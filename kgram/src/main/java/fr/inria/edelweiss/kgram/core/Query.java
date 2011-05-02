@@ -1,0 +1,1718 @@
+package fr.inria.edelweiss.kgram.core;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.edelweiss.kgram.api.core.Filter;
+import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.filter.Compile;
+import fr.inria.edelweiss.kgram.tool.Message;
+
+/**
+ * KGRAM Query
+ * also used for subquery
+ * 
+ * @author Olivier Corby, Edelweiss, INRIA 2009
+ *
+ */
+
+public class Query extends Exp {
+	public static boolean test = true;
+	
+	int limit = Integer.MAX_VALUE, offset = 0;
+	boolean distinct = false;
+	int iNode = 0, iEdge = 0;
+	List<Node> from, named, selectNode;
+	// all nodes (on demand)
+	List<Node> 
+		// std patterns but select, minus and exists
+		patternNodes,  
+		// std patterns  + minus + exists but select
+		queryNodes,
+		// select nodes in std pattern
+		patternSelectNodes, 
+		// all select nodes
+		querySelectNodes;
+	List<Exp> selectExp, orderBy, groupBy;
+	List<Filter> failure;
+	List<Mapping> bindings;
+	Exp having, construct, delete;
+	// gNode is a local graph node when subquery has no ?g in its select 
+	// use case: graph ?g {{select where {}}}
+	Node gNode;
+	// outer main query that contains this (when subquery)
+	Query query, outerQuery;
+	Object object, ast;
+	Compile compiler;
+	boolean 
+	isCompiled = false,
+	isDebug = false, 
+	isAggregate = false,
+	isFunctional = false,
+	isRelax = false,
+	isDistribute = false,
+	isTest = false,
+	// sort edges to be connected
+	isSort = true, 
+	isConstruct = false,
+	isDelete = false,
+	isUpdate = false,
+	// true:  path do not loop on node
+	isLoopNode = false, 
+	isPipe = false,
+	isListGroup = false,
+	// select/aggregate/group by SPARQL 1.1 rules
+	isCorrect = true,
+	isConnect = false;
+
+	private boolean isBind = false;
+	
+	Query(){
+		super(QUERY);
+		from = new ArrayList<Node>();
+		named = new ArrayList<Node>();
+		selectExp = new ArrayList<Exp>();
+		orderBy = new ArrayList<Exp>();
+		groupBy = new ArrayList<Exp>();
+		failure = new ArrayList<Filter>();
+		compiler = new Compile(this);
+		
+		patternNodes 		= new ArrayList<Node>();
+		queryNodes 			= new ArrayList<Node>();
+		patternSelectNodes 	= new ArrayList<Node>();
+		querySelectNodes 	= new ArrayList<Node>();
+	}
+	
+	Query(Exp e){
+		this();
+		add(e);
+	}
+	
+	public static Query create(Exp e){
+		return new Query(e);
+	}
+	
+	public static Query create(int type){
+		return new Query();
+	}
+	
+	public String toString(){
+		String str = super.toString();
+		if (selectExp.size()>0){
+			str = "select " + selectExp + "\n" + str;
+		}
+		return str;
+	}
+	
+	public Object getObject(){
+		return object;
+	}
+	
+	public void setObject(Object o){
+		object = o;
+	}
+	
+	public Object getAST(){
+		return ast;
+	}
+	
+	public void setAST(Object o){
+		ast = o;
+	}
+	
+	public Exp getBody(){
+		return first();
+	}
+	
+	void setGlobalQuery(Query q){
+		query = q;
+		inherit(q);
+	}
+	
+	/**
+	 * inherit from and from named
+	 */
+	void inherit(Query q){
+		setFrom(q.getFrom());
+		setNamed(q.getNamed());
+	}
+	
+	public Query getGlobalQuery(){
+		return query;
+	}
+	
+	public void setOuterQuery(Query q){
+		outerQuery = q;
+	}
+	
+	Query getOuterQuery(){
+		if (outerQuery == null) return this;
+		return outerQuery;
+	}
+	
+	boolean isSubQuery(){
+		return query!=null;
+	}
+	
+	boolean isLoopNode(){
+		return isLoopNode;
+	}
+	
+	public void setLoopNode(boolean b){
+		isLoopNode = b;
+	}
+	
+	boolean isPipe(){
+		return isPipe;
+	}
+	
+	public void setPipe(boolean b){
+		isPipe = b;
+	}
+	
+	/**
+	 * Fake local graph node
+	 */
+	public Node getGraphNode(){
+		return gNode;
+	}
+	
+	public void setGraphNode(Node n){
+		gNode = n;
+	}
+	
+	/**
+	 * Return equivalent local node for graph node 
+	 * it may be a local node with same variable name
+	 * it may be a fake node
+	 */
+	public Node getGraphNode(Node g){
+		Node node = getSelectNode(g.getLabel());
+		if (node != null){
+			return node;
+		}
+		else {
+			return getGraphNode();
+		}
+	}
+
+	
+	public Exp getFunction(){
+		for (Exp exp : getSelectFun()){
+			if (exp.getFilter()!=null && exp.getFilter().isFunctional()){
+				return exp;
+			}
+		}
+		return null;
+	}
+	
+	public static boolean isSPARQL2(){
+		return  true;
+	}
+	
+	List<Node> getFrom(Node gNode){
+		if (gNode == null)
+			return from;
+		else return named;
+	}
+	
+	public List<Node> getFrom(){
+			return from;
+	}
+	
+	public List<Node> getNamed(){
+		return named;
+	}
+	
+	public void setFrom(List<Node> l){
+		from = l;
+	}
+	
+	public void setNamed(List<Node> l){
+		named = l;
+	}
+	
+	public List<Node> getPatternNodes(){
+		return patternNodes;
+	}
+	
+	public List<Node> getQueryNodes(){
+		return queryNodes;
+	}
+	
+	public List<Node> getPatternSelectNodes(){
+		return patternSelectNodes;
+	}
+	
+	public List<Node> getQuerySelectNodes(){
+		return querySelectNodes;
+	}
+	
+	/**
+	 * use case:
+	 * select *
+	 * list of nodes that are exposed as select *
+	 */
+	public List<Node> getSelectNodes(){
+		List<Node> list = new ArrayList<Node>();
+		for (Node node : patternNodes){
+			list.add(node);
+		}
+		for (Node node : patternSelectNodes){
+			if (! contains(list, node)){
+				Node ext = getExtNode(node);
+				add(list, ext);
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * 
+	 * use case:
+	 * select ?x
+	 */
+	public Node getSelectNodes(String name){
+		Node node = get(patternNodes, name);
+		if (node != null) return node;
+		node = get(patternSelectNodes, name);
+		if (node!=null) return getExtNode(node);
+		return node;
+	}
+
+
+	public List<Exp> getSelectNodesExp(){
+		List<Node> list = getSelectNodes();
+		return toExp(list);
+	}
+	
+	public Node getPatternNode(String name){
+		return get(patternNodes, name);
+	}
+	
+	public Node getQueryNode(String name){
+		return get(queryNodes, name);
+	}
+	
+	public Node getPatternSelectNode(String name){
+		return get(patternSelectNodes, name);
+	}
+	
+	public Node getQuerySelectNode(String name){
+		return get(querySelectNodes, name);
+	}
+	
+	public Node getNode(String name){
+		return getExtNode(name);
+	}
+		
+	public Node getExtNode(Node qNode){
+		return getExtNode(qNode.getLabel());
+	}
+	
+	public Node getExtNode(String name){
+		Node node = getPatternNode(name);
+		if (node != null) return node;
+		node = getQueryNode(name);
+		if (node != null) return node;
+		node = getPatternSelectNode(name);
+		if (node != null) return node;
+		node = getQuerySelectNode(name);
+		return node;
+	}
+	
+	Node get(List<Node> list, String name){
+		for (Node node : list){
+			if (name.equals(node.getLabel())){
+				return node;
+			}
+		}
+		return null;
+	}
+	
+	
+	
+	
+	public void setLimit(int n){
+		limit = n;
+	}
+	
+	public int getLimit(){
+		return limit;
+	}
+	
+	public int getLimitOffset(){
+		// when order by/group by/count(), return all results, group sort agg, and then apply offset/limit
+		if ( ! isConstruct() &&
+				(isOrderBy() || isGroupBy() || isAggregate())) return Integer.MAX_VALUE;
+		if (limit < Integer.MAX_VALUE - offset){
+			return limit + offset;
+		}
+		else {
+			return limit;
+		}
+	}
+	
+	public void setOffset(int n){
+		offset = n;
+	}
+	
+	public int getOffset(){
+		return offset;
+	}
+	
+	public boolean isDistinct(){
+		return distinct;
+	}
+	
+	public void setDistinct(boolean b){
+		 distinct = b;
+	}
+	
+	public boolean isDebug(){
+		return isDebug;
+	}
+	
+	public void setDebug(boolean b){
+		 isDebug = b;
+	}
+	
+	public void setSort(boolean b){
+		 isSort = b;
+	}
+	
+	public boolean isFunctional(){
+		return isFunctional;
+	}
+	
+	public boolean isAggregate(){
+		return isAggregate;
+	}
+	
+	public void setAggregate(boolean b){
+		isAggregate = b;
+	}
+	
+	public boolean isRelax(){
+		return isRelax;
+	}
+	
+	public void setRelax(boolean b){
+		isRelax = b;
+	}
+	
+	public boolean isDistribute(){
+		if (query != null)
+			return query.isDistribute();
+		else return isDistribute;
+	}
+	
+	public void setDistribute(boolean b){
+		isDistribute = b;
+	}
+	
+	public boolean isConstruct(){
+		return isConstruct;
+	}
+	
+	public void setConstruct(boolean b){
+		isConstruct = b;
+	}
+	
+	public boolean isDelete(){
+		return isDelete;
+	}
+	
+	public void setDelete(boolean b){
+		isDelete = b;
+	}
+	
+	public boolean isUpdate(){
+		return isUpdate;
+	}
+	
+	public void setUpdate(boolean b){
+		isUpdate = b;
+	}
+	
+	public boolean isTest(){
+		return isTest;
+	}
+	
+	public void setTest(boolean b){
+		isTest = b;
+	}
+	
+	public void setAggregate(){
+		for (Exp exp : getSelectFun()){
+			if (exp.getFilter()!=null){
+				if (exp.getFilter().isAggregate()){
+					isAggregate = true;
+				}
+				else if (exp.getFilter().isFunctional()){
+					isFunctional = true;
+				}
+			}
+		}
+		for (Exp exp : getOrderBy()){
+			if (exp.getFilter()!=null && exp.getFilter().isAggregate()){
+				isAggregate = true;
+			}
+		}
+	}
+	
+	
+	
+	public void addFailure(Filter exp){
+		failure.add(exp);
+	}
+	
+	public List<Filter> getFailures(){
+		return failure;
+	}
+	
+	public void setSelectFun(List<Exp> s){
+		selectExp = s;
+	}
+	
+	public List<Exp> getSelectFun(){
+		return selectExp;
+	}
+	
+	public void addSelect(Exp exp){
+		selectExp.add(exp);
+	}
+	
+	public void addSelect(Node node){
+		selectExp.add(Exp.create(NODE, node));
+	}
+	
+	public void addOrderBy(Exp exp){
+		orderBy.add(exp);
+	}
+	
+	public void addOrderBy(Node node){
+		orderBy.add(Exp.create(NODE, node));
+	}
+	
+	public void addGroupBy(Exp exp){
+		groupBy.add(exp);
+	}
+	
+	public void addGroupBy(Node node){
+		groupBy.add(Exp.create(NODE, node));
+	}
+	
+	public void setOrderBy(List<Exp> s){
+		orderBy = s;
+	}
+	
+	public boolean isOrderBy(){
+		return orderBy.size()>0;
+	}
+	
+	public List<Exp> getOrderBy(){
+		return orderBy;
+	}
+	
+	public void setGroupBy(List<Exp> s){
+		groupBy = s;
+	}
+	
+	public List<Exp> getGroupBy(){
+		return groupBy;
+	}
+	
+	public boolean isGroupBy(){
+		return groupBy.size()>0;
+	}
+	
+	public boolean isListGroup(){
+		return isListGroup;
+	}
+	
+	public void setListGroup(boolean b){
+		isListGroup = b;
+	}
+	
+	public void setMapping(List<Mapping> list){
+		bindings = list;
+	}
+	
+	public List<Mapping> getMapping(){
+		return bindings;
+	}
+	
+	public boolean isCorrect(){
+		return isCorrect;
+	}
+	
+	public void setCorrect(boolean b){
+		isCorrect = b;
+	}
+	
+	public boolean isConnect(){
+		return isConnect;
+	}
+	
+	public void setConnect(boolean b){
+		isConnect = b;
+	}
+	
+	public void setHaving(Exp f){
+		having = f;
+	}
+	
+	public Exp getHaving(){
+		return having;
+	}
+	
+	public void setConstruct(Exp c){
+		construct = c;
+	}
+	
+	public Exp getConstruct(){
+		return construct;
+	}
+	
+	public void setDelete(Exp c){
+		delete = c;
+	}
+	
+	public Exp getDelete(){
+		return delete;
+	}
+
+	public int nbFun(){
+		int nbfun = 0;
+		for (Exp e : getSelectFun()){
+			if (e.getFilter()!=null){
+				nbfun++;
+			}
+		}
+		return nbfun;
+	}
+	
+	/**
+	 * Check that select variables and expressions are compatible with group by & aggregates
+	 * use case:
+	 * 
+	 * SELECT ?P (COUNT(?O) AS ?C) WHERE { ?S ?P ?O }
+	 * 
+	 * SELECT ((?O1 + ?O2) AS ?O12) (COUNT(?O1) AS ?C)
+	 * WHERE { ?S :p ?O1; :q ?O2 } GROUP BY (?S)
+	 * 
+	 * 
+	 */
+	public boolean check(){
+		if (getGroupBy().size()>0){
+			for (Exp exp : getSelectFun()){
+				if (! checkGroupBy(exp)){
+					return false;
+				}
+			}
+		}
+		else {
+			return checkAggregate();
+		}
+		return true;
+	}
+	
+	/**
+	 * If there is an aggregate, there should be no variable in select
+	 * 
+	 * SELECT ?P (COUNT(?O) AS ?C) WHERE { ?S ?P ?O }
+	 */
+	boolean checkAggregate(){
+		boolean hasVariable = false, hasAggregate = false;
+		
+		for (Exp exp : getSelectFun()){
+			if (exp.getFilter() == null){
+				if (! exp.status()){
+					// special case, status=true means 
+					// exp was generated by transformer as input arg of another select exp
+					// see checkFilterVariables
+					hasVariable = true;
+				}
+			}
+			else if (exp.getFilter().isRecAggregate()){
+				hasAggregate = true;
+			}
+		}
+		return ! (hasAggregate && hasVariable);
+	}
+	
+	/**
+	 * 
+	 * Check that select variables and expressions are compatible with group by 
+	 * 
+	 * SELECT ((?O1 + ?O2) AS ?O12) (COUNT(?O1) AS ?C)
+	 * WHERE { ?S :p ?O1; :q ?O2 } GROUP BY (?S)
+	 * 	 
+	 * */
+	boolean checkGroupBy(Exp exp){
+		if (exp.getFilter()!=null){
+			// variables should be in group by or in aggregate 
+			// (fun(count(?x)) as y
+			if (exp.getFilter().isRecAggregate()){
+				return true;
+			}
+			if (member(exp.getNode(), getGroupBy())){
+				// use case: select ?x where {} group by (f(?y) as ?x)
+				return true;
+			}
+			
+			List<String> list = exp.getFilter().getVariables();
+			for (String var : list){
+				if (! member(var, getGroupBy())){
+					return false;
+				}
+			}
+		}
+		else if (! member(exp.getNode(), getGroupBy())){
+			return false;
+		}
+		return true;
+	}
+	
+	
+	boolean member(Node node, List<Exp> lExp){
+		return member(node.getLabel(), lExp);
+	}
+	
+	
+	boolean member(String var, List<Exp> lExp){
+		for (Exp exp : lExp){
+			if (var.equals(exp.getNode().getLabel())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	
+	/**
+	 * PRAGMA: do not use at compile time (use getSelectFun())
+	 * @return all var in select, including fun() as ?var
+	 */
+	public List<Node> getSelect(){
+		if (selectNode == null){
+			selectNode = new ArrayList<Node>();
+			if (selectExp != null){
+				for (Exp exp : selectExp){
+					selectNode.add(exp.getNode());
+				}
+			}
+		}
+		return selectNode;
+	}
+	
+	public List<String> getVariables(){
+		List<String> list = new ArrayList<String>();
+		for (Node node : getSelect()){
+			list.add(node.getLabel());
+		}
+		return list;
+	}
+	
+	
+	public Exp getSelectExp(String label){
+		for (Exp exp : getSelectFun()){
+			Node node = exp.getNode();
+			if (node.getLabel().equals(label)){
+				return exp;
+			}
+		}
+		return null;
+	}
+	
+	Node getSelectNode(String label){
+		Exp exp = getSelectExp(label);
+		if (exp != null) return exp.getNode();
+		return null;
+	}
+	
+	int nbNodes(){
+		return iNode;
+	}
+	
+	public int nbEdges(){
+		return iEdge;
+	}
+	
+
+	public void complete(){
+		if (isCompiled) return;
+		else isCompiled = true;
+		
+		compile();
+		setAggregate();
+		index(this, getBody(), true, false, -1);
+		if (getHaving()!=null){
+			index(this, getHaving().getFilter());
+		}
+		for (Exp ee : getSelectFun()){
+			// use case: query node created to hold fun result
+			Node snode = ee.getNode();
+			index(snode);
+			// use case: select (exists{?x :p ?y} as ?b)
+			if (ee.getFilter()!=null){
+				index(this, ee.getFilter());
+			}
+		}
+		for (Exp ee : getOrderBy()){
+			// use case: order by exists{?x :p ?y} 
+			if (ee.getFilter()!=null){
+				index(this, ee.getFilter());
+			}
+		}
+		for (Exp ee : getGroupBy()){
+			// use case: group by (exists{?x :p ?y} as ?b)
+			if (ee.getFilter()!=null){
+				index(this, ee.getFilter());
+			}
+		}
+		if (getGraphNode()!=null){
+			index(getGraphNode());
+		}
+	}
+	
+	public Query getQuery(){
+		return this;
+	}
+	
+	void trace(){
+		System.out.println("patternNodes: " + patternNodes);
+		System.out.println("queryNodes: " + queryNodes);
+		System.out.println("patternSelectNodes: " + patternSelectNodes);
+		System.out.println("querySelectNodes: " + querySelectNodes);
+	}
+	
+	/**
+	 * TODO:
+	 * must also join:
+	 * {select ?x where {?x rdf:first ?y}}
+	 * filter (exists {?x})
+	 * minus {?x}
+	 * and also
+	 * {minus {select ?x where }}
+	 * filter exists {{select ?x where }}
+	 * 
+	 * embedding select * must evolve as well
+	 */
+	Node getOuterNode(Node subNode){
+		if (test) return getExtNode(subNode);
+		return getProperAndSubSelectNode(subNode.getLabel());
+	}
+	
+	/**
+	 * get node with going in select sub query
+	 * go into in its own select because order by may reuse a select variable
+	 * use case: 
+	 * transformer find node for select & group by
+	 */
+	public Node getProperAndSubSelectNode(String label){
+		if (test) return getProperAndSubSelectNode2(label);
+		// first, look in query without subquery
+		Node node = findNode(label, true);
+		// if not found, look in subquery
+		if (node == null) node = findNode(label, false);
+		return node;
+	}
+	
+	public Node getProperAndSubSelectNode2(String name){
+		Node node = getPatternNode(name);
+		if (node != null) return node;
+		node = getSelectNode(name);
+		if (node != null) return node;
+		node = getQueryNode(name);
+		if (node != null) return node;
+		node = getPatternSelectNode(name);
+		if (node != null) return node;
+		node = getQuerySelectNode(name);
+		return node;
+	}
+	
+	/**
+	 * get node without going in select sub query
+	 * use case: 
+	 * eval get outer node corresponding to sub query select node
+	 * this query is the outer query, hence we do not go into sub query
+	 */
+	Node getProperNode(String label){
+		if (test) return getProperAndSubSelectNode2(label);
+		return findNode(label, true);
+	}
+	
+	
+	Node findNode(String label, boolean isProper){
+		// search proper nodes first
+		for (Exp exp : this){
+			Node node = exp.getNode(label, isProper);
+			if (node != null) return node;
+		}
+		
+		// for fun() as var aggregates and having:
+		return getSelectNode(label);		
+	}
+	
+	
+	void store(Node node, boolean exist, boolean select){
+		if (select){
+			if (exist){
+				add(querySelectNodes, node);
+			}
+			else {
+				add(patternSelectNodes, node);
+			}
+		}
+		else {
+			if (exist){
+				add(queryNodes, node);
+			}
+			else {
+				add(patternNodes, node);
+			}
+		}
+	}
+	
+	public void collect(){
+		for (Exp ee : this){
+			collect(ee, false);
+		}
+	}
+	
+	void collect(Exp exp, boolean exist){
+
+		switch (exp.type()){
+
+		case FILTER:
+			// get exists {} nodes
+			// draft
+			collectExist(exp.getFilter().getExp());
+			break;
+
+		case NODE:
+			store(exp.getNode(), exist, false);
+			break ;
+
+		case EDGE:
+		case PATH:
+		case XPATH:
+		case EVAL:
+			for (int i=0; i<exp.nbNode(); i++){ 
+				Node node = exp.getNode(i);
+				store(node, exist, false);
+			}			
+			break ;
+
+		case MINUS:
+			// second argument does not bind anything: skip it
+			if (exp.first() != null) collect(exp.first(), exist);
+			if (exp.rest() != null)  collect(exp.rest(), true);
+
+			break;
+
+		case QUERY:
+			
+			// use case: select * where { {select ?y fun() as ?var where {}} }
+			// we want ?y & ?var for select *			
+			for (Exp ee : exp.getQuery().getSelectFun()){
+				store(ee.getNode(), exist, true);
+			}
+	
+			break ;
+
+
+		default:
+			for (Exp ee : exp){
+				collect(ee, exist);
+			}
+		}
+
+	}
+	
+	
+	void collectExist(Expr exp){
+		switch (exp.oper()){
+
+		case ExprType.EXIST:
+			Exp pat = getPattern(exp);
+			collect(pat, true);
+			break;
+
+		default:
+			for (Expr ee : exp.getExpList()){
+				collectExist(ee);
+			}
+
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	/**
+	 * set Index for EDGE & NODE
+	 * check if subquery is aggregate
+	 * in case of UNION, start is the start index for both branches
+	 * if exp is free (no already bound variable, it is tagged as free)
+	 * return the min of index of exp Nodes
+	 */
+	int index(Query query, Exp exp,  boolean hasFree, boolean isExist, int start){
+		//System.out.println("** Q: " + exp + " " + isExist);
+		int min = Integer.MAX_VALUE, n;
+		int type = exp.type();
+
+		switch (type){
+
+		case EDGE:
+		case PATH:
+		case XPATH:
+		case EVAL:
+			Edge edge = exp.getEdge();
+			edge.setIndex(iEdge++);
+			for (int i=0; i<exp.nbNode(); i++){ 
+				Node node = exp.getNode(i);
+				n = qIndex(query, node);
+				min = Math.min(min, n);
+			}
+			
+			break;
+
+		case NODE:
+			Node node = exp.getNode();
+			min = qIndex(query, node);
+			break;
+
+		case FILTER:
+			// use case: filter(exists {?x ?p ?y})
+			boolean hasExist = index(query, exp.getFilter());
+			
+			List<String> lVar = exp.getFilter().getVariables();
+			//System.out.println(exp + " " + lVar);
+			for (String var : lVar){
+				Node qNode = query.getProperAndSubSelectNode(var);
+				if (qNode != null){
+					n = qIndex(query, qNode);
+					min = Math.min(min, n); 
+				}
+				else if (! isExist && ! hasExist){
+					// TODO: does not work with filter in exists{}
+					// because getProperAndSubSelectNode does not go into exists{}
+					Message.log(Message.UNDEF_VAR , var);
+				}
+			}
+			if (hasExist){
+				// by safety, outer exp will not be free
+				// use case:
+				// exists {?x p ?y filter(?x != ?z)}
+				min = -1;
+			}
+			break;
+			
+			
+		case QUERY:
+			
+			Query qq = exp.getQuery();
+			qq.setGlobalQuery(this);
+			qq.setOuterQuery(query);
+			qq.setAggregate();
+
+			
+			for (Exp e : exp){
+				// for subquery, do not consider index here
+				index(qq, e, hasFree, isExist, -1);
+			}
+			
+			for (Exp ee : qq.getSelectFun()){
+				// use case: query node created to hold fun result
+				// see Transformer compiler.compileSelectFun()
+				Node sNode = ee.getNode();
+				//index(sNode);
+				// get the outer node for this select sNode
+				// use case:
+				// ?x ?p ?y 
+				// {select * where {?y ?r ?t}}
+				// get the index of outer sNode ?y 
+				//Node oNode = query.getProperAndSubSelectNode(sNode.getLabel());
+				//n = qIndex(query, oNode);
+				
+				n = qIndex(qq, sNode);
+
+				min = Math.min(min, n);
+			}
+//			if (qq.getGraphNode()!=null){
+//				index(qq.getGraphNode());
+//			}
+			if (qq.getHaving()!=null){
+				index(qq, qq.getHaving().getFilter());
+			}
+			
+			break;
+			
+			
+		case BIND:
+			
+		case ACCEPT:
+			break;
+			
+			
+		default: 
+			// AND UNION OPTION GRAPH BIND
+			int startIndex = iNode, ind = -1;
+			if (start >= 0) startIndex = start;
+			if (exp.isUnion()) ind = startIndex;
+			for (Exp e : exp){
+				n = index(query, e, hasFree && ! exp.isGraph(), isExist, ind);
+				min = Math.min(min, n);
+			}
+			
+			
+			switch (exp.type()){
+
+			case GRAPHNODE:
+				break;
+				
+			default:
+				//System.out.println("** Q: " + exp + " " + startIndex+ " " + min + " " + hasFree);
+				if (startIndex > 0 && min >= startIndex && hasFree){
+					// this exp has no variable in common with preceding exp
+					// hasFree = false : 
+					// except graph ?g {ei ej} because ek in graph share ?g implicitly !!!
+					// pragma {kg:kgram kg:test true}
+					if (! isTest()) exp.setFree(true);
+					if (isDebug()) Message.log(Message.FREE, exp);
+				}
+			}
+			
+		}
+		
+		// index the fake graph node (select/minus)
+		if (exp.getGraphNode()!=null){
+			index(exp.getGraphNode());
+		}
+		
+		return min;
+		
+	}
+	
+	
+	boolean inSelect(Node qNode){
+		for (Exp exp : getSelectFun()){
+			Node node = exp.getNode();
+			if (node == qNode) return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Generate or retrieve index of node
+	 * If node is in a sub query, return the index of the outer node 
+	 * corresponding to node and rec.
+	 */
+	int qIndex(Query query, Node node){
+		int n = index(node);
+		if (query != this && query.inSelect(node)){
+			// get the outer node for this sub select sNode
+			Node oNode = query.getOuterQuery().getProperAndSubSelectNode(node.getLabel());
+			if (oNode != null) n = qIndex(query.getOuterQuery(), oNode);
+		}
+		return n;
+	}
+	
+	
+	/**
+	 * Return true if new node, false if already indexed
+	 */
+	public int index(Node node){
+		if (node.getIndex() == -1){
+			node.setIndex(iNode++);
+		}
+		return node.getIndex();
+	}
+	
+	
+	/**
+	 * 
+	 * @return nodes for select * where BODY
+	 * go into BODY
+	 */
+	public List<Exp> getNodesExp(){
+		List<Node> lNode = getNodes();
+		return toExp(lNode);
+	}
+	
+	public List<Exp> toExp(List<Node> lNode){
+		List<Exp> lExp = new ArrayList<Exp>();
+		for (Node node : lNode){
+			lExp.add(Exp.create(NODE, node));
+		}
+		return lExp;
+	}
+	
+	
+	/**
+	 * use case: select distinct ?x where
+	 * add an ACCEPT ?x statement to check that
+	 * ?x is new
+	 */ 	 
+	public void distinct(){
+		if (isDistinct() && getSelectFun().size() == 1){
+			Node qNode = getSelectFun().get(0).getNode();
+			for (Exp exp : this){
+				if (exp.distinct(qNode)){
+					return;
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/***************************************************************
+	 * Compile before exec
+	 */
+	
+	
+	/**
+	 * sort edges wrt binding
+	 * add BIND ?x = ?y 
+	 * move filter where variable are bound
+	 * remove redundant NODE wrt EDGE
+	 */
+	void compile(){
+		VString bound =  new VString();
+		compile(this, bound, false);
+	}
+
+
+	Exp compile(Exp exp, VString lVar, boolean option){
+		//System.out.println("** Query: " + exp + " " + lVar);
+		int type = exp.type();
+		
+		switch (type){
+		
+		case EDGE:
+		case XPATH:
+		case EVAL:
+		case NODE:
+			break;
+			
+		case FILTER:
+			// compile inner exists {} if any
+			compile(exp.getFilter(), lVar, option);
+			break;
+			
+		case PATH:
+			compiler.test(exp.getRegex());
+			break;
+
+		case QUERY:
+			// lVar = lVar INTER select
+			VString list = new VString();
+			for (Exp ee : exp.getQuery().getSelectFun()){
+				Node node = ee.getNode();
+				if (lVar.contains(node.getLabel())){
+					list.add(node.getLabel());
+				}
+			}
+			lVar = list;
+			if (getHaving() != null){
+				compile(getHaving().getFilter(), new VString(), false);
+			}
+			// continue
+
+		default: 
+			
+			if (type == OPTION || type == OPTIONAL ||type == UNION || type == NOT || type == MINUS) option = true;
+				
+			
+			if (isSort){
+				// identify remarkable filters such as ?x = ?y
+				findFilter(exp);
+				
+				int num = exp.size();
+				/**
+				 * TODO:
+				 * when filter x = y concern same edge, remove BIND
+				 * when BIND concern graph ?g variable, 
+				 * graph ?g is not considered as bound by sort
+				 * 
+				 * lBind : filter VAR = CST
+				 * 
+				 */
+				List<Exp> lBind = exp.varBind();
+				
+				if (exp.type() == AND){
+					// sort edges as connected when possible
+					exp.sort(lVar, lBind);
+				}
+				// put filters where they are bound
+				sortFilter(exp, lVar);
+				// check patterns
+				//processFilter(exp, option);
+
+				if (exp.size()!=num){
+					//System.out.println(this);
+				}
+				
+				// set BIND expressions
+				exp.cstBind();
+				exp.graphFilter();
+				if (isTest()) 
+					exp.edgeFilter();
+			}
+			
+			
+			int size = lVar.size();
+
+			if (exp.isGraph()){
+				// GRAPH {GRAPHNODE NODE} {EXP}
+				Node gNode = exp.getGraphName();
+				lVar.add(gNode.getLabel());
+			}
+		
+			for (Exp e : exp){
+				compile(e, lVar, option);
+				if (e.isEdge() && exp.type() == AND){
+					// { t1 t2 optional { t3 t4 }}
+					// t1 & t2 are bound when entering optional
+					// hence bound is used by nested patterns
+					// TODO:
+					// bind graph ?g {}
+					e.addBind(lVar);
+				}
+			}
+			
+			lVar.clear(size);
+			cleanNode(exp);		
+			
+		}
+		
+		return exp;
+	}
+	
+	/**
+	 * Identify remarkable filter 
+	 * ?x = ?y or ?x = cst or !bound()
+	 * filter is tagged
+	 */
+	void findFilter(Exp exp){
+		for (Exp ee : exp){
+			if (ee.isFilter()){
+				compiler.process(ee);
+			}
+		}
+	}
+	
+
+	
+	void processFilter(Exp exp, boolean option){
+		boolean correct =	checkFilter(exp);
+
+		if (! correct){
+			if (option){
+				// in case of option, exp is the inner AND
+				exp.setFail(true);
+			}
+			else {
+				this.setFail(true);
+			}
+		}
+		
+	}
+
+
+	/**
+	 * if exist EDGE with NODE n and exist also NODE n by itself 
+	 * then remove NODE n because it is redundant
+	 */
+	void cleanNode(Exp exp){
+		ArrayList<Exp> nodes = new ArrayList<Exp>();
+		for (Exp eNode : exp){
+			if (eNode.isNode()){
+				for (Exp eEdge : exp){
+					if (eEdge.type() == OPTION){
+						// option may bind the node
+						// hence cannot remove mandatory node
+						// use case: ?x rdf:type CC  optional {?x p ?y}
+						return;
+					}
+					else if (eEdge.isEdge() && ! eEdge.isPath() &&
+							 eEdge.contains(eNode.getNode())){
+						nodes.add(eNode);
+					}
+				}
+			}
+		}
+		for (Exp node : nodes){
+			exp.remove(node);
+		}
+	}
+	
+	
+	class VString extends ArrayList<String> {
+		
+		void clear(int size){
+			if (size == 0) clear();
+			else
+			while(size()>size){
+				remove(size()-1);
+			}
+		}
+		
+		public boolean add(String var){
+			if (! contains(var)){
+				super.add(var);
+			}
+			return  true;
+		}
+	}
+	
+	
+	/**
+	 * Check always true and always false filters
+	 * return false if there is a always false filter
+	 */
+	boolean checkFilter(Exp exp){
+		boolean b = true;
+		for (int i = 0; i< exp.size(); i++){
+			Exp e1 = exp.get(i);
+			if (e1.isFilter()){
+				b = compiler.check(e1) && b;
+				
+				for (int j = i+1; j < exp.size(); j++){
+					Exp e2 = exp.get(j);
+					if (e2.isFilter()){
+						b = compiler.check(e1, e2) && b;
+					}
+				}
+			}
+		}
+		return b;
+	}
+	
+		
+	/**
+	 * Move filter at place where variables are bound in exp
+	 * expVar: list of bound variables
+	 */
+	void sortFilter(Exp exp, VString expVar){
+		//System.out.println("** Q: " + exp + " " + expVar);
+		int size = expVar.size();
+		List<String> filterVar;
+		List<Exp> done = new ArrayList<Exp>();
+
+		for (int jf=exp.size()-1; jf>=0 ; jf--){
+			// reverse to get them in same order after placement
+
+			Exp f = exp.get(jf);
+
+			if (f.isFilter() && ! done.contains(f)){
+				//compiler.process(f);
+				Filter ff = f.getFilter();
+
+				if (compiler.isLocal(ff)){
+					//TODO: fix it
+					// optional {} !bound()
+					// !bound() should not be moved
+					done.add(f);
+					continue;
+				}
+
+				expVar.clear(size);
+
+				filterVar = ff.getVariables();
+				boolean isExist = isExist(ff);
+				
+				//System.out.println("** Q: " + ff + " " + filterVar);
+
+				for (int je=0; je<exp.size() ; je++){
+					// search exp e after which filter f is bound
+					Exp e = exp.get(je);
+
+					e.share(filterVar, expVar);
+										
+					if (bound(filterVar, expVar) || (isExist && je+1 == exp.size())){
+						// insert filter after exp
+						// an exist filter that is not bound is moved at the end because it 
+						// may bound its own variables.
+
+						done.add(f);
+						if (jf < je){
+							// filter is before, move it after
+							exp.remove(f);
+							exp.add(je, f);
+							//jf--;
+						}
+						else if (jf > je+1){
+							// put if just behind
+							exp.remove(f);
+							exp.add(je+1, f);
+							jf++;
+						}
+
+						break;
+					}
+				}
+			}
+		}
+		
+		expVar.clear(size);
+
+	}
+	
+
+	/**
+	 * Compute node list for filter variables 
+	 * use case:
+	 * Pattern compiler (?x = cst)
+	 * TODO:
+	 * does not dive into minus {PAT}
+	 */
+	public List<Node> getNodes(Exp exp){
+		return getNodes(exp.getFilter());
+	}
+	
+	/**
+	 * use case:
+	 * select count(distinct *)
+	 */
+	public List<Node> getNodes(Filter f){
+		List<String> lVar = f.getVariables();
+		ArrayList<Node> lNode = new ArrayList<Node>();
+		for (String var : lVar){
+			Node node = getProperAndSubSelectNode(var);
+			if (node != null && ! lNode.contains(node)) lNode.add(node);
+		}
+		return lNode;
+	}
+
+	boolean bound(List<String> fvec, VString evec){
+		for (String var : fvec){
+			if (! evec.contains(var)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
+	
+	/********************************************************************
+	 * 
+	 * Dependency with filter exp
+	 * for tracking filter(exists {PAT})
+	 * 
+	 */
+	
+	boolean index(Query query, Filter f){
+		return index(query, f.getExp());
+	}
+
+	/**
+	 * Looking for filter(exist {})
+	 */
+	boolean index(Query query, Expr exp){
+		boolean b = false;
+		if (exp.oper() == ExprType.EXIST){
+			index(query, getPattern(exp), false, true, -1);
+			b = true;
+		}
+		else {
+			for (Expr ee : exp.getExpList()){
+				b = index(query, ee) || b;
+			}
+		}
+		return b;
+	}
+	
+	
+	void compile(Filter f, VString lVar, boolean opt){
+		compile(f.getExp(), lVar, opt);
+	}
+	
+	/**
+	 * Compile pattern of exists {} if any
+	 */
+	void compile(Expr exp, VString lVar, boolean opt){
+		if (exp.oper() == ExprType.EXIST){
+			compile(getPattern(exp), lVar, opt);
+			//System.out.println("** Exist: " + exp.getPattern());
+		}
+		else {
+			for (Expr ee : exp.getExpList()){
+				compile(ee, lVar, opt);
+			}
+		}
+	}
+	
+	
+	boolean isExist(Filter f){
+		return isExist(f.getExp());
+	}
+	
+	boolean isExist(Expr exp){
+		if (exp.oper() == ExprType.EXIST){
+			return true;
+		}
+		else {
+			for (Expr ee : exp.getExpList()){
+				if (isExist(ee)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	/**********************************************************************
+	 * 
+	 * Pipeline using operators on queries:
+	 * union/and/optional/minus
+	 * q1.union(q2).and(q3).optional(q4).minus(q5)
+	 * 
+	 **********************************************************************/
+	
+	public Query union(Query q2){
+		Query q1 = this;
+		Exp exp = Exp.create(UNION, q1, q2);
+		Query q = Query.create(exp).complete(q1, q2);
+		return q;
+	}
+	
+	public Query and(Query q2){
+		Query q1 = this;
+		Exp exp = Exp.create(AND, q1, q2);
+		Query q = Query.create(exp).complete(q1, q2);
+		return q;
+	}
+	
+	public Query minus(Query q2){
+		Query q1 = this;
+		Exp exp = Exp.create(MINUS, q1, Exp.create(AND, q2));
+		Query q = Query.create(exp).complete(q1, q2);
+		return q;
+	}
+	
+	public Query optional(Query q2){
+		Query q1 = this;
+		Exp exp = Exp.create(AND, q1, Exp.create(OPTION, Exp.create(AND, q2)));
+		Query q = Query.create(exp).complete(q1, q2);
+		return q;
+	}
+	
+	public Query ifthen(Query q1, Query q2){
+		
+		return this;
+	}
+
+	
+	public Query orderBy(Node node){
+		if (node!=null && ! contain(getOrderBy(), node)){
+			addOrderBy(node);
+		}
+		return this;
+	}
+	
+	public Query orderBy(String n){
+		return orderBy(getNode(n));
+	}
+	
+	public Query groupBy(Node node){
+		if (node!=null && ! contain(getGroupBy(), node)){
+			addGroupBy(node);
+		}
+		return this;
+	}
+	
+	public Query groupBy(String n){
+		return groupBy(getNode(n));
+	}
+	
+	public Query select(Node node){
+		if (node!=null && ! contain(getSelectFun(), node)){
+			addSelect(node);
+		}
+		return this;
+	}
+	
+	public Query select(String n){
+		return select(getNode(n));
+	}
+
+	
+	Query complete(Query q1, Query q2){
+		q1.setOuterQuery(this);
+		q2.setOuterQuery(this);
+		setGlobalQuery(getBody());
+		setSelect(q1, q2);
+		collect();
+		setAST(q2.getAST());
+		return this;
+	}
+	
+	void setSelect(Query q1, Query q2){
+		List<Exp> list = new ArrayList<Exp>();
+		list.addAll(q1.getSelectFun());
+		for (Exp exp : q2.getSelectFun()){
+			if (! contain(list, exp.getNode())){
+				list.add(exp);
+			}
+		}
+		setSelectFun(list);
+	}
+	
+	// rec set global query
+	void setGlobalQuery(Exp exp){
+		for (Exp q : exp){
+			if (q.isQuery()){
+				q.getQuery().setGlobalQuery(this);
+				setGlobalQuery(q);
+			}
+		}
+	}
+
+	public void setBind(boolean isBind) {
+		this.isBind = isBind;
+	}
+
+	public boolean isBind() {
+		return isBind;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}

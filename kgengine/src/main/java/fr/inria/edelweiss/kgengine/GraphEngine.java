@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -64,7 +65,7 @@ public class GraphEngine implements IEngine {
 		return graph;
 	}
 	
-	QueryProcess createQueryProcess(){
+	public QueryProcess createQueryProcess(){
 		QueryProcess qp = QueryProcess.create(graph);
 		qp.setLoader(loader());
 		qp.setListGroup(isListGroup);
@@ -72,7 +73,7 @@ public class GraphEngine implements IEngine {
 		return qp;
 	}
 
-	Load loader(){
+	public Load loader(){
 		Load load = Load.create(graph);
 		load.setEngine(rengine);
 		return load;
@@ -196,35 +197,15 @@ public class GraphEngine implements IEngine {
 	}
 
 	
-	public IResults SPARQLQuery(String query) throws EngineException {
-		if (lEngine.size()>0) return SPARQLQueryList(query);
-		
-		QueryProcess exec = createQueryProcess();
-		Mappings map = exec.query(query);
-		QueryResults res = QueryResults.create(map);
-		return res;
+	public IResults SPARQLQuery(String query) throws EngineException {		
+		QueryExec exec = QueryExec.create(this);
+		return exec.SPARQLQuery(query);
 	}
 	
-	
-	public void add(GraphEngine e){
-		lEngine.add(e);
-	}
-
-	public IResults SPARQLQueryList(String query) throws EngineException {
-		QueryProcess exec = createQueryProcess();
-		for (GraphEngine e : lEngine){
-			exec.add(e.getGraph());
-		}
-		Mappings map = exec.query(query);
-		QueryResults res = QueryResults.create(map);
-		return res;
-	}
 	
 	public IResults SPARQLQuery(ASTQuery ast) throws EngineException {
-		QueryProcess exec = createQueryProcess();
-		Mappings map = exec.query(ast);
-		QueryResults res = QueryResults.create(map);
-		return res;
+		QueryExec exec = QueryExec.create(this);
+		return exec.SPARQLQuery(ast);
 	}
 
 	

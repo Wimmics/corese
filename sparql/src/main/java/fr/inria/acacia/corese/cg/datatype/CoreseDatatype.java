@@ -515,7 +515,9 @@ public class CoreseDatatype
 			else if (d2.isLiteral()) return GREATER;
 		}
 		
-		boolean sameDatatype = d1.getDatatype() == d2.getDatatype();
+		//boolean sameDatatype = (d1.getDatatype() == d2.getDatatype());
+		boolean sameDatatype = equivalentDatatype(d2);
+
 		if (! sameDatatype){
 			//  sort number date string/literal/..
 			if   (d1 instanceof CoreseNumber){
@@ -540,6 +542,7 @@ public class CoreseDatatype
 		// also compare string/literal/XMLLiteral/boolean/undef
 		try {b = d1.less(d2);}
 		catch (CoreseDatatypeException e){}
+		
 		if (b)
 			return LESSER;
 		else if  (d1.semiEquals(d2)){
@@ -574,6 +577,16 @@ public class CoreseDatatype
 			}
 		}
 		else return GREATER;
+	}
+	
+	/**
+	 * Same datatype or String & Literal
+	 */
+	boolean equivalentDatatype(IDatatype dt){
+		return 
+			getDatatype() == dt.getDatatype() ||
+			getCode() == STRING  && dt.getCode() == LITERAL ||
+			getCode() == LITERAL && dt.getCode() == STRING ;
 	}
 	
 	// default generic functions :

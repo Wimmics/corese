@@ -449,6 +449,8 @@ Exp AskQuery() : { Exp stack; }
   (<DEBUG> { astq.setDebug(true); } )?
   ( DatasetClause() )*
   stack = WhereClause()
+  (Bindings()) ?
+  
   {
   	astq.setResultForm(ASTQuery.QT_ASK);
   	return stack;
@@ -1479,12 +1481,29 @@ Token OpeRegExp() : {Token ope;}
 }
 
 
-Expression PrimaryRegExp():{Expression exp; String t; Constant cst;}
+Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant cst;}
 {
-	( t = IRIref()  { cst = astq.createConstant(t); cst.setQName(true); exp = cst;}
+	( 
+		t = IRIref() 
+		{ cst = astq.createConstant(t); cst.setQName(true); exp = cst;}
+		
+		|	
 	
-|	<LPAREN> exp = AddRegExp() <RPAREN>
+		<LPAREN> exp = AddRegExp() <RPAREN>
 	) 
+	
+	
+	( 
+		LOOKAHEAD(2)
+		
+		<LBRACKET> 
+		  { stack = BasicGraphPattern.create(); }
+		  
+		  test = Expression(stack) 
+		  
+		  {astq.setRegexTest(exp, test);} 
+		<RBRACKET> 		
+	) ?   
 	
 	{ return exp; }
 
@@ -1771,7 +1790,9 @@ Expression UnaryExpression(Exp stack) : { Token t1; Expression expression1; }
 Expression BuiltInCall(Exp stack) : { Expression expression1, expression2; Variable var1; Token t1; Term term; }
 {
   (
-    ( ( t1 = <STR> | t1 = <DTYPE> | t1 = <LANG> | t1 = <IS_IRI> | t1 = <IS_URI> | 
+    ( ( 
+        t1 = <STR> | 
+        t1 = <DTYPE> | t1 = <LANG> | t1 = <IS_IRI> | t1 = <IS_URI> | 
         t1 = <IS_BLANK> | t1 = <IS_LITERAL> ) 
     	<LPAREN> expression1 = Expression(stack) <RPAREN> 
       { term = astq.createFunction(t1.image, expression1); } 

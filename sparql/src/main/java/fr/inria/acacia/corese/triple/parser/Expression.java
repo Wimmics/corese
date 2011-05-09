@@ -23,7 +23,6 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
 
 public class Expression extends Statement 
 implements Regex, Filter, Expr {
-	String name, longName;
 	public static final int STDFILTER = 0;
 	public static final int ENDFILTER = 1;
 	public static final int POSFILTER = 2;
@@ -34,6 +33,9 @@ implements Regex, Filter, Expr {
 	boolean isEget = false;
 	boolean isSystem = false;
 	boolean isInverse = false, isReverse = false;
+	
+	String name, longName;
+	Expression exp;
 
 	public Expression(){}
 	
@@ -79,6 +81,14 @@ implements Regex, Filter, Expr {
 	
 	public void setLongName(String name){
 		longName = name;
+	}
+	
+	public void setExpr(Expression exp){
+		this.exp = exp;
+	}
+	
+	public Expression getExpr(){
+		return exp;
 	}
 	
 	public String getKey(){

@@ -340,6 +340,7 @@ public class Term extends Expression {
 			term.setMax(getMax());
 			term.setMin(getMin());
 			term.setPlus(isPlus());
+			term.setExpr(getExpr());
 		}
 		return term;
 	}

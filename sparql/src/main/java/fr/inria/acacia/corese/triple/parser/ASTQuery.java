@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -183,7 +184,9 @@ public class ASTQuery  implements Keyword {
 //	Vector<Boolean> sortDistanceTable = new Vector<Boolean>();
 	
 	Hashtable<String, Expression> selectFunctions = new Hashtable<String, Expression>();
-    Hashtable<Expression, Expression> selectExp   = new Hashtable<Expression, Expression>();
+	ExprTable selectExp   = new ExprTable();
+	ExprTable regexExpr   = new ExprTable();
+
     // pragma display {}
     Hashtable<String, Exp> pragma;
     Hashtable<String, Exp> blank;
@@ -192,6 +195,8 @@ public class ASTQuery  implements Keyword {
 	TTable ttable;
 	NSManager nsm;
 	ASTUpdate astu;
+	
+	class ExprTable extends Hashtable<Expression,Expression> {};
 
 	/**
 	 * The constructor of the class It looks like the one for QueryGraph
@@ -960,6 +965,18 @@ public class ASTQuery  implements Keyword {
 			fun = Term.function(ope, exp);
 		}
 		return fun;
+	}
+	
+	/**
+	 * Filter associated to a path regex
+	 */
+	public void setRegexTest(Expression exp, Expression test){
+		regexExpr.put(exp, test);
+		exp.setExpr(test);
+	}
+	
+	public Collection<Expression> getRegexTest(){
+		return regexExpr.values();
 	}
 	
 	Term star(Expression exp){

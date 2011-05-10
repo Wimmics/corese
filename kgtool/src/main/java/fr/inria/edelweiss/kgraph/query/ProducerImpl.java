@@ -18,7 +18,6 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 
@@ -34,7 +33,6 @@ public class ProducerImpl implements Producer {
 	static final String TOPREL = Graph.TOPREL;
 	
 	List<Entity> empty = new ArrayList<Entity>();
-	Loader load;
 	
 	Graph graph, 
 	// cache for handling (fun() as var) created Nodes
@@ -60,14 +58,6 @@ public class ProducerImpl implements Producer {
 	
 	public Graph getGraph(){
 		return graph;
-	}
-	
-	public void setLoad(Loader l){
-		load = l;
-	}
-	
-	public Loader getLoad(){
-		return load;
 	}
 	
 	Node getNode(Edge edge, Node gNode, int i){
@@ -133,7 +123,7 @@ public class ProducerImpl implements Producer {
 				
 		Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
 		// check gNode/from/named
-		it = complete(it, gNode, getNode(gNode, env), from, env);
+		it = complete(it, gNode, getNode(gNode, env), from);
 		
 		return it;
 	}
@@ -148,24 +138,19 @@ public class ProducerImpl implements Producer {
 	 * Retrieve edges from index IGRAPH with node bound to from
 	 */
 	Iterable<Entity> getEdgesFrom(Node predicate, List<Node> from){
-		MetaIterator<Entity> meta = null;
+		MetaIterator<Entity> meta = new MetaIterator<Entity>();
 
 		for (Node src : from){
 			if (graph.isGraphNode(src)){
 				src = graph.getGraphNode(src.getLabel());
 				Iterable<Entity> it = graph.getEdges(predicate, src, IGRAPH);
 				if (it!=null){
-					if (meta == null){
-						meta = new MetaIterator<Entity>(it);
-					}
-					else {
-						meta.next(it);
-					}
+					meta.next(it);
 				}
 			}
 		}
 
-		if (meta == null) return empty;
+		if (meta.isEmpty()) return empty;
 		else return meta;
 	}
 	
@@ -175,7 +160,7 @@ public class ProducerImpl implements Producer {
 	 * if no gNode, eliminate duplicate successive edges
 	 */
 	Iterable<Entity> complete(Iterable<Entity> it, Node gNode, Node sNode,
-			List<Node> from, Environment env){
+			List<Node> from){
 		if (it == null){
 			it = empty;
 		}
@@ -232,10 +217,10 @@ public class ProducerImpl implements Producer {
 	}
 
 	/**
-	 *
+	 * Edges for Property Path Regex 
 	 */
-	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
-			Environment env, Regex exp, Node start, int index) {
+	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env,
+			 Regex exp, Node src, Node start, int index) {
 				
 		if (start == null){
 			Node qNode = edge.getNode(index);
@@ -245,22 +230,23 @@ public class ProducerImpl implements Producer {
 		}
 
 		if (exp.isReverse()){
+			// ?x ^p ?y
+			// start node is now reverse(index) node
 			index = (index==0)?1:0;
 		}
 		
 		if (exp.isNot()){
-			return getNegEdges(gNode, from, edge, env, exp, start, index);
+			return getNegEdges(gNode, from, edge, env, exp, src, start, index);
 		}
 		
 		Node predicate = graph.getPropertyNode(exp.getLongName());
 		if (predicate == null){
 			return empty;
 		}
-		//System.out.println(start + " " + index); 
 
 		Iterable<Entity> it = graph.getEdges(predicate, start, index);
 		// gNode, from
-		it = complete(it, gNode, getNode(gNode, env), from, env);
+		it = complete(it, gNode, src, from);
 		return it;
 	}
 	
@@ -269,16 +255,12 @@ public class ProducerImpl implements Producer {
 	 * ?x ! rdf:type ?y
 	 * ?x !(rdf:type|rdfs:subClassOf) ?y
 	 * enumerate properties but those in the negation
-	 * TODO:
-	 * !(^p1|^p2)
 	 */
-	public Iterable<Entity> getNegEdges(Node gNode, List<Node> from, Edge edge,
-			Environment env, Regex exp, Node start, int index){
-//		if (exp.isReverse()){
-//			index = (index==0)?1:0;
-//		}
+	public Iterable<Entity> getNegEdges(Node gNode, List<Node> from, Edge edge, Environment env,
+		Regex exp, Node src, Node start, int index){
+		
 		exp = exp.getArg(0);
-		MetaIterator<Entity> meta = null;
+		MetaIterator<Entity> meta = new MetaIterator<Entity>();
 		for (Node pred : graph.getProperties()){
 			if (match(exp, pred)){
 				// exclude
@@ -286,12 +268,12 @@ public class ProducerImpl implements Producer {
 			else {
 				Iterable<Entity> it = graph.getEdges(pred, start, index);
 				if (it != null){
-					if (meta == null) meta = new MetaIterator<Entity>(it);
-					else meta.next(it);
+					meta.next(it);
 				}
 			}
 		}
-		Iterable<Entity> it = complete(meta, gNode, getNode(gNode, env), from, env);
+		if (meta.isEmpty()) return empty;
+		Iterable<Entity> it = complete(meta, gNode, src, from);
 		return it;
 	}
 	
@@ -377,12 +359,10 @@ public class ProducerImpl implements Producer {
 	 */
 	Iterable<Entity> getNodes(Node gNode, List<Node> from, Environment env){
 		MetaIterator<Entity> meta = new MetaIterator<Entity>();
-		int n = 0;
 		for (Node gn : getGraphNodes(gNode, from, env)){
 			meta.next(graph.getNodes(gn));
-			n++;
 		}
-		if (n == 0) return new ArrayList<Entity>();
+		if (meta.isEmpty()) return new ArrayList<Entity>();
 		if (gNode == null){
 			// eliminate duplicates
 			return getNodes(meta);
@@ -512,13 +492,6 @@ public class ProducerImpl implements Producer {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void load(String path) {
-		if (load != null){
-			load.load(path);
-		}
 	}
 	
 	@Override

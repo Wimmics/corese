@@ -30,7 +30,7 @@ public class Entailment {
 	public static final String KGRAPH 		= ExpType.KGRAM;
 
 	public static String DEFAULT 	= KGRAPH + "default";
-	public static String ENTAIL 	= KGRAPH + "entail";
+	public static String ENTAIL 	= KGRAPH + "entailment";
 	public static String RULE 		= KGRAPH + "rule";
 	public static String[] GRAPHS   = {DEFAULT, ENTAIL, RULE};
 

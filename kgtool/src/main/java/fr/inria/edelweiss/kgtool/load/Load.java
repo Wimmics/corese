@@ -73,6 +73,10 @@ public class Load
 		engine = eng;
 	}
 	
+	public RuleEngine getRuleEngine(){
+		return engine;
+	}
+	
 	public void setDebug(boolean b){
 		debug = b;
 	}

@@ -20,9 +20,9 @@ import fr.inria.edelweiss.kgram.tool.Message;
  *
  */
 public class Pragma  {
-	static final String KG = ExpType.KGRAM;
+	protected static final String KG = ExpType.KGRAM;
 	// subject
-	static final String SELF 	= KG + "kgram";
+	protected static final String SELF 	= KG + "kgram";
 	static final String MATCH 	= KG + "match";
 	static final String PATH 	= KG + "path";
 
@@ -59,6 +59,11 @@ public class Pragma  {
 		ast = a;
 	}
 	
+	public Pragma(Query q, ASTQuery a){
+		query = q;
+		ast = a;
+	}
+	
 	public void parse(){
 		for (fr.inria.acacia.corese.triple.parser.Exp pragma : ast.getPragma().getBody()){
 			
@@ -70,7 +75,7 @@ public class Pragma  {
 		}
 	}
 	
-	void triple(Triple t){
+	public void triple(Triple t){
 		
 		String subject  = t.getSubject().getLongName();
 		String property = t.getProperty().getLongName();
@@ -89,9 +94,6 @@ public class Pragma  {
 			}
 			else if (property.equals(LISTEN) && value(object)){
 				kgram.addEventListener(EvalListener.create());
-			}
-			else if (property.equals(LOAD) ){
-				kgram.getProducer().load(object);
 			}
 			else if (property.equals(LIST) && value(object)){
 				query.setListGroup(true);
@@ -119,15 +121,10 @@ public class Pragma  {
 				}
 			}
 		}
-		else if (subject.equals(PATH)){
-			if (property.equals(LOOP)){
-				query.setLoopNode(! value(object));
-			}
-		}
 
 	}
 	
-	boolean value(String value){
+	public boolean value(String value){
 		return value.equals("true");
 	}
 	

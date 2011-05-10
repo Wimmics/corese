@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -32,7 +33,6 @@ import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 public class QueryProcess extends QuerySolver {
 
 	Construct constructor;
-	//Graph graph;
 	Loader load;
 		
 	public QueryProcess (){
@@ -44,10 +44,6 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 
-//	public static QueryProcess create(){
-//		return new QueryProcess();
-//	}
-	
 	public static QueryProcess create(Graph g){
 		ProducerImpl p =  ProducerImpl.create(g);
 		QueryProcess exec = QueryProcess.create(p);
@@ -61,7 +57,6 @@ public class QueryProcess extends QuerySolver {
 	}
 
 	public void setLoader(Loader ld){
-		((ProducerImpl)getProducer()).setLoad(ld);
 		load = ld;
 	}
 	
@@ -100,19 +95,42 @@ public class QueryProcess extends QuerySolver {
 	
 	public Mappings query(String squery, Mapping map, List<String> from, List<String> named) throws EngineException{
 		Query q = compile(squery, from, named);
+		pragma(q);
 		
 		if (q.isUpdate()){
-			UpdateProcess up = UpdateProcess.create(this);
-			Mappings lMap = up.update(q, from, named);
-			return lMap;
+			return update(q, from, named);
 		}
 		else {
 			Mappings lMap =  query(q, map);
 
 			if (q.isConstruct()){
+				// construct where
 				construct(lMap);
 			}
 			return lMap;
+		}
+	}
+	
+	
+	public Mappings update(Query query,  List<String> from, List<String> named) throws EngineException{
+		complete(from);
+		ManagerImpl man = ManagerImpl.create(this, from, named);
+		UpdateProcess up = UpdateProcess.create(man);
+		up.setDebug(isDebug());
+		Mappings lMap = up.update(query);
+		lMap.setObject(getGraph());
+		return lMap;
+	}
+	
+	
+	void complete(List<String> from){
+		if (from != null){
+			// add the default graphs where insert or entailment may have been done previously
+			for (String src : Entailment.GRAPHS){
+				if (! from.contains(src)){
+					from.add(src);
+				}
+			}		
 		}
 	}
 	
@@ -123,6 +141,9 @@ public class QueryProcess extends QuerySolver {
 		return query(ast, null, null);
 	}
 	
+	/**
+	 * Called by Manager (delete/insert operations)
+	 */
 	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
 		Mappings lMap = super.query(ast, from, named);
 		Query q = lMap.getQuery();
@@ -132,6 +153,7 @@ public class QueryProcess extends QuerySolver {
 			delete(lMap, from, named);
 		}
 		if (q.isConstruct()){ 
+			// insert
 			construct(lMap);
 		}
 		
@@ -155,12 +177,7 @@ public class QueryProcess extends QuerySolver {
 			if (from == null){
 				from = new ArrayList<String>();
 			}
-			for (String src : Entailment.GRAPHS){
-				// add graphs where entailments are stored
-				if (! from.contains(src)){
-					from.add(src);
-				}
-			}		
+			complete(from);
 		}
 		
 		if (from != null && named == null){
@@ -186,10 +203,6 @@ public class QueryProcess extends QuerySolver {
 	public Graph getGraph(){
 		return ((ProducerImpl) getProducer()).getGraph();
 	}
-//	
-//	void setGraph(Graph g){
-//		graph = g;
-//	}
 	
 	
 	/**
@@ -226,12 +239,21 @@ public class QueryProcess extends QuerySolver {
 	
 	
 	
+	void pragma(Query query){
+		ASTQuery ast = (ASTQuery) query.getAST();
+		if (ast!=null && ast.getPragma() != null){
+			new PragmaImpl(this, query).parse();
+		}
+	}
 	
-
-
 	
 	
 	
-
-
+	
+	
+	
+	
+	
+	
+	
 }

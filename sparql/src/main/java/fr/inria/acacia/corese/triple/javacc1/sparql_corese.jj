@@ -1494,13 +1494,9 @@ Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant 
 	
 	
 	( 
-		LOOKAHEAD(2)
-		
-		<LBRACKET> 
+		<AT> <LBRACKET> 
 		  { stack = BasicGraphPattern.create(); }
-		  
 		  test = Expression(stack) 
-		  
 		  {astq.setRegexTest(exp, test);} 
 		<RBRACKET> 		
 	) ?   

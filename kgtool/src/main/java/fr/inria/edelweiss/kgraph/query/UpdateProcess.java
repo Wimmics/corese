@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
 
-import java.util.List;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
@@ -13,34 +12,30 @@ import fr.inria.acacia.corese.triple.update.Composite;
 import fr.inria.acacia.corese.triple.update.Update;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 
 /**
  * SPARQL 1.1 Update
  * 
- * This is called by QueryProcess.query() to process update query
+ * Called by QueryProcess.query() to handle update query
+ * 
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2011
  *
  */
 public class UpdateProcess {
 
-	QueryProcess exec;
 	Manager manager;
 	Query query;
-	List<String> from, named;
 	
 	boolean isDebug = false; 
 	
-	UpdateProcess(QueryProcess e){
-		exec = e;
-		isDebug = e.isDebug();
-		manager = Manager.create(exec.getGraph(), exec.getLoader());
+	UpdateProcess(Manager m){
+		manager = m;
 	}
 	
-	static UpdateProcess create(QueryProcess e){
-		UpdateProcess u = new UpdateProcess(e);
+	static UpdateProcess create(Manager m){
+		UpdateProcess u = new UpdateProcess(m);
 		return u;
 	}
 		
@@ -49,26 +44,11 @@ public class UpdateProcess {
 	 * Process an update sparql query
 	 * There may be a list of queries
 	 */
-	public Mappings update(Query q){
-		return update(q, null, null);
-	}
 	
-	public Mappings update(Query q, List<String> from, List<String> named){
+	public Mappings update(Query q){
 		query = q;
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ASTUpdate astu = ast.getUpdate();
-		if (from != null){
-			// add the default graphs where insert or entailment may have been done previously
-			for (String src : Entailment.GRAPHS){
-				if (! from.contains(src)){
-					from.add(src);
-				}
-			}		
-		}
-		manager.setFrom(from);
-		manager.setNamed(named);
-		this.from = from;
-		this.named = named;
 		
 		for (Update u : astu.getUpdates()){
 			if (isDebug){
@@ -88,8 +68,11 @@ public class UpdateProcess {
 		}
 		
 		Mappings lMap = Mappings.create(q);
-		lMap.setObject(exec.getGraph());
 		return lMap;
+	}
+	
+	public void setDebug(boolean b){
+		isDebug = b;
 	}
 	
 	
@@ -132,7 +115,7 @@ public class UpdateProcess {
 		}
 		
 		// Processed as a construct (add) on target graph
-		exec.query(ast);
+		manager.query(ast);
 
 	}
 	
@@ -161,7 +144,7 @@ public class UpdateProcess {
 			ast.setDelete(exp);
 		}
 		
-		exec.query(ast, from, named);
+		manager.query(ast);
 
 	}
 	
@@ -206,7 +189,7 @@ public class UpdateProcess {
 				}
 		}
 
-		Mappings map = exec.query(ast, from, named);
+		Mappings map = manager.query(ast);
 		if (isDebug) System.out.println(map);	
 	}
 	

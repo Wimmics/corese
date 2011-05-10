@@ -44,6 +44,8 @@ import fr.inria.edelweiss.kgram.core.Query;
  */
 public class Transformer implements ExpType {	
 	public static final String ROOT = "?_kgram_";
+	public static final String THIS = "?this";
+
 	int count = 0;
 
 	CompilerFactory fac;
@@ -139,6 +141,8 @@ public class Transformer implements ExpType {
 		complete(q, ast);
 
 		q.setAST(ast);
+
+		path(q, ast);
 
 		having(q, ast);
 		
@@ -315,6 +319,17 @@ public class Transformer implements ExpType {
 
 	}
 
+	void path(Query q, ASTQuery ast){
+		if (ast.getRegexTest().size()>0){
+			Node node = compiler.createNode(Variable.create(THIS));
+			q.setPathNode(node);
+		}
+		for (Expression test : ast.getRegexTest()){
+			// ?x c:isMemberOf[?this != <inria>] + ?y
+			Filter f = compile(test);
+			q.addPathFilter(f);
+		}
+	}
 
 	void having(Query q, ASTQuery ast){
 		if (ast.getHaving()!=null){

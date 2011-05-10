@@ -48,8 +48,13 @@ public class Graph {
 	NodeIndex gindex;
 	Entailment inference, proxy;
 	// true when graph is modified and need index()
-	boolean isUpdate = false, isDelete = false, 
-	index = false, isDebug = !true;
+	boolean 
+	isUpdate = false, 
+	isDelete = false, 
+	isIndex  = false, 
+	// automatic entailment when init()
+	isEntail = true,
+	isDebug  = !true;
 	// number of edges
 	int size = 0;
 			
@@ -77,7 +82,7 @@ public class Graph {
 	
 	public static Graph create(boolean b){
 		Graph g = new Graph();
-		g.setEntailment(b);
+		if (b) g.setEntailment();
 		return g;
 	}
 	
@@ -98,13 +103,13 @@ public class Graph {
 		return inference;
 	}
 	
-	public void setInference(Entailment i){
+	public void setEntailment(Entailment i){
 		inference = i;
 	}
 	
 	public void setEntailment(){
 		Entailment entail = Entailment.create(this);
-		setInference(entail);
+		setEntailment(entail);
 		
 		if (size()>0){
 			entail.define();
@@ -117,11 +122,13 @@ public class Graph {
 		}
 	}
 	
+	/**
+	 * If true, entailment is done by init() before query processing
+	 */
 	public void setEntailment(boolean b){
-		if (b){
-			setEntailment();
-		}
+		isEntail = b;
 	}
+	
 	
 	public void entail(){
 		if (inference!=null){
@@ -130,7 +137,7 @@ public class Graph {
 	}
 	
 	public void entail(List<Entity> list){
-		if (inference!=null){
+		if (isEntail && inference!=null){
 			inference.entail(list);
 		}
 	}
@@ -152,7 +159,7 @@ public class Graph {
 	
 	// true when index is sorted 
 	boolean isIndex(){
-		return index;
+		return isIndex;
 	}
 	
 	public boolean isType(Edge edge){
@@ -167,17 +174,22 @@ public class Graph {
 	}
 	
 	public void setIndex(boolean b){
-		index = b;
+		isIndex = b;
 	}
 	
+	/**
+	 * send e.g. by kgram eval() before every query execution
+	 * restore consistency if updates have been done
+	 */
+	
 	public void init(){
-		if (! index){
-			index = true;
+		if (! isIndex){
+			isIndex = true;
 			index();
 		}
 		if (isUpdate){
 			update();
-			entail();
+			if (isEntail) entail();
 		}
 	}
 	
@@ -226,7 +238,7 @@ public class Graph {
 		for (int i=0; i<MAX; i++){
 			tables[i].index();
 		}
-		index = true;
+		isIndex = true;
 	}
 	
 	void clearIndex(){
@@ -516,6 +528,30 @@ public class Graph {
 		return addNode(dt);
 	}
 	
+	public Node addLiteral(String label){
+		return addLiteral(label, null, null);
+	}
+	
+	public Node addLiteral(int n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	public Node addLiteral(long n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	public Node addLiteral(double n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	public Node addLiteral(float n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	public Node addLiteral(boolean n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
 	/**
 	 * May infer datatype from property range
 	 */
@@ -542,6 +578,11 @@ public class Graph {
 		}
 		return node;
 	}
+	
+	public Node addBlank(){
+		return addBlank(newBlankID());
+	}
+
 	
 	public String newBlankID(){
 		return BLANK + blankid++;

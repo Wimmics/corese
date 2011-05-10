@@ -31,6 +31,16 @@ public class EdgeImpl implements Edge, Entity {
 		return new EdgeImpl(g, subject, pred, object);
 	}
 	
+	public static EdgeImpl create(Node g, Node subject, Node pred, Node object, Node arg){
+		EdgeImpl e = new EdgeImpl(g, subject, pred, object);
+		e.add(arg);
+		return e;
+	}
+	
+	void add(Node node){
+		nodes.add((NodeImpl)node);
+	}
+	
 	public  EdgeImpl copy(){
 		return new EdgeImpl(getGraph(), getNode(0), getEdgeNode(), getNode(1));
 	}

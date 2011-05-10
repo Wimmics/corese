@@ -34,7 +34,6 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 public class RuleEngine {
 	Graph graph;
 	QueryProcess exec;
-	RuleProducer prod;
 	List<Rule> rules;
 	boolean debug = false;
 	int loop = 0;
@@ -110,6 +109,9 @@ public class RuleEngine {
 		debug = b;
 	}
 	
+	public void clear(){
+		rules.clear();
+	}
 	
 	/**
 	 * Define a construct {} where {} rule

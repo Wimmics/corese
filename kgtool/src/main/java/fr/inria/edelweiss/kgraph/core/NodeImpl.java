@@ -20,6 +20,10 @@ public class NodeImpl implements Node, Entity {
 		dt = val;
 	}	
 	
+	public static NodeImpl create(IDatatype val){
+		return new NodeImpl(val);
+	}
+	
 	public String toString(){
 		return dt.toSparql();
 	}

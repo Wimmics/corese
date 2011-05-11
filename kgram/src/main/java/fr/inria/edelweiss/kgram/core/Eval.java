@@ -332,7 +332,7 @@ public class Eval implements  ExpType, Plugin {
 	
 	// copy memory for path
 	private Memory copyMemory(Query query){
-		return copyMemory(query, null);
+		return copyMemory(memory, query, null);
 	}
 	
 	
@@ -342,6 +342,10 @@ public class Eval implements  ExpType, Plugin {
 	 * 
 	 */
 	private Memory copyMemory(Query query, Query sub){
+		return copyMemory(memory, query, sub);
+	}
+	
+	private Memory copyMemory(Memory memory, Query query, Query sub){
 		Memory mem = new Memory(match, evaluator);
 		if (sub == null) mem.init(query);
 		else mem.init(sub);
@@ -356,14 +360,22 @@ public class Eval implements  ExpType, Plugin {
 	 * copy current memory content into target memory
 	 */
 	public Memory getMemory(Exp exp){
+		return getMemory(memory, exp);
+	}
+	
+	public Memory getMemory(Memory memory, Exp exp){
 		Memory mem;
-		if (exp.getObject()!=null){
+		if (memory.isFake()){
+			// Temporary memory created by PathFinder
+			mem = memory;
+		}
+		else if (exp.getObject()!=null){
 			mem = (Memory) exp.getObject();
 			mem.start();
 			memory.copyInto(null, mem);
 		}
-		else {
-			mem = copyMemory(query);
+		else {			
+			mem = copyMemory(memory, query, null);			
 			exp.setObject(mem);
 		}
 		return mem;
@@ -1385,7 +1397,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 			}
 		}
 		
-		path.start(exp.getEdge(), env, f);	
+		path.start(exp.getEdge(), query.getPathNode(), env, f);	
 		boolean isSuccess = false;
  		
 		for (Mapping map : path.candidate(gNode, qq.getFrom(gNode), env)){
@@ -1628,6 +1640,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 			// copy current Eval,  new stack
 			// bind sub query select nodes in new memory
 			Eval ev = copy(copyMemory(query, subQuery), producer, evaluator);
+			
 			Node subNode = null;
 			
 			if (gNode != null){

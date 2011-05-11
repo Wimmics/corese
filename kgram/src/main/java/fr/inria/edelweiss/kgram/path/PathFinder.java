@@ -59,7 +59,7 @@ public class PathFinder
 	private Filter filter;
 	private Memory mem;
 	private Edge edge;
-	private Node gNode, targetNode;
+	private Node gNode, targetNode, regexNode;
 	private List<Node> from;
 	private Stack loopStack;
 	// index of node in edge that is the start of the path
@@ -150,7 +150,8 @@ public class PathFinder
 	 * Start/init computation of a new list of path
 	 * 
 	 */
-	public void start(Edge edge, Memory memo, Filter f){
+	public void start(Edge edge, Node node, Memory memo, Filter f){
+		regexNode = node;
 		List<String> lVar = null;
 		if (f != null) lVar = f.getVariables();
 		lMap.clear();
@@ -164,10 +165,19 @@ public class PathFinder
 		if (f != null){
 			if (match(edge, lVar, index)){
 				filter = f;
-				mem = new Memory(matcher, evaluator);
-				mem.init(memo.getQuery());
+				init(memo);
 			}
 		}
+		if (mem == null && node!=null){
+			init(memo);
+		}
+	}
+	
+	void init(Memory memo){
+		mem = new Memory(matcher, evaluator);
+		mem.init(memo.getQuery());
+		mem.init(memo);
+		mem.setFake(true);
 	}
 	
 	
@@ -609,7 +619,7 @@ public class PathFinder
 				int dist = size+1;
 				//Edge rel;
 				boolean swap = false, go = true;
-				Regex exp = step.getProperty();
+				Regex exp = step.getRegex();
 				boolean inverse = exp.isInverse() || exp.isReverse();
 				Producer pp = producer;
 				List<Node> ff = from;
@@ -622,7 +632,7 @@ public class PathFinder
 					hasFilter = filter!=null;
 				Visit visit = visited;
 				
-				for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, cstart, ii)){
+				for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, csrc, cstart, ii)){
 					
 					if (ent == null){
 						continue;
@@ -637,6 +647,13 @@ public class PathFinder
 						// this relation is inverse wrt to cstart: 
 						rel = new EdgeInv(rel);	
 						node = rel.getNode(ii);
+					}
+					
+					if (exp.getExpr() != null){
+						// use case: ?x c:isMemberOf[?this != <http://www.inria.fr] + ?y
+						boolean b = test(exp.getExpr().getFilter(), regexNode, rel.getNode(oo));
+						//System.out.println("** PF: " + b + " " + rel.getNode(oo) + " " + exp.getExpr());
+						if (! b) continue;
 					}
 					
 					if (hasFilter && cstart == null){
@@ -925,11 +942,15 @@ public class PathFinder
 		};
 	}
 	
-	boolean test(Node node){
-		mem.push(edge.getNode(index), node);
+	boolean test(Filter filter, Node qNode, Node node){
+		mem.push(qNode, node);
 		boolean test = evaluator.test(filter, mem);
-		mem.pop(edge.getNode(index));
+		mem.pop(qNode);
 		return test;
+	}
+	
+	boolean test(Node node){
+		return test(filter, edge.getNode(index), node);
 	}
 	
 	

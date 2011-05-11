@@ -97,6 +97,10 @@ class Step {
 		return prop;
 	}
 	
+	public Regex getRegex(){
+		return prop;
+	}
+	
 	public List<State> getStates(){
 		return states;
 	}

@@ -328,7 +328,7 @@ public class Interpreter implements Evaluator, ExprType {
 			Memory memory = (Memory) env;
 			Node gNode = memory.getGraphNode();
 			Eval kgram = memory.getEval();
-			Eval eval = kgram.copy(kgram.getMemory(pat), producer, this);
+			Eval eval = kgram.copy(kgram.getMemory(memory, pat), producer, this);
 			eval.setSubEval(true);
 			eval.setLimit(1);
 			Mappings lMap = eval.subEval(memory.getQuery(), gNode, Stack.create(pat), 0);

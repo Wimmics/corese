@@ -81,6 +81,11 @@ public class Mapping
 		init(qn, tn);
 	}
 	
+	public static Mapping create(List<Node> q, List<Node> t){
+		return new Mapping(q, t);
+	}
+
+	
 	public static Mapping create(){
 		return new Mapping();
 	}

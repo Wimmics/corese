@@ -55,6 +55,8 @@ public class Memory implements Environment {
 	Mappings results, group;
 	// true when processing aggregate at the end 
 	boolean isAggregate = false;
+
+	private boolean isFake = false;
 	
 	EventManager manager;
 	boolean hasEvent = false;
@@ -142,6 +144,11 @@ public class Memory implements Environment {
 		return isAggregate;
 	}
 	
+	public void init(Memory memory){
+		setGraphNode(memory.getGraphNode());
+		setEval(memory.getEval());
+	}
+	
 	public void init(Query q){
 		// store (sub) query
 		query = q;
@@ -188,7 +195,9 @@ public class Memory implements Environment {
 		int n = 0;
 		for (Node qNode : qNodes){
 			if (qNode != null){
-				str += n++ + " " + qNode + " = " + getNode(qNode) + "\n";
+				if (n++>0) str += "\n";
+				String num = "(" + qNode.getIndex() + ") ";
+				str += num + qNode + " = " + getNode(qNode) ;
 			}
 		}
 		return str;
@@ -227,7 +236,6 @@ public class Memory implements Environment {
 				// get out Node with same label as sub Node :
 				// TODO:  optimize it ? 
 				Node outNode = query.getOuterNode(subNode);
-
 				copyInto(outNode, subNode, mem, n);
 				n++;
 			}
@@ -240,14 +248,18 @@ public class Memory implements Environment {
 	 * subNode is query Node in mem  Memory
 	 */
 	void copyInto(Node outNode, Node subNode, Memory mem, int n){
-		if (outNode != null && isBound(outNode)){
-			mem.push(subNode, getNode(outNode), -1);
-			if (getPath(outNode)!=null){
-				mem.setPath(n, getPath(outNode));
+		if (outNode != null){
+			Node tNode = getNode(outNode);
+			if (tNode != null){
+				//System.out.println("** M2: " + subNode + " " + getNode(outNode));
+				mem.push(subNode, tNode, -1);
+				if (getPath(outNode)!=null){
+					mem.setPath(n, getPath(outNode));
+				}
 			}
 		}
 	}
-	
+
 	
 	void setPath(int n, Path p){
 		lPath[n] = p;
@@ -672,6 +684,7 @@ public class Memory implements Environment {
 	 */
 	public Node getNode(Node node){
 		int n = node.getIndex();
+		//System.out.println("** M: " + node  + " " + n + " " + nodes[n]);
 		if (n == -1) return null;
 		return nodes[n];
 	}
@@ -790,6 +803,14 @@ public class Memory implements Environment {
 	
 	public void setObject(Object o){
 		object = o;
+	}
+
+	public void setFake(boolean isFake) {
+		this.isFake = isFake;
+	}
+
+	boolean isFake() {
+		return isFake;
 	}
 		
 }

@@ -24,6 +24,10 @@ public class MetaIterator<T> implements Iterator<T>, Iterable<T> {
 		first = tt;
 	}
 	
+	public boolean isEmpty(){
+		return first == null;
+	}
+	
 	public void next(MetaIterator<T> m){
 		set(m);
 	}

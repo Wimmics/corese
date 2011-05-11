@@ -18,6 +18,10 @@ public class NodeImpl implements Node {
 		label = l;
 	}
 	
+	public static NodeImpl create(String label){
+		return new NodeImpl(label);
+	}
+	
 	public String toString(){
 		return label;
 	}

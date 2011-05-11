@@ -112,10 +112,10 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	
 	
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env, 
-			Regex exp, Node start, int index){
+			Regex exp, Node src, Node start, int index){
 		MetaIterator<Entity> meta = null;
 		for (Producer p : lProducer){
-			meta = add(meta, p.getEdges(gNode, from, qEdge, env,exp, start, index));
+			meta = add(meta, p.getEdges(gNode, from, qEdge, env, exp, src, start, index));
 		}
 		return meta;
 	}
@@ -150,13 +150,5 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		// TODO Auto-generated method stub
 		return producer.isBindable(node);
 	}
-
-	@Override
-	public void load(String path) {
-		producer.load(path);
-		
-	}
-
-	
 
 }

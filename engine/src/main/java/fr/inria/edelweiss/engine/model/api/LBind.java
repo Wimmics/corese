@@ -3,10 +3,14 @@ package fr.inria.edelweiss.engine.model.api;
 
 import java.util.List;
 
-import fr.inria.acacia.corese.api.IResult;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+
+//import fr.inria.acacia.corese.api.IResult;
 
 
 public interface LBind extends Iterable<Bind> {
+	
+	ASTQuery getAST();
 	
 	/**
 	 * getter and setter of the instance lBindInstance
@@ -39,9 +43,9 @@ public interface LBind extends Iterable<Bind> {
 	
 	public int size();
 	
-	public IResult get(int i);
+	//public IResult get(int i);
 	
-	public void remove(IResult r);
+	//public void remove(IResult r);
 	
 	
 

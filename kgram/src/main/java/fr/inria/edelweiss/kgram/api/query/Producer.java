@@ -105,6 +105,11 @@ public interface Producer {
 	 * @param exp either property name or a ! (pname | pname) or null
 	 * @param index of the node to return
 	 * @return Iterable of start nodes for exp
+	 * 
+	 * SPARQL 1.1 requires:
+	 * ZeroLengthPath match all nodes of (current) graph, including Literals
+	 * If the argument is a constant, it matches even if it is not a node of the graph
+	 * 
 	 */
 	
 	Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge qEdge, Environment env, 
@@ -127,13 +132,14 @@ public interface Producer {
 	 * @param qEdge Pseudo query edge for path
 	 * @param env The binding environment
 	 * @param exp either property name or a ! (pname | pname)
+	 * @param src current source if any
 	 * @param start The start node for current edge
 	 * @param index of the start node in edge
 	 * exp.isInverse() authorize to consider nodes in reverse order (as if the symmetric relation would exist)
 	 * @return Iterable of start nodes for exp
 	 */
 	Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env, 
-			Regex exp, Node start, int index);
+			Regex exp, Node src, Node start, int index);
 	
 	
 	
@@ -148,13 +154,17 @@ public interface Producer {
 	 */
 	Node getNode(Object value);
 	
-	
+	/**
+	 * use case: filter (?x = ?y)  filter(?x = 'cst')
+	 * is it possible to bind ?x to the argument to optimize query processing ?
+	 * node is the argument 
+	 */
 	boolean isBindable(Node node);
 	
 	
 	/**
 	 * Given a value from the filter language, return a list of Node that represent this value
-	 * use case: ?x xpath('/book/title') ?y
+	 * use case:  select (xpath('/book/title') ?as list) 
 	 * 
 	 * @param value
 	 * @return List<Node>
@@ -165,7 +175,7 @@ public interface Producer {
 	/**
 	 * Given an object resulting from the evaluation of an extension function, return  Mappings
 	 * that represents the values
-	 * use case: select sql('select fom where') as (?x, ?y)
+	 * use case: select (sql('select fom where') as (?x, ?y))
 	 * in case of sql, the object is a java.sql.ResultSet
 	 * 
 	 * @param qNodes the query nodes to bind with values of object
@@ -174,8 +184,5 @@ public interface Producer {
 	 */
 	Mappings map(List<Node> qNodes, Object object);
 	
-	void load(String path);
-	
-
 
 }

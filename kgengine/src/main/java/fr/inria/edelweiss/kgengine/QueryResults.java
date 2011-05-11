@@ -8,7 +8,6 @@ import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;

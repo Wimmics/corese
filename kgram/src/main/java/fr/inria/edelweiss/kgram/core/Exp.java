@@ -560,7 +560,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	 * Ensure edges are connected
 	 * lVar is the list of var that are already bound
 	 */
-	void sort(List<String> lVar, List<Exp> lBind){
+	void sort(Query q, List<String> lVar, List<Exp> lBind){
 		//System.out.println("** Exp enter: " + this + " " + lVar);
 		List<Node> lNode = new ArrayList<Node>();
 
@@ -583,7 +583,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 						}
 						else if (e2.isSortable()){
 
-							if (before(e2, e1, lNode, lVar, lBind)) {
+							if (before(q, e2, e1, lNode, lVar, lBind)) {
 								// ej<ei : put ej at i and shift
 								for (int k = j; k > i; k--) {
 									// shift to the right
@@ -624,17 +624,49 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	 * constant node count 1
 	 * variable node not bound count 0
 	 */
-	boolean before(Exp e2, Exp e1, List<Node> lNode, List<String> lVar, List<Exp> lBind){
+	boolean before(Query q, Exp e2, Exp e1, List<Node> lNode, List<String> lVar, List<Exp> lBind){
 		if (isGraphPath(e2, e1)) return true;
 		if (isGraphPath(e1, e2)) return false;
 		
 		int n1  = e1.nBind(lNode, lVar, lBind);
 		int n2  = e2.nBind(lNode, lVar, lBind);
 
-//		if (n1 == 0) return n2 > 0;
-//		else return false;
-
+		if (n1 == 0 && n2 == 0){
+			if (beforeBind(q, e2, e1)){
+				return true;
+			}
+		}
+		
 		return n2 > n1;
+	}
+	
+	/**
+	 * Edge with node in bindings has advantage
+	 */
+	boolean beforeBind(Query q, Exp e2, Exp e1){
+		List<Mapping> list = q.getMapping();
+		if (list != null && list.size()>0){
+			Mapping map = list.get(0);
+			if (bind(e1, map)) return false;
+			if (bind(e2, map)) return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Does edge e have a node bound by map (bindings)
+	 */
+	boolean bind(Exp e, Mapping map){
+		if (! e.isEdge()) return false;
+
+		for (int i=0; i<e.nbNode(); i++){
+			Node node = e.getNode(i);
+			if (node.isVariable() && map.getNode(node) != null){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	

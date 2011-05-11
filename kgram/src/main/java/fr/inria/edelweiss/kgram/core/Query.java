@@ -37,12 +37,12 @@ public class Query extends Exp {
 		// all select nodes
 		querySelectNodes;
 	List<Exp> selectExp, orderBy, groupBy;
-	List<Filter> failure;
+	List<Filter> failure, pathFilter;
 	List<Mapping> bindings;
 	Exp having, construct, delete;
 	// gNode is a local graph node when subquery has no ?g in its select 
 	// use case: graph ?g {{select where {}}}
-	Node gNode;
+	Node gNode, pathNode;
 	// outer main query that contains this (when subquery)
 	Query query, outerQuery;
 	Object object, ast;
@@ -78,6 +78,7 @@ public class Query extends Exp {
 		orderBy = new ArrayList<Exp>();
 		groupBy = new ArrayList<Exp>();
 		failure = new ArrayList<Filter>();
+		pathFilter = new ArrayList<Filter>();
 		compiler = new Compile(this);
 		
 		patternNodes 		= new ArrayList<Node>();
@@ -183,6 +184,27 @@ public class Query extends Exp {
 	public void setGraphNode(Node n){
 		gNode = n;
 	}
+	
+	public Node getPathNode(){
+		return pathNode;
+	}
+	
+	public void setPathNode(Node n){
+		pathNode = n;
+	}
+	
+	public void addPathFilter(Filter f){
+		pathFilter.add(f);
+	}
+	
+	/**
+	 * constraint in property path:
+	 * ?x ex:prop @[?this != <John>] ?y
+	 */
+	List<Filter> getPathFilter(){
+		return pathFilter;
+	}
+	
 	
 	/**
 	 * Return equivalent local node for graph node 
@@ -755,6 +777,9 @@ public class Query extends Exp {
 		if (getHaving()!=null){
 			index(this, getHaving().getFilter());
 		}
+		for (Filter f : getPathFilter()){
+			index(this, f);
+		}
 		for (Exp ee : getSelectFun()){
 			// use case: query node created to hold fun result
 			Node snode = ee.getNode();
@@ -778,6 +803,9 @@ public class Query extends Exp {
 		}
 		if (getGraphNode()!=null){
 			index(getGraphNode());
+		}
+		if (getPathNode()!=null){
+			index(getPathNode());
 		}
 	}
 	
@@ -881,8 +909,21 @@ public class Query extends Exp {
 	}
 	
 	public void collect(){
+		if (getPathNode()!=null){
+			/** 
+			 * use case: ?x ex:prop @[?this != <John>] + ?y
+			 * collect ?this first because it may be within @[exists {?this ?p ?y}}
+			 * and even worse within @[exists {select ?this where {?this ?p ?y}}]
+			*/
+			store(getPathNode(), false, false);
+		}
+		
 		for (Exp ee : this){
 			collect(ee, false);
+		}
+
+		for (Filter ff : getPathFilter()){
+			collectExist(ff.getExp());
 		}
 	}
 	
@@ -1270,7 +1311,7 @@ public class Query extends Exp {
 				
 				if (exp.type() == AND){
 					// sort edges as connected when possible
-					exp.sort(lVar, lBind);
+					exp.sort(this, lVar, lBind);
 				}
 				// put filters where they are bound
 				sortFilter(exp, lVar);

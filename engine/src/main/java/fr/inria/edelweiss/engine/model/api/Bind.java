@@ -3,12 +3,12 @@ package fr.inria.edelweiss.engine.model.api;
 import java.util.Map;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.api.IResult;
+//import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.triple.api.ElementClause;
 import fr.inria.acacia.corese.triple.parser.Constant;
 
 
-public interface Bind extends IResult
+public interface Bind //extends IResult
 {
 	
 	/**

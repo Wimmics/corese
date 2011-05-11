@@ -5,9 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IBRuleEngine;
-import fr.inria.acacia.corese.api.IResults;
 //import fr.inria.acacia.corese.event.Event;
 //import fr.inria.acacia.corese.event.RuleEvent;
 import fr.inria.acacia.corese.exceptions.EngineException;
@@ -16,11 +13,11 @@ import fr.inria.acacia.corese.triple.parser.ParserSparql1;
 
 import fr.inria.edelweiss.engine.core.Backward;
 import fr.inria.edelweiss.engine.core.Engine;
-import fr.inria.edelweiss.engine.core.ResultManager;
 import fr.inria.edelweiss.engine.model.api.Bind;
 import fr.inria.edelweiss.engine.model.api.LBind;
 import fr.inria.edelweiss.engine.model.api.RuleBase;
 import fr.inria.edelweiss.engine.model.core.BindImpl;
+import fr.inria.edelweiss.engine.model.core.LBindImpl;
 import fr.inria.edelweiss.engine.model.core.QueryImpl;
 import fr.inria.edelweiss.engine.tool.api.EventsTreatment;
 import fr.inria.edelweiss.engine.tool.core.EventsTreatmentImpl;
@@ -28,7 +25,9 @@ import fr.inria.edelweiss.engine.tool.core.RulesTreatmentImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 //import fr.inria.edelweiss.kgramenv.util.QueryExec;
 
-public class Engine implements IBRuleEngine {
+public class Engine 
+//implements IBRuleEngine 
+{
 	private static Logger logger = Logger.getLogger(Engine.class);
 	boolean hasEvent = false;
 	/**
@@ -38,7 +37,7 @@ public class Engine implements IBRuleEngine {
     private  RuleBase ruleBase;
     
     //the engine server 
-    private  IEngine server;
+    //private  IEngine server;
     
     private QuerySolver exec;
     
@@ -50,11 +49,11 @@ public class Engine implements IBRuleEngine {
     	return engine;
     }
     
-    public static Engine create(IEngine e){
-    	Engine engine = new Engine();
-    	engine.setEngine(e);
-    	return engine;
-    }
+//    public static Engine create(IEngine e){
+//    	Engine engine = new Engine();
+//    	engine.setEngine(e);
+//    	return engine;
+//    }
     
     public static Engine create(QuerySolver exec){
     	Engine engine = new Engine();
@@ -63,10 +62,10 @@ public class Engine implements IBRuleEngine {
     }
 
     
-    public void setEngine(IEngine server){
-    	this.server = server;
-    }
-    
+//    public void setEngine(IEngine server){
+//    	this.server = server;
+//    }
+//    
     
     /**
      * Load rule documents into the rule base
@@ -82,18 +81,18 @@ public class Engine implements IBRuleEngine {
 		ruleBase = new RulesTreatmentImpl().createRules(ruleBase,  lpath);		
     }
     
-    public IResults SPARQLProve(String squery){
+    public LBind SPARQLProve(String squery){
     	return query(squery);
     }
 
     
-    public ResultManager query(String squery){
+    public LBind query(String squery){
       	ASTQuery ast = parse(squery);
     	if (ast == null) return null;
     	return query(ast);
     }
     
-    public ResultManager query(ASTQuery ast){
+    public LBind query(ASTQuery ast){
    	    if (ruleBase == null){
     		logger.error("** Backward Engine: RuleBase is empty");
     		return null;
@@ -113,9 +112,9 @@ public class Engine implements IBRuleEngine {
 
     	Backward backward = new Backward(ruleBase, proc);
     	
-   	    if (server!=null){
-   	    	//backward.setEventManager(server.getEventManager());
-   	    }
+//   	    if (server!=null){
+//   	    	backward.setEventManager(server.getEventManager());
+//   	    }
    	    
     	QueryImpl query = new QueryImpl(ast);
     	query.setVariables(exec.compile(ast).getVariables());
@@ -129,9 +128,12 @@ public class Engine implements IBRuleEngine {
 //    		server.getEventManager().send(re);
 //    	}
       	
-      	ResultManager res = ResultManager.create(lBind, query);
+      	//ResultManager res = ResultManager.create(lBind, query);
 		
-		return res;
+    	LBindImpl lb = (LBindImpl) lBind;
+    	lb.setAST(ast);
+    	
+		return lb;
     }
     
     

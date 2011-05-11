@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.api.IResult;
-import fr.inria.acacia.corese.api.IResultValue;
+//import fr.inria.acacia.corese.api.IResult;
+//import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.triple.api.ElementClause;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.edelweiss.engine.model.api.Bind;
@@ -251,68 +251,68 @@ implements Bind {
 	
 	/**************** IResult **********************/
 	
-	@Override
-	public Iterable<String> getVariables() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
-	public boolean includes(IResult r){
-		return false;
-	}
-	
-	public boolean matches(IResult r){
-		return false;
-	}
-	
-	public  IResultValue getResultValue(String var){
-		if (isBound(var)){
-			return ResultValue.create(getValue(var).getDatatypeValue());
-		}
-		else return null;
-	}
-	
-	@Override
-	public void setResultValue(String variableName, IResultValue value) {
-		// TODO Auto-generated method stub
-	}
-	
-
-	public IResultValue[] getResultValues(String var){
-		if (! isBound(var)) return null;
-		IResultValue[] res = new IResultValue[1];
-		res[0] = getResultValue(var);
-		return res;
-	}
-
-	public String[] getStringValues(String var){
-		if (! isBound(var)) return null;
-		String[] res = new String[1];
-		res[0] = getValue(var).getDatatypeValue().getLabel();
-		return res;
-	}
-
-	public String getStringValue(String var){
-		return getValue(var).getDatatypeValue().getLabel();
-	}
-
-	public String[] getSPARQLValues(String var){
-		return getStringValues(var);
-	}
-
-	public  double getSimilarity(){
-		return -1;
-	}
-
-	public  boolean isBound(String var){
-		return hasVariable(var);
-	}
-	
-	@Override
-	public IResultValue[] getAllResultValues(String variableName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	public Iterable<String> getVariables() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//	
+//	public boolean includes(IResult r){
+//		return false;
+//	}
+//	
+//	public boolean matches(IResult r){
+//		return false;
+//	}
+//	
+//	public  IResultValue getResultValue(String var){
+//		if (isBound(var)){
+//			return ResultValue.create(getValue(var).getDatatypeValue());
+//		}
+//		else return null;
+//	}
+//	
+//	
+//	public void setResultValue(String variableName, IResultValue value) {
+//		// TODO Auto-generated method stub
+//	}
+//	
+//
+//	public IResultValue[] getResultValues(String var){
+//		if (! isBound(var)) return null;
+//		IResultValue[] res = new IResultValue[1];
+//		res[0] = getResultValue(var);
+//		return res;
+//	}
+//
+//	public String[] getStringValues(String var){
+//		if (! isBound(var)) return null;
+//		String[] res = new String[1];
+//		res[0] = getValue(var).getDatatypeValue().getLabel();
+//		return res;
+//	}
+//
+//	public String getStringValue(String var){
+//		return getValue(var).getDatatypeValue().getLabel();
+//	}
+//
+//	public String[] getSPARQLValues(String var){
+//		return getStringValues(var);
+//	}
+//
+//	public  double getSimilarity(){
+//		return -1;
+//	}
+//
+//	public  boolean isBound(String var){
+//		return hasVariable(var);
+//	}
+//	
+//	
+//	public IResultValue[] getAllResultValues(String variableName) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 	
 	
 }

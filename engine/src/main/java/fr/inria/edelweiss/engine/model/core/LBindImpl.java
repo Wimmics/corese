@@ -4,27 +4,30 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.inria.acacia.corese.api.IResult;
+//import fr.inria.acacia.corese.api.IResult;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.engine.model.api.Bind;
 import fr.inria.edelweiss.engine.model.api.Clause;
 import fr.inria.edelweiss.engine.model.api.LBind;
+import fr.inria.edelweiss.kgram.core.Query;
 
 public class LBindImpl implements LBind {
 
 	private List<Bind> lBindInstance;
+	ASTQuery ast;
 	private boolean tripleFound;
 	
 	public int size(){
 		return lBindInstance.size();
 	}
 	
-	public IResult get(int i){
-		return lBindInstance.get(i);
-	}
+//	public IResult get(int i){
+//		return lBindInstance.get(i);
+//	}
 	
-	public void remove(IResult r){
-		lBindInstance.remove(r);
-	}
+//	public void remove(IResult r){
+//		lBindInstance.remove(r);
+//	}
 
 	public List<Bind> getLBindInstance() {
 		return lBindInstance;
@@ -48,6 +51,14 @@ public class LBindImpl implements LBind {
 	public LBindImpl() {
 		lBindInstance=new ArrayList<Bind>();
 		tripleFound=false;
+	}
+	
+	public void setAST(ASTQuery q){
+		ast = q;
+	}
+	
+	public ASTQuery getAST(){
+		return ast;
 	}
 
 	/**

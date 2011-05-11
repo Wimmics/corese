@@ -1494,12 +1494,27 @@ Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant 
 	
 	
 	( 
-		<AT> <LBRACKET> 
+		<AT> 
+		(
+		// filter
+		<LBRACKET> 
 		  { stack = BasicGraphPattern.create(); }
 		  test = Expression(stack) 
 		  {astq.setRegexTest(exp, test);} 
-		<RBRACKET> 		
+		<RBRACKET> 	
+		
+		|
+		// pattern
+		//<LBRACE> 
+		  stack = GroupGraphPattern()
+		  
+		  {test = astq.createExist(stack, false);
+		   astq.setRegexTest(exp, test);}
+		  
+		//<LBRACE>
+		)	
 	) ?   
+	
 	
 	{ return exp; }
 

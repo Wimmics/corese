@@ -48,5 +48,7 @@ public interface Regex {
 	Regex translate();
 
 	int regLength();
+	
+	Expr getExpr();
 
 }

@@ -40,7 +40,8 @@ public class ProducerDefault implements Producer {
 	}
 
 	@Override
-	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,  Environment env, Regex exp, Node start,
+	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,  Environment env, Regex exp, 
+			Node src, Node start,
 			int index){
 		// TODO Auto-generated method stub
 		return null;
@@ -102,12 +103,6 @@ public class ProducerDefault implements Producer {
 	public boolean isBindable(Node node) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void load(String path) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

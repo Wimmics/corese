@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.IModel;
 import fr.inria.acacia.corese.api.IResultValue;
@@ -13,7 +14,14 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.edelweiss.engine.core.Engine;
+import fr.inria.edelweiss.engine.model.api.Bind;
+import fr.inria.edelweiss.engine.model.api.LBind;
+import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -31,8 +39,9 @@ public class GraphEngine implements IEngine {
 	
 	private Graph graph;
 	private RuleEngine rengine;
-	//private Engine bengine;
+	private Engine bengine;
 	private List<GraphEngine> lEngine;
+	QueryProcess exec;
 	
 	private boolean isListGroup = false,
 	isDebug = false;
@@ -41,8 +50,9 @@ public class GraphEngine implements IEngine {
 		DatatypeMap.setLiteralAsString(false);
 		graph   = Graph.create(true);
 		rengine = RuleEngine.create(graph);
-		//bengine = Engine.create(QueryProcess.create(graph));
+		bengine = Engine.create(QueryProcess.create(graph));
 		lEngine = new ArrayList<GraphEngine>();
+		exec = QueryProcess.create(graph);
 	}
 	
 	public static GraphEngine create(){
@@ -81,10 +91,10 @@ public class GraphEngine implements IEngine {
 	
 	public void load(String path) throws EngineException {
 		//System.out.println("** Load: " + path);
-//		if (path.endsWith(BRUL)){
-//			bengine.load(path);
-//		}
-//		else 
+		if (path.endsWith(BRUL)){
+			bengine.load(path);
+		}
+		else 
 		{
 			loader().load(path);
 		}
@@ -186,8 +196,29 @@ public class GraphEngine implements IEngine {
 
 	
 	public IResults SPARQLProve(String query) throws EngineException {
-		//return bengine.SPARQLProve(query);
-		return null;
+		LBind res = bengine.SPARQLProve(query);
+		Mappings lMap = translate(res);
+		return QueryResults.create(lMap);
+	}
+	
+	
+	
+	Mappings translate(LBind lb){
+		ASTQuery ast = lb.getAST();
+		Query query = exec.compile(ast);
+		Mappings lMap =  Mappings.create(query);
+		for (Bind b : lb){
+			List<Node> list = new ArrayList<Node>();
+			
+			for (Node qNode : query.getSelect()){
+				IDatatype dt = b.getDatatypeValue(qNode.getLabel());
+				Node node = graph.getNode(dt, true, false);
+				list.add(node);
+			}
+			Mapping map = Mapping.create(query.getSelect(), list);
+			lMap.add(map);
+		}
+		return lMap;
 	}
 
 	

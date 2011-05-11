@@ -137,12 +137,13 @@ public class Transformer implements ExpType {
 			q.setUpdate(true);
 		}
 
+		path(q, ast);
+		
 		// retrieve select nodes for query:
 		complete(q, ast);
 
 		q.setAST(ast);
 
-		path(q, ast);
 
 		having(q, ast);
 		

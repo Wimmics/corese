@@ -21,7 +21,12 @@
 			<groupId>arp</groupId>
 			<artifactId>arp</artifactId>
 			<version>2.2.b</version>
-		</dependency>		
+		</dependency>
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.4.2</version>
+		</dependency> 
 		<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgram</artifactId>

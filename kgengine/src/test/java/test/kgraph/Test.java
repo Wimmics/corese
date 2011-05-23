@@ -6,9 +6,13 @@ import java.util.Date;
 
 
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.CoreseBoolean;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -53,12 +57,15 @@ public class Test {
 		//loader.load("http://www.w3.org/2000/01/rdf-schema#");
 //		loader.load(data + "meta.rdfs");
 		
-		loader.load(data + "comma/comma.rdfs");
-		loader.load(data + "comma/commatest.rdfs");
+//		loader.load(data + "comma/comma.rdfs");
+//		loader.load(data + "comma/commatest.rdfs");
 		loader.load(data + "comma/testrdf.rdf");
-		loader.load(data + "comma/model.rdf", "http://www.test.fr/g1" );
-		loader.load(data + "comma/data");						
-////		loader.load(data + "comma/data2");
+//		loader.load(data + "comma/model.rdf", "http://www.test.fr/g1" );
+//		loader.load(data + "comma/data");
+//		
+//		//loader.load(data + "kgraph/path.rdf");
+//
+//		loader.load(data + "comma/data2");
 //		loader.load(data + "kgraph/tmp.rdf");
 
 		
@@ -979,22 +986,114 @@ query = "select * where {" +
 
 		"} limit 10";
 
+query = "select * where {" +
+		"?x c:isMemberOf[  ! contains(?this,  'inria') ]+  ?org " +
+		"}";
+
+query = "select *  where {" +
+"?x c:isMemberOf " +
+"@[exists { {?this rdf:type c:Consortium} union " +
+		   "{?this c:Designation ?name filter(contains(?name, 'inria'))}} ] +  ?org " +
+"} ";
+
+query = "select *  where {" +
+"c:Document (^rdfs:range/rdfs:domain @[ ! (strstarts(?this, c:)) ] )" +
+"+ ?x" +
+"} " ;
+
+query = 
+	"prefix ext: <function://test.kgraph.Test>" +
+	"select * (pathLength($path) as ?l) where {" +
+	"?x rdf:type/rdfs:subClassOf " +
+	    "@[?this != c:Something && ext:display(?this) ] + :: $path ?class " +
+	    "filter(pathLength($path) > 2)" +
+	"} limit 10" ;
+
+
+query = 
+	"prefix ext: <function://test.kgraph.Test>" +
+	"select * (pathLength($path) as ?l) where {" +
+	"?x c:isMemberOf " +
+	"@{  " +
+		"?this rdf:type/rdfs:subClassOf* c:Consortium  " +
+	"} +  :: $path" +
+	"?org " +
+	"filter(pathLength($path) >= 1)" +
+	"} " ;
+
+
+query = 
+	"prefix ext: <function://test.kgraph.Test>" +
+	"select * (pathLength($path) as ?l) where {" +
+	"?x c:isMemberOf " +
+	"@{select ?this  where {?this ?p ?y} having(count(*) >= 20)}  " +
+	"+  :: $path" +
+	"?org " +
+	"filter(pathLength($path) >= 3)" +
+	"} " ;
+
+query = 
+	"prefix ext: <function://test.kgraph.Test>" +
+	"select * (pathLength($path) as ?l) where {" +
+	"?x (c:isMemberOf/c:isMemberOf) " +
+	"@{  " +
+		"?this rdf:type c:Consortium  " +
+	"}   :: $path" +
+	"?org " +
+	"filter(pathLength($path) > 1)" +
+	"} " ;
+
+query = 
+	"prefix ext: <function://test.kgraph.Test>" +
+	"select *  where {" +
+	//"?x c:isMemberOf/c:Designation  :: $path 'T-Nova' "  +
+	//"<http://www.inria.fr/olivier.corby> (!rdf:type)*   :: $path ?org "  +
+	//"c:a  !( c:q  | ^ c:p)  ?x " +
+	//"c:a  ( !c:q  | ^ (!c:p))  ?x " +
+	"?x (c:p|c:q) c:a" +
+	"}  " ;
+
+query = "select * where {?x  (rdf:rest*|rdf:first*)+ ?y}";
+
+query = "select * where {?x    (( rdf:rest{0,1}) *) + ?y}";
+
+query = "prefix cc: <http://www.inria.fr/acacia/comma#>" +
+		"select   * where { graph ?g {    ?doc cc:CreatedBy ?x " +
+		"?x cc:FamilyName ?name  filter( ?name = 'Corby' )} " +
+		"filter(?name = xpath(?g, '/rdf:RDF//*[cc:FamilyName = \"Corby\" ]/*/text()' ))" +
+				"{select (xpath(?g, '/rdf:RDF/*/cc:Title/text()' ) as ?title) where {}}}";
+
+
+query = "describe ?x where  {?x c:hasCreated ?doc filter(?x ~ 'olivier.corby') }"; 
+
+
+query = "select * where {?x (rdf:rest{0,1}/rdf:rest{0,1})*/rdf:first ?y}";
+
+//query = "select * where {?x (rdf:rest{0,1})*/rdf:first ?y}";
+
+query = 
+"select * where {" +
+"?x (rdf:rest +) " +
+"@{" +
+"graph $path {?b rdf:rest ?this} " +
+"graph ?g {?b rdf:rest ?this  ?b rdf:first ?d} " +
+" " +
+"} / rdf:first :: $path ?y}";
+
+
+System.out.println(Integer.MAX_VALUE);
 
 RuleEngine re = RuleEngine.create(graph);
 RuleLoad rl = RuleLoad.create(re);
 
-rl.load(data + "kgraph/rdf.rul");
-rl.load(data + "kgraph/rdfs.rul");
+//rl.load(data + "kgraph/rdf.rul");
+//rl.load(data + "kgraph/rdfs.rul");
 
 try {
 	QueryProcess exec = QueryProcess.create(graph);
 	//exec.setListGroup(true);
 //	exec.add(ponto);
 	
-
-	
-	
-
 	//exec.addEventListener(EvalListener.create());
 	t1 = new Date().getTime();
 	//exec.setDebug(true);
@@ -1005,8 +1104,10 @@ try {
 	//lMap1 = exec.query(update2);
 	//lMap = exec.query(query);
 	
-	System.out.println(XMLFormat.create(lMap));
-	//System.out.println(lMap);
+	//System.out.println(RDFFormat.create(lMap, exec.getAST(lMap).getNSM()));
+	
+	System.out.println(lMap);
+	
 	System.out.println(lMap.size());
 	t2 = new Date().getTime();
 	System.out.println(lMap.size() + " " + (t2-t1) / 1000.0 + "s");
@@ -1073,11 +1174,18 @@ try {
 	}
 	
 	
+	public IDatatype display(Object obj){
+		System.out.println(obj);
+		return CoreseBoolean.TRUE;
+		
+	}
 	
 	
-
 	
-	
+	void test(int n){
+		System.out.println(n);
+		test(n+1);
+	}
 	
 	
 	

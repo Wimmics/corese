@@ -23,6 +23,7 @@ import fr.inria.edelweiss.kgram.tool.ProducerDefault;
 public class Path extends ProducerDefault
 {
 	boolean loopNode = true;
+	int max = Integer.MAX_VALUE;
 	
 	ArrayList<Edge> path;
 	
@@ -38,6 +39,14 @@ public class Path extends ProducerDefault
 	
 	public ArrayList<Edge> getEdges(){
 		return path;
+	}
+	
+	void setMax(int m){
+		max = m;
+	}
+	
+	int getMax(){
+		return max;
 	}
 	
 	void checkLoopNode(boolean b){
@@ -230,6 +239,7 @@ public class Path extends ProducerDefault
 	
 	public String toString(){
 		String str = "path[" + path.size() + "]{";
+		if (path.size() > 1) str += "\n";
 		for (Edge edge : path){
 			str += edge + "\n";
 		}

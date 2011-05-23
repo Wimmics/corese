@@ -40,6 +40,11 @@
 			<artifactId>kgtool</artifactId>
 			<version>1.0</version>
 		</dependency>
+	      <dependency>
+			<groupId>fr.inria.edelweiss</groupId>
+			<artifactId>engine</artifactId>
+			<version>1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

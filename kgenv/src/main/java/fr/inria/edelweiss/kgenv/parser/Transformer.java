@@ -118,8 +118,10 @@ public class Transformer implements ExpType {
 		compiler = fac.newInstance(); 
 		compiler.setAST(ast);
 		// generate Exp from AST body
-		Exp exp = compile(ast);
+		//Exp exp = compile(ast);
 		
+		Exp exp = compile(ast.getBody(), false);
+	
 		Query q =  Query.create(exp);
 		
 		if (ast.isConstruct() || ast.isDescribe()){

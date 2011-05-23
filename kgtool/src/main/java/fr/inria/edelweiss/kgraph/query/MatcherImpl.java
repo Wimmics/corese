@@ -77,6 +77,12 @@ public class MatcherImpl implements Matcher {
 		if (q.getLabel().equals(Entailment.RDFTYPE)){
 			return matchType(q, r, env);
 		}
+		
+		if (! q.getLabel().equals(Graph.TOPREL) && 
+			! q.getLabel().equals(r.getLabel())) {
+			return false;
+		}
+			
 		int max = q.nbNode();
 		if (max > r.nbNode()) return false;
 		for (int i=0; i<max; i++){

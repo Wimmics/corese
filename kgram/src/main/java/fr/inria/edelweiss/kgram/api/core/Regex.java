@@ -8,9 +8,22 @@ package fr.inria.edelweiss.kgram.api.core;
  */
 public interface Regex {
 	
+	public static final int LABEL	= 0;
+	public static final int NOT 	= 1;
+	public static final int SEQ 	= 2;
+	public static final int STAR 	= 3;
+	public static final int PLUS 	= 4;
+	public static final int OPTION 	= 5;
+	public static final int COUNT 	= 6;
+	public static final int ALT		= 7;
+	public static final int TEST	= 8;
+
+	
 	String getName();
 	
 	String getLongName();
+	
+	int retype();
 	
 	int getArity();
 	
@@ -36,6 +49,8 @@ public interface Regex {
 	boolean isStar();
 	
 	boolean isPlus();
+	
+	boolean isCounter();
 
 	int getMin();
 	
@@ -45,7 +60,11 @@ public interface Regex {
 
 	Regex reverse();
 	
+	Regex transform();
+
 	Regex translate();
+	
+	boolean isNotOrReverse();
 
 	int regLength();
 	

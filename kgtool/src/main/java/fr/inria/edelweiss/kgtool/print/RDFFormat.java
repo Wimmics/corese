@@ -12,6 +12,8 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 
@@ -64,6 +66,14 @@ public class RDFFormat {
 	
 	public static RDFFormat create(Graph g){
 		return new RDFFormat(g, NSManager.create());
+	}
+	
+	public static RDFFormat create(Mappings lm, NSManager m){
+		RDFFormat f = RDFFormat.create(m);
+		for (Mapping map : lm){
+			f.add(map);
+		}
+		return f;
 	}
 	
 	public static RDFFormat create(Mapping m){

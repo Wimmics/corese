@@ -262,6 +262,29 @@ public class Constant extends Atom {
 	public Object getValue(){
 		return getDatatypeValue();
 	}
+	
+	
+	public Constant copy(){
+		Constant cst;
+		if (isLiteral()){
+			cst = new Constant(getLabel(), getDatatype(), getLang());
+		}
+		else {
+			cst = new Constant(getLabel());
+		}
+		cst.setLongName(getLongName());
+		return cst;
+	}
+	
+	public Expression transform(boolean isReverse){
+		Constant cst = this;
+		if (isReverse){
+			cst = copy();
+			cst.setReverse(isReverse);
+		}
+		cst.setretype(cst.getretype());
+		return cst;
+	}
     
 
 }

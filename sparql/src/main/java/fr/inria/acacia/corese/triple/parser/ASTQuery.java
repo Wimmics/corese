@@ -938,11 +938,8 @@ public class ASTQuery  implements Keyword {
 	// regex only
 	public  Expression createOperator(String ope, Expression exp) {
 		Term fun = null;
-		if (ope.equals(SINV)) {
-			fun = Term.function(SINV, exp);
-		} 
-		else if (ope.equals(SBE)) {
-			fun = Term.function(SBE, exp);
+		if (ope.equals(SINV) || ope.equals(SBE)) {
+			fun = Term.function(ope, exp);
 		} 
 		else if (ope.equals(SMULT)){
 			fun = star(exp);
@@ -968,11 +965,15 @@ public class ASTQuery  implements Keyword {
 	}
 	
 	/**
-	 * Filter associated to a path regex
+	 * Filter test associated to path regex exp
 	 */
-	public void setRegexTest(Expression exp, Expression test){
+	public Expression setRegexTest(Expression exp, Expression test){
 		regexExpr.put(exp, test);
-		exp.setExpr(test);
+		//exp.setExpr(test);
+		Expression tt = Term.function(Term.TEST);
+		tt.setExpr(test);
+		Expression seq = sequence(exp, tt);
+		return seq;
 	}
 	
 	public Collection<Expression> getRegexTest(){
@@ -996,9 +997,9 @@ public class ASTQuery  implements Keyword {
 		int n1 = 0, n2 = Integer.MAX_VALUE;
 		if (s1 != null) n1 = Integer.parseInt(s1);
 		if (s2 != null) n2 = Integer.parseInt(s2);
-		exp = star(exp);
-		exp.setMin(n1);
-		exp.setMax(n2);
+//		exp = star(exp);
+//		exp.setMin(n1);
+//		exp.setMax(n2);
 		return createOperator(n1, n2, exp);
 	}
 	

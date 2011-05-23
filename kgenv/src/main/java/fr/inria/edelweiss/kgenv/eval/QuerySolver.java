@@ -190,6 +190,11 @@ public class QuerySolver  {
 	public ASTQuery getAST(Query q){
 		return (ASTQuery) q.getAST();
 	}
+	
+	public ASTQuery getAST(Mappings lm){
+		Query q = lm.getQuery();
+		return getAST(q);
+	}
 		
 	public void addEventListener(EventListener el){
 		if (manager == null) manager = new EventManager();

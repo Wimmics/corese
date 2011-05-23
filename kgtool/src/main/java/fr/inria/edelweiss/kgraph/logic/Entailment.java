@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -324,9 +325,13 @@ public class Entailment {
 	 * signature
 	 */
 	void infer(Node gNode, Edge edge, List<Node> list, int i){
+		Node node = edge.getNode(i);
+		IDatatype dt = (IDatatype) node.getValue();
+		if (i == 1 && dt.isLiteral()) return;
+		
 		if (list!=null){
 			for (Node type : list){
-				EdgeImpl ee =  EdgeImpl.create(gNode, edge.getNode(i), hasType, type);
+				EdgeImpl ee =  EdgeImpl.create(gNode, node, hasType, type);
 				record(gNode, edge, ee);
 			}
 		}

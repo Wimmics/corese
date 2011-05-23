@@ -3326,7 +3326,7 @@
         jj_consume_token(LBRACKET);
                     stack = BasicGraphPattern.create();
         test = Expression(stack);
-                   astq.setRegexTest(exp, test);
+                   exp = astq.setRegexTest(exp, test);
         jj_consume_token(RBRACKET);
         break;
       case LBRACE:
@@ -3334,7 +3334,7 @@
                         //<LBRACE> 
                           stack = GroupGraphPattern();
                    test = astq.createExist(stack, false);
-                   astq.setRegexTest(exp, test);
+                   exp = astq.setRegexTest(exp, test);
         break;
       default:
         jj_la1[179] = jj_gen;

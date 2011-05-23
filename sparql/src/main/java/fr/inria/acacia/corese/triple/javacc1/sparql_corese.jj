@@ -1500,7 +1500,7 @@ Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant 
 		<LBRACKET> 
 		  { stack = BasicGraphPattern.create(); }
 		  test = Expression(stack) 
-		  {astq.setRegexTest(exp, test);} 
+		  {exp = astq.setRegexTest(exp, test);} 
 		<RBRACKET> 	
 		
 		|
@@ -1509,7 +1509,7 @@ Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant 
 		  stack = GroupGraphPattern()
 		  
 		  {test = astq.createExist(stack, false);
-		   astq.setRegexTest(exp, test);}
+		   exp = astq.setRegexTest(exp, test);}
 		  
 		//<LBRACE>
 		)	

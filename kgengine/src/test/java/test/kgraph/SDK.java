@@ -62,9 +62,11 @@ public class SDK {
 			t1 = new Date().getTime();
 			Mappings lMap = null;
 			System.out.println("start");
-			//Mapping map = init();
-			//for (int i=0; i<10; i++)
-			Mappings res = exec.query(query);
+
+			Mappings res = null;
+			t1 = new Date().getTime();
+			
+			res = exec.query(query);
 
 			t2 = new Date().getTime();
 			//if (lMap.size()<=10) 

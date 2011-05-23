@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Regex;
 
 /**
  * Record intermediate nodes that are visited by a loop path expression
@@ -16,10 +17,17 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  */
 public class Visit {
 	Hashtable<State, List<Node>> table;
+	Hashtable<Regex, List<Node>> etable;
+	Hashtable<Regex, Integer> ctable;
+	ArrayList<Regex> list;
+
 	boolean isReverse = false;
 	
 	Visit(boolean b){
-		table = new Hashtable<State, List<Node>>();
+		table  = new Hashtable<State, List<Node>>();
+		etable = new Hashtable<Regex, List<Node>>();
+		ctable = new Hashtable<Regex, Integer> ();
+		list   = new ArrayList<Regex>();
 		isReverse = b;
 	}
 	
@@ -119,5 +127,167 @@ public class Visit {
 		}
 		return false;
 	} 
+	
+	
+	
+	
+	
+	/**************************************
+	 * 
+	 * With Regex
+	 * 
+	 */
+	
+	void add(Regex exp, Node node){
+		List<Node> list = etable.get(exp);
+		if (list == null){
+			list = new ArrayList<Node>();
+			etable.put(exp, list);
+		}
+		list.add(node);
+	}
+	
+	boolean knows(Regex exp){
+		return list.contains(exp);
+	}
+	
+	void insert(Regex exp, Node start){
+		if (start == null){
+			// subscribe exp to start() above because start node is not bound yet
+			list.add(exp);
+		}
+		else {
+			add(exp, start);
+		}
+	}
+	
+	void set(Regex exp, List<Node> list){
+		if (list!=null){
+			etable.put(exp, list); 
+		}
+	}
+	
+	List<Node> unset(Regex exp){
+		List<Node> list = etable.get(exp);
+		etable.remove(exp);
+		return list;
+	}
+	
+	/**
+	 * use case:
+	 * ?x p* ?y
+	 * ?x is not bound when path starts
+	 * first occurrence of p binds ?x
+	 * node is ?x
+	 * exp is p*
+	 * add node to the visited list of exp to prevent loops
+	 */
+	void start(Node node){
+		for (Regex exp : list){
+			add(exp, node);
+		}
+	}
+	
+	/**
+	 * same use case as start() above
+	 * leave the binding
+	 */
+	void leave(Node node){
+		for (Regex exp : list){
+			remove(exp, node);
+		}
+	}
+	
+	/**
+	 * Remove node from visited list
+	 */
+	void remove (Regex exp, Node node){
+		if (node == null){
+			list.remove(exp);
+			return;
+		}
+		List<Node> list = etable.get(exp);
+		if (! list.get(list.size()-1).equals(node)){
+			System.out.println("** ERROR Visit: " + node + " " + list);
+		}
+		list.remove(list.size()-1);
+	}
+	
+	
+	/**
+	 * Test whether path loops 
+	 */
+	 boolean loop(Regex exp, Node start) {
+		insert(exp, start);
+		if (loop(exp)){
+			remove(exp, start);
+			return true;
+		}
+		
+		return false;
+	}
+	 
+	/**
+	 * Test if there is a loop on path of exp
+	 */
+	 boolean loop(Regex exp) {
+
+		List<Node> list = etable.get(exp);
+		if (list == null || list.size()<2) return false;
+		int last = list.size()-1;
+
+		//System.out.println("** V: " + list);
+
+		if (isReverse){
+			// use case: ?s {2,} ex:uri
+			// Walk through the list backward (from <uri> to ?s), skip 2 first nodes
+			// cf W3C pp test case
+			Node node = null;
+			int count = 0;
+			int min = exp.getMin();
+			for (int i = last; i>=0; i--){
+				if (count<min) {count++; continue;}
+				else if (count == min){ 
+					node = list.get(i);
+				}
+				else {
+					//System.out.println("** V: " + node + " " + list.get(i) + " "  + list.get(i).equals(node));
+					if (list.get(i).equals(node)){
+						return true;
+					}
+				}
+				count++;
+			}
+		}
+		else {
+			Node node = list.get(last);		
+			for (int i = 0; i<last; i++){
+				if (list.get(i).equals(node)){
+					//System.out.println("** V: " + list);
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	 } 
+	 
+	 void set(Regex exp, int n){
+		 ctable.put(exp, n);
+	 }
+
+	 void count(Regex exp, int n){
+		 Integer i = ctable.get(exp);
+		 if (i == null) i = 0;
+		 ctable.put(exp, i + n);
+	 }
+
+
+	 int count(Regex exp){
+		 Integer i = ctable.get(exp);
+		 if (i == null) return 0;
+		 return i;
+	 }
+	
 
 }

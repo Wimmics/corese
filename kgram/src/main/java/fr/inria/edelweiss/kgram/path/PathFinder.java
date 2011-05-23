@@ -43,7 +43,8 @@ public class PathFinder
 	private static Logger logger = Logger.getLogger(PathFinder.class);
 	
 	static int cc = 0;
-	
+	static boolean isStack = true;
+
 	// thread that enumerates the path
 	private GraphPath path;
 	private Visit visited;
@@ -59,7 +60,7 @@ public class PathFinder
 	private Filter filter;
 	private Memory mem;
 	private Edge edge;
-	private Node gNode, targetNode, regexNode;
+	private Node gNode, targetNode, regexNode, varNode;
 	private List<Node> from;
 	private Stack loopStack;
 	// index of node in edge that is the start of the path
@@ -82,7 +83,7 @@ public class PathFinder
 	loopNode = false,
 	std = !true;
 	//isInverse;
-	private int  maxLength = 100, 
+	private int  maxLength = Integer.MAX_VALUE, 
 	min = 0, max = maxLength,
 	userMin = -1,
 	userMax = -1;
@@ -94,7 +95,7 @@ public class PathFinder
 	private ITable htdistance; 
 //	private Integer[] adistance;
 	// regexp for path
-	private Regex regexp;
+	private Regex regexp0, regexp1, regexp;
 	private Automaton  automaton;
 	// depth or width first 
 	private String mode = "";
@@ -160,6 +161,7 @@ public class PathFinder
 		start(n);
 		index = n;
 		targetNode = memo.getNode(edge.getNode(other));
+		varNode = edge.getEdgeVariable();
 		producer.initPath(edge, index);
 		
 		if (f != null){
@@ -272,8 +274,10 @@ public class PathFinder
 	 */
 	public void init(Regex exp, Object smode, int pmin, int pmax){
 		loopStack = new Stack();
+		regexp0 = exp;
+		regexp1 = exp.transform();
 		regexp = exp;
-		
+
 		mode = (String)smode;
 		
 		isBreadth = defaultBreadth;
@@ -326,10 +330,11 @@ public class PathFinder
 	 * depends on index : which arg is bound or where we start
 	 */
 	void start(int n){
-		if (n != index){
+		regexp = regexp0;
+		if (n != 0){
 			// we change index : reset automaton
 			// and reverse regex
-			regexp = regexp.reverse();
+			regexp = regexp0.reverse();
 			automaton = null;
 			// distances are obsolete: clean table
 			htmeta.clear();
@@ -442,7 +447,15 @@ public class PathFinder
 			if (hasEvent){
 				send(Event.PATH, regexp, cstart, imin);
 			}
-			path(cstart, csource, path,  min, imin);
+			
+			if (isStack){
+				path.setMax(max);
+				eval(regexp1, path, cstart, csource);
+			}
+			else {
+				path(cstart, csource, path,  min, imin);
+			}
+			
 		}
 
 		// in order to stop enumeration, return null
@@ -649,12 +662,12 @@ public class PathFinder
 						node = rel.getNode(ii);
 					}
 					
-					if (exp.getExpr() != null){
-						// use case: ?x c:isMemberOf[?this != <http://www.inria.fr] + ?y
-						boolean b = test(exp.getExpr().getFilter(), regexNode, rel.getNode(oo));
-						//System.out.println("** PF: " + b + " " + rel.getNode(oo) + " " + exp.getExpr());
-						if (! b) continue;
-					}
+//					if (exp.getExpr() != null){
+//						// use case: ?x c:isMemberOf[?this != <http://www.inria.fr] + ?y
+//						boolean b = test(exp.getExpr().getFilter(), regexNode, rel.getNode(oo));
+//						//System.out.println("** PF: " + b + " " + rel.getNode(oo) + " " + exp.getExpr());
+//						if (! b) continue;
+//					}
 					
 					if (hasFilter && cstart == null){
 						// test a filter on the index node
@@ -942,98 +955,468 @@ public class PathFinder
 		};
 	}
 	
-	boolean test(Filter filter, Node qNode, Node node){
+	boolean test(Filter filter, Path path, Node qNode, Node node){
+		mem.push(qNode, node);
+		if (varNode != null){
+			mem.push(varNode, varNode);
+			mem.pushPath(varNode, path);
+		}
+		boolean test = evaluator.test(filter, mem);
+		mem.pop(qNode);
+		if (varNode != null){
+			mem.pop(varNode);
+			mem.popPath(varNode);
+		}
+		return test;
+	}
+	
+	boolean test(Node node){
+		Node qNode = edge.getNode(index);
 		mem.push(qNode, node);
 		boolean test = evaluator.test(filter, mem);
 		mem.pop(qNode);
 		return test;
 	}
 	
-	boolean test(Node node){
-		return test(filter, edge.getNode(index), node);
+	
+/*********************************************************************************
+ * 
+ * New version interprets regex directly with a stack 
+ * 
+ ********************************************************************************/
+	
+	
+	/**
+	 *  rewrite   ! (^ p)   as   ^ (! p)
+	 *  rewrite   ^(p/q)    as   ^q/^p
+	 */
+	void eval(Regex exp, Path path, Node start, Node src){
+//		System.out.println(exp);
+		Record stack = new Record().push(exp);
+		try {
+			eval(stack, path, start, src, false);
+		}
+		catch (StackOverflowError e){
+			System.out.println("** Path Error: " + e);
+		}
 	}
 	
 	
-//	public Iterable<Node> getNodes(Node csrc, final Edge edge, List<Node> from, List<Regex> it){	
-//		
-//		final ArrayList <Iterable<Entity>> vec = new ArrayList <Iterable<Entity>> ();
-//		
-//		if (it == null){
-//			// need all properties
-//			Iterable<Entity> nit = producer.getNodes(gNode, from, edge, memory, null, index);
-//			if (nit != null){
-//				vec.add(nit);
+	/**
+	 * top of stack is current exp to eval
+	 * rest of stack is in sequence
+	 * path may be walked left to right if start is bound or right to left if end is bound
+	 * in the later case,  index = 1
+	 */
+	void eval(Record stack, Path path, Node start, Node src, boolean inv){
+		
+		if (stack.isEmpty()){
+			result(path, start, src);
+			return;
+		}
+			
+		Regex exp = stack.pop();
+			
+//		System.out.println("** PF: " + exp + " " + exp.retype());			
+		
+		switch (exp.retype()){
+		
+		
+		case Regex.TEST: {
+			// exp @[ ?this != <John> ]
+			
+			boolean b = true;
+			
+			if (start != null){
+				b = test(exp.getExpr().getFilter(), path, regexNode, start);
+			}
+			
+			if (b){
+				eval(stack, path, start, src, inv);
+			}
+			stack.push(exp);
+		}
+		break;
+		
+			
+		case Regex.LABEL:
+		case Regex.NOT: {
+			
+			if (path.size() >= path.getMax()){
+				stack.push(exp);
+				return;
+			}
+			
+			boolean inverse = exp.isInverse() || exp.isReverse();
+			Producer pp = producer;
+			List<Node> ff = from;
+			Edge ee = edge;
+			Node rNode = regexNode;
+			Environment env = memory;
+			int ii = index, oo = other;
+			int size = path.size();
+			boolean 
+				hasFilter = filter!=null,
+				isStart = start == null,
+				hasSource = size == 0 && src == null && gNode != null;
+
+			Visit visit = visited;
+			Node gg = gNode;
+						
+//			if (inverse){
+//				exp.setReverse(true);
 //			}
-//		}
-//		else for (Regex exp : it){
-//			// iterate starting properties
-//			Iterable<Entity> nit = producer.getNodes(gNode, from, edge, memory, exp, index);
-//			if (nit != null){
-//				vec.add(nit);
-//			}
-//		}
-//
-//		if (vec.size() == 0){
-//			ArrayList<Node> res = new ArrayList<Node>();
-//			return res;
-//		}
-//		
-//		/* 
-//		 * iterate the vector of PCandidate of first properties
-//		 * return the (first) concepts of the relations
-//		 */
-//		return new Iterable<Node>(){
-//			int i = 0;
-//			// iterate on PCandidate 
-//			Iterator<Entity> it = vec.get(i++).iterator();
-//				
-//			public Iterator<Node> iterator(){
-//
-//				return new Iterator<Node>(){
-//
-//					public boolean hasNext() {
-//						if (it.hasNext())
-//							return true;
-//						else if (i<vec.size()){
-//							it = vec.get(i++).iterator();
-//							return hasNext();
-//						}
-//						else return false;
-//					}
-//
-//					public Node next2() {
-//						Entity entity = it.next();
-//						if (entity == null) return null;
-//						return entity.getNode();				
-//					}
-//					
-//					public Node next() {
-//						while (hasNext()){
-//							Entity entity = it.next();
-//							if (entity == null) return null;
-//							Node node =  entity.getNode();
-//							if (filter == null){
-//								return node;
-//							}
-//							mem.push(edge.getNode(index), node);
-//							boolean test = evaluator.test(filter, mem);
-//							mem.pop(edge.getNode(index));
-//							if (test){
-//								return node;
-//							}
-//						}
-//						return null;
-//					}
-//
-//					@Override
-//					public void remove() {
-//						// TODO Auto-generated method stub
-//						
-//					}
-//				};
-//			}
-//		};
-//	}
+						
+			for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, src, start, ii)){
+
+				if (ent == null){
+					continue;
+				}
+				
+				//System.out.println(ent);
+				
+				Edge rel = ent.getEdge();
+				Node node = rel.getNode(ii);
+
+				if (inverse){
+					rel = new EdgeInv(rel);	
+					node = rel.getNode(ii);
+				}
+				
+				if (hasFilter && start == null){
+					// test a filter on the index node
+					boolean test = test(rel.getNode(ii));
+					if (! test) continue;
+				}
+				
+				if (hasSource){
+					// first time: bind the common source of current path
+					src = ent.getGraph();
+				}
+				else if (src != null && ! ent.getGraph().same(src) ){ 
+					// all relations need same source in one path
+					continue;
+				}				
+								
+				if (isStart){
+					visit.start(node);
+				}
+				
+				path.add(rel);
+				eval(stack, path, rel.getNode(oo), src, inv);
+				path.remove(size);
+				
+				if (isStart){
+					visit.leave(node);
+				}
+			}
+			
+			stack.push(exp);
+		}
+		break;
+		
+		case Regex.SEQ: {
+			
+			int fst = 0, rst = 1;
+			if (isReverse){
+				// path walk from right to left
+				// index = 1
+				// hence sequence walk from right to left
+				// use case: ?x p/q <uri>
+				fst=1;
+				rst=0;
+			}
+
+			stack.push(exp.getArg(rst));
+			stack.push(exp.getArg(fst));
+			
+			eval(stack, path, start, src, inv);
+			
+			stack.pop();
+			stack.pop();
+			stack.push(exp);
+			
+		}
+		break;
+		
+		
+		case Regex.PLUS:
+			// exp+
+			if (start == null && visited.knows(exp)){
+				stack.push(exp);
+				return;
+			}
+			plus(exp, stack, path, start, src, inv);
+		break;
+		
+		
+		case Regex.COUNT:
+			// exp{1,n}
+			count(exp, stack, path, start, src, inv);
+			break;
+		
+			
+		case Regex.STAR: 	
+			// exp*
+			if (start == null && visited.knows(exp)){
+				stack.push(exp);
+				return;
+			}
+			star(exp, stack, path, start, src, inv);			
+		break;
+		
+		
+		case Regex.ALT:
+			
+			stack.push(exp.getArg(0));
+			eval(stack, path, start, src, inv);
+			stack.pop();
+			
+			stack.push(exp.getArg(1));
+			eval(stack, path, start, src, inv);
+			stack.pop();
+			
+			stack.push(exp);
+		break;
+		
+		
+		case Regex.OPTION:
+			
+			eval(stack, path, start, src, inv);
+			stack.push(exp.getArg(0));
+			eval(stack, path, start, src, inv);	
+			
+			stack.pop();
+			stack.push(exp);
+		break;
+		
+		}
+		
+	}
+	
+	
+	
+	Regex test(Regex exp){
+		
+		return exp;
+	}
+	
+	
+	int reverse(int i){
+		switch (i){
+		case 0: return 1;
+		case 1: return 0;
+		}
+		return 0;
+	}
+	
+	void result(Path path, Node start, Node src){
+		if (path.size()>0){
+
+			Mapping map = result(path, gNode, src, start, isReverse);
+			//System.out.println("** PF: \n" + map);
+			if (map != null){
+				mbuffer.put(map, true);
+			}
+		}
+		else {
+			for (Entity ent : getStart(start, src)){
+				if (ent != null){
+					Node node = ent.getNode();
+					if (gNode != null){ 
+						src = ent.getGraph();
+					}
+					Mapping m = result(path, gNode, src, node, isReverse);
+
+					if (m != null){
+						mbuffer.put(m, true);
+					}
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * exp*
+	 */
+	void star(Regex exp, Record stack, Path path, Node start, Node src, boolean inv){
+		
+		if (visited.loop(exp, start)){
+			// start already met in exp path: stop
+			stack.push(exp);
+			return;
+		}		
+		
+		// use case: (p*/q)*
+		// we must save each visited of p*
+		// because it expands to p*/q . p*/q ...
+		// and each occurrence of p* has its own visited 
+		//List<Node> save = visited.unset(exp);
+		//eval(stack, path, start, src);
+		//visited.set(exp, save);
+
+		// first step: zero length 
+		eval(stack, path, start, src, inv);
+
+		// restore exp*
+		stack.push(exp);
+		// push exp
+		stack.push(exp.getArg(0));
+		// second step: eval exp once more
+		eval(stack, path, start, src, inv);
+		// restore stack (exp* on top)
+		stack.pop();
+
+		visited.remove(exp, start);	
+	}
+	
+	
+	
+	/**
+	 * exp+
+	 */
+	void plus(Regex exp, Record stack, Path path, Node start, Node src, boolean inv){
+		
+		if (count(exp) == 0){
+			// first step
+			stack.push(exp);
+
+			count(exp, +1);
+			stack.push(exp.getArg(0));
+			eval(stack, path, start, src, inv);
+			stack.pop();
+			count(exp, -1);		
+		}
+		else {
+			
+			if (visited.loop(exp, start)){
+				stack.push(exp);
+				return;
+			}
+			
+			// (1) leave
+			eval(stack, path, start, src, inv);
+
+			// (2) continue
+			stack.push(exp);
+
+			count(exp, +1);
+			stack.push(exp.getArg(0));
+			eval(stack, path, start, src, inv);
+			stack.pop();
+			count(exp, -1);
+
+			visited.remove(exp, start);		
+		}
+	}
+
+	
+	
+	/**
+	 * exp{n,m}
+	 * exp{n,}
+	 */
+	void count(Regex exp, Record stack, Path path, Node start, Node src, boolean inv){
+		
+		if (count(exp) >= exp.getMin()){			
+			
+			if (! hasMax(exp) && visited.loop(exp, start)){
+				stack.push(exp);
+				return;
+			}
+			
+			// min length is reached, can leave
+			int save = count(exp);
+			set(exp, 0);
+			eval(stack, path, start, src, inv);
+			set(exp, save);
+
+			stack.push(exp);
+			
+			if (count(exp) < exp.getMax()){
+				// max length not reached, can continue
+				
+				count(exp, +1);
+				stack.push(exp.getArg(0));
+				eval(stack, path, start, src, inv);
+				stack.pop();
+				count(exp, -1);
+
+			}
+			
+			if (! hasMax(exp)) visited.remove(exp, start);		
+			
+		}
+		else {
+			// count(exp) < exp.getMin()
+			
+			if (isReverse && ! hasMax(exp)){
+				// use case: ?x exp{2,} <uri>
+				// path goes backward
+				visited.insert(exp, start);
+			}
+			
+			stack.push(exp);
+
+			count(exp, +1);
+			stack.push(exp.getArg(0));
+			eval(stack, path, start, src, inv);
+			stack.pop();
+			count(exp, -1);	
+			
+			if (isReverse && ! hasMax(exp)){
+				// use case: ?x exp{2,} <uri>
+				// path goes backward
+				visited.remove(exp, start);
+			}
+			
+		}
+	} 
+	
+	
+	int count(Regex exp){
+		return visited.count(exp);
+	}
+	
+	void count(Regex exp, int n){
+		visited.count(exp, n);
+	}
+	
+	void set(Regex exp, int n){
+		visited.set(exp, n);
+	}
+	
+	Regex star(Regex exp){
+		return exp;
+	}
+	
+	boolean hasMax(Regex exp){
+		return exp.getMax()!=-1 && exp.getMax()!= Integer.MAX_VALUE;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }

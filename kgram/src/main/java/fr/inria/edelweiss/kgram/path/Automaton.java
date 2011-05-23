@@ -13,6 +13,8 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
  *
  */
 public class Automaton {
+	static boolean isStack = PathFinder.isStack;
+	
 	State in, out, current;
 	// list of open transitions (target state to be completed)
 	StepList pending;
@@ -134,11 +136,11 @@ public class Automaton {
 	 */
 	void compute(Regex exp, Regex star, boolean or,  boolean inverse, boolean reverse){
 		
+		//if (exp.getExpr()!=null) System.out.println("** A: " + exp + " " + exp.getExpr() + " " + exp.isSeq());
+		
 		if (exp.isReverse()){
 			// ?x ^ ex:prop ?y
 			// SPARQL 1.1 inverse edge
-//			reverse = true;
-//			exp = exp.getArg(0);
 			// rec call to process ^ ^ exp
 			compute(exp.getArg(0), star, or, inverse, !reverse);
 			return;
@@ -150,7 +152,7 @@ public class Automaton {
 			exp = exp.getArg(0);
 		}
 		
-		if (isNotOrReverse(exp)){
+		if (exp.isNotOrReverse()){
 			// use case:   ! (^ rdf:type | rdf:type)
 			// rewrite as :  (^ (! rdf:type) | ! rdf:type)
 			compute(exp.translate(), star, or, inverse, reverse);
@@ -158,7 +160,7 @@ public class Automaton {
 		}
 		
 		if (exp.isConstant() || exp.isNot()){
-			exp.setReverse(reverse);
+			if (! isStack) exp.setReverse(reverse);
 			exp.setInverse(inverse);
 			Step step = new Step(exp);
 			// pending transitions waiting for their target state
@@ -306,25 +308,7 @@ public class Automaton {
 			pending = psave;
 		}
 	}
-	
-	/**
-	 * 
-	 * ! (p1 | ^p2)
-	 */
-	boolean isNotOrReverse(Regex exp){
-		if (! exp.isNot()) return false;
-		Regex ee = exp.getArg(0);
-		if (ee.isReverse()) return true;
-		if (ee.isOr()){
-			for (int i = 0; i<ee.getArity(); i++){
-				if (ee.getArg(i).isReverse()){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
+		
 	
 	/**
 	 * use case:

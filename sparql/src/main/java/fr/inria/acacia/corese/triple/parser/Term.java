@@ -30,6 +30,8 @@ public class Term extends Expression {
 	static final String SEOR  = Keyword.SEOR;
 	public static final String SEQ   = Keyword.SEQ;
 	public static final String STAR = "star";
+	public static final String TEST = "test";
+
 	static final String OPT = "opt";
 	static final String PLUS = "plus";
 	static final String XPATH = "xpath";
@@ -301,6 +303,10 @@ public class Term extends Expression {
 		return isFunction(OPT);
 	}
 	
+	public boolean isTest(){
+		return isFunction(TEST);
+	}
+	
 	// final state in regexp
 	public boolean isFinal(){
 		if (isStar() || isOpt()) return true;
@@ -316,9 +322,13 @@ public class Term extends Expression {
 	
 	/**
 	 * Return a copy of  the reverse regex :
-	 * p1 / p2 
+	 * p/q 
 	 * ->
-	 * p2 / p1
+	 * q/p
+	 * 
+	 * use case: ?x exp <a>
+	 * walk the exp from <a> to ?x 
+	 * and set index = 1
 	 * 
 	 */
 	public Expression reverse(){
@@ -337,13 +347,73 @@ public class Term extends Expression {
 				term.add(arg.reverse());
 			}
 			
-			term.setMax(getMax());
-			term.setMin(getMin());
-			term.setPlus(isPlus());
-			term.setExpr(getExpr());
+			term.copy(this);
 		}
 		return term;
 	}
+	
+	void copy(Term t){
+		setMax(t.getMax());
+		setMin(t.getMin());
+		setPlus(t.isPlus());
+		setExpr(t.getExpr());
+	}
+	
+	
+	
+	/**
+	 * ^(p/q) -> ^q/^p
+	 * 
+	 *  and translate()
+	 *  
+	 *  inside reverse, properties (and ! prop)  are setReverse(true)
+	 */
+	public Expression transform(boolean isReverse){
+		Term term = this;
+		Expression exp;
+		boolean trace = !true;		
+		if (trace) System.out.println("** T: " + this + " " + isFunction());
+		
+		if (isNotOrReverse()){
+			if (trace) System.out.println("** T1: " + this );
+			exp = translate();
+			exp = exp.transform(isReverse);
+			exp.setretype(exp.getretype());
+			return exp;
+		}
+
+		if (isReverse()){
+			if (trace) System.out.println("** T2: " + this );
+			// Constant redefine transform()
+			exp = getArg(0).transform(! isReverse);
+			exp.setretype(exp.getretype());
+			return exp;
+		}
+		else if (isReverse && isSeq()){
+			if (trace) System.out.println("** T3: " + this );
+			term = Term.create(getName(), getArg(1).transform(isReverse), getArg(0).transform(isReverse));
+		}
+		else { 
+			if (trace) System.out.println("** T4: " + this );
+			if (isFunction()){
+				term = Term.function(getName());
+			}
+			else {
+				term = Term.create(getName());
+			}
+			for (Expression arg : getArgs()){
+				term.add(arg.transform(isReverse));
+			}
+			if (isNot()){
+				term.setReverse(isReverse);
+			}
+			term.copy(this);
+		}
+		if (trace) System.out.println("** T5: " + this );
+		term.setretype(term.getretype());
+		return term;
+	}
+	
 
 	/**
 	 * this term is one of:
@@ -354,7 +424,7 @@ public class Term extends Expression {
 		Expression exp = getArg(0);
 		
 		if (exp.isReverse()){
-			Expression e1 = Term.function(SENOT, exp.getArg(0));
+			Expression e1 = Term.negation(exp.getArg(0));
 			Expression e2 = Term.function(SREV, e1);
 			return e2;
 		}
@@ -382,6 +452,25 @@ public class Term extends Expression {
 		
 		return this;
 	}
+	
+	
+	/**
+	 * ! (p1 | ^p2)
+	 */
+	public boolean isNotOrReverse(){
+		if (! isNot()) return false;
+		Expression ee = getArg(0);
+		if (ee.isReverse()) return true;
+		if (ee.isOr()){
+			for (int i = 0; i<ee.getArity(); i++){
+				if (ee.getArg(i).isReverse()){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	
 	Expression add (String ope, Expression e1, Expression e2){
 		if (e1 == null){

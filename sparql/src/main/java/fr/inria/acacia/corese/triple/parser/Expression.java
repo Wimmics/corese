@@ -27,7 +27,7 @@ implements Regex, Filter, Expr {
 	public static final int ENDFILTER = 1;
 	public static final int POSFILTER = 2;
 	public static final int BOUND = 4;
-	int type = -1, min = -1, max = -1;
+	int type = -1, min = -1, max = -1, retype = -1;
 	
 	boolean isQName = false;
 	boolean isEget = false;
@@ -214,6 +214,10 @@ implements Regex, Filter, Expr {
 		return this;
 	}
 	
+	public boolean isNotOrReverse(){
+		return false;
+	}
+	
 	void setMin(int n){
 		min = n;
 	}
@@ -230,6 +234,11 @@ implements Regex, Filter, Expr {
 		return max;
 	}
 	
+	// include isPlus()
+	public boolean isCounter(){
+		return (min!=-1 || max != -1);
+	}
+	
 	boolean isOrVarEqCst(Variable var){
 		return false;
 	}
@@ -244,11 +253,23 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+	public boolean isTest(){
+		return false;
+	}
+	
 	public boolean isFinal(){
 		return false;
 	}
 	
 	public Expression reverse(){
+		return this;
+	}
+	
+	public Expression transform(){
+		return transform(false);
+	}
+	
+	public Expression transform(boolean isReverse){
 		return this;
 	}
 	
@@ -356,13 +377,13 @@ implements Regex, Filter, Expr {
 
 	
 	public Expr getExp() {
-		// TODO Auto-generated method stub
+		
 		return this;
 	}
 
 	
 	public List<String> getVariables() {
-		// TODO Auto-generated method stub
+		
 		List<String> list = new ArrayList<String>();
 		getVariables(list);
 		return list;
@@ -373,54 +394,74 @@ implements Regex, Filter, Expr {
 
 	
 	public int arity() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	
 	public String getLabel() {
-		// TODO Auto-generated method stub
+		
 		if (longName!=null) return longName;
 		return name;
 	}
 
 	
 	public Object getValue() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	
 	public boolean isAggregate() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 	
 	public boolean isRecAggregate() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 	
 	public boolean isFunctional() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	
 	public int oper() {
-		// TODO Auto-generated method stub
+		
 		return -1;
 	}
 
 	
 	public int type() {
-		// TODO Auto-generated method stub
 		return type;
+	}
+	
+	public int retype() {
+		return retype;
+	}
+	
+	void setretype(int n){
+		retype = n;
+	}
+	
+	int getretype() {
+		if (isConstant()) return Regex.LABEL;
+		if (isNot())	 return Regex.NOT;
+		if (isSeq())	 return Regex.SEQ;
+		if (isOr())	 	 return Regex.ALT;
+		if (isPlus())	 return Regex.PLUS;
+		if (isCounter()) return Regex.COUNT;
+		if (isStar()) 	 return Regex.STAR;
+		if (isOpt()) 	 return Regex.OPTION;
+		if (isTest())	 return Regex.TEST;
+		return -1;
 	}
 
 	
 	public List<Expr> getExpList() {
-		// TODO Auto-generated method stub
+		
 		return new ArrayList<Expr>();
 	}
 	
@@ -430,19 +471,19 @@ implements Regex, Filter, Expr {
 
 	
 	public int getIndex() {
-		// TODO Auto-generated method stub
+		
 		return -1;
 	}
 
 	
 	public void setIndex(int index) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	
 	public void setArg(Expr exp) {
-		// TODO Auto-generated method stub
+		
 	}
 	
 	public Expr getArg(){
@@ -455,13 +496,13 @@ implements Regex, Filter, Expr {
 
 	
 	public boolean isDistinct() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	
 	public String getModality() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	

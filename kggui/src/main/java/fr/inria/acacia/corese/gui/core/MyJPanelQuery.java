@@ -57,6 +57,7 @@ import org.miv.graphstream.ui.swing.SwingGraphViewer;
 import com.ibm.icu.util.StringTokenizer;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
@@ -84,7 +85,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	private static final long serialVersionUID = 1L;
 
 	//Boutton du panneau Query
-	private JButton buttonRun,buttonTKgram;
+	private JButton buttonRun,buttonTKgram,buttonProve;
 	private JButton buttonSearch;
 	private JButton buttonRefreshStyle,buttonDefaultStyle;
 	
@@ -138,6 +139,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	    scrollPaneQuery = new JScrollPane();
 	    textPaneQuery = new JTextPane();
 	    buttonRun = new JButton();
+	    buttonProve = new JButton();
 	    buttonTKgram = new JButton();
 	    buttonSearch = new JButton();
 	    buttonRefreshStyle = new JButton();
@@ -339,9 +341,13 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	    
 	    /** Bouttons et leurs actions **/	
 	    //Lancer une requête
-	    buttonRun.setText("Run Query");
+	    buttonRun.setText("Query");
 	    ActionListener l_RunListener = createListener(coreseFrame, false);
 	    buttonRun.addActionListener(l_RunListener);
+	    
+	    buttonProve.setText("Prove");
+	    buttonProve.addActionListener(l_RunListener);
+
 	
 	    buttonTKgram.setText("Trace");
 	    ActionListener kt_RunListener = createListener(coreseFrame, true);
@@ -445,6 +451,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 
         hSeq2.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 257, Short.MAX_VALUE);
         hSeq2.addComponent(buttonRun);
+        hSeq2.addComponent(buttonProve);
         hSeq2.addComponent(buttonTKgram);
         hSeq2.addComponent(buttonSearch);
         hSeq2.addGap(30, 30, 30);
@@ -465,6 +472,8 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 
         vParallel2.addComponent(buttonTKgram);
         vParallel2.addComponent(buttonRun);
+        vParallel2.addComponent(buttonProve);
+
         vParallel2.addComponent(buttonSearch);
         vParallel2.addComponent(buttonRefreshStyle);
         vParallel2.addComponent(buttonDefaultStyle);
@@ -998,22 +1007,29 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 
 
 	ActionListener  createListener(final MainFrame coreseFrame, final boolean isTrace){
+		
 		return new ActionListener() {
-			public void actionPerformed(ActionEvent l_Event) {
+			
+			public void actionPerformed(ActionEvent ev) {
 				textAreaXMLResult.setText("");
 				IResults l_Results = null;
 				scrollPaneTreeResult.setViewportView(new JPanel());
 				scrollPaneTreeResult.setRowHeaderView(new JPanel());
 				
 				String l_message =new String("Parsing:\n");
+				IEngine engine = coreseFrame.getMyCorese();
 				try {
 					// Lance d'abbord la validation
-					if (!coreseFrame.isKgram()) coreseFrame.getMyCorese().SPARQLValidate(textPaneQuery.getText());
+					if (!coreseFrame.isKgram()) {
+						engine.SPARQLValidate(textPaneQuery.getText());
+					}
 					try {
-
+						if (ev.getSource() == buttonProve){
+							l_Results = engine.SPARQLProve(textPaneQuery.getText());
+						}
 						// Lance la requête
-						if (!coreseFrame.isKgram()){
-							l_Results = coreseFrame.getMyCorese().SPARQLQuery(textPaneQuery.getText());
+						else if (!coreseFrame.isKgram()){
+							l_Results = engine.SPARQLQuery(textPaneQuery.getText());
 						}
 						else {
 							Exec exec = new Exec(coreseFrame, textPaneQuery.getText(), isTrace);

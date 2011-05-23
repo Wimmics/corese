@@ -1176,7 +1176,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	 */
 	public void loadRule() {
 		l_path = null;
-		Filter FilterRUL = new Filter(new String[]{"rul"}, "Rul files (*.rul)");
+		Filter FilterRUL = new Filter(new String[]{"rul", "brul"}, "Rul files (*.rul)");
 		JFileChooser fileChooser = new JFileChooser(l_path_courant);
 		fileChooser.setMultiSelectionEnabled(true);
 		fileChooser.addChoosableFileFilter(FilterRUL);

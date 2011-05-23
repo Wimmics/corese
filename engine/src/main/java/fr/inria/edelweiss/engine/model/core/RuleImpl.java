@@ -38,6 +38,10 @@ public class RuleImpl implements Rule {
 		this.ruleInstance = ruleInstance;
 	}
 	
+	public String toString(){
+		return ruleInstance.toString();
+	}
+	
 	/**
      * rule = construct {?a grandFather ?c} where {?a father ?b . ?b father ?c}
      * RETURNS the query (set of clauses) : ?a father ?b . ?b father ?c

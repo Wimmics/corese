@@ -39,6 +39,10 @@ public class ClauseImpl implements Clause {
 		}
 		//checkGround();
 	}
+	
+	public String toString(){
+		return triple.toSparql();
+	}
 
 	public Iterator<ElementClause> iterator() {
 		return elements.iterator();

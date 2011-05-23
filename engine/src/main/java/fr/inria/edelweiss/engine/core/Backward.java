@@ -253,7 +253,6 @@ public class Backward {
             		continue;
             	}
             	
-            	
             	// get the clause of the rule matching the clause of the query
             	Clause clauseRule = rule.match(clause, bind);
  
@@ -281,7 +280,7 @@ public class Backward {
                    		if (debug){
                    			System.out.println(stack);
                    			System.out.println(level + ": " + rule.getID() + " " + clauseRule.getTriple() + " " + unified);
-                   			watch();
+                   			//watch();
                    		}
                    	 
             			lb1 = prove(rule.getBody(), rule.getBody().getClauses(), 

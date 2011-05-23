@@ -198,6 +198,9 @@ public class Memory implements Environment {
 				if (n++>0) str += "\n";
 				String num = "(" + qNode.getIndex() + ") ";
 				str += num + qNode + " = " + getNode(qNode) ;
+				if (isPath(qNode)){
+					str += " " + lPath[qNode.getIndex()];
+				}
 			}
 		}
 		return str;
@@ -639,11 +642,11 @@ public class Memory implements Environment {
 		}
 	}
 	
-	void pushPath(Node qNode, Path path){
+	public void pushPath(Node qNode, Path path){
 		lPath[qNode.getIndex()] = path;
 	}
 	
-	void popPath(Node qNode){
+	public void popPath(Node qNode){
 		if (nbNodes[qNode.getIndex()] == 0){
 			lPath[qNode.getIndex()] = null;
 		}

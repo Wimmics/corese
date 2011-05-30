@@ -25,7 +25,8 @@ public interface ExprType {
 	// function
 	public static int BOUND = 14;
 	public static int COUNT = 15;
-	
+	public static int NUMBER = 16;
+
 	public static int ISNUMERIC = 19;
 	public static int MIN = 20;
 	public static int MAX = 21;

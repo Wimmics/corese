@@ -190,7 +190,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	    textPaneQuery.addCaretListener(this);
 	    
 	    //Bouton refreshStyleGraph + listener a l'écoute afin de recharger la feuille de style ou de renvoyer une exception
-	    buttonRefreshStyle.setText("Refresh graph stylesheet");
+	    buttonRefreshStyle.setText("Refresh stylesheet");
 	    buttonDefaultStyle.setText("Default stylesheet");
 	    buttonRefreshStyle.setEnabled(false);
 	    buttonDefaultStyle.setEnabled(false);
@@ -341,7 +341,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	    
 	    /** Bouttons et leurs actions **/	
 	    //Lancer une requête
-	    buttonRun.setText("Query");
+	    buttonRun.setText("Query ");
 	    ActionListener l_RunListener = createListener(coreseFrame, false);
 	    buttonRun.addActionListener(l_RunListener);
 	    
@@ -470,9 +470,9 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
         GroupLayout.ParallelGroup vParallel2 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
         GroupLayout.SequentialGroup vSeq1 = pane_listenerLayout.createSequentialGroup();
 
-        vParallel2.addComponent(buttonTKgram);
         vParallel2.addComponent(buttonRun);
         vParallel2.addComponent(buttonProve);
+        vParallel2.addComponent(buttonTKgram);
 
         vParallel2.addComponent(buttonSearch);
         vParallel2.addComponent(buttonRefreshStyle);

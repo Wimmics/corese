@@ -46,7 +46,6 @@ import org.apache.log4j.WriterAppender;
 //import fr.inria.acacia.corese.Corese;
 //import fr.inria.acacia.corese.api.EngineFactory;
 import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
 //import fr.inria.acacia.corese.gui.event.MyLoadListener;
@@ -81,6 +80,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	private JMenuItem loadRDF;
 	private JMenuItem loadRDFs;
     private JMenuItem loadQuery;
+    private JMenuItem loadPipe;
     private JMenuItem loadRule;
     private JMenuItem saveQuery;
     private JMenuItem saveResult;
@@ -160,7 +160,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	
 	public MainFrame(CaptureOutput aCapturer, String p_PropertyPath){
 		super();
-		this.setTitle("Corese/KGRAM GUI - 3.0 - 2011-05-01" ); //+ Corese.version + " - " + Corese.date );
+		this.setTitle("Corese/KGRAM GUI - 3.0.2 - 2011-05-30" ); //+ Corese.version + " - " + Corese.date );
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(900, 700);
 		this.setMinimumSize(this.getSize());
@@ -422,6 +422,9 @@ public class MainFrame extends JFrame implements ActionListener{
         loadQuery = new JMenuItem("Load Query");
         loadQuery.addActionListener(this); 
         
+        loadPipe = new JMenuItem("Load Pipeline");
+        loadPipe.addActionListener(this); 
+        
         saveQuery = new JMenuItem("Save Query");
         saveQuery.addActionListener(this);
         
@@ -508,7 +511,8 @@ public class MainFrame extends JFrame implements ActionListener{
         fileMenu.add(loadRDFs);
         fileMenu.add(loadRule);
         fileMenu.add(loadRDF);
-        fileMenu.add(loadQuery); 
+        fileMenu.add(loadQuery);
+        fileMenu.add(loadPipe);
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
         fileMenu.add(loadAndRunRule);
@@ -723,6 +727,9 @@ public class MainFrame extends JFrame implements ActionListener{
 		//Appelle la fonction pour le chargement d'un fichier query
 		else if (e.getSource() == loadQuery){
 			loadQuery();			
+		}
+		else if (e.getSource() == loadPipe){
+			loadPipe();			
 		}
 		//Appelle la fonction pour le chargement d'un fichier rule
 		else if (e.getSource() == loadRule){
@@ -1170,6 +1177,23 @@ public class MainFrame extends JFrame implements ActionListener{
 			newQuery();
 	    }
 	}
+	
+	
+	public void loadPipe(){
+		//Load and run a pipeline
+		Filter FilterRUL = new Filter(new String[]{"rdf"}, "rdf files (*.rdf)");
+	    JFileChooser fileChooser = new JFileChooser(l_path_courant);
+		fileChooser.addChoosableFileFilter(FilterRUL);
+	    File selectedFile;
+	    int returnValue = fileChooser.showOpenDialog(null);
+	    if (returnValue == JFileChooser.APPROVE_OPTION) {
+	    	//Voici le fichier qu'on a selectionné
+	    	selectedFile = fileChooser.getSelectedFile();
+        	l_path_courant = selectedFile.getParent();
+			myCorese.runPipeline(selectedFile.getAbsolutePath());
+	    }
+	}
+	
 	
 	/**
 	 * Charge un fichier Rule dans CORESE

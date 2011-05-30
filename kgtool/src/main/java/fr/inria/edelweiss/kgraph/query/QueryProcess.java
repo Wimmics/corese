@@ -10,7 +10,6 @@ import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -95,6 +94,21 @@ public class QueryProcess extends QuerySolver {
 	
 	public Mappings query(String squery, Mapping map, List<String> from, List<String> named) throws EngineException{
 		Query q = compile(squery, from, named);
+		return query(q, map, from, named);
+	}
+	
+	public Mappings query(Query q) {
+		try {
+			return query(q, null, null, null);
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Mappings.create(q);
+	}
+		
+	public Mappings query(Query q, Mapping map, List<String> from, List<String> named) throws EngineException{
+		
 		pragma(q);
 		
 		if (q.isUpdate()){

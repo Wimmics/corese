@@ -132,6 +132,21 @@ public class Mapping
 		this.nodes = nodes;
 	}
 	
+	public void bind(Node qNode, Node tNode){
+		Node[] qq = new Node[qNodes.length+1];
+		Node[] tt = new Node[nodes.length+1];
+		int i = 0;
+		for (Node q : qNodes){
+			qq[i] = q;
+			tt[i] = nodes[i];
+			i++;
+		}
+		qq[i] = qNode;
+		tt[i] = tNode;
+		qNodes = qq;
+		nodes = tt;
+	}
+	
 	public void setRead(boolean b){
 		read = b;
 	}
@@ -174,6 +189,18 @@ public class Mapping
 	
 	public void setPath(Node qNode, Path path){
 		setPath(getIndex(qNode), path);
+	}
+	
+	
+	public void rename(Node oName, Node nName){
+		int i = 0;
+		for (Node qn : qNodes){
+			if (qn!=null && qn.getLabel().equals(oName.getLabel())){
+				qNodes[i] = nName;
+				return;
+			}
+			i++;
+		}
 	}
 	
 	

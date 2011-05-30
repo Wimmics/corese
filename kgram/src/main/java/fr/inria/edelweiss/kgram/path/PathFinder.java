@@ -955,6 +955,9 @@ public class PathFinder
 		};
 	}
 	
+	/**
+	 * exp @{?this rdf:type c:Person}
+	 */
 	boolean test(Filter filter, Path path, Node qNode, Node node){
 		mem.push(qNode, node);
 		if (varNode != null){

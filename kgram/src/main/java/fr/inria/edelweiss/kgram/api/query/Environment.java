@@ -93,7 +93,7 @@ public interface Environment {
 	 * @param qNode
 	 * @return
 	 */
-	Node max(Node qNode);
+	//Node max(Node qNode);
 	
 	/**
 	 * Return the min value of query node in every mapping.
@@ -101,7 +101,7 @@ public interface Environment {
 	 * @param qNode
 	 * @return
 	 */
-	Node min(Node qNode);
+	//Node min(Node qNode);
 	
 	/**
 	 * Run the eval function of the evaluator with filter f on every Mapping 

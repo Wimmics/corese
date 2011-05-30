@@ -40,6 +40,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	Evaluator eval;
 	EvalListener el;
 	DatatypeMap dm;
+	int number = 0;
 	
 	// KGRAM is relax wrt to string vs literal vs uri input arg of functions
 	// eg regex() concat() strdt()
@@ -76,6 +77,10 @@ public class ProxyImpl implements Proxy, ExprType {
 		case Evaluator.KGRAM_MODE: 
 			SPARQLCompliant = false; break;	
 		}
+	}
+	
+	public void start(){
+		number = 0;
 	}
 	
 	@Override
@@ -158,8 +163,11 @@ public class ProxyImpl implements Proxy, ExprType {
 
 	@Override
 	public Object eval(Expr exp, Environment env, Object[] args) {
-		
 		switch (exp.oper()){
+		
+		case NUMBER:
+			// number of result
+			return getValue(env.count());
 		
 		case SIM: return similarity(env);
 		

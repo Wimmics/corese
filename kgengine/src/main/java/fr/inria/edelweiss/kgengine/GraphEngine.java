@@ -18,12 +18,14 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.engine.core.Engine;
 import fr.inria.edelweiss.engine.model.api.Bind;
 import fr.inria.edelweiss.engine.model.api.LBind;
+import fr.inria.edelweiss.kgpipe.Pipe;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
@@ -39,8 +41,8 @@ public class GraphEngine implements IEngine {
 	
 	private Graph graph;
 	private RuleEngine rengine;
+	private QueryEngine qengine;
 	private Engine bengine;
-	private List<GraphEngine> lEngine;
 	QueryProcess exec;
 	
 	private boolean isListGroup = false,
@@ -50,8 +52,8 @@ public class GraphEngine implements IEngine {
 		DatatypeMap.setLiteralAsString(false);
 		graph   = Graph.create(true);
 		rengine = RuleEngine.create(graph);
+		qengine = QueryEngine.create(graph);
 		bengine = Engine.create(QueryProcess.create(graph));
-		lEngine = new ArrayList<GraphEngine>();
 		exec = QueryProcess.create(graph);
 	}
 	
@@ -86,6 +88,7 @@ public class GraphEngine implements IEngine {
 	public Load loader(){
 		Load load = Load.create(graph);
 		load.setEngine(rengine);
+		load.setEngine(qengine);
 		return load;
 	}
 	
@@ -105,12 +108,20 @@ public class GraphEngine implements IEngine {
 	}
 	
 	public void runRuleEngine() {
-		//rengine.setDebug(true);
+		rengine.setDebug(isDebug);
 		rengine.process();
 	}
 	
+	public void runQueryEngine() {
+		qengine.setDebug(isDebug);
+		qengine.process();
+	}
 	
-	
+	public void runPipeline(String path){
+		Pipe pipe = Pipe.create(graph);
+		pipe.setDebug(true);
+		pipe.process(path);
+	}
 
 	
 	public boolean validate(String path) {
@@ -212,8 +223,13 @@ public class GraphEngine implements IEngine {
 			
 			for (Node qNode : query.getSelect()){
 				IDatatype dt = b.getDatatypeValue(qNode.getLabel());
-				Node node = graph.getNode(dt, true, false);
-				list.add(node);
+				if (dt == null){
+					list.add(null);
+				}
+				else {
+					Node node = graph.getNode(dt, true, false);
+					list.add(node);
+				}
 			}
 			Mapping map = Mapping.create(query.getSelect(), list);
 			lMap.add(map);

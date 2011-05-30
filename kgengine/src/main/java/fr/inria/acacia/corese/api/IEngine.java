@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.api;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
@@ -128,6 +129,8 @@ public interface IEngine {
 	
 	public void runRuleEngine(boolean rdf, boolean owl);
 	
+	public void runQueryEngine();
+
 	/**
 	 * Prove by backward chaining inference rules (suffix .brul)
 	 */
@@ -244,6 +247,8 @@ public interface IEngine {
 
 	
 	void start();
+
+	public void runPipeline(String name);
 
 	
 }

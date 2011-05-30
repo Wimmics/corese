@@ -16,6 +16,7 @@ import org.xml.sax.SAXParseException;
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.ARP;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
+import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -23,6 +24,7 @@ import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 
 
@@ -34,11 +36,12 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
  *
  */
 public class Load 
-	implements	StatementHandler, org.xml.sax.ErrorHandler,
+	implements	StatementHandler, RDFListener, org.xml.sax.ErrorHandler,
 	Loader {
 	
 	static final String RULE = ".rul";
-	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", RULE};
+	static final String QUERY = ".rq";
+	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", RULE, QUERY};
 	static final String HTTP = "http://";
 	static final String FTP  = "ftp://";
 	static final String FILE = "file://";
@@ -48,8 +51,11 @@ public class Load
 
 	Graph graph;
 	RuleEngine engine;
-	Node src;
+	QueryEngine qengine;
+	Node src, cur;
 	Hashtable<String, String> blank, loaded;
+	
+	String source;
 	
 	boolean debug = false;
 	
@@ -77,6 +83,14 @@ public class Load
 		return engine;
 	}
 	
+	public void setEngine(QueryEngine eng){
+		qengine = eng;
+	}
+	
+	public QueryEngine getQueryEngine(){
+		return qengine;
+	}
+	
 	public void setDebug(boolean b){
 		debug = b;
 	}
@@ -84,6 +98,8 @@ public class Load
 		
 	String uri(String name){
 		if (! isURL(name)){
+			// for windows
+			name = name.replace('\\','/');
 			name = FILE + name;
 		}
 		return name;
@@ -96,8 +112,13 @@ public class Load
 	
 	public void load(String path, String base, String source){
 		if (! suffix(path)) return ;
+		
 		if (path.endsWith(RULE)){
 			loadRule(path, base);
+			return;
+		}
+		if (path.endsWith(QUERY)){
+			loadQuery(path, base);
 			return;
 		}
 		
@@ -143,8 +164,15 @@ public class Load
 		
 		graph.setUpdate(true);
 		src = graph.addGraph(source);
+		cur = src;
 		blank.clear();
 		ARP arp = new ARP();
+		try {
+			arp.setRDFListener(this);
+		}
+		catch (java.lang.NoSuchMethodError e){
+			
+		}
 		arp.setStatementHandler(this);
 		try {
 			arp.load(read, base);
@@ -168,6 +196,14 @@ public class Load
 			engine = RuleEngine.create(graph);
 		}
 		RuleLoad load = RuleLoad.create(engine);
+		load.load(path);
+	}
+	
+	void loadQuery(String path, String src){
+		if (qengine == null){
+			qengine = QueryEngine.create(graph);
+		}
+		QueryLoad load = QueryLoad.create(qengine);
 		load.load(path);
 	}
 	
@@ -210,8 +246,8 @@ public class Load
 			Node predicate 	= getProperty(pred);
 			Node value 		= getLiteral(pred, lit);
 			if (value == null) return;
-			EdgeImpl edge 	= EdgeImpl.create(src, subject, predicate, value);
-			process(src, edge);
+			EdgeImpl edge 	= EdgeImpl.create(cur, subject, predicate, value);
+			process(cur, edge);
 		}
 	}
 	
@@ -226,8 +262,8 @@ public class Load
 			Node subject 	= getNode(subj);
 			Node predicate 	= getProperty(pred);
 			Node value 		= getNode(obj);
-			EdgeImpl edge 	= EdgeImpl.create(src, subject, predicate, value);
-			process(src, edge);
+			EdgeImpl edge 	= EdgeImpl.create(cur, subject, predicate, value);
+			process(cur, edge);
 		}
 	}
 	
@@ -290,5 +326,24 @@ public class Load
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/**
+	 * Process cos:graph statement
+	 * TODO:
+	 * generate different blanks in different graphs
+	 */
+	public void setSource(String s) {
+		if (s == null){
+			cur = src;
+		}
+		else if (! cur.getLabel().equals(s)){
+			cur = graph.addGraph(s);
+		}
+	}
+
+	public String getSource() {
+		return source;
+	}
+	
 
 }

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
@@ -270,16 +271,22 @@ implements Comparator<Mapping>
 		if (size() == 0) return ;
 		Query qq = query;
 		boolean isEvent = hasEvent;
+		Exp num = null;
 		// select count(?n) as ?count
 		for (Exp exp : qq.getSelectFun()){
 			Filter f = exp.getFilter();
-			if (f!=null && f.isRecAggregate()){
-				// perform group by and then aggregate
-				if (isEvent){
-					Event event = EventImpl.create(Event.AGG, exp);
-					manager.send(event);
+			if (f!=null){
+				if (f.isRecAggregate()){
+					// perform group by and then aggregate
+					if (isEvent){
+						Event event = EventImpl.create(Event.AGG, exp);
+						manager.send(event);
+					}
+					eval(evaluator, exp, memory, SELECT);
 				}
-				eval(evaluator, exp, memory, SELECT);
+				else if (f.getExp().oper() == ExprType.NUMBER){
+					num = exp;
+				}
 			}
 		}
 
@@ -405,7 +412,6 @@ implements Comparator<Mapping>
 			memory.pop(firstMap);
 		return res;
 	}
-
 
 
 	/**

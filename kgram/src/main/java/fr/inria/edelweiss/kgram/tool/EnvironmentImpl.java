@@ -61,18 +61,6 @@ public class EnvironmentImpl implements Environment {
 	}
 
 	@Override
-	public Node max(Node node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node min(Node node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public int pathLength(Node node) {
 		// TODO Auto-generated method stub
 		return 0;

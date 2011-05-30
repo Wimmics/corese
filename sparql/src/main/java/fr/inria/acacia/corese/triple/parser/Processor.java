@@ -24,6 +24,7 @@ public class Processor {
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
 	public static final String BOUND = "bound";
 	public static final String COUNT = "count";
+
 	private static final String MIN = "min";
 	private static final String MAX = "max";
 	private static final String SUM = "sum";
@@ -61,7 +62,9 @@ public class Processor {
 	static final String KGRAM = "sparql";
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
+	
 	static final String SIMILAR = ExpType.KGRAM + "similarity";
+	static final String NUMBER  = ExpType.KGRAM + "number";
 
 	
 	static final String STRLEN 	= "strlen";
@@ -286,6 +289,7 @@ public class Processor {
 		defoper(Term.EXIST, ExprType.EXIST);
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(SIMILAR, ExprType.SIM);
+		defoper(NUMBER, ExprType.NUMBER);
 
 		defoper(STRLEN, ExprType.STRLEN);
 		defoper(SUBSTR, ExprType.SUBSTR);

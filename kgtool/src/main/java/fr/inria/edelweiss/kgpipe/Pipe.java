@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgpipe;
 
 
+import java.util.Date;
+
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -16,7 +18,7 @@ import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.load.RuleLoad;
 
 /**
- * Pipeline described using RDF, interpreted using SPARQL
+ * Pipeline described using RDF, interpreted using SPARQL queries
  * 
  * @author Olivier Corby, Edelweiss INRIA 2011
  *
@@ -29,9 +31,13 @@ public class Pipe {
 	static final String QUERY 	= KGRAM + "Query";
 	static final String UPDATE 	= KGRAM + "Update";
 	static final String RULE  	= KGRAM + "Rule";
+	static final String RULEBASE= KGRAM + "RuleBase";
 	static final String PIPE  	= KGRAM + "Pipe";
 	static final String TEST  	= KGRAM + "Test";
 	static final String AND   	= KGRAM + "And";
+	static final String THEN   	= KGRAM + "then";
+	static final String ELSE   	= KGRAM + "else";
+
 	
 	static final String QNAME   = "?q";
 	static final String TNAME   = "?t";
@@ -44,12 +50,14 @@ public class Pipe {
 	static final String EQNAME  = "?qe";
 	static final String ETNAME  = "?te";
 
+	static final String RQNAME  = "?qr";
 
 
 	static final String QACTION = 
 		"select  * where {" +
 		"?p rdf:type kg:Pipeline " +
-		"{?p kg:body ?q ?q rdf:type ?t " +
+		"{?p kg:body ?q " +
+		"?q rdf:type ?t " +
 		"minus {?q rdf:type rdf:List}" +
 		"} union {" +
 		"?p kg:body ?a " +
@@ -58,7 +66,7 @@ public class Pipe {
 		"}"; 
 	
 	static final String QIF = 
-		"select debug * where {" +
+		"select * where {" +
 		"?q kg:if ?qi  " +
 		"optional {?q kg:then ?qt ?qt rdf:type ?tt} " +
 		"optional {?q kg:else ?qe ?qe rdf:type ?te}" +
@@ -72,8 +80,20 @@ public class Pipe {
 		"}";
 	
 	
+	static final String QRULEBASE = 
+		"select * where {" +
+		"?q kg:body ?b " +
+		"?b rdf:rest*/rdf:first ?qr " +
+		"?qr rdf:type ?tr" +
+		"}";
 	
-	Graph graph, pipe;
+	
+	
+	Graph 
+	// target graph on which the pipe is run
+	graph, 
+	// graph that contains the pipe as an RDF graph
+	pipe;
 	QueryProcess exec, pipeExec;
 	Load load;
 	
@@ -102,42 +122,41 @@ public class Pipe {
 	}
 	
 	/**
-	 * 
+	 * Load and run a pipeline
 	 * @param name: path or URL of pipeline to execute
 	 */
 	public void process(String name){
-		Mappings pipe = get(name);
+		long d1 = new Date().getTime();
 		try {
+			Mappings pipe = get(name);
 			run(pipe);
 		} catch (EngineException e) {
 			e.printStackTrace();
 			System.out.println("** Error: " + e.getMessage());
 		}
+		long d2 = new Date().getTime();
+		System.out.println("** Pipe: " + (d2-d1)/1000.0);
 	}
 	
 	/**
 	 * Load the pipeline and return the body
 	 * name is a path (or URL)
+	 * Return one mapping for each operation of the pipeline body
+	 * @throws EngineException 
 	 */
-	Mappings get(String name){
+	Mappings get(String name) throws EngineException{
 		pipe = Graph.create(true);
 		Loader load = Load.create(pipe);
 		load.load(name);
 		pipeExec = QueryProcess.create(pipe);
-		pipeExec.add(graph);
-		try {
-			Mappings lMap = pipeExec.query(QACTION);
-			return lMap;
-		} catch (EngineException e) {
-			e.printStackTrace();
-			System.out.println("** Error: " + e.getMessage());
-		}
-		return new Mappings();
+		pipeExec.add(graph);			
+		Mappings lMap = pipeExec.query(QACTION);
+		return lMap;
 	}
 	
 
 	/**
-	 * Each Mapping is an instruction of the pipeline
+	 * Each Mapping is an operation of the pipeline
 	 * ?q = name of file to process
 	 * ?t = type of instruction
 	 */
@@ -153,8 +172,13 @@ public class Pipe {
 	 */
 	void run(Mapping map) throws EngineException{
 		
-		String t = map.getNode(TNAME).getLabel();
-		String q = map.getNode(QNAME).getLabel();
+		Node qn = map.getNode(QNAME);
+		Node tn = map.getNode(TNAME);
+		
+		if (qn == null || tn == null) return;
+		
+		String t = tn.getLabel();
+		String q = qn.getLabel();
 
 		if (isDebug){
 			System.out.println(t);
@@ -169,6 +193,9 @@ public class Pipe {
 		}
 		else if (t.equals(QUERY) || t.equals(UPDATE)){
 			query(q);
+		}
+		else if (t.equals(RULEBASE)) {
+			ruleBase(map);
 		}
 		else if (t.equals(RULE)) {
 			rule(q);
@@ -218,14 +245,68 @@ public class Pipe {
 	
 	/**
 	 * Load and run a Rule Base
+	 * @throws EngineException 
 	 */
-	void rule(String q){
+	void ruleBase(Mapping map) throws EngineException{
+		Node rb = map.getNode(QNAME);
+		if (rb == null) return;
+		
+		if (rb.isBlank()){
+			// there is a body with a list of rules
+			rules(map);
+		}
+		else {
+			// there is a URI for loading the rule base
+			RuleEngine re = RuleEngine.create(graph);
+			re.setDebug(isDebug);
+			RuleLoad rl = RuleLoad.create(re);
+			rl.load(rb.getLabel());
+			re.process();
+		}
+	}
+	
+	/**
+	 * Retrieve a list of rules
+	 * <RuleBase>
+	 *   <body parseType='Collection'>
+	 *     <Rule rdf:about='r1.rq' />
+	 *   </body>
+	 * </RuleBase>
+	 */
+	void rules(Mapping map) throws EngineException{
+		QueryLoad  rl = QueryLoad.create();
 		RuleEngine re = RuleEngine.create(graph);
-		re.setDebug(true);
-		RuleLoad rl = RuleLoad.create(re);
-		rl.load(q);
+		re.setDebug(isDebug);
+		Mappings lm = pipeExec.query(QRULEBASE, map);
+		for (Mapping m : lm){
+			Node nr = m.getNode(RQNAME); 
+			if (nr!=null){
+				String rule = rl.read(nr.getLabel());
+				if (isDebug){
+					System.out.println(nr.getLabel());
+					System.out.println(rule);
+				}
+				re.addRule(rule);
+			}
+		}
 		re.process();
 	}
+	
+	
+	/**
+	 * Load and run one Rule 
+	 */	
+	void rule(String q){
+		QueryLoad ql = QueryLoad.create();
+		String rule = ql.read(q);
+		if (isDebug) System.out.println(rule);
+		if (rule == null) return;
+		
+		RuleEngine re = RuleEngine.create(graph);
+		re.addRule(rule);
+		re.process();
+	}
+	
 	
 	/**
 	 * Process another pipe
@@ -241,25 +322,29 @@ public class Pipe {
 	 */
 	void test(Mapping map) throws EngineException{
 		Mappings lm = pipeExec.query(QIF, map);
+		if (lm.size() == 0) return;
+		
 		Mapping m = lm.get(0);
 		
 		Node nif   = m.getNode(IQNAME);
 		Node nelse = m.getNode(EQNAME);
+		
+		if (nif == null) return;
 
 		if (isDebug) System.out.println(nif);
 
 		Mappings res = query(nif.getLabel());
+		
+		Mapping mm = Mapping.create();
 
 		if (res.size() > 0){
-			if (isDebug) System.out.println("then");
-			Mapping mm = Mapping.create();
+			if (isDebug) System.out.println(THEN);
 			mm.bind(qNode, m.getNode(TQNAME));
 			mm.bind(tNode, m.getNode(TTNAME));
 			run(mm);
 		}
 		else if (nelse != null){
-			if (isDebug) System.out.println("else");
-			Mapping mm = Mapping.create();
+			if (isDebug) System.out.println(ELSE);
 			mm.bind(qNode, m.getNode(EQNAME));
 			mm.bind(tNode, m.getNode(ETNAME));
 			run(mm);

@@ -25,7 +25,6 @@ public interface ExprType {
 	// function
 	public static int BOUND = 14;
 	public static int COUNT = 15;
-	public static int NUMBER = 16;
 
 	public static int ISNUMERIC = 19;
 	public static int MIN = 20;
@@ -94,7 +93,6 @@ public interface ExprType {
 
 	
 
-	public static int SIM 	= 99;
 
 	
 	// term
@@ -126,6 +124,13 @@ public interface ExprType {
 	public static int CONT 	= 121; // ~
 	public static int START = 122; // ^
 	public static int IN 	= 123; 
+	
+	
+	// extension
+	
+	public static int DISPLAY = 200;
+	public static int NUMBER  = 201;
+	public static int SIM 	  = 202;
 
 
 

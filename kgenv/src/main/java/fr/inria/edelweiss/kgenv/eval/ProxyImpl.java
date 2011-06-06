@@ -168,7 +168,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		case NUMBER:
 			// number of result
 			return getValue(env.count());
-		
+			
 		case SIM: return similarity(env);
 		
 		case EXTERNAL:
@@ -206,6 +206,10 @@ public class ProxyImpl implements Proxy, ExprType {
 		}
 		
 		switch (exp.oper()){
+		
+			case DISPLAY:
+				System.out.println("** Display: " + exp + " = " + dt);
+				return TRUE;
 		
 			case ISURI: 	b = dt.isURI(); 	return getValue(b);
 			

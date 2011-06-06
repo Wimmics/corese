@@ -389,7 +389,7 @@ public class Term extends Expression {
 			exp.setretype(exp.getretype());
 			return exp;
 		}
-		else if (isReverse && isSeq()){
+		else if (isReverse && isSeq() && ! getArg(1).isTest()){
 			if (trace) System.out.println("** T3: " + this );
 			term = Term.create(getName(), getArg(1).transform(isReverse), getArg(0).transform(isReverse));
 		}

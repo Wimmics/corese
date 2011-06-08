@@ -63,9 +63,12 @@ public class Processor {
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
 	
-	static final String SIMILAR = ExpType.KGRAM + "similarity";
-	static final String NUMBER  = ExpType.KGRAM + "number";
-	static final String DISPLAY = ExpType.KGRAM + "display";
+	static final String SIMILAR  = ExpType.KGRAM + "similarity";
+	static final String NUMBER   = ExpType.KGRAM + "number";
+	static final String DISPLAY  = ExpType.KGRAM + "display";
+	static final String EXTEQUAL = ExpType.KGRAM + "equals";
+	static final String EXTCONT  = ExpType.KGRAM + "contains";
+
 	
 	static final String STRLEN 	= "strlen";
 	static final String SUBSTR 	= "substr";
@@ -292,6 +295,8 @@ public class Processor {
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(NUMBER,  ExprType.NUMBER);
 		defoper(DISPLAY, ExprType.DISPLAY);
+		defoper(EXTEQUAL, ExprType.EXTEQUAL);
+		defoper(EXTCONT, ExprType.EXTCONT);
 
 		defoper(STRLEN, ExprType.STRLEN);
 		defoper(SUBSTR, ExprType.SUBSTR);

@@ -122,7 +122,8 @@ public class QuerySolver  {
 		transformer.setFrom(from);
 		transformer.setNamed(named);
 		Query query = transformer.transform(ast);
-		return query(query);
+		// keep null below (cf QueryProcess)
+		return query(query, null);
 	}
 	
 	public Mappings query(String squery) throws EngineException{

@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.filter.Proxy;
+import fr.inria.lang.StringHelper;
 
 /**
  * Implements evaluator of operators & functions of filter language
@@ -206,11 +207,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		}
 		
 		switch (exp.oper()){
-		
-			case DISPLAY:
-				System.out.println("** Display: " + exp + " = " + dt);
-				return TRUE;
-		
+						
 			case ISURI: 	b = dt.isURI(); 	return getValue(b);
 			
 			case ISLITERAL: b = dt.isLiteral(); return getValue(b);
@@ -324,13 +321,17 @@ public class ProxyImpl implements Proxy, ExprType {
 				b = proc.regex(dt.getLabel(), dt1.getLabel());
 				return getValue(b);
 			}
+			
+			
+			/***********************************************
+			 * Extension Functions
+			 */
+
 				
 			case XPATH: {
 				// xpath(?g, '/book/title')
 				Processor proc = getProcessor(exp);
-				//if (proc.getResolver() == null){
-					proc.setResolver(new VariableResolverImpl(env));
-				//}
+				proc.setResolver(new VariableResolverImpl(env));
 				IDatatype res = proc.xpath(dt, dt1);				
 				return res;
 			}
@@ -339,7 +340,22 @@ public class ProxyImpl implements Proxy, ExprType {
 				Processor proc = getProcessor(exp);
 				// return ResultSet
 				return proc.sql(dt, dt1, datatype(args[2]), datatype(args[3]));
-			}					
+			}	
+						
+			case DISPLAY:
+				System.out.println(exp + " = " + dt);
+				return TRUE;
+				
+			case EXTEQUAL: {
+				boolean bb = StringHelper.equalsIgnoreCaseAndAccent(dt.getLabel(), dt1.getLabel());
+				return getValue(bb);
+			}
+				
+			case EXTCONT: {
+				boolean bb = StringHelper.containsWordIgnoreCaseAndAccent(dt.getLabel(), dt1.getLabel());
+				return getValue(bb);
+			}
+			
 		}
 			
 		return null;

@@ -131,6 +131,12 @@ public interface ExprType {
 	public static int DISPLAY = 200;
 	public static int NUMBER  = 201;
 	public static int SIM 	  = 202;
+	// equalsIgnoreAccent equalsIgnoreCaseAndAccent equalsIgnoreCaseAccentAndPlurial
+	// containsWordIgnoreCase containsWordIgnoreCaseAndAccent containsWordIgnoreCaseAccentAndPlurial
+	public static int EXTEQUAL	= 203;
+	public static int EXTCONT   = 204;
+
+
 
 
 

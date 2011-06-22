@@ -21,6 +21,11 @@
 			<artifactId>cryptohash</artifactId>
 			<version>1.0</version>
 		</dependency> 
+		<dependency>
+			<groupId>StringHelper</groupId>
+			<artifactId>StringHelper</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 
 

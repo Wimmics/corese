@@ -45,6 +45,8 @@ public class Entailment {
 	public static final String RDFSSUBCLASSOF 	 = RDFS + "subClassOf";
 	public static final String RDFSDOMAIN 		 = RDFS + "domain";
 	public static final String RDFSRANGE 		 = RDFS + "range";
+	public static final String RDFSMEMBER 		 = RDFS + "member";
+	public static final String RDFBLI 		 	 = RDF  + "_";
 	public static final String RDFSCLASS 	 	 = RDFS + "Class";
 
 	public static final String RDFTYPE 			 = RDF + "type";
@@ -69,13 +71,14 @@ public class Entailment {
 
 	boolean	
 		// generate rdf:type wrt rdfs:subClassOf
-		hasSubClassOf = !true,
-		
-		hasSubPropertyOf = true,
+		isSubClassOf 	 = !true,
+		isSubPropertyOf = true,
 		// entailments in default graph
-		hasDefaultGraph = true,
+		isDefaultGraph  = true,
 		// infer datatype from property range for literal (à la corese)
-		hasDatatypeInference = false;
+		isDatatypeInference = false,
+		isRDF  = true,
+		isRDFS = true;
 	
 	// deprecated
 	boolean recurse = false,
@@ -122,18 +125,19 @@ public class Entailment {
 	}
 
 	public void set(String name, boolean b){
-		if (name.equals(RDFSSUBCLASSOF)) hasSubClassOf = b;
-		else if (name.equals(RDFSSUBPROPERTYOF)) hasSubPropertyOf = b;
-		else if (name.equals(DATATYPE_INFERENCE)) hasDatatypeInference = b;
-		else if (name.equals(ENTAIL)) hasDefaultGraph = b;
+		if (name.equals(RDFSSUBCLASSOF)) 		  isSubClassOf = b;
+		else if (name.equals(RDFSSUBPROPERTYOF))  isSubPropertyOf = b;
+		else if (name.equals(DATATYPE_INFERENCE)) isDatatypeInference = b;
+		else if (name.equals(ENTAIL)) 			  isDefaultGraph = b;
+		else if (name.equals(RDFS))				  isRDFS = b;
 	}
 	
 	public boolean isDatatypeInference(){
-		return hasDatatypeInference;
+		return isDatatypeInference;
 	}
 	
 	public boolean isSubClassOfInference(){
-		return hasSubClassOf;
+		return isSubClassOf;
 	}
 	
 	public void setDebug(boolean b){
@@ -192,20 +196,16 @@ public class Entailment {
 	/**
 	 * Internal process of entailed edge 
 	 */
-	void record(Node gNode, Edge ee, EdgeImpl edge){
+	void recordWithoutEntailment(Node gNode, Edge ee, EdgeImpl edge){
 		Entity ent = target.add(edge);
-		if (ent != null && recurse){
-			// deprecated on the fly
-			// in case specialize metamodel
-			define(gNode, ent.getEdge());
-			entail(gNode, ent.getEdge());
-		}
-		else {
-			//reject(edge);
-		}
 	}
 	
-
+	void recordWithEntailment(Node gNode, Edge ee, EdgeImpl edge){
+		Entity ent = target.add(edge);
+		define(gNode, edge);
+	}
+	
+	
 	
 	/**
 	 * Store property domain, range, subPropertyOf, symmetric, inverse
@@ -213,7 +213,10 @@ public class Entailment {
 	public boolean define(Node gNode, Edge edge){
 		//if (! edge.getLabel().startsWith(W3C)) return;
 		boolean isMeta = false;
-		
+//		if (edge.getNode(1).isBlank()){
+//			// DRAFT: do nothing
+//		}
+//		else 
 		if (hasLabel(edge, RDFTYPE)){
 			if (edge.getNode(1).getLabel().equals(OWLSYMMETRIC)){
 				symetric.define(edge.getNode(0), edge.getNode(0));
@@ -256,6 +259,27 @@ public class Entailment {
 		subsume(gNode, edge);
 	}
 
+	/**
+	 *  graph creates new property pNode
+	 *  infer:
+	 *  pNode rdf:type rdf:Property
+	 *  TODO: BUG: concurrent modification while entailment
+	 *  TODO: move at entailment time
+	 */
+	void defProperty(Node pNode) {
+		Node gNode = graph.addGraph(ENTAIL);
+		Node tNode = graph.addResource(RDFPROPERTY);
+		EdgeImpl ee =  EdgeImpl.create(gNode, pNode, hasType, tNode);
+		recordWithoutEntailment(gNode, null, ee);
+		
+		if (isRDFS && pNode.getLabel().startsWith(RDFBLI)){
+			// rdf:_i rdfs:subPropertyOf rdfs:member
+			tNode    = graph.addResource(RDFSMEMBER);
+			Node sub = graph.addProperty(RDFSSUBPROPERTYOF);
+			ee =  EdgeImpl.create(gNode, pNode, sub, tNode);
+			recordWithEntailment(gNode, null, ee);
+		}
+	}
 	
 	
 	void property(Node gNode, Edge edge){	
@@ -272,13 +296,13 @@ public class Entailment {
 		if (list != null){
 			for (Node type : list){
 				EdgeImpl ee =  EdgeImpl.create(gNode, edge.getNode(1), type, edge.getNode(0));
-				record(gNode, edge, ee);
+				recordWithoutEntailment(gNode, edge, ee);
 			}
 		}
 	}
 	
 	void subproperty(Node gNode, Edge edge){
-		if (! hasSubPropertyOf) return;
+		if (! isSubPropertyOf) return;
 		
 		Node pred = edge.getEdgeNode();
 		List<Node> list = subproperty.get(pred);
@@ -286,7 +310,7 @@ public class Entailment {
 		if (list!=null){
 			for (Node sup : list){
 				EdgeImpl ee =  EdgeImpl.create(gNode, edge.getNode(0), sup, edge.getNode(1));
-				record(gNode, edge, ee);
+				recordWithoutEntailment(gNode, edge, ee);
 				if (isMeta(sup)){
 					define(gNode, ee);
 				}
@@ -309,7 +333,7 @@ public class Entailment {
 	
 	void subsume(Node gNode, Edge edge){
 		// infer types using subClassOf
-		if (hasSubClassOf && hasLabel(edge, RDFTYPE)){
+		if (isSubClassOf && hasLabel(edge, RDFTYPE)){
 			infer(gNode, edge);
 		}
 	}
@@ -332,7 +356,7 @@ public class Entailment {
 		if (list!=null){
 			for (Node type : list){
 				EdgeImpl ee =  EdgeImpl.create(gNode, node, hasType, type);
-				record(gNode, edge, ee);
+				recordWithoutEntailment(gNode, edge, ee);
 			}
 		}
 	}
@@ -350,7 +374,7 @@ public class Entailment {
 			for (Entity type : list){
 				EdgeImpl ee = 
 					 EdgeImpl.create(gNode, edge.getNode(0), hasType, type.getEdge().getNode(1));
-				record(gNode, edge, ee);
+				recordWithoutEntailment(gNode, edge, ee);
 			}
 		}
 	}
@@ -449,6 +473,9 @@ public class Entailment {
 	}
 	
 	
+	/**
+	 * Complementary entailment from rules on new edge list
+	 */
 	public int entail(List<Entity> list){
 		inference(list);
 		return loop();
@@ -530,7 +557,7 @@ public class Entailment {
 	 * May be default or edge graph
 	 */
 	Node getGraph(Entity ent){
-		if (hasDefaultGraph){
+		if (isDefaultGraph){
 			if (graphNode == null){
 				graphNode = graph.addGraph(ENTAIL);
 			}
@@ -543,9 +570,12 @@ public class Entailment {
 	/**
 	 * First loop on whole graph that was just loaded 
 	 * Entailed edges stored in fresh target graph
+	 * TODO: defProperty() for rule entail
 	 */
 	void graphEntail(){
 		for (Node pred : graph.getProperties()){
+			// ?p rdf:type rdf:Property
+			defProperty(pred);
 			Entity prev = null;
 			for (Entity ent : graph.getEdges(pred)){
 				Edge edge = ent.getEdge();
@@ -652,7 +682,8 @@ public class Entailment {
 		}
 		return str;
 	}
-	
+
+
 	
 	
 	

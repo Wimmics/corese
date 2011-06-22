@@ -619,7 +619,9 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				if (ee.type()!=AND){
 					level = n;
 					maxExp = stack.get(n);
-					Message.log(Message.EVAL,  n + " "+ maxExp);
+					String s = Integer.toString(n);
+					if (n <= 9) s = "0" + s;
+					Message.log(Message.EVAL,  s + " "+ maxExp);
 				}
 			}
 		}

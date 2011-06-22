@@ -14,10 +14,12 @@ public class StatListener extends EvalListener {
 	filterTrue = 0, filterFalse = 0,
 	step = 0, bind = 0, graph = 0,
 	filter = 0, eval = 0,
-	result = 0, query = 0, total = 0;
+	result = 0, query = 0, total = 0, imax =0;
 	
 	int[] stat = new int[Event.END + 1];
 	int[] statExp = new int[ExpType.TITLE.length]; 
+	
+	int[] counter = new int[100];
 	
 	StatListener(){
 		super();
@@ -30,6 +32,9 @@ public class StatListener extends EvalListener {
 		}
 		for (int i=0; i<statExp.length; i++){
 			statExp[i] = 0;
+		}
+		for (int i=0; i<counter.length; i++){
+			counter[i] = 0;
 		}
 	}
 	
@@ -57,6 +62,9 @@ public class StatListener extends EvalListener {
 				edge ++;
 				if (e.isSuccess()) enumTrue++;
 				else enumFalse++;
+				int index = e.getExp().getEdge().getIndex();
+				counter[index] += 1;
+				if (index > imax) imax = index;
 			}
 			break;
 			
@@ -71,6 +79,16 @@ public class StatListener extends EvalListener {
 		
 		return true;
 		
+	}
+	
+	public String display(){
+		String str = "";
+		for (int i = 0; i<= imax; i++){
+			String s = Integer.toString(i);
+			if (i<=9) s = "0" + s;
+			System.out.println(s + " " + counter[i]);
+		}
+		return str;
 	}
 	
 	public String toString(){
@@ -102,6 +120,7 @@ public class StatListener extends EvalListener {
 			str += "true/total: " + 100 * filterTrue/(filter) +"%\n";
 		}
 		str += "total: " + total;
+		
 		return str;
 		
 	}

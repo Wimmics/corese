@@ -592,7 +592,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 								set(i, e2);
 								e1 = e2;
 								//System.out.println(this);
-								break;
+								//break;
 							}
 						}
 					}
@@ -636,6 +636,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 				return true;
 			}
 		}
+//		System.out.println(this);
+//		System.out.println(n2 + " " + e2);
+//		System.out.println(n1 + " " + e1);
+//		System.out.println();
 		
 		return n2 > n1;
 	}

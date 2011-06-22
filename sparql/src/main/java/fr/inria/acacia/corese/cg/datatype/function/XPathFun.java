@@ -29,7 +29,6 @@ import fr.inria.acacia.corese.cg.datatype.CoreseInteger;
 import fr.inria.acacia.corese.cg.datatype.CoreseString;
 import fr.inria.acacia.corese.cg.datatype.CoreseXMLLiteral;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 
 public class XPathFun {

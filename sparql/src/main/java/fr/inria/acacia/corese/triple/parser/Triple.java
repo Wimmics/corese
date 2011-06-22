@@ -1287,7 +1287,7 @@ public class Triple extends Exp {
 	}
 	
 	public static boolean isQName(String str) {
-		return str.toLowerCase().matches("[a-z]*:[a-z]*");
+		return str.toLowerCase().matches("[a-z]*:[a-z_]*");
 	}
 	
 	public static boolean isABaseWord(String str) {

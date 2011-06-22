@@ -47,6 +47,7 @@ public class GraphEngine implements IEngine {
 	
 	private boolean isListGroup = false,
 	isDebug = false;
+	String pattern;
 	
 	GraphEngine (){
 		DatatypeMap.setLiteralAsString(false);
@@ -89,7 +90,12 @@ public class GraphEngine implements IEngine {
 		Load load = Load.create(graph);
 		load.setEngine(rengine);
 		load.setEngine(qengine);
+		load.setPattern(pattern);
 		return load;
+	}
+	
+	public void setPattern(String pat){
+		pattern = pat;
 	}
 	
 	public void load(String path) throws EngineException {

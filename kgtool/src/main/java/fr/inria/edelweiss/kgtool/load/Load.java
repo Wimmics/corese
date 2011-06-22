@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.xml.sax.SAXException;
@@ -54,6 +55,8 @@ public class Load
 	QueryEngine qengine;
 	Node src, cur;
 	Hashtable<String, String> blank, loaded;
+	ArrayList<String> exclude;
+	String pattern, lbase;
 	
 	String source;
 	
@@ -65,6 +68,7 @@ public class Load
 		graph = g;
 		blank = new Hashtable<String, String> ();
 		loaded = new Hashtable<String, String> ();
+		exclude = new ArrayList<String>();
 	}
 	
 	public static Load create(Graph g){
@@ -73,6 +77,10 @@ public class Load
 	
 	public void reset(){
 		//COUNT = 0;
+	}
+	
+	public void exclude(String ns){
+		exclude.add(ns);
 	}
 	
 	public void setEngine(RuleEngine eng){
@@ -85,6 +93,10 @@ public class Load
 	
 	public void setEngine(QueryEngine eng){
 		qengine = eng;
+	}
+	
+	public void setPattern(String pat){
+		pattern = pat;
 	}
 	
 	public QueryEngine getQueryEngine(){
@@ -150,8 +162,14 @@ public class Load
 			source = base;
 		}
 		
+		if (pattern != null){
+			base   = process(base);
+			source = process(source);
+		}
+		
 		load(read, path, base, source);
 	}
+	
 	
 	// not for rules
 	public void load(InputStream stream, String source){
@@ -161,6 +179,8 @@ public class Load
 	}
 	
 	void load(Reader read,  String path, String base, String source){
+		lbase = base;
+		if (pattern != null) lbase = clean(base);
 		
 		graph.setUpdate(true);
 		src = graph.addGraph(source);
@@ -240,8 +260,19 @@ public class Load
 		}
 	}
 	
+	
+	boolean accept(String pred){
+		if (exclude.size() == 0) return true;
+		for (String ns : exclude){
+			if (pred.startsWith(ns)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public void statement(AResource subj, AResource pred, ALiteral lit) {
-		if (true){
+		if (accept(pred.getURI())){
 			Node subject 	= getNode(subj);
 			Node predicate 	= getProperty(pred);
 			Node value 		= getLiteral(pred, lit);
@@ -252,7 +283,7 @@ public class Load
 	}
 	
 	public void statement(AResource subj, AResource pred, AResource obj) {
-		if (true){
+		if (accept(pred.getURI())){
 			
 			if (pred.getURI().equals(IMPORTS)){
 				imports(obj.getURI());
@@ -335,10 +366,32 @@ public class Load
 	public void setSource(String s) {
 		if (s == null){
 			cur = src;
+			return;
 		}
-		else if (! cur.getLabel().equals(s)){
+		
+		if (pattern != null){
+			s = lbase + s;
+		}
+		if (! cur.getLabel().equals(s)){
 			cur = graph.addGraph(s);
 		}
+	}
+	
+	// remove file name after last "/"
+	String clean(String str){
+		if (str.endsWith(File.separator) || str.endsWith("#")) return str;
+		int ind = str.lastIndexOf(File.separator);
+		str = str.substring(0, ind+1);
+		return str;
+	}
+	
+	// remove pattern from str
+	String process(String str){
+		int index = str.indexOf(pattern);
+		if (index != -1){
+			str = str.substring(0, index) + str.substring(index + pattern.length());
+		}
+		return str;
 	}
 
 	public String getSource() {

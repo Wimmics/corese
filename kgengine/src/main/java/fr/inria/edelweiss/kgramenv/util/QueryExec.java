@@ -60,7 +60,7 @@ public class QueryExec  {
 		GraphEngine engine = (GraphEngine) eng;
 		if (exec == null){
 			exec = engine.createQueryProcess();
-			exec.setListGroup(isListGroup);
+			//exec.setListGroup(isListGroup);
 			exec.setDebug(isDebug);
 			for (EventListener el : list){
 				exec.addEventListener(el);

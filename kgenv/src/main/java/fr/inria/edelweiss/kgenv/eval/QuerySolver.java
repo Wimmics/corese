@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
@@ -40,6 +41,7 @@ public class QuerySolver  {
 	protected Producer producer;
 	protected Evaluator evaluator;
 	protected Matcher matcher;
+	protected Sorter sort;
 
 	
 	boolean isListGroup = false,
@@ -101,6 +103,10 @@ public class QuerySolver  {
 		meta.add(prod);
 	}
 	
+	public void set(Sorter s){
+		sort = s;
+	}
+	
 	
 	public void setSPARQL1(boolean b){
 	}
@@ -121,6 +127,7 @@ public class QuerySolver  {
 		Transformer transformer =  Transformer.create();
 		transformer.setFrom(from);
 		transformer.setNamed(named);
+		transformer.set(sort);
 		Query query = transformer.transform(ast);
 		// keep null below (cf QueryProcess)
 		return query(query, null);
@@ -209,6 +216,7 @@ public class QuerySolver  {
 	public Query compile(ASTQuery ast) {
 		Transformer transformer =  Transformer.create();			
 		transformer.setNamespaces(NAMESPACES);
+		transformer.set(sort);
 		Query query = transformer.transform(ast);
 		return query;
 	}
@@ -219,6 +227,7 @@ public class QuerySolver  {
 		transformer.setBase(defaultBase);
 		transformer.setFrom(from);
 		transformer.setNamed(named);
+		transformer.set(sort);
 
 		Query query = transformer.transform(squery);
 		return query;

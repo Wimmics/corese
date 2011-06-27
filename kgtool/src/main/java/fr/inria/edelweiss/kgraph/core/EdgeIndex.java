@@ -288,6 +288,12 @@ implements Index {
 		return getEdges(pred, node, null);
 	}
 	
+	public int size(Node pred){
+		List<Entity> list = checkGet(pred);
+		if (list == null) return 0;
+		return list.size();
+	}
+	
 	public Iterable<Entity> getEdges(Node pred, Node node, Node node2){
 		List<Entity> list = checkGet(pred); //get(pred);
 		if (list == null || node == null){

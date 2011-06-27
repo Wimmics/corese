@@ -32,6 +32,8 @@ public interface Index {
 	boolean exist(Entity edge);
 
 	void declare(Entity edge);
+	
+	int size(Node pred);
 
 	Iterable<Entity> getEdges();
 

@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -49,6 +50,12 @@ public class RuleEngine {
 	
 	void set(QueryProcess p){
 		exec = p;
+	}
+	
+	public void set(Sorter s){
+		if (exec!=null){
+			exec.set(s);
+		}
 	}
 	
 	public static RuleEngine create(Graph g){

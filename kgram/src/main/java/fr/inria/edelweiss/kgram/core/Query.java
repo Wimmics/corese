@@ -47,6 +47,8 @@ public class Query extends Exp {
 	Query query, outerQuery;
 	Object object, ast;
 	Compile compiler;
+	Sorter sort;
+	
 	boolean 
 	isCompiled = false,
 	isDebug = false, 
@@ -85,6 +87,9 @@ public class Query extends Exp {
 		queryNodes 			= new ArrayList<Node>();
 		patternSelectNodes 	= new ArrayList<Node>();
 		querySelectNodes 	= new ArrayList<Node>();
+		
+		sort = new Sorter();
+
 	}
 	
 	Query(Exp e){
@@ -106,6 +111,10 @@ public class Query extends Exp {
 			str = "select " + selectExp + "\n" + str;
 		}
 		return str;
+	}
+	
+	public void set(Sorter s){
+		sort = s;
 	}
 	
 	public Object getObject(){
@@ -1311,7 +1320,8 @@ public class Query extends Exp {
 				
 				if (exp.type() == AND){
 					// sort edges as connected when possible
-					exp.sort(this, lVar, lBind);
+					//exp.sort(this, lVar, lBind);
+					sort.sort(this, exp, lVar, lBind);
 				}
 				// put filters where they are bound
 				sortFilter(exp, lVar);

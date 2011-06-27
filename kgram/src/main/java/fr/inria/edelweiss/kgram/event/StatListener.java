@@ -1,5 +1,8 @@
 package fr.inria.edelweiss.kgram.event;
 
+import java.text.NumberFormat;
+
+import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 
 /**
@@ -9,6 +12,7 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
  *
  */
 public class StatListener extends EvalListener {
+	static final int MAX = 100;
 	
 	int enumTrue = 0, enumFalse = 0, edge = 0,
 	filterTrue = 0, filterFalse = 0,
@@ -19,11 +23,21 @@ public class StatListener extends EvalListener {
 	int[] stat = new int[Event.END + 1];
 	int[] statExp = new int[ExpType.TITLE.length]; 
 	
-	int[] counter = new int[100];
+	int[] 
+	    counter = new int[MAX],
+	    status  = new int[MAX];
+	
+	Edge[] edges = new Edge[MAX];
+	
+	NumberFormat nf; 
+
 	
 	StatListener(){
 		super();
 		start();
+		nf = NumberFormat.getInstance();
+		nf.setMaximumFractionDigits(1);
+
 	}
 	
 	void start(){
@@ -35,6 +49,7 @@ public class StatListener extends EvalListener {
 		}
 		for (int i=0; i<counter.length; i++){
 			counter[i] = 0;
+			status[i]  = 0;
 		}
 	}
 	
@@ -62,8 +77,12 @@ public class StatListener extends EvalListener {
 				edge ++;
 				if (e.isSuccess()) enumTrue++;
 				else enumFalse++;
-				int index = e.getExp().getEdge().getIndex();
+				
+				Edge edge = e.getExp().getEdge();
+				int index = edge.getIndex();
 				counter[index] += 1;
+				edges[index] = edge;
+				if (e.isSuccess()) status[index] += 1;
 				if (index > imax) imax = index;
 			}
 			break;
@@ -86,7 +105,12 @@ public class StatListener extends EvalListener {
 		for (int i = 0; i<= imax; i++){
 			String s = Integer.toString(i);
 			if (i<=9) s = "0" + s;
-			System.out.println(s + " " + counter[i]);
+			str += s + " " + status[i] + " " + counter[i];
+			if (counter[i] >0){
+				str += " " + nf.format(((status[i] * 1.0 / counter[i]) * 100.0)) + "%" ;
+			}
+			str += "  :  " + edges[i];
+			str += "\n";
 		}
 		return str;
 	}

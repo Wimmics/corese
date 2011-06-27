@@ -1493,7 +1493,7 @@ Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant 
 	) 
 	
 	
-	( 
+	( 	LOOKAHEAD(2)
 		<AT> 
 		(
 		// filter
@@ -1587,34 +1587,50 @@ Expression BlankNodePropertyList(Exp stack) : { Expression expression1; }
 */
 Expression Collection(Exp stack) : 
 { Expression graphNodeExpression, firstExpression, lastExpression, bnExpression; 
-  Exp tripleGenerated, finalCollection; }
+  Exp tripleGenerated, finalCollection; boolean subList, contains;}
 {
 	{
 		lastExpression = null;
 		firstExpression = null;
 		finalCollection = new And();
+		subList = false;
+		contains = false;
 	}
+	
+	//  @( ) means a sublist (query list without rdf:nil at the end)
+	// @@( ) means rdf:rest* @( )
+	
+	( 
+		<AT> { subList = true; }  
+	) ?
+	
   	<LPAREN>
   	(
   		graphNodeExpression = GraphNode(stack)
   		{
   			bnExpression = astq.newBlankNode();
+  			
   			if (firstExpression == null) {
   				firstExpression = bnExpression;
   			}
+  			
   			if (lastExpression != null) {  				
   				tripleGenerated = astq.generateRest(lastExpression, bnExpression);
   				finalCollection.add(tripleGenerated);
   			}
+  			
   			tripleGenerated = astq.generateFirst(bnExpression, graphNodeExpression);
   			finalCollection.add(tripleGenerated);
+  			
   			lastExpression = bnExpression;
   		}   
   	) +
   	<RPAREN>
   	{ 
-  		tripleGenerated = astq.generateRest(lastExpression, astq.createConstant(RDFS.qrdfNil));
-  		finalCollection.add(tripleGenerated);
+  		if (! subList) {
+  			tripleGenerated = astq.generateRest(lastExpression, astq.createConstant(RDFS.qrdfNil));
+   			finalCollection.add(tripleGenerated);
+  		}
   		//System.out.println("sparql_corese.jj - Collection - "+finalCollection.toSparql());  
   		stack.add(finalCollection);
   		return firstExpression; 

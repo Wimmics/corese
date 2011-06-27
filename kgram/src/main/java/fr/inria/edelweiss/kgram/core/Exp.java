@@ -554,56 +554,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		return false;
 	}
 	
-	
-	
-	/**
-	 * Ensure edges are connected
-	 * lVar is the list of var that are already bound
-	 */
-	void sort(Query q, List<String> lVar, List<Exp> lBind){
-		//System.out.println("** Exp enter: " + this + " " + lVar);
-		List<Node> lNode = new ArrayList<Node>();
 
-		for (int i = 0; i < size(); i++) {
-			Exp e1 = get(i);
-			//System.out.println("** Exp1: " + e1 + " " + lVar);
-			if (e1.isSortable()){
-				if (lNode.size() == 0 && lVar.size() == 0){
-					// let first edge at its place
-				}
-				else 
-				{
-					for (int j = i + 1; j < size(); j++) {
-						Exp e2 = get(j);
-						//System.out.println("** Exp2: " + e2);
-						if (e2.isOption()){
-							// cannot move option because it may bind free variables
-							// that may influence next exp
-							break;
-						}
-						else if (e2.isSortable()){
-
-							if (before(q, e2, e1, lNode, lVar, lBind)) {
-								// ej<ei : put ej at i and shift
-								for (int k = j; k > i; k--) {
-									// shift to the right
-									set(k, get(k - 1));
-								}
-								set(i, e2);
-								e1 = e2;
-								//System.out.println(this);
-								//break;
-							}
-						}
-					}
-				}
-				
-				e1.bind(lNode);
-			}
-		}
-		//System.out.println(this);
-	}
-	
 	
 	boolean isSortable(){
 		return isEdge() || isPath() || isGraph() || type == BIND ;
@@ -619,52 +570,16 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		}
 	}
 	
-	/**
-	 * variable node bound count 2
-	 * constant node count 1
-	 * variable node not bound count 0
-	 */
-	boolean before(Query q, Exp e2, Exp e1, List<Node> lNode, List<String> lVar, List<Exp> lBind){
-		if (isGraphPath(e2, e1)) return true;
-		if (isGraphPath(e1, e2)) return false;
-		
-		int n1  = e1.nBind(lNode, lVar, lBind);
-		int n2  = e2.nBind(lNode, lVar, lBind);
-
-		if (n1 == 0 && n2 == 0){
-			if (beforeBind(q, e2, e1)){
-				return true;
-			}
-		}
-//		System.out.println(this);
-//		System.out.println(n2 + " " + e2);
-//		System.out.println(n1 + " " + e1);
-//		System.out.println();
-		
-		return n2 > n1;
-	}
 	
-	/**
-	 * Edge with node in bindings has advantage
-	 */
-	boolean beforeBind(Query q, Exp e2, Exp e1){
-		List<Mapping> list = q.getMapping();
-		if (list != null && list.size()>0){
-			Mapping map = list.get(0);
-			if (bind(e1, map)) return false;
-			if (bind(e2, map)) return true;
-		}
-		return false;
-	}
 	
 	/**
 	 * Does edge e have a node bound by map (bindings)
 	 */
-	boolean bind(Exp e, Mapping map){
-		if (! e.isEdge()) return false;
+	boolean bind(Mapping map){
+		if (! isEdge()) return false;
 
-		for (int i=0; i<e.nbNode(); i++){
-			Node node = e.getNode(i);
+		for (int i=0; i<nbNode(); i++){
+			Node node = getNode(i);
 			if (node.isVariable() && map.getNode(node) != null){
 				return true;
 			}
@@ -694,7 +609,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	
 
-	int nBind(List<Node> lNode, List<String> lVar, List<Exp> lBind){
+	public int nBind(List<Node> lNode, List<String> lVar, List<Exp> lBind){
 		if (isSimple()){
 			return count(lNode, lVar, lBind);
 		}

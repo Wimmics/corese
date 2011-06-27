@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.core.Sorter;
 
 
 /**
@@ -50,6 +51,7 @@ public class Transformer implements ExpType {
 
 	CompilerFactory fac;
 	Compiler compiler;
+	Sorter sort;
 	//Table table;
 	ASTQuery ast;
 
@@ -81,6 +83,10 @@ public class Transformer implements ExpType {
 	}
 	public void setNamed(List<String> list){
 		named = list;
+	}
+	
+	public void set(Sorter s){
+		sort = s;
 	}
 
 	public Query transform(String squery) throws EngineException{
@@ -122,7 +128,7 @@ public class Transformer implements ExpType {
 		
 		Exp exp = compile(ast.getBody(), false);
 	
-		Query q =  Query.create(exp);
+		Query q =  create(exp);
 		
 		if (ast.isConstruct() || ast.isDescribe()){
 			// use case: kgraph only
@@ -160,6 +166,14 @@ public class Transformer implements ExpType {
 		q.setDebug(ast.isDebug());
 		q.setRelax(ast.isMore());
 
+		return q;
+	}
+	
+	Query create(Exp exp){
+		Query q = Query.create(exp);
+		if (sort!=null){
+			q.set(sort);
+		}
 		return q;
 	}
 
@@ -675,7 +689,7 @@ public class Transformer implements ExpType {
 			// complete select, order by, group by
 			//complete(exp);
 
-			Query q =  Query.create(exp);
+			Query q =  create(exp);
 
 			complete(q, ast);
 

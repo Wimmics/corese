@@ -368,7 +368,7 @@ public class Graph {
 	/**
 	 * Retrieve a node/graph node/property node 
 	 */
-	Node getResource(String name){
+	public Node getResource(String name){
 		Node node = getNode(name);
 		if (node == null) node = getGraphNode(name);
 		if (node == null){
@@ -464,12 +464,16 @@ public class Graph {
 	}
 	
 	public Iterable<Entity> getEdges(Node predicate, Node node, Node node2, int n){
-		if (predicate.getLabel().equals(TOPREL)){
+		if (isTopRelation(predicate)){
 			return getEdges(node, n);
 		}
 		else {
 			return tables[n].getEdges(predicate, node, node2);
 		}
+	}
+	
+	boolean isTopRelation(Node predicate){
+		return predicate.getLabel().equals(TOPREL);
 	}
 	
 	// without duplicates 
@@ -494,6 +498,13 @@ public class Graph {
 		Iterable<Entity> it = getEdges(predicate, null, 0);
 		if (it == null) it = new ArrayList<Entity>();
 		return it;
+	}
+	
+	public int size (Node predicate){
+		if (isTopRelation(predicate)) return graph.size();
+		Node pred = getPropertyNode(predicate.getLabel());
+		if (pred == null) return 0;
+		return table.size(pred);
 	}
 	
 	public Iterable<Node> getGraphNodes(){

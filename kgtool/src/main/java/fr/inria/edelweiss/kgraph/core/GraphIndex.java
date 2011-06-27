@@ -225,4 +225,11 @@ implements Index, Iterable<Entity> {
 		
 	}
 
+
+	@Override
+	public int size(Node pred) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

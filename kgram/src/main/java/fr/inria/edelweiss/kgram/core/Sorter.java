@@ -27,7 +27,7 @@ public class Sorter {
 			Exp e1 = exp.get(i);
 			//System.out.println("** Exp1: " + e1 + " " + lVar);
 			if (e1.isSortable()){
-				if (lNode.size() == 0 && lVar.size() == 0){
+				if (lNode.size() == 0 && lVar.size() == 0 && leaveFirst()){
 					// let first edge at its place
 				}
 				else 
@@ -61,6 +61,10 @@ public class Sorter {
 			}
 		}
 		//System.out.println(this);
+	}
+	
+	public boolean leaveFirst(){
+		return true;
 	}
 	
 	

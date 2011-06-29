@@ -14,7 +14,6 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.engine.core.Engine;
 import fr.inria.edelweiss.engine.model.api.Bind;
 import fr.inria.edelweiss.engine.model.api.LBind;

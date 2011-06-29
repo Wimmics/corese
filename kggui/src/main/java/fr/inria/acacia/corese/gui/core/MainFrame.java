@@ -160,7 +160,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	
 	public MainFrame(CaptureOutput aCapturer, String p_PropertyPath){
 		super();
-		this.setTitle("Corese/KGRAM GUI - 3.0.2 - 2011-05-30" ); //+ Corese.version + " - " + Corese.date );
+		this.setTitle("Corese/KGRAM GUI - 3.0 - 2011-07-01" ); //+ Corese.version + " - " + Corese.date );
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(900, 700);
 		this.setMinimumSize(this.getSize());

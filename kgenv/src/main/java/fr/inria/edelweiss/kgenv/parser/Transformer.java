@@ -107,7 +107,7 @@ public class Transformer implements ExpType {
 		
 		//bind(ast);
 		
-		Parser.create().ncompile(ast);
+		//Parser.create().ncompile(ast);
 		
 		Query q = transform(ast);
 		
@@ -117,7 +117,8 @@ public class Transformer implements ExpType {
 	
 	public Query transform (ASTQuery ast){
 		this.ast = ast;
-		
+		Parser.create().ncompile(ast);
+
 		if (fac == null) fac = new CompilerFacKgram();			
 		ast.setKgram(true);
 

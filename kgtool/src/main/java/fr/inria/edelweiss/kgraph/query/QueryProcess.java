@@ -30,6 +30,9 @@ import fr.inria.edelweiss.kgraph.query.ProducerImpl;
  *
  */
 public class QueryProcess extends QuerySolver {
+	
+	//sort query edges taking cardinality into account
+	static boolean isSort = false;
 
 	Construct constructor;
 	Loader load;
@@ -40,6 +43,10 @@ public class QueryProcess extends QuerySolver {
 	
 	protected QueryProcess (Producer p, Evaluator e, Matcher m){
 		super(p, e, m);
+		if (isSort && p instanceof ProducerImpl){
+			ProducerImpl pp = (ProducerImpl) p;
+			set(SorterImpl.create(pp.getGraph()));
+		}
 	}
 	
 
@@ -53,6 +60,10 @@ public class QueryProcess extends QuerySolver {
 		QueryProcess qp = QueryProcess.create(g);
 		qp.add(g2);
 		return qp;
+	}
+	
+	public static void setSort(boolean b){
+		isSort = b;
 	}
 
 	public void setLoader(Loader ld){

@@ -25,9 +25,9 @@ public class SorterImpl extends Sorter {
 		graph = g;
 	}
 	
-	public static SorterImpl create(){
-		return new SorterImpl();
-	}
+//	public static SorterImpl create(){
+//		return new SorterImpl();
+//	}
 	
 	public static SorterImpl create(Graph g){
 		return new SorterImpl(g);
@@ -60,6 +60,11 @@ public class SorterImpl extends Sorter {
 		
 		return n2 > n1;
 	}
+	
+	public boolean leaveFirst(){
+		return false;
+	}
+	
 	
 
 }

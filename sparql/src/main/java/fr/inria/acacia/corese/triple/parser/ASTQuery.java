@@ -108,9 +108,9 @@ public class ASTQuery  implements Keyword {
     boolean describeAll = false;
     // generate a relation for rdf:type
     boolean isRelationForType = false;
-    boolean isKgram = false, 
+    boolean isKgram = true, 
     // true means with SPARQL 1.1 syntax for select (fun(?x) as ?y) where
-    isSPARQL1 = false,
+    isSPARQL1 = true,
     isBind = false;
     
 	/** max cg result */
@@ -1326,7 +1326,7 @@ public class ASTQuery  implements Keyword {
     }
 
     public void complete(Parser parser) {
-        setQueryPrettyPrint(getSparqlPrettyPrint());
+       // setQueryPrettyPrint(getSparqlPrettyPrint());
      
     	// if we are in the first parser, getBodyExp = null
         if (isConstruct()  && getBody()!=null) {
@@ -1340,20 +1340,29 @@ public class ASTQuery  implements Keyword {
         } 
         else if (isDescribe()) {
         	compileDescribe(parser);
-        } 
+        }
+        
+        setQueryPrettyPrint(getSparqlPrettyPrint());
+        
     }
     
     
     private void compileConstruct(Parser parser) {
         if (getConstruct() != null){
+        	// kgram:
         	setConst(getConstruct());
             Exp exp = getConstruct().complete(parser);
             Env env = new Env(false);
             // assign graph ?src variable to inner triples
     		exp.setSource(parser,  env, null, false);
+    		// TODO: clean
             exp = exp.distrib();
             // set the compiled exp as construct:
             setConstruct(exp);
+        }
+        else if (getConst() !=null){
+        	// kgram update
+        	setConstruct(getConst());
         }
     }
 
@@ -1364,7 +1373,9 @@ public class ASTQuery  implements Keyword {
     		// for CoreseGraph.construct()
     		root = ExpParser.KGRAMVAR;
     	}
-		Vector<String> describe = getDescribe();
+    	String PP = root + "p_";
+    	String VV = root + "v_";
+    	Vector<String> describe = getDescribe();
 		Exp bodyExpLocal = getBody();
 		
 		boolean describeAllTemp = isDescribeAll();
@@ -1387,12 +1398,12 @@ public class ASTQuery  implements Keyword {
 
 			//// create variables
 			int nbd = getVariableId();
-			Variable prop1 = createVariable(root + "p_" + nbd);
-			Variable val1  = createVariable(root + "v_" + nbd);
+			Variable prop1 = createVariable(PP + nbd);
+			Variable val1  = createVariable(VV + nbd);
 			
 			nbd = getVariableId();
-			Variable prop2 = createVariable(root + "p_" + nbd);
-			Variable val2  = createVariable(root + "v_" + nbd);
+			Variable prop2 = createVariable(PP + nbd);
+			Variable val2  = createVariable(VV + nbd);
 		
 			//// create triple sd ?p0 ?v0
 			Triple triple = Triple.create(expression, prop1, val1);

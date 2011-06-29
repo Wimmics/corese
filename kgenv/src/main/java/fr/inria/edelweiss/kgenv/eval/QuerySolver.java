@@ -107,7 +107,6 @@ public class QuerySolver  {
 		sort = s;
 	}
 	
-	
 	public void setSPARQL1(boolean b){
 	}
 	
@@ -123,11 +122,18 @@ public class QuerySolver  {
 		return query(ast, null, null);
 	}
 	
+	Transformer transformer(){
+		Transformer transformer = Transformer.create();
+		if (sort != null) {
+			transformer.set(sort);
+		}
+		return transformer;
+	}
+	
 	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
-		Transformer transformer =  Transformer.create();
+		Transformer transformer =  transformer();
 		transformer.setFrom(from);
 		transformer.setNamed(named);
-		transformer.set(sort);
 		Query query = transformer.transform(ast);
 		// keep null below (cf QueryProcess)
 		return query(query, null);
@@ -214,20 +220,18 @@ public class QuerySolver  {
 	}
 	
 	public Query compile(ASTQuery ast) {
-		Transformer transformer =  Transformer.create();			
+		Transformer transformer =  transformer();			
 		transformer.setNamespaces(NAMESPACES);
-		transformer.set(sort);
 		Query query = transformer.transform(ast);
 		return query;
 	}
 	
 	public Query compile(String squery, List<String> from, List<String> named) throws EngineException {
-		Transformer transformer =  Transformer.create();			
+		Transformer transformer =  transformer();			
 		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
 		transformer.setFrom(from);
 		transformer.setNamed(named);
-		transformer.set(sort);
 
 		Query query = transformer.transform(squery);
 		return query;

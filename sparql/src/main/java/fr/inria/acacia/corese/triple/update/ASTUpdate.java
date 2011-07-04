@@ -34,7 +34,6 @@ public class ASTUpdate {
 	public void add(Update ope){
 		ope.set(this);
 		list.add(ope);
-		//System.out.println(ope);
 	}
 	
 	public List<Update> getUpdates(){

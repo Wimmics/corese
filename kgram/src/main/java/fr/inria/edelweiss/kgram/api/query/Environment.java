@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgram.api.query;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
 
@@ -119,6 +120,10 @@ public interface Environment {
 	void setObject(Object o);
 	
 	Object getObject();
+	
+	void setExp(Exp exp);
+	
+	Exp getExp();
 	
 	
 }

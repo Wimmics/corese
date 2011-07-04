@@ -3,18 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.edelweiss</groupId>
 	<artifactId>kgenv</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 
 	<dependencies>
-		<dependency>
+		<!--<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgram</artifactId>
 			<version>1.0</version>
-		</dependency>	
+		</dependency>	-->
 		<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>sparql</artifactId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 		</dependency>	
 		<dependency>
 			<groupId>cryptohash</groupId>
@@ -30,7 +30,7 @@
 
 
 	<build>
-	<finalName>kgenv-1.0</finalName>
+	<finalName>kgenv-1.0.1</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

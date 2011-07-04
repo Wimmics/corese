@@ -116,7 +116,6 @@ public class EngineFactory {
 	 * Create an empty engine
 	 */
 	public IEngine newInstance() {
-		//System.out.println("++++++++++++++ "+propertyFile+" --- "+datapath);
 		GraphEngine engine = GraphEngine.create();
 		
 		String namespace = propertiesHM.get(ENGINE_NAMESPACE);

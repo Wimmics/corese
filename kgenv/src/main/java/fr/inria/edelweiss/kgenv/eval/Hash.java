@@ -2,6 +2,9 @@ package fr.inria.edelweiss.kgenv.eval;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.apache.log4j.Logger;
+
 import fr.cryptohash.*;
 
 /**
@@ -11,6 +14,8 @@ import fr.cryptohash.*;
  * 
  */
 public class Hash {
+	private static Logger logger = Logger.getLogger(Hash.class);	
+
 	static String SHA224 = "SHA-224";
 	String name;
 	
@@ -30,7 +35,7 @@ public class Hash {
 			hash = MessageDigest.getInstance(name).digest(uniqueKey);
 		}
 		catch (NoSuchAlgorithmException e){
-			System.out.println("No support in this VM: " + name);
+			logger.error("No support in this VM: " + name);
 			return null;
 		}
 

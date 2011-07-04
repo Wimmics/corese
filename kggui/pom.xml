@@ -3,10 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.edelweiss</groupId>
 	<artifactId>kggui</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 
 	<dependencies>
-		
+		<!--<dependency>
+			<groupId>StringHelper</groupId>
+			<artifactId>StringHelper</artifactId>
+			<version>1.0</version>
+		</dependency>		
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
@@ -21,13 +25,13 @@
 			<groupId>arp</groupId>
 			<artifactId>arp</artifactId>
 			<version>2.2.b</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
 			<version>0.4.2</version>
 		</dependency> 
-		<dependency>
+		<!--<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgram</artifactId>
 			<version>1.0</version>
@@ -46,28 +50,28 @@
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgtool</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgengine</artifactId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>engine</artifactId>
 			<version>1.0</version>
-		</dependency>
-		  <dependency>
+		</dependency>-->
+		  <!--<dependency>
 		      <groupId>jdom</groupId>
 		      <artifactId>jdom</artifactId>
 		      <version>1.1</version>
-		  </dependency>
+		  </dependency>-->
 
 	
 	</dependencies>
 
 	<build>
-	<finalName>kggui-1.0</finalName>
+	<finalName>kggui-1.0.1</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

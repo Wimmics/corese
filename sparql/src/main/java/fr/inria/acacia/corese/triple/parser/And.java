@@ -94,24 +94,20 @@ public class And extends Exp {
 	 *  Recursive distribution of AND over OR
 	 */
 	Exp distrib(){
-		//System.out.println("** Parser dist 1 " + this);
 		Exp exp;
 		boolean triple=true;
 		for (int i=0; i<size(); i++){
 			// recurse distrib on sons
 			exp=eget(i).distrib();
-			//System.out.println("** Parser dist 2 " + exp);
 			set(i, exp);
 			if (! (exp.isTriple()))
 				triple=false;
 		}
 		if (triple){
-			//System.out.println("** Parser dist 3 " + this);
 			return this;
 		}
 		else {
 			Exp res=product();
-			//System.out.println("** Parser dist 4 " + res);
 			return res;
 		}
 	}

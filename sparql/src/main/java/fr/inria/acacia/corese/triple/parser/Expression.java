@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 
@@ -416,6 +417,21 @@ implements Regex, Filter, Expr {
 		
 		return false;
 	}
+	
+	public boolean isExist(){
+		if (oper() == ExprType.EXIST){
+			return true;
+		}
+		else {
+			for (Expr ee : getExpList()){
+				if (ee.isExist()){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	
 	public boolean isRecAggregate() {
 		

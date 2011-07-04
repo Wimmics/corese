@@ -338,7 +338,6 @@ public abstract class Exp extends Statement implements Comparable<Exp> {
 			term = Term.negation(term);
 			bt =  Triple.create(term); 
 			//bt.setID(parser.getTripleId());
-			//System.out.println("** Exp : " + opt + " " + bt);
 			add(opt);
 			add(bt);
 		}
@@ -516,27 +515,15 @@ public abstract class Exp extends Statement implements Comparable<Exp> {
 	}
 	
 	public String toSparql(NSManager nsm) {
-		//System.out.println("Exp.java - "+size()+" "+this+" "+this.getClass());
 		String str = "";
-//		boolean bgpinstance = false;
-//		if (this instanceof BasicGraphPattern) {
-//			bgpinstance = true;
-//		}
-//		if (bgpinstance) str += ASTQuery.OPEN_BRACKET;
+
 		if (size() == 1) {
 			str += eget(0).toSparql(nsm);
 		} else {
 			for (int i=0;i<size();i++) {
 				str += eget(i).toSparql(nsm);
-//				if (this instanceof Or && i<(size()-1)) {
-//					//str += "union ";
-//					str += ASTQuery.UNION + ASTQuery.SPACE;
-//					i++;
-//					str += eget(i).toSparql(nsm);
-//				}
 			}
 		}
-//		if (bgpinstance) str += ASTQuery.CLOSE_BRACKET;
 		return str;
 	}
 	

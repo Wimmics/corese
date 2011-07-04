@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.function.SQLFun;
 import fr.inria.acacia.corese.cg.datatype.function.VariableResolver;
@@ -21,6 +23,8 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 
 public class Processor {
+	private static Logger logger = Logger.getLogger(Processor.class);
+
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
 	public static final String BOUND = "bound";
 	public static final String COUNT = "count";
@@ -206,7 +210,6 @@ public class Processor {
 			oper = getOperID();
 		}
 		if (oper == ExprType.UNDEF){
-			//System.out.println("** Undefined term: " + term);
 		}
 		setArguments();
 		check(ast);
@@ -473,6 +476,10 @@ public class Processor {
 		return sql.sql(uri, login, passwd, query);
 	}
 	
+	public ResultSet sql(IDatatype uri, IDatatype driver, IDatatype login, IDatatype passwd, IDatatype query){
+		return sql.sql(uri, driver, login, passwd, query);
+	}
+	
 	/**
 	 * xpath(?g, '/book/title')
 	 */
@@ -492,7 +499,7 @@ public class Processor {
 		return dt;
 		}
 		catch (RuntimeException e){
-			System.out.println("XPath error: " + e.getMessage());
+			logger.error("XPath error: " + e.getMessage());
 		}
 		return null;
 	}
@@ -526,7 +533,6 @@ public class Processor {
 	 */
 	void compileExternal(ASTQuery ast)  {
 		String oper = term.getLabel();
-		//System.out.println(oper);
 		String p ;
 		String path ;
 		Class c = null;  
@@ -536,12 +542,12 @@ public class Processor {
 				String message = "Undefined function: "+oper;
 				if (oper.contains("://")) 
 					message += "\nThe prefix should start with \""+functionPrefix+"\"";
-				System.out.println(message);
+				logger.warn(message);
 				return ;
 			}
 			int lio = oper.lastIndexOf(".");
 			if (lio == -1){
-				System.out.println("Undefined function: "+oper);
+				logger.error("Undefined function: "+oper);
 				return;
 			}
 			p = oper.substring(0, lio);

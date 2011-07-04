@@ -29,7 +29,6 @@ public class Atom extends Expression implements ElementClause{
 	}
 
     public String toSparql() {
-        //System.out.println("Atom.java - name: "+name+" isConstant: "+isConstant()+" isVariable: "+isVariable()+" isLiteral: "+isLiteral()+" isOperator: "+isOperator(name));
         if (lang != null) {
             //return name + "@" + lang;
        		return KeywordPP.QUOTE + name + KeywordPP.QUOTE + KeywordPP.LANG + lang;

@@ -172,13 +172,11 @@ public class Term extends Expression {
 			String fst;
 			for (int i=start; i < n; i++){
 				fst = getArg(i).toSparql();
-				//System.out.println("Term.java - fst: "+fst);
 				if (fst.startsWith("'") || fst.startsWith("\""))
 					str += KeywordPP.SPACE + fst;
 				else
 					str += fst;
 				if (i < n - 1) {
-					//str += ((isope) ? PrettyPrintCst.SPACE + getName() + PrettyPrintCst.SPACE : "");
 					if (isope) {
 						if (getName().matches("\\$.*")) {
 							// we are in the case filter(?o) -> filter(?o $istrue ?o)
@@ -372,10 +370,8 @@ public class Term extends Expression {
 		Term term = this;
 		Expression exp;
 		boolean trace = !true;		
-		if (trace) System.out.println("** T: " + this + " " + isFunction());
 		
 		if (isNotOrReverse()){
-			if (trace) System.out.println("** T1: " + this );
 			exp = translate();
 			exp = exp.transform(isReverse);
 			exp.setretype(exp.getretype());
@@ -383,18 +379,15 @@ public class Term extends Expression {
 		}
 
 		if (isReverse()){
-			if (trace) System.out.println("** T2: " + this );
 			// Constant redefine transform()
 			exp = getArg(0).transform(! isReverse);
 			exp.setretype(exp.getretype());
 			return exp;
 		}
 		else if (isReverse && isSeq() && ! getArg(1).isTest()){
-			if (trace) System.out.println("** T3: " + this );
 			term = Term.create(getName(), getArg(1).transform(isReverse), getArg(0).transform(isReverse));
 		}
 		else { 
-			if (trace) System.out.println("** T4: " + this );
 			if (isFunction()){
 				term = Term.function(getName());
 			}
@@ -409,7 +402,6 @@ public class Term extends Expression {
 			}
 			term.copy(this);
 		}
-		if (trace) System.out.println("** T5: " + this );
 		term.setretype(term.getretype());
 		return term;
 	}

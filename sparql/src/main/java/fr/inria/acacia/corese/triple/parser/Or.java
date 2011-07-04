@@ -210,7 +210,6 @@ public class Or extends Exp {
 				exp.add(expFrom);
 			}
 		}
-		//System.out.println("** UNION: " + this);
 	}	
 	
 	
@@ -225,7 +224,6 @@ public class Or extends Exp {
 	}
 	
 	public String toSparql(NSManager nsm) {
-		//System.out.println("Or.java - "+size()+" "+this+" "+this.getClass());
 		String str = "";
 		if (size() == 1) {
 			str += eget(0).toSparql(nsm);

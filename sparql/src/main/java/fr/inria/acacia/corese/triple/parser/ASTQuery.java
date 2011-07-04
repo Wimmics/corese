@@ -775,6 +775,55 @@ public class ASTQuery  implements Keyword {
     	return term;
     }
     
+    
+    public RDFList createRDFList(List<Expression> list){
+    	return createRDFList(list, true);
+    }
+    
+    /**
+     * Create an RDF List (rdf:first/rdf:rest)
+     * if close = true, end by rdf:nil (usual case) 
+     * Return an RDFList which is an And on the triples
+     * Can get starting first blank node with function head()
+     * i.e. the subject of first triple
+     */
+    public RDFList createRDFList(List<Expression> list, boolean close){
+    	Expression 
+    	first = null, 
+    	rest = null, 
+    	blank; 
+    	Exp triple;
+    	RDFList rlist = RDFList.create(); 
+    	rlist.setList(list);
+  
+    	for (Expression exp : list){
+    		blank = newBlankNode();
+  			
+  			if (first == null) {
+  				first = blank;
+  				rlist.setHead(first);
+  			}
+  			
+  			if (rest != null) {  				
+  				triple = generateRest(rest, blank);
+  				rlist.add(triple);
+  			}
+  			
+  			triple = generateFirst(blank, exp);
+  			rlist.add(triple);
+  			
+  			rest = blank;
+    	}
+    	
+    	if (close){
+      		triple = generateRest(rest, createConstant(RDFS.qrdfNil));
+       		rlist.add(triple);
+    	}
+    	
+    	return rlist;
+    }
+    
+    
 
 	public  Term createFunction(String name, Expression expression1) {
         Term term = Term.function(name);
@@ -1442,7 +1491,6 @@ public class ASTQuery  implements Keyword {
 			setConst(body);
 			setConstruct(body);
 		}
-		//System.out.println("ASTQuery.java - "+getSelect()+"\n"+getBodyExp());
     }
     
     private void compileAsk() {

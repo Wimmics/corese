@@ -36,6 +36,8 @@ public interface Expr {
 	boolean isAggregate();
 	
 	boolean isRecAggregate();
+	
+	boolean isExist();
 
 	boolean isVariable();
 	

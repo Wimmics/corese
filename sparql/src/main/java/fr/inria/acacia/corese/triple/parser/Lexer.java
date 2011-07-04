@@ -34,13 +34,11 @@ public class Lexer extends StringTokenizer {
 
   public String next(){
      String str = nextToken(false);
-     //System.out.println("** Lexer next : " + str);
      return str;
    }
 
   public String lookAhead(){
     String str = nextToken(true);
-     //System.out.println("** Lexer ahead : " + str);
      return str;
   }
 
@@ -59,7 +57,6 @@ public class Lexer extends StringTokenizer {
     if (token==null){
       //token=super.nextToken();
       token=parseToken();
-      //System.out.println("** lexer : token " + token);
     }
     if (lookahead)
       save=token;
@@ -104,7 +101,6 @@ public class Lexer extends StringTokenizer {
     }
     if (lookahead)
       token=save;
-    //System.out.println("** lexer : result " + result);
     return result;
   }
 

@@ -298,7 +298,6 @@ public class Option extends Exp {
 					// this filter has some variable not bound yet, may be bound by next inner option
 					// hence the filter will be moved after the option if any
 					if (option) { // there is inner option
-						//System.out.println("** Option filter has unbound var : " + triple.getExp());
 						unboundFilter.add(triple); // store the unbound filter for the moment
 						exp.remove(i); // remove filter from current place because unbound var
 						i--; // go back from one position because of the removal
@@ -307,7 +306,6 @@ public class Option extends Exp {
 						//logger.debug("** WARNING : Option filter has unbound var : " + triple.getExp());
 					}
 				}
-				//else  System.out.println("** Option has bound var : " + triple.getExp());
 			}
 		}
 		if (unboundFilter.size() > 0) { // there are unbound filters
@@ -329,7 +327,6 @@ public class Option extends Exp {
 				// fake a relation to carry the filter
 				first = fake(parser);
 				exp.add(0, first);
-				//System.out.println("** Query Parser option : add fake relation : " + this);
 			}
 		}
 		return this;

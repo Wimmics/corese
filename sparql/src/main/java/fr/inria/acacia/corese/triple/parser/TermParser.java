@@ -66,15 +66,12 @@ public class TermParser {
 	 */
 	Expression bool(Lexer lex) {
 		Expression exp1 = and(lex);
-		//System.out.println("** TP1 : " + exp1);
 		if (lex.hasMoreElements()){
 			String oper = lex.lookAhead();
-			//System.out.println("** TP2 : " + oper);
 			if (oper.equals(Keyword.SEOR)){
 				lex.next();
 				Expression exp2=bool(lex);
 				Term term =  new Term(oper, exp1, exp2);
-				//System.out.println("** TP3 : " + term);
 				return term;
 			}
 		}

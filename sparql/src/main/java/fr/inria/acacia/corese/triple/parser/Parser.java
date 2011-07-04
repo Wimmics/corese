@@ -126,13 +126,11 @@ public class Parser {
 	
 	
 	boolean validate(){
-		//System.out.println("** Parser: " + exp);
 		try {
 			astq.getBody().validate(new Bind(), 0);
 			return true;
 		}
 		catch (QuerySemanticException e){
-			//System.out.println("** Parser: " + e.getMessage());
 			astq.addError(e.getMessage());
 			astq.setCorrect(false);
 			return false;
@@ -154,7 +152,6 @@ public class Parser {
 		//aq.setTripleQuery(exp);
 		
 		if (SPARQLCompliant){
-			//System.out.println("** Parser: " + exp);
 			validate();
 		}
 		

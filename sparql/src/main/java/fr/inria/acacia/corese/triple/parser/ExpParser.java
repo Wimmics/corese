@@ -67,7 +67,6 @@ public class ExpParser {
    * @deprecated
    */
      Exp parse(Parser parser, String squery){
-       //if (Corese.debug())System.out.println("parse: "+ query);
        Lexer lex=new Lexer(squery);
        Exp exp=null, res;
        String fst=null;
@@ -245,7 +244,6 @@ public class ExpParser {
          exp.add(res);
          res  = exp;
        }
-       //System.out.println("** ExpParser : " + res);
        return res;
      }
 
@@ -336,7 +334,6 @@ public class ExpParser {
            if (isOption) {
              //e.setOption(true);
              e= Option.create(e);
-             //System.out.println("** ExpParser " + e);
            }
           /* if (isNot){
              Term term=e.toTerm();
@@ -357,7 +354,6 @@ public class ExpParser {
            Expression filter = new TermParser(parser).bool(st);
            // compute get:gui if any :
            filter = filter.parseGet(parser);
-           //System.out.println("** ExpParser : " + filter);
            if (filter != null){
              triple = Triple.create(filter);
              //triple.setID(parser.getTripleId());

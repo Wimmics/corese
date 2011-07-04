@@ -5,6 +5,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
 
@@ -104,6 +105,18 @@ public class EnvironmentImpl implements Environment {
 
 	@Override
 	public Object getObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setExp(Exp exp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Exp getExp() {
 		// TODO Auto-generated method stub
 		return null;
 	}

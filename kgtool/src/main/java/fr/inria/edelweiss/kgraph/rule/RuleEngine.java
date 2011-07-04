@@ -3,6 +3,8 @@ package fr.inria.edelweiss.kgraph.rule;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -33,6 +35,9 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
  * @author Olivier Corby, Edelweiss INRIA 2011
  */
 public class RuleEngine {
+	private static Logger logger = Logger.getLogger(RuleEngine.class);	
+
+	
 	Graph graph;
 	QueryProcess exec;
 	List<Rule> rules;
@@ -177,7 +182,6 @@ public class RuleEngine {
 				graph.setUpdate(false);
 				Query qq = rule.getQuery();
 				if (debug || qq.isDebug()){
-					//System.out.println(qq);
 					qq.setDebug(true);
 				}
 				
@@ -196,7 +200,7 @@ public class RuleEngine {
 			}
 		}
 		
-		if (debug) System.out.println("** Rule: " + (graph.size() - start));
+		if (debug) logger.debug("** Rule: " + (graph.size() - start));
 		
 		return graph.size() - start;
 		
@@ -226,8 +230,8 @@ public class RuleEngine {
 		cons.insert(lMap, graph);	
 
 		if (debug || qq.isDebug()){
-			System.out.println("** Mappings: " + lMap.size());
-			System.out.println("** Graph: "  + graph.size());
+			logger.debug("** Mappings: " + lMap.size());
+			logger.debug("** Graph: "  + graph.size());
 		}
 
 		return graph.size() - start;

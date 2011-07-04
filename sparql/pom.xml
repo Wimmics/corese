@@ -6,14 +6,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.edelweiss</groupId>
 	<artifactId>sparql</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 
 	<dependencies>
-		<dependency>
+		<!--<dependency>
 			<groupId>StringHelper</groupId>
 			<artifactId>StringHelper</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -27,14 +27,14 @@
 		<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgram</artifactId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 		</dependency>
 	
-		<dependency>
+		<!--<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
 			<version>0.4.2</version>
-		</dependency> 	
+		</dependency> 	-->
 		
 		  <dependency>
 	      <groupId>jdom</groupId>
@@ -46,7 +46,7 @@
 	</dependencies>
 
 	<build>
-	<finalName>sparql-1.0</finalName>
+	<finalName>sparql-1.0.1</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

@@ -77,7 +77,6 @@ public class XPathFun {
 				NSManager nm = nsm;
 				
 				public String getNamespaceURI(String prefix) {
-					//System.out.println("** XF: " + prefix + " = " + nm.getNamespace(prefix));
 					return nm.getNamespace(prefix);
 				}
 				
@@ -119,16 +118,13 @@ public class XPathFun {
 			Object obj = nsm.get(name);
 			if (obj != null){
 				// already parsed this document
-				//System.out.println("** XP find: " + name);// + name + " " + exp);
 				doc = (Node) obj;
 				if (isXPathConstant && n.getIntegerValue()  == 0){
 					// already computed same path on dame doc:
-					//System.out.println("** XP: " + exp);
 					Object dt = nsm.pop(name, exp);
 					if (dt != null){
 						// only if there is no variable in the exp
 						// because bindings may have changed !
-						//System.out.println("** XP: " + iexp + " " + dt);
 						return dt;
 					}
 				}
@@ -139,7 +135,6 @@ public class XPathFun {
 				
 			}
 			else {
-				//System.out.println("** XP parse: " + name);
 				//logger.debug("** XP parse: "  + name + " " + exp);
 				DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
 				fac.setNamespaceAware(true); 

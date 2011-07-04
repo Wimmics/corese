@@ -192,7 +192,6 @@ public class CoreseDatatype
 	public static IDatatype create(String valueJType,
 			String datatype, String label, String lang, boolean cast)
 	throws CoreseDatatypeException {
-		//System.out.println(valueJType+" - "+datatype+" - "+label+" - "+lang+" - "+cast);
 		if (lang!=null) lang=lang.toLowerCase() ;
 		if (valueJType.equals(Cst.jTypeString)){
 			return new CoreseString(label);
@@ -488,7 +487,6 @@ public class CoreseDatatype
 		boolean b = false;
 		
 		IDatatype d1 = this;
-		//if (trace) System.out.println("** Datatype 0 : " + d1 + " " + d2);
 		if (SPARQLCompliant){
 			// BN uri literal
 			// literal last
@@ -536,7 +534,6 @@ public class CoreseDatatype
 			else if (d1 instanceof CoreseDate) return LESSER;
 			else if (d2 instanceof CoreseDate) return GREATER;
 		}
-		if (trace) System.out.println("** Datatype 1 : " + d1 + " " + d2);
 		
 		// compare same datatypes
 		// also compare string/literal/XMLLiteral/boolean/undef
@@ -546,11 +543,8 @@ public class CoreseDatatype
 		if (b)
 			return LESSER;
 		else if  (d1.semiEquals(d2)){
-			if (trace) System.out.println("** Datatype 2 : " + d1 + " " + d2);
 			// equal (modulo language if any)
 			if (d1.getDataLang() == d2.getDataLang()){
-				if (trace)
-					System.out.println("** Datatype 3 : " + d1 + d1.getClass().getName() + " " + d2 + d2.getClass().getName());
 				// same lang or no lang
 				if (sameDatatype)
 					return 0; // same/no lang : are equal
@@ -565,7 +559,6 @@ public class CoreseDatatype
 			}
 			// equal but different languages :
 			else {
-				if (trace) System.out.println("** Datatype 4 : " + d1 + " " + d2);
 				// sort by lang :
 				try{
 					if (d1.getDataLang().less(d2.getDataLang())) return LESSER;

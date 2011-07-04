@@ -34,7 +34,6 @@ public  class CoreseFloat extends CoreseDouble{
 	}
 	
 	public static String getNormalizedLabel(String label){
-		//System.out.println("CoreseFloat.java - label: "+label);
 		String str = infinity(label);
 		if (str!=null) return str;
 		

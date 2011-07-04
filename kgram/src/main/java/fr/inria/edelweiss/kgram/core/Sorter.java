@@ -20,12 +20,10 @@ public class Sorter {
 	 * lVar is the list of var that are already bound
 	 */
 	public void sort(Query q, Exp exp, List<String> lVar, List<Exp> lBind){
-		//System.out.println("** Exp enter: " + this + " " + lVar);
 		List<Node> lNode = new ArrayList<Node>();
 
 		for (int i = 0; i < exp.size(); i++) {
 			Exp e1 = exp.get(i);
-			//System.out.println("** Exp1: " + e1 + " " + lVar);
 			if (e1.isSortable()){
 				if (lNode.size() == 0 && lVar.size() == 0 && leaveFirst()){
 					// let first edge at its place
@@ -34,7 +32,6 @@ public class Sorter {
 				{
 					for (int j = i + 1; j < exp.size(); j++) {
 						Exp e2 = exp.get(j);
-						//System.out.println("** Exp2: " + e2);
 						if (e2.isOption()){
 							// cannot move option because it may bind free variables
 							// that may influence next exp
@@ -50,7 +47,6 @@ public class Sorter {
 								}
 								exp.set(i, e2);
 								e1 = e2;
-								//System.out.println(this);
 								//break;
 							}
 						}
@@ -60,7 +56,6 @@ public class Sorter {
 				e1.bind(lNode);
 			}
 		}
-		//System.out.println(this);
 	}
 	
 	public boolean leaveFirst(){

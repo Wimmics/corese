@@ -12,7 +12,6 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
-//import fr.inria.edelweiss.pipe.api.Solutions;
 
 /*
  * Manage list of Mapping, result of a query
@@ -24,7 +23,6 @@ import fr.inria.edelweiss.kgram.event.EventManager;
  */
 public class Mappings extends ArrayList<Mapping> 
 implements Comparator<Mapping>
-//, Solutions 
 {
 	/**
 	 * 
@@ -388,7 +386,6 @@ implements Comparator<Mapping>
 				manager.send(event);
 			}
 			setValid(res);
-			//if (res) System.out.println(res);
 		}
 		else {
 			// TODO: group by should be bound ??
@@ -471,7 +468,6 @@ implements Comparator<Mapping>
 	 */
 	private	void having(Evaluator evaluator, Memory memory){
 		if (query.getHaving()!=null){
-			//System.out.println(query.getHaving());
 			int i = 0;
 			while (i < size()){
 				Mapping map = get(i);

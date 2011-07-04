@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
+import fr.inria.edelweiss.kgram.core.Query.VString;
 
 /**
  * KGRAM expressions
@@ -38,6 +39,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	Node node;
 	List<Node> lNodes;
 	Filter filter;
+	List<Filter> lFilter;
 	// for UNION
 	Stack stack;
 	// for EXTERN 
@@ -56,6 +58,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	 Exp (int t){
 		type = t;
 		args = new VExp();
+		lFilter = new ArrayList<Filter>();
 	 }
 	
 	 Exp (int t, Exp e1, Exp e2){
@@ -363,6 +366,14 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	public void setFilter(Filter f){
 		filter = f;
 		if (f.isRecAggregate()) setAggregate(true);
+	}
+	
+	void addFilter(Filter f){
+		lFilter.add(f);
+	}
+	
+	public List<Filter> getFilters(){
+		return lFilter;
 	}
 	
 	public boolean isFail(){
@@ -764,7 +775,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	 * that are in filterVar
 	 * bound means no optional, no union 
 	 */
-	void share(List<String> filterVar, List<String> expVar){
+	public void share(List<String> filterVar, List<String> expVar){
 		switch (type()){
 		
 			case FILTER: 
@@ -836,6 +847,23 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 			eVar.add(node.getLabel());
 		}
 	}
+	
+	public boolean bound(List<String> fvec, List<String> evec){
+		for (String var : fvec){
+			if (! evec.contains(var)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean bind(Filter f){
+		List<String> lVar = f.getVariables();
+		List<String> lVarExp = new ArrayList<String>();
+		share(lVar, lVarExp);
+		return bound(lVar, lVarExp);
+	}
+	
 	
 	/**
 	 * Return variable nodes of this exp 
@@ -1205,7 +1233,6 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 				filter.status(true);
 				test.status(order(filter, indexVar));
 				
-				//System.out.println("** Exp: "  + node + " " + edge + " " + filter + " " + indexNode + " " + indexVar);
 				return true;
 			}
 		}

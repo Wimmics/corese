@@ -6,6 +6,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -26,6 +28,8 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
  *
  */
 public class Graph {
+	private static Logger logger = Logger.getLogger(Graph.class);	
+	
 	public static final String TOPREL = RDFS.RootPropertyURI;
 	public static final int IGRAPH = 2;
 	public static final int MAX = 3;
@@ -234,7 +238,6 @@ public class Graph {
 	 * When load is finished,  sort edges
 	 */
 	public void index(){
-		//System.out.println("** Size: " + size());
 		for (int i=0; i<MAX; i++){
 			tables[i].index();
 		}
@@ -655,13 +658,13 @@ public class Graph {
 	public boolean compare(Graph g2, boolean isGraph){
 		Graph g1 = this;
 		if (isDebug){
-			System.out.println(g1.getIndex());
-			System.out.println(g2.getIndex());
+			logger.debug(g1.getIndex());
+			logger.debug(g2.getIndex());
 		}
 		if (! g1.isIndex()) index();
 		if (! g2.isIndex()) g2.index();
 		if (g1.size()!=g2.size()){
-			if (isDebug) System.out.println("** Graph Size: " + size() + " " + g2.size());
+			if (isDebug) logger.debug("** Graph Size: " + size() + " " + g2.size());
 			return false;
 		}
 
@@ -673,7 +676,7 @@ public class Graph {
 			
 			if (pred2 == null){
 				if (l1.iterator().hasNext()){
-					if (isDebug)  System.out.println("Not found: " + pred1);
+					if (isDebug)  logger.debug("Not found: " + pred1);
 					return false;
 				}
 			}
@@ -689,8 +692,8 @@ public class Graph {
 					Entity ent2 = it.next();
 					if (! compare(ent1, ent2, isGraph)){
 						if (isDebug){
-							System.out.println(ent1);
-							System.out.println(ent2);
+							logger.debug(ent1);
+							logger.debug(ent2);
 						}
 						return false;
 					}
@@ -728,8 +731,8 @@ public class Graph {
 		for (Index ie : tables){
 			Entity ent = ie.delete(edge);
 			if (isDebug){
-				System.out.println("delete: " + ie.getIndex() + " " + edge);
-				System.out.println("delete: " + ie.getIndex() + " " + ent);
+				logger.debug("delete: " + ie.getIndex() + " " + edge);
+				logger.debug("delete: " + ie.getIndex() + " " + ent);
 			}
 			if (ent != null){
 				setDelete(true);
@@ -775,7 +778,7 @@ public class Graph {
 	public boolean clear(String uri, boolean isSilent){
 		if (uri != null){
 			Node gg = getGraphNode(uri);
-			if (isDebug) System.out.println("** clear: " + gg);
+			if (isDebug) logger.debug("** clear: " + gg);
 			if (gg != null){
 				setDelete(true);
 				tables[IGRAPH].clear(gg);

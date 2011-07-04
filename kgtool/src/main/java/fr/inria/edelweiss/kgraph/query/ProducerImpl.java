@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -10,12 +11,15 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -77,7 +81,7 @@ public class ProducerImpl implements Producer {
 	
 	@Override
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
-			Environment env) {
+			Environment env) {			
 		Node predicate = getPredicate(edge, env);
 		if (predicate == null){
 			return empty;
@@ -304,7 +308,6 @@ public class ProducerImpl implements Producer {
 			Node nn = graph.copy(node);
 			ArrayList<Entity> list = new ArrayList<Entity>();
 			list.add(EntityImpl.create(null, nn));
-			//System.out.println("** PI: " + gNode + " " + nn);
 			return list;
 		}
 		else if (gNode == null){
@@ -497,8 +500,15 @@ public class ProducerImpl implements Producer {
 	@Override
 	public Mappings map(List<Node> nodes, Object object) {
 		// TODO Auto-generated method stub
-		if (object instanceof IDatatype) return map(nodes, (IDatatype) object);
-		
+		if (object instanceof IDatatype){
+			return map(nodes, (IDatatype) object);
+		}
+		else if (object instanceof ResultSet){
+			// sql()
+			Mapper mapper = new Mapper(this);
+			Mappings lMap = mapper.sql(nodes, (ResultSet) object);
+			return lMap;
+		}
 		return new Mappings();
 	}
 	
@@ -541,25 +551,37 @@ public class ProducerImpl implements Producer {
 	}
 	
 	
-	
-//	public Iterable<Entity> getNodes2(Node gNode, List<Node> from, Edge edge,
-//	Environment env, List<Regex> exp, int index) {
-//Node qNode = edge.getNode(index);
-//
-//if (qNode.isConstant()){
-//	// must create in case of literal: "01"^xsd:int vs "1"^^xsd:int
-//	Node node = graph.copy(qNode);
-//
-//	if (node != null){
-//		List<Entity> list = new ArrayList<Entity>();
-//		// Node is NodeImpl is Entity
-//		list.add((Entity)node);
-//		return list;
-//	}
-//}
-//MetaIterator<Entity> meta = new MetaIterator<Entity>(graph.getNodes());
-//meta.next(graph.getLiteralNodes());
-//return meta;
-//}
+	void test(Environment env){
+		Exp exp = env.getExp();
+		List<String> lVar = new ArrayList<String>();
+		List<Node> lNode = new ArrayList<Node>();
+		
+		for (Filter f : exp.getFilters()){
+			if (f.getExp().isExist()) continue;
+			
+			System.out.println("** P: " + exp + " " + f + " " + exp.bind(f));
+			
+			for (String var : f.getVariables()){
+				if (! lVar.contains(var)){
+					Node node = env.getNode(var);
+					if (node != null){
+						lVar.add(var);
+						lNode.add(node);
+					}
+				}
+			}
+		}
+		
+//		System.out.print("bindings ");
+//		for (String var : lVar){
+//			System.out.print(var + " ");
+//		}
+//		System.out.println("{(");
+//		for (Node node : lNode){
+//			System.out.print(node + " ");
+//		}
+//		System.out.println(")}");
+
+	}
 
 }

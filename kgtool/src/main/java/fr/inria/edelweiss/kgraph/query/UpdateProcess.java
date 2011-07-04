@@ -2,6 +2,8 @@ package fr.inria.edelweiss.kgraph.query;
 
 
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Exp;
@@ -24,6 +26,7 @@ import fr.inria.edelweiss.kgram.core.Query;
  *
  */
 public class UpdateProcess {
+	private static Logger logger = Logger.getLogger(UpdateProcess.class);	
 
 	Manager manager;
 	Query query;
@@ -52,7 +55,7 @@ public class UpdateProcess {
 		
 		for (Update u : astu.getUpdates()){
 			if (isDebug){
-				System.out.println("** Update: " + u);
+				logger.debug("** Update: " + u);
 			}
 			
 			if (u.isBasic()){
@@ -104,7 +107,7 @@ public class UpdateProcess {
 		
 		Exp exp = ope.getData();
 		if (! exp.validateData()){
-			if (isDebug) System.out.println("** Update: insert not valid: " + exp);
+			if (isDebug) logger.debug("** Update: insert not valid: " + exp);
 			query.setCorrect(false);
 			return;
 		}
@@ -133,7 +136,7 @@ public class UpdateProcess {
 		Exp exp = ope.getData();
 		if (! exp.validateData() || ! exp.validateDelete()){
 			if (isDebug){
-				System.out.println("** Update: delete not valid: " + exp);
+				logger.debug("** Update: delete not valid: " + exp);
 			}
 			query.setCorrect(false);
 			return;
@@ -190,7 +193,7 @@ public class UpdateProcess {
 		}
 
 		Mappings map = manager.query(ast);
-		if (isDebug) System.out.println(map);	
+		if (isDebug) logger.debug(map);	
 	}
 	
 	

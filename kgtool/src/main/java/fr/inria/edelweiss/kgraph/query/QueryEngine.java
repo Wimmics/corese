@@ -2,6 +2,8 @@ package fr.inria.edelweiss.kgraph.query;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -15,6 +17,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  *
  */
 public class QueryEngine {
+	private static Logger logger = Logger.getLogger(QueryEngine.class);	
 	
 	Graph graph;
 	QueryProcess exec;
@@ -62,8 +65,7 @@ public class QueryEngine {
 			}
 			Mappings map = exec.query(q);
 			if (isDebug){
-				System.out.println(map);
-				System.out.println();
+				logger.debug(map + "\n");
 			}
 		}
 	}

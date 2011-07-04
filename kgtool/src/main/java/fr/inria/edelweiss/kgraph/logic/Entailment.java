@@ -306,7 +306,6 @@ public class Entailment {
 		
 		Node pred = edge.getEdgeNode();
 		List<Node> list = subproperty.get(pred);
-		//System.out.println(pred +" " + list);
 		if (list!=null){
 			for (Node sup : list){
 				EdgeImpl ee =  EdgeImpl.create(gNode, edge.getNode(0), sup, edge.getNode(1));
@@ -468,7 +467,6 @@ public class Entailment {
 
 		count += loop();
 		
-		if (isDebug) System.out.println("** Entail: " + count);
 		return count;
 	}
 	
@@ -509,7 +507,6 @@ public class Entailment {
 			}
 			
 			count += list.size();
-			//System.out.println("** Entail: " + list.size());
 
 		}
 		

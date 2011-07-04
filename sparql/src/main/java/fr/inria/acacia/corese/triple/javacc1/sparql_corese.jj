@@ -1586,6 +1586,44 @@ Expression BlankNodePropertyList(Exp stack) : { Expression expression1; }
 *
 */
 Expression Collection(Exp stack) : 
+{ 
+  ArrayList<Expression> list;
+  Expression node;
+  RDFList rlist;
+  boolean close;
+}
+{
+	{
+		close = true;
+		list = new ArrayList<Expression>();
+	}
+	
+	//  @( ) means a sublist (query list without rdf:nil at the end)
+	
+	( 
+		<AT> { close = false; }  
+	) ?
+	
+  	<LPAREN>
+  	(
+  		node = GraphNode(stack)
+  		{
+  			list.add(node);
+  		}   
+  	) +
+  	<RPAREN>
+  	{ 
+  	    rlist = astq.createRDFList(list, close);
+  		stack.add(rlist);
+  		return rlist.head(); 
+  	}
+}
+
+
+
+
+
+Expression Collection2(Exp stack) : 
 { Expression graphNodeExpression, firstExpression, lastExpression, bnExpression; 
   Exp tripleGenerated, finalCollection; boolean subList, contains;}
 {
@@ -1598,7 +1636,6 @@ Expression Collection(Exp stack) :
 	}
 	
 	//  @( ) means a sublist (query list without rdf:nil at the end)
-	// @@( ) means rdf:rest* @( )
 	
 	( 
 		<AT> { subList = true; }  

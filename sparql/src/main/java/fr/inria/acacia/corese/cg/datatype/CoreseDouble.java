@@ -106,7 +106,6 @@ public  class CoreseDouble extends CoreseNumber{
 	}
 	
 	public static String getNormalizedLabel(String label){
-		//System.out.println("CoreseDouble.java - label: "+label);
 		String str = infinity(label);
 		if (str!=null) return str;
 		double v = Double.parseDouble(label);

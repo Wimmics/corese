@@ -403,7 +403,7 @@ public class DatatypeMap implements Cst, RDF {
 			dt = createLiteralWE(label, datatype, lang);
 		} catch (CoreseDatatypeException e) {
 			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return dt;
 	}

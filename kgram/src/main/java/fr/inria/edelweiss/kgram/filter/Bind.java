@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.edelweiss.kgram.api.core.Expr;
 
 
@@ -15,7 +17,8 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
  *
  */
 public class Bind {
-	
+	private static Logger logger = Logger.getLogger(Bind.class);	
+
 	Hashtable<Expr, Expr> table;
 	List<Expr> stack;
 	boolean success = true;
@@ -39,14 +42,12 @@ public class Bind {
 	
 	void setValue(Expr qe, Expr te){
 		if (qe instanceof Pattern){
-			//System.out.println(qe + " += " + te);
 			table.put(qe, te);
 			stack.add(qe);
 		}
 	}
 	
 	void reset(Expr exp){
-		//System.out.println(exp + " -= " + table.get(exp));
 		table.remove(exp);
 		stack.remove(exp);
 	}
@@ -63,7 +64,7 @@ public class Bind {
 			reset(stack.get(stack.size()-1));
 		}
 		if (table.size() != stack.size()){
-			System.out.println("** ERROR: Match Bind: Stack and Table have different sizes");
+			logger.error("Match Bind: Stack and Table have different sizes");
 		}
 	}
 

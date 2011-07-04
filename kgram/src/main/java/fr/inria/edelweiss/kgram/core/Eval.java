@@ -6,6 +6,8 @@ package fr.inria.edelweiss.kgram.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -46,6 +48,8 @@ import fr.inria.edelweiss.kgram.tool.ResultsImpl;
  *
  */
 public class Eval implements  ExpType, Plugin {
+	private static Logger logger = Logger.getLogger(Eval.class);	
+
 	static final int STOP = -2;
 	
 	EventManager manager;
@@ -262,7 +266,6 @@ public class Eval implements  ExpType, Plugin {
 	 * draft for if then else 
 	 */
 	public Mappings subEval(Query q, Node gNode, Stack stack, int n){
-		//System.out.println(stack);
 		setSubEval(true);
 		starter(q);
 		eval(gNode, stack, n, false);
@@ -483,7 +486,6 @@ public class Eval implements  ExpType, Plugin {
 			if (qqNode != null){
 				Node node = map.getNode(qNode);
 				if (node != null){
-					//System.out.println("** Bind: " + qqNode + " " + node);
 					bind(qqNode, node);
 				}
 			}
@@ -894,7 +896,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				// scan a partial result (for trace/debug)
 
 				Mapping scan = env.store(query);
-				System.out.println(scan);
+				logger.debug(scan);
 				backtrack = eval(gNode, stack, n+1, option);
 				break;
 
@@ -936,7 +938,6 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				// it has succeeded
 			}
 			else {
-				//System.out.println("** E: " + exp);
 				// exp is not connected by variables to preceding exp
 				// exp has failed (to reach it's next ending exp)
 				// hence exp will always fail again
@@ -995,7 +996,6 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 			if (! env.isBound(qNode) && producer.isBindable(node) ){
 				// bind qNode with same index as other variable
 				env.push(qNode, node, env.getIndex(exp.get(i).getNode()));
-				//System.out.println("** Eval var: " + qNode + " = " + node);
 				if (hasEvent){
 					send(Event.BIND, exp, qNode, node);
 				}
@@ -1057,7 +1057,6 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 			for (Node node : exp.getNodeList()){
 				// Enumerate constant Node
 				env.push(qNode, node, n);
-				// System.out.println("** Eval cst: " + qNode + " = " + node);
 				if (hasEvent){
 					send(Event.BIND, exp, qNode, node);
 				}
@@ -1357,12 +1356,10 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 					// optional {} !bound()
 					// WATCH BODY CONTINUE !bound(?x)
 					// get index of WATCH:
-					//System.out.println("** Eval opt: " + stack.get(n-1).first());
 					backtrack = stack.indexOf(stack.get(n-1).first());
 				}
 				else {
 					// backjump just before where ?x was bound
-					//System.out.println("** Eval: " + exp);
 					backtrack = env.getIndex(exp.getNode()) -1;
 				}
 			}
@@ -1474,7 +1471,6 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 
 	
 	private	int edge(Node gNode, Exp exp, Stack stack, int n,  boolean option) {
-		
 		int backtrack = n-1, evENUM = Event.ENUM;
 		boolean isSuccess = false,
 			hasGraphNode = gNode != null,
@@ -1501,13 +1497,11 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 //					// backjump require different node
 //					// between previous and current edge
 ////					if (indexToDiffer != n){
-////						System.out.println("** KGRAM: backjump error: " + indexToDiffer + " " + n);
 ////						System.out.println(query);
 ////						edgeToDiffer = null;
 ////					}
 ////					else 
 //						if (! differ(exp, edgeToDiffer, previous, edge)){
-//							System.out.println("** E: " + edge);
 //						continue;
 //					}
 //					else {
@@ -1596,7 +1590,6 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		}
 		else
 			for (Entity entity : producer.getNodes(gNode, query.getFrom(gNode), qNode,  env)){
-				//System.out.println(n + " " + node);
 
 				if (entity != null){
 					Node node  = entity.getNode();
@@ -1790,8 +1783,6 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		Eval eva = copy();
 		Mappings lRes = eva.subEval(query, gNode, Stack.create(exp.first()), 0);
 
-		//System.out.println(lRes.size() + " " + memory.getNode(0));
-
 		if (lRes.size() > 0){
 			for (Mapping rr : lRes){
 				if (memory.push(rr, n)){
@@ -1858,7 +1849,6 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 			else {
 				outNode = exp.get(0).getNode();
 			}
-			//System.out.println("** E: " + outNode + " " + node);
 			if (node != null){
 				// a value may be null because of an option {}
 				if (! (mm.match(outNode, node, env) && env.push(outNode, node, n))){
@@ -1920,7 +1910,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		if (exp.getObject() instanceof String){
 			String label = (String) exp.getObject();
 			if (env.getNode(label)!=null)
-			System.out.println(n + ": " + label + " " + env.getNode(label).getLabel());
+			logger.debug(n + ": " + label + " " + env.getNode(label).getLabel());
 		}
 	}
 

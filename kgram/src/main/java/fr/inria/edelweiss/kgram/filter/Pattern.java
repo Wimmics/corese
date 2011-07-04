@@ -247,6 +247,12 @@ public class Pattern implements ExprType, Expr {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean isExist() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 
 }

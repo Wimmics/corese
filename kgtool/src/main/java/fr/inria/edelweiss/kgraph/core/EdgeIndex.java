@@ -7,6 +7,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
@@ -24,7 +26,7 @@ import fr.inria.edelweiss.kgram.tool.MetaIterator;
 public class EdgeIndex extends Hashtable<Node, List<Entity>> 
 implements Index {
 	static final int IGRAPH = Graph.IGRAPH;
-	
+	private static Logger logger = Logger.getLogger(EdgeIndex.class);	
 
 
 	int index = 0, other = 1;
@@ -139,7 +141,6 @@ implements Index {
 			list.add(i, edge);
 		}
 		else {
-			//System.out.println("** add: " + edge);
 			list.add(edge);
 		}
 		
@@ -203,9 +204,7 @@ implements Index {
 			Collections.sort(list, comp);
 		}
 		if (index == 0){
-			//System.out.println("reduce");
 			reduce();
-			//System.out.println(graph);
 		}
 	}
 	
@@ -227,7 +226,6 @@ implements Index {
 			put(pred, l2);
 			if (l1.size()!=l2.size()){
 				graph.setSize(graph.size() - (l1.size()-l2.size()));
-				//System.out.println("Index reduce: " + pred + " " + l1.size() + " " + l2.size());
 			}
 		}
 	}
@@ -237,15 +235,12 @@ implements Index {
 		Entity pred = null;
 		for (Entity ent : list){
 			if (pred == null){
-				//System.out.println("** red: " + ent);
 				l.add(ent);
 			}
 			else if (comp.compare(ent, pred) != 0){
-				//System.out.println("** red: " + ent);
 				l.add(ent);
 			}
 			else {
-				//System.out.println("** rem: " + ent);
 				count++;
 			}
 			pred = ent;
@@ -266,14 +261,8 @@ implements Index {
 		List<Entity> list = get(pred);
 		if (index > 0 && list != null && list.size()==0){
 			List<Entity> std = (List<Entity>) graph.getIndex().getEdges(pred, null);
-//			if (isDebug){
-//				for (Entity ee : std){
-//					System.out.println(ee);
-//				}
-//			}
 			list.addAll(std);
 			Collections.sort(list, comp);
-			//System.out.println("** Index: " + pred + " " + index + " " + list.size());
 		}
 		return list;
 	}
@@ -322,7 +311,7 @@ implements Index {
 		for (int i=0; i<list.size(); i++){
 			if (! list.get(i).getEdge().getNode(1).same(nn)){
 				nn = list.get(i).getEdge().getNode(1);
-				System.out.println(nn);
+				logger.debug(nn);
 			}
 		}
 	}
@@ -442,16 +431,16 @@ implements Index {
 	
 	public Entity delete(Entity edge){
 		List<Entity> list = get(edge.getEdge().getEdgeNode());
-		if (isDebug) System.out.println("EI: " + index + " " + list);
+		if (isDebug) logger.debug("EI: " + index + " " + list);
 		if (list==null) return null;
 		int i = find(list, edge, 0, list.size());
-		if (isDebug) System.out.println("EI: " + i);
+		if (isDebug) logger.debug("EI: " + i);
 		if (i>=list.size()){
 			return null;
 		}
 		
 		int res = comp.compare(edge, list.get(i));
-		if (isDebug) System.out.println("EI: " + res);
+		if (isDebug) logger.debug("EI: " + res);
 		if (res == 0){
 			edge = list.get(i);
 			list.remove(i);
@@ -497,11 +486,11 @@ implements Index {
 			}
 			
 			if (isDebug){
-				for (Entity ee : list) System.out.println("** EI: " + ee);
+				for (Entity ee : list) logger.debug("** EI: " + ee);
 			}
 
 			int n = find(list, g1);
-			if (isDebug) System.out.println("** EI find: " + g1 + " " + (n != -1));
+			if (isDebug) logger.debug("** EI find: " + g1 + " " + (n != -1));
 			
 			if (n == -1) continue;
 			
@@ -521,7 +510,7 @@ implements Index {
 
 			if (ent.getEdge().getNode(index).same(g1)){
 				if (isDebug) 
-					System.out.println("** EI update: " + index + " " + ent);
+					logger.debug("** EI update: " + index + " " + ent);
 
 				switch (mode){
 
@@ -568,7 +557,7 @@ implements Index {
 			if (ei.getIndex()!= IGRAPH) {
 				Entity rem = ei.delete(ent);
 				if (isDebug && rem!=null)
-					System.out.println("** EI clear: " + ei.getIndex() + " " + rem);
+					logger.debug("** EI clear: " + ei.getIndex() + " " + rem);
 			}
 		}
 	}

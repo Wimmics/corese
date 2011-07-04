@@ -78,7 +78,6 @@ public class Merge extends Group {
 		int count = 0;
 		
 		while (merge){
-			//System.out.println("** count: " + count++);
 			nlist = new ListMappings();
 			merge = false;
 			for (Mappings lm1 : list){

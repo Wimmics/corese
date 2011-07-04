@@ -1029,7 +1029,6 @@ public class Query extends Exp {
 	 * return the min of index of exp Nodes
 	 */
 	int index(Query query, Exp exp,  boolean hasFree, boolean isExist, int start){
-		//System.out.println("** Q: " + exp + " " + isExist);
 		int min = Integer.MAX_VALUE, n;
 		int type = exp.type();
 
@@ -1059,7 +1058,6 @@ public class Query extends Exp {
 			boolean hasExist = index(query, exp.getFilter());
 			
 			List<String> lVar = exp.getFilter().getVariables();
-			//System.out.println(exp + " " + lVar);
 			for (String var : lVar){
 				Node qNode = query.getProperAndSubSelectNode(var);
 				if (qNode != null){
@@ -1144,7 +1142,6 @@ public class Query extends Exp {
 				break;
 				
 			default:
-				//System.out.println("** Q: " + exp + " " + startIndex+ " " + min + " " + hasFree);
 				if (startIndex > 0 && min >= startIndex && hasFree){
 					// this exp has no variable in common with preceding exp
 					// hasFree = false : 
@@ -1262,7 +1259,6 @@ public class Query extends Exp {
 
 
 	Exp compile(Exp exp, VString lVar, boolean option){
-		//System.out.println("** Query: " + exp + " " + lVar);
 		int type = exp.type();
 		
 		switch (type){
@@ -1329,7 +1325,6 @@ public class Query extends Exp {
 				//processFilter(exp, option);
 
 				if (exp.size()!=num){
-					//System.out.println(this);
 				}
 				
 				// set BIND expressions
@@ -1474,7 +1469,6 @@ public class Query extends Exp {
 	 * expVar: list of bound variables
 	 */
 	void sortFilter(Exp exp, VString expVar){
-		//System.out.println("** Q: " + exp + " " + expVar);
 		int size = expVar.size();
 		List<String> filterVar;
 		List<Exp> done = new ArrayList<Exp>();
@@ -1501,8 +1495,6 @@ public class Query extends Exp {
 				filterVar = ff.getVariables();
 				boolean isExist = isExist(ff);
 				
-				//System.out.println("** Q: " + ff + " " + filterVar);
-
 				for (int je=0; je<exp.size() ; je++){
 					// search exp e after which filter f is bound
 					Exp e = exp.get(je);
@@ -1513,7 +1505,7 @@ public class Query extends Exp {
 						// insert filter after exp
 						// an exist filter that is not bound is moved at the end because it 
 						// may bound its own variables.
-
+						e.addFilter(ff);
 						done.add(f);
 						if (jf < je){
 							// filter is before, move it after
@@ -1564,14 +1556,6 @@ public class Query extends Exp {
 		return lNode;
 	}
 
-	boolean bound(List<String> fvec, VString evec){
-		for (String var : fvec){
-			if (! evec.contains(var)){
-				return false;
-			}
-		}
-		return true;
-	}
 	
 	
 	
@@ -1614,7 +1598,6 @@ public class Query extends Exp {
 	void compile(Expr exp, VString lVar, boolean opt){
 		if (exp.oper() == ExprType.EXIST){
 			compile(getPattern(exp), lVar, opt);
-			//System.out.println("** Exist: " + exp.getPattern());
 		}
 		else {
 			for (Expr ee : exp.getExpList()){
@@ -1625,21 +1608,7 @@ public class Query extends Exp {
 	
 	
 	boolean isExist(Filter f){
-		return isExist(f.getExp());
-	}
-	
-	boolean isExist(Expr exp){
-		if (exp.oper() == ExprType.EXIST){
-			return true;
-		}
-		else {
-			for (Expr ee : exp.getExpList()){
-				if (isExist(ee)){
-					return true;
-				}
-			}
-		}
-		return false;
+		return f.getExp().isExist();
 	}
 	
 	

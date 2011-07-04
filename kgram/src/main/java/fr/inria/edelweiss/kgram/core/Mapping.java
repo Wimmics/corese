@@ -527,7 +527,6 @@ public class Mapping
 			Node q2 = m.getSelectQueryNode(q1.getLabel());
 			if (q2 != null){
 				Node n2 = m.getNode(q2);
-				//System.out.println(q1 + " " + n1 + " " + q2 + " " + n2);
 				if (! same(n1, n2)){
 					return null;
 				}

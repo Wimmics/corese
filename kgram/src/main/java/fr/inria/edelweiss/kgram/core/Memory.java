@@ -128,7 +128,7 @@ public class Memory implements Environment {
 		return stack;
 	}
 	
-	void setExp(Exp ee){
+	public void setExp(Exp ee){
 		exp = ee;
 	}
 	
@@ -159,7 +159,6 @@ public class Memory implements Environment {
 		}
 		int nmax = q.nbNodes();
 		int emax = q.nbEdges();
-		//System.out.println(q.nbNodes() + " " + q.nbEdges());
 		nbNodes = new int[nmax];
 		stackIndex = new int[nmax];
 		nbEdges = new int[emax];
@@ -254,7 +253,6 @@ public class Memory implements Environment {
 		if (outNode != null){
 			Node tNode = getNode(outNode);
 			if (tNode != null){
-				//System.out.println("** M2: " + subNode + " " + getNode(outNode));
 				mem.push(subNode, tNode, -1);
 				if (getPath(outNode)!=null){
 					mem.setPath(n, getPath(outNode));
@@ -583,7 +581,6 @@ public class Memory implements Environment {
 	boolean push(Mapping res, int n){
 		int k = 0;
 		for (Node qNode : res.getQueryNodes()){
-			//System.out.println(qNode);
 			if (qNode.getIndex()>=0){
 				// use case: skip select fun() as var
 				// when var has no index
@@ -687,7 +684,6 @@ public class Memory implements Environment {
 	 */
 	public Node getNode(Node node){
 		int n = node.getIndex();
-		//System.out.println("** M: " + node  + " " + n + " " + nodes[n]);
 		if (n == -1) return null;
 		return nodes[n];
 	}

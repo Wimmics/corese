@@ -8,7 +8,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.edelweiss</groupId>
 	<artifactId>kgram</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 	
 	
 	
@@ -21,7 +21,7 @@
 	</dependencies>
 
 	<build>
-	<finalName>kgram-1.0</finalName>
+	<finalName>kgram-1.0.1</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

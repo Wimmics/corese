@@ -67,7 +67,6 @@ public class RuleLoad {
 		for (int i=0; i<list.getLength(); i++){
 			Node node = list.item(i);
 			String rule = node.getTextContent();
-			//System.out.println(rule);
 			try {
 				engine.defRule(rule);
 			} catch (EngineException e) {
@@ -94,7 +93,6 @@ public class RuleLoad {
 
 			String rule = getRule(((Element) lconst.item(0)), ((Element) lwhere.item(0)));
 
-			//System.out.println(rule);
 			try {
 				engine.defRule(rule);
 			} catch (EngineException e) {

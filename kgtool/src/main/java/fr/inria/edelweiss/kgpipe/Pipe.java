@@ -3,6 +3,8 @@ package fr.inria.edelweiss.kgpipe;
 
 import java.util.Date;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -24,7 +26,8 @@ import fr.inria.edelweiss.kgtool.load.RuleLoad;
  *
  */
 public class Pipe {
-	
+	private static Logger logger = Logger.getLogger(Pipe.class);	
+
 	static final String KGRAM = ExpType.KGRAM ;
 	
 	static final String LOAD 	= KGRAM + "Load";
@@ -132,10 +135,10 @@ public class Pipe {
 			run(pipe);
 		} catch (EngineException e) {
 			e.printStackTrace();
-			System.out.println("** Error: " + e.getMessage());
+			logger.error("** Error: " + e.getMessage());
 		}
 		long d2 = new Date().getTime();
-		System.out.println("** Pipe: " + (d2-d1)/1000.0);
+		logger.debug("** Pipe: " + (d2-d1)/1000.0);
 	}
 	
 	/**
@@ -181,8 +184,8 @@ public class Pipe {
 		String q = qn.getLabel();
 
 		if (isDebug){
-			System.out.println(t);
-			System.out.println(q);
+			logger.debug(t);
+			logger.debug(q);
 		}
 		
 		if (t.equals(LOAD)){
@@ -207,7 +210,7 @@ public class Pipe {
 			test(map);
 		}
 		else {
-			System.out.println("** Pipe: unknown: " + t);
+			logger.warn("** Pipe: unknown: " + t);
 		}
 	}
 	
@@ -234,11 +237,11 @@ public class Pipe {
 		QueryLoad ql = QueryLoad.create();
 		String qq = ql.read(q);
 
-		if (isDebug) System.out.println(qq);
+		if (isDebug) logger.debug(qq);
 
 		Mappings res = exec.query(qq);
 
-		if (isDebug) System.out.println(res);
+		if (isDebug) logger.debug(res);
 		
 		return res;
 	}
@@ -283,8 +286,8 @@ public class Pipe {
 			if (nr!=null){
 				String rule = rl.read(nr.getLabel());
 				if (isDebug){
-					System.out.println(nr.getLabel());
-					System.out.println(rule);
+					logger.debug(nr.getLabel());
+					logger.debug(rule);
 				}
 				re.addRule(rule);
 			}
@@ -299,7 +302,7 @@ public class Pipe {
 	void rule(String q){
 		QueryLoad ql = QueryLoad.create();
 		String rule = ql.read(q);
-		if (isDebug) System.out.println(rule);
+		if (isDebug) logger.debug(rule);
 		if (rule == null) return;
 		
 		RuleEngine re = RuleEngine.create(graph);
@@ -331,20 +334,20 @@ public class Pipe {
 		
 		if (nif == null) return;
 
-		if (isDebug) System.out.println(nif);
+		if (isDebug) logger.debug(nif);
 
 		Mappings res = query(nif.getLabel());
 		
 		Mapping mm = Mapping.create();
 
 		if (res.size() > 0){
-			if (isDebug) System.out.println(THEN);
+			if (isDebug) logger.debug(THEN);
 			mm.bind(qNode, m.getNode(TQNAME));
 			mm.bind(tNode, m.getNode(TTNAME));
 			run(mm);
 		}
 		else if (nelse != null){
-			if (isDebug) System.out.println(ELSE);
+			if (isDebug) logger.debug(ELSE);
 			mm.bind(qNode, m.getNode(EQNAME));
 			mm.bind(tNode, m.getNode(ETNAME));
 			run(mm);

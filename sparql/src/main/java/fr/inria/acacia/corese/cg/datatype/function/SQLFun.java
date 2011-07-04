@@ -16,14 +16,13 @@ public class SQLFun {
 	ResultSet output;
 	static Object driver;
 
-	public ResultSet sql(IDatatype uri, IDatatype driver,
+	public ResultSet sql(IDatatype uri, IDatatype dd,
 			IDatatype login, IDatatype passwd, IDatatype query){
-		if (input == null){
+		if (driver == null){
 			// first time
 			try {
 				// remember driver is loaded
-				input = uri;
-				Class.forName(driver.getLabel()).newInstance();
+				driver = Class.forName(dd.getLabel()).newInstance();
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

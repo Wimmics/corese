@@ -3,6 +3,8 @@ package fr.inria.edelweiss.kgenv.eval;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -31,6 +33,8 @@ import fr.inria.edelweiss.kgram.tool.MetaProducer;
  *
  */
 public class QuerySolver  {
+	private static Logger logger = Logger.getLogger(QuerySolver.class);
+	
 	public static final int STD_ENTAILMENT  = 0;
 	public static final int RDF_ENTAILMENT  = 1;
 	public static final int RDFS_ENTAILMENT = 2;
@@ -273,10 +277,10 @@ public class QuerySolver  {
 
 	void debug(Query query){
 		if (query.isDebug()){
-			System.out.println(query.getBody());
-			System.out.println("limit " + query.getLimit());
+			logger.debug(query.getBody());
+			logger.debug("limit " + query.getLimit());
 			if (query.isFail()){
-				System.out.println("Fail at compile time");
+				logger.debug("Fail at compile time");
 			}
 		}
 	}

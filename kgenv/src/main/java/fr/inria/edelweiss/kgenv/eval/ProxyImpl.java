@@ -4,6 +4,8 @@ package fr.inria.edelweiss.kgenv.eval;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.cg.datatype.RDF;
@@ -31,6 +33,8 @@ import fr.inria.lang.StringHelper;
  *
  */
 public class ProxyImpl implements Proxy, ExprType {
+	private static Logger logger = Logger.getLogger(ProxyImpl.class);	
+
 	static IDatatype TRUE = DatatypeMap.TRUE;
 	static IDatatype FALSE = DatatypeMap.FALSE;
 	static final String UTF8 = "UTF-8";
@@ -153,7 +157,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			}
 		}
 		catch (CoreseDatatypeException e){
-			//System.out.println(e.getMessage());
+			//logger.error(e.getMessage());
 			return null;
 		}
 		return getValue(b);
@@ -339,7 +343,14 @@ public class ProxyImpl implements Proxy, ExprType {
 			case SQL: {
 				Processor proc = getProcessor(exp);
 				// return ResultSet
-				return proc.sql(dt, dt1, datatype(args[2]), datatype(args[3]));
+				if (args.length == 4){
+					// no driver
+					return proc.sql(dt, dt1, datatype(args[2]), datatype(args[3]));
+				}
+				else {
+					// with driver
+					return proc.sql(dt, dt1, datatype(args[2]), datatype(args[3]), datatype(args[4]));
+				}
 			}	
 						
 			case DISPLAY:

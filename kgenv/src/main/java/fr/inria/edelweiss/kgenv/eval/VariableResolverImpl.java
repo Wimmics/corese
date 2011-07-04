@@ -35,20 +35,16 @@ class VariableResolverImpl implements VariableResolver {
 	
 	public Object resolveVariable(QName name) {
 		if (var != null && value != null && name.equals(var)){
-			//System.out.println("** XP1: " + name + " " + value);
 			return value;
 		}
 		var = name;
 		if (env == null) return null;
-		//System.out.println("** Proxy: " + env);
 		Node node = env.getNode("?" + name.getLocalPart());
 		if (node != null){
 			value = document.createTextNode(node.getLabel()); //name.getLocalPart());
-			//System.out.println("** XP2: " + name + " " + value);
 			return value;
 		}
 		else {
-			//System.out.println("** XP3: " + name + " " + null);
 			return null;
 		}
 	}

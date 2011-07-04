@@ -98,7 +98,6 @@ public class GraphEngine implements IEngine {
 	}
 	
 	public void load(String path) throws EngineException {
-		//System.out.println("** Load: " + path);
 		if (path.endsWith(BRUL)){
 			bengine.load(path);
 		}

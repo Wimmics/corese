@@ -2,6 +2,8 @@ package fr.inria.acacia.corese.gui.query;
 
 import java.util.Date;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
@@ -21,6 +23,7 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
  * Exec KGRAM Query in a // thread to enable interacting with EvalListener through the GUI
  */
 public class Exec extends Thread {
+	private static Logger logger = Logger.getLogger(Exec.class);
 	MainFrame frame;
 	String query;
 	Buffer buffer;
@@ -61,7 +64,7 @@ public class Exec extends Thread {
 		try {
 			IResults l_Results = exec.SPARQLQuery(query);
 			Date d2 = new Date();
-			System.out.println("** Results: " + l_Results.size()); // + " ; Time: " + d2.get);
+			logger.info("** Results: " + l_Results.size()); // + " ; Time: " + d2.get);
 			return l_Results;
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block

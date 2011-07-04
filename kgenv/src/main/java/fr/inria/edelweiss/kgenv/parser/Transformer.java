@@ -102,13 +102,7 @@ public class Transformer implements ExpType {
 		if (named!=null) ast.setDefaultNamed(named);
 
 		ParserSparql1.create(ast).parse();
-
-		//System.out.println(graph.getInference().display());		
-		
-		//bind(ast);
-		
-		//Parser.create().ncompile(ast);
-		
+						
 		Query q = transform(ast);
 		
 		return q;
@@ -328,7 +322,6 @@ public class Transformer implements ExpType {
 		// check semantics of select vs aggregates and group by
 		boolean correct = qCurrent.check();
 		if (! correct){
-			//System.out.println("** Query check fails");
 			qCurrent.setCorrect(false);
 		}
 		else {
@@ -586,8 +579,6 @@ public class Transformer implements ExpType {
 		opt = opt || type == OPTION || type == OPTIONAL || 
 		type == UNION || type == MINUS;
 
-		//System.out.println("** T compile: "+ ExpType.TITLE[type] + " " + query + " " + opt);
-
 		switch(type){
 
 
@@ -749,15 +740,7 @@ public class Transformer implements ExpType {
 
 			Exp tmp = Exp.create(EXTERN);
 			tmp.setObject("?x");
-			//exp.add(tmp);
-
-			//exp.add(Exp.create(SCAN));
-
-			//exp = Exp.create(SCAN, exp);
-
-			//Exp option = Exp.create(OPTION2, Exp.create(AND, exp.get(0), exp.get(1)), exp.get(2).first());
-			//System.out.println(option);
-			//exp = option;
+			
 		}
 
 		else if (query.isNegation()){
@@ -921,7 +904,6 @@ public class Transformer implements ExpType {
 	 * store them in Exp e
 	 */
 	void processPath(Exp exp, Exp ef){
-		//System.out.println(f + " " + e );
 		Filter f = ef.getFilter();
 		Edge e = exp.getEdge();
 		Node n = e.getEdgeVariable();
@@ -931,7 +913,6 @@ public class Transformer implements ExpType {
 		if (n==null) return;
 		if (! n.getLabel().equals(lVar.get(0))) return ;
 
-		//System.out.println(f + " " + e );
 		Regex regex = compiler.getRegex(f);
 
 		if (regex != null && exp.getRegex()==null){

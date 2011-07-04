@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -32,6 +34,8 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 public class Construct 
 	implements Comparator<Node>{
+	private static Logger logger = Logger.getLogger(Construct.class);	
+
 	static final String BLANK = "_:b";
 
 	int count = 0;
@@ -126,10 +130,8 @@ public class Construct
 			clear();
 			construct(gNode, exp, map);
 			
-			//System.out.println(getID(map));
 		}
 		
-		//System.out.println(graph);
 		graph.index();
 		return graph;
 	}
@@ -150,11 +152,10 @@ public class Construct
 		for (Exp ee : exp.getExpList()){
 			if (ee.isEdge()){
 				EdgeImpl edge = construct(gNode, ee.getEdge(), map);
-				//if (isDebug) System.out.println("** CD: " + edge);
 
 				if (edge != null){
 					if (isDelete){
-						if (isDebug) System.out.println("** Delete: " + edge);
+						if (isDebug) logger.debug("** Delete: " + edge);
 						if (gNode == null && from!=null && from.size()>0){
 							// delete in default graph
 							graph.delete(edge, from);
@@ -165,7 +166,7 @@ public class Construct
 						}
 					}
 					else {
-						if (isDebug) System.out.println("** Construct: " + edge);
+						if (isDebug) logger.debug("** Construct: " + edge);
 						Entity ent = graph.addEdge(edge);
 						if (ent != null && list != null){
 							list.add(ent);
@@ -210,14 +211,7 @@ public class Construct
 		
 		Node subject = construct(source, edge.getNode(0), map);
 		Node object  = construct(source, edge.getNode(1), map);
-		
-//		if (isDebug){
-//			System.out.println(source);
-//			System.out.println(subject);
-//			System.out.println(property);
-//			System.out.println(object);
-//		}
-		
+				
 		if ((source == null && ! isDelete) || subject == null || property == null || object == null){
 			return null;
 		}

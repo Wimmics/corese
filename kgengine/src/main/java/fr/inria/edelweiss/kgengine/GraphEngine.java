@@ -27,7 +27,9 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.Build;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadPlugin;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram
@@ -43,10 +45,11 @@ public class GraphEngine implements IEngine {
 	private QueryEngine qengine;
 	private Engine bengine;
 	QueryProcess exec;
+	LoadPlugin plugin;
+	Build build;
 	
 	private boolean isListGroup = false,
 	isDebug = false;
-	String pattern;
 	
 	GraphEngine (){
 		DatatypeMap.setLiteralAsString(false);
@@ -89,12 +92,17 @@ public class GraphEngine implements IEngine {
 		Load load = Load.create(graph);
 		load.setEngine(rengine);
 		load.setEngine(qengine);
-		load.setPattern(pattern);
+		load.setPlugin(plugin);
+		load.setBuild(build);
 		return load;
 	}
 	
-	public void setPattern(String pat){
-		pattern = pat;
+	public void setPlugin(LoadPlugin p){
+		plugin = p;
+	}
+	
+	public void setBuild(Build b){
+		build = b;
 	}
 	
 	public void load(String path) throws EngineException {

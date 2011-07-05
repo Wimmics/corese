@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
@@ -21,10 +20,7 @@ import fr.com.hp.hpl.jena.rdf.arp.ARP;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.api.Loader;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
@@ -37,8 +33,6 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
  * 
  * @author Olivier Corby, Edelweiss INRIA 2010
  * 
- * http://gfx.developpez.com/tutoriel/java/log4j/
- *
  */
 public class Load 
 	implements	StatementHandler, RDFListener, org.xml.sax.ErrorHandler,
@@ -58,22 +52,21 @@ public class Load
 	Graph graph;
 	RuleEngine engine;
 	QueryEngine qengine;
-	Node src, cur;
-	Hashtable<String, String> blank, loaded;
-	ArrayList<String> exclude;
-	String pattern, lbase;
+	Hashtable<String, String>  loaded;
+	LoadPlugin plugin;
+	Build build;
 	
 	String source;
 	
-	boolean debug = false;
+	boolean debug = false,
+	hasPlugin = false;
 	
 	int nb = 0;
 	
 	Load(Graph g){
 		graph = g;
-		blank = new Hashtable<String, String> ();
 		loaded = new Hashtable<String, String> ();
-		exclude = new ArrayList<String>();
+		build = BuildImpl.create(g);
 	}
 	
 	public static Load create(Graph g){
@@ -85,7 +78,7 @@ public class Load
 	}
 	
 	public void exclude(String ns){
-		exclude.add(ns);
+		build.exclude(ns);
 	}
 	
 	public void setEngine(RuleEngine eng){
@@ -100,8 +93,17 @@ public class Load
 		qengine = eng;
 	}
 	
-	public void setPattern(String pat){
-		pattern = pat;
+	public void setPlugin(LoadPlugin p){
+		if (p != null){
+			plugin = p;
+			hasPlugin = true;
+		}
+	}
+	
+	public void setBuild(Build b){
+		if (b != null){
+			build = b;
+		}
 	}
 	
 	public QueryEngine getQueryEngine(){
@@ -175,11 +177,6 @@ public class Load
 			source = base;
 		}
 		
-		if (pattern != null){
-			base   = process(base);
-			source = process(source);
-		}
-		
 		load(read, path, base, source);
 	}
 	
@@ -195,14 +192,16 @@ public class Load
 		load(read, source, source, source);
 	}
 	
-	void load(Reader read,  String path, String base, String source){
-		lbase = base;
-		if (pattern != null) lbase = clean(base);
+	
+	void load(Reader read,  String path, String base, String src){
+		if (hasPlugin){
+			src  = plugin.statSource(src);
+			base = plugin.statBase(base);
+		}
 		
-		graph.setUpdate(true);
-		src = graph.addGraph(source);
-		cur = src;
-		blank.clear();
+		source = src;
+		build.setSource(source);
+		build.start();
 		ARP arp = new ARP();
 		try {
 			arp.setRDFListener(this);
@@ -277,40 +276,16 @@ public class Load
 		}
 	}
 	
-	
-	boolean accept(String pred){
-		if (exclude.size() == 0) return true;
-		for (String ns : exclude){
-			if (pred.startsWith(ns)){
-				return false;
-			}
-		}
-		return true;
-	}
+
 	
 	public void statement(AResource subj, AResource pred, ALiteral lit) {
-		if (accept(pred.getURI())){
-			Node subject 	= getNode(subj);
-			Node predicate 	= getProperty(pred);
-			Node value 		= getLiteral(pred, lit);
-			if (value == null) return;
-			EdgeImpl edge 	= EdgeImpl.create(cur, subject, predicate, value);
-			process(cur, edge);
-		}
+		build.statement(subj, pred, lit);
 	}
 	
 	public void statement(AResource subj, AResource pred, AResource obj) {
-		if (accept(pred.getURI())){			
-			
-			Node subject 	= getNode(subj);
-			Node predicate 	= getProperty(pred);
-			Node value 		= getNode(obj);
-			EdgeImpl edge 	= EdgeImpl.create(cur, subject, predicate, value);
-			process(cur, edge);
-			
-			if (pred.getURI().equals(IMPORTS)){
-				imports(obj.getURI());
-			}
+		build.statement(subj, pred, obj);
+		if (pred.getURI().equals(IMPORTS)){
+			imports(obj.getURI());
 		}
 	}
 	
@@ -321,40 +296,7 @@ public class Load
 		}
 	}
 	
-	void process(Node gNode, EdgeImpl edge){
-		Entity ent = graph.addEdge(edge);
-	}
-	
-	
-	Node getLiteral(AResource pred, ALiteral lit){
-		String lang = lit.getLang();
-		String datatype = lit.getDatatypeURI();
-		if (lang == "") lang = null;
-		return graph.addLiteral(pred.getURI(), lit.toString(), datatype, lang);
-	}
-	
-	Node getProperty(AResource res){
-		return graph.addProperty(res.getURI());		
-	}
-	
-	Node getNode(AResource res){
-		if (res.isAnonymous()){
-			return graph.addBlank(getID(res.getAnonymousID()));
-		}
-		else {
-			return graph.addResource(res.getURI());
-		}		
-	}
-	
-	String getID(String b){
-		String id = blank.get(b);
-		if (id == null){
-			id = graph.newBlankID();
-			blank.put(b, id);
-		}
-		return id;
-	}
-	
+
 
 	@Override
 	public void error(SAXParseException exception) throws SAXException {
@@ -381,34 +323,22 @@ public class Load
 	 */
 	public void setSource(String s) {
 		if (s == null){
-			cur = src;
+			//cur = src;
+			build.setSource(source);
 			return;
 		}
 		
-		if (pattern != null){
-			s = lbase + s;
+		if (hasPlugin){
+			s = plugin.dynSource(s);
 		}
-		if (! cur.getLabel().equals(s)){
-			cur = graph.addGraph(s);
-		}
+		build.setSource(s);
+//		if (! cur.getLabel().equals(s)){
+//			cur = build.getGraph(s);
+//		}
 	}
 	
-	// remove file name after last "/"
-	String clean(String str){
-		if (str.endsWith(File.separator) || str.endsWith("#")) return str;
-		int ind = str.lastIndexOf(File.separator);
-		str = str.substring(0, ind+1);
-		return str;
-	}
 	
-	// remove pattern from str
-	String process(String str){
-		int index = str.indexOf(pattern);
-		if (index != -1){
-			str = str.substring(0, index) + str.substring(index + pattern.length());
-		}
-		return str;
-	}
+	
 
 	public String getSource() {
 		return source;

@@ -19,7 +19,6 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -551,14 +550,20 @@ public class ProducerImpl implements Producer {
 	}
 	
 	
-	void test(Environment env){
+	void filter(Environment env){
+		// KGRAM exp for current edge
 		Exp exp = env.getExp();
 		List<String> lVar = new ArrayList<String>();
 		List<Node> lNode = new ArrayList<Node>();
 		
 		for (Filter f : exp.getFilters()){
-			if (f.getExp().isExist()) continue;
+			// filters attached to current edge
+			if (f.getExp().isExist()){
+				// skip exists { PAT }
+				continue;
+			}
 			
+			// function exp.bind(f) tests whether current edge binds all variable of filter f
 			System.out.println("** P: " + exp + " " + f + " " + exp.bind(f));
 			
 			for (String var : f.getVariables()){
@@ -572,15 +577,15 @@ public class ProducerImpl implements Producer {
 			}
 		}
 		
-//		System.out.print("bindings ");
-//		for (String var : lVar){
-//			System.out.print(var + " ");
-//		}
-//		System.out.println("{(");
-//		for (Node node : lNode){
-//			System.out.print(node + " ");
-//		}
-//		System.out.println(")}");
+		System.out.print("bindings ");
+		for (String var : lVar){
+			System.out.print(var + " ");
+		}
+		System.out.println("{(");
+		for (Node node : lNode){
+			System.out.print(node + " ");
+		}
+		System.out.println(")}");
 
 	}
 

@@ -166,15 +166,35 @@ public class Graph {
 		return isIndex;
 	}
 	
+	void setProxy(){
+		proxy = inference;
+		if (proxy == null){
+			proxy = Entailment.create(this);
+		}
+	}
+	
 	public boolean isType(Edge edge){
 		if (proxy == null){
-			proxy = inference;
-			if (proxy == null){
-				proxy = Entailment.create(this);
-			}
+			setProxy();
 		}
 
 		return proxy.isType(edge);
+	}
+	
+	public boolean isType(Node pred){
+		if (proxy == null){
+			setProxy();
+		}
+
+		return proxy.isType(pred);
+	}
+	
+	public boolean isSubClassOf(Node pred){
+		if (proxy == null){
+			setProxy();
+		}
+
+		return proxy.isSubClassOf(pred);
 	}
 	
 	public void setIndex(boolean b){
@@ -291,6 +311,10 @@ public class Graph {
 			}
 		}
 		return ent;
+	}
+	
+	public EdgeCore create(Node source, Node subject, Node predicate, Node value){
+		return EdgeCore.create(source, subject, predicate, value);
 	}
 
 	

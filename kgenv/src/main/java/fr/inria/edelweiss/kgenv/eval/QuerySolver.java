@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgenv.parser.Transformer;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -43,6 +44,7 @@ public class QuerySolver  {
 
 	protected EventManager manager;
 	protected Producer producer;
+	protected Provider provider;
 	protected Evaluator evaluator;
 	protected Matcher matcher;
 	protected Sorter sort;
@@ -111,6 +113,10 @@ public class QuerySolver  {
 		sort = s;
 	}
 	
+	public void set(Provider p){
+		provider = p;
+	}
+	
 	public void setSPARQL1(boolean b){
 	}
 	
@@ -172,6 +178,7 @@ public class QuerySolver  {
 		}
 
 		Eval kgram = Eval.create(producer, evaluator, matcher);
+		kgram.set(provider);
 
 		events(kgram);
 		

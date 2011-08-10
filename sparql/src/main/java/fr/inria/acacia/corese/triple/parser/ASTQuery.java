@@ -1710,17 +1710,17 @@ public class ASTQuery  implements Keyword {
             sm += KeywordPP.LIMIT + KeywordPP.SPACE + (int)getMaxResult() + KeywordPP.SPACE;
  
         // DISPLAY rdf/table/flat/asquery/integer/xml/blank
-        if (isRDF())
-            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.DRDF + KeywordPP.SPACE;
-        else if (isFlat())
-            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.FLAT + KeywordPP.SPACE;
-        else if (isPQuery())
-            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.ASQUERY + KeywordPP.SPACE;
-        else if (getMaxDisplay() != 1000)   // attention chiffre en dur
-            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + (int)getMaxDisplay() + KeywordPP.SPACE;
-        else if (isDisplayBNID())
-            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.BLANK + KeywordPP.SPACE;
-       
+//        if (isRDF())
+//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.DRDF + KeywordPP.SPACE;
+//        else if (isFlat())
+//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.FLAT + KeywordPP.SPACE;
+//        else if (isPQuery())
+//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.ASQUERY + KeywordPP.SPACE;
+//        else if (getMaxDisplay() != 1000)   // attention chiffre en dur
+//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + (int)getMaxDisplay() + KeywordPP.SPACE;
+//        else if (isDisplayBNID())
+//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.BLANK + KeywordPP.SPACE;
+//       
         if (!sm.equals(""))
             sm += KeywordPP.SPACE_LN;
         return sm;

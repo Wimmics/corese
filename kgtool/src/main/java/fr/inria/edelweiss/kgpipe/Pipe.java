@@ -124,15 +124,17 @@ public class Pipe {
 		//exec.setDebug(b);
 	}
 	
-	/**
-	 * Load and run a pipeline
-	 * @param name: path or URL of pipeline to execute
-	 */
-	public void process(String name){
+	public void load(String name){
+		pipe = Graph.create(true);
+		Loader load = Load.create(pipe);
+		load.load(name);
+	}
+	
+	public void process(){
 		long d1 = new Date().getTime();
 		try {
-			Mappings pipe = get(name);
-			run(pipe);
+			Mappings map = get();
+			run(map);
 		} catch (EngineException e) {
 			e.printStackTrace();
 			logger.error("** Error: " + e.getMessage());
@@ -142,15 +144,23 @@ public class Pipe {
 	}
 	
 	/**
+	 * Load and run a pipeline
+	 * @param name: path or URL of pipeline to execute
+	 */
+	public void process(String name){
+		load(name);
+		process();
+	}
+	
+	
+	
+	/**
 	 * Load the pipeline and return the body
 	 * name is a path (or URL)
 	 * Return one mapping for each operation of the pipeline body
 	 * @throws EngineException 
 	 */
-	Mappings get(String name) throws EngineException{
-		pipe = Graph.create(true);
-		Loader load = Load.create(pipe);
-		load.load(name);
+	Mappings get() throws EngineException{
 		pipeExec = QueryProcess.create(pipe);
 		pipeExec.add(graph);			
 		Mappings lMap = pipeExec.query(QACTION);
@@ -189,7 +199,7 @@ public class Pipe {
 		}
 		
 		if (t.equals(LOAD)){
-			load(q);
+			pload(q);
 		}
 		else if (t.equals(AND)){
 			and(map);
@@ -215,7 +225,7 @@ public class Pipe {
 	}
 	
 	
-	void load(String name){
+	void pload(String name){
 		load.load(name);
 	}
 	

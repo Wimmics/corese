@@ -44,6 +44,10 @@ public class CompilerKgram implements ExpType, Compiler {
 		consList = new ArrayList<IDatatype>();
 	}
 	
+	public static CompilerKgram create(){
+		return new  CompilerKgram();
+	}
+	
 	
 	public void setAST(ASTQuery ast){
 		this.ast = ast;

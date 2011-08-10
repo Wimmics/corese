@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.core.EdgeCore;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.NodeImpl;
@@ -228,7 +229,7 @@ public class Construct
 			graph.addGraphNode(source);
 		}
 
-		EdgeImpl ee =  EdgeImpl.create(source, subject, property, object);
+		EdgeImpl ee =  EdgeCore.create(source, subject, property, object);
 		return ee;
 	}
 	

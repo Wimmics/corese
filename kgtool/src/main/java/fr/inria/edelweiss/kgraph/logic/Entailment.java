@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.EdgeCore;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
@@ -48,6 +49,8 @@ public class Entailment {
 	public static final String RDFSMEMBER 		 = RDFS + "member";
 	public static final String RDFBLI 		 	 = RDF  + "_";
 	public static final String RDFSCLASS 	 	 = RDFS + "Class";
+	public static final String RDFSLABEL 	 	 = RDFS + "label";
+	public static final String RDFSCOMMENT 	 	 = RDFS + "comment";
 
 	public static final String RDFTYPE 			 = RDF + "type";
 	public static final String RDFPROPERTY 	 	 = RDF + "Property";
@@ -205,7 +208,9 @@ public class Entailment {
 		define(gNode, edge);
 	}
 	
-	
+	EdgeImpl create(Node src, Node sub, Node pred, Node obj){
+		return EdgeCore.create(src, sub, pred, obj);
+	}
 	
 	/**
 	 * Store property domain, range, subPropertyOf, symmetric, inverse
@@ -269,18 +274,17 @@ public class Entailment {
 	void defProperty(Node pNode) {
 		Node gNode = graph.addGraph(ENTAIL);
 		Node tNode = graph.addResource(RDFPROPERTY);
-		EdgeImpl ee =  EdgeImpl.create(gNode, pNode, hasType, tNode);
+		EdgeImpl ee =  create(gNode, pNode, hasType, tNode);
 		recordWithoutEntailment(gNode, null, ee);
 		
 		if (isRDFS && pNode.getLabel().startsWith(RDFBLI)){
 			// rdf:_i rdfs:subPropertyOf rdfs:member
 			tNode    = graph.addResource(RDFSMEMBER);
 			Node sub = graph.addProperty(RDFSSUBPROPERTYOF);
-			ee =  EdgeImpl.create(gNode, pNode, sub, tNode);
+			ee =  create(gNode, pNode, sub, tNode);
 			recordWithEntailment(gNode, null, ee);
 		}
 	}
-	
 	
 	void property(Node gNode, Edge edge){	
 		inverse(gNode, edge, symetric);
@@ -295,7 +299,7 @@ public class Entailment {
 		List<Node> 	list = table.get(pred);
 		if (list != null){
 			for (Node type : list){
-				EdgeImpl ee =  EdgeImpl.create(gNode, edge.getNode(1), type, edge.getNode(0));
+				EdgeImpl ee =  create(gNode, edge.getNode(1), type, edge.getNode(0));
 				recordWithoutEntailment(gNode, edge, ee);
 			}
 		}
@@ -308,7 +312,7 @@ public class Entailment {
 		List<Node> list = subproperty.get(pred);
 		if (list!=null){
 			for (Node sup : list){
-				EdgeImpl ee =  EdgeImpl.create(gNode, edge.getNode(0), sup, edge.getNode(1));
+				EdgeImpl ee =  create(gNode, edge.getNode(0), sup, edge.getNode(1));
 				recordWithoutEntailment(gNode, edge, ee);
 				if (isMeta(sup)){
 					define(gNode, ee);
@@ -354,7 +358,7 @@ public class Entailment {
 		
 		if (list!=null){
 			for (Node type : list){
-				EdgeImpl ee =  EdgeImpl.create(gNode, node, hasType, type);
+				EdgeImpl ee =  create(gNode, node, hasType, type);
 				recordWithoutEntailment(gNode, edge, ee);
 			}
 		}
@@ -372,7 +376,7 @@ public class Entailment {
 		if (list!=null){
 			for (Entity type : list){
 				EdgeImpl ee = 
-					 EdgeImpl.create(gNode, edge.getNode(0), hasType, type.getEdge().getNode(1));
+					 create(gNode, edge.getNode(0), hasType, type.getEdge().getNode(1));
 				recordWithoutEntailment(gNode, edge, ee);
 			}
 		}
@@ -431,6 +435,14 @@ public class Entailment {
 
 	public boolean isType(Edge edge){
 		return hasLabel(edge, RDFTYPE);
+	}
+	
+	public boolean isType(Node pred){
+		return pred.getLabel().equals(RDFTYPE);
+	}
+	
+	public boolean isSubClassOf(Node pred){
+		return pred.getLabel().equals(RDFSSUBCLASSOF);
 	}
 	
 	boolean hasLabel(Edge edge, String type){

@@ -147,10 +147,15 @@ implements Index {
 		return edge;
 	}
 	
-
+	List<Entity> getByLabel(Entity e){
+		Node pred = graph.getPropertyNode(e.getEdge().getEdgeNode().getLabel());
+		if (pred == null) return null;
+		List<Entity> list = get(pred);
+		return list;
+	}
 	
 	public boolean exist(Entity edge){
-		List<Entity> list = get(edge.getEdge().getEdgeNode());
+		List<Entity> list = getByLabel(edge); 
 		if (list==null) return false;
 		int i = find(list, edge, 0, list.size());
 		
@@ -430,7 +435,7 @@ implements Index {
  */
 	
 	public Entity delete(Entity edge){
-		List<Entity> list = get(edge.getEdge().getEdgeNode());
+		List<Entity> list = getByLabel(edge);
 		if (isDebug) logger.debug("EI: " + index + " " + list);
 		if (list==null) return null;
 		int i = find(list, edge, 0, list.size());

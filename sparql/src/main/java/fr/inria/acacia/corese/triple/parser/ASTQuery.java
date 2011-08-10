@@ -107,7 +107,7 @@ public class ASTQuery  implements Keyword {
     boolean isAdd = false;
     boolean describeAll = false;
     // generate a relation for rdf:type
-    boolean isRelationForType = false;
+    boolean isRelationForType = true;
     boolean isKgram = true, 
     // true means with SPARQL 1.1 syntax for select (fun(?x) as ?y) where
     isSPARQL1 = true,
@@ -406,6 +406,10 @@ public class ASTQuery  implements Keyword {
 	}
 
 	public void setMaxResult(int maxResult) {
+		MaxResult = maxResult;
+	}
+	
+	public void setLimit(int maxResult) {
 		MaxResult = maxResult;
 	}
 
@@ -1013,6 +1017,13 @@ public class ASTQuery  implements Keyword {
 		return fun;
 	}
 	
+	public Expression createOperator(String ope, Expression exp1, Expression exp2) {
+		if (ope.equals(SOR)){
+			ope = SEOR;
+		}
+		return createTerm(ope, exp1, exp2);
+	}
+	
 	/**
 	 * Filter test associated to path regex exp
 	 */
@@ -1057,6 +1068,10 @@ public class ASTQuery  implements Keyword {
 		t.setMin(n1);
 		t.setMax(n2);
 		return t;
+	}
+	
+	public Constant createConstant(String s, String datatype) {
+		return createConstant(s, datatype, null);
 	}
 
 	// Literal
@@ -2038,8 +2053,13 @@ public class ASTQuery  implements Keyword {
     	if (exp.getBody().size() == 0) return;
     	Exp body = exp.getBody().get(0);
     	if (! body.isTriple()) return;
-    	having = body.getTriple().getExp();
+    	setHaving(body.getTriple().getExp());
     }
+    
+    public void setHaving(Expression exp){
+    	having = exp;
+    }
+    
     
     public Expression getHaving(){
     	return having;
@@ -2238,12 +2258,14 @@ public class ASTQuery  implements Keyword {
     }
 
     public void setDescribe(boolean describe) {
-        //this.describe = describe;
     	if (describe) setResultForm(QT_DESCRIBE);
     }
     
+    public void setAsk(boolean b) {
+    	if (b) setResultForm(QT_ASK);
+    }
+    
     public boolean isDescribe() {
-        //return describe;
     	return (getResultForm() == QT_DESCRIBE);
     }
     

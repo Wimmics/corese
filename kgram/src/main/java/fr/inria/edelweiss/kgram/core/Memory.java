@@ -155,7 +155,7 @@ public class Memory implements Environment {
 		if (q.isSubQuery()){
 			// we need the outer query to get the max nb of nodes
 			// because index may vary from 0 to max in any sub query
-			q = q.getGlobalQuery();
+			q = q.getGlobalQuery();			
 		}
 		int nmax = q.nbNodes();
 		int emax = q.nbEdges();
@@ -579,7 +579,12 @@ public class Memory implements Environment {
 	 * Push elementary result in the memory
 	 */
 	boolean push(Mapping res, int n){
+		return push(res, n, true);
+	}
+	
+	boolean push(Mapping res, int n, boolean isEdge){
 		int k = 0;
+
 		for (Node qNode : res.getQueryNodes()){
 			if (qNode.getIndex()>=0){
 				// use case: skip select fun() as var
@@ -601,17 +606,19 @@ public class Memory implements Environment {
 			k++;
 		}
 
-		k = 0;
-		for (Edge qEdge : res.getQueryEdges()){
-			Edge edge = res.getEdge(k);
-			if (! push(qEdge, edge, n)){
-				for (int i=0; i<k; i++){
-					pop(res.getQueryEdge(i), res.getEdge(i));
+		if (isEdge){
+			k = 0;
+			for (Edge qEdge : res.getQueryEdges()){
+				Edge edge = res.getEdge(k);
+				if (! push(qEdge, edge, n)){
+					for (int i=0; i<k; i++){
+						pop(res.getQueryEdge(i), res.getEdge(i));
+					}
+					// TODO: pop the nodes
+					return false;
 				}
-				// TODO: pop the nodes
-				return false;
+				k++;
 			}
-			k++;
 		}
 
 		return true;
@@ -622,6 +629,10 @@ public class Memory implements Environment {
 	 * Pop elementary result
 	 */
 	void pop(Mapping res){
+		pop(res, true);
+	}
+	
+	void pop(Mapping res, boolean isEdge){
 		int n=0;
 		for (Node qNode : res.getQueryNodes()){
 			if (qNode.getIndex()>=0){
@@ -633,9 +644,11 @@ public class Memory implements Environment {
 			n++;
 		}
 		
-		n=0;
-		for (Edge qEdge : res.getQueryEdges()){
-			pop(qEdge, res.getEdge(n++));
+		if (isEdge){
+			n=0;
+			for (Edge qEdge : res.getQueryEdges()){
+				pop(qEdge, res.getEdge(n++));
+			}
 		}
 	}
 	

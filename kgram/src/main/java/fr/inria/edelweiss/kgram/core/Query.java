@@ -49,26 +49,16 @@ public class Query extends Exp {
 	Compile compiler;
 	Sorter sort;
 	
-	boolean 
-	isCompiled = false,
-	isDebug = false, 
-	isAggregate = false,
-	isFunctional = false,
-	isRelax = false,
-	isDistribute = false,
-	isTest = false,
-	// sort edges to be connected
-	isSort = true, 
-	isConstruct = false,
-	isDelete = false,
-	isUpdate = false,
-	// true:  path do not loop on node
-	isLoopNode = false, 
-	isPipe = false,
-	isListGroup = false,
-	// select/aggregate/group by SPARQL 1.1 rules
-	isCorrect = true,
-	isConnect = false;
+	private boolean 
+	isCompiled = false;
+
+	boolean isDebug = false, isAggregate = false, isFunctional = false, isRelax = false, isDistribute = false, isTest = false, // sort edges to be connected
+	isSort = true, isConstruct = false,
+			isDelete = false, isUpdate = false, // true:  path do not loop on node
+			isLoopNode = false, isPipe = false, isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
+			isCorrect = true, isConnect = false;
+
+	private boolean isService = false;
 
 	private boolean isBind = false;
 	
@@ -146,8 +136,10 @@ public class Query extends Exp {
 	 * inherit from and from named
 	 */
 	void inherit(Query q){
-		setFrom(q.getFrom());
-		setNamed(q.getNamed());
+		if (! isService()){
+			setFrom(q.getFrom());
+			setNamed(q.getNamed());
+		}
 	}
 	
 	public Query getGlobalQuery(){
@@ -777,8 +769,8 @@ public class Query extends Exp {
 	
 
 	public void complete(){
-		if (isCompiled) return;
-		else isCompiled = true;
+		if (isCompiled()) return;
+		else setCompiled(true);
 		
 		compile();
 		setAggregate();
@@ -1082,6 +1074,7 @@ public class Query extends Exp {
 		case QUERY:
 			
 			Query qq = exp.getQuery();
+			qq.setCompiled(true);
 			qq.setGlobalQuery(this);
 			qq.setOuterQuery(query);
 			qq.setAggregate();
@@ -1725,6 +1718,22 @@ public class Query extends Exp {
 
 	public boolean isBind() {
 		return isBind;
+	}
+
+	public void setService(boolean isService) {
+		this.isService = isService;
+	}
+
+	boolean isService() {
+		return isService;
+	}
+
+	void setCompiled(boolean isCompiled) {
+		this.isCompiled = isCompiled;
+	}
+
+	boolean isCompiled() {
+		return isCompiled;
 	}
 	
 	

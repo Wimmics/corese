@@ -7,6 +7,7 @@ import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.EdgeCore;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -24,16 +25,16 @@ public class BuildImpl implements Build {
 	Node source;
 	ArrayList<String> exclude;
 	Hashtable<String, String> blank;
-	
+	Hashtable<String, Class<? extends EdgeImpl>> table;
+
 	public BuildImpl(){
-		
 	}
 	
 	public BuildImpl(Graph g){
 		graph = g;
 		blank = new Hashtable<String, String> ();
 		exclude = new ArrayList<String>();
-		source = graph.addGraph(Entailment.DEFAULT);
+		table = new Hashtable<String, Class<? extends EdgeImpl>>();
 	}
 	
 	public static BuildImpl create(Graph g){
@@ -46,7 +47,7 @@ public class BuildImpl implements Build {
 			Node predicate 	= getProperty(pred);
 			Node value 		= getLiteral(pred, lit);
 			if (value == null) return;
-			EdgeImpl edge 	= EdgeImpl.create(source, subject, predicate, value);
+			EdgeImpl edge 	= getEdge(source, subject, predicate, value);
 			process(source, edge);
 		}
 	}
@@ -57,7 +58,7 @@ public class BuildImpl implements Build {
 			Node subject 	= getNode(subj);
 			Node predicate 	= getProperty(pred);
 			Node value 		= getNode(obj);
-			EdgeImpl edge 	= EdgeImpl.create(source, subject, predicate, value);
+			EdgeImpl edge 	= getEdge(source, subject, predicate, value);
 			process(source, edge);
 		}
 	}
@@ -90,6 +91,40 @@ public class BuildImpl implements Build {
 		Entity ent = graph.addEdge(edge);
 	}
 	
+	public void define(String name, Class<? extends EdgeImpl> cl){
+		table.put(name, cl);
+	}
+	
+	public EdgeImpl getEdge(Node source, Node subject, Node predicate, Node value){
+		if (source == null) source = graph.addGraph(Entailment.DEFAULT);
+		
+		Class<? extends EdgeImpl> cl = table.get(predicate.getLabel());
+		if (cl != null){
+			EdgeImpl ee =  create(cl, source, subject, predicate, value);
+			return ee;
+		}
+		
+		return EdgeCore.create(source, subject, predicate, value);
+	}
+	
+	public EdgeImpl create(Class<? extends EdgeImpl> cl,
+			Node source, Node subject, Node predicate, Node value){
+		try {
+			EdgeImpl  edge = cl.newInstance();
+			edge.setGraph(source);
+			edge.setEdgeNode(predicate);
+			edge.setNode(0, subject);
+			edge.setNode(1, value);
+			
+			return edge;
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	
 	public Node getLiteral(AResource pred, ALiteral lit){
 		String lang = lit.getLang();

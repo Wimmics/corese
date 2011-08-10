@@ -668,33 +668,28 @@ public class Transformer implements ExpType {
 			break;
 
 
-
-
 		case QUERY:
 
-			ASTQuery ast = query.getQuery();
-
-			// subquery is compiled using a new compiler to get fresh new nodes
-			// to prevent type inference on nodes between outer and sub queries
-			exp = compile(ast);
-
-			// complete select, order by, group by
-			//complete(exp);
-
-			Query q =  create(exp);
-
-			complete(q, ast);
-
-			having(q, ast);
-			
-			q.setBind(ast.isBind());
-
-			exp = q;
-			
+			exp = compileQuery(query.getQuery());
 
 			break;
-
-
+			
+			
+		case SERVICE: {
+			// compiled as subquery
+			
+			Service service = (Service) query;
+			Node src = compile(service.getService());
+			Exp node = Exp.create(NODE, src);
+			
+			ASTQuery a = ast.subCreate();
+			a.setSelectAll(true);
+		    a.setBody(service.get(0));
+			Query q = compileQuery(a);
+			q.setService(true);
+			exp = Exp.create(SERVICE, node, q);
+		}
+		break;
 
 
 		default:
@@ -792,18 +787,40 @@ public class Transformer implements ExpType {
 
 
 		}
-		else if (type == SERVICE){
-			Service service = (Service) query;
-			Node src = compile(service.getService());
-			Exp node = Exp.create(NODE, src);
-			exp.add(0, node);
-		}
+//		else if (type == SERVICE){
+//			Service service = (Service) query;
+//			Node src = compile(service.getService());
+//			Exp node = Exp.create(NODE, src);
+//			exp.add(0, node);
+//		}
 
 		}
 
 		return exp;
 
 	}
+	
+	
+	Query compileQuery(ASTQuery ast){
+		// subquery is compiled using a new compiler to get fresh new nodes
+		// to prevent type inference on nodes between outer and sub queries
+		Exp exp = compile(ast);
+
+		// complete select, order by, group by
+		//complete(exp);
+
+		Query q =  create(exp);
+		q.setAST(ast);
+
+		complete(q, ast);
+
+		having(q, ast);
+
+		q.setBind(ast.isBind());
+
+		return q;
+	}
+	
 	
 	Node compile(Atom at){
 		// create triple(?g rdf:type rdfs:Resource)

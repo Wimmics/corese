@@ -106,6 +106,10 @@ public class Load
 		}
 	}
 	
+	public Build getBuild(){
+		return build;
+	}
+	
 	public QueryEngine getQueryEngine(){
 		return qengine;
 	}

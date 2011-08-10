@@ -55,6 +55,25 @@ public class Constant extends Atom {
 		return new Constant(str);
 	}
 	
+	public static Constant create(){
+		return new Constant();
+	}
+	
+	public static Constant createResource(){
+		Constant cst = new Constant();
+		cst.setDatatype(RDFS.RDFSRESOURCE);
+		return cst;
+	}
+	
+	public static Constant createBlank(){
+		Constant cst = new Constant();
+		cst.setDatatype(RDFS.RDFSRESOURCE);
+		cst.setBlank(true);
+		return cst;
+	}
+	
+
+	
 	public static Constant createResource(String str){
 		Constant cst =  new Constant(str);
 		if (nsm==null){

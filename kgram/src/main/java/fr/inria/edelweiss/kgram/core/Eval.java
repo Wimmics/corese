@@ -18,6 +18,7 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Plugin;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.api.query.Results;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
@@ -57,6 +58,8 @@ public class Eval implements  ExpType, Plugin {
 	
 	// Edge and Node producer
 	Producer producer, saveProducer;
+	
+	Provider provider;
 	
 	// Filter evaluator
 	Evaluator evaluator;
@@ -120,6 +123,10 @@ public class Eval implements  ExpType, Plugin {
 	
 	public static Eval create(Producer p, Evaluator e, Matcher m){
 		return new Eval(p, e, m);
+	}
+	
+	public void set(Provider p){
+		provider = p;
 	}
 	
 
@@ -316,6 +323,7 @@ public class Eval implements  ExpType, Plugin {
 	public Eval copy(Memory m, Producer p, Evaluator e){
 		Eval ev = create(p, e, match);
 		ev.setMemory(m);
+		ev.set(provider);
 		//ev.setSubEval(true);
 		if (hasEvent) ev.setEventManager(manager);
 		return ev;
@@ -675,7 +683,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				break;
 				
 			case SERVICE:
-				stack = stack.and(exp.rest(), n);
+				//stack = stack.and(exp.rest(), n);
 				backtrack = service(gNode, exp, stack, n, option);
 				break;
 
@@ -1194,10 +1202,67 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	}
 
 	
-	private	int service(Node gNode, Exp exp, Stack stack, int n,  boolean option){
+	private	int service2(Node gNode, Exp exp, Stack stack, int n,  boolean option){
 		stack = stack.and(exp.rest(), n);
 		int backtrack = eval(gNode, stack, n, option);
 		return backtrack;
+	}
+	
+	
+	private	Mappings service(Node serv, Exp exp){	
+		Memory mem = new Memory(match, evaluator);
+		mem.init(query);
+		Eval eval = copy(mem, producer, evaluator);
+		Mappings lMap = eval.subEval(query, null, Stack.create(exp), 0);
+		return lMap;
+	}
+	
+	private	int service(Node gNode, Exp exp, Stack stack, int n,  boolean option){
+			
+		int backtrack = n-1;
+		Memory env = memory;
+		Node serv = exp.first().getNode();
+		Node node = serv;
+		
+		if (serv.isVariable()){
+			node = env.getNode(serv);
+			if (node == null){
+				logger.error("Service variable unbound: " + serv);
+				return backtrack;
+			}
+		}
+				
+		if (provider != null){
+			Mappings lMap = provider.service(node, exp.rest());
+			for (Mapping map : lMap){
+				complete(query, map);
+				if (env.push(map, n, false)){
+					backtrack = eval(gNode, stack, n+1, option);
+					env.pop(map, false);
+					if (backtrack < n){
+						return backtrack;
+					}
+				}
+			}
+		}
+		else {
+			//lMap = service(node, exp.rest());
+			Query q = exp.rest().getQuery();
+			return query(gNode, q, stack, n, option);
+		}	
+			
+		return backtrack;
+	}
+	
+	void complete(Query q, Mapping map){
+		int i = 0;
+		for (Node node : map.getQueryNodes()){
+			Node out = q.getOuterNode(node);
+			if (out != null){
+				map.getQueryNodes()[i] = out;
+			}
+			i++;
+		}
 	}
 	
 	/**

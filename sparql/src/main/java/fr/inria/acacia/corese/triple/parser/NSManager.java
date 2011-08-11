@@ -193,6 +193,11 @@ public class NSManager
 		return str;
 	}
 	
+	public String definePrefix(String prefix, String ns){
+		return defNamespace(ns, prefix);
+	}
+
+	
 	public String defNamespace(String ns, String prefix){
 		if (ns!=null && prefix!=null){
 			prefix=createPrefix(prefix);

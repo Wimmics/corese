@@ -763,7 +763,11 @@ public class ASTQuery  implements Keyword {
     }
     
     public  Term createList(ExpressionList el) {
-    	return createFunction(LIST, el);
+    	Term list = Term.list();
+    	for (Expression exp : el){
+    		list.add(exp);
+    	}
+    	return list;
     }
 
     public Term negation(Expression e){

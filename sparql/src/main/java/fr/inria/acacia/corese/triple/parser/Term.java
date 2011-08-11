@@ -41,6 +41,8 @@ public class Term extends Expression {
 	static final String SCORE = "score";
 	static final String SBOUND = "bound";
 	static final String EXIST = "exist";
+	static final String LIST = "list";
+
 
 	Processor proc;
 	Exp exist;
@@ -88,6 +90,10 @@ public class Term extends Expression {
 		Term fun = new Term(name); 
 		fun.isFunction = true;
 		return fun;
+	}
+	
+	public static Term list(){
+		return Term.function(LIST);
 	}
 	
 	public static Term function(String name, Expression exp){

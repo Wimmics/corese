@@ -177,8 +177,8 @@ public class ASTQuery  implements Keyword {
 	Vector<String> vinfo;
 	Vector<String> errors;
 	
-	ArrayList<Variable> varBindings;
-	ArrayList<ArrayList<Constant>> valueBindings;
+	List<Variable> varBindings;
+	List<List<Constant>> valueBindings;
 	
 	Vector<Boolean> reverseTable = new Vector<Boolean>();
 //	Vector<Boolean> sortDistanceTable = new Vector<Boolean>();
@@ -2117,7 +2117,7 @@ public class ASTQuery  implements Keyword {
             group.add(var);
     }
     
-    public void setVariableBindings(ArrayList<Variable> list){
+    public void setVariableBindings(List<Variable> list){
     	varBindings = list;
     }
     
@@ -2125,14 +2125,14 @@ public class ASTQuery  implements Keyword {
     	return varBindings;
     }
     
-    public void setValueBindings(ArrayList<Constant> list){
+    public void setValueBindings(List<Constant> list){
     	if (valueBindings == null){
-    		valueBindings = new ArrayList<ArrayList<Constant>>();
+    		valueBindings = new ArrayList<List<Constant>>();
     	}
     	valueBindings.add(list);
    }
     
-    public List<ArrayList<Constant>> getValueBindings(){
+    public List<List<Constant>> getValueBindings(){
     	return valueBindings;
     }
     

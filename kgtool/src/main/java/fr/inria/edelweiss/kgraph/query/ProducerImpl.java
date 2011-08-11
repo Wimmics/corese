@@ -40,6 +40,7 @@ public class ProducerImpl implements Producer {
 	Graph graph, 
 	// cache for handling (fun() as var) created Nodes
 	local;
+	Mapper mapper;
 	
 	public ProducerImpl(){
 		this(Graph.create());
@@ -48,6 +49,7 @@ public class ProducerImpl implements Producer {
 	public ProducerImpl(Graph g){
 		graph = g;
 		local = Graph.create();
+		mapper = new Mapper(this);
 	}
 	
 	public static ProducerImpl create(Graph g){
@@ -61,6 +63,10 @@ public class ProducerImpl implements Producer {
 	
 	public Graph getGraph(){
 		return graph;
+	}
+	
+	public void set(Mapper m){
+		mapper = m;
 	}
 	
 	Node getNode(Edge edge, Node gNode, int i){
@@ -504,7 +510,6 @@ public class ProducerImpl implements Producer {
 		}
 		else if (object instanceof ResultSet){
 			// sql()
-			Mapper mapper = new Mapper(this);
 			Mappings lMap = mapper.sql(nodes, (ResultSet) object);
 			return lMap;
 		}

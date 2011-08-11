@@ -22,8 +22,12 @@ public class Mapper {
 	
 	Producer producer;
 	
-	Mapper(Producer p){
+	public Mapper(Producer p){
 		producer = p;
+	}
+	
+	public Producer getProducer(){
+		return producer;
 	}
 	
 	Mappings map(List<Node> lNodes, Object object){
@@ -33,43 +37,24 @@ public class Mapper {
 		else return new Mappings();
 	}
 	
-	Mappings sql(List<Node> lNodes, ResultSet rs){
+	public Mappings sql(List<Node> lNodes, ResultSet rs){
 		Mappings lMap = new Mappings();
 		Node[] qNodes = new Node[lNodes.size()];
 		int j = 0;
 		for (Node n : lNodes){
 			qNodes[j++] = n;
 		}
-		IDatatype dt;
+		
     	try {
 			int size = rs.getMetaData().getColumnCount();
 			while (rs.next()) {
 				Node[] nodes = new Node[size];
+				
 				for (int i=1; i<=size; i++){
-					// column starts at 1 !!!
-					dt = null;
-					switch(rs.getMetaData().getColumnType(i)){
-					
-					case java.sql.Types.INTEGER:
-					case java.sql.Types.NUMERIC:
-					case java.sql.Types.DECIMAL:
-						dt = DatatypeMap.newInstance(rs.getInt(i));break;
-					case java.sql.Types.BIGINT:
-						dt = DatatypeMap.newInstance(rs.getLong(i));break;
-					case java.sql.Types.FLOAT: 
-						dt = DatatypeMap.newInstance(rs.getFloat(i));break;
-					case java.sql.Types.DOUBLE:
-						dt = DatatypeMap.newInstance(rs.getDouble(i));break;
-					case java.sql.Types.BOOLEAN: 
-						dt = DatatypeMap.newInstance(rs.getBoolean(i));break;
-					case java.sql.Types.DATE: 
-						dt = DatatypeMap.newDate(rs.getDate(i).toString());break;
-					default: 
-						dt = DatatypeMap.newInstance(rs.getString(i).trim());
-					}
-					Node node = producer.getNode(dt);
+					Node node = getNode(rs, i);
 					nodes[i-1] = node;
 				}
+				
 				Mapping map =  Mapping.create(qNodes, nodes);
 				lMap.add(map);
 			}
@@ -81,6 +66,44 @@ public class Mapper {
 			lMap = null;
 		}
     	return lMap;
+	}
+		
+	public Node getNode(ResultSet rs, int i) throws SQLException{
+		IDatatype dt = null;
+		
+		switch(rs.getMetaData().getColumnType(i)){
+		
+		case java.sql.Types.NULL: break;
+
+		case java.sql.Types.INTEGER:
+		case java.sql.Types.NUMERIC:
+		case java.sql.Types.DECIMAL:
+			dt = DatatypeMap.newInstance(rs.getInt(i));break;
+			
+		case java.sql.Types.BIGINT:
+			dt = DatatypeMap.newInstance(rs.getLong(i));break;
+			
+		case java.sql.Types.FLOAT: 
+			dt = DatatypeMap.newInstance(rs.getFloat(i));break;
+			
+		case java.sql.Types.DOUBLE:
+			dt = DatatypeMap.newInstance(rs.getDouble(i));break;
+			
+		case java.sql.Types.BOOLEAN: 
+			dt = DatatypeMap.newInstance(rs.getBoolean(i));break;
+			
+		case java.sql.Types.DATE: 
+			dt = DatatypeMap.newDate(rs.getDate(i).toString());break;
+			
+		default: 
+			dt = DatatypeMap.newInstance(rs.getString(i).trim());
+		}
+		
+		Node node = null;
+		if (dt != null){
+			node = producer.getNode(dt);
+		}
+		return node;
 	}
 	
 	

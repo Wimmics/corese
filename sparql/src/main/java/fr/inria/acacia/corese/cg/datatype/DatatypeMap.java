@@ -24,6 +24,8 @@ public class DatatypeMap implements Cst, RDF {
 
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(DatatypeMap.class);
+	
+	public static IDatatype ZERO = newInstance(0);
 
 	private static Hashtable<String, Mapping> ht ;
 	static DatatypeMap dm = DatatypeMap.create();

@@ -38,7 +38,7 @@ public class NSManager
 	public static final String NSsep="#";
 	static final char[] end={'#', '/', '?', ':'}; // may end an URI ...
 	static final String[] PROTOCOLS = 
-	{ "http://", "file:", "ftp://", "mailto:", "urn:", "news:" };
+	{ "http://", "file:", "ftp://", "mailto:", "urn:", "news:", KeywordPP.CORESE_PREFIX };
 	static final String pchar=":";
 	int count=0;
 	Hashtable<String, String> def; // system namespace with prefered prefix
@@ -298,6 +298,10 @@ public class NSManager
 	 */
 	public String toNamespaceB(String pname){
 		pname = toNamespace(pname);
+		if (pname.matches("[a-zA-Z0-9]*://.*")){
+			// skip schemes like: test://www.example.org (cf W3C update test case) 
+			return pname;
+		}
 		if (isBase() && ! isURN(pname) && !Triple.isVariable(pname)) {
 			String toReturn = getBase() + pname;
 			return toReturn;

@@ -57,16 +57,26 @@ public class UpdateProcess {
 			if (isDebug){
 				logger.debug("** Update: " + u);
 			}
+			boolean suc = true;
 			
 			if (u.isBasic()){
 				// load copy ...
 				Basic b = u.getBasic();
-				manager.process(b);
+				suc = manager.process(b);
+				
 			}
 			else {
 				// delete insert data where
 				Composite c = u.getComposite();
-				process(c);
+				suc = process(c);
+			}
+			
+			if (! suc){
+				q.setCorrect(false);
+				if (isDebug){
+					logger.debug("** Failure: " + u);
+				}
+				break;
 			}
 		}
 		

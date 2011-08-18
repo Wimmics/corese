@@ -7,6 +7,7 @@ import java.util.List;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.edelweiss.kgenv.parser.Transformer;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -163,7 +164,19 @@ public class QueryProcess extends QuerySolver {
 	 * Called by sparql update
 	 */
 	public Mappings query(ASTQuery ast){
+		if (ast.isUpdate()){
+			return update(ast);
+		}
 		return query(ast, null, null);
+	}
+	
+	/**
+	 * equivalent of std query(ast) but for update
+	 */
+	public Mappings update(ASTQuery ast){
+		Transformer transformer =  transformer();
+		Query query = transformer.transform(ast);
+		return query(query);
 	}
 	
 	/**

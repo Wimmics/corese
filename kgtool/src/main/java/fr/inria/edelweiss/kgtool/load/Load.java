@@ -39,9 +39,10 @@ public class Load
 	Loader {
 	private static Logger logger = Logger.getLogger(Load.class);	
 
-	static final String RULE = ".rul";
-	static final String QUERY = ".rq";
-	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", RULE, QUERY};
+	static final String RULE 	= ".rul";
+	static final String QUERY 	= ".rq";
+	static final String UPDATE 	= ".ru";
+	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", RULE, QUERY, UPDATE};
 	static final String HTTP = "http://";
 	static final String FTP  = "ftp://";
 	static final String FILE = "file://";
@@ -140,8 +141,59 @@ public class Load
 		return true;
 	}
 	
-	public void load(String path, String base, String source){
-		if (! suffix(path)) return ;
+	public void load(String path){
+		load(path, null);
+	}
+	
+	public void loadWE(String path) throws LoadException{
+		loadWE(path, null);
+	}
+	
+	public void load(String path, String src){
+		File file=new File(path);
+		if (file.isDirectory()){
+			path += File.separator;
+			for (String f : file.list()){
+				if (! suffix(f)) continue ;
+				String name = path + f;
+				load(name, src);
+			}
+		}
+		else {
+			if (debug){
+				logger.debug("** Load: " + nb + " " + path);
+			}
+			try {
+				load(path, src, null);
+			} catch (LoadException e) {
+				e.printStackTrace();
+			} 
+		}
+	}
+	
+	public void loadWE(String path, String src) throws LoadException{
+		File file=new File(path);
+		if (file.isDirectory()){
+			path += File.separator;
+			
+			for (String f : file.list()){
+				if (! suffix(f)) continue ;
+				String name = path + f;
+				loadWE(name, src);
+			}
+		}
+		else {
+			if (debug){
+				logger.debug("** Load: " + nb + " " + path);
+			}
+			load(path, src, null);
+		}
+	}
+	
+	
+	
+	public void load(String path, String base, String source) throws LoadException {
+		//if (! suffix(path)) return ;
 		
 		if (path.endsWith(RULE)){
 			loadRule(path, base);
@@ -158,15 +210,13 @@ public class Load
 			if (isURL(path)){
 				URL url = new URL(path);
 				read = new InputStreamReader(url.openStream());
-				}
+			}
 			else {
 				read = new FileReader(path);
 			}
-		} 
+		}
 		catch (Exception e){
-			error(e.getMessage());
-			error("URL/File load error: " + path);
-			return;
+			throw LoadException.create(e);
 		}
 				
 		if (base != null){
@@ -190,19 +240,19 @@ public class Load
 	
 	
 	// not for rules
-	public void load(InputStream stream, String source){
+	public void load(InputStream stream, String source) throws LoadException{
 		if (source == null) source = Entailment.DEFAULT;
 		Reader read = new InputStreamReader(stream);
 		load(read, source, source, source);
 	}
 	
 	
-	void load(Reader read,  String path, String base, String src){
+	void load(Reader read,  String path, String base, String src) throws LoadException {
 		if (hasPlugin){
 			src  = plugin.statSource(src);
 			base = plugin.statBase(base);
 		}
-		
+
 		source = src;
 		build.setSource(source);
 		build.start();
@@ -211,7 +261,7 @@ public class Load
 			arp.setRDFListener(this);
 		}
 		catch (java.lang.NoSuchMethodError e){
-			
+
 		}
 		arp.setStatementHandler(this);
 		try {
@@ -219,14 +269,10 @@ public class Load
 			read.close();
 		} 
 		catch (SAXException e) {
-			// TODO Auto-generated catch block
-			error(e.getMessage() + " " + path); 
-			error(arp.getLocator());
+			throw LoadException.create(e, arp.getLocator());
 		} 
 		catch (IOException e) {
-			// TODO Auto-generated catch block
-			error(e.getMessage() + " " + path); 
-			error(arp.getLocator());
+			throw LoadException.create(e, arp.getLocator());
 		}
 	}
 	
@@ -249,7 +295,7 @@ public class Load
 	
 	
 	boolean suffix(String path){
-		if (isURL(path)) return true;
+		//if (isURL(path)) return true;
 		
 		for (String suf : SUFFIX){
 			if (path.endsWith(suf)){
@@ -258,29 +304,6 @@ public class Load
 		}
 		return false;
 	}
-	
-	public void load(String path){
-		load(path, null);
-	}
-	
-	public void load(String path, String src){
-		File file=new File(path);
-		if (file.isDirectory()){
-			path += File.separator;
-			for (String f : file.list()){
-				String name = path + f;
-				load(name, src);
-			}
-		}
-		else {
-			if (debug){
-				logger.debug("** Load: " + nb + " " + path);
-			}
-			load(path, src, null);
-		}
-	}
-	
-
 	
 	public void statement(AResource subj, AResource pred, ALiteral lit) {
 		build.statement(subj, pred, lit);

@@ -93,10 +93,15 @@ public class Mapper {
 			dt = DatatypeMap.newInstance(rs.getBoolean(i));break;
 			
 		case java.sql.Types.DATE: 
-			dt = DatatypeMap.newDate(rs.getDate(i).toString());break;
+			if (rs.getDate(i) != null){
+				dt = DatatypeMap.newDate(rs.getDate(i).toString());
+			}
+			break;
 			
 		default: 
-			dt = DatatypeMap.newInstance(rs.getString(i).trim());
+			if (rs.getString(i) != null){
+				dt = DatatypeMap.newInstance(rs.getString(i).trim());
+			}
 		}
 		
 		Node node = null;

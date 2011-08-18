@@ -132,7 +132,7 @@ public class QuerySolver  {
 		return query(ast, null, null);
 	}
 	
-	Transformer transformer(){
+	protected Transformer transformer(){
 		Transformer transformer = Transformer.create();
 		if (sort != null) {
 			transformer.set(sort);

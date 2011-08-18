@@ -203,8 +203,9 @@ void UpdateQuery1() : {
 	}
 	
 	(
-		<LOAD> {ope = Basic.create(Update.LOAD);} uri = IRIref() {ope.setURI(uri);} 
-		
+		<LOAD> {ope = Basic.create(Update.LOAD);} 
+		(<SILENT> 	{ope.setSilent(true);} ) ?  
+		uri = IRIref() {ope.setURI(uri);} 
 		( <INTO> <GRAPH> graph = IRIref() {ope.setTarget(graph);} ) ?
 	|
 		(<CLEAR>  	{ope = Basic.create(Update.CLEAR);} | <DROP> {ope = Basic.create(Update.DROP);})

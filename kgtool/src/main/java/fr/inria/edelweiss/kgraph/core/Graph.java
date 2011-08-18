@@ -815,20 +815,23 @@ public class Graph {
 	public boolean update(String source, String target, boolean isSilent, int mode){
 		Node g1 = getGraphNode(source);
 		Node g2 = getGraphNode(target);
-		if (g1 != null){
-			setUpdate(true);
-
-			if (g2 == null){
-				g2 = addGraph(target);
-			}
-			
-			switch (mode){
-			case ADD:  tables[IGRAPH].add(g1, g2); break;
-			case MOVE: tables[IGRAPH].move(g1, g2); break;
-			case COPY: tables[IGRAPH].copy(g1, g2); break;
-
-			}
+		
+		if (g1 == null){
+			return false;
 		}
+		setUpdate(true);
+
+		if (g2 == null){
+			g2 = addGraph(target);
+		}
+
+		switch (mode){
+		case ADD:  tables[IGRAPH].add(g1, g2); break;
+		case MOVE: tables[IGRAPH].move(g1, g2); break;
+		case COPY: tables[IGRAPH].copy(g1, g2); break;
+
+		}
+		
 		return true;
 	}
 	

@@ -30,6 +30,10 @@ public class CoreseLiteral extends CoreseStringLiteral { //CoreseStringableImpl{
 	 * Literal has no xsd:datatype
 	 */
 	public IDatatype getDatatype(){
+		if (dataLang == empty){
+			// SPARQL requires that datatype("abc") = xsd:string
+			return CoreseString.datatype;
+		}
 		return null;
 	}
 

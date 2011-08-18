@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 
 /**
  * SPARQL 1.1 Update
@@ -233,9 +234,9 @@ public class ManagerImpl implements Manager {
 		if (source.equals(target)) return true;
 		
 		switch (mode){
-		case ADD:   graph.add(source, target, ope.isSilent()); break;
-		case MOVE:  graph.move(source, target, ope.isSilent());break;
-		case COPY: 	graph.copy(source, target, ope.isSilent());break;
+		case ADD:   return graph.add(source, target, ope.isSilent()); 
+		case MOVE:  return graph.move(source, target, ope.isSilent());
+		case COPY: 	return graph.copy(source, target, ope.isSilent());
 		}
 		return true;
 	}
@@ -263,7 +264,11 @@ public class ManagerImpl implements Manager {
 	private boolean load(Basic ope) {
 		String uri = ope.expand(ope.getURI());
 		String src = ope.expand(ope.getTarget());
-		load.load(uri, src);
+		try {
+			load.loadWE(uri, src);
+		} catch (LoadException e) {
+			return ope.isSilent();
+		}
 		return true;
 	}
 

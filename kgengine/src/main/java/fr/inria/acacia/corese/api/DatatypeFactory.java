@@ -3,9 +3,7 @@ package fr.inria.acacia.corese.api;
 import java.util.Date;
 import java.util.HashMap;
 
-import fr.inria.acacia.corese.cg.datatype.CoreseBlankNode;
 import fr.inria.acacia.corese.cg.datatype.CoreseDatatype;
-import fr.inria.acacia.corese.cg.datatype.CoreseURI;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
@@ -76,7 +74,7 @@ public class DatatypeFactory {
 		// if type = literal, without language, we change it to String
 		if (type == CoreseType.LITERAL) type = CoreseType.STRING;
 		// if type = blank node, this is a particular case and we create directly the new CoreseBlankNode
-		else if (type == CoreseType.BNODE) return new CoreseBlankNode(result);
+		else if (type == CoreseType.BNODE) return DatatypeMap.createBlank(result); // new CoreseBlankNode(result);
 		// if the table hasn't been created yet, we do it now
 		if (datatypeHM == null) createTable();
 		// then we return the new correct CoreseDatatype

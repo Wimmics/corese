@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Build;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.LoadPlugin;
 
 /**
@@ -157,7 +158,11 @@ public class GraphEngine implements IEngine {
 
 	
 	public void load(InputStream rdf, String source) throws EngineException {
-		loader().load(rdf, source);
+		try {
+			loader().load(rdf, source);
+		} catch (LoadException e) {
+			throw new EngineException(e.toString());
+		}
 	}
 
 	

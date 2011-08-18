@@ -3,7 +3,7 @@ package fr.inria.edelweiss.kgenv.eval;
 import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.CoreseInteger;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -24,6 +24,8 @@ import fr.inria.edelweiss.kgram.filter.Proxy;
  * 
  */
 class Walker extends Interpreter {
+	static IDatatype ZERO = DatatypeMap.ZERO;
+	
 	Expr exp;
 	Node qNode, tNode;
 	double sum = 0;
@@ -72,7 +74,7 @@ class Walker extends Interpreter {
 			
 		case SUM: 
 			if (dtres == null){
-				return CoreseInteger.ZERO;
+				return ZERO;
 			}
 			else { 
 				return dtres;
@@ -80,7 +82,7 @@ class Walker extends Interpreter {
 
 		case AVG: 
 			if (dtres == null){
-				return CoreseInteger.ZERO;
+				return ZERO;
 			}
 			
 			double dd = dtres.getDoubleValue() / num;

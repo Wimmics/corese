@@ -34,7 +34,8 @@ public class NSManager
 	
 	/** prefix seed (ns1, ns2,...) */
 	private static final String seed = "ns";
-	
+	private static final String DOT = ".";
+
 	public static final String NSsep="#";
 	static final char[] end={'#', '/', '?', ':'}; // may end an URI ...
 	static final String[] PROTOCOLS = 
@@ -198,11 +199,23 @@ public class NSManager
 	}
 
 	
+	/**
+	 *  function://fr.inria.Extern should ends with a "."
+	 */
+	String prepare(String ns){
+		if (ns.startsWith(KeywordPP.CORESE_PREFIX) && ! ns.endsWith(DOT)){
+			ns += DOT;
+		}
+		return ns;
+	}
+	
 	public String defNamespace(String ns, String prefix){
 		if (ns!=null && prefix!=null){
-			prefix=createPrefix(prefix);
-			if (! tns.containsKey(ns))
+			ns = prepare(ns);
+			prefix = createPrefix(prefix);
+			if (! tns.containsKey(ns)){
 				tns.put(ns, prefix);
+			}
 			defPrefix(prefix, ns);
 			index.put(ns, new Integer(tns.size()));
 		}

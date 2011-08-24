@@ -54,7 +54,7 @@ public class Term extends Expression {
 	isPlus = false;
 	boolean isSystem = false;
 	boolean isDistinct = false;
-	String longName, modality;
+	String  modality;
 	
 	public Term() {
 	}
@@ -115,17 +115,17 @@ public class Term extends Expression {
 	}
 	
 	public String getLabel() {
-		if (longName!=null) return longName;
+		if (getLongName()!=null) return getLongName();
 		return name;
 	}
 	
-	public String getLongName(){
-		return longName;
-	}
-	
-	public void setLongName(String name){
-		 longName = name;
-	}
+//	public String getLongName(){
+//		return longName;
+//	}
+//	
+//	public void setLongName(String name){
+//		 longName = name;
+//	}
 	
 	public void setDistinct(boolean b){
 		isDistinct = b;

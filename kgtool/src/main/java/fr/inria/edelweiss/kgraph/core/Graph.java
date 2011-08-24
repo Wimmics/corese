@@ -166,6 +166,14 @@ public class Graph {
 		return isIndex;
 	}
 	
+	public boolean isUpdate(){
+		return isUpdate;
+	}
+	
+	public boolean isEntail(){
+		return isEntail;
+	}
+	
 	void setProxy(){
 		proxy = inference;
 		if (proxy == null){
@@ -207,6 +215,7 @@ public class Graph {
 	 */
 	
 	public void init(){
+		
 		if (! isIndex){
 			isIndex = true;
 			index();
@@ -262,6 +271,12 @@ public class Graph {
 			tables[i].index();
 		}
 		isIndex = true;
+	}
+	
+	public void prepare(){
+		if (! isIndex){
+			index();
+		}
 	}
 	
 	void clearIndex(){
@@ -509,15 +524,15 @@ public class Graph {
 	}
 	
 	public Iterable<Entity> getEdges(Node node, int n){
-		MetaIterator<Entity> meta = null;
+		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+		
 		for (Node pred : table.getProperties()){
 			Iterable<Entity> it = tables[n].getEdges(pred, node);
 			if (it != null){
-				if (meta == null) meta = new MetaIterator<Entity>(it);
-				else meta.next(it);
+				meta.next(it);
 			}
 		}
-		if (meta == null) return new ArrayList<Entity>();
+		if (meta.isEmpty()) return new ArrayList<Entity>();
 		return meta;
 	}
 	

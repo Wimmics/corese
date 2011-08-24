@@ -72,8 +72,10 @@ public class Processor {
 	static final String DISPLAY  = ExpType.KGRAM + "display";
 	static final String EXTEQUAL = ExpType.KGRAM + "equals";
 	static final String EXTCONT  = ExpType.KGRAM + "contains";
+	static final String PROCESS  = ExpType.KGRAM + "process";
+	static final String ENV  	 = ExpType.KGRAM + "env";
 
-	
+	static final String EXIST 	= Term.EXIST;
 	static final String STRLEN 	= "strlen";
 	static final String SUBSTR 	= "substr";
 	static final String UCASE 	= "ucase";
@@ -292,14 +294,16 @@ public class Processor {
 		defoper(KGRAM, 	ExprType.KGRAM);
 		defoper(EXTERN, ExprType.EXTERN);
 		defoper(UNNEST, ExprType.UNNEST);
-		defoper(Term.EXIST, ExprType.EXIST);
-		defoper(SYSTEM,  ExprType.SYSTEM);
+		defoper(EXIST,  ExprType.EXIST);
+		defoper(SYSTEM, ExprType.SYSTEM);
 		
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(NUMBER,  ExprType.NUMBER);
 		defoper(DISPLAY, ExprType.DISPLAY);
-		defoper(EXTEQUAL, ExprType.EXTEQUAL);
+		defoper(EXTEQUAL,ExprType.EXTEQUAL);
 		defoper(EXTCONT, ExprType.EXTCONT);
+		defoper(PROCESS, ExprType.PROCESS);
+		defoper(ENV, 	 ExprType.ENV);
 
 		defoper(STRLEN, ExprType.STRLEN);
 		defoper(SUBSTR, ExprType.SUBSTR);

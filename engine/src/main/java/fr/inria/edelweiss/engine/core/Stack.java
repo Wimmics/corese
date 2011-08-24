@@ -19,6 +19,7 @@ class Stack  {
 	
 	ArrayList<Rule> rules 		= new ArrayList<Rule>();
 	ArrayList<Clause> clauses 	= new ArrayList<Clause>();
+	ArrayList<Clause> clauseRule= new ArrayList<Clause>();
 	ArrayList<Bind> binds 		= new ArrayList<Bind>();
 
 	void push(Rule r, Clause clause, Bind bind){
@@ -27,11 +28,20 @@ class Stack  {
 		binds.add(bind);
 	}
 	
+	void push(Rule r, Clause clause, Clause crule, Bind bind){
+		rules.add(r);
+		clauses.add(clause);
+		binds.add(bind);
+		clauseRule.add(crule);
+	}
+	
 	void pop(){
 		if (rules.size()>0)
 			rules.remove(rules.size()-1);
 		if (clauses.size()>0)
 			clauses.remove(clauses.size()-1);
+		if (clauseRule.size()>0)
+			clauseRule.remove(clauseRule.size()-1);
 		if (binds.size()>0)
 			binds.remove(binds.size()-1);
 	}
@@ -110,7 +120,9 @@ class Stack  {
 	public String toString(){
 		String str = "";
 		for (int i=0; i<rules.size(); i++){
-			str += i + ": " + rules.get(i).getID() + " " + clauses.get(i).getTriple() + " " + binds.get(i) + "\n";
+			str += i + ": " + rules.get(i).getID() + " c: " + 
+			clauses.get(i).getTriple() + " r: " + clauseRule.get(i).getTriple() + " " +
+			binds.get(i) + "\n";
 		}
 		return str;
 	}

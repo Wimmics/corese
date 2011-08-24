@@ -135,6 +135,8 @@ public interface ExprType {
 	// containsWordIgnoreCase containsWordIgnoreCaseAndAccent containsWordIgnoreCaseAccentAndPlurial
 	public static int EXTEQUAL	= 203;
 	public static int EXTCONT   = 204;
+	public static int PROCESS   = 205;
+	public static int ENV   	= 206;
 
 
 

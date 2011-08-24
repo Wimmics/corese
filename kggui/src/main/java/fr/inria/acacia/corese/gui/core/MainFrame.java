@@ -63,6 +63,8 @@ public class MainFrame extends JFrame implements ActionListener{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L; 
+	
+	private static final String TITLE = "Corese/KGRAM GUI - 3.0 - 2011-08-24";
 
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
@@ -160,7 +162,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	
 	public MainFrame(CaptureOutput aCapturer, String p_PropertyPath){
 		super();
-		this.setTitle("Corese/KGRAM GUI - 3.0 - 2011-07-01" ); //+ Corese.version + " - " + Corese.date );
+		this.setTitle(TITLE ); //+ Corese.version + " - " + Corese.date );
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(900, 700);
 		this.setMinimumSize(this.getSize());

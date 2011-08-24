@@ -513,7 +513,17 @@ public class ProducerImpl implements Producer {
 			Mappings lMap = mapper.sql(nodes, (ResultSet) object);
 			return lMap;
 		}
+		else if (object instanceof Mappings){
+			return map(nodes, (Mappings) object);
+		}
 		return new Mappings();
+	}
+	
+	Mappings map(List<Node> lNodes, Mappings lMap){
+		for (Mapping map : lMap){
+			map.setNodes(lNodes);
+		}
+		return lMap;
 	}
 	
 	

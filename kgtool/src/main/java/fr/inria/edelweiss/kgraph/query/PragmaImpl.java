@@ -38,10 +38,11 @@ public class PragmaImpl extends Pragma {
 		if (subject.equals(SELF)){
 			if (property.equals(ENTAIL)){
 				boolean b = value(object);
+				graph.setEntailment();
 				graph.setEntailment(b);
 				// as graph.isUpdate may have been set to false
 				// we force entailment
-				if (b) graph.setUpdate(true);
+				if (b) graph.setUpdate(true);	
 			}
 		}
 		

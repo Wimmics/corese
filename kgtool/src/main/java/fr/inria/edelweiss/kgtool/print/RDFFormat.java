@@ -53,6 +53,7 @@ public class RDFFormat {
 	RDFFormat(Graph g, NSManager n){
 		this(n);
 		graph = g;
+		graph.prepare();
 	}
 	
 	RDFFormat(Mapping m, NSManager n){
@@ -139,7 +140,7 @@ public class RDFFormat {
 	
 	
 	void print(Node node){
-
+		
 		Iterator<Entity> it = getEdges(node).iterator();
 		
 		if (it.hasNext()){

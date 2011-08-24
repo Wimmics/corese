@@ -741,7 +741,8 @@ public class ASTQuery  implements Keyword {
 
     public  Term createFunction(String name) {
     	Term term = Term.function(name);
-    	if (nsm!=null) term.setLongName(nsm.toNamespace(name));
+    	// no toNamespaceB()
+    	term.setLongName(getNSM().toNamespace(name));
     	return term;
     }
     
@@ -834,7 +835,7 @@ public class ASTQuery  implements Keyword {
     
 
 	public  Term createFunction(String name, Expression expression1) {
-        Term term = Term.function(name);
+        Term term = createFunction(name);
         term.add(expression1);
 		return term;
 	}
@@ -2019,9 +2020,7 @@ public class ASTQuery  implements Keyword {
     }
     
     public String defURI(String s){
-    	if (s.startsWith(KeywordPP.CORESE_PREFIX)) {
-      		s = s + ".";
-      	}
+    	//s = nsm.prepare(s);
     	return s;
     }
 

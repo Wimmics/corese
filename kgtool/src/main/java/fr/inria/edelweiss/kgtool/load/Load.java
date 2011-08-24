@@ -166,7 +166,7 @@ public class Load
 			try {
 				load(path, src, null);
 			} catch (LoadException e) {
-				e.printStackTrace();
+				logger.error(e);
 			} 
 		}
 	}
@@ -216,7 +216,7 @@ public class Load
 			}
 		}
 		catch (Exception e){
-			throw LoadException.create(e);
+			throw LoadException.create(e, path);
 		}
 				
 		if (base != null){
@@ -264,15 +264,16 @@ public class Load
 
 		}
 		arp.setStatementHandler(this);
+		arp.setErrorHandler(this);
 		try {
 			arp.load(read, base);
 			read.close();
 		} 
 		catch (SAXException e) {
-			throw LoadException.create(e, arp.getLocator());
+			throw LoadException.create(e, arp.getLocator(), path);
 		} 
 		catch (IOException e) {
-			throw LoadException.create(e, arp.getLocator());
+			throw LoadException.create(e, arp.getLocator(), path);
 		}
 	}
 	

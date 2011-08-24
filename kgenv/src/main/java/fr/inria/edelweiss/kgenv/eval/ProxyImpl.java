@@ -35,8 +35,8 @@ import fr.inria.lang.StringHelper;
 public class ProxyImpl implements Proxy, ExprType {
 	private static Logger logger = Logger.getLogger(ProxyImpl.class);	
 
-	static IDatatype TRUE = DatatypeMap.TRUE;
-	static IDatatype FALSE = DatatypeMap.FALSE;
+	protected static IDatatype TRUE = DatatypeMap.TRUE;
+	protected static IDatatype FALSE = DatatypeMap.FALSE;
 	static final String UTF8 = "UTF-8";
 	public static final String RDFNS   =  "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	public static final String RDFTYPE   = RDFNS + "type";
@@ -184,6 +184,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			
 		case KGRAM: 
 		case EXTERN:
+		case PROCESS:
 			return plugin.eval(exp, env, args);
 			
 		case DEBUG:

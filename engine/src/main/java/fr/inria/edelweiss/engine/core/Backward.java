@@ -59,6 +59,13 @@ public class Backward {
 	
 		public LBind prove(Query query, Bind bind){
 			debug = query.getASTQuery().isDebug();
+			if (debug){
+				System.out.println("** RuleBase: " );
+				for (Rule rr : ruleBase){
+					System.out.println(rr);
+				}
+				System.out.println("** end" );
+			}
 			return prove(query, query.getClauses(), bind, 0, 0);
 		}
 		
@@ -135,6 +142,13 @@ public class Backward {
 
 			LBind lbQuery = sparql.searchTriples(query, clause, bind);
 			
+			if (debug){
+				System.out.println("sparql: "+ clause);
+				System.out.println("bind: " + bind);
+				System.out.println("result: " + lbQuery);
+				System.out.println("__");
+			}
+			
 //			if (hasEvent){ 
 //				// we try to prove current clause by querying the graph
 //				RuleEvent e = 
@@ -144,7 +158,7 @@ public class Backward {
 //			}
 			
 			LBind lbProve;
-			
+									
 			if (clause.isGround()){
 				// e.g. clause = xxx rdf:type owl:TranstiveProperty
 				// no backward for this clause, search only in RDF store
@@ -247,15 +261,17 @@ public class Backward {
             
             //iteration of the base of rules
             for (Rule rule : ruleBase){
-            	
+           	
             	// draft to prevent loop 
             	if (stack.contains(rule, clause, bind)){
             		continue;
             	}
             	
+
             	// get the clause of the rule matching the clause of the query
+            	// TODO: what if several clauses would match ?
             	Clause clauseRule = rule.match(clause, bind);
- 
+
             	if (clauseRule != null){
                 	//the rule match the clause, with considering the bind
             		
@@ -275,12 +291,14 @@ public class Backward {
             		Bind unified =  bind.unify(clauseRule, clause);
             		
             		if (unified != null){
-                   		stack.push(rule, clause, bind);
-                   		
+                   		stack.push(rule, clause, clauseRule, bind);
+
                    		if (debug){
+                   			//System.out.println(level + ": " + rule.getID() + " " + clauseRule.getTriple() + " " + clause + " " + unified);
+                   			System.out.println("prove: " + clause );
+                   			System.out.println("with:  " + clauseRule.getTriple() + " " + unified);
                    			System.out.println(stack);
-                   			System.out.println(level + ": " + rule.getID() + " " + clauseRule.getTriple() + " " + unified);
-                   			//watch();
+                   			watch();
                    		}
                    	 
             			lb1 = prove(rule.getBody(), rule.getBody().getClauses(), 

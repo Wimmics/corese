@@ -75,6 +75,8 @@ public class Eval implements  ExpType, Plugin {
 	// Stacks for binding edges and nodes
 	Memory memory; 
 	
+	private Stack current;
+	
 	Query query;
 	
 	Exp maxExp;
@@ -127,6 +129,18 @@ public class Eval implements  ExpType, Plugin {
 	
 	public void set(Provider p){
 		provider = p;
+	}
+	
+	public void set(Producer p){
+		producer = p;
+	}
+	
+	public void set(Matcher m){
+		match = m;
+	}
+	
+	public void set(Evaluator e){
+		evaluator = e;
 	}
 	
 
@@ -202,7 +216,9 @@ public class Eval implements  ExpType, Plugin {
 			function();
 		}
 		else {
-			eval(gNode, Stack.create(q.getBody()), 0, false);
+			Stack stack = Stack.create(q.getBody());
+			set(stack);
+			eval(gNode, stack, 0, false);
 		}
 	}
 	
@@ -2096,6 +2112,14 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	boolean send(int type, Object obj, Object arg, Object arg2){
 		Event e = EventImpl.create(type, obj, arg, arg2);
 		return manager.send(e);
+	}
+
+	void set(Stack current) {
+		this.current = current;
+	}
+
+	public Stack getStack() {
+		return current;
 	}
 	
 

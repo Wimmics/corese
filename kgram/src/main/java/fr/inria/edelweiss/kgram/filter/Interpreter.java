@@ -49,6 +49,10 @@ public class Interpreter implements Evaluator, ExprType {
 		producer = p;
 	}
 	
+	public Proxy getProxy(){
+		return proxy;
+	}
+	
 	public Node eval(Filter f, Environment env) {
 		Expr exp = f.getExp();
 		Object value = eval(exp, env);
@@ -182,6 +186,8 @@ public class Interpreter implements Evaluator, ExprType {
 		
 		switch (exp.oper()){
 		
+		case ENV: return env;
+		
 		case SKIP: return TRUE;
 				
 		case BOUND: 
@@ -206,7 +212,7 @@ public class Interpreter implements Evaluator, ExprType {
 			if (qNode == null) return null;
 			int value = env.pathLength(qNode);
 			return proxy.getValue(value);	
-			
+		
 		case COUNT:
 		case MIN:
 		case MAX:
@@ -266,8 +272,6 @@ public class Interpreter implements Evaluator, ExprType {
 
 	}
 
-	
-	
 	Object[] evalArguments(Expr exp, Environment env){
 		Object[] args = new Object[exp.arity()];
 		int i = 0;

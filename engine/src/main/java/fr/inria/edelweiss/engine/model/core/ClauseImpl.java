@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.api.ElementClause;
@@ -29,7 +30,18 @@ public class ClauseImpl implements Clause {
 		
 		//initialize the list of clause-elements
 		elements=new ArrayList<ElementClause>();
-				
+		
+		// Use case:  SPARQL query return result using select *
+		// must transform blanks into std variables
+		Atom sub = triple.getSubject();
+		if (sub.isBlankNode()){
+			sub.getVariable().setBlankNode(false);
+		}
+		Atom obj = triple.getObject();
+		if (obj.isBlankNode()){
+			obj.getVariable().setBlankNode(false);
+		}
+		
 		elements.add(triple.getSubject());
 		elements.add(triple.getPredicate());
 		elements.add(triple.getObject());

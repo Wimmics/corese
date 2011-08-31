@@ -13,6 +13,7 @@ public class NodeImpl implements Node {
 	
 	String label;
 	int index;
+	Object object;
 	
 	public NodeImpl(String l){
 		label = l;
@@ -75,6 +76,14 @@ public class NodeImpl implements Node {
 	public boolean isBlank() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public Object getObject() {
+		return object;
+	}
+
+	public void setObject(Object o) {
+		object = o;
 	}
 
 }

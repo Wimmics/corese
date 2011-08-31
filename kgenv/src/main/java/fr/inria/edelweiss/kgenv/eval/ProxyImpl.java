@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgenv.eval;
 
 
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 
 import org.apache.log4j.Logger;
@@ -425,12 +426,17 @@ public class ProxyImpl implements Proxy, ExprType {
 	}		
 	
 	IDatatype uri(Expr exp, IDatatype dt){
-		if (exp.getModality()!=null){
+		if (dt.isURI()) return dt;
+		String label = dt.getLabel();
+		if (exp.getModality()!=null && ! isURI(label)){
 			// with base
-			return DatatypeMap.newResource(exp.getModality() + dt.getLabel());
-		}
-		else if (dt.isURI()) return dt;
-		else return DatatypeMap.newResource(dt.getLabel());
+			return DatatypeMap.newResource(exp.getModality() + label);
+		} 
+		else return DatatypeMap.newResource(label);
+	}
+	
+	boolean isURI(String str){
+		return str.matches("[a-zA-Z0-9]+://.*");
 	}
 
 	

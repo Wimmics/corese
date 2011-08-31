@@ -49,6 +49,7 @@ public class Entailment {
 	public static final String RDFSMEMBER 		 = RDFS + "member";
 	public static final String RDFBLI 		 	 = RDF  + "_";
 	public static final String RDFSCLASS 	 	 = RDFS + "Class";
+	public static final String RDFSRESOURCE		 = RDFS + "Resource";
 	public static final String RDFSLABEL 	 	 = RDFS + "label";
 	public static final String RDFSCOMMENT 	 	 = RDFS + "comment";
 

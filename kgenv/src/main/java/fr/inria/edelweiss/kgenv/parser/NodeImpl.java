@@ -110,4 +110,16 @@ public class NodeImpl implements Node {
 		index = n;
 	}
 
+	@Override
+	public Object getObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setObject(Object o) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -709,7 +709,14 @@ public class Transformer implements ExpType {
 			if (tmp.isQuery() && tmp.getQuery().isBind()){
 				hasBind = true;
 			}
-			exp.insert(tmp);
+			if (ee.isScope()){
+				// add AND as a whole
+				exp.add(tmp);
+			}
+			else {
+				// add elements of AND one by one
+				exp.insert(tmp);
+			}
 
 		}
 		

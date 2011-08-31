@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  */
 public class NodeImpl implements Node, Entity {
 	IDatatype dt;
-	
+	Object object;
 	
 	
 	public NodeImpl(IDatatype val){
@@ -107,6 +107,14 @@ public class NodeImpl implements Node, Entity {
 	public Node getNode() {
 		// TODO Auto-generated method stub
 		return this;
+	}
+	
+	public Object getObject() {
+		return object;
+	}
+
+	public void setObject(Object o) {
+		object = o;
 	}
 
 }

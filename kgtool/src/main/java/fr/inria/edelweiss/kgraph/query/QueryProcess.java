@@ -86,7 +86,7 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	public static QueryProcess create(Producer prod, Matcher match){
-		Interpreter eval  = interpreter(prod);
+		Interpreter eval  = createInterpreter(prod);
 		QueryProcess exec = new QueryProcess(prod, eval, match);
 		return exec;
 	}
@@ -94,6 +94,15 @@ public class QueryProcess extends QuerySolver {
 	public static QueryProcess create(Producer prod, Evaluator ev, Matcher match){
 		QueryProcess exec = new QueryProcess(prod, ev, match);
 		return exec;
+	}
+	
+	static Interpreter createInterpreter(Producer p){
+		Interpreter eval  = interpreter(p);
+		if (p instanceof ProducerImpl){
+			ProducerImpl pp = (ProducerImpl) p;
+			eval.getProxy().setPlugin(PluginImpl.create(pp.getGraph()));
+		}
+		return eval;
 	}
 	
 	public Mappings query(String squery) throws EngineException{

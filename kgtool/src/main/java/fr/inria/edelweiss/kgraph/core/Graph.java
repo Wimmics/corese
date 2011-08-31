@@ -505,6 +505,15 @@ public class Graph {
 		return getEdges(predicate, node, null, n);
 	}
 	
+	public Iterable<Node> getNodes(Node pred, Node node, int n){
+		Iterable<Entity> it = getEdges(pred, node, n);
+		if (it == null){
+			return new ArrayList<Node>();
+		}
+		int index = (n == 0) ? 1 : 0;
+		return NodeIterator.create(it, index);
+	}
+	
 	public Iterable<Entity> getEdges(Node predicate, Node node, Node node2, int n){
 		if (isTopRelation(predicate)){
 			return getEdges(node, n);

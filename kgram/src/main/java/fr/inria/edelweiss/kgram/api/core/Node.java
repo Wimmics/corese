@@ -48,6 +48,10 @@ public interface Node {
 	// the target value for Matcher and Evaluator
 	// for KGRAM query it returns IDatatype
 	Object getValue();
+	
+	Object getObject();
+	
+	void setObject(Object o);
 
 	
 }

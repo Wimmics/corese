@@ -309,8 +309,11 @@ public class NSManager
 	 * @param pname
 	 * @return
 	 */
-	public String toNamespaceB(String pname){
-		pname = toNamespace(pname);
+	public String toNamespaceB(String str){
+		String pname = toNamespace(str);
+		if (! pname.equals(str)){
+			return pname;
+		}
 		if (pname.matches("[a-zA-Z0-9]*://.*")){
 			// skip schemes like: test://www.example.org (cf W3C update test case) 
 			return pname;

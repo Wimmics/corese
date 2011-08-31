@@ -174,7 +174,11 @@ public class ProxyImpl implements Proxy, ExprType {
 			// number of result
 			return getValue(env.count());
 			
-		case SIM: return similarity(env);
+		case SIM: 
+			if (plugin != null){
+				return plugin.eval(exp, env, args); 
+			}
+			return similarity(env);
 		
 		case EXTERNAL:
 			// user defined function with prefix/namespace
@@ -632,7 +636,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		return obj;
 	}
 
-	Object similarity(Environment env){
+	public Object similarity(Environment env){
 		if (! (env instanceof Memory)) return getValue(0);
 		Memory memory = (Memory) env;
 		int count = 0, total = 0;

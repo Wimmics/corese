@@ -42,7 +42,7 @@ public class PluginImpl extends ProxyImpl {
 		
 		case SIM:
 			if (distance == null){
-				distance = Distance.create(graph);
+				distance = graph.setDistance();
 			}
 			
 			if (args.length == 2){

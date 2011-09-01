@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  * If a class is not subClassOf rdfs:Resource, depth simulate to 1
  * 
  * TODO:
+ * Expensive with Entailment because of rdf:type generated rdfs:domain and rdfs:range
  * It loops if there is a loop in the subClassOf hierarchy
  * 
  * @author Olivier Corby & Fabien Gandon, Edelweiss INRIA 2011

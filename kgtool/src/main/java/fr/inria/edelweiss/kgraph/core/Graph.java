@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 /**
@@ -51,6 +52,7 @@ public class Graph {
 	Hashtable<String, Node> graph, property;
 	NodeIndex gindex;
 	Entailment inference, proxy;
+	private Distance distance;
 	// true when graph is modified and need index()
 	boolean 
 	isUpdate = false, 
@@ -869,5 +871,21 @@ public class Graph {
 	
 	public boolean copy(String source, String target, boolean isSilent){
 		return update(source, target, isSilent, COPY);
+	}
+
+	void setDistance(Distance distance) {
+		this.distance = distance;
+	}
+	
+	public Distance setDistance(){
+		if (distance != null){
+			return distance;
+		}
+		setDistance(Distance.create(this));
+		return distance;
+	}
+
+	public Distance getDistance() {
+		return distance;
 	}
 }

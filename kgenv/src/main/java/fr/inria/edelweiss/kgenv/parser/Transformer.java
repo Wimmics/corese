@@ -142,15 +142,17 @@ public class Transformer implements ExpType {
 
 		path(q, ast);
 		
+		// before complete (because select include binding nodes)
+		bindings(q, ast);
+
 		// retrieve select nodes for query:
 		complete(q, ast);
-
+		
 		q.setAST(ast);
 
 
 		having(q, ast);
 		
-		bindings(q, ast);
 
 
 		if (compiler.isFail() || fail){
@@ -206,7 +208,9 @@ public class Transformer implements ExpType {
 	void bindings(Query q, ASTQuery ast){
 		   if (ast.getValueBindings() == null) return ;
 		   
-		   Node[] nodes = bind(q, ast);
+		   List<Node> lNode = bind(q, ast);
+		   q.setBindingNodes(lNode);
+		   Node[] nodes = getNodes(lNode);
 		   
 		   List<Mapping> lMap = new ArrayList<Mapping>();
 		   
@@ -225,7 +229,7 @@ public class Transformer implements ExpType {
 	   }
 
 	
-	Node[] bind(Query q, ASTQuery ast){
+	List<Node> bind(Query q, ASTQuery ast){
 
 		List<Node> lNode = new ArrayList<Node>();
 
@@ -238,15 +242,19 @@ public class Transformer implements ExpType {
 			}
 			lNode.add(qNode);
 		}
-
+		
+		return lNode;
+	}
+	
+	Node[] getNodes(List<Node> lNode){
 		Node[] nodes = new Node[lNode.size()];
 		int i = 0;
 		for (Node node : lNode){
 			nodes[i++] = node;
 		}
 		return nodes;
-
 	}
+	
 	
 	List<Node> bind(List<Constant> lVal){
 		List<Node> lNode = new ArrayList<Node>();
@@ -319,13 +327,15 @@ public class Transformer implements ExpType {
 
 		qCurrent.setGraphNode(createNode());
 		
-		// check semantics of select vs aggregates and group by
-		boolean correct = qCurrent.check();
-		if (! correct){
-			qCurrent.setCorrect(false);
-		}
-		else {
-			qCurrent.setCorrect(ast.isCorrect());
+		if (qCurrent.isCorrect()){
+			// check semantics of select vs aggregates and group by
+			boolean correct = qCurrent.check();
+			if (! correct){
+				qCurrent.setCorrect(false);
+			}
+			else {
+				qCurrent.setCorrect(ast.isCorrect());
+			}
 		}
 
 	}

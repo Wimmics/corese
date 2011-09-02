@@ -8,6 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.filter.Compile;
 import fr.inria.edelweiss.kgram.tool.Message;
 
@@ -28,14 +29,16 @@ public class Query extends Exp {
 	List<Node> from, named, selectNode;
 	// all nodes (on demand)
 	List<Node> 
-		// std patterns but select, minus and exists
+		// std patterns (including bindings) but select, minus and exists
 		patternNodes,  
 		// std patterns  + minus + exists but select
 		queryNodes,
 		// select nodes in std pattern
 		patternSelectNodes, 
 		// all select nodes
-		querySelectNodes;
+		querySelectNodes,
+		// all bindings nodes
+		bindingNodes;
 	List<Exp> selectExp, orderBy, groupBy;
 	List<Filter> failure, pathFilter;
 	List<Mapping> bindings;
@@ -57,6 +60,8 @@ public class Query extends Exp {
 			isDelete = false, isUpdate = false, // true:  path do not loop on node
 			isLoopNode = false, isPipe = false, isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
 			isCorrect = true, isConnect = false;
+	
+	int mode = Matcher.UNDEF;
 
 	private boolean isService = false;
 
@@ -77,7 +82,8 @@ public class Query extends Exp {
 		queryNodes 			= new ArrayList<Node>();
 		patternSelectNodes 	= new ArrayList<Node>();
 		querySelectNodes 	= new ArrayList<Node>();
-		
+		bindingNodes 		= new ArrayList<Node>();
+
 		sort = new Sorter();
 
 	}
@@ -121,6 +127,14 @@ public class Query extends Exp {
 	
 	public void setAST(Object o){
 		ast = o;
+	}
+	
+	public int getMode(){
+		return mode;
+	}
+	
+	public void setMode(int m){
+		mode = m;
 	}
 	
 	public Exp getBody(){
@@ -272,6 +286,14 @@ public class Query extends Exp {
 	
 	public List<Node> getQuerySelectNodes(){
 		return querySelectNodes;
+	}
+	
+	public List<Node> getBindingNodes(){
+		return bindingNodes;
+	}
+	
+	public void setBindingNodes(List<Node> l){
+		bindingNodes = l;
 	}
 	
 	/**
@@ -921,6 +943,10 @@ public class Query extends Exp {
 		
 		for (Exp ee : this){
 			collect(ee, false);
+		}
+		
+		for (Node node : getBindingNodes()){
+			store(node, false, false);
 		}
 
 		for (Filter ff : getPathFilter()){

@@ -2,6 +2,8 @@ package fr.inria.edelweiss.kgraph.query;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Update;
@@ -24,6 +26,8 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
  *
  */
 public class ManagerImpl implements Manager {
+	
+	static Logger logger = Logger.getLogger(ManagerImpl.class);
 	
 	Graph graph;
 	Loader load;
@@ -262,6 +266,10 @@ public class ManagerImpl implements Manager {
 	}
 
 	private boolean load(Basic ope) {
+		if (load == null){
+			logger.error("Load " + ope.getURI() + ": Loader is undefined");
+			return ope.isSilent();
+		}
 		String uri = ope.expand(ope.getURI());
 		String src = ope.expand(ope.getTarget());
 		try {

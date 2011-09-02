@@ -102,7 +102,7 @@ public class Pragma  {
 		else if (subject.equals(MATCH)){
 			if (property.equals(MODE)){
 				int mode = getMode(object);
-				kgram.getMatcher().setMode(mode);
+				query.setMode(mode);
 			}
 			else if (property.equals(RDFS.RDFTYPE)){
 				// kg:match rdf:type <fr.inria.edelweiss.kgramenv.util.MatcherImpl> 

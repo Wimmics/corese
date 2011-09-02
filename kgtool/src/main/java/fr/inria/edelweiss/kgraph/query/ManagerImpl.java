@@ -27,6 +27,9 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
  */
 public class ManagerImpl implements Manager {
 	
+	// default loader, by meta protocol to preserve modularity
+	static final String LOADER = "fr.inria.edelweiss.kgtool.load.Load";
+	
 	static Logger logger = Logger.getLogger(ManagerImpl.class);
 	
 	Graph graph;
@@ -42,6 +45,9 @@ public class ManagerImpl implements Manager {
 		graph = g;
 		graph.init();
 		load = ld;
+		if (load == null){
+			load = getLoader(LOADER);
+		}
 	}
 	
 	ManagerImpl(QueryProcess exec){
@@ -62,6 +68,23 @@ public class ManagerImpl implements Manager {
 		m.setFrom(from);
 		m.setNamed(named);
 		return m;
+	}
+	
+	
+	Loader getLoader(String name){
+		try {
+			Class<Loader> loadClass = (Class<Loader>) Class.forName(name);
+			Loader ld = loadClass.newInstance();
+			ld.init(graph);
+			return ld;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} 
+		return null;
 	}
 	
 	public void setFrom(List<String> l){

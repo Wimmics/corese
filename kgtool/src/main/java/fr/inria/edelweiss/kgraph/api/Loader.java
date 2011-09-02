@@ -5,6 +5,8 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 
 public interface Loader {
 	
+	void init(Object o);
+	
 	void load(String path);
 	
 	void load(String path, String source);

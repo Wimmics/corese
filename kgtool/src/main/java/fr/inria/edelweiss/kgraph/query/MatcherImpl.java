@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -30,6 +31,8 @@ public class MatcherImpl implements Matcher {
 	Graph graph;
 	Entailment entail;
 	Table table ;
+	
+	int mode = ONTOLOGY;
 	
 	class BTable extends Hashtable<Node,Boolean>{}
 	
@@ -74,6 +77,7 @@ public class MatcherImpl implements Matcher {
 
 	@Override
 	public boolean match(Edge q, Edge r, Environment env) {
+		
 		if (q.getLabel().equals(Entailment.RDFTYPE)){
 			return matchType(q, r, env);
 		}
@@ -104,12 +108,28 @@ public class MatcherImpl implements Matcher {
 		if (env.getQuery().isRelax()){
 			return true;
 		}
+		
+		Query query = env.getQuery();
+		int localMode = mode;
+		if (query!=null && query.getMode()!=UNDEF){
+			localMode = query.getMode();
+		}
+		
+		switch (localMode){
+			case STRICT: return match(q.getNode(1), r.getNode(1), env);
+			case RELAX: return true;
+		}
+		
 		if (entail!=null && q.getNode(1).isConstant() 
-				&& ! entail.isSubClassOfInference()
-				){
+				&& ! entail.isSubClassOfInference()){
 			// if rdf:type is completed by subClassOf, skip this and perform std match
 			// if rdf:type is not completed by subClassOf, check whether r <: q
 			boolean b = isSubClassOf(r.getNode(1), q.getNode(1), env);
+			
+			if (! b && localMode == SUBSUME){
+				b = isSubClassOf(q.getNode(1), r.getNode(1), env);
+			}
+			
 			return b;
 		}
 		
@@ -153,8 +173,7 @@ public class MatcherImpl implements Matcher {
 
 	@Override
 	public void setMode(int mode) {
-		// TODO Auto-generated method stub
-		
+		this.mode = mode;
 	}
 	
 	public boolean match(Node q, Node t, Environment env){

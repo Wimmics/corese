@@ -62,7 +62,7 @@ public class Entailment {
 	public static final String OWLREFLEXIVE  = OWL + "ReflexiveProperty";
 	public static final String OWLCLASS  	 = OWL + "Class";
 	
-	public static final String DATATYPE_INFERENCE 		 = KGRAPH + "DATATYPE";
+	public static final String DATATYPE_INFERENCE 		 = KGRAPH + "datatype";
 
 	
 
@@ -81,8 +81,10 @@ public class Entailment {
 		isDefaultGraph  = true,
 		// infer datatype from property range for literal (à la corese)
 		isDatatypeInference = false,
+		isDomain = true,
+		isRange = true,
 		isRDF  = true,
-		isRDFS = true;
+		isMember = true;
 	
 	// deprecated
 	boolean recurse = false,
@@ -129,11 +131,13 @@ public class Entailment {
 	}
 
 	public void set(String name, boolean b){
-		if (name.equals(RDFSSUBCLASSOF)) 		  isSubClassOf = b;
+		     if (name.equals(RDFSSUBCLASSOF)) 	  isSubClassOf = b;
 		else if (name.equals(RDFSSUBPROPERTYOF))  isSubPropertyOf = b;
+		else if (name.equals(RDFSDOMAIN)) 		  isDomain = b;
+		else if (name.equals(RDFSRANGE)) 		  isRange = b;
 		else if (name.equals(DATATYPE_INFERENCE)) isDatatypeInference = b;
 		else if (name.equals(ENTAIL)) 			  isDefaultGraph = b;
-		else if (name.equals(RDFS))				  isRDFS = b;
+		else if (name.equals(RDFSMEMBER))		  isMember = b;
 	}
 	
 	public boolean isDatatypeInference(){
@@ -278,7 +282,7 @@ public class Entailment {
 		EdgeImpl ee =  create(gNode, pNode, hasType, tNode);
 		recordWithoutEntailment(gNode, null, ee);
 		
-		if (isRDFS && pNode.getLabel().startsWith(RDFBLI)){
+		if (isMember && pNode.getLabel().startsWith(RDFBLI)){
 			// rdf:_i rdfs:subPropertyOf rdfs:member
 			tNode    = graph.addResource(RDFSMEMBER);
 			Node sub = graph.addProperty(RDFSSUBPROPERTYOF);
@@ -327,9 +331,11 @@ public class Entailment {
 	void signature(Node gNode, Edge edge){
 		Node pred = edge.getEdgeNode();
 		
-		infer(gNode, edge, domain.get(pred), 0);
+		if (isDomain){
+			infer(gNode, edge, domain.get(pred), 0);
+		}
 
-		if (graph.isIndividual(edge.getNode(1))){
+		if (isRange && graph.isIndividual(edge.getNode(1))){
 			infer(gNode, edge, range.get(pred), 1);
 		}
 	}

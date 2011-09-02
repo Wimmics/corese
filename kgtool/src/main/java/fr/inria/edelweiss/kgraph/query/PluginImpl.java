@@ -111,22 +111,16 @@ public class PluginImpl extends ProxyImpl {
 
 						if (qtype == null){
 							// query type is undefined in ontology
-							if (ttype == null){
-
-							}
-							else if (qtype.getLabel().equals(ttype.getLabel())){
-								// OK
-							}
-							else {
-								// distance max ?
-							}
+							qtype = qEdge.getNode(1);
 						}
-						else if (ttype != null){ 
-
-							if (! ee.isSubClassOf(ttype, qtype)){
-								dd += distance.distance(ttype, qtype);
-							}
+						if (ttype == null){
+							// target type is undefined in ontology
+							ttype = edge.getNode(1);
 						}
+						
+						if (! ee.isSubClassOf(ttype, qtype)){
+							dd += distance.distance(ttype, qtype);
+						}						
 					}
 				}
 			}

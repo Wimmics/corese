@@ -1,10 +1,6 @@
 package fr.inria.edelweiss.kgtool.print;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.NSManager;
@@ -13,7 +9,6 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 
@@ -27,33 +22,35 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
  */
 public class RDFFormat {
 	static final String DESCRIPTION = "rdf:Description";
-	static final String ID 		= " rdf:ID='";
-	static final String NODEID 	= " rdf:NodeID='";
-	static final String RESOURCE = " rdf:resource='";
-	static final String LANG 	= " xml:lang='";
-	static final String DATATYPE = " rdf:datatype='";
-	static final String SPACE 	= "   ";
+	static final String ID 			= " rdf:about='";
+	static final String NODEID 		= " rdf:NodeID='";
+	static final String RESOURCE 	= " rdf:resource='";
+	static final String LANG 		= " xml:lang='";
+	static final String DATATYPE 	= " rdf:datatype='";
 	static final String RDFSCLASS 	= "rdfs:Class";
 	static final String RDFPROPERTY	= "rdf:Property";
 	static final String OWLCLASS 	= "owl:Class";
+	static final String SPACE 		= "   ";
+	static final String NL 			= System.getProperty("line.separator");
+
 	
 	Graph graph;
 	Mapper map;
 	NSManager nsm;
-	StringWriter w;
-	PrintWriter pw;
+	StringBuilder sb;
 	
 	RDFFormat(NSManager n){
 		nsm = n;
-		w = new StringWriter();
-		pw = new PrintWriter(w);
+		sb = new StringBuilder();
 	}
 	
 	
 	RDFFormat(Graph g, NSManager n){
 		this(n);
-		graph = g;
-		graph.prepare();
+		if (g!=null){
+			graph = g;
+			graph.prepare();
+		}
 	}
 	
 	RDFFormat(Mapping m, NSManager n){
@@ -118,24 +115,44 @@ public class RDFFormat {
 
 	
 	public String toString(){
+		if (graph == null && map == null){
+			return null;
+		}
+		
 		for (Entity ent : getNodes()){
 			Node node = ent.getNode();
 			print(node);
 		}
-		String str = w.toString();
-		str = "<rdf:RDF " + 
-		header() +   ">\n\n" + str + 
-		"</rdf:RDF>";
-		return str;
+		
+		StringBuilder bb = new StringBuilder();
+		
+		bb.append("<rdf:RDF"); 
+		bb.append(NL);
+		header(bb);
+		bb.append(">");
+		bb.append(NL);
+		bb.append(NL);
+		bb.append(sb); 
+		bb.append("</rdf:RDF>");
+		
+		return bb.toString();
 	}
 	
-	String header(){
-		String str = "";
+	
+	void header(StringBuilder bb){
+		boolean first = true;
 		for (String p : nsm.getPrefixSet()){
+			
+			if (first){
+				first = false;
+			}
+			else {
+				bb.append(NL);
+			}
+			
 			String ns = nsm.getNamespace(p);
-			str += "xmlns:" + p + "='" + ns + "'\n";
+			bb.append("xmlns:" + p + "='" + ns);
 		}
-		return str;
 	}
 	
 	
@@ -219,15 +236,19 @@ public class RDFFormat {
 	
 	
 	void display(String mes, Object obj){
-		pw.println(mes + obj);
+		//pw.println(mes + obj);
+		sb.append(mes);
+		sb.append(obj);
 	}
 
 	void display(Object obj){
-		pw.println(obj);
+		sb.append(obj);
+		//pw.println(obj);
 	}
 	
 	void display(){
-		pw.println();
+		sb.append(NL);
+		//pw.println();
 	}
 
 }

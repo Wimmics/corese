@@ -17,6 +17,8 @@ public interface Matcher {
 	 * Match mode
 	 */
 	// equality of types
+	public static final int UNDEF = -1;
+	
 	public static final int STRICT = 0;
 	// exploit type inference (subsumption)
 	public static final int ONTOLOGY = 1;

@@ -52,7 +52,15 @@ public class Distance {
 	}
 	
 	public static Distance create(Graph g){
-		return new Distance(g, g.getNode(Entailment.RDFSRESOURCE));
+		return new Distance(g, getRoot(g));
+	}
+	
+	static Node getRoot(Graph g){
+		Node n = g.getNode(Entailment.RDFSRESOURCE);
+		if (n == null){
+			n = g.createNode(Entailment.RDFSRESOURCE);
+		}
+		return n;
 	}
 	
 	public static Distance create(Graph g, Node r){
@@ -148,6 +156,7 @@ public class Distance {
 	 * Node with no super class is considered subClassOf root
 	 */
 	public Iterable<Node> getSuperClasses(Node node){
+		if (subClassOf == null) return topList;
 		Iterable<Node> it = graph.getNodes(subClassOf, node, 0);
 		if (! it.iterator().hasNext()){
 			return topList;
@@ -156,6 +165,7 @@ public class Distance {
 	}
 	
 	public Iterable<Node> getSubClasses(Node node){
+		if (subClassOf == null) return new ArrayList<Node>();
 		return graph.getNodes(subClassOf, node, 1);
 	}
 	

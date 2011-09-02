@@ -4,6 +4,7 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 /**
  * Pragma specific to kgraph
@@ -14,16 +15,18 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  */
 public class PragmaImpl extends Pragma {
 	
-	static final String ENTAIL 	= KG + "entail";
+	static final String ENTAIL 	= KG + "entailment";
 	
 	QueryProcess exec;
 	Graph graph;
+	Entailment entail ;
 
 
 	public PragmaImpl(QueryProcess ex, Query q){
 		super(q, ex.getAST(q));
 		exec = ex;
 		graph = exec.getGraph();
+		entail = graph.getEntailment();
 	}
 
 
@@ -44,6 +47,11 @@ public class PragmaImpl extends Pragma {
 				// we force entailment
 				if (b) graph.setUpdate(true);	
 			}
+		}
+		else if (subject.equals(ENTAIL)){
+			// kg:entailment rdfs:subClassOf true
+			// kg:entailment rdfs:range false
+			entail.set(property, value(object));
 		}
 		
 				

@@ -693,7 +693,7 @@ public class Graph {
 	}
 	
 	// resource nodes
-	Node createNode(String name){
+	public Node createNode(String name){
 		IDatatype dt = DatatypeMap.createResource(name);
 		if (dt == null) return null;
 		return createNode(dt);

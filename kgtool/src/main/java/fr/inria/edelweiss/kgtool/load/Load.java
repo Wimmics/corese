@@ -65,13 +65,28 @@ public class Load
 	int nb = 0;
 	
 	Load(Graph g){
-		graph = g;
-		loaded = new Hashtable<String, String> ();
-		build = BuildImpl.create(g);
+		set(g);
 	}
 	
+	public Load() {
+	}
+
 	public static Load create(Graph g){
 		return new Load(g);
+	}
+	
+	public static Load create(){
+		return new Load();
+	}
+	
+	public void init(Object o){
+		set((Graph) o);
+	}
+	
+	void set(Graph g){
+		graph = g;
+		loaded = new Hashtable<String, String> ();
+		build = BuildImpl.create(graph);
 	}
 	
 	public void reset(){

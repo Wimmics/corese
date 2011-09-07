@@ -47,6 +47,7 @@ public class ManagerImpl implements Manager {
 		load = ld;
 		if (load == null){
 			load = getLoader(LOADER);
+			load.init(graph);
 		}
 	}
 	
@@ -55,6 +56,9 @@ public class ManagerImpl implements Manager {
 		this.exec = exec;
 	}
 	
+	ManagerImpl() {
+	}
+
 	static ManagerImpl create(Graph g, Loader ld){
 		return new ManagerImpl(g, ld);
 	}
@@ -70,12 +74,14 @@ public class ManagerImpl implements Manager {
 		return m;
 	}
 	
+	static Loader getLoader(){
+		return getLoader(LOADER);
+	}
 	
-	Loader getLoader(String name){
+	static Loader getLoader(String name){
 		try {
 			Class<Loader> loadClass = (Class<Loader>) Class.forName(name);
 			Loader ld = loadClass.newInstance();
-			ld.init(graph);
 			return ld;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

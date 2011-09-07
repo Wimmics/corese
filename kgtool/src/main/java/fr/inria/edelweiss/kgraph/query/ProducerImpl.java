@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgraph.query;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -9,6 +8,7 @@ import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.edelweiss.kgenv.eval.SQLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -508,9 +508,9 @@ public class ProducerImpl implements Producer {
 		if (object instanceof IDatatype){
 			return map(nodes, (IDatatype) object);
 		}
-		else if (object instanceof ResultSet){
+		else if (object instanceof SQLResult){
 			// sql()
-			Mappings lMap = mapper.sql(nodes, (ResultSet) object);
+			Mappings lMap = mapper.sql(nodes, (SQLResult) object);
 			return lMap;
 		}
 		else if (object instanceof Mappings){

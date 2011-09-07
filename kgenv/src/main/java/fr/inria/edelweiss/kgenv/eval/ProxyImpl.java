@@ -2,8 +2,8 @@ package fr.inria.edelweiss.kgenv.eval;
 
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.ResultSet;
 
 import org.apache.log4j.Logger;
 
@@ -43,6 +43,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	public static final String RDFTYPE   = RDFNS + "type";
 		
 	Proxy plugin;
+	SQLFun sql;
 	Evaluator eval;
 	EvalListener el;
 	DatatypeMap dm;
@@ -56,6 +57,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	
 	public ProxyImpl(){
 		dm = DatatypeMap.create();
+		sql = new SQLFun();
 	}
 	
 	public void setEvaluator(Evaluator ev){
@@ -175,12 +177,6 @@ public class ProxyImpl implements Proxy, ExprType {
 			// number of result
 			return getValue(env.count());
 			
-		case SIM: 
-			if (plugin != null){
-				return plugin.eval(exp, env, args); 
-			}
-			return similarity(env);
-		
 		case EXTERNAL:
 			// user defined function with prefix/namespace
 			// function://package.className
@@ -347,16 +343,9 @@ public class ProxyImpl implements Proxy, ExprType {
 			}
 			
 			case SQL: {
-				Processor proc = getProcessor(exp);
+				
 				// return ResultSet
-				if (args.length == 4){
-					// no driver
-					return proc.sql(dt, dt1, datatype(args[2]), datatype(args[3]));
-				}
-				else {
-					// with driver
-					return proc.sql(dt, dt1, datatype(args[2]), datatype(args[3]), datatype(args[4]));
-				}
+				return sql(exp, env, args);
 			}	
 						
 			case DISPLAY:
@@ -372,6 +361,11 @@ public class ProxyImpl implements Proxy, ExprType {
 				boolean bb = StringHelper.containsWordIgnoreCaseAndAccent(dt.getLabel(), dt1.getLabel());
 				return getValue(bb);
 			}
+			
+			default:
+				if (plugin != null){
+					return plugin.eval(exp, env, args); 
+				}
 			
 		}
 			
@@ -666,6 +660,34 @@ public class ProxyImpl implements Proxy, ExprType {
 		if (total == 0) return getValue(1);
 		else return getValue(count/total);
 		
+	}
+	
+	/**
+	 * sql('db', 'login', 'passwd', 'query')
+	 * sql('db', 'driver', 'login', 'passwd', 'query')
+	 * sql('db', 'driver', 'login', 'passwd', 'query', true)
+	 * 
+	 * sort means list of sparql variables (sql() as (var)) must be sorted according to sql variables in result
+	 */
+	Object sql(Expr exp, Environment env, Object[] args){
+		ResultSet rs;
+		boolean isSort = false;
+		if (args.length == 4){
+			// no driver
+			rs = sql.sql(datatype(args[0]), datatype(args[1]), datatype(args[2]), datatype(args[3]));
+		}
+		else {
+			if (args.length == 6){
+				try {
+					isSort = datatype(args[5]).isTrue();
+				} catch (CoreseDatatypeException e) {
+				}
+			}
+			// with driver
+			rs = sql.sql(datatype(args[0]), datatype(args[1]), datatype(args[2]), datatype(args[3]), datatype(args[4]));
+		}
+		
+		return new SQLResult(rs, isSort);
 	}
 
 }

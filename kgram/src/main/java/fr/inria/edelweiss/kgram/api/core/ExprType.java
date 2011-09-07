@@ -131,12 +131,16 @@ public interface ExprType {
 	public static int DISPLAY = 200;
 	public static int NUMBER  = 201;
 	public static int SIM 	  = 202;
-	// equalsIgnoreAccent equalsIgnoreCaseAndAccent equalsIgnoreCaseAccentAndPlurial
-	// containsWordIgnoreCase containsWordIgnoreCaseAndAccent containsWordIgnoreCaseAccentAndPlurial
 	public static int EXTEQUAL	= 203;
 	public static int EXTCONT   = 204;
 	public static int PROCESS   = 205;
 	public static int ENV   	= 206;
+	public static int DEPTH 	= 207;
+	public static int GRAPH 	= 208;
+	public static int NODE 		= 209;
+	public static int GET 		= 210;
+	public static int SET 		= 211;
+	public static int LOAD 		= 212;
 
 
 

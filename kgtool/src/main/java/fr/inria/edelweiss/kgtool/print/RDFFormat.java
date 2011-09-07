@@ -236,19 +236,18 @@ public class RDFFormat {
 	
 	
 	void display(String mes, Object obj){
-		//pw.println(mes + obj);
 		sb.append(mes);
 		sb.append(obj);
+		sb.append(NL);
 	}
 
 	void display(Object obj){
 		sb.append(obj);
-		//pw.println(obj);
+		sb.append(NL);
 	}
 	
 	void display(){
 		sb.append(NL);
-		//pw.println();
 	}
 
 }

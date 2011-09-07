@@ -94,6 +94,7 @@ public class Graph {
 	
 	public void setUpdate(boolean b){
 		isUpdate = b;
+		if (distance!=null) distance.setUpdate(b);
 	}
 	
 	void setDelete(boolean b){

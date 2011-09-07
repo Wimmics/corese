@@ -63,11 +63,17 @@ public class Processor {
 	static final String EXTERN = "extern";
 	static final String XPATH = "xpath";
 	static final String SQL = "sql";
-	static final String KGRAM = "sparql";
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
 	
+	static final String KGRAM 	 = ExpType.KGRAM + "sparql";
 	static final String SIMILAR  = ExpType.KGRAM + "similarity";
+	static final String DEPTH    = ExpType.KGRAM + "depth";
+	static final String GRAPH    = ExpType.KGRAM + "graph";
+	static final String NODE     = ExpType.KGRAM + "node";
+	static final String GET      = ExpType.KGRAM + "getObject";
+	static final String SET      = ExpType.KGRAM + "setObject";
+	static final String LOAD     = ExpType.KGRAM + "load";
 	static final String NUMBER   = ExpType.KGRAM + "number";
 	static final String DISPLAY  = ExpType.KGRAM + "display";
 	static final String EXTEQUAL = ExpType.KGRAM + "equals";
@@ -298,6 +304,12 @@ public class Processor {
 		defoper(SYSTEM, ExprType.SYSTEM);
 		
 		defoper(SIMILAR, ExprType.SIM);
+		defoper(DEPTH,   ExprType.DEPTH);
+		defoper(GRAPH,   ExprType.GRAPH);
+		defoper(NODE,    ExprType.NODE);
+		defoper(GET,     ExprType.GET);
+		defoper(SET,     ExprType.SET);
+		defoper(LOAD,    ExprType.LOAD);
 		defoper(NUMBER,  ExprType.NUMBER);
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);
@@ -473,15 +485,16 @@ public class Processor {
 	}
 	
 	void compileSQL(ASTQuery ast){
-		sql = new SQLFun();
+		//sql = new SQLFun();
 	}
 	
+	// @deprecated
 	public ResultSet sql(IDatatype uri, IDatatype login, IDatatype passwd, IDatatype query){
-		return sql.sql(uri, login, passwd, query);
+		return null; //return sql.sql(uri, login, passwd, query);
 	}
 	
 	public ResultSet sql(IDatatype uri, IDatatype driver, IDatatype login, IDatatype passwd, IDatatype query){
-		return sql.sql(uri, driver, login, passwd, query);
+		return null; //return sql.sql(uri, driver, login, passwd, query);
 	}
 	
 	/**

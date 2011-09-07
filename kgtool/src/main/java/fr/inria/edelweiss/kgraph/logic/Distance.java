@@ -35,6 +35,7 @@ public class Distance {
 
 	int depthMax = 0;
 	double K = 1, dmax = 0;
+	boolean isUpdate = false;
 	
 	static Logger logger = Logger.getLogger(Distance.class);
 	
@@ -48,11 +49,15 @@ public class Distance {
 			//logger.info("Distance set Graph with Entailment");
 			graph.setEntailment();
 		}
-		depth();
+		init();
 	}
 	
 	public static Distance create(Graph g){
 		return new Distance(g, getRoot(g));
+	}
+	
+	public void setUpdate(boolean b){
+		isUpdate = b;
 	}
 	
 	static Node getRoot(Graph g){
@@ -74,6 +79,19 @@ public class Distance {
 	
 	void setDepth(Node n, Integer i){
 		n.setObject(i);
+	}
+	
+	void init(){
+		depthMax = 0;
+		dmax = 0;
+		K = 1;
+		depth();
+	}
+	
+	void reinit(){
+		reset(root);
+		init();
+		isUpdate = false;
 	}
 	
 	void depth(){
@@ -104,6 +122,16 @@ public class Distance {
 			}
 		}
 	}
+	
+	void reset(Node sup){
+		setDepth(sup, null);
+		for (Node sub : getSubClasses(sup)){
+			if (sub != null){
+				reset(sub);
+			}
+		}
+	}
+
 	
 	/**
 	 * Used by semantic distance

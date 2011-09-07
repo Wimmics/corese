@@ -2,10 +2,12 @@ package fr.inria.edelweiss.kgraph.query;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.edelweiss.kgenv.eval.SQLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -31,13 +33,17 @@ public class Mapper {
 	}
 	
 	Mappings map(List<Node> lNodes, Object object){
-		if (object instanceof ResultSet){
-			return sql(lNodes, (ResultSet) object);
+		if (object instanceof SQLResult){
+			return sql(lNodes, (SQLResult) object);
 		}
 		else return new Mappings();
 	}
 	
-	public Mappings sql(List<Node> lNodes, ResultSet rs){
+	public Mappings sql(List<Node> lNodes, SQLResult res){
+		ResultSet rs = res.getResultSet();
+		if (res.isSort()){
+			lNodes = sort(lNodes, rs);
+		}
 		Mappings lMap = new Mappings();
 		Node[] qNodes = new Node[lNodes.size()];
 		int j = 0;
@@ -66,6 +72,41 @@ public class Mapper {
 			lMap = null;
 		}
     	return lMap;
+	}
+	
+	/**
+	 * Use case:
+	 * r2rml may have generated lNode in arbitrary order wrt SQL query
+	 * sort nodes according to sql result
+	 */
+	List<Node> sort(List<Node> lNode, ResultSet rs){
+		List<Node> list = new ArrayList<Node>();
+		try {
+			int size = rs.getMetaData().getColumnCount();
+			for (int i=0; i<size; i++){
+				String name = rs.getMetaData().getColumnLabel(i);
+				Node node = getNode(lNode, name);
+				if (node == null){
+					return lNode;
+				}
+				list.add(node);
+			}
+		} catch (SQLException e) {
+			return lNode;
+		}
+		
+		return list;
+		
+	}
+	
+	Node getNode(List<Node> list, String name){
+		String str = "?"+name;
+		for (Node node : list){
+			if (node.getLabel().equals(str)){
+				return node;
+			}
+		}
+		return null;
 	}
 		
 	public Node getNode(ResultSet rs, int i) throws SQLException{

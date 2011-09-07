@@ -141,7 +141,12 @@ public class Load
 			// otherwise URI is not correct (for ARP)
 			name = new File(name).getAbsolutePath();
 			// for windows
-			name = name.replace('\\','/');
+			if (System.getProperty("os.name").contains("indows")){
+				name = name.replace('\\','/');
+				if (name.matches("[A-Z]:.*")){
+					name = "/" + name;
+				}
+			}
 			name = FILE + name;
 		}
 		return name;

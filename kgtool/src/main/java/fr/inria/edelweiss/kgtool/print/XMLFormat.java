@@ -6,6 +6,8 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -237,8 +239,8 @@ public class XMLFormat  {
 		String open  = "<binding name='" + name + "'>";
 		String close = "</binding>";
 		print(open);
+		String str = dt.getLabel();
 		if (dt.isLiteral()) {
-			String str = dt.getLabel();
 			String literal = "</literal>";
 			str = toXML(str);
 			if (dt.hasLang()) {
@@ -256,11 +258,10 @@ public class XMLFormat  {
 			}
 		}
 		else if (dt.isBlank()) {
-			print("<bnode>" + dt.getLabel() + "</bnode>");
+			print("<bnode>" + str + "</bnode>");
 		}
 		else {
-			//print("<uri>" + Cg2Rdf.toXML(dt.getLabel()) + "</uri>");
-			print("<uri>" + dt.getLabel() + "</uri>");
+			print("<uri>" + StringEscapeUtils.escapeXml(str) + "</uri>");
 		}
 		println(close);
 	}

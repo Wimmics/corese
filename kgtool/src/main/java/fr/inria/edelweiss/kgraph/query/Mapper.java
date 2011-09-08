@@ -41,6 +41,8 @@ public class Mapper {
 	
 	public Mappings sql(List<Node> lNodes, SQLResult res){
 		ResultSet rs = res.getResultSet();
+		if (rs == null) return new Mappings();
+		
 		if (res.isSort()){
 			lNodes = sort(lNodes, rs);
 		}

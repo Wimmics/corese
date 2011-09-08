@@ -96,7 +96,7 @@ public class PluginImpl extends ProxyImpl {
 	IDatatype similarity(IDatatype dt1, IDatatype dt2 ){		
 		Node n1 = graph.getNode(dt1.getLabel());
 		Node n2 = graph.getNode(dt2.getLabel());
-		if (n1 == null || n1 == null) return null;
+		if (n1 == null || n2 == null) return null;
 		
 		double dd = distance.similarity(n1, n2);
 		return getValue(dd);
@@ -191,7 +191,7 @@ public class PluginImpl extends ProxyImpl {
 	
 	IDatatype depth(Object o){
 		Node n = node(o);
-		if (n == null) return getValue(-1);
+		if (n == null || n.getObject()== null) return null;
 		IDatatype d = getValue((Integer) n.getObject());
 		return d;
 	}

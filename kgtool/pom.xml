@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.edelweiss</groupId>
 	<artifactId>kgtool</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<dependencies>
 		<dependency>
@@ -21,12 +21,12 @@
 			<artifactId>arp</artifactId>
 			<version>2.2.b</version>
 		</dependency>		
-		<!--<dependency>
-			<groupId>fr.inria.edelweiss</groupId>
-			<artifactId>kgram</artifactId>
-			<version>1.0</version>
-		</dependency>	
 		<dependency>
+			<groupId>org.apache</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>	
+		<!--<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>sparql</artifactId>
 			<version>1.0</version>
@@ -34,12 +34,12 @@
 		<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgenv</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 	</dependencies>
 
 	<build>
-	<finalName>kgtool-1.0.1</finalName>
+	<finalName>kgtool-1.0.2</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

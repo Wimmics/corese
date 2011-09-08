@@ -36,6 +36,7 @@ public class Distance {
 	int depthMax = 0;
 	double K = 1, dmax = 0;
 	boolean isUpdate = false;
+	private Hashtable<Node, Node> table;
 	
 	static Logger logger = Logger.getLogger(Distance.class);
 	
@@ -44,6 +45,7 @@ public class Distance {
 		root = r;
 		topList = new NodeList();
 		topList.add(root);
+		table = new Hashtable<Node, Node>();
 		subClassOf = graph.getPropertyNode(Entailment.RDFSSUBCLASSOF);
 		if (graph.getEntailment() == null){
 			//logger.info("Distance set Graph with Entailment");
@@ -96,21 +98,26 @@ public class Distance {
 	
 	void depth(){
 		setDepth(root, 0);
+		table.clear();
 		depth(root);
+		if (depthMax == 0){
+			// in case there is no rdfs:subClassOf, choose  max depth 1
+			depthMax = 1;
+		}
 		setDmax(depthMax);
 	}
 	
 	/**
 	 * Recursively compute depth
 	 * Take multiple inheritance into account
-	 * TODO: 
-	 * do not take subClassOf loop into account 
 	 */
 	void depth(Node sup){
+		visit(sup);
+		
 		Integer depth = getDepth(sup);
 		Integer dd = depth + 1;
 		for (Node sub : getSubClasses(sup)){
-			if (sub != null){
+			if (sub != null && ! visited(sub)){
 				Integer d = getDepth(sub);
 				if (d == null || dd > d){
 					if (dd > depthMax){
@@ -121,7 +128,23 @@ public class Distance {
 				}
 			}
 		}
+		
+		leave(sup);
 	}
+	
+	boolean visited(Node node){
+		return table.containsKey(node);
+	}
+	
+	void visit(Node node){
+		table.put(node, node);
+	}
+	
+	void leave(Node node){
+		table.remove(node);
+	}
+	
+	
 	
 	void reset(Node sup){
 		setDepth(sup, null);
@@ -215,6 +238,7 @@ public class Distance {
 	}
 	
 	public double similarity(Node c1, Node c2){
+		if (c1.equals(c2)) return 1;
 		float d = distance(c1, c2);
 		return similarity(d, 1);
 	}

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.edelweiss</groupId>
 	<artifactId>sparql</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<dependencies>
 		<!--<dependency>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgram</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 	
 		<!--<dependency>
@@ -46,7 +46,7 @@
 	</dependencies>
 
 	<build>
-	<finalName>sparql-1.0.1</finalName>
+	<finalName>sparql-1.0.2</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

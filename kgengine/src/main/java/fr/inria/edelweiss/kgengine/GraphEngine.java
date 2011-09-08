@@ -311,7 +311,9 @@ public class GraphEngine implements IEngine {
 		return false;
 	}
 
-	
+	/**
+	 * @deprecated
+	 */
 	public void setProperty(String name, String value) {
 		
 		

@@ -62,7 +62,7 @@ public class ExpFilterImpl implements ExpFilter {
 			
 			if (exp.isFunction()){
 				//case the term is a function
-				term = Term.function(exp.getName());
+				term = Term.function(exp.getLabel());
 			}
 			else {
 				term = Term.create(exp.getName());

@@ -18,9 +18,7 @@ import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.query.Construct;
-import fr.inria.edelweiss.kgraph.query.MatcherImpl;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
+import java.net.URL;
 
 
 /**
@@ -49,7 +47,7 @@ public class QueryProcess extends QuerySolver {
 			set(SorterImpl.create(pp.getGraph()));
 		}
 	}
-	
+
 
 	public static QueryProcess create(Graph g){
 		ProducerImpl p =  ProducerImpl.create(g);
@@ -74,9 +72,13 @@ public class QueryProcess extends QuerySolver {
 	public Loader getLoader(){
 		return load;
 	}
-	
+        
 	public void add(Graph g){
 		add(ProducerImpl.create(g));
+	}
+        
+        public void addRemote(URL url){
+		add(new RemoteProducerImpl(url));
 	}
 	
 	public static QueryProcess create(ProducerImpl prod){
@@ -88,7 +90,7 @@ public class QueryProcess extends QuerySolver {
 	public static QueryProcess create(Producer prod, Matcher match){
 		Interpreter eval  = createInterpreter(prod);
 		QueryProcess exec = new QueryProcess(prod, eval, match);
-		return exec;
+ 		return exec;
 	}
 	
 	public static QueryProcess create(Producer prod, Evaluator ev, Matcher match){

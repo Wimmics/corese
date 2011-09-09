@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
+import junit.textui.TestRunner;
 
 public class KgraphTestSuite extends TestSuite
 {
@@ -3564,7 +3565,7 @@ query = "select   distinct ?t1 ?t2     where {"+
     {
         String[] testSuiteName = {KgraphTestSuite.class.getName(), "-noloading"};
         Date d1=new Date();
-          junit.swingui.TestRunner.main(testSuiteName);
+          TestRunner.main(testSuiteName);
           Date d2=new Date();
 
     } //public static void main(String[] args)

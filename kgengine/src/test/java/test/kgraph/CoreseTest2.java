@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import junit.textui.TestRunner;
 
 public class CoreseTest2 extends TestCase {
 
@@ -369,7 +370,7 @@ public class CoreseTest2 extends TestCase {
 	 */
 	public static void main(String[] args) {
 		String[] testCaseName = { CoreseTest2.class.getName() };
-		junit.swingui.TestRunner.main(testCaseName);
+		TestRunner.main(testCaseName);
 
 	}
 

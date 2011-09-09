@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>fr.inria.edelweiss</groupId>
+    <artifactId>kg-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.2</version>
+    <name>kg-parent</name>
+<!--    <description>MOTEUR2 workflow manager</description>
+    <inceptionYear>2011</inceptionYear>
+    <url>http://modalis.polytech.unice.fr/moteur2</url>
+    <licenses>
+        <license>
+            <name>CeCILL-B, Version 1.0</name>
+            <url>http://www.cecill.info/</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>I3S Laboratory</name>
+        <url>http://www.i3s.unice.fr/</url>
+    </organization>-->
+    <developers>
+        <developer>
+            <id>OlivierCorby</id>
+            <name>Olivier Corby</name>
+            <email>olivier.corby@inria.fr</email>
+            <url>http://www-sop.inria.fr/members/Olivier.Corby/index.php</url>
+            <organization>INRIA</organization>
+            <organizationUrl>http://www.inria.fr/</organizationUrl>
+            <timezone>1</timezone>
+        </developer>
+    </developers>
+    <modules>
+        <module>kgram</module>
+        <module>engine</module>
+        <module>kgengine</module>
+        <module>kgenv</module>
+        <module>kggui</module>
+        <module>kgtool</module>
+        <module>kgserver</module>
+        <module>kgserver-stubs</module>
+        <module>kgimport</module>
+        <module>sparql</module>
+        <module>rif</module>
+    </modules>
+<!--    <repositories>
+        <repository>
+            <id>thirdparty</id>
+            <name>I3S Third-party Repository</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/thirdparty</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>releases</id>
+            <name>I3S Releases Repository</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/releases</url>
+            <releases>
+                updatePolicy>always</updatePolicy <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+         repository>
+            <id>snapshots</id>
+            <name>I3S Snapshot Repository</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots</url>
+            <snapshots>
+            </snapshots>
+        </repository 
+        <repository>
+            <id>creatis-releases</id>
+            <name>Creatis Insa Lyon repository [creatis]</name>
+            <url>http://kingkong.grid.creatis.insa-lyon.fr:9007/nexus/content/repositories/releases</url>
+        </repository>
+    </repositories>
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>I3S Releases Repository</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>I3S Snapshot Repository</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+    <scm>
+        <connection>scm:svn:https://nyx.unice.fr/svn/moteur2</connection>
+        <developerConnection>scm:svn:https://nyx.unice.fr/svn/moteur2</developerConnection>
+        <url>https://nyx.unice.fr/svn/moteur2</url>
+    </scm>-->
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.12</version>
+            </dependency>    
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.8.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.icu</groupId>
+                <artifactId>icu4j</artifactId>
+                <version>3.4.5</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>1.3.03</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-rt</artifactId>
+                <version>2.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.ws</groupId>
+                <artifactId>jaxws-api</artifactId>
+                <version>2.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>jsr181-api</artifactId>
+                <version>1.0-MR1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hp.hpl.jena</groupId>
+                <artifactId>jena</artifactId>
+                <version>2.6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hp.hpl.jena</groupId>
+                <artifactId>sdb</artifactId>
+                <version>1.3.2</version>
+            </dependency>
+            <dependency>
+                <groupId>jdom</groupId>
+                <artifactId>jdom</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.3</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
+

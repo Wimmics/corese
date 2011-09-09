@@ -1,9 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.inria.edelweiss</groupId>
+        <parent>
+        <groupId>fr.inria.edelweiss</groupId>
+        <artifactId>kg-parent</artifactId>
+        <version>1.0.2</version>
+        <relativePath>..</relativePath>
+        </parent>
+	
+        <groupId>fr.inria.edelweiss</groupId>
 	<artifactId>kggui</artifactId>
-	<version>1.0.2</version>
 
 	<dependencies>
 		<!--<dependency>
@@ -54,7 +60,7 @@
 		<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
 			<artifactId>kgengine</artifactId>
-			<version>1.0.2</version>
+			<version>${project.version}</version>
 		</dependency>
 		<!--<dependency>
 			<groupId>fr.inria.edelweiss</groupId>
@@ -66,9 +72,15 @@
 		      <artifactId>jdom</artifactId>
 		      <version>1.1</version>
 		  </dependency>-->
-
-	
-	</dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+        </dependency>
+    </dependencies>
 
 	<build>
 	<finalName>kggui-1.0.2</finalName>
@@ -101,7 +113,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2-beta-5</version>
+<!--				<version>2.2-beta-5</version>-->
 				<executions>
 					<execution>
 						<phase>package</phase>

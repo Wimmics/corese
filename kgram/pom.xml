@@ -1,27 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
-	<properties>
-	  <version>1.0</version>
-	</properties> 
+
 	
 	<modelVersion>4.0.0</modelVersion>
+        <parent>
+            <groupId>fr.inria.edelweiss</groupId>
+            <artifactId>kg-parent</artifactId>
+            <version>1.0.2</version>
+            <relativePath>..</relativePath>
+        </parent>
+    
 	<groupId>fr.inria.edelweiss</groupId>
 	<artifactId>kgram</artifactId>
-	<version>1.0.2</version>
-	
-	
 	
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.12</version>
 		</dependency>	
 	</dependencies>
 
 	<build>
-	<finalName>kgram-1.0.2</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -48,7 +47,7 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-			<plugin>
+<!--			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2-beta-5</version>
@@ -69,7 +68,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 			
 			
 			<plugin>

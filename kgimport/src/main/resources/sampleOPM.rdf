@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="MacRoman"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.0="http://openprovenance.org/model/opmo#"
+    xmlns:j.1="http://purl.org/net/opmv/ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+  <j.0:Used rdf:about="http://openprovenance.org/ontology#Used-030b1c492f684d8c930459fb84ac31d3">
+    <j.0:time>
+      <j.0:OTime rdf:about="http://openprovenance.org/ontology#OTime-26908166c6e2444faef4d944144f28fb">
+        <j.0:exactlyAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2011-08-26T12:25:55.93Z</j.0:exactlyAt>
+      </j.0:OTime>
+    </j.0:time>
+    <j.0:account>
+      <j.0:Account rdf:about="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+    </j.0:account>
+    <j.0:role>
+      <j.0:Role rdf:about="http://openprovenance.org/ontology#Role-148a0008fe384edfb0ee2ee25dc48d6c">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >input1</rdfs:label>
+      </j.0:Role>
+    </j.0:role>
+    <j.0:cause>
+      <j.1:Artifact rdf:about="http://openprovenance.org/ontology#Artifact-a7e3677c0e4d44d7aab85d3811e72fe0">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+        <j.0:avalue>
+          <j.0:AValue rdf:about="http://openprovenance.org/ontology#AValue-7ebb1d9f170d488b88d9657b327fa6fe">
+            <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+            <j.0:content rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >generateJobs_array(parse_text_protocol_process_number(text_protocol_1))_0</j.0:content>
+          </j.0:AValue>
+        </j.0:avalue>
+      </j.1:Artifact>
+    </j.0:cause>
+    <j.0:effect>
+      <j.1:Process rdf:about="http://neurolog.techlog.anr.fr/processingtoolexec#sorteo_singles-91c2cd91b7a84178a6dad69be1b65508">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >sorteo_singles</rdfs:comment>
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+      </j.1:Process>
+    </j.0:effect>
+  </j.0:Used>
+  <j.0:WasDerivedFrom rdf:about="http://openprovenance.org/ontology#WasDerivedFrom-3b016c6c5a71476f9aec71513d10eaae">
+    <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+    <j.0:cause rdf:resource="http://openprovenance.org/ontology#Artifact-a7e3677c0e4d44d7aab85d3811e72fe0"/>
+    <j.0:effect>
+      <j.1:Artifact rdf:about="http://openprovenance.org/ontology#Artifact-0bda8fd6c2944dc399cbe2e17436e70a">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+        <j.0:avalue>
+          <j.0:AValue rdf:about="http://openprovenance.org/ontology#AValue-21c913693b2443de8542af9cae685c27">
+            <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+            <j.0:content rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >sorteo_singles_result0(concatenate_out(/grid/biomed/creatis/vip/results, appendDate_result(SimulationName_0)), generateJobs_array(parse_text_protocol_process_number(text_protocol_1))_0, CompileProtocol_result0(fantome_v_1, text_protocol_1, concatenate_out(/grid/biomed/creatis/vip/results, appendDate_result(SimulationName_0))))</j.0:content>
+          </j.0:AValue>
+        </j.0:avalue>
+      </j.1:Artifact>
+    </j.0:effect>
+  </j.0:WasDerivedFrom>
+  <j.0:Used rdf:about="http://openprovenance.org/ontology#Used-c226ccba1703493a9e168ef0abf71466">
+    <j.0:time rdf:resource="http://openprovenance.org/ontology#OTime-26908166c6e2444faef4d944144f28fb"/>
+    <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+    <j.0:role>
+      <j.0:Role rdf:about="http://openprovenance.org/ontology#Role-9bf60ecc8f174dd2a9ee16b6b76641cb">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >input0</rdfs:label>
+      </j.0:Role>
+    </j.0:role>
+    <j.0:cause>
+      <j.1:Artifact rdf:about="http://openprovenance.org/ontology#Artifact-0762c43e7a1d43e7b3f7e3d387dfcb3f">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+        <j.0:avalue>
+          <j.0:AValue rdf:about="http://openprovenance.org/ontology#AValue-858966f304f842b7a1ceb94a030db063">
+            <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+            <j.0:content rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >CompileProtocol_result0(fantome_v_1, text_protocol_1, concatenate_out(/grid/biomed/creatis/vip/results, appendDate_result(SimulationName_0)))</j.0:content>
+          </j.0:AValue>
+        </j.0:avalue>
+      </j.1:Artifact>
+    </j.0:cause>
+    <j.0:effect rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#sorteo_singles-91c2cd91b7a84178a6dad69be1b65508"/>
+  </j.0:Used>
+  <j.0:WasDerivedFrom rdf:about="http://openprovenance.org/ontology#WasDerivedFrom-714c84a3e976410abfb2948fd0f80b2c">
+    <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+    <j.0:cause rdf:resource="http://openprovenance.org/ontology#Artifact-0762c43e7a1d43e7b3f7e3d387dfcb3f"/>
+    <j.0:effect rdf:resource="http://openprovenance.org/ontology#Artifact-0bda8fd6c2944dc399cbe2e17436e70a"/>
+  </j.0:WasDerivedFrom>
+  <j.0:WasControlledBy rdf:about="http://openprovenance.org/ontology#WasControlledBy-7d66c1a4ec8f4b4ca53d97f2541e9b52">
+    <j.0:cause>
+      <j.1:Agent rdf:about="http://not.a.web.service">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+      </j.1:Agent>
+    </j.0:cause>
+    <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+    <j.0:startTime rdf:resource="http://openprovenance.org/ontology#OTime-26908166c6e2444faef4d944144f28fb"/>
+    <j.0:effect rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#sorteo_singles-91c2cd91b7a84178a6dad69be1b65508"/>
+  </j.0:WasControlledBy>
+  <j.0:Used rdf:about="http://openprovenance.org/ontology#Used-14e42670cdd14b068fd6e54d3ee257f4">
+    <j.0:time rdf:resource="http://openprovenance.org/ontology#OTime-26908166c6e2444faef4d944144f28fb"/>
+    <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+    <j.0:role>
+      <j.0:Role rdf:about="http://openprovenance.org/ontology#Role-88f03c334ee8480a9307cb70246f3418">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >input2</rdfs:label>
+      </j.0:Role>
+    </j.0:role>
+    <j.0:cause>
+      <j.1:Artifact rdf:about="http://openprovenance.org/ontology#Artifact-0564c063a5cc408994a2baf9d477718b">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+        <j.0:avalue>
+          <j.0:AValue rdf:about="http://openprovenance.org/ontology#AValue-805546173ba84c53b6bb706d0f684307">
+            <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+            <j.0:content rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >concatenate_out(/grid/biomed/creatis/vip/results, appendDate_result(SimulationName_0))</j.0:content>
+          </j.0:AValue>
+        </j.0:avalue>
+      </j.1:Artifact>
+    </j.0:cause>
+    <j.0:effect rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#sorteo_singles-91c2cd91b7a84178a6dad69be1b65508"/>
+  </j.0:Used>
+  <j.0:WasGeneratedBy rdf:about="http://openprovenance.org/ontology#WasGeneratedBy-5ffb07100d6042c49ba645e72cd001c0">
+    <j.0:time rdf:resource="http://openprovenance.org/ontology#OTime-26908166c6e2444faef4d944144f28fb"/>
+    <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+    <j.0:role>
+      <j.0:Role rdf:about="http://openprovenance.org/ontology#Role-96de96fdcd864c4abbe64bc78020dcc9">
+        <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >result0</rdfs:label>
+      </j.0:Role>
+    </j.0:role>
+    <j.0:cause rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#sorteo_singles-91c2cd91b7a84178a6dad69be1b65508"/>
+    <j.0:effect rdf:resource="http://openprovenance.org/ontology#Artifact-0bda8fd6c2944dc399cbe2e17436e70a"/>
+  </j.0:WasGeneratedBy>
+  <j.0:WasDerivedFrom rdf:about="http://openprovenance.org/ontology#WasDerivedFrom-0cbe5f279e394ffbb6675ed849a4db0e">
+    <j.0:account rdf:resource="http://neurolog.techlog.anr.fr/processingtoolexec#workflow-f02f9653dd974861b1869f9ef7b4c1af"/>
+    <j.0:cause rdf:resource="http://openprovenance.org/ontology#Artifact-0564c063a5cc408994a2baf9d477718b"/>
+    <j.0:effect rdf:resource="http://openprovenance.org/ontology#Artifact-0bda8fd6c2944dc399cbe2e17436e70a"/>
+  </j.0:WasDerivedFrom>
+</rdf:RDF>

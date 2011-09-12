@@ -2,7 +2,11 @@ package fr.inria.edelweiss.kgram.tool;
 
 import java.util.Hashtable;
 
+import org.apache.log4j.Logger;
+
 public class Message {
+	static Logger logger = Logger.getLogger(Message.class);
+	
 	public static final int UNDEF_VAR 	= 0;
 	public static final int FAIL 	= 1;
 	public static final int FAIL_AT = 2;
@@ -46,19 +50,19 @@ public class Message {
 	}
 	
 	public static void log(int code){
-		System.out.println(get(code));
+		logger.warn(get(code));
 	}
 	
 	public static void log(){
-		System.out.println();
+		//System.out.println();
 	}
 	
 	public static void log(int code, Object mes){
-		System.out.println(get(code) + mes);
+		logger.warn(get(code) + mes);
 	}
 	
 	public static void log(Object mes){
-		System.out.println(mes);
+		logger.warn(mes);
 	}
 	
 }

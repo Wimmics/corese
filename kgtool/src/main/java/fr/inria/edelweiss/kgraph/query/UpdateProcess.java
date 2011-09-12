@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.update.ASTUpdate;
@@ -172,7 +173,7 @@ public class UpdateProcess {
 	void composite(Composite ope){
 		
 		// the graph where insert/delete occurs
-		String src = ope.getWith();
+		Constant src = ope.getWith();
 
 		ASTQuery ast = createAST(ope);
 
@@ -182,7 +183,7 @@ public class UpdateProcess {
 				
 				if (src != null){
 					// insert in src
-					exp = Source.create(ast.createConstant(src), exp);
+					exp = Source.create(src, exp);
 				}
 				
 				if (cc.type() == Update.INSERT){
@@ -218,16 +219,16 @@ public class UpdateProcess {
 		// where {pat}
 		ast.setBody(ope.getBody());		
 		
-		for (String uri : ope.getUsing()){
+		for (Constant uri : ope.getUsing()){
 			// using -> from
 			ast.setFrom(uri);
 		}
-		for (String uri : ope.getNamed()){
+		for (Constant uri : ope.getNamed()){
 			// using named -> from named
 			ast.setNamed(uri);
 		}
 
-		String src = ope.getWith();
+		Constant src = ope.getWith();
 		if (src!=null && ope.getUsing().size()==0){
 			ast.setFrom(src);
 		}

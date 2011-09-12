@@ -50,7 +50,9 @@ public class XMLFormat  {
 	private static final String[] XML = {"&", "<"};
 	private static final String ODATA = "<![CDATA[";
 	private static final String CDATA = "]]>";
-	
+	private static final String OCOM = "<!--";
+	private static final String CCOM = "--!>";
+
 
 	
 	boolean displaySort = false;
@@ -150,6 +152,7 @@ public class XMLFormat  {
 	
 	public void print(boolean printInfoInFile, String fileName) {
 		println(getTitle(Title.OHEADER));
+		error();
 		println(getTitle(Title.OHEAD));
 		if (isMore()) {
 			//printVar(SIMILARITY);
@@ -179,6 +182,32 @@ public class XMLFormat  {
 		}
 		
 		println(getTitle(Title.CHEADER));
+	}
+	
+	void error(){
+		boolean b1 = ast!=null     && ast.getErrors()!=null;
+		boolean b2 = query != null && query.getErrors()!=null;
+		
+		if (b1 || b2){
+			
+			println(OCOM);
+			if (ast.getText()!=null){
+				println(ast.getText());
+			}
+			println("");
+			
+			if (b1){
+				for (String mes : ast.getErrors()){
+					println(mes);
+				}
+			}
+			if (b2){
+				for (String mes : query.getErrors()){
+					println(mes);
+				}
+			}
+			println(CCOM);
+		}
 	}
 	
 	

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 
 /**
@@ -29,6 +30,16 @@ public class Variable extends Atom {
 	
 	public static Variable create(String str){
 		return new Variable(str);
+	}
+	
+	public String toSparql(){
+		if (isBlankNode()) {
+			// variable for blank node, replace ?_ by _:
+			return KeywordPP.BN + name.substring(2,name.length());
+		} 
+		else { 
+			return name;
+		}
 	}
 	
 	public void setPath(boolean b){

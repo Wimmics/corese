@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.api.core.ExpPattern;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.edelweiss.kgram.api.core.Regex;
 
 public class Processor {
 	private static Logger logger = Logger.getLogger(Processor.class);
@@ -28,6 +29,7 @@ public class Processor {
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
 	public static final String BOUND = "bound";
 	public static final String COUNT = "count";
+	public static final String LIST  = "list";
 
 	private static final String MIN = "min";
 	private static final String MAX = "max";
@@ -217,7 +219,14 @@ public class Processor {
 			type = ExprType.TERM;
 			oper = getOperID();
 		}
+		
 		if (oper == ExprType.UNDEF){
+			if (term.isPathExp()){
+				// Property Path Exp
+			}
+			else {
+				ast.addError("Undefined expression: ", term);
+			}
 		}
 		setArguments();
 		check(ast);
@@ -231,6 +240,7 @@ public class Processor {
 			}
 			else if (term.getArity() > 1){
 				ast.setCorrect(false);
+				ast.addError("Arity error: ", term);
 			}
 		}
 	}
@@ -276,13 +286,14 @@ public class Processor {
 		defoper(LANG, 	ExprType.LANG);
 		defoper(LANGMATCH, ExprType.LANGMATCH);
 		
-		defoper(STRDT, ExprType.STRDT);
-		defoper(STRLANG, ExprType.STRLANG);
-		defoper(BNODE, ExprType.BNODE);
-		defoper(COALESCE, ExprType.COALESCE);
-		defoper(IF, ExprType.IF);
-		defoper(GROUPCONCAT, ExprType.GROUPCONCAT);
-		defoper(SAMPLE, ExprType.SAMPLE);
+		defoper(STRDT, 		ExprType.STRDT);
+		defoper(STRLANG, 	ExprType.STRLANG);
+		defoper(BNODE, 		ExprType.BNODE);
+		defoper(COALESCE, 	ExprType.COALESCE);
+		defoper(IF, 		ExprType.IF);
+		defoper(GROUPCONCAT,ExprType.GROUPCONCAT);
+		defoper(SAMPLE, 	ExprType.SAMPLE);
+		defoper(LIST, 		ExprType.LIST);
 
 		
 		defoper(REGEX, 		ExprType.REGEX);

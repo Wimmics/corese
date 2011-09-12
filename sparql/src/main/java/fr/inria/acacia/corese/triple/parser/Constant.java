@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 
@@ -104,6 +105,31 @@ public class Constant extends Atom {
 		return new Array(el);
 	}
 	
+	public String toSparql() {
+		if (isLiteral()){
+			String str = KeywordPP.QUOTE + name + KeywordPP.QUOTE;
+			if (lang != null) {
+				//return name + "@" + lang;
+				return str + KeywordPP.LANG + lang;
+			} 
+			else if (hasRealDatatype()) {	
+				return str + KeywordPP.SDT + datatype;
+			} 
+			else {
+				return str;
+			}
+		}
+		else if (isQName) {
+			return name;
+		} 
+		else {
+			return KeywordPP.OPEN + getLongName() + KeywordPP.CLOSE;
+		}
+		
+	}
+	
+	
+	
 	public Constant getConstant() {
 		return this;
 	}
@@ -135,14 +161,11 @@ public class Constant extends Atom {
 				logger.error("** Constant2Datatype: longName missing: " + this);
 				str = name;
 			}
-			//dt = CoreseDatatype.create(Cst.jTypeURI, null, str, null);
 			dt = DatatypeMap.createResource(str);
 
 		}
 		else {
 			String ndt =  nsm.toNamespace(datatype);
-//				String JavaType = dm.getJType(ndt);
-//				dt = CoreseDatatype.create(JavaType, ndt, name, lang);
 			dt = DatatypeMap.createLiteral(name, ndt,  lang);
 		}
 		return dt;

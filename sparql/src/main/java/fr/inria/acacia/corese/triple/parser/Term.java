@@ -291,6 +291,10 @@ public class Term extends Expression {
 		return getName().equals(SENOT);
 	}
 	
+	public boolean isPathExp(){
+		return getretype() != UNDEF;
+	}
+	
 	public boolean isInverse(){
 		return getName().equals(SEINV) || super.isInverse() ;
 	}

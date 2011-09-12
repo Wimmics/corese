@@ -180,6 +180,12 @@ public class Eval implements  ExpType, Plugin {
 		
 	private	Mappings eval(Node gNode, Query q, Mapping map){
 		init(q);
+		
+		if (q.isCheck()){
+			// Draft
+			Checker check = Checker.create(this);
+			check.check(q);
+		}
 				
 		if (map != null){
 			bind(map);

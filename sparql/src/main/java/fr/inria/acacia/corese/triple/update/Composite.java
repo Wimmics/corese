@@ -3,6 +3,7 @@ package fr.inria.acacia.corese.triple.update;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
 /**
  * 
@@ -25,14 +26,14 @@ public class Composite extends Update {
 	// list insert delete
 	List<Composite> list;
 	
-	String with;
-	List<String> using, named;
+	Constant with;
+	List<Constant> using, named;
 	
 	Composite(int t){
 		type = t;
 		list  = new ArrayList<Composite>();
-		using = new ArrayList<String>();
-		named = new ArrayList<String>();
+		using = new ArrayList<Constant>();
+		named = new ArrayList<Constant>();
 
 	}
 	
@@ -46,7 +47,8 @@ public class Composite extends Update {
 	}
 	
 	public static Composite create(int type, Exp d){
-		return new Composite(type, d);
+		Composite ope = new Composite(type, d);
+		return ope;
 	}
 	
 	public String toString(){
@@ -61,19 +63,19 @@ public class Composite extends Update {
 		}
 		else {
 			if (getWith()!=null){
-				str += WITH + " " + getWith() + NL;
+				str += WITH + " " + getWith().toSparql() + NL;
 			}
 			for (Composite cc : getUpdates()){
 				str += cc.title() + " " ;
 				str += cc.getPattern()  + NL;
 			}
 
-			for (String uri : getUsing()){
-				str += USING + " " + uri + NL;
+			for (Constant uri : getUsing()){
+				str += USING + " " + uri.toSparql() + NL;
 			}
 			
-			for (String uri : getNamed()){
-				str += NAMED + " " + uri + NL;
+			for (Constant uri : getNamed()){
+				str += NAMED + " " + uri.toSparql() + NL;
 			}
 
 			if (getBody()!=null){
@@ -111,27 +113,27 @@ public class Composite extends Update {
 		return list;
 	}
 	
-	public void setWith(String uri){
+	public void setWith(Constant uri){
 		with = uri;
 	}
 	
-	public String getWith(){
+	public Constant getWith(){
 		return with;
 	}
 	
-	public void addUsing(String uri){
+	public void addUsing(Constant uri){
 		using.add(uri);
 	}
 	
-	public List<String> getUsing(){
+	public List<Constant> getUsing(){
 		return using;
 	}
 	
-	public void addNamed(String uri){
+	public void addNamed(Constant uri){
 		named.add(uri);
 	}
 	
-	public List<String> getNamed(){
+	public List<Constant> getNamed(){
 		return named;
 	}
 	

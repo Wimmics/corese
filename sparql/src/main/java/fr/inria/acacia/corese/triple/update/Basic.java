@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.update;
 
+import fr.inria.acacia.corese.triple.parser.Constant;
+
 /**
  * load clear drop create add move copy
  * 
@@ -22,6 +24,7 @@ public class Basic extends Update {
 	all 	= false;
 	
 	String uri, graph, target;
+	Constant auri, agraph, atarget;
 	
 	Basic (int t){
 		type = t;
@@ -119,25 +122,40 @@ public class Basic extends Update {
 		graph = g;
 	}
 	
+	public void setGraph(Constant g){
+		agraph = g;
+	}
+	
 	
 	public void setTarget(String t){
 		target = t;
+	}
+	
+	public void setTarget(Constant t){
+		atarget = t;
 	}
 	
 	public void setURI(String t){
 		uri = t;
 	}
 	
+	public void setURI(Constant t){
+		auri = t;
+	}
+	
 	public String getGraph(){
-		return graph;
+		if (agraph == null) return null;
+		return agraph.getLongName();
 	}
 	
 	public String getTarget(){
-		return target;
+		if (atarget == null) return null;
+		return atarget.getLongName();
 	}
 	
 	public String getURI(){
-		return uri;
+		if (auri == null) return null;
+		return auri.getLongName();
 	}
 	
 }

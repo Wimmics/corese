@@ -151,7 +151,7 @@ public class RDFFormat {
 			}
 			
 			String ns = nsm.getNamespace(p);
-			bb.append("xmlns:" + p + "='" + ns);
+			bb.append("xmlns:" + p + "='" + ns + "'");
 		}
 	}
 	

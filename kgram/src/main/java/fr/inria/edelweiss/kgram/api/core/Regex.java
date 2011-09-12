@@ -8,6 +8,7 @@ package fr.inria.edelweiss.kgram.api.core;
  */
 public interface Regex {
 	
+	public static final int UNDEF	= -1;
 	public static final int LABEL	= 0;
 	public static final int NOT 	= 1;
 	public static final int SEQ 	= 2;

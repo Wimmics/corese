@@ -111,7 +111,7 @@ public class ManagerImpl implements Manager {
 	}
 	
 	public boolean process(Basic ope){
-		String uri 			= ope.expand(ope.getGraph());
+		String uri 			= ope.getGraph();
 		boolean isDefault 	= ope.isDefault();
 		boolean isNamed 	= ope.isNamed();
 		boolean isAll 		= ope.isAll();
@@ -151,7 +151,7 @@ public class ManagerImpl implements Manager {
 	 *
 	 */
 	void system(Basic ope){
-		String uri = ope.expand(ope.getGraph());
+		String uri = ope.getGraph();
 		
 		if (! isSystem(uri)){
 			return;
@@ -227,8 +227,8 @@ public class ManagerImpl implements Manager {
 			}
 		}
 		if (ope.getGraph()!=null){
-			graph.clear(ope.expand(ope.getGraph()), ope.isSilent());
-			if (drop) graph.deleteGraph(ope.expand(ope.getGraph()));
+			graph.clear(ope.getGraph(), ope.isSilent());
+			if (drop) graph.deleteGraph(ope.getGraph());
 		}
 		return true;
 	}
@@ -241,8 +241,8 @@ public class ManagerImpl implements Manager {
 
 	
 	private boolean update(Basic ope, int mode) {
-		String source = ope.expand(ope.getGraph());
-		String target = ope.expand(ope.getTarget());
+		String source = ope.getGraph();
+		String target = ope.getTarget();
 		
 		if (source != null){
 			if (target != null){
@@ -289,7 +289,7 @@ public class ManagerImpl implements Manager {
 
 
 	private boolean create(Basic ope) {
-		String uri = ope.expand(ope.getGraph());
+		String uri = ope.getGraph();
 		graph.addGraph(uri);
 		return true;
 	}
@@ -299,8 +299,8 @@ public class ManagerImpl implements Manager {
 			logger.error("Load " + ope.getURI() + ": Loader is undefined");
 			return ope.isSilent();
 		}
-		String uri = ope.expand(ope.getURI());
-		String src = ope.expand(ope.getTarget());
+		String uri = ope.getURI();
+		String src = ope.getTarget();
 		try {
 			load.loadWE(uri, src);
 		} catch (LoadException e) {

@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgenv.parser;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -54,6 +55,8 @@ public class Transformer implements ExpType {
 	Sorter sort;
 	//Table table;
 	ASTQuery ast;
+	Checker check;
+	Hashtable<Edge, Query> table;  
 
 	int ncount = 0, rcount = 0;
 	boolean fail = false,
@@ -63,9 +66,11 @@ public class Transformer implements ExpType {
 	List<String> from, named;
 
 	Transformer(){
+		table = new Hashtable<Edge, Query>();
 	}
 
 	Transformer(CompilerFactory f){
+		this();
 		fac = f;
 	}
 
@@ -116,15 +121,14 @@ public class Transformer implements ExpType {
 		if (fac == null) fac = new CompilerFacKgram();			
 		ast.setKgram(true);
 
-		compiler = fac.newInstance(); 
-		compiler.setAST(ast);
-		// generate Exp from AST body
-		//Exp exp = compile(ast);
+//		compiler = fac.newInstance(); 
+//		compiler.setAST(ast);
+//		Exp exp = compile(ast.getBody(), false);
 		
-		Exp exp = compile(ast.getBody(), false);
-	
+		Exp exp = compile(ast);
 		Query q =  create(exp);
-		
+		q.setAST(ast);
+
 		if (ast.isConstruct() || ast.isDescribe()){
 			// use case: kgraph only
 			Exp cons = construct(ast);
@@ -148,12 +152,7 @@ public class Transformer implements ExpType {
 		// retrieve select nodes for query:
 		complete(q, ast);
 		
-		q.setAST(ast);
-
-
 		having(q, ast);
-		
-
 
 		if (compiler.isFail() || fail){
 			q.setFail(true);
@@ -161,10 +160,38 @@ public class Transformer implements ExpType {
 
 		q.setSort(ast.isSorted());
 		q.setDebug(ast.isDebug());
+		q.setCheck(ast.isCheck());
 		q.setRelax(ast.isMore());
+		
+		for (Edge edge : table.keySet()){
+			q.set(edge, table.get(edge));
+		}
 
 		return q;
 	}
+	
+	
+	/**
+	 * subquery is compiled using a new compiler to get fresh new nodes
+	 * to prevent type inference on nodes between outer and sub queries
+	 */
+	Query compileQuery(ASTQuery ast){
+		Exp exp = compile(ast);
+		Query q =  create(exp);
+		q.setAST(ast);
+
+		path(q, ast);
+		// complete select, order by, group by
+		complete(q, ast);
+
+		having(q, ast);
+
+		// bind is compiled as subquery
+		q.setBind(ast.isBind());
+
+		return q;
+	}
+	
 	
 	Query create(Exp exp){
 		Query q = Query.create(exp);
@@ -277,7 +304,18 @@ public class Transformer implements ExpType {
 		return Mapping.create(lNode, nodes);
 	}
 	
-
+	Exp  compile(ASTQuery ast, fr.inria.acacia.corese.triple.parser.Exp exp){
+		Compiler save = compiler;
+		compiler = fac.newInstance();
+		compiler.setAST(ast);
+		Exp ee = compile(exp, false);
+		
+		if (save != null){
+			compiler = save;
+		}
+		return ee;
+	}
+	
 	/**
 	 * Generate a new compiler for each (sub) query in order to get fresh new nodes
 	 */
@@ -291,15 +329,6 @@ public class Transformer implements ExpType {
 	
 	Exp  delete(ASTQuery ast){
 		return compile(ast, ast.getDelete());
-	}
-	
-	Exp  compile(ASTQuery ast, fr.inria.acacia.corese.triple.parser.Exp exp){
-		Compiler save = compiler;
-		compiler = fac.newInstance();
-		compiler.setAST(ast);
-		Exp ee = compile(exp, false);
-		compiler = save;
-		return ee;
 	}
 
 	public ASTQuery getAST(){
@@ -632,7 +661,7 @@ public class Transformer implements ExpType {
 			Exp t = Exp.create(EMPTY);
 
 			if (r != null){
-				//src = r.getNode(IRelation.ISOURCE);
+				
 				t = Exp.create(EDGE, r);
 
 				if (tt.isXPath()){
@@ -653,6 +682,10 @@ public class Transformer implements ExpType {
 					}
 					t.setObject(tt.getMode());
 				}
+				else if (ast.isCheck()) {
+					check(tt, r);
+				}
+				
 			}
 			else if (c != null)  {
 				t = Exp.create(NODE, c);
@@ -817,28 +850,7 @@ public class Transformer implements ExpType {
 
 	}
 	
-	
-	Query compileQuery(ASTQuery ast){
-		// subquery is compiled using a new compiler to get fresh new nodes
-		// to prevent type inference on nodes between outer and sub queries
-		Exp exp = compile(ast);
-
-		// complete select, order by, group by
-		//complete(exp);
-
-		Query q =  create(exp);
-		q.setAST(ast);
-
-		complete(q, ast);
-
-		having(q, ast);
-
-		q.setBind(ast.isBind());
-
-		return q;
-	}
-	
-	
+		
 	Node compile(Atom at){
 		// create triple(?g rdf:type rdfs:Resource)
 		Triple triple = Triple.create(at, Constant.create(RDFS.RDFTYPE), Constant.create(RDFS.RDFSRESOURCE));
@@ -1027,18 +1039,23 @@ public class Transformer implements ExpType {
 
 	/***************************************/
 
-
-
-
-
-
-
-
-
-
-
-
-
+	
+	/**
+	 * Generate a complementary Query that checks:
+	 * definition of class/property
+	 */
+	void check(Triple tt, Edge edge){
+		ASTQuery aa = new Checker(ast).check(tt);
+		if (aa != null){
+			Transformer tr = Transformer.create();
+			Query qq = tr.transform(aa);
+			add(edge, qq);
+		}
+	}
+	
+	void add(Edge edge, Query query){
+		table.put(edge, query);
+	}
 
 
 }

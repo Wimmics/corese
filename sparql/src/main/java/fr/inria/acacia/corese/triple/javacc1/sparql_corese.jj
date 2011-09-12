@@ -47,7 +47,7 @@ PARSER_BEGIN(SparqlCorese)
     /** An instanciation of the class Parser */
     //Parser parser;
     /** An instanciation of the class ASTQuery (a graph representing the query) */
-    ASTQuery astq;
+    ASTQuery astq, gast;
     ASTUpdate astu;
     /** should we say to the user when he uses something deprecated? (option, sort, or, source, as...) */
     boolean printDeprecated = true;
@@ -59,13 +59,10 @@ PARSER_BEGIN(SparqlCorese)
     boolean show = false;
     /** To show some printings about the part of the parser which deals with Expression */
     boolean debug2 = show && false;
-        
-	/*public void setParser(Parser p) {
-    	parser = p;
-    }*/
     
 	public void setASTQuery(ASTQuery aq) {
 		astq = aq;
+		gast = aq;
 	}
 	
 	/**
@@ -188,7 +185,7 @@ void  UpdateQuery() : { Exp stack; }
 
 void UpdateQuery1() : { 
 	Exp stack; Basic ope;
-	String graph, uri, target; 
+	Constant graph, uri, target; 
 	boolean silent, defaut, named, all;
 	}
 {
@@ -205,14 +202,14 @@ void UpdateQuery1() : {
 	(
 		<LOAD> {ope = Basic.create(Update.LOAD);} 
 		(<SILENT> 	{ope.setSilent(true);} ) ?  
-		uri = IRIref() {ope.setURI(uri);} 
-		( <INTO> <GRAPH> graph = IRIref() {ope.setTarget(graph);} ) ?
+		uri = IRIrefConst() {ope.setURI(uri);} 
+		( <INTO> <GRAPH> graph = IRIrefConst() {ope.setTarget(graph);} ) ?
 	|
 		(<CLEAR>  	{ope = Basic.create(Update.CLEAR);} | <DROP> {ope = Basic.create(Update.DROP);})
 		
 		(<SILENT> 	{ope.setSilent(true);} ) ?  
 			
-		(<GRAPH> 	graph = IRIref() {ope.setGraph(graph);} | 
+		(<GRAPH> 	graph = IRIrefConst() {ope.setGraph(graph);} | 
 		
 		<DEFAUT> 	{ope.setDefault(true);} | 
 		<NAMED> 	{ope.setNamed(true);} |
@@ -221,7 +218,7 @@ void UpdateQuery1() : {
 		
 	|
 		<CREATE> {ope = Basic.create(Update.CREATE);} (<SILENT> {ope.setSilent(true);} ) ?  
-		<GRAPH> graph = IRIref() {ope.setGraph(graph);}
+		<GRAPH> graph = IRIrefConst() {ope.setGraph(graph);}
 	|
 		(<ADD>  {ope = Basic.create(Update.ADD);}  | 
 		 <MOVE> {ope = Basic.create(Update.MOVE);} | 
@@ -229,9 +226,9 @@ void UpdateQuery1() : {
 		
 		(<SILENT> {ope.setSilent(true);} ) ?
 		   
-		(<GRAPH> graph = IRIref()  {ope.setGraph(graph);}    | <DEFAUT> 	{ope.setDefault(true);} )  
+		(<GRAPH> graph = IRIrefConst()  {ope.setGraph(graph);}    | <DEFAUT> 	{ope.setDefault(true);} )  
 		<TO>
-		(<GRAPH> graph = IRIref() {ope.setTarget(graph);}    | <DEFAUT> 	{ope.setDefault(true);} ) 
+		(<GRAPH> graph = IRIrefConst() {ope.setTarget(graph);}    | <DEFAUT> 	{ope.setDefault(true);} ) 
 	
 	|	
 		LOOKAHEAD(2)
@@ -286,11 +283,11 @@ void DeleteInsertData() : {Exp exp; Composite ope, upd;}
 
 // create an AST as a whole
 
-void DeleteInsertWhere() : {Exp exp; Composite upd, ope; String uri;}
+void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri;}
 {
 	{upd = Composite.create(Update.COMPOSITE);}
 	
-	( <WITH> uri = IRIref() 
+	( <WITH> uri = IRIrefConst() 
 	
 	{upd.setWith(uri);}
 	
@@ -318,9 +315,9 @@ void DeleteInsertWhere() : {Exp exp; Composite upd, ope; String uri;}
 	
 	// from & from named
 	
-	( <USING> (           uri = IRIref()   { upd.addUsing(uri); } | 
+	( <USING> (           uri = IRIrefConst()   { upd.addUsing(uri); } | 
 	
-	            <NAMED>   uri = IRIref()   { upd.addNamed(uri); }
+	            <NAMED>   uri = IRIrefConst()   { upd.addNamed(uri); }
 	          ) 
 	) *
 	
@@ -366,7 +363,7 @@ Exp SelectQuery() : { Exp stack; }
 {
 
     <SELECT>
-    (<DEBUG> { astq.setDebug(true); } )?
+    Debug()
     (<NOSORT> {astq.setSorted(false); } )?
     OneMoreListMerge()
     GroupCountSortDisplayVar()
@@ -381,13 +378,20 @@ Exp SelectQuery() : { Exp stack; }
 }
 
 
+void Debug(): {} 
+{
+ (<DEBUG> { astq.setDebug(true); } )?
+ (<CHECK> { astq.setCheck(true); } )?
+}
+
+
 
 Exp ConstructQuery() : { Exp stack1, stack2; }
 {
   (<CONSTRUCT> 
   //| <ADD>  {astq.setAdd(true);} 
   )
-  (<DEBUG> { astq.setDebug(true); } )?
+  Debug()
   
   (
   (
@@ -421,16 +425,16 @@ Exp ConstructQuery() : { Exp stack1, stack2; }
   
 }
 
-Exp DescribeQuery() : { Exp stack; Variable v; String s; }
+Exp DescribeQuery() : { Exp stack; Variable v; String s; Atom at;}
 {  
   { stack = new And(); }	
   <DESCRIBE>
-  (<DEBUG> { astq.setDebug(true); } )?
+  Debug()
   ( 
   	( LOOKAHEAD(2) 
   		( 
-  			v = Var() { astq.setDescribe(v.getName()); }
-  			| s = IRIref() { astq.setDescribe(s); }
+  			  at = Var() { astq.setDescribe(at); }
+  			| at = IRIrefConst() { astq.setDescribe(at); }
   		) 
   	)+
   	| <STAR> { astq.setDescribeAll(true); }
@@ -447,7 +451,7 @@ Exp DescribeQuery() : { Exp stack; Variable v; String s; }
 Exp AskQuery() : { Exp stack; }
 {
   <ASK>
-  (<DEBUG> { astq.setDebug(true); } )?
+  Debug()
   ( DatasetClause() )*
   stack = WhereClause()
   (Bindings()) ?
@@ -735,9 +739,9 @@ void Bindings() : {Variable var; Constant val; ArrayList<Variable> list; ArrayLi
 Constant Value() : { Constant cst; String s; Token t1;}
 {
   	( 
-  	  s = Q_IRI_ref() { cst = astq.createConstant(s); }
-  	| t1 = <QNAME>    { cst = astq.createConstant(t1.image); cst.setQName(true); }
-  	| t1 = <QNAME_NS> { cst = astq.createConstant(t1.image); cst.setQName(true); }
+  	  s = Q_IRI_ref() { cst = astq.createURI(s); }
+  	| t1 = <QNAME>    { cst = astq.createQName(t1.image);  }
+  	| t1 = <QNAME_NS> { cst = astq.createQName(t1.image);  }
   	| t1 = <UNDEF>    { cst = null; }  
   	| cst = RDFLiteral() 
   	| cst = NumericLiteral()
@@ -944,7 +948,7 @@ void GraphPatternNotTriples(Exp stack) : {ASTQuery ast;}
 void SubQuery(Exp stack) : {ASTQuery ast; Query q; Exp exp;}
 {
 // 	  <LBRACE> 
-		{ ast = astq; astq = astq.subCreate(); } 
+		{ ast = astq; astq = gast.subCreate(); } 
  	  	exp = SelectQuery() 
  	  	{ astq.setBody(exp); q = Query.create(astq); stack.add(q); astq = ast; } 
 // 	  <RBRACE>
@@ -1305,7 +1309,7 @@ Atom Verb() : { Atom atom; }
 {
   ( 
     atom = PropertyVarOrIRIref() 
-    | <KW_A> { atom = astq.createConstant(RDFS.rdftype); }
+    | <KW_A> { atom = astq.createQName(RDFS.qrdftype); }
   )
   { return atom; }
 }
@@ -1319,9 +1323,7 @@ Atom PropertyVarOrIRIref(): { Atom atom; Token t1; Variable var; Constant cst; S
       
     | atom = Var()
     
-   // | temp = Q_IRI_ref() { atom = astq.createConstant(temp); }
-    
-   // | t1 = <QNAME_NS> { atom = astq.createConstant(t1.image); atom.setQName(true); }
+ 
   )
   
   
@@ -1329,25 +1331,6 @@ Atom PropertyVarOrIRIref(): { Atom atom; Token t1; Variable var; Constant cst; S
 }
 
 
-
-Atom StdProperty2(): { Atom atom; Token t1; Variable var; Constant cst; String temp; }
-{
-  
-      t1 = <QNAME>  
-      
-      { cst = astq.createConstant(t1.image); cst.setQName(true); } 
-      
-      ( 
-      	<COLON2> 
-      	var = Var() 
-      	{ 
-      		cst.setVar(var); 
-      	} 
-      )? 
-      
-      { return cst; }
-      
-}
 
 
 Atom StdProperty(): {Variable var; Constant cst;  Expression exp;}
@@ -1485,8 +1468,7 @@ Token OpeRegExp() : {Token ope;}
 Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant cst;}
 {
 	( 
-		t = IRIref() 
-		{ cst = astq.createConstant(t); cst.setQName(true); exp = cst;}
+		exp = IRIrefConst() 
 		
 		|	
 	
@@ -1666,7 +1648,7 @@ Expression Collection2(Exp stack) :
   	<RPAREN>
   	{ 
   		if (! subList) {
-  			tripleGenerated = astq.generateRest(lastExpression, astq.createConstant(RDFS.qrdfNil));
+  			tripleGenerated = astq.generateRest(lastExpression, astq.createQName(RDFS.qrdfNil));
    			finalCollection.add(tripleGenerated);
   		}
   		//System.out.println("sparql_corese.jj - Collection - "+finalCollection.toSparql());  
@@ -1697,7 +1679,7 @@ Atom VarOrBlankNodeOrIRIref(Exp stack) : { Atom a; String s; }
   ( 
     a = Var() { s = a.getName(); } 
     | a = BlankNode(stack) { s = a.getName(); } 
-    | s = IRIref() { a = astq.createConstant(s); }
+    | a = IRIrefConst() 
   )
   { return a; }
 }
@@ -1705,8 +1687,8 @@ Atom VarOrBlankNodeOrIRIref(Exp stack) : { Atom a; String s; }
 Atom VarOrIRIref(Exp stack) : { Atom a; String s; }
 {
   ( 
-    a = Var() 
-    | s = IRIref() { a = astq.createConstant(s); }
+      a = Var() 
+    | a = IRIrefConst() 
   )
   { return a; }
 }
@@ -1725,15 +1707,15 @@ Atom GraphTerm(Exp stack) : { Constant cst; String s; Token t1; Variable var; At
 {
   (
   	( 
-  	s = Q_IRI_ref() { cst = astq.createConstant(s); }
+  	s = Q_IRI_ref() { cst = astq.createURI(s); }
   	| t1 = <QNAME> 
-  		{ cst = astq.createConstant(t1.image); cst.setQName(true); }
+  		{ cst = astq.createQName(t1.image);  }
     	( 
  	   	<COLON2> 
  	   	var = Var() 
  		{ cst.setVar(var); } 
  	    )?
-  	| t1 = <QNAME_NS> { cst = astq.createConstant(t1.image); cst.setQName(true); }
+  	| t1 = <QNAME_NS> { cst = astq.createQName(t1.image); }
   	| cst = RDFLiteral() 
   	| // ( <MINUS> | <PLUS> )? 
   	  cst = NumericLiteral()
@@ -1741,7 +1723,7 @@ Atom GraphTerm(Exp stack) : { Constant cst; String s; Token t1; Variable var; At
   	| 
  // 		t1 = <NIL> 
   		t1 = <LPAREN>  <RPAREN> 
-  	{ cst = astq.createConstant(RDFS.qrdfNil); }  
+  	{ cst = astq.createQName(RDFS.qrdfNil); }  
   	) { a = cst; }
   	| a = BlankNode(stack) 
   )
@@ -1926,14 +1908,13 @@ Term FunctionCall(Exp stack) : { Term term1;  String s; ExpressionList v; }
 // The case of "q:name()" or just "q:name"
 // by expanding out FunctionCall()
 
-Expression IRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term term; Expression expression;  }
+Expression IRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term term; Expression expression;  Constant cst;}
 {
-  s1 = IRIref() 
-  { expression = astq.createConstant(s1); }
+  cst = IRIrefConst() {expression = cst;}
   ( 
     v = ArgList(stack)
     { 
-    	term = astq.createFunction(s1, v); 
+    	term = astq.createFunction(cst, v); 
 	  	expression = term;
     } 
   )?
@@ -2043,8 +2024,7 @@ Constant NumericLiteral() : { Token t; String datatype; }
    ( t = <INTEGER> { datatype = RDFS.qxsdInteger; } 
    | t = <DECIMAL> { datatype = RDFS.qxsdDecimal; } 
    | t = <DOUBLE>  { datatype = RDFS.qxsdDouble; } )
-   // note: null corresponds to the language parameter
-   { return astq.createConstant(t.image, datatype, null); }
+   { return astq.createConstant(t.image, datatype); }
 }
 
 Constant RDFLiteral() : { Constant res; String iriref, s, lang; Token t; }
@@ -2086,6 +2066,17 @@ String IRIref() : { String res; }
    | res = QName() )
    { return res; }
 }
+
+
+Constant IRIrefConst() : { String res; Constant cst;}
+{
+   ( res = Q_IRI_ref() {cst = astq.createURI(res);}
+   | res = QName()     {cst = astq.createQName(res);}
+   )
+   { return cst; }
+}
+
+
 
 String QName(): { Token t; }
 {
@@ -2316,6 +2307,7 @@ TOKEN [IGNORE_CASE] :
 | <COLON2: "::" >
 | <DISTANCE: "distance">
 | <DEBUG: "debug">
+| <CHECK: "check">
 | <NOSORT: "nosort">
 | <TUPLE: "tuple">
 | <XPATH: "xpath">

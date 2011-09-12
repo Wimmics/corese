@@ -29,12 +29,17 @@ import fr.inria.acacia.corese.cg.datatype.RDF;
 	 static final String qxsdDecimal 	= "xsd:decimal";
 	 static final String qxsdString 	= "xsd:string";
 	 static final String qxsdBoolean 	= "xsd:boolean";
-	 static final String qrdfsLiteral	=  "rdfs:Literal";
+	 static final String qrdfsLiteral	= "rdfs:Literal";
 	 static final String qrdfsResource 	= "rdfs:Resource";
+	 
+	 static String[] FAKEDT = {RDFSRESOURCE,qrdfsResource, RDFSLITERAL, qrdfsLiteral};
+
 
 	 static final String qrdfFirst 	= "rdf:first";
 	 static final String qrdfRest	= "rdf:rest";
 	 static final String qrdfNil 	= "rdf:nil";
+	 static final String qrdftype   = "rdf:type";
+	 
 	 static final String rdftype    = "rdf:type";
 
 	 static final String RDFRESOURCE 	= RDF+"resource";

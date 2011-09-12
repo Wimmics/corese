@@ -28,7 +28,7 @@ implements Regex, Filter, Expr {
 	public static final int ENDFILTER = 1;
 	public static final int POSFILTER = 2;
 	public static final int BOUND = 4;
-	int type = -1, min = -1, max = -1, retype = -1;
+	int type = -1, min = -1, max = -1, retype = Regex.UNDEF;
 	
 	boolean isQName = false;
 	boolean isEget = false;
@@ -472,7 +472,7 @@ implements Regex, Filter, Expr {
 		if (isStar()) 	 return Regex.STAR;
 		if (isOpt()) 	 return Regex.OPTION;
 		if (isTest())	 return Regex.TEST;
-		return -1;
+		return Regex.UNDEF;
 	}
 
 	

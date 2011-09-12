@@ -42,6 +42,10 @@ public class BasicGraphPattern extends And {
         return new BasicGraphPattern(exp);
     }
     
+    public void addFilter(Expression e){
+    	add(Triple.create(e));
+    }
+    
     public String toSparql(NSManager nsm) {
     	return "{" + super.toSparql(nsm) + "}";
     }
@@ -125,6 +129,21 @@ public class BasicGraphPattern extends And {
     	if (size() == 1 && get(0).isTriple() && get(0).isExp())
     		throw new QuerySemanticException("Unbound variable in Filter: " + 
     				this.toString());
+    }
+    
+    public Exp union(){
+    	if (getBody().size()<2) return this;
+    	
+    	Exp exp = null;
+    	for (Exp e : getBody()){
+    		if (exp == null){
+    			exp = e;
+    		}
+    		else {
+    			exp = Or.create(exp, e);
+    		}
+    	}
+    	return exp;
     }
     
 }

@@ -93,7 +93,7 @@ public class ASTQuery  implements Keyword {
     // validation mode (check errors)
     private boolean validate = false; 
 	boolean sorted = true; // if the relations must be sorted (default true)
-	boolean debug = false;
+	boolean debug = false, isCheck = false;
     boolean nosort = false, 
     // load from and from named documents before processing
     isLoad = false, 
@@ -159,8 +159,8 @@ public class ASTQuery  implements Keyword {
     // triples that define prefix/namespace
     Exp prefixExp = new And();
     
+    ASTQuery globalAST;
 	Expression having;
-    
 	Vector<Variable> selectVar = new Vector<Variable>();
 	Vector<Expression> sort = new Vector<Expression>();
 	Vector<Expression> lGroup = new Vector<Expression>();
@@ -171,11 +171,12 @@ public class ASTQuery  implements Keyword {
 	Vector<String> named = new Vector<String>();
 	// values given by query
 	Vector<String> defFrom, defNamed; 
-    Vector<String> describe = new Vector<String>();  
+   // Vector<String> describe = new Vector<String>();  
+    ArrayList<Atom> adescribe = new ArrayList<Atom>();
 	Vector<String> source = new Vector<String>();
 	Vector<String> stack = new Vector<String>(); // bound variables
 	Vector<String> vinfo;
-	Vector<String> errors;
+	List<String> errors;
 	
 	List<Variable> varBindings;
 	List<List<Constant>> valueBindings;
@@ -235,10 +236,18 @@ public class ASTQuery  implements Keyword {
 	 */
 	public ASTQuery subCreate(){
 		ASTQuery ast = create();
+		ast.setGlobalAST(this);
 		ast.setNSM(getNSM());
-		ast.setEdgeForType(isEdgeForType());
-		ast.setKgram(isKgram());
 		return ast;
+	}
+	
+	void setGlobalAST(ASTQuery a){
+		globalAST = a;
+	}
+	
+	public ASTQuery getGlobalAST(){
+		if (globalAST == null) return this;
+		return globalAST;
 	}
 	
 	public void setDefaultFrom(String[] from){
@@ -324,22 +333,30 @@ public class ASTQuery  implements Keyword {
 	 * @param error
 	 */
 	public void addError(String error) {
-		if (errors == null)
-			errors = new Vector<String>(1, 1);
-		if (!errors.contains(error)) errors.add(error);
+		getGlobalAST().setError(error);
+	}	
+	
+	public void addError(String error, Object obj) {
+		getGlobalAST().setError(error + obj);
 	}
 	
-	public Vector<String> getErrors(){
+	public List<String> getErrors(){
+		return getGlobalAST().errors();
+	}
+	
+	void setError(String error){
+		if (errors == null)
+			errors = new ArrayList<String>();
+		if (! errors.contains(error)){
+			errors.add(error);
+			logger.error(error);
+		}
+	}
+		
+	List<String> errors(){
 		return errors;
 	}
-
-//	public byte getAccess() {
-//		return access;
-//	}
-//
-//	public void setAccess(byte access) {
-//		this.access = access;
-//	}
+	
 
 	public void setConnex(boolean connex) {
 		this.connex = connex;
@@ -746,6 +763,12 @@ public class ASTQuery  implements Keyword {
     	return term;
     }
     
+    // TBD: clean this
+    public  Term createFunction(Constant name, ExpressionList el) {
+    	return createFunction(name.getName(), el);
+    }
+    
+    
     public  Term createFunction(String name, ExpressionList el) {
     	Term term = createFunction(name);
     	term.setDistinct(el.isDistinct());
@@ -825,7 +848,7 @@ public class ASTQuery  implements Keyword {
     	}
     	
     	if (close){
-      		triple = generateRest(rest, createConstant(RDFS.qrdfNil));
+      		triple = generateRest(rest, createQName(RDFS.qrdfNil));
        		rlist.add(triple);
     	}
     	
@@ -888,14 +911,34 @@ public class ASTQuery  implements Keyword {
 		// if we are in "describe *", add this variable to the list of variable to describe
         // notice: if the variable is already in the list, it won't add it again
         if (aq.isDescribeAll()) {
-            aq.setDescribe(s);
+            aq.setDescribe(var);
         }
         return var;
 	}
 
-	// URI
+	// ex:name or <uri>
 	public  Constant createConstant(String s) {
 		Constant cst = Constant.create(s);
+		cst.setLongName(getNSM().toNamespaceB(s));
+		return cst;
+	}
+	
+	// ex:name
+	public  Constant createQName(String s) {
+		Constant cst = Constant.create(s);
+		String lname = getNSM().toNamespace(s);
+		cst.setLongName(lname);
+		if (s.equals(lname)){
+			addError("Undefined prefix: ", s);
+		}
+		cst.setQName(true);
+		return cst;
+	}
+	
+	// <uri>
+	public  Constant createURI(String s) {
+		Constant cst = Constant.create(s);
+		// base
 		cst.setLongName(getNSM().toNamespaceB(s));
 		return cst;
 	}
@@ -1163,13 +1206,13 @@ public class ASTQuery  implements Keyword {
 
     /** used for collections */
     public  Exp generateFirst(Expression expression1, Expression expression2) {
-        Atom atom = createConstant(RDFS.qrdfFirst);
+        Atom atom = createQName(RDFS.qrdfFirst);
         Triple triple = Triple.create(expression1, atom, expression2);
         return triple; 
     }
 
     public  Exp generateRest(Expression expression1, Expression expression2) {
-        Atom atom = createConstant(RDFS.qrdfRest);
+        Atom atom = createQName(RDFS.qrdfRest);
         Triple triple = Triple.create(expression1, atom, expression2);
         return triple; 
     }
@@ -1232,6 +1275,14 @@ public class ASTQuery  implements Keyword {
 
 	public void setDebug(boolean b) {
 		debug = b;
+	}
+	
+	public boolean isCheck() {
+		return isCheck;
+	}
+
+	public void setCheck(boolean b) {
+		isCheck = b;
 	}
 
     public boolean isNosort() {
@@ -1336,18 +1387,28 @@ public class ASTQuery  implements Keyword {
 		return array;
 	}
 
-    public void setDescribe(String var) {
-        if (!describe.contains(var))
-            describe.add(var);
+//    public void setDescribe(String var) {
+//        if (!describe.contains(var))
+//            describe.add(var);
+//    }
+    
+    public void setDescribe(Atom at){
+    	setResultForm(QT_DESCRIBE); 
+    	for (Atom aa : adescribe){
+    		if (aa.getLabel().equals(at.getLabel())){
+    			return;
+    		}
+    	}
+    	adescribe.add(at);
+    	//setDescribe(at.getName());
     }
     
-    public void setDescribe(Atom var){
-    	setResultForm(QT_DESCRIBE);   
-    	setDescribe(var.getName());
-    }
+//    public Vector<String> getDescribe() {
+//        return describe;
+//    }
     
-    public Vector<String> getDescribe() {
-        return describe;
+    public List<Atom> getDescribe() {
+        return adescribe;
     }
 
     public void setDescribeAll(boolean b) {
@@ -1394,10 +1455,7 @@ public class ASTQuery  implements Keyword {
         return nbd++;
     }
 
-    public void complete(Parser parser) {
-       // setQueryPrettyPrint(getSparqlPrettyPrint());
-     
-    	// if we are in the first parser, getBodyExp = null
+    public void complete(Parser parser) {     
         if (isConstruct()  && getBody()!=null) {
         	// construct {} group by ?x => no merge
         	if (! isGroup() && ! isConnex()) setMerge(true);
@@ -1423,9 +1481,10 @@ public class ASTQuery  implements Keyword {
             Exp exp = getConstruct().complete(parser);
             Env env = new Env(false);
             // assign graph ?src variable to inner triples
+            // for backward rules ?
     		exp.setSource(parser,  env, null, false);
     		// TODO: clean
-            exp = exp.distrib();
+           // exp = exp.distrib();
             // set the compiled exp as construct:
             setConstruct(exp);
         }
@@ -1436,15 +1495,10 @@ public class ASTQuery  implements Keyword {
     }
 
     private void compileDescribe(Parser parser) {
-    	String root = ExpParser.SYSVAR;
-    	if (isKgram()){
-    		// it must not be a systemvariable()
-    		// for CoreseGraph.construct()
-    		root = ExpParser.KGRAMVAR;
-    	}
+    	String root = ExpParser.KGRAMVAR;
     	String PP = root + "p_";
     	String VV = root + "v_";
-    	Vector<String> describe = getDescribe();
+    	
 		Exp bodyExpLocal = getBody();
 		
 		boolean describeAllTemp = isDescribeAll();
@@ -1452,16 +1506,7 @@ public class ASTQuery  implements Keyword {
 		
         BasicGraphPattern body = BasicGraphPattern.create();
         
-		for (String sd : describe) {
-			
-			Expression expression;
-			if (Triple.isVariable(sd)){ 
-				// Var
-				expression = createVariable(sd);				
-			} else {
-				// IRIref
-				expression = createConstant(sd);
-			}
+		for (Atom expression : adescribe) {
 			
 			setMerge(true);
 
@@ -1578,7 +1623,6 @@ public class ASTQuery  implements Keyword {
         String head = "";
         Vector<String> from = getFrom();
         Vector<String> named = getNamed();
-        Vector<String> describe = getDescribe();
         Vector<String> select = getSelect();
 
         // Select
@@ -1641,21 +1685,25 @@ public class ASTQuery  implements Keyword {
             head += KeywordPP.CONSTRUCT + 
             KeywordPP.SPACE + //PrettyPrintCst.OPEN_BRACKET + PrettyPrintCst.SPACE + 
             getConstruct().toSparql(); // + PrettyPrintCst.CLOSE_BRACKET;
-        } else if (isDescribe()) {
+        } 
+        else if (isDescribe()) {
             // Describe
             head += KeywordPP.DESCRIBE + KeywordPP.SPACE;
             if (isDescribeAll()) {
                 head += KeywordPP.STAR + KeywordPP.SPACE;
-            } else if (describe != null && describe.size()>0) {
-                for (int i=0;i<describe.size();i++) {
-                    String v = describe.get(i);
-                    // if we have an IRI, we have to put "<" and ">" back
-                    if (!Triple.isVariable(v))
+            } 
+            else if (adescribe != null && adescribe.size()>0) {
+            	
+                for (Atom at : adescribe) {
+                	String v = at.getLabel();
+                    if (at.isConstant()){
                         v = KeywordPP.OPEN + v + KeywordPP.CLOSE;
+                    }
                     head += v + KeywordPP.SPACE;
                 }
             }
-        } else if (isDelete()) {
+        } 
+        else if (isDelete()) {
         	head += KeywordPP.DELETE + KeywordPP.SPACE + KeywordPP.STAR + KeywordPP.SPACE;
         }
         // DataSet
@@ -2030,7 +2078,7 @@ public class ASTQuery  implements Keyword {
     }
     
     public void setNamed(Atom uri) {
-    	setNamed(uri.getName());
+    	setNamed(uri.getLongName());
     }
 
     public void setFrom(String uri) {
@@ -2039,7 +2087,7 @@ public class ASTQuery  implements Keyword {
     }
     
     public void setFrom(Atom uri) {
-       setFrom(uri.getName());
+       setFrom(uri.getLongName());
     }
 
     public void setCount(String var) {

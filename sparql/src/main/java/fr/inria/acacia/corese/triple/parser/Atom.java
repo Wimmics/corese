@@ -28,26 +28,7 @@ public class Atom extends Expression implements ElementClause{
 	public Atom() {
 	}
 
-    public String toSparql() {
-        if (lang != null) {
-            //return name + "@" + lang;
-       		return KeywordPP.QUOTE + name + KeywordPP.QUOTE + KeywordPP.LANG + lang;
-        } else if (datatype != null && hasRealDatatype()) {
-        	if (isVariable()) {
-                return name + KeywordPP.SDT + datatype;
-            } else {
-                return KeywordPP.QUOTE + name + KeywordPP.QUOTE + KeywordPP.SDT + datatype;
-            }
-        } else if (isVariable() && ((Variable)this).isBlankNode()) {
-            // "this" is a blank node
-            return KeywordPP.BN + name.substring(2,name.length());
-        } else if (isConstant() && !isLiteral() && Triple.isABaseWord(name)) {
-        	// when there is the keyword "base", we can have <Engineer> for example
-        	return KeywordPP.OPEN + name+ KeywordPP.CLOSE;
-        } else {
-            return name;
-        }
-    }
+	
     
 	public String toString() {
 		if (lang != null)
@@ -94,13 +75,18 @@ public class Atom extends Expression implements ElementClause{
 	}
 
 	boolean hasRealDatatype() {
-		return !datatype.equals(RDFS.RDFSRESOURCE)
-				&& !datatype.equals(RDFS.qrdfsResource);				
+		if (datatype == null) return false;
+		for (String str : RDFS.FAKEDT){
+			if (datatype.equals(str)){
+				return false;
+			}
+		}
+		return true;				
 	}
 
 	// only xsd/rdf datatype (no rdfs:Literal no rdfs:Resource)
 	public String getRealDatatype() {
-		if (datatype == null || !hasRealDatatype())
+		if (! hasRealDatatype())
 			return null;
 		else
 			return datatype;

@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgram.core;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -42,6 +43,7 @@ public class Query extends Exp {
 	List<Exp> selectExp, orderBy, groupBy;
 	List<Filter> failure, pathFilter;
 	List<Mapping> bindings;
+	List<String> errors;
 	Exp having, construct, delete;
 	// gNode is a local graph node when subquery has no ?g in its select 
 	// use case: graph ?g {{select where {}}}
@@ -52,14 +54,18 @@ public class Query extends Exp {
 	Compile compiler;
 	Sorter sort;
 	
+	Hashtable<Edge, Query> table;
+	
 	private boolean 
 	isCompiled = false;
 
-	boolean isDebug = false, isAggregate = false, isFunctional = false, isRelax = false, isDistribute = false, isTest = false, // sort edges to be connected
+	boolean isDebug = false, isCheck = false,
+	isAggregate = false, isFunctional = false, isRelax = false, 
+	isDistribute = false, isTest = false, // sort edges to be connected
 	isSort = true, isConstruct = false,
-			isDelete = false, isUpdate = false, // true:  path do not loop on node
-			isLoopNode = false, isPipe = false, isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
-			isCorrect = true, isConnect = false;
+	isDelete = false, isUpdate = false, // true:  path do not loop on node
+	isLoopNode = false, isPipe = false, isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
+	isCorrect = true, isConnect = false;
 	
 	int mode = Matcher.UNDEF;
 
@@ -69,15 +75,17 @@ public class Query extends Exp {
 	
 	Query(){
 		super(QUERY);
-		from = new ArrayList<Node>();
-		named = new ArrayList<Node>();
-		selectExp = new ArrayList<Exp>();
-		orderBy = new ArrayList<Exp>();
-		groupBy = new ArrayList<Exp>();
-		failure = new ArrayList<Filter>();
-		pathFilter = new ArrayList<Filter>();
-		compiler = new Compile(this);
+		from 		= new ArrayList<Node>();
+		named 		= new ArrayList<Node>();
+		selectExp 	= new ArrayList<Exp>();
+		orderBy 	= new ArrayList<Exp>();
+		groupBy 	= new ArrayList<Exp>();
+		failure 	= new ArrayList<Filter>();
+		pathFilter 	= new ArrayList<Filter>();
 		
+		compiler 	= new Compile(this);
+		table 		= new Hashtable<Edge, Query>();
+
 		patternNodes 		= new ArrayList<Node>();
 		queryNodes 			= new ArrayList<Node>();
 		patternSelectNodes 	= new ArrayList<Node>();
@@ -113,6 +121,14 @@ public class Query extends Exp {
 		sort = s;
 	}
 	
+	public void set(Edge e, Query q){
+		table.put(e, q);
+	}
+	
+	Query get(Edge e){
+		return table.get(e);
+	}
+	
 	public Object getObject(){
 		return object;
 	}
@@ -137,6 +153,22 @@ public class Query extends Exp {
 		mode = m;
 	}
 	
+	void addError(String mes, Object obj){
+		if (errors == null){
+			errors = new ArrayList<String>();
+		}
+		if (obj != null){
+			mes += obj;
+		}
+		if (! errors.contains(mes)){
+			errors.add(mes);
+		}
+	}
+	
+	public List<String> getErrors(){
+		return errors;
+	}
+	
 	public Exp getBody(){
 		return first();
 	}
@@ -157,7 +189,9 @@ public class Query extends Exp {
 	}
 	
 	public Query getGlobalQuery(){
-		return query;
+		if (query != null)
+			return query;
+		return this;
 	}
 	
 	public void setOuterQuery(Query q){
@@ -423,6 +457,14 @@ public class Query extends Exp {
 	
 	public void setDebug(boolean b){
 		 isDebug = b;
+	}
+	
+	public boolean isCheck(){
+		return isCheck;
+	}
+	
+	public void setCheck(boolean b){
+		isCheck = b;
 	}
 	
 	public void setSort(boolean b){
@@ -1086,6 +1128,7 @@ public class Query extends Exp {
 					// TODO: does not work with filter in exists{}
 					// because getProperAndSubSelectNode does not go into exists{}
 					Message.log(Message.UNDEF_VAR , var);
+					getGlobalQuery().addError(Message.get(Message.UNDEF_VAR) , var);
 				}
 			}
 			if (hasExist){

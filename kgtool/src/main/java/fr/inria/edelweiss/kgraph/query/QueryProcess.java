@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -18,7 +19,7 @@ import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import java.net.URL;
+//import java.net.URL;
 
 
 /**
@@ -77,9 +78,9 @@ public class QueryProcess extends QuerySolver {
 		add(ProducerImpl.create(g));
 	}
         
-        public void addRemote(URL url){
-		add(new RemoteProducerImpl(url));
-	}
+//	public void addRemote(URL url){
+//		add(new RemoteProducerImpl(url));
+//	}
 	
 	public static QueryProcess create(ProducerImpl prod){
 		Matcher match =  MatcherImpl.create(prod.getGraph());
@@ -135,10 +136,10 @@ public class QueryProcess extends QuerySolver {
 		pragma(q);
 		
 		if (q.isUpdate()){
-			return update(q, from, named);
+			return synUpdate(q, from, named);
 		}
 		else {
-			Mappings lMap =  query(q, map);
+			Mappings lMap =  synQuery(q, map);
 
 			if (q.isConstruct()){
 				// construct where
@@ -148,8 +149,37 @@ public class QueryProcess extends QuerySolver {
 		}
 	}
 	
+	Lock readLock(){
+		return getGraph().readLock();
+	}
 	
-	public Mappings update(Query query,  List<String> from, List<String> named) throws EngineException{
+	Lock writeLock(){
+		return getGraph().writeLock();
+	}
+	
+	Mappings synQuery(Query query, Mapping m) {
+		try {
+			readLock().lock();
+			return query(query, m);
+		}
+		finally {
+			readLock().unlock();
+		}
+	}
+
+	
+	Mappings synUpdate(Query query,  List<String> from, List<String> named) throws EngineException{
+		try {
+			writeLock().lock();
+			return update(query, from, named);
+		}
+		finally {
+			writeLock().unlock();
+		}
+	}
+	
+	
+	Mappings update(Query query,  List<String> from, List<String> named) throws EngineException{
 		complete(from);
 		ManagerImpl man = ManagerImpl.create(this, from, named);
 		UpdateProcess up = UpdateProcess.create(man);
@@ -171,14 +201,22 @@ public class QueryProcess extends QuerySolver {
 		}
 	}
 	
-	/**
-	 * Called by sparql update
-	 */
+	
 	public Mappings query(ASTQuery ast){
 		if (ast.isUpdate()){
 			return update(ast);
 		}
-		return query(ast, null, null);
+		return synQuery(ast);
+	}
+	
+	Mappings synQuery(ASTQuery ast){
+		try {
+			readLock().lock();
+			return super.query(ast);
+		}
+		finally {
+			readLock().unlock();
+		}
 	}
 	
 	/**
@@ -193,7 +231,7 @@ public class QueryProcess extends QuerySolver {
 	/**
 	 * Called by Manager (delete/insert operations)
 	 */
-	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
+	Mappings update(ASTQuery ast, List<String> from, List<String> named) {
 		Mappings lMap = super.query(ast, from, named);
 		Query q = lMap.getQuery();
 		

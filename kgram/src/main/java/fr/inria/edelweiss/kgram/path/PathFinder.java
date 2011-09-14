@@ -70,6 +70,7 @@ public class PathFinder
 	// the inverse of the index (i.e. the other arg)
 	private int other ;
 	private boolean 
+	isStop = false,
 	hasEvent = false,
 	// true if breadth first (else depth first)
 	isBreadth,
@@ -242,6 +243,7 @@ public class PathFinder
 	}
 	
 	void mstart(Environment mem) {
+		isStop = false;
 		// buffer store path enumeration
 		memory = mem;
 		mbuffer = new Buffer();
@@ -256,9 +258,10 @@ public class PathFinder
 	}
 	
 	public void stop(){
-		if (path != null){
-			path.stop();
-		}
+//		if (path != null){
+//			path.stop();
+//		}
+		isStop = true;
 	}
 	
 	public void interrupt(){
@@ -1000,7 +1003,7 @@ public class PathFinder
 			eval(stack, path, start, src, false);
 		}
 		catch (StackOverflowError e){
-			System.out.println("** Path Error: " + e);
+			logger.error("** Property Path Error: \n" + e);
 		}
 	}
 	
@@ -1012,6 +1015,8 @@ public class PathFinder
 	 * in the later case,  index = 1
 	 */
 	void eval(Record stack, Path path, Node start, Node src, boolean inv){
+		
+		if (isStop) return;
 		
 		if (stack.isEmpty()){
 			result(path, start, src);
@@ -1071,6 +1076,8 @@ public class PathFinder
 //			}
 						
 			for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, src, start, ii)){
+				
+				if (isStop) return;
 
 				if (ent == null){
 					continue;
@@ -1224,6 +1231,9 @@ public class PathFinder
 		}
 		else {
 			for (Entity ent : getStart(start, src)){
+				
+				if (isStop) return;
+				
 				if (ent != null){
 					Node node = ent.getNode();
 					if (gNode != null){ 

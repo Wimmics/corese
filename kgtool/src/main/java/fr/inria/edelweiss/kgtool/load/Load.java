@@ -41,9 +41,11 @@ public class Load
 	private static Logger logger = Logger.getLogger(Load.class);	
 
 	static final String RULE 	= ".rul";
+	static final String BRULE 	= ".brul";
+	static final String[] RULES 	= {RULE, BRULE};
 	static final String QUERY 	= ".rq";
 	static final String UPDATE 	= ".ru";
-	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", RULE, QUERY, UPDATE};
+	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", RULE, BRULE, QUERY, UPDATE};
 	static final String HTTP = "http://";
 	static final String FTP  = "ftp://";
 	static final String FILE = "file://";
@@ -162,6 +164,15 @@ public class Load
 		return true;
 	}
 	
+	boolean isRule(String path){
+		for (String suf : RULES){
+			if (path.endsWith(suf)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void load(String path){
 		load(path, null);
 	}
@@ -216,7 +227,7 @@ public class Load
 	public void load(String path, String base, String source) throws LoadException {
 		//if (! suffix(path)) return ;
 		
-		if (path.endsWith(RULE)){
+		if (isRule(path)){
 			loadRule(path, base);
 			return;
 		}

@@ -87,7 +87,7 @@ public class RuleEngine {
 		if (graph==null){
 			set(Graph.create());
 		}
-		return entail();
+		return synEntail();
 	}
 	
 	public int process(Graph g){
@@ -95,13 +95,13 @@ public class RuleEngine {
 		if (exec==null){
 			set(QueryProcess.create(g));
 		}
-		return entail();
+		return synEntail();
 	}
 	
 	public int process(Graph g, QueryProcess q){
 		set(g);
 		set(q);
-		return entail();
+		return synEntail();
 	}
 	
 	public int process(QueryProcess q){
@@ -109,7 +109,7 @@ public class RuleEngine {
 			set(Graph.create());
 		}
 		set(q);
-		return entail();
+		return synEntail();
 	}
 	
 	public Graph getGraph(){
@@ -152,6 +152,15 @@ public class RuleEngine {
 	}
 	
 	
+	int synEntail(){
+		try {
+			graph.writeLock().lock();
+			return entail();
+		}
+		finally {
+			graph.writeLock().unlock();
+		}
+	}
 	
 	
 	/**

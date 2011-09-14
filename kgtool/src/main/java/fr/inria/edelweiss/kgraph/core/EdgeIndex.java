@@ -71,7 +71,7 @@ implements Index {
 	 */
 	public List<Node> getSortedProperties(){
 		List<Node> list = new ArrayList<Node>();
-		for (Node pred : keySet()){
+		for (Node pred : getProperties()){
 			list.add(pred);
 		}
 		Collections.sort(list, new Comparator<Node>(){
@@ -147,6 +147,9 @@ implements Index {
 		return edge;
 	}
 	
+	/**
+	 * delete/exist
+	 */
 	List<Entity> getByLabel(Entity e){
 		Node pred = graph.getPropertyNode(e.getEdge().getEdgeNode().getLabel());
 		if (pred == null) return null;
@@ -187,7 +190,7 @@ implements Index {
 	/**
 	 * Create and store an empty list if needed
 	 */
-	List<Entity> define(Node predicate){
+	private List<Entity> define(Node predicate){
 		List<Entity> list = get(predicate);
 		if (list == null){
 			list = new ArrayList<Entity>(0);
@@ -204,7 +207,7 @@ implements Index {
 	 * Sort edges by values of first Node and then by value of second Node
 	 */
 	public void index(){
-		for (Node pred : keySet()){
+		for (Node pred : getProperties()){
 			List<Entity> list = get(pred);
 			Collections.sort(list, comp);
 		}
@@ -214,7 +217,7 @@ implements Index {
 	}
 	
 	public void indexNode(){
-		for (Node pred : keySet()){
+		for (Node pred : getProperties()){
 			for (Entity ent : get(pred)){
 				graph.define(ent);
 			}
@@ -224,8 +227,8 @@ implements Index {
 	/** 
 	 * eliminate duplicate edges
 	 */
-	void reduce(){
-		for (Node pred : keySet()){
+	private void reduce(){
+		for (Node pred : getProperties()){
 			List<Entity> l1 = get(pred);
 			List<Entity> l2 = reduce(l1);
 			put(pred, l2);
@@ -235,7 +238,7 @@ implements Index {
 		}
 	}
 	
-	List<Entity> reduce(List<Entity> list){
+	private List<Entity> reduce(List<Entity> list){
 		List<Entity> l = new ArrayList<Entity>();
 		Entity pred = null;
 		for (Entity ent : list){
@@ -262,16 +265,31 @@ implements Index {
 	 * Check that this table has been built and initialized (sorted) for this predicate
 	 * If not, copy edges from table of index 0 and then sort these edges
 	 */
-	List<Entity> checkGet(Node pred){
-		List<Entity> list = get(pred);
-		if (index > 0 && list != null && list.size()==0){
-			List<Entity> std = (List<Entity>) graph.getIndex().getEdges(pred, null);
-			list.addAll(std);
-			Collections.sort(list, comp);
+	private List<Entity> checkGet(Node pred){
+		if (index == 0){
+			return get(pred);
 		}
-		return list;
+		else {
+			return synCheckGet(pred);
+		}
 	}
 	
+	
+	/**
+	 * Create the index of property pred on nth argument
+	 * It is synchronized on pred hence several synGetCheck can occur in parallel on different pred
+	 */
+	private List<Entity> synCheckGet(Node pred){
+		synchronized (pred){
+			List<Entity> list = get(pred);
+			if (list != null && list.size()==0){
+				List<Entity> std = (List<Entity>) graph.getIndex().getEdges(pred, null);
+				list.addAll(std);
+				Collections.sort(list, comp);
+			}
+			return list;
+		}
+	}
 	
 	
 	/**
@@ -481,9 +499,19 @@ implements Index {
 		update(g1, g2, Graph.COPY);
 	}
 	
-	public void update (Node g1, Node g2, int mode){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private void update (Node g1, Node g2, int mode){
 		
-		for (Node pred : keySet()){
+		for (Node pred : getProperties()){
 			
 			List<Entity> list = checkGet(pred);
 			if (list == null){
@@ -505,7 +533,7 @@ implements Index {
 	}
 	
 	
-	void update(Node g1, Node g2, List<Entity> list, int n, int mode){
+	private void update(Node g1, Node g2, List<Entity> list, int n, int mode){
 		boolean incr = false;
 		if (g2!=null && g2.compare(g1) == -1) incr = true;
 		
@@ -549,7 +577,7 @@ implements Index {
 	/**
 	 * TODO:  setUpdate(true)
 	 */
-	Entity copy(Node gNode, Entity ent){
+	private Entity copy(Node gNode, Entity ent){
 		EdgeImpl e = (EdgeImpl) ent;
 		EdgeImpl ee = e.copy();
 		ee.setGraph(gNode);
@@ -557,7 +585,7 @@ implements Index {
 		return res;
 	}
 	
-	void clear(Entity ent){
+	private void clear(Entity ent){
 		for (Index ei : graph.tables){
 			if (ei.getIndex()!= IGRAPH) {
 				Entity rem = ei.delete(ent);

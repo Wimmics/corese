@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
+import java.util.concurrent.locks.Lock;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -251,21 +252,37 @@ public class Load
 			source = base;
 		}
 		
-		load(read, path, base, source);
+		synLoad(read, path, base, source);
 	}
 	
 	void error(Object mes){
 		logger.error(mes);
 	}
 	
-	
+	public void load(InputStream stream) throws LoadException{
+		load(stream, Entailment.DEFAULT);
+	}
+
 	// not for rules
 	public void load(InputStream stream, String source) throws LoadException{
 		if (source == null) source = Entailment.DEFAULT;
 		Reader read = new InputStreamReader(stream);
-		load(read, source, source, source);
+		synLoad(read, source, source, source);
 	}
 	
+	Lock writeLock(){
+		return graph.writeLock();
+	}
+	
+	void synLoad(Reader read,  String path, String base, String src) throws LoadException {
+		try {		
+			writeLock().lock();
+			load(read, path, base, src);
+		}
+		finally {
+			writeLock().unlock();
+		}
+	}
 	
 	void load(Reader read,  String path, String base, String src) throws LoadException {
 		if (hasPlugin){

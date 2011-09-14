@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
@@ -43,6 +45,20 @@ public class Graph {
 	static long blankid = 0;
 	static final String BLANK = "_:b";
 	
+	/**
+	 * Synchronization:
+	 * 
+	 * several read in // ; only one write
+	 * lock read:  Query (QueryProcess)
+	 * lock write: Load (Load), Update (QueryProcess), Rule (RuleEngine)
+	 * synchronized: Entailment synchronized in read, hence only one entailment can occur
+	 * synchronized: indexNode (index of nodes for path)
+	 * synchronized: synGetCheck (EdgeIndex) may generate index of nth arg during read
+	 * see occurrences of graph.readLock() graph.writeLock()
+	 **/
+	 
+	ReentrantReadWriteLock lock;
+	
 	Index[] tables;
 	// Table of index 0
 	Index table;
@@ -66,6 +82,8 @@ public class Graph {
 			
 	
 	Graph(){
+		lock = new ReentrantReadWriteLock();
+		
 		tables = new Index[MAX];
 		for (int i=0; i<MAX; i++){
 			// One table per node index
@@ -80,6 +98,7 @@ public class Graph {
 		graph 		= new Hashtable<String, Node>();
 		property 	= new Hashtable<String, Node>();
 		gindex 		= new NodeIndex();
+		
 	}
 	
 	public static Graph create(){
@@ -92,14 +111,17 @@ public class Graph {
 		return g;
 	}
 	
+	public Lock readLock(){
+		return lock.readLock();
+	}
+	
+	public Lock writeLock(){
+		return lock.writeLock();
+	}
+	
 	public void setUpdate(boolean b){
 		isUpdate = b;
 		if (distance!=null) distance.setUpdate(b);
-	}
-	
-	void setDelete(boolean b){
-		setUpdate(b);
-		isDelete = b;
 	}
 	
 	public Entailment getInference(){
@@ -177,35 +199,26 @@ public class Graph {
 		return isEntail;
 	}
 	
-	void setProxy(){
-		proxy = inference;
+	Entailment getProxy(){
 		if (proxy == null){
-			proxy = Entailment.create(this);
+			proxy = inference;
+			if (proxy == null){
+				proxy = Entailment.create(this);
+			}
 		}
+		return proxy;
 	}
 	
 	public boolean isType(Edge edge){
-		if (proxy == null){
-			setProxy();
-		}
-
-		return proxy.isType(edge);
+		return getProxy().isType(edge);
 	}
 	
 	public boolean isType(Node pred){
-		if (proxy == null){
-			setProxy();
-		}
-
-		return proxy.isType(pred);
+		return getProxy().isType(pred);
 	}
 	
 	public boolean isSubClassOf(Node pred){
-		if (proxy == null){
-			setProxy();
-		}
-
-		return proxy.isSubClassOf(pred);
+		return getProxy().isSubClassOf(pred);
 	}
 	
 	public void setIndex(boolean b){
@@ -217,15 +230,17 @@ public class Graph {
 	 * restore consistency if updates have been done
 	 */
 	
-	public void init(){
+	public synchronized void init(){
 		
 		if (! isIndex){
-			isIndex = true;
 			index();
 		}
 		if (isUpdate){
+			// load or sparql update
 			update();
-			if (isEntail) entail();
+			if (isEntail){
+				entail();
+			}
 		}
 	}
 	
@@ -241,7 +256,7 @@ public class Graph {
 	 * delete where {graph kg:default {?x ?p ?y}}
 	 * but all that was inserted in default graph is also removed ...
 	 */
-	void update(){
+	private void update(){
 		isUpdate = false;
 		// node index
 		clearIndex();
@@ -261,6 +276,10 @@ public class Graph {
 		}
 	}
 	
+	private void setDelete(boolean b){
+		setUpdate(b);
+		isDelete = b;
+	}
 	
 	public Index getIndex(){
 		return table;
@@ -286,8 +305,10 @@ public class Graph {
 		gindex.clear();
 	}
 	
-	void indexNode(){
-		table.indexNode();
+	synchronized void indexNode(){
+		if (gindex.size() == 0){
+			table.indexNode();
+		}
 	}
 	
 	void define(Entity ent){
@@ -574,16 +595,12 @@ public class Graph {
 	}
 	
 	public Iterable<Entity> getAllNodes(){
-		if (gindex.size() == 0){
-			indexNode();
-		}
+		indexNode();
 		return gindex.getNodes();
 	}
 	
 	public Iterable<Entity> getNodes(Node gNode){
-		if (gindex.size() == 0){
-			indexNode();
-		}
+		indexNode();
 		return gindex.getNodes(gNode);
 	}
 

@@ -107,7 +107,7 @@ public class ManagerImpl implements Manager {
 	
 	
 	public Mappings query(ASTQuery ast){
-		return exec.query(ast, from, named);
+		return exec.update(ast, from, named);
 	}
 	
 	public boolean process(Basic ope){

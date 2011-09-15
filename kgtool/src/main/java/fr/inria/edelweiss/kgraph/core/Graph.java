@@ -119,6 +119,10 @@ public class Graph {
 		return lock.writeLock();
 	}
 	
+	public ReentrantReadWriteLock getLock(){
+		return lock;
+	}
+	
 	public void setUpdate(boolean b){
 		isUpdate = b;
 		if (distance!=null) distance.setUpdate(b);

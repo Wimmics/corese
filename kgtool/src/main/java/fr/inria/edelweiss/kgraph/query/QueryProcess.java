@@ -4,6 +4,7 @@ package fr.inria.edelweiss.kgraph.query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -36,6 +37,7 @@ public class QueryProcess extends QuerySolver {
 
 	Construct constructor;
 	Loader load;
+	ReentrantReadWriteLock lock;
 		
 	public QueryProcess (){
 	}
@@ -43,9 +45,17 @@ public class QueryProcess extends QuerySolver {
 	
 	protected QueryProcess (Producer p, Evaluator e, Matcher m){
 		super(p, e, m);
-		if (isSort && p instanceof ProducerImpl){
+		if (p instanceof ProducerImpl){
 			ProducerImpl pp = (ProducerImpl) p;
-			set(SorterImpl.create(pp.getGraph()));
+			if (isSort){
+				set(SorterImpl.create(pp.getGraph()));
+			}
+			lock = pp.getGraph().getLock();
+		}
+		else {
+			// TBD: the lock should be unique to all calls
+			// hence it should be provided by Producer
+			lock = new ReentrantReadWriteLock();
 		}
 	}
 
@@ -149,32 +159,26 @@ public class QueryProcess extends QuerySolver {
 		}
 	}
 	
-	Lock readLock(){
-		return getGraph().readLock();
-	}
-	
-	Lock writeLock(){
-		return getGraph().writeLock();
-	}
+
 	
 	Mappings synQuery(Query query, Mapping m) {
 		try {
-			readLock().lock();
+			readLock();
 			return query(query, m);
 		}
 		finally {
-			readLock().unlock();
+			readUnlock();
 		}
 	}
 
 	
 	Mappings synUpdate(Query query,  List<String> from, List<String> named) throws EngineException{
 		try {
-			writeLock().lock();
+			writeLock();
 			return update(query, from, named);
 		}
 		finally {
-			writeLock().unlock();
+			writeUnlock();
 		}
 	}
 	
@@ -211,11 +215,11 @@ public class QueryProcess extends QuerySolver {
 	
 	Mappings synQuery(ASTQuery ast){
 		try {
-			readLock().lock();
+			readLock();
 			return super.query(ast);
 		}
 		finally {
-			readLock().unlock();
+			readUnlock();
 		}
 	}
 	
@@ -288,7 +292,11 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	public Graph getGraph(){
-		return ((ProducerImpl) getProducer()).getGraph();
+		Producer p = getProducer();
+		if (p instanceof ProducerImpl){
+			return ((ProducerImpl) p).getGraph();
+		}
+		return null;	
 	}
 	
 	
@@ -335,9 +343,31 @@ public class QueryProcess extends QuerySolver {
 	
 	
 	
+	/*************************************************/
 	
+	private Lock getReadLock(){
+		return lock.readLock(); 
+	}
 	
+	private Lock getWriteLock(){
+		return lock.writeLock(); 
+	}
 	
+	private void readLock(){
+		getReadLock().lock();
+	}
+
+	private void readUnlock(){
+		getReadLock().unlock();
+	}
+
+	private void writeLock(){
+		getWriteLock().lock();
+	}
+
+	private void writeUnlock(){
+		getWriteLock().unlock();
+	}
 	
 	
 	

@@ -112,6 +112,18 @@ implements Comparator<Mapping>
 	public List<Node> getSelect(){
 		return select;
 	}
+	
+	public Object getValue(Node qNode){
+		return getValue(qNode.getLabel());
+	}
+	
+	public Object getValue(String var){
+		if (size() == 0) return null;
+		Mapping map = get(0);
+		Node node = map.getNode(var);
+		if (node == null) return null;
+		return node.getValue();
+	}
 
 	void setSelect(List<Node> nodes){
 		select = nodes;

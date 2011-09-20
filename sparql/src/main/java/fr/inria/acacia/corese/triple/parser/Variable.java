@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 
@@ -161,7 +162,12 @@ public class Variable extends Atom {
 	// see ProducerDefault
 	// use case: project a query graph on itself
 	public Object getValue(){
-		return Constant.create(name).getValue();
+		return getDatatypeValue();
 	}
+	
+	public IDatatype getDatatypeValue(){
+		return Constant.create(name).getDatatypeValue();
+	}
+
 	
 }

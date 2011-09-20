@@ -3,12 +3,14 @@ package fr.inria.edelweiss.kgtool.print;
 import java.util.Iterator;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 
@@ -32,12 +34,16 @@ public class RDFFormat {
 	static final String OWLCLASS 	= "owl:Class";
 	static final String SPACE 		= "   ";
 	static final String NL 			= System.getProperty("line.separator");
+	private static final String OCOM = "<!--";
+	private static final String CCOM = "--!>";
 
 	
 	Graph graph;
 	Mapper map;
 	NSManager nsm;
 	StringBuilder sb;
+	Query query;
+	ASTQuery ast;
 	
 	RDFFormat(NSManager n){
 		nsm = n;
@@ -53,6 +59,20 @@ public class RDFFormat {
 		}
 	}
 	
+	RDFFormat(Graph g, Query q){
+		this(getAST(q).getNSM());
+		if (g!=null){
+			graph = g;
+			graph.prepare();
+		}
+		ast = getAST(q);
+		query = q;
+	}
+	
+	static ASTQuery getAST(Query q){
+		return (ASTQuery) q.getAST();
+	}
+	
 	RDFFormat(Mapping m, NSManager n){
 		this(n);
 		add(m);
@@ -60,6 +80,18 @@ public class RDFFormat {
 	
 	public static RDFFormat create(Graph g, NSManager n){
 		return new RDFFormat(g, n);
+	}
+	
+	public static RDFFormat create(Graph g, Query q){
+		return new RDFFormat(g, q);
+	}
+	
+	public static RDFFormat create(Mappings map){
+		Graph g = (Graph) map.getGraph();
+		if (g!=null){
+			return create(g, map.getQuery());
+		}
+		return create(map, NSManager.create());
 	}
 	
 	public static RDFFormat create(Graph g){
@@ -131,6 +163,7 @@ public class RDFFormat {
 		header(bb);
 		bb.append(">");
 		bb.append(NL);
+		error();
 		bb.append(NL);
 		bb.append(sb); 
 		bb.append("</rdf:RDF>");
@@ -249,5 +282,34 @@ public class RDFFormat {
 	void display(){
 		sb.append(NL);
 	}
+	
+	
+	void error(){
+		boolean b1 = ast!=null     && ast.getErrors()!=null;
+		boolean b2 = query != null && query.getErrors()!=null;
+		
+		if (b1 || b2){
+			
+			display(OCOM);
+			if (ast.getText()!=null){
+				display(ast.getText());
+			}
+			display();
+			
+			if (b1){
+				for (String mes : ast.getErrors()){
+					display(mes);
+				}
+			}
+			if (b2){
+				for (String mes : query.getErrors()){
+					display(mes);
+				}
+			}
+			display(CCOM);
+		}
+	}
+	
+	
 
 }

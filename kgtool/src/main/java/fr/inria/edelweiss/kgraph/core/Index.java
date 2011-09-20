@@ -24,6 +24,9 @@ public interface Index {
 	void indexNode();
 
 	Iterable<Node> getProperties();
+	
+	Iterable<Node> getSortedProperties();
+
 
 	Entity add(Entity edge);
 	

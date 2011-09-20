@@ -87,6 +87,9 @@ implements Index, Iterable<Entity> {
 		return tree.keySet();
 	}
 
+	public Iterable<Node> getSortedProperties() {
+		return tree.keySet();
+	}
 	
 	public Entity add(Entity edge) {
 		GraphEdgeIndex gei = getIndex(edge);

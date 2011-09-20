@@ -28,6 +28,8 @@ implements Regex, Filter, Expr {
 	public static final int ENDFILTER = 1;
 	public static final int POSFILTER = 2;
 	public static final int BOUND = 4;
+	
+	static ArrayList<Expr> empty = new ArrayList<Expr>();
 	int type = -1, min = -1, max = -1, retype = Regex.UNDEF;
 	
 	boolean isQName = false;
@@ -56,7 +58,8 @@ implements Regex, Filter, Expr {
 		return null;
 	}
 	
-	public void compile(ASTQuery ast){
+	public Expression compile(ASTQuery ast){
+		return this;
 	}
 	
 	public Expression and(Expression e2){
@@ -408,7 +411,6 @@ implements Regex, Filter, Expr {
 
 	
 	public Object getValue() {
-		
 		return null;
 	}
 
@@ -477,8 +479,7 @@ implements Regex, Filter, Expr {
 
 	
 	public List<Expr> getExpList() {
-		
-		return new ArrayList<Expr>();
+		return empty;
 	}
 	
 	public Expr getExp(int i){

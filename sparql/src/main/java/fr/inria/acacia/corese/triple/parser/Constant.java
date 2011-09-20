@@ -73,8 +73,6 @@ public class Constant extends Atom {
 		return cst;
 	}
 	
-
-	
 	public static Constant createResource(String str){
 		Constant cst =  new Constant(str);
 		if (nsm==null){
@@ -183,6 +181,11 @@ public class Constant extends Atom {
 	public IDatatype getDatatypeValue(){
 		if (dt == null) dt = createDatatype();
 		return dt;
+	}
+	
+	public Expression compile(ASTQuery ast){
+		getDatatypeValue();
+		return this;
 	}
 	
 	/**
@@ -302,7 +305,7 @@ public class Constant extends Atom {
 	}
 	
 	public Object getValue(){
-		return getDatatypeValue();
+		return dt;
 	}
 	
 	

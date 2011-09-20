@@ -848,8 +848,8 @@ public class Term extends Expression {
 	
 	// Exp
 	
-	public void compile(ASTQuery ast){
-		if (proc != null) return ;
+	public Expression compile(ASTQuery ast){
+		if (proc != null) return this;
 		
 		for (Expression exp : getArgs()){
 			exp.compile(ast);
@@ -857,6 +857,7 @@ public class Term extends Expression {
 		
 		proc = new Processor(this);
 		proc.compile(ast);
+		return this;
 		
 	}
 

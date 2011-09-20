@@ -48,7 +48,7 @@ public class Processor {
 	private static final String STRLANG = "strlang";
 	private static final String IF = "if";
 	private static final String COALESCE = "coalesce";
-	private static final String BNODE = "bnode";
+	public static final String BNODE = "bnode";
 	private static final String GROUPCONCAT = "group_concat";
 	private static final String SAMPLE = "sample";
 
@@ -82,6 +82,7 @@ public class Processor {
 	static final String EXTCONT  = ExpType.KGRAM + "contains";
 	static final String PROCESS  = ExpType.KGRAM + "process";
 	static final String ENV  	 = ExpType.KGRAM + "env";
+	public static final String PATHNODE = ExpType.KGRAM + "pathNode";
 
 	static final String EXIST 	= Term.EXIST;
 	static final String STRLEN 	= "strlen";
@@ -194,6 +195,7 @@ public class Processor {
 			type = ExprType.FUNCTION;
 			oper = getOperID();
 			switch(oper){
+				case ExprType.IN: 		compileInList(); break;
 				case ExprType.HASH: 	compileHash(); break;
 				case ExprType.URI: 		compileURI(ast); break;
 				case ExprType.CAST: 	compileCast(); break;
@@ -249,7 +251,7 @@ public class Processor {
 	void deftable(){
 		table = new Hashtable<String, Integer>();
 		tname = new Hashtable<Integer, String>();
-		//toccur = new Hashtable<Integer, String>();
+		toccur = new Hashtable<Integer, String>();
 
 		defoper("<", 	ExprType.LT);
 		defoper("<=", 	ExprType.LE);
@@ -289,6 +291,7 @@ public class Processor {
 		defoper(STRDT, 		ExprType.STRDT);
 		defoper(STRLANG, 	ExprType.STRLANG);
 		defoper(BNODE, 		ExprType.BNODE);
+		defoper(PATHNODE, 	ExprType.PATHNODE);
 		defoper(COALESCE, 	ExprType.COALESCE);
 		defoper(IF, 		ExprType.IF);
 		defoper(GROUPCONCAT,ExprType.GROUPCONCAT);
@@ -393,6 +396,16 @@ public class Processor {
 		return n;
 	}
 	
+	
+	public static void finish(){
+		for (Integer n : table.values()){
+			if (! toccur.containsKey(n)){
+				System.out.println("Missing test: " + tname.get(n));
+			}
+		}
+	}
+	
+	
 	/**
 	 * xsd:integer(?x)
 	 * ->
@@ -401,15 +414,11 @@ public class Processor {
 	void compileCast(){
 		// name = xsd:integer | ... | str
 		String name = term.getName();
-//		if (name.equalsIgnoreCase(STR)){
-//			name = RDFS.xsdstring;
-//		}
-//		else if (name.equalsIgnoreCase(URI) || name.equalsIgnoreCase(IRI)){
-//			name = RDFS.RDFSRESOURCE;
-//		}
 		Constant dt = Constant.createResource(name);
+		dt.getDatatypeValue();
 		// type = CoreseInteger
 		Constant type = Constant.create(Constant.getJavaType(name), RDFS.xsdstring);
+		type.getDatatypeValue();
 		lExp = new ArrayList<Expr>();
 		lExp.add(term.getArg(0));
 		lExp.add(dt);
@@ -433,6 +442,11 @@ public class Processor {
 		if (base!=null && base!=""){
 			term.setModality(ast.getNSM().getBase());
 		}
+	}
+	
+	void compileInList(){
+		// ?x in (a b)
+		
 	}
 	
 	

@@ -18,6 +18,7 @@ import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Memory;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
@@ -56,6 +57,7 @@ public class PathFinder
 	private Producer producer;
 	private Matcher matcher;
 	private Evaluator evaluator;
+	private Query query;
 	private List<Mapping> lMap ;
 	private Filter filter;
 	private Memory mem;
@@ -68,7 +70,7 @@ public class PathFinder
 
 
 	// the inverse of the index (i.e. the other arg)
-	private int other ;
+	private int other;
 	private boolean 
 	isStop = false,
 	hasEvent = false,
@@ -128,12 +130,18 @@ public class PathFinder
 	public PathFinder(){}
 	
 	
-	public PathFinder(Producer p, Matcher match, Evaluator eval) {
+	public PathFinder(Producer p, Matcher match, Evaluator eval, Query q) {
+		query = q;
 		producer = p;
 		matcher = match;
 		evaluator = eval;
 		lMap = new ArrayList<Mapping>();
 	}
+	
+	public static PathFinder create(Producer p, Matcher match, Evaluator eval, Query q) {
+		return new PathFinder(p, match, eval, q);
+	}
+
 	
 	public void setDefaultBreadth(boolean b){
 		defaultBreadth = b;
@@ -798,10 +806,12 @@ public class PathFinder
 		tNodes[1] = n2;
 		// here we need a proxy Node that fakes the $path target node
 		// for pathLength()
-		if (path.size() == 0)
-			 tNodes[2] = ee.getEdgeNode();
-		else tNodes[2] = path.get(lst).getEdgeNode();
+//		if (path.size() == 0)
+//			 tNodes[2] = ee.getEdgeNode();
+//		else tNodes[2] = path.get(lst).getEdgeNode();
 		
+		tNodes[2] = getPathNode();
+	
 		if (src!=null){
 			qNodes[3] = gNode;
 			tNodes[3] = src;
@@ -809,11 +819,20 @@ public class PathFinder
 		
 		Path edges = path.copy();
 		if (isReverse) edges.reverse();
-		
+
 		map.setPath(ee.getEdgeVariable(), edges);
-		
 		//lMap.add(map);
 		return map;
+	}
+	
+	/**
+	 * Generate a unique Blank Node wrt query that represents the path
+	 * Use a predefined filter pathNode()
+	 */
+	Node getPathNode(){
+		Filter f  = query.getGlobalFilter(Query.PATHNODE);
+		Node node = evaluator.eval(f, memory);
+		return node;
 	}
 
 	

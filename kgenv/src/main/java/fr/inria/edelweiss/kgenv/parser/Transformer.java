@@ -5,11 +5,13 @@ import java.util.Hashtable;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.ParserSparql1;
+import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Service;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Variable;
@@ -166,6 +168,8 @@ public class Transformer implements ExpType {
 		for (Edge edge : table.keySet()){
 			q.set(edge, table.get(edge));
 		}
+		
+		filters(q);
 
 		return q;
 	}
@@ -188,7 +192,7 @@ public class Transformer implements ExpType {
 
 		// bind is compiled as subquery
 		q.setBind(ast.isBind());
-
+		
 		return q;
 	}
 	
@@ -1055,6 +1059,18 @@ public class Transformer implements ExpType {
 	
 	void add(Edge edge, Query query){
 		table.put(edge, query);
+	}
+	
+	/**
+	 * Generate predefined system filters that may be used by kgram
+	 * Filters are stored in a table, we can have several predefined filters
+	 * pathNode() generate a blank node for each path (PathFinder)
+	 */
+	void filters(Query q){
+		ASTQuery ast = (ASTQuery) q.getAST();
+		
+		Term t = Term.function(Processor.PATHNODE);
+		q.setFilter(Query.PATHNODE, t.compile(ast));
 	}
 
 

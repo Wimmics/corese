@@ -125,7 +125,7 @@ public class Graph {
 	
 	public void setUpdate(boolean b){
 		isUpdate = b;
-		if (distance!=null) distance.setUpdate(b);
+		setDistance(null);
 	}
 	
 	public Entailment getInference(){
@@ -321,6 +321,10 @@ public class Graph {
 	
 	public Iterable<Node> getProperties(){
 		return table.getProperties();
+	}
+	
+	public Iterable<Node> getSortedProperties(){
+		return table.getSortedProperties();
 	}
 	
 	/**
@@ -899,7 +903,7 @@ public class Graph {
 		this.distance = distance;
 	}
 	
-	public Distance setDistance(){
+	synchronized public Distance setDistance(){
 		if (distance != null){
 			return distance;
 		}

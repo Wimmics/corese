@@ -32,7 +32,6 @@ public class PluginImpl extends ProxyImpl {
 	static Logger logger = Logger.getLogger(PluginImpl.class);
 	
 	Graph graph;
-	Distance distance;
 	Loader ld;
 	
 	PluginImpl(Graph g){
@@ -46,46 +45,70 @@ public class PluginImpl extends ProxyImpl {
 	
 	
 	
-	public Object eval(Expr exp, Environment env, Object[] args) {
+	public Object function(Expr exp, Environment env) {
+		
+		switch (exp.oper()){
+		
+		case GRAPH:
+			return graph();	
+			
+		case SIM:						
+			// solution similarity
+			return similarity(env);						
+		}
+		
+		return null;
+	}
+	
+	
+	
+	public Object function(Expr exp, Environment env, Object o) {
+		
 		switch (exp.oper()){
 		
 		case KGRAM:
-			return kgram(args[0]);
-		
-		case GRAPH:
-			return graph();
+			return kgram(o);
 			
 		case NODE:
-			return node(args[0]);
+			return node(o);
 			
 		case GET:
-			return getObject(args[0]);	
+			return getObject(o);	
 			
 		case SET:
-			if (args.length==2)
-				 return setObject(args[0], args[1]);	
-			else return setObject(args[0]);	
-			
+			 return setObject(o);	
+			 
 		case LOAD:
-			return load(args[0]);
+			return load(o);
 		
 		case DEPTH:
-			return depth(args[0]);
+			return depth(o);
+			 						
+		}
+		return null;
+	}
+	
+	public Object function(Expr exp, Environment env, Object o1, Object o2) {
 		
-		case SIM:
-			if (distance == null){
-				distance = graph.setDistance();
-			}
+		switch (exp.oper()){
+		
+		case SET:
+			return setObject(o1, o2);	
 			
-			if (args.length == 2){
+		case SIM:
 				// class similarity
-				return similarity((IDatatype) args[0], (IDatatype) args[1]);
-			}
-			else {
-				// solution similarity
-				return similarity(env);
-			}
-
+			return similarity((IDatatype) o1, (IDatatype) o2);
+						
+		}
+		
+		return null;
+	}
+	
+	
+	public Object eval(Expr exp, Environment env, Object[] args) {
+		
+		switch (exp.oper()){
+		
 		}
 		
 		return null;
@@ -98,6 +121,7 @@ public class PluginImpl extends ProxyImpl {
 		Node n2 = graph.getNode(dt2.getLabel());
 		if (n1 == null || n2 == null) return null;
 		
+		Distance distance = graph.setDistance();
 		double dd = distance.similarity(n1, n2);
 		return getValue(dd);
 	}
@@ -114,7 +138,8 @@ public class PluginImpl extends ProxyImpl {
 		Memory memory = (Memory) env;
 		Entailment ee = graph.getEntailment();
 		Hashtable<Node, Boolean> visit = new Hashtable<Node, Boolean>();
-		
+		Distance distance = graph.setDistance();
+
 		// number of node + edge in the answer
 		int count = 0;
 		float dd = 0;

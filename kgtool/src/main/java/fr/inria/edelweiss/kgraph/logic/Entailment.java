@@ -176,7 +176,7 @@ public class Entailment {
 	 * use case: redefine after delete 
 	 */
 	public void define(){
-		for (Node pred : graph.getProperties()){
+		for (Node pred : graph.getSortedProperties()){
 			for (Entity ent : graph.getEdges(pred)){
 				Edge edge = ent.getEdge();
 				boolean isMeta = define(ent.getGraph(), ent.getEdge());

@@ -35,7 +35,6 @@ public class Distance {
 
 	int depthMax = 0;
 	double K = 1, dmax = 0;
-	boolean isUpdate = false;
 	private Hashtable<Node, Node> table;
 	
 	static Logger logger = Logger.getLogger(Distance.class);
@@ -51,15 +50,15 @@ public class Distance {
 			//logger.info("Distance set Graph with Entailment");
 			graph.setEntailment();
 		}
+		if (getDepth(root)!=null){
+			// clean obsolete depth 
+			reset(root);
+		}
 		init();
 	}
 	
 	public static Distance create(Graph g){
 		return new Distance(g, getRoot(g));
-	}
-	
-	public void setUpdate(boolean b){
-		isUpdate = b;
 	}
 	
 	static Node getRoot(Graph g){
@@ -93,7 +92,6 @@ public class Distance {
 	void reinit(){
 		reset(root);
 		init();
-		isUpdate = false;
 	}
 	
 	void depth(){

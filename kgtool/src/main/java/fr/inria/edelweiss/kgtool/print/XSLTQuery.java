@@ -108,8 +108,8 @@ public class XSLTQuery {
 			ASTQuery ast = (ASTQuery) q.getAST();
 			
 			String str = null;
-			if (q.isConstruct() && map.getObject()!=null){
-				Graph g = (Graph) map.getObject();
+			if (q.isConstruct() && map.getGraph()!=null){
+				Graph g = (Graph) map.getGraph();
 				RDFFormat p = RDFFormat.create(g, ast.getNSM());
 				str = p.toString();
 			}

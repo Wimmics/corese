@@ -43,6 +43,13 @@ public interface Proxy {
 	// functions isURI regex
 	Object eval(Expr exp, Environment env, Object[] args);
 	
+	Object function(Expr exp, Environment env);
+
+	Object function(Expr exp, Environment env, Object o1);
+
+	Object function(Expr exp, Environment env, Object o1, Object o2);
+
+	
 	// apply sum(?x) over env mappings
 	Object aggregate(Expr exp, Environment env, Node qNode);
 

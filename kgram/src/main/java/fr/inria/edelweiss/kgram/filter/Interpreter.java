@@ -41,7 +41,7 @@ public class Interpreter implements Evaluator, ExprType {
 	public Interpreter(Proxy p){
 		proxy = p;
 		p.setEvaluator(this);
-		TRUE = proxy.getValue(true);
+		TRUE  = proxy.getValue(true);
 		FALSE = proxy.getValue(false);
 	}
 	
@@ -61,6 +61,7 @@ public class Interpreter implements Evaluator, ExprType {
 	}
 
 	public List<Node> evalList(Filter f, Environment env) {
+		
 		Expr exp = f.getExp();
 		switch(exp.oper()){
 		
@@ -83,15 +84,11 @@ public class Interpreter implements Evaluator, ExprType {
 		case UNNEST:
 			// unnest(sql()) as ()
 			exp = exp.getExp(0);
-			
-		
-		default:
-			Object[] args = evalArguments(exp, env);
-			if (args == null) return null;
-			Object res = proxy.eval(exp, env, args);
+				
+		default:			
+			Object res = eval(exp, env);
 			if (res == null) return new Mappings();
 			return producer.map(nodes, res);
-
 		}
 	}
 	
@@ -109,9 +106,9 @@ public class Interpreter implements Evaluator, ExprType {
 	}
 	
 	Object getValue(Expr var, Environment env){
-		Node node = getNode(var, env);
+		Node node = env.getNode(var);
 		if (node == null) return null;
-		return getValue(node);
+		return node.getValue();
 	}
 	
 	Object getValue(Node node) {
@@ -123,8 +120,14 @@ public class Interpreter implements Evaluator, ExprType {
 	public Object eval(Expr exp, Environment env){
 		//System.out.println("Interpret: " + exp + " " + env.getClass().getName());
 		switch (exp.type()){
-		case CONSTANT: 	return proxy.getConstantValue(exp.getValue());
-		case VARIABLE: 	return getValue(exp, env);
+		
+		case CONSTANT: 	return exp.getValue(); //return proxy.getConstantValue(exp.getValue());
+
+		case VARIABLE: 	
+			Node node = env.getNode(exp);
+			if (node == null) return null;
+			return node.getValue();
+			
 		case BOOLEAN: 	return connector(exp, env);
 		case TERM: 		return term(exp, env);
 		case FUNCTION: 	return function(exp, env);
@@ -191,8 +194,9 @@ public class Interpreter implements Evaluator, ExprType {
 		case SKIP: return TRUE;
 				
 		case BOUND: 
-			Node node = getNode(exp.getExp(0), env);
-			return proxy.getValue(node != null);
+			Node node = env.getNode(exp.getExp(0));
+			if (node == null) return FALSE;
+			return TRUE;
 		
 		case COALESCE:
 			for (Expr arg : exp.getExpList()){
@@ -221,22 +225,47 @@ public class Interpreter implements Evaluator, ExprType {
 		case SAMPLE:
 		case GROUPCONCAT:
 			return aggregate(exp, env);
+			
+		case SYSTEM:
+			return system(exp, env);	
 		
+		
+		case SELF:
+			return eval(exp.getExp(0), env);
+		
+		case CONCAT:
+		case EXTERNAL:
+			// variable number of args: need array
+			break;
+			
+
+		default:
+			switch (exp.getExpList().size()){
+			
+			case 0:
+				return proxy.function(exp, env);
+
+			case 1: 
+				Object val = eval(exp.getExp(0), env);
+				if (val == null) return null;
+				return proxy.function(exp, env, val);
+
+			case 2: 
+				Object value1 = eval(exp.getExp(0), env);
+				if (value1 == null) return null;
+				Object value2 = eval(exp.getExp(1), env);
+				if (value2 == null) return null;
+				return proxy.function(exp, env, value1, value2);
+			}
+
 		}
-		
 		
 		Object[] args = evalArguments(exp, env);
 		if (args == null) return null;
 		
-		switch (exp.oper()){
-			case SELF: return args[0];
-			
-			case SYSTEM:
-				return system(exp, env);
-		}
-		
 		Object res = proxy.eval(exp, env, args);
 		return res;
+
 	}
 	
 	
@@ -283,17 +312,22 @@ public class Interpreter implements Evaluator, ExprType {
 		return args;
 	}
 
+	
 	Object term(Expr exp, Environment env){
+		
 		switch (exp.oper()){
+		
 		case IN:
-			// ?x in (?y, ?z)
 			return in(exp, env);
+			
 		}
 		
 		Object o1 = eval(exp.getExp(0), env);
-		if (o1 == null) return null;		
+		if (o1 == null) return null;	
+		
 		Object o2 = eval(exp.getExp(1), env);
 		if (o2 == null) return null;
+		
 		Object res = proxy.eval(exp, env, o1, o2);
 		return res;
 	}
@@ -301,10 +335,11 @@ public class Interpreter implements Evaluator, ExprType {
 	
 	Object in(Expr exp, Environment env){
 		Object o1 = eval(exp.getExp(0), env);
-		if (o1 == null) return null;	
-		boolean error = false;
+		if (o1 == null) return null;
 		
+		boolean error = false;
 		Expr list = exp.getExp(1);
+		
 		for (Expr arg : list.getExpList()){
 			Object o2 = eval(arg, env);
 			if (o2 == null){

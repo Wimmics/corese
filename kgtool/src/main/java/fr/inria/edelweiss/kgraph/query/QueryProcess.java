@@ -189,7 +189,7 @@ public class QueryProcess extends QuerySolver {
 		UpdateProcess up = UpdateProcess.create(man);
 		up.setDebug(isDebug());
 		Mappings lMap = up.update(query);
-		lMap.setObject(getGraph());
+		lMap.setGraph(getGraph());
 		return lMap;
 	}
 	
@@ -288,7 +288,7 @@ public class QueryProcess extends QuerySolver {
 
 	
 	public Graph getGraph(Mappings map){
-		return (Graph) map.getObject();
+		return (Graph) map.getGraph();
 	}
 	
 	public Graph getGraph(){
@@ -317,7 +317,7 @@ public class QueryProcess extends QuerySolver {
 		else {
 			gg = cons.construct(lMap);
 		}
-		lMap.setObject(gg);
+		lMap.setGraph(gg);
 	}
 	
 	
@@ -327,7 +327,7 @@ public class QueryProcess extends QuerySolver {
 		cons.setDebug(isDebug() || query.isDebug());
 		Graph g = getGraph();
 		Graph gg = cons.delete(lMap, g, from, named);
-		lMap.setObject(gg);
+		lMap.setGraph(gg);
 	}
 	
 	

@@ -41,7 +41,7 @@ public class NodeImpl implements Node {
 	}
 	
 	public Object getValue(){
-		return atom.getValue();
+		return atom.getDatatypeValue();
 	}
 	
 	public String toString(){

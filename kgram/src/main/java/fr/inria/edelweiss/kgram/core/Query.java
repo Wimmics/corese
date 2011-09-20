@@ -22,11 +22,14 @@ import fr.inria.edelweiss.kgram.tool.Message;
  */
 
 public class Query extends Exp {
+	public static final String PATHNODE = "pathNode";
+	public static final String BPATH = "_:_path_";
+
 	public static boolean test = true;
 	
 	int limit = Integer.MAX_VALUE, offset = 0;
 	boolean distinct = false;
-	int iNode = 0, iEdge = 0;
+	int iNode = 0, iEdge = 0, iPath = 0;
 	List<Node> from, named, selectNode;
 	// all nodes (on demand)
 	List<Node> 
@@ -53,6 +56,7 @@ public class Query extends Exp {
 	Object object, ast;
 	Compile compiler;
 	Sorter sort;
+	Hashtable <String, Filter> ftable;
 	
 	Hashtable<Edge, Query> table;
 	
@@ -85,6 +89,7 @@ public class Query extends Exp {
 		
 		compiler 	= new Compile(this);
 		table 		= new Hashtable<Edge, Query>();
+		ftable 		= new Hashtable<String, Filter>();
 
 		patternNodes 		= new ArrayList<Node>();
 		queryNodes 			= new ArrayList<Node>();
@@ -829,6 +834,10 @@ public class Query extends Exp {
 	
 	public int nbEdges(){
 		return iEdge;
+	}
+	
+	public synchronized int nbPath(){
+		return iPath++;
 	}
 	
 
@@ -1805,11 +1814,22 @@ public class Query extends Exp {
 		return isCompiled;
 	}
 	
+	public Filter getFilter(String name){
+		return ftable.get(name);
+	}
+	
+	public Filter getGlobalFilter(String name){
+		return getGlobalQuery().getFilter(name);
+	}
 	
 	
+	public void setFilter(String name, Filter filter){
+		ftable.put(name, filter);
+	}
 	
-	
-	
+	public  Iterable<String> getFilterNames(){
+		return ftable.keySet();
+	}
 	
 	
 	

@@ -43,6 +43,7 @@ implements Comparator<Mapping>
 	Group group, distinct;
 	Node fake;
 	Object object;
+	private Object graph;
 
 	EventManager manager;
 	
@@ -684,6 +685,14 @@ implements Comparator<Mapping>
 				map.setSelect(nodes);
 			}
 		}
+	}
+
+	public void setGraph(Object graph) {
+		this.graph = graph;
+	}
+
+	public Object getGraph() {
+		return graph;
 	}
 
 

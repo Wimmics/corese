@@ -366,6 +366,12 @@ public class Mapping
 		return qNodes[n];
 	}
 	
+	public Object getValue(String name){
+		Node n = getNode(name);
+		if (n == null) return null;
+		return n.getValue();
+	}
+	
 	public Node getNode(String label){
 		int n = 0;
 		for (Node qnode : qNodes){

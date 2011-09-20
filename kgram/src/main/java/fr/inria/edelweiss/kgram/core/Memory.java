@@ -747,8 +747,8 @@ public class Memory implements Environment {
 		if (index == -1){
 			index = getIndex(var.getLabel());
 			var.setIndex(index);
+			if (index == -1) return null;
 		} 
-		if (index == -1) return null;
 		return getNode(index);
 	}
 	

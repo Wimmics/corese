@@ -541,7 +541,7 @@ public class Eval implements  ExpType, Plugin {
 				return pf;
 			}
 		}
-		PathFinder pathFinder = new PathFinder(producer, match, evaluator);
+		PathFinder pathFinder =  PathFinder.create(producer, match, evaluator, query);
 		//pathFinder.setDefaultBreadth(false);
 		if (hasEvent){
 			pathFinder.setEventManager(manager);
@@ -1950,8 +1950,10 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 					}
 					return false;
 				}
-				else if (res.isPath(subNode)){
-					env.pushPath(outNode, res.getPath(subNode));
+				else {
+					if (res.isPath(subNode)){
+						env.pushPath(outNode, res.getPath(subNode));
+					}
 				}
 			}
 			k++;

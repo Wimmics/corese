@@ -19,10 +19,12 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
+import fr.inria.edelweiss.kgraph.core.NodeImpl;
 
 /**
  * Producer
@@ -457,7 +459,13 @@ public class ProducerImpl implements Producer {
 		IDatatype dt = (IDatatype) value;
 		Node node = graph.getNode(dt, false, false);
 		if (node == null){
-			node = local.addNode(dt);
+			if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)){
+				// blank generated for path node: do not store it
+				return new NodeImpl(dt);
+			}
+			else {
+				node = local.addNode(dt);
+			}
 		}
 		return node;
 	}

@@ -20,6 +20,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.core.Memory;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
@@ -94,39 +95,14 @@ public class ProxyImpl implements Proxy, ExprType {
 	@Override
 	public Object eval(Expr exp, Environment env, Object o1, Object o2) {
 		IDatatype dt1 = (IDatatype) o1;
-		IDatatype dt2 = (IDatatype) o2;
-		return eval(exp, env, dt1, dt2);
-	}
-		
-	IDatatype eval(Expr exp, Environment env, IDatatype dt1, IDatatype dt2) {
-		if (dt2.isArray()){
-			// use case: ?x = xpath(?doc, exp)
-			// there are several values coming from xpath()
-			// test if any value match operator (like in xpath expression itself)
-			// catch errors. but if all are errors throw error (like boolean OR)
-			for (IDatatype dt : dt2.getValues()){
-				IDatatype obj = eval(exp, env, dt1, dt);
-				if (obj != null && isTrue(obj)){
-					return TRUE;
-				}
-			}
-			return FALSE;
-		}
-		else if (dt1.isArray()){
-			for (IDatatype dt : dt1.getValues()){
-				IDatatype obj = eval(exp, env, dt, dt2);
-				if (obj != null && isTrue(obj)){
-					return TRUE;
-				}
-			}
-			return FALSE;
-		}
-		
+		IDatatype dt2 = (IDatatype) o2;		
 		boolean b = true;
+		
 		try {
 			switch(exp.oper()){
+			
 			case NEQ: 	b = ! dt1.equals(dt2); break;
-			case IN:
+			case IN:	return in(dt1, dt2); 
 			case EQ: 	b = dt1.equals(dt2); break;
 			case LT: 	b = dt1.less(dt2); break;
 			case LE: 	b = dt1.lessOrEqual(dt2); break;
@@ -142,6 +118,7 @@ public class ProxyImpl implements Proxy, ExprType {
 					}
 				}
 				return dt1.plus(dt2);
+				
 			case MINUS: return dt1.minus(dt2);
 			case MULT: 	return dt1.mult(dt2);
 			case DIV: 
@@ -160,23 +137,192 @@ public class ProxyImpl implements Proxy, ExprType {
 			}
 		}
 		catch (CoreseDatatypeException e){
-			//logger.error(e.getMessage());
 			return null;
 		}
-		return getValue(b);
+		
+		return (b) ? TRUE : FALSE;
 	}
+	
+	
+	
+	
+	public Object function(Expr exp, Environment env) {
+		
+		switch (exp.oper()){
+		
+		case NUMBER: return getValue(env.count());
+			
+		case RANDOM: return getValue(Math.random());	
+			
+		case NOW:	 return DatatypeMap.newDate();	
+		
+		case BNODE:  return DatatypeMap.createBlank();
+		
+		case PATHNODE: return pathNode(env);		
+			
+		default: if (plugin!=null){
+				return plugin.function(exp, env);
+			}
+		}
+		
+		return null; 
+	}
+	
 	
 
 
+	public Object function(Expr exp, Environment env, Object o1) {
+		
+		IDatatype dt = (IDatatype) o1;
+		
+		switch (exp.oper()){
+				
+		case ISURI: 	return (dt.isURI()) ? TRUE : FALSE;
+		
+		case ISLITERAL: return (dt.isLiteral()) ? TRUE : FALSE; 
+		
+		case ISBLANK: 	return (dt.isBlank()) ? TRUE : FALSE;  
+		
+		case ISNUMERIC: return (dt.isNumber()) ? TRUE : FALSE; 
+		
+		case URI:  return uri(exp, dt);
+		
+		case STR: return str(exp, dt);
+		
+		case STRLEN: return getValue(dt.getLabel().length());
+			
+		case UCASE: return ucase(dt);
+		
+		case LCASE: return lcase(dt);
+					
+		case ENCODE:  return encode(dt);
+			
+		case ABS: return abs(dt);
+			
+		case FLOOR:
+			return getValue(Math.floor(dt.getDoubleValue()), dt.getDatatypeURI());
+			
+		case ROUND:
+			return getValue(Math.round(dt.getDoubleValue()), dt.getDatatypeURI());
+
+		case CEILING:
+			return getValue(Math.ceil(dt.getDoubleValue()), dt.getDatatypeURI());
+			
+		case TIMEZONE: return dm.getTimezone(dt);
+		
+		case TZ: return dm.getTZ(dt);
+		
+		case YEAR:
+		case MONTH:
+		case DAY:
+		case HOURS:
+		case MINUTES:
+		case SECONDS: return time(exp, dt);
+		
+		case HASH: return hash(exp, dt);
+
+		case LANG: 	return dt.getDataLang(); 
+		
+		case BNODE: return DatatypeMap.createBlank(dt.getLabel());
+			
+		case DATATYPE: return dt.getDatatype();
+		
+		case DISPLAY:
+			System.out.println(exp + " = " + dt);
+			return TRUE;
+			
+		default:
+			if (plugin != null){
+				return plugin.function(exp, env, o1); 
+			}	
+		
+		}
+		return null;
+	}
+	
+	
+	
+	public Object function(Expr exp, Environment env, Object o1, Object o2) {
+		IDatatype dt  = (IDatatype) o1;
+		IDatatype dt1 = (IDatatype) o2;
+		boolean b;
+		
+		switch(exp.oper()){
+				
+		case CONTAINS: 
+			// SPARQL 1.1 distinguishes cases  
+			b = dt.getLabel().contains(dt1.getLabel());
+			return (b) ? TRUE : FALSE;
+
+		case STARTS: 
+			b = dt.startsWith(dt1); 
+			return (b) ? TRUE : FALSE;
+
+		case ENDS:
+			b = dt.getLabel().endsWith(dt1.getLabel());
+			return (b) ? TRUE : FALSE;
+			
+		case SUBSTR: 			
+			return substr(dt, dt1, null);	
+			
+		case LANGMATCH: 
+			return langMatches(dt, dt1); 
+			
+		case STRDT:
+			if (SPARQLCompliant && ! DatatypeMap.isSimpleLiteral(dt)){
+				return null;
+			}
+			return DatatypeMap.createLiteral(dt.getLabel(), dt1.getLabel());
+
+		case STRLANG:
+			if (SPARQLCompliant && ! DatatypeMap.isSimpleLiteral(dt)){
+				return null;
+			}
+			return DatatypeMap.createLiteral(dt.getLabel(), null, dt1.getLabel());	
+			
+		case REGEX: {
+			if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt)){
+				return null;
+			}
+			Processor proc = getProcessor(exp);
+			b = proc.regex(dt.getLabel(), dt1.getLabel());
+			return (b) ? TRUE : FALSE;
+		}
+			
+			
+		case XPATH: {
+			// xpath(?g, '/book/title')
+			Processor proc = getProcessor(exp);
+			proc.setResolver(new VariableResolverImpl(env));
+			IDatatype res = proc.xpath(dt, dt1);				
+			return res;
+		}	
+		
+		case EXTEQUAL: {
+			boolean bb = StringHelper.equalsIgnoreCaseAndAccent(dt.getLabel(), dt1.getLabel());
+			return (bb) ? TRUE : FALSE;
+		}
+			
+		case EXTCONT: {
+			boolean bb = StringHelper.containsWordIgnoreCaseAndAccent(dt.getLabel(), dt1.getLabel());
+			return (bb) ? TRUE : FALSE;
+		}
+		
+		default:
+			if (plugin != null){
+				return plugin.function(exp, env, o1, o2); 
+			}
+			
+			
+		}
+		
+		return null;
+	}
 
 	@Override
 	public Object eval(Expr exp, Environment env, Object[] args) {
 		switch (exp.oper()){
-		
-		case NUMBER:
-			// number of result
-			return getValue(env.count());
-			
+					
 		case EXTERNAL:
 			// user defined function with prefix/namespace
 			// function://package.className
@@ -199,9 +345,11 @@ public class ProxyImpl implements Proxy, ExprType {
 				env.getEventManager().send(e);
 			}
 			return TRUE;
+			
+		case CONCAT: 
+			return concat(args);			
 		}
-		
-		
+				
 		
 		boolean b = true;
 		IDatatype dt = null, dt1 = null;
@@ -213,160 +361,34 @@ public class ProxyImpl implements Proxy, ExprType {
 		}
 		
 		switch (exp.oper()){
-						
-			case ISURI: 	b = dt.isURI(); 	return getValue(b);
-			
-			case ISLITERAL: b = dt.isLiteral(); return getValue(b);
-			
-			case ISBLANK: 	b = dt.isBlank(); 	return getValue(b);
-			
-			case ISNUMERIC: b = dt.isNumber();	return getValue(b);
-			
-			case URI:  return uri(exp, dt);
-			
-			case STR: return str(exp, dt);
-				
-			case CONTAINS: 
-				// SPARQL 1.1 distinguishes cases  
-				b = dt.getLabel().contains(dt1.getLabel());
-				return getValue(b);
-			
-			case STARTS: 
-				b = dt.startsWith(dt1); 
-				return getValue(b);
-			
-			case ENDS:
-				b = dt.getLabel().endsWith(dt1.getLabel());
-				return getValue(b);
-				
-			case CONCAT: 
-				return concat(args);
-				
-			case STRLEN: 
-				int l = dt.getLabel().length();
-				return getValue(l);
-				
-			case SUBSTR: 
-				IDatatype dt2 = null;
-				if (args.length>2){
-					dt2 = datatype(args[2]);
-				}
-				return substr(dt, dt1, dt2);
-				
-			case UCASE: return ucase(dt);
-			
-			case LCASE: return lcase(dt);
-						
-			case ENCODE:  
-				return encode(dt);
-				
-			case RANDOM:
-				return getValue(Math.random());
-				
-			case ABS:
-				return abs(dt);
-				
-			case FLOOR:
-				return getValue(Math.floor(dt.getDoubleValue()), dt.getDatatypeURI());
-				
-			case ROUND:
-				return getValue(Math.round(dt.getDoubleValue()), dt.getDatatypeURI());
-
-			case CEILING:
-				return getValue(Math.ceil(dt.getDoubleValue()), dt.getDatatypeURI());
-			
-			case NOW:	return dm.newDate();
-			
-			case TIMEZONE: return dm.getTimezone(dt);
-				
-			case TZ: return dm.getTZ(dt);
-			
-			case YEAR:
-			case MONTH:
-			case DAY:
-			case HOURS:
-			case MINUTES:
-			case SECONDS: return time(exp, dt);
-			
-			case HASH:
-				return hash(exp, dt);
-	
-			case LANG: 		return dt.getDataLang(); 
-			
-			case LANGMATCH: 
-				if (args.length!=2) return null;
-				return langMatches(dt, dt1); 
-				
-			case STRDT:
-				if (SPARQLCompliant && ! DatatypeMap.isSimpleLiteral(dt)){
-					return null;
-				}
-				return DatatypeMap.createLiteral(dt.getLabel(), dt1.getLabel());
-
-			case STRLANG:
-				if (SPARQLCompliant && ! DatatypeMap.isSimpleLiteral(dt)){
-					return null;
-				}
-				return DatatypeMap.createLiteral(dt.getLabel(), null, dt1.getLabel());
-				
-			case BNODE:
-				if (dt!=null)
-					return DatatypeMap.createBlank(dt.getLabel());
-				else return DatatypeMap.createBlank();
-
-			case CAST: // cast(?x, xsd:string, CoreseString)
-				return dt.cast(dt1, datatype(args[2]));
-			
-			case DATATYPE: return dt.getDatatype();
-			
-			case REGEX: {
+		
+			case REGEX: 
+				// it may have a 3rd argument stored as getModality()
 				if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt)){
 					return null;
 				}
 				Processor proc = getProcessor(exp);
 				b = proc.regex(dt.getLabel(), dt1.getLabel());
-				return getValue(b);
-			}
-			
-			
-			/***********************************************
-			 * Extension Functions
-			 */
+				return (b) ? TRUE : FALSE;
+																		
+			case SUBSTR: 
+				IDatatype dt2 = null;
+				if (args.length>2){
+					dt2 = datatype(args[2]);
+				}
+				return substr(dt, dt1, dt2);				
 
-				
-			case XPATH: {
-				// xpath(?g, '/book/title')
-				Processor proc = getProcessor(exp);
-				proc.setResolver(new VariableResolverImpl(env));
-				IDatatype res = proc.xpath(dt, dt1);				
-				return res;
-			}
-			
-			case SQL: {
-				
+			case CAST: // cast(?x, xsd:string, CoreseString)
+				return dt.cast(dt1, datatype(args[2]));
+																
+			case SQL: 
 				// return ResultSet
 				return sql(exp, env, args);
-			}	
-						
-			case DISPLAY:
-				System.out.println(exp + " = " + dt);
-				return TRUE;
-				
-			case EXTEQUAL: {
-				boolean bb = StringHelper.equalsIgnoreCaseAndAccent(dt.getLabel(), dt1.getLabel());
-				return getValue(bb);
-			}
-				
-			case EXTCONT: {
-				boolean bb = StringHelper.containsWordIgnoreCaseAndAccent(dt.getLabel(), dt1.getLabel());
-				return getValue(bb);
-			}
-			
+													
 			default:
 				if (plugin != null){
 					return plugin.eval(exp, env, args); 
-				}
-			
+				}	
 		}
 			
 		return null;
@@ -401,11 +423,6 @@ public class ProxyImpl implements Proxy, ExprType {
 	
 	// return a Literal (not a xsd:string)
 	IDatatype str(Expr exp, IDatatype dt){
-//		if (SPARQLCompliant){
-//			if (! (dt.isURI() || DatatypeMap.isLiteral(dt))){
-//				return null;
-//			}
-//		}
 		return DatatypeMap.createLiteral(dt.getLabel());
 	}
 	
@@ -553,16 +570,22 @@ public class ProxyImpl implements Proxy, ExprType {
 	public Object getConstantValue(Object value) {
 		return value;
 	}
+	
+	IDatatype pathNode(Environment env){
+		Query q = env.getQuery();
+		int num = q.getGlobalQuery().nbPath();
+		IDatatype dt = DatatypeMap.createBlank(Query.BPATH + Integer.toString(num));
+		return dt;
+	}
 
 
 	@Override
 	public boolean isTrue(Object value) {
 		IDatatype dt = (IDatatype) value;
-		if (! dt.isTrueAble()) return false;
+		//if (! dt.isTrueAble()) return false;
 		try {
 			return dt.isTrue();
 		} catch (CoreseDatatypeException e) {
-			// TODO Auto-generated catch block
 			return false;
 		}
 	}
@@ -689,5 +712,45 @@ public class ProxyImpl implements Proxy, ExprType {
 		
 		return new SQLResult(rs, isSort);
 	}
+	
+	
+	
+	/**
+	 * ?x in (a b)
+	 * ?x in (xpath())
+	 */
+	Object in(IDatatype dt1, IDatatype dt2){
+
+		boolean error = false;
+		
+		if (dt2.isArray()){
+			
+			for (IDatatype dt : dt2.getValues()){
+				try {
+					if (dt1.equals(dt)){
+						return TRUE;
+					}
+				} catch (CoreseDatatypeException e) {
+					error = true;
+				}
+			}
+			
+			if (error) return null;
+			return FALSE;
+		} 
+		else
+			try {
+				if (dt1.equals(dt2)){
+					return TRUE;
+				}
+			} catch (CoreseDatatypeException e) {
+				return null;
+			}
+		
+		return FALSE;
+	}
+	
+	
+
 
 }

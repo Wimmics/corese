@@ -26,6 +26,18 @@ public class ProxyDefault implements Proxy, ExprType {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public Object function(Expr exp, Environment env) {
+		return null;
+	}
+	
+	public Object function(Expr exp, Environment env, Object o1) {
+		return o1;
+	}
+	
+	public Object function(Expr exp, Environment env, Object o1, Object o2) {
+		return o1;
+	}
 
 	@Override
 	public Object getConstantValue(Object value) {

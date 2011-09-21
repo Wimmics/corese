@@ -199,8 +199,18 @@ public  class CoreseLong extends CoreseNumber {
    return new CoreseDouble(getdValue() * iod.getdValue());
  }
 
+ /**
+  * double/long : double
+  * decimal/long : decimal
+  */
  public IDatatype polydiv(CoreseDouble iod) {
-  return new CoreseDouble(iod.getdValue() / getdValue());
+	 if (iod.isDecimal()){
+		 return new CoreseDecimal(iod.getdValue() / getdValue()); 
+	 }
+	 else if (iod.isFloat()){
+		 return new CoreseFloat(iod.getdValue() / getdValue()); 
+	 }
+	 return new CoreseDouble(iod.getdValue() / getdValue());
  }
 
  

@@ -28,9 +28,10 @@ class Walker extends Interpreter {
 	
 	Expr exp;
 	Node qNode, tNode;
-	double sum = 0;
+	//double sum = 0;
 	IDatatype dtres;
 	int num = 0;
+	boolean isError = false;
 	String str = "", sep = " ";
 	Group group;
 	Evaluator eval;
@@ -64,6 +65,9 @@ class Walker extends Interpreter {
 	
 		
 	Object getResult(){
+		
+		if (isError) return null;
+		
 		switch (exp.oper()){
 		
 		case SAMPLE:
@@ -84,10 +88,15 @@ class Walker extends Interpreter {
 			if (dtres == null){
 				return ZERO;
 			}
-			
-			double dd = dtres.getDoubleValue() / num;
-			
-			return proxy.getValue(dd, dtres.getDatatypeURI()); 
+						
+			try {
+				Object dt = dtres.div(DatatypeMap.newInstance(num));
+				return dt;
+			}
+			catch (java.lang.ArithmeticException e){
+				return null;
+			}
+
 
 		case COUNT:
 			return proxy.getValue(num);
@@ -213,7 +222,10 @@ class Walker extends Interpreter {
 
 			case SUM:
 			case AVG:
-				if (dt.isNumber() && accept(f, map)){
+				if (! dt.isNumber()){
+					isError = true;
+				}
+				else if (accept(f, map)){
 					if (dtres == null){
 						dtres = dt;
 					}
@@ -221,7 +233,7 @@ class Walker extends Interpreter {
 						dtres = dtres.plus(dt);
 					}
 					
-					sum += dt.getDoubleValue();
+					//sum += dt.getDoubleValue();
 					num++;
 				}
 				break;

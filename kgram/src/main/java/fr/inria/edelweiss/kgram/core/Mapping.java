@@ -312,7 +312,13 @@ public class Mapping
 	public Node getGroupBy(int n){
 		return gNodes[n];
 	}
-
+	
+	public Node getGroupBy(Node qNode, int n){
+		if (gNodes.length == 0){
+			return getNode(qNode);
+		}
+		return gNodes[n];
+	}
 	
 	public void setNode(Node qNode, Node node){
 		int n = 0;

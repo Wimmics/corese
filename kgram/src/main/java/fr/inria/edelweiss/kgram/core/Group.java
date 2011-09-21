@@ -162,7 +162,7 @@ public class Group implements Comparator<Mappings>{
 			return map.getNode(qNode);
 		}
 		else {
-			return map.getGroupBy(n);
+			return map.getGroupBy(qNode, n);
 		}
 	}
 	

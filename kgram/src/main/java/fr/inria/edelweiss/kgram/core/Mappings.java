@@ -451,9 +451,18 @@ implements Comparator<Mapping>
 	 * process group by
 	 * leave one Mapping within each group
 	 */
-	private	void cut(){
+	public	void cut(){
 		if (group == null) group = createGroup();
 		// clear the current list
+		feed(group);
+	}
+		
+	
+	/**
+	 * Generate the Mapping list according to the group
+	 * PRAGMA: replace the original list by the group list
+	 */
+	public void feed(Group group){
 		clear();
 		for (List<Mappings> ll :  group.values()){
 			for (Mappings lMap : ll){
@@ -470,7 +479,6 @@ implements Comparator<Mapping>
 				}
 			}
 		}
-		
 	}
 
 
@@ -508,14 +516,33 @@ implements Comparator<Mapping>
 			return group;
 		}
 		else {
-			Group group = new Group(query.getGroupBy());
-			group.setDuplicate(query.isDistribute());
-
-			for (Mapping map : this){
-				group.add(map);
-			}
+			Group group = createGroup(query.getGroupBy());
 			return group;
 		}
+	}
+	
+	/**
+	 * Generate a group by list of variables
+	 */
+	public Group defineGroup(List<String> list){
+		ArrayList<Exp> el = new ArrayList<Exp>();
+		for (String name : list){
+			el.add(query.getSelectExp(name));
+		}
+		return createGroup(el);
+	}
+	
+	/**
+	 * group by
+	 */
+	Group createGroup(List<Exp> list){
+		Group group = new Group(list);
+		group.setDuplicate(query.isDistribute());
+
+		for (Mapping map : this){
+			group.add(map);
+		}
+		return group;
 	}
 
 	

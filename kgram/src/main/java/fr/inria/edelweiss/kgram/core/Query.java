@@ -822,7 +822,7 @@ public class Query extends Exp {
 		return null;
 	}
 	
-	Node getSelectNode(String label){
+	public Node getSelectNode(String label){
 		Exp exp = getSelectExp(label);
 		if (exp != null) return exp.getNode();
 		return null;

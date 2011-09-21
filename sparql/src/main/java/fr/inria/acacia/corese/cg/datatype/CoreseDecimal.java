@@ -88,12 +88,12 @@ public  class CoreseDecimal extends CoreseDouble {
 		return new CoreseDecimal(iod.getdValue() - getdValue());
 	}
 	
-	
-	
-	
-	
-	
-	
+	/**
+	 * Integer / decimal : decimal
+	 */
+	public IDatatype polydiv(CoreseLong iod) {
+		return new CoreseDecimal(iod.getdValue() / getdValue());
+	}
 	
 	
 	

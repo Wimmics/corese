@@ -144,6 +144,7 @@ public interface ExprType {
 	public static int SET 		= 211;
 	public static int LOAD 		= 212;
 	public static int PATHNODE 	= 213;
+	public static int GROUPBY 	= 214;
 
 
 

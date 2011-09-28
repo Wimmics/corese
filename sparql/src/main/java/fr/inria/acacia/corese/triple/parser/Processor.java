@@ -67,7 +67,8 @@ public class Processor {
 	static final String SQL = "sql";
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
-	
+	static final String GROUPBY = "groupBy";
+
 	static final String KGRAM 	 = ExpType.KGRAM + "sparql";
 	static final String SIMILAR  = ExpType.KGRAM + "similarity";
 	static final String DEPTH    = ExpType.KGRAM + "depth";
@@ -316,7 +317,8 @@ public class Processor {
 		defoper(UNNEST, ExprType.UNNEST);
 		defoper(EXIST,  ExprType.EXIST);
 		defoper(SYSTEM, ExprType.SYSTEM);
-		
+		defoper(GROUPBY, ExprType.GROUPBY);
+
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(DEPTH,   ExprType.DEPTH);
 		defoper(GRAPH,   ExprType.GRAPH);

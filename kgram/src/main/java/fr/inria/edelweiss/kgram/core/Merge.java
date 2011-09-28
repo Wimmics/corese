@@ -32,6 +32,9 @@ public class Merge extends Group {
 		return ll;
 	}
 	
+	public Iterable<Mappings> getValues(){
+		return list;
+	}
 	
 	void merge(){
 		list = merge(lMap);

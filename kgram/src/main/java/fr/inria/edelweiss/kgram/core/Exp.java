@@ -40,6 +40,8 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	List<Node> lNodes;
 	Filter filter;
 	List<Filter> lFilter;
+	// min(?l, expGroupBy(?x, ?y))
+	List<Exp> expGroupBy;
 	// for UNION
 	Stack stack;
 	// for EXTERN 
@@ -374,6 +376,18 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	public List<Filter> getFilters(){
 		return lFilter;
+	}
+	
+	public boolean isExpGroupBy(){
+		return expGroupBy!=null;
+	}
+	
+	public void setExpGroupBy(List<Exp> l){
+		expGroupBy = l;
+	}
+	
+	public List<Exp> getExpGroupBy(){
+		return expGroupBy;
 	}
 	
 	public boolean isFail(){

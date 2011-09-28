@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgram.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -54,7 +55,10 @@ implements Comparator<Mapping>
 
 
 	public Mappings(){
-
+	}
+	
+	Mappings(Mapping map){
+		add(map);
 	}
 
 	Mappings(Query q){
@@ -65,7 +69,7 @@ implements Comparator<Mapping>
 		manager = man;
 		hasEvent = true;
 	}
-
+	
 	public static Mappings create(Query q){
 		Mappings lMap = new Mappings(q); 
 		lMap.isDistinct = q.isDistinct();
@@ -144,20 +148,7 @@ implements Comparator<Mapping>
 		if (select.size()==0) return true;
 
 		if (isDistinct){
-
-			if (true) return distinct.add(r);
-
-			boolean same;
-			for (Mapping res : this){
-				same = true;
-				for (Node qnode : select){
-					if (! same(res.getNode(qnode), r.getNode(qnode))){
-						same = false;
-						break;
-					}
-				}
-				if (same) return false;
-			}
+			return distinct.add(r);
 		}
 		return true;
 	}
@@ -279,42 +270,31 @@ implements Comparator<Mapping>
 	 * we could enumerate Mappings once and compute all aggregates for each map
 	 */
 	void aggregate(Evaluator evaluator, Memory memory){
+//		System.out.println("** M: aggregate " + size());
+//		long t1 = new Date().getTime();
+		aggregate(query, evaluator, memory, true);
+//		long t2 = new Date().getTime();
+//		System.out.println((t2-t1)/1000.0);
+	}
+	
+	public void aggregate(Query qq, Evaluator evaluator, Memory memory){
+		aggregate(qq, evaluator, memory, false);
+	}
+	
+	void aggregate(Query qq, Evaluator evaluator, Memory memory, boolean isFinish){
 		if (size() == 0) return ;
-		Query qq = query;
 		boolean isEvent = hasEvent;
-		Exp num = null;
-		// select count(?n) as ?count
-		for (Exp exp : qq.getSelectFun()){
-			Filter f = exp.getFilter();
-			if (f!=null){
-				if (f.isRecAggregate()){
-					// perform group by and then aggregate
-					if (isEvent){
-						Event event = EventImpl.create(Event.AGG, exp);
-						manager.send(event);
-					}
-					eval(evaluator, exp, memory, SELECT);
-				}
-				else if (f.getExp().oper() == ExprType.NUMBER){
-					num = exp;
-				}
-			}
+		
+		if (qq.hasGroupBy()){
+			if (group==null) group = createGroup();
 		}
-
-		// order by ?count
-		int n = 0;
-		for (Exp exp : qq.getOrderBy()){
-			Filter f = exp.getFilter();
-			if (f!=null && f.isRecAggregate()){
-				// perform group by and then aggregate
-				if (isEvent){
-					Event event = EventImpl.create(Event.AGG, exp);
-					manager.send(event);
-				}
-				eval(evaluator, exp, memory, n++);
-			}
-		}
-
+		
+		// select (count(?n) as ?count)
+		aggregate(evaluator, memory, qq.getSelectFun(), true);
+		
+		// group by count(?n)
+		aggregate(evaluator, memory, qq.getOrderBy(), false);
+	
 		if (qq.getHaving() != null){
 			if (isEvent){
 				Event event = EventImpl.create(Event.AGG, query.getHaving());
@@ -323,31 +303,36 @@ implements Comparator<Mapping>
 			eval(evaluator, qq.getHaving(), memory, HAVING);
 		}
 
-		if ((qq.isGroupBy() || qq.isConnect()) && qq.isConstruct()){
-			if (group==null) group = createGroup();
-		}
-
-		if ((qq.isGroupBy() || qq.isConnect())&& ! qq.isConstruct()){ // && query.isAggregate
+		finish(qq);
+	}
+	
+	
+	
+	
+	void finish(Query qq){
+		if (qq.hasGroupBy() && ! qq.isConstruct()){ 
 			// after group by (and aggregate), leave one Mapping for each group
 			// with result of the group
-			cut();
+			groupBy();
 		}
 		else if (qq.getHaving() != null){
 			// clause 'having' with no group by
 			// select (max(?x) as ?max where {}
 			// having(?max > 100)
-			if ( isValid()){
-				clean();
-			}
-			else {
-				clear();
-			}
+			having();
 		}
-		else if (query.isAggregate() && ! qq.isConstruct()){
+		else if (qq.isAggregate() && ! qq.isConstruct()){
 			clean();
 		}
-
-		//having(evaluator, memory);
+	}
+	
+	void having(){
+		if (isValid()){
+			clean();
+		}
+		else {
+			clear();
+		}
 	}
 
 	void clean(){
@@ -357,6 +342,21 @@ implements Comparator<Mapping>
 			add(map);
 		}
 	}
+	
+	void aggregate(Evaluator evaluator, Memory memory, List<Exp> list, boolean isSelect){
+		int n = 0;
+		for (Exp exp : list){
+			if (exp.isAggregate()){
+				// perform group by and then aggregate
+				if (hasEvent){
+					Event event = EventImpl.create(Event.AGG, exp);
+					manager.send(event);
+				}
+				eval(evaluator, exp, memory, (isSelect)?SELECT:n++);
+			}
+		}
+	}
+	
 
 	/** 
 	 * select count(?doc) as ?count
@@ -365,9 +365,14 @@ implements Comparator<Mapping>
 	 */
 
 	private	void eval(Evaluator eval, Exp exp, Memory mem, int n){
-		if (query.isGroupBy() || query.isConnect()){
+		if (exp.isExpGroupBy()){
+			// min(?l, groupBy(?x, ?y))
+			Group g = createGroup(exp);
+			aggregate(g, eval, exp, mem, n);
+		}
+		else if (query.hasGroupBy()){
 			// perform group by and then aggregate
-			aggregate(eval, exp, mem, n);
+			aggregate(group, eval, exp, mem, n);
 		}
 		else {
 			apply(eval, exp, mem, n);
@@ -428,19 +433,36 @@ implements Comparator<Mapping>
 	 * Process aggregate for each group
 	 * select, order by, having
 	 */
-	private	void aggregate(Evaluator eval, Exp exp, Memory mem, int n){
-		if (group == null) group = createGroup();
+	private	void aggregate2(Group group, Evaluator eval, Exp exp, Memory mem, int n){
+		//if (group == null) group = createGroup();
+
+		for (Mappings maps : group.getValues()){
+			// eval aggregate filter for each group 
+			// set memory current group
+			// filter (e.g. count()) will consider this group
+			if (hasEvent) maps.setEventManager(manager);
+			mem.setGroup(maps);
+			maps.apply(eval, exp, mem, n);
+			mem.setGroup(null);
+		}
+	}
+	
+	private	void aggregate(Group group, Evaluator eval, Exp exp, Memory mem, int n){
+		if (Group.test){
+			aggregate2(group, eval, exp, mem, n);
+			return;
+		}
 
 		for (List<Mappings> lGroup :  group.values()){
 			// lGroup is a list of groups (that share same value for first groupBy variable)
 
-			for (Mappings group : lGroup){
+			for (Mappings maps : lGroup){
 				// eval aggregate filter for each group 
 				// set memory current group
 				// filter (e.g. count()) will consider this group
-				if (hasEvent) group.setEventManager(manager);
-				mem.setGroup(group);
-				group.apply(eval, exp, mem, n);
+				if (hasEvent) maps.setEventManager(manager);
+				mem.setGroup(maps);
+				maps.apply(eval, exp, mem, n);
 				mem.setGroup(null);
 			}
 		}
@@ -451,18 +473,47 @@ implements Comparator<Mapping>
 	 * process group by
 	 * leave one Mapping within each group
 	 */
-	public	void cut(){
+	public	void groupBy(){
 		if (group == null) group = createGroup();
 		// clear the current list
-		feed(group);
+		groupBy(group);
 	}
 		
+	
+	public Mappings groupBy(List<Exp> list){
+		Group group = createGroup(list);
+		groupBy(group);
+		return this;
+	}
+	
 	
 	/**
 	 * Generate the Mapping list according to the group
 	 * PRAGMA: replace the original list by the group list
 	 */
-	public void feed(Group group){
+	public void groupBy2(Group group){
+		clear();
+		for (Mappings lMap : group.getValues()){
+			int start = 0;
+			if (lMap.isValid()){
+				// clause 'having' may have tagged first mapping as not valid
+				start = 1;
+				Mapping map = lMap.get(0);
+				if (isListGroup && map != null){
+					map.setMappings(lMap);
+				}
+				// add one element for current group
+				add(map);
+			}
+		}
+	}
+	
+	public void groupBy(Group group){
+		if (Group.test){
+			groupBy2(group);
+			return;
+		}
+		
 		clear();
 		for (List<Mappings> ll :  group.values()){
 			for (Mappings lMap : ll){
@@ -479,6 +530,17 @@ implements Comparator<Mapping>
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Project on select variables of query 
+	 * Modify all the Mapping
+	 */
+	public Mappings project(){
+		for (Mapping map : this){
+			map.project(query);
+		}
+		return this;
 	}
 
 
@@ -532,12 +594,22 @@ implements Comparator<Mapping>
 		return createGroup(el);
 	}
 	
+	
 	/**
 	 * group by
 	 */
 	Group createGroup(List<Exp> list){
+		return createGroup(list, false);
+	}
+	
+	Group createGroup(Exp exp){
+		return createGroup(exp.getExpGroupBy(), true);
+	}
+	
+	Group createGroup(List<Exp> list, boolean extend){
 		Group group = new Group(list);
 		group.setDuplicate(query.isDistribute());
+		group.setExtend(extend);
 
 		for (Mapping map : this){
 			group.add(map);

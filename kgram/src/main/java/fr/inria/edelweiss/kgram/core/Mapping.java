@@ -2,7 +2,10 @@ package fr.inria.edelweiss.kgram.core;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.TreeMap;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -44,7 +47,10 @@ public class Mapping
 	// group by
 	gNodes;
 	
+	Node[] group;
+	
 	Mappings lMap;
+	Hashtable<String, Node> table;
 	
 	boolean read = false;
 	
@@ -70,15 +76,7 @@ public class Mapping
 	
 	public Mapping(List<Node> q, List<Node> t){
 		this();
-		Node[] qn = new Node[q.size()];
-		Node[] tn = new Node[t.size()];
-		int i = 0;
-		for (Node qq : q){
-			qn[i] = qq;
-			tn[i] = t.get(i);
-			i++;
-		}
-		init(qn, tn);
+		init(q, t);
 	}
 	
 	public static Mapping create(List<Node> q, List<Node> t){
@@ -127,6 +125,20 @@ public class Mapping
 	}
 
 	
+	void init(List<Node> q, List<Node> t){
+		Node[] qn = new Node[q.size()];
+		Node[] tn = new Node[t.size()];
+		qn = q.toArray(qn);
+		tn = t.toArray(tn);
+		init(qn, tn);
+	}
+	
+	
+	void init(List<Path> lp){
+		lPath = new Path[lp.size()]; 
+		lPath = lp.toArray(lPath);
+	}
+
 	void init(Node[] qnodes, Node[] nodes){
 		this.qNodes = qnodes;
 		this.nodes = nodes;
@@ -146,6 +158,34 @@ public class Mapping
 		qNodes = qq;
 		nodes = tt;
 	}
+	
+	/**
+	 * Project on select variables of query 
+	 * Modify this Mapping
+	 */
+	public void project(Query q){
+		ArrayList<Node> lqNodes = new ArrayList<Node>();
+		ArrayList<Node> ltNodes = new ArrayList<Node>();
+		ArrayList<Path> paths   = new ArrayList<Path>();
+
+		for (Node qNode : q.getSelect()){
+			Node tNode = getNode(qNode);
+			if (tNode != null){
+				lqNodes.add(qNode);
+				ltNodes.add(tNode);
+				if (isPath()) {
+					paths.add(getPath(qNode));
+				}
+			}
+		}
+		
+		init(lqNodes, ltNodes);
+		
+		if (isPath()){
+			init(paths);
+		}
+	}
+	
 	
 	public void setRead(boolean b){
 		read = b;
@@ -307,6 +347,35 @@ public class Mapping
 			n++;
 		}
 		return null;
+	}
+	
+	void init(){
+	}
+	
+	/**
+	 * min(?l, groupBy(?x, ?y))
+	 * store value of ?x ?y in an array 
+	 */
+	void setGroup(List<Node> list){
+		group = new Node[list.size()];
+		int i = 0;
+		for (Node qNode : list){
+			Node node = getNode(qNode);
+			group[i++] = node;
+		}
+	}
+	
+	/**
+	 * min(?l, groupBy(?x, ?y))
+	 * retrieve value of ?x ?y in an array 
+	 */
+	Node getGroupNode(int n){
+		return group[n];
+	}
+	
+	
+	public Node getTNode(Node node){
+		return getNode(node);
 	}
 	
 	public Node getGroupBy(int n){
@@ -624,14 +693,5 @@ public class Mapping
 		return false;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	
 }

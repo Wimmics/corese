@@ -65,14 +65,21 @@ public class Pragma  {
 	}
 	
 	public void parse(){
+		//System.out.println("** Pragma1: " + ast.getPragma());
+
 		for (fr.inria.acacia.corese.triple.parser.Exp pragma : ast.getPragma().getBody()){
-			
 			if (query.isDebug()) Message.log(Message.PRAGMA, pragma);
 			
 			if (pragma.isTriple()){
 				triple(pragma.getTriple());
 			}
+			else {
+				parse(pragma);
+			}
 		}
+	}
+	
+	public void parse(fr.inria.acacia.corese.triple.parser.Exp exp){
 	}
 	
 	public void triple(Triple t){

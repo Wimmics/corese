@@ -57,7 +57,7 @@ public class QueryResults implements IResults
 	}
 	
 	public Graph getGraph(){
-		return (Graph) getMappings().getObject();
+		return (Graph) getMappings().getGraph();
 	}
 	
 	public Iterable<Entity> getEdges(){
@@ -213,14 +213,8 @@ public class QueryResults implements IResults
 	
 	public String toSPARQLResult() {
 		if (ast.isConstruct()){
-			Graph g = (Graph) map.getObject();
-			if (g != null){
-				RDFFormat rdf = RDFFormat.create(g, ast.getNSM());
-				return rdf.toString();
-			}
-			else {
-				return null;
-			}
+			RDFFormat rdf = RDFFormat.create(map);
+			return rdf.toString();
 		}
 		else {
 			XMLFormat xml = XMLFormat.create(map);

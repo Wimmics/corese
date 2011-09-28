@@ -46,7 +46,8 @@ public class ASTQuery  implements Keyword {
 	static String RootPropertyQN =  RDFS.RootPropertyQN; // cos:Property
 	static String RootPropertyURI = RDFS.RootPropertyURI; //"http://www.inria.fr/acacia/corese#Property";
 	static final String LIST = "list";
-	
+	static final String NL 	= System.getProperty("line.separator");
+
 	static int nbt=0; // to generate an unique id for a triple if needed
 	
 	public final static int QT_SELECT 	= 0;
@@ -657,6 +658,10 @@ public class ASTQuery  implements Keyword {
 	}
 
 	public Vector<Expression> getSort() {
+		return sort;
+	}
+	
+	public Vector<Expression> getOrderBy() {
 		return sort;
 	}
 	
@@ -1570,18 +1575,16 @@ public class ASTQuery  implements Keyword {
     	// we calculate the pretty print only one time
     	if (this.queryPrettyPrint.equals("") || this.queryPrettyPrint.length() == 0) {
         	String str = "";
-	        // Prefix
 	        str += getSparqlPrefix();
-	        // Header
 	        str += getSparqlHeader();
-	        // Body
 	        str += getSparqlBody();
-	        // SolutionModifier
-	        if (! isAsk()) 
+	        if (! isAsk()) {
+	        	str += NL;
 	        	str += getSparqlSolutionModifier();
-	        //else str += PrettyPrintCst.CLOSE_BRACKET;
+	        }
 	        return str;
-        } else {
+        } 
+    	else {
         	return this.queryPrettyPrint;
         }
     }
@@ -1642,18 +1645,6 @@ public class ASTQuery  implements Keyword {
                 head += KeywordPP.MORE + KeywordPP.SPACE;
             if (isMerge())
                 head += KeywordPP.MERGE + KeywordPP.SPACE;
-            // sort : if we have sort count or sort distance, we write it there for the moment, 
-            // because we don't know on which variable is the count or the distance
-//            if (sort != null) {
-//                for (Expression o : sort){
-//                	String s = "";
-//                	if (o instanceof Term) s = ((Term)o).toSparql();
-//                	else s = o.toString();
-//                	if (s.equalsIgnoreCase(PrettyPrintCst.COUNT) || s.equalsIgnoreCase(PrettyPrintCst.DISTANCE)) {
-//                		head += PrettyPrintCst.SORT + " " + s + " ";                	  
-//                	}
-//                }
-//            }
                 // Distinct
             if (isDistinct())
                 head += KeywordPP.DISTINCT + KeywordPP.SPACE;
@@ -1662,21 +1653,18 @@ public class ASTQuery  implements Keyword {
                 head += KeywordPP.SORTED + KeywordPP.SPACE;
             // Variables
             if (select != null && select.size()>0){
-              Enumeration<String> en=select.elements();
-              while (en.hasMoreElements()){
-				  String s = en.nextElement();
-            	  if (getSelectFunctions().get(s) != null) {
-            		  s = getSelectFunctions().get(s).toSparql() + KeywordPP.SPACE + "as" + KeywordPP.SPACE + s;
+              for (String s : getSelect()){
+            	  if (getExpression(s) != null) {
+            		  head += "(" + getExpression(s).toSparql() + " as "  + s + ")";
             	  }
-            	  head += s + KeywordPP.SPACE;
-            	  //head += en.nextElement() + PrettyPrintCst.SPACE;     
+            	  else {
+            		  head += s + KeywordPP.SPACE;
+            	  }
               }
-            } else if (isSelectAll()) {
+            } 
+            else if (isSelectAll()) {
                 head += KeywordPP.STAR + KeywordPP.SPACE;
             }
-              // Threshold
-            if (getThreshold() != getDefaultThreshold())
-                head += KeywordPP.THRESHOLD + KeywordPP.SPACE + (int)getThreshold() + KeywordPP.SPACE;
         } else if (isAsk()) {
             // Ask
             head += KeywordPP.ASK + KeywordPP.SPACE;
@@ -1720,14 +1708,12 @@ public class ASTQuery  implements Keyword {
         // Where
         if (! (isDescribe() && ! isWhere()))
             head += KeywordPP.WHERE + KeywordPP.SPACE_LN ; //+ 
-            //PrettyPrintCst.OPEN_BRACKET + PrettyPrintCst.SPACE;  // warning: for describe, not always WHERE
         
         return head;
     }
 
     public String getSparqlBody() {
         String body = "";
-        //if ((getResultForm() != QT_DESCRIBE || isWhere()) && getBodyExp()!=null)
         if (! isDescribe() || getBody()!=null)
             body += getBody().toSparql();
         return body;
@@ -1742,55 +1728,43 @@ public class ASTQuery  implements Keyword {
         String sm = "";
         Vector<Expression> sort = getSort();
         Vector<Boolean> reverse = getReverseTable();
- 
-        if (group != null) {
-            Enumeration<String> en=group.elements();
-            while (en.hasMoreElements()){
-              sm += KeywordPP.GROUPBY + KeywordPP.SPACE + en.nextElement() + KeywordPP.SPACE;
-            }
+        
+        if (getGroupBy().size()>0){
+        	sm += KeywordPP.GROUPBY + KeywordPP.SPACE;
+        	for (Expression exp : getGroupBy()){
+        		sm += exp.toSparql() + KeywordPP.SPACE;
+        	}
+        	sm += NL;
         }
         
         if (sort.size() > 0 ) {
-            sm += KeywordPP.ORDERBY + KeywordPP.SPACE;
-            for (int i=0;i<sort.size();i++) {
-                Object o = sort.get(i);
-                String s = "";
-                if (o instanceof Term) s = ((Term)o).toSparql();
-                else s = o.toString();
-                if (!s.equalsIgnoreCase(KeywordPP.COUNT) && 
-                		!s.equalsIgnoreCase(KeywordPP.DISTANCE)) {
-	                boolean breverse = ((Boolean)reverse.get(i)).booleanValue();
-	                if (breverse) {
-	                    sm += KeywordPP.DESC;
-	                        sm += "(";
-	                }
-	                sm += s + KeywordPP.SPACE;
-	                if (breverse) 
-	                    sm += ")" + KeywordPP.SPACE;
-                }
-            }
+        	int i = 0;
+        	sm += KeywordPP.ORDERBY + KeywordPP.SPACE;
+        	
+        	for (Expression exp : getOrderBy()) {
+        		
+        		boolean breverse = reverse.get(i++);
+        		if (breverse) {
+        			sm += KeywordPP.DESC;
+        			sm += "(";
+        		}
+        		sm += exp.toSparql();
+        		if (breverse) 
+        			sm += ")" ;
+        		sm += KeywordPP.SPACE;
+        	}
+        	sm += NL;
         }
+        
         if (getOffset() > 0)
-            sm += KeywordPP.OFFSET + KeywordPP.SPACE + (int)getOffset() + KeywordPP.SPACE;
-        if (getMaxProjection() != getDefaultMaxProjection())
-            sm += KeywordPP.PROJECTION + KeywordPP.SPACE + (int)getMaxProjection() + KeywordPP.SPACE;
+            sm += KeywordPP.OFFSET + KeywordPP.SPACE + getOffset() + KeywordPP.SPACE;
+        
         if (getMaxResult() != getDefaultMaxResult())
-            sm += KeywordPP.LIMIT + KeywordPP.SPACE + (int)getMaxResult() + KeywordPP.SPACE;
+            sm += KeywordPP.LIMIT + KeywordPP.SPACE + getMaxResult() + KeywordPP.SPACE;
  
-        // DISPLAY rdf/table/flat/asquery/integer/xml/blank
-//        if (isRDF())
-//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.DRDF + KeywordPP.SPACE;
-//        else if (isFlat())
-//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.FLAT + KeywordPP.SPACE;
-//        else if (isPQuery())
-//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.ASQUERY + KeywordPP.SPACE;
-//        else if (getMaxDisplay() != 1000)   // attention chiffre en dur
-//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + (int)getMaxDisplay() + KeywordPP.SPACE;
-//        else if (isDisplayBNID())
-//            sm += KeywordPP.DISPLAY + KeywordPP.SPACE + KeywordPP.BLANK + KeywordPP.SPACE;
-//       
         if (!sm.equals(""))
-            sm += KeywordPP.SPACE_LN;
+            sm += NL;
+        
         return sm;
     }
 
@@ -2301,6 +2275,10 @@ public class ASTQuery  implements Keyword {
     }
 
     public String toString() {
+        return getSparqlPrettyPrint();
+    }
+    
+    public String toSparql() {
         return getSparqlPrettyPrint();
     }
 

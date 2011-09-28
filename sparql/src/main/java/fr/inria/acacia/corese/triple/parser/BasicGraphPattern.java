@@ -46,6 +46,10 @@ public class BasicGraphPattern extends And {
     	add(Triple.create(e));
     }
     
+    public boolean isBGP(){
+		return true;
+	}
+    
     public String toSparql(NSManager nsm) {
     	return "{" + super.toSparql(nsm) + "}";
     }

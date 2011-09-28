@@ -16,6 +16,7 @@ public class QueryLoad {
 	static final String FTP  = "ftp://";
 
 	static final String[] PROTOCOLS = {HTTP, FILE, FTP};
+	static final String NL 			= System.getProperty("line.separator");
 
 
 	
@@ -71,7 +72,7 @@ public class QueryLoad {
 					fq.close();
 					break;
 				}
-				query += str + "\n";
+				query += str + NL;
 			}
 		} 
 		catch (FileNotFoundException e) {

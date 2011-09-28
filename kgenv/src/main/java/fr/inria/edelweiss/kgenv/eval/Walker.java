@@ -55,7 +55,9 @@ class Walker extends Interpreter {
 				nodes = env.getQuery().getNodes();
 			}
 			else {
-				nodes = env.getQuery().getNodes(exp.getFilter());
+				// TODO: count(distinct foo(?x))
+				// TODO: store nodes
+				nodes = env.getQuery().getAggNodes(exp.getFilter());
 			}
 			group = Group.create(nodes);
 			group.setDistinct(true);
@@ -118,7 +120,8 @@ class Walker extends Interpreter {
 	 */
 	boolean accept(Filter f, Mapping map){
 		if (f.getExp().isDistinct()){
-			return group.add(map);
+			boolean b = group.add(map);
+			return b;
 		}
 		return true;
 	}
@@ -171,7 +174,7 @@ class Walker extends Interpreter {
 		if (arg.isVariable()){
 			// sum(?x)
 			// get value from Node Mapping
-			node = map.getNode(qNode);
+			node = map.getTNode(qNode);
 			if (node == null) return null;
 			dt = (IDatatype) node.getValue();
 		}

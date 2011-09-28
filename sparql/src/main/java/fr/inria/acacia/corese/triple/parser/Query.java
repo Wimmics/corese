@@ -11,6 +11,14 @@ public class Query extends BasicGraphPattern {
 		add(ast.getBody());
 	}
 	
+	public String toString(){
+		return ast.toString();
+	}
+	
+	public String toSparql(NSManager nsm){
+		return ast.toString();
+	}
+	
 	public static Query create(ASTQuery a){
 		return new Query(a);
 	}

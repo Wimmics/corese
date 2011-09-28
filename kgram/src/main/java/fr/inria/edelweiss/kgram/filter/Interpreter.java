@@ -191,7 +191,9 @@ public class Interpreter implements Evaluator, ExprType {
 		
 		case ENV: return env;
 		
-		case SKIP: return TRUE;
+		case SKIP: 
+		case GROUPBY:
+			return TRUE;
 				
 		case BOUND: 
 			Node node = env.getNode(exp.getExp(0));
@@ -319,7 +321,6 @@ public class Interpreter implements Evaluator, ExprType {
 		
 		case IN:
 			return in(exp, env);
-			
 		}
 		
 		Object o1 = eval(exp.getExp(0), env);

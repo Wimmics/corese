@@ -325,23 +325,32 @@ public class Memory implements Environment {
 			// select fun() as ?res
 			for (Exp e : q.getSelectFun()){
 				
-				Node node = null;
 				Filter f = e.getFilter();
 				if (f != null){
+					Node node = null;
 					if (! e.isAggregate()){
 						node = eval.eval(f, this);
+						push(e.getNode(), node);
 					}
 					qnode[n] = e.getNode();
 					tnode[n] = node;
 					n++;
 				}
 			}
+			
+			for (Exp e : q.getSelectFun()){
+				Filter f = e.getFilter();
+				if (f != null && ! e.isAggregate()){
+					pop(e.getNode());
+				}
+			}			
 		}
 			
 		orderGroup(q.getOrderBy(), snode);
 		orderGroup(q.getGroupBy(), gnode);
 
 		Mapping map = new Mapping(qedge, tedge, qnode, tnode);
+		map.init();
 		map.setPath(lp);
 		map.setOrderBy(snode);
 		map.setGroupBy(gnode);

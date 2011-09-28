@@ -56,9 +56,13 @@ public class Query extends Exp {
 	Object object, ast;
 	Compile compiler;
 	Sorter sort;
-	Hashtable <String, Filter> ftable;
 	
+	// Extended filters: pathNode()
+	Hashtable <String, Filter> ftable;
+	// Extended queries for type check
 	Hashtable<Edge, Query> table;
+	// Extended queries for additional group by
+	List<Query> queries;
 	
 	private boolean 
 	isCompiled = false;
@@ -90,6 +94,7 @@ public class Query extends Exp {
 		compiler 	= new Compile(this);
 		table 		= new Hashtable<Edge, Query>();
 		ftable 		= new Hashtable<String, Filter>();
+		queries 	= new ArrayList<Query>();
 
 		patternNodes 		= new ArrayList<Node>();
 		queryNodes 			= new ArrayList<Node>();
@@ -132,6 +137,14 @@ public class Query extends Exp {
 	
 	Query get(Edge e){
 		return table.get(e);
+	}
+	
+	public void addQuery(Query q){
+		queries.add(q);
+	}
+	
+	public List<Query> getQueries(){
+		return queries;
 	}
 	
 	public Object getObject(){
@@ -431,7 +444,7 @@ public class Query extends Exp {
 	public int getLimitOffset(){
 		// when order by/group by/count(), return all results, group sort agg, and then apply offset/limit
 		if ( ! isConstruct() &&
-				(isOrderBy() || isGroupBy() || isAggregate())) return Integer.MAX_VALUE;
+				(isOrderBy() || hasGroupBy() || isAggregate())) return Integer.MAX_VALUE;
 		if (limit < Integer.MAX_VALUE - offset){
 			return limit + offset;
 		}
@@ -541,8 +554,8 @@ public class Query extends Exp {
 	public void setAggregate(){
 		for (Exp exp : getSelectFun()){
 			if (exp.getFilter()!=null){
-				if (exp.getFilter().isAggregate()){
-					isAggregate = true;
+				if (exp.isAggregate() && ! exp.isExpGroupBy()){
+					setAggregate(true);
 				}
 				else if (exp.getFilter().isFunctional()){
 					isFunctional = true;
@@ -551,7 +564,7 @@ public class Query extends Exp {
 		}
 		for (Exp exp : getOrderBy()){
 			if (exp.getFilter()!=null && exp.getFilter().isAggregate()){
-				isAggregate = true;
+				setAggregate(true);
 			}
 		}
 	}
@@ -620,6 +633,10 @@ public class Query extends Exp {
 	
 	public boolean isGroupBy(){
 		return groupBy.size()>0;
+	}
+	
+	public boolean hasGroupBy(){
+		return isGroupBy() || isConnect();
 	}
 	
 	public boolean isListGroup(){
@@ -863,23 +880,27 @@ public class Query extends Exp {
 				index(this, ee.getFilter());
 			}
 		}
-		for (Exp ee : getOrderBy()){
-			// use case: order by exists{?x :p ?y} 
-			if (ee.getFilter()!=null){
-				index(this, ee.getFilter());
-			}
-		}
-		for (Exp ee : getGroupBy()){
-			// use case: group by (exists{?x :p ?y} as ?b)
-			if (ee.getFilter()!=null){
-				index(this, ee.getFilter());
-			}
-		}
+		index(getOrderBy());
+		index(getGroupBy());
 		if (getGraphNode()!=null){
 			index(getGraphNode());
 		}
 		if (getPathNode()!=null){
 			index(getPathNode());
+		}
+		
+		for (Query q : getQueries()){
+			q.complete();
+		}
+	}
+	
+	void index(List<Exp> list){
+		for (Exp ee : list){
+			// use case: group by (exists{?x :p ?y} as ?b)
+			// use case: order by exists{?x :p ?y} 
+			if (ee.getFilter()!=null){
+				index(this, ee.getFilter());
+			}
 		}
 	}
 	
@@ -1613,10 +1634,7 @@ public class Query extends Exp {
 		return getNodes(exp.getFilter());
 	}
 	
-	/**
-	 * use case:
-	 * select count(distinct *)
-	 */
+	
 	public List<Node> getNodes(Filter f){
 		List<String> lVar = f.getVariables();
 		ArrayList<Node> lNode = new ArrayList<Node>();
@@ -1627,7 +1645,21 @@ public class Query extends Exp {
 		return lNode;
 	}
 
-	
+	/**
+	 * use case:
+	 * select count(distinct ?x)
+	 */
+	public List<Node> getAggNodes(Filter f){
+		ArrayList<Node> lNode = new ArrayList<Node>();
+		for (Expr exp : f.getExp().getExpList()){
+			if (exp.type() == ExprType.VARIABLE){
+				Node node = getProperAndSubSelectNode(exp.getLabel());
+				if (node != null && ! lNode.contains(node)) lNode.add(node);
+			}
+		}
+		return lNode;
+	}
+
 	
 	
 	/********************************************************************

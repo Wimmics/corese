@@ -122,15 +122,13 @@ public class Transformer implements ExpType {
 
 		if (fac == null) fac = new CompilerFacKgram();			
 		ast.setKgram(true);
-
-//		compiler = fac.newInstance(); 
-//		compiler.setAST(ast);
-//		Exp exp = compile(ast.getBody(), false);
-		
+	
 		Exp exp = compile(ast);
 		Query q =  create(exp);
 		q.setAST(ast);
-
+		
+		extension(q);
+		
 		if (ast.isConstruct() || ast.isDescribe()){
 			// use case: kgraph only
 			Exp cons = construct(ast);
@@ -410,37 +408,36 @@ public class Transformer implements ExpType {
 		if (ast.isSelectAll() || ast.isConstruct()){
 			// select *
 			// get nodes from query nodes and edges
-			if (Query.test) select = qCurrent.getSelectNodesExp();
-			else select = qCurrent.getNodesExp();
+			select = qCurrent.getSelectNodesExp();
 		}
 
 		for (Variable var : ast.getSelectVar()){	
 			// retrieve var node from query
 			String varName = var.getName();
 			Node node = getNode(qCurrent, var);
+			Exp exp = Exp.create(NODE, node);
+			
 			// process filter if any
-			Filter f = null;		
 			Expression ee = ast.getExpression(varName);
 			
 			if (ee != null){
 				// select fun() as var
-				ee = ee.process(ast);
-				if (ee != null){
-					f = compile(ee);
-					if (f.isAggregate()){
-						// store select variable in aggregate expression
-						// use case: sample(f(?x)) as ?y
-						f.getExp().setArg(var);
+				Filter f = compileSelect(ee, ast);
+				//f = compile(ee);
+
+				if (f != null){
+					// select fun() as var
+					exp.setFilter(f);
+					checkFilterVariables(qCurrent, f, select, lNodes);
+					function(qCurrent, exp, var);
+
+					if (exp.isAggregate()){
+						extendAggregate(qCurrent, exp, ee);
+					}
+					else {
+						checkAggregate(exp, select);
 					}
 				}
-			}
-
-			Exp exp = Exp.create(NODE, node);
-			// select fun() as var
-			if (f != null){
-				exp.setFilter(f);
-				checkFilterVariables(qCurrent, f, select, lNodes);
-				function(qCurrent, exp, var);
 			}
 
 			select.add(exp);
@@ -453,7 +450,43 @@ public class Transformer implements ExpType {
 		}
 		return select;
 	}
+	
+	
+	/**
+	 * use case: select (count(?x) as ?c) (?c + ?c as ?d)
+	 * check that ?c is an aggregate variable
+	 * set ?c + ?c as aggregate
+	 */
+	void checkAggregate(Exp exp, List<Exp> select){
+		List<String> list = exp.getFilter().getVariables();
+		
+		for (Exp ee : select){
+			if (ee.isAggregate()){
+				String name = ee.getNode().getLabel();
+				if (list.contains(name)){
+					exp.setAggregate(true);
+					break;
+				}
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * min(?l, groupBy(?x, ?y))
+	 */
+	void extendAggregate(Query qCurrent, Exp exp, Expression ee){
+		if (ee.isAggregate() && ee.arity()>1){
+			Expression g = ee.getArg(1);
+			if (g.oper() == ExprType.GROUPBY){
+				List<Exp> ob = orderBy(qCurrent, g.getArgs(), ast);
+				exp.setExpGroupBy(ob);
+			}
+		}
+	}
 
+	
 	Node getNode(Query qCurrent, Variable var){
 		Node node = getProperAndSubSelectNode(qCurrent, var.getName());
 		if (node == null){
@@ -563,6 +596,10 @@ public class Transformer implements ExpType {
 				}
 				else {
 					Node node = getProperAndSubSelectNode(qCurrent, ee.getName());
+					if (node == null){
+						ast.addError("Undefined exp: ", ee);
+						node = compiler.createNode(ee.getName());
+					}
 					exp = Exp.create(NODE, node);
 					list.add(exp);
 				}
@@ -897,18 +934,12 @@ public class Transformer implements ExpType {
 		return f;
 	}
 	
-	
-	/**
-	 * Rewrite exp if it is a composite expression over aggregates:
-	 * 
-	 * select (sum(exp1) / count(exp2)  as ?a) 
-	 * compiled as :
-	 * select (sum(exp1) as ?e1) (count(exp2) as ?e2) (agg(?e1 / ?e2) as ?a)
-	 */
-	void compileAggregate(Expression exp){
-		
+	Filter compileSelect(Expression exp, ASTQuery ast){
+		Filter f = exp.compile(ast);
+		compileExist(f.getExp(), false);
+		return f;
 	}
-
+	
 
 	/**
 	 * filter(exist {PAT})
@@ -1071,6 +1102,29 @@ public class Transformer implements ExpType {
 		
 		Term t = Term.function(Processor.PATHNODE);
 		q.setFilter(Query.PATHNODE, t.compile(ast));
+	}
+	
+	/**********************************************/
+	
+	
+	void extension(Query q){
+		ASTQuery ast = (ASTQuery) q.getAST();
+		if (ast.getPragma()!=null){
+			extension(q, ast.getPragma());
+		}
+	}
+	
+	void extension(Query q, fr.inria.acacia.corese.triple.parser.Exp exp){
+		//System.out.println(exp);
+		if (exp.isQuery()){
+			Query qq = compileQuery(exp.getQuery());
+			q.addQuery(qq);
+		}
+		else if (exp.isBGP()){
+			for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
+				extension(q, ee);
+			}
+		} 
 	}
 
 

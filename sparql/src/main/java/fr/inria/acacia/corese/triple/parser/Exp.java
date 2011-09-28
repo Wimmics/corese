@@ -518,10 +518,10 @@ public abstract class Exp extends Statement implements Comparable<Exp> {
 		String str = "";
 
 		if (size() == 1) {
-			str += eget(0).toSparql(nsm);
+			str += get(0).toSparql(nsm);
 		} else {
 			for (int i=0;i<size();i++) {
-				str += eget(i).toSparql(nsm);
+				str += get(i).toSparql(nsm);
 			}
 		}
 		return str;

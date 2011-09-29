@@ -51,7 +51,7 @@ public class SparqlResultParser {
                                 map.put(var, "<"+sVal+">");
                             } else if ((val != null) && (val.getNodeName() != null) && (val.getNodeName().equals("literal"))) {
                                 String sVal = val.getTextContent();
-                                map.put(var, "\""+sVal+"\"");
+                                map.put(var, "'''"+ sVal +"'''");
                             }
 //                            if ((val != null) && (val.getNodeName() != null) ) {
 //                                String sVal = val.getTextContent();

@@ -228,26 +228,27 @@ public  class CoreseLong extends CoreseNumber {
   }
 
   public IDatatype polydiv(CoreseLong iod) {
-      try {
-          if (getdValue() == 0.0) {
-              return new CoreseDecimal(iod.getlValue()/0);
-          } else {
-        	  double d = iod.getdValue() / getdValue();
-        	  double dd = Math.floor(d);
-        	  if (dd == d){
-        		  if (dd < Integer.MAX_VALUE){
-        			  return new CoreseInteger((int)d) ;
-        		  }
-        		  else {
-        			  return new CoreseLong((long)d) ;
-        		  }
-        	  }
-              return new CoreseDecimal(d);
-          }
-      } catch (java.lang.ArithmeticException ae) {
-    	  //logger.fatal(ae.getMessage());
-          return null;
-      }
+	  try {
+		  if (getdValue() == 0.0) {
+			  return new CoreseDecimal(iod.getlValue()/0);
+		  } 
+		  else {
+			  double d = iod.getdValue() / getdValue();
+//			  double dd = Math.floor(d);
+//			  if (dd == d){
+//				  if (dd < Integer.MAX_VALUE){
+//					  return new CoreseInteger((int)d) ;
+//				  }
+//				  else {
+//					  return new CoreseLong((long)d) ;
+//				  }
+//			  }
+			  return new CoreseDecimal(d);
+		  }
+	  } 
+	  catch (java.lang.ArithmeticException ae) {
+		  return null;
+	  }
   }
 
 

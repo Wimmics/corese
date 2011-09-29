@@ -406,12 +406,21 @@ implements Comparator<Mapping>
 			setValid(res);
 		}
 		else {
-			// TODO: group by should be bound ??
-			Node node = eval.eval(exp.getFilter(), memory);
+			Node node = null;
+			
+			if (exp.getFilter() == null){
+				// order by ?count
+				node = memory.getNode(exp.getNode());			
+			}
+			else {
+				node = eval.eval(exp.getFilter(), memory);
+			}
+			
 			if (hasEvent){
 				Event event = EventImpl.create(Event.FILTER, exp, node);
 				manager.send(event);
 			}
+			
 			for (Mapping map : this){
 
 				if (n == select){

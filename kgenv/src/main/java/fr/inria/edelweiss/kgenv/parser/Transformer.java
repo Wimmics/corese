@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
@@ -385,7 +384,8 @@ public class Transformer implements ExpType {
 
 	void having(Query q, ASTQuery ast){
 		if (ast.getHaving()!=null){
-			Filter having = compile(ast.getHaving());
+			//Filter having = compile(ast.getHaving());			
+			Filter having = compileSelect(ast.getHaving(), ast);			
 			q.setHaving(Exp.create(FILTER, having));
 		}
 	}
@@ -430,13 +430,7 @@ public class Transformer implements ExpType {
 					exp.setFilter(f);
 					checkFilterVariables(qCurrent, f, select, lNodes);
 					function(qCurrent, exp, var);
-
-					if (exp.isAggregate()){
-						extendAggregate(qCurrent, exp, ee);
-					}
-					else {
-						checkAggregate(exp, select);
-					}
+					aggregate(qCurrent, exp, ee, select);					
 				}
 			}
 
@@ -449,6 +443,19 @@ public class Transformer implements ExpType {
 			select.add(exp);
 		}
 		return select;
+	}
+	
+	
+	void aggregate(Query qCurrent, Exp exp, Expression ee, List<Exp> list){
+		if (exp.isAggregate()){
+			// process  min(?l, groupBy(?x, ?y))
+			extendAggregate(qCurrent, exp, ee);
+		}
+		else {
+			// check if exp has a variable that is computed by a previous aggregate
+			// if yes, exp is also considered as an aggregate
+			checkAggregate(exp, list);
+		}
 	}
 	
 	
@@ -470,7 +477,6 @@ public class Transformer implements ExpType {
 			}
 		}
 	}
-	
 	
 	
 	/**
@@ -564,16 +570,12 @@ public class Transformer implements ExpType {
 	List<Exp> orderBy(Query qCurrent, ASTQuery ast){
 		List<Exp> order = orderBy(qCurrent, ast.getSort(), ast);
 		if (order.size()>0){
-			//boolean[] desc = new boolean [order.size()];
 			int n = 0;
 			for (boolean b : ast.getReverse()){
-				//desc[n] = b;
 				order.get(n).status(b);
 				n++;
 			}
-			//qCurrent.setReverse(desc);
 		}
-
 		return order;
 	}
 
@@ -590,30 +592,41 @@ public class Transformer implements ExpType {
 		for (Expression ee : input){
 			if (ee.isVariable()){
 				Exp exp = qCurrent.getSelectExp(ee.getName());
+				//				if (exp != null){
+				//					// select var fun() as var
+				//					list.add(exp);
+				//				}
+				//				else 
+				//				{
+				Node node;
 				if (exp != null){
-					// select var fun() as var
-					list.add(exp);
+					node = exp.getNode();
 				}
 				else {
-					Node node = getProperAndSubSelectNode(qCurrent, ee.getName());
-					if (node == null){
-						ast.addError("Undefined exp: ", ee);
-						node = compiler.createNode(ee.getName());
-					}
-					exp = Exp.create(NODE, node);
-					list.add(exp);
+					node = getProperAndSubSelectNode(qCurrent, ee.getName());
 				}
+
+				if (node == null){
+					ast.addError("Undefined exp: ", ee);
+					node = compiler.createNode(ee.getName());
+				}
+				Exp e = Exp.create(NODE, node);
+
+				if (exp!=null  && exp.isAggregate()){
+					// order by ?count
+					e.setAggregate(true);
+				}
+				list.add(e);
+				//}
 			}
 			else {
-				// rewrite select fun() as var in ee
-				ee = ee.process(ast);
-				if (ee != null){
-					Filter f = compile(ee);
-					Node node = createNode(); 
-					Exp exp = Exp.create(NODE, node);
-					exp.setFilter(f);
-					list.add(exp);
-				}
+				// order by fun(?x)
+				// TODO: check rewrite fun() as var
+				Filter f = compile(ee);
+				Node node = createNode(); 
+				Exp exp = Exp.create(NODE, node);
+				exp.setFilter(f);
+				list.add(exp);
 			}
 		}
 		return list;
@@ -934,6 +947,9 @@ public class Transformer implements ExpType {
 		return f;
 	}
 	
+	/**
+	 * Do not rewrite fun() as var
+	 */
 	Filter compileSelect(Expression exp, ASTQuery ast){
 		Filter f = exp.compile(ast);
 		compileExist(f.getExp(), false);

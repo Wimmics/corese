@@ -7,6 +7,7 @@ package fr.inria.edelweiss.kgimport;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sdb.SDBException;
@@ -32,13 +33,6 @@ public class JenaGraphFactory {
 
     public static Logger logger = Logger.getLogger(JenaGraphFactory.class);
 
-//  source   = graph.addGraph(uri);
-//  subject  = graph.addResource(uri);
-//  property = graph.addProperty(uri);
-//  object   = graph.addBlank(id);
-//  object   = graph.addLiteral(value, datatype, lang);
-//  edge     = Edge.create(source, subject, property, object);
-//  graph.addEdge(edge);
     /**
      *  Handling of XSDDateType ?? -> transformed as String into KGRAM
      *  See http://openjena.org/javadoc/com/hp/hpl/jena/datatypes/xsd/XSDDatatype.html
@@ -60,18 +54,7 @@ public class JenaGraphFactory {
             logger.info(st.asTriple().toString());
 
             //subject
-            if (st.getSubject().isAnon()) {
-            } else if (st.getSubject().isLiteral()) {
-                logger.debug("Subject as literal " + st.getSubject().toString());
-            } else if (st.getSubject().isResource()) {
-                logger.debug("Subject as resource " + st.getSubject().toString());
-                subject = g.addResource(st.getSubject().toString());
-            } else if (st.getSubject().isURIResource()) {
-                logger.debug("Subject as URI resource " + st.getSubject().getURI());
-                subject = g.addResource(st.getSubject().getURI());
-            } else {
-                logger.warn("Subject " + st.getSubject().toString() + " not recognized by JENA as a blank node, a literal or a resource.");
-            }
+            subject = getNode(st.getSubject());
 
             //property
             if (st.getPredicate().isProperty()) {
@@ -82,11 +65,25 @@ public class JenaGraphFactory {
             }
 
             //object 
-            if (st.getObject().isAnon()) {
-                object = g.addBlank(st.getObject().asNode().getBlankNodeId().toString());
-            } else if (st.getObject().isLiteral()) {
-                logger.debug("Object as literal " + st.getObject().toString());
-                Literal l = st.getObject().asLiteral();
+            object = getNode(st.getObject());
+
+            //edge
+            EdgeCore e = EdgeCore.create(source, subject, predicate, object);
+            g.addEdge(e);
+        }
+    }
+    
+    
+    
+    public static Node getNode(RDFNode jenaNode) {
+        Graph g = Graph.create();
+        Node kgNode = null;
+        
+        if (jenaNode.isAnon()) {
+                kgNode = g.addBlank(jenaNode.asNode().getBlankNodeId().toString());
+            } else if (jenaNode.isLiteral()) {
+                logger.debug("Object as literal " + jenaNode.toString());
+                Literal l = jenaNode.asLiteral();
                 logger.debug("lexical form " + l.getLexicalForm());
                 Object value = null;
                 try {
@@ -97,42 +94,35 @@ public class JenaGraphFactory {
                 }
 
                 if (value instanceof Integer) {
-                    object = g.addLiteral(((Integer) value).intValue());
+                    kgNode = g.addLiteral(((Integer) value).intValue());
                 } else if (value instanceof Long) {
-                    object = g.addLiteral(((Long) value).longValue());
+                    kgNode = g.addLiteral(((Long) value).longValue());
                 } else if (value instanceof Float) {
-                    object = g.addLiteral(((Float) value).floatValue());
+                    kgNode = g.addLiteral(((Float) value).floatValue());
                 } else if (value instanceof Double) {
-                    object = g.addLiteral(((Double) value).doubleValue());
+                    kgNode = g.addLiteral(((Double) value).doubleValue());
                 } else if (value instanceof Boolean) {
-                    object = g.addLiteral(((Boolean) value).booleanValue());
+                    kgNode = g.addLiteral(((Boolean) value).booleanValue());
                 } else if (value instanceof String) {
-                    object = g.addLiteral(((String) value));
+                    kgNode = g.addLiteral(((String) value));
                 } else if (value instanceof XSDDateTime) {
                     logger.warn("Literal value " + value + " : " + value.getClass().getCanonicalName() + " transformed as String into KGRAM");
-                    object = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
+                    kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
                 }else {
                     logger.error("Literal value " + value + " : " + value.getClass().getCanonicalName() + " not handled by KGRAM graphs");
                 }
 
-            } else if (st.getObject().isResource()) {
-                logger.debug("Object as resource " + st.getObject().toString());
-                object = g.addResource(st.getObject().asResource().toString());
-            } else if (st.getObject().isURIResource()) {
-                logger.debug("Object as resource " + st.getObject().asResource().getURI());
-                object = g.addResource(st.getObject().asResource().getURI());
+            } else if (jenaNode.isResource()) {
+                logger.debug("Object as resource " + jenaNode.toString());
+                kgNode = g.addResource(jenaNode.asResource().toString());
+            } else if (jenaNode.isURIResource()) {
+                logger.debug("Object as resource " + jenaNode.asResource().getURI());
+                kgNode = g.addResource(jenaNode.asResource().getURI());
             } else {
-                logger.warn("Object " + st.getObject().toString() + " not recognized by JENA as a blank node, a literal or a resource.");
+                logger.warn("Object " + jenaNode.toString() + " not recognized by JENA as a blank node, a literal or a resource.");
             }
-
-            //edge
-//            if (source != null || subject != null || predicate != null || object != null) {
-            EdgeCore e = EdgeCore.create(source, subject, predicate, object);
-            g.addEdge(e);
-//            }
-//            System.out.println(e.toString());
-//            System.out.println("");
-        }
+        
+        return kgNode;
     }
 
     public static Graph createGraph(Model m) {
@@ -140,12 +130,6 @@ public class JenaGraphFactory {
         JenaGraphFactory.updateGraph(m, g);
         return g;
     }
-
-//    public static IEngine createEngine(Model m) {
-//        GraphEngine gEngine = GraphEngine.create();
-//        JenaGraphFactory.updateGraph(m, gEngine.getGraph());
-//        return gEngine;
-//    }
 
     public static Graph createGraph(String sdbUrl, String login, String password, String namedModel) {
         StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex, DatabaseType.MySQL);
@@ -161,21 +145,6 @@ public class JenaGraphFactory {
 
         return JenaGraphFactory.createGraph(m);
     }
-
-//    public static IEngine createEngine(String sdbUrl, String login, String password, String namedModel) {
-//        StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex, DatabaseType.MySQL);
-//        JDBC.loadDriverMySQL();
-//        SDBConnection conn = new SDBConnection(sdbUrl.toString(), login, password);
-//        Store store = SDBFactory.connectStore(conn, storeDesc);
-//        Model m = null;
-//        if (namedModel != null) {
-//            m = SDBFactory.connectNamedModel(store, namedModel);
-//        } else {
-//            m = SDBFactory.connectDefaultModel(store);
-//        }
-//
-//        return JenaGraphFactory.createEngine(m);
-//    }
 
     public static boolean isJenaSDBConnection(String sdbUrl, String login, String password) {
         try {

@@ -61,7 +61,8 @@ public class JenaLoadingTest {
         model.read(in, null);
 
         Graph g = JenaGraphFactory.createGraph(model);
-        System.out.println(RDFFormat.create(g));
+        System.out.println(RDFFormat.create(g).toString());
+        System.out.println(g.size());
     }
 
     @Test
@@ -91,6 +92,7 @@ public class JenaLoadingTest {
         model.read(in, null);
 
         Graph g = JenaGraphFactory.createGraph(model);
-        System.out.println(RDFFormat.create(g));
+        System.out.println(RDFFormat.create(g).toString());
+        System.out.println(g.size());
     }
 }

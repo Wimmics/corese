@@ -145,7 +145,6 @@ public class FoafTest {
     }
     
     @Test
-    @Ignore
     public void foafJena() throws EngineException {
         Model model = ModelFactory.createDefaultModel();
         InputStream in = FoafTest.class.getClassLoader().getResourceAsStream("kgram#2-persons.rdf");
@@ -168,34 +167,6 @@ public class FoafTest {
 
     @Test
     @Ignore
-    public void foafQuery() throws EngineException {
-        
-        QueryExec exec = QueryExec.create();
-        exec.add(engine);
-
-        IResults res = exec.SPARQLQuery(sparqlQuery);
-        String[] variables = res.getVariables();
-
-        for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
-            IResult r = en.nextElement();
-            HashMap<String, String> result = new HashMap<String, String>();
-            for (String var : variables) {
-                if (r.isBound(var)) {
-                    IResultValue[] values = r.getResultValues(var);
-                    for (int j = 0; j < values.length; j++) {
-                        System.out.println(var + " = " + values[j].getStringValue());
-//                            result.put(var, values[j].getStringValue());
-                    }
-                } else {
-                    System.out.println(var + " = Not bound");
-                }
-            }
-
-        }
-    }
-
-    @Test
-    @Ignore
     public void testSparqlQuery() {
         String sparqlQuery = "PREFIX kg: <http://ns.inria.fr/edelweiss/2010/kgram/>"
                 + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
@@ -211,85 +182,5 @@ public class FoafTest {
 
         ASTQuery astQuery = ASTQuery.create(sparqlQuery);
         Expression ex = astQuery.bind();
-    }
-
-    @Test
-    @Ignore
-    public void remoteFoafQuery() throws EngineException, MalformedURLException, IOException {
-
-        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8089/kgserver-1.0-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8090/kgserver-1.0-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-
-        File rep1 = File.createTempFile("rep1", ".rdf");
-        FileWriter fw = new FileWriter(rep1);
-        InputStream is = FoafTest.class.getClassLoader().getResourceAsStream("kgram#1-persons.rdf");
-        int c;
-        while ((c = is.read()) != -1) {
-            fw.write(c);
-        }
-        is.close();
-        fw.close();
-
-        File rep2 = File.createTempFile("rep2", ".rdf");
-        fw = new FileWriter(rep2);
-        is = FoafTest.class.getClassLoader().getResourceAsStream("kgram#2-persons.rdf");
-        while ((c = is.read()) != -1) {
-            fw.write(c);
-        }
-        is.close();
-        fw.close();
-
-        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
-        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-
-        Map<String, Object> reqCtxt2 = ((BindingProvider) kg2).getRequestContext();
-        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-
-        DataHandler data = new DataHandler(new FileDataSource(rep1));
-        kg1.uploadRDF(data);
-        DataHandler data2 = new DataHandler(new FileDataSource(rep2));
-        kg2.uploadRDF(data2);
-
-        rep1.delete();
-        rep2.delete();
-
-        String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
-                + "SELECT distinct ?x ?m ?z WHERE"
-                + "{"
-                + "     ?x foaf:knows ?y ."
-                + "     ?y foaf:knows ?z ."
-                + "     OPTIONAL {?x foaf:mbox ?m}"
-                + " FILTER (?x ~ 'Filip')"
-                + "}";
-//                + "GROUP BY ?x ORDER BY ?x "
-//                + "LIMIT 6";
-
-        EngineFactory ef = new EngineFactory();
-        IEngine engine = ef.newInstance();
-
-        QueryExec exec = QueryExec.create(engine);
-        exec.addRemote(new URL("http://cavaco.unice.fr:8089/kgserver-1.0-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://cavaco.unice.fr:8090/kgserver-1.0-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-
-        IResults res = exec.SPARQLQuery(sparqlQuery);
-        String[] variables = res.getVariables();
-
-        for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
-            IResult r = en.nextElement();
-            HashMap<String, String> result = new HashMap<String, String>();
-            for (String var : variables) {
-                if (r.isBound(var)) {
-                    IResultValue[] values = r.getResultValues(var);
-                    for (int j = 0; j < values.length; j++) {
-                        System.out.println(var + " = " + values[j].getStringValue());
-//                            result.put(var, values[j].getStringValue());
-                    }
-                } else {
-                    System.out.println(var + " = Not bound");
-                }
-            }
-        }
     }
 }

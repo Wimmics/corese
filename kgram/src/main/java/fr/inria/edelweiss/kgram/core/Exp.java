@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Query.VString;
 
 /**
@@ -378,6 +379,19 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		return lFilter;
 	}
 	
+	public boolean isHaving(){
+		return getHavingFilter()!=null;
+	}
+	
+	public Filter getHavingFilter(){
+		Expr e = getFilter().getExp();
+		if (e.arity() >= 3){
+			return e.getExp(2).getFilter();
+		}
+		return null;
+	}
+	
+	
 	public boolean isExpGroupBy(){
 		return expGroupBy!=null;
 	}
@@ -442,6 +456,22 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	public Object getObject(){
 		return object;
+	}
+	
+	public void setProducer(Object o){
+		object = o;
+	}
+	
+	public Exp getRestore(){
+		return (Exp) object;
+	}
+	
+	public void setRestore(Object o){
+		object = o;
+	}
+	
+	public Producer getProducer(){
+		return (Producer) object;
 	}
 	
 	public List<Object> getValues(){

@@ -671,6 +671,225 @@ public class TestQuery {
 	
 	
 	
+	@Test
+	public void test22(){
+				
+		String query = 
+			"select  " +
+			"where {" +
+			"c:Engineer rdfs:subClassOf+ :: $path ?y " +
+			"graph $path {?a ?p ?b}" +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 258, map.size()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
+	
+	@Test
+	public void test23(){
+				
+		String query = 
+			"select  " +
+			"where {" +
+			"c:Engineer rdfs:subClassOf+ :: $path ?y " +
+			"graph $path {{c:Toto ?p ?b} union {c:Engineer ?p ?b}}" +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 52, map.size()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
+	@Test
+	public void test24(){
+				
+		String query = 
+			"select debug " +
+			"where {" +
+			"c:Engineer rdfs:subClassOf+ :: $path ?y " +
+			"graph $path {?a ?p ?b filter(?a = c:Engineer)}" +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 52, map.size()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
+	@Test
+	public void test25(){
+				
+		String query = 
+			"select  " +
+			"where {" +
+			"c:Engineer rdfs:subClassOf+ :: $path ?y " +
+			"graph $path {optional{c:Engineer ?p ?b} filter(! bound(?b))}" +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 0, map.size()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
+	
+	@Test
+	public void test26(){
+				
+		String query = 
+			"select  " +
+			"where {" +
+			"c:Engineer rdfs:subClassOf+ :: $path ?y " +
+			"graph $path {optional{c:Toto ?p ?b} filter(! bound(?b))}" +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 52, map.size()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
+	
+	@Test
+	public void test27(){
+				
+		String query = 
+			"select  " +
+			"where {" +
+			"c:Engineer rdfs:subClassOf+ :: $path ?y " +
+			"graph $path {{c:Engineer ?p ?b} minus {?a ?p c:Engineer}}" +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 52, map.size()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
+	
+	@Test
+	public void test28(){
+				
+		String query = 
+			"select debug " +
+			"where {" +
+			"c:Engineer rdfs:subClassOf+ :: $path ?y " +
+			"graph $path {c:Engineer ?p ?b} " +
+			"?x rdf:type c:Engineer " +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 364, map.size()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
+	@Test
+	public void test29(){
+				
+		String query = 
+			"select debug " +
+			"where {" +
+			"?class rdfs:subClassOf+ :: $path c:Person " +
+			"graph $path {?a ?p c:Person} " +
+			"?x rdf:type/rdfs:subClassOf+ :: $path2 ?class " +
+			"graph $path2 {?x rdf:type ?c } " +
+			"?x c:FirstName ?n " +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 43, map.size()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
+	
+	
+	@Test
+	public void test50(){
+				
+		String query = 
+			"select  " +
+			"(pathLength($path) as ?l) " +
+			"(max(?l, groupBy(?x, ?y)) as ?m) " +
+			"(max(?m) as ?max) " +
+			"where {" +
+			"?x rdfs:subClassOf+ :: $path ?y" +			
+			"}" ;
+				
+		try {
+									
+			QueryProcess exec = QueryProcess.create(graph);
+			Mappings map = exec.query(query);
+			IDatatype dt = getValue(map, "?max");
+			assertEquals("Result", 13, dt.getIntegerValue()); 	
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+				
+	}
+	
 	
 	public IDatatype fun(Object o1, Object o2){
 		IDatatype dt1 = datatype(o1);
@@ -690,7 +909,9 @@ public class TestQuery {
 	
 	
 	IDatatype getValue(Mappings map, String name){
-		return datatype(map.getValue(name));
+		Object value = map.getValue(name);
+		if (value == null) return null;
+		return datatype(value);
 	}
 	
 	IDatatype datatype(Object n){

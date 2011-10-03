@@ -42,7 +42,8 @@ public interface ExpType {
 	static final int NEXT 		= 27; 
 	static final int MINUS 		= 28; 
 	static final int POP 		= 29; 
-	static final int SERVICE 		= 30; 
+	static final int SERVICE 	= 30; 
+	static final int RESTORE 	= 31; 
 
 
 
@@ -51,7 +52,7 @@ public interface ExpType {
 		"EMPTY", "AND", "UNION", "GRAPH", "OPTION", "EDGE", "FILTER", "NODE", 
 		"NOT", "WATCH", "CONTINUE", "BACKJUMP", "EXTERN", "QUERY", "FORALL", "EXIST",
 		"GRAPHNODE", "OPTIONAL", "SCAN", "IF", "PATH", "XPATH", "ACCEPT", "BIND", 
-		"EVAL", "SCOPE", "TEST", "NEXT", "MINUS", "POP", "SERVICE"
+		"EVAL", "SCOPE", "TEST", "NEXT", "MINUS", "POP", "SERVICE", "RESTORE"
 	};
 	
 }

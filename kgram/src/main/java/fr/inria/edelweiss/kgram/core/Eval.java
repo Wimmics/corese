@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.event.EventManager;
+import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
@@ -627,11 +628,14 @@ public class Eval implements  ExpType, Plugin {
 	 * 
 	 */
 
+	private	int eval(Node gNode, Stack stack, int n, boolean option)  {
+		return eval(producer, gNode, stack, n, option);
+	}
 	
 	/**
 	 * gNode is the query graph name if any, may be null 
 	 */
-private	int eval(Node gNode, Stack stack, int n, boolean option)  {
+private	int eval(Producer p, Node gNode, Stack stack, int n, boolean option)  {
 		int backtrack = n-1;
 		boolean isEvent = hasEvent;
 		Memory env = memory;
@@ -689,19 +693,19 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				// we have reached the end of an exp, it's next status is success=true
 				exp.status(true);
 				stack.remove(n);
-				backtrack = eval(gNode, stack, n, option);
+				backtrack = eval(p, gNode, stack, n, option);
 				break;
 				
 			
 			case EMPTY:
 
-				eval(gNode, stack, n+1, option);
+				eval(p, gNode, stack, n+1, option);
 				break;
 
 
 			case AND:
 				stack = stack.and(exp, n);
-				backtrack = eval(gNode, stack, n, option);
+				backtrack = eval(p, gNode, stack, n, option);
 				break;
 				
 			case SERVICE:
@@ -712,13 +716,18 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 			case GRAPH:
 
 				if (env.isPath(exp.getGraphName())){
-					backtrack = inPath(gNode, exp, stack, n, option);
+					backtrack = inPath(p, gNode, exp, stack, n, option);
 				}
 				else {
 					backtrack = graph(gNode, exp, stack, n, option);
 				}
 				break;
-
+				
+				
+			case RESTORE:
+				backtrack = eval(exp.getProducer(), gNode, stack, n+1, option);
+				break;
+				
 
 			case GRAPHNODE:
 
@@ -728,7 +737,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 
 			case UNION:	
 
-				backtrack = union(gNode, exp, stack, n, option);
+				backtrack = union(p, gNode, exp, stack, n, option);
 				break;
 
 
@@ -748,7 +757,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 //				else 
 				{
 					stack = stack.watch(exp.first(), WATCH, CONTINUE, true, n);
-					backtrack = eval(gNode, stack, n, true);
+					backtrack = eval(p, gNode, stack, n, true);
 				}
 
 				break;
@@ -760,7 +769,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 					backtrack = graphNodes(gNode, gNode, exp, stack, n, n, false);
 				}
 				else {
-					backtrack = minus(gNode, exp, stack, n, true);
+					backtrack = minus(p, gNode, exp, stack, n, true);
 				}
 				break;
 
@@ -773,7 +782,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				 * 
 				 */
 				stack = stack.watch(exp.first(), WATCH, BACKJUMP, true, n);
-				backtrack = eval(gNode, stack, n, true);
+				backtrack = eval(p, gNode, stack, n, true);
 				break;
 
 
@@ -783,7 +792,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				// false means if reach BACK, WATCH must not backtrack after (must skip it)
 				// exist succeed
 				stack = stack.watch(exp.first(), WATCH, BACKJUMP, false, n);
-				backtrack = eval(gNode, stack, n, true);
+				backtrack = eval(p, gNode, stack, n, true);
 				break;	
 
 
@@ -794,7 +803,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 					backtrack =  graphNodes(gNode, gNode, exp, stack, n, n, true);
 				}
 				else {
-					backtrack = watch(gNode, exp, stack, n, option);
+					backtrack = watch(p, gNode, exp, stack, n, option);
 				}
 				break;
 
@@ -803,7 +812,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 
 				// optional succeed, mark it and continue
 				exp.status(! exp.skip());
-				backtrack = eval(gNode, stack, n+1, true);
+				backtrack = eval(p, gNode, stack, n+1, true);
 				break;
 
 
@@ -826,18 +835,18 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 					backtrack = graphNodes(gNode, gNode, exp, stack, n, n, false);
 				}
 				else {
-					backtrack = filter(gNode, exp, stack, n, option);
+					backtrack = filter(p, gNode, exp, stack, n, option);
 				}
 				break;
 
-			case PATH:			
+			case PATH:	
 				backtrack = path(gNode, exp, stack, n, option);
 				break;		
 			
 				
 			case EDGE:	
 
-				backtrack = edge(gNode, exp, stack, n, option);
+				backtrack = edge(p, gNode, exp, stack, n, option);
 				break;
 				
 				
@@ -877,7 +886,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				 * ?z q ?t
 				 * 
 				 */
-				backtrack = bind(gNode, exp, stack, n, option);
+				backtrack = bind(p, gNode, exp, stack, n, option);
 				break;
 
 
@@ -890,7 +899,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 
 			case SCOPE:
 
-				backtrack = eval(gNode, stack.copy(exp.get(0), n), n, option);	
+				backtrack = eval(p, gNode, stack.copy(exp.get(0), n), n, option);	
 
 				break;
 
@@ -903,12 +912,12 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 						// backjump here when a mapping will be found with this node
 						// see store()
 						backjump = n-1;
-						backtrack = eval(gNode, stack, n+1, option);
+						backtrack = eval(p, gNode, stack, n+1, option);
 					}
 				}
 				else 
 				{
-					backtrack = eval(gNode, stack, n+1, option);
+					backtrack = eval(p, gNode, stack, n+1, option);
 				}
 				break;
 
@@ -917,7 +926,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 
 				// draft trace expression
 				plugin.exec(exp, env, n);
-				backtrack = eval(gNode, stack, n+1, option);
+				backtrack = eval(p, gNode, stack, n+1, option);
 				break;
 
 
@@ -927,7 +936,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 
 				Mapping scan = env.store(query);
 				logger.debug(scan);
-				backtrack = eval(gNode, stack, n+1, option);
+				backtrack = eval(p, gNode, stack, n+1, option);
 				break;
 
 
@@ -940,14 +949,14 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 //				}
 				
 				
-				backtrack = option(gNode, exp, stack, n, option);
+				backtrack = option(p, gNode, exp, stack, n, option);
 				break;
 
 			case FORALL:
 
 				Exp fa = Exp.create(NOT, Exp.create(AND, exp.first(), Exp.create(NOT, exp.rest())));
 				stack.set(n, fa);
-				backtrack = eval(gNode, stack, n, true);
+				backtrack = eval(p, gNode, stack, n, true);
 				break;
 
 
@@ -1003,7 +1012,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 	 * (n+1) EDGE{?x ?q ?z}
 	 * (n+2) FILTER{?x = ?y}
 	 */
-	private	int bind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
+	private	int bind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		Memory env = memory;
 		int backtrack = n-1;
 	
@@ -1017,7 +1026,7 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				node = env.getNode(exp.get(i).getNode());
 				if (node == null){
 					// no binding: continue
-					backtrack = eval(gNode, stack, n+1, option);
+					backtrack = eval(p, gNode, stack, n+1, option);
 					return backtrack;
 				}
 			}
@@ -1029,17 +1038,17 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 				if (hasEvent){
 					send(Event.BIND, exp, qNode, node);
 				}
-				backtrack = eval(gNode, stack, n+1, option);
+				backtrack = eval(p, gNode, stack, n+1, option);
 				env.pop(qNode);
 			}
 			else {
-				backtrack = eval(gNode, stack, n+1, option);
+				backtrack = eval(p, gNode, stack, n+1, option);
 			}
 	
 			return backtrack;
 		}
 		else {
-			backtrack =  cbind(gNode, exp, stack, n, option);
+			backtrack =  cbind(p, gNode, exp, stack, n, option);
 			return backtrack;
 
 		}
@@ -1051,14 +1060,14 @@ private	int eval(Node gNode, Stack stack, int n, boolean option)  {
 	 * exp : BIND{?x = cst1 || ?x = cst2}
 	 * Bind ?x with all its values
 	 */
-private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
+private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		int backtrack = n-1;
 		Memory env = memory;
 		Producer prod = producer;
 		
 		Node qNode = exp.get(0).getNode();
 		if (! exp.status() || env.isBound(qNode)){
-			return eval(gNode, stack, n+1, option);
+			return eval(p, gNode, stack, n+1, option);
 		}
 		
 		if (exp.getNodeList() == null){
@@ -1090,7 +1099,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 				if (hasEvent){
 					send(Event.BIND, exp, qNode, node);
 				}
-				backtrack = eval(gNode, stack, n+1, option);
+				backtrack = eval(p, gNode, stack, n+1, option);
 				env.pop(qNode);
 				if (backtrack < n){
 					return backtrack;
@@ -1098,7 +1107,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 			}
 		}
 		else {
-			backtrack = eval(gNode, stack, n+1, option);
+			backtrack = eval(p, gNode, stack, n+1, option);
 		}
 		return backtrack;
 	}
@@ -1109,10 +1118,10 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	 * Node gNode : actual graph node
 	 * Node node  : exp graph node
 	 */
-	private	Mappings subEval(Node gNode, Node node, Exp exp){		
+	private	Mappings subEval(Producer p, Node gNode, Node node, Exp exp){		
 		Memory mem = new Memory(match, evaluator);
 		mem.init(query);
-		Eval eval = copy(mem, producer, evaluator);
+		Eval eval = copy(mem, p, evaluator);
 		graphNode(gNode, node, mem);
 		Mappings lMap = eval.subEval(query, node, Stack.create(exp), 0);
 		return lMap;
@@ -1131,12 +1140,12 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	
 	
 	
-	private	int watch(Node gNode, Exp exp, Stack stack, int n,  boolean option){
+	private	int watch(Producer p, Node gNode, Exp exp, Stack stack, int n,  boolean option){
 		int backtrack = n-1;	
 		Exp skip  = exp.first();
 		skip.status(skip.skip()); //true);
 		// eval the optional exp
-		backtrack = eval(gNode, stack, n+1, true);
+		backtrack = eval(p, gNode, stack, n+1, true);
 		if (backtrack == STOP){
 			return backtrack;
 		}
@@ -1144,7 +1153,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		// if the option fail/not succeed
 		if (skip.status()){
 			//  option fail / not succeed: skip it and eval the rest of the stack
-			backtrack = eval(gNode, stack, stack.indexOf(skip) + 1, true);
+			backtrack = eval(p, gNode, stack, stack.indexOf(skip) + 1, true);
 		}
 		return backtrack;
 	}
@@ -1158,7 +1167,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	 * optimize it, cache results in exp (like subquery)
 	 */
 
-	private	int minus(Node gNode, Exp exp, Stack stack, int n,  boolean option){
+	private	int minus(Producer p, Node gNode, Exp exp, Stack stack, int n,  boolean option){
 		int backtrack = n-1;
 		boolean hasGraph = gNode != null;
 		Memory env = memory;
@@ -1169,8 +1178,8 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 			node1 = qNode;
 			node2 = exp.getGraphNode();
 		}
-		Mappings lMap1 = subEval(gNode, node1, exp.first());
-		Mappings lMap2 = subEval(gNode, node2, exp.rest());
+		Mappings lMap1 = subEval(p, gNode, node1, exp.first());
+		Mappings lMap2 = subEval(p, gNode, node2, exp.rest());
 		
 		for (Mapping map : lMap1){
 			boolean ok = true;
@@ -1185,7 +1194,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 					// query fake graph node must not be bound
 					// for further minus ...
 					if (hasGraph) env.pop(qNode);
-					backtrack = eval(gNode, stack, n+1, option);
+					backtrack = eval(p, gNode, stack, n+1, option);
 					env.pop(map);
 					if (backtrack < n) return backtrack;
 				}
@@ -1196,10 +1205,10 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	
 
 	
-	private	int union(Node gNode, Exp exp, Stack stack,  int n, boolean option){
+	private	int union(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		int backtrack = n-1;
 		Stack nstack = stack.copy(exp.first(), n);
-		int b1 = eval(gNode, nstack, n, option);
+		int b1 = eval(p, gNode, nstack, n, option);
 		if (b1 == STOP){
 			return b1;
 		}
@@ -1211,7 +1220,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 			maxExp = exp;
 		}
 		nstack = stack.copy(exp.rest(), n);
-		backtrack = eval(gNode, nstack, n, option);
+		backtrack = eval(p, gNode, nstack, n, option);
 
 		if (backtrack == STOP) return backtrack;
 		// backjump is max of both indexes
@@ -1411,6 +1420,46 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		return backtrack;
 	}
 	
+	/**
+	 * graph $path { }
+	 * switch producer to path
+	 * add RESTORE(p)  after this graph exp
+	 */
+	private	int inPath(Producer p, Node gNode, Exp exp, Stack stack, int n,  boolean option){
+		int backtrack = n-1;
+		
+		Path path = memory.getPath(exp.getGraphName());
+		stack.set(n, exp.rest());
+		
+		if (n == stack.size()-1){
+			// last statement: switch Producer to Path			
+			backtrack = eval(path, gNode, stack, n, option);
+			stack.reset(n, exp);
+		}
+		else {
+			Exp next = getRestore(p, exp);
+			stack.add(n+1, next);
+			backtrack = eval(path, gNode, stack, n, option);
+			for (int i = n+1; stack.get(i) != next; ){
+				stack.remove(i);
+			}
+			stack.remove(n+1);
+			stack.set(n, exp);
+		}
+		
+		return backtrack;
+	}
+	
+	
+	Exp getRestore(Producer p, Exp exp){
+		Exp next = exp.getRestore();
+		if (next == null){
+			next = Exp.create(RESTORE);
+			exp.setRestore(next);
+		}
+		next.setProducer(p);
+		return next;
+	}
 	
 	
 	/**
@@ -1419,12 +1468,13 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	 * When filter fail, backjump before optional
 	 * 
 	 */
-	private	int filter(Node gNode, Exp exp, Stack stack, int n,  boolean option){
+	private	int filter(Producer p, Node gNode, Exp exp, Stack stack, int n,  boolean option){
 		int backtrack = n-1;
 		Memory env = memory;
 		
 		env.setGraphNode(gNode);
 		//memory.setStack(stack);
+		//exp.getFilter().getExp().isExist();
 		boolean success = evaluator.test(exp.getFilter(), env);
 		env.setGraphNode(null);
 		//memory.setStack(null);
@@ -1434,7 +1484,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		}
 
 		if (success){
-			backtrack = eval(gNode, stack, n+1, option);
+			backtrack = eval(p, gNode, stack, n+1, option);
 		}
 		else if (exp.status()){
 			if (exp.getNode() != null){
@@ -1523,7 +1573,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	 * hence we enumerate path edges and nodes for nested Exp
 	 * no graph, no subquery inside inpath
 	 **/
-	private	int inPath(Node gNode, Exp exp, Stack stack, int n,  boolean option){
+	private	int inPath3(Node gNode, Exp exp, Stack stack, int n,  boolean option){
 		int backtrack = n-1, evENUM = Event.ENUM;	
 		Node qPath = exp.getGraphName();
 		Memory env = memory;
@@ -1557,7 +1607,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	 */
 
 	
-	private	int edge(Node gNode, Exp exp, Stack stack, int n,  boolean option) {
+	private	int edge(Producer p, Node gNode, Exp exp, Stack stack, int n,  boolean option) {
 		int backtrack = n-1, evENUM = Event.ENUM;
 		boolean isSuccess = false,
 			hasGraphNode = gNode != null,
@@ -1567,10 +1617,10 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		Node graph = null;
 		Memory env = memory;
 		env.setExp(exp);
-		Producer prod = producer;
+		//Producer prod = producer;
 		Query qq = query;
-
-		for (Entity map : prod.getEdges(gNode, qq.getFrom(gNode), qEdge,  env)){			
+			
+		for (Entity map : p.getEdges(gNode, qq.getFrom(gNode), qEdge,  env)){			
 			
 			if (map != null){
 				nbEdge++;
@@ -1610,7 +1660,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 				
 				if (bmatch){
 					isSuccess = true;
-					backtrack = eval(gNode, stack, n+1, option);
+					backtrack = eval(p, gNode, stack, n+1, option);
 
 					env.pop(qEdge, edge);
 					if (hasGraphNode) env.pop(gNode);
@@ -1810,7 +1860,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 	// std SPARQL semantics:
 	// ENV |- A -> LENV1 & ENV |- B -> LENV2 & merge(LENV1 LENV2 -> LENV3) & minus(LENV1 LENV2 -> LENV4)
 	// ENV |- A option B -> LENV3 . LENV4
-	private	int option(Node gNode, Exp exp, Stack stack, int n, boolean option){
+	private	int option(Producer p, Node gNode, Exp exp, Stack stack, int n, boolean option){
 		int backtrack = n-1;
 		boolean hasGraph = gNode != null;
 		Node qNode = query.getGraphNode();
@@ -1820,8 +1870,8 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		if (hasGraph){
 			node1 = qNode;
 		}
-		Mappings lMap1 = subEval(gNode, node1, exp.first());
-		Mappings lMap2 = subEval(gNode, node1, exp.rest());
+		Mappings lMap1 = subEval(p, gNode, node1, exp.first());
+		Mappings lMap2 = subEval(p, gNode, node1, exp.rest());
 
 		for (Mapping r1 : lMap1){
 
@@ -1840,7 +1890,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 							if (hasGraph){
 								env.pop(qNode);
 							}
-							eval(gNode, stack, n+1, true);
+							eval(p, gNode, stack, n+1, true);
 							env.pop(r2);
 						}
 						env.pop(r1);
@@ -1854,7 +1904,7 @@ private	int cbind(Node gNode, Exp exp, Stack stack,  int n, boolean option){
 				if (hasGraph){
 					env.pop(qNode);
 				}
-				eval(gNode, stack, n+1, true);
+				eval(p, gNode, stack, n+1, true);
 				env.pop(r1);
 			}
 		}

@@ -77,6 +77,13 @@ public class Stack extends ArrayList<Exp> implements ExpType {
 		return this;
 	}
 	
+	void reset(int n, Exp exp){
+		while (size()-1 > n){
+			remove(size()-1);
+		}
+		set(n, exp);
+	}
+	
 	/**
 	 * compile OPTIONAL{EXP} and NOT{EXP}
 	 * as WATCH EXP NEXT

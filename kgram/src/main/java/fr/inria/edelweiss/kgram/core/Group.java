@@ -139,7 +139,7 @@ public class Group implements Comparator<Mappings>{
 	
 	public void setDistinct(boolean b){
 		isDistinct = b;
-		isByName = b;
+		//isByName = b;
 	}
 	
 	public void setExtend(boolean b){
@@ -191,8 +191,12 @@ public class Group implements Comparator<Mappings>{
 	
 
 	Node getGroupBy(Mapping map, Node qNode, int n){		
-		if (isByName){
-			return map.getNode(qNode); 
+//		if (isByName){
+//			return map.getNode(qNode); 
+//		}
+//		else 
+		if (isDistinct){
+			return map.getDistinctNode(n); 
 		}
 		else if (isExtend){
 			return map.getGroupNode(n);
@@ -205,7 +209,10 @@ public class Group implements Comparator<Mappings>{
 	
 	public boolean add2(Mapping map){
 		
-		if (isExtend){
+		if (isDistinct){
+			map.setDistinct(nodes);
+		}
+		else if (isExtend){
 			// min(?l, groupBy(?x, ?y))
 			// store value of ?x ?y in an array to speed up
 			map.setGroup(nodes);

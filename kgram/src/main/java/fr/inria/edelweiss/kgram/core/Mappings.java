@@ -72,15 +72,19 @@ implements Comparator<Mapping>
 	
 	public static Mappings create(Query q){
 		Mappings lMap = new Mappings(q); 
-		lMap.isDistinct = q.isDistinct();
-		lMap.isListGroup = q.isListGroup();
-		lMap.setSelect(q.getSelect());
-		if (lMap.isDistinct){
-			lMap.distinct = lMap.group(q.getSelectFun());
-			lMap.distinct.setDistinct(true);
-			lMap.distinct.setDuplicate(q.isDistribute());
-		}
+		lMap.init(q);
 		return lMap;
+	}
+	
+	void init(Query q){
+		isDistinct  = q.isDistinct();
+		isListGroup = q.isListGroup();
+		setSelect(q.getSelect());
+		if (isDistinct){
+			distinct = group(q.getSelectFun());
+			distinct.setDistinct(true);
+			distinct.setDuplicate(q.isDistribute());
+		}
 	}
 	
 	public Query getQuery(){
@@ -285,9 +289,9 @@ implements Comparator<Mapping>
 		if (size() == 0) return ;
 		boolean isEvent = hasEvent;
 		
-		if (qq.hasGroupBy()){
-			if (group==null) group = createGroup();
-		}
+//		if (qq.hasGroupBy()){
+//			if (group==null) group = createGroup();
+//		}
 		
 		// select (count(?n) as ?count)
 		aggregate(evaluator, memory, qq.getSelectFun(), true);
@@ -366,20 +370,47 @@ implements Comparator<Mapping>
 
 	private	void eval(Evaluator eval, Exp exp, Memory mem, int n){
 		if (exp.isExpGroupBy()){
-			// min(?l, groupBy(?x, ?y))
+			// min(?l, groupBy(?x, ?y)) as ?min
 			Group g = createGroup(exp);
 			aggregate(g, eval, exp, mem, n);
+			if (exp.isHaving()){
+				// min(?l, groupBy(?x, ?y), (?l = ?min)) as ?min
+				having(eval, exp, mem, g);
+				// remove global group if any 
+				// may be recomputed with new Mapping list
+				setGroup(null);
+			}
 		}
 		else if (query.hasGroupBy()){
 			// perform group by and then aggregate
-			aggregate(group, eval, exp, mem, n);
+			aggregate(getCreateGroup(), eval, exp, mem, n);
 		}
 		else {
 			apply(eval, exp, mem, n);
 		}
 	}
 
-
+	
+	
+	/**
+	 * exp : min(?l, groupBy(?x, ?y), (?l = ?min)) as ?min)
+	 * test the filter, remove Mappping that fail
+	 */
+	void having(Evaluator eval, Exp exp, Memory mem, Group g){
+		Filter f = exp.getHavingFilter();
+		clear();
+		for (Mappings lm : g.getValues()){
+			for (Mapping map : lm){
+				mem.push(map, -1);
+				if (eval.test(f, mem)){
+					add(map);
+				}
+				mem.pop(map);
+			}
+		}
+	}
+	
+	
 
 	/**
 	 * Compute aggregate (e.g. count() max()) and having
@@ -483,9 +514,8 @@ implements Comparator<Mapping>
 	 * leave one Mapping within each group
 	 */
 	public	void groupBy(){
-		if (group == null) group = createGroup();
 		// clear the current list
-		groupBy(group);
+		groupBy(getCreateGroup());
 	}
 		
 	
@@ -592,6 +622,21 @@ implements Comparator<Mapping>
 		}
 	}
 	
+	private Group getCreateGroup(){
+		if (group == null){
+			 group = createGroup();
+		}
+		return group;
+	}
+	
+	private Group getGroup(){
+		return group;
+	}
+	
+	private void setGroup(Group g){
+		group = g;
+	}
+	
 	/**
 	 * Generate a group by list of variables
 	 */
@@ -634,13 +679,6 @@ implements Comparator<Mapping>
 		Group group = new Group(list);
 		return group;
 	}
-
-	
-	
-	public Group getGroup(){
-		return group;
-	}
-
 
 	public Node max(Node qNode){
 		Node node = minmax(qNode, true);

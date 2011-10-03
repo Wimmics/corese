@@ -47,7 +47,7 @@ public class Mapping
 	// group by
 	gNodes;
 	
-	Node[] group;
+	Node[] distinct, group;
 	
 	Mappings lMap;
 	Hashtable<String, Node> table;
@@ -358,10 +358,19 @@ public class Mapping
 	 */
 	void setGroup(List<Node> list){
 		group = new Node[list.size()];
+		set(list, group);
+	}
+	
+	void setDistinct(List<Node> list){
+		distinct = new Node[list.size()];
+		set(list, distinct);
+	}
+	
+	void set(List<Node> list, Node[] array){
 		int i = 0;
 		for (Node qNode : list){
 			Node node = getNode(qNode);
-			group[i++] = node;
+			array[i++] = node;
 		}
 	}
 	
@@ -373,6 +382,9 @@ public class Mapping
 		return group[n];
 	}
 	
+	Node getDistinctNode(int n){
+		return distinct[n];
+	}
 	
 	public Node getTNode(Node node){
 		return getNode(node);

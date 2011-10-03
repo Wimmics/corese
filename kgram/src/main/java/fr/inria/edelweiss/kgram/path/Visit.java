@@ -1,8 +1,10 @@
 package fr.inria.edelweiss.kgram.path;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.TreeMap;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
@@ -18,17 +20,35 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
 public class Visit {
 	Hashtable<State, List<Node>> table;
 	Hashtable<Regex, List<Node>> etable;
+	Hashtable<Regex, Table> eetable;
 	Hashtable<Regex, Integer> ctable;
 	ArrayList<Regex> list;
 
 	boolean isReverse = false;
 	
 	Visit(boolean b){
-		table  = new Hashtable<State, List<Node>>();
-		etable = new Hashtable<Regex, List<Node>>();
-		ctable = new Hashtable<Regex, Integer> ();
-		list   = new ArrayList<Regex>();
+		table   = new Hashtable<State, List<Node>>();
+		etable  = new Hashtable<Regex, List<Node>>();
+		eetable = new Hashtable<Regex, Table>();
+		ctable  = new Hashtable<Regex, Integer> ();
+		list    = new ArrayList<Regex>();
 		isReverse = b;
+	}
+	
+	class Table2 extends Hashtable<Node, Node> {}
+	
+	class Table extends TreeMap<Node, Node> {	
+		
+		Table(){
+			super(new Compare());
+		}
+	}
+	
+	class Compare implements Comparator<Node> {
+
+		public int compare(Node o1, Node o2) {
+			return o1.compare(o2);
+		}
 	}
 	
 	static Visit create(boolean b){
@@ -138,7 +158,8 @@ public class Visit {
 	 * 
 	 */
 	
-	void add(Regex exp, Node node){
+	
+	void ladd(Regex exp, Node node){
 		List<Node> list = etable.get(exp);
 		if (list == null){
 			list = new ArrayList<Node>();
@@ -146,6 +167,17 @@ public class Visit {
 		}
 		list.add(node);
 	}
+	
+	
+	void eadd(Regex exp, Node node){
+		Table table = eetable.get(exp);
+		if (table == null){
+			table = new Table();
+			eetable.put(exp, table);
+		}
+		table.put(node, node);
+	}
+
 	
 	boolean knows(Regex exp){
 		return list.contains(exp);
@@ -198,6 +230,16 @@ public class Visit {
 		}
 	}
 	
+	void add(Regex exp, Node node){
+		//ladd(exp, node);
+		if (isReverse){
+			ladd(exp, node);
+		}
+		else {
+			eadd(exp, node);
+		}
+	}
+	
 	/**
 	 * Remove node from visited list
 	 */
@@ -206,6 +248,18 @@ public class Visit {
 			list.remove(exp);
 			return;
 		}
+		
+		//lremove(exp, node);
+
+		if (isReverse){
+			lremove(exp, node);
+		}
+		else {
+			eremove(exp, node);
+		}
+	}
+	
+	void lremove(Regex exp, Node node){
 		List<Node> list = etable.get(exp);
 		if (! list.get(list.size()-1).equals(node)){
 			System.out.println("** ERROR Visit: " + node + " " + list);
@@ -213,64 +267,86 @@ public class Visit {
 		list.remove(list.size()-1);
 	}
 	
+	void eremove(Regex exp, Node node){
+		Table table = eetable.get(exp);
+		table.remove(node);
+	}
+	
 	
 	/**
 	 * Test whether path loops 
 	 */
-	 boolean loop(Regex exp, Node start) {
-		insert(exp, start);
-		if (loop(exp)){
-			remove(exp, start);
+	boolean loop(Regex exp, Node start) {
+		if (isReverse){
+			insert(exp, start);
+			if (revLoop(exp)){
+				remove(exp, start);
+				return true;
+			}
+		}
+		else if (eLoop(exp, start)){
 			return true;
 		}
-		
+		else {
+			insert(exp, start);
+		}
+	
 		return false;
 	}
 	 
+	 boolean eLoop(Regex exp, Node start){
+		Table table = eetable.get(exp);
+		if (table == null) {
+			return false;
+		}
+		return table.containsKey(start);
+	 }
+	
+	 boolean stdLoop(Regex exp, Node start){
+		 List<Node> list = etable.get(exp);
+		 if (list == null) return false;
+		 int size = list.size();
+		 
+		 for (int i = 0; i<size; i++){
+			 if (list.get(i).equals(start)){
+				 return true;
+			 }
+		 }
+		 return false;
+	 }
+	 
 	/**
 	 * Test if there is a loop on path of exp
+	 * path isReverse
 	 */
-	 boolean loop(Regex exp) {
+	 boolean revLoop(Regex exp) {
 
 		List<Node> list = etable.get(exp);
 		if (list == null || list.size()<2) return false;
 		int last = list.size()-1;
 
-		//System.out.println("** V: " + list);
-
-		if (isReverse){
-			// use case: ?s {2,} ex:uri
-			// Walk through the list backward (from <uri> to ?s), skip 2 first nodes
-			// cf W3C pp test case
-			Node node = null;
-			int count = 0;
-			int min = exp.getMin();
-			for (int i = last; i>=0; i--){
-				if (count<min) {count++; continue;}
-				else if (count == min){ 
-					node = list.get(i);
-				}
-				else {
-					//System.out.println("** V: " + node + " " + list.get(i) + " "  + list.get(i).equals(node));
-					if (list.get(i).equals(node)){
-						return true;
-					}
-				}
-				count++;
+		// use case: ?s {2,} ex:uri
+		// Walk through the list backward (from <uri> to ?s), skip 2 first nodes
+		// cf W3C pp test case
+		Node node = null;
+		int count = 0;
+		int min = exp.getMin();
+		for (int i = last; i>=0; i--){
+			if (count<min) {count++; continue;}
+			else if (count == min){ 
+				node = list.get(i);
 			}
-		}
-		else {
-			Node node = list.get(last);		
-			for (int i = 0; i<last; i++){
+			else {
 				if (list.get(i).equals(node)){
-					//System.out.println("** V: " + list);
 					return true;
 				}
 			}
+			count++;
 		}
-		
+					
 		return false;
 	 } 
+	 
 	 
 	 void set(Regex exp, int n){
 		 ctable.put(exp, n);

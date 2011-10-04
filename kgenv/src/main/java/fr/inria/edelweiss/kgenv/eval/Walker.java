@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgenv.eval;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeMap;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -12,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Group.ListMappings;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 
@@ -34,6 +37,7 @@ class Walker extends Interpreter {
 	boolean isError = false;
 	String str = "", sep = " ";
 	Group group;
+	TreeData tree;
 	Evaluator eval;
 	
 	
@@ -52,16 +56,17 @@ class Walker extends Interpreter {
 			List<Node> nodes;
 			if (exp.arity() == 0){
 				// count(distinct *)
+				// TODO: use same fun as Transformer for select *
 				nodes = env.getQuery().getNodes();
 			}
 			else {
-				// TODO: count(distinct foo(?x))
+				// TODO: group_concat(distinct foo(?x))
 				// TODO: store nodes
 				nodes = env.getQuery().getAggNodes(exp.getFilter());
 			}
 			group = Group.create(nodes);
 			group.setDistinct(true);
-			group.setDuplicate(env.getQuery().isDistribute());
+			tree = new TreeData();
 		}
 	}
 	
@@ -126,6 +131,14 @@ class Walker extends Interpreter {
 		return true;
 	}
 	
+	boolean accept(Filter f, IDatatype dt){
+		if (f.getExp().isDistinct()){
+			boolean b = tree.add(dt);
+			return b;
+		}
+		return true;
+	}
+	
 	
 	/**
 	 * map is a Mapping
@@ -144,7 +157,7 @@ class Walker extends Interpreter {
 				
 				for (Expr arg : exp.getExpList()){
 					IDatatype dt = null;			
-					dt = (IDatatype) eval.eval(arg, env);				
+					dt = (IDatatype) eval.eval(arg, map);				
 					if (dt != null){
 						str += dt.getLabel() + sep;
 					}		
@@ -181,7 +194,7 @@ class Walker extends Interpreter {
 		else {
 			// sum(?x + ?y)
 			// eval ?x + ?y
-			dt = (IDatatype) eval.eval(arg, env);
+			dt = (IDatatype) eval.eval(arg, map);
 		}
 		
 		if (dt != null){
@@ -218,7 +231,7 @@ class Walker extends Interpreter {
 				break;
 
 			case COUNT:
-				if (accept(f, map)){
+				if (accept(f, dt)){ 
 					num++;
 				}
 				break;
@@ -228,7 +241,7 @@ class Walker extends Interpreter {
 				if (! dt.isNumber()){
 					isError = true;
 				}
-				else if (accept(f, map)){
+				else if (accept(f, dt)){ 
 					if (dtres == null){
 						dtres = dt;
 					}
@@ -236,7 +249,6 @@ class Walker extends Interpreter {
 						dtres = dtres.plus(dt);
 					}
 					
-					//sum += dt.getDoubleValue();
 					num++;
 				}
 				break;
@@ -253,6 +265,34 @@ class Walker extends Interpreter {
 
 		return null;
 	}
+	
+	
+	
+	
+	
+	class TreeData extends TreeMap<IDatatype, IDatatype> {	
+		
+		TreeData(){
+			super(new Compare());
+		}
+		
+		boolean add(IDatatype dt){
+			if (containsKey(dt)){
+				return false;
+			}
+			put(dt, dt);
+			return true;
+		}
+	}
+	
+	class Compare implements Comparator<IDatatype> {
+
+		@Override
+		public int compare(IDatatype o1, IDatatype o2) {
+			return o1.compareTo(o2);
+		}
+	}
+	
 	
 
 }

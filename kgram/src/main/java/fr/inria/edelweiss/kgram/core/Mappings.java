@@ -152,7 +152,7 @@ implements Comparator<Mapping>
 		if (select.size()==0) return true;
 
 		if (isDistinct){
-			return distinct.add(r);
+			return distinct.isDistinct(r);
 		}
 		return true;
 	}
@@ -288,11 +288,7 @@ implements Comparator<Mapping>
 	void aggregate(Query qq, Evaluator evaluator, Memory memory, boolean isFinish){
 		if (size() == 0) return ;
 		boolean isEvent = hasEvent;
-		
-//		if (qq.hasGroupBy()){
-//			if (group==null) group = createGroup();
-//		}
-		
+
 		// select (count(?n) as ?count)
 		aggregate(evaluator, memory, qq.getSelectFun(), true);
 		
@@ -473,7 +469,7 @@ implements Comparator<Mapping>
 	 * Process aggregate for each group
 	 * select, order by, having
 	 */
-	private	void aggregate2(Group group, Evaluator eval, Exp exp, Memory mem, int n){
+	private	void aggregate(Group group, Evaluator eval, Exp exp, Memory mem, int n){
 		//if (group == null) group = createGroup();
 
 		for (Mappings maps : group.getValues()){
@@ -487,26 +483,7 @@ implements Comparator<Mapping>
 		}
 	}
 	
-	private	void aggregate(Group group, Evaluator eval, Exp exp, Memory mem, int n){
-		if (Group.test){
-			aggregate2(group, eval, exp, mem, n);
-			return;
-		}
 
-		for (List<Mappings> lGroup :  group.values()){
-			// lGroup is a list of groups (that share same value for first groupBy variable)
-
-			for (Mappings maps : lGroup){
-				// eval aggregate filter for each group 
-				// set memory current group
-				// filter (e.g. count()) will consider this group
-				if (hasEvent) maps.setEventManager(manager);
-				mem.setGroup(maps);
-				maps.apply(eval, exp, mem, n);
-				mem.setGroup(null);
-			}
-		}
-	}
 
 
 	/** 
@@ -530,7 +507,7 @@ implements Comparator<Mapping>
 	 * Generate the Mapping list according to the group
 	 * PRAGMA: replace the original list by the group list
 	 */
-	public void groupBy2(Group group){
+	public void groupBy(Group group){
 		clear();
 		for (Mappings lMap : group.getValues()){
 			int start = 0;
@@ -547,29 +524,7 @@ implements Comparator<Mapping>
 		}
 	}
 	
-	public void groupBy(Group group){
-		if (Group.test){
-			groupBy2(group);
-			return;
-		}
-		
-		clear();
-		for (List<Mappings> ll :  group.values()){
-			for (Mappings lMap : ll){
-				int start = 0;
-				if (lMap.isValid()){
-					// clause 'having' may have tagged first mapping as not valid
-					start = 1;
-					Mapping map = lMap.get(0);
-					if (isListGroup && map != null){
-						map.setMappings(lMap);
-					}
-					// add one element for current group
-					add(map);
-				}
-			}
-		}
-	}
+
 	
 	/**
 	 * Project on select variables of query 
@@ -581,28 +536,6 @@ implements Comparator<Mapping>
 		}
 		return this;
 	}
-
-
-	/**
-	 * remove Mapping which do not verify having filter
-	 * having(?count > 50)
-	 * @deprecated
-	 */
-	private	void having(Evaluator evaluator, Memory memory){
-		if (query.getHaving()!=null){
-			int i = 0;
-			while (i < size()){
-				Mapping map = get(i);
-				if (evaluator.test(query.getHaving().getFilter(), map)){
-					i++;
-				}
-				else {
-					remove(map);
-				}
-			}
-		}
-	}
-
 
 
 
@@ -861,7 +794,51 @@ implements Comparator<Mapping>
 
 
 
-
-
+//	@Deprecated
+//	private	void aggregate2(Group group, Evaluator eval, Exp exp, Memory mem, int n){
+//		if (Group.test){
+//			aggregate2(group, eval, exp, mem, n);
+//			return;
+//		}
+//
+//		for (List<Mappings> lGroup :  group.values()){
+//			// lGroup is a list of groups (that share same value for first groupBy variable)
+//
+//			for (Mappings maps : lGroup){
+//				// eval aggregate filter for each group 
+//				// set memory current group
+//				// filter (e.g. count()) will consider this group
+//				if (hasEvent) maps.setEventManager(manager);
+//				mem.setGroup(maps);
+//				maps.apply(eval, exp, mem, n);
+//				mem.setGroup(null);
+//			}
+//		}
+//	}
+	
+//	@Deprecated
+//	public void groupBy2(Group group){
+//		if (Group.test){
+//			groupBy2(group);
+//			return;
+//		}
+//		
+//		clear();
+//		for (List<Mappings> ll :  group.values()){
+//			for (Mappings lMap : ll){
+//				int start = 0;
+//				if (lMap.isValid()){
+//					// clause 'having' may have tagged first mapping as not valid
+//					start = 1;
+//					Mapping map = lMap.get(0);
+//					if (isListGroup && map != null){
+//						map.setMappings(lMap);
+//					}
+//					// add one element for current group
+//					add(map);
+//				}
+//			}
+//		}
+//	}
 
 }

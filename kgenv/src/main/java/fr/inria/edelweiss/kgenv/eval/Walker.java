@@ -14,7 +14,6 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Group.ListMappings;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 
@@ -125,7 +124,7 @@ class Walker extends Interpreter {
 	 */
 	boolean accept(Filter f, Mapping map){
 		if (f.getExp().isDistinct()){
-			boolean b = group.add(map);
+			boolean b = group.isDistinct(map);
 			return b;
 		}
 		return true;

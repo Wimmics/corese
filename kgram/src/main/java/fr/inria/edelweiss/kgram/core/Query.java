@@ -172,6 +172,10 @@ public class Query extends Exp {
 	}
 	
 	void addError(String mes, Object obj){
+		getGlobalQuery().setError(mes, obj);
+	}
+	
+	void setError(String mes, Object obj){
 		if (errors == null){
 			errors = new ArrayList<String>();
 		}
@@ -1158,7 +1162,7 @@ public class Query extends Exp {
 					// TODO: does not work with filter in exists{}
 					// because getProperAndSubSelectNode does not go into exists{}
 					Message.log(Message.UNDEF_VAR , var);
-					getGlobalQuery().addError(Message.get(Message.UNDEF_VAR) , var);
+					addError(Message.get(Message.UNDEF_VAR) , var);
 				}
 			}
 			if (hasExist){

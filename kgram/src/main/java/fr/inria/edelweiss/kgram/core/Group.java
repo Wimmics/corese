@@ -210,6 +210,8 @@ public class Group implements Comparator<Mappings>{
 	public boolean add2(Mapping map){
 		
 		if (isDistinct){
+			// select distinct *
+			// select (avg(distinct ?x) as ?a)
 			map.setDistinct(nodes);
 		}
 		else if (isExtend){

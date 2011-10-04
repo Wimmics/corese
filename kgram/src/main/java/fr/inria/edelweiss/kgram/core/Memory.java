@@ -471,17 +471,23 @@ public class Memory implements Environment {
 			qNodes[index] = node;
 			
 			nbNode++;
+			nbNodes[index]++;
 			// exp stack index where node is bound
 			stackIndex[index] = n;
+			return true;
 		}
-		else if (! match.same(node, nodes[index], target, this)){ 
-			// Query node already bound but target not equal to binding
-			// also process use case: ?x ?p ?p
+		else if (target == null){
+			// may happen with aggregate or subquery
 			return false;
 		}
-
-		nbNodes[index]++;
-		return true;
+		else if	(match.same(node, nodes[index], target, this)){ 
+			nbNodes[index]++;
+			return true;
+		}
+		
+		// Query node already bound but target not equal to binding
+		// also process use case: ?x ?p ?p
+		return false;
 	}
 	
 	public void pop(Node node){

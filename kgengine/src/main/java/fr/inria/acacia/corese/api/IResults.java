@@ -185,5 +185,8 @@ public interface IResults extends Iterable<IResult> {
 	public boolean isDescribe();
 	
 	public boolean isAsk();
+	
+	// construct where graph
+	public Object getGraph();
 }
 

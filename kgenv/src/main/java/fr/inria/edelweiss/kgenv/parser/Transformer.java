@@ -498,7 +498,15 @@ public class Transformer implements ExpType {
 		if (node == null){
 			node = compiler.createNode(var);
 		}
+		else {
+			ASTQuery ast = getAST(qCurrent);
+			//ast.addError("Variable already defined: ", var);
+		}
 		return node;
+	}
+	
+	ASTQuery getAST(Query q){
+		return (ASTQuery) q.getAST();
 	}
 
 	Node getProperAndSubSelectNode(Query q, String name){

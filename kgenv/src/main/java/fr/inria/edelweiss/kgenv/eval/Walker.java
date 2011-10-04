@@ -272,11 +272,26 @@ class Walker extends Interpreter {
 	
 	class TreeData extends TreeMap<IDatatype, IDatatype> {	
 		
+		boolean hasNull = false;
+		
+		
 		TreeData(){
 			super(new Compare());
 		}
 		
+		
 		boolean add(IDatatype dt){
+			
+			if (dt == null){
+				if (hasNull){
+					return false;
+				}
+				else {
+					hasNull = true;
+					return true;
+				}
+			}
+			
 			if (containsKey(dt)){
 				return false;
 			}

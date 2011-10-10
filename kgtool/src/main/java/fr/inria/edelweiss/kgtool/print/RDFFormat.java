@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgtool.print;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -45,7 +47,11 @@ public class RDFFormat {
 	Query query;
 	ASTQuery ast;
 	
+	List<String> with, without;
+	
 	RDFFormat(NSManager n){
+		with = new ArrayList<String>();
+		without = new ArrayList<String>();
 		nsm = n;
 		sb = new StringBuilder();
 	}
@@ -122,6 +128,14 @@ public class RDFFormat {
 	public void add(Mapping m){
 		if (map == null) map = Mapper.create();
 		map.add(m);
+	}
+	
+	public void with(String name){
+		with.add(name);
+	}
+	
+	public void without(String name){
+		without.add(name);
 	}
 	
 	Iterable<Entity> getNodes(){
@@ -208,7 +222,9 @@ public class RDFFormat {
 
 			for (; it.hasNext();){
 				Entity ent = it.next();
-				if (ent!=null) print(ent);
+				if (ent!=null){
+					wprint(ent);
+				}
 			}
 
 			display(close);
@@ -236,6 +252,21 @@ public class RDFFormat {
 	}
 	
 
+	void wprint(Entity ent){
+		Node gname = ent.getGraph();
+		
+		if (without.contains(gname.getLabel())){
+			return;
+		}
+
+		if (with.size()>0){
+			if (! with.contains(gname.getLabel())){
+				return;
+			}
+		}
+		print(ent);
+	}
+		
 	
 	void print(Entity ent){
 		Edge edge = ent.getEdge();

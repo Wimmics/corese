@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -160,6 +161,42 @@ public class TestJunit {
 			assertEquals("Result", true, false);
 		}
 	}
+	
+	
+	@Test
+	public void testRDF(){
+		Graph graph = Graph.create(true);
+		Load ld = Load.create(graph);
+		
+		QueryProcess exec = QueryProcess.create(graph);
+		
+		String init = "insert data {" +
+				"<John> <name> 'John' " +
+				"<name> rdfs:domain <Person>" +
+				"}";
+		
+		try {
+			Mappings map = exec.query(init);
+			graph.init();
+			RDFFormat f = RDFFormat.create(graph, map.getQuery());
+			f.with(Entailment.DEFAULT);
+			//f.with(Entailment.ENTAIL);
+			//f.without(Entailment.ENTAIL);
+			System.out.println(f);
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

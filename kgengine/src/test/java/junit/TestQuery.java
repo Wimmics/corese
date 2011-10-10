@@ -866,7 +866,7 @@ public class TestQuery {
 	
 	
 	@Test
-	public void test50(){
+	public void test30(){
 				
 		String query = 
 			"select  " +
@@ -889,6 +889,82 @@ public class TestQuery {
 		}
 				
 	}
+	
+	
+	
+	@Test
+	public void test31(){
+		String query = "select (count(?l) as ?c1) " +
+				"(count(distinct ?l) as ?c2) " +
+				"(count(distinct self(?l)) as ?c3) " +
+				"where {" +
+				"?x rdfs:label ?l" +
+				"}";
+		QueryProcess exec = QueryProcess.create(graph);
+		try {
+			Mappings map = exec.query(query);
+			IDatatype dt1 = getValue(map, "?c1");
+			IDatatype dt2 = getValue(map, "?c2");
+			IDatatype dt3 = getValue(map, "?c3");
+
+			assertEquals("Result", 1406, dt1.getIntegerValue());
+			assertEquals("Result", 1367, dt2.getIntegerValue());
+			assertEquals("Result", 1367, dt3.getIntegerValue());
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+	}
+	
+	
+	@Test
+	public void test32(){
+		// select (group_concat(distinct ?x, ?y) as ?str)
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(graph);
+
+		String update = "insert data {" +
+				"<John>  <value> 1, 2 ." +
+				"<Jack>  <value> 3, 4 ." +
+				"<James> <value> 1, 2 ." +
+				"}";
+		
+		String query = "select  (group_concat(distinct ?y, ?z) as ?str) where {" +
+				"?x <value> ?y, ?z. filter(?y < ?z)" +
+				"}";
+		
+		// TODO: bug with distinct function 
+		String query2 = "select  (group_concat(distinct self(?y), self(?z)) as ?str) where {" +
+		"?x <value> ?y, ?z. filter(?y < ?z)" +
+		"}";
+		
+		try {
+			exec.query(update);
+			Mappings map = exec.query(query);
+
+			IDatatype dt1 = getValue(map, "?str");
+			System.out.println(dt1);
+			
+			Mappings map2 = exec.query(query2);
+			IDatatype dt2 = getValue(map2, "?str");
+			System.out.println(dt2);
+			
+			assertEquals("Result", true, true);
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+	
+	}
+	
+	
+
+	
+	
+	
+	
+	
+	
 	
 	
 	public IDatatype fun(Object o1, Object o2){

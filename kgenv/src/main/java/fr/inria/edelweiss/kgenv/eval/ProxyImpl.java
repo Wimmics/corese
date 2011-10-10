@@ -265,6 +265,12 @@ public class ProxyImpl implements Proxy, ExprType {
 		case SUBSTR: 			
 			return substr(dt, dt1, null);	
 			
+		case STRBEFORE:
+			return strbefore(dt, dt1);
+			
+		case STRAFTER:
+			return strafter(dt, dt1);		
+			
 		case LANGMATCH: 
 			return langMatches(dt, dt1); 
 			
@@ -376,11 +382,21 @@ public class ProxyImpl implements Proxy, ExprType {
 				if (args.length>2){
 					dt2 = datatype(args[2]);
 				}
-				return substr(dt, dt1, dt2);				
-
+				return substr(dt, dt1, dt2);	
+				
 			case CAST: // cast(?x, xsd:string, CoreseString)
 				return dt.cast(dt1, datatype(args[2]));
-																
+					
+				
+			case STRREPLACE:
+				
+				if (args.length != 3) return null;
+				if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt)){
+					return null;
+				}
+				return strreplace(exp, dt, dt1, datatype(args[2]));
+				
+				
 			case SQL: 
 				// return ResultSet
 				return sql(exp, env, args);
@@ -450,6 +466,51 @@ public class ProxyImpl implements Proxy, ExprType {
 		return str.matches("[a-zA-Z0-9]+://.*");
 	}
 
+	IDatatype strbefore(IDatatype dt1, IDatatype dt2){
+		
+		if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt1)){
+			return null;
+		}
+		
+		int index = dt1.getLabel().indexOf(dt2.getLabel());
+		String str = "";
+		if (index != -1){
+			str = dt1.getLabel().substring(0, index);
+		}
+		return result(str, dt1, dt2);
+	}
+	
+	
+	IDatatype strafter(IDatatype dt1, IDatatype dt2){
+		if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt1)){
+			return null;
+		}
+		
+		int index = dt1.getLabel().indexOf(dt2.getLabel());
+		String str = "";
+		if (index != -1){
+			str = dt1.getLabel().substring(index+1);
+		}
+		return result(str, dt1, dt2);
+	}
+	
+	
+	IDatatype strreplace(Expr exp, IDatatype dt1, IDatatype dt2, IDatatype dt3){
+		Processor p = getProcessor(exp);
+		String str = p.replace(dt1.getLabel(), dt3.getLabel());	
+		return result(str, dt1, dt3);
+	}
+
+	
+	IDatatype result(String str, IDatatype dt1, IDatatype dt2){
+		if (dt1.hasLang()){
+			return DatatypeMap.createLiteral(str, null, dt1.getLang());
+		}
+		else if (DatatypeMap.isString(dt1)){
+			return getValue(str);
+		}
+		return DatatypeMap.createLiteral(str);
+	}
 	
 	/**
 	 * literals with same lang return literal@lang

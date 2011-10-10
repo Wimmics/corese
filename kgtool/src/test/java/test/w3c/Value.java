@@ -55,7 +55,12 @@ class Value {
 	}
 	
 	void setValue(String val){
-		this.value = val;
+		if (value == null){
+			value = val;
+		}
+		else {
+			value += val;
+		}
 		createDatatype();
 	}
 	

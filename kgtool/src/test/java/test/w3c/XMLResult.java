@@ -67,7 +67,7 @@ public class XMLResult {
 	    }
 	 
 	    public void startElement(String namespaceURI, String simpleName, 
-	                             String qualifiedName, Attributes atts){
+	    		String qualifiedName, Attributes atts){
 	    	isContent = false;
 	    	if (qualifiedName.equals("boolean")){
 	    		isBoolean = true;
@@ -78,11 +78,11 @@ public class XMLResult {
 	    		vec.add(res);
 	    	}
 	    	else if (qualifiedName.equals("binding")){
-	    		 var = atts.getValue("name");
+	    		var = atts.getValue("name");
 	    	}
 	    	else if (qualifiedName.equals("uri")){
 	    		isContent = true;
-	    		 value = Value.createURI(null);
+	    		value = Value.createURI(null);
 	    	}
 	    	else if (qualifiedName.equals("literal")){
 	    		isContent = true;
@@ -92,27 +92,32 @@ public class XMLResult {
 	    	}
 	    	else if (qualifiedName.equals("bnode")){
 	    		isContent = true;
-	    		 value = Value.createBlank(null);
+	    		value = Value.createBlank(null);
 	    	}
 	    }
 	    
 	    public void endElement(String namespaceURI, String simpleName, 
                 String qualifiedName){
+			isContent = false;
 	    	if (qualifiedName.equals("literal")){
-	    		if (isContent){
+	    		//if (isContent){
+	    		if (value.getValue()==null){
 	    			// had no characters, hence boolean still true
 	    			// fake empty string
-	    			isContent = false;
+	    			//isContent = false;
 	    			value.setValue("");
 	    			res.put(var, value);
 	    		}
 	    	}
 	    }
 	    
-	    
+	    /**
+	     * In some case, there may be several calls to this function
+	     * in one element.
+	     */
 	    public void characters (char buf [], int offset, int len){
 	    	if (isContent){
-	    		isContent = false;
+	    		//isContent = false;
 	    		String s=new String(buf, offset, len);
 	    		if (isBoolean){
 	    			ask = s.equals("true");
@@ -126,7 +131,7 @@ public class XMLResult {
 	    			else {
 	    				value.setURI(s);
 	    			}
-	    			//System.out.println("** Test " + var + " " + value);
+	    			//System.out.println("** Test " + var + " " + s);
 	    			res.put(var, value);
 	    		}
 	    	}

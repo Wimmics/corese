@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -19,18 +20,27 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.query.ProducerImpl;
+import fr.inria.edelweiss.kgraph.query.ProviderImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgraph.query.SorterImpl;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 
+import fr.inria.edelweiss.kgtool.load.BuildOptim;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.RuleLoad;
+import fr.inria.edelweiss.kgtool.print.CSVFormat;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.edelweiss.kgtool.print.TSVFormat;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
 
 /**
  * KGRAM benchmark on W3C SPARQL 1.1 Query Language Test cases
@@ -78,6 +88,8 @@ public class W3CTest11KGraph {
 		"optional {?x sd:entailmentRegime ?ent}" +
 		"optional {?x mf:result ?r}" +
 		"optional {?x rdf:type ?t}" +
+		"" +
+		"optional { ?a qt:serviceData [qt:endpoint ?ep ; qt:data ?ed] }" +
 		
 		"{?man rdf:first ?x} " +
 
@@ -127,6 +139,7 @@ public class W3CTest11KGraph {
 	
 	List<String> errors = new ArrayList<String>();
 	List<String> names = new ArrayList<String>();
+	Earl earl;
 
 	class Test extends Hashtable<String,Integer> {}
 		
@@ -134,6 +147,7 @@ public class W3CTest11KGraph {
 		DatatypeMap.setSPARQLCompliant(true);
 		tko = new Test();
 		tok = new Test();
+		earl = new Earl();
 	}
 	
 	public static void main(String[] args){
@@ -186,6 +200,9 @@ public class W3CTest11KGraph {
 	void test1(){
 		sparql1=true;
 
+		skip(root + "service");
+		
+		test(root + "syntax-fed");
 		test(root + "entailment");
 		test(root + "syntax-query");			 
 		test(root + "negation");
@@ -195,10 +212,12 @@ public class W3CTest11KGraph {
 		test(root + "grouping");
 		test(root + "functions");
 		test(root + "json-res");
+		test(root + "csv-tsv-res");
 		test(root + "aggregates");
 		test(root + "property-path");
 		test(root + "bind");
 		test(root + "bindings");
+		test(root + "exists");
 
 	}
 	
@@ -213,15 +232,15 @@ public class W3CTest11KGraph {
 		 test(root + "clear", true);
 		 test(root + "delete", true);
 		 test(root + "drop", true);
-		 
-		// blank nodes in delete not fixed in test case
 		 test(root + "delete-insert", true);		 
+		 test(root + "update-silent", true);
 	}
 	
 	void test(){
 		sparql1=true;
-		test(root + "bindings");
-		//test(root + "property-path");
+		
+		test(root + "functions");			 
+
 	}
 	
 	void process(){
@@ -248,7 +267,7 @@ public class W3CTest11KGraph {
 
 		
 		System.out.println("<html><head>");
-		System.out.println("<title>KGRAM  SPARQL 1.1 Query &amp; Update W3C Test cases</title>");
+		System.out.println("<title>Corese 3.0/KGRAM  SPARQL 1.1 Query &amp; Update W3C Test cases</title>");
 
 		System.out.println("<style type = 'text/css'>");
 		System.out.println(".success   {background:lightgreen}");
@@ -301,8 +320,8 @@ public class W3CTest11KGraph {
 			System.out.println("<h2>Failure</h2>");
 		}
 		for (String name : names){
-			//System.out.println(k++ + ": " + name.substring(name.indexOf("data-sparql11")));
-			System.out.println(k++ + ": " + name);
+			System.out.println(k++ + ": " + name.substring(name.indexOf("data-sparql11")));
+			//System.out.println(k++ + ": " + name);
 			System.out.println("<pre>\n" + errors.get(j++) + "\n</pre>");
 			System.out.println();
 		}
@@ -312,19 +331,10 @@ public class W3CTest11KGraph {
 			System.out.println("*** Missing result: " + total + " " + nbtest);
 		}
 		
-		
-		//finish();
+		earl.toFile(more + "earl.ttl");
+
+		//Processor.finish();
 				
-	}
-	
-	
-	void finish(){
-		for (Integer n : Processor.table.values()){
-			if (! Processor.toccur.containsKey(n)){
-				System.out.println("Missing test: " + Processor.tname.get(n));
-			}
-		}
-		
 	}
 	
 	
@@ -332,12 +342,19 @@ public class W3CTest11KGraph {
 	/**
 	 * Test one manifest
 	 */
-	void test(String path){
-		test(path, false);
+	void skip(String path){
+		test(path, false, false);
 	}
 	
+	void test(String path){
+		test(path, false, true);
+	}
 	
 	void test(String path, boolean update){
+		test(path, update, true);
+	}
+	
+	void test(String path, boolean update, boolean process){
 		String manifest = path + "/manifest.rdf";
 		try {
 			System.out.println("** Load: " + pp(manifest));
@@ -359,8 +376,12 @@ public class W3CTest11KGraph {
 			int ok = 0, ko = 0;
 			
 			for (Mapping map : res2){
-								
-				if (query(path, map)){
+					
+				if (! process){
+					String test	 = getValue(map, "?x");
+					earl.skip(test);
+				}
+				else if (query(path, map)){
 					ok++;
 				}
 				else {
@@ -420,18 +441,28 @@ public class W3CTest11KGraph {
 		String[] fdefault = getValues(map, "?d");;
 		String[] frnamed  = getValues(map, "?gr");
 		String[] frnames  = getValues(map, "?nres");
+		String test	  	  = getValue(map, "?x");
 		String fquery	  = getValue(map, "?q");
 		String fresult 	  = getValue(map, "?r");
 		String ent 		  = getValue(map, "?ent");
 		String type		  = getValue(map, "?t");
+		
+		String[] ep  = getValues(map, "?ep");
+		String[] ed  = getValues(map, "?ed");
 
+		
 		boolean isEmpty   = getValue(map, "?ee") != null;
-		boolean isJSON = false;
+		boolean isBlankResult = false;
+		boolean isJSON = false, isCSV = false, isTSV = false;
 		boolean rdfs = ent != null &&  ent.equals(ENTAILMENT+"RDFS");
-		boolean rdf = ent  != null &&  ent.equals(ENTAILMENT+"RDF");
+		boolean rdf  = ent != null &&  ent.equals(ENTAILMENT+"RDF");
 		int entail = QueryProcess.STD_ENTAILMENT;
 		
-		//if (! fquery.contains("path-ng-01.rq")) return true;
+		if (fresult!=null){
+			Node nr = map.getNode("?r");
+			isBlankResult = nr.isBlank();
+		}
+		
 		
 //		String man = getValue(map, "?man");
 //		if (man == null){
@@ -440,6 +471,9 @@ public class W3CTest11KGraph {
 //		}
 		
 		if (fquery == null) fquery = getValue(map, "?a");
+		
+		//if (! fquery.contains("replace03")) return true;
+
 
 		if (trace) System.out.println(pp(fquery));	
 		
@@ -449,18 +483,24 @@ public class W3CTest11KGraph {
 		if (query == null || query == ""){
 			System.out.println("** ERROR 1: " + fquery + " " + query);
 		}
-		
-		
-		
+						
 		Graph graph = Graph.create();
-		graph.setEntailment();
-		graph.set(Entailment.RDFSSUBCLASSOF, true);
+		if (rdf || rdfs){
+			graph.setEntailment();
+			graph.set(Entailment.RDFS, rdfs);
+			if (rdfs){
+				graph.set(Entailment.RDFSSUBCLASSOF, true);
+			}
+		}
 		
 		RuleEngine re = RuleEngine.create(graph);
-		RuleLoad ld = RuleLoad.create(re);
-		Load load = Load.create(graph);
+		RuleLoad ld   = RuleLoad.create(re);
+		Load load     = Load.create(graph);
+		BuildOptim bb = BuildOptim.create(graph);
+		load.setBuild(bb);
 		load.reset();
 		QueryProcess exec = QueryProcess.create(graph);
+		//exec.set(SorterImpl.create(graph));
 		// for update:
 		exec.setLoader(load);
 		// default base to interpret from <data.ttl>
@@ -483,8 +523,13 @@ public class W3CTest11KGraph {
 			nbres = vec.size();
 		}
 		else if (fresult!=null && fresult.endsWith(".srj")){
-			// JSON Result
 			isJSON = true;
+		}
+		else if (fresult!=null && fresult.endsWith(".csv")){
+			isCSV = true;
+		}
+		else if (fresult!=null && fresult.endsWith(".tsv")){
+			isTSV = true;
 		}
 		else if (frnamed.length>0 || 
 				(fresult != null && (fresult.endsWith(".ttl") ||  fresult.endsWith(".rdf")))){
@@ -494,7 +539,7 @@ public class W3CTest11KGraph {
 				Load rl = Load.create(gres);
 				rl.reset();
 				
-				if (fresult != null ){
+				if (fresult != null && ! isBlankResult){
 					rl.load(ttl2rdf(fresult));
 				}
 				
@@ -534,16 +579,20 @@ public class W3CTest11KGraph {
 					errors.add(query);
 				}
 				
+				earl.define(test, qq.isCorrect());
 				return qq.isCorrect();
 			}
 			// NEGATIVE is tested below, at runtime
 		} 
 		catch (EngineException e1) {
 			if (type!=null && type.contains(NEGATIVE)){
+				earl.define(test, true);
 				return true;
 			}
+			System.out.println("** Parser Error: " + e1.getMessage());
 			names.add(fquery);
 			errors.add(query);
+			earl.define(test, false);
 			return false;
 		}
 		
@@ -572,7 +621,11 @@ public class W3CTest11KGraph {
 			fnamed[i++] = name;
 		}		
 
-
+		if (ep.length>0){
+			Provider p = endpoint(ep, ed);
+			exec.set(p);
+		}
+		
 		if (fdefault.length>0){
 			// Load RDF files for default graph
 			defaultGraph = new ArrayList<String>();
@@ -617,10 +670,12 @@ public class W3CTest11KGraph {
 			}
 			else {
 				entail = QueryProcess.RDF_ENTAILMENT;
+				// exclude rdfs properties when load rdf
+				load.exclude(RDFS.RDFS);
 			}
 
 			load.load(more + "rdf.rdf", RDFS.RDF);					
-			ld.load(more + "rdf.rul");
+			//ld.load(more + "rdf.rul");
 			defaultGraph.add(RDFS.RDF);
 			
 			//re.setDebug(true);
@@ -633,6 +688,9 @@ public class W3CTest11KGraph {
 			// QUERY PROCESSING
 			//exec.setDebug(true);
 			Mappings res = exec.sparql(query, defaultGraph, namedGraph, entail);
+			
+//			XMLFormat f = XMLFormat.create(res);
+//			System.out.println(f);
 			
 			//System.out.println(res);
 						
@@ -647,9 +705,23 @@ public class W3CTest11KGraph {
 					result = false;
 				}
 			}
+			else if (! res.getQuery().isCorrect()){
+				System.out.println("** Should be true: " + res.getQuery().isCorrect());
+				result = false;
+			}
 			else if (isJSON){
 				// checked by hand
 				JSONFormat json = JSONFormat.create(res);
+				System.out.println(json);
+			}
+			else if (isCSV){
+				// checked by hand
+				CSVFormat json = CSVFormat.create(res);
+				System.out.println(json);
+			}
+			else if (isTSV){
+				// checked by hand
+				TSVFormat json = TSVFormat.create(res);
 				System.out.println(json);
 			}
 			else if (gres != null){
@@ -697,11 +769,13 @@ public class W3CTest11KGraph {
 				errors.add(query);
 			}
 			
+			earl.define(test, result);
 			return result;
 			
 		}
 		catch (EngineException e){
 			if (type!=null && type.contains(NEGATIVE)){
+				earl.define(test, true);
 				return true;
 			}
 			
@@ -712,9 +786,31 @@ public class W3CTest11KGraph {
 			System.out.println(query);
 			errors.add(query);
 			names.add(fquery);
+			earl.define(test, false);
 			return false;			
 		}
 	}
+	
+	
+	
+	Provider endpoint(String[] ep, String[] ed){
+		ProviderImpl p =  ProviderImpl.create();
+		int j = 0;
+		for (String nep : ep){
+			String name = ed[j++];
+
+			// rdf version
+			String ff = ttl2rdf(name);
+			Graph g = Graph.create();
+			Load load = Load.create(g);
+			load.load(ff, name);
+			p.add(nep, g);
+		}
+
+		return p;
+	}
+
+	
 	
 	
 	/**
@@ -870,7 +966,9 @@ public class W3CTest11KGraph {
 		
 		if (ok && strict && wdt.isLiteral()){
 			// check same datatypes
-			ok = kdt.getIDatatype().sameTerm(wdt.getIDatatype());
+			if (kdt.getDatatype()!=null && wdt.getDatatype()!=null)
+				 ok = kdt.getDatatype().sameTerm(wdt.getDatatype());
+			else ok = kdt.getIDatatype().sameTerm(wdt.getIDatatype());
 			if (!ok)
 				System.out.println("** Datatype differ: " + kdt.toSparql() + " " + wdt.toSparql());
 		}

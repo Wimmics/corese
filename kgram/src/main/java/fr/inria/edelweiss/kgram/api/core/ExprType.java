@@ -88,12 +88,15 @@ public interface ExprType {
 	public static int CEILING 	= 71;
 	public static int RANDOM 	= 72;
 
-	public static int HASH 	= 73;
-	public static int URI 	= 74;
-	public static int TZ 	= 75;
-	public static int STR 	= 76;
+	public static int HASH 		= 73;
+	public static int URI 		= 74;
+	public static int TZ 		= 75;
+	public static int STR 		= 76;
 
-	
+	public static int STRBEFORE  = 77;
+	public static int STRAFTER 	 = 78;
+	public static int STRREPLACE = 79;
+
 
 
 	

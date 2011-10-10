@@ -261,12 +261,21 @@ public class Pipe {
 	 * @throws EngineException 
 	 */
 	void ruleBase(Mapping map) throws EngineException{
+		RuleEngine re = parseRuleBase(map);
+		if (re != null){
+			re.process();
+		}
+	}
+		
+		
+		
+	RuleEngine parseRuleBase(Mapping map) throws EngineException{
 		Node rb = map.getNode(QNAME);
-		if (rb == null) return;
+		if (rb == null) return null;
 		
 		if (rb.isBlank()){
 			// there is a body with a list of rules
-			rules(map);
+			return rules(map);
 		}
 		else {
 			// there is a URI for loading the rule base
@@ -274,7 +283,7 @@ public class Pipe {
 			re.setDebug(isDebug);
 			RuleLoad rl = RuleLoad.create(re);
 			rl.load(rb.getLabel());
-			re.process();
+			return re;
 		}
 	}
 	
@@ -286,7 +295,7 @@ public class Pipe {
 	 *   </body>
 	 * </RuleBase>
 	 */
-	void rules(Mapping map) throws EngineException{
+	RuleEngine rules(Mapping map) throws EngineException{
 		QueryLoad  rl = QueryLoad.create();
 		RuleEngine re = RuleEngine.create(graph);
 		re.setDebug(isDebug);
@@ -302,7 +311,7 @@ public class Pipe {
 				re.addRule(rule);
 			}
 		}
-		re.process();
+		return re;
 	}
 	
 	
@@ -310,14 +319,22 @@ public class Pipe {
 	 * Load and run one Rule 
 	 */	
 	void rule(String q){
+		RuleEngine re = parseRule(q);
+		if (re != null){
+			re.process();
+		}
+	}
+		
+	
+	RuleEngine parseRule(String q){	
 		QueryLoad ql = QueryLoad.create();
 		String rule = ql.read(q);
 		if (isDebug) logger.debug(rule);
-		if (rule == null) return;
+		if (rule == null) return null;
 		
 		RuleEngine re = RuleEngine.create(graph);
 		re.addRule(rule);
-		re.process();
+		return re;
 	}
 	
 	
@@ -325,9 +342,15 @@ public class Pipe {
 	 * Process another pipe
 	 */
 	void pipe(String q){
+		Pipe pipe = parsePipe(q);
+		pipe.process();
+	}
+	
+	Pipe parsePipe(String q){
 		Pipe pipe = Pipe.create(graph);
 		pipe.setDebug(isDebug);
-		pipe.process(q);
+		pipe.load(q);
+		return pipe;
 	}
 	
 	/**

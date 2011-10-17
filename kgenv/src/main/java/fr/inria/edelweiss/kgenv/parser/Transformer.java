@@ -343,7 +343,8 @@ public class Transformer implements ExpType {
 
 	void complete(Query qCurrent, ASTQuery ast){	
 		qCurrent.collect();
-		qCurrent.setSelectFun(select(qCurrent, ast));
+		//qCurrent.setSelectFun(select(qCurrent, ast));
+		select(qCurrent, ast);		
 		qCurrent.setOrderBy(orderBy(qCurrent, ast));
 		qCurrent.setGroupBy(groupBy(qCurrent, ast));
 		
@@ -411,6 +412,8 @@ public class Transformer implements ExpType {
 			select = qCurrent.getSelectNodesExp();
 		}
 
+		qCurrent.setSelectFun(select);
+		
 		for (Variable var : ast.getSelectVar()){	
 			// retrieve var node from query
 			String varName = var.getName();
@@ -600,12 +603,6 @@ public class Transformer implements ExpType {
 		for (Expression ee : input){
 			if (ee.isVariable()){
 				Exp exp = qCurrent.getSelectExp(ee.getName());
-				//				if (exp != null){
-				//					// select var fun() as var
-				//					list.add(exp);
-				//				}
-				//				else 
-				//				{
 				Node node;
 				if (exp != null){
 					node = exp.getNode();
@@ -615,7 +612,7 @@ public class Transformer implements ExpType {
 				}
 
 				if (node == null){
-					ast.addError("Undefined exp: ", ee);
+					ast.addError("OrderBy GroupBy Undefined exp: ", ee);
 					node = compiler.createNode(ee.getName());
 				}
 				Exp e = Exp.create(NODE, node);

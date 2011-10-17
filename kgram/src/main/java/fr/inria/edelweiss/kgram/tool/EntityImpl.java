@@ -42,4 +42,12 @@ public class EntityImpl implements Entity {
 		return node;
 	}
 
+	@Override
+	public Node getNode(int i) {
+		if (edge != null){
+			return edge.getNode(i);
+		}
+		return null;
+	}
+
 }

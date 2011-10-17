@@ -33,4 +33,9 @@ public class EntityImpl implements Entity {
 		return graph;
 	}
 
+	@Override
+	public Node getNode(int i) {
+		return null;
+	}
+
 }

@@ -117,4 +117,10 @@ public class NodeImpl implements Node, Entity {
 		object = o;
 	}
 
+	@Override
+	public Node getNode(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

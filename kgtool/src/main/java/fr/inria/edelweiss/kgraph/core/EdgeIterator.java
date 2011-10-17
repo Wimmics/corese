@@ -78,8 +78,8 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 			}
 			else if (last != null){
 				// eliminate successive duplicates
-				if (last.getNode(0).same(ent.getEdge().getNode(0)) &&
-					last.getNode(1).same(ent.getEdge().getNode(1)) &&
+				if (last.getNode(0).same(ent.getNode(0)) &&
+					last.getNode(1).same(ent.getNode(1)) &&
 					last.getLabel().equals(ent.getEdge().getLabel())){
 					ok = false;
 				}

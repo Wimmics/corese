@@ -28,31 +28,17 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
 
 /**********************************************************
  * 
- * ?x rdf:resf * /rdf:first
+ * Use case:
+ * ?x rdf:resf* / rdf:first
  * 
+ * match the regexp (and subproperties)
  * write paths in a synchronized buffer
- * 
- * ?x ^(p/q) ?y ::= ?y p/q ?x
- * ->
- * ?x inv(q)/inv(p) ?y
- * 
- * 
- * ?x p/q uri
- * path is computed backward from uri to ?x with index=1 other=0 isReverse=true
- * sequence is eval as q/p, all other exp are the same
- * 
- * 
- * ?x ^(p/q) uri ::= uri p/q ?x
- * -> ?x inv(q)/inv(p) uri
- * 
- * 
- * TODO: check result path for inv(q)
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
  * 
  *********************************************************/
 
-public class PathFinder 
+public class PathFinder2 
 {	
 	
 	private static Logger logger = Logger.getLogger(PathFinder.class);
@@ -64,6 +50,7 @@ public class PathFinder
 	private GraphPath path;
 	private Visit visited;
 	// synchronized buffer between this and projection
+	//private Buffer buffer;
 	private Buffer mbuffer;
 	private Environment memory;
 	private EventManager manager;
@@ -77,6 +64,7 @@ public class PathFinder
 	private Edge edge;
 	private Node gNode, targetNode, regexNode, varNode;
 	private List<Node> from;
+	private Stack loopStack;
 	// index of node in edge that is the start of the path
 	private int index = 0;
 
@@ -91,17 +79,27 @@ public class PathFinder
 	defaultBreadth = !true,
 	// true if accept subproperty in regexp
 	isSubProperty,
+	isRecSource, 
 	isReverse,
 	isShort,
 	isOne, 
-	loopNode = false;
+	loopNode = false,
+	std = !true;
+	//isInverse;
 	private int  maxLength = Integer.MAX_VALUE, 
 	min = 0, max = maxLength,
 	userMin = -1,
 	userMax = -1;
 	private int count = 0;
 	
-	private Regex  regexp1, regexp;
+	// meta table for start -> distance(start, *)
+	private Hashtable<Node, ITable> htmeta;
+	// table for distance(start, target)
+	private ITable htdistance; 
+//	private Integer[] adistance;
+	// regexp for path
+	private Regex regexp0, regexp1, regexp;
+	private Automaton  automaton;
 	// depth or width first 
 	private String mode = "";
 	private final static String DEPTH	="d";
@@ -129,10 +127,10 @@ public class PathFinder
 		}
 	}
 	
-	public PathFinder(){}
+	public PathFinder2(){}
 	
 	
-	public PathFinder(Producer p, Matcher match, Evaluator eval, Query q) {
+	public PathFinder2(Producer p, Matcher match, Evaluator eval, Query q) {
 		query = q;
 		producer = p;
 		matcher = match;
@@ -258,7 +256,8 @@ public class PathFinder
 		memory = mem;
 		mbuffer = new Buffer();
 		// path enumeration in a thread 
-		path = new GraphPath(this, mem, mbuffer);
+		// TODO: rem comment
+		//path = new GraphPath(this, mem, mbuffer);
 		// launch path computing (one by one) eg launch process() below
 		path.start();
 	}
@@ -268,6 +267,9 @@ public class PathFinder
 	}
 	
 	public void stop(){
+//		if (path != null){
+//			path.stop();
+//		}
 		isStop = true;
 	}
 	
@@ -279,9 +281,12 @@ public class PathFinder
 	
 	/**
 	 * init at creation time, no need to change.
-	 * pmax comes from pathLength() <= pmax
+	 * TODO:
+	 * Check wether we should clear htmeta when index changes
 	 */
 	public void init(Regex exp, Object smode, int pmin, int pmax){
+		loopStack = new Stack();
+		regexp0 = exp;
 		regexp1 = exp.transform();
 		regexp = exp;
 
@@ -289,16 +294,24 @@ public class PathFinder
 		
 		isBreadth = defaultBreadth;
 		isSubProperty = true;
+		isRecSource = false; //edge.isRecSource();
 		isReverse = false;
 		isShort = false;
 		isOne = false;
+		//isInverse = false;
+		htmeta = new Hashtable<Node, ITable>();
 		other = 1;
 
 		if (mode != null){
+			//isBreadth =     mode.indexOf(DEPTH) == -1;
 			if (mode.indexOf(DEPTH) >= 0)   isBreadth = false;
 			if (mode.indexOf(BREADTH) >= 0) isBreadth = true;
 			isSubProperty = mode.indexOf(PROPERTY) == -1;
 			isShort =       mode.indexOf(SHORT) != -1;
+			//isInverse = 	mode.indexOf(INVERSE) != -1;
+//			if (mode.indexOf(INVERSE) != -1){
+//				exp.setInverse(true);
+//			}
 			if (isShort && ! isBreadth){
 				isOne = mode.indexOf(ALL) == -1;
 			}
@@ -316,7 +329,6 @@ public class PathFinder
 		
 		// user default values
 		if (userMin != -1) min = Math.max(min, userMin);
-		// either IntegerMax or pathLength($p) <= max
 		if (userMax != -1) max = userMax;
 			
 	}
@@ -330,6 +342,15 @@ public class PathFinder
 	 * depends on index : which arg is bound or where we start
 	 */
 	void start(int n){
+		regexp = regexp0;
+		if (n != 0){
+			// we change index : reset automaton
+			// and reverse regex
+			regexp = regexp0.reverse();
+			automaton = null;
+			// distances are obsolete: clean table
+			htmeta.clear();
+		}
 		index = n;
 		if (index == 1){ 
 			other = 0;
@@ -339,7 +360,20 @@ public class PathFinder
 			other = 1;
 			isReverse = false;
 		}
-	
+
+		if (automaton == null){
+			automaton = new Automaton();
+			automaton.compile(regexp);
+		}
+
+		automaton.start();
+		
+		if (!isStack && automaton.isBound()){
+			min = 0;
+			max = 1000;
+		}
+//		System.out.println("** PF: \n" + automaton);
+//		System.out.println("** PF: " + regexp);
 	}
 	
 	
@@ -360,6 +394,7 @@ public class PathFinder
 	void process(Environment memory){
 		// Is the source of edge bound ?
 		// In which case all path relations come from same source 
+		//Node csource = get(memory, IRelation.ISOURCE);
 		Node csource = null;
 		if (gNode!=null){
 			csource = memory.getNode(gNode);
@@ -367,11 +402,74 @@ public class PathFinder
 		
 		// the start concept for path
 		Node cstart = get(memory, index);
+
+		// the path that is recursively built
 		Path path = new Path();
-		path.setMax(max);
 		visited =  Visit.create(isReverse);
+		//path.checkLoopNode(loopNode);
+		// try paths with length between min and max
+		int imin = min, imax = max;
+//		adistance = new Integer[max+2];
+//		for (int i=0; i<adistance.length; i++){
+//			adistance[i]=new Integer(i);
+//		}
+		if (! isBreadth){
+			// depth first: one rec call explore all depths until max
+			// breadth first: one call for each depth until max
+			imin = max;
+		}
 		
-		eval(regexp1, path, cstart, csource);
+		if (std){
+			// enumerate start nodes first
+			for (int i=imin; i<=imax; i++){
+				// try paths with length i:
+				//System.out.println("** Path length : " + i);
+				for (Entity ent : getStart(cstart, csource)){
+					
+					if (ent != null){
+						Node cnext = ent.getNode();
+						//System.out.println("** PF: " + cnext + " " + index + " " + imax);
+						// each start node has its distance table:
+						if (isShort){
+							htdistance = getTable(cnext);
+							htdistance.setDistance(cnext, 0); //adistance[0]);
+						}
+						automaton.start();
+						visited.clear();
+						loopStack.clear();
+						path.clear();
+						if (hasEvent){
+							send(Event.PATH, regexp, cnext, i);
+						}
+						path(cnext, csource, path,  min, i);
+					}
+				}
+			}
+		}
+		else {
+			// if cstart is not bound,
+			// start nodes will be determined by edge enumeration
+			// if zero length path, all nodes will be enumerated
+			// depth first only
+			// TODO: check distance
+			automaton.start();
+			visited.clear();
+			loopStack.clear();
+			path.clear();
+			if (hasEvent){
+				send(Event.PATH, regexp, cstart, imin);
+			}
+			
+			if (isStack){
+				path.setMax(max);
+				//System.out.println("** Path  : " + max);
+				eval(regexp1, path, cstart, csource);
+			}
+			else {
+				path(cstart, csource, path,  min, imin);
+			}
+			
+		}
 
 		// in order to stop enumeration, return null
 		mbuffer.put(null, false);
@@ -379,7 +477,292 @@ public class PathFinder
 	}
 	
 
+	
+	
+	/**
+	 * Compute paths of size<=max, starting from bound concept of edge
+	 * or from last concept in current path,
+	 * from left to right or right to left (according to index of Candidate)
+	 * write the path in a synchronized buffer 
+	 * exp/next : regular expression the path must match
+	 * use case : rdf:rest* / rdf:first
+	 * This function interprets a finite state automaton that codes
+	 * the regex with states and transitions
+	 * It follows SPARQL 1.1 Property Path semantics
+	 * TODO:
+	 * (exp1/exp2+)+
+	 * In this case, loop check has bug as we manage only one list of visited nodes for all
+	 * occurrences of exp2+
+	 * But this case is lousy
+	 *
+	 */
+	private	void path(Node cstart, Node csrc, Path path,  int min, int max){
+		Automaton automata = automaton;
+		Stack stack = loopStack;
+		Node gg = gNode;
+		int size = path.size();
+		
+		boolean trace = !true ;
+		//if (trace) System.out.println("** Path in : " + size + " " + exp + " " + next + " " + min + " " + max);
+		
+		// when true, we need to bind the source with first relation source
+		boolean hasSource = size == 0 && csrc == null && gg != null;
+		
+		// where to enumerate candidate relations for current step
+		State current = automata.getCurrent();
+		
+		if (trace) System.out.println("** Path fst: " + current);
 
+		if (current.isFinal() &&
+				((isBreadth && size == max) || (! isBreadth && size >= min))){
+
+			if (trace) System.out.println("** Path: OK " + size + " " + max);
+
+			if (size > 0 || std){
+				Mapping map = result(path, gg, csrc, cstart, isReverse);
+
+				if (map != null){
+					mbuffer.put(map, true);
+				}
+			}
+			else {
+				// path of length zero: enumerate all nodes
+				// TODO: case where csrc is bound
+				for (Entity ent : getStart(cstart, csrc)){
+					if (ent != null){
+						Node node = ent.getNode();
+						Node src = csrc;
+						if (gg != null){ 
+							src = ent.getGraph();
+						}
+						Mapping m = result(path, gg, src, node, isReverse);
+
+						if (m != null){
+							mbuffer.put(m, true);
+						}
+					}
+				}
+			}
+		}
+		
+		State next;
+		boolean epsilon;
+		if (trace) System.out.println("** Path loop transitions of: " + current);
+		
+		if (current.isFirst() && cstart!=null){
+			//System.out.println("** visit: " +cstart);
+			// exp*  exp+ exp{n,}
+			// record visited nodes in order to prevent loop
+			visited.add(current, cstart);
+		}
+		
+		if (current.isFirst() && visited.loop(current)){
+			// skip
+		}
+		else for (Step step : current.getTransitions()){
+					
+			if (trace) System.out.println("** Path transition: " + step);
+			epsilon = step.isEpsilon();
+			
+			next = step.getState();
+			if (trace) System.out.println("** Path next:" + next + " " + size + " " + max);
+		
+			if (epsilon){
+				// non deterministic empty transition to next step
+				// use case: p*   exp{n,m}
+				
+				if (stack.loop(step, path)){
+					// we do the empty transition only if we have not 
+					// already done it or if a relation has been considered 
+					// since last time, otherwise we enter an infinite loop
+					// use case: star(p1 || star(p2))				
+					continue;
+				}
+				
+				boolean ok = true;
+				int save = -1;
+//				List<Node> list = null;
+				if (step.isEnter()){
+					// enter a loop: exp{1, 5}
+					// save current counter
+					// use case: (p{n,m}/q)*
+					// the first loop is reentrant hence we save current counter
+					// and restore it when finished (see below)
+					if (next.isBound()){
+						save = next.getCount();
+						next.setCount(0);
+					}
+//					if (next.isFirst()){
+//						list = visited.get(next);
+//						visited.put(next, new ArrayList<Node>());
+//					}
+				}
+				else if (step.isLeave()){
+					// leave a loop: exp{1, 5}
+					if (current.isBound() && 
+						current.getCount() < current.getMin()){
+						// have not reached min, do not leave yet
+						ok = false;
+					}
+				}
+				else if (current.isBound() && 
+						 current.getCount() >= current.getMax()){ //current.endLoop()){
+					// exp{1, 5} reach 5 loops, do not enter this epsilon
+					ok = false;
+				}
+								
+				if (ok){ 
+
+					automata.setCurrent(next);
+					stack.push(step, path);
+					path(cstart, csrc, path, min, max);
+					
+					stack.pop(step, path);
+					if (save != -1){
+						next.setCount(save);
+					}
+
+					automata.setCurrent(current);
+				}
+				
+				// consider  next transitions
+				continue;
+				// end of an epsilon transition
+			}
+			
+			
+			
+			if (size == max || 
+					(current.isBound() && current.getCount() >= current.getMax())){
+				// consider  next transition (because it may be epsilon)
+				if (trace) System.out.println("** Path: cont " + size + " " + max + " " + cstart);
+				continue;
+			}
+			
+			if (size < max){
+				// enumerate relations of current concept with current candidate
+				if (trace) logger.debug("** Path: start relations");
+				int dist = size+1;
+				//Edge rel;
+				boolean swap = false, go = true;
+				Regex exp = step.getRegex();
+				boolean inverse = exp.isInverse() || exp.isReverse();
+				Producer pp = producer;
+				List<Node> ff = from;
+				Edge ee = edge;
+				Environment env = memory;
+				ITable htd = htdistance;
+				int ii = index, oo = other;
+				int evPATHSTEP = Event.PATHSTEP;
+				boolean isEvent = hasEvent, is = isShort, 
+					hasFilter = filter!=null;
+				Visit visit = visited;
+				
+				for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, csrc, cstart, ii)){
+					
+					if (ent == null){
+						continue;
+					}
+					
+					Edge rel = ent.getEdge();
+					Node node = rel.getNode(ii);
+
+					if (inverse){
+						// deprecate Corese isInverse()
+						//&& ! cstart.equals(rel.getNode(ii))){
+						// this relation is inverse wrt to cstart: 
+						rel = new EdgeInv(rel);	
+						node = rel.getNode(ii);
+					}
+					
+//					if (exp.getExpr() != null){
+//						// use case: ?x c:isMemberOf[?this != <http://www.inria.fr] + ?y
+//						boolean b = test(exp.getExpr().getFilter(), regexNode, rel.getNode(oo));
+//						//System.out.println("** PF: " + b + " " + rel.getNode(oo) + " " + exp.getExpr());
+//						if (! b) continue;
+//					}
+					
+					if (hasFilter && cstart == null){
+						// test a filter on the index node
+						boolean test = test(rel.getNode(ii));
+						if (! test) continue;
+					}
+
+					if (trace)  System.out.println("** Path rel: " + size +  " " + rel);
+
+					if (eliminate(rel, dist) ){
+						// may eliminate by shorter distance
+						continue;
+					}
+					//count++;
+
+					if (hasSource){
+						// first time: bind the common source of current path
+						csrc = ent.getGraph();
+					}
+
+					Node graph = ent.getGraph();
+					if (csrc != null && ! graph.same(csrc) ){ 
+
+						// all relations need same source in one path
+						if (trace) System.out.println("** Path : skip src");
+					}
+//					else if (loopNode &&  path.loop(rel, cstart, ii, oo)){
+//						// there is a loop: skip rel
+//					}
+					else {
+						if (isEvent){
+							send(evPATHSTEP, cstart, exp, rel);
+						}
+
+						// candidate relation is OK
+						if (is){
+							// store distance from start to this node
+							htd.setDistance(rel.getNode(oo), dist);
+						}
+
+						if (trace) System.out.println("** Path: rec 1 " + rel);
+						// recurse one step ahead
+						path.add(ent);
+						automata.setCurrent(next);
+
+						if (next.isBound()) next.incCount(+1);
+						if (cstart == null && current.isFirst()){
+							visit.add(current, node);
+						}
+						
+						path(rel.getNode(oo), csrc, path,  min, max);
+						
+						if (cstart == null && current.isFirst()){
+							visit.remove(current, node);
+						}						
+						if (next.isBound()) next.incCount(-1);
+
+						path.remove(size);
+					}
+				}
+
+
+			}
+
+			automata.setCurrent(current);
+		}
+		
+		if (current.isFirst() && cstart!=null){
+			visited.remove(current, cstart);
+		}
+	}
+
+	private boolean send(int sort, Object exp, Object target){
+		boolean b = manager.send(EventImpl.create(sort, exp, target));
+		return b;
+	}
+	
+	private boolean send(int sort, Object exp, Object target, Object arg){
+		boolean b = manager.send(EventImpl.create(sort, exp, target, arg));
+		return b;
+	}
+	
 	/**
 	 * Path result as a Mapping
 	 * start and last nodes
@@ -404,8 +787,8 @@ public class PathFinder
 			n2 = start;
 		}
 		else {
-			n1 = path.getEdge(fst).getNode(0);
-			n2 = path.getEdge(lst).getNode(1);
+			n1 = path.get(fst).getEdge().getNode(0);
+			n2 = path.get(lst).getEdge().getNode(1);
 		}
 		
 		if (isShort){
@@ -502,7 +885,51 @@ public class PathFinder
 	}
 	
 	
+	/**
+	 * dist is length of current path
+	 * if target concept of rel already reached (in any previous path)
+	 * with length <= dist, skip this rel (because it is redundant)
+	 */
+	private boolean eliminate(Edge rel, int dist){
+		if (isShort){
+			// have we already reach this target concept:
+			int pdist = htdistance.getDistance(rel.getNode(other));
+			//System.out.println(rel.getNode(other) + " " + dist + " " + pdist);
+			if (pdist > 0){//(pdist != -1){
+				if (isOne){
+					if (pdist <= dist){	
+						return true;
+					}
+				}
+				else if (pdist < dist){
+					// already reach with a smaller distance : skip this edge
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
+	
+	private ITable getTable(Node c){
+		ITable t = htmeta.get(c);
+		if (t == null){
+			t = new ITable();
+			htmeta.put(c, t);
+		}
+		return t;
+	}
+	
+	private int getDistance(Node c1, Node c2){
+		ITable t = htmeta.get(c1);
+		if (t != null){
+			return t.getDistance(c2);
+		}
+		return -1;
+	}
+	
+	
+	
 	/**
 	 * List of starting nodes for path
 	 * TODO: check start memberOf src
@@ -518,8 +945,7 @@ public class PathFinder
 			vec.add(EntityImpl.create(csrc, cstart));
 			return vec;
 		}		
-		else return getNodes(csrc, edge, from, null);
-		//else return getNodes(csrc, edge, from, automaton.getStart());
+		else return getNodes(csrc, edge, from, automaton.getStart());
 	}
 	
 	
@@ -630,7 +1056,7 @@ public class PathFinder
 		}
 			
 		Regex exp = stack.pop();
-							
+					
 		switch (exp.retype()){
 			
 		case Regex.TEST: {
@@ -682,14 +1108,13 @@ public class PathFinder
 					continue;
 				}
 				
+				//System.out.println(ent);
 				
-				Edge rel  = ent.getEdge();
+				Edge rel = ent.getEdge();
 				Node node = rel.getNode(ii);
 
 				if (inverse){
-					EdgeInv ei = new EdgeInv(ent);	
-					rel = ei;
-					ent = ei;
+					rel = new EdgeInv(rel);	
 					node = rel.getNode(ii);
 				}
 				
@@ -746,8 +1171,8 @@ public class PathFinder
 			eval(stack, path, start, src, inv);
 			
 			stack.pop();
-			stack.pop();
-			stack.push(exp);
+			//stack.pop();
+			stack.set(exp);
 			
 		}
 		break;

@@ -46,6 +46,8 @@ public class Visit {
 	
 	class Compare implements Comparator<Node> {
 
+		// TODO: xsd:integer & xsd:decimal may be considered as same node
+		// in loop checking
 		public int compare(Node o1, Node o2) {
 			return o1.compare(o2);
 		}

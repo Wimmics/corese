@@ -293,10 +293,10 @@ public class Mapping
 		lPath[n] = p;
 	}
 	
-	void setPath(Path[] lp){
+	public void setPath(Path[] lp){
 		lPath = lp;
 	}
-	
+		
 	public String toString(){
 		String str = "";
 		for (Edge e : edges){

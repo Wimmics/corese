@@ -34,17 +34,41 @@ public class Group implements Comparator<Mappings>{
 
 	
 	class TreeMapping extends TreeMap<Mapping, Mappings> {	
-
-		TreeMapping(){
-			super(new Compare());
+		
+		TreeMapping(List<Node> ln){
+			super(new Compare(ln));
 		}
 	}
+	
 
 	class Compare implements Comparator<Mapping> {
+		
+		List<Node> list;
+		
+		Compare(List<Node> ln){
+			list = ln;
+		}
 
 		@Override
-		public int compare(Mapping o1, Mapping o2) {
-			return comparator(o1, o2);
+		public int compare(Mapping m1, Mapping m2){
+			int size = list.size();
+			for (int i = 0; i<size; i++){
+				Node qNode = list.get(i);
+				int res = compare(getGroupBy(m1, qNode, i), getGroupBy(m2, qNode, i));
+				if (res != 0) return res;
+			}
+			return 0;
+		}
+		
+		int compare(Node n1, Node n2){
+			if (n1 == null){
+				if (n2 == null) return 0;
+				else return -1;
+			}
+			else if (n2 == null){
+				return +1;
+			}
+			else return n1.compare(n2);
 		}
 	}
 
@@ -68,7 +92,7 @@ public class Group implements Comparator<Mappings>{
 		for (Exp exp : criteria){
 			nodes.add(exp.getNode());
 		}
-		table = new TreeMapping();
+		table = new TreeMapping(nodes);
 	}
 	
 	public void setDistinct(boolean b){
@@ -155,26 +179,9 @@ public class Group implements Comparator<Mappings>{
 	
 	
 
-	int comparator(Mapping m1, Mapping m2){
-		int size = nodes.size();
-		for (int i = 0; i<size; i++){
-			Node qNode = nodes.get(i);
-			int res = compare(getGroupBy(m1, qNode, i), getGroupBy(m2, qNode, i));
-			if (res != 0) return res;
-		}
-		return 0;
-	}
 	
-	int compare(Node n1, Node n2){
-		if (n1 == null){
-			if (n2 == null) return 0;
-			else return -1;
-		}
-		else if (n2 == null){
-			return +1;
-		}
-		else return n1.compare(n2);
-	}
+	
+	
 	
 	
 

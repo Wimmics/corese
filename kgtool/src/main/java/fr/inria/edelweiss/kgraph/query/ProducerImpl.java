@@ -67,6 +67,10 @@ public class ProducerImpl implements Producer {
 		return graph;
 	}
 	
+	public Graph getLocalGraph(){
+		return local;
+	}
+	
 	public void set(Mapper m){
 		mapper = m;
 	}
@@ -458,14 +462,16 @@ public class ProducerImpl implements Producer {
 		}
 		IDatatype dt = (IDatatype) value;
 		Node node = graph.getNode(dt, false, false);
+				
 		if (node == null){
 			if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)){
 				// blank generated for path node: do not store it
 				return new NodeImpl(dt);
 			}
 			else {
-				node = local.addNode(dt);
-			}
+				//node = local.getLiteralNode(name, dt, true, true);
+				node = local.getNode(dt, true, true);
+			}			
 		}
 		return node;
 	}
@@ -486,8 +492,7 @@ public class ProducerImpl implements Producer {
 
 	@Override
 	public void initPath(Edge edge, int index) {
-		// TODO Auto-generated method stub
-		
+		graph.initPath();
 	}
 
 	@Override

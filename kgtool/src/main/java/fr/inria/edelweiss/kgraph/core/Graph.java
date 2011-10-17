@@ -2,9 +2,13 @@ package fr.inria.edelweiss.kgraph.core;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -63,7 +67,8 @@ public class Graph {
 	// Table of index 0
 	Index table;
 	// resource and blank nodes
-	Hashtable<String, Entity> individual, literal;
+	Hashtable<String, Entity> individual;
+	SortedMap<IDatatype, Entity> literal;
 	// graph property nodes
 	Hashtable<String, Node> graph, property;
 	NodeIndex gindex;
@@ -79,6 +84,34 @@ public class Graph {
 	isDebug  = !true;
 	// number of edges
 	int size = 0;
+	
+	// SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
+	
+	class TreeNode extends TreeMap<IDatatype, Entity>  {
+		
+		TreeNode(){
+			super(new Compare());
+		}
+						
+	}
+	
+	class Compare implements Comparator<IDatatype> {
+		
+		public int compare(IDatatype dt1, IDatatype dt2){
+			
+			// xsd:integer differ from xsd:decimal 
+			// same node for same datatype 
+			if (dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null){
+				int cmp = dt1.getDatatypeURI().compareTo(dt2.getDatatypeURI());
+				if (cmp != 0){
+					return cmp;
+				}
+			}
+									
+			int res =  dt1.compareTo(dt2);
+			return res;
+		}
+	}
 			
 	
 	Graph(){
@@ -94,7 +127,7 @@ public class Graph {
 		}
 		table = tables[0];
 		individual 	= new Hashtable<String, Entity>();
-		literal 	= new Hashtable<String, Entity>();
+		literal 	= Collections.synchronizedSortedMap(new TreeNode());
 		graph 		= new Hashtable<String, Node>();
 		property 	= new Hashtable<String, Node>();
 		gindex 		= new NodeIndex();
@@ -249,6 +282,17 @@ public class Graph {
 	}
 	
 	
+	public void initPath(){
+		for (Entity ent : individual.values()){
+			ent.getNode().setObject(null);
+		}
+		for (Entity ent : literal.values()){
+			ent.getNode().setObject(null);
+		}
+		
+	}
+
+	
 	/**
 	 * An edge has been added or deleted
 	 * Restore consistency wrt indexes and entailment
@@ -369,6 +413,14 @@ public class Graph {
 		return size;
 	}
 	
+	public int nbIndividuals(){
+		return individual.size();
+	}
+	
+	public int nbLiterals(){
+		return literal.size();
+	}
+	
 	void setSize(int n){
 		size = n;
 	}
@@ -405,24 +457,44 @@ public class Graph {
 			return getLiteralNode(dt, create, add);
 		}
 		else {
-			Node node = getNode(dt.getLabel());
-			if (node != null) return node;
-			node = getResource(dt.getLabel());
-			if (node == null && create){
-				node = createNode(dt);
-			}
-			if (add) add(node);
-			return node;
+			return getResourceNode(dt, create, add);
 		}
 	}
 	
+	
+	public Node getResourceNode(IDatatype dt, boolean create, boolean add){
+		Node node = getNode(dt.getLabel());
+		if (node != null) return node;
+		node = getResource(dt.getLabel());
+		if (node == null && create){
+			node = createNode(dt);
+		}
+		if (add) add(node);
+		return node;
+	}
+	
+	
+//	public Node getLiteralNode2(IDatatype dt, boolean create, boolean add){
+//		return getLiteralNode(dt.toSparql(), dt, create, add);
+//	}
+//		
+//		
+//	public Node getLiteralNode(String name, IDatatype dt, boolean create, boolean add){
+//		Node node = getLiteralNode(name);
+//		if (node != null) return node;
+//		if (create){ 
+//			node = createNode(dt);
+//			if (add) addLiteralNode(name, node);
+//		}
+//		return node;
+//	}
+	
 	public Node getLiteralNode(IDatatype dt, boolean create, boolean add){
-		String name = dt.toSparql();
-		Node node = getLiteralNode(name);
+		Node node = getLiteralNode(dt);
 		if (node != null) return node;
 		if (create){ 
 			node = createNode(dt);
-			if (add) addLiteralNode(name, node);
+			if (add) addLiteralNode(dt, node);
 		}
 		return node;
 	}
@@ -466,22 +538,33 @@ public class Graph {
 	
 	// resource node
 	public void add(Node node){
-		if (datatype(node).isLiteral()){
-			addLiteralNode(node.getLabel(), node);
+		IDatatype  dt = datatype(node);
+		if (dt.isLiteral()){
+			//addLiteralNode(node.getLabel(), node);
+			addLiteralNode(dt, node);
 		}
 		else {
 			individual.put(node.getLabel(), (Entity) node);
 		}
 	}
 	
-	// resource node
-	public Node getLiteralNode(String name){
-		return (Node) literal.get(name);
+	// literal node
+//	public Node getLiteralNode(String name){
+//		return (Node) literal.get(name);
+//	}
+//	
+//	public void addLiteralNode(String name, Node node){
+//		literal.put(name, (Entity) node);
+//	}
+	
+	
+	public void addLiteralNode(IDatatype dt, Node node){
+		literal.put(dt, (Entity) node);
 	}
 	
-	public void addLiteralNode(String name, Node node){
-		literal.put(name, (Entity) node);
-	}
+	public Node getLiteralNode(IDatatype dt){
+		return (Node) literal.get(dt);
+	}	
 	
 	public Node getGraphNode(String label){
 		return graph.get(label);

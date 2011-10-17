@@ -52,9 +52,11 @@ implements Index {
 	Comparator<Entity> getComparator(){
 		return new Comparator<Entity>(){
 			public int compare(Entity o1, Entity o2) {
-				int res = getNode(o1, index).compare(getNode(o2, index));
+				//int res = getNode(o1, index).compare(getNode(o2, index));
+				int res = o1.getNode(index).compare(o2.getNode(index));
 				if (res == 0){
-					res = getNode(o1, other).compare(getNode(o2, other));
+					//res = getNode(o1, other).compare(getNode(o2, other));
+					res = o1.getNode(other).compare(o2.getNode(other));
 					if (res == 0 && index == 0){
 						if (o1.getGraph() == null || o2.getGraph() == null) res = 0;
 						else res = o1.getGraph().compare(o2.getGraph());
@@ -111,10 +113,10 @@ implements Index {
 		return str;
 	}
 
-	Node getNode(Entity ent, int n){
-		if (n == IGRAPH) return ent.getGraph();
-		else return ent.getEdge().getNode(n);
-	}
+//	Node getNode(Entity ent, int n){
+//		if (n != IGRAPH) return ent.getEdge().getNode(n);
+//		else return ent.getGraph(); 
+//	}
 	
 	/** 
 	 * Add a property in the table
@@ -312,13 +314,20 @@ implements Index {
 			return list;
 		}
 		// node is bound, enumerate edges where node = edge.getNode(index)
-		int n = find(list, node, node2, 0, list.size());
-
+		int n = 0;
+		
+		if (node2 == null){
+			n = find(list, node, 0, list.size());
+		}
+		else {
+			n = find(list, node, node2, 0, list.size());
+		}
+		
 		if (n>=0 && n<list.size()){
-			Node tNode = getNode(list.get(n), index);
+			Node tNode = list.get(n).getNode(index);
 			if (tNode.same(node)){
 				if (node2 != null){
-					Node tNode2 = getNode(list.get(n), other);
+					Node tNode2 = list.get(n).getNode(other);
 					if (! tNode2.same(node2)){
 						return null; 
 					}
@@ -351,7 +360,7 @@ implements Index {
 		
 		Iterate(List<Entity> l, int n){
 			list = l;
-			node = getNode(list.get(n), index);
+			node = list.get(n).getNode(index);
 			start = n;
 		}
 
@@ -365,7 +374,7 @@ implements Index {
 		@Override
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
-			boolean b = ind<list.size() && getNode(list.get(ind), index).same(node);
+			boolean b = ind<list.size() && list.get(ind).getNode(index).same(node);
 			return b;
 		}
 
@@ -397,6 +406,22 @@ implements Index {
 	/**
 	 * Find the index of node in list of Edge by dichotomy
 	 */
+	int find(List<Entity> list, Node node, int first, int last){
+		if (first >= last) {
+			return first;
+		}
+		else {
+			int mid = (first + last) / 2;
+			int res = compare(list.get(mid), node);
+			if (res >= 0) {
+				return find(list, node, first, mid);
+			}
+			else {
+				return find(list, node,mid+1, last); 
+			}
+		}		
+	}
+	
 	int find(List<Entity> list, Node node, Node node2, int first, int last){
 		if (first >= last) {
 			return first;
@@ -414,13 +439,17 @@ implements Index {
 	}
 	
 	int compare(Entity ent, Node n1, Node n2){
-		Node tNode = getNode(ent, index);
+		Node tNode = ent.getNode(index);
 		int res = tNode.compare(n1);
 		if (res == 0 && n2 != null){
-			res = getNode(ent, other).compare(n2);
+			res = ent.getNode(other).compare(n2);
 		}
 		return res;
 
+	}
+	
+	int compare(Entity ent, Node n1){
+		return ent.getNode(index).compare(n1);		
 	}
 	
 	int find(List<Entity> list, Entity edge, int first, int last){

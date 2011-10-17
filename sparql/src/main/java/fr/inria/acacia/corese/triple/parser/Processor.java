@@ -95,6 +95,10 @@ public class Processor {
 	static final String CONTAINS = "contains";
 	static final String ENCODE = "encode_for_uri";
 	static final String CONCAT 	= "concat"; 
+	static final String STRBEFORE 	= "strbefore"; 
+	static final String STRAFTER 	= "strafter"; 
+	static final String STRREPLACE 	= "replace"; 
+
 	
 	static final String RANDOM 	= "rand"; 
 	static final String ABS 	= "abs"; 
@@ -201,6 +205,7 @@ public class Processor {
 				case ExprType.URI: 		compileURI(ast); break;
 				case ExprType.CAST: 	compileCast(); break;
 				case ExprType.REGEX: 	compileRegex(); break;
+				case ExprType.STRREPLACE: 	compileReplace(); break;
 				case ExprType.XPATH: 	compileXPath(ast); break;
 				case ExprType.SQL:		compileSQL(ast); break;
 				case ExprType.EXTERNAL:	compileExternal(ast); break;
@@ -243,7 +248,7 @@ public class Processor {
 			}
 			else if (term.getArity() > 1){
 				ast.setCorrect(false);
-				ast.addError("Arity error: ", term);
+				//ast.addError("Arity error: ", term);
 			}
 		}
 	}
@@ -342,6 +347,10 @@ public class Processor {
 		defoper(CONTAINS, ExprType.CONTAINS);
 		defoper(ENCODE, ExprType.ENCODE);
 		defoper(CONCAT, ExprType.CONCAT);
+		defoper(STRBEFORE, ExprType.STRBEFORE);
+		defoper(STRAFTER, ExprType.STRAFTER);
+		defoper(STRREPLACE, ExprType.STRREPLACE);
+
 		
 		defoper(RANDOM, ExprType.RANDOM);
 		defoper(ABS, 	ExprType.ABS);
@@ -496,7 +505,24 @@ public class Processor {
 		match = pat.matcher("");
 	}
 	
+	void compileReplace(){
+		if (term.getArg(1).isConstant()){
+			compileReplace(term.getArg(1).getName());
+		}
+	}
 	
+	// TODO: test if constant
+	void compileReplace(String str){
+		pat = Pattern.compile(str);
+		match = pat.matcher("");
+	}
+	
+	// replace('%abc@def#', '[^a-z0-9]', '-')
+	public String replace(String str, String rep){
+		match.reset(str);
+		String res = match.replaceAll(rep);
+		return res;
+	}
 	
 	public boolean regex(String str){
 		match.reset(str);

@@ -12,6 +12,8 @@ public interface Entity {
 	
 	Node getNode();
 	
+	Node getNode(int i);
+	
 	Node getGraph();
 
 }

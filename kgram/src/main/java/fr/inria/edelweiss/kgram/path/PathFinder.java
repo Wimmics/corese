@@ -47,6 +47,7 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
  * 
  * 
  * TODO: check result path for inv(q)
+ * TODO: only one shortest path because store length into Node
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
  * 
@@ -77,6 +78,7 @@ public class PathFinder
 	private Edge edge;
 	private Node gNode, targetNode, regexNode, varNode;
 	private List<Node> from;
+	private Node[] qNodes;
 	// index of node in edge that is the start of the path
 	private int index = 0;
 
@@ -371,6 +373,11 @@ public class PathFinder
 		path.setMax(max);
 		visited =  Visit.create(isReverse);
 		
+		if (isShort && cstart != null) {
+			// if null, will be done later
+			producer.initPath(edge, 0);
+		}
+		
 		eval(regexp1, path, cstart, csource);
 
 		// in order to stop enumeration, return null
@@ -428,29 +435,31 @@ public class PathFinder
 			return null;
 		}
 		
-		Mapping map = getMapping(length);
+		if (qNodes == null){
+			// computed once and then shared by all Mapping
+			qNodes = new Node[length];
+			qNodes[0] = ee.getNode(0);
+			qNodes[1] = ee.getNode(1);
+			qNodes[2] = ee.getEdgeVariable();
+			if (src!=null){
+				qNodes[3] = gNode;
+			}
+		}
 		
-		Node[] qNodes = map.getQueryNodes();
-		Node[] tNodes = map.getNodes();
-		
-		qNodes[0] = ee.getNode(0);
-		qNodes[1] = ee.getNode(1);
-		qNodes[2] = ee.getEdgeVariable();
-		
+		Node[] tNodes = new Node[length];
 		tNodes[0] = n1;
 		tNodes[1] = n2;
 		tNodes[2] = getPathNode();
-	
 		if (src!=null){
-			qNodes[3] = gNode;
 			tNodes[3] = src;
 		}
 		
 		Path edges = path.copy();
 		if (isReverse) edges.reverse();
-
 		Path[] lp = new Path[length];
 		lp[2] = edges;
+		
+		Mapping map =  Mapping.create(qNodes, tNodes);			
 		map.setPath(lp);
 		
 		return map;
@@ -606,7 +615,7 @@ public class PathFinder
 //		System.out.println(exp);
 		Record stack = new Record().push(exp);
 		try {
-			eval(stack, path, start, src, false);
+			eval(stack, path, start, src);
 		}
 		catch (StackOverflowError e){
 			logger.error("** Property Path Error: \n" + e);
@@ -620,7 +629,7 @@ public class PathFinder
 	 * path may be walked left to right if start is bound or right to left if end is bound
 	 * in the later case,  index = 1
 	 */
-	void eval(Record stack, Path path, Node start, Node src, boolean inv){
+	void eval(Record stack, Path path, Node start, Node src){
 		
 		if (isStop) return;
 		
@@ -643,7 +652,7 @@ public class PathFinder
 			}
 			
 			if (b){
-				eval(stack, path, start, src, inv);
+				eval(stack, path, start, src);
 			}
 			stack.push(exp);
 		}
@@ -676,12 +685,16 @@ public class PathFinder
 						
 			for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, src, start, ii)){
 				
-				if (isStop) return;
+				if (isStop){
+					stack.push(exp);
+					return;
+				}
 
 				if (ent == null){
 					continue;
 				}
 				
+				//System.out.println(ent);
 				
 				Edge rel  = ent.getEdge();
 				Node node = rel.getNode(ii);
@@ -716,7 +729,7 @@ public class PathFinder
 				}
 				
 				path.add(ent);
-				eval(stack, path, rel.getNode(oo), src, inv);
+				eval(stack, path, rel.getNode(oo), src);
 				path.remove(size);
 				
 				if (isStart){
@@ -743,7 +756,7 @@ public class PathFinder
 			stack.push(exp.getArg(rst));
 			stack.push(exp.getArg(fst));
 			
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 			
 			stack.pop();
 			stack.pop();
@@ -759,13 +772,13 @@ public class PathFinder
 				stack.push(exp);
 				return;
 			}
-			plus(exp, stack, path, start, src, inv);
+			plus(exp, stack, path, start, src);
 		break;
 		
 		
 		case Regex.COUNT:
 			// exp{1,n}
-			count(exp, stack, path, start, src, inv);
+			count(exp, stack, path, start, src);
 			break;
 		
 			
@@ -775,18 +788,18 @@ public class PathFinder
 				stack.push(exp);
 				return;
 			}
-			star(exp, stack, path, start, src, inv);			
+			star(exp, stack, path, start, src);			
 		break;
 		
 		
 		case Regex.ALT:
 			
 			stack.push(exp.getArg(0));
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 			stack.pop();
 			
 			stack.push(exp.getArg(1));
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 			stack.pop();
 			
 			stack.push(exp);
@@ -795,9 +808,9 @@ public class PathFinder
 		
 		case Regex.OPTION:
 			
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 			stack.push(exp.getArg(0));
-			eval(stack, path, start, src, inv);	
+			eval(stack, path, start, src);	
 			
 			stack.pop();
 			stack.push(exp);
@@ -856,7 +869,7 @@ public class PathFinder
 	/**
 	 * exp*
 	 */
-	void star(Regex exp, Record stack, Path path, Node start, Node src, boolean inv){
+	void star(Regex exp, Record stack, Path path, Node start, Node src){
 		
 		if (visited.loop(exp, start)){
 			// start already met in exp path: stop
@@ -873,14 +886,14 @@ public class PathFinder
 		//visited.set(exp, save);
 
 		// first step: zero length 
-		eval(stack, path, start, src, inv);
+		eval(stack, path, start, src);
 
 		// restore exp*
 		stack.push(exp);
 		// push exp
 		stack.push(exp.getArg(0));
 		// second step: eval exp once more
-		eval(stack, path, start, src, inv);
+		eval(stack, path, start, src);
 		// restore stack (exp* on top)
 		stack.pop();
 
@@ -892,7 +905,7 @@ public class PathFinder
 	/**
 	 * exp+
 	 */
-	void plus(Regex exp, Record stack, Path path, Node start, Node src, boolean inv){
+	void plus(Regex exp, Record stack, Path path, Node start, Node src){
 		
 		if (count(exp) == 0){
 			// first step
@@ -900,7 +913,7 @@ public class PathFinder
 
 			count(exp, +1);
 			stack.push(exp.getArg(0));
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 			stack.pop();
 			count(exp, -1);		
 		}
@@ -912,14 +925,14 @@ public class PathFinder
 			}
 			
 			// (1) leave
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 
 			// (2) continue
 			stack.push(exp);
 
 			//count(exp, +1);
 			stack.push(exp.getArg(0));
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 			stack.pop();
 			//count(exp, -1);
 
@@ -933,7 +946,7 @@ public class PathFinder
 	 * exp{n,m}
 	 * exp{n,}
 	 */
-	void count(Regex exp, Record stack, Path path, Node start, Node src, boolean inv){
+	void count(Regex exp, Record stack, Path path, Node start, Node src){
 		
 		if (count(exp) >= exp.getMin()){			
 			
@@ -945,7 +958,7 @@ public class PathFinder
 			// min length is reached, can leave
 			int save = count(exp);
 			set(exp, 0);
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 			set(exp, save);
 
 			stack.push(exp);
@@ -955,7 +968,7 @@ public class PathFinder
 				
 				count(exp, +1);
 				stack.push(exp.getArg(0));
-				eval(stack, path, start, src, inv);
+				eval(stack, path, start, src);
 				stack.pop();
 				count(exp, -1);
 
@@ -977,7 +990,7 @@ public class PathFinder
 
 			count(exp, +1);
 			stack.push(exp.getArg(0));
-			eval(stack, path, start, src, inv);
+			eval(stack, path, start, src);
 			stack.pop();
 			count(exp, -1);	
 			

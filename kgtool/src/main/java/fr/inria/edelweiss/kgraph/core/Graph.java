@@ -39,7 +39,8 @@ public class Graph {
 	
 	public static final String TOPREL = RDFS.RootPropertyURI;
 	public static final int IGRAPH = 2;
-	public static final int MAX = 3;
+	public static final int NBNODE = 3;
+	public static final int LENGTH = NBNODE;
 	
 	static final int COPY = 0;
 	static final int MOVE = 1;
@@ -63,9 +64,11 @@ public class Graph {
 	 
 	ReentrantReadWriteLock lock;
 	
-	Index[] tables;
+	Index[] tables, dtables;
 	// Table of index 0
-	Index table;
+	Index table, 
+	// for rdf:type, no named graph to speed up type test
+	dtable;
 	// resource and blank nodes
 	Hashtable<String, Entity> individual;
 	SortedMap<IDatatype, Entity> literal;
@@ -81,7 +84,8 @@ public class Graph {
 	isIndex  = false, 
 	// automatic entailment when init()
 	isEntail = true,
-	isDebug  = !true;
+	isDebug  = !true,
+	hasDefault = !true;
 	// number of edges
 	int size = 0;
 	
@@ -117,17 +121,18 @@ public class Graph {
 	Graph(){
 		lock = new ReentrantReadWriteLock();
 		
-		tables = new Index[MAX];
-		for (int i=0; i<MAX; i++){
+		tables  = new Index[LENGTH];
+		dtables = new Index[LENGTH];
+		for (int i=0; i<LENGTH; i++){
 			// One table per node index
 			// edges are sorted according to ith Node
-			tables[i] = new EdgeIndex(this, i);
-			//tables[i] = new GraphIndex(this, i);
-
+			tables[i]  = new EdgeIndex(this, i);	
+			dtables[i] = new EdgeIndex(this, i, true);
 		}
-		table = tables[0];
-		individual 	= new Hashtable<String, Entity>();
+		table 		= tables[0];
+		dtable 		= dtables[0];
 		literal 	= Collections.synchronizedSortedMap(new TreeNode());
+		individual 	= new Hashtable<String, Entity>();
 		graph 		= new Hashtable<String, Node>();
 		property 	= new Hashtable<String, Node>();
 		gindex 		= new NodeIndex();
@@ -195,6 +200,13 @@ public class Graph {
 		isEntail = b;
 	}
 	
+	public void setDefault(boolean b){
+		hasDefault = b;
+	}	
+	
+	public boolean hasDefault(){
+		return hasDefault;
+	}
 	
 	public void entail(){
 		if (inference!=null){
@@ -337,8 +349,13 @@ public class Graph {
 	 * When load is finished,  sort edges
 	 */
 	public void index(){
-		for (int i=0; i<MAX; i++){
+		for (int i=0; i<LENGTH; i++){
 			tables[i].index();
+		}
+		if (hasDefault){
+			for (int i=0; i<LENGTH; i++){
+				dtables[i].index();
+			}
 		}
 		isIndex = true;
 	}
@@ -381,9 +398,18 @@ public class Graph {
 		if (ent != null){
 			addGraphNode(edge.getGraph());
 			addPropertyNode(edge.getEdgeNode());
-			for (int i=1; i<MAX; i++){
+			
+			for (int i=1; i<NBNODE; i++){
 				tables[i].declare(edge);
 			}
+			
+			if (hasDefault){
+				dtable.add(edge);
+				for (int i=1; i<NBNODE; i++){
+					dtables[i].declare(edge);
+				}
+			}
+			
 			size++;
 		}
 		return ent;
@@ -638,6 +664,13 @@ public class Graph {
 		}
 	}
 	
+	public Iterable<Entity> getDefaultEdges(Node predicate, Node node, Node node2, int n){
+		if (isTopRelation(predicate)){
+			return getEdges(node, n, hasDefault);
+		}
+		return getIndex(n, hasDefault).getEdges(predicate, node, node2);
+	}
+	
 	boolean isTopRelation(Node predicate){
 		return predicate.getLabel().equals(TOPREL);
 	}
@@ -647,11 +680,23 @@ public class Graph {
 		return EdgeIterator.create(getEdges(node, 0));
 	}
 	
+
+	Index getIndex(int n, boolean def){
+		if (def){
+			return dtables[n];
+		}
+		return tables[n];
+	}
+	
 	public Iterable<Entity> getEdges(Node node, int n){
+		return getEdges(node, n, false);
+	}
+	
+	public Iterable<Entity> getEdges(Node node, int n, boolean def){
 		MetaIterator<Entity> meta = new MetaIterator<Entity>();
 		
 		for (Node pred : table.getProperties()){
-			Iterable<Entity> it = tables[n].getEdges(pred, node);
+			Iterable<Entity> it = getIndex(n, def).getEdges(pred, node);
 			if (it != null){
 				meta.next(it);
 			}

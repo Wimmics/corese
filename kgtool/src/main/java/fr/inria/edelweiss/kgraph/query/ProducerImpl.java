@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.query;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +35,7 @@ import fr.inria.edelweiss.kgraph.core.NodeImpl;
  */
 public class ProducerImpl implements Producer {
 	static final int IGRAPH = Graph.IGRAPH;
-	static final int MAX = Graph.MAX;
+	static final int MAX = Graph.NBNODE;
 	static final String TOPREL = Graph.TOPREL;
 	
 	List<Entity> empty = new ArrayList<Entity>();
@@ -136,10 +137,19 @@ public class ProducerImpl implements Producer {
 			}
 		}		
 				
-		Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
-		// check gNode/from/named
-		it = complete(it, gNode, getNode(gNode, env), from);
+		//Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
 		
+		Iterable<Entity> it;
+		if (gNode != null || from.size()>0 || ! graph.hasDefault()){
+			it = graph.getEdges(predicate, node, node2, n);
+		}
+		else {
+			it = graph.getDefaultEdges(predicate, node, node2, n);
+			return it;
+		}
+		
+		// check gNode/from/named
+		it = complete(it, gNode, getNode(gNode, env), from);		
 		return it;
 	}
 	
@@ -259,11 +269,20 @@ public class ProducerImpl implements Producer {
 			return empty;
 		}
 
-		Iterable<Entity> it = graph.getEdges(predicate, start, index);
+		Iterable<Entity> it;
+		if (gNode != null || from.size()>0 || ! graph.hasDefault()){
+			it = graph.getEdges(predicate, start, null, index);
+		}
+		else {
+			it = graph.getDefaultEdges(predicate, start, null, index);			
+			return it;
+		}
 		// gNode, from
 		it = complete(it, gNode, src, from);
 		return it;
 	}
+
+	
 	
 	/**
 	 * regex is a negation

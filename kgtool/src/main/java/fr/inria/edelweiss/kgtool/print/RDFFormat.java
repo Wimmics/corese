@@ -1,5 +1,7 @@
 package fr.inria.edelweiss.kgtool.print;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -161,6 +163,23 @@ public class RDFFormat {
 
 	
 	public String toString(){
+		StringBuilder bb = getStringBuilder();
+		return bb.toString();
+	}
+	
+	
+	public void write(String name) throws IOException{
+		StringBuilder sb = getStringBuilder();
+		FileOutputStream fos = new FileOutputStream(name);
+		for (int i = 0; i<sb.length(); i++){
+			fos.write(sb.charAt(i));
+		}
+		fos.close();
+	}
+
+	
+	
+	public StringBuilder getStringBuilder(){
 		if (graph == null && map == null){
 			return null;
 		}
@@ -182,8 +201,9 @@ public class RDFFormat {
 		bb.append(sb); 
 		bb.append("</rdf:RDF>");
 		
-		return bb.toString();
+		return bb;
 	}
+	
 	
 	
 	void header(StringBuilder bb){

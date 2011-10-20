@@ -1,11 +1,14 @@
 package fr.inria.edelweiss.kgtool.load;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
@@ -87,5 +90,23 @@ public class QueryLoad {
 	}
 	
 	
+	
+	public void write(String name, String str){
+		String query = "";
+		try {
+			Writer fr = new FileWriter(name);
+			BufferedWriter fq = new BufferedWriter(fr);
+			fq.write(str);
+			fr.close();
+		} 
+		catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+		}
+		
+	}
 
 }

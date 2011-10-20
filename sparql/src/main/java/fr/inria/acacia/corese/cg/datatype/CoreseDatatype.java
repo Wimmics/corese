@@ -483,10 +483,37 @@ public class CoreseDatatype
 	 */
 	
 	public int compareTo(IDatatype d2){
-		boolean trace = false;
+		int code2 = d2.getCode();
 		boolean b = false;
 		
+		switch (code2){
+		case URI:
+		case BLANK:
+		case STRING:
+			
+			if (getCode() == code2){
+				return this.getLabel().compareTo(d2.getLabel());
+			}
+			break;
+					
+		case NUMBER:
+		case BOOLEAN:
+			
+			if (getCode() == code2){
+				try {
+					b = this.less(d2);
+				}
+				catch (CoreseDatatypeException e) {}
+				if (b) return LESSER;
+				else if (this.sameTerm(d2)) return 0;
+				else return GREATER;
+			}
+		}
+		
+		boolean trace = false;
 		IDatatype d1 = this;
+		
+
 		if (SPARQLCompliant){
 			// BN uri literal
 			// literal last

@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -14,8 +15,8 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 
 /**
- * Table property name -> List<Edge>
- * Sorted by getNode(index)
+ * Table property node -> List<Edge>
+ * Sorted by getNode(index), getNode(other)
  * At the beginning, only table of index 0 is fed with edges
  * Other index are built at runtime only if needed 
  * 
@@ -31,36 +32,66 @@ implements Index {
 
 	int index = 0, other = 1;
 	int count = 0;
-	boolean isDebug = !true;
+	boolean isDebug = !true,
+	isIndexer = false;
 	
 	Comparator<Entity>  comp;
 	Graph graph;
 	
+
 	EdgeIndex(Graph g, int n){
+		init(g, n);
+		comp = getComparator();	
+	}
+	
+	EdgeIndex(Graph g, int n, boolean skip){
+		init(g, n);
+		comp = getComparator2();
+		isIndexer = true;
+	}
+	
+	void init(Graph g, int n){
 		graph = g;
 		index = n;
 		switch (index){
-		case 0: other = 1; break;
-		case 1: other = 0; break;
-		case Graph.IGRAPH: other = 0; break;
+			case 0: other = 1; break;
+			case 1: other = 0; break;
+			case Graph.IGRAPH: other = 0; break;
 		}
-		
-		comp = getComparator();
-			
 	}
 	
+	
 	Comparator<Entity> getComparator(){
+		
 		return new Comparator<Entity>(){
+			
 			public int compare(Entity o1, Entity o2) {
-				//int res = getNode(o1, index).compare(getNode(o2, index));
 				int res = o1.getNode(index).compare(o2.getNode(index));
 				if (res == 0){
-					//res = getNode(o1, other).compare(getNode(o2, other));
 					res = o1.getNode(other).compare(o2.getNode(other));
 					if (res == 0 && index == 0){
 						if (o1.getGraph() == null || o2.getGraph() == null) res = 0;
 						else res = o1.getGraph().compare(o2.getGraph());
 					}
+				}
+				return res;
+			}
+		};
+	}
+	
+	
+	/**
+	 * declare equal when N0 N1 are equal but in different graphs
+	 * optimize rdf:type test
+	 */
+	Comparator<Entity> getComparator2(){
+		
+		return new Comparator<Entity>(){
+			
+			public int compare(Entity o1, Entity o2) {
+				int res = o1.getNode(index).compare(o2.getNode(index));
+				if (res == 0){
+					res = o1.getNode(other).compare(o2.getNode(other));
 				}
 				return res;
 			}
@@ -214,7 +245,7 @@ implements Index {
 			Collections.sort(list, comp);
 		}
 		if (index == 0){
-			reduce();
+			reduce(! isIndexer);
 		}
 	}
 	
@@ -229,12 +260,12 @@ implements Index {
 	/** 
 	 * eliminate duplicate edges
 	 */
-	private void reduce(){
+	private void reduce(boolean bsize){
 		for (Node pred : getProperties()){
 			List<Entity> l1 = get(pred);
 			List<Entity> l2 = reduce(l1);
 			put(pred, l2);
-			if (l1.size()!=l2.size()){
+			if (bsize && l1.size()!=l2.size()){
 				graph.setSize(graph.size() - (l1.size()-l2.size()));
 			}
 		}
@@ -267,7 +298,7 @@ implements Index {
 	 * Check that this table has been built and initialized (sorted) for this predicate
 	 * If not, copy edges from table of index 0 and then sort these edges
 	 */
-	private List<Entity> checkGet(Node pred){
+	List<Entity> checkGet(Node pred){
 		if (index == 0){
 			return get(pred);
 		}
@@ -308,8 +339,9 @@ implements Index {
 		return list.size();
 	}
 	
+
 	public Iterable<Entity> getEdges(Node pred, Node node, Node node2){
-		List<Entity> list = checkGet(pred); //get(pred);
+		List<Entity> list = checkGet(pred); 
 		if (list == null || node == null){
 			return list;
 		}
@@ -325,14 +357,17 @@ implements Index {
 		
 		if (n>=0 && n<list.size()){
 			Node tNode = list.get(n).getNode(index);
+			
 			if (tNode.same(node)){
 				if (node2 != null){
 					Node tNode2 = list.get(n).getNode(other);
 					if (! tNode2.same(node2)){
 						return null; 
 					}
-				}
-				return new Iterate(list, n);
+				}			
+				
+				Iterate it = new Iterate(list, n);
+				return it;
 			}
 		}
 		return null; 

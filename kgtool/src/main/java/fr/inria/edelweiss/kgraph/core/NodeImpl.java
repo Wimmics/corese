@@ -14,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 public class NodeImpl implements Node, Entity {
 	IDatatype dt;
 	Object object;
+	Object status;
 	
 	
 	public NodeImpl(IDatatype val){
@@ -29,16 +30,17 @@ public class NodeImpl implements Node, Entity {
 	}
 	
 	
-	@Override
 	public int compare(Node node) {
 		// TODO Auto-generated method stub
 		if (node.getValue() instanceof IDatatype){
 			return dt.compareTo((IDatatype) node.getValue());
 		}
-		else return getLabel().compareTo(node.getLabel());
+		else 
+			return getLabel().compareTo(node.getLabel());
 		
 	}
-
+	
+	
 	@Override
 	public int getIndex() {
 		// TODO Auto-generated method stub
@@ -121,6 +123,24 @@ public class NodeImpl implements Node, Entity {
 	public Node getNode(int i) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Object getProperty(int p) {
+		switch(p){
+		case STATUS: return status;
+		
+		default: return object;
+		}	
+	}
+
+	@Override
+	public void setProperty(int p, Object o) {
+		switch(p){
+		case STATUS: status = o; break;
+		
+		default: object = o;
+		}
 	}
 
 }

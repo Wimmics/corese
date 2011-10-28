@@ -18,6 +18,8 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
  *
  */
 public class Visit {
+	public static boolean speedUp = false;
+	
 	Hashtable<State, List<Node>> table;
 	Hashtable<Regex, List<Node>> etable;
 	Hashtable<Regex, Table> eetable;
@@ -35,9 +37,17 @@ public class Visit {
 		isReverse = b;
 	}
 	
-	class Table2 extends Hashtable<Node, Node> {}
+	interface TTable {
+		
+		Node put(Node n1, Node n2);
+		Node remove(Node n1);
+		boolean containsKey(Node node);
+		
+	}
 	
-	class Table extends TreeMap<Node, Node> {	
+	class Table1 extends Hashtable<Node, Node>  {}
+	
+	class Table extends TreeMap<Node, Node>  {	
 		
 		Table(){
 			super(new Compare());
@@ -172,6 +182,10 @@ public class Visit {
 	
 	
 	void eadd(Regex exp, Node node){
+		if (speedUp){
+			node.setProperty(Node.STATUS, true);
+			return;
+		}
 		Table table = eetable.get(exp);
 		if (table == null){
 			table = new Table();
@@ -270,6 +284,10 @@ public class Visit {
 	}
 	
 	void eremove(Regex exp, Node node){
+		if (speedUp){
+			node.setProperty(Node.STATUS, false);
+			return;
+		}
 		Table table = eetable.get(exp);
 		table.remove(node);
 	}
@@ -296,13 +314,16 @@ public class Visit {
 		return false;
 	}
 	 
-	 boolean eLoop(Regex exp, Node start){
+	boolean eLoop(Regex exp, Node start){
+		if (speedUp){
+			return (start!= null && start.getProperty(Node.STATUS) == Boolean.TRUE);
+		}
 		Table table = eetable.get(exp);
 		if (table == null) {
 			return false;
 		}
 		return table.containsKey(start);
-	 }
+	}
 	
 	 boolean stdLoop(Regex exp, Node start){
 		 List<Node> list = etable.get(exp);

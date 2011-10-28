@@ -244,7 +244,7 @@ public class Mapping
 	}
 	
 	
-	Path getPath(Node qNode){
+	public Path getPath(Node qNode){
 		return getPath(getIndex(qNode));
 	}
 	
@@ -380,6 +380,10 @@ public class Mapping
 	 */
 	Node getGroupNode(int n){
 		return group[n];
+	}
+	
+	Node[] getGroupNodes(){
+		return group;
 	}
 	
 	Node getDistinctNode(int n){

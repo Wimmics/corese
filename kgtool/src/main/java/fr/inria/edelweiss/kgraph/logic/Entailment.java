@@ -590,10 +590,17 @@ public class Entailment {
 	 */
 	void graphEntail(){
 		for (Node pred : graph.getProperties()){
-			// ?p rdf:type rdf:Property
-			defProperty(pred);
 			Entity prev = null;
+			boolean isFirst = true;
+			
 			for (Entity ent : graph.getEdges(pred)){
+				
+				if (isFirst){
+					isFirst = false;
+					// ?p rdf:type rdf:Property
+					defProperty(pred);
+				}
+				
 				Edge edge = ent.getEdge();
 				Node gg = getGraph(ent);
 

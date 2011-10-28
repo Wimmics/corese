@@ -44,31 +44,65 @@ public class Group implements Comparator<Mappings>{
 	class Compare implements Comparator<Mapping> {
 		
 		List<Node> list;
+		int size;
 		
 		Compare(List<Node> ln){
 			list = ln;
+			size = list.size();
 		}
 
 		@Override
 		public int compare(Mapping m1, Mapping m2){
-			int size = list.size();
+			if (isExtend){
+				return compareExtend(m1, m2);
+			}
+			
+			if (isDistinct){
+				return compareDistinct(m1, m2);
+			}
+			
 			for (int i = 0; i<size; i++){
 				Node qNode = list.get(i);
-				int res = compare(getGroupBy(m1, qNode, i), getGroupBy(m2, qNode, i));
+				int res = compare(m1.getGroupBy(qNode, i), m2.getGroupBy(qNode, i));
 				if (res != 0) return res;
 			}
 			return 0;
 		}
 		
+		
+		public int compareExtend(Mapping m1, Mapping m2){
+			Node[] g1 = m1.getGroupNodes();
+			Node[] g2 = m2.getGroupNodes();
+
+			for (int i = 0; i<size; i++){
+				int res = compare(g1[i], g2[i]);
+				if (res != 0) return res;
+			}
+			return 0;
+		}
+		
+		public int compareDistinct(Mapping m1, Mapping m2){
+			for (int i = 0; i<size; i++){
+				int res = compare(m1.getDistinctNode(i), m2.getDistinctNode(i));
+				if (res != 0) return res;
+			}
+			return 0;
+		}
+		
+		
 		int compare(Node n1, Node n2){
-			if (n1 == null){
-				if (n2 == null) return 0;
-				else return -1;
+			if (n1 == n2){
+				return 0;
+			}
+			else if (n1 == null){
+				return -1;
 			}
 			else if (n2 == null){
 				return +1;
 			}
-			else return n1.compare(n2);
+			else {
+				return n1.compare(n2);
+			}
 		}
 	}
 
@@ -126,9 +160,9 @@ public class Group implements Comparator<Mappings>{
 		if (isDistinct){
 			return map.getDistinctNode(n); 
 		}
-		else if (isExtend){
-			return map.getGroupNode(n);
-		}
+//		else if (isExtend){
+//			return map.getGroupNode(n);
+//		}
 		else {
 			return map.getGroupBy(qNode, n);
 		}

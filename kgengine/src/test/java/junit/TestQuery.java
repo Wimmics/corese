@@ -41,6 +41,8 @@ public class TestQuery {
 	@BeforeClass
 	static public void init(){
 		QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
+		QueryProcess.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
+
 		graph = Graph.create(true);
 		Load ld = Load.create(graph);
 		init(graph, ld);
@@ -921,7 +923,7 @@ public class TestQuery {
 	public void test32(){
 		// select (group_concat(distinct ?x, ?y) as ?str)
 		Graph g = Graph.create();
-		QueryProcess exec = QueryProcess.create(graph);
+		QueryProcess exec = QueryProcess.create(g);
 
 		String update = "insert data {" +
 				"<John>  <value> 1, 2 ." +
@@ -959,6 +961,139 @@ public class TestQuery {
 	
 	
 
+	@Test
+	public void test33(){
+		// select (group_concat(distinct ?x, ?y) as ?str)
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+
+		String update = "insert data {" +
+				"<John> foaf:knows <Jack> " +
+				"<Jack> foaf:knows <Jim> " +
+				"}" ;
+		
+		String query = "select * where {" +
+				"?x foaf:knows+ :: $path <Jim> " +
+				"graph $path { ?a foaf:knows ?b }" +
+				"}";
+		
+		try {
+			exec.query(update);
+			
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			assertEquals("Result", 3, map.size());			
+			
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}		
+	}
+	
+	
+	@Test
+	public void test34(){
+		// select (group_concat(distinct ?x, ?y) as ?str)
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+
+		String update = "insert data {" +
+				"<John> foaf:knows <Jack> " +
+				"<Jack> foaf:knows <Jim> " +
+				"}" ;
+		
+		String query = "select * where {" +
+				"?x ^ (foaf:knows+) :: $path <John> " +
+				"graph $path { ?a foaf:knows ?b }" +
+				"}";
+		
+		try {
+			exec.query(update);
+			
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			assertEquals("Result", 3, map.size());			
+			
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+		
+	}
+	
+	
+	@Test
+	public void test35(){
+		// select (group_concat(distinct ?x, ?y) as ?str)
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+
+		String update = "insert data {" +
+				"<John> foaf:knows <Jack> " +
+				"<Jack> foaf:knows <Jim> " +
+				"}" ;
+		
+		String query = "select * where {" +
+				"?x  (^foaf:knows)+ :: $path <John> " +
+				"graph $path { ?a foaf:knows ?b }" +
+				"}";
+		
+		try {
+			exec.query(update);
+			
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			assertEquals("Result", 3, map.size());			
+			
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+		
+	}
+	
+	
+	
+	
+	
+	@Test
+	public void test36(){
+		// select (group_concat(distinct ?x, ?y) as ?str)
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+
+		String update = "insert data {" +
+				"<John> foaf:knows (<a> <b> <c>) " +
+				"}" ;
+		
+		String query = "select * where {" +
+				"graph ?g {optional{?x rdf:rest*/rdf:first ?y} " +
+				"filter(!bound(?y))  " +
+				"}" +
+				"}";
+		
+		try {
+			exec.query(update);
+			
+			Mappings map = exec.query(query);
+			//System.out.println(map);
+			assertEquals("Result", 0, map.size());			
+			
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

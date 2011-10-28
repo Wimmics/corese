@@ -74,12 +74,12 @@ public class Distance {
 	}
 	
 	Integer getDepth(Node n){
-		Integer d = (Integer) n.getObject() ;
+		Integer d = (Integer) n.getProperty(Node.DEPTH) ;
 		return d ;
 	}
 	
 	void setDepth(Node n, Integer i){
-		n.setObject(i);
+		n.setProperty(Node.DEPTH, i);
 	}
 	
 	void init(){

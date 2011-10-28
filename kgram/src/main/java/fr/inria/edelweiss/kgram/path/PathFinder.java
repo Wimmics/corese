@@ -58,7 +58,7 @@ public class PathFinder
 	
 	private static Logger logger = Logger.getLogger(PathFinder.class);
 	
-	static int cc = 0;
+	public static long cedge = 0, cresult = 0, ctest = 0;
 	static boolean isStack = true;
 
 	// thread that enumerates the path
@@ -284,6 +284,9 @@ public class PathFinder
 	 * pmax comes from pathLength() <= pmax
 	 */
 	public void init(Regex exp, Object smode, int pmin, int pmax){
+		cedge = 0;
+		cresult = 0;
+		ctest = 0;
 		regexp1 = exp.transform();
 		regexp = exp;
 
@@ -415,21 +418,19 @@ public class PathFinder
 			n2 = path.getEdge(lst).getNode(1);
 		}
 		
-		if (isShort){
-			// eliminate current path to n2 if it is longer than a previous path to n2
-			if (n2.getObject()==null){
-				n2.setObject(path.size());
-			}
-			else {
-				Integer l = (Integer) n2.getObject();
-				if (path.size()>l){
-					return null;
-				}
-				else {
-					n2.setObject(path.size());
-				}
-			}
-		}
+//		if (isShort){
+//			// eliminate current path to n2 if it is longer than a previous path to n2
+//			Integer l = getLength(n2);
+//			if (l == null){
+//				setLength(n2, path.size());
+//			}
+//			else if (path.size()>l){
+//				return null;
+//			}
+//			else {
+//				setLength(n2, path.size());
+//			}
+//		}
 		
 		if (! check(n1, n2)){
 			return null;
@@ -463,6 +464,14 @@ public class PathFinder
 		map.setPath(lp);
 		
 		return map;
+	}
+	
+	void setLength(Node n, int l){
+		n.setProperty(Node.LENGTH, l);
+	}
+	
+	Integer getLength(Node n){
+		return (Integer) n.getProperty(Node.LENGTH);
 	}
 	
 	/**
@@ -634,6 +643,7 @@ public class PathFinder
 		if (isStop) return;
 		
 		if (stack.isEmpty()){
+			//cresult++;
 			result(path, start, src);
 			return;
 		}
@@ -648,6 +658,7 @@ public class PathFinder
 			boolean b = true;
 			
 			if (start != null){
+				//ctest ++;
 				b = test(exp.getExpr().getFilter(), path, regexNode, start);
 			}
 			
@@ -674,6 +685,8 @@ public class PathFinder
 			Environment env = memory;
 			int ii = index, oo = other;
 			int size = path.size();
+			int length = size+1;
+
 			boolean 
 				hasFilter = filter!=null,
 				isStart   = start == null,
@@ -693,6 +706,8 @@ public class PathFinder
 				if (ent == null){
 					continue;
 				}
+				
+				//cedge++;
 				
 				//System.out.println(ent);
 				
@@ -725,6 +740,19 @@ public class PathFinder
 					visit.start(node);
 					if (hasShort) {
 						producer.initPath(edge, 0);
+					}
+				}
+				else if (hasShort){
+					Node other = rel.getNode(oo);
+					Integer l = getLength(other);
+					if (l == null){
+						setLength(other, length);
+					}
+					else if (length > l){
+						continue;
+					}
+					else {
+						setLength(other, length);
 					}
 				}
 				
@@ -918,7 +946,6 @@ public class PathFinder
 			count(exp, -1);		
 		}
 		else {
-			
 			if (visited.loop(exp, start)){
 				stack.push(exp);
 				return;

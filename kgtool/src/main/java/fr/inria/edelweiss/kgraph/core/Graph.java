@@ -296,10 +296,10 @@ public class Graph {
 	
 	public void initPath(){
 		for (Entity ent : individual.values()){
-			ent.getNode().setObject(null);
+			ent.getNode().setProperty(Node.LENGTH, null);
 		}
 		for (Entity ent : literal.values()){
-			ent.getNode().setObject(null);
+			ent.getNode().setProperty(Node.LENGTH, null);
 		}
 		
 	}

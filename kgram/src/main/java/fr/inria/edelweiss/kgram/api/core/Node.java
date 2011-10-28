@@ -9,6 +9,11 @@ package fr.inria.edelweiss.kgram.api.core;
  */
 public interface Node {
 	
+	public static final int DEPTH 	= 0;
+	public static final int LENGTH 	= 1;
+	public static final int STATUS 	= 2;
+
+	
 	/**
 	 * Query nodes have an index computed by KGRAM
 	 * @return
@@ -52,6 +57,10 @@ public interface Node {
 	Object getObject();
 	
 	void setObject(Object o);
+	
+	Object getProperty(int p);
+	
+	void setProperty(int p, Object o);
 
 	
 }

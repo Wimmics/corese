@@ -11,6 +11,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.CoreseFloat;
 import fr.inria.acacia.corese.cg.datatype.CoreseInteger;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -28,6 +29,7 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.print.RDFFormat;
 
 /**
  * 
@@ -177,9 +179,176 @@ public class TestAST {
 	}
 	
 	
-	
-	
-	
+	@Test
+	public void test8(){
+		IDatatype dt1 = DatatypeMap.createLiteral("toto", null, "en");
+		IDatatype dt2 = DatatypeMap.createLiteral("toto", null, "fr");
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", -1, res);
+		try {
+			boolean b = dt1.less(dt2);
+			assertEquals("Result", false, b);
+			b = dt1.equals(dt2);
+			assertEquals("Result", false, b);
+			b = dt1.greater(dt2);
+			assertEquals("Result", false, b);
 
+		} catch (CoreseDatatypeException e) {
+			// TODO Auto-generated catch block
+			assertEquals("Result", false, false);
+		}
+	}
+	
+	@Test
+	public void test9(){
+		IDatatype dt1 = DatatypeMap.createLiteral("toto", null, "fr");
+		IDatatype dt2 = DatatypeMap.createLiteral("toto", null, "en");
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", 1, res);
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", -1, res);
+		
+	}
+	
+	@Test
+	public void test10(){
+		IDatatype dt1 = DatatypeMap.createLiteral("tata", null, "en");
+		IDatatype dt2 = DatatypeMap.createLiteral("toto", null, "fr");
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res<0));
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", true, (res>0));
+	}
+	
+	@Test
+	public void test11(){
+		IDatatype dt1 = DatatypeMap.createLiteral("tata", null, "fr");
+		IDatatype dt2 = DatatypeMap.createLiteral("toto", null, "en");
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res<0));
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", true, (res>0));
+	}
+	
+	@Test
+	public void test12(){
+		IDatatype dt1 = DatatypeMap.createLiteral("tutu", null, "fr");
+		IDatatype dt2 = DatatypeMap.createLiteral("toto");
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res>0));
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", true, (res<0));
+	}
+
+	@Test
+	public void test13(){
+		IDatatype dt1 = DatatypeMap.createLiteral("toto");
+		IDatatype dt2 = DatatypeMap.createLiteral("toto", null, "fr");
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res<0));
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", true, (res>0));
+	}
+	
+	@Test
+	public void test14(){
+		IDatatype dt1 = DatatypeMap.createLiteral("toto", RDFS.xsdstring);
+		IDatatype dt2 = DatatypeMap.createLiteral("toto", null, "fr");
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res<0));
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", true, (res>0));
+	}
+	
+	
+	@Test
+	public void test15(){
+		IDatatype dt1 = DatatypeMap.createLiteral("2009-10-11", RDFS.xsddate);
+		IDatatype dt2 = DatatypeMap.createLiteral("2009-11-11", RDFS.xsddate);
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res<0));
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", true, (res>0));
+	}
+	
+	@Test
+	public void test16(){
+		IDatatype dt1 = DatatypeMap.createLiteral("2009-10-11", RDFS.xsddate);
+		IDatatype dt2 = DatatypeMap.createLiteral("2009-10-11", RDFS.xsddate);
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res==0));
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", true, (res==0));
+	}
+	
+	@Test
+	public void test17(){
+		IDatatype dt1 = DatatypeMap.createLiteral("2009-12-11", RDFS.xsddate);
+		IDatatype dt2 = DatatypeMap.createLiteral("2009-11-11", RDFS.xsddate);
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res>0));
+	}
+	
+	@Test
+	public void test18(){
+		IDatatype dt1 = DatatypeMap.createLiteral("2009-12-11");
+		IDatatype dt2 = DatatypeMap.createLiteral("2009-11-11", RDFS.xsddate);
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res<0));
+		res = dt2.compareTo(dt1);
+		assertEquals("Result", true, (res>0));
+	}
+	
+	@Test
+	public void test19(){
+
+		IDatatype dt1 = DatatypeMap.createBlank("b");
+		IDatatype dt2 = DatatypeMap.createResource("a");
+		IDatatype dt3 = DatatypeMap.createLiteral("c");
+		IDatatype dt4 = DatatypeMap.newInstance(1);
+		
+		IDatatype dt5 = DatatypeMap.createLiteral("b", "undef1");
+		IDatatype dt6 = DatatypeMap.createLiteral("b", "undef1");
+		IDatatype dt7 = DatatypeMap.createLiteral("a", "undef2");
+
+
+		int res = dt1.compareTo(dt2);
+		assertEquals("Result", true, (res<0));
+		res = dt2.compareTo(dt3);
+		assertEquals("Result", true, (res<0));
+		res = dt1.compareTo(dt3);
+		assertEquals("Result", true, (res<0));
+		res = dt1.compareTo(dt4);
+		assertEquals("Result", true, (res<0));
+		res = dt3.compareTo(dt4);
+		assertEquals("Result", true, (res<0));
+		
+		res = dt5.compareTo(dt6);
+		assertEquals("Result", true, (res==0));
+		res = dt5.compareTo(dt7);
+		assertEquals("Result", true, (res<0));
+		
+		
+	}
+	
+	
+@Test
+public void test20() throws EngineException{
+	Graph g = Graph.create();
+	QueryProcess exec = QueryProcess.create(g);
+	
+	String query = "insert data {" +
+			"<John>  rdf:value 1 " +
+			"<James> rdf:value '1.0'^^xsd:decimal " +
+			"}";
+	
+	exec.query(query);
+	
+	RDFFormat f = RDFFormat.create(g);
+	System.out.println(f);
+}
+	
+	
+	
 
 }

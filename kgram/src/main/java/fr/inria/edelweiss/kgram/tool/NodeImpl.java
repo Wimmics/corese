@@ -86,4 +86,16 @@ public class NodeImpl implements Node {
 		object = o;
 	}
 
+	@Override
+	public Object getProperty(int p) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProperty(int p, Object o) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

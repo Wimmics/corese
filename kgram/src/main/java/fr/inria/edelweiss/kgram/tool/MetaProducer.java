@@ -40,6 +40,10 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		return lProducer;
 	}
 	
+	public Producer getProducer(){
+		return producer;
+	}
+	
 	public static MetaProducer create(){
 		return new MetaProducer();
 	}

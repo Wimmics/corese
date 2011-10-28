@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
+import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -111,9 +112,9 @@ public class QueryProcess extends QuerySolver {
 	
 	static Interpreter createInterpreter(Producer p){
 		Interpreter eval  = interpreter(p);
-		if (p instanceof ProducerImpl){
-			ProducerImpl pp = (ProducerImpl) p;
-			eval.getProxy().setPlugin(PluginImpl.create(pp.getGraph()));
+		Graph g = sGetGraph(p);
+		if (g != null){
+			eval.getProxy().setPlugin(PluginImpl.create(g));
 		}
 		return eval;
 	}
@@ -292,11 +293,25 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	public Graph getGraph(){
-		Producer p = getProducer();
+		return sGetGraph(getProducer());
+	}
+				
+	static Graph sGetGraph(Producer p){
+		Graph g = getGraph(p);
+		if (g != null){
+			return g;
+		}
+		else if (p instanceof MetaProducer){
+			return getGraph(((MetaProducer)p).getProducer());
+		}
+		return null;	
+	}
+	
+	static Graph getGraph(Producer p){
 		if (p instanceof ProducerImpl){
 			return ((ProducerImpl) p).getGraph();
 		}
-		return null;	
+		return null;
 	}
 	
 	
@@ -311,7 +326,7 @@ public class QueryProcess extends QuerySolver {
 		cons.setDebug(isDebug() || query.isDebug());
 		Graph gg;
 		if (getAST(query).isAdd()){
-			Graph g = ((ProducerImpl) getProducer()).getGraph();
+			Graph g = getGraph();
 			gg = cons.insert(lMap, g);
 		}
 		else {

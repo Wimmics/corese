@@ -106,31 +106,31 @@ public class CoreseDatatype
 	 * create a literal, normalize its label (for unique markers)
 	 * we accept not well formed numbers, created with CoreseUndef datatype 
 	 */
-	public static IDatatype normalizeCreate(String label, String lang, String valueJType, String conceptTypeLabel)
-	throws CoreseDatatypeException{
-		try{
-			label = DatatypeMap.getDatatypeNormalizedLabel(conceptTypeLabel, label);
-		}
-		catch (CoreseDatatypeException cde){
-			if (valueJType.equals(Cst.jTypeUndef)){
-				// toto^^xsd:integer : continue because we create 
-				// CoreseUndef with xsd:integer as datatype
-			}
-			else {
-				logger.error(cde.getMessage());
-				throw cde;
-			}
-		}
-		
-		try {
-			IDatatype dt = CoreseDatatype.create(valueJType, conceptTypeLabel, label, lang);
-			return dt; 
-		} 
-		catch (CoreseDatatypeException cde){
-			logger.fatal(cde.getMessage());
-			throw cde;
-		}
-	}
+//	public static IDatatype normalizeCreate(String label, String lang, String valueJType, String conceptTypeLabel)
+//	throws CoreseDatatypeException{
+//		try{
+//			label = DatatypeMap.getDatatypeNormalizedLabel(conceptTypeLabel, label);
+//		}
+//		catch (CoreseDatatypeException cde){
+//			if (valueJType.equals(Cst.jTypeUndef)){
+//				// toto^^xsd:integer : continue because we create 
+//				// CoreseUndef with xsd:integer as datatype
+//			}
+//			else {
+//				logger.error(cde.getMessage());
+//				throw cde;
+//			}
+//		}
+//		
+//		try {
+//			IDatatype dt = CoreseDatatype.create(valueJType, conceptTypeLabel, label, lang);
+//			return dt; 
+//		} 
+//		catch (CoreseDatatypeException cde){
+//			logger.fatal(cde.getMessage());
+//			throw cde;
+//		}
+//	}
 	
 	public static IDatatype create(String valueJType, String label) throws CoreseDatatypeException {
 		return create(valueJType, null, label, null);
@@ -208,7 +208,6 @@ public class CoreseDatatype
 		
 		IDatatype o = null;
 		Class valueClass = null;
-		
 		try{
 			valueClass = Class.forName(valueJType);
 		}
@@ -483,15 +482,159 @@ public class CoreseDatatype
 	 */
 	
 	public int compareTo(IDatatype d2){
-		int code2 = d2.getCode();
+		int code = getCode(), other = d2.getCode();
 		boolean b = false;
 		
-		switch (code2){
+		switch (other){
+		
+		case URI:
+		case BLANK:
+		case STRING:
+		case XMLLITERAL:
+			
+			if (code == other){
+				return this.getLabel().compareTo(d2.getLabel());
+			}
+			break;
+					
+		case NUMBER:
+		case BOOLEAN:
+		case DATE:
+			
+			if (code == other){
+				try {
+					b = this.less(d2);
+				}
+				catch (CoreseDatatypeException e) {}
+				if (b) return LESSER;
+				else if (this.sameTerm(d2)) return 0;
+				else return GREATER;
+			}
+			
+		case UNDEF:
+			
+			if (code == UNDEF){
+				int res = getDatatypeURI().compareTo(d2.getDatatypeURI());
+				if (res == 0){
+					return getLabel().compareTo(d2.getLabel());
+				}
+				else {
+					return res;
+				}
+			}	
+			
+			
+		}
+		
+		boolean trace = false;
+		IDatatype d1 = this;
+		
+		
+		
+		
+		switch (code){
+		// case where CODE are not equal 
+		// SPARQL order:
+		// Blank URI Literal
+
+		case BLANK: return LESSER;
+		
+		case URI:
+			switch (other){
+				case BLANK: return GREATER;
+				// other is Literal
+				default: return LESSER;
+			}
+			
+		default:
+			// this is LITERAL
+			switch (other){
+			case BLANK: 
+			case URI: return GREATER;
+		}
+		}
+		
+		
+		// String vs Literal
+		switch (code){
+		
+		case STRING:
+			if (other == LITERAL){ 
+				int res = d1.getLabel().compareTo(d2.getLabel());
+				if (res == 0 && d2.hasLang()){
+					return LESSER;
+				}
+				return res;
+			}
+			break;
+			
+			
+		case LITERAL:
+			
+			switch (other){
+			
+			case STRING:
+					int res =  d1.getLabel().compareTo(d2.getLabel());
+					if (res == 0 && hasLang()){
+						return GREATER;
+					}
+					return res;
+				
+				
+			case LITERAL:
+				
+				res =  d1.getLabel().compareTo(d2.getLabel());
+				
+				if (! hasLang() && ! d2.hasLang()) {
+					return res;
+				}
+
+				if (res == 0){
+					if (! hasLang()){
+						return LESSER;
+					}
+					else if (! d2.hasLang()){
+						return GREATER;
+					}
+					else {
+						return getLang().compareTo(d2.getLang());
+					}
+				}
+				
+				return res;
+				
+			}
+			
+			
+		
+		}
+		
+		
+		
+		
+		if (code < other){
+			return LESSER;
+		}
+		else {
+			return GREATER;
+		}
+		
+		
+	}
+	
+	
+	
+	
+	public int compareTo2(IDatatype d2){
+		int other = d2.getCode();
+		boolean b = false;
+		
+		switch (other){
 		case URI:
 		case BLANK:
 		case STRING:
 			
-			if (getCode() == code2){
+			if (getCode() == other){
 				return this.getLabel().compareTo(d2.getLabel());
 			}
 			break;
@@ -499,7 +642,7 @@ public class CoreseDatatype
 		case NUMBER:
 		case BOOLEAN:
 			
-			if (getCode() == code2){
+			if (getCode() == other){
 				try {
 					b = this.less(d2);
 				}
@@ -512,7 +655,6 @@ public class CoreseDatatype
 		
 		boolean trace = false;
 		IDatatype d1 = this;
-		
 
 		if (SPARQLCompliant){
 			// BN uri literal
@@ -526,6 +668,7 @@ public class CoreseDatatype
 				if (! d2.isBlank()) return LESSER;
 			}
 			else if (d2.isBlank()) return GREATER;
+			
 		}
 		else {
 			// generic last
@@ -538,6 +681,7 @@ public class CoreseDatatype
 				if (! d2.isLiteral()) return LESSER;
 			}
 			else if (d2.isLiteral()) return GREATER;
+			
 		}
 		
 		//boolean sameDatatype = (d1.getDatatype() == d2.getDatatype());
@@ -555,7 +699,8 @@ public class CoreseDatatype
 					else if (d1.sameTerm(d2)) return 0;
 					else return GREATER;
 				}
-				else return LESSER;
+				else 
+					return LESSER;
 			}
 			else if (d2 instanceof CoreseNumber) return GREATER;
 			else if (d1 instanceof CoreseDate) return LESSER;

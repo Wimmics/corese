@@ -171,35 +171,35 @@ public class DatatypeMap implements Cst, RDF {
 	 * Return the String ID of the marker set. If there is a lang, the ID is
 	 * rdfs:Literal/lang
 	 */
-	public String getDatatypeMarkerSet(String dt, String lang, boolean std){
-
-		if (dt==null)
-			return null;
-		else if (!std){
-			return dt + NWFL; // not well formed literal
-		}
-		else if (dt.equals(RDFSLITERAL)){
-			//indirection vers une hash qd LITERAL <-- gestion de la langue
-			Mapping th = ht.get(dt);
-			if(lang == null || lang.equals("")){
-				return th.getDataTypeMarkerSetHash().get(DEFAULT);
-			}
-			Hashtable<String, String> dtmsh = th.getDataTypeMarkerSetHash();
-			String dtms = dtmsh.get(lang);
-			//creation dynamique du marker set
-			if (dtms == null){
-				dtms = RDFSLITERAL + "/" + lang ;
-				dtmsh.put(lang, dtms);
-			}
-			return dtms;
-		}
-		Mapping map=getMapping(dt);
-		if (map == null)
-			return null;
-		else return map.getDataTypeMarkerSet();
-
-
-	}
+//	public String getDatatypeMarkerSet(String dt, String lang, boolean std){
+//
+//		if (dt==null)
+//			return null;
+//		else if (!std){
+//			return dt + NWFL; // not well formed literal
+//		}
+//		else if (dt.equals(RDFSLITERAL)){
+//			//indirection vers une hash qd LITERAL <-- gestion de la langue
+//			Mapping th = ht.get(dt);
+//			if(lang == null || lang.equals("")){
+//				return th.getDataTypeMarkerSetHash().get(DEFAULT);
+//			}
+//			Hashtable<String, String> dtmsh = th.getDataTypeMarkerSetHash();
+//			String dtms = dtmsh.get(lang);
+//			//creation dynamique du marker set
+//			if (dtms == null){
+//				dtms = RDFSLITERAL + "/" + lang ;
+//				dtmsh.put(lang, dtms);
+//			}
+//			return dtms;
+//		}
+//		Mapping map=getMapping(dt);
+//		if (map == null)
+//			return null;
+//		else return map.getDataTypeMarkerSet();
+//
+//
+//	}
 
 	private static Method getDatatypeNormalizedLabelMethod(String dt){
 		if(dt==null){ return null;}
@@ -221,43 +221,43 @@ public class DatatypeMap implements Cst, RDF {
 		return c;
 	}
 
-	public static String getDatatypeNormalizedLabel(String jType, String label)
-	throws CoreseDatatypeException {
-		if (jType==null){ return null; }
-		if (jType.equals(xsdstring) || jType.equals(RDFSLITERAL)){ // to optimize
-			return label;
-		}
-		String args[] = {label};
-		try{
-			String nLabel = "";
-			Object o = null;
-			Method m = null;
-			Class c = null;
-
-			m = getDatatypeNormalizedLabelMethod(jType);
-			c = getDatatypeNormalizedLabelClass(jType);
-			o = m.invoke(c,(Object[])args);
-			nLabel = (String)o;
-			if (nLabel == null) throw new CoreseDatatypeException(jType, label);
-			return nLabel;
-			//return (String)getDatatypeNormalizedLabelMethod(jType).invoke(getDatatypeNormalizedLabelClass(jType),args);
-		}
-		catch(java.lang.IllegalAccessException e){
-			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
-			throw de;
-		}
-		catch(java.lang.reflect.InvocationTargetException e){
-			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
-			throw de;
-		}
-		catch(Exception e){
-			if (e instanceof CoreseDatatypeException)
-				throw (CoreseDatatypeException) e;
-			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
-			System.err.println(de);
-			throw de;
-		}
-	}
+//	public static String getDatatypeNormalizedLabel(String jType, String label)
+//	throws CoreseDatatypeException {
+//		if (jType==null){ return null; }
+//		if (jType.equals(xsdstring) || jType.equals(RDFSLITERAL)){ // to optimize
+//			return label;
+//		}
+//		String args[] = {label};
+//		try{
+//			String nLabel = "";
+//			Object o = null;
+//			Method m = null;
+//			Class c = null;
+//
+//			m = getDatatypeNormalizedLabelMethod(jType);
+//			c = getDatatypeNormalizedLabelClass(jType);
+//			o = m.invoke(c,(Object[])args);
+//			nLabel = (String)o;
+//			if (nLabel == null) throw new CoreseDatatypeException(jType, label);
+//			return nLabel;
+//			//return (String)getDatatypeNormalizedLabelMethod(jType).invoke(getDatatypeNormalizedLabelClass(jType),args);
+//		}
+//		catch(java.lang.IllegalAccessException e){
+//			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
+//			throw de;
+//		}
+//		catch(java.lang.reflect.InvocationTargetException e){
+//			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
+//			throw de;
+//		}
+//		catch(Exception e){
+//			if (e instanceof CoreseDatatypeException)
+//				throw (CoreseDatatypeException) e;
+//			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
+//			System.err.println(de);
+//			throw de;
+//		}
+//	}
 
 	/**
 	 * Defines the datatype map between XSD datatypes and the java class

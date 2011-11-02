@@ -14,7 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 public class NodeImpl implements Node, Entity {
 	IDatatype dt;
 	Object object;
-	Object status;
+	Object[] properties;
 	
 	
 	public NodeImpl(IDatatype val){
@@ -127,20 +127,18 @@ public class NodeImpl implements Node, Entity {
 
 	@Override
 	public Object getProperty(int p) {
-		switch(p){
-		case STATUS: return status;
-		
-		default: return object;
-		}	
+		if (properties == null){
+			return null;
+		}
+		return properties[p];
 	}
 
 	@Override
 	public void setProperty(int p, Object o) {
-		switch(p){
-		case STATUS: status = o; break;
-		
-		default: object = o;
+		if (properties == null){
+			properties = new Object[PSIZE];
 		}
+		properties[p] = o;
 	}
 
 }

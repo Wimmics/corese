@@ -17,11 +17,13 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
+import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.tool.EdgeInv;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 
@@ -59,7 +61,7 @@ public class PathFinder
 	private static Logger logger = Logger.getLogger(PathFinder.class);
 	
 	public static long cedge = 0, cresult = 0, ctest = 0;
-	static boolean isStack = true;
+	//public static boolean speedUp = false;
 
 	// thread that enumerates the path
 	private GraphPath path;
@@ -68,11 +70,12 @@ public class PathFinder
 	private Buffer mbuffer;
 	private Environment memory;
 	private EventManager manager;
+	private ResultListener listener;
 	private Producer producer;
 	private Matcher matcher;
 	private Evaluator evaluator;
 	private Query query;
-	private List<Mapping> lMap ;
+	private Mappings lMap ;
 	private Filter filter;
 	private Memory mem;
 	private Edge edge;
@@ -96,6 +99,8 @@ public class PathFinder
 	isReverse,
 	isShort,
 	isOne, 
+	// if true: return list of path instead of thread buffer: 50% faster but enumerate all path
+	isList = false,
 	loopNode = false;
 	private int  maxLength = Integer.MAX_VALUE, 
 	min = 0, max = maxLength,
@@ -139,7 +144,7 @@ public class PathFinder
 		producer = p;
 		matcher = match;
 		evaluator = eval;
-		lMap = new ArrayList<Mapping>();
+		lMap = new Mappings();
 	}
 	
 	public static PathFinder create(Producer p, Matcher match, Evaluator eval, Query q) {
@@ -151,14 +156,23 @@ public class PathFinder
 		defaultBreadth = b;
 	}
 	
-	public void setEventManager(EventManager man){
+	public void set(EventManager man){
 		manager = man;
 		hasEvent = true;
+	}
+	
+	public void set(ResultListener rl){
+		listener = rl;
 	}
 	
 	public void checkLoopNode(boolean b){
 		loopNode = b;
 	}
+	
+	public void setList(boolean b){
+		isList = b;
+	}
+	
 	
 	/**
 	 * Start/init computation of a new list of path
@@ -245,19 +259,39 @@ public class PathFinder
 		maxLength = n;
 	}
 
-	
-	public Iterable<Mapping> candidate(Node gNode, List<Node> from, Environment memory) {
+	/**
+	 * Enumerate all path, return a list of path
+	 * 50% faster that thread but enumerate *all* path
+	 */
+	public Iterable<Mapping> candidate2(Node gNode, List<Node> from, Environment mem) {
 		this.gNode = gNode;
 		this.from = from;
-		mstart(memory);
+		this.memory = mem;
+		lMap.clear();
+		process(memory);
+		return lMap;
+	}
+	
+	/**
+	 * Enumerate path in a parallel thread, return a synchronised buffer
+	 * Useful if  backjump or have a limit in sparql query
+	 */
+	public Iterable<Mapping> candidate(Node gNode, List<Node> from, Environment mem) {
+		if (isList){
+			return candidate2(gNode, from, mem);
+		}
+		this.gNode = gNode;
+		this.from = from;
+		this.memory = mem;
+		mstart(mem);
 		// return path enumeration (read the synchronized buffer)
 		return mbuffer;
 	}
 	
+	
 	void mstart(Environment mem) {
 		isStop = false;
 		// buffer store path enumeration
-		memory = mem;
 		mbuffer = new Buffer();
 		// path enumeration in a thread 
 		path = new GraphPath(this, mem, mbuffer);
@@ -384,7 +418,9 @@ public class PathFinder
 		eval(regexp1, path, cstart, csource);
 
 		// in order to stop enumeration, return null
-		mbuffer.put(null, false);
+		if (! isList){
+			mbuffer.put(null, false);
+		}
 		
 	}
 	
@@ -417,20 +453,6 @@ public class PathFinder
 			n1 = path.getEdge(fst).getNode(0);
 			n2 = path.getEdge(lst).getNode(1);
 		}
-		
-//		if (isShort){
-//			// eliminate current path to n2 if it is longer than a previous path to n2
-//			Integer l = getLength(n2);
-//			if (l == null){
-//				setLength(n2, path.size());
-//			}
-//			else if (path.size()>l){
-//				return null;
-//			}
-//			else {
-//				setLength(n2, path.size());
-//			}
-//		}
 		
 		if (! check(n1, n2)){
 			return null;
@@ -643,8 +665,8 @@ public class PathFinder
 		if (isStop) return;
 		
 		if (stack.isEmpty()){
-			//cresult++;
-			result(path, start, src);
+			cresult++;						
+			result(path, start, src);			
 			return;
 		}
 			
@@ -865,12 +887,20 @@ public class PathFinder
 	}
 	
 	void result(Path path, Node start, Node src){
+		
 		if (path.size()>0){
 
-			Mapping map = result(path, gNode, src, start, isReverse);
-			//System.out.println("** PF: \n" + map);
-			if (map != null){
-				mbuffer.put(map, true);
+			boolean store = true;
+			if (listener!=null){
+				store = listener.process(path.copy());
+			}
+
+			if (store){
+				Mapping map = result(path, gNode, src, start, isReverse);
+				//System.out.println("** PF: \n" + map);
+				if (map != null){
+					result(map);
+				}
 			}
 		}
 		else {
@@ -886,10 +916,19 @@ public class PathFinder
 					Mapping m = result(path, gNode, src, node, isReverse);
 
 					if (m != null){
-						mbuffer.put(m, true);
+						result(m);
 					}
 				}
 			}
+		}
+	}
+	
+	void result(Mapping map){
+		if (isList){
+			lMap.add(map);
+		}
+		else {
+			mbuffer.put(map, true);
 		}
 	}
 	

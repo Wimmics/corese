@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
  *
  */
 public class Automaton {
-	static boolean isStack = PathFinder.isStack;
+	static boolean isStack = false;
 	
 	State in, out, current;
 	// list of open transitions (target state to be completed)

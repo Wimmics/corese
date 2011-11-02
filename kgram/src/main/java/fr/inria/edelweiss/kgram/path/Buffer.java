@@ -41,9 +41,10 @@ public class Buffer implements
 			} catch (InterruptedException e) {
 			}
 		}
+		notify();
 		return hasNext;
 	}
-	
+
 	
 	
 	public synchronized void put(Mapping val, boolean next){

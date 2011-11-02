@@ -159,7 +159,7 @@ public class Distance {
 	 * Node with no depth (not in subClassOf hierarchy of root) is considered at depth 1 just under root (at depth 0)
 	 */
 	Integer getDDepth(Node n){
-		Integer d = (Integer) n.getObject() ;
+		Integer d = getDepth(n);
 		if (d == null) return ONE;
 		return d ;
 	}

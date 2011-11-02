@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.event.EventManager;
+import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
@@ -50,10 +51,11 @@ import fr.inria.edelweiss.kgram.tool.ResultsImpl;
  *
  */
 public class Eval implements  ExpType, Plugin {
-	private static Logger logger = Logger.getLogger(Eval.class);	
-
+	private static Logger logger = Logger.getLogger(Eval.class);
+	
 	static final int STOP = -2;
 	
+	ResultListener listener;
 	EventManager manager;
 	boolean hasEvent = false;
 	
@@ -85,6 +87,8 @@ public class Eval implements  ExpType, Plugin {
 	Node nn;
 	
 	Exp edgeToDiffer;
+	
+	Mapping mapping;
 	
 	Mappings results, 
 		// initial results to be completed
@@ -545,9 +549,10 @@ public class Eval implements  ExpType, Plugin {
 		PathFinder pathFinder =  PathFinder.create(producer, match, evaluator, query);
 		//pathFinder.setDefaultBreadth(false);
 		if (hasEvent){
-			pathFinder.setEventManager(manager);
+			pathFinder.set(manager);
 		}
-		pathFinder.checkLoopNode(query.isLoopNode());
+		pathFinder.set(listener);
+		pathFinder.setList(query.isListPath());
 		pathFinder.init(exp.getRegex(), exp.getObject(), exp.getMin(), exp.getMax());
 		lPathFinder.add(pathFinder);
 		return pathFinder;
@@ -566,15 +571,13 @@ public class Eval implements  ExpType, Plugin {
 	
 	private	int solution(int n){
 		int backtrack = n-1;
-		Mapping map = store();
-		if (hasEvent){
-			send(Event.RESULT, query, map);
-		}
+		store();
+		
 		if	(results.size() >= limit){
 			clean();
-			if (hasEvent){
-				send(Event.LIMIT, query, map);
-			}
+//			if (hasEvent){
+//				send(Event.LIMIT, query, map);
+//			}
 			// backjump to send finish events to listener
 			// and perform 'close instructions' if any
 			return STOP;
@@ -1538,12 +1541,12 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
  		
 		for (Mapping map : path.candidate(gNode, qq.getFrom(gNode), env)){
 			boolean success = match(map) && env.push(map, n);
-
+			
 			if (isEvent){
 				send(evENUM, exp, map, success);
 			}
 
-			if (success){						
+			if (success){	
 				isSuccess = true;
 				backtrack = eval(gNode, stack, n+1, option);
 				env.pop(map);
@@ -1619,7 +1622,7 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		env.setExp(exp);
 		//Producer prod = producer;
 		Query qq = query;
-			
+		
 		for (Entity map : p.getEdges(gNode, qq.getFrom(gNode), qEdge,  env)){			
 			
 			if (map != null){
@@ -2057,11 +2060,18 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 	/**
 	 * Store a new result
 	 */
-	private	Mapping store(){
-		Mapping ans = memory.store(query, isSubEval);
-		//Mapping ans = memory.store(query);
-		results.submit(ans);
-		return ans;
+	private	void store(){
+		boolean store = true;
+		if (listener != null){
+			store = listener.process(memory);
+		}
+		if (store) {
+			Mapping ans = memory.store(query, isSubEval);
+			results.submit(ans);
+			if (hasEvent){
+				send(Event.RESULT, query, ans);
+			}		
+		}
 	}
 	
 	public int nbResult(){
@@ -2128,6 +2138,11 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 	 * 
 	 * @param el
 	 */
+	
+	public void addResultListener(ResultListener el){
+		listener = el;
+	}
+
 	
 	public void addEventListener(EventListener el){
 		createManager();

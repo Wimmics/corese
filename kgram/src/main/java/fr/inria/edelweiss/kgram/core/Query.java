@@ -72,7 +72,10 @@ public class Query extends Exp {
 	isDistribute = false, isTest = false, // sort edges to be connected
 	isSort = true, isConstruct = false,
 	isDelete = false, isUpdate = false, // true:  path do not loop on node
-	isLoopNode = false, isPipe = false, isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
+	isLoopNode = false, isPipe = false, 
+	isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
+	// PathFinder list path instead of thread buffer: 50% faster but enumerate all path
+	isListPath = false,
 	isCorrect = true, isConnect = false;
 	
 	int mode = Matcher.UNDEF;
@@ -649,6 +652,14 @@ public class Query extends Exp {
 	
 	public void setListGroup(boolean b){
 		isListGroup = b;
+	}
+	
+	public void setListPath(boolean b){
+		isListPath = b;
+	}
+	
+	public boolean isListPath(){
+		return isListPath;
 	}
 	
 	public void setMapping(List<Mapping> list){

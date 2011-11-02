@@ -284,6 +284,19 @@ public class Mapping
 		return lPath[n];
 	}
 	
+	public Node getQueryPathNode(){
+		if (! isPath()) return null;
+		
+		int n = 0;
+		for (Path pp : lPath){
+			if (pp != null){
+				return qNodes[n];
+			}
+			n++;
+		}
+		return null;
+	}
+	
 	boolean isPath(Node qNode){
 		return isPath(getIndex(qNode));
 	}

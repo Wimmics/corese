@@ -128,7 +128,11 @@ public class Pragma  {
 				}
 			}
 		}
-
+		else if (subject.equals(PATH)){
+			if (property.equals(LIST)){
+				query.setListPath(value(object));
+			}
+		}
 	}
 	
 	public boolean value(String value){

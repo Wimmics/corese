@@ -13,7 +13,11 @@ import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgramenv.util.QueryExec;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.print.RDFFormat;
 
 public class TestCoreseAPI {
 	
@@ -111,8 +115,58 @@ public class TestCoreseAPI {
 		
 	}
 	
+	@Test
+	public void test4(){
+		EngineFactory ef = new EngineFactory(); 
+		IEngine semengine1 = ef.newInstance(); 
+		IEngine semengine2 = ef.newInstance(); 
+
 	
-	
+		QueryExec queryAgent = QueryExec.create(); 
+		queryAgent.setListGroup(false); 
+		queryAgent.add( semengine1 ); 
+		queryAgent.add( semengine2 ); 
+		
+		String init = "insert data {graph <test> {<John> <name> 'John'}}";
+		try {
+			queryAgent.SPARQLQuery(init);
+			
+			GraphEngine e = (GraphEngine) semengine1;
+			Graph g = e.getGraph();
+			g.init();
+			
+//			RDFFormat f = RDFFormat.create(g);
+//			System.out.println(f);
+												
+			assertEquals("Result", 2, g.size());
+			
+			
+			String query = "select * where {graph <test> {?x ?p ?y}}";
+			IResults res = queryAgent.SPARQLQuery(query);
+			assertEquals("Result", 1, res.size());
+
+			
+			query = "select * where {?p rdf:type rdf:Property}";
+			
+			res = queryAgent.SPARQLQuery(query);
+//			System.out.println("** Res: " );
+//			System.out.println(res);
+			assertEquals("Result", 1, res.size());
+			
+			
+			String update = "delete {?x ?p ?y} where {?x ?p ?y}";
+			queryAgent.SPARQLQuery(update);
+						
+			
+			res = queryAgent.SPARQLQuery(query);
+			System.out.println(res);
+			assertEquals("Result", 0, res.size());
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
 	
 	
 

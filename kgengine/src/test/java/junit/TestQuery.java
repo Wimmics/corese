@@ -7,14 +7,19 @@ import org.junit.Test;
 
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
+import fr.inria.acacia.corese.api.EngineFactory;
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.api.IEngine;
+import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.StatListener;
+import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -1084,6 +1089,43 @@ public class TestQuery {
 	
 	
 	
+	@Test
+	public void test37(){
+		Graph g = Graph.create(true);
+		QueryProcess exec  = QueryProcess.create(g);
+		
+		String init = "insert data {<John> <name> 'John'}";
+		try {
+			exec.query(init);
+			
+			g.init();
+			
+//			RDFFormat f = RDFFormat.create(g);
+//			System.out.println(f);
+												
+			assertEquals("Result", 2, g.size());
+			
+			String query = "select * where {?p rdf:type rdf:Property}";
+			
+			Mappings res = exec.query(query);
+//			System.out.println("** Res: " );
+//			System.out.println(res);
+			assertEquals("Result", 1, res.size());
+			
+			
+			String update = "delete {?x ?p ?y} where {?x ?p ?y}";
+			exec.query(update);
+						
+			
+			String qq = "select * where {?x ?p ?y}";
+			res = exec.query(qq);
+			assertEquals("Result", 0, res.size());
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
 	
 	
 	

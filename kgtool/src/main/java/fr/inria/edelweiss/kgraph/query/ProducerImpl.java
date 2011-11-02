@@ -93,12 +93,13 @@ public class ProducerImpl implements Producer {
 	
 	@Override
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
-			Environment env) {			
+			Environment env) {
+		
 		Node predicate = getPredicate(edge, env);
 		if (predicate == null){
 			return empty;
 		}
-		
+
 		Node node = null, node2 = null;
 		int n = 0;
 
@@ -123,7 +124,7 @@ public class ProducerImpl implements Producer {
 				}
 			}
 		}
-						
+				
 		if (node == null  && from.size()>0){
 			// from named <uri>
 			// graph ?g { }
@@ -145,6 +146,9 @@ public class ProducerImpl implements Producer {
 		}
 		else {
 			it = graph.getDefaultEdges(predicate, node, node2, n);
+			if (it == null){
+				return empty;
+			}
 			return it;
 		}
 		

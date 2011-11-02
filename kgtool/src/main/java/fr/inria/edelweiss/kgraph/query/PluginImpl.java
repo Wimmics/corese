@@ -216,8 +216,8 @@ public class PluginImpl extends ProxyImpl {
 	
 	IDatatype depth(Object o){
 		Node n = node(o);
-		if (n == null || n.getObject()== null) return null;
-		IDatatype d = getValue((Integer) n.getObject());
+		if (n == null || n.getProperty(Node.DEPTH)== null) return null;
+		IDatatype d = getValue((Integer) n.getProperty(Node.DEPTH));
 		return d;
 	}
 	

@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.event.EventManager;
+import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgram.tool.ParallelMetaProducer;
@@ -44,6 +45,7 @@ public class QuerySolver  {
 	static String NAMESPACES;
 
 	protected EventManager manager;
+	protected ResultListener listener;
 	protected Producer producer;
 	protected Provider provider;
 	protected Evaluator evaluator;
@@ -52,6 +54,7 @@ public class QuerySolver  {
 
 	
 	boolean isListGroup = false,
+	isListPath = false,
 	isDebug = false;
 	
 	boolean isSequence = false;
@@ -123,7 +126,7 @@ public class QuerySolver  {
 		}
 		else {
 			meta = MetaProducer.create();
-                            meta.add(producer);
+            meta.add(producer);
 			producer = meta;
 		}
 		meta.add(prod);
@@ -212,6 +215,7 @@ public class QuerySolver  {
 	
 	void init(Query q){
 		q.setListGroup(isListGroup);
+		q.setListPath(isListPath);
 		if (isDebug) q.setDebug(isDebug);
 	}
 	
@@ -245,6 +249,11 @@ public class QuerySolver  {
 		if (manager == null) manager = new EventManager();
 		manager.addEventListener(el);
 	}
+	
+	public void addResultListener(ResultListener el){
+		listener = el;
+	}
+
 	
 	public Query compile(String squery) throws EngineException {
 		return compile(squery, null, null);
@@ -318,6 +327,7 @@ public class QuerySolver  {
 				kgram.addEventListener(el);
 			}
 		}
+		kgram.addResultListener(listener);
 	}
 	
 	void pragma(Eval kgram, Query query){
@@ -339,6 +349,10 @@ public class QuerySolver  {
 	
 	public void setListGroup(boolean b){
 		isListGroup = b;
+	}
+	
+	public void setListPath(boolean b){
+		isListPath = b;
 	}
 	
 	public void setDebug(boolean b){

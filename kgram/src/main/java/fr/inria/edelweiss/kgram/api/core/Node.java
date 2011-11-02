@@ -12,6 +12,10 @@ public interface Node {
 	public static final int DEPTH 	= 0;
 	public static final int LENGTH 	= 1;
 	public static final int STATUS 	= 2;
+	public static final int DEGREE 	= 3;
+
+	
+	public static final int PSIZE 	= 4;
 
 	
 	/**

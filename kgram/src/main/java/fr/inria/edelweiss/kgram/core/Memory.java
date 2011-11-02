@@ -361,6 +361,14 @@ public class Memory implements Environment {
 	}
 	
 	
+	Mapping store(Query q, Mapping map){
+		Node[] gnode = new Node[q.getGroupBy().size()];
+		orderGroup(q.getGroupBy(), gnode);
+		map.setGroupBy(gnode);
+		return map;
+	}
+	
+	
 	void orderGroup(List<Exp> lExp, Node[] nodes){
 		int n = 0;
 		for (Exp e : lExp){
@@ -820,6 +828,15 @@ public class Memory implements Environment {
 	
 	Path getPath(Node qNode){
 		return lPath[qNode.getIndex()];
+	}
+	
+	public Path getPath(){
+		for (int i = 0; i<lPath.length; i++){
+			if (lPath[i]!=null){
+				return lPath[i];
+			}
+		}
+		return null;
 	}
 	
 	boolean isPath(Node qNode){

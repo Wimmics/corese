@@ -3,69 +3,116 @@ package sna;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.Path;
 
 /**
- * Process several Mappings, each one is result of a query where ?x is bound:
+ * SNA Processor
  * 
- * ?x foaf:knows+ :: $path ?y
+ * ?x sa(foaf:knows+) :: $path ?y
  * group by ?x ?y
  * bindings ?x {(<someone>)}
+ * 
+ * Compute betweeness of intermediate nodes  with shortest paths between x, y 
+ * For each x,y : consider all shortest paths ; store and count intermediate nodes
+ * 
+ * Based on Guillaume Erétéo SNA query library
+ * 
+ * Olivier Corby, Edelweiss, INRIA, 2011
  *
  */
 public class SSNA implements ResultListener {
 	
-	HashMap<Node, Integer> 
-	// min path length between x ?b y
-	tmin, 
-	// nb path with min length between x ?b y 
-	tcmin, 
-	// total nb of all degree of node ?b (for all ?x ?b ?y)
-	tcdeg;
-	
-	HashMap<Node, Float> 
-	// total sum of all degree of node ?b (for all ?x ?b ?y)
-	tdeg;
-	
-	HashMap<Integer, Integer>
-	// total nb path of length min between x y
-	// key is min, value is nb
-	ttcmin;
-	
-	// Node is the target node of path
-	HashMap<Node, List<Path>> tpath;
+	static int MAXNODE 	 = 1000;
+
+	boolean isFake = false, 
+	speedUp = true;
+			
+	int maxNode = MAXNODE;
+		
+	// number of target node where node occur
+	int  acdeg[], 
+	// index of nodes of current path
+	lindex[];
+	// sum of degrees for each node
+	float adeg[];
 	
 	
-	int maxPathLength = 0, 
+	Node[] 	     
+	     // all nodes of network which have a degree
+	     allNodes;
+	
+	// One record for each target node
+	// Record store intermediate nodes, their counter, 
+	// min path length, number of min path
+	Record[] records ;
+
+	
+	// SNA result handler
+	SSNAHandler handler;
+	
+	Node start;
+	
+	
+	int 
+	index = 0,
+	count = 0, 
+	maxPathLength = 0, 
 	countPath 	= 0, 
 	countResult = 0, 
 	totalResult = 0;
 	
+	class ListPath extends ArrayList<Path> {}
 	
 	SSNA(){
-		
-		ttcmin = new HashMap<Integer, Integer>();
-		tmin   = new HashMap<Node, Integer>();
-		tcmin  = new HashMap<Node, Integer>();
-		
-		tcdeg  = new HashMap<Node, Integer>();
-		tdeg   = new HashMap<Node, Float>();
-		
-		tpath  = new HashMap<Node, List<Path>>();
+		this(MAXNODE);
 	}
+
+	SSNA(int lnode){
+		
+		maxNode = lnode;
+		records = new Record[lnode];
+		acdeg 	= new int[lnode];
+		adeg 	= new float[lnode];
+
+		allNodes	= new Node[lnode];
+		
+		for (int i = 0; i<lnode; i++){
+			acdeg[i] = 0;
+			adeg[i]  = 0;
+		}
+		
+		lindex = new int[lnode];
+						
+		handler = new SSNAHandler();
+	}
+	
 	
 	public static SSNA create(){
 		return  new SSNA();
+	}
+	
+	public static SSNA create(int lnode){
+		return  new SSNA(lnode);
+	}
+	
+	public void set(SSNAHandler h){
+		handler = h;
+	}
+	
+	void setFake(boolean b){
+		isFake = b;
+	}
+	
+	boolean isFake(){
+		return isFake;
 	}
 	
 	
@@ -75,94 +122,34 @@ public class SSNA implements ResultListener {
 	 * 
 	 * Mappings with same value of ?x
 	 */
-	public void process(){
-				
-		for (Node target : getPathNodes()){
-			// for each target ?y
-			clear();
-			List<Path> list = getPathList(target);
-
-			//System.out.println(lm + " " + qp);
-			
-			boolean suc = path(list);
-			if (suc){
-				analysis();
-			}
-			
-		}
+	
+	public void start(){
 		
 	}
-	
-	
-	
 
-	
 	/**
-	 * ?x foaf:knows+ ?y
-	 * Mappings lm with same value of ?x, ?y
+	 * After all source x target paths have been found
+	 * Compute the final degrees
 	 */
-	boolean path(List<Path> list){
-				
-		for (Path pp : list){
-
-			// same values of ?x and ?y
-			int length = pp.size();
-			if (length == 1){
-				return false;
-			}
-			// number of paths with this length  between ?x ?y
-			allMinCount(length);
-			countPath++;
-			
-			if (length > maxPathLength){
-				maxPathLength = length;
-			}
-			
-			int n = 1;
-			
-			for (Entity ent : pp.getEdges()){
-				// enumerate path edges
-				if (n++ < length){
-					// skip last edge
-					Node node = ent.getNode(1);
-					// min path length with this intermediate node
-					// ?x .. node .. ?y
-					min(node, length);
+	public void complete(){
+		if (isFake()){
+			return;
+		}
+		
+		int n = 0;
+		for (Node node : allNodes){
+			if (node != null){
+				float deg = getDegree(n);
+				if (deg!=0){
+					float degree = deg / getCountDegree(n); 
+					setDegree(n, degree);
+					handler.degree(node, degree);
 				}
 			}
-		}
-		
-		return true;
-		
-	}
-	
-	
-	/**
-	 * partial betweenness
-	 * ?x foaf:knows+ ?y
-	 * Mappings with same value of ?x, ?y
-	 */
-	void analysis(){
-		
-		for (Node node : getNodes()){
-			// for all node between ?x and ?y
-			
-			// min path length (by node)
-			int min = getMin(node);
-			
-			// number of path with min length (by node)
-			float cmin = getCountMin(node);
-			
-			// total number of path with length=min between ?x, ?y
-			float total = getAllMinCount(min);
-			
-			float deg = cmin / total;
-			
-			addDegree(node, deg);
-						
+			n++;
 		}
 	}
-	
+
 	
 
 	
@@ -170,10 +157,10 @@ public class SSNA implements ResultListener {
 	List<Node> result(){
 		ArrayList<Node> list = new ArrayList<Node>();
 		
-		for (Node node : getAllNodes()){
-			list.add(node);
-			setDegree(node, getDegree(node) / getCountDegree(node));
-			node.setProperty(Node.DEGREE, getDegree(node));
+		for (Node node : allNodes){
+			if (node!=null && getDegree(node)>0){
+				list.add(node);
+			}
 		}
 		
 		Collections.sort(list, new  Compare());
@@ -187,7 +174,9 @@ public class SSNA implements ResultListener {
 	class Compare implements Comparator<Node> {
 		
 		public int compare(Node o1, Node o2) {
-			int res =  getDegree(o1).compareTo(getDegree(o2));
+			float d1 = getDegree(o1);
+			float d2 = getDegree(o2);
+			int res = Float.compare(d1, d2);
 			if (res == 0){
 				return o2.getLabel().compareTo(o1.getLabel());
 			}
@@ -205,36 +194,37 @@ public class SSNA implements ResultListener {
 	
 	
 	
-	
+	/****************************************************************/
+	 
+	/**
+	 * Generate a unique index for node
+	 * Nodes are stored in arrays at this index
+	 */
+	int index(Node node){
+		return node.getIndex();
+	}
 
 	
-	void countDegree(Node n){
-		Integer i = tcdeg.get(n);
-		if (i == null){
-			i = 0;
-		}
-		tcdeg.put(n, i+1);
+	int getCountDegree(int n){
+		return acdeg[n];
 	}
 	
-	Integer getCountDegree(Node n){
-		return tcdeg.get(n);
+	void addDegree(int n, float f){
+		adeg[n] += f;
+		acdeg[n] += 1;
+	}
+
+	
+	float getDegree(int n){
+		return adeg[n];
 	}
 	
-	void addDegree(Node n, float f){
-		Float d = getDegree(n);
-		if (d == null){
-			d = (float)0;
-		}
-		setDegree(n, d+f);
-		countDegree(n);
+	void setDegree(int n, float d){
+		adeg[n] = d;
 	}
 	
-	void setDegree(Node n, float f){
-		tdeg.put(n, f);
-	}
-	
-	Float getDegree(Node n){
-		return tdeg.get(n);
+	float getDegree(Node n){
+		return getDegree(index(n));
 	}
 	
 	int getMaxPathLength(){
@@ -245,58 +235,7 @@ public class SSNA implements ResultListener {
 		return countPath;
 	}
 	
-	
-	int getMin(Node n){
-		return tmin.get(n);
-	}
-	
-	int getCountMin(Node n){
-		return tcmin.get(n);
-	}
-	
 
-	
-	Iterable<Node> getNodes(){
-		return tmin.keySet();
-	}
-	
-	Iterable<Node> getAllNodes(){
-		return tdeg.keySet();
-	}
-	
-	
-	void clear(){
-		tmin.clear();
-		tcmin.clear();
-		ttcmin.clear();
-	}
-	
-	void min(Node n, int l){
-		Integer i = tmin.get(n);
-		if (i == null || l<i){
-			tmin.put(n,l);
-			tcmin.put(n, 1);
-		}
-		else if (l == i){
-			tcmin.put(n, tcmin.get(n)+1);
-		}
-	}
-	
-	int getAllMinCount(int i){
-		return ttcmin.get(i);
-	}
-	
-	void allMinCount(int i){
-		// nb occurrences of value = i
-		Integer c = ttcmin.get(i);
-		if (c == null){
-			ttcmin.put(i, 1);
-		}
-		else {
-			ttcmin.put(i, c+1);
-		}
-	}
-	
 	
 	/****************************************************
 	 * 
@@ -308,8 +247,10 @@ public class SSNA implements ResultListener {
 	 * Start a new source Node
 	 */
 	void reset(){
-		tpath.clear();
-		countResult = 0;
+		if (index != 0){
+			System.out.println("** Error: index not zero: " + index);
+		}
+		countResult = 0;		
 	}
 	
 	/**
@@ -323,52 +264,8 @@ public class SSNA implements ResultListener {
 		return totalResult;
 	}
 	
-	/**
-	 * Target nodes
-	 */
-	Iterable<Node> getPathNodes(){
-		return tpath.keySet();
-	}
+
 	
-	/**
-	 * List of Path of target Node n
-	 */
-	List<Path> getPathList(Node n){
-		return tpath.get(n);
-	}
-	
-	/**
-	 * Store path in list of path that share same target Node
-	 * If one path has length 1 for this target, the whole list is rejected.
-	 */
-	void store(Path path){
-				
-		Node source = path.getEdge(0).getNode(0);
-		Node target = path.getEdge(path.size()-1).getNode(1);
-		
-		if (source.same(target)){
-			return;
-		}
-		
-		List<Path> list = tpath.get(target);
-		
-		if (list == null){
-			list = new ArrayList<Path>();
-			tpath.put(target, list);
-		}
-		else if (list.size() == 0){
-			// this list is rejected because a path of length 1 has been found
-			return;
-		}
-		
-		if (path.size() == 1){
-			// this list is rejected because a path of length 1 has been found
-			list.clear();
-			return;
-		}
-		
-		list.add(path);
-	}
 	
 	/**
 	 * kgram call process(env) for each result
@@ -383,8 +280,255 @@ public class SSNA implements ResultListener {
 	public boolean process(Path path){
 		countResult++;
 		totalResult++;
-		store(path);
+		
+		if (path.size() > maxPathLength){
+			maxPathLength = path.size();
+		}
+		
+		if (isFake()){
+			return false;
+		}
+		
+		handle(path);		
+		
 		return false;
+	}
+
+
+	public boolean enter(Node node, Regex exp, int size) {
+		//System.out.println("** Enter: " + node + " " + size);
+		return false;
+	}
+
+
+	public boolean leave(Node node, Regex exp, int size) {
+		//System.out.println("** Leave: " + node + " " + size);
+		return false;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public boolean enter(Entity ent, Regex exp, int size) {
+		if (speedUp){
+			enter(ent.getNode(1));
+		}
+		return false;
+	}	
+
+	public boolean leave(Entity ent, Regex exp, int size) {
+		if (speedUp){
+			leave();
+		}
+		return false;
+	}
+	
+	/**
+	 * Add new target node to current path
+	 * Store it's index in lindex array
+	 * hence lindex[i] = index of ith node of current path
+	 * speedUp enumeration of node index in handle(path)
+	 */
+	void enter(Node node){
+		int id = index(node);
+		lindex[index] = id;
+		allNodes[id] = node;
+		index++;
+	}
+
+	void leave(){
+		lindex[index--] = -1;
+	}
+	
+	/****************************************************************************
+	 * 
+	 * Store intermediate nodes (with their counter) between each pair x,y
+	 * instead of storing all paths between x,y
+	 * 
+	 **/
+	
+			
+	/**
+	 * Handle one path on the fly
+	 */
+	void handle(Path path){
+		int size = path.size();
+		
+		if (size==0){
+			return;
+		}
+		
+		Node source = path.getSource();
+		Node target = path.getTarget();
+		
+		if (source.same(target)){
+			return;
+		}
+		
+		// intermediate nodes between source, target
+		Record r = getRecord(target);
+				
+		if (size < r.size()){
+			// this is a shorter path: reset counters
+			r.reset();
+		}
+		
+		if (size>1){
+			
+			if (speedUp){
+				r.count();
+			}
+			else {
+				int n = 1;
+				
+				for (Entity ent : path.getEdges()){
+					// count inter
+					if (n++ < size){
+						// skip last node which is target
+						r.count(ent.getNode(1));
+					}
+				}
+			}
+		}
+
+		r.countPath(size);
+
+	}
+	
+	
+	/**
+	 * 
+	 */
+	Record getRecord(Node target){
+		int id = index(target);
+		Record r = records[id];
+		if (r == null){
+			r = new Record(target);
+			records[id] = r;
+		}
+		return r;
+	}
+	
+	
+
+	/**
+	 * For one x and for each y
+	 * Process intermediate nodes between x,y
+	 * Compute degrees of intermediate nodes
+	 */
+	void process(){
+		if (isFake()){
+			return;
+		}
+		
+		int i = 0;
+		
+		for (Record r : records){
+			// process one target y
+			if (r!=null){
+				if (r.size()>1){
+					r.process();
+				}
+			}
+			records[i] = null;
+			i++;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Store intermediate node & counters between x, y
+	 * Size of min path
+	 * number of paths with this min size
+	 * 
+	 */
+	class Record {
+		
+		int size = 0, count = 0;
+		Node target;
+		// one counter for each intermediate node
+		int[] counter;
+		
+
+		Record(Node t){
+			target = t;
+			counter = new int[maxNode];
+			init(counter);
+		}
+		
+		void reset(){
+			init(counter);
+			count = 0;
+			size = 0;
+		}
+		
+		void init(int[] counter){
+			for (int i=0; i<counter.length; i++){
+				counter[i] = 0;
+			}
+		}
+		
+		void count(Node node){
+			Integer id = index(node);
+			allNodes[id] = node;
+			counter[id] += 1;
+		}
+		
+		void count(int id){
+			counter[id] += 1;
+		}
+		
+		/**
+		 * Handle new path:
+		 * increment counter of each intermediate node of path
+		 * path is represented as array of index of node 
+		 * lindex[i] = index of ith node
+		 * counter[id] is counter of node with index = id
+		 */
+		void count(){
+			int max = index-1;
+
+			for (int i = 0; i<max; i++){
+				// lindex[i] = index of ith node of path
+				// this loop is at the core of SNA, hence we enumerate index array to speed up
+				counter[lindex[i]] += 1;
+			}
+		}
+		
+		
+		Integer getCount(Node node){
+			return counter[index(node)];
+		}
+		
+		void countPath(int size){
+			this.size = size;
+			count++;
+		}
+		
+		int size(){
+			return size;
+		}
+		
+		
+		/**
+		 * Compute degree of intermediate nodes between x,y
+		 */
+		void process(){
+			int i = 0;
+			float fcount = (float) count;
+			for (int cc : counter){
+				if (cc != 0){
+					float deg = (float) cc / fcount;
+					addDegree(i, deg);
+				}
+				i++;
+			}
+		}
 	}
 	
 

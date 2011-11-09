@@ -172,7 +172,7 @@ public class SNA  {
 		for (Node node : getAllNodes()){
 			list.add(node);
 			setDegree(node, getDegree(node) / getCountDegree(node));
-			node.setProperty(Node.DEGREE, getDegree(node));
+			//node.setProperty(Node.DEGREE, getDegree(node));
 		}
 		
 		Collections.sort(list, new  Compare());

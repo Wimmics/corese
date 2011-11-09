@@ -12,8 +12,9 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  *
  */
 public class NodeImpl implements Node, Entity {
+	static int cindex = 0;
+	int index = -1;
 	IDatatype dt;
-	Object object;
 	Object[] properties;
 	
 	
@@ -43,8 +44,10 @@ public class NodeImpl implements Node, Entity {
 	
 	@Override
 	public int getIndex() {
-		// TODO Auto-generated method stub
-		return 0;
+		if (index == -1){
+			index = cindex++;
+		}
+		return index;
 	}
 
 	@Override
@@ -89,8 +92,7 @@ public class NodeImpl implements Node, Entity {
 
 	@Override
 	public void setIndex(int n) {
-		// TODO Auto-generated method stub
-		
+		index = n;
 	}
 
 	@Override
@@ -112,11 +114,11 @@ public class NodeImpl implements Node, Entity {
 	}
 	
 	public Object getObject() {
-		return object;
+		return getProperty(OBJECT);
 	}
 
 	public void setObject(Object o) {
-		object = o;
+		setProperty(OBJECT, o);
 	}
 
 	@Override

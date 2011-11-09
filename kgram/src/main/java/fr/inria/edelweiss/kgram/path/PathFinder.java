@@ -61,6 +61,7 @@ public class PathFinder
 	private static Logger logger = Logger.getLogger(PathFinder.class);
 	
 	public static long cedge = 0, cresult = 0, ctest = 0;
+	public static boolean SPARQLCompliant = true;
 	//public static boolean speedUp = false;
 
 	// thread that enumerates the path
@@ -91,6 +92,7 @@ public class PathFinder
 	private boolean 
 	isStop = false,
 	hasEvent = false,
+	hasListener = false,
 	// true if breadth first (else depth first)
 	isBreadth,
 	defaultBreadth = !true,
@@ -163,6 +165,8 @@ public class PathFinder
 	
 	public void set(ResultListener rl){
 		listener = rl;
+		hasListener = rl!=null;
+		
 	}
 	
 	public void checkLoopNode(boolean b){
@@ -665,7 +669,7 @@ public class PathFinder
 		if (isStop) return;
 		
 		if (stack.isEmpty()){
-			cresult++;						
+			//cresult++;						
 			result(path, start, src);			
 			return;
 		}
@@ -713,11 +717,14 @@ public class PathFinder
 				hasFilter = filter!=null,
 				isStart   = start == null,
 				hasSource = size == 0 && src == null && gNode != null,
-				hasShort  = isShort;
+				hasHandler = hasListener,
+				hasShort  = isShort,
+				hasOne 	  = isOne;
 
 			Visit visit = visited;
 			Node gg = gNode;
-						
+			ResultListener handler = listener;
+			
 			for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, src, start, ii)){
 				
 				if (isStop){
@@ -761,7 +768,8 @@ public class PathFinder
 				if (isStart){
 					visit.start(node);
 					if (hasShort) {
-						producer.initPath(edge, 0);
+						// reset node length to zero
+						pp.initPath(ee, 0);
 					}
 				}
 				else if (hasShort){
@@ -773,19 +781,31 @@ public class PathFinder
 					else if (length > l){
 						continue;
 					}
+					else if (hasOne && length == l){
+						continue;
+					}
 					else {
 						setLength(other, length);
 					}
 				}
-				
+
+				if (hasHandler){
+					handler.enter(ent, exp, size);
+				}	
 				path.add(ent);
-				eval(stack, path, rel.getNode(oo), src);
-				path.remove(size);
 				
+				eval(stack, path, rel.getNode(oo), src);
+				
+				path.remove(size);
+				if (hasHandler){
+					handler.leave(ent, exp, size);
+				}								
 				if (isStart){
 					visit.leave(node);
 				}
 			}
+			
+			
 			
 			stack.push(exp);
 		}
@@ -891,8 +911,8 @@ public class PathFinder
 		if (path.size()>0){
 
 			boolean store = true;
-			if (listener!=null){
-				store = listener.process(path.copy());
+			if (hasListener){
+				store = listener.process(path);
 			}
 
 			if (store){
@@ -975,6 +995,14 @@ public class PathFinder
 	void plus(Regex exp, Record stack, Path path, Node start, Node src){
 		
 		if (count(exp) == 0){
+			
+			if (! SPARQLCompliant){
+				if (visited.loop(exp, start)){
+					stack.push(exp);
+					return;
+				}
+			}
+						
 			// first step
 			stack.push(exp);
 
@@ -982,7 +1010,12 @@ public class PathFinder
 			stack.push(exp.getArg(0));
 			eval(stack, path, start, src);
 			stack.pop();
-			count(exp, -1);		
+			count(exp, -1);	
+			
+			if (! SPARQLCompliant){
+				visited.remove(exp, start);		
+			}
+			
 		}
 		else {
 			if (visited.loop(exp, start)){
@@ -995,12 +1028,10 @@ public class PathFinder
 
 			// (2) continue
 			stack.push(exp);
-
-			//count(exp, +1);
+			
 			stack.push(exp.getArg(0));
 			eval(stack, path, start, src);
 			stack.pop();
-			//count(exp, -1);
 
 			visited.remove(exp, start);		
 		}

@@ -14,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  *
  */
 public  class EdgeImpl implements Edge, Entity {
+	public static boolean displayGraph = true;
 	private static int MAX = 2;
 
 	protected Node subject, object;
@@ -38,7 +39,8 @@ public  class EdgeImpl implements Edge, Entity {
 	
 	public String toString(){
 		String str = "";
-		str += getGraph() + " " + getNode(0) + " " + getEdgeNode() + " " +  getNode(1);
+		if (displayGraph) str += getGraph() + " " ;
+		str +=  getNode(0) + " " + getEdgeNode() + " " +  getNode(1);
 		return str;
 	}
 

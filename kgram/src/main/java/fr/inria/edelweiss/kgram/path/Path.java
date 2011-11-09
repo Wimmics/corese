@@ -65,6 +65,15 @@ public class Path extends ProducerDefault
 		path.remove(n);
 	}
 	
+	
+	public Node getSource(){
+		return getEdge(0).getNode(0);
+	}
+	
+	public Node getTarget() {
+		return getEdge(size()-1).getNode(1);
+	}
+	
 	public Entity get(int n){
 		return path.get(n);
 	}

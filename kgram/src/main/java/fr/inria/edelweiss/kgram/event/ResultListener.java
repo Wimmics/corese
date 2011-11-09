@@ -1,5 +1,8 @@
 package fr.inria.edelweiss.kgram.event;
 
+import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.path.Path;
 
@@ -25,5 +28,9 @@ public interface ResultListener {
 	 * If return false: Mapping not created
 	 */
 	boolean process(Path path);
-
+	
+	boolean enter(Entity ent, Regex exp, int size);
+	
+	boolean leave(Entity ent, Regex exp, int size);
+	
 }

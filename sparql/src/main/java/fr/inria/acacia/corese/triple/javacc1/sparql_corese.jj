@@ -226,9 +226,9 @@ void UpdateQuery1() : {
 		
 		(<SILENT> {ope.setSilent(true);} ) ?
 		   
-		(<GRAPH> graph = IRIrefConst()  {ope.setGraph(graph);}    | <DEFAUT> 	{ope.setDefault(true);} )  
+		((<GRAPH>) ? graph = IRIrefConst()  {ope.setGraph(graph);}    | <DEFAUT> 	{ope.setDefault(true);} )  
 		<TO>
-		(<GRAPH> graph = IRIrefConst() {ope.setTarget(graph);}    | <DEFAUT> 	{ope.setDefault(true);} ) 
+		((<GRAPH>) ? graph = IRIrefConst()  {ope.setTarget(graph);}   | <DEFAUT> 	{ope.setDefault(true);} ) 
 	
 	|	
 		LOOKAHEAD(2)

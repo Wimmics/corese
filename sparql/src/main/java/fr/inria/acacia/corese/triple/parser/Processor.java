@@ -71,6 +71,8 @@ public class Processor {
 
 	static final String KGRAM 	 = ExpType.KGRAM + "sparql";
 	static final String SIMILAR  = ExpType.KGRAM + "similarity";
+	static final String CSIMILAR  = ExpType.KGRAM + "cSimilarity";
+	static final String PSIMILAR  = ExpType.KGRAM + "pSimilarity";
 	static final String DEPTH    = ExpType.KGRAM + "depth";
 	static final String GRAPH    = ExpType.KGRAM + "graph";
 	static final String NODE     = ExpType.KGRAM + "node";
@@ -325,6 +327,8 @@ public class Processor {
 		defoper(GROUPBY, ExprType.GROUPBY);
 
 		defoper(SIMILAR, ExprType.SIM);
+		defoper(CSIMILAR, ExprType.SIM);
+		defoper(PSIMILAR, ExprType.PSIM);
 		defoper(DEPTH,   ExprType.DEPTH);
 		defoper(GRAPH,   ExprType.GRAPH);
 		defoper(NODE,    ExprType.NODE);

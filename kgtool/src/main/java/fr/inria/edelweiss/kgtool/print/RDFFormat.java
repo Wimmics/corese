@@ -16,7 +16,9 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.OWL;
+import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 
 /**
  * 
@@ -152,7 +154,7 @@ public class RDFFormat {
 	
 	Node getType(Node node){
 		if (map != null) return map.getMapType(node);
-		Node type = graph.getPropertyNode(Entailment.RDFTYPE);
+		Node type = graph.getPropertyNode(RDF.TYPE);
 		if (type == null) return null;
 		Edge edge = graph.getEdge(type, node, 0);
 		if (edge == null) return null;
@@ -258,13 +260,13 @@ public class RDFFormat {
 		Node type = getType(node);
 		if (type!=null){
 			String name = type.getLabel();
-			if (name.equals(Entailment.RDFSCLASS)){
+			if (name.equals(RDFS.CLASS)){
 				open = RDFSCLASS;
 			}
-			else if (name.equals(Entailment.OWLCLASS)){
+			else if (name.equals(OWL.CLASS)){
 				open = OWLCLASS;
 			}
-			else if (name.equals(Entailment.RDFPROPERTY)){
+			else if (name.equals(RDF.PROPERTY)){
 				open = RDFPROPERTY;
 			}
 		}

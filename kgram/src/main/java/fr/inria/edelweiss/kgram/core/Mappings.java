@@ -138,8 +138,26 @@ implements Comparator<Mapping>
 		select = nodes;
 	}
 
+	/**
+	 * select distinct 
+	 * in case of aggregates, accept Mapping now, distinct will be computed below
+	 */
 	void submit(Mapping a){
-		if (accept(a)){
+		if (query.isAggregate() || accept(a)){
+			add(a);
+		}
+	}
+	
+	/**
+	 * Used for distinct on aggregates
+	 */
+	void submit2(Mapping a){
+		if (query.isAggregate()){
+			 if (accept(a)){
+				 add(a);
+			 }
+		}
+		else {
 			add(a);
 		}
 	}
@@ -292,7 +310,7 @@ implements Comparator<Mapping>
 		// select (count(?n) as ?count)
 		aggregate(evaluator, memory, qq.getSelectFun(), true);
 		
-		// group by count(?n)
+		// order by count(?n)
 		aggregate(evaluator, memory, qq.getOrderBy(), false);
 	
 		if (qq.getHaving() != null){
@@ -305,9 +323,7 @@ implements Comparator<Mapping>
 
 		finish(qq);
 	}
-	
-	
-	
+		
 	
 	void finish(Query qq){
 		if (qq.hasGroupBy() && ! qq.isConstruct()){ 
@@ -325,6 +341,7 @@ implements Comparator<Mapping>
 			clean();
 		}
 	}
+	
 	
 	void having(){
 		if (isValid()){
@@ -519,7 +536,8 @@ implements Comparator<Mapping>
 					map.setMappings(lMap);
 				}
 				// add one element for current group
-				add(map);
+				// check distinct if any
+				submit2(map);
 			}
 		}
 	}

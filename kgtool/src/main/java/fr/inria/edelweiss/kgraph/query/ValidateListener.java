@@ -8,6 +8,8 @@ import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 
 
 /**
@@ -107,8 +109,8 @@ public class ValidateListener extends EvalListener {
 	 * does it have instances ?
 	 */
 	void check(Node type){
-		Node rdfsClass = graph.getNode(Entailment.RDFSCLASS);
-		Node rdftype   = graph.getPropertyNode(Entailment.RDFTYPE);
+		Node rdfsClass = graph.getNode(RDFS.CLASS);
+		Node rdftype   = graph.getPropertyNode(RDF.TYPE);
 		Iterable<Entity> it = graph.getEdges(rdftype, type, rdfsClass, 0);
 		if (it == null){
 			// undefined class

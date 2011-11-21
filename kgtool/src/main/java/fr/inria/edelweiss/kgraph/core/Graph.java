@@ -16,13 +16,11 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.logic.Distance;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.*;
 
 /**
  * Graph Manager
@@ -37,7 +35,9 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
 public class Graph {
 	private static Logger logger = Logger.getLogger(Graph.class);	
 	
-	public static final String TOPREL = RDFS.RootPropertyURI;
+	public static final String TOPREL = 
+		fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
+	
 	public static final int IGRAPH = 2;
 	public static final int NBNODE = 3;
 	public static final int LENGTH = NBNODE;
@@ -76,7 +76,7 @@ public class Graph {
 	Hashtable<String, Node> graph, property;
 	NodeIndex gindex;
 	Entailment inference, proxy;
-	private Distance distance;
+	private Distance classDistance, propertyDistance;
 	// true when graph is modified and need index()
 	boolean 
 	isUpdate = false, 
@@ -163,7 +163,8 @@ public class Graph {
 	
 	public void setUpdate(boolean b){
 		isUpdate = b;
-		setDistance(null);
+		setClassDistance(null);
+		setPropertyDistance(null);
 	}
 	
 	public Entailment getInference(){
@@ -461,6 +462,48 @@ public class Graph {
 		return getNode(datatype(node), true, false);
 	}
 	
+	
+	public Node getTopClass(){
+		Node n = getNode(RDFS.RESOURCE);
+		if (n == null){
+			n = getNode(OWL.THING);
+		}
+		if (n == null){
+			n = createNode(RDFS.RESOURCE);
+		}
+		return n;
+	}
+	
+	public Node getTopProperty(){
+		Node n = getNode(TOPREL);
+		if (n == null){
+			n = createNode(TOPREL);
+		}
+		return n;
+	}
+	
+	
+	public List<Node> getTopProperties(){
+		List<Node> nl = new ArrayList<Node>();
+		Node n;
+		
+//		n = getNode(OWL.TOPOBJECTPROPERTY);
+//		if (n != null){
+//			nl.add(n);
+//		}
+//		n = getNode(OWL.TOPDATAPROPERTY);
+//		if (n != null){
+//			nl.add(n);
+//		}
+		
+		if (nl.size() == 0){
+			n = getTopProperty();
+			nl.add(n);
+		}
+		
+		return nl;
+	}
+	
 		
 	// all nodes
 	// TODO: check producer
@@ -634,11 +677,17 @@ public class Graph {
 		return null;
 	}
 	
+	public Edge getEdge(String name, Node node, int index){
+		Node pred = getPropertyNode(name);		
+		return getEdge(pred, node, index);
+	}
+
+	
 	public Edge getEdge(String name, String arg, int index){
 		Node pred = getPropertyNode(name);		
 		Node node = getNode(arg);
 		if (pred==null || node==null) return null;
-		Edge edge = getEdge(pred, node, 0);
+		Edge edge = getEdge(pred, node, index);
 		return edge;
 	}
 	
@@ -670,6 +719,28 @@ public class Graph {
 		}
 		return getIndex(n, hasDefault).getEdges(predicate, node, node2);
 	}
+	
+	public List<Node> getList(Node node){
+		List<Node> list = new ArrayList<Node>();
+		list(node, list);
+		return list;
+	}
+
+	/**
+	 * node is a list Node
+	 * compute the list of elements
+	 */
+	void list(Node node, List<Node> list){
+		if (node.getLabel().equals(RDF.NIL)){
+		}
+		else {
+			Edge first = getEdge(RDF.FIRST, node, 0);
+			list.add(first.getNode(1));
+			Edge rest  = getEdge(RDF.REST, node, 0);
+			list(rest.getNode(1), list);
+		}
+	}
+	
 	
 	boolean isTopRelation(Node predicate){
 		return predicate.getLabel().equals(TOPREL);
@@ -1027,19 +1098,37 @@ public class Graph {
 		return update(source, target, isSilent, COPY);
 	}
 
-	void setDistance(Distance distance) {
-		this.distance = distance;
+	public void setClassDistance(Distance distance) {
+		this.classDistance = distance;
 	}
 	
-	synchronized public Distance setDistance(){
-		if (distance != null){
-			return distance;
+	synchronized public Distance setClassDistance(){
+		if (classDistance != null){
+			return classDistance;
 		}
-		setDistance(Distance.create(this));
-		return distance;
+		setClassDistance(Distance.classDistance(this));
+		return classDistance;
 	}
 
-	public Distance getDistance() {
-		return distance;
+	public Distance getClassDistance() {
+		return classDistance;
 	}
+	
+	public void setPropertyDistance(Distance distance) {
+		this.propertyDistance = distance;
+	}
+	
+	synchronized public Distance setPropertyDistance(){
+		if (propertyDistance != null){
+			return propertyDistance;
+		}
+		setPropertyDistance(Distance.propertyDistance(this));
+		return propertyDistance;
+	}
+
+	public Distance getPropertyDistance() {
+		return propertyDistance;
+	}
+	
+	
 }

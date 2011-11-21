@@ -98,6 +98,11 @@ public class PluginImpl extends ProxyImpl {
 		case SIM:
 				// class similarity
 			return similarity((IDatatype) o1, (IDatatype) o2);
+			
+		case PSIM:
+			// prop similarity
+			return pSimilarity((IDatatype) o1, (IDatatype) o2);
+			
 						
 		}
 		
@@ -121,7 +126,18 @@ public class PluginImpl extends ProxyImpl {
 		Node n2 = graph.getNode(dt2.getLabel());
 		if (n1 == null || n2 == null) return null;
 		
-		Distance distance = graph.setDistance();
+		Distance distance = graph.setClassDistance();
+		double dd = distance.similarity(n1, n2);
+		return getValue(dd);
+	}
+	
+	
+	IDatatype pSimilarity(IDatatype dt1, IDatatype dt2 ){		
+		Node n1 = graph.getNode(dt1.getLabel());
+		Node n2 = graph.getNode(dt2.getLabel());
+		if (n1 == null || n2 == null) return null;
+		
+		Distance distance = graph.setPropertyDistance();
 		double dd = distance.similarity(n1, n2);
 		return getValue(dd);
 	}
@@ -138,7 +154,7 @@ public class PluginImpl extends ProxyImpl {
 		Memory memory = (Memory) env;
 		Entailment ee = graph.getEntailment();
 		Hashtable<Node, Boolean> visit = new Hashtable<Node, Boolean>();
-		Distance distance = graph.setDistance();
+		Distance distance = graph.setClassDistance();
 
 		// number of node + edge in the answer
 		int count = 0;

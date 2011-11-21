@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.RDF;
 
 /**
  * Match
@@ -78,7 +79,7 @@ public class MatcherImpl implements Matcher {
 	@Override
 	public boolean match(Edge q, Edge r, Environment env) {
 		
-		if (q.getLabel().equals(Entailment.RDFTYPE)){
+		if (q.getLabel().equals(RDF.TYPE)){
 			return matchType(q, r, env);
 		}
 		

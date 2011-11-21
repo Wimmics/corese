@@ -43,8 +43,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.WriterAppender;
 
-//import fr.inria.acacia.corese.Corese;
-//import fr.inria.acacia.corese.api.EngineFactory;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
@@ -64,7 +62,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	 */
 	private static final long serialVersionUID = 1L; 
 	
-	private static final String TITLE = "Corese/KGRAM GUI - 3.0 - 2011-08-24";
+	private static final String TITLE = "Corese/KGRAM GUI - 3.0 - 2011-11-11";
 
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
@@ -84,6 +82,7 @@ public class MainFrame extends JFrame implements ActionListener{
     private JMenuItem loadQuery;
     private JMenuItem loadPipe;
     private JMenuItem loadRule;
+    private JMenuItem loadStyle;
     private JMenuItem saveQuery;
     private JMenuItem saveResult;
     private JMenuItem loadAndRunRule;
@@ -123,7 +122,7 @@ public class MainFrame extends JFrame implements ActionListener{
 //    private MyQueryListener eql;
     
     //style correspondant au graphe
-    private String defaultStylesheet;
+    private String defaultStylesheet, saveStylesheet;
 
 
 	private ArrayList<JCheckBox> listCheckbox;	//list qui stocke les JCheckBoxs présentes sur le JPanelListener
@@ -143,6 +142,13 @@ public class MainFrame extends JFrame implements ActionListener{
 	// Texte par défaut dans l'onglet requête 
 	private String defaultTextQuery = "SELECT ?x ?t WHERE\n{\n ?x rdf:type ?t\n}";
 	
+//	private String defaultTextQuery = 
+//		"prefix c: <http://www.inria.fr/acacia/comma#>\n"+
+//		"construct {?x ?p ?y}\n"+
+//		"where {\n"+
+//		"?doc c:CreatedBy ?x ?x ?p ?y"+
+//		"}";
+//	
 	// Relatif à Corese 
 //	private EngineFactory ef = new EngineFactory();
 	private IEngine myCorese = null;
@@ -170,7 +176,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		this.setResizable(true);
 		
 		
-		defaultStylesheet = 
+		saveStylesheet = 
 				
 				"graph {\n"+
 					"\t  color:grey;\n"+	
@@ -198,16 +204,25 @@ public class MainFrame extends JFrame implements ActionListener{
 
 				"}\n"+
 				
-				"node.BlankNode {\n"+
+				"node.Blank {\n"+
 			  	"\t  text-size:9;\n"+
-				"\t  text-color:green;\n"+
+				"\t  text-color:white;\n"+
 				"\t  text-style:bold;\n"+
 				"\t  text-align:center;\n"+
 				"\t  width:17;\n"+
-				"\t  color:green;\n"+
-				"\t  node-shape:circle;\n"+
-
-			"}\n"+
+				"\t  color:brown;\n"+
+				"\t  node-shape:text-ellipse;\n"+
+				"}\n"+
+				
+				"node.Class {\n"+
+			  	"\t  text-size:9;\n"+
+				"\t  text-color:white;\n"+
+				"\t  text-style:bold;\n"+
+				"\t  text-align:center;\n"+
+				"\t  width:17;\n"+
+				"\t  color:blue;\n"+
+				"\t  node-shape:text-ellipse;\n"+
+				"}\n"+
 				
 				"edge {\n"+
 					"\t  text-color:black;\n"+
@@ -217,7 +232,8 @@ public class MainFrame extends JFrame implements ActionListener{
 					"\t  text-align:center;\n"+
 				"}";	
 		
-			
+		
+		defaultStylesheet = saveStylesheet;
 		
 		//Initialise Corese
 		myCapturer = aCapturer;
@@ -371,6 +387,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		//supprime l'onglet "+", ajoute un onglet Query, puis recrée l'onglet "+" à la suite	
 		conteneurOnglets.remove(plus);	
 		MyJPanelQuery temp = new MyJPanelQuery(this);
+
 		monTabOnglet.add(temp);
 	    nbreTab.add(n);
 	    for(int n=1;n<=monTabOnglet.size();n++){
@@ -427,6 +444,9 @@ public class MainFrame extends JFrame implements ActionListener{
         loadPipe = new JMenuItem("Load Pipeline");
         loadPipe.addActionListener(this); 
         
+        loadStyle = new JMenuItem("Load Style");
+        loadStyle.addActionListener(this); 
+ 
         saveQuery = new JMenuItem("Save Query");
         saveQuery.addActionListener(this);
         
@@ -518,6 +538,8 @@ public class MainFrame extends JFrame implements ActionListener{
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
         fileMenu.add(loadAndRunRule);
+        fileMenu.add(loadStyle);
+       
         editMenu.add(undo);
         editMenu.add(redo);
         editMenu.add(cut);
@@ -527,6 +549,7 @@ public class MainFrame extends JFrame implements ActionListener{
         editMenu.add(duplicateFrom);
         editMenu.add(comment);
         editMenu.add(newQuery);
+        
         engineMenu.add(runRules);
         engineMenu.add(reset);
         engineMenu.add(refresh);
@@ -775,6 +798,11 @@ public class MainFrame extends JFrame implements ActionListener{
 			 	}
 			 }
 		}
+		else if (e.getSource() == loadStyle){
+			String style = loadText();
+			defaultStylesheet = style;
+		}
+		
 		
 		//Sauvegarde le résultat sous forme XML dans un fichier texte
 		else if (e.getSource() == saveResult){
@@ -1152,8 +1180,9 @@ public class MainFrame extends JFrame implements ActionListener{
 	/**
 	 *  Crée un nouvel onglet requête avec le texte contenu dans un fichier
 	 */
-	public void loadQuery(){
-		//On charge un fichier texte contenant la requete
+	
+	public String loadText(){
+		String str = "";
 	    JFileChooser fileChooser = new JFileChooser(l_path_courant);
 	    File selectedFile;
 	    int returnValue = fileChooser.showOpenDialog(null);
@@ -1170,15 +1199,21 @@ public class MainFrame extends JFrame implements ActionListener{
 					int result = fis.read(b);
 					if (result == -1) break;
 					//On remplit un string avec ce qu'il y a dans le fichier, "s" est ce qu'on va mettre dans la textArea de la requête
-					textQuery = new String(b);
+					str = new String(b);
 					appendMsg("Loading file from path: " + selectedFile + "\n");
 				}
 			}
-			catch (IOException err) {}	
-			//On créé l'onglet requête
-			newQuery();
+			catch (IOException err) {}
 	    }
+		return str;
 	}
+	
+	public void loadQuery(){
+		textQuery = loadText();
+		newQuery();
+	}
+
+
 	
 	
 	public void loadPipe(){
@@ -1318,6 +1353,10 @@ public class MainFrame extends JFrame implements ActionListener{
 
 	public String getDefaultStylesheet() {
 		return defaultStylesheet;
+	}
+	
+	public String getSaveStylesheet() {
+		return saveStylesheet;
 	}
 	
 	public MyJPanelListener getOngletListener() {

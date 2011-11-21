@@ -2,7 +2,8 @@ package fr.inria.edelweiss.kgtool.load;
 
 
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.rdf.EdgeComment;
 import fr.inria.edelweiss.kgraph.rdf.EdgeLabel;
 import fr.inria.edelweiss.kgraph.rdf.EdgeSubClass;
@@ -28,10 +29,10 @@ public class BuildOptim extends BuildImpl {
 	}
 	
 	public void init(){	
-		define(Entailment.RDFTYPE, 			EdgeType.class);
-		define(Entailment.RDFSSUBCLASSOF, 	EdgeSubClass.class);
-		define(Entailment.RDFSLABEL,		EdgeLabel.class);
-		define(Entailment.RDFSCOMMENT, 		EdgeComment.class);
+		define(RDF.TYPE, 			EdgeType.class);
+		define(RDFS.SUBCLASSOF, 	EdgeSubClass.class);
+		define(RDFS.LABEL,			EdgeLabel.class);
+		define(RDFS.COMMENT, 		EdgeComment.class);
 	}
 	
 }

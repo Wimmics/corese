@@ -13,7 +13,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -48,28 +47,34 @@ import javax.swing.tree.TreePath;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+//import org.graphstream.graph.Node;
+//import org.graphstream.graph.implementations.MultiGraph;
+//import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
+//import org.graphstream.ui.swingViewer.View;
+//import org.graphstream.ui.swingViewer.Viewer;
+//import org.graphstream.util.parser.TokenMgrError;
+
 import org.miv.graphstream.algorithm.layout2.elasticbox.ElasticBox;
 import org.miv.graphstream.graph.Node;
 import org.miv.graphstream.graph.implementations.MultiGraph;
+import org.miv.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
+import org.miv.graphstream.ui.graphicGraph.stylesheet.parser.TokenMgrError;
 import org.miv.graphstream.ui.swing.SwingGraphRenderer;
 import org.miv.graphstream.ui.swing.SwingGraphViewer;
 
-import com.ibm.icu.util.StringTokenizer;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
-//import fr.inria.acacia.corese.cg.CoreseGraph;
-//import fr.inria.acacia.corese.cg.CoreseRelation;
-//import fr.inria.acacia.corese.cg.Result;
-//import fr.inria.acacia.corese.cst.RDF;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.exceptions.QueryLexicalException;
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.gui.query.Exec;
+import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -82,6 +87,18 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 
 public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, DocumentListener, FocusListener, CaretListener{
 	
+	private static final String SYSTEM_WHITE = "width:0;edge-style:dashes;color:white;";
+	private static final String EDGE = "edge";
+	private static final String LABEL = "label";
+	private static final String TEMP = "temp";
+	private static final String UI_STYLESHEET = "ui.stylesheet";
+	private static final String UI_STYLE = "ui.style";
+	private static final String UI_CLASS = "ui.class";
+	
+	private static final String CLASS 	= "Class";
+	private static final String URI 	= "URI";
+	private static final String LITERAL = "Literal";
+	private static final String BLANK 	= "Blank";
 	private static final long serialVersionUID = 1L;
 
 	//Boutton du panneau Query
@@ -190,13 +207,14 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	    textPaneQuery.addCaretListener(this);
 	    
 	    //Bouton refreshStyleGraph + listener a l'écoute afin de recharger la feuille de style ou de renvoyer une exception
-	    buttonRefreshStyle.setText("Refresh stylesheet");
-	    buttonDefaultStyle.setText("Default stylesheet");
+	    buttonRefreshStyle.setText("Refresh style");
+	    buttonDefaultStyle.setText("Default style");
+
 	    buttonRefreshStyle.setEnabled(false);
 	    buttonDefaultStyle.setEnabled(false);
 
 	    stylesheet = coreseFrame.getDefaultStylesheet();
-	    
+	    	    	    
 	   /**
 	    * ActionListener sur le Bouton refresh Stylesheet
 	    * Refresh stylesheet du Graphe 
@@ -206,7 +224,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	        public void actionPerformed(ActionEvent e) {
 	        	String style = textPaneStyleGraph.getText();
 	        	JTextArea areaException = new JTextArea();
-	        	org.miv.graphstream.ui.graphicGraph.stylesheet.StyleSheet sh = new org.miv.graphstream.ui.graphicGraph.stylesheet.StyleSheet();
+	        	StyleSheet sh = new StyleSheet();
 	        	try {
 					sh.parseFromString(style);
 					areaException.setText("");
@@ -218,7 +236,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 					 JOptionPane.showMessageDialog(null, areaException,"Error Syntax",JOptionPane.WARNING_MESSAGE);
 					 excepCatch=true;
 				}
-				catch(org.miv.graphstream.ui.graphicGraph.stylesheet.parser.TokenMgrError e1){
+				catch(TokenMgrError e1){
 					 areaException.setText(e1.getMessage());
 					 areaException.setEditable(false);
 					 areaException.setForeground(Color.red);
@@ -226,7 +244,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 					 excepCatch=true;
 				}
 				if(!excepCatch){
-					graph.addAttribute( "ui.stylesheet", style );	
+					graph.addAttribute( UI_STYLESHEET, style );	
 					textPaneStyleGraph.setText(style); 
 					stylesheet =style;
 				}	
@@ -241,12 +259,13 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 		 */
 		ActionListener defaultListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				stylesheet = coreseFrame.getDefaultStylesheet();
+				stylesheet = coreseFrame.getSaveStylesheet();
 				textPaneStyleGraph.setText(stylesheet);
-				graph.addAttribute( "ui.stylesheet", stylesheet);
+				graph.addAttribute( UI_STYLESHEET, stylesheet);
 			}
 		};
 		buttonDefaultStyle.addActionListener(defaultListener);
+		
 		
 	    /**
 	     * appel de la fonction de coloration syntaxique et de comptage de ligne pour l'initialisation
@@ -490,7 +509,10 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	}
 	
 
-	
+	void setStyleSheet(String str){
+		textPaneStyleGraph.setText(str);
+		stylesheet = str;
+    }
 
 	public void search(JTextPane comp){
 	  	  			
@@ -812,15 +834,15 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	 } 	  	
 
 	
-	public String find(String mySearch, Iterator<Node> iterator){
-		while (iterator.hasNext()){
-			String temp = iterator.next().getId();
-        	if(mySearch.equals(temp)){
-        		return temp;
-        	}
-    	}
-		return null;
-	}	
+//	public String find(String mySearch, Iterator<Node> iterator){
+//		while (iterator.hasNext()){
+//			String temp = iterator.next().getId();
+//        	if(mySearch.equals(temp)){
+//        		return temp;
+//        	}
+//    	}
+//		return null;
+//	}	
 	
 	/**
 	 * fonction temporaire permettant de savoir si la requête est sélective ou constructive
@@ -843,17 +865,23 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 			return qr.getEdges();
 		}
 		return null;
-//		else {
-//			// corese/kgram
-//			CoreseGraph cg = null;
-//
-//			for (IResult res : l){
-//				cg = (CoreseGraph) res;	
-//			}
-//			if (cg == null) return new ArrayList<Entity>();
-//			Iterable<Entity> edges = cg.getEdges();
-//			return edges;
-//		} 
+	}
+	
+	Graph getGraph(IResults l){
+		if (l instanceof QueryResults){
+			// kgraph
+			QueryResults qr = (QueryResults) l;
+			return qr.getGraph();
+		}
+		return null;
+	}
+	
+	NSManager getNSM(IResults l){
+		if (l instanceof QueryResults){
+			QueryResults qr = (QueryResults) l;
+			return qr.getNSM();
+		}
+		return null;
 	}
 	
 	String getLabel(String name){
@@ -871,7 +899,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 		textAreaXMLResult.setText(resultXML.toString());
 		
 		int num=0;
-		graph = new MultiGraph( false, true );	
+		graph = new MultiGraph("graph", false, true);	
 		String sujetUri, predicat, objetUri, temp = "http://www.inria.fr/acacia/corese#Results";		
 		
 		// On affiche la version en arbre du résultat dans l'onglet Tree
@@ -905,76 +933,106 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 		//pointe sur le résultat XML
 		tabbedPaneResults.setSelectedIndex(1);
 
-		
+			
 		if (l_Results.isConstruct() || l_Results.isDescribe()){
-						
-			graph.addNode(temp).addAttribute( "ui.style", "color:white;");
+			
+			Graph g = getGraph(l_Results);
+			NSManager nsm = getNSM(l_Results);
+
+			// system unvisible node
+			graph.addNode(temp).addAttribute( UI_STYLE, "color:white;");
 
 			String sujet = null;
 			String objet = null;
 			
-			Iterable<Entity> edges = getEdges(l_Results);
+			Iterable<Entity> edges = g.getEdges();
 			
 			for (Entity ent : edges){
 				Edge edge = ent.getEdge();
+				
 				sujetUri = edge.getNode(0).getLabel();
 				objetUri = edge.getNode(1).getLabel();
+				IDatatype dt = (IDatatype) edge.getNode(1).getValue();
 				
-//				if (edge instanceof CoreseRelation)
-//					predicat = ((CoreseRelation)edge).getCType().toString();
-//				else 
-					predicat = getLabel(edge.getEdgeNode().getLabel());
+				predicat = nsm.toPrefix(edge.getEdgeNode().getLabel());
 				
-				sujet = getLabel(sujetUri);
-				objet = getLabel(objetUri);
+				sujet = nsm.toPrefix(sujetUri);
+				if (dt.isURI()){
+					objet = nsm.toPrefix(objetUri);
+				}
+				else if (dt.isLiteral() && 
+						(dt.getDatatype() == null ||
+						(dt.getDatatypeURI().equals(RDFS.xsdstring)))){
+					objet = "\"" + objetUri + "\"";
+				}
+				else {
+					objet = objetUri;
+				}
 				
-				if (find(sujetUri,graph.getNodeIterator())==null){
-					graph.addNode(sujetUri).addAttribute("label", sujet);
-					graph.getNode(sujetUri).setAttribute("ui.class", sujet);
-					if (edge.getNode(0).isBlank())
-					{
-						graph.getNode(sujetUri).setAttribute("ui.class", "BlankNode");
+				if (graph.getNode(sujetUri) == null){
+					
+					Node source = graph.addNode(sujetUri); 
+					source.addAttribute(LABEL, sujet);
+					source.setAttribute(UI_CLASS, sujet);
+					
+					if (edge.getNode(0).isBlank()){
+						source.setAttribute(UI_CLASS, BLANK);
 					}
-					graph.addEdge("temp"+num, sujetUri, temp);
-					graph.getEdge("temp"+num).addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
-
-				}			
-				num++;
-				
-				//Lors de l'ajout d'un Noeud (ou pas) Objet
-				if (find(objetUri,graph.getNodeIterator())==null){
-					graph.addNode(objetUri).addAttribute("label", objet);
-					graph.getNode(objetUri).setAttribute("ui.class", objet);
-					if (edge.getNode(1).isBlank())
-					{
-						graph.getNode(objetUri).setAttribute("ui.class", "BlankNode");
-					}
-					IDatatype dt = (IDatatype) edge.getNode(1).getValue();
-					if (dt.isLiteral())
-					{
-						graph.getNode(objetUri).setAttribute("ui.class", "Literal");
+					else {
+						source.setAttribute(UI_CLASS, URI);
 					}
 					
-					graph.addEdge("temp"+num, objetUri, temp);
-					//graph.getEdge("temp"+num).addAttribute("label", "http://www.inria.fr/acacia/corese#result");
-					graph.getEdge("temp"+num).addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
+					if (g.isSubClassOf(edge.getEdgeNode())){
+						source.setAttribute(UI_CLASS, CLASS);
+					}
+					
+					// system unvisible edge
+					graph.addEdge(TEMP+num, sujetUri, temp);
+					graph.getEdge(TEMP+num).addAttribute(UI_STYLE, SYSTEM_WHITE);
+					num++;
 				}			
-				num++;
 				
-				graph.addEdge("edge"+num, sujetUri, objetUri , true); 
-				graph.getEdge("edge"+num).addAttribute("label", predicat);
-				graph.getEdge("edge"+num).addAttribute("ui.class", predicat);
-
+				if (graph.getNode(objetUri) == null){
+					
+					Node target = graph.addNode(objetUri);
+					target.addAttribute(LABEL, objet);
+					target.setAttribute(UI_CLASS, objet);
+					
+					
+					if (edge.getNode(1).isBlank()){
+						target.setAttribute(UI_CLASS, BLANK);
+					}
+					else if (dt.isLiteral()){
+						target.setAttribute(UI_CLASS, LITERAL);
+					}
+					else if (g.isType(edge.getEdgeNode()) || g.isSubClassOf(edge.getEdgeNode())){
+						target.setAttribute(UI_CLASS, CLASS);
+					}
+					else {
+						target.setAttribute(UI_CLASS, URI);
+					}
+					
+					// system unvisible edge
+					graph.addEdge(TEMP+num, objetUri, temp);
+					graph.getEdge(TEMP+num).addAttribute(UI_STYLE, SYSTEM_WHITE);
+					num++;
+				}			
+				
+				graph.addEdge(EDGE+num, sujetUri, objetUri , true); 
+				graph.getEdge(EDGE+num).addAttribute(LABEL, predicat);
+				graph.getEdge(EDGE+num).addAttribute(UI_CLASS, predicat);
+				num++;
 			}
 
 			textPaneStyleGraph.setText(stylesheet);
-			graph.addAttribute( "ui.stylesheet", stylesheet);
+			graph.addAttribute( UI_STYLESHEET, stylesheet);
 	
 			//permet de visualiser correctement le graphe dans l'onglet de Corese
 			ElasticBox eb = new ElasticBox();
 			eb.setForce((float) 0.1);
 			SwingGraphViewer sgv = new SwingGraphViewer(graph, eb,true, true);	
 			SwingGraphRenderer sgr = sgv.getRenderer();
+			
 
 			//Dégrise le bouton et ajoute le texte dans le textPane
 			buttonRefreshStyle.setEnabled(true);
@@ -990,7 +1048,11 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 			JScrollPane jsStyleGraph = new JScrollPane();
 			jsStyleGraph.setViewportView(panelStyleGraph);
 
-			final JSplitPane jpGraph = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT	, jsStyleGraph, sgr);
+//			Viewer viewer = graph.display();
+//			View view = viewer.getDefaultView();
+			
+			final JSplitPane jpGraph = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, jsStyleGraph, sgr);
+
 			jpGraph.setContinuousLayout(true);
 			scrollPaneTreeResult.setViewportView(jpGraph);
 
@@ -1001,11 +1063,8 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 	
 		 
 	}	
-		
-		
 
-
-
+	
 	ActionListener  createListener(final MainFrame coreseFrame, final boolean isTrace){
 		
 		return new ActionListener() {

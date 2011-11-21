@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgraph.logic;
 
 import java.util.Hashtable;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -9,68 +10,109 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
 /**
- * Semantic distance & similarity
- * Corese Algorithm
+ * Semantic distance & similarity with Corese 2.4 Algorithm
  * 
  * PRAGMA: 
- * need a graph where Node setObject (Object depth)
- * need a root class, default is rdfs:Resource
+ * need a graph with Node set/get Depth 
+ * need a root class, default is rdfs:Resource or owl:Thing
  * 
- * If a class is not subClassOf rdfs:Resource, depth simulate to 1
+ * If a class is not subClassOf root, depth simulate to 1
+ * 
+ * Generalized to property hierarchy with a step of 1/8^n instead of 1/2^n
+ * steps can be changed with pragma:
+ * kg:similarity kg:cstep 3.0
+ * kg:similarity kg:pstep 4.0
  * 
  * TODO:
  * Expensive with Entailment because of rdf:type generated rdfs:domain and rdfs:range
- * It loops if there is a loop in the subClassOf hierarchy
+ * A resource may have several types, in Corese 2.4 types were synthetized into one type
  * 
  * @author Olivier Corby & Fabien Gandon, Edelweiss INRIA 2011
  */
 
 public class Distance {
+	// property step is: 1 / 8^n
+	private static double PSTEP = 8;
+	// class step is: 1 / 2^n
+	private static double CSTEP = 2;
 	
+	private static int FIRST_STEP = 5;
+
 	Graph graph;
-	Node  root, subClassOf;
+	Node  root, subEntityOf;
 	NodeList topList;
 	Integer MONE = new Integer(-1);
 	Integer ONE = new Integer(1);
 
 	int depthMax = 0;
+	private double step = CSTEP;
 	double K = 1, dmax = 0;
-	private Hashtable<Node, Node> table;
+	boolean isProperty = false;
 	
+	private Hashtable<Node, Node> table;
+
 	static Logger logger = Logger.getLogger(Distance.class);
 	
-	Distance(Graph g, Node r){
+	
+	
+	void init(Graph g, List<Node> top, boolean isProp){
+		isProperty = isProp;
+		String ako;
+		if (isProperty){
+			ako = RDFS.SUBPROPERTYOF;
+			setStep(PSTEP);
+		}
+		else {
+			ako = RDFS.SUBCLASSOF;
+			setStep(CSTEP);
+		}
 		graph = g;
-		root = r;
-		topList = new NodeList();
-		topList.add(root);
+		topList = new NodeList(top);
 		table = new Hashtable<Node, Node>();
-		subClassOf = graph.getPropertyNode(Entailment.RDFSSUBCLASSOF);
+		subEntityOf = graph.getPropertyNode(ako);
 		if (graph.getEntailment() == null){
 			//logger.info("Distance set Graph with Entailment");
 			graph.setEntailment();
 		}
-		if (getDepth(root)!=null){
-			// clean obsolete depth 
-			reset(root);
-		}
+		
+		reset();
 		init();
 	}
 	
-	public static Distance create(Graph g){
-		return new Distance(g, getRoot(g));
+	public static Distance classDistance(Graph g){
+		Distance dist = new Distance();
+		ArrayList<Node> top = new ArrayList<Node>();
+		top.add(g.getTopClass());
+		dist.init(g, top, false );
+		return dist;
 	}
 	
-	static Node getRoot(Graph g){
-		Node n = g.getNode(Entailment.RDFSRESOURCE);
-		if (n == null){
-			n = g.createNode(Entailment.RDFSRESOURCE);
-		}
-		return n;
+	/**
+	 * Manage two hierarchies with topObject and topData
+	 * 
+	 */
+	public static Distance propertyDistance(Graph g){
+		Distance dist = new Distance();
+		List<Node> top = g.getTopProperties();
+		dist.init(g, top, true );
+		return dist;
 	}
 	
-	public static Distance create(Graph g, Node r){
-		return new Distance(g, r);
+	
+	void setProperty(boolean b){
+		isProperty = b;
+	}
+	
+	void setStep(double f){
+		step = f;
+	}
+	
+	public static void setPropertyStep(double d){
+		PSTEP = d;
+	}
+	
+	public static void setClassStep(double d){
+		CSTEP = d;
 	}
 	
 	Integer getDepth(Node n){
@@ -86,18 +128,25 @@ public class Distance {
 		depthMax = 0;
 		dmax = 0;
 		K = 1;
-		depth();
+		initDepth();
 	}
 	
 	void reinit(){
-		reset(root);
+		reset();
 		init();
 	}
 	
-	void depth(){
-		setDepth(root, 0);
+	void initDepth(){
+		for (Node sup :topList){
+			initDepth(sup);
+		}
+	}
+
+	
+	void initDepth(Node sup){
+		setDepth(sup, 0);
 		table.clear();
-		depth(root);
+		depth(sup);
 		if (depthMax == 0){
 			// in case there is no rdfs:subClassOf, choose  max depth 1
 			depthMax = 1;
@@ -114,7 +163,11 @@ public class Distance {
 		
 		Integer depth = getDepth(sup);
 		Integer dd = depth + 1;
-		for (Node sub : getSubClasses(sup)){
+//		if (isProperty && depth == 0){
+//			// in the property  hierarchy we set the first step to 5
+//			dd = FIRST_STEP;
+//		}
+		for (Node sub : getSubEntities(sup)){
 			if (sub != null && ! visited(sub)){
 				Integer d = getDepth(sub);
 				if (d == null || dd > d){
@@ -142,11 +195,17 @@ public class Distance {
 		table.remove(node);
 	}
 	
-	
+	void reset(){
+		for (Node sup : topList){
+			if (getDepth(sup)!=null){
+				reset(sup);
+			}
+		}
+	}
 	
 	void reset(Node sup){
 		setDepth(sup, null);
-		for (Node sub : getSubClasses(sup)){
+		for (Node sub : getSubEntities(sup)){
 			if (sub != null){
 				reset(sub);
 			}
@@ -160,17 +219,19 @@ public class Distance {
 	 */
 	Integer getDDepth(Node n){
 		Integer d = getDepth(n);
-		if (d == null) return ONE;
+		if (d == null){
+			d = ONE;
+		}
 		return d ;
 	}
 	
 	
-	float step(Node f) {
-		return (float)(1 / Math.pow(2, getDDepth(f)));
+	double step(Node f) {
+		return step(getDDepth(f));
 	}
 	
 	double step(int depth){
-		 return (1 / Math.pow(2, depth));
+		 return (1 / Math.pow(step, depth));
 	 }
 	
 	void setDmax(int max){
@@ -179,43 +240,48 @@ public class Distance {
 			dmax += step(i);
 		}
 		dmax = 2 * dmax;
-		K = Math.pow(2, max) / 100.0;
+		K = Math.pow(step, max) / 100.0;
 	}
 	
 	public double maxDistance(){
 		return dmax;
 	}
 	
-	public double similarity(float distance){
+	public double similarity(double distance){
 		return similarity(distance, 1);
 	}
 	
-	public double similarity(float distance, int num){
-		 double sim = distance / (dmax * num);
-		 sim = 1 / ( 1 + (K * sim)); //  1/1+0=1 1/1+1 = 1/2    1/1+2 = 1/3
+	public double similarity(double distance, int num){
+		 double dist = distance / (dmax * num);
+		 double sim = 1 / ( 1 + (K * dist)); //  1/1+0=1 1/1+1 = 1/2    1/1+2 = 1/3
 		 return sim;
 	 }
 	 
 	
 	boolean isRoot(Node n){
-		return n.same(root);
+		for (Node sup : topList){
+			if (n.same(sup)){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
 	 * Node with no super class is considered subClassOf root
 	 */
-	public Iterable<Node> getSuperClasses(Node node){
-		if (subClassOf == null) return topList;
-		Iterable<Node> it = graph.getNodes(subClassOf, node, 0);
+	public Iterable<Node> getSuperEntities(Node node){
+		if (subEntityOf == null) return topList;
+		Iterable<Node> it = graph.getNodes(subEntityOf, node, 0);
 		if (! it.iterator().hasNext()){
 			return topList;
 		}
 		return it;
 	}
 	
-	public Iterable<Node> getSubClasses(Node node){
-		if (subClassOf == null) return new ArrayList<Node>();
-		return graph.getNodes(subClassOf, node, 1);
+	public Iterable<Node> getSubEntities(Node node){
+		if (subEntityOf == null) return new ArrayList<Node>();
+		return graph.getNodes(subEntityOf, node, 1);
 	}
 	
 	
@@ -227,21 +293,21 @@ public class Distance {
 	 * hence the first common ancestor is the deepest
 	 */
 	
-	public float sdistance(Node c1, Node c2)	{
+	public Double sdistance(Node c1, Node c2)	{
 		Entailment ee = graph.getEntailment();
 		if (ee.isSubClassOf(c1, c2) || ee.isSubClassOf(c2, c1)){
-			return 0;
+			return 0.0;
 		}
 		return distance(c1, c2);
 	}
 	
 	public double similarity(Node c1, Node c2){
 		if (c1.equals(c2)) return 1;
-		float d = distance(c1, c2);
+		Double d = distance(c1, c2);
 		return similarity(d, 1);
 	}
 	
-	public float distance(Node c1, Node c2)	{
+	public double distance(Node c1, Node c2)	{
 		return distance(c1, c2, true);
 	}
 	
@@ -254,12 +320,44 @@ public class Distance {
 	
 	
 	
-	class NodeList extends ArrayList<Node> {}
+	class NodeList extends ArrayList<Node> {
+		
+		NodeList(){}
+		
+		NodeList(Node n){
+			add(n);
+		}
+		
+		NodeList(List<Node> l){
+			for (Node n : l){
+				add(n);
+			}
+		}
+	}
 	
-	class Table extends Hashtable<Node, Float> {}
+	
+	class Table extends Hashtable<Node, Double> {
+		
+		boolean hasRoot = false;
+		
+		public Double put(Node n, Double d){
+			if (isRoot(n)){
+				hasRoot = true;
+			}
+			return super.put(n, d);
+		}
+		
+		public boolean contains(Node n){
+			if (containsKey(n)){
+				return true;
+			}
+			return false;
+		}
+		
+	}
 	
 	
-	float distance(Node c1, Node c2, boolean step)	{
+	double distance(Node n1, Node n2, boolean step)	{
 		
 		Table hct1 = new Table();
 		Table hct2 = new Table();
@@ -272,39 +370,41 @@ public class Distance {
 		boolean endC2 = false;
 		int max1, max2; // maximal (deepest) depth of current
 		
-		Float i = new Float(0);
-		Float j = new Float(0);
+		Double i = 0.0;
+		Double j = 0.0;
 		Node common=null;
 		int count=0;
-		hct1.put(c1, i);
-		hct2.put(c2, j);
-		max1=getDDepth(c1); 
-		max2=getDDepth(c2); 
-		ct1current.add(c1);
-		ct2current.add(c2);
+		hct1.put(n1, i);
+		hct2.put(n2, j);
+		max1=getDDepth(n1); 
+		max2=getDDepth(n2); 
+		ct1current.add(n1);
+		ct2current.add(n2);
 		
 		if (max1 == 0) {
-			if (isRoot(c1)){ 
-				endC1 = true; // ???
+			if (isRoot(n1)){ 
+				endC1 = true; 
 			}
 			else {
-				return 0;
+				return 0.0;
 			}
 		}
+		
 		if (max2 == 0){
-			if (isRoot(c2)){
+			if (isRoot(n2)){
 				endC2 = true;
 			}
 			else {
-				return 0;
+				return 0.0;
 			}
 		}
 		
-		if (hct1.containsKey(c2)) end = true;
+		if (hct1.contains(n2)) end = true;
 		
 		while (!end) {
+			
 			if (count++ > 10000) {
-				logger.debug("** Node distance suspect a loop " + c1 + " " + c2);
+				logger.debug("** Node distance suspect a loop " + n1 + " " + n2);
 				break;
 			}
 			
@@ -321,7 +421,7 @@ public class Distance {
 				// dit autrement, on ne considere  un type commun qu'apres avoir explore
 				// tous les types plus profonds que lui de maniere a trouver en premier
 				// le type commun le plus profond
-				if (hct1.containsKey(ct2current.get(d))){
+				if (hct1.contains(ct2current.get(d))){
 					common=ct2current.get(d);
 					break;
 				}
@@ -339,7 +439,7 @@ public class Distance {
 			}			
 			
 			for (int d = 0 ; d < ct1current.size() && getDDepth(ct1current.get(d)) >= max2; d++) {
-				if (hct2.containsKey(ct1current.get(d))){
+				if (hct2.contains(ct1current.get(d))){
 					common=ct1current.get(d);
 					break;
 				}
@@ -348,7 +448,7 @@ public class Distance {
 				return distance(common, hct1, hct2);
 			}
 		}
-		return 0;
+		return 0.0;
 	}
 	
 	
@@ -367,9 +467,8 @@ public class Distance {
 	}
 	
 	
-	float distance(Node c, Table hct1, Table hct2){
-		return ((hct1.get(c)).floatValue() +
-				(hct2.get(c)).floatValue());
+	double distance(Node c, Table hct1, Table hct2){
+		return hct1.get(c) + hct2.get(c);
 	}
 	
 	/**
@@ -382,34 +481,32 @@ public class Distance {
 	 *
 	 * @return true if reach root 
 	 */
-	boolean distance(NodeList current, 
-		Table ht, int max, boolean step){
+	boolean distance(NodeList current, Table ht, int max, boolean step){
 		NodeList father=new NodeList();
 		boolean endC1=false;
 		father.clear();
-		Float i;
-		float d;
-		Node ct;
+		double i,d;
+		Node node;
 		// Calcul des peres des derniers concepts traites
 		while (current.size() > 0)   {
-			ct=current.get(0);
-			if (getDDepth(ct) < max){
+			node=current.get(0);
+			if (getDDepth(node) < max){
 				// process only deepest types ( >= max depth)
 				break;
 			}
-			current.remove(ct);
-			i = ht.get(ct);
+			current.remove(node);
+			i = ht.get(node);
 			// distance of the fathers of ct
-			for (Node f : getSuperClasses(ct))  {
-				d = i.floatValue() + ((step) ? step(f) : 1);
-				if (ht.get(f)==null){
-					father.add(f);
-					ht.put(f, new Float(d));
+			for (Node sup : getSuperEntities(node))  {
+				d = i + ((step) ? step(sup) : 1);
+				if (ht.get(sup) == null){
+					father.add(sup);
+					ht.put(sup, d);
 				}
 				else { // already passed through father f, is distance best (less) ?
-					if (d < (ht.get(f)).floatValue()){
+					if (d < ht.get(sup)){
 						//logger.debug(f + " is cheaper ");
-						ht.put(f, new Float(d));
+						ht.put(sup, d);
 					}
 				}
 			}
@@ -418,8 +515,8 @@ public class Distance {
 		// concepts courants += concepts peres
 		sort(current, father);
 		if (current.size() > 0){
-			ct =  current.get(0);
-			if (isRoot(ct)) {
+			node =  current.get(0);
+			if (isRoot(node)) {
 				endC1 = true;
 			}
 		}

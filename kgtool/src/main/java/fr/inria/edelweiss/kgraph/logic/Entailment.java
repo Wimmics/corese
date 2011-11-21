@@ -36,32 +36,8 @@ public class Entailment {
 	public static String RULE 		= KGRAPH + "rule";
 	public static String[] GRAPHS   = {DEFAULT, ENTAIL, RULE};
 
-
-	public static final String RDF   =  "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-	public static final String RDFS  =  "http://www.w3.org/2000/01/rdf-schema#";
 	public static final String XSD   =  "http://www.w3.org/2001/XMLSchema#";
-	public static final String OWL   =  "http://www.w3.org/2002/07/owl#";
 
-	public static final String RDFSSUBPROPERTYOF = RDFS + "subPropertyOf";
-	public static final String RDFSSUBCLASSOF 	 = RDFS + "subClassOf";
-	public static final String RDFSDOMAIN 		 = RDFS + "domain";
-	public static final String RDFSRANGE 		 = RDFS + "range";
-	public static final String RDFSMEMBER 		 = RDFS + "member";
-	public static final String RDFBLI 		 	 = RDF  + "_";
-	public static final String RDFSCLASS 	 	 = RDFS + "Class";
-	public static final String RDFSRESOURCE		 = RDFS + "Resource";
-	public static final String RDFSLABEL 	 	 = RDFS + "label";
-	public static final String RDFSCOMMENT 	 	 = RDFS + "comment";
-
-	public static final String RDFTYPE 			 = RDF + "type";
-	public static final String RDFPROPERTY 	 	 = RDF + "Property";
-
-	public static final String OWLINVERSEOF  = OWL + "inverseOf";
-	public static final String OWLSYMMETRIC  = OWL + "SymmetricProperty";
-	public static final String OWLTRANSITIVE = OWL + "TransitiveProperty";
-	public static final String OWLREFLEXIVE  = OWL + "ReflexiveProperty";
-	public static final String OWLCLASS  	 = OWL + "Class";
-	
 	public static final String DATATYPE_INFERENCE 		 = KGRAPH + "datatype";
 
 	
@@ -119,7 +95,7 @@ public class Entailment {
 		range 	 	= new Signature();
 		subproperty = new Signature();
 		count = new Hashtable<Node, Integer>();
-		hasType = graph.addProperty(RDFTYPE);
+		hasType = graph.addProperty(RDF.TYPE);
 	}
 	
 	public void clear(){
@@ -131,13 +107,13 @@ public class Entailment {
 	}
 
 	public void set(String name, boolean b){
-		     if (name.equals(RDFSSUBCLASSOF)) 	  isSubClassOf = b;
-		else if (name.equals(RDFSSUBPROPERTYOF))  isSubPropertyOf = b;
-		else if (name.equals(RDFSDOMAIN)) 		  isDomain = b;
-		else if (name.equals(RDFSRANGE)) 		  isRange = b;
+		     if (name.equals(RDFS.SUBCLASSOF)) 	  isSubClassOf = b;
+		else if (name.equals(RDFS.SUBPROPERTYOF)) isSubPropertyOf = b;
+		else if (name.equals(RDFS.DOMAIN)) 		  isDomain = b;
+		else if (name.equals(RDFS.RANGE)) 		  isRange = b;
 		else if (name.equals(DATATYPE_INFERENCE)) isDatatypeInference = b;
 		else if (name.equals(ENTAIL)) 			  isDefaultGraph = b;
-		else if (name.equals(RDFSMEMBER))		  isMember = b;
+		else if (name.equals(RDFS.MEMBER))		  isMember = b;
 	}
 	
 	public boolean isDatatypeInference(){
@@ -181,7 +157,7 @@ public class Entailment {
 				Edge edge = ent.getEdge();
 				boolean isMeta = define(ent.getGraph(), ent.getEdge());
 				if (! isMeta){
-					if (edge.getLabel().equals(RDFTYPE)){
+					if (edge.getLabel().equals(RDF.TYPE)){
 						// continue for rdf:type owl:Symmetric
 					}
 					else {
@@ -222,37 +198,34 @@ public class Entailment {
 	 */
 	public boolean define(Node gNode, Edge edge){
 		//if (! edge.getLabel().startsWith(W3C)) return;
-		boolean isMeta = false;
+		boolean isMeta = true;
 //		if (edge.getNode(1).isBlank()){
 //			// DRAFT: do nothing
 //		}
 //		else 
-		if (hasLabel(edge, RDFTYPE)){
-			if (edge.getNode(1).getLabel().equals(OWLSYMMETRIC)){
+		if (hasLabel(edge, RDF.TYPE)){
+			if (edge.getNode(1).getLabel().equals(OWL.SYMMETRIC)){
 				symetric.define(edge.getNode(0), edge.getNode(0));
-				isMeta = true;			
 			}
 		}
-		else if (hasLabel(edge, OWLINVERSEOF)){
+		else if (hasLabel(edge, OWL.INVERSEOF)){
 			inverse.define(edge.getNode(0), edge.getNode(1));
 			inverse.define(edge.getNode(1), edge.getNode(0));
-			isMeta = true;			
 		}
-		else if (hasLabel(edge, RDFSDOMAIN)){
+		else if (hasLabel(edge, RDFS.DOMAIN)){
 			domain.define(edge.getNode(0), edge.getNode(1));
-			isMeta = true;			
 		}
-		else if (hasLabel(edge, RDFSRANGE)){
+		else if (hasLabel(edge, RDFS.RANGE)){
 			range.define(edge.getNode(0), edge.getNode(1));
-			isMeta = true;			
 		}
-		else if (hasLabel(edge, RDFSSUBPROPERTYOF)){
+		else if (hasLabel(edge, RDFS.SUBPROPERTYOF)){
 			subproperty.define(edge.getNode(0), edge.getNode(1));
-			isMeta = true;			
 		}
-		else if (hasLabel(edge, RDFSSUBCLASSOF)){
+		else if (hasLabel(edge, RDFS.SUBCLASSOF)){
 			subClassOf = edge.getEdgeNode();
-			isMeta = true;			
+		}
+		else {
+			isMeta = false;
 		}
 		return isMeta;
 	}
@@ -278,14 +251,14 @@ public class Entailment {
 	 */
 	void defProperty(Node pNode) {
 		Node gNode = graph.addGraph(ENTAIL);
-		Node tNode = graph.addResource(RDFPROPERTY);
+		Node tNode = graph.addResource(RDF.PROPERTY);
 		EdgeImpl ee =  create(gNode, pNode, hasType, tNode);
 		recordWithoutEntailment(gNode, null, ee);
 		
-		if (isMember && pNode.getLabel().startsWith(RDFBLI)){
+		if (isMember && pNode.getLabel().startsWith(RDF.BLI)){
 			// rdf:_i rdfs:subPropertyOf rdfs:member
-			tNode    = graph.addResource(RDFSMEMBER);
-			Node sub = graph.addProperty(RDFSSUBPROPERTYOF);
+			tNode    = graph.addResource(RDFS.MEMBER);
+			Node sub = graph.addProperty(RDFS.SUBPROPERTYOF);
 			ee =  create(gNode, pNode, sub, tNode);
 			recordWithEntailment(gNode, null, ee);
 		}
@@ -325,7 +298,44 @@ public class Entailment {
 			}
 		}
 	}
+	
+	
 
+	/**
+	 * Man intersectionOf (Human Male)
+	 * Human unionOf (Man Woman)
+	 * edge: Man intersectionOf _:b
+	 */
+	void interunion(Node gNode, Edge edge){
+		if (edge.getNode(0).isBlank()) return;
+
+		if (hasLabel(edge, OWL.INTERSECTIONOF)){
+			interunion(gNode, edge, false);
+		}
+		else if (hasLabel(edge, OWL.UNIONOF)){
+			interunion(gNode, edge, true);
+		}
+	}
+	
+	
+	void interunion(Node gNode, Edge edge, boolean union){
+		Node node  = edge.getNode(0);
+		Node bnode = edge.getNode(1);
+		List<Node> list = graph.getList(bnode);
+		
+		for (Node elem : list){
+			if (! elem.isBlank()){
+				EdgeImpl ee;
+				if (union){
+					ee =  create(gNode, elem, subClassOf, node);
+				}
+				else {
+					ee =  create(gNode, node, subClassOf, elem);
+				}
+				recordWithoutEntailment(gNode, edge, ee);
+			}
+		}
+	}
 	
 	
 	void signature(Node gNode, Edge edge){
@@ -343,7 +353,7 @@ public class Entailment {
 	
 	void subsume(Node gNode, Edge edge){
 		// infer types using subClassOf
-		if (isSubClassOf && hasLabel(edge, RDFTYPE)){
+		if (isSubClassOf && hasLabel(edge, RDF.TYPE)){
 			infer(gNode, edge);
 		}
 	}
@@ -403,7 +413,7 @@ public class Entailment {
 	
 	public void getClasses(Node node, List<Node> list, boolean isSubClass){
 		Iterable<Entity> it = 
-			graph.getEdges(graph.getPropertyNode(RDFSSUBCLASSOF), node, (isSubClass)?1:0);
+			graph.getEdges(graph.getPropertyNode(RDFS.SUBCLASSOF), node, (isSubClass)?1:0);
 		
 		if (it == null) return;
 		
@@ -418,7 +428,7 @@ public class Entailment {
 
 	public boolean isSubClassOf(Node node, Node sup){
 		if (node.same(sup)) return true;
-		Node pred = graph.getPropertyNode(RDFSSUBCLASSOF);
+		Node pred = graph.getPropertyNode(RDFS.SUBCLASSOF);
 		if (pred == null) return false;
 		Iterable<Entity> it = graph.getEdges(pred, node, 0);
 		
@@ -441,15 +451,19 @@ public class Entailment {
 	}
 
 	public boolean isType(Edge edge){
-		return hasLabel(edge, RDFTYPE);
+		return hasLabel(edge, RDF.TYPE);
 	}
 	
 	public boolean isType(Node pred){
-		return pred.getLabel().equals(RDFTYPE);
+		return pred.getLabel().equals(RDF.TYPE);
 	}
 	
 	public boolean isSubClassOf(Node pred){
-		return pred.getLabel().equals(RDFSSUBCLASSOF);
+		return pred.getLabel().equals(RDFS.SUBCLASSOF);
+	}
+	
+	public boolean isSubClassOf(Edge edge){
+		return hasLabel(edge, RDFS.SUBCLASSOF);
 	}
 	
 	boolean hasLabel(Edge edge, String type){
@@ -606,7 +620,7 @@ public class Entailment {
 
 				property(gg, edge);
 				subsume(gg, edge);
-
+				
 				if (prev == null){
 					signature(gg, edge);
 					prev = ent;
@@ -642,7 +656,7 @@ public class Entailment {
 	 */
 	
 	void meta(){
-		Node subprop = graph.getPropertyNode(RDFSSUBPROPERTYOF);
+		Node subprop = graph.getPropertyNode(RDFS.SUBPROPERTYOF);
 		if (subprop != null){
 			for (Entity ent : graph.getEdges(subprop)){
 				Edge edge = ent.getEdge();
@@ -660,14 +674,14 @@ public class Entailment {
 	
 	
 	boolean isMeta(Node pred){
-		return pred.getLabel().startsWith(RDFS);
+		return pred.getLabel().startsWith(RDFS.RDFS);
 	}
 	
 	public String getRange(String pred){
 		if (true)
 		return getRange2(pred);
 		
-		Edge range = graph.getEdge(RDFSRANGE, pred, 0);
+		Edge range = graph.getEdge(RDFS.RANGE, pred, 0);
 		if (range == null) return null;
 		return range.getNode(1).getLabel();
 	}

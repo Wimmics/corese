@@ -16,7 +16,6 @@ import java.util.List;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -25,8 +24,11 @@ import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.path.Visit;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.ProviderImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -239,7 +241,7 @@ public class W3CTest11KGraph {
 	void test(){
 		sparql1=true;
 		
-		test(root + "functions");			 
+		test(root + "subquery");			 
 
 	}
 	
@@ -472,7 +474,7 @@ public class W3CTest11KGraph {
 		
 		if (fquery == null) fquery = getValue(map, "?a");
 		
-		//if (! fquery.contains("replace03")) return true;
+		//if (! fquery.contains("sq14")) return true;
 
 
 		if (trace) System.out.println(pp(fquery));	
@@ -487,9 +489,9 @@ public class W3CTest11KGraph {
 		Graph graph = Graph.create();
 		if (rdf || rdfs){
 			graph.setEntailment();
-			graph.set(Entailment.RDFS, rdfs);
+			graph.set(RDFS.RDFS, rdfs);
 			if (rdfs){
-				graph.set(Entailment.RDFSSUBCLASSOF, true);
+				graph.set(RDFS.SUBCLASSOF, true);
 			}
 		}
 		
@@ -674,9 +676,9 @@ public class W3CTest11KGraph {
 				load.exclude(RDFS.RDFS);
 			}
 
-			load.load(more + "rdf.rdf", RDFS.RDF);					
+			load.load(more + "rdf.rdf", RDF.RDF);					
 			//ld.load(more + "rdf.rul");
-			defaultGraph.add(RDFS.RDF);
+			defaultGraph.add(RDF.RDF);
 			
 			//re.setDebug(true);
 			re.process();								

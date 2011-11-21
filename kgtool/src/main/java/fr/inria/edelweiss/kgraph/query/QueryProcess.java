@@ -352,7 +352,7 @@ public class QueryProcess extends QuerySolver {
 	void pragma(Query query){
 		ASTQuery ast = (ASTQuery) query.getAST();
 		if (ast!=null && ast.getPragma() != null){
-			new PragmaImpl(this, query).parse();
+			 PragmaImpl.create(this, query).parse();
 		}
 	}
 	

@@ -167,9 +167,17 @@ public class Graph {
 		setPropertyDistance(null);
 	}
 	
-	public Entailment getInference(){
-		return inference;
+	public boolean isEntail(){
+		return isEntail;
 	}
+	
+	/**
+	 * If true, entailment is done by init() before query processing
+	 */
+	public void setEntailment(boolean b){
+		isEntail = b;
+	}
+	
 	
 	public Entailment getEntailment(){
 		return inference;
@@ -194,20 +202,7 @@ public class Graph {
 		}
 	}
 	
-	/**
-	 * If true, entailment is done by init() before query processing
-	 */
-	public void setEntailment(boolean b){
-		isEntail = b;
-	}
-	
-	public void setDefault(boolean b){
-		hasDefault = b;
-	}	
-	
-	public boolean hasDefault(){
-		return hasDefault;
-	}
+
 	
 	public void entail(){
 		if (inference!=null){
@@ -219,6 +214,15 @@ public class Graph {
 		if (isEntail && inference!=null){
 			inference.entail(list);
 		}
+	}
+	
+	
+	public void setDefault(boolean b){
+		hasDefault = b;
+	}	
+	
+	public boolean hasDefault(){
+		return hasDefault;
 	}
 	
 	public Index[] getTables(){
@@ -245,11 +249,9 @@ public class Graph {
 		return isUpdate;
 	}
 	
-	public boolean isEntail(){
-		return isEntail;
-	}
+
 	
-	Entailment getProxy(){
+	public Entailment getProxy(){
 		if (proxy == null){
 			proxy = inference;
 			if (proxy == null){
@@ -269,6 +271,10 @@ public class Graph {
 	
 	public boolean isSubClassOf(Node pred){
 		return getProxy().isSubClassOf(pred);
+	}
+	
+	public boolean isSubClassOf(Node node, Node sup){
+		return getProxy().isSubClassOf(node, sup);
 	}
 	
 	public void setIndex(boolean b){
@@ -425,7 +431,7 @@ public class Graph {
 		if (ent != null){
 			setUpdate(true);
 			if (inference!=null){
-				inference.process(ent.getGraph(), edge);
+				inference.define(ent.getGraph(), edge);
 			}
 		}
 		return ent;

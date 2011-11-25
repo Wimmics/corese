@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgraph.api.Loader;
@@ -32,15 +33,19 @@ public class PluginImpl extends ProxyImpl {
 	static Logger logger = Logger.getLogger(PluginImpl.class);
 	
 	Graph graph;
+	MatcherImpl match;
 	Loader ld;
 	
-	PluginImpl(Graph g){
+	PluginImpl(Graph g, Matcher m){
 		graph = g;
+		if (m instanceof MatcherImpl){
+			match = (MatcherImpl) m;
+		}
 	}
 	
 	
-	public static PluginImpl create(Graph g){
-		return new PluginImpl(g);
+	public static PluginImpl create(Graph g, Matcher m){
+		return new PluginImpl(g, m);
 	}
 	
 	
@@ -148,11 +153,11 @@ public class PluginImpl extends ProxyImpl {
 	 * Sum distance of approximate types
 	 * Divide by number of nodes and edge
 	 * 
+	 * TODO: exploit subClassOf table from MatcherImpl
 	 */
 	public IDatatype similarity(Environment env){
 		if (! (env instanceof Memory)) return getValue(0);
 		Memory memory = (Memory) env;
-		Entailment ee = graph.getEntailment();
 		Hashtable<Node, Boolean> visit = new Hashtable<Node, Boolean>();
 		Distance distance = graph.setClassDistance();
 
@@ -191,7 +196,7 @@ public class PluginImpl extends ProxyImpl {
 							ttype = edge.getNode(1);
 						}
 						
-						if (! ee.isSubClassOf(ttype, qtype)){
+						if (! subClassOf(ttype, qtype, env)){
 							dd += distance.distance(ttype, qtype);
 						}						
 					}
@@ -206,6 +211,14 @@ public class PluginImpl extends ProxyImpl {
 		return getValue(sim);
 		
 	}
+	
+	boolean subClassOf(Node n1, Node n2, Environment env){
+		if (match != null){
+			return match.isSubClassOf(n1, n2, env);
+		}
+		return graph.isSubClassOf(n1, n2);
+	}
+	
 	
 	Object getObject(Object o){
 		Node n = node(o);

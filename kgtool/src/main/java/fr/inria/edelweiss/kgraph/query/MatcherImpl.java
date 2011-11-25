@@ -10,7 +10,9 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.OWL;
 import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 
 /**
  * Match
@@ -72,7 +74,7 @@ public class MatcherImpl implements Matcher {
 	public static MatcherImpl create(Graph g){
 		MatcherImpl m = new MatcherImpl();
 		m.graph = g;
-		m.entail = g.getInference();
+		m.entail = g.getEntailment();
 		return m;
 	}
 
@@ -116,22 +118,33 @@ public class MatcherImpl implements Matcher {
 			localMode = query.getMode();
 		}
 		
+		Node qnode = q.getNode(1);
+		
 		switch (localMode){
-			case STRICT: return match(q.getNode(1), r.getNode(1), env);
+			case STRICT: return match(qnode, r.getNode(1), env);
 			case RELAX: return true;
 		}
 		
-		if (entail!=null && q.getNode(1).isConstant() 
-				&& ! entail.isSubClassOfInference()){
-			// if rdf:type is completed by subClassOf, skip this and perform std match
-			// if rdf:type is not completed by subClassOf, check whether r <: q
-			boolean b = isSubClassOf(r.getNode(1), q.getNode(1), env);
+		
+		if (qnode.isConstant() && entail!=null){
 			
-			if (! b && localMode == SUBSUME){
-				b = isSubClassOf(q.getNode(1), r.getNode(1), env);
+			if (entail.isTopClass(qnode)){
+				// ?x rdf:type rdfs:Resource
+				return true;
 			}
-			
-			return b;
+		
+			if (! entail.isSubClassOfInference()){
+				// if rdf:type is completed by subClassOf, skip this and perform std match
+				// if rdf:type is not completed by subClassOf, check whether r <: q
+				boolean b = isSubClassOf(r.getNode(1), qnode, env);
+
+				if (! b && localMode == SUBSUME){
+					b = isSubClassOf(qnode, r.getNode(1), env);
+				}
+
+				return b;
+			}
+		
 		}
 		
 		return match(q.getNode(1), r.getNode(1), env);
@@ -142,11 +155,12 @@ public class MatcherImpl implements Matcher {
 	 * for each query type and each target type, store whether target subClassOf query
 	 * the cache is bound to current query (via the environment)
 	 */
-	boolean isSubClassOf(Node t, Node q, Environment env){
+	public boolean isSubClassOf(Node t, Node q, Environment env){
 		Table table = getTable(env);
 		Boolean b = table.get(q, t);
 		if (b == null){
-			b = entail.isSubClassOf(t, q);
+			// PRAGMA: use graph because entail may be null (cf PluginImpl)
+			b = graph.isSubClassOf(t, q);
 			table.put(q, t, b);
 		}
 		return b;
@@ -162,7 +176,7 @@ public class MatcherImpl implements Matcher {
 	}
 	
 	boolean isSubClassOf2(Node t, Node q, Environment env){
-		boolean b = entail.isSubClassOf(t, q);
+		boolean b = graph.isSubClassOf(t, q);
 		return b;
 	}
 	

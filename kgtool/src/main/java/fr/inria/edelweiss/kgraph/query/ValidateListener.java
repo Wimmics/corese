@@ -130,7 +130,7 @@ public class ValidateListener extends EvalListener {
 			if (p instanceof ProducerImpl){
 				ProducerImpl prod = (ProducerImpl) p;
 				graph = prod.getGraph();
-				ontology = graph.getInference();
+				ontology = graph.getEntailment();
 			}
 			
 		}

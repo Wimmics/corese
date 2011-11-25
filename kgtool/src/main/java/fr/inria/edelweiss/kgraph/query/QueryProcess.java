@@ -100,7 +100,7 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	public static QueryProcess create(Producer prod, Matcher match){
-		Interpreter eval  = createInterpreter(prod);
+		Interpreter eval  = createInterpreter(prod, match);
 		QueryProcess exec = new QueryProcess(prod, eval, match);
  		return exec;
 	}
@@ -110,11 +110,11 @@ public class QueryProcess extends QuerySolver {
 		return exec;
 	}
 	
-	static Interpreter createInterpreter(Producer p){
+	static Interpreter createInterpreter(Producer p, Matcher m){
 		Interpreter eval  = interpreter(p);
 		Graph g = sGetGraph(p);
 		if (g != null){
-			eval.getProxy().setPlugin(PluginImpl.create(g));
+			eval.getProxy().setPlugin(PluginImpl.create(g, m));
 		}
 		return eval;
 	}

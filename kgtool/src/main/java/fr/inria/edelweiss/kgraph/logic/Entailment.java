@@ -128,13 +128,6 @@ public class Entailment {
 		isDebug = b;
 	}
 	
-	/**
-	 * External entry point
-	 * Record ontology definitions such as range
-	 */
-	public void process(Node gNode, Edge edge){
-		define(gNode, edge);
-	}
 	
 	/**
 	 * clear tables of meta statements (domain, range, etc.)
@@ -411,6 +404,9 @@ public class Entailment {
 		return list;
 	}
 	
+	/**
+	 * TODO: track loop
+	 */
 	public void getClasses(Node node, List<Node> list, boolean isSubClass){
 		Iterable<Entity> it = 
 			graph.getEdges(graph.getPropertyNode(RDFS.SUBCLASSOF), node, (isSubClass)?1:0);
@@ -425,14 +421,39 @@ public class Entailment {
 			}
 		}		
 	}
-
+	
+	class Table extends Hashtable<Node, Node> {
+		
+		boolean visited(Node node){
+			return containsKey(node);
+		}
+		
+		void enter(Node node){
+			put(node, node);
+		}
+		
+		void leave(Node node){
+			remove(node);
+		}
+	}
+	
+	
 	public boolean isSubClassOf(Node node, Node sup){
+		return isSubClassOf(node, sup, new Table());
+	}
+
+	/**
+	 * Take loop into account
+	 */
+	public boolean isSubClassOf(Node node, Node sup, Table t){
 		if (node.same(sup)) return true;
 		Node pred = graph.getPropertyNode(RDFS.SUBCLASSOF);
 		if (pred == null) return false;
 		Iterable<Entity> it = graph.getEdges(pred, node, 0);
 		
 		if (it == null) return false;
+		
+		t.enter(node);
 		
 		for (Entity ent : it){
 			Node nn = ent.getEdge().getNode(1);
@@ -442,10 +463,15 @@ public class Entailment {
 			if (nn.same(node)){
 				continue;
 			}
-			if (isSubClassOf(nn, sup)){
+			if (t.visited(nn)){
+				continue;
+			}
+			if (isSubClassOf(nn, sup, t)){
 				return true;
 			}
 		}
+		
+		t.leave(node);
 		
 		return false;
 	}
@@ -474,7 +500,10 @@ public class Entailment {
 		return symetric.containsKey(edge.getEdgeNode());
 	}
 	
-
+	public boolean isTopClass(Node node){
+		return node.getLabel().equals(RDFS.RESOURCE) || 
+			   node.getLabel().equals(OWL.THING);
+	}
 	
 	
 	/*********************

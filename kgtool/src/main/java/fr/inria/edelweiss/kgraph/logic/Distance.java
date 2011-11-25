@@ -11,12 +11,14 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 
 /**
  * Semantic distance & similarity with Corese 2.4 Algorithm
+ * Extended to property hierarchy distance: kg:pSimilarity
  * 
  * PRAGMA: 
  * need a graph with Node set/get Depth 
  * need a root class, default is rdfs:Resource or owl:Thing
  * 
  * If a class is not subClassOf root, depth simulate to 1
+ * Exploit owl:sameAs & owl:equivalentClass/Property
  * 
  * Generalized to property hierarchy with a step of 1/8^n instead of 1/2^n
  * steps can be changed with pragma:
@@ -39,7 +41,7 @@ public class Distance {
 	private static int FIRST_STEP = 5;
 
 	Graph graph;
-	Node  root, subEntityOf;
+	Node  root, subEntityOf, sameAs, equivAs;
 	NodeList topList;
 	Integer MONE = new Integer(-1);
 	Integer ONE = new Integer(1);
@@ -47,7 +49,10 @@ public class Distance {
 	int depthMax = 0;
 	private double step = CSTEP;
 	double K = 1, dmax = 0;
-	boolean isProperty = false;
+	boolean isProperty = false,
+	isExtended = true,
+	hasSame = false,
+	hasEquiv = false;
 	
 	private Hashtable<Node, Node> table;
 
@@ -57,24 +62,25 @@ public class Distance {
 	
 	void init(Graph g, List<Node> top, boolean isProp){
 		isProperty = isProp;
-		String ako;
+		
+		graph = g;
+
 		if (isProperty){
-			ako = RDFS.SUBPROPERTYOF;
+			subEntityOf = graph.getPropertyNode(RDFS.SUBPROPERTYOF);
+			equivAs = graph.getPropertyNode(OWL.EQUIVALENTPROPERTY);
 			setStep(PSTEP);
 		}
 		else {
-			ako = RDFS.SUBCLASSOF;
+			subEntityOf = graph.getPropertyNode(RDFS.SUBCLASSOF);
+			equivAs = graph.getPropertyNode(OWL.EQUIVALENTCLASS);
 			setStep(CSTEP);
 		}
-		graph = g;
-		topList = new NodeList(top);
-		table = new Hashtable<Node, Node>();
-		subEntityOf = graph.getPropertyNode(ako);
-		if (graph.getEntailment() == null){
-			//logger.info("Distance set Graph with Entailment");
-			graph.setEntailment();
-		}
 		
+		topList = new NodeList(top);
+		table 	= new Hashtable<Node, Node>();
+		sameAs  = graph.getPropertyNode(OWL.SAMEAS);
+		hasSame = sameAs != null;
+		hasEquiv = equivAs != null;
 		reset();
 		init();
 	}
@@ -98,6 +104,9 @@ public class Distance {
 		return dist;
 	}
 	
+	public void setExtended(boolean b){
+		isExtended = b;
+	}
 	
 	void setProperty(boolean b){
 		isProperty = b;
@@ -157,16 +166,13 @@ public class Distance {
 	/**
 	 * Recursively compute depth
 	 * Take multiple inheritance into account
+	 * TODO: in this case depth is 1+  least depth of superclasses
 	 */
 	void depth(Node sup){
 		visit(sup);
 		
 		Integer depth = getDepth(sup);
 		Integer dd = depth + 1;
-//		if (isProperty && depth == 0){
-//			// in the property  hierarchy we set the first step to 5
-//			dd = FIRST_STEP;
-//		}
 		for (Node sub : getSubEntities(sup)){
 			if (sub != null && ! visited(sub)){
 				Integer d = getDepth(sub);
@@ -294,10 +300,10 @@ public class Distance {
 	 */
 	
 	public Double sdistance(Node c1, Node c2)	{
-		Entailment ee = graph.getEntailment();
-		if (ee.isSubClassOf(c1, c2) || ee.isSubClassOf(c2, c1)){
-			return 0.0;
-		}
+//		Entailment ee = graph.getEntailment();
+//		if (ee.isSubClassOf(c1, c2) || ee.isSubClassOf(c2, c1)){
+//			return 0.0;
+//		}
 		return distance(c1, c2);
 	}
 	
@@ -359,11 +365,11 @@ public class Distance {
 	
 	double distance(Node n1, Node n2, boolean step)	{
 		
-		Table hct1 = new Table();
-		Table hct2 = new Table();
+		Table t1 = new Table();
+		Table t2 = new Table();
 		
-		NodeList ct1current = new NodeList();
-		NodeList ct2current = new NodeList();
+		NodeList current1 = new NodeList();
+		NodeList current2 = new NodeList();
 
 		boolean end = false;
 		boolean endC1 = false;
@@ -374,12 +380,12 @@ public class Distance {
 		Double j = 0.0;
 		Node common=null;
 		int count=0;
-		hct1.put(n1, i);
-		hct2.put(n2, j);
+		t1.put(n1, i);
+		t2.put(n2, j);
 		max1=getDDepth(n1); 
 		max2=getDDepth(n2); 
-		ct1current.add(n1);
-		ct2current.add(n2);
+		current1.add(n1);
+		current2.add(n2);
 		
 		if (max1 == 0) {
 			if (isRoot(n1)){ 
@@ -399,7 +405,7 @@ public class Distance {
 			}
 		}
 		
-		if (hct1.contains(n2)) end = true;
+		if (t1.contains(n2)) end = true;
 		
 		while (!end) {
 			
@@ -408,47 +414,89 @@ public class Distance {
 				break;
 			}
 			
-			// Traitement du ConceptType c1
 			if (! endC1 && max1 >= max2) {
 				// distance from current to their fathers
-				endC1=distance(ct1current, hct1, max2, step);
-				max1=getMax(ct1current); // max depth of current 1
+				endC1=distance(current1, t1, max2, step);
+				max1=getMax(current1); // max depth of current 1
 			}
 			
-			for (int d = 0 ; d < ct2current.size() && getDDepth(ct2current.get(d)) >= max1 ; d++) {
-				// on ne considere comme candidat a type commun que ceux qui sont
-				// aussi profond que le plus profond des types deja parcourus
-				// dit autrement, on ne considere  un type commun qu'apres avoir explore
-				// tous les types plus profonds que lui de maniere a trouver en premier
-				// le type commun le plus profond
-				if (hct1.contains(ct2current.get(d))){
-					common=ct2current.get(d);
+			// on ne considere comme candidat a type commun que ceux qui sont
+			// aussi profond que le plus profond des types deja parcourus
+			// dit autrement, on ne considere  un type commun qu'apres avoir explore
+			// tous les types plus profonds que lui de maniere a trouver en premier
+			// le type commun le plus profond
+			
+			for (Node node : current2) {
+				
+				if (getDDepth(node) < max1){
 					break;
 				}
-			}
+				
+				if (t1.contains(node)){
+					return distance(node, t1, t2);
+				}
+				
+				double dd = extDistance(node, t1, t2);
+				if (dd != -1) return dd;
+				
+			}		
 			
-			if (common!=null){
-				return distance(common, hct1, hct2);
-			}
-			
-			// Traitement du ConceptType c2
 			if (!endC2 && max2 >= max1)     {
 				// distance from current to their fathers
-				endC2=distance(ct2current, hct2, max1, step);
-				max2=getMax(ct2current); // max depth of current 2
+				endC2=distance(current2, t2, max1, step);
+				max2=getMax(current2); // max depth of current 2
 			}			
 			
-			for (int d = 0 ; d < ct1current.size() && getDDepth(ct1current.get(d)) >= max2; d++) {
-				if (hct2.contains(ct1current.get(d))){
-					common=ct1current.get(d);
+			for (Node node : current1) {
+				
+				if (getDDepth(node) < max2){
 					break;
 				}
+				
+				if (t2.contains(node)){
+					return distance(node, t1, t2);
+				}
+				
+				double dd = extDistance(node, t2, t1);
+				if (dd != -1) return dd;
 			}
-			if (common!=null){
-				return distance(common, hct1, hct2);
-			}
+
 		}
 		return 0.0;
+	}
+	
+	
+	/**
+	 * Exploit aa sameAs bb
+	 */
+	double extDistance(Node node, Table ta, Table tb){
+		if (! isExtended) return -1;
+		if (hasSame){
+			double dd = distance(node, sameAs, ta, tb);
+			if (dd != -1) return dd;
+		}
+		if (hasEquiv){
+			double dd = distance(node, equivAs, ta, tb);
+			if (dd != -1) return dd;
+		}
+		return -1;
+	}
+	
+	
+
+	double distance(Node node, Node pred, Table ta, Table tb){
+		for (Node same : graph.getNodes(pred, node, 0)){
+			if (ta.contains(same)){
+				return ta.get(same) + tb.get(node);
+			}
+		}
+		for (Node same : graph.getNodes(pred, node, 1)){
+			if (ta.contains(same)){
+				return ta.get(same) + tb.get(node);
+			}
+		}
+		
+		return -1;
 	}
 	
 	

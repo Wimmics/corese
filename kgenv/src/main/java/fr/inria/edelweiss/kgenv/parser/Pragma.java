@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Atom;
+import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
@@ -25,6 +27,7 @@ public class Pragma  {
 	protected static final String SELF 	= KG + "kgram";
 	static final String MATCH 	= KG + "match";
 	static final String PATH 	= KG + "path";
+	protected static final String PRAGMA 	= KG + "pragma";
 
 	// kgram
 	static final String TEST 	= KG + "test";
@@ -36,6 +39,7 @@ public class Pragma  {
 	static final String EDGE 	= KG + "edge";
 	static final String LOAD 	= KG + "load";
 	static final String LIST 	= KG + "list";
+	protected static final String HELP 	= KG + "help";
 
 	
 
@@ -43,14 +47,15 @@ public class Pragma  {
 	static final String MODE 	= KG + "mode";
 	// match mode
 	static final String RELAX 		= "relax";
-	static final String SUBSUME 	= "subsume";
+	static final String GENERAL 	= "general";
 	static final String STRICT  	= "strict";
-	static final String ONTOLOGY  	= "ontology";
+	static final String SUBSUME  	= "subsume";
 	static final String INFERENCE  	= "inference";
+	static final String MIX  		= "mix";
 
 
 	Eval kgram;
-	Query query;
+	protected Query query;
 	ASTQuery ast;
 	
 	public Pragma(Eval e, Query q, ASTQuery a){
@@ -66,23 +71,50 @@ public class Pragma  {
 	
 	public void parse(){
 		//System.out.println("** Pragma1: " + ast.getPragma());
-
-		for (fr.inria.acacia.corese.triple.parser.Exp pragma : ast.getPragma().getBody()){
+		parse(null, ast.getPragma());
+	}
+	
+	
+	public void parse(Atom g, fr.inria.acacia.corese.triple.parser.Exp exp){
+		
+		for (fr.inria.acacia.corese.triple.parser.Exp pragma : exp.getBody()){
+			
 			if (query.isDebug()) Message.log(Message.PRAGMA, pragma);
 			
 			if (pragma.isTriple()){
-				triple(pragma.getTriple());
+				triple(g, pragma.getTriple());
 			}
-			else {
-				parse(pragma);
+			else if (pragma.isGraph()){
+				Source gp = (Source) pragma;
+				parse(gp.getSource(), gp.getBody().get(0));
 			}
 		}
 	}
 	
-	public void parse(fr.inria.acacia.corese.triple.parser.Exp exp){
+	
+	String help (){
+		String query = 
+			"select where {}\n" +
+			"pragma {\n" +
+			"kg:kgram kg:debug true        # debug mode \n" +
+			"kg:kgram kg:list  true        # list group result \n" +
+			"\n" +
+			"kg:match kg:mode 'strict'     # strict type match \n" +
+			"kg:match kg:mode 'relax'      # approximate type match \n" +
+			"kg:match kg:mode 'subsume'    # subsume type match \n" +
+			"kg:match kg:mode 'general'    # generalize type match \n" +
+			"kg:match kg:mode 'mix'        # subsume + generalize type match \n" +
+			"\n" +
+			"kg:path  kg:list  true        # list path result (no thread) \n" +
+			"kg:path  kg:loop  false       # path without loop \n" +
+
+			"}";
+		
+		return query;
 	}
 	
-	public void triple(Triple t){
+	
+	public void triple(Atom g, Triple t){
 		
 		String subject  = t.getSubject().getLongName();
 		String property = t.getProperty().getLongName();
@@ -132,6 +164,14 @@ public class Pragma  {
 			if (property.equals(LIST)){
 				query.setListPath(value(object));
 			}
+			else if (property.equals(LOOP)){
+				query.setCheckLoop(! value(object));
+			}
+		}
+		else if (subject.equals(PRAGMA)){
+			if (property.equals(HELP) && value(object)){
+				query.addInfo(help(), null);
+			}
 		}
 	}
 	
@@ -142,11 +182,12 @@ public class Pragma  {
 	int getMode(String mode){
 		if (mode.equals(STRICT)) 	return Matcher.STRICT;
 		if (mode.equals(RELAX)) 	return Matcher.RELAX;
-		if (mode.equals(ONTOLOGY)) 	return Matcher.ONTOLOGY;
 		if (mode.equals(SUBSUME)) 	return Matcher.SUBSUME;
+		if (mode.equals(GENERAL))	return Matcher.GENERAL;
+		if (mode.equals(MIX))		return Matcher.MIX;
 		if (mode.equals(INFERENCE)) return Matcher.INFERENCE;
 		// default
-		return Matcher.ONTOLOGY;
+		return Matcher.SUBSUME;
 	}
 	
 	

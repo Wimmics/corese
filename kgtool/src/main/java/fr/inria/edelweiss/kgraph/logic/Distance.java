@@ -81,6 +81,7 @@ public class Distance {
 		sameAs  = graph.getPropertyNode(OWL.SAMEAS);
 		hasSame = sameAs != null;
 		hasEquiv = equivAs != null;
+		// reset all depth
 		reset();
 		init();
 	}

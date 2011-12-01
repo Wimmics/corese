@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgenv.parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -353,7 +355,12 @@ public class Transformer implements ExpType {
 		qCurrent.distinct();
 		qCurrent.setFrom (nodes(ast.getActualFrom()));
 		qCurrent.setNamed(nodes(ast.getActualNamed()));
-
+		
+		// sort from uri to speed up verification at query time 
+		// Producer may use dichotomy
+		qCurrent.setFrom (sort(qCurrent.getFrom()));
+		qCurrent.setNamed(sort(qCurrent.getNamed()));
+				
 		qCurrent.setLimit(Math.min(ast.getMaxResult(), ast.getMaxProjection()));
 		qCurrent.setOffset(ast.getOffset());
 
@@ -654,6 +661,15 @@ public class Transformer implements ExpType {
 			nodes.add(new NodeImpl(cst));
 		}
 		return nodes;
+	}
+	
+	List<Node> sort(List<Node> list){
+		Collections.sort(list, new Comparator<Node>(){
+			public int compare(Node o1, Node o2) {
+				return o1.compare(o2);			
+			}
+		});
+		return list;
 	}
 
 

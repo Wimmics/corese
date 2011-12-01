@@ -35,7 +35,7 @@ public class MatcherImpl implements Matcher {
 	Entailment entail;
 	Table table ;
 	
-	int mode = ONTOLOGY;
+	int mode = SUBSUME;
 	
 	class BTable extends Hashtable<Node,Boolean>{}
 	
@@ -127,27 +127,40 @@ public class MatcherImpl implements Matcher {
 		
 		
 		if (qnode.isConstant() && entail!=null){
-			
-			if (entail.isTopClass(qnode)){
-				// ?x rdf:type rdfs:Resource
-				return true;
-			}
-		
-			if (! entail.isSubClassOfInference()){
-				// if rdf:type is completed by subClassOf, skip this and perform std match
-				// if rdf:type is not completed by subClassOf, check whether r <: q
-				boolean b = isSubClassOf(r.getNode(1), qnode, env);
 
-				if (! b && localMode == SUBSUME){
-					b = isSubClassOf(qnode, r.getNode(1), env);
+			switch (localMode){
+
+			case SUBSUME:
+			case MIX:
+
+				if (entail.isTopClass(qnode)){
+					// ?x rdf:type rdfs:Resource
+					return true;
 				}
 
+				// if rdf:type is completed by subClassOf, skip this and perform std match
+				// if rdf:type is not completed by subClassOf, check whether r <: q
+				boolean b = false;
+				
+				if (entail.isSubClassOfInference()){
+					b = match(qnode, r.getNode(1), env);
+				}
+				else {
+					b = isSubClassOf(r.getNode(1), qnode, env);
+				}
+				
+				if (! b && localMode == MIX){
+					b = isSubClassOf(qnode, r.getNode(1), env);
+				}
 				return b;
+
+
+			case GENERAL:
+				return   isSubClassOf(qnode, r.getNode(1), env);
 			}
-		
 		}
 		
-		return match(q.getNode(1), r.getNode(1), env);
+		return match(qnode, r.getNode(1), env);
 	}
 	
 	/**

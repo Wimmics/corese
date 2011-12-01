@@ -15,8 +15,9 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
  * @author Olivier Savoie
  */
 
-public class CoreseLiteral extends CoreseStringLiteral { //CoreseStringableImpl{
-	static final CoreseURI datatype=new CoreseURI(RDF.RDFSLITERAL);
+public class CoreseLiteral extends CoreseStringLiteral { 
+	static final String DATATYPE = RDF.xsdlangString; // RDF.RDFSLITERAL;
+	static final CoreseURI datatype=new CoreseURI(DATATYPE);
 	static final int code=LITERAL;
 	private CoreseString dataLang=null;
 
@@ -34,11 +35,11 @@ public class CoreseLiteral extends CoreseStringLiteral { //CoreseStringableImpl{
 			// SPARQL requires that datatype("abc") = xsd:string
 			return CoreseString.datatype;
 		}
-		return null;
+		return datatype;
 	}
 
 	public IDatatype getExtDatatype(){
-		return datatype;
+		return getDatatype(); //datatype;
 	}
 
 

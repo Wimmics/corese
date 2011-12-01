@@ -270,6 +270,7 @@ public class DatatypeMap implements Cst, RDF {
 		Hashtable<String, String> htlang = new Hashtable<String, String>();
 		htlang.put(DEFAULT,RDFSLITERAL);
 		put(RDFSLITERAL,jTypeLiteral,htlang);
+		put(xsdlangString,jTypeLiteral,htlang);
 
 		put(XMLLITERAL,	jTypeXMLString,		XMLLITERAL);
 		put(xsdstring, 		jTypeString,xsdstring);

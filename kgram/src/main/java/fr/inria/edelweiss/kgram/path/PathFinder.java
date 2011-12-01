@@ -61,8 +61,6 @@ public class PathFinder
 	private static Logger logger = Logger.getLogger(PathFinder.class);
 	
 	public static long cedge = 0, cresult = 0, ctest = 0;
-	public static boolean SPARQLCompliant = true;
-	//public static boolean speedUp = false;
 
 	// thread that enumerates the path
 	private GraphPath path;
@@ -103,7 +101,9 @@ public class PathFinder
 	isOne, 
 	// if true: return list of path instead of thread buffer: 50% faster but enumerate all path
 	isList = false,
-	loopNode = false;
+	checkLoop = false,
+	trace = true;
+	
 	private int  maxLength = Integer.MAX_VALUE, 
 	min = 0, max = maxLength,
 	userMin = -1,
@@ -169,8 +169,8 @@ public class PathFinder
 		
 	}
 	
-	public void checkLoopNode(boolean b){
-		loopNode = b;
+	public void setCheckLoop(boolean b){
+		checkLoop = b;
 	}
 	
 	public void setList(boolean b){
@@ -653,6 +653,7 @@ public class PathFinder
 			eval(stack, path, start, src);
 		}
 		catch (StackOverflowError e){
+			logger.error("** Property Path Size: " + path.size());
 			logger.error("** Property Path Error: \n" + e);
 		}
 	}
@@ -665,7 +666,8 @@ public class PathFinder
 	 * in the later case,  index = 1
 	 */
 	void eval(Record stack, Path path, Node start, Node src){
-		
+		//trace(stack.isEmpty() + " " + path);
+
 		if (isStop) return;
 		
 		if (stack.isEmpty()){
@@ -766,6 +768,7 @@ public class PathFinder
 				}				
 								
 				if (isStart){
+					//trace("** Visit: " + node);
 					visit.start(node);
 					if (hasShort) {
 						// reset node length to zero
@@ -797,12 +800,14 @@ public class PathFinder
 				eval(stack, path, rel.getNode(oo), src);
 				
 				path.remove(size);
+				
 				if (hasHandler){
 					handler.leave(ent, exp, size);
 				}								
 				if (isStart){
 					visit.leave(node);
 				}
+			
 			}
 			
 			
@@ -993,10 +998,11 @@ public class PathFinder
 	 * exp+
 	 */
 	void plus(Regex exp, Record stack, Path path, Node start, Node src){
-		
+
 		if (count(exp) == 0){
 			
-			if (! SPARQLCompliant){
+			if (checkLoop){
+				//trace("** Visit: " + start);
 				if (visited.loop(exp, start)){
 					stack.push(exp);
 					return;
@@ -1012,13 +1018,15 @@ public class PathFinder
 			stack.pop();
 			count(exp, -1);	
 			
-			if (! SPARQLCompliant){
+			if (checkLoop){
 				visited.remove(exp, start);		
 			}
 			
 		}
 		else {
+			//trace("** Visit: " + start);
 			if (visited.loop(exp, start)){
+				//trace("** Loop: " + start);
 				stack.push(exp);
 				return;
 			}
@@ -1037,7 +1045,9 @@ public class PathFinder
 		}
 	}
 
-	
+	void trace(String str){
+		System.out.println(str);
+	}
 	
 	/**
 	 * exp{n,m}
@@ -1047,9 +1057,11 @@ public class PathFinder
 		
 		if (count(exp) >= exp.getMin()){			
 			
-			if (! hasMax(exp) && visited.loop(exp, start)){
-				stack.push(exp);
-				return;
+			if (checkLoop(exp)){
+				if (visited.loop(exp, start)){
+					stack.push(exp);
+					return;
+				}
 			}
 			
 			// min length is reached, can leave
@@ -1071,17 +1083,29 @@ public class PathFinder
 
 			}
 			
-			if (! hasMax(exp)) visited.remove(exp, start);		
+			if (checkLoop(exp)){
+				visited.remove(exp, start);		
+			}
 			
 		}
 		else {
 			// count(exp) < exp.getMin()
 			
-			if (isReverse && ! hasMax(exp)){
-				// use case: ?x exp{2,} <uri>
-				// path goes backward
-				visited.insert(exp, start);
+			if (isReverse){ 
+				if (checkLoop(exp)){
+					// use case: ?x exp{2,} <uri>
+					// path goes backward
+					visited.insert(exp, start);
+				}
 			}
+			// TODO: draft
+			else if (checkLoop){
+				if (visited.loop(exp, start)){
+					stack.push(exp);
+					return;
+				}
+			}
+
 			
 			stack.push(exp);
 
@@ -1090,14 +1114,20 @@ public class PathFinder
 			eval(stack, path, start, src);
 			stack.pop();
 			count(exp, -1);	
-			
-			if (isReverse && ! hasMax(exp)){
-				// use case: ?x exp{2,} <uri>
-				// path goes backward
-				visited.remove(exp, start);
+									
+			if (isReverse){
+				if (checkLoop(exp)){
+					// use case: ?x exp{2,} <uri>
+					// path goes backward
+					visited.remove(exp, start);
+				}
 			}
-			
+			// TODO: draft
+			else if (checkLoop){
+				visited.remove(exp, start);		
+			}
 		}
+		
 	} 
 	
 	
@@ -1121,28 +1151,11 @@ public class PathFinder
 		return exp.getMax()!=-1 && exp.getMax()!= Integer.MAX_VALUE;
 	}
 	
+	// for count exp {n,m}
+	boolean checkLoop(Regex exp){
+		return checkLoop || ! hasMax(exp);
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 }

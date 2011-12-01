@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.query;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -39,7 +40,24 @@ public class PragmaImpl extends Pragma {
 		return new PragmaImpl(ex, q);
 	}
 
-	public void triple(Triple t){
+	String help (){
+		String query = 
+			"select where {}\n" +
+			"pragma {\n" +
+			"kg:entailment rdfs:domain true \n" +
+			"kg:entailment rdfs:range true \n" +
+			"kg:entailment rdfs:subClassOf true \n" +
+			"kg:entailment rdfs:subPropertyOf true \n" +
+			"" +
+			"kg:similarity kg:cstep 2 \n" +
+			"kg:similarity kg:pstep 8 \n" +
+			"}" ;
+	
+		return query;
+	}
+	
+	
+	public void triple(Atom g, Triple t){
 
 		String subject  = t.getSubject().getLongName();
 		String property = t.getProperty().getLongName();
@@ -72,6 +90,11 @@ public class PragmaImpl extends Pragma {
 				// kg:similarity kg:cstep 2
 				graph.setClassDistance(null);
 				Distance.setClassStep(dt.getDoubleValue());
+			}
+		}
+		else if (subject.equals(PRAGMA)){
+			if (property.equals(HELP) && value(object)){
+				query.addInfo(help(), null);
 			}
 		}
 				

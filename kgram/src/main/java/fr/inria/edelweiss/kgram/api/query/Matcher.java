@@ -21,13 +21,15 @@ public interface Matcher {
 	
 	public static final int STRICT = 0;
 	// exploit type inference (subsumption)
-	public static final int ONTOLOGY = 1;
+	public static final int SUBSUME = 1;
 	// type inference and accept generalization of types 
-	public static final int SUBSUME = 2;
+	public static final int GENERAL = 2;
+	// subsume + generalize
+	public static final int MIX = 3;
 	// accept any types
-	public static final int RELAX = 3;
+	public static final int RELAX = 4;
 	// exploit rules 
-	public static final int INFERENCE = 4;
+	public static final int INFERENCE = 5;
 
 
 	/**

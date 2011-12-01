@@ -55,6 +55,7 @@ public class QuerySolver  {
 	
 	boolean isListGroup = false,
 	isListPath = false,
+	isCheckLoop = false,
 	isDebug = false;
 	
 	boolean isSequence = false;
@@ -216,6 +217,7 @@ public class QuerySolver  {
 	void init(Query q){
 		q.setListGroup(isListGroup);
 		q.setListPath(isListPath);
+		q.setCheckLoop(isCheckLoop);
 		if (isDebug) q.setDebug(isDebug);
 	}
 	
@@ -353,6 +355,10 @@ public class QuerySolver  {
 	
 	public void setListPath(boolean b){
 		isListPath = b;
+	}
+	
+	public void setPathLoop(boolean b){
+		isCheckLoop = !b;
 	}
 	
 	public void setDebug(boolean b){

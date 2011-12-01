@@ -100,10 +100,13 @@ public class Checker {
 
 	
 	void report(Edge edge, boolean exist, boolean match, boolean define){
+		query.addInfo(edge.toString(),  
+				" defined:" + define + " exist: " + exist + " match: " + match );
 		logger.info("Edge: " + edge + ": " + exist + " " + match + " " + define);
 	}
 	
 	void report(Edge edge, boolean exist, boolean match){
+		query.addInfo(edge.toString(), " exist: " + exist + " match: " + match);
 		logger.info("Edge: " + edge + ": " + exist + " " + match);
 	}
 	

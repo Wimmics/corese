@@ -7,12 +7,12 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss, INRIA 2011
  *
  */
-public class RDFList extends And {
+public class RDFList extends BasicGraphPattern  {
 	
 	Expression first;
 	List<Expression> list;
 	
-	static RDFList create (){
+	public static RDFList create (){
 		return new RDFList();
 	}
 	

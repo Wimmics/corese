@@ -46,7 +46,7 @@ public class Query extends Exp {
 	List<Exp> selectExp, orderBy, groupBy;
 	List<Filter> failure, pathFilter;
 	List<Mapping> bindings;
-	List<String> errors;
+	List<String> errors, info;
 	Exp having, construct, delete;
 	// gNode is a local graph node when subquery has no ?g in its select 
 	// use case: graph ?g {{select where {}}}
@@ -72,7 +72,7 @@ public class Query extends Exp {
 	isDistribute = false, isTest = false, // sort edges to be connected
 	isSort = true, isConstruct = false,
 	isDelete = false, isUpdate = false, // true:  path do not loop on node
-	isLoopNode = false, isPipe = false, 
+	isCheckLoop = false, isPipe = false, 
 	isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
 	// PathFinder list path instead of thread buffer: 50% faster but enumerate all path
 	isListPath = false,
@@ -194,6 +194,23 @@ public class Query extends Exp {
 		return errors;
 	}
 	
+	public void addInfo(String mes, Object obj){
+		if (info == null){
+			info = new ArrayList<String>();
+		}
+		if (obj != null){
+			mes += obj;
+		}
+		if (! info.contains(mes)){
+			info.add(mes);
+		}
+	}
+	
+	public List<String> getInfo(){
+		return info;
+	}
+	
+	
 	public Exp getBody(){
 		return first();
 	}
@@ -232,12 +249,12 @@ public class Query extends Exp {
 		return query!=null;
 	}
 	
-	boolean isLoopNode(){
-		return isLoopNode;
+	boolean isCheckLoop(){
+		return isCheckLoop;
 	}
 	
-	public void setLoopNode(boolean b){
-		isLoopNode = b;
+	public void setCheckLoop(boolean b){
+		isCheckLoop = b;
 	}
 	
 	boolean isPipe(){

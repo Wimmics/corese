@@ -187,8 +187,9 @@ public class XMLFormat  {
 	void error(){
 		boolean b1 = ast!=null     && ast.getErrors()!=null;
 		boolean b2 = query != null && query.getErrors()!=null;
-		
-		if (b1 || b2){
+		boolean b3 = query != null && query.getInfo()!=null;
+
+		if (b1 || b2 || b3){
 			
 			println(OCOM);
 			if (ast.getText()!=null){
@@ -203,6 +204,11 @@ public class XMLFormat  {
 			}
 			if (b2){
 				for (String mes : query.getErrors()){
+					println(mes);
+				}
+			}
+			if (b3){
+				for (String mes : query.getInfo()){
 					println(mes);
 				}
 			}

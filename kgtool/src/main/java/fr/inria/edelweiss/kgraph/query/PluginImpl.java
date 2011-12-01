@@ -153,7 +153,7 @@ public class PluginImpl extends ProxyImpl {
 	 * Sum distance of approximate types
 	 * Divide by number of nodes and edge
 	 * 
-	 * TODO: exploit subClassOf table from MatcherImpl
+	 * TODO: cache distance in Environment during query proc
 	 */
 	public IDatatype similarity(Environment env){
 		if (! (env instanceof Memory)) return getValue(0);
@@ -182,7 +182,7 @@ public class PluginImpl extends ProxyImpl {
 						}
 					}
 					
-					if (qEdge.getLabel().equals(RDFTYPE) && qEdge.getNode(1).isConstant()){
+					if (graph.isType(qEdge) && qEdge.getNode(1).isConstant()){
 
 						Node qtype = graph.getNode(qEdge.getNode(1).getLabel());
 						Node ttype = graph.getNode(edge.getNode(1).getLabel());

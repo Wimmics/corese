@@ -1474,7 +1474,7 @@ public class ASTQuery  implements Keyword {
         	compileDescribe(parser);
         }
         
-        setQueryPrettyPrint(getSparqlPrettyPrint());
+      //  setQueryPrettyPrint(getSparqlPrettyPrint());
         
     }
     

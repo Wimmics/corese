@@ -553,6 +553,8 @@ public class Eval implements  ExpType, Plugin {
 		}
 		pathFinder.set(listener);
 		pathFinder.setList(query.isListPath());
+		// TODO: subQuery 
+		pathFinder.setCheckLoop(query.isCheckLoop());
 		pathFinder.init(exp.getRegex(), exp.getObject(), exp.getMin(), exp.getMax());
 		lPathFinder.add(pathFinder);
 		return pathFinder;

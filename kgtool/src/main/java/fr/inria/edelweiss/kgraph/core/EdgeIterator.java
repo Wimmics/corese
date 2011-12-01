@@ -103,13 +103,53 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		
 	}
 	
+	/**
+	 * 
+	 * Check if entity graph node is member of from by dichotomy
+	 */
 	boolean isFrom(Entity ent, List<Node> from){
+		Node g = ent.getGraph();
+		int res = find(from, g);
+		return res != -1;
+	}
+	
+	int find(List<Node> list, Node node){
+		int res = find(list, node,  0, list.size());
+		if (res>= 0 && res<list.size() && 
+			list.get(res).same(node)){
+			return res;
+		}
+		return -1;
+	}
+
+	/**
+	 * Find the index of node in list of Node by dichotomy
+	 */
+	int find(List<Node> list, Node node, int first, int last){
+		if (first >= last) {
+			return first;
+		}
+		else {
+			int mid = (first + last) / 2;
+			int res = list.get(mid).compare(node);
+			if (res >= 0) {
+				return find(list, node, first, mid);
+			}
+			else {
+				return find(list, node,mid+1, last); 
+			}
+		}		
+	}
+	
+	boolean isFrom2(Entity ent, List<Node> from){
+		Node g = ent.getGraph();
 		for (Node node : from){
-			if (ent.getGraph().same(node)){
+			if (g.same(node)){
 				return true;
 			}
 		}
 		return false;
 	}
 	
+
 }

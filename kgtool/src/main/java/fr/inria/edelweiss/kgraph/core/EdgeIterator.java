@@ -21,12 +21,20 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	List<Node> from;
 	boolean hasGraph, hasFrom;
 	
+	EdgeIterator(){
+	}
+	
 	// eliminate duplicate edges due to same source
 	EdgeIterator(Iterable<Entity> i){
 		iter = i;
 		hasGraph = false;
 		hasFrom = false;
 	}
+	
+	public static EdgeIterator create(){
+		return new EdgeIterator();
+	}
+
 	
 	public static EdgeIterator create(Iterable<Entity> i){
 		return new EdgeIterator(i);
@@ -112,6 +120,12 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		int res = find(from, g);
 		return res != -1;
 	}
+	
+	public boolean isFrom(List<Node> from, Node node){
+		int res = find(from, node);
+		return res != -1;
+	}
+
 	
 	int find(List<Node> list, Node node){
 		int res = find(list, node,  0, list.size());

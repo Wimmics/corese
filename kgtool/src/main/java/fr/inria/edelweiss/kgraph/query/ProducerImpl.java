@@ -39,6 +39,7 @@ public class ProducerImpl implements Producer {
 	static final String TOPREL = Graph.TOPREL;
 	
 	List<Entity> empty = new ArrayList<Entity>();
+	EdgeIterator ei;
 	
 	Graph graph, 
 	// cache for handling (fun() as var) created Nodes
@@ -53,6 +54,7 @@ public class ProducerImpl implements Producer {
 		graph = g;
 		local = Graph.create();
 		mapper = new Mapper(this);
+		ei = EdgeIterator.create();
 	}
 	
 	public static ProducerImpl create(Graph g){
@@ -110,6 +112,13 @@ public class ProducerImpl implements Producer {
 				if (i == 1 && qNode.isConstant() && graph.isType(edge)){
 					// ?x rdf:type c:Engineer
 					// no dichotomy on c:Engineer to get subsumption
+					
+					/**
+					 * TODO:
+					 * for Type t : graph.getTypes()
+					 * if match.isSubClassOf(qnode, t) 
+					 *     graph.enumerate(t)
+					 */
 				}
 				else 
 				{
@@ -124,7 +133,7 @@ public class ProducerImpl implements Producer {
 				}
 			}
 		}
-				
+		
 		if (node == null  && from.size()>0){
 			// from named <uri>
 			// graph ?g { }
@@ -530,13 +539,8 @@ public class ProducerImpl implements Producer {
 		Node node = env.getNode(gNode);
 		if (! graph.isGraphNode(node)) return false;
 		if (from.size()==0) return true;
-		for (Node src : from){
-			if (node.same(src)){
-				return true;
-			}
-		}
-		return false;
-	}
+		
+		return ei.isFrom(from, node);
 	
 	@Override
 	public Mappings map(List<Node> nodes, Object object) {

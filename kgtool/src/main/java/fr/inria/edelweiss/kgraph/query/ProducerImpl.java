@@ -541,6 +541,7 @@ public class ProducerImpl implements Producer {
 		if (from.size()==0) return true;
 		
 		return ei.isFrom(from, node);
+	}
 	
 	@Override
 	public Mappings map(List<Node> nodes, Object object) {

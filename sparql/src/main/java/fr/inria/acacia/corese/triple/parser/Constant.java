@@ -103,27 +103,27 @@ public class Constant extends Atom {
 		return new Array(el);
 	}
 	
-	public String toSparql() {
+	public StringBuffer toString(StringBuffer sb) {
 		if (isLiteral()){
-			String str = KeywordPP.QUOTE + name + KeywordPP.QUOTE;
+			sb.append(KeywordPP.QUOTE + name + KeywordPP.QUOTE);
 			if (lang != null) {
 				//return name + "@" + lang;
-				return str + KeywordPP.LANG + lang;
+				sb.append(KeywordPP.LANG + lang);
 			} 
 			else if (hasRealDatatype()) {	
-				return str + KeywordPP.SDT + datatype;
+				sb.append(KeywordPP.SDT + datatype);
 			} 
 			else {
-				return str;
+				return sb;
 			}
 		}
 		else if (isQName) {
-			return name;
+			sb.append(name);
 		} 
 		else {
-			return KeywordPP.OPEN + getLongName() + KeywordPP.CLOSE;
+			sb.append(KeywordPP.OPEN + getLongName() + KeywordPP.CLOSE);
 		}
-		
+		return sb;
 	}
 	
 	

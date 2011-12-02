@@ -510,45 +510,18 @@ public abstract class Exp extends Statement implements Comparable<Exp> {
 		return false;
 	}
 	
-	public String toSparql() {
-		return toSparql(null);
-	}
 	
-	public String toSparql(NSManager nsm) {
-		String str = "";
-
+	public StringBuffer toString(StringBuffer sb) {
 		if (size() == 1) {
-			str += get(0).toSparql(nsm);
+			sb.append(get(0).toString());
 		} else {
-			for (int i=0;i<size();i++) {
-				str += get(i).toSparql(nsm);
+			sb.append(get(0).toString());
+			for (int i=1;i<size();i++) {
+				sb.append(ASTQuery.NL);
+				sb.append(get(i).toString());
 			}
 		}
-		return str;
-	}
-	
-	public String toString(){
-		return toSparql(null);
-	}
-	
-	public String toString(NSManager nsm){
-		boolean isor = this instanceof Or;
-		if (size() == 0)
-			return "";
-		else if (size() == 1)
-			return eget(0).toString(nsm);
-		Exp exp; int last = size() -1;
-		String str = "(";
-		for (int i = 0; i < size(); i++){
-			exp=eget(i);
-			str += exp.toString(nsm);
-			if (exp instanceof Triple && i < last)
-				str += " \n";
-			else str += " ";
-			if (isor && i < last) str += " or ";
-		}
-		str += " )";
-		return str;
+		return sb;
 	}
 	
 	

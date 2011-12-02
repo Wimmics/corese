@@ -321,8 +321,9 @@ implements Regex, Filter, Expr {
         return null;
     }
 	
-	public String toSparql() {
-		return null;
+	
+	public String toRegex() {
+		return toString();
 	}
 	
 	/**

@@ -28,17 +28,6 @@ public class Atom extends Expression implements ElementClause{
 	public Atom() {
 	}
 
-	
-    
-	public String toString() {
-		if (lang != null)
-			return name + KeywordPP.LANG + lang;
-		else if (datatype != null && hasRealDatatype()) {
-            return name + KeywordPP.SDT + datatype;
-        }
-		else
-			return name;
-	}
     
     public Atom(String name) {
 		super(name);

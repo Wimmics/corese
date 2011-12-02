@@ -82,12 +82,9 @@ public class Score extends And {
     eget(0).setScore(vec);
   }
 
-  public String toSparql(NSManager nsm){
-      return KeywordPP.SCORE + KeywordPP.SPACE + score + KeywordPP.OPEN_BRACKET + super.toSparql(nsm) + KeywordPP.CLOSE_BRACKET;
+  public String toString(){
+      return KeywordPP.SCORE + KeywordPP.SPACE + score + KeywordPP.OPEN_BRACKET + super.toString() + KeywordPP.CLOSE_BRACKET;
   }
 
-  public String toString(NSManager nsm){
-    return "score " + score + " { " + super.toString(nsm) + " }" ;
-  }
 
 }

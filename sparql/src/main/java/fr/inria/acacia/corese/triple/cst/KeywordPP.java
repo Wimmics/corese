@@ -59,22 +59,24 @@ public interface KeywordPP {
     public final static String FILTER = "filter";
     public final static String OPTIONAL = "optional";
     public final static String UNION = "union";
+    public final static String MINUS = "minus";
     public final static String DOT = " . ";
     public final static String COMMA = ",";
     public final static String ORDERBY = "order by";
     public final static String DESC = "desc";
     public final static String DISTANCE = "distance";
     public final static String LIMIT = "limit";
+    public final static String HAVING = "having";
     public final static String OFFSET = "offset";
     public final static String SPACE = " ";
-    public final static String SPACE_LN = " \n";
+    public final static String SPACE_LN = " " + System.getProperty("line.separator");
     
     public final static String OPEN_BRACKET = "{";
     public final static String CLOSE_BRACKET = "}";
     public final static String OPEN_SQUARE_BRACKET = "[";
     public final static String CLOSE_SQUARE_BRACKET = "]";
-    public final static String OPEN_PARENTHESIS = "(";
-    public final static String CLOSE_PARENTHESIS = ")";
+    public final static String OPEN_PAREN = "(";
+    public final static String CLOSE_PAREN = ")";
     public final static String OPEN = "<";
     public final static String CLOSE = ">";
 	

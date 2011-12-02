@@ -212,35 +212,18 @@ public class Or extends Exp {
 		}
 	}	
 	
+
 	
-	
-	
-	
-	
-	
-	
-	public String toSparql() {
-		return toSparql(null);
-	}
-	
-	public String toSparql(NSManager nsm) {
-		String str = "";
-		if (size() == 1) {
-			str += eget(0).toSparql(nsm);
-		} else {
-			for (int i=0;i<size();i++) {
-				str += KeywordPP.OPEN_BRACKET + KeywordPP.SPACE + eget(i).toSparql(nsm);
-				str += KeywordPP.CLOSE_BRACKET + KeywordPP.SPACE + 
-					KeywordPP.UNION + KeywordPP.SPACE + 
-					KeywordPP.OPEN_BRACKET + KeywordPP.SPACE;
-				i++;
-				Exp e = eget(i);
-				if (e != null)
-					str += e.toSparql(nsm);
-				str += KeywordPP.CLOSE_BRACKET + KeywordPP.SPACE_LN;				
-			}
+	public StringBuffer toString(StringBuffer sb) {
+				
+		sb.append(get(0).toString());
+						
+		for (int i=1; i<size(); i++) {
+			sb.append(KeywordPP.SPACE + KeywordPP.UNION + KeywordPP.SPACE); 		
+			sb.append(get(i).toString());
 		}
-		return str;
+		
+		return sb;
 	}
 	
 	

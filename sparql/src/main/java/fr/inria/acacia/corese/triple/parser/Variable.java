@@ -33,14 +33,15 @@ public class Variable extends Atom {
 		return new Variable(str);
 	}
 	
-	public String toSparql(){
+	public StringBuffer toString(StringBuffer sb){
 		if (isBlankNode()) {
 			// variable for blank node, replace ?_ by _:
-			return KeywordPP.BN + name.substring(2,name.length());
+			sb.append( KeywordPP.BN + name.substring(2,name.length()));
 		} 
 		else { 
-			return name;
+			sb.append( name);
 		}
+		return sb;
 	}
 	
 	public void setPath(boolean b){

@@ -514,32 +514,15 @@ public class Option extends Exp {
 		else return null;
 	}
 	
-	public String toSparql() {
-		return toSparql(null);
-	}
-	
-	public String toSparql(NSManager nsm) {
-		String str = KeywordPP.OPTIONAL + KeywordPP.SPACE;
-		//str += PrettyPrintCst.OPEN_BRACKET;
+
+	public StringBuffer toString(StringBuffer sb) {
+		sb.append(KeywordPP.OPTIONAL + KeywordPP.SPACE);
 		for (int i=0; i<size(); i++){
-			str+=eget(i).toSparql(nsm);
+			sb.append(eget(i).toString());
 		}
-		//str += PrettyPrintCst.CLOSE_BRACKET;
-		return str;
-		//return "option";
+		return sb;
 	}
 	
-//	public String toString(){
-//		return toString(null);
-//	}
-	
-	public String toString(NSManager nsm){
-		String str="option ( ";
-		for (int i=0; i<size(); i++){
-			str+=eget(i).toString(nsm)+ " " ;
-		}
-		str += " )";
-		return str;
-	}
+
 	
 }

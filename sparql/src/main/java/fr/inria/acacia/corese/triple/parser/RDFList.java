@@ -7,7 +7,7 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss, INRIA 2011
  *
  */
-public class RDFList extends BasicGraphPattern  {
+public class RDFList extends And  {
 	
 	Expression first;
 	List<Expression> list;

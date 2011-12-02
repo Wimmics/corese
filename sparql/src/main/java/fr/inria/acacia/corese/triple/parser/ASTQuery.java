@@ -2,7 +2,6 @@ package fr.inria.acacia.corese.triple.parser;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -172,7 +171,6 @@ public class ASTQuery  implements Keyword {
 	Vector<String> named = new Vector<String>();
 	// values given by query
 	Vector<String> defFrom, defNamed; 
-   // Vector<String> describe = new Vector<String>();  
     ArrayList<Atom> adescribe = new ArrayList<Atom>();
 	Vector<String> source = new Vector<String>();
 	Vector<String> stack = new Vector<String>(); // bound variables
@@ -1110,10 +1108,9 @@ public class ASTQuery  implements Keyword {
 		int n1 = 0, n2 = Integer.MAX_VALUE;
 		if (s1 != null) n1 = Integer.parseInt(s1);
 		if (s2 != null) n2 = Integer.parseInt(s2);
-//		exp = star(exp);
-//		exp.setMin(n1);
-//		exp.setMax(n2);
-		return createOperator(n1, n2, exp);
+		Term t = createOperator(n1, n2, exp);
+		t.setCount(true);
+		return t;
 	}
 	
 	Term createOperator(int n1, int n2, Expression exp) {
@@ -1567,206 +1564,204 @@ public class ASTQuery  implements Keyword {
     	setMaxResult(1);
     }
 
-    /**
-     * Return a pretty printed version of the source of the SPARQL query (2nd parser)
-     * @return
-     */
+    @Deprecated
     public String getSparqlPrettyPrint() {
-    	// we calculate the pretty print only one time
-    	if (this.queryPrettyPrint.equals("") || this.queryPrettyPrint.length() == 0) {
-        	String str = "";
-	        str += getSparqlPrefix();
-	        str += getSparqlHeader();
-	        str += getSparqlBody();
-	        if (! isAsk()) {
-	        	str += NL;
-	        	str += getSparqlSolutionModifier();
-	        }
-	        return str;
-        } 
+        return toString();
+    }
+    
+    public String toString() {
+    	StringBuffer sb = new StringBuffer();
+    	toString(sb);
+    	return sb.toString();
+    }
+    
+    public StringBuffer toString(StringBuffer sb) {
+    	getSparqlPrefix(sb);
+    	
+    	if (isUpdate()){
+    		getUpdate().toString(sb);
+    	}
     	else {
-        	return this.queryPrettyPrint;
-        }
+    		getSparqlHeader(sb);
+    		if (! isDescribe() || getBody()!=null){
+    			getBody().toString(sb);
+    		}
+
+    		if (! isAsk()) {
+    			sb.append(NL);
+    			getSparqlSolutionModifier(sb);
+    		}
+    	}
+    	return sb;
     }
 
-    public String getSparqlPrefix() {
-        String pre = "";
+    StringBuffer getSparqlPrefix(StringBuffer sb) {
+        
         for (Exp e : getPrefixExp().getBody()) {
-            Triple t = (Triple) e;
+            Triple t = e.getTriple();
             String r = t.getSubject().getName();
             String p = t.getPredicate().getName();
             String v = t.getObject().getName();
+            
             // if v starts with "<function://", we have add a ".", so we have to remove it now
             if (v.startsWith(KeywordPP.CORESE_PREFIX)) {
             	v = v.substring(0, v.length()-1) ;
             }
-            //logger.debug("ASTQuery.java - element: - "+r+" "+p+" "+v);
-//            if (p.equalsIgnoreCase(PrettyPrintCst.AS)) { // if we are in the "AS" case, we change it to "PREFIX" because it's more SPARQL compliant
-//                pre += PrettyPrintCst.PREFIX + PrettyPrintCst.SPACE + r + ":" + 
-//                PrettyPrintCst.SPACE + PrettyPrintCst.OPEN + v + PrettyPrintCst.CLOSE + 
-//                PrettyPrintCst.SPACE_LN;
-//            } else 
+
             if (r.equalsIgnoreCase(KeywordPP.PREFIX)) {
-                pre += KeywordPP.PREFIX + KeywordPP.SPACE + p + ": " + 
-                KeywordPP.OPEN + v + KeywordPP.CLOSE + KeywordPP.SPACE_LN;
+                sb.append(KeywordPP.PREFIX + KeywordPP.SPACE + p + ": " + 
+                KeywordPP.OPEN + v + KeywordPP.CLOSE + NL);
             } else if (r.equalsIgnoreCase(KeywordPP.BASE)) {
-                pre += KeywordPP.BASE + KeywordPP.SPACE + 
-                KeywordPP.OPEN +  v + KeywordPP.CLOSE +  KeywordPP.SPACE_LN;
+                sb.append(KeywordPP.BASE + KeywordPP.SPACE + 
+                KeywordPP.OPEN +  v + KeywordPP.CLOSE +  NL);
             }
         }
-        return pre;
+        return sb;
     }
 
     /**
      * Return the header part of the SPARQL-like Query (2nd parser)
      * @return
      */
-    public String getSparqlHeader() {
+    StringBuffer getSparqlHeader(StringBuffer sb) {
+    	String SPACE = KeywordPP.SPACE;
+    	List<String> from = getFrom();
+    	List<String> named = getNamed();
+    	List<String> select = getSelect();
 
-        String head = "";
-        Vector<String> from = getFrom();
-        Vector<String> named = getNamed();
-        Vector<String> select = getSelect();
+    	// Select
+    	if (isSelect()) {
+    		sb.append(KeywordPP.SELECT + SPACE);
+    		if (isDebug())
+    			sb.append(KeywordPP.DEBUG + SPACE);
+    		if (isMore())
+    			sb.append(KeywordPP.MORE + SPACE);
+    		if (isDistinct())
+    			sb.append(KeywordPP.DISTINCT + SPACE);
 
-        // Select
-        if (isSelect()) {
-            head += KeywordPP.SELECT + KeywordPP.SPACE;
-            // Debug
-            if (isDebug())
-                head += KeywordPP.DEBUG + KeywordPP.SPACE;
-            // Nosort
-            if (isNosort())
-                head += KeywordPP.NOSORT + KeywordPP.SPACE;
-            // One
-            if (isOne())
-                head += KeywordPP.ONE + KeywordPP.SPACE;
-            // More
-            if (isMore())
-                head += KeywordPP.MORE + KeywordPP.SPACE;
-            if (isMerge())
-                head += KeywordPP.MERGE + KeywordPP.SPACE;
-                // Distinct
-            if (isDistinct())
-                head += KeywordPP.DISTINCT + KeywordPP.SPACE;
-            // Sorted
-            if (isDistinct() && !isStrictDistinct())
-                head += KeywordPP.SORTED + KeywordPP.SPACE;
-            // Variables
-            if (select != null && select.size()>0){
-              for (String s : getSelect()){
-            	  if (getExpression(s) != null) {
-            		  head += "(" + getExpression(s).toSparql() + " as "  + s + ")";
-            	  }
-            	  else {
-            		  head += s + KeywordPP.SPACE;
-            	  }
-              }
-            } 
-            else if (isSelectAll()) {
-                head += KeywordPP.STAR + KeywordPP.SPACE;
-            }
-        } else if (isAsk()) {
-            // Ask
-            head += KeywordPP.ASK + KeywordPP.SPACE;
-        } else if (isConstruct()) {
-            // Construct
-            head += KeywordPP.CONSTRUCT + 
-            KeywordPP.SPACE + //PrettyPrintCst.OPEN_BRACKET + PrettyPrintCst.SPACE + 
-            getConstruct().toSparql(); // + PrettyPrintCst.CLOSE_BRACKET;
-        } 
-        else if (isDescribe()) {
-            // Describe
-            head += KeywordPP.DESCRIBE + KeywordPP.SPACE;
-            if (isDescribeAll()) {
-                head += KeywordPP.STAR + KeywordPP.SPACE;
-            } 
-            else if (adescribe != null && adescribe.size()>0) {
-            	
-                for (Atom at : adescribe) {
-                	String v = at.getLabel();
-                    if (at.isConstant()){
-                        v = KeywordPP.OPEN + v + KeywordPP.CLOSE;
-                    }
-                    head += v + KeywordPP.SPACE;
-                }
-            }
-        } 
-        else if (isDelete()) {
-        	head += KeywordPP.DELETE + KeywordPP.SPACE + KeywordPP.STAR + KeywordPP.SPACE;
-        }
-        // DataSet
-        if (! isConstruct())    // because it's already done in the construct case
-            head += KeywordPP.SPACE_LN;
-        // From
-        for (int i=0;i<from.size();i++) {
-            head += KeywordPP.FROM + KeywordPP.SPACE + KeywordPP.OPEN + from.get(i) + KeywordPP.CLOSE + KeywordPP.SPACE_LN;
-        }
-        // From Named
-        for (int i=0;i<named.size();i++) {
-            head += KeywordPP.FROM + KeywordPP.SPACE + KeywordPP.NAMED + KeywordPP.SPACE + KeywordPP.OPEN + named.get(i) + KeywordPP.CLOSE + KeywordPP.SPACE_LN;
-        }
-        // Where
-        if (! (isDescribe() && ! isWhere()))
-            head += KeywordPP.WHERE + KeywordPP.SPACE_LN ; //+ 
-        
-        return head;
+    		if (isSelectAll()) {
+    			sb.append(KeywordPP.STAR + SPACE);
+    		}
+    		
+    		if (select != null && select.size()>0){
+    			for (String s : getSelect()){
+    				if (getExpression(s) != null) {
+    					sb.append("(");
+    					getExpression(s).toString(sb);
+    					sb.append(" as "  + s + ")");
+    				}
+    				else {
+    					sb.append(s + SPACE);
+    				}
+    			}
+    		} 
+  		
+    	} 
+    	else if (isAsk()) {
+    		sb.append(KeywordPP.ASK + SPACE);
+    	} 
+    	else if (isConstruct()) {
+    		sb.append(KeywordPP.CONSTRUCT + SPACE); 
+    		getConstruct().toString(sb); 
+    	} 
+    	else if (isDescribe()) {
+    		sb.append(KeywordPP.DESCRIBE + SPACE);
+    		
+    		if (isDescribeAll()) {
+    			sb.append(KeywordPP.STAR + SPACE);
+    		} 
+    		else if (adescribe != null && adescribe.size()>0) {
+
+    			for (Atom at : adescribe) {
+    				at.toString(sb);
+    				sb.append(SPACE);
+    			}
+    		}
+    	} 
+    	
+    	// DataSet
+    	if (! isConstruct())    // because it's already done in the construct case
+    		sb.append(NL);
+    	
+    	// From
+    	for (String name : from) {
+    		sb.append(KeywordPP.FROM + SPACE);
+    		createConstant(name).toString(sb);
+    		sb.append(NL);
+    	}
+    	
+    	// From Named
+    	for (String name : named) {
+       		sb.append(KeywordPP.FROM + SPACE + KeywordPP.NAMED + SPACE);
+    		createConstant(name).toString(sb);
+    		sb.append(NL);
+    	}
+    	
+    	// Where
+    	if (! (isDescribe() && ! isWhere()))
+    		sb.append(KeywordPP.WHERE + NL) ; 
+
+    	return sb;
     }
 
-    public String getSparqlBody() {
-        String body = "";
-        if (! isDescribe() || getBody()!=null)
-            body += getBody().toSparql();
-        return body;
-    }
 
     /**
      * return the solution modifiers : order by, limit, offset
      * @param parser
      * @return
      */
-    public String getSparqlSolutionModifier() {
-        String sm = "";
-        Vector<Expression> sort = getSort();
-        Vector<Boolean> reverse = getReverseTable();
+    public StringBuffer getSparqlSolutionModifier(StringBuffer sb) {
+        String SPACE = KeywordPP.SPACE;
+        List<Expression> sort = getSort();
+        List<Boolean> reverse = getReverseTable();
         
         if (getGroupBy().size()>0){
-        	sm += KeywordPP.GROUPBY + KeywordPP.SPACE;
+        	sb.append(KeywordPP.GROUPBY + SPACE);
         	for (Expression exp : getGroupBy()){
-        		sm += exp.toSparql() + KeywordPP.SPACE;
+        		sb.append(exp.toString() + SPACE);
         	}
-        	sm += NL;
+        	sb.append(NL);
         }
         
         if (sort.size() > 0 ) {
         	int i = 0;
-        	sm += KeywordPP.ORDERBY + KeywordPP.SPACE;
+        	sb.append(KeywordPP.ORDERBY + SPACE);
         	
         	for (Expression exp : getOrderBy()) {
         		
         		boolean breverse = reverse.get(i++);
         		if (breverse) {
-        			sm += KeywordPP.DESC;
-        			sm += "(";
+        			sb.append(KeywordPP.DESC + "(");
         		}
-        		sm += exp.toSparql();
+        		sb.append(exp.toString());
         		if (breverse) 
-        			sm += ")" ;
-        		sm += KeywordPP.SPACE;
+        			sb.append(")") ;
+        		sb.append(SPACE);
         	}
-        	sm += NL;
+        	sb.append(NL);
         }
         
         if (getOffset() > 0)
-            sm += KeywordPP.OFFSET + KeywordPP.SPACE + getOffset() + KeywordPP.SPACE;
+        	sb.append(KeywordPP.OFFSET + SPACE + getOffset() + SPACE);
         
         if (getMaxResult() != getDefaultMaxResult())
-            sm += KeywordPP.LIMIT + KeywordPP.SPACE + getMaxResult() + KeywordPP.SPACE;
- 
-        if (!sm.equals(""))
-            sm += NL;
+        	sb.append(KeywordPP.LIMIT + SPACE + getMaxResult() + KeywordPP.SPACE);
         
-        return sm;
+        if (getHaving()!=null){
+        	sb.append(KeywordPP.HAVING);
+        	sb.append(KeywordPP.OPEN_PAREN);
+        	getHaving().toString(sb);
+        	sb.append(KeywordPP.CLOSE_PAREN);
+        }
+ 
+        if (sb.length()>0)
+        	sb.append(NL);
+        
+        return sb;
     }
+    
+    
+    
 
 	public void setConstruct(Exp constructExp) {
 		this.setResultForm(QT_CONSTRUCT);
@@ -2274,10 +2269,7 @@ public class ASTQuery  implements Keyword {
         return reverseTable;
     }
 
-    public String toString() {
-        return getSparqlPrettyPrint();
-    }
-    
+
     public String toSparql() {
         return getSparqlPrettyPrint();
     }

@@ -1339,84 +1339,79 @@ public class Triple extends Exp {
 		return str;
 	}
 	
-	public String toSparql() {
-		return toSparql(null);
+
+	
+	public StringBuffer ftoSparql(Expression exp, StringBuffer sb) {
+		if (exp == null) return sb;
+		boolean isAtom = (exp.isAtom());
+		sb.append(KeywordPP.FILTER + KeywordPP.SPACE);
+		if (isAtom) sb.append("(");
+		exp.toString(sb);
+		if (isAtom) sb.append(")");
+		sb.append(KeywordPP.SPACE);
+		return sb;
 	}
 	
-	public String toSparql(NSManager nsm) {
+	public StringBuffer toString(StringBuffer sb) {
 		
-		// filter
 		if (isExpression()) {
-			if (exp == null) return "";
-			boolean isAtom = (exp.isAtom());
-			String str = KeywordPP.FILTER + KeywordPP.SPACE;
-			if (isAtom) str += "(";
-			str += exp.toSparql();
-			if (isAtom) str += ")";
-			str += KeywordPP.SPACE;
-			return str;
+			return ftoSparql(getExp(), sb);
 		}
+				
+		String SPACE = " ";
 		String s = "";
 		String r;
 		String p;
 		String v;
 		
 		if (source != null){
-			s = source.toSparql() + " ";
+			sb.append(source.toString() + " ");
 		}
 		
 		// resource
-		r = subject.toSparql();
+		r = subject.toString();
 		
 		// property
 		p = predicate.getName();
+		
 		// if we have something like <Engineer> (because there is a base), add < and >
-		//if (!isVariable(p) && !isUri(p) && !(p.startsWith(PrettyPrintCst.OPEN) && p.endsWith(PrettyPrintCst.CLOSE)))
 		if (isABaseWord(p))
 			p = KeywordPP.OPEN + p + KeywordPP.CLOSE;
-		if (variable != null) {
+		
+		if (isPath()){
+			p = getRegex().toRegex();
+			
+			if (variable != null && ! variable.getName().startsWith(ExpParser.SYSVAR)){
+				p += " :: " + variable.getName();
+			}
+		}
+		else if (variable != null) {
 			if (p.equals(getRootPropertyURI()) || p.equals(getRootPropertyQN()))
 				p = variable.getName();
 			else
 				p += "::" + variable.getName();
 		}
-		if (isone)
-			p = "one::" + p;
-		if (isdirect)
-			p = "direct::" + p;
-		if (isall)
-			p = "all::" + p;
-		if (star >= 1) {
-			if (isset)
-				p += KeywordPP.OPEN_BRACKET + star + KeywordPP.CLOSE_BRACKET;
-			else
-				p += KeywordPP.OPEN_SQUARE_BRACKET + star + KeywordPP.CLOSE_SQUARE_BRACKET;
-		}
+		
+
 		
 		// value
-		v = object.toSparql();
+		v = object.toString();
 		
 		// tuple?
 		if (vexp != null) {
-			String str = KeywordPP.TUPLE + KeywordPP.OPEN_PARENTHESIS + r + KeywordPP.SPACE + p + KeywordPP.SPACE + v + KeywordPP.SPACE;
+			sb.append(KeywordPP.TUPLE + KeywordPP.OPEN_PAREN + r + SPACE + p + SPACE + v + SPACE);
 			for (Expression e : vexp) {
-				str += e.toSparql() + KeywordPP.SPACE;
+				sb.append(e.toString() + SPACE);
 			}
-			str += KeywordPP.CLOSE_PARENTHESIS + KeywordPP.DOT;
-			return str;
+			sb.append(KeywordPP.CLOSE_PAREN + KeywordPP.DOT);
+			return sb;
 		}
 		
-		return s + r + KeywordPP.SPACE + p + KeywordPP.SPACE + v + KeywordPP.DOT;
+		sb.append(r + SPACE + p + SPACE + v + KeywordPP.DOT);
+		return sb;
 	}
 	
-	public String toString() {
-		return toSparql(null);
-	}
-	
-	public String toString(NSManager nsm) {
-		return toSparql(nsm);
-		
-	}
+
 	
 	public void setExp(boolean b) {
 		isexp = b;

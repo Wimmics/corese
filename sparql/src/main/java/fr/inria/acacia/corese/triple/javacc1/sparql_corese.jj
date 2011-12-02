@@ -674,30 +674,13 @@ void Threshold(): { Token t; }
 
 // ----
 
-void DatasetClause() : { String s; }
+void DatasetClause() : { Atom s; }
 {
   <FROM>
-  ( s = DefaultGraphClause() { astq.setFrom(s); }
-  | s = NamedGraphClause() { astq.setNamed(s); } )
-}
-
-String DefaultGraphClause() : { String s; }
-{
-  s = SourceSelector()
-  { return s; }
-}
-
-String NamedGraphClause() : { String s; }
-{
-  <NAMED>
-  s = SourceSelector()
-  { return s; }
-}
-
-String SourceSelector() : {Token t1; String s; }
-{
-  (( s = IRIref() ) | ( t1 = <VAR1> { s = t1.image; } ))
-  { return s; }
+  ( 
+            s = IRIrefConst()  { astq.setFrom(s); }
+  | <NAMED> s = IRIrefConst()  { astq.setNamed(s); } 
+  )
 }
 
 Exp WhereClause() : { Exp stack; }

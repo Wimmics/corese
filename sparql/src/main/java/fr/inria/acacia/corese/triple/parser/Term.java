@@ -40,7 +40,7 @@ public class Term extends Expression {
 	static final String SIM = "similarity";
 	static final String SCORE = "score";
 	static final String SBOUND = "bound";
-	static final String EXIST = "exist";
+	static final String EXIST = "exists";
 	static final String LIST = "list";
 
 
@@ -51,6 +51,7 @@ public class Term extends Expression {
 	// additional system arg:
 	Expr exp;
 	boolean isFunction = false,
+	isCount = false,
 	isPlus = false;
 	boolean isSystem = false;
 	boolean isDistinct = false;
@@ -155,96 +156,99 @@ public class Term extends Expression {
 		super.setName(name);
 	}
 	
-	public String toSparql() {
-//		if (args.size() == 0) {
-//			return "no arg";
-//		} else 
-			if (getName() == null) {
-			return "no name";
-		} else {
-			String str = "";
-			boolean isope = true;
-			int n = args.size();
-			int start = 0;
-			if (isNegation(getName())){
-				str = "(" + SENOT;
-				n = 1;
-			} else if (isFunction()){
-				str += getName();
-				start = 0;
-				isope = false;
+	public String toRegex() {
+		if (isCount()){
+			String str = paren(getArg(0).toRegex()) + "{";
+			if (getMin() == getMax()){
+				str += getMin();
 			}
-			str += "(";
-			String fst;
-			for (int i=start; i < n; i++){
-				fst = getArg(i).toSparql();
-				if (fst.startsWith("'") || fst.startsWith("\""))
-					str += KeywordPP.SPACE + fst;
-				else
-					str += fst;
-				if (i < n - 1) {
-					if (isope) {
-						if (getName().matches("\\$.*")) {
-							// we are in the case filter(?o) -> filter(?o $istrue ?o)
-							// we stop the loop
-							i = n;
-						} else {
-							str += KeywordPP.SPACE + getName() + KeywordPP.SPACE;
-						}
-					}
+			else {
+				if (getMin()!=0){
+					str += getMin();
 				}
-				if (!isope && i < (n-1)) str += KeywordPP.COMMA;
+				str += ",";
+				if (getMax()!= Integer.MAX_VALUE){
+					str += getMax();
+				}
 			}
-			if (isNegation(getName())) {
-				str += ")";
-			}
-			str +=")";
+			str += "}";
 			return str;
-			//return "Term";
 		}
+		else if (isPlus()){
+			return paren(getArg(0).toRegex()) + "+";
+		}
+		else if (isStar()){
+			return paren(getArg(0).toRegex()) + "*";
+		}
+		else if (isNot()){
+			return "!" + paren(getArg(0).toRegex());
+		}
+		else if (isReverse()){
+			return "^" + paren(getArg(0).toRegex());
+		}
+		else if (isOpt()){
+			return paren(getArg(0).toRegex()) + "?";
+		}
+		else if (isSeq()){
+			return getArg(0).toRegex() + "/" + getArg(1).toRegex();
+		}
+		else if (isOr()){
+			return getArg(0).toRegex() + "|" + getArg(1).toRegex();
+		}
+		return toString();
+	}
+
+	String paren(String s){
+		return "(" + s + ")";
 	}
 	
-	public String toString(){
-		boolean isope = true;
-//		if (args.size() == 0) {
-//			return "no arg";
-//		}
-//		else 
-			if (getName() == null) {
-			return "no name";
+	public StringBuffer toString(StringBuffer sb) {
+
+		if (getName() == null) {
+			return sb;
+		} 
+		
+		if (getName().equals(EXIST)){
+			return getExist().toString(sb);
 		}
-		else {
-			String str = "";
-			int n = args.size();
-			int start = 0;
-			if (isNegation(getName())){
-				str = SENOT + " " ;
-				n = 1;
-			}
-			else if (isFunction()){
-				str += getName() ;
-				start = 0;
-				isope = false;
-			}
-			str += "(";
-			String fst;
-			for (int i=start; i < n; i++){
-				if (getArg(i) != null) {
-					fst = getArg(i).toString();
-					if (fst.startsWith("'") || fst.startsWith("\""))
-						str += " " ;
-					str += fst;
-					if (i < n - 1)
-						str += " " + ((isope) ? getName() : "") + " " ;
+		boolean isope = true;
+		int n = args.size();
+
+		if (isNegation(getName())){
+			sb.append(KeywordPP.OPEN_PAREN + SENOT);
+			n = 1;
+		} 
+		else if (isFunction()){
+			sb.append(getName());
+			isope = false;
+		}
+
+		sb.append(KeywordPP.OPEN_PAREN);
+
+		for (int i=0; i < n; i++){
+
+			sb.append(getArg(i).toString());
+
+			if (i < n - 1) {
+				if (isope) {						
+					sb.append(KeywordPP.SPACE + getName() + KeywordPP.SPACE);						
+				}
+				else {
+					sb.append(KeywordPP.COMMA);
 				}
 			}
-			if (getPattern() != null){
-				str += getPattern();
-			}
-			str +=" )";
-			return str;
 		}
+
+		sb.append(KeywordPP.CLOSE_PAREN);
+
+		if (isNegation(getName())) {
+			sb.append(KeywordPP.CLOSE_PAREN);
+		}
+		
+		return sb;
 	}
+
+
 	
 	
 	static boolean isNegation(String name) {
@@ -513,6 +517,14 @@ public class Term extends Expression {
 	
 	void setPlus(boolean b){
 		isPlus = b;
+	}
+	
+	public boolean isCount(){
+		return isCount;
+	}
+	
+	void setCount(boolean b){
+		isCount = b;
 	}
 	
 	public boolean isTerm(String oper){

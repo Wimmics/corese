@@ -49,8 +49,8 @@ public class ExpParser {
   public static final String NOT  = "not";
   public static final String OR  ="or";
   public static final String[] AUNION  ={OR, KeywordPP.UNION, Keyword.SEOR};
-  public static final String OPAREN  = KeywordPP.OPEN_PARENTHESIS;
-  public static final String CPAREN  = KeywordPP.CLOSE_PARENTHESIS;
+  public static final String OPAREN  = KeywordPP.OPEN_PAREN;
+  public static final String CPAREN  = KeywordPP.CLOSE_PAREN;
   public static final String [] AFROM  = {KeywordPP.FROM};
   public static final String [] ANAMED  = {KeywordPP.NAMED};
   public static final String [] AAND  = {"and", Keyword.SEAND};

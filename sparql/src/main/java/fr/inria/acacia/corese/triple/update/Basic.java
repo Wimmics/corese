@@ -37,36 +37,36 @@ public class Basic extends Update {
 		return b;
 	}
 	
-	public String toString(){
-		String str = "";
-		str += title();
+	
+	public StringBuffer toString(StringBuffer sb){
+		sb.append(title());
 		
-		if (silent) 	str += " " + SILENT ;
+		if (silent) 	sb.append(" " + SILENT) ;
 		
 		switch (type()){
 		
 		case LOAD:
-			if (uri!=null)    str += " " + uri;
-			if (target!=null) str += " " + INTO + " " + GRAPH + " " + target;
+			if (uri!=null)    sb.append(" " + uri);
+			if (target!=null) sb.append(" " + INTO + " " + GRAPH + " " + target);
 			break;
 		
 		case ADD:
 		case MOVE:
 		case COPY:
 			if (graph!=null){
-				str += " " + GRAPH + " " + graph;
+				sb.append(" " + GRAPH + " " + graph);
 			}
 			else {
-				str += " " + DEFAUT;
+				sb.append(" " + DEFAUT);
 			}
 			
-			str += " " + TO + " ";
+			sb.append(" " + TO + " ");
 			
 			if (target!=null){
-				str += target;
+				sb.append(target);
 			}
 			else {
-				str += DEFAUT;
+				sb.append(DEFAUT);
 			}
 			break;
 		
@@ -74,13 +74,13 @@ public class Basic extends Update {
 		case CLEAR:
 		case DROP:
 		case CREATE:
-			if (graph!=null)  str += " " + GRAPH + " " + graph;
-			if (named) 		str += " " + NAMED ;
-			if (all) 		str += " " + ALL ;
-			if (defaut) 	str += " " + DEFAUT ;
+			if (graph!=null)  sb.append(" " + GRAPH + " " + graph);
+			if (named) 		sb.append(" " + NAMED) ;
+			if (all) 		sb.append(" " + ALL) ;
+			if (defaut) 	sb.append(" " + DEFAUT) ;
 		}
 
-		return str;
+		return sb;
 	}
 
 	

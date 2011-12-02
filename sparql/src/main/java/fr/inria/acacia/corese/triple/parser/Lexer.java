@@ -60,7 +60,7 @@ public class Lexer extends StringTokenizer {
     }
     if (lookahead)
       save=token;
-    String open=KeywordPP.OPEN_PARENTHESIS, close = KeywordPP.CLOSE_PARENTHESIS;
+    String open=KeywordPP.OPEN_PAREN, close = KeywordPP.CLOSE_PAREN;
     int index=token.indexOf(open);
     if (index == -1){
       index = token.indexOf(KeywordPP.OPEN_BRACKET); // fake sparql

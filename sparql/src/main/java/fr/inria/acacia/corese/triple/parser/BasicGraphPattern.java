@@ -50,8 +50,11 @@ public class BasicGraphPattern extends And {
 		return true;
 	}
     
-    public String toSparql(NSManager nsm) {
-    	return "{" + super.toSparql(nsm) + "}";
+    public StringBuffer toString(StringBuffer sb) {
+    	sb.append ("{");
+    	super.toString(sb);
+    	sb.append("}");
+    	return sb;
     }
     
     /**

@@ -210,34 +210,20 @@ public class Source extends And {
     	}
     }
     
-    
- 
-    public String toSparql() {
-        return toSparql(null);
-    }
 
-    public String toSparql(NSManager nsm) {
-        String str = KeywordPP.GRAPH + KeywordPP.SPACE;
-        if (state) str = KeywordPP.STATE + KeywordPP.SPACE;
-        if (asource.isVariable()) 
-            str += source;
-        else 
-            str += KeywordPP.OPEN + source + KeywordPP.CLOSE;
-        str += KeywordPP.SPACE;
-        //str += PrettyPrintCst.OPEN_BRACKET;
+
+    public StringBuffer toString(StringBuffer sb) {
+        sb.append(KeywordPP.GRAPH + KeywordPP.SPACE);
+        if (state) sb.append(KeywordPP.STATE + KeywordPP.SPACE);
+        sb.append(asource);
+        sb.append(KeywordPP.SPACE);
         for (int i=0; i<size(); i++){
-            str+=eget(i).toSparql(nsm);
+        	sb.append(eget(i).toString());
         }
-       // str += PrettyPrintCst.CLOSE_BRACKET;
-        return str;       
+        return sb;       
     }
 
-  public String toString(NSManager nsm){
-    return "graph " + source + " { " + super.toString(nsm) + " }" ;
-  }
-  
-  
-  
+ 
   public boolean validateData(){
 	  if (asource.isVariable()) return false;
 

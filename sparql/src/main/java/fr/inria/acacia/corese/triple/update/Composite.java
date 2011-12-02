@@ -16,6 +16,7 @@ public class Composite extends Update {
 	static final String NAMED = "using named";
 	static final String WHERE = "where";
 	static final String DATA  = "data";
+	static final String NL = System.getProperty("line.separator");
 
 	
 	Exp data, 
@@ -51,38 +52,38 @@ public class Composite extends Update {
 		return ope;
 	}
 	
-	public String toString(){
-		String str = "";
-		String NL = "\n";
+
+	public StringBuffer toString(StringBuffer sb){
+		
 		if (type() != COMPOSITE){
-			str += title() + " ";
+			sb.append(title() + " ");
 		}
 
 		if (getData()!=null){
-			str += DATA + " " + getData();
+			sb.append(DATA + " " + getData());
 		}
 		else {
 			if (getWith()!=null){
-				str += WITH + " " + getWith().toSparql() + NL;
+				sb.append(WITH + " " + getWith().toString() + NL);
 			}
 			for (Composite cc : getUpdates()){
-				str += cc.title() + " " ;
-				str += cc.getPattern()  + NL;
+				sb.append(cc.title() + " ") ;
+				sb.append(cc.getPattern()  + NL);
 			}
 
 			for (Constant uri : getUsing()){
-				str += USING + " " + uri.toSparql() + NL;
+				sb.append(USING + " " + uri.toString() + NL);
 			}
 			
 			for (Constant uri : getNamed()){
-				str += NAMED + " " + uri.toSparql() + NL;
+				sb.append(NAMED + " " + uri.toString() + NL);
 			}
 
 			if (getBody()!=null){
-				str += WHERE + " " + getBody();
+				sb.append(WHERE + " " + getBody());
 			}
 		}
-		return str;
+		return sb;
 	}
 	
 	public void setPattern(Exp d){

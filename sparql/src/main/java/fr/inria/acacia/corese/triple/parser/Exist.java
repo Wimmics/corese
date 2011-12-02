@@ -15,4 +15,9 @@ public class Exist extends BasicGraphPattern {
 		return true;
 	}
 	
+	public StringBuffer toString(StringBuffer sb){
+		sb.append(Term.EXIST + " " + get(0));
+		return sb;
+	}
+	
 }

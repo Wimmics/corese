@@ -146,10 +146,7 @@ public class NSManager
 	
 	// add default namespaces
 	 void initDefault(){
-		Enumeration<String> en=def.keys();
-		String ns;
-		while (en.hasMoreElements()){
-			ns=en.nextElement();
+		for (String ns : def.keySet()){
 			defNamespace(ns, def.get(ns));
 		}
 	}
@@ -166,12 +163,12 @@ public class NSManager
 	/** Define a namespace, returns the prefix
 	 */
 	public String defNamespace(String ns){
-		if (ns==null)
+		if (ns == null){
 			return null;
-		else
-			if (! tns.containsKey(ns)){
-				defNamespace(ns, makePrefix(ns));
-			}
+		}
+		else if (! tns.containsKey(ns)){
+			defNamespace(ns, makePrefix(ns));
+		}
 		return getPrefix(ns);
 	}
 	
@@ -185,8 +182,9 @@ public class NSManager
 	}
 	
 	String createPrefix(String p){
-		if (! p.equals(seed))
+		if (! p.equals(seed)){
 			return p;
+		}
 		String str= (count==0)?seed:(seed+ count);
 		count++;
 		return str;
@@ -244,8 +242,9 @@ public class NSManager
 	}
 	
 	public int getIndex(String ns){
-		if (getPrefix(ns)==null)
+		if (getPrefix(ns)==null){
 			defNamespace(ns);
+		}
 		return (index.get(ns)).intValue();
 	}
 	
@@ -259,12 +258,12 @@ public class NSManager
 	 */
 	public String toPrefix(String nsname, boolean skip){
 		String ns=namespace(nsname);
-		if (ns==null || ns.equals(""))
+		if (ns==null || ns.equals("")){
 			return nsname;
+		}
 		String p=getPrefix(ns);
 		if (p==null){
-			if (skip)
-				return nsname;
+			if (skip) return nsname;
 			else p=defNamespace(ns);
 		}
 		String str=p + pchar + nsname.substring(ns.length());
@@ -280,10 +279,8 @@ public class NSManager
 	 */
 	public String toNamespace(String pname){
 		if (pname == null) return null;
-		Enumeration<String> en=getPrefixEnum();
-		String p;
-		while (en.hasMoreElements()){
-			p=(String)en.nextElement();
+		
+		for  (String p : tprefix.keySet()){
 			if (pname.startsWith(p) && pname.indexOf(pchar)==p.length()){
 				return getNamespace(p) + pname.substring(p.length()+1);
 			}
@@ -315,8 +312,8 @@ public class NSManager
 	}
 	
 	boolean isURN(String str) {
-		for (int i = 0; i < PROTOCOLS.length; i++) {
-			if (str.startsWith(PROTOCOLS[i]))
+		for (String pr : PROTOCOLS) {
+			if (str.startsWith(pr))
 				return true;
 		}
 		return false;
@@ -338,10 +335,7 @@ public class NSManager
 	 * Return the namespace of this QName
 	 */
 	public String getQNamespace(String pname) {
-		Enumeration<String> en = getPrefixEnum();
-		String p;
-		while (en.hasMoreElements()) {
-			p = (String) en.nextElement();
+		for (String p : tprefix.keySet()) {
 			if (pname.startsWith(p) && pname.indexOf(pchar) == p.length()) {
 				return getNamespace(p);
 			}
@@ -360,11 +354,7 @@ public class NSManager
 		return ns;
 		
 	}
-	
-	
-	public static boolean isBlankNodeID(String id){
-		return id.startsWith(RDFS.PPBN);
-	}
+
 	
 	/**
 	 * toNamespace , if it is an external BN uri, return the internal BN uri
@@ -378,17 +368,6 @@ public class NSManager
 		return tns.size();
 	}
 	
-	public String decNamespace(){
-		Enumeration<String> en=tns.keys();
-		String ns;
-		String dec=new String("");
-		while (en.hasMoreElements()){
-			ns=(String)en.nextElement();
-			dec+="xmlns:"+getPrefix(ns) + "='" + ns + "'";
-			if (en.hasMoreElements()) dec+=" ";
-		}
-		return dec;
-	}
 	
 	public String stripns(String name, String namespace, boolean refp){
 		// if namespace not null, removes it
@@ -421,19 +400,15 @@ public class NSManager
 	}
 	
 	public boolean sysNamespace(String name){
-		Enumeration<String> en=def.keys();
-		String ns;
-		while (en.hasMoreElements()){
-			ns=(String)en.nextElement();
+		for (String ns : def.keySet()){
 			if (inNamespace(name, ns))
 				return true;
 		}
 		return false;
 	}
 	
-	public boolean inNamespace(String type, String namespace)
+	public boolean inNamespace(String type, String namespace){
 	// retourne si un type appartient au namespace
-	{
 		if (namespace==null) return true;
 		else return type.startsWith(namespace);
 	};

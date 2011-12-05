@@ -75,15 +75,15 @@ public class Construct
 		return cons;
 	}
 	
-	void setDelete(boolean b){
+	public void setDelete(boolean b){
 		isDelete = b;
 	}
 	
-	void setInsert(boolean b){
+	public void setInsert(boolean b){
 		isInsert = b;
 	}
 	
-	void setDebug(boolean b){
+	public void setDebug(boolean b){
 		isDebug = b;
 	}
 	

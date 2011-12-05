@@ -106,9 +106,11 @@ public class JenaGraphFactory {
                 } else if (value instanceof String) {
                     kgNode = g.addLiteral(((String) value));
                 } else if (value instanceof XSDDateTime) {
-                    logger.warn("Literal value " + value + " : " + value.getClass().getCanonicalName() + " transformed as String into KGRAM");
                     kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
-                }else {
+                } else if (l.getDatatypeURI() != null) {
+                    kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
+                    logger.debug("Literal value " + value + " : " + value.getClass().getCanonicalName() + " handled by KGRAM graphs through "+l.getDatatypeURI());
+                } else {  
                     logger.error("Literal value " + value + " : " + value.getClass().getCanonicalName() + " not handled by KGRAM graphs");
                 }
 

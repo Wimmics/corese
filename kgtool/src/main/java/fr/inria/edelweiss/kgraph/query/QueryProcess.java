@@ -110,7 +110,7 @@ public class QueryProcess extends QuerySolver {
 		return exec;
 	}
 	
-	static Interpreter createInterpreter(Producer p, Matcher m){
+	public static Interpreter createInterpreter(Producer p, Matcher m){
 		Interpreter eval  = interpreter(p);
 		Graph g = sGetGraph(p);
 		if (g != null){

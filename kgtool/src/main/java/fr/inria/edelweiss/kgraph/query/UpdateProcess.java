@@ -125,7 +125,7 @@ public class UpdateProcess {
 		
 		if (exp != null){
 			ast.setBody(BasicGraphPattern.create());
-			ast.setConst(exp);
+			ast.setInsert(exp);
 		}
 		
 		// Processed as a construct (add) on target graph
@@ -189,7 +189,7 @@ public class UpdateProcess {
 				if (cc.type() == Update.INSERT){
 					// insert {exp}
 					ast.setInsert(true);
-					ast.setConst(exp);
+					ast.setInsert(exp);
 				}
 				else {
 					// delete {exp}

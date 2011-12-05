@@ -70,7 +70,7 @@ public class Variable extends Atom {
 	}
 	
 	public static boolean isBlankVariable(String name){
-		return name.startsWith(ExpParser.BNVAR);
+		return name.startsWith(ASTQuery.BNVAR);
 	}
 	
 	/**

@@ -4,7 +4,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -56,7 +55,7 @@ public class NSManager
 	private Hashtable <String, Boolean> htValid;
 	
 	/** contains the prefix defined in the query */
-	Vector<String> queryPrefix = new Vector<String>();
+	//Vector<String> queryPrefix = new Vector<String>();
 	
 	/** 
 	 * Corese.getDataLoader().get(CoreseProp.PGNS)
@@ -65,10 +64,10 @@ public class NSManager
 	private String defaultNamespaces = null;
 	
 	private NSManager(){
-		def=new Hashtable<String, String>();
-		index=new Hashtable<String, Integer>();
-		tprefix=new Hashtable<String, String>();
-		tns = new Hashtable<String, String>();
+		def = 		new Hashtable<String, String>();
+		tprefix = 	new Hashtable<String, String>();
+		tns = 		new Hashtable<String, String>();
+		index = 	new Hashtable<String, Integer>();
 		define();
 	}
 	
@@ -136,11 +135,10 @@ public class NSManager
 	
 	// default system namespaces, not for application namespace
 	 void define(){
-		//def.put(RDFS.GETNS,  RDFS.GETPrefix);
 		def.put(RDFS.XML,  RDFS.XMLPrefix);
 		def.put(RDFS.RDF,  RDFS.RDFPrefix);
 		def.put(RDFS.RDFS, RDFS.RDFSPrefix);
-		def.put(RDFS.XSD, RDFS.XSDPrefix);
+		def.put(RDFS.XSD,  RDFS.XSDPrefix);
 		def.put(RDFS.OWL,  RDFS.OWLPrefix);
 		def.put(ExpType.KGRAM, ExpType.KPREF);
 		def.put(RDFS.COS,  RDFS.COSPrefix);
@@ -222,15 +220,6 @@ public class NSManager
 		return prefix;
 	}
 	
-	public String defNamespaceQuery(String ns, String prefix){
-		if (!(queryPrefix.contains(prefix)))
-			queryPrefix.add(prefix);
-		return defNamespace(ns, prefix);
-	}
-	
-	public Vector<String> getQueryPrefix() {
-		return queryPrefix;
-	}
 	
 	/** Returns the prefix of the namespace
 	 */
@@ -373,13 +362,6 @@ public class NSManager
 	}
 	
 	
-	// from  external to internal id (from  cosbn#genid1 to _bn#genid1)
-//	used in query language to retrieve a BN from its external id
-//	public static String getInternalBlankNodeID(String id) {
-//		String str = NSManager.nstrip(id); // remove cosbn, str=genid1
-//		return NSParser.getInternalID(str); // return  _bn#genid1
-//	}
-	
 	public static boolean isBlankNodeID(String id){
 		return id.startsWith(RDFS.PPBN);
 	}
@@ -389,17 +371,6 @@ public class NSManager
 	 */
 	public String toNamespaceBN(String str) {
 		return toNamespaceB(str);
-		
-//		if (isBlankNodeID(str)) { // query external cosbn#genid1
-//			return getInternalBlankNodeID(str); // query internal _bn#genid1
-//		}
-//		else {
-//			str = toNamespaceB(str);
-//			if (isBlankNodeID(str)) // query external cosbn#genid1
-//				return getInternalBlankNodeID(str); // query internal _bn#genid1
-//			else
-//				return str;
-//		}
 	}
 	
 	
@@ -431,9 +402,6 @@ public class NSManager
 		return  nstrip(name);
 	}
 	
-//	public String blankID(String name){
-//		return NSParser.blankID(name);
-//	}
 	
 	public String strip(String name, String ns){
 		// remove ns from name

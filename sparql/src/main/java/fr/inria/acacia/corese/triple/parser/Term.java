@@ -120,14 +120,7 @@ public class Term extends Expression {
 		return name;
 	}
 	
-//	public String getLongName(){
-//		return longName;
-//	}
-//	
-//	public void setLongName(String name){
-//		 longName = name;
-//	}
-	
+
 	public void setDistinct(boolean b){
 		isDistinct = b;
 	}
@@ -265,12 +258,6 @@ public class Term extends Expression {
 		return null;
 	}
 	
-	
-	
-	void validate(Parser parser){
-		getArg(0).validate(parser);
-		getArg(1).validate(parser);
-	}
 	
 	Bind validate(Bind env){
 		for (Expression exp : getArgs()){
@@ -618,7 +605,7 @@ public class Term extends Expression {
 	
 	public boolean isBound(){
 		if (isFunction()) {
-			return getName().equalsIgnoreCase(TermParser.BOUND);   
+			return getName().equalsIgnoreCase(Processor.BOUND);   
 		} 
 		else for (int i = 0; i < getArity(); i++) {
 			if (getArg(i).isBound())
@@ -635,7 +622,6 @@ public class Term extends Expression {
 		}
 		return null;
 	}
-	
 	
 	
 	public  int getArity(){
@@ -668,105 +654,6 @@ public class Term extends Expression {
 		setName(str);
 	}
 	
-	/**
-	 * x = v1 || x = v2 || x = v3
-	 */
-	public boolean isOrVarEqCst(){
-		if (! isOr()) return false;
-		// take arg 1 because arg 0 may still be an or itself
-		if (! getArg(1).isTerm()) return false;
-		Term t = (Term) getArg(1);
-		if (! t.getArg(0).isVariable()) return false;
-		return isOrVarEqCst((Variable) t.getArg(0));
-	}
-
-	boolean isOrVarEqCst(Variable var){
-		if (isOr()) return getArg(0).isOrVarEqCst(var) && 
-			getArg(1).isOrVarEqCst(var);
-		else if (isTerm() && getOper().equals(SEQ)){
-			return 
-				getArg(0).isVariable() && 
-				getArg(0).getName().equals(var.getName()) &&
-				getArg(1).isConstant();
-		}
-		return false;
-	}
-	
-	// pragma: only when isOrVarEqCst() = true
-	public void getCst(Vector<Constant> vec){
-		if (isOr()){
-			 getArg(0).getCst(vec);
-			 getArg(1).getCst(vec);
-		}
-		else { 
-			vec.add((Constant) getArg(1));
-		}
-	}
-	
-	/**
-	 * Process get:gui
-	 * filter ?x >= get:gui --> ?x >= 12
-	 */
-	public Expression parseGet(Parser parser){
-		// case ?x get:oper ?y
-		String str = parser.pget(name);
-		if (str != null){
-			// str = oper, get its value :
-			String value = parser.getExtValue(str);
-			if (value == null) return null;
-			else setOper(value); // the target operator
-		}
-		// case ?x >= get:gui
-		for (int i = 0; i < getArity(); i++) {
-			Expression exp = getArg(i).parseGet(parser);
-			if (exp != null && exp.isEget()) setEget(true);
-			if (exp == null){ 
-				return null;
-			}
-			else args.set(i, exp);
-		}
-		return this;
-	}
-	
-	
-	/**
-	 * ! (!A || !B) -> A && B
-	 * !! A -> A
-	 * !A || !B -> ! (A && B)
-	 */
-	public Expression rewrite(){
-		if (isTerm(SENOT)) {
-			Expression term = getArg(0);
-			if (term.isTerm(SEOR) && term.getArg(0).isTerm(SENOT) && term.getArg(1).isTerm(SENOT)) {
-				Term aterm =  new Term(SEAND, term.getArg(0).getArg(0), term.getArg(1).getArg(0));
-				return aterm;
-			}
-			else if (term.isTerm(SENOT)){
-				return term.getArg(0);
-			}
-		}
-		else if (isTerm(SEOR)) {
-			if (getArg(0).isTerm(SENOT) && getArg(1).isTerm(SENOT)) {
-				Term aterm =  
-					new Term(SENOT, new Term(SEAND, getArg(0).getArg(0), getArg(1).getArg(0)));
-				return aterm;
-			}
-		}
-		return this;
-	}
-	
-	
-	/**
-	 * Translate some terms like :
-	 * differ(?x ?y ?z) -> (?x != ?y && ?y != ?z && ?x != ?z)
-	 */
-	public Expression process(){
-		if (isFunction() && 
-				(getName().equals(DIFFER) || getName().equals(ISDIFFER))){
-			return differ();
-		}
-		else return this;
-	}
 	
 	/**
 	 * use case: select fun(?x) as ?y

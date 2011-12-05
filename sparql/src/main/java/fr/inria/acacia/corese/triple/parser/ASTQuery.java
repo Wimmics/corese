@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -24,7 +23,7 @@ import fr.inria.acacia.corese.triple.update.ASTUpdate;
  * This class is the abstract syntax tree, it represents the initial query (except for get:gui).<br>
  * When complete, it will be transformed into a Query Graph.java.
  * <br>
- * @author Virginie Bottollier
+ * @author Olivier Corby & Virginie Bottollier
  */
 
 public class ASTQuery  implements Keyword {
@@ -45,13 +44,16 @@ public class ASTQuery  implements Keyword {
 	static String RootPropertyQN =  RDFS.RootPropertyQN; // cos:Property
 	static String RootPropertyURI = RDFS.RootPropertyURI; //"http://www.inria.fr/acacia/corese#Property";
 	static final String LIST = "list";
+	public static final String KGRAMVAR = "?_kgram_";
+	public static final String SYSVAR = "?_cos_";
+	public static final String BNVAR = "?_bn_";
 	static final String NL 	= System.getProperty("line.separator");
 
 	static int nbt=0; // to generate an unique id for a triple if needed
 	
 	public final static int QT_SELECT 	= 0;
 	public final static int QT_ASK 		= 1;
-	public final static int QT_CONSTRUCT = 2;
+	public final static int QT_CONSTRUCT= 2;
 	public final static int QT_DESCRIBE = 3;
 	public final static int QT_DELETE 	= 4;
 	public final static int QT_UPDATE 	= 5;
@@ -88,8 +90,8 @@ public class ASTQuery  implements Keyword {
 	boolean pQuery = false;
 	/** select * : select all variables from query */
 	boolean selectAll = false;
-    boolean hasGet=false;   // is there a get:gui ?
-    boolean hasGetSuccess=false; // if get:gui, does the first one has a value ?
+//    boolean hasGet=false;   // is there a get:gui ?
+//    boolean hasGetSuccess=false; // if get:gui, does the first one has a value ?
     // validation mode (check errors)
     private boolean validate = false; 
 	boolean sorted = true; // if the relations must be sorted (default true)
@@ -146,8 +148,6 @@ public class ASTQuery  implements Keyword {
 	
     /** Source body of the query returned by javacc parser */
     Exp bodyExp;
-	/** the source triple query as an Exp */
-	//Exp tripleQuery;
 	/** Compiled triple query expression */
 	Exp query ;
 	// compiled construct (graph ?g removed)
@@ -161,40 +161,36 @@ public class ASTQuery  implements Keyword {
     
     ASTQuery globalAST;
 	Expression having;
-	Vector<Variable> selectVar = new Vector<Variable>();
-	Vector<Expression> sort = new Vector<Expression>();
-	Vector<Expression> lGroup = new Vector<Expression>();
-
-	Vector<String> select = new Vector<String>();
-	Vector<String> group = new Vector<String>();
-	Vector<String> from  = new Vector<String>();
-	Vector<String> named = new Vector<String>();
-	// values given by query
-	Vector<String> defFrom, defNamed; 
-    ArrayList<Atom> adescribe = new ArrayList<Atom>();
-	Vector<String> source = new Vector<String>();
-	Vector<String> stack = new Vector<String>(); // bound variables
-	Vector<String> vinfo;
+	List<Variable> selectVar = new ArrayList<Variable>();
+	List<Expression> sort 	 = new ArrayList<Expression>();
+	List<Expression> lGroup  = new ArrayList<Expression>();
+	
+	List<Atom> from  		= new ArrayList<Atom>();
+	List<Atom> named 		= new ArrayList<Atom>();
+	List<Atom> defFrom, defNamed; 
+	
+    List<Atom> adescribe = new ArrayList<Atom>();
+	List<String> stack = new ArrayList<String>(); // bound variables
+	List<String> vinfo;
 	List<String> errors;
 	
 	List<Variable> varBindings;
 	List<List<Constant>> valueBindings;
 	
-	Vector<Boolean> reverseTable = new Vector<Boolean>();
-//	Vector<Boolean> sortDistanceTable = new Vector<Boolean>();
+	List<Boolean> reverseTable = new ArrayList<Boolean>();
 	
 	Hashtable<String, Expression> selectFunctions = new Hashtable<String, Expression>();
 	ExprTable selectExp   = new ExprTable();
 	ExprTable regexExpr   = new ExprTable();
 
-    // pragma display {}
+    // pragma {}
     Hashtable<String, Exp> pragma;
     Hashtable<String, Exp> blank;
 
-	NSTable tfrom, tdeny;
-	TTable ttable;
 	NSManager nsm;
 	ASTUpdate astu;
+
+
 	
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
@@ -249,41 +245,89 @@ public class ASTQuery  implements Keyword {
 		return globalAST;
 	}
 	
-	public void setDefaultFrom(String[] from){
-		if (from != null && from.length>0){
-			defFrom = new Vector<String>(from.length,0);
-			for (String name : from){
-				defFrom.add(name);
-			}
-		}
+	public List<Atom> getFrom() {
+		return from;
+	}
+
+	public List<Atom> getNamed() {
+		return named;
 	}
 	
+	public void setNamed(String uri) {
+		setNamed(createConstant(uri));
+	}
+
+	public void setNamed(Atom uri) {
+		named.add(uri);
+	}
+
+	public void setFrom(String uri) {
+		setFrom(createConstant(uri));
+	}
+
+	public void setFrom(Atom uri) {
+		from.add(uri);
+	}
+
+	
+
 	public void setDefaultFrom(List<String> from){
 		if (from != null && from.size()>0){
-			defFrom = new Vector<String>(from.size());
+			defFrom = new ArrayList<Atom>(from.size());
 			for (String name : from){
-				defFrom.add(name);
-			}
-		}
-	}
-	
-	public void setDefaultNamed(String[] from){
-		if (from != null && from.length>0){
-			defNamed = new Vector<String>(from.length,0);
-			for (String name : from){
-				defNamed.add(name);
+				defFrom.add(createConstant(name));
 			}
 		}
 	}
 	
 	public void setDefaultNamed(List<String> from){
 		if (from != null && from.size()>0){
-			defNamed = new Vector<String>(from.size());
+			defNamed = new ArrayList<Atom>(from.size());
 			for (String name : from){
-				defNamed.add(name);
+				defNamed.add(createConstant(name));
 			}
 		}
 	}
+	
+	public void setDefaultFrom(String[] from){
+		if (from != null && from.length>0){
+			defFrom = new ArrayList<Atom>(from.length);
+			for (String name : from){
+				defFrom.add(createConstant(name));
+			}
+		}
+	}
+	public void setDefaultNamed(String[] from){
+		if (from != null && from.length>0){
+			defNamed = new ArrayList<Atom>(from.length);
+			for (String name : from){
+				defNamed.add(createConstant(name));
+			}
+		}
+	}
+	
+
+	
+	List<Atom> getDefaultFrom(){
+		return defFrom;
+	}
+	
+	List<Atom> getDefaultNamed(){
+		return defNamed;
+	}
+	
+	public List<Atom> getActualFrom(){
+		if (from.size() > 0) return from;
+		if (defFrom != null) return defFrom;
+		return from;
+	}
+	
+	public List<Atom> getActualNamed(){
+		if (named.size() > 0) return named;
+		if (defNamed != null) return defNamed;
+		return named;
+	}
+	
 	
 	public void setValidate(boolean b){
 		validate = b;
@@ -292,29 +336,6 @@ public class ASTQuery  implements Keyword {
 	public boolean isValidate(){
 		return validate;
 	}
-	
-	Vector<String> getDefaultFrom(){
-		return defFrom;
-	}
-	
-	Vector<String> getDefaultNamed(){
-		return defNamed;
-	}
-	
-	public Vector<String> getActualFrom(){
-		if (from.size() > 0) return from;
-		if (defFrom != null) return defFrom;
-		return from;
-	}
-	
-	public Vector<String> getActualNamed(){
-		if (named.size() > 0) return named;
-		if (defNamed != null) return defNamed;
-		return named;
-	}
-	
-	
-
     
  
 	/**
@@ -323,7 +344,7 @@ public class ASTQuery  implements Keyword {
 	 */
 	public void addInfo(String info) {
 		if (vinfo == null)
-			vinfo = new Vector<String>(1, 1);
+			vinfo = new ArrayList<String>(1);
 		vinfo.add(info);
 	}
 
@@ -401,9 +422,6 @@ public class ASTQuery  implements Keyword {
 		this.flat = flat;
 	}
 
-//	public void setGroup(Vector<String> group) {
-//		this.group = group;
-//	}
 
 	public void setConclusion(boolean isConclusion) {
 		this.isConclusion = isConclusion;
@@ -433,21 +451,13 @@ public class ASTQuery  implements Keyword {
 		this.more = more;
 	}
 
-	public void setNamed(Vector<String> named) {
+	public void setNamed(List<Atom> named) {
 		this.named = named;
 	}
 	
 	public void setOne(boolean one) {
       this.one = one;
 	}
-
-    public boolean isUnion() {
-        return union;
-    }
-
-    public void setUnion(boolean union) {
-        this.union = union;
-    }
 
 	public void setPQuery(boolean query) {
 		pQuery = query;
@@ -463,15 +473,6 @@ public class ASTQuery  implements Keyword {
 
     public boolean getScore() {
         return hasScore;
-    }
-
-    void setSource(String src){
-        if (! source.contains(src))
-          source.add(src);
-    }
-
-    public Vector<String> getSource() {
-        return source;
     }
     
     public void setDistance(String dist){
@@ -513,9 +514,9 @@ public class ASTQuery  implements Keyword {
 		return connex;
 	}
 
-	public boolean isDisplayBNID() {
-		return displayBNID;
-	}
+//	public boolean isDisplayBNID() {
+//		return displayBNID;
+//	}
 
 	public boolean isDistinct() {
 		return distinct;
@@ -531,18 +532,6 @@ public class ASTQuery  implements Keyword {
 	
 	public boolean isFlat() {
 		return flat;
-	}
-
-	public Vector<String> getFrom() {
-		return from;
-	}
-
-	public Vector<String> getGroup() {
-		return group;
-	}
-	
-	public boolean isGroup(){
-		return group.size() > 0;
 	}
 
 	public boolean isConclusion() {
@@ -569,10 +558,6 @@ public class ASTQuery  implements Keyword {
 		return more;
 	}
 
-	public Vector<String> getNamed() {
-		return named;
-	}
-	
 	public void setLoad(boolean b){
 		isLoad = b;
 	}
@@ -612,15 +597,6 @@ public class ASTQuery  implements Keyword {
 		base = ns;
 	}
 
-    public boolean isOne() {
-        return one;
-	}
-
-    /** here we want to know if there is the keyword one and one or several union in the query */
-    public boolean isAll() {
-        return (isUnion() && !isOne());
-    }
-
 	public boolean isPQuery() {
 		return pQuery;
 	}
@@ -634,17 +610,8 @@ public class ASTQuery  implements Keyword {
 		return getBody();
 	}
 
-	public boolean[] getReverse() {
-		//return reverse;
-        return Parser.getArray(reverseTable);
-	}
-
 	public boolean isRule() {
 		return rule;
-	}
-
-	public Vector<String> getSelect() {
-		return select;
 	}
 	
 	public List<Variable> getSelectVar() {
@@ -655,23 +622,13 @@ public class ASTQuery  implements Keyword {
 		return selectAll;
 	}
 
-	public Vector<Expression> getSort() {
+	public List<Expression> getSort() {
 		return sort;
 	}
 	
-	public Vector<Expression> getOrderBy() {
+	public List<Expression> getOrderBy() {
 		return sort;
 	}
-	
-	public List<Expression> getGroupBy2() {
-		ArrayList<Expression> list = new ArrayList<Expression>();
-		for (String var : group){
-			list.add(Variable.create(var));
-		}
-		return list;
-	}
-
-
 
 	public String getText() {
 		return text;
@@ -875,42 +832,14 @@ public class ASTQuery  implements Keyword {
 		return Term.function("get", exp, Constant.create(n));
 	}
 	
-	public Atom createAtom(String value, Parser parser) {
-		String datatype = null;
-		String lang = null;
-		int index = value.indexOf(KeywordPP.SDT); // ^^
-		boolean literal = false;
-		if (index != -1) {
-			datatype = value.substring(index + KeywordPP.SDT.length());
-			value = value.substring(0, index);
-			literal = true;
-		}
-		index = value.indexOf(KeywordPP.LANG); // @fr
-		if (index != -1) {
-			lang = value.substring(index + 1);
-            lang = computeGuiString(parser,lang);
-			value = value.substring(0, index);
-			literal = true;
-		}
-		return createAtom(value, datatype, lang, literal);
-	}
+	
 
-	public static Atom createAtom(String value, String datatype, String lang, boolean literal) {
-		value = Triple.process(value); // remove count::
-		if (Triple.isVariable(value)){ 
-			return createVariable(value); //, datatype, lang);
-		} else {
-			return createConstant2(value, datatype, lang, literal);
-		}
-	}
-
-
-	public static Variable createVariable(String s){ //, String datatype, String lang) {
+	public static Variable createVariable(String s){
         return Variable.create(s);
 	}
 	
 	public static Variable createVariable(String s, ASTQuery aq) {
-		Variable var = createVariable(s); //, datatype, lang);
+		Variable var = createVariable(s); 
 		// if we are in "describe *", add this variable to the list of variable to describe
         // notice: if the variable is already in the list, it won't add it again
         if (aq.isDescribeAll()) {
@@ -974,7 +903,7 @@ public class ASTQuery  implements Keyword {
 			// property path or xpath
 			Variable var = t.getVariable();
 			if (var == null){
-				var = new Variable(ExpParser.SYSVAR + nbd++);
+				var = new Variable(SYSVAR + nbd++);
 				var.setBlankNode(true);
 				t.setVariable(var);
 			}
@@ -1126,7 +1055,7 @@ public class ASTQuery  implements Keyword {
 
 	// Literal
 	public Constant createConstant(String s, String datatype, String lang) {
-		if (datatype == null){ // || datatype.equals("")){
+		if (datatype == null){ 
 			datatype = datatype(lang);
 		}
 		else if (! knownDatatype(datatype)){
@@ -1149,63 +1078,7 @@ public class ASTQuery  implements Keyword {
 		else return false;
 	}
 
-	/**
-	 * old parser, 
-	 * @deprecated
-	 */
-	public static Constant createConstant2(String s, 
-			String datatype, String lang, boolean literal) {
-		Constant cst;
-
-		// old parser (deprecated)
-		if (isString(s)) { literal = true; }
-		if (datatype == null || datatype.equals("")){
-			if (isNumber(s)){
-				if (isInteger(s))
-					datatype = RDFS.qxsdInteger;
-				else datatype = RDFS.qxsdDouble;
-				literal=true;
-			}
-			else if (isString(s)){
-				literal = true;
-				if (lang == null || lang.equals("")) 
-					datatype = RDFS.qxsdString;
-				else  datatype = RDFS.qrdfsLiteral;
-			}
-			else  if (! literal) { // no datatype and not a string : a resource
-				datatype = RDFS.qrdfsResource;
-			}
-			// does not happen with std syntax:
-
-			else {
-				datatype = RDFS.qrdfsLiteral;
-			}
-		}
-
-		if (literal){
-			s = clean(s);
-			cst = Constant.create(s, datatype, lang);
-		}
-		else cst = Constant.create(s);
-		return cst;
-	}
 	
-	
-
-	public static Triple createTriple () {
-		return new Triple(getTripleId());
-	}
-
-    public String computeGuiString(Parser parser, String s) {
-    	if (parser != null && parser.ispGet(s)){ // it is @get:lang computed from GUI
-            s=parser.getValue(parser.pget(s));
-            if (parser.isEmpty(s)) {
-              s="";
-            }
-        }
-        return s;
-    }
-
     /** used for collections */
     public  Exp generateFirst(Expression expression1, Expression expression2) {
         Atom atom = createQName(RDFS.qrdfFirst);
@@ -1223,41 +1096,7 @@ public class ASTQuery  implements Keyword {
 		return value.startsWith("\"") || value.startsWith("'");
 	}
 
-	public static boolean isNumber(String str) {
-		try {
-			new Float(str);
-			return true;
-		}
-		catch (NumberFormatException e) {
-			return false;
-		}
-		catch (Exception e) {
-			logger.fatal(e.getMessage());
-			return false;
-		}
-	}
-
-	public static boolean isInteger(String str) {
-		try {
-			new Integer(str);
-			return true;
-		}
-		catch (NumberFormatException e) {
-			return false;
-		}
-		catch (Exception e) {
-			logger.fatal(e.getMessage());
-			return false;
-		}
-	}
-
-	public void setMerge(boolean b){
-        merge = true;
-	}
-
-    public boolean isMerge() {
-        return merge;
-    }
+	
 
 	public void setList(boolean b){
 		this.setJoin(!b);
@@ -1341,7 +1180,7 @@ public class ASTQuery  implements Keyword {
 	}
 
     public Variable newBlankNode() {
-		Variable var = createVariable( ExpParser.BNVAR + getNbBNode());
+		Variable var = createVariable( BNVAR + getNbBNode());
 		var.setBlankNode(true);
 		return var;
 	}
@@ -1388,11 +1227,6 @@ public class ASTQuery  implements Keyword {
 		Array array =  new Array(list);
 		return array;
 	}
-
-//    public void setDescribe(String var) {
-//        if (!describe.contains(var))
-//            describe.add(var);
-//    }
     
     public void setDescribe(Atom at){
     	setResultForm(QT_DESCRIBE); 
@@ -1402,12 +1236,8 @@ public class ASTQuery  implements Keyword {
     		}
     	}
     	adescribe.add(at);
-    	//setDescribe(at.getName());
     }
     
-//    public Vector<String> getDescribe() {
-//        return describe;
-//    }
     
     public List<Atom> getDescribe() {
         return adescribe;
@@ -1457,47 +1287,52 @@ public class ASTQuery  implements Keyword {
         return nbd++;
     }
 
-    public void complete(Parser parser) {     
-        if (isConstruct()  && getBody()!=null) {
-        	// construct {} group by ?x => no merge
-        	if (! isGroup() && ! isConnex()) setMerge(true);
-        	setDisplayBNID(true); // pp rdf need bnid (cf sparql w3c test base)
-            compileConstruct(parser);
+    
+    /***************************************************************
+     * 
+     * Compile AST
+     * 
+     ***************************************************************/
+    
+    
+    public void compile(){
+    	if (isConstruct()  && getBody()!=null) {
+            compileConstruct();
         } 
         else if (isAsk()) {
         	compileAsk();
         } 
         else if (isDescribe()) {
-        	compileDescribe(parser);
-        }
-        
-      //  setQueryPrettyPrint(getSparqlPrettyPrint());
-        
-    }
-    
-    
-    private void compileConstruct(Parser parser) {
-        if (getConstruct() != null){
-        	// kgram:
-        	setConst(getConstruct());
-            Exp exp = getConstruct().complete(parser);
-            Env env = new Env(false);
-            // assign graph ?src variable to inner triples
-            // for backward rules ?
-    		exp.setSource(parser,  env, null, false);
-    		// TODO: clean
-           // exp = exp.distrib();
-            // set the compiled exp as construct:
-            setConstruct(exp);
-        }
-        else if (getConst() !=null){
-        	// kgram update
-        	setConstruct(getConst());
-        }
+        	compileDescribe();
+			setBasicSelectAll(true);
+       }      
+		Exp exp = getBody();
+		if (exp != null){
+			setQuery(exp);
+		}
+	}
+	  
+ 
+ // TODO: clean
+    private void compileConstruct() {
+    	if (getConstruct() != null){
+    		// kgram:
+    		setInsert(getConstruct());
+    		Exp exp = getConstruct();
+    		//Env env = new Env(false);
+    		// assign graph ?src variable to inner triples
+    		// TODO: for backward rules only
+    		//exp.setSource(env, null, false);
+    		setConstruct(exp);
+    	}
+    	else if (getInsert() !=null){
+    		// kgram update
+    		setConstruct(getInsert());
+    	}
     }
 
-    private void compileDescribe(Parser parser) {
-    	String root = ExpParser.KGRAMVAR;
+    private void compileDescribe() {
+    	String root = KGRAMVAR;
     	String PP = root + "p_";
     	String VV = root + "v_";
     	
@@ -1510,7 +1345,7 @@ public class ASTQuery  implements Keyword {
         
 		for (Atom expression : adescribe) {
 			
-			setMerge(true);
+			//setMerge(true);
 
 			//// create variables
 			int nbd = getVariableId();
@@ -1523,20 +1358,19 @@ public class ASTQuery  implements Keyword {
 		
 			//// create triple sd ?p0 ?v0
 			Triple triple = Triple.create(expression, prop1, val1);
-			Exp e1 = triple; //.parse(parser, expression, v2, v3);
+			Exp e1 = triple; 
 			BasicGraphPattern bgp1 = BasicGraphPattern.create();
 			bgp1.add(e1);
 			body.add(e1);
 			
 			//// create triple ?v0 ?p0 sd
 			Triple triple2 = Triple.create(val2, prop2, expression);
-			Exp e2 = triple2; //.parse(parser, v3, v2, expression);
+			Exp e2 = triple2; 
 			BasicGraphPattern bgp2 = BasicGraphPattern.create();
 			bgp2.add(e2);
 			body.add(e2);
 
 			//// create the union of both
-			setUnion(true);
 			Or union = new Or();
 			union.add(bgp1);
 			union.add(bgp2);
@@ -1552,10 +1386,9 @@ public class ASTQuery  implements Keyword {
 		}
 		setDescribeAll(describeAllTemp);
 		setBody(bodyExpLocal);
-		setRDF(true);
 		
 		if (isKgram()){
-			setConst(body);
+			setInsert(body);
 			setConstruct(body);
 		}
     }
@@ -1563,11 +1396,60 @@ public class ASTQuery  implements Keyword {
     private void compileAsk() {
     	setMaxResult(1);
     }
-
-    @Deprecated
-    public String getSparqlPrettyPrint() {
-        return toString();
+    
+    /**
+     *  @deprecated
+     */
+    public Expression bind(){
+ 	   if (valueBindings == null) return null;
+ 	   Expression exp = null;
+ 	   
+ 	   for (List<Constant> lVal :  valueBindings){
+ 		   if (varBindings.size()!=lVal.size()){
+ 			   setCorrect(false);
+ 		   }
+ 		   else if (exp == null){
+ 			   exp = bind(varBindings, lVal);
+ 		   }
+ 	   }
+ 	   return exp;
     }
+    
+    /**
+     *  @deprecated
+     */     
+    public Expression bind(List<Variable> lVar, List<Constant> lVal){
+		Expression exp = null;
+		int i = 0;
+		for (Variable var : lVar){
+			if (i>=lVal.size()){
+				
+			}
+			else if (lVal.get(i)==null){
+				i++;
+			}
+			else {
+				Term term = Term.create(Term.SEQ, var, lVal.get(i++));
+				if (exp == null){
+					exp = term;
+				}
+				else {
+					exp = exp.and(term);
+				}
+			}
+		}
+		return exp;
+	}
+   
+ 
+    
+    
+    /************************************************************
+     * 
+     * Pretty Printer
+     * 
+     ************************************************************/
+
     
     public String toString() {
     	StringBuffer sb = new StringBuffer();
@@ -1625,9 +1507,9 @@ public class ASTQuery  implements Keyword {
      */
     StringBuffer getSparqlHeader(StringBuffer sb) {
     	String SPACE = KeywordPP.SPACE;
-    	List<String> from = getFrom();
-    	List<String> named = getNamed();
-    	List<String> select = getSelect();
+    	List<Atom> from = getFrom();
+    	List<Atom> named = getNamed();
+    	List<Variable> select = getSelectVar();
 
     	// Select
     	if (isSelect()) {
@@ -1644,10 +1526,10 @@ public class ASTQuery  implements Keyword {
     		}
     		
     		if (select != null && select.size()>0){
-    			for (String s : getSelect()){
-    				if (getExpression(s) != null) {
+    			for (Atom s : getSelectVar()){
+    				if (getExpression(s.getName()) != null) {
     					sb.append("(");
-    					getExpression(s).toString(sb);
+    					getExpression(s.getName()).toString(sb);
     					sb.append(" as "  + s + ")");
     				}
     				else {
@@ -1684,16 +1566,16 @@ public class ASTQuery  implements Keyword {
     		sb.append(NL);
     	
     	// From
-    	for (String name : from) {
+    	for (Atom name: from) {
     		sb.append(KeywordPP.FROM + SPACE);
-    		createConstant(name).toString(sb);
+    		name.toString(sb);
     		sb.append(NL);
     	}
     	
     	// From Named
-    	for (String name : named) {
+    	for (Atom name : named) {
        		sb.append(KeywordPP.FROM + SPACE + KeywordPP.NAMED + SPACE);
-    		createConstant(name).toString(sb);
+    		name.toString(sb);
     		sb.append(NL);
     	}
     	
@@ -1713,7 +1595,7 @@ public class ASTQuery  implements Keyword {
     public StringBuffer getSparqlSolutionModifier(StringBuffer sb) {
         String SPACE = KeywordPP.SPACE;
         List<Expression> sort = getSort();
-        List<Boolean> reverse = getReverseTable();
+        List<Boolean> reverse = getReverse();
         
         if (getGroupBy().size()>0){
         	sb.append(KeywordPP.GROUPBY + SPACE);
@@ -1794,13 +1676,15 @@ public class ASTQuery  implements Keyword {
         return constructExp;
     }
     
-    public void setConst(Exp exp) {
+    public void setInsert(Exp exp) {
         this.construct = exp;
     }
 
-    public Exp getConst() {
+    public Exp getInsert() {
         return construct;
     }
+    
+  
     
     public void setDelete(Exp exp) {
         this.delete = exp;
@@ -1834,137 +1718,8 @@ public class ASTQuery  implements Keyword {
     	else name = getNSM().toNamespace(name);
     	if (exp == null) pragma.remove(name);
     	else pragma.put(name, exp);
-    	//pragma(exp);
     }
     
-    public void pragma(){
-    	if (pragma!=null){
-    		for (String name : pragma.keySet()){
-    			pragma(pragma.get(name));
-    		}
-    	}
-    }
-    
-    /**
-     * Store access pragma tables
-     */
-    void pragma(Exp pragma){
-    	if (pragma == null) return;
-
-    	NSManager nsm = getNSM();
-    	for (Exp exp : pragma.getBody()){
-    		if (exp.isRelation()){
-    			Triple t = (Triple) exp;
-    			//sem:root sem:type wiki:Page ;
-    			String subject =  nsm.toNamespace(t.getSubject().getName());
-    			String property = nsm.toNamespace(t.getProperty().getName());
-    			String object =   nsm.toNamespace(t.getObject().getName());
-    			//logger.debug("** PRAGMA AST: " + t);
-    			if (property.equals(RDFS.ACCEPT)){
-    				property =  RDFS.FROM;
-    			}
-    			if (subject.equals(RDFS.RDFRESOURCE)){
-    				def(RDFS.RDFSUBJECT, property, object);
-    				def(RDFS.RDFOBJECT, property, object);
-    			}
-    			else {
-    				def(subject, property, object);
-    			}
-    		}
-    	}
-    	if (ttable!=null)
-    		cleanPragma();
-
-    }
-
-    
-   	// replace xxx from _:b . _:b type yyy by xxx type yyy
-	// xxx from [type yyy] by xxx type yyy
-    void cleanPragma(){
-    	if (getSubject(RDFS.FROM)!=null)
-    	for (String subject : getSubject(RDFS.FROM)){
-    		SVector from = getValue(RDFS.FROM, subject);
-    		if (from!=null){
-    			for (int i=0; i<from.size(); i++){
-    				// from.get(i) = _:b
-    				SVector types = getValue(RDFS.RDFTYPE, from.get(i));
-    				if (types != null){
-    					// there exist _:b type yyy
-    					// remove : xxx cos:from _:b
-    					from.remove(i);
-    					for (String type : types){
-    						// add xxx rdf:type yyy
-    						def(subject, RDFS.RDFTYPE, type);
-    					}
-    				}
-    			}
-    		}
-    	}
-    }
-    
-    
-    public boolean hasNamespace(){
-    	return ttable != null;
-    }
-    
-    public boolean hasProperty(String name){
-    	return ttable.get(name) != null;
-    }
-    
-    // return from/deny
-    public Iterable<String> getProperty(){
-    	return ttable.keySet();
-    }
-    
-    // prop : from/deny
-    // return subjects of prop
-    public Iterable<String> getSubject(String prop){
-    	NSTable table =  ttable.get(prop);
-    	if (table == null) return null;
-    	return table.keySet();
-    }
-    
-    public Iterable<String> getValues(String prop, String name){
-    	NSTable table =  ttable.get(prop);
-    	if (table == null) return null;
-    	return table.get(name);
-    }
-    
-    public SVector getValue(String prop, String name){
-    	NSTable table =  ttable.get(prop);
-    	if (table == null) return null;
-    	return table.get(name);
-    }
-    
-    void def(String name, String prop, String ns){
-    	if (ttable == null) ttable = new TTable();
-    	NSTable table = ttable.get(prop);
-    	if (table == null){
-    		table = new NSTable();
-    		ttable.put(prop, table);
-    	}
-    	access(table, name, ns);
-    }
-
-    void access(NSTable table, String name, String ns){
-    	SVector vec = table.get(name);
-    	if (vec == null){
-    		vec = new SVector();
-    		table.put(name, vec);
-    	}
-    	if (! vec.contains(ns))
-    		vec.add(ns);
-    }
-    
-    // from -> NSTable
-    class TTable extends Hashtable <String, NSTable>{}
-    
-    // subject from {ns}
-    class NSTable extends Hashtable<String, SVector>{}
-    
-    class SVector extends Vector<String> {}
-    
-
     
     public void setPragma(Exp exp){
     	 setPragma(RDFS.COSPRAGMA, exp);
@@ -2041,24 +1796,7 @@ public class ASTQuery  implements Keyword {
     	return s;
     }
 
-    public void setNamed(String uri) {
-    	if (!named.contains(uri))
-            named.add(uri);
-    }
-    
-    public void setNamed(Atom uri) {
-    	setNamed(uri.getLongName());
-    }
-
-    public void setFrom(String uri) {
-        if (!from.contains(uri))
-            from.add(uri);
-    }
-    
-    public void setFrom(Atom uri) {
-       setFrom(uri.getLongName());
-    }
-
+ 
     public void setCount(String var) {
     }
 
@@ -2091,9 +1829,6 @@ public class ASTQuery  implements Keyword {
     	//sortDistanceTable.add(new Boolean(false));   
     }
 
-//    public void setGroup(Variable var) {
-//    	 setGroup(var.getName());
-//    }
     
 	public List<Expression> getGroupBy() {
 		return lGroup;
@@ -2133,8 +1868,6 @@ public class ASTQuery  implements Keyword {
 
     
     public void setGroup(String var) {
-        if (!group.contains(var))
-            group.add(var);
     }
     
     public void setVariableBindings(List<Variable> list){
@@ -2157,44 +1890,7 @@ public class ASTQuery  implements Keyword {
     }
     
     
-   public Expression bind(List<Variable> lVar, List<Constant> lVal){
-		Expression exp = null;
-		int i = 0;
-		for (Variable var : lVar){
-			if (i>=lVal.size()){
-				
-			}
-			else if (lVal.get(i)==null){
-				i++;
-			}
-			else {
-				Term term = Term.create(Term.SEQ, var, lVal.get(i++));
-				if (exp == null){
-					exp = term;
-				}
-				else {
-					exp = exp.and(term);
-				}
-			}
-		}
-		return exp;
-	}
-   
-   // TODO: complete
-   public Expression bind(){
-	   if (valueBindings == null) return null;
-	   Expression exp = null;
-	   
-	   for (List<Constant> lVal :  valueBindings){
-		   if (varBindings.size()!=lVal.size()){
-			   setCorrect(false);
-		   }
-		   else if (exp == null){
-			   exp = bind(varBindings, lVal);
-		   }
-	   }
-	   return exp;
-   }
+
    
    public void defSelect(Variable var, Expression exp){
 	   checkSelect(var);
@@ -2207,19 +1903,28 @@ public class ASTQuery  implements Keyword {
    }
       
     public void setSelect(Variable var) {
-    	if (! select.contains(var.getName())){
-            select.add(var.getName());
-            selectVar.add(var);
+    	if (! contains(selectVar, var)){
+          selectVar.add(var);
     	}
     }
     
+    boolean contains(List<Variable> list, Variable var){
+    	for (Variable vv : list){
+    		if (vv.getName().equals(var.getName())){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     public boolean checkSelect(Variable var){
-    	if (select.contains(var.getName())){
+    	if (contains(selectVar, var)){
     		setCorrect(false);
     		return false;
     	}
     	return true;
     }
+    
         
     public void setSelect(Variable var, Expression e) {
     	setSelect(var);
@@ -2249,34 +1954,17 @@ public class ASTQuery  implements Keyword {
     public void setSelect() {
     }
 
-    
-    void setGetGui(boolean b){
-        if (! hasGet){
-          hasGet=true;
-        }
-        if (b) hasGetSuccess=true;
-    }
+ 
 
-    public boolean isSelected(Exp exp){
-        if (hasGet){
-          return hasGetSuccess;
-        }
-        else return true;
-    }
-
-
-    public Vector<Boolean> getReverseTable() {
+    public List<Boolean> getReverse() {
         return reverseTable;
     }
 
 
     public String toSparql() {
-        return getSparqlPrettyPrint();
+        return toString();
     }
 
-    private void setQueryPrettyPrint(String queryPrettyPrint) {
-        this.queryPrettyPrint = queryPrettyPrint;
-    }
 
     public void setDescribe(boolean describe) {
     	if (describe) setResultForm(QT_DESCRIBE);
@@ -2324,48 +2012,7 @@ public class ASTQuery  implements Keyword {
     	return isDelete;
     }
     
-    
-    void bind(String var){
-        if (! stack.contains(var)){
-            stack.add(var);
-        }
-    }
-    boolean isBound(String var){
-        return stack.contains(var);
-    }
-
-    public Vector<String> getStack() {
-    	return stack;
-    }
-
-    public void setStack(Vector<String> stack) {
-        this.stack = stack;
-    }
-    void clear(){
-        stack.clear();
-    }
-    boolean hasOptionVar(Expression exp){
-        return  exp.isOptionVar(stack);
-    }
-    int getStackSize(){
-        return stack.size();
-    }
-
-    public boolean isHasGet() {
-        return hasGet;
-    }
-
-    public void setHasGet(boolean hasGet) {
-        this.hasGet = hasGet;
-    }
-
-    public boolean isHasGetSuccess() {
-        return hasGetSuccess;
-    }
-
-    public void setHasGetSuccess(boolean hasGetSuccess) {
-        this.hasGetSuccess = hasGetSuccess;
-    }
+   
 
     public boolean isConstructCompiled() {
         return constructCompiled;
@@ -2426,6 +2073,7 @@ public class ASTQuery  implements Keyword {
 		RootPropertyURI = rootPropertyURI;
 	}
 
+		// TODO: check
 	public static String clean(String str) {
 		if (str.length() <= 1) return str;
 		if ((str.startsWith(SQ3)   && str.endsWith(SQ3)) ||
@@ -2490,29 +2138,9 @@ public class ASTQuery  implements Keyword {
 		this.selectFunctions = selectFunctions;
 	}
 	
-	/**
-	 * Expand qnames from triples
-	 *
-	 */
-	public ASTQuery expand(){
-		if (getBody() != null){
-			getBody().expand(getNSM());
-		}
-		if (isConstruct()){
-			getConstruct().expand(getNSM());
-		}
-		Parser.create().ncompile(this);
-		return this;
-	}
 	
 	
-	/************************************************************************
-	 * 
-	 * 	Update
-	 * 
-	 * 
-	 * **********************************************************************/
-	 
+	
 	public void set(ASTUpdate u){
 		astu = u;
 		u.set(this);
@@ -2521,5 +2149,47 @@ public class ASTQuery  implements Keyword {
 	public ASTUpdate getUpdate(){
 		return astu;
 	}
+	
+	
+	
+	
+    @Deprecated
+    public void setConst(Exp exp) {
+        setInsert(exp);
+    }
+
+    @Deprecated
+   public Exp getConst() {
+        return getInsert();
+    }
+	
+    
+    void bind(String var){
+        if (! stack.contains(var)){
+            stack.add(var);
+        }
+    }
+    
+    boolean isBound(String var){
+        return stack.contains(var);
+    }
+
+    public List<String> getStack() {
+    	return stack;
+    }
+
+    public void setStack(List<String> stack) {
+        this.stack = stack;
+    }
+    void clear(){
+        stack.clear();
+    }
+    boolean hasOptionVar(Expression exp){
+        return  exp.isOptionVar(stack);
+    }
+    int getStackSize(){
+        return stack.size();
+    }
+
 	
 }

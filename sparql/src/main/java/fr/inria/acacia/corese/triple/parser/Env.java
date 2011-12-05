@@ -8,6 +8,7 @@ class Env {
 	Vector<String> leaves;
 	boolean state = false;
 	String name;
+	int vcount = 0;
 	
 	Env(){
 		vars =    new Vector<String>();
@@ -32,6 +33,10 @@ class Env {
 	
 	String getName(){
 		return name;
+	}
+	
+	String newVar(String name){
+		return name +  vcount++;
 	}
 	
 	

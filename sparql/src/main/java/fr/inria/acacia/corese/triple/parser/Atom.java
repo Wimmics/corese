@@ -2,7 +2,6 @@ package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ElementClause;
-import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 
 /**
@@ -18,7 +17,6 @@ public class Atom extends Expression implements ElementClause{
 	
 	String datatype = null;
 	String lang = null;
-	//String src;
 	boolean isone = false;
 	boolean isall = false;
 	boolean isdirect = false;
@@ -84,10 +82,6 @@ public class Atom extends Expression implements ElementClause{
 	public String getLang() {
 		return lang;
 	}
-
-//	public String getValue() {
-//		return name;
-//	}
 
 	public boolean hasLang() {
 		return lang != null && lang != "";

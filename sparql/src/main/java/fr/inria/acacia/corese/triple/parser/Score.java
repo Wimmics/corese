@@ -56,15 +56,6 @@ public class Score extends And {
 	  return true;
   }
 
-  /**
-   * score ?s { ?x rdf:type c:Person } ->
-   * score ?s { ?x rdf:type c:Person  ?x rdf:type ?class}
-   * generate a relation to carry the score
-   */
-  void finalize(Parser parser){
-	  finalizeType(parser);
- }
-  
 
   Exp duplicate(){
     Score exp = new Score();

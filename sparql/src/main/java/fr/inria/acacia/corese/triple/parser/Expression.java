@@ -152,9 +152,9 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
-	void validate(Parser parser){
-		
-	}
+//	void validate(Parser parser){
+//		
+//	}
 	
 	Bind validate(Bind env){
 		return env;
@@ -173,12 +173,12 @@ implements Regex, Filter, Expr {
 	}
 	
 	
-	public boolean isOptionVar(Vector<String> stdVar){
+	public boolean isOptionVar(List<String> stdVar){
 		Variable var = getOptionVar(stdVar);
 		return var != null;
 	}
 	
-	public Variable getOptionVar(Vector<String> stdVar){
+	public Variable getOptionVar(List<String> stdVar){
 		return null;
 	}
 	
@@ -346,13 +346,6 @@ implements Regex, Filter, Expr {
 		return this;
 	}
 	
-	/**
-	 * Process get:gui
-	 * filter ?x >= get:gui --> ?x >= 12
-	 */
-	public Expression parseGet(Parser parser){
-		return this;
-	}
 	
 	public boolean isQName() {
 		return isQName;

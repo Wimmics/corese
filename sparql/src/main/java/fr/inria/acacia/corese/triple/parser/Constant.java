@@ -269,32 +269,7 @@ public class Constant extends Atom {
         return var;
     }
 
-    /**
-     * Process get:gui filter ?x >= get:gui --> return value of get:gui
-     */
-    public Expression parseGet(Parser parser) {
-    	if (literal)
-    		return this;
-    	String str = parser.pget(name); // get:gui ?
-    	if (str == null)
-    		return this;
-    	String value = parser.getExtValue(str);
-    	if (value == null) {
-    		//return null;
-    		if (name.startsWith(Parser.EGET)) {
-    			this.setEget(true);
-    			return this;
-    		} else {
-    			return null;
-    		}
-    	}
-    	
-    	TermParser tp = new TermParser(parser);
-    	Lexer lex = new Lexer(value);
-    	Expression exp = tp.exp(lex);
-    	return exp;
-    }
-    
+ 
     
 	/**
 	 * KGRAM

@@ -13,7 +13,6 @@ import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import java.net.URL;
 
 
 
@@ -26,13 +25,13 @@ import java.net.URL;
  *
  */
 public class QueryExec  {
-	QueryProcess exec;
-	boolean isListGroup = false, 
+	protected QueryProcess exec;
+	protected boolean isListGroup = false, 
 	isDebug = false;
-	ArrayList<EventListener> list;
+	protected ArrayList<EventListener> list;
 	
 
-	QueryExec (){
+	public QueryExec (){
 		list = new ArrayList<EventListener>();
 	}
 
@@ -70,25 +69,6 @@ public class QueryExec  {
 		else {
 			exec.add(engine.getGraph());
 		}
-	}
-        
-        /**
-	 * Draft with several engine
-	 * 
-	 * TODO:
-	 * add is done in first engine (see constructor in set() )
-	 */
-	
-	public void addRemote(URL producerURL){
-                if (exec == null){
-                        exec = new QueryProcess();
-                        exec.setListGroup(isListGroup);
-                        exec.setDebug(isDebug);
-                        for (EventListener el : list){
-                                exec.addEventListener(el);
-                        }
-                }
-                exec.addRemote(producerURL);
 	}
 	
 	public void definePrefix(String p, String ns){

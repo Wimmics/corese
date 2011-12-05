@@ -93,11 +93,7 @@ PARSER_BEGIN(SparqlCorese)
         	for (int i = 0; i<ex.size();i++) {
         		logger.debug("sparql-parser - ex.get("+i+"): "+ex.get(i));
         	} 
-        if (astq.isSelected(ex)) {	// true if get:gui ok
-        	astq.setSelect();	        
-        } else {
-        	//ex = null; // Do not do this, because we want to keep triples that are ok
-        }
+        
         astq.setBody(ex);
         return astq;
     }    
@@ -505,7 +501,9 @@ void List(): {}
 void Merge(): {}
 {
   <MERGE>
-  { astq.setMerge(true); }
+  { 
+  //astq.setMerge(true); 
+  }
 }
 
 void GroupCountSortDisplayVar(): {}
@@ -598,7 +596,9 @@ void Group(): { Atom var; }
 {
   <GROUP> (<BY>)?
   var = Var()
-  { astq.setGroup(var.getName()); }
+  { 
+  //astq.setGroup(var.getName()); 
+  }
 }
 
 void Count(): { Atom var; }
@@ -1589,56 +1589,6 @@ Expression Collection(Exp stack) :
 
 
 
-Expression Collection2(Exp stack) : 
-{ Expression graphNodeExpression, firstExpression, lastExpression, bnExpression; 
-  Exp tripleGenerated, finalCollection; boolean subList, contains;}
-{
-	{
-		lastExpression = null;
-		firstExpression = null;
-		finalCollection = new And();
-		subList = false;
-		contains = false;
-	}
-	
-	//  @( ) means a sublist (query list without rdf:nil at the end)
-	
-	( 
-		<AT> { subList = true; }  
-	) ?
-	
-  	<LPAREN>
-  	(
-  		graphNodeExpression = GraphNode(stack)
-  		{
-  			bnExpression = astq.newBlankNode();
-  			
-  			if (firstExpression == null) {
-  				firstExpression = bnExpression;
-  			}
-  			
-  			if (lastExpression != null) {  				
-  				tripleGenerated = astq.generateRest(lastExpression, bnExpression);
-  				finalCollection.add(tripleGenerated);
-  			}
-  			
-  			tripleGenerated = astq.generateFirst(bnExpression, graphNodeExpression);
-  			finalCollection.add(tripleGenerated);
-  			
-  			lastExpression = bnExpression;
-  		}   
-  	) +
-  	<RPAREN>
-  	{ 
-  		if (! subList) {
-  			tripleGenerated = astq.generateRest(lastExpression, astq.createQName(RDFS.qrdfNil));
-   			finalCollection.add(tripleGenerated);
-  		}
-  		//System.out.println("sparql_corese.jj - Collection - "+finalCollection.toSparql());  
-  		stack.add(finalCollection);
-  		return firstExpression; 
-  	}
-}
 
 // -------- Nodes in a graph pattern or template
 

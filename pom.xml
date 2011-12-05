@@ -39,60 +39,13 @@
         <module>kgenv</module>
         <module>kggui</module>
         <module>kgtool</module>
+        <module>kg-dqp</module>
         <module>kgserver</module>
         <module>kgserver-stubs</module>
         <module>kgimport</module>
         <module>sparql</module>
         <module>rif</module>
     </modules>
-<!--    <repositories>
-        <repository>
-            <id>thirdparty</id>
-            <name>I3S Third-party Repository</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/thirdparty</url>
-            <releases>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-        </repository>
-        <repository>
-            <id>releases</id>
-            <name>I3S Releases Repository</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/releases</url>
-            <releases>
-                updatePolicy>always</updatePolicy <updatePolicy>never</updatePolicy>
-            </releases>
-        </repository>
-         repository>
-            <id>snapshots</id>
-            <name>I3S Snapshot Repository</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots</url>
-            <snapshots>
-            </snapshots>
-        </repository 
-        <repository>
-            <id>creatis-releases</id>
-            <name>Creatis Insa Lyon repository [creatis]</name>
-            <url>http://kingkong.grid.creatis.insa-lyon.fr:9007/nexus/content/repositories/releases</url>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <name>I3S Releases Repository</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>I3S Snapshot Repository</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
-    <scm>
-        <connection>scm:svn:https://nyx.unice.fr/svn/moteur2</connection>
-        <developerConnection>scm:svn:https://nyx.unice.fr/svn/moteur2</developerConnection>
-        <url>https://nyx.unice.fr/svn/moteur2</url>
-    </scm>-->
     
     <dependencyManagement>
         <dependencies>
@@ -100,7 +53,7 @@
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>1.2.12</version>
-            </dependency>    
+            </dependency>   
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

@@ -3,8 +3,6 @@ package fr.inria.edelweiss.kgramserver.webservice;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 import fr.inria.acacia.corese.api.EngineFactory;
 import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResult;
-import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -14,8 +12,6 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
 import javax.activation.DataHandler;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -25,8 +21,11 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
- *
- * @author gaignard
+ * KGRAM engine exposed as a web service. 
+ * The engine can be remotely initialized, populated with an RDF file, 
+ * and queried through SPARQL requests. 
+ * 
+ * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
  */
 @WebService
 @MTOM(threshold = 1024)
@@ -55,8 +54,11 @@ public class RemoteProducer extends ProducerImpl {
         this.endpoint = endpoint;
     }
 
-    //todo load (sparql 1.1)
     
+    /**
+     * Transfers an RDF file and load it into KGRAM.
+     * @param data streamed RDF file to be loaded by KGRAM. 
+     */
     @WebMethod
     public void uploadRDF(@XmlMimeType(value = "application/octet-stream") DataHandler data) {
         try {
@@ -72,7 +74,7 @@ public class RemoteProducer extends ProducerImpl {
             logger.debug("Loading " + localFile.getAbsolutePath() + " into KGRAM");
             engine.load(localFile.getAbsolutePath());
 
-//            localFile.delete();
+            localFile.delete();
             sw.stop();
             logger.info("Uploaded content to KGRAM: " + sw.getTime() + " ms");
         } catch (EngineException ex) {
@@ -87,13 +89,22 @@ public class RemoteProducer extends ProducerImpl {
     @WebMethod
     public void loadRDF(String remotePath) {
     }
-
+    
+    /**
+     * Processes a SPARQL query and return the SPARQL results. 
+     * @param sparqlQuery the query to be processed. 
+     * @return the corresponding SPARQL results. 
+     */
     @WebMethod
     public String getEdges(String sparqlQuery) {
-        logger.debug("Received query: \n" + sparqlQuery);
+        StopWatch sw = new StopWatch();
+        sw.start();
+
+//        logger.debug("Received query: \n" + sparqlQuery);
         try {
             QueryExec exec = QueryExec.create(engine);
             exec.add(engine);
+
             IResults results = exec.SPARQLQuery(sparqlQuery);
 
             ASTQuery astQuery = ASTQuery.create(sparqlQuery);
@@ -103,39 +114,45 @@ public class RemoteProducer extends ProducerImpl {
             //results processing
             String[] variables = results.getVariables();
             if (results.getSuccess()) {
-                for (Enumeration<IResult> en = results.getResults(); en.hasMoreElements();) {
-                    IResult r = en.nextElement();
-                    HashMap<String, String> result = new HashMap<String, String>();
-                    for (String var : variables) {
-                        if (r.isBound(var)) {
-                            IResultValue[] values = r.getResultValues(var);
-                            for (int j = 0; j < values.length; j++) {
-                                System.out.println(var + " = " + values[j].getStringValue());
-//                            result.put(var, values[j].getStringValue());
-                            }
-                        } else {
-                            System.out.println(var + " = Not bound");
-                        }
-                    }
-                }
-                
-//                logger.info("Sparql result :\n" + sparqlRes);
+//                for (Enumeration<IResult> en = results.getResults(); en.hasMoreElements();) {
+//                    IResult r = en.nextElement();
+//                    HashMap<String, String> result = new HashMap<String, String>();
+//                    for (String var : variables) {
+//                        if (r.isBound(var)) {
+//                            IResultValue[] values = r.getResultValues(var);
+//                            for (int j = 0; j < values.length; j++) {
+//                                System.out.println(var + " = " + values[j].getStringValue());
+////                            result.put(var, values[j].getStringValue());
+//                            }
+//                        } else {
+//                            System.out.println(var + " = Not bound");
+//                        }
+//                    }
+//                }
+                sw.stop();
+                logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
 
-                //todo result "insert data.."
-                
                 return sparqlRes;
             } else {
                 logger.debug("No results found");
+                sw.stop();
+                logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
                 return null;
             }
         } catch (EngineException ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
+            sw.stop();
+            logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
             return null;
         }
     }
 
-    private void initEngine() {
+    /**
+     * Initializes the KGRAM engine with a new instance. 
+     */
+    @WebMethod
+    public void initEngine() {
         try {
             //need to use the EngineFactory ?
 //            engine = GraphEngine.create(this.getGraph());
@@ -145,7 +162,6 @@ public class RemoteProducer extends ProducerImpl {
             engine = ef.newInstance();
             engine.load(RemoteProducer.class.getClassLoader().getResourceAsStream("kgram-foaf.rdfs"), null);
             engine.load(RemoteProducer.class.getClassLoader().getResourceAsStream("dbpedia_3.6.owl"), null);
-//            engine.load(RemoteProducer.class.getClassLoader().getResourceAsStream("kgram-persons.rdf"), null);
             sw.stop();
             logger.info("Initialized GraphEngine: " + sw.getTime() + " ms");
 //            engine.runRuleEngine();

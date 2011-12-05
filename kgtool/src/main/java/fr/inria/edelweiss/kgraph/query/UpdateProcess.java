@@ -38,7 +38,7 @@ public class UpdateProcess {
 		manager = m;
 	}
 	
-	static UpdateProcess create(Manager m){
+	public static UpdateProcess create(Manager m){
 		UpdateProcess u = new UpdateProcess(m);
 		return u;
 	}

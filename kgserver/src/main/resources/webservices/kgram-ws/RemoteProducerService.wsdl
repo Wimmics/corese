@@ -48,6 +48,12 @@
   <message name="getEdgesResponse">
     <part name="parameters" element="tns:getEdgesResponse"/>
   </message>
+  <message name="initEngine">
+    <part name="parameters" element="tns:initEngine"/>
+  </message>
+  <message name="initEngineResponse">
+    <part name="parameters" element="tns:initEngineResponse"/>
+  </message>
   <message name="runRule">
     <part name="parameters" element="tns:runRule"/>
   </message>
@@ -82,6 +88,10 @@
     <operation name="getEdges">
       <input message="tns:getEdges"/>
       <output message="tns:getEdgesResponse"/>
+    </operation>
+    <operation name="initEngine">
+      <input message="tns:initEngine"/>
+      <output message="tns:initEngineResponse"/>
     </operation>
     <operation name="runRule">
       <input message="tns:runRule"/>
@@ -145,6 +155,15 @@
       </output>
     </operation>
     <operation name="getEdges">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="initEngine">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>

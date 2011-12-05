@@ -9,6 +9,10 @@
 
   <xs:element name="getEndpointResponse" type="tns:getEndpointResponse"/>
 
+  <xs:element name="initEngine" type="tns:initEngine"/>
+
+  <xs:element name="initEngineResponse" type="tns:initEngineResponse"/>
+
   <xs:element name="load" type="tns:load"/>
 
   <xs:element name="loadRDF" type="tns:loadRDF"/>
@@ -40,6 +44,14 @@
   </xs:complexType>
 
   <xs:complexType name="setEndpointResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="initEngine">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="initEngineResponse">
     <xs:sequence/>
   </xs:complexType>
 

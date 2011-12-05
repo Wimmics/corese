@@ -19,7 +19,6 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Forall;
 import fr.inria.acacia.corese.triple.parser.IfThenElse;
-import fr.inria.acacia.corese.triple.parser.Parser;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -119,7 +118,7 @@ public class Transformer implements ExpType {
 	
 	public Query transform (ASTQuery ast){
 		this.ast = ast;
-		Parser.create().ncompile(ast);
+		ast.compile();
 
 		if (fac == null) fac = new CompilerFacKgram();			
 		ast.setKgram(true);
@@ -226,6 +225,7 @@ public class Transformer implements ExpType {
 		isSPARQL1 = b;
 	}
 	
+	@Deprecated
 	void bind(ASTQuery ast){
 		if (ast.getVariableBindings()!=null){
 			Expression exp = ast.bind();
@@ -328,7 +328,7 @@ public class Transformer implements ExpType {
 	}
 	
 	Exp  construct(ASTQuery ast){
-		return compile(ast, ast.getConst());
+		return compile(ast, ast.getInsert());
 	}
 	
 	Exp  delete(ASTQuery ast){
@@ -654,10 +654,9 @@ public class Transformer implements ExpType {
 		return node;
 	}
 
-	List<Node> nodes(List<String> from){
+	List<Node> nodes(List<Atom> from){
 		List<Node> nodes = new ArrayList<Node>();
-		for (String uri : from){
-			Constant cst = ast.createConstant(uri);
+		for (Atom cst : from){
 			nodes.add(new NodeImpl(cst));
 		}
 		return nodes;

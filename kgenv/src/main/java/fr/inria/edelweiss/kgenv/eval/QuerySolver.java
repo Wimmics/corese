@@ -24,7 +24,6 @@ import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
-import fr.inria.edelweiss.kgram.tool.ParallelMetaProducer;
 
 
 
@@ -99,26 +98,6 @@ public class QuerySolver  {
 		eval.setProducer(p);
 		return eval;
 	}
-	
-	
-        // Alban Gaignard : 
-        // Un-comment the following code and replace the add(Producer prod) method`
-        // to enable concurent producers 
-        
-//        public void add(Producer prod){
-//		ParallelMetaProducer meta;
-//		if (producer instanceof MetaProducer){
-//			meta = (ParallelMetaProducer) producer;
-//		}
-//		else {
-//			meta = ParallelMetaProducer.create();
-//			if (producer != null) {
-//                            meta.add(producer);
-//                        }
-//			producer = meta;
-//		}
-//		meta.add(prod);
-//	}
         
 	public void add(Producer prod){
 		MetaProducer meta;
@@ -194,7 +173,7 @@ public class QuerySolver  {
 		init(query);
 		debug(query);
 		
-		if ((producer instanceof MetaProducer)||(producer instanceof ParallelMetaProducer)){
+                if (producer instanceof MetaProducer){
 			query.setDistribute(true);
 			if (isSequence){
 				return queries(query, map);

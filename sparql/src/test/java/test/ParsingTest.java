@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -43,6 +44,7 @@ public class ParsingTest {
     //
 
     @Test
+    @Ignore
     public void hello1() throws QueryLexicalException, QuerySyntaxException {
         String query = "insert data {\n"
                 + "<http://dbpedia.org/resource/Alban_Bagbin> <http://xmlns.com/foaf/0.1/name> \"Alban Kingsford Sumana Bagbin\"\n"

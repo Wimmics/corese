@@ -67,7 +67,7 @@ public class ManagerImpl implements Manager {
 		return new ManagerImpl(exec);
 	}
 	
-	static ManagerImpl create(QueryProcess exec, List<String> from, List<String> named){
+	public static ManagerImpl create(QueryProcess exec, List<String> from, List<String> named){
 		ManagerImpl m = new ManagerImpl(exec);
 		m.setFrom(from);
 		m.setNamed(named);

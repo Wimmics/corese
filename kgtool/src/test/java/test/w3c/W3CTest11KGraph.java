@@ -241,7 +241,7 @@ public class W3CTest11KGraph {
 	void test(){
 		sparql1=true;
 		
-		test(root + "subquery");			 
+		test(root + "bind");			 
 
 	}
 	
@@ -474,7 +474,7 @@ public class W3CTest11KGraph {
 		
 		if (fquery == null) fquery = getValue(map, "?a");
 		
-		//if (! fquery.contains("sq14")) return true;
+		//if (! fquery.contains("rdf02")) return true;
 
 
 		if (trace) System.out.println(pp(fquery));	

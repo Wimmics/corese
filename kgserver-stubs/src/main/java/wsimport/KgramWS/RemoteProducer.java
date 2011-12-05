@@ -102,6 +102,14 @@ public interface RemoteProducer {
      * 
      */
     @WebMethod
+    @RequestWrapper(localName = "initEngine", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.InitEngine")
+    @ResponseWrapper(localName = "initEngineResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.InitEngineResponse")
+    public void initEngine();
+
+    /**
+     * 
+     */
+    @WebMethod
     @RequestWrapper(localName = "runRule", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.RunRule")
     @ResponseWrapper(localName = "runRuleResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.RunRuleResponse")
     public void runRule();

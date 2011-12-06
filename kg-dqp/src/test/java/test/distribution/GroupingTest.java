@@ -5,17 +5,15 @@
 package test.distribution;
 
 import fr.inria.acacia.corese.api.EngineFactory;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -47,6 +45,7 @@ public class GroupingTest {
     //
 
     @Test
+    @Ignore
     public void hello() throws EngineException{
          
         String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"

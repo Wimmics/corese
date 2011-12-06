@@ -5,22 +5,9 @@
     <groupId>fr.inria.edelweiss</groupId>
     <artifactId>kg-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2</version>
+    <version>1.0.5</version>
     <name>kg-parent</name>
-<!--    <description>MOTEUR2 workflow manager</description>
-    <inceptionYear>2011</inceptionYear>
-    <url>http://modalis.polytech.unice.fr/moteur2</url>
-    <licenses>
-        <license>
-            <name>CeCILL-B, Version 1.0</name>
-            <url>http://www.cecill.info/</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <organization>
-        <name>I3S Laboratory</name>
-        <url>http://www.i3s.unice.fr/</url>
-    </organization>-->
+
     <developers>
         <developer>
             <id>OlivierCorby</id>

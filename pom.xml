@@ -18,6 +18,18 @@
             <organizationUrl>http://www.inria.fr/</organizationUrl>
             <timezone>1</timezone>
         </developer>
+        <developer>
+            <id>AlbanGaignard</id>
+            <name>Alban Gaignard</name>
+            <email>alban.gaignard@i3s.unice.fr</email>
+            <url>http://www.i3s.unice.fr/~gaignard</url>
+            <roles>
+                <role>Contributor for the implementation of the distributed query processor, namely maven modules "kg-dqp", "kgserver", "kgserver-stubs"</role>
+            </roles>
+            <organization>CNRS</organization>
+            <organizationUrl>http://www.cnrs.fr/</organizationUrl>
+            <timezone>1</timezone>
+        </developer>
     </developers>
     <modules>
         <module>kgram</module>

@@ -30,6 +30,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import wsimport.KgramWS.RemoteProducer;
 import wsimport.KgramWS.RemoteProducerServiceClient;
@@ -128,6 +129,7 @@ public class NlogCentralizedTestBed {
     //
 
     @Test
+    @Ignore
     public void T1DS() throws MalformedURLException, EngineException {
 
         String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"

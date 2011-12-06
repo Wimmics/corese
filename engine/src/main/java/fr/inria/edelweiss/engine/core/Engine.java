@@ -145,7 +145,8 @@ public class Engine
     		ast.setSPARQL1(true);
     		ParserSparql1.create(ast).parse();
     		// expansion of prefix
-    		ast = ast.expand();
+    		//ast = ast.expand();
+    		ast.compile();
     		logger.debug("Prove: \n" + ast + "\n");
     		// create the query containing the body of the SPARQL query
    		return ast;

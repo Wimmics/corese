@@ -57,7 +57,9 @@ public class RulesTreatmentImpl implements RulesTreatment {
 					ast.setSPARQL1(true);
 					ast = ParserSparql1.create(ast).parse();
 					
-					ast = ast.expand();
+					//ast = ast.expand();
+					ast.compile();
+
 
 					//create an object rule with the instance of rule as ASTQuery
 					Rule rule=new RuleImpl();

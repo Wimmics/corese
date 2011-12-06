@@ -4,13 +4,15 @@
         <parent>
         <groupId>fr.inria.edelweiss</groupId>
         <artifactId>kg-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.5</version>
         <relativePath>..</relativePath>
         </parent>
 	
         <groupId>fr.inria.edelweiss</groupId>
 	<artifactId>kggui</artifactId>
-
+	<properties>
+		<corese-version>3.0.6</corese-version>
+	</properties>
 	<dependencies>
 		<!--<dependency>
 			<groupId>StringHelper</groupId>
@@ -83,7 +85,7 @@
     </dependencies>
 
 	<build>
-	<finalName>kggui-1.0.2</finalName>
+		<finalName>corese-${corese-version}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

@@ -5,7 +5,7 @@
     <parent>
         <groupId>fr.inria.edelweiss</groupId>
         <artifactId>kg-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.5</version>
         <relativePath>..</relativePath>
     </parent>
     <groupId>fr.inria.edelweiss</groupId>
@@ -15,7 +15,7 @@
 		
         <dependency>
             <groupId>fr.inria.edelweiss</groupId>
-            <artifactId>sparql</artifactId>
+            <artifactId>kgtool</artifactId>
             <version>${project.version}</version>
         </dependency>	
 		
@@ -35,7 +35,7 @@
             <type>jar</type>
         </dependency>
         
-        <dependency>
+        <!--<dependency>
             <groupId>fr.inria.edelweiss</groupId>
             <artifactId>kgram</artifactId>
             <version>${project.version}</version>
@@ -46,12 +46,8 @@
             <artifactId>kgenv</artifactId>
             <version>${project.version}</version>
         </dependency>
+        -->
         
-        <dependency>
-            <groupId>fr.inria.edelweiss</groupId>
-            <artifactId>engine</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>

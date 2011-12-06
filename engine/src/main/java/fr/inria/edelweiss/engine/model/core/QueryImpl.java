@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.engine.model.api.Clause;
 import fr.inria.edelweiss.engine.model.api.ExpFilter;
 import fr.inria.edelweiss.engine.model.api.Query;
@@ -126,8 +127,8 @@ public class QueryImpl implements Query {
 
 		//case select : set the name of the variables
 		if (select){
-			for(String variable:sparqlQuery.getSelect()){
-				variables.add(variable);
+			for(Variable variable:sparqlQuery.getSelectVar()){
+				variables.add(variable.getName());
 			}
 		}
 	}

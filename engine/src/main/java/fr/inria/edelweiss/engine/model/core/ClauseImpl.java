@@ -53,7 +53,7 @@ public class ClauseImpl implements Clause {
 	}
 	
 	public String toString(){
-		return triple.toSparql();
+		return triple.toString();
 	}
 
 	public Iterator<ElementClause> iterator() {

@@ -229,7 +229,19 @@ public class QueryResults implements IResults
 	
 	public IResults union(IResults r) {
 		
-		return null;
+		if (r instanceof QueryResults){
+			QueryResults qr = (QueryResults) r;
+			Mappings res = Mappings.create(map.getQuery());
+			
+			for (Mapping m : getMappings()){
+				res.add(m);
+			}
+			for (Mapping m : qr.getMappings()){
+				res.add(m);
+			}
+			return create(res);
+		}
+		return this;
 	}
 
 	

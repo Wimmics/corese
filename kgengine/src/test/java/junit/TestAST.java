@@ -11,6 +11,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.CoreseFloat;
 import fr.inria.acacia.corese.cg.datatype.CoreseInteger;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -349,6 +350,50 @@ public void test20() throws EngineException{
 }
 	
 	
+@Test
+public void test21(){
+	IDatatype dt1 = DatatypeMap.createLiteral("test", RDF.xsdlangString, "en");
+	IDatatype dt2 = DatatypeMap.createLiteral("test", RDF.xsdlangString, "fr");
+	IDatatype dt3 = DatatypeMap.createLiteral("test");
+
+	try {
+		assertEquals("Result", true, (dt1.equals(dt1)));
+		assertEquals("Result", false, (dt1.sameTerm(dt2)));
+		assertEquals("Result", false, (dt1.sameTerm(dt3)));
+		assertEquals("Result", RDF.xsdlangString, dt1.getDatatypeURI());
+		
+		Constant cst = Constant.create(dt1);
+
+		assertEquals("Result", true, (dt1.equals(cst.getDatatypeValue())));
+		
+		cst = Constant.create("test", RDF.xsdlangString, "en");
+		
+		assertEquals("Result", true, (dt1.equals(cst.getDatatypeValue())));
+
+
+	} catch (CoreseDatatypeException e) {
+		// TODO Auto-generated catch block
+		assertEquals("Result", true, e);
+	}
+
 	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

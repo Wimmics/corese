@@ -27,6 +27,8 @@ import fr.inria.edelweiss.kgram.event.StatListener;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -336,8 +338,8 @@ public class CoreseTest2 extends TestCase {
 		load.setBuild(BuildOptim.create(graph));
 
 		long t1 = new Date().getTime();
-		load.load(data + "kgraph/rdf.rdf",  Entailment.RDF);
-		load.load(data + "kgraph/rdfs.rdf", Entailment.RDFS);
+		load.load(data + "kgraph/rdf.rdf",  RDF.RDF);
+		load.load(data + "kgraph/rdfs.rdf", RDFS.RDFS);
 		load.load(data + "comma/comma.rdfs");
 		load.load(data + "comma/commatest.rdfs");
 		load.load(data + "comma/model.rdf");

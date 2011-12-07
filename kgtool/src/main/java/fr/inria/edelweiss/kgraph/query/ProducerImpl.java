@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +15,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -45,6 +45,7 @@ public class ProducerImpl implements Producer {
 	// cache for handling (fun() as var) created Nodes
 	local;
 	Mapper mapper;
+	MatcherImpl match;
 	
 	public ProducerImpl(){
 		this(Graph.create());
@@ -64,6 +65,12 @@ public class ProducerImpl implements Producer {
 	
 	public void setMode(int n){
 		
+	}
+	
+	public void set(Matcher m){
+		if (m instanceof MatcherImpl){
+			match = (MatcherImpl) m;
+		}
 	}
 	
 	public Graph getGraph(){
@@ -105,6 +112,8 @@ public class ProducerImpl implements Producer {
 		Node node = null, node2 = null;
 		int n = 0;
 
+		boolean isType = false;
+		
 		for (int i=0; i<MAX; i++){
 			// Edge has a node that is bound or constant ?
 			Node qNode = getNode(edge, gNode, i);
@@ -112,13 +121,13 @@ public class ProducerImpl implements Producer {
 				if (i == 1 && qNode.isConstant() && graph.isType(edge)){
 					// ?x rdf:type c:Engineer
 					// no dichotomy on c:Engineer to get subsumption
-					
-					/**
-					 * TODO:
-					 * for Type t : graph.getTypes()
-					 * if match.isSubClassOf(qnode, t) 
-					 *     graph.enumerate(t)
-					 */
+//					node = graph.getNode(qNode.getLabel());
+//					if (node == null){
+//						//TODO:
+//					}
+//					else {
+//						isType = true;
+//					}
 				}
 				else 
 				{
@@ -146,11 +155,13 @@ public class ProducerImpl implements Producer {
 				return 	empty;
 			}
 		}		
-				
-		//Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
-		
+						
 		Iterable<Entity> it;
-		if (gNode != null || from.size()>0 || ! graph.hasDefault()){
+		
+		if (isType){
+			it = getTypeEdges(predicate, node, env);
+		}
+		else if (gNode != null || from.size()>0 || ! graph.hasDefault()){
 			it = graph.getEdges(predicate, node, node2, n);
 		}
 		else {
@@ -191,6 +202,29 @@ public class ProducerImpl implements Producer {
 		if (meta.isEmpty()) return empty;
 		else return meta;
 	}
+	
+	
+	Iterable<Entity> getTypeEdges(Node predicate, Node type, Environment env){
+		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+		
+		for (Node node : graph.getTypeNodes()){
+
+			if (node.same(type) || match.isSubClassOf(node, type, env)){
+				Iterable<Entity> it = graph.getEdges(predicate, node, 1);
+				if (it != null){
+					meta.next(it);
+				}
+			}
+		}
+		
+		if (meta.isEmpty()){
+			return empty;
+		}
+		
+		return meta;
+	}
+
+	
 	
 	
 	/**

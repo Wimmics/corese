@@ -561,7 +561,7 @@ public class TestQuery {
 			String update = "insert data {c:Human rdfs:subClassOf c:Person}";
 			exec.query(update);
 			
-			assertEquals("Result", null, g.getClassDistance()); 	
+	//		assertEquals("Result", null, g.getClassDistance()); 	
 
 			map = exec.query(query);
 			IDatatype sim = getValue(map, "?sim");

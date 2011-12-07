@@ -95,6 +95,7 @@ public class QueryProcess extends QuerySolver {
 	
 	public static QueryProcess create(ProducerImpl prod){
 		Matcher match =  MatcherImpl.create(prod.getGraph());
+		prod.set(match);
 		QueryProcess exec = QueryProcess.create(prod,  match);
 		return exec;
 	}

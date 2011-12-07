@@ -235,4 +235,11 @@ implements Index, Iterable<Entity> {
 		return 0;
 	}
 
+
+	@Override
+	public Iterable<Node> getTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 /**
  * Table property node -> List<Edge>
@@ -37,11 +38,12 @@ implements Index {
 	
 	Comparator<Entity>  comp;
 	Graph graph;
-	
+	Hashtable<Node, Node> types;
 
 	EdgeIndex(Graph g, int n){
 		init(g, n);
 		comp = getComparator();	
+		types = new Hashtable<Node, Node>();
 	}
 	
 	EdgeIndex(Graph g, int n, boolean skip){
@@ -143,11 +145,6 @@ implements Index {
 		}
 		return str;
 	}
-
-//	Node getNode(Entity ent, int n){
-//		if (n != IGRAPH) return ent.getEdge().getNode(n);
-//		else return ent.getGraph(); 
-//	}
 	
 	/** 
 	 * Add a property in the table
@@ -161,24 +158,39 @@ implements Index {
 			
 			if (i>=list.size()){
 				list.add(edge);
-				return edge;
 			}
-			
-			res = comp.compare(edge, list.get(i));
-			if (res == 0 && index == 0){
-				// eliminate duplicate at load time for index 0
-				count++;
-				return null;
+			else {
+				if (index == 0){
+					res = comp.compare(edge, list.get(i));
+					if (res == 0){
+						// eliminate duplicate at load time for index 0
+						count++;
+						return null;
+					}
+				}
+				
+				list.add(i, edge);
 			}
-			
-			list.add(i, edge);
 		}
 		else {
 			list.add(edge);
 		}
-		
+
+		complete(edge);
 		return edge;
 	}
+	
+	
+	void complete(Entity ent){
+		if (index == 0 && graph.isType(ent.getEdge())){
+			types.put(ent.getEdge().getNode(1), ent.getEdge().getNode(1));
+		}
+	}
+	
+	public Iterable<Node> getTypes(){
+		return types.values();
+	}
+
 	
 	/**
 	 * delete/exist
@@ -205,7 +217,7 @@ implements Index {
 	
 	
 	boolean isSort(Entity edge){
-		return graph.isIndex();
+		return ! graph.isIndex();
 	}
 	
 	/**

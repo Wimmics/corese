@@ -81,7 +81,7 @@ public class Graph {
 	boolean 
 	isUpdate = false, 
 	isDelete = false, 
-	isIndex  = false, 
+	isIndex  = true, 
 	// automatic entailment when init()
 	isEntail = true,
 	isDebug  = !true,
@@ -161,24 +161,13 @@ public class Graph {
 		return lock;
 	}
 	
-	public void setUpdate(boolean b){
-		isUpdate = b;
+	
+	void clearDistance(){
 		setClassDistance(null);
 		setPropertyDistance(null);
 	}
 	
-	public boolean isEntail(){
-		return isEntail;
-	}
-	
-	/**
-	 * If true, entailment is done by init() before query processing
-	 */
-	public void setEntailment(boolean b){
-		isEntail = b;
-	}
-	
-	
+
 	public Entailment getEntailment(){
 		return inference;
 	}
@@ -240,17 +229,7 @@ public class Graph {
 		return str;
 	}
 	
-	// true when index is sorted 
-	boolean isIndex(){
-		return isIndex;
-	}
-	
-	public boolean isUpdate(){
-		return isUpdate;
-	}
-	
 
-	
 	public Entailment getProxy(){
 		if (proxy == null){
 			proxy = inference;
@@ -277,18 +256,25 @@ public class Graph {
 		return getProxy().isSubClassOf(node, sup);
 	}
 	
-	public void setIndex(boolean b){
-		isIndex = b;
-	}
+	
+	/**************************************************************
+	 * 
+	 * Consistency Management
+	 * 
+	 **************************************************************/
 	
 	/**
 	 * send e.g. by kgram eval() before every query execution
-	 * restore consistency if updates have been done
+	 * restore consistency if updates have been done, perform entailment
+	 * when delete is performed, it is the user responsibility
+	 * to delete the entailments that depend on it
+	 * it can be done using:  drop graph kg:entailment 
+	 * Rules are not automatically run, use re.process()
 	 */
 	
 	public synchronized void init(){
 		
-		if (! isIndex){
+		if (isIndex){
 			index();
 		}
 		if (isUpdate){
@@ -299,8 +285,54 @@ public class Graph {
 			}
 		}
 	}
+
+	private void update(){
+		isUpdate = false;
+		// node index
+		clearIndex();
+		clearDistance();
+		
+		if (isDelete){
+			isDelete = false;
+			
+			if (inference!=null){
+				// use case: a meta triple was deleted previously
+				// remove it from entailment tables
+				inference.reset();
+			}		
+		}
+	}
+	
+	public void setUpdate(boolean b){
+		isUpdate = b;
+	}
+	
+	private void setDelete(boolean b){
+		setUpdate(b);
+		isDelete = b;
+	}
+	
+	public boolean isEntailment(){
+		return isEntail;
+	}
+	
+	/**
+	 * If true, entailment is done by init() before query processing
+	 */
+	public void setEntailment(boolean b){
+		isEntail = b;
+	}
 	
 	
+	// true when index must be sorted 
+	boolean isIndex(){
+		return isIndex;
+	}
+
+	/**
+	 * Property Path start a new shortest path
+	 * Only with one user (no thread here)
+	 */
 	public void initPath(){
 		for (Entity ent : individual.values()){
 			ent.getNode().setProperty(Node.LENGTH, null);
@@ -310,43 +342,13 @@ public class Graph {
 		}
 		
 	}
-
 	
-	/**
-	 * An edge has been added or deleted
-	 * Restore consistency wrt indexes and entailment
-	 * PRAGMA:
-	 * when delete is performed, it is the user responsibility
-	 * to delete the entailments that depend on it
-	 * 
-	 * it can be done using: 
-	 * delete where {graph kg:default {?x ?p ?y}}
-	 * but all that was inserted in default graph is also removed ...
-	 */
-	private void update(){
-		isUpdate = false;
-		// node index
-		clearIndex();
-		if (isDelete){
-			delete();
-		}
-	}
 	
-	/**
-	 * use case: a meta triple was deleted previously
-	 * remove it from entailment tables
-	 */
-	void delete(){
-		isDelete = false;
-		if (inference!=null){
-			inference.reset();
-		}
-	}
 	
-	private void setDelete(boolean b){
-		setUpdate(b);
-		isDelete = b;
-	}
+	/*************************************************************************/
+	
+	
+	
 	
 	public Index getIndex(){
 		return table;
@@ -364,11 +366,11 @@ public class Graph {
 				dtables[i].index();
 			}
 		}
-		isIndex = true;
+		isIndex = false;
 	}
 	
 	public void prepare(){
-		if (! isIndex){
+		if (isIndex){
 			index();
 		}
 	}
@@ -548,21 +550,6 @@ public class Graph {
 		return node;
 	}
 	
-	
-//	public Node getLiteralNode2(IDatatype dt, boolean create, boolean add){
-//		return getLiteralNode(dt.toSparql(), dt, create, add);
-//	}
-//		
-//		
-//	public Node getLiteralNode(String name, IDatatype dt, boolean create, boolean add){
-//		Node node = getLiteralNode(name);
-//		if (node != null) return node;
-//		if (create){ 
-//			node = createNode(dt);
-//			if (add) addLiteralNode(name, node);
-//		}
-//		return node;
-//	}
 	
 	public Node getLiteralNode(IDatatype dt, boolean create, boolean add){
 		Node node = getLiteralNode(dt);
@@ -799,6 +786,10 @@ public class Graph {
 		return graph.values();
 	}
 	
+	public Iterable<Node> getTypeNodes(){
+		return table.getTypes();
+	}
+	
 	public Iterable<Entity> getNodes(){
 		return individual.values();
 	}
@@ -942,8 +933,8 @@ public class Graph {
 			logger.debug(g1.getIndex());
 			logger.debug(g2.getIndex());
 		}
-		if (! g1.isIndex()) index();
-		if (! g2.isIndex()) g2.index();
+		if (g1.isIndex()) index();
+		if (g2.isIndex()) g2.index();
 		if (g1.size()!=g2.size()){
 			if (isDebug) logger.debug("** Graph Size: " + size() + " " + g2.size());
 			return false;
@@ -996,11 +987,11 @@ public class Graph {
 	}
 	
 	
-	/*********************************************************************
+	/*****************************************************************
 	 * 
 	 * Update
 	 * 
-	 */
+	 *****************************************************************/
 	
 	
 	public Entity delete(EdgeImpl edge){
@@ -1104,6 +1095,14 @@ public class Graph {
 		return update(source, target, isSilent, COPY);
 	}
 
+	
+	/*********************************************************
+	 * 
+	 * Distance
+	 * 
+	 ********************************************************/
+	
+	
 	public void setClassDistance(Distance distance) {
 		this.classDistance = distance;
 	}

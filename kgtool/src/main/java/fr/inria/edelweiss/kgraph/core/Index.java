@@ -26,6 +26,8 @@ public interface Index {
 	Iterable<Node> getProperties();
 	
 	Iterable<Node> getSortedProperties();
+	
+	Iterable<Node> getTypes();
 
 
 	Entity add(Entity edge);

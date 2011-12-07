@@ -39,8 +39,19 @@ public class Entailment {
 	public static final String XSD   =  "http://www.w3.org/2001/XMLSchema#";
 
 	public static final String DATATYPE_INFERENCE 		 = KGRAPH + "datatype";
-
 	
+	
+	static final int UNDEF 			= -1;
+	static final int SUBCLASSOF 	= 0;
+	static final int SUBPROPERTYOF 	= 1;
+	static final int DOMAIN 		= 2;
+	static final int RANGE 			= 3;
+	static final int TYPE 			= 4;
+	static final int MEMBER 		= 5;
+	static final int INVERSEOF 		= 6;
+
+
+	public static boolean trace = false;
 
 	Signature domain, range, inverse, symetric, subproperty;
 	Graph graph, target;
@@ -48,6 +59,7 @@ public class Entailment {
 	Edge last, current;
 	
 	Hashtable<Node, Integer> count; 
+	Hashtable<String, Integer> keyword;
 
 	boolean	
 		// generate rdf:type wrt rdfs:subClassOf
@@ -94,8 +106,10 @@ public class Entailment {
 		domain 	 	= new Signature();
 		range 	 	= new Signature();
 		subproperty = new Signature();
-		count = new Hashtable<Node, Integer>();
+		keyword 	= new Hashtable<String, Integer>();
+		count 		= new Hashtable<Node, Integer>();
 		hasType = graph.addProperty(RDF.TYPE);
+		init();
 	}
 	
 	public void clear(){
@@ -105,15 +119,25 @@ public class Entailment {
 		range.clear();
 		subproperty.clear();
 	}
+	
+	void init(){
+		keyword.put(RDFS.SUBCLASSOF, 	SUBCLASSOF);
+		keyword.put(RDFS.SUBPROPERTYOF, SUBPROPERTYOF);
+		keyword.put(RDFS.DOMAIN, 		DOMAIN);
+		keyword.put(RDFS.RANGE, 		RANGE);
+		keyword.put(OWL.INVERSEOF, 		INVERSEOF);
+		keyword.put(RDFS.MEMBER, 		MEMBER);
+		keyword.put(RDF.TYPE, 			TYPE);
+	}
 
 	public void set(String name, boolean b){
 		     if (name.equals(RDFS.SUBCLASSOF)) 	  isSubClassOf = b;
 		else if (name.equals(RDFS.SUBPROPERTYOF)) isSubPropertyOf = b;
 		else if (name.equals(RDFS.DOMAIN)) 		  isDomain = b;
 		else if (name.equals(RDFS.RANGE)) 		  isRange = b;
+		else if (name.equals(RDFS.MEMBER))		  isMember = b;
 		else if (name.equals(DATATYPE_INFERENCE)) isDatatypeInference = b;
 		else if (name.equals(ENTAIL)) 			  isDefaultGraph = b;
-		else if (name.equals(RDFS.MEMBER))		  isMember = b;
 	}
 	
 	public boolean isDatatypeInference(){
@@ -145,12 +169,15 @@ public class Entailment {
 	 * use case: redefine after delete 
 	 */
 	public void define(){
+		
 		for (Node pred : graph.getSortedProperties()){
+			boolean isType = isType(pred);
+			
 			for (Entity ent : graph.getEdges(pred)){
 				Edge edge = ent.getEdge();
 				boolean isMeta = define(ent.getGraph(), ent.getEdge());
 				if (! isMeta){
-					if (edge.getLabel().equals(RDF.TYPE)){
+					if (isType){
 						// continue for rdf:type owl:Symmetric
 					}
 					else {
@@ -186,6 +213,12 @@ public class Entailment {
 		return EdgeCore.create(src, sub, pred, obj);
 	}
 	
+	Integer keyword(String name){
+		Integer type = keyword.get(name);
+		if (type == null) type = UNDEF;
+		return type;
+	}
+	
 	/**
 	 * Store property domain, range, subPropertyOf, symmetric, inverse
 	 */
@@ -196,30 +229,42 @@ public class Entailment {
 //			// DRAFT: do nothing
 //		}
 //		else 
-		if (hasLabel(edge, RDF.TYPE)){
+		switch (keyword(edge.getLabel())){
+		
+		case TYPE: 
 			if (edge.getNode(1).getLabel().equals(OWL.SYMMETRIC)){
 				symetric.define(edge.getNode(0), edge.getNode(0));
 			}
-		}
-		else if (hasLabel(edge, OWL.INVERSEOF)){
+			break;
+		
+		case DOMAIN:
+			domain.define(edge.getNode(0), edge.getNode(1));
+			break;
+
+		case RANGE:
+			range.define(edge.getNode(0), edge.getNode(1));
+			break;
+
+		case SUBPROPERTYOF: 
+			subproperty.define(edge.getNode(0), edge.getNode(1));
+			break;
+
+		case SUBCLASSOF: 
+			subClassOf = edge.getEdgeNode();
+			break;
+
+		case INVERSEOF:
 			inverse.define(edge.getNode(0), edge.getNode(1));
 			inverse.define(edge.getNode(1), edge.getNode(0));
-		}
-		else if (hasLabel(edge, RDFS.DOMAIN)){
-			domain.define(edge.getNode(0), edge.getNode(1));
-		}
-		else if (hasLabel(edge, RDFS.RANGE)){
-			range.define(edge.getNode(0), edge.getNode(1));
-		}
-		else if (hasLabel(edge, RDFS.SUBPROPERTYOF)){
-			subproperty.define(edge.getNode(0), edge.getNode(1));
-		}
-		else if (hasLabel(edge, RDFS.SUBCLASSOF)){
-			subClassOf = edge.getEdgeNode();
-		}
-		else {
+			break;
+
+		default:
 			isMeta = false;
+	
+
 		}
+		
+		
 		return isMeta;
 	}
 	
@@ -332,17 +377,23 @@ public class Entailment {
 	
 	
 	void signature(Node gNode, Edge edge){
-		Node pred = edge.getEdgeNode();
-		
+		domain(gNode, edge);
+		range(gNode, edge);
+	}
+	
+	void domain(Node gNode, Edge edge){		
 		if (isDomain){
+			Node pred = edge.getEdgeNode();
 			infer(gNode, edge, domain.get(pred), 0);
-		}
-
-		if (isRange && graph.isIndividual(edge.getNode(1))){
-			infer(gNode, edge, range.get(pred), 1);
 		}
 	}
 	
+	void range(Node gNode, Edge edge){		
+		if (isRange && graph.isIndividual(edge.getNode(1))){
+			Node pred = edge.getEdgeNode();
+			infer(gNode, edge, range.get(pred), 1);
+		}
+	}
 	
 	void subsume(Node gNode, Edge edge){
 		// infer types using subClassOf
@@ -633,32 +684,48 @@ public class Entailment {
 	 */
 	void graphEntail(){
 		for (Node pred : graph.getProperties()){
-			Entity prev = null;
+			Entity pdomain = null, prange = null;
 			boolean isFirst = true;
 			
 			for (Entity ent : graph.getEdges(pred)){
 				
 				if (isFirst){
-					isFirst = false;
+					//isFirst = false;
 					// ?p rdf:type rdf:Property
 					defProperty(pred);
 				}
-				
+								
 				Edge edge = ent.getEdge();
 				Node gg = getGraph(ent);
 
 				property(gg, edge);
 				subsume(gg, edge);
+			
 				
-				if (prev == null){
+				//signature(gg, edge);
+
+				if (isFirst){
+					isFirst = false;
 					signature(gg, edge);
-					prev = ent;
+					pdomain = ent;
+					prange = ent;
 				}
-				else if (! prev.getEdge().getNode(0).same(ent.getEdge().getNode(0)) ||
-						! prev.getGraph().same(gg)){
-					signature(gg, edge);
-					prev = ent;
+				else {
+					
+					if (pdomain.getEdge().getNode(0) != ent.getEdge().getNode(0) ||
+						!  isDefaultGraph){
+						domain(gg, edge);
+						pdomain = ent;
+					}
+
+					if (prange.getEdge().getNode(1) != ent.getEdge().getNode(1) ||
+						! isDefaultGraph){
+						range(gg, edge);
+						prange = ent;
+					}
 				}
+
+				
 			}
 		}
 	}

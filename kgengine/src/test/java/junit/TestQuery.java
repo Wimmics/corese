@@ -22,7 +22,8 @@ import fr.inria.edelweiss.kgram.event.StatListener;
 import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.BuildImpl;
 import fr.inria.edelweiss.kgtool.load.Load;
@@ -158,7 +159,8 @@ public class TestQuery {
 				"?doc rdf:type c:WebPage" +
 				"}" +
 				"order by desc(?sim)" +
-				"pragma {kg:match kg:mode 'subsume'}";
+				"pragma {kg:match kg:mode 'general'}";
+		
 		QueryProcess exec = QueryProcess.create(graph);
 		try {
 			Mappings map = exec.query(query);
@@ -448,10 +450,10 @@ public class TestQuery {
 		
 		MyBuild(Graph g){
 			super(g);
-			define(Entailment.RDFSSUBCLASSOF, EdgeSubClass.class);
-			define(Entailment.RDFTYPE, EdgeType.class);
-			define(Entailment.RDFSLABEL, EdgeLabel.class);
-			define(Entailment.RDFSCOMMENT, EdgeComment.class);
+			define(RDFS.SUBCLASSOF, EdgeSubClass.class);
+			define(RDF.TYPE, EdgeType.class);
+			define(RDFS.LABEL, EdgeLabel.class);
+			define(RDFS.COMMENT, EdgeComment.class);
 		}
 		
 		public void process(Node gNode, EdgeImpl edge) {
@@ -559,7 +561,7 @@ public class TestQuery {
 			String update = "insert data {c:Human rdfs:subClassOf c:Person}";
 			exec.query(update);
 			
-			assertEquals("Result", null, g.getDistance()); 	
+			assertEquals("Result", null, g.getClassDistance()); 	
 
 			map = exec.query(query);
 			IDatatype sim = getValue(map, "?sim");
@@ -1129,12 +1131,84 @@ public class TestQuery {
 	
 	
 	
+	@Test
+	public void test38(){
+		Graph graph = Graph.create();
+		QueryProcess exec = QueryProcess.create(graph);
+		
+		String init = "insert data {" +
+				"<John>  <age> 20 " +
+				"<John>  <age> 10 " +
+				"<James> <age> 30 " +
+				"}";
+		
+		String query = 
+				"select distinct (sum(?age) as ?s) where {" +
+				"?x <age> ?age" +
+				"}" +
+				"group by ?x";
+		
+		
+		try {
+			exec.query(init);
+			Mappings res = exec.query(query);
+			assertEquals("Result", 1, res.size());
+			assertEquals("Result", 30, getValue(res, "?s").getIntegerValue());
+
+
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}
+		
+	}
 	
 	
 	
 	
-	
-	
+	@Test
+	public void test39(){
+		Graph graph = Graph.create();
+		QueryProcess exec = QueryProcess.create(graph);
+		
+		String init = 
+				"insert data {" +
+				"<a> foaf:knows <b> " +
+				"<b> foaf:knows <a> " +
+				"<b> foaf:knows <c> " +
+				"<a> foaf:knows <c> " +
+				"}";
+		
+		String query = 
+				"select * where {" +
+				"<a> foaf:knows+ ?t " +
+				"}";
+		
+		String query2 = 
+			"select * where {" +
+			"<a> foaf:knows{1,10} ?t " +
+			"}" +
+			"pragma {kg:path kg:loop false}";
+		
+		
+		try {
+			exec.query(init);
+			Mappings res = exec.query(query);
+			assertEquals("Result", 5, res.size());
+			
+			exec.setPathLoop(false);
+			res = exec.query(query);
+			assertEquals("Result", 3, res.size());
+			
+			exec.setPathLoop(true);
+			res = exec.query(query2);
+			assertEquals("Result", 3, res.size());
+			
+
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}
+		
+	}
 	
 	
 	

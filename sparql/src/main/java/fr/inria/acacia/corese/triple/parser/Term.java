@@ -21,8 +21,14 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
  */
 
 public class Term extends Expression {
+	static final String RE_CHECK = "check";
+	static final String RE_PARA = "||";
+	static final String RE_ALT = "|";
+	static final String RE_SEQ = "/";
+
 	static final String STNOT = Keyword.STNOT;
 	static final String SENOT = Keyword.SENOT;
+	
 	public static final String SEINV = "i";
 	public static final String SREV = Keyword.SBE;
 	public static final String SEAND = Keyword.SEAND;
@@ -183,10 +189,13 @@ public class Term extends Expression {
 			return paren(getArg(0).toRegex()) + "?";
 		}
 		else if (isSeq()){
-			return getArg(0).toRegex() + "/" + getArg(1).toRegex();
+			return getArg(0).toRegex() + RE_SEQ + getArg(1).toRegex();
 		}
-		else if (isOr()){
-			return getArg(0).toRegex() + "|" + getArg(1).toRegex();
+		else if (isAlt()){
+			return getArg(0).toRegex() + RE_ALT + getArg(1).toRegex();
+		}
+		else if (isPara()){
+			return getArg(0).toRegex() + RE_PARA + getArg(1).toRegex();
 		}
 		return toString();
 	}
@@ -267,7 +276,7 @@ public class Term extends Expression {
 	}
 	
 	public boolean isSeq(){
-		return getName().equals(SEAND) || getName().equals(SEDIV);
+		return getName().equals(RE_SEQ);
 	}
 	
 	public boolean isAnd(){
@@ -276,6 +285,14 @@ public class Term extends Expression {
 	
 	public boolean isOr(){
 		return getName().equals(SEOR);
+	}
+	
+	public boolean isAlt(){
+		return getName().equals(RE_ALT);
+	}
+	
+	public boolean isPara(){
+		return getName().equals(RE_PARA);
 	}
 	
 	public boolean isNot(){
@@ -306,10 +323,14 @@ public class Term extends Expression {
 		return isFunction(TEST);
 	}
 	
+	public boolean isCheck(){
+		return isFunction(RE_CHECK);
+	}
+	
 	// final state in regexp
 	public boolean isFinal(){
 		if (isStar() || isOpt()) return true;
-		if (isAnd() || isOr()){
+		if (isAnd() || isAlt()){
 			for (Expression exp : args){
 				if (! exp.isFinal()) return false;
 			}
@@ -333,11 +354,11 @@ public class Term extends Expression {
 	public Expression reverse(){
 		Term term = this;
 		if (isSeq()){
-			term = Term.create(SEDIV, getArg(1).reverse(), getArg(0).reverse());
+			term = Term.create(RE_SEQ, getArg(1).reverse(), getArg(0).reverse());
 		}
-		else if (isOr() || isFunction()){
-			if (isOr()){
-				term = Term.create(SEOR);
+		else if (isAlt() || isFunction()){
+			if (isAlt()){
+				term = Term.create(RE_ALT);
 			}
 			else {
 				term = Term.function(getName());
@@ -386,7 +407,8 @@ public class Term extends Expression {
 			return exp;
 		}
 		else if (isReverse && isSeq() && ! getArg(1).isTest()){
-			term = Term.create(getName(), getArg(1).transform(isReverse), getArg(0).transform(isReverse));
+			term = Term.create(getName(), getArg(1).transform(isReverse), 
+					getArg(0).transform(isReverse));
 		}
 		else { 
 			if (isFunction()){
@@ -395,12 +417,24 @@ public class Term extends Expression {
 			else {
 				term = Term.create(getName());
 			}
+			
 			for (Expression arg : getArgs()){
 				term.add(arg.transform(isReverse));
 			}
-			if (isNot()){
-				term.setReverse(isReverse);
+			
+			switch (getretype()){
+			
+				case NOT: 
+					term.setReverse(isReverse); 
+					break;
+					
+				case PARA: 
+					Term t = Term.function(RE_CHECK, term.getArg(1));
+					t.setretype(CHECK);
+					term.add(t);
+					break;
 			}
+			
 			term.copy(this);
 		}
 		term.setretype(term.getretype());
@@ -422,15 +456,15 @@ public class Term extends Expression {
 			return e2;
 		}
 		
-		if (exp.isOr()){
+		if (exp.isAlt()){
 			Expression std = null, rev = null;
 			for (int i=0; i<exp.getArity(); i++){
 				Expression ee = exp.getArg(i);
 				if (ee.isReverse()){
-					rev = add(SEOR, rev, Term.negation(ee.getArg(0)));
+					rev = add(RE_ALT, rev, Term.negation(ee.getArg(0)));
 				}
 				else {
-					std = add(SEOR, std, Term.negation(ee));
+					std = add(RE_ALT, std, Term.negation(ee));
 				}
 			}
 			Expression res = null;
@@ -438,7 +472,7 @@ public class Term extends Expression {
 				res = std;
 			}
 			if (rev != null){
-				res = add(SEOR, res, Term.function(SREV, rev));
+				res = add(RE_ALT, res, Term.function(SREV, rev));
 			}
 			return res;
 		}
@@ -454,7 +488,7 @@ public class Term extends Expression {
 		if (! isNot()) return false;
 		Expression ee = getArg(0);
 		if (ee.isReverse()) return true;
-		if (ee.isOr()){
+		if (ee.isAlt()){
 			for (int i = 0; i<ee.getArity(); i++){
 				if (ee.getArg(i).isReverse()){
 					return true;
@@ -487,7 +521,7 @@ public class Term extends Expression {
 		if (isSeq()){
 			return getArg(0).length() + getArg(1).length();
 		}
-		else if (isOr()){
+		else if (isAlt()){
 			return Math.min(getArg(0).length(), getArg(1).length());
 		}
 		else if (isNot()){
@@ -539,7 +573,7 @@ public class Term extends Expression {
 			if (isType(getName(), type))
 				return true;
 		}
-		else if (getName().equals(SEOR)){
+		else if (isOr()){
 			// if type is BOUND : return true
 			if (isType(getName(), type))
 				return true;

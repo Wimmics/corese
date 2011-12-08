@@ -682,11 +682,19 @@ public class ASTQuery  implements Keyword {
 	}
 
 	public  Term createConditionalOrExpression(String oper, Expression exp1, Expression exp2) {
-		if (oper.equals(SOR)){
-			oper = SEOR;
-		}
-		return createTerm(oper, exp1, exp2);
-
+		return createTerm(SEOR, exp1, exp2);
+	}
+	
+	public  Term createAltExpression(Expression exp1, Expression exp2) {
+		return createTerm(Term.RE_ALT, exp1, exp2);
+	}
+	
+	public  Term createParaExpression(Expression exp1, Expression exp2) {
+		return createTerm(Term.RE_PARA, exp1, exp2);
+	}
+	
+	public  Term createSeqExpression(Expression exp1, Expression exp2) {
+		return createTerm(Term.RE_SEQ, exp1, exp2);
 	}
 
 	public  Term createRelationalExpression(String oper, Expression exp1, Expression exp2) {
@@ -1025,11 +1033,11 @@ public class ASTQuery  implements Keyword {
 	}
 	
 	Term sequence(Expression e1, Expression e2){
-		return Term.create(SDIV, e1, e2);
+		return Term.create(Term.RE_SEQ, e1, e2);
 	}
 	
 	Expression alter(Expression e1, Expression e2){
-		return Term.create(SOR, e1, e2);
+		return Term.create(Term.RE_ALT, e1, e2);
 
 	}
 	

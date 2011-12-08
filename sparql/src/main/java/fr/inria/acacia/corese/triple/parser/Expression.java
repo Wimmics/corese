@@ -190,7 +190,15 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+	public boolean isAlt(){
+		return false;
+	}
+	
 	public boolean isOr(){
+		return false;
+	}
+	
+	public boolean isPara(){
 		return false;
 	}
 	
@@ -258,6 +266,10 @@ implements Regex, Filter, Expr {
 	}
 	
 	public boolean isTest(){
+		return false;
+	}
+	
+	public boolean isCheck(){
 		return false;
 	}
 	
@@ -459,15 +471,18 @@ implements Regex, Filter, Expr {
 	}
 	
 	int getretype() {
-		if (isConstant()) return Regex.LABEL;
+		if (isConstant())return Regex.LABEL;
 		if (isNot())	 return Regex.NOT;
 		if (isSeq())	 return Regex.SEQ;
-		if (isOr())	 	 return Regex.ALT;
+		if (isPara())	 return Regex.PARA;
+		if (isAlt())	 return Regex.ALT;
 		if (isPlus())	 return Regex.PLUS;
 		if (isCounter()) return Regex.COUNT;
 		if (isStar()) 	 return Regex.STAR;
 		if (isOpt()) 	 return Regex.OPTION;
 		if (isTest())	 return Regex.TEST;
+		if (isCheck())	 return Regex.CHECK;
+
 		return Regex.UNDEF;
 	}
 

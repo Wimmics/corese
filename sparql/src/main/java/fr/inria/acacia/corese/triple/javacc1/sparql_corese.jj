@@ -1362,9 +1362,17 @@ Expression AddRegExp():{Token t; Expression exp1, exp2;}
 {
     exp1 = MultRegExp() 
     
-    ( t = <BAR>   exp2 = MultRegExp() 
-    
-    {exp1 = astq.createConditionalOrExpression(t.image, exp1, exp2); } 
+    (
+    	(
+    		 t = <BAR>   exp2 = MultRegExp() 
+   		    {exp1 = astq.createAltExpression(exp1, exp2); } 
+   			 
+   		)
+   		|
+   		(
+   		    t = <SC_OR>   exp2 = MultRegExp() 
+   		    {exp1 = astq.createParaExpression(exp1, exp2); } 
+   		)
     
     ) *
     
@@ -1378,9 +1386,11 @@ Expression MultRegExp():{Token t; Expression exp1, exp2;}
 
 	exp1 = UnaryRegExp() 
 	
+	
+	
 	( t = <SLASH>  exp2 = UnaryRegExp() 
 	
-	  {exp1 = astq.createMultiplicativeExpression(t.image, exp1, exp2); } 
+	  {exp1 = astq.createSeqExpression(exp1, exp2); } 
 		
 	) *
 

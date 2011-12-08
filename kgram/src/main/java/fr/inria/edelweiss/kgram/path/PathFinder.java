@@ -47,9 +47,33 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
  * ?x ^(p/q) uri ::= uri p/q ?x
  * -> ?x inv(q)/inv(p) uri
  * 
+ * PP Extensions
  * 
- * TODO: check result path for inv(q)
- * TODO: only one shortest path because store length into Node
+ * Path Variable:
+ * ?x exp :: $path ?y
+ * 
+ * Path Length:
+ * pathLength($path)
+ * 
+ * Path Enumeration:
+ * ?x exp :: $path ?y
+ * graph $path {?a ?p ?b}
+ * 
+ * Shortest path: 
+ * ?x s exp ?y ; ?x sa exp ?y
+ * -- TODO: only one shortest path because store length into Node
+ * 
+ * Constaint:
+ * ?x exp @{?this c foaf:Person} ?y
+ * ?x exp @[?this != <John>] ?y
+ * 
+ * Parallel Path:
+ * ?x (foaf:knows || ^rdfs:seeAlso) + ?y
+ * 
+ * Check Loop:
+ * pf.setCheckLoop(true) => exp+ exp{n,m} without loop
+ * exec.setPathLoop(false)
+ * pragma {kg:path kg:loop false}
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
  * 
@@ -64,7 +88,6 @@ public class PathFinder
 
 	// thread that enumerates the path
 	private GraphPath path;
-	private Visit visited;
 	// synchronized buffer between this and projection
 	private Buffer mbuffer;
 	private Environment memory;
@@ -412,7 +435,6 @@ public class PathFinder
 		Node cstart = get(memory, index);
 		Path path = new Path();
 		path.setMax(max);
-		visited =  Visit.create(isReverse);
 		
 		if (isShort && cstart != null) {
 			// if null, will be done later
@@ -647,8 +669,8 @@ public class PathFinder
 	 *  rewrite   ^(p/q)    as   ^q/^p
 	 */
 	void eval(Regex exp, Path path, Node start, Node src){
-//		System.out.println(exp);
-		Record stack = new Record().push(exp);
+		Record stack = new Record(Visit.create(isReverse));
+		stack.push(exp);
 		try {
 			eval(stack, path, start, src);
 		}
@@ -671,7 +693,16 @@ public class PathFinder
 		if (isStop) return;
 		
 		if (stack.isEmpty()){
-			//cresult++;						
+			
+			if (stack.getTarget() != null){
+				// this is a parallel path check, path is finished: stop it
+				if (start.same(stack.getTarget())){
+					// it is successful 
+					stack.setSuccess(true);
+				}
+				return;
+			}
+			
 			result(path, start, src);			
 			return;
 		}
@@ -723,13 +754,19 @@ public class PathFinder
 				hasShort  = isShort,
 				hasOne 	  = isOne;
 
-			Visit visit = visited;
+			Visit visit = stack.getVisit();
 			Node gg = gNode;
 			ResultListener handler = listener;
 			
 			for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, src, start, ii)){
 				
 				if (isStop){
+					stack.push(exp);
+					return;
+				}
+				
+				if (stack.isSuccess()){
+					// parallel path has succeeded: stop it
 					stack.push(exp);
 					return;
 				}
@@ -766,10 +803,14 @@ public class PathFinder
 					// all relations need same source in one path
 					continue;
 				}				
-								
+					
+				
+				
 				if (isStart){
 					//trace("** Visit: " + node);
 					visit.start(node);
+					// in case there is e1 || e2
+					stack.pushStart(node);
 					if (hasShort) {
 						// reset node length to zero
 						pp.initPath(ee, 0);
@@ -806,6 +847,7 @@ public class PathFinder
 				}								
 				if (isStart){
 					visit.leave(node);
+					stack.popStart();
 				}
 			
 			}
@@ -841,9 +883,57 @@ public class PathFinder
 		break;
 		
 		
+		case Regex.PARA: 
+			
+			// e1 || e2
+			if (start!=null) stack.pushStart(start);
+			// push check(e2) (para has a 3rd argument for check)
+			stack.push(exp.getArg(2));
+			// push e1
+			stack.push(exp.getArg(0));
+			eval(stack, path, start, src);
+			// pop e1
+			stack.pop();
+			// pop check(e2)
+			stack.pop();
+
+			if (start!=null) stack.popStart();
+			// push para
+			stack.push(exp);
+			
+		break;
+			
+			
+		case Regex.CHECK: 
+			
+				Node target = start;
+				// check(e2) from e1 || e2
+				// e1 has computed a path from former start to this start (which is now target of e2)
+				// check there is a parallel path e2 from start to target
+				// create new Record to check loop specific to path e2 
+				Record st = new Record(Visit.create(isReverse));
+				// push e2
+				st.push(exp.getArg(0));
+				st.setTarget(target);
+				// retrieve the common start of path e1 and e2
+				Node prev = stack.getStart();
+				
+				eval(st, path, prev, src);
+
+				if (st.isSuccess()){
+					eval(stack, path, start, src);
+				}
+				
+				stack.push(exp);
+
+			
+		break;
+
+		
+		
 		case Regex.PLUS:
 			// exp+
-			if (start == null && visited.knows(exp)){
+			if (start == null && stack.getVisit().knows(exp)){
 				stack.push(exp);
 				return;
 			}
@@ -859,7 +949,7 @@ public class PathFinder
 			
 		case Regex.STAR: 	
 			// exp*
-			if (start == null && visited.knows(exp)){
+			if (start == null && stack.getVisit().knows(exp)){
 				stack.push(exp);
 				return;
 			}
@@ -963,7 +1053,7 @@ public class PathFinder
 	 */
 	void star(Regex exp, Record stack, Path path, Node start, Node src){
 		
-		if (visited.loop(exp, start)){
+		if (stack.getVisit().loop(exp, start)){
 			// start already met in exp path: stop
 			stack.push(exp);
 			return;
@@ -989,7 +1079,7 @@ public class PathFinder
 		// restore stack (exp* on top)
 		stack.pop();
 
-		visited.remove(exp, start);	
+		stack.getVisit().remove(exp, start);	
 	}
 	
 	
@@ -999,11 +1089,11 @@ public class PathFinder
 	 */
 	void plus(Regex exp, Record stack, Path path, Node start, Node src){
 
-		if (count(exp) == 0){
+		if (stack.getVisit().count(exp) == 0){
 			
 			if (checkLoop){
 				//trace("** Visit: " + start);
-				if (visited.loop(exp, start)){
+				if (stack.getVisit().loop(exp, start)){
 					stack.push(exp);
 					return;
 				}
@@ -1012,20 +1102,20 @@ public class PathFinder
 			// first step
 			stack.push(exp);
 
-			count(exp, +1);
+			stack.getVisit().count(exp, +1);
 			stack.push(exp.getArg(0));
 			eval(stack, path, start, src);
 			stack.pop();
-			count(exp, -1);	
+			stack.getVisit().count(exp, -1);
 			
 			if (checkLoop){
-				visited.remove(exp, start);		
+				stack.getVisit().remove(exp, start);		
 			}
 			
 		}
 		else {
 			//trace("** Visit: " + start);
-			if (visited.loop(exp, start)){
+			if (stack.getVisit().loop(exp, start)){
 				//trace("** Loop: " + start);
 				stack.push(exp);
 				return;
@@ -1041,7 +1131,7 @@ public class PathFinder
 			eval(stack, path, start, src);
 			stack.pop();
 
-			visited.remove(exp, start);		
+			stack.getVisit().remove(exp, start);		
 		}
 	}
 
@@ -1055,36 +1145,35 @@ public class PathFinder
 	 */
 	void count(Regex exp, Record stack, Path path, Node start, Node src){
 		
-		if (count(exp) >= exp.getMin()){			
+		if (stack.getVisit().count(exp) >= exp.getMin()){			
 			
 			if (checkLoop(exp)){
-				if (visited.loop(exp, start)){
+				if (stack.getVisit().loop(exp, start)){
 					stack.push(exp);
 					return;
 				}
 			}
 			
 			// min length is reached, can leave
-			int save = count(exp);
-			set(exp, 0);
+			int save = stack.getVisit().count(exp);
+			stack.getVisit().set(exp, 0);
 			eval(stack, path, start, src);
-			set(exp, save);
+			stack.getVisit().set(exp, save);
 
 			stack.push(exp);
 			
-			if (count(exp) < exp.getMax()){
+			if (stack.getVisit().count(exp) < exp.getMax()){
 				// max length not reached, can continue
 				
-				count(exp, +1);
+				stack.getVisit().count(exp, +1);
 				stack.push(exp.getArg(0));
 				eval(stack, path, start, src);
 				stack.pop();
-				count(exp, -1);
-
+				stack.getVisit().count(exp, -1);
 			}
 			
 			if (checkLoop(exp)){
-				visited.remove(exp, start);		
+				stack.getVisit().remove(exp, start);		
 			}
 			
 		}
@@ -1095,12 +1184,12 @@ public class PathFinder
 				if (checkLoop(exp)){
 					// use case: ?x exp{2,} <uri>
 					// path goes backward
-					visited.insert(exp, start);
+					stack.getVisit().insert(exp, start);
 				}
 			}
 			// TODO: draft
 			else if (checkLoop){
-				if (visited.loop(exp, start)){
+				if (stack.getVisit().loop(exp, start)){
 					stack.push(exp);
 					return;
 				}
@@ -1109,39 +1198,28 @@ public class PathFinder
 			
 			stack.push(exp);
 
-			count(exp, +1);
+			stack.getVisit().count(exp, +1);
 			stack.push(exp.getArg(0));
 			eval(stack, path, start, src);
 			stack.pop();
-			count(exp, -1);	
+			stack.getVisit().count(exp, -1);
 									
 			if (isReverse){
 				if (checkLoop(exp)){
 					// use case: ?x exp{2,} <uri>
 					// path goes backward
-					visited.remove(exp, start);
+					stack.getVisit().remove(exp, start);
 				}
 			}
 			// TODO: draft
 			else if (checkLoop){
-				visited.remove(exp, start);		
+				stack.getVisit().remove(exp, start);		
 			}
 		}
 		
 	} 
 	
 	
-	int count(Regex exp){
-		return visited.count(exp);
-	}
-	
-	void count(Regex exp, int n){
-		visited.count(exp, n);
-	}
-	
-	void set(Regex exp, int n){
-		visited.set(exp, n);
-	}
 	
 	Regex star(Regex exp){
 		return exp;

@@ -17,7 +17,9 @@ public interface Regex {
 	public static final int OPTION 	= 5;
 	public static final int COUNT 	= 6;
 	public static final int ALT		= 7;
-	public static final int TEST	= 8;
+	public static final int PARA	= 8;
+	public static final int TEST	= 9;
+	public static final int CHECK	= 10;
 
 	
 	String getName();
@@ -29,9 +31,11 @@ public interface Regex {
 	int getArity();
 	
 	boolean isConstant();
-
-	boolean isOr();
 	
+	boolean isAlt();
+	
+	boolean isPara();
+
 	boolean isSeq();
 	
 	boolean isOpt();

@@ -220,7 +220,7 @@ public class Automaton {
 				// current: B->? 
 				psave.addAll(pending);
 			}
-			else if (exp.isOr()){
+			else if (exp.isAlt()){
 				for (int i=0; i<exp.getArity(); i++){
 					Regex e = exp.getArg(i);	
 					// csave: A | B

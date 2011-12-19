@@ -95,7 +95,7 @@ public abstract class Exp extends Statement {
 		return body.size();
 	}
 	
-	boolean validate(){
+	public boolean validate(ASTQuery ast){
 		return true;
 	}
 	

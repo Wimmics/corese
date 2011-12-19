@@ -44,6 +44,16 @@ public class Variable extends Atom {
 		return sb;
 	}
 	
+	public boolean equals(Object o){
+		if (o instanceof Variable){
+			Variable var = (Variable) o;
+			if (getName().equals(var.getName())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void setPath(boolean b){
 		isPath = b;
 	}

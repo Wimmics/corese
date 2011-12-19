@@ -126,8 +126,6 @@ public class Constant extends Atom {
 		return sb;
 	}
 	
-	
-	
 	public Constant getConstant() {
 		return this;
 	}
@@ -194,7 +192,7 @@ public class Constant extends Atom {
 	public static Constant create(IDatatype dt){
 		Constant cst;
 		if (dt.isLiteral()){
-			cst = Constant.create(dt.getLabel(), dt.getExtDatatype().getLabel(), dt.getLang());
+			cst = Constant.create(dt.getLabel(), dt.getDatatype().getLabel(), dt.getLang());
 		}
 		else {
 			// URI & Blank

@@ -140,9 +140,12 @@ implements Index {
 	
 	public String toString(){
 		String str = "Edges:\n";
+		int total = 0;
 		for (Node pred : getSortedProperties()){
+			total += get(pred).size();
 			str += pred + ": " + get(pred).size() +"\n";
 		}
+		str += "Total: " + total + "\n";
 		return str;
 	}
 	
@@ -366,10 +369,9 @@ implements Index {
 		else {
 			n = find(list, node, node2, 0, list.size());
 		}
-		
+
 		if (n>=0 && n<list.size()){
 			Node tNode = list.get(n).getNode(index);
-			
 			if (tNode.same(node)){
 				if (node2 != null){
 					Node tNode2 = list.get(n).getNode(other);

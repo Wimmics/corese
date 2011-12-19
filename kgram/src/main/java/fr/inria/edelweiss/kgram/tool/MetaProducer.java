@@ -33,11 +33,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	}
 	
 	public Iterator<Producer> iterator(){
-		return lProducer.iterator();
-	}
-	
-	public List<Producer> getProducers(){
-		return lProducer;
+		return getProducerList().iterator();
 	}
 	
 	public Producer getProducer(){
@@ -48,20 +44,35 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		return new MetaProducer();
 	}
 	
+	
+	/**
+	 * add and get must be synchronized
+	 * That is, there should not happen a query and a add in parallel
+	 */
 	public void add(Producer p){
 		if (producer == null) producer = p;
-		lProducer.add(p);
+		getProducerList().add(p);
+	}
+	
+	List<Producer> getProducerList(){
+		return lProducer;
+	}
+	
+	
+	
+	public List<Producer> getProducers(){
+		return getProducerList();
 	}
 	
 	public void init(int nbNode, int nbEdge){
-		for (Producer p : lProducer){
+		for (Producer p : getProducerList()){
 			p.init(nbNode, nbEdge);
 		}
 	}
 	
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,  Environment env){
 		MetaIterator<Entity> meta = null;
-		for (Producer p : lProducer){
+		for (Producer p : getProducerList()){
 			meta = add(meta, p.getEdges(gNode, from, edge, env));
 		}
 		return meta;
@@ -76,14 +87,14 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	
 	public Iterable<Entity> getNodes(Node gNode, List<Node> from, Node node,  Environment env){
 		MetaIterator<Entity> meta = null;
-		for (Producer p : lProducer){
+		for (Producer p : getProducerList()){
 			meta = add(meta, p.getNodes(gNode, from, node, env));
 		}
 		return meta;
 	}
 	
 	public boolean isGraphNode(Node gNode, List<Node> from, Environment env){
-		for (Producer p : lProducer){
+		for (Producer p : getProducerList()){
 			if (p.isGraphNode(gNode, from, env)){
 				return true;
 			}
@@ -93,7 +104,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	
 	public Iterable<Node> getGraphNodes(Node gNode, List<Node> from, Environment env){
 		MetaIterator<Node> meta = null;
-		for (Producer p : lProducer){
+		for (Producer p : getProducerList()){
 			Iterable<Node> it = p.getGraphNodes(gNode, from, env);
 			MetaIterator<Node> m = new MetaIterator<Node>(it);
 			if (meta == null) meta = m;
@@ -108,7 +119,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	 */
 	
 	public void initPath(Edge edge, int index){
-		for (Producer p : lProducer){
+		for (Producer p : getProducerList()){
 			p.initPath(edge, index);
 		}
 	}
@@ -118,7 +129,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env, 
 			Regex exp, Node src, Node start, int index){
 		MetaIterator<Entity> meta = null;
-		for (Producer p : lProducer){
+		for (Producer p : getProducerList()){
 			meta = add(meta, p.getEdges(gNode, from, qEdge, env, exp, src, start, index));
 		}
 		return meta;
@@ -130,7 +141,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	public Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge edge,  Environment env, List<Regex> list, 
 			int index){
 		MetaIterator<Entity> meta = null;
-		for (Producer p : lProducer){
+		for (Producer p : getProducerList()){
 			meta = add(meta, p.getNodes(gNode, from, edge, env, list, index));
 		}
 		return meta;

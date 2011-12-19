@@ -9,11 +9,13 @@ import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.tool.Message;
+import fr.inria.edelweiss.kgram.tool.MetaProducer;
 
 /**
  * Pragma processor
@@ -25,9 +27,10 @@ public class Pragma  {
 	protected static final String KG = ExpType.KGRAM;
 	// subject
 	protected static final String SELF 	= KG + "kgram";
-	static final String MATCH 	= KG + "match";
-	static final String PATH 	= KG + "path";
-	protected static final String PRAGMA 	= KG + "pragma";
+	static final String MATCH 			= KG + "match";
+	static final String PATH 			= KG + "path";
+	static final String QUERY 			= KG + "query";
+	protected static final String PRAGMA= KG + "pragma";
 
 	// kgram
 	static final String TEST 	= KG + "test";
@@ -39,6 +42,11 @@ public class Pragma  {
 	static final String EDGE 	= KG + "edge";
 	static final String LOAD 	= KG + "load";
 	static final String LIST 	= KG + "list";
+	static final String DISPLAY	= KG + "display";
+
+	protected static final String STATUS	= KG + "status";
+	protected static final String DESCRIBE	= KG + "describe";
+
 	protected static final String HELP 	= KG + "help";
 
 	
@@ -54,7 +62,7 @@ public class Pragma  {
 	static final String MIX  		= "mix";
 
 
-	Eval kgram;
+	protected Eval kgram;
 	protected Query query;
 	ASTQuery ast;
 	
@@ -107,6 +115,9 @@ public class Pragma  {
 			"\n" +
 			"kg:path  kg:list  true        # list path result (no thread) \n" +
 			"kg:path  kg:loop  false       # path without loop \n" +
+			
+			"kg:query kg:display true      # pprint query AST \n" +
+
 
 			"}";
 		
@@ -168,6 +179,11 @@ public class Pragma  {
 				query.setCheckLoop(! value(object));
 			}
 		}
+		else if (subject.equals(QUERY)){
+			if (property.equals(DISPLAY)){
+				query.addInfo("AST:\n", ast);
+			}
+		}
 		else if (subject.equals(PRAGMA)){
 			if (property.equals(HELP) && value(object)){
 				query.addInfo(help(), null);
@@ -190,6 +206,8 @@ public class Pragma  {
 		return Matcher.SUBSUME;
 	}
 	
+	
+
 	
 	Object create(String name){
 		try {

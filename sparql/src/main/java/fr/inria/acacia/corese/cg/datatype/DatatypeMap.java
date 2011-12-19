@@ -44,8 +44,8 @@ public class DatatypeMap implements Cst, RDF {
 
 	private class Mapping {
 		private String javatype = "";
-		private String datatypeMarkerSet = "";
-		private Hashtable<String, String> datatypeHashMarkerSet;
+//		private String datatypeMarkerSet = "";
+//		private Hashtable<String, String> datatypeHashMarkerSet;
 		private Method method = null;
 		private Class cl = null;
 
@@ -54,69 +54,69 @@ public class DatatypeMap implements Cst, RDF {
 		public Mapping(String jtype){//, Hashtable<String, String> htms){
 			javatype = jtype;
 			//datatypeHashMarkerSet = htms;
-			Class str = null;
-			try{
-				cl = Class.forName(jtype);
-				str = Class.forName("java.lang.String");
-			}
-			catch(ClassNotFoundException e){
-				//MUST not occur !!! jtype is always specified correctly
-				//coming from the DatatypeMap
-				logger.fatal(e.getMessage());
-			}
-
-			Class[] methodArg = {str};
-			try{
-				try{
-					//search in the class
-					method = cl.getDeclaredMethod("getNormalizedLabel", methodArg);
-				}
-				catch(NoSuchMethodException e){
-					//else in the superclass
-					method = cl.getMethod("getNormalizedLabel", methodArg);
-				}
-			}
-			catch(NoSuchMethodException e){
-				//MUST not occur !!! getNormalizedLabel is a method of IDatatype
-				//so, each CoreseDatatype implements this method, if not the project
-				//doesn't compile
-				logger.fatal(e.getMessage());
-			}
+//			Class str = null;
+//			try{
+//				cl = Class.forName(jtype);
+//				str = Class.forName("java.lang.String");
+//			}
+//			catch(ClassNotFoundException e){
+//				//MUST not occur !!! jtype is always specified correctly
+//				//coming from the DatatypeMap
+//				logger.fatal(e.getMessage());
+//			}
+//
+//			Class[] methodArg = {str};
+//			try{
+//				try{
+//					//search in the class
+//					method = cl.getDeclaredMethod("getNormalizedLabel", methodArg);
+//				}
+//				catch(NoSuchMethodException e){
+//					//else in the superclass
+//					method = cl.getMethod("getNormalizedLabel", methodArg);
+//				}
+//			}
+//			catch(NoSuchMethodException e){
+//				//MUST not occur !!! getNormalizedLabel is a method of IDatatype
+//				//so, each CoreseDatatype implements this method, if not the project
+//				//doesn't compile
+//				logger.fatal(e.getMessage());
+//			}
 		}
 
 
-		String getLiteralMarkerSet(String lang){
-			return datatypeHashMarkerSet.get(lang);
-		}
-
-
-		String getDataTypeMarkerSet(){
-			return datatypeMarkerSet;
-		}
-		
-		void setDataTypeMarkerSet(String ms){
-			 datatypeMarkerSet = ms;
-		}
-
-		Hashtable<String, String> getDataTypeMarkerSetHash(){
-			return datatypeHashMarkerSet;
-		}
-		
-		void setDataTypeMarkerSetHash(Hashtable<String, String> dtms){
-			 datatypeHashMarkerSet = dtms;
-		}
+//		String getLiteralMarkerSet(String lang){
+//			return datatypeHashMarkerSet.get(lang);
+//		}
+//
+//
+//		String getDataTypeMarkerSet(){
+//			return datatypeMarkerSet;
+//		}
+//		
+//		void setDataTypeMarkerSet(String ms){
+//			 datatypeMarkerSet = ms;
+//		}
+//
+//		Hashtable<String, String> getDataTypeMarkerSetHash(){
+//			return datatypeHashMarkerSet;
+//		}
+//		
+//		void setDataTypeMarkerSetHash(Hashtable<String, String> dtms){
+//			 datatypeHashMarkerSet = dtms;
+//		}
 
 		String getJavaType(){
 			return javatype;
 		}
 
-		Method getNormalizedLabelMethod(){
-			return method;
-		}
-
-		Class getNormalizedLabelClass(){
-			return cl;
-		}
+//		Method getNormalizedLabelMethod(){
+//			return method;
+//		}
+//
+//		Class getNormalizedLabelClass(){
+//			return cl;
+//		}
 	}
 
 
@@ -132,13 +132,13 @@ public class DatatypeMap implements Cst, RDF {
 
 	public void put(String dt, String jtype, Hashtable<String, String> htms){
 		Mapping map = new Mapping(jtype);//,htms);
-		map.setDataTypeMarkerSetHash(htms);
+		//map.setDataTypeMarkerSetHash(htms);
 		ht.put(dt, map);
 	}
 
 	public void put(String dt, String jtype, String dtms){
 		Mapping map = new Mapping(jtype);//,dtms);
-		map.setDataTypeMarkerSet(dtms);
+		//map.setDataTypeMarkerSet(dtms);
 		ht.put(dt, map);
 	}
 
@@ -167,97 +167,28 @@ public class DatatypeMap implements Cst, RDF {
 		return map;
 	}
 
-	/**
-	 * Return the String ID of the marker set. If there is a lang, the ID is
-	 * rdfs:Literal/lang
-	 */
-//	public String getDatatypeMarkerSet(String dt, String lang, boolean std){
-//
-//		if (dt==null)
-//			return null;
-//		else if (!std){
-//			return dt + NWFL; // not well formed literal
-//		}
-//		else if (dt.equals(RDFSLITERAL)){
-//			//indirection vers une hash qd LITERAL <-- gestion de la langue
-//			Mapping th = ht.get(dt);
-//			if(lang == null || lang.equals("")){
-//				return th.getDataTypeMarkerSetHash().get(DEFAULT);
-//			}
-//			Hashtable<String, String> dtmsh = th.getDataTypeMarkerSetHash();
-//			String dtms = dtmsh.get(lang);
-//			//creation dynamique du marker set
-//			if (dtms == null){
-//				dtms = RDFSLITERAL + "/" + lang ;
-//				dtmsh.put(lang, dtms);
-//			}
-//			return dtms;
-//		}
-//		Mapping map=getMapping(dt);
-//		if (map == null)
-//			return null;
-//		else return map.getDataTypeMarkerSet();
-//
-//
+	
+
+//	private static Method getDatatypeNormalizedLabelMethod(String dt){
+//		if(dt==null){ return null;}
+//		Method m = null;
+//		Mapping mp = ht.get(dt);
+//		if(mp==null){ return null; }
+//		m= mp.getNormalizedLabelMethod();
+//		if(m == null) { return null; }
+//		return m;
 //	}
 
-	private static Method getDatatypeNormalizedLabelMethod(String dt){
-		if(dt==null){ return null;}
-		Method m = null;
-		Mapping mp = ht.get(dt);
-		if(mp==null){ return null; }
-		m= mp.getNormalizedLabelMethod();
-		if(m == null) { return null; }
-		return m;
-	}
-
-	private static Class getDatatypeNormalizedLabelClass(String dt){
-
-		if(dt==null){ return null; }
-		Mapping mp = ht.get(dt);
-		if(mp==null){ return null; }
-		Class c = mp.getNormalizedLabelClass();
-		if(c==null){ return null;}
-		return c;
-	}
-
-//	public static String getDatatypeNormalizedLabel(String jType, String label)
-//	throws CoreseDatatypeException {
-//		if (jType==null){ return null; }
-//		if (jType.equals(xsdstring) || jType.equals(RDFSLITERAL)){ // to optimize
-//			return label;
-//		}
-//		String args[] = {label};
-//		try{
-//			String nLabel = "";
-//			Object o = null;
-//			Method m = null;
-//			Class c = null;
+//	private static Class getDatatypeNormalizedLabelClass(String dt){
 //
-//			m = getDatatypeNormalizedLabelMethod(jType);
-//			c = getDatatypeNormalizedLabelClass(jType);
-//			o = m.invoke(c,(Object[])args);
-//			nLabel = (String)o;
-//			if (nLabel == null) throw new CoreseDatatypeException(jType, label);
-//			return nLabel;
-//			//return (String)getDatatypeNormalizedLabelMethod(jType).invoke(getDatatypeNormalizedLabelClass(jType),args);
-//		}
-//		catch(java.lang.IllegalAccessException e){
-//			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
-//			throw de;
-//		}
-//		catch(java.lang.reflect.InvocationTargetException e){
-//			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
-//			throw de;
-//		}
-//		catch(Exception e){
-//			if (e instanceof CoreseDatatypeException)
-//				throw (CoreseDatatypeException) e;
-//			CoreseDatatypeException de =  new CoreseDatatypeException(e,jType,label);
-//			System.err.println(de);
-//			throw de;
-//		}
+//		if(dt==null){ return null; }
+//		Mapping mp = ht.get(dt);
+//		if(mp==null){ return null; }
+//		Class c = mp.getNormalizedLabelClass();
+//		if(c==null){ return null;}
+//		return c;
 //	}
+
 
 	/**
 	 * Defines the datatype map between XSD datatypes and the java class
@@ -269,43 +200,34 @@ public class DatatypeMap implements Cst, RDF {
 		//define the hashtable that 1 MS for (LITERAL,lang)
 		Hashtable<String, String> htlang = new Hashtable<String, String>();
 		htlang.put(DEFAULT,RDFSLITERAL);
-		put(RDFSLITERAL,jTypeLiteral,htlang);
-		put(xsdlangString,jTypeLiteral,htlang);
+		put(RDFSLITERAL,  jTypeLiteral,htlang);
+		put(rdflangString,jTypeLiteral,htlang);
 
 		put(XMLLITERAL,	jTypeXMLString,		XMLLITERAL);
-		put(xsdstring, 		jTypeString,xsdstring);
+		put(xsdstring, 	jTypeString,xsdstring);
 		put(xsdboolean,	jTypeBoolean,		xsdboolean);  
+		put(xsdanyURI,  jTypeURI,			xsdstring );
+		
 		put(xsdnormalizedString, jTypeString,	xsdstring);
 		put(xsdtoken, 	jTypeString,			xsdstring);
-		put(xsdanyURI,  jTypeURI,			xsdstring );
 		put(xsdnmtoken, jTypeString,			xsdstring );
 		put(xsdname, 	jTypeString,			xsdstring );
 		put(xsdncname, 	jTypeString,			xsdstring );
-		put(xsdlanguage, jTypeString,			xsdstring );
+		put(xsdlanguage,jTypeString,			xsdstring );
 
-		//put(cosnumber,	jTypeDouble,		xsddouble);
 		String intSpace = xsdinteger;
+		// Integer + store datatype URI ?
+		String intJType = jTypeInteger;		
 
-		if (SEVERAL_NUMBER_SPACE){ // different value spaces for number datatypes
-			put(xsddouble,		jTypeDouble, xsddouble);
-			put(xsdfloat,	jTypeFloat,  xsdfloat);
-			put(xsddecimal, jTypeDecimal,xsddecimal);
-			intSpace = xsdinteger;
-		}
-		else { // same value space
-			put(xsddouble,		jTypeDouble, xsddouble);
-			put(xsdfloat, 	jTypeDouble, xsddouble);
-			put(xsddecimal,	jTypeDecimal,xsddouble);
-			intSpace = xsddouble;
-		}
-
-		String intJType = jTypeInteger;
-
-		put(xsdinteger,		intJType,	intSpace);
-		put(xsdlong,		intJType,	intSpace);
-		put(xsdshort,		intJType,	intSpace);
-		put(xsdint,			intJType,	intSpace);
-		put(xsdbyte,		intJType,	intSpace);
+		put(xsddouble,	jTypeDouble, xsddouble);
+		put(xsdfloat,	jTypeFloat,  xsdfloat);
+		put(xsddecimal, jTypeDecimal,xsddecimal);		
+		put(xsdinteger,	jTypeInteger,intSpace);
+		put(xsdlong,	jTypeLong,intSpace);
+		
+		put(xsdshort,				intJType,intSpace);
+		put(xsdint,					intJType,intSpace);
+		put(xsdbyte,				intJType,intSpace);
 		put(xsdnonNegativeInteger, 	intJType,intSpace);
 		put(xsdnonPositiveInteger, 	intJType,intSpace);
 		put(xsdpositiveInteger, 	intJType,intSpace);
@@ -327,6 +249,84 @@ public class DatatypeMap implements Cst, RDF {
 
 
 	}
+	
+	void define(String datatype, int code){
+		
+	}
+	
+	void defineString(String datatype){
+		
+	}
+	
+	void defineInteger(String datatype){
+		
+	}
+	
+	int getType(String datatype){
+		return IDatatype.UNDEF;
+	}
+	
+	public void init2(){
+		
+		define(RDFSLITERAL,	 IDatatype.LITERAL);
+		define(rdflangString,IDatatype.LITERAL);
+		define(XMLLITERAL,	 IDatatype.XMLLITERAL);
+		define(xsdboolean,	 IDatatype.BOOLEAN);  
+		define(xsdanyURI,    IDatatype.URI);
+		define(xsdstring, 	 IDatatype.STRING);
+		define(RDFSRESOURCE, IDatatype.URI);
+		
+		defineString(xsdnormalizedString);
+		defineString(xsdtoken);
+		defineString(xsdnmtoken);
+		defineString(xsdname);
+		defineString(xsdncname);
+		defineString(xsdlanguage);
+
+		define(xsddouble, 	IDatatype.DOUBLE);
+		define(xsdfloat,	IDatatype.FLOAT);
+		define(xsddecimal, 	IDatatype.DECIMAL);
+		define(xsdinteger,	IDatatype.INTEGER);
+		define(xsdlong,		IDatatype.LONG);
+		
+		defineInteger(xsdshort);
+		defineInteger(xsdint);
+		defineInteger(xsdbyte);
+		defineInteger(xsdnonNegativeInteger);
+		defineInteger(xsdnonPositiveInteger);
+		defineInteger(xsdpositiveInteger);
+		defineInteger(xsdnegativeInteger);
+		defineInteger(xsdunsignedLong);
+		defineInteger(xsdunsignedInt);
+		defineInteger(xsdunsignedShort);
+		defineInteger(xsdunsignedByte);
+
+		define(xsddate,		IDatatype.DATE); //jTypeDate,		xsddate);
+		define(xsddateTime, IDatatype.DATETIME); //jTypeDateTime,	xsddateTime);
+		
+		define(xsdday,		IDatatype.DAY); //jTypeDay,	xsdday);
+		define(xsdmonth,	IDatatype.MONTH); //jTypeMonth,	xsdmonth);
+		define(xsdyear,		IDatatype.YEAR); //jTypeYear,	xsdyear);
+		
+		define(xsddaytimeduration,	IDatatype.DURATION); // CoreseGeneric
+
+	}
+	
+	
+	static boolean isNumber(String name){
+		return name.equals(xsdlong) ||name.equals(xsdinteger) || name.equals(xsddouble) || 
+		name.equals(xsdfloat)   || name.equals(xsddecimal);
+	}
+	
+	
+	IDatatype create(String label, String datatype, String lang){
+		switch(getType(datatype)){
+		case IDatatype.STRING: return new CoreseString(label);
+		}
+		
+		return null;
+	}
+	
 
 	public static IDatatype newInstance(double result) {
 		return new CoreseDouble(result);
@@ -493,9 +493,9 @@ public class DatatypeMap implements Cst, RDF {
 		return new CoreseBlankNode(BLANK + COUNT++);
 	}
 
-	public  String undefType(){
-		return jTypeUndef;
-	}
+//	public  String undefType(){
+//		return jTypeUndef;
+//	}
 
 	/*******************************
 	 * 
@@ -522,15 +522,23 @@ public class DatatypeMap implements Cst, RDF {
 	}
 	
 	public static boolean isInteger(IDatatype dt){
-		return (dt instanceof CoreseInteger);
+		return dt.getCode() == IDatatype.INTEGER;
 	}
 	
 	public static boolean isLong(IDatatype dt){
-		return (dt instanceof CoreseLong);
+		return dt.getCode() == IDatatype.LONG;
+	}
+	
+	public static boolean isFloat(IDatatype dt){
+		return dt.getCode() == IDatatype.FLOAT;
 	}
 	
 	public static boolean isDouble(IDatatype dt){
-		return (dt instanceof CoreseDouble);
+		return dt.getCode() == IDatatype.DOUBLE;
+	}
+	
+	public static boolean isDecimal(IDatatype dt){
+		return dt.getCode() == IDatatype.DECIMAL;
 	}
 	
 	public static boolean isBindable(IDatatype dt){

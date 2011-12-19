@@ -33,59 +33,48 @@ public class CoreseBlankNode extends CoreseResource {
 	}
 	
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polyCompare(this);
+		switch (iod.getCode()){
+		case BLANK: return getLabel().compareTo(iod.getLabel());
+		}
+		throw failure();
+		//return iod.polyCompare(this);
 	}
-	
-	public int polyCompare(CoreseBlankNode icod) throws CoreseDatatypeException {
-		return   icod.intCompare(this);
-	}
-	
+		
 	public boolean less(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphGreater(this);
+		switch (iod.getCode()){
+		case BLANK: return getLabel().compareTo(iod.getLabel()) < 0;
+		}
+		throw failure();
 	}
 	
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException{
-		return iod.polymorphGreaterOrEqual(this);
+		switch (iod.getCode()){
+		case BLANK: return getLabel().compareTo(iod.getLabel()) <= 0;
+		}
+		throw failure();
 	}
 	
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphLess(this);
+		switch (iod.getCode()){
+		case BLANK: return getLabel().compareTo(iod.getLabel()) > 0;
+		}
+		throw failure();
 	}
 	
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphLessOrEqual(this);
+		switch (iod.getCode()){
+		case BLANK: return getLabel().compareTo(iod.getLabel()) >= 0;
+		}
+		throw failure();
 	}
 	
 	public boolean equals(IDatatype iod) throws CoreseDatatypeException{
-		return  iod.polymorphEquals(this);
+		switch (iod.getCode()){
+		case BLANK: return getLabel().equals(iod.getLabel()) ;
+		}
+		return false;
 	}
 	
-	public boolean polymorphEquals(CoreseBlankNode icod) throws CoreseDatatypeException {
-		boolean b= intCompare(icod) == 0;
-		return b;
-	}
-	
-	
-	public boolean polymorphGreaterOrEqual(CoreseBlankNode icod) throws
-	CoreseDatatypeException {
-		return intCompare(icod) >= 0;
-	}
-	
-	public boolean polymorphGreater(CoreseBlankNode icod)
-	throws CoreseDatatypeException {
-		return intCompare(icod) > 0;
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseBlankNode icod)
-	throws CoreseDatatypeException {
-		return intCompare(icod) <= 0;
-	}
-	
-	public boolean polymorphLess(CoreseBlankNode icod)
-	throws CoreseDatatypeException {
-		return intCompare(icod) < 0;
-	}
-	
-	
+
 	
 }

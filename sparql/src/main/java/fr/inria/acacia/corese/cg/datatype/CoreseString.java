@@ -41,18 +41,14 @@ public class CoreseString extends CoreseStringLiteral { //CoreseStringableImpl{
 
  
   public boolean equals(IDatatype iod) throws CoreseDatatypeException {
-	  return iod.polymorphEquals(this);
+	  switch (iod.getCode()){
+	  case STRING:  return getLabel().equals(iod.getLabel());
+	  case LITERAL: return iod.equals(this);
+	  case URI:
+	  case BLANK: return false;
+	  }
+	  throw failure();
   }
   
-  public boolean polymorphEquals(CoreseString icod) throws CoreseDatatypeException {
-	  boolean res =   getValue().compareTo(icod.getValue()) == 0;
-	  return res;
-  }
-  
-  public boolean polymorphEquals(CoreseLiteral icod) throws CoreseDatatypeException {
-	 return icod.polymorphEquals(this);
-  }
-  
-
 
 }

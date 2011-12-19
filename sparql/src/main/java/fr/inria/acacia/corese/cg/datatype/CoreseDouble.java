@@ -16,79 +16,132 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
 public  class CoreseDouble extends CoreseNumber{
 	static final CoreseURI datatype=new CoreseURI(RDF.xsddouble);
-	
-	public CoreseDouble(String value) {
-		super(value);
+	static final int code = DOUBLE;
+	protected double dvalue = 0;
+
+	public CoreseDouble(String normalizedLabel){
+		dvalue = Double.parseDouble(normalizedLabel);
 	}
 	
-	public CoreseDouble(double value) {
-		super(value);
+	public CoreseDouble(double val){
+		dvalue = val;
+	}
+	
+	public int getCode(){
+		return code;
 	}
 	
 	public IDatatype getDatatype(){
 		return datatype;
 	}
 	
-	public boolean isStringable(){ return false; }
+	public boolean isTrue() {
+		return dvalue != 0.0;
+	}
 	
-	public boolean isOrdered(){ return true;}
+	public double doubleValue(){
+		return  dvalue;
+	}
 	
-	public boolean isRegExpable(){return false;}
+	public float floatValue(){
+		return  (float) dvalue;
+	}
 	
+	public long longValue(){
+		return (long) dvalue;
+	}
+	
+	public int intValue(){
+		return (int) dvalue;
+	}
+	
+	
+	
+	
+	public double getdValue(){
+		return dvalue;
+	}
+	
+	public long getlValue(){
+		return (long) dvalue;
+	}
+	
+
+
 	
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polyCompare(this);
+		switch (iod.getCode()){
+		case LONG:   
+		case INTEGER:   
+		case DECIMAL: 
+		case DOUBLE: 
+		case FLOAT: 
+			double d1 = iod.doubleValue();
+			return (dvalue < d1) ? -1 : (d1 == dvalue ? 0 : 1);
+		default: throw failure();
+		}	
 	}
 	
-	public int polyCompare(CoreseDouble icod) throws CoreseDatatypeException {
-		double d1 = icod.getdValue();
-		return (d1 < dvalue) ? -1 : (d1 == dvalue ? 0 : 1);
-	}
-	
-	public int polyCompare(CoreseLong icod) throws CoreseDatatypeException {
-		double d1 = icod.getdValue();
-		return (d1 < dvalue) ? -1 : (d1 == dvalue ? 0 : 1);
-	}
-	
-	
+
 	public boolean less(IDatatype iod)  throws  CoreseDatatypeException {
-		return iod.polymorphGreater(this);
+		switch (iod.getCode()){
+		case LONG:   
+		case INTEGER: 
+		case DECIMAL: 
+		case FLOAT: 
+		case DOUBLE: return dvalue < iod.doubleValue();
+		default: throw failure();
+		}	
 	}
 	
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphGreaterOrEqual(this);
+		switch (iod.getCode()){
+		case LONG:   
+		case INTEGER: 
+		case DECIMAL: 
+		case FLOAT: 
+		case DOUBLE: return dvalue <= iod.doubleValue();
+		default: throw failure();
+		}	
 	}
 	
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphLess(this);
+		switch (iod.getCode()){
+		case LONG:   
+		case INTEGER: 
+		case DECIMAL: 
+		case FLOAT: 
+		case DOUBLE: return dvalue > iod.doubleValue();
+		default: throw failure();
+		}	
 	}
 	
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphLessOrEqual(this);
+		switch (iod.getCode()){
+		case LONG:   
+		case INTEGER: 
+		case DECIMAL: 
+		case FLOAT: 
+		case DOUBLE: return dvalue >= iod.doubleValue();
+		default: throw failure();
+		}	
 	}
 	
 	public boolean equals(IDatatype iod) throws CoreseDatatypeException{
-		return iod.polymorphEquals(this);
-	}
-	
-	
-	
-	public IDatatype plus(IDatatype iod) {
+		switch (iod.getCode()){
+		case LONG:   
+		case INTEGER:   
+		case DECIMAL:
+		case FLOAT:
+		case DOUBLE: return dvalue == iod.doubleValue();
 		
-		return iod.polyplus(this);
+		case URI:
+		case BLANK: return false;
+		
+		default: throw failure();
+		}	
 	}
 	
-	public IDatatype minus(IDatatype iod) {
-		return iod.polyminus(this);
-	}
-	
-	public IDatatype mult(IDatatype iod) {
-		return iod.polymult(this);
-	}
-	
-	public IDatatype div(IDatatype iod) {
-		return iod.polydiv(this);
-	}
 	
 	public String getNormalizedLabel(){
 		String label = Double.toString(dvalue);
@@ -122,90 +175,6 @@ public  class CoreseDouble extends CoreseNumber{
 	public String getLowerCaseLabel(){
 		return Double.toString(dvalue);
 	}
-	
-	
-	
-	public boolean polymorphGreaterOrEqual(CoreseDouble icod){
-		return dvalue >= icod.getdValue();
-	}
-	
-	public boolean polymorphGreater(CoreseDouble icod){
-		return dvalue > icod.getdValue();
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseDouble icod){
-		return dvalue <= icod.getdValue();
-	}
-	
-	public boolean polymorphLess(CoreseDouble icod){
-		return dvalue < icod.getdValue();
-	}
-	
-	public boolean polymorphEquals(CoreseDouble icod){
-		return dvalue == icod.getdValue();
-	}
-	
-	
-	/******************LONG*************************/
-	
-	public boolean polymorphGreaterOrEqual(CoreseLong icod){
-		return dvalue >= icod.getdValue();
-	}
-	
-	public boolean polymorphGreater(CoreseLong icod){
-		return dvalue > icod.getdValue();
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseLong icod){
-		return dvalue <= icod.getdValue();
-	}
-	public boolean polymorphLess(CoreseLong icod){
-		return dvalue < icod.getdValue();
-	}
-	
-	public boolean polymorphEquals(CoreseLong icod){
-		return dvalue == icod.getdValue();
-	}
-	
-	
-	/******************************************************************/
-	
-	
-	public IDatatype polyplus(CoreseDouble iod) {
-		return new CoreseDouble(getdValue() + iod.getdValue());
-	}
-	
-	public IDatatype polyminus(CoreseDouble iod) {
-		return new CoreseDouble(iod.getdValue() - getdValue());
-	}
-	
-	public IDatatype polymult(CoreseDouble iod) {
-		return new CoreseDouble(getdValue() * iod.getdValue());
-	}
-	
-	public IDatatype polydiv(CoreseDouble iod) {
-		return new CoreseDouble(iod.getdValue() / getdValue());
-	}
-	
-	
-	
-	
-	public IDatatype polyplus(CoreseLong iod) {
-		return new CoreseDouble(getdValue() + iod.getdValue());
-	}
-	
-	public IDatatype polyminus(CoreseLong iod) {
-		return new CoreseDouble(iod.getdValue() - getdValue());
-	}
-	
-	public IDatatype polymult(CoreseLong iod) {
-		return new CoreseDouble(getdValue() * iod.getdValue());
-	}
-	
-	public IDatatype polydiv(CoreseLong iod) {
-		return new CoreseDouble(iod.getdValue() / getdValue());
-	}
-	
-	
+
 	
 }

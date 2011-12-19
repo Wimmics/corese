@@ -18,8 +18,6 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
 public class CoreseURI extends CoreseResource {
     static int  code=URI;
-	//private Object object; // to store an object such as an XML document
-
 
   public CoreseURI(String value) {
       super(value);
@@ -34,72 +32,46 @@ public class CoreseURI extends CoreseResource {
   }
   
   public int compare(IDatatype iod) throws CoreseDatatypeException {
-	  return iod.polyCompare(this);
-  }
-  
-  public int polyCompare(CoreseURI icod) throws CoreseDatatypeException {
-	  return   icod.intCompare(this);
+	  switch (iod.getCode()){
+	  case URI: return getLabel().compareTo(iod.getLabel());
+	  }
+	  throw failure();
   }
 
   public boolean less(IDatatype iod) throws CoreseDatatypeException {
-      return iod.polymorphGreater(this);
+	  switch (iod.getCode()){
+	  case URI: return getLabel().compareTo(iod.getLabel()) < 0;
+	  }
+	  throw failure();
     }
 
-    public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException{
-      return iod.polymorphGreaterOrEqual(this);
-    }
-
-    public boolean greater(IDatatype iod) throws CoreseDatatypeException {
-      return iod.polymorphLess(this);
-    }
-
-    public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
-      return iod.polymorphLessOrEqual(this);
-    }
-
-    public boolean equals(IDatatype iod) throws CoreseDatatypeException{
-      return  iod.polymorphEquals(this);
-    }
-
-//    public IDatatype plus(IDatatype iod) {
-//        return iod.polyplus(this);
-//      }
-//      
-//      public IDatatype minus(IDatatype iod) {
-//          return iod.polyminus(this);
-//        }
-//  
-  
-    
-    public boolean polymorphEquals(CoreseURI icod) throws CoreseDatatypeException {
-       // boolean b= getValue().compareTo(icod.getValue()) == 0;
-        boolean b= getValue().equals(icod.getValue());
-
-        return b;
-      }
-
-
-    public boolean polymorphGreaterOrEqual(CoreseURI icod) throws
-        CoreseDatatypeException {
-      return intCompare(icod) >= 0;
-    }
-
-  public boolean polymorphGreater(CoreseURI icod)
-      throws CoreseDatatypeException {
-    return intCompare(icod) > 0;
+  public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException{
+	  switch (iod.getCode()){
+	  case URI: return getLabel().compareTo(iod.getLabel()) <= 0;
+	  }
+	  throw failure();
   }
 
-  public boolean polymorphLessOrEqual(CoreseURI icod)
-      throws CoreseDatatypeException {
-    return intCompare(icod) <= 0;
+  public boolean greater(IDatatype iod) throws CoreseDatatypeException {
+	  switch (iod.getCode()){
+	  case URI: return getLabel().compareTo(iod.getLabel()) > 0;
+	  }
+	  throw failure();
   }
 
-  public boolean polymorphLess(CoreseURI icod)
-   throws CoreseDatatypeException {
-    return intCompare(icod) < 0;
+  public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
+	  switch (iod.getCode()){
+	  case URI: return getLabel().compareTo(iod.getLabel()) >= 0;
+	  }
+	  throw failure();
   }
 
- 
+  public boolean equals(IDatatype iod) throws CoreseDatatypeException{
+	  switch (iod.getCode()){
+	  case URI: return getLabel().equals(iod.getLabel());
+	  }
+	  return false;
+  }
 
 
 

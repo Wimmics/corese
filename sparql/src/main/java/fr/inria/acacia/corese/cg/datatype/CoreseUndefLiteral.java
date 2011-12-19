@@ -19,7 +19,6 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
 public class CoreseUndefLiteral extends CoreseStringLiteral {
     CoreseURI datatype=null ;
-    static final Hashtable<String, CoreseURI> hdt = new Hashtable<String, CoreseURI>(); // datatype name -> CoreseURI datatype
     static final int code = UNDEF;
 
   public CoreseUndefLiteral(String value) {
@@ -27,12 +26,7 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
   }
 
   public void setDatatype(String uri) {
-    CoreseURI dt = (CoreseURI) hdt.get(uri);
-    if (dt == null){
-      dt = new CoreseURI(uri);
-      hdt.put(uri, dt);
-    }
-    datatype = dt;
+    datatype = getGenericDatatype(uri);
   }
 
   public int getCode() {
@@ -61,22 +55,11 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
   public boolean equals(IDatatype iod) throws CoreseDatatypeException {
 	  if (! iod.isLiteral()) return false; 
 	  check(iod);
-	  return iod.polymorphEquals(this);
-  }
-  
-  public boolean polymorphEquals(CoreseUndefLiteral icod) throws CoreseDatatypeException {
-	  check(icod);
-	  boolean b =  getValue().compareTo(icod.getValue()) == 0;
-	  // if same undef datatype but different labels
-	  // cannot conclude they differ because we know nothing about 
-	  // this datatype !!!
-	  //if (!b && Corese.SPARQLCompliant) throw failure();
+	  boolean b =  getLabel().equals(iod.getLabel());
 	  if (!b) throw failure();
 	  return b;
-	  
+
   }
-
-
-
+  
 
 }

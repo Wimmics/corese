@@ -48,18 +48,12 @@ public class CoreseXMLLiteral extends CoreseStringLiteral {
     
     
     public boolean equals(IDatatype iod) throws CoreseDatatypeException {
-    	return iod.polymorphEquals(this);
+    	switch (iod.getCode()){
+    	case XMLLITERAL: return getLabel().equals(iod.getLabel());
+    	case URI:
+    	case BLANK: return false;
+    	}
+    	throw failure();
     }
-    
-    /**
-     * TODO: comparing DOM XML Literals coming from XPath or XSLT
-     * may not return good results because the string values
-     * may not be correct.
-     */
-    public boolean polymorphEquals(CoreseXMLLiteral icod) throws CoreseDatatypeException {
-    	return // object == icod.getObject() &&
-    		getValue().compareTo(icod.getValue()) == 0;
-    }
-
-
+  
 }

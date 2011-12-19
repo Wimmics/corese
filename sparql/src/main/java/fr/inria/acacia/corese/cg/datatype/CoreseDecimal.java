@@ -17,6 +17,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
 public  class CoreseDecimal extends CoreseDouble {
 	static final CoreseURI datatype=new CoreseURI(RDF.xsddecimal);
+	static final int code = DECIMAL;
 	
 	public CoreseDecimal(String value) throws  CoreseDatatypeException {
 		super(value);
@@ -35,66 +36,12 @@ public  class CoreseDecimal extends CoreseDouble {
 		return datatype;
 	}
 	
+	 public int getCode(){
+			return code;
+		}
+	
 	public boolean isDecimal(){
 		return true;
 	}
-	
-	public IDatatype polyplus(CoreseDouble iod) {
-		if (iod.isDecimal()){
-			return new CoreseDecimal(getdValue() + iod.getdValue());
-		} 
-		else if (iod.isFloat()){
-			return new CoreseFloat(getdValue() + iod.getdValue());
-		}
-		return super.polyplus(iod);
-	}
-	
-	public IDatatype polyminus(CoreseDouble iod) {
-		if (iod.isDecimal()){
-			return new CoreseDecimal(iod.getdValue() - getdValue());
-		} 
-		else if (iod.isFloat()){
-			return new CoreseFloat(iod.getdValue() - getdValue());
-		}
-		return super.polyminus(iod);
-	}
-	
-	public IDatatype polymult(CoreseDouble iod) {
-		if (iod.isDecimal()){
-			return new CoreseDecimal(getdValue() * iod.getdValue());
-		}
-		else if (iod.isFloat()){
-			return new CoreseFloat(getdValue() * iod.getdValue());
-		}
-		return super.polymult(iod);
-	}
-	
-	public IDatatype polydiv(CoreseDouble iod) {
-		if (iod.isDecimal()){
-			return new CoreseDecimal(iod.getdValue() / getdValue());
-		} 
-		else if (iod.isFloat()){
-			return new CoreseFloat(iod.getdValue() / getdValue());
-		}
-		return super.polydiv(iod);
-	}
-	
-	
-	public IDatatype polyplus(CoreseLong iod) {
-		return new CoreseDecimal(getdValue() + iod.getdValue());
-	}
-	
-	public IDatatype polyminus(CoreseLong iod) {
-		return new CoreseDecimal(iod.getdValue() - getdValue());
-	}
-	
-	/**
-	 * Integer / decimal : decimal
-	 */
-	public IDatatype polydiv(CoreseLong iod) {
-		return new CoreseDecimal(iod.getdValue() / getdValue());
-	}
-	
-	
 	
 }

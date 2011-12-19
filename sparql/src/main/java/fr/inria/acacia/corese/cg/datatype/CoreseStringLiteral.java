@@ -48,51 +48,65 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
   
   
   public int compare(IDatatype iod) throws CoreseDatatypeException {
-	  return iod.polyCompare(this);
+	  switch (iod.getCode()){
+	  case LITERAL:
+	  case STRING:
+	  case BOOLEAN:
+	  case XMLLITERAL:
+	  //case UNDEF:
+		  return getLabel().compareTo(iod.getLabel());
+	  }
+	  throw failure();
   }
   
-  public int polyCompare(CoreseStringLiteral icod) throws CoreseDatatypeException {
-	  return   icod.intCompare(this);
-  }
-
 
   public boolean less(IDatatype iod) throws CoreseDatatypeException {
-	  return iod.polymorphGreater(this);
+	  switch (iod.getCode()){
+	  case LITERAL:
+	  case STRING:
+	  case BOOLEAN:
+	  case XMLLITERAL:
+	  case UNDEF:
+		  return getLabel().compareTo(iod.getLabel()) < 0;
+	  }
+	  throw failure();
   }
   
   public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException{
-	  return iod.polymorphGreaterOrEqual(this);
+	  switch (iod.getCode()){
+	  case LITERAL:
+	  case STRING:
+	  case BOOLEAN:
+	  case XMLLITERAL:
+	  case UNDEF:
+		  return getLabel().compareTo(iod.getLabel()) <= 0;
+	  }
+	  throw failure();
   }
   
   public boolean greater(IDatatype iod) throws CoreseDatatypeException {
-	  return iod.polymorphLess(this);
+	  switch (iod.getCode()){
+	  case LITERAL:
+	  case STRING:
+	  case BOOLEAN:
+	  case XMLLITERAL:
+	  case UNDEF:
+		  return getLabel().compareTo(iod.getLabel()) > 0;
+	  }
+	  throw failure();
   }
   
   public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
-	  return iod.polymorphLessOrEqual(this);
+	  switch (iod.getCode()){
+	  case LITERAL:
+	  case STRING:
+	  case BOOLEAN:
+	  case XMLLITERAL:
+	  case UNDEF:
+		  return getLabel().compareTo(iod.getLabel()) >= 0;
+	  }
+	  throw failure();
   }
   
   
-  public boolean polymorphGreaterOrEqual(CoreseStringLiteral icod) throws
-  CoreseDatatypeException {
-	  return intCompare(icod) >= 0;
-  }
-  
-  public boolean polymorphGreater(CoreseStringLiteral icod)
-  throws CoreseDatatypeException {
-	  return intCompare(icod) > 0;
-  }
-  
-  public boolean polymorphLessOrEqual(CoreseStringLiteral icod)
-  throws CoreseDatatypeException {
-	  return intCompare(icod) <= 0;
-  }
-  
-  public boolean polymorphLess(CoreseStringLiteral icod)
-  throws CoreseDatatypeException {
-	  return intCompare(icod) < 0;
-  }
-
- 
-
 }

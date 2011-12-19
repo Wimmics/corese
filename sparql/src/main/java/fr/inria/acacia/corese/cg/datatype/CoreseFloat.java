@@ -16,6 +16,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 
 public  class CoreseFloat extends CoreseDouble{
 	static final CoreseURI datatype=new CoreseURI(RDF.xsdfloat);
+	static final int code = FLOAT;
 	
 	public CoreseFloat(String value) {
 		super(value);
@@ -32,6 +33,10 @@ public  class CoreseFloat extends CoreseDouble{
 	public IDatatype getDatatype(){
 		return datatype;
 	}
+	
+	 public int getCode(){
+			return code;
+		}
 	
 	public static String getNormalizedLabel(String label){
 		String str = infinity(label);
@@ -52,41 +57,5 @@ public  class CoreseFloat extends CoreseDouble{
 	public boolean isFloat(){
 		return true;
 	}
-	
-	public IDatatype polyplus(CoreseDouble iod) {
-		if (iod.isFloat() || iod.isDecimal()){
-			return new CoreseFloat(getdValue() + iod.getdValue());
-		} 
-		return super.polyplus(iod);
-	}
-	
-	public IDatatype polyminus(CoreseDouble iod) {
-		if (iod.isFloat() || iod.isDecimal()){
-			return new CoreseFloat(iod.getdValue() - getdValue());
-		} 
-		return super.polyplus(iod);
-	}
-	
-	public IDatatype polymult(CoreseDouble iod) {
-		if (iod.isFloat() || iod.isDecimal()){
-			return new CoreseFloat(getdValue() * iod.getdValue());
-		} 
-		return super.polyplus(iod);
-	}
-	
-	public IDatatype polydiv(CoreseDouble iod) {
-		if (iod.isFloat() || iod.isDecimal()){
-			return new CoreseFloat(iod.getdValue() / getdValue());
-		} 
-		return super.polyplus(iod);
-	}
-	
-	public IDatatype polyplus(CoreseLong iod) {
-		return new CoreseFloat(getdValue() + iod.getdValue());
-	}
-	
-	public IDatatype polyminus(CoreseLong iod) {
-		return new CoreseFloat(iod.getdValue() - getdValue());
-	}
-	
+
 }

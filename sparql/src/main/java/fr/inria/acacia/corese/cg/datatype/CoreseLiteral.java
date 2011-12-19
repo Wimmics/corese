@@ -16,7 +16,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
  */
 
 public class CoreseLiteral extends CoreseStringLiteral { 
-	static final String DATATYPE = RDF.xsdlangString; // RDF.RDFSLITERAL;
+	static final String DATATYPE = RDF.rdflangString; 
 	static final CoreseURI datatype=new CoreseURI(DATATYPE);
 	static final int code=LITERAL;
 	private CoreseString dataLang=null;
@@ -37,11 +37,6 @@ public class CoreseLiteral extends CoreseStringLiteral {
 		}
 		return datatype;
 	}
-
-	public IDatatype getExtDatatype(){
-		return getDatatype(); //datatype;
-	}
-
 
 	public  int getCode(){
 		return code;
@@ -89,23 +84,23 @@ public class CoreseLiteral extends CoreseStringLiteral {
 	 *
 	 */
 	public boolean equals(IDatatype iod) throws CoreseDatatypeException{
-		boolean b2=  iod.polymorphEquals(this);
-		return b2;
-	}
-
-	public boolean polymorphEquals(CoreseLiteral icod) throws CoreseDatatypeException {
-		boolean b1= testLang(icod);
-		if (! b1) throw failure(); //return false;
-		boolean b2 = getValue().compareTo(icod.getValue()) == 0;
-		return b2;
-	}
-	
-	public boolean polymorphEquals(CoreseString icod) throws CoreseDatatypeException {
-		if (getDataLang() != empty){
-			throw failure();
+		switch (iod.getCode()){
+		
+		case STRING:  
+			if (getDataLang() != empty){
+				throw failure();
+			}
+			return getLabel().equals(iod.getLabel());
+			
+		case LITERAL:
+			boolean b1 = testLang(iod);
+			if (! b1) throw failure(); //return false;
+			return getLabel().equals(iod.getLabel());	
+			
+		case URI:
+		case BLANK: return false;
 		}
-		return getValue().equals(icod.getValue());
+		throw failure();
 	}
-
 
 }

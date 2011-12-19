@@ -31,7 +31,6 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	static int code = STRINGABLE;
 	public static int count = 0;
 	String value = "";
-	//String lowerCaseValue = "";
 
 	public CoreseStringableImpl() {}
 
@@ -70,6 +69,10 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	public String getValue(){
 		return value;
 	}
+	
+	public String getLabel(){
+		return value;
+	}
 
 	public String getLowerCaseLabel(){
 		return value.toLowerCase();
@@ -100,7 +103,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 
 	public boolean startsWith(IDatatype iod){
 		try{
-			return getValue().startsWith(iod.getNormalizedLabel());
+			return getLabel().startsWith(iod.getLabel());
 		}
 		catch(ClassCastException e){
 			logger.fatal(e.getMessage());
@@ -139,17 +142,8 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 
 
 	public IDatatype plus(IDatatype iod) {
-		return iod.polyplus(this);
-	}
-
-	public IDatatype minus(IDatatype iod) {
-		return iod.polyminus(this);
-	}
-
-
-
-	public IDatatype polyplus(CoreseStringableImpl iod) {
-		String str = iod.getValue() + getValue();
+		String str = getLabel() + iod.getLabel();
+		
 		if (this instanceof CoreseURI || iod instanceof CoreseURI) {
 			return new CoreseURI(str);
 		}
@@ -158,18 +152,17 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 		}
 	}
 
-
-
-	// iod - this
-	public IDatatype polyminus(CoreseStringableImpl iod) {
-		int index = iod.getValue().indexOf(getValue());
+	public IDatatype minus(IDatatype iod) {
+		int index = getLabel().indexOf(iod.getLabel());
 		String str=null;
+		
 		if (index == 0){
-			str = iod.getValue().substring(getValue().length());
+			str = getLabel().substring(iod.getLabel().length());
 		}
 		else if (index > 0){
-			str = iod.getValue().substring(0, index - 1);
+			str = getLabel().substring(0, index - 1);
 		}
+		
 		if (str != null){
 			if (this instanceof CoreseURI || iod instanceof CoreseURI){
 				return new CoreseURI(str);
@@ -181,6 +174,5 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 		else
 			return iod;
 	}
-
 
 }

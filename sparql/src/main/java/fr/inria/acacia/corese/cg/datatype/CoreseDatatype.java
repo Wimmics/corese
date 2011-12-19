@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.acacia.corese.triple.cst.RDFS;
 
 /**
  * <p>Title: Corese</p>
@@ -23,22 +24,13 @@ public class CoreseDatatype
 	implements IDatatype 
 	{
 	static final CoreseURI datatype=new CoreseURI(RDF.RDFSRESOURCE);
-	static final int LITERAL=0;
-	static final int STRING=1;
-	static final int XMLLITERAL=2;
-	static final int NUMBER=3;
-	static final int DATE=4;
-	static final int BOOLEAN=5;
-	static final int STRINGABLE=6;
-	static final int URI=7;
-	static final int UNDEF=8;
-	static final int BLANK=9;
+		
 	final static CoreseString empty=new CoreseString("");
-	final static CoreseDatatypeException failure  = new CoreseDatatypeException("statically created");
-	static Hashtable<String, CoreseString> lang2dataLang=new Hashtable<String, CoreseString>(); // 'en' -> CoreseString('en')
-	//static DatatypeMap dm = new DatatypeMap();
+	final static CoreseDatatypeException failure  = new CoreseDatatypeException("Datatype Exception, statically created");
+	static final Hashtable<String, CoreseString> lang2dataLang = new Hashtable<String, CoreseString>(); // 'en' -> CoreseString('en')
+    static final Hashtable<String, CoreseURI>    hdt = new Hashtable<String, CoreseURI>(); // datatype name -> CoreseURI datatype
 	static final     int LESSER = -1, GREATER = 1;
-	static boolean SPARQLCompliant = false; //Corese.SPARQLCompliant;
+	static boolean SPARQLCompliant = false; 
 	static DatatypeMap dm = DatatypeMap.create();
 	
 	/** logger from log4j */
@@ -57,7 +49,7 @@ public class CoreseDatatype
 	
 	public String toSparql(){
 		String value = toString();
-		if (getDatatype() != null){
+		if (getDatatype() != null && ! getDatatype().getLabel().equals(RDFS.rdflangString)){
 			String datatype = getDatatype().getLabel();
 			if (datatype.startsWith(RDF.XSD)){
 				datatype = datatype.substring(RDF.XSD.length());
@@ -97,40 +89,21 @@ public class CoreseDatatype
 		return dtl;
 	}
 	
+	static CoreseURI getGenericDatatype(String uri){
+		CoreseURI dt =  hdt.get(uri);
+		if (dt == null){
+			dt = new CoreseURI(uri);
+			hdt.put(uri, dt);
+		}
+		return dt;
+	}
+	
 	static  int code=-1;
 	
 	public CoreseDatatype() {
 	}
 	
-	/**
-	 * create a literal, normalize its label (for unique markers)
-	 * we accept not well formed numbers, created with CoreseUndef datatype 
-	 */
-//	public static IDatatype normalizeCreate(String label, String lang, String valueJType, String conceptTypeLabel)
-//	throws CoreseDatatypeException{
-//		try{
-//			label = DatatypeMap.getDatatypeNormalizedLabel(conceptTypeLabel, label);
-//		}
-//		catch (CoreseDatatypeException cde){
-//			if (valueJType.equals(Cst.jTypeUndef)){
-//				// toto^^xsd:integer : continue because we create 
-//				// CoreseUndef with xsd:integer as datatype
-//			}
-//			else {
-//				logger.error(cde.getMessage());
-//				throw cde;
-//			}
-//		}
-//		
-//		try {
-//			IDatatype dt = CoreseDatatype.create(valueJType, conceptTypeLabel, label, lang);
-//			return dt; 
-//		} 
-//		catch (CoreseDatatypeException cde){
-//			logger.fatal(cde.getMessage());
-//			throw cde;
-//		}
-//	}
+	
 	
 	public static IDatatype create(String valueJType, String label) throws CoreseDatatypeException {
 		return create(valueJType, null, label, null);
@@ -245,20 +218,10 @@ public class CoreseDatatype
 		return o;
 	}
 	
-	/**
-	 * Create Constant from SPARQL AST Triple language
-	 */
-//	public Constant getConstant(){
-//		return Constant.create(this);
-//	}
 	
 	public boolean isBindable(){
-		if (isURI() || isBlank()) return true;
-		
-		switch (getCode()){
-		case NUMBER: return false;
-		default: return true;
-		}
+		if (isNumber()) return false;
+		return true;
 	}
 
 	public boolean isDatatype(){
@@ -385,32 +348,20 @@ public class CoreseDatatype
 		return datatype;
 	}
 	
-	// rdfs:Literal has ExtDatatype (See CoreseLiteral)
+	@Deprecated
 	public IDatatype getExtDatatype(){
 		return getDatatype();
 	}
 	
 	// URI has rdfs:Resource as datatype
 	public IDatatype getIDatatype(){
-		return getExtDatatype();
+		return getDatatype();
 	}
 	
 	public  int getCode(){
 		return code;
 	}
 	
-	// comparable at cache time ?
-//	public boolean isComparable(VarMarker m){
-//		return true;
-//	}
-//	
-//	public IDatatype eval(IMemory memory) {
-//		return this;
-//	}
-//	
-//	public int countBind(IMemory mem){
-//		return 1;
-//	}
 	
 	public boolean startsWith(IDatatype iod){
 		return false;
@@ -438,21 +389,28 @@ public class CoreseDatatype
 		return getNormalizedLabel();
 	}
 	
-//	public boolean isStringable() {
-//	return false;
-//	}
-	
-//	public boolean isOrdered() {
-//	return false;
-//	}
-	
-//	public boolean isRegExpable() {
-//	return false;
-//	}
-	
 	public boolean isNumber() {
 		return false;
 	}
+	
+
+	public long longValue(){
+		return -1;
+	}
+	
+	public int intValue(){
+		return -1;
+	}
+	
+	public double doubleValue(){
+		return  -1;
+	}
+	
+	public float floatValue(){
+		return  -1;
+	}
+	
+	
 	
 	public double getdValue(){
 		return -1;
@@ -487,17 +445,43 @@ public class CoreseDatatype
 		
 		switch (other){
 		
+		case STRING:
+			if (code == other){
+				// Generic Datatype is also STRING
+				return this.getLabel().compareTo(d2.getLabel());
+			}
+			break;
+		
 		case URI:
 		case BLANK:
-		case STRING:
 		case XMLLITERAL:
 			
 			if (code == other){
 				return this.getLabel().compareTo(d2.getLabel());
 			}
 			break;
-					
-		case NUMBER:
+						
+		//case NUMBER:
+		case DOUBLE:
+		case FLOAT:
+		case DECIMAL:
+		case LONG:
+		case INTEGER:
+	
+			switch (code){
+			//case NUMBER:
+			case DOUBLE:
+			case FLOAT:
+			case DECIMAL:
+			case LONG:
+			case INTEGER:
+				try {
+					return compare(d2);
+				}
+				catch (CoreseDatatypeException e) {}
+
+			}		
+			
 		case BOOLEAN:
 		case DATE:
 			
@@ -510,7 +494,7 @@ public class CoreseDatatype
 				else if (this.sameTerm(d2)) return 0;
 				else return GREATER;
 			}
-			
+		
 		case UNDEF:
 			
 			if (code == UNDEF){
@@ -625,124 +609,124 @@ public class CoreseDatatype
 	
 	
 	
-	public int compareTo2(IDatatype d2){
-		int other = d2.getCode();
-		boolean b = false;
-		
-		switch (other){
-		case URI:
-		case BLANK:
-		case STRING:
-			
-			if (getCode() == other){
-				return this.getLabel().compareTo(d2.getLabel());
-			}
-			break;
-					
-		case NUMBER:
-		case BOOLEAN:
-			
-			if (getCode() == other){
-				try {
-					b = this.less(d2);
-				}
-				catch (CoreseDatatypeException e) {}
-				if (b) return LESSER;
-				else if (this.sameTerm(d2)) return 0;
-				else return GREATER;
-			}
-		}
-		
-		boolean trace = false;
-		IDatatype d1 = this;
-
-		if (SPARQLCompliant){
-			// BN uri literal
-			// literal last
-			if (d2.isLiteral()) {
-				if (! d1.isLiteral()) return LESSER;
-			}
-			else if (d1.isLiteral()) return GREATER;
-			// BN first
-			if (d1.isBlank()) {
-				if (! d2.isBlank()) return LESSER;
-			}
-			else if (d2.isBlank()) return GREATER;
-			
-		}
-		else {
-			// generic last
-			if (d2.isBlank()) {
-				if (! d1.isBlank()) return LESSER;
-			}
-			else if (d1.isBlank()) return GREATER;
-			// literal first
-			if (d1.isLiteral()) {
-				if (! d2.isLiteral()) return LESSER;
-			}
-			else if (d2.isLiteral()) return GREATER;
-			
-		}
-		
-		//boolean sameDatatype = (d1.getDatatype() == d2.getDatatype());
-		boolean sameDatatype = equivalentDatatype(d2);
-
-		if (! sameDatatype){
-			//  sort number date string/literal/..
-			if   (d1 instanceof CoreseNumber){
-				if (d2 instanceof CoreseNumber){
-					try {
-						b = d1.less(d2);
-					}
-					catch (CoreseDatatypeException e) {}
-					if (b) return LESSER;
-					else if (d1.sameTerm(d2)) return 0;
-					else return GREATER;
-				}
-				else 
-					return LESSER;
-			}
-			else if (d2 instanceof CoreseNumber) return GREATER;
-			else if (d1 instanceof CoreseDate) return LESSER;
-			else if (d2 instanceof CoreseDate) return GREATER;
-		}
-		
-		// compare same datatypes
-		// also compare string/literal/XMLLiteral/boolean/undef
-		try {b = d1.less(d2);}
-		catch (CoreseDatatypeException e){}
-		
-		if (b)
-			return LESSER;
-		else if  (d1.semiEquals(d2)){
-			// equal (modulo language if any)
-			if (d1.getDataLang() == d2.getDataLang()){
-				// same lang or no lang
-				if (sameDatatype)
-					return 0; // same/no lang : are equal
-				else {
-					// sort them arbitrarily
-					// TODO BUG  undef datatypes have same code
-					// this discriminates string  XMLLiteral undef :
-					if (d1.getCode() < d2.getCode()) return LESSER;
-					else if (d1.getCode() > d2.getCode()) return GREATER;
-					else return d1.getDatatype().compareTo(d2.getDatatype());
-				}
-			}
-			// equal but different languages :
-			else {
-				// sort by lang :
-				try{
-					if (d1.getDataLang().less(d2.getDataLang())) return LESSER;
-					else return GREATER;
-				}
-				catch (CoreseDatatypeException e){
-					logger.debug("CoreseDatatype.java ");
-					e.printStackTrace(); return LESSER;} // never happens on languages
-			}
-		}
-		else return GREATER;
-	}
+//	public int compareTo2(IDatatype d2){
+//		int other = d2.getCode();
+//		boolean b = false;
+//		
+//		switch (other){
+//		case URI:
+//		case BLANK:
+//		case STRING:
+//			
+//			if (getCode() == other){
+//				return this.getLabel().compareTo(d2.getLabel());
+//			}
+//			break;
+//					
+//		case NUMBER:
+//		case BOOLEAN:
+//			
+//			if (getCode() == other){
+//				try {
+//					b = this.less(d2);
+//				}
+//				catch (CoreseDatatypeException e) {}
+//				if (b) return LESSER;
+//				else if (this.sameTerm(d2)) return 0;
+//				else return GREATER;
+//			}
+//		}
+//		
+//		boolean trace = false;
+//		IDatatype d1 = this;
+//
+//		if (SPARQLCompliant){
+//			// BN uri literal
+//			// literal last
+//			if (d2.isLiteral()) {
+//				if (! d1.isLiteral()) return LESSER;
+//			}
+//			else if (d1.isLiteral()) return GREATER;
+//			// BN first
+//			if (d1.isBlank()) {
+//				if (! d2.isBlank()) return LESSER;
+//			}
+//			else if (d2.isBlank()) return GREATER;
+//			
+//		}
+//		else {
+//			// generic last
+//			if (d2.isBlank()) {
+//				if (! d1.isBlank()) return LESSER;
+//			}
+//			else if (d1.isBlank()) return GREATER;
+//			// literal first
+//			if (d1.isLiteral()) {
+//				if (! d2.isLiteral()) return LESSER;
+//			}
+//			else if (d2.isLiteral()) return GREATER;
+//			
+//		}
+//		
+//		//boolean sameDatatype = (d1.getDatatype() == d2.getDatatype());
+//		boolean sameDatatype = equivalentDatatype(d2);
+//
+//		if (! sameDatatype){
+//			//  sort number date string/literal/..
+//			if   (d1 instanceof CoreseNumber){
+//				if (d2 instanceof CoreseNumber){
+//					try {
+//						b = d1.less(d2);
+//					}
+//					catch (CoreseDatatypeException e) {}
+//					if (b) return LESSER;
+//					else if (d1.sameTerm(d2)) return 0;
+//					else return GREATER;
+//				}
+//				else 
+//					return LESSER;
+//			}
+//			else if (d2 instanceof CoreseNumber) return GREATER;
+//			else if (d1 instanceof CoreseDate) return LESSER;
+//			else if (d2 instanceof CoreseDate) return GREATER;
+//		}
+//		
+//		// compare same datatypes
+//		// also compare string/literal/XMLLiteral/boolean/undef
+//		try {b = d1.less(d2);}
+//		catch (CoreseDatatypeException e){}
+//		
+//		if (b)
+//			return LESSER;
+//		else if  (d1.semiEquals(d2)){
+//			// equal (modulo language if any)
+//			if (d1.getDataLang() == d2.getDataLang()){
+//				// same lang or no lang
+//				if (sameDatatype)
+//					return 0; // same/no lang : are equal
+//				else {
+//					// sort them arbitrarily
+//					// TODO BUG  undef datatypes have same code
+//					// this discriminates string  XMLLiteral undef :
+//					if (d1.getCode() < d2.getCode()) return LESSER;
+//					else if (d1.getCode() > d2.getCode()) return GREATER;
+//					else return d1.getDatatype().compareTo(d2.getDatatype());
+//				}
+//			}
+//			// equal but different languages :
+//			else {
+//				// sort by lang :
+//				try{
+//					if (d1.getDataLang().less(d2.getDataLang())) return LESSER;
+//					else return GREATER;
+//				}
+//				catch (CoreseDatatypeException e){
+//					logger.debug("CoreseDatatype.java ");
+//					e.printStackTrace(); return LESSER;} // never happens on languages
+//			}
+//		}
+//		else return GREATER;
+//	}
 	
 	/**
 	 * Same datatype or String & Literal
@@ -776,40 +760,12 @@ public class CoreseDatatype
 		throw failure();
 	}
 	
-	/**
-	 * Is this dtvalue comparable to datatype dt ??
-	 * dtvalue is CoreseInteger 1 and dt is CoreseURI xsd:integer for example
-	 */
-	public boolean compatible(IDatatype dt){
-		String name  = dt.getLabel();
-		if (isNumber(name)) return getCode() == NUMBER;
-		else if (name.equals(RDF.xsddate) || name.equals(RDF.xsddateTime))
-			return getCode() == DATE;
-		else return true;
-	}
 	
 	static boolean isNumber(String name){
-		return name.equals(RDF.xsdinteger) || name.equals(RDF.xsddouble) || 
+		return name.equals(RDF.xsdlong) ||name.equals(RDF.xsdinteger) || name.equals(RDF.xsddouble) || 
 		name.equals(RDF.xsdfloat)   || name.equals(RDF.xsddecimal);
 	}
 	
-	
-//	public boolean less(IDatatype iod)  throws CoreseDatatypeException {
-//	return compare(iod) < 0;
-//	}
-//	
-//	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
-//	return compare(iod) <= 0;
-//	}
-//	
-//	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
-//	return compare(iod) > 0;
-//	}
-//	
-//	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
-//	return compare(iod) >= 0;
-//	}
-//	
 	
 	// never happens because every datatype has its own equals
 	public boolean equals(IDatatype iod) throws CoreseDatatypeException {
@@ -849,37 +805,6 @@ public class CoreseDatatype
 	
 	
 	
-	public IDatatype polyplus(CoreseDouble iod) {
-		return null;
-	}
-	
-	public IDatatype polyminus(CoreseDouble iod) {
-		return null;
-	}
-	
-	public IDatatype polymult(CoreseDouble iod) {
-		return null;
-	}
-	
-	public IDatatype polydiv(CoreseDouble iod) {
-		return null;
-	}
-	
-	public IDatatype polyplus(CoreseLong iod) {
-		return null;
-	}
-	
-	public IDatatype polyminus(CoreseLong iod) {
-		return null;
-	}
-	
-	public IDatatype polymult(CoreseLong iod) {
-		return null;
-	}
-	
-	public IDatatype polydiv(CoreseLong iod) {
-		return null;
-	}
 	
 	
 	
@@ -891,224 +816,9 @@ public class CoreseDatatype
 		return failure;
 	}
 	
-	public int polyCompare(CoreseDouble icod)  throws CoreseDatatypeException {
-		throw failure();
-	}
 	
-	public boolean polymorphGreaterOrEqual(CoreseDouble icod) throws CoreseDatatypeException {
-		throw failure();  
-	}
-	
-	public boolean polymorphGreater(CoreseDouble icod) throws CoreseDatatypeException {
-		throw failure() ;  
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseDouble icod) throws CoreseDatatypeException{
-		throw failure() ;  
-	}
-	
-	public boolean polymorphLess(CoreseDouble icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphEquals(CoreseDouble icod)throws CoreseDatatypeException {
-		return defaultEquals(icod);
-	}
-	
-	/*******************************/
-	
-	public int polyCompare(CoreseLong icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreaterOrEqual(CoreseLong icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreater(CoreseLong icod) throws CoreseDatatypeException {
-		throw failure() ; //return false;
-	}
-	
-	
-	public boolean polymorphLessOrEqual(CoreseLong icod) throws CoreseDatatypeException{
-		throw failure();
-	}
-	
-	public boolean polymorphLess(CoreseLong icod) throws CoreseDatatypeException {
-		throw failure() ; //return false;
-	}
-	
-	public boolean polymorphEquals(CoreseLong icod)throws CoreseDatatypeException {
-		return defaultEquals(icod);
-	}
-	
-	
-	/********************************************/
-	
-	/**
-	 * We arrive here when there is a type clash with equals
-	 * 1. datatype1  vs datatype2 is an error
-	 * 2. URI or BN  vs datatype  return false
-	 */
-	public boolean defaultEquals(IDatatype dt) throws CoreseDatatypeException {
-		if (isLiteral())
-			throw failure(); 
-		else 
-			return false;   
-	}
-	
-	public boolean polymorphEquals(CoreseXMLLiteral icod) throws CoreseDatatypeException {
-		return defaultEquals(icod);
-	}
-	
-	public boolean polymorphEquals(CoreseLiteral icod) throws CoreseDatatypeException {
-		return defaultEquals(icod);
-	}
-	
-	public boolean polymorphEquals(CoreseString icod) throws CoreseDatatypeException {
-		return defaultEquals(icod);
-	}
-	
-	public boolean polymorphEquals(CoreseBoolean icod) throws CoreseDatatypeException {
-		return defaultEquals(icod);
-	}
-	
-	public boolean polymorphEquals(CoreseUndefLiteral icod) throws CoreseDatatypeException {
-		return defaultEquals(icod);
-	}
-	
-	
-	public int polyCompare(CoreseStringLiteral icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreaterOrEqual(CoreseStringLiteral icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreater(CoreseStringLiteral icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseStringLiteral icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphLess(CoreseStringLiteral icod) throws CoreseDatatypeException{
-		throw failure();
-	}
-	
-	public IDatatype polyplus(CoreseStringableImpl iod) {
-		return null;
-	}
-	
-	public IDatatype polyminus(CoreseStringableImpl iod) {
-		return null;
-	}
-	
-	/************************************/
-	
-	public int polyCompare(CoreseURI icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreaterOrEqual(CoreseURI icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreater(CoreseURI icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseURI icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphLess(CoreseURI icod) throws CoreseDatatypeException{
-		throw failure();
-	}
-	
-	// comparing with URI is not an error, just false
-	public boolean polymorphEquals(CoreseURI icod)throws CoreseDatatypeException {
-		return false;
-	}
-	
-	public IDatatype polyplus(CoreseURI iod) {
-		return null;
-	}
-	
-	public IDatatype polyminus(CoreseURI iod) {
-		return null;
-	}
-	
-	
-	/***********************************/
-	
-	
-	public int polyCompare(CoreseBlankNode icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreaterOrEqual(CoreseBlankNode icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreater(CoreseBlankNode icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseBlankNode icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphLess(CoreseBlankNode icod) throws CoreseDatatypeException{
-		throw failure();
-	}
-	
-	// comparing with BN is not an error, just false
-	public boolean polymorphEquals(CoreseBlankNode icod)throws CoreseDatatypeException {
-		return false;
-	}
-	
-	public IDatatype polyplus(CoreseBlankNode iod) {
-		return null;
-	}
-	
-	public IDatatype polyminus(CoreseBlankNode iod) {
-		return null;
-	} 	    
-	
-	
-	/**********************************************************/
-	/***********************DATE**************************/
-	/**********************************************************/
-	
-	public int polyCompare(CoreseDate icod)  throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreaterOrEqual(CoreseDate icod)  throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphGreater(CoreseDate icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseDate icod) throws CoreseDatatypeException {
-		throw failure() ; //return false;
-	}
-	
-	public boolean polymorphLess(CoreseDate icod) throws CoreseDatatypeException {
-		throw failure();
-	}
-	
-	public boolean polymorphEquals(CoreseDate icod) throws CoreseDatatypeException {
-		return defaultEquals(icod);
-	}
 	
 	public String getDatatypeURI() {
-		//return getDatatype().getNormalizedLabel();
 		if (getDatatype() != null)
 			return getDatatype().getNormalizedLabel();
 		else return null;

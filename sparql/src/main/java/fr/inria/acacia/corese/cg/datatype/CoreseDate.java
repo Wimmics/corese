@@ -30,12 +30,10 @@ public class CoreseDate extends CoreseDatatype {
 	
 	static int code=DATE;
 	static final String TODAY = "today";
-	//protected XSDatatype xsddate = null;
 	protected CoreseCalendar cal = null;
 	protected String normalizedLabel = "";
 
 	
-	//static final CoreseURI datatype=new CoreseURI(RDF.xsddate);
 	static final CoreseURI datatype=new CoreseURI(RDF.xsddate);
 	
 	public CoreseDate()throws CoreseDatatypeException{
@@ -223,29 +221,55 @@ public class CoreseDate extends CoreseDatatype {
 	}
 	
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polyCompare(this);
+		switch (iod.getCode()){
+		case DATE: 
+			CoreseDate dt = (CoreseDate) iod;
+			long l1 =    getDate().getTimeInMillis();
+			long l2 = dt.getDate().getTimeInMillis();
+			return (l1 < l2) ? -1 : (l1 == l2 ? 0 : 1);
+		}
+		throw failure();
 	}
 	
-	public int polyCompare(CoreseDate icod) throws CoreseDatatypeException {
-		long l1 = icod.getDate().getTimeInMillis();
-		long l2 = getDate().getTimeInMillis();
-		return (l1 < l2) ? -1 : (l1 == l2 ? 0 : 1);
-	}
-	
+
 	public boolean less(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphGreater(this);
+		switch (iod.getCode()){
+		case DATE:
+			check(iod);
+			CoreseDate dt = (CoreseDate) iod;
+			return cal.getTimeInMillis() < dt.getDate().getTimeInMillis();
+		}
+		throw failure();
 	}
 	
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphGreaterOrEqual(this);
+		switch (iod.getCode()){
+		case DATE:
+			check(iod);
+			CoreseDate dt = (CoreseDate) iod;
+			return cal.getTimeInMillis() <= dt.getDate().getTimeInMillis();
+		}
+		throw failure();
 	}
 	
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphLess(this);
+		switch (iod.getCode()){
+		case DATE:
+			check(iod);
+			CoreseDate dt = (CoreseDate) iod;
+			return cal.getTimeInMillis() > dt.getDate().getTimeInMillis();
+		}
+		throw failure();
 	}
 	
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
-		return iod.polymorphLessOrEqual(this);
+		switch (iod.getCode()){
+		case DATE:
+			check(iod);
+			CoreseDate dt = (CoreseDate) iod;
+			return cal.getTimeInMillis() >= dt.getDate().getTimeInMillis();
+		}
+		throw failure();
 	}
 	
 	
@@ -320,36 +344,21 @@ public class CoreseDate extends CoreseDatatype {
 	}
 	
 	public boolean equals(IDatatype iod) throws CoreseDatatypeException{
-		check(iod);
-		return iod.polymorphEquals(this);
+		switch (iod.getCode()){
+		case DATE:
+			check(iod);
+			CoreseDate dt = (CoreseDate) iod;
+			boolean b =  cal.getTimeInMillis() == dt.getDate().getTimeInMillis();
+			return b && cal.getZ() == dt.getDate().getZ() 
+			&& eq(dt);
+			
+		case URI:
+		case BLANK: return false;
+		}
+		throw failure();
 	}
 	
-	public boolean polymorphGreaterOrEqual(CoreseDate icod) throws CoreseDatatypeException{
-		check(icod);
-		return cal.getTimeInMillis() >= icod.getDate().getTimeInMillis();
-	}
-	
-	public boolean polymorphGreater(CoreseDate icod) throws CoreseDatatypeException{
-		check(icod);
-		return cal.getTimeInMillis() > icod.getDate().getTimeInMillis();
-	}
-	
-	public boolean polymorphLessOrEqual(CoreseDate icod) throws CoreseDatatypeException{
-		check(icod);
-		return cal.getTimeInMillis() <= icod.getDate().getTimeInMillis();
-	}
-	
-	public boolean polymorphLess(CoreseDate icod) throws CoreseDatatypeException{
-		check(icod);
-		return cal.getTimeInMillis() < icod.getDate().getTimeInMillis();
-	}
-	
-	public boolean polymorphEquals(CoreseDate icod) throws CoreseDatatypeException{
-		check(icod);
-		boolean b =  cal.getTimeInMillis() == icod.getDate().getTimeInMillis();
-		return b && cal.getZ() == icod.getDate().getZ() && eq(icod);
-	}
-	
+
 	boolean eq(CoreseDate icod){
 		String num = icod.getDate().getNum();
 		if (cal.getNum() == null){
@@ -367,15 +376,4 @@ public class CoreseDate extends CoreseDatatype {
 		}
 	}
 	
-	public boolean isStringable() {
-		return false;
-	}
-	
-	public boolean isOrdered() {
-		return true;
-	}
-	
-	public boolean isRegExpable() {
-		return false;
-	}
 }

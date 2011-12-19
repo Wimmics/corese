@@ -21,7 +21,6 @@ public class CoreseBoolean extends CoreseStringLiteral {
   static String SFALSE="false";
   public static final CoreseBoolean TRUE =  new CoreseBoolean(true);
   public static final CoreseBoolean FALSE = new CoreseBoolean(false);
-  //static String UNKNOWN="unknown";
   static final CoreseURI datatype=new CoreseURI(RDF.xsdboolean);
   boolean bvalue=true;
 
@@ -105,15 +104,14 @@ public class CoreseBoolean extends CoreseStringLiteral {
         else return null;
     }
 
-  public boolean equals(IDatatype iod) 
-  throws CoreseDatatypeException {
-	  return iod.polymorphEquals(this);
+  public boolean equals(IDatatype iod) throws CoreseDatatypeException {
+	  switch (iod.getCode()){
+	  case BOOLEAN: return   getLabel().equals(iod.getLabel());
+	  case URI:
+	  case BLANK: return false;
+	  }
+	  throw failure();
   }
   
-  public boolean polymorphEquals(CoreseBoolean icod) 
-  throws CoreseDatatypeException {
-	  return   getValue().compareTo(icod.getValue()) == 0;
-  }
-
 
 }

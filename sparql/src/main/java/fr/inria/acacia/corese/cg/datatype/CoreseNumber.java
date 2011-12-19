@@ -15,19 +15,8 @@ import fr.inria.acacia.corese.api.IDatatype;
  */
 
 public abstract class CoreseNumber extends CoreseDatatype {
-	static int code=NUMBER;
-	protected double dvalue = 0;
-	protected String normalizedLabel = "";
-	
-	protected CoreseNumber(String normalizedLabel){
-		this.normalizedLabel = normalizedLabel;
-		dvalue = Double.parseDouble(normalizedLabel); //.doubleValue();
-	}
-	
-	CoreseNumber(double val){
-		dvalue = val;
-	}
-	
+	static final int code=NUMBER;
+
 	/**
 	 * Cast a number to integer means take the integer part,
 	 * not just parsing the string label<br />
@@ -35,25 +24,18 @@ public abstract class CoreseNumber extends CoreseDatatype {
 	 */
 	public IDatatype cast(IDatatype target, IDatatype javaType) {
 		if (target.getLabel().equals(RDF.xsdinteger)){
-			return new CoreseInteger(getlValue());
+			return new CoreseInteger(intValue());
 		}
 		else if (target.getLabel().equals(RDF.xsdboolean)){
-			//return new CoreseInteger(getlValue());
-			if (getlValue() == 0)      return CoreseBoolean.FALSE;
-			else if (getlValue() == 1) return CoreseBoolean.TRUE;
+			if (longValue() == 0)      return CoreseBoolean.FALSE;
+			else if (longValue() == 1) return CoreseBoolean.TRUE;
 			else return null;
 		}
 		else return super.cast(target, javaType);
 	}
 	
-	
-	
 	public boolean isNumber(){
 		return true;
-	}
-	
-	public boolean isTrue() {
-		return dvalue != 0;
 	}
 	
 	public boolean isTrueAble() {
@@ -69,19 +51,173 @@ public abstract class CoreseNumber extends CoreseDatatype {
 		return datatype;
 	}
 	
-	public double getdValue(){
-		return dvalue;
+	
+	public IDatatype plus(IDatatype dt) {
+		switch (getCode()){
+		case DOUBLE:
+			return new CoreseDouble(doubleValue() + dt.doubleValue());
+			
+		case FLOAT:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() + dt.doubleValue());
+			default:     return new CoreseFloat(floatValue() + dt.floatValue());
+			}
+			
+		case DECIMAL:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() + dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() + dt.floatValue());
+			default:     return new CoreseDecimal(doubleValue() + dt.doubleValue());
+			}
+			
+		case LONG:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() + dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() + dt.floatValue());
+			case DECIMAL:return new CoreseDecimal(doubleValue() + dt.doubleValue());
+			case LONG:   return new CoreseLong(longValue() + dt.longValue());
+			case INTEGER:return new CoreseLong(longValue() + dt.intValue());
+			}
+			
+		case INTEGER:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() + dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() + dt.floatValue());
+			case DECIMAL:return new CoreseDecimal(doubleValue() + dt.doubleValue());
+			case INTEGER:return new CoreseInteger(intValue() + dt.intValue());
+			case LONG:   return new CoreseLong(intValue() + dt.longValue());
+			}
+		}
+		return null;
 	}
 	
-	public long getlValue(){
-		return (long) dvalue;
+	public IDatatype minus(IDatatype dt) {
+		switch (getCode()){
+		case DOUBLE:
+			return new CoreseDouble(doubleValue() - dt.doubleValue());
+			
+		case FLOAT:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() - dt.doubleValue());
+			default:     return new CoreseFloat(floatValue() - dt.floatValue());
+			}
+			
+		case DECIMAL:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() - dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() - dt.floatValue());
+			default:     return new CoreseDecimal(doubleValue() - dt.doubleValue());
+			}
+			
+		case LONG:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() - dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() - dt.floatValue());
+			case DECIMAL:return new CoreseDecimal(doubleValue() - dt.doubleValue());
+			case INTEGER:return new CoreseLong(longValue() - dt.intValue());
+			case LONG:   return new CoreseLong(longValue() - dt.longValue());
+			}
+			
+		case INTEGER:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() - dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() - dt.floatValue());
+			case DECIMAL:return new CoreseDecimal(doubleValue() - dt.doubleValue());
+			case INTEGER:return new CoreseInteger(intValue() - dt.intValue());
+			case LONG:   return new CoreseLong(intValue() - dt.longValue());
+			}
+		}
+		return null;
 	}
 	
-	public static String getNormalizedLabel(String label){
-		return "";
+	public IDatatype mult(IDatatype dt) {
+		switch (getCode()){
+		case DOUBLE:
+			return new CoreseDouble(doubleValue() * dt.doubleValue());
+			
+		case FLOAT:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() * dt.doubleValue());
+			default:     return new CoreseFloat(floatValue() * dt.floatValue());
+			}
+			
+		case DECIMAL:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() * dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() * dt.floatValue());
+			default:     return new CoreseDecimal(doubleValue() * dt.doubleValue());
+			}
+			
+		case LONG:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() * dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() * dt.floatValue());
+			case DECIMAL:return new CoreseDecimal(doubleValue() * dt.doubleValue());
+			case INTEGER:return new CoreseLong(longValue() * dt.intValue());
+			case LONG:   return new CoreseLong(longValue() * dt.longValue());
+			}
+			
+		case INTEGER:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() * dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() * dt.floatValue());
+			case DECIMAL:return new CoreseDecimal(doubleValue() * dt.doubleValue());
+			case INTEGER:return new CoreseInteger(intValue() * dt.intValue());
+			case LONG:   return new CoreseLong(intValue() * dt.longValue());
+			}
+		}
+		return null;
 	}
 	
-	
+	public IDatatype div(IDatatype dt) {
+		
+		if (dt.doubleValue() == 0.0) {
+			return null;
+		} 	
+			
+		try {
+		
+		switch (getCode()){
+		case DOUBLE:
+			return new CoreseDouble(doubleValue() / dt.doubleValue());
+			
+		case FLOAT:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() / dt.doubleValue());
+			default:     return new CoreseFloat(floatValue() / dt.floatValue());
+			}
+			
+		case DECIMAL:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() / dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() / dt.floatValue());
+			default:     return new CoreseDecimal(doubleValue() / dt.doubleValue());
+			}
+			
+		case LONG:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() / dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() / dt.floatValue());
+			case DECIMAL:return new CoreseDecimal(doubleValue() / dt.doubleValue());
+			case INTEGER:return new CoreseDecimal(longValue() / dt.doubleValue());
+			case LONG:   return new CoreseDecimal(longValue() / dt.doubleValue());
+			}
+			
+		case INTEGER:
+			switch (dt.getCode()){
+			case DOUBLE: return new CoreseDouble(doubleValue() / dt.doubleValue());
+			case FLOAT:  return new CoreseFloat(floatValue() / dt.floatValue());
+			case DECIMAL:return new CoreseDecimal(doubleValue() / dt.doubleValue());
+			case INTEGER:return new CoreseDecimal(intValue() / dt.doubleValue());
+			case LONG:   return new CoreseDecimal(intValue() / dt.doubleValue());
+			}
+		}
+		}
+		catch (java.lang.ArithmeticException a){
+			
+		}
+		return null;
+	}
 	
 	
 }

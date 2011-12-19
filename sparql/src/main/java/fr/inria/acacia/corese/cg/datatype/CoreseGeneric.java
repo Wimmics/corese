@@ -1,7 +1,5 @@
 package fr.inria.acacia.corese.cg.datatype;
 
-import java.util.Hashtable;
-
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
@@ -9,9 +7,8 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
  * 
  * Generic datatype for other such as dayTimeDuration
  */
-public class CoreseGeneric extends CoreseStringableImpl {
-    static final Hashtable<String, CoreseURI> hdt = new Hashtable<String, CoreseURI>(); // datatype name -> CoreseURI datatype
-
+public class CoreseGeneric extends CoreseString {
+	
     CoreseURI datatype;
 	
 	public CoreseGeneric(String label, String uri){
@@ -24,12 +21,7 @@ public class CoreseGeneric extends CoreseStringableImpl {
 	}
 	
 	public void setDatatype(String uri){
-		CoreseURI dt =  hdt.get(uri);
-	    if (dt == null){
-	      dt = new CoreseURI(uri);
-	      hdt.put(uri, dt);
-	    }
-	    datatype = dt;
+	    datatype = getGenericDatatype(uri);
 	}
 
 	public IDatatype getDatatype(){
@@ -37,9 +29,14 @@ public class CoreseGeneric extends CoreseStringableImpl {
 	}
 	
 	public boolean equals(IDatatype dt) throws CoreseDatatypeException {
-		if (dt.getDatatype() == null) throw failure();
-		if (! getDatatype().sameTerm(dt.getDatatype())) throw failure();
-		return getLabel().equals(dt.getLabel());
+		switch (dt.getCode()){
+		case STRING: 
+			if (! getDatatypeURI().equals(dt.getDatatypeURI())) throw failure();
+			return getLabel().equals(dt.getLabel());
+		case URI:
+		case BLANK: return false;
+		}
+		throw failure();
 	}
 	
 	

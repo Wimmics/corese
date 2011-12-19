@@ -20,7 +20,7 @@ public interface RDF {
 	static final String BLANKSEED   	= "_:";
 	
 	static final String qxsdString 	 = "xsd:string";
-	static final String qxsdlangString 	 = "xsd:langString";
+	static final String qxsdlangString 	 = "rdf:langString";
 	static final String qrdfsLiteral = "rdfs:Literal";
 
 	static final String xsdboolean 	= XSD+"boolean";
@@ -43,7 +43,7 @@ public interface RDF {
 	static final String xsdunsignedShort   = XSD+"unsignedShort";
 	static final String xsdunsignedByte    = XSD+"unsignedByte";
 
-	static final String xsdlangString 	= XSD+"langString";
+	static final String rdflangString 	= RDF+"langString";
 	static final String xsdstring 	= XSD+"string";
 	static final String xsdnormalizedString 	= XSD+"normalizedString";
 	static final String xsdtoken 	= XSD+"token";

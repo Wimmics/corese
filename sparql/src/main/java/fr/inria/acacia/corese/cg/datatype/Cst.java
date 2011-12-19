@@ -6,9 +6,6 @@ public interface Cst {
 	 */
 	static final String pack = "fr.inria.acacia.corese.cg.datatype.";
 	
-	static final String jIDatatype		= "fr.inria.acacia.corese.api.IDatatype";
-
-	static final String jICoreseDatatype = pack + "ICoreseDatatype";
 	static final String jDatatype		= pack + "CoreseDatatype";
 	static final String jTypeString		= pack + "CoreseString";
 	static final String jTypeBoolean	= pack + "CoreseBoolean";
@@ -17,6 +14,7 @@ public interface Cst {
 	static final String jTypeFloat		= pack + "CoreseFloat";
 	static final String jTypeDecimal	= pack + "CoreseDecimal";
 	static final String jTypeInteger	= pack + "CoreseInteger";
+	static final String jTypeGenericInteger	= pack + "CoreseGenericInteger";
 	static final String jTypeLong   	= pack + "CoreseLong";
 	static final String jTypeLiteral	= pack + "CoreseLiteral";
 	static final String jTypeUndef  	= pack + "CoreseUndefLiteral";

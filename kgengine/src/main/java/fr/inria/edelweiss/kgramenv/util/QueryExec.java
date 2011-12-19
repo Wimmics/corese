@@ -88,12 +88,27 @@ public class QueryExec  {
 	/**
 	 * User API query processor
 	 */
+	
 	public IResults SPARQLQuery(String squery) throws EngineException {
-		return SPARQLQuery(squery, null, null);
+		Mappings map =  exec.query(squery);
+		QueryResults res = QueryResults.create(map);
+		return res;	
+		}
+	
+	public IResults query(String squery) throws EngineException {
+		Mappings map =  exec.sparqlQuery(squery);
+		QueryResults res = QueryResults.create(map);
+		return res;	
+		}
+	
+	public IResults update(String squery) throws EngineException {
+		Mappings map =  exec.sparqlUpdate(squery);
+		QueryResults res = QueryResults.create(map);
+		return res;
 	}
 	
 	public IResults SPARQLQuery(String squery, List<String> from, List<String> named) throws EngineException {
-		Mappings map =  exec.query(squery, from, named);
+		Mappings map =  exec.query(squery, null, from, named);
 		QueryResults res = QueryResults.create(map);
 		return res;
 	}

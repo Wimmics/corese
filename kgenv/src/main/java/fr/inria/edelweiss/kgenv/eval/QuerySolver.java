@@ -55,7 +55,8 @@ public class QuerySolver  {
 	boolean isListGroup = false,
 	isListPath = false,
 	isCheckLoop = false,
-	isDebug = false;
+	isDebug = false,
+	isSPARQLCompliant = false;
 	
 	boolean isSequence = false;
 	
@@ -242,6 +243,7 @@ public class QuerySolver  {
 	
 	public Query compile(ASTQuery ast) {
 		Transformer transformer =  transformer();			
+		transformer.setSPARQLCompliant(isSPARQLCompliant);
 		transformer.setNamespaces(NAMESPACES);
 		Query query = transformer.transform(ast);
 		return query;
@@ -249,6 +251,7 @@ public class QuerySolver  {
 	
 	public Query compile(String squery, List<String> from, List<String> named) throws EngineException {
 		Transformer transformer =  transformer();			
+		transformer.setSPARQLCompliant(isSPARQLCompliant);
 		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
 		transformer.setFrom(from);
@@ -338,6 +341,16 @@ public class QuerySolver  {
 	
 	public void setPathLoop(boolean b){
 		isCheckLoop = !b;
+	}
+	
+
+	public void setSPARQLCompliant(boolean isSPARQLCompliant) {
+		this.isSPARQLCompliant = isSPARQLCompliant;
+	}
+
+
+	boolean isSPARQLCompliant() {
+		return isSPARQLCompliant;
 	}
 	
 	public void setDebug(boolean b){

@@ -71,13 +71,15 @@ public class Processor {
 
 	static final String KGRAM 	 = ExpType.KGRAM + "sparql";
 	static final String SIMILAR  = ExpType.KGRAM + "similarity";
-	static final String CSIMILAR  = ExpType.KGRAM + "cSimilarity";
-	static final String PSIMILAR  = ExpType.KGRAM + "pSimilarity";
+	static final String CSIMILAR = ExpType.KGRAM + "cSimilarity";
+	static final String PSIMILAR = ExpType.KGRAM + "pSimilarity";
 	static final String DEPTH    = ExpType.KGRAM + "depth";
 	static final String GRAPH    = ExpType.KGRAM + "graph";
 	static final String NODE     = ExpType.KGRAM + "node";
 	static final String GET      = ExpType.KGRAM + "getObject";
 	static final String SET      = ExpType.KGRAM + "setObject";
+	static final String GETP     = ExpType.KGRAM + "getProperty";
+	static final String SETP     = ExpType.KGRAM + "setProperty";
 	static final String LOAD     = ExpType.KGRAM + "load";
 	static final String NUMBER   = ExpType.KGRAM + "number";
 	static final String DISPLAY  = ExpType.KGRAM + "display";
@@ -334,6 +336,9 @@ public class Processor {
 		defoper(NODE,    ExprType.NODE);
 		defoper(GET,     ExprType.GET);
 		defoper(SET,     ExprType.SET);
+		defoper(GETP,    ExprType.GETP);
+		defoper(SETP,    ExprType.SETP);
+		
 		defoper(LOAD,    ExprType.LOAD);
 		defoper(NUMBER,  ExprType.NUMBER);
 		defoper(DISPLAY, ExprType.DISPLAY);

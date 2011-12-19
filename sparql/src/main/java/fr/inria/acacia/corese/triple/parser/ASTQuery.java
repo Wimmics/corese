@@ -89,7 +89,9 @@ public class ASTQuery  implements Keyword {
 	/** display types of query */
 	boolean pQuery = false;
 	/** select * : select all variables from query */
-	boolean selectAll = false;
+	boolean selectAll = false,
+	// additional SPARQL constraints (dot, arg of type string type, ...)
+	isSPARQLCompliant = false;
 //    boolean hasGet=false;   // is there a get:gui ?
 //    boolean hasGetSuccess=false; // if get:gui, does the first one has a value ?
     // validation mode (check errors)
@@ -126,7 +128,7 @@ public class ASTQuery  implements Keyword {
 	int MaxDisplay = 10000;
 	/** Offset */
 	int Offset = 0;
-	static long nbBNode = 0;
+	int nbBNode = 0;
     int nbd = 0; // to generate an unique id for a variable if needed
 	int resultForm = QT_SELECT;
 	
@@ -866,7 +868,7 @@ public class ASTQuery  implements Keyword {
 	// ex:name
 	public  Constant createQName(String s) {
 		Constant cst = Constant.create(s);
-		String lname = getNSM().toNamespace(s);
+		String lname = getNSM().toNamespaceB(s);
 		cst.setLongName(lname);
 		if (s.equals(lname)){
 			addError("Undefined prefix: ", s);
@@ -1275,6 +1277,14 @@ public class ASTQuery  implements Keyword {
     	isKgram = b;
     }
     
+    public boolean isSPARQLCompliant(){
+    	return isSPARQLCompliant;
+    }
+    
+    public void setSPARQLCompliant(boolean b){
+    	isSPARQLCompliant = b;
+    }
+    
     public boolean isBind(){
     	return isBind;
     }
@@ -1389,7 +1399,7 @@ public class ASTQuery  implements Keyword {
 			bodyExpLocal.add(opt);
 			
 			if (expression.isVariable()){ 
-				setSelect((Variable)expression);
+				setSelect(expression.getVariable());
 			}
 		}
 		setDescribeAll(describeAllTemp);
@@ -1482,6 +1492,9 @@ public class ASTQuery  implements Keyword {
     			getSparqlSolutionModifier(sb);
     		}
     	}
+    	
+        getFinal(sb);
+    	
     	return sb;
     }
 
@@ -1643,13 +1656,50 @@ public class ASTQuery  implements Keyword {
         	getHaving().toString(sb);
         	sb.append(KeywordPP.CLOSE_PAREN);
         }
- 
+         
         if (sb.length()>0)
         	sb.append(NL);
         
         return sb;
     }
     
+    
+    void getFinal(StringBuffer sb){
+    	String SPACE = " ";
+
+    	if (getVariableBindings() != null){
+    		sb.append(KeywordPP.BINDINGS);
+    		sb.append(SPACE);
+
+    		for (Atom var : getVariableBindings()){
+    			sb.append(var.getName());
+    			sb.append(SPACE);
+    		}
+    		sb.append(KeywordPP.OPEN_BRACKET);
+    		sb.append(NL);
+
+    		for (List<Constant> list : getValueBindings()){
+    			sb.append(KeywordPP.OPEN_PAREN);
+
+    			for (Constant value : list){
+    				sb.append(value);
+    				sb.append(SPACE);
+    			}
+    			sb.append(KeywordPP.CLOSE_PAREN);
+    			sb.append(NL);
+    		}
+
+    		sb.append(KeywordPP.CLOSE_BRACKET);
+    		sb.append(NL);
+    	}
+
+    	if (getPragma()!=null){
+    		sb.append(KeywordPP.PRAGMA);
+    		sb.append(SPACE);
+    		getPragma().toString(sb);
+    	}
+    }
+
     
     
 

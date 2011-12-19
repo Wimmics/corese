@@ -3,6 +3,7 @@ package fr.inria.acacia.corese.triple.parser;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.config.PropertyGetter.PropertyCallback;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -1094,6 +1095,11 @@ public class Triple extends Exp {
 			return false;
 		}
 		return true;
+	}
+	
+	
+	public boolean contains(Atom at){
+		return subject.equals(at) || object.equals(at) || predicate.equals(at) || variable.equals(at);
 	}
 	
 }

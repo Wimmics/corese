@@ -1,8 +1,11 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
   
 /**
  * <p>Title: Corese</p>
@@ -137,6 +140,89 @@ public class BasicGraphPattern extends And {
     		throw new QuerySemanticException("Unbound variable in Filter: " + 
     				this.toString());
     }
+    
+    /**
+     * SPARQL Constraint:
+     * Two occurrences of same blank not separated by a pattern
+     */
+    public boolean validate (ASTQuery ast){
+    	boolean isBefore = true;
+    	Table table = new Table();
+    	
+//    	if (size() == 1){
+//    		Exp exp = getBody().get(0);
+//    		if (exp.isFilter()){
+//    			Expression f = exp.getTriple().getExp();
+//    			if (f.oper()!=ExprType.EXIST){
+//    				List<String> list = f.getVariables();
+//    				if (list.size()>0) {
+//    					ast.addError("Illegal filter in BGP: " + exp);
+//    					ast.setCorrect(false);
+//    					return false;
+//    				}
+//    			}
+//    		}
+//    	}
+    	
+    	for (Exp exp : getBody()){
+    		
+    		if (exp.isTriple()){
+    			if (! exp.isFilter()){
+    				Triple t = exp.getTriple();
+    				if (isBefore){
+    					table.addBlank(t);
+    				}
+    				else {
+    					Atom b = table.contains(t);
+    					if (b != null){
+    						ast.addError("Illegal blank references: " + b + " in " + this);
+    						ast.setCorrect(false);
+    						return false;
+    					}
+    				}
+    			}
+    		}
+    		else {
+    			isBefore = false;
+    		}
+    	}
+    	
+    	return true;
+    }
+    
+    class Table extends Hashtable<String, String> {
+    	void put(String s){
+    		put(s, s);
+    	}
+    	
+    	Atom contains(Triple t){
+        	if (t.getSubject().isBlankNode()){
+        		if (containsKey(t.getSubject().getLabel())){
+        			return t.getSubject();
+        		}
+        	}
+        	if (t.getObject().isBlankNode()){
+        		if (containsKey(t.getObject().getLabel())){
+        			return t.getObject();
+        		}
+        	}
+        	return null;
+        }
+    	
+    	
+    	void addBlank(Triple t){
+        	if (t.getSubject().isBlankNode()){
+        		put(t.getSubject().getLabel());
+        	}
+        	if (t.getObject().isBlankNode()){
+        		put(t.getObject().getLabel());
+        	}
+        }
+        
+    }
+    
+    
+    
     
     public Exp union(){
     	if (getBody().size()<2) return this;

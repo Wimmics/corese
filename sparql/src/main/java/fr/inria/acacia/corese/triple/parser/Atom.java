@@ -36,6 +36,10 @@ public class Atom extends Expression implements ElementClause{
 		datatype = dt;
 		lang = lg;
 	}
+	
+	public boolean equals(Object at){
+		return  false;
+	}
 
 	public Variable getVariable() {
 		return null;

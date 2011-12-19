@@ -289,7 +289,7 @@ public class NSManager
 	}
 	
 	/**
-	 * same as function 'toNamespace' + pname may be a 'base' (ex: comes from
+	 * namespace + base:
 	 * <Person>)
 	 * 
 	 * @param pname
@@ -298,6 +298,18 @@ public class NSManager
 	public String toNamespaceB(String str){
 		String pname = toNamespace(str);
 		if (! pname.equals(str)){
+			if (isBase()){
+				if (pname.matches("[a-zA-Z0-9]*://.*")){
+					// skip schemes like: test://www.example.org (cf W3C update test case) 
+					return pname;
+				}
+				// use case:
+				// base <xxx>
+				// prefix : <>
+				pname = getBase() + pname;
+				return pname;
+			}
+			
 			return pname;
 		}
 		if (pname.matches("[a-zA-Z0-9]*://.*")){

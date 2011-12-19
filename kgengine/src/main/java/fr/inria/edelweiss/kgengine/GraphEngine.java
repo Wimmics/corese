@@ -259,13 +259,21 @@ public class GraphEngine implements IEngine {
 		
 		return null;
 	}
-
-	
+		
 	public IResults SPARQLQuery(String query) throws EngineException {		
 		QueryExec exec = QueryExec.create(this);
 		return exec.SPARQLQuery(query);
 	}
 	
+	public IResults query(String query) throws EngineException {		
+		QueryExec exec = QueryExec.create(this);
+		return exec.query(query);
+	}
+	
+	public IResults update(String query) throws EngineException {		
+		QueryExec exec = QueryExec.create(this);
+		return exec.update(query);
+	}
 	
 	public IResults SPARQLQuery(ASTQuery ast) throws EngineException {
 		QueryExec exec = QueryExec.create(this);
@@ -296,7 +304,6 @@ public class GraphEngine implements IEngine {
 
 	
 	public ASTQuery parse(String query) throws EngineException {
-		
 		return null;
 	}
 	

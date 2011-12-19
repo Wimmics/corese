@@ -169,17 +169,26 @@ void PrefixDecl() : { Token t1, t2; String s; Triple triple; }
  
 // Update
 
-void  UpdateQuery() : { Exp stack; }
+void  UpdateQuery() : {  }
 {
 	UpdateQuery1()
+	( Pragma() ) ?
 	
-	( <SEMICOLON> ( Prolog() UpdateQuery() ) ? ) ?
+	
+}
+
+
+void  UpdateQuery1() : {  }
+{
+	UpdateQuery2()
+	
+	( <SEMICOLON> ( Prolog() UpdateQuery1() ) ? ) ?
 }
 
 
 
 
-void UpdateQuery1() : { 
+void UpdateQuery2() : { 
 	Exp stack; Basic ope;
 	Constant graph, uri, target; 
 	boolean silent, defaut, named, all;
@@ -884,15 +893,17 @@ void GraphPattern(Exp stack) : {}
 {    
 	FilteredBasicGraphPattern(stack)
   	(
-	GraphPatternNotTriples(stack) 
-    (<DOT>)?
-    GraphPattern(stack)
-  )?  	 
+		GraphPatternNotTriples(stack) 
+   	 	(<DOT>   )?
+    	GraphPattern(stack)
+  	)?  	 
 }
 
 
 void FilteredBasicGraphPattern(Exp stack) : {} 
-{	( BlockOfTriples(stack) )? 
+{
+		
+	( BlockOfTriples(stack) )? 
 	( 
 		Constraint(stack) 
     	( <DOT> )? 
@@ -900,16 +911,20 @@ void FilteredBasicGraphPattern(Exp stack) : {}
 	)?
 }
 
-//BlockOfTriples		:= TriplesSameSubject ( <DOT> ( TriplesSameSubject )? )*
-void BlockOfTriples(Exp stack) : {}
-{
-	TriplesSameSubject(stack) 
-	(		
-		<DOT>
-		|
-		TriplesSameSubject(stack)
-	)*
+void BlockOfTriples(Exp stack) : {boolean b1, b2;}
+{   
+		TriplesSameSubject(stack) 
+		{b1 = false; b2 = false;}	
+		(<DOT> {b1 = true;} ) ?
+		(BlockOfTriples(stack) {b2 = true;} ) ?
+		{if (b2 && ! b1 && astq.isSPARQLCompliant()) {
+			astq.setCorrect(false);
+			}
+		}
+	
 }
+
+
 
 void GraphPatternNotTriples(Exp stack) : {ASTQuery ast;}
 {
@@ -1996,9 +2011,9 @@ Constant BooleanLiteral() : { Token t1, t2; Constant cst; String iriref, lang;}
 String String() : { Token t; }
 {
   (  t = <STRING_LITERAL1>
-  |  t = <STRING_LITERAL2>
+  |  t = <STRING_LITERAL2>       
   |  t = <STRING_LITERAL_LONG1>
-  |  t = <STRING_LITERAL_LONG2>
+  |  t = <STRING_LITERAL_LONG2> 
   )
   { return t.image; }
 }
@@ -2309,17 +2324,35 @@ TOKEN :
 | < STRING_LITERAL1:
       // Single quoted string
       "'" ( (~["'","\\","\n","\r"]) | <ECHAR> )* "'" >
+      
 | < STRING_LITERAL2:
     // Double quoted string
       "\"" ( (~["\"","\\","\n","\r"]) | <ECHAR> )* "\"" >
+      
 | < STRING_LITERAL_LONG1:
      <QUOTE_3S>
-      ( ~["'","\\"] | <ECHAR> | ("'" ~["'"]) | ("''" ~["'"]))*
+      ( ( "'" | "''" ) ?     ( ~["'", "\\"] |  <ECHAR> ) )*
      <QUOTE_3S> >
+     
 | < STRING_LITERAL_LONG2:
      <QUOTE_3D>
-      ( ~["\"","\\"] | <ECHAR> | ("\"" ~["\""]) | ("\"\"" ~["\""]))*
-     <QUOTE_3D> >
+      ( ( "\"" | "\"\"" ) ?  ( ~["\"", "\\"] |  <ECHAR> ) )*
+     <QUOTE_3D> >    
+          
+     
+//| < STRING_LITERAL_LONG1:
+//    <QUOTE_3S>
+//      ( ~["'","\\"] | <ECHAR> | ("'" ~["'"]) | ("''" ~["'"]) )*
+//     <QUOTE_3S> >     
+     
+//| < STRING_LITERAL_LONG2:
+//     <QUOTE_3D>
+//      ( ~["\"","\\"] | <ECHAR> | ("\"" ~["\""]) | ("\"\"" ~["\""]) )*
+//     <QUOTE_3D> >
+     
+  
+     
+     
 | < DIGITS: (["0"-"9"])+>
 | <HEX: ["0"-"9"] | ["A"-"F"] | ["a"-"f"]>
 }
@@ -2403,7 +2436,7 @@ TOKEN:
   <#NCNAME_PREFIX: <NCCHAR1p> ((<NCCHAR>|".")* <NCCHAR>)? >
 |
   // With a leading "_", no dot at end of local name.
-  <#NCNAME: <NCCHAR1> ((<NCCHAR>|".")* <NCCHAR>)? >
+  <#NCNAME:  <NCCHAR1> ((<NCCHAR>|".")* <NCCHAR>)? >
 |
   // NCNAME without "-" and ".", allowing leading digits.
   <#VARNAME: ( <NCCHAR1> | ["0"-"9"] )

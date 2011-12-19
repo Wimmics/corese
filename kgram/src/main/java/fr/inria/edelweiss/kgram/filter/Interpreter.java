@@ -263,8 +263,7 @@ public class Interpreter implements Evaluator, ExprType {
 		}
 		
 		Object[] args = evalArguments(exp, env);
-		if (args == null) return null;
-		
+		if (args == null) return null;		
 		Object res = proxy.eval(exp, env, args);
 		return res;
 

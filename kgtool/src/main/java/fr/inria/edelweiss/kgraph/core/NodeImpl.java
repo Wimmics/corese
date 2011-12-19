@@ -1,5 +1,7 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import java.util.Arrays;
+
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -129,7 +131,7 @@ public class NodeImpl implements Node, Entity {
 
 	@Override
 	public Object getProperty(int p) {
-		if (properties == null){
+		if (properties == null || p >= properties.length ){
 			return null;
 		}
 		return properties[p];
@@ -139,6 +141,9 @@ public class NodeImpl implements Node, Entity {
 	public void setProperty(int p, Object o) {
 		if (properties == null){
 			properties = new Object[PSIZE];
+		}
+		if (p >= properties.length){
+			properties = Arrays.copyOf(properties, p+1);
 		}
 		properties[p] = o;
 	}

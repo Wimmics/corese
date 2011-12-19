@@ -23,6 +23,7 @@ import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -54,6 +55,7 @@ public class Load
 	static final String IMPORTS = OWL + "imports";
 
 	Graph graph;
+	Log log;
 	RuleEngine engine;
 	QueryEngine qengine;
 	Hashtable<String, String>  loaded;
@@ -88,6 +90,7 @@ public class Load
 	
 	void set(Graph g){
 		graph = g;
+		log = g.getLog();
 		loaded = new Hashtable<String, String> ();
 		build = BuildImpl.create(graph);
 	}
@@ -222,10 +225,13 @@ public class Load
 		}
 	}
 	
-	
+	void log(String name){
+		graph.log(Log.LOAD, name);
+	}
 	
 	public void load(String path, String base, String source) throws LoadException {
 		//if (! suffix(path)) return ;
+		log(path);
 		
 		if (isRule(path)){
 			loadRule(path, base);
@@ -271,11 +277,13 @@ public class Load
 	}
 	
 	public void load(InputStream stream) throws LoadException{
+		log("stream");
 		load(stream, Entailment.DEFAULT);
 	}
 
 	// not for rules
 	public void load(InputStream stream, String source) throws LoadException{
+		log("stream");
 		if (source == null) source = Entailment.DEFAULT;
 		Reader read = new InputStreamReader(stream);
 		synLoad(read, source, source, source);

@@ -6,41 +6,40 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 /**
  * This is an interface for all Corese datatypes.<br />
  * 
- * @author  Olivier Corby
  * This is an interface for all xsd:datatypes: each has a normalized label and a lower case label,
  * that are comparable with an other datatype(instance). Each can also have a value space (which is
  * a string or not and so allow regular expression matching) that have an order relation.
- * <br>
- * Here are the hierarchy of datatypes in Corese:<br />
- * <pre>
- * IDatatype
- * 	ICoreseDatatype
- * 		CoreseDatatype
- * 			CoreseDate
- * 			CoreseNumber
- * 				CoreseDouble
- * 					CoreseDecimal
- * 					CoreseFloat
- * 				CoreseLong
- * 					CoreseInteger
- * 			CoreseStringableImpl
- * 				CoreseResource
- * 					CoreseBlankNode
- * 					CoreseURI
- * 				CoreseStringableLiteral
- * 					CoreseBoolean
- * 					CoreseLiteral
- * 					CoreseString
- * 						CoreseStringCast
- * 					CoreseUndefLiteral
- * 					CoreseXMLLiteral
- * </pre>
+ * 
  * @author Olivier Savoie & Olivier Corby & Virginie Bottollier
  */
 public interface IDatatype 
 	extends ICoresePolymorphDatatype
-	//, IResultValue 
 	{
+	
+	static final int LITERAL =	0;
+	static final int STRING =	1;
+	static final int XMLLITERAL=2;
+	static final int NUMBER =	3;
+	static final int DATE =		4;
+	static final int BOOLEAN =	5;
+	static final int STRINGABLE=6;
+	static final int URI = 		7;
+	static final int UNDEF =	8;
+	static final int BLANK =	9;
+	
+	static final int DOUBLE =	11;
+	static final int FLOAT =	12;
+	static final int DECIMAL =	13;
+	static final int LONG =		14;
+	static final int INTEGER =	15;
+	
+	// Pseudo codes (target is Integer or String ...)
+	static final int DAY =		21;
+	static final int MONTH =	22;
+	static final int YEAR =		23;
+	static final int DURATION =	24;
+	static final int DATETIME =	25;
+
 
 	/**
 	 * @return true if we have a blanknode
@@ -56,9 +55,7 @@ public interface IDatatype
 	public IDatatype get(int n);
 	
 	public int size();
-	
-	//public Constant getConstant();
-	
+		
 	/**
 	 * @return true if we have a literal
 	 */
@@ -85,11 +82,7 @@ public interface IDatatype
 	 */
 	public IDatatype getDataLang();
 
-	/**
-	 * @return the normalized formatted string depending on the datatype <br>
-	 *         representing the value of this
-	 */
-	public String getNormalizedLabel();
+
 	
 	/**
 	 * @return the Sparql form of the datatype
@@ -101,6 +94,7 @@ public interface IDatatype
 	 */
 	public boolean isURI();
 	
+	// Used by XMLLiteral to store a XML DOM 
 	public void setObject(Object obj);
 	
 	public Object getObject();
@@ -137,7 +131,6 @@ public interface IDatatype
 	 *
 	 * @param iod the instance to be tested with this
 	 * @return true if the param has the same runtime class and if values are equals, else false
-	 * note: pequals correponds to the SPARQL keyword "sameTerm" (if an error is produced by the function "equals", the return value will be "false")
 	 */
 	public boolean sameTerm(IDatatype iod);
 
@@ -204,28 +197,16 @@ public interface IDatatype
 	public IDatatype div(IDatatype iod);
 
 	/***************************************************************************/
-		
-	/**
-	 * @return the value of this as an integer
-	 * @deprecated <i>use getIntegerValue instead</i>
-	 */
-	public int getiValue();
 	
-	/**
-	 * @return the value of this as a double
-	 * @deprecated <i>use getDoubleValue instead</i>
-	 */
-	public double getdValue();
 	
 	/**
 	 * @return the datatype of this
 	 */
 	public IDatatype getDatatype();
 	
-	// same as getDatatype but return rdfs:Literal for literal with lang
-	public IDatatype getExtDatatype();
+
 	
-	// same as getExtDatatype but URI return rdfs:Resource
+	// same as getDatatype but URI return rdfs:Resource
 	public IDatatype getIDatatype();
 	
 	/**
@@ -244,22 +225,35 @@ public interface IDatatype
 	 */
 	public String getLabel();
 	
-	public String getLowerCaseLabel();
 
 	/**
 	 * @return true if this instance class is a number
 	 */
 	public boolean isNumber();
 
-	/**
-	 * @return the value of this as a double
-	 */
+	
+	public double doubleValue();
+	public float  floatValue();
+	public long   longValue();
+	public int    intValue();
+	
+	
+	/***************************************************/
+
+	@Deprecated
 	public double getDoubleValue();
-	
-	/**
-	 * @return the value of this as an integer
-	 */
+	@Deprecated
 	public int getIntegerValue();
+	@Deprecated
+	public int getiValue();
+	@Deprecated
+	public double getdValue();
 	
+	@Deprecated
+	public String getNormalizedLabel();
+	@Deprecated 
+	public IDatatype getExtDatatype();
+	@Deprecated
+	public String getLowerCaseLabel();
 
 }

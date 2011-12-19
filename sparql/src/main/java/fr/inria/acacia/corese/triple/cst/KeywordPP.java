@@ -68,6 +68,9 @@ public interface KeywordPP {
     public final static String LIMIT = "limit";
     public final static String HAVING = "having";
     public final static String OFFSET = "offset";
+    public final static String BINDINGS = "bindings";
+    public final static String PRAGMA = "pragma";
+
     public final static String SPACE = " ";
     public final static String SPACE_LN = " " + System.getProperty("line.separator");
     

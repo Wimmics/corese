@@ -146,8 +146,16 @@ public interface IEngine {
 	 * @return the IResults which corresponds to the Result of the query
 	 * @throws EngineException
 	 */
+	
+	// query & update
 	public IResults SPARQLQuery(String query) throws EngineException;
 	
+	// query only
+	public IResults query(String query) throws EngineException;
+
+	// update 
+	public IResults update(String query) throws EngineException;
+
 	public IResults SPARQLQuery(ASTQuery ast) throws EngineException;
 
 	

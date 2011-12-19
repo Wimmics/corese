@@ -229,19 +229,20 @@ implements Comparator<Mapping>
 			else {
 				res = 0;
 			}
-
+			
 			if (orderBy.get(i).status()){ 
-				switch (res) {
-				case -1 : res = 1; break;
-				case 1 : res = -1; break;
-				}
+				res = desc(res);
 			}
 
 		}
 		return res;
 	}
 
-
+	int desc(int i){
+		if (i < 0) return +1;
+		else return -1;
+	}
+	
 	/***********************************************************
 	 * 
 	 * 	Aggregates

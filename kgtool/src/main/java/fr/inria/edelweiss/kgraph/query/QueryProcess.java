@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgraph.api.Loader;
+import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 //import java.net.URL;
@@ -46,15 +47,21 @@ public class QueryProcess extends QuerySolver {
 	
 	protected QueryProcess (Producer p, Evaluator e, Matcher m){
 		super(p, e, m);
-		if (p instanceof ProducerImpl){
-			ProducerImpl pp = (ProducerImpl) p;
-			if (isSort){
-				set(SorterImpl.create(pp.getGraph()));
-			}
-			lock = pp.getGraph().getLock();
+		init();
+	}
+	
+	void init(){
+		if (isSort && producer instanceof ProducerImpl){
+			ProducerImpl pp = (ProducerImpl) producer;
+			set(SorterImpl.create(pp.getGraph()));
+		}
+		
+		Graph g = getGraph();
+		if (g != null){
+			lock = g.getLock();
 		}
 		else {
-			// TBD: the lock should be unique to all calls
+			// TODO: the lock should be unique to all calls
 			// hence it should be provided by Producer
 			lock = new ReentrantReadWriteLock();
 		}
@@ -88,10 +95,6 @@ public class QueryProcess extends QuerySolver {
 	public void add(Graph g){
 		add(ProducerImpl.create(g));
 	}
-        
-//	public void addRemote(URL url){
-//		add(new RemoteProducerImpl(url));
-//	}
 	
 	public static QueryProcess create(ProducerImpl prod){
 		Matcher match =  MatcherImpl.create(prod.getGraph());
@@ -120,34 +123,112 @@ public class QueryProcess extends QuerySolver {
 		return eval;
 	}
 	
-	public Mappings query(String squery) throws EngineException{
+	
+	/****************************************************************
+	 * 
+	 * API for query
+	 * 
+	 ****************************************************************/
+	
+	public Mappings update(String squery) throws EngineException{
 		return query(squery, null, null, null);
 	}
 	
-	public Mappings query(String squery, List<String> from, List<String> named) throws EngineException{
-		return query(squery, null, from, named);
+	public Mappings query(String squery) throws EngineException{
+		return query(squery, null, null, null);
 	}
 	
 	public Mappings query(String squery, Mapping map, List<String> from, List<String> named) throws EngineException{
 		Query q = compile(squery, from, named);
 		return query(q, map, from, named);
-	}
+	}	
 	
 	public Mappings query(Query q) {
+		return qquery(q, null);
+	}
+
+	public Mappings qquery(Query q, Mapping map) {
 		try {
-			return query(q, null, null, null);
+			return query(q, map, null, null);
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return Mappings.create(q);
 	}
-		
-	public Mappings query(Query q, Mapping map, List<String> from, List<String> named) throws EngineException{
+	
+	
+	
+	/**
+	 * KGRAM + full SPARQL compliance :
+	 * - type of arguments of functions (e.g. sparql regex require string)
+	 * - variable in select with group by
+	 * - specify the dataset
+	 */
+	public Mappings sparql(String squery, List<String> from, List<String> named) throws EngineException{
+		return sparqlQueryUpdate(squery, from, named, STD_ENTAILMENT);
+	}
+	
+	public Mappings sparql(String squery, List<String> from, List<String> named, int entail) throws EngineException{
+		return sparqlQueryUpdate(squery, from, named, entail);
+	}
+	
+	
+	public Mappings query(ASTQuery ast){
+		if (ast.isUpdate()){
+			return update(ast);
+		}
+		return synQuery(ast);
+	}
+	
+	/**
+	 * equivalent of std query(ast) but for update
+	 */
+	public Mappings update(ASTQuery ast){
+		Transformer transformer =  transformer();
+		Query query = transformer.transform(ast);
+		return query(query);
+	}
+	
+	
+	/******************************************
+	 * 
+	 * Secure Query OR Update
+	 * 
+	 ******************************************/
+	
+	public Mappings sparqlQuery(String squery) throws EngineException{
+		Query q = compile(squery, null, null);
+		if (q.isUpdate()){
+			throw new EngineException("Unauthorized Update in SPARQL Query:\n" + squery);
+		}
+		return query(q, null, null, null);
+	}
+	
+	public Mappings sparqlUpdate(String squery) throws EngineException{
+		Query q = compile(squery, null, null);
+		if (! q.isUpdate()){
+			throw new EngineException("Unauthorized Query in SPARQL Update:\n" + squery);
+		}
+		return query(q, null, null, null);
+	}
+
+	public Mappings sparqlQueryUpdate(String squery) throws EngineException{
+		return query(squery);
+	}
+
+	
+	/****************************************************************************
+	 * 
+	 * 
+	 ****************************************************************************/
+	
+	Mappings query(Query q, Mapping map, List<String> from, List<String> named) throws EngineException{
 		
 		pragma(q);
-		
+
 		if (q.isUpdate()){
+			log(Log.UPDATE, q);
 			return synUpdate(q, from, named);
 		}
 		else {
@@ -157,11 +238,10 @@ public class QueryProcess extends QuerySolver {
 				// construct where
 				construct(lMap);
 			}
+			log(Log.QUERY, q, lMap);
 			return lMap;
 		}
 	}
-	
-
 	
 	Mappings synQuery(Query query, Mapping m) {
 		try {
@@ -172,7 +252,22 @@ public class QueryProcess extends QuerySolver {
 			readUnlock();
 		}
 	}
-
+	
+	void log(int type, Query q){
+		Graph g = getGraph();
+		if (g != null){
+			g.log(type, q);
+		}
+	}
+	
+	void log(int type, Query q, Mappings m){
+		Graph g = getGraph();
+		if (g != null){
+			g.log(type, q, m);
+		}
+	}
+	
+	
 	
 	Mappings synUpdate(Query query,  List<String> from, List<String> named) throws EngineException{
 		try {
@@ -208,12 +303,7 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	
-	public Mappings query(ASTQuery ast){
-		if (ast.isUpdate()){
-			return update(ast);
-		}
-		return synQuery(ast);
-	}
+
 	
 	Mappings synQuery(ASTQuery ast){
 		try {
@@ -225,14 +315,7 @@ public class QueryProcess extends QuerySolver {
 		}
 	}
 	
-	/**
-	 * equivalent of std query(ast) but for update
-	 */
-	public Mappings update(ASTQuery ast){
-		Transformer transformer =  transformer();
-		Query query = transformer.transform(ast);
-		return query(query);
-	}
+
 	
 	/**
 	 * Called by Manager (delete/insert operations)
@@ -253,17 +336,10 @@ public class QueryProcess extends QuerySolver {
 		return lMap;
 	}
 	
-	/**
-	 * KGRAM + some SPARQL constraints:
-	 * - type of arguments of functions (e.g. sparql regex require string)
-	 * - variable in select with group by
-	 * - specify the dataset
-	 */
-	public Mappings sparql(String squery, List<String> from, List<String> named) throws EngineException{
-		return sparql(squery, from, named, STD_ENTAILMENT);
-	}
-	
-	public Mappings sparql(String squery, List<String> from, List<String> named, int entail) throws EngineException{
+
+		
+		
+	Mappings sparqlQueryUpdate(String squery, List<String> from, List<String> named, int entail) throws EngineException{
 		getEvaluator().setMode(Evaluator.SPARQL_MODE);
 
 		if (entail != STD_ENTAILMENT){
@@ -287,7 +363,6 @@ public class QueryProcess extends QuerySolver {
 		}
 		return map;
 	}
-
 	
 	public Graph getGraph(Mappings map){
 		return (Graph) map.getGraph();
@@ -384,9 +459,7 @@ public class QueryProcess extends QuerySolver {
 	private void writeUnlock(){
 		getWriteLock().unlock();
 	}
-	
-	
-	
-	
+
+
 	
 }

@@ -46,6 +46,7 @@ public class ProducerImpl implements Producer {
 	local;
 	Mapper mapper;
 	MatcherImpl match;
+	QueryEngine qengine;
 	
 	public ProducerImpl(){
 		this(Graph.create());
@@ -71,6 +72,10 @@ public class ProducerImpl implements Producer {
 		if (m instanceof MatcherImpl){
 			match = (MatcherImpl) m;
 		}
+	}
+	
+	public void set(QueryEngine qe){
+		qengine = qe;
 	}
 	
 	public Graph getGraph(){
@@ -103,7 +108,7 @@ public class ProducerImpl implements Producer {
 	@Override
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
 			Environment env) {
-		
+					
 		Node predicate = getPredicate(edge, env);
 		if (predicate == null){
 			return empty;
@@ -315,6 +320,12 @@ public class ProducerImpl implements Producer {
 		if (predicate == null){
 			return empty;
 		}
+		
+		// draft: computes edges with construct-where queries
+//		if (qengine!=null){
+//			return construct(start, exp, index);
+//		}
+		
 
 		Iterable<Entity> it;
 		if (gNode != null || from.size()>0 || ! graph.hasDefault()){
@@ -330,6 +341,16 @@ public class ProducerImpl implements Producer {
 	}
 
 	
+	
+	// draft: computes edges with construct-where queries
+	Iterable<Entity> construct(Node start, Regex exp, int index){
+		Mappings map = qengine.process(start, exp.getLongName(), index);
+		if (map == null || map.getGraph() == null) return empty;
+		Graph g = (Graph) map.getGraph();
+		g.prepare();
+		return g.getEdges();		
+	}
+
 	
 	/**
 	 * regex is a negation

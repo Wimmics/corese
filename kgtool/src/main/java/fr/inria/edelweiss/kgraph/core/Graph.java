@@ -20,6 +20,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.*;
 
 /**
@@ -75,6 +76,7 @@ public class Graph {
 	// graph property nodes
 	Hashtable<String, Node> graph, property;
 	NodeIndex gindex;
+	Log log;
 	Entailment inference, proxy;
 	private Distance classDistance, propertyDistance;
 	// true when graph is modified and need index()
@@ -135,8 +137,7 @@ public class Graph {
 		individual 	= new Hashtable<String, Entity>();
 		graph 		= new Hashtable<String, Node>();
 		property 	= new Hashtable<String, Node>();
-		gindex 		= new NodeIndex();
-		
+		gindex 		= new NodeIndex();		
 	}
 	
 	public static Graph create(){
@@ -147,6 +148,30 @@ public class Graph {
 		Graph g = new Graph();
 		if (b) g.setEntailment();
 		return g;
+	}
+	
+	public boolean isLog(){
+		return log != null;
+	}
+	
+	public Log getLog(){
+		return log;
+	}
+	
+	public void setLog(Log l){
+		log = l;
+	}
+	
+	public void log(int type, Object obj){
+		if (log != null){
+			log.log(type, obj);
+		}
+	}
+	
+	public void log(int type, Object obj1, Object obj2){
+		if (log != null){
+			log.log(type, obj1, obj2);
+		}
 	}
 	
 	public Lock readLock(){
@@ -220,12 +245,13 @@ public class Graph {
 	
 	public String toString(){
 		String str = "";
-		str += "Edge: " + size() + "\n";
-		str += "Node: " + (individual.size() + literal.size()) + "\n";
-		str += "Property: " + table.size() + "\n";
-		str += "Duplicate: " + table.duplicate() + "\n";
-		str += "Individual: " + (individual.size()) + "\n";
-		str += "Literal: " + (literal.size());
+		str += "Edge:       " 	+ size() + "\n";
+		str += "Node:       " 	+ (individual.size() + literal.size()) + "\n";
+		str += "Graph:      "	+ graph.size() + "\n";
+		str += "Property:   " + table.size() + "\n";
+		str += "Literal:    " 	+ literal.size() + "\n";
+		str += "Individual: " + individual.size() + "\n";
+		str += "Duplicate:  "+ table.duplicate() + "\n";
 		return str;
 	}
 	
@@ -647,8 +673,9 @@ public class Graph {
 	}
 	
 	public void addPropertyNode(Node pNode){
-		if (! property.containsKey(pNode.getLabel()))
+		if (! property.containsKey(pNode.getLabel())){
 			property.put(pNode.getLabel(), pNode);
+		}
 	}
 	
 

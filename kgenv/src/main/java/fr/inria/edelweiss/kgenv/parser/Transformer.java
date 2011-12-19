@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
+import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.ParserSparql1;
 import fr.inria.acacia.corese.triple.parser.Processor;
@@ -62,7 +63,7 @@ public class Transformer implements ExpType {
 
 	int ncount = 0, rcount = 0;
 	boolean fail = false,
-	isEdgeForType = true,
+	isSPARQLCompliant = true,
 	isSPARQL1 = true;
 	String namespaces, base;
 	List<String> from, named;
@@ -101,9 +102,7 @@ public class Transformer implements ExpType {
 		ast = ASTQuery.create(squery);
 		ast.setDefaultNamespaces(namespaces);
 		ast.setDefaultBase(base);
-		ast.setEdgeForType(isEdgeForType);
-		ast.setKgram(true);
-		ast.setSPARQL1(isSPARQL1);
+		ast.setSPARQLCompliant(isSPARQLCompliant);
 
 		if (from!=null) ast.setDefaultFrom(from);
 		if (named!=null) ast.setDefaultNamed(named);
@@ -118,6 +117,7 @@ public class Transformer implements ExpType {
 	
 	public Query transform (ASTQuery ast){
 		this.ast = ast;
+		ast.setSPARQLCompliant(isSPARQLCompliant);
 		ast.compile();
 
 		if (fac == null) fac = new CompilerFacKgram();			
@@ -205,12 +205,12 @@ public class Transformer implements ExpType {
 	}
 
 
-	public boolean isEdgeForType(){
-		return isEdgeForType;
+	public boolean isSPARQLCompliant(){
+		return isSPARQLCompliant;
 	}
 
-	public void setEdgeForType(boolean b){
-		isEdgeForType = b;
+	public void setSPARQLCompliant(boolean b){
+		isSPARQLCompliant = b;
 	}
 
 	public void setNamespaces(String ns){
@@ -674,7 +674,7 @@ public class Transformer implements ExpType {
 
 	/**
 	 * Compile AST statements into KGRAM statements
-	 * Compile triple into QueryRelation, filter into QueryMarker
+	 * Compile triple into Edge, filter into Filter
 	 */
 	Exp compile(
 			fr.inria.acacia.corese.triple.parser.Exp query, boolean opt){
@@ -685,6 +685,7 @@ public class Transformer implements ExpType {
 			fr.inria.acacia.corese.triple.parser.Exp query, boolean opt, int level){
 
 		List<Filter> qvec;
+		ArrayList<Atom> list;
 		Exp exp = null;
 
 		query.setAST(ast);
@@ -719,12 +720,12 @@ public class Transformer implements ExpType {
 
 
 		case EDGE:
-			// match Edge and Node (?x rdf:type c:Person will be a Node)
+			// match Edge 
 
 			Triple tt = (Triple) query ;
 
 			if (opt){
-				// union/option: no type inference
+				// union/option
 				tt.setOption(true);
 			}
 
@@ -766,22 +767,24 @@ public class Transformer implements ExpType {
 				t = Exp.create(NODE, c);
 			}
 
+			exp = t;
+			
 			// type checking may be compiled as filters (in union or option)
-			qvec = compiler.getFilters();
-
-			if (qvec.size()>0){
-				Exp a = Exp.create(AND, t);
-
-				for (Filter qm : qvec){
-					Exp f = Exp.create(FILTER, qm);
-					compileExist(qm.getExp(), opt);
-					a.add(f);
-				}
-				exp = a;
-			}
-			else {
-				exp = t;
-			}
+//			qvec = compiler.getFilters();
+//
+//			if (qvec.size()>0){
+//				Exp a = Exp.create(AND, t);
+//
+//				for (Filter qm : qvec){
+//					Exp f = Exp.create(FILTER, qm);
+//					compileExist(qm.getExp(), opt);
+//					a.add(f);
+//				}
+//				exp = a;
+//			}
+//			else {
+//				exp = t;
+//			}
 
 			break;
 
@@ -811,15 +814,18 @@ public class Transformer implements ExpType {
 
 
 		default:
-
-			//			if (!opt && type == AND && ! query.isScope() && query.size() == 1){
-			//				return compile(query.get(0), opt);
-			//			}
+			
+	/**************************
+	 * 
+	 * Compile Body
+	 * 
+	 **************************/
 
 			exp = Exp.create(cpType(type));
 
 		boolean hasBind = false;
-		// compile body		
+		
+
 		for (fr.inria.acacia.corese.triple.parser.Exp ee : query.getBody()){
 
 			Exp tmp = compile(ee, opt, level+1);
@@ -835,9 +841,11 @@ public class Transformer implements ExpType {
 				// add elements of AND one by one
 				exp.insert(tmp);
 			}
-
 		}
 		
+		// PRAGMA: do it after loop above to have filter compiled
+		query.validate(ast);		
+	
 		if (hasBind && level>0){
 			// pop bind(f(?x) as ?y) at the end of group pattern
 			// unless body pattern which keep binding for select
@@ -925,7 +933,8 @@ public class Transformer implements ExpType {
 
 	}
 	
-		
+
+	
 	Node compile(Atom at){
 		// create triple(?g rdf:type rdfs:Resource)
 		Triple triple = Triple.create(at, Constant.create(RDFS.RDFTYPE), Constant.create(RDFS.RDFSRESOURCE));

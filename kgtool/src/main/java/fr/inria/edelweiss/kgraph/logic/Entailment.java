@@ -38,8 +38,11 @@ public class Entailment {
 
 	public static final String XSD   =  "http://www.w3.org/2001/XMLSchema#";
 
+	// take literal range into account in loader
 	public static final String DATATYPE_INFERENCE 		 = KGRAPH + "datatype";
-	
+	// false: do not duplicate RDFS entailment in kg:entailment graph
+	public static final String DUPLICATE_INFERENCE 		 = KGRAPH + "duplicate";
+
 	
 	static final int UNDEF 			= -1;
 	static final int SUBCLASSOF 	= 0;
@@ -210,7 +213,7 @@ public class Entailment {
 	}
 	
 	EdgeImpl create(Node src, Node sub, Node pred, Node obj){
-		return EdgeCore.create(src, sub, pred, obj);
+		return graph.create(src, sub, pred, obj);
 	}
 	
 	Integer keyword(String name){
@@ -526,7 +529,11 @@ public class Entailment {
 		
 		return false;
 	}
-
+	
+	
+	public boolean isEntailment(Node source){
+		return hasLabel(source, ENTAIL);
+	}
 	public boolean isType(Edge edge){
 		return hasLabel(edge, RDF.TYPE);
 	}
@@ -545,6 +552,10 @@ public class Entailment {
 	
 	boolean hasLabel(Edge edge, String type){
 		return edge.getLabel().equals(type);
+	}
+	
+	boolean hasLabel(Node node, String type){
+		return node.getLabel().equals(type);
 	}
 	
 	public boolean isSymmetric(Edge edge){

@@ -248,6 +248,12 @@ public class Mapping
 		return getPath(getIndex(qNode));
 	}
 	
+	public Path getPath(String name){
+		Node qNode = getQueryNode(name);
+		if (qNode == null) return null;
+		return getPath(getIndex(qNode));
+	}
+	
 	/**
 	 * Index of qNode in mapping (not in stack)
 	 */

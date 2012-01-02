@@ -54,7 +54,6 @@ public class RemoteProducer extends ProducerImpl {
         this.endpoint = endpoint;
     }
 
-    
     /**
      * Transfers an RDF file and load it into KGRAM.
      * @param data streamed RDF file to be loaded by KGRAM. 
@@ -89,7 +88,7 @@ public class RemoteProducer extends ProducerImpl {
     @WebMethod
     public void loadRDF(String remotePath) {
     }
-    
+
     /**
      * Processes a SPARQL query and return the SPARQL results. 
      * @param sparqlQuery the query to be processed. 
@@ -106,32 +105,11 @@ public class RemoteProducer extends ProducerImpl {
             exec.add(engine);
 
             IResults results = exec.SPARQLQuery(sparqlQuery);
-
-            ASTQuery astQuery = ASTQuery.create(sparqlQuery);
-            Exp exp = astQuery.getBody();
-
             String sparqlRes = results.toSPARQLResult();
-            //results processing
-            String[] variables = results.getVariables();
+
             if (results.getSuccess()) {
-//                for (Enumeration<IResult> en = results.getResults(); en.hasMoreElements();) {
-//                    IResult r = en.nextElement();
-//                    HashMap<String, String> result = new HashMap<String, String>();
-//                    for (String var : variables) {
-//                        if (r.isBound(var)) {
-//                            IResultValue[] values = r.getResultValues(var);
-//                            for (int j = 0; j < values.length; j++) {
-//                                System.out.println(var + " = " + values[j].getStringValue());
-////                            result.put(var, values[j].getStringValue());
-//                            }
-//                        } else {
-//                            System.out.println(var + " = Not bound");
-//                        }
-//                    }
-//                }
                 sw.stop();
                 logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
-
                 return sparqlRes;
             } else {
                 logger.debug("No results found");

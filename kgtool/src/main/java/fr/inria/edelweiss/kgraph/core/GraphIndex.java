@@ -242,4 +242,11 @@ implements Index, Iterable<Entity> {
 		return null;
 	}
 
+
+	@Override
+	public void setDuplicateEntailment(boolean value) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

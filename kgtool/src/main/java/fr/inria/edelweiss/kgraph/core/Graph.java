@@ -78,6 +78,7 @@ public class Graph {
 	NodeIndex gindex;
 	Log log;
 	Entailment inference, proxy;
+	EdgeFactory fac;
 	private Distance classDistance, propertyDistance;
 	// true when graph is modified and need index()
 	boolean 
@@ -137,7 +138,8 @@ public class Graph {
 		individual 	= new Hashtable<String, Entity>();
 		graph 		= new Hashtable<String, Node>();
 		property 	= new Hashtable<String, Node>();
-		gindex 		= new NodeIndex();		
+		gindex 		= new NodeIndex();	
+		fac 		= new EdgeFactory(this);
 	}
 	
 	public static Graph create(){
@@ -148,6 +150,14 @@ public class Graph {
 		Graph g = new Graph();
 		if (b) g.setEntailment();
 		return g;
+	}
+	
+	public EdgeFactory getEdgeFactory(){
+		return fac;
+	}
+	
+	public void setOptimize(boolean b){
+		fac.setOptimize(b);
 	}
 	
 	public boolean isLog(){
@@ -192,7 +202,6 @@ public class Graph {
 		setPropertyDistance(null);
 	}
 	
-
 	public Entailment getEntailment(){
 		return inference;
 	}
@@ -211,12 +220,19 @@ public class Graph {
 	}
 	
 	public void set(String property, boolean value){
+		localSet(property, value);
 		if (inference!=null){
 			inference.set(property, value);
 		}
 	}
 	
-
+	void localSet(String property, boolean value){
+		if (property.equals(Entailment.DUPLICATE_INFERENCE)){
+			for (Index t : tables){
+				t.setDuplicateEntailment(value);
+			}
+		}
+	}
 	
 	public void entail(){
 		if (inference!=null){
@@ -465,8 +481,9 @@ public class Graph {
 		return ent;
 	}
 	
-	public EdgeCore create(Node source, Node subject, Node predicate, Node value){
-		return EdgeCore.create(source, subject, predicate, value);
+	public EdgeImpl create(Node source, Node subject, Node predicate, Node value){
+		return fac.create(source, subject, predicate, value);
+		//return EdgeCore.create(source, subject, predicate, value);
 	}
 
 	

@@ -255,7 +255,8 @@ public class Memory implements Environment {
 			if (tNode != null){
 				mem.push(subNode, tNode, -1);
 				if (getPath(outNode)!=null){
-					mem.setPath(n, getPath(outNode));
+					mem.setPath(subNode.getIndex(), getPath(outNode));
+					//mem.setPath(n, getPath(outNode));
 				}
 			}
 		}

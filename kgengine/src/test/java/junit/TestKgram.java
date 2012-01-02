@@ -17,6 +17,7 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgtool.load.Load;
 
 public class TestKgram extends TestSuite
@@ -1607,7 +1608,7 @@ suite.addTest(new CoreseTest2(true, "testQuery", corese,
     		"select         distinct sorted ?y ?t    where {" +
     		"?x ?p ?y   filter( ?x ~ 'olivier.corby')  ?z ?q ?t   filter(?z ~ 'olivier.corby') " +
     		"  filter (datatype(?y) = datatype(?t)) } order by ?y"
-    		, 18));
+    		, 14));
 
 
 
@@ -3573,13 +3574,10 @@ query = "select   distinct ?t1 ?t2     where {"+
 
     public static void main(String[] args)
     {
-        //String[] testSuiteName = {KgraphTestSuite.class.getName(), "-noloading"};
-        String[] testSuiteName = {TestKgram.class.getName()};
-       Date d1=new Date();
-          //junit.swingui.TestRunner.main(testSuiteName);
-          TestRunner.main(testSuiteName);
-         Date d2=new Date();
-
-    } //public static void main(String[] args)
-
-} //public class CoreseTestSuite extends TestCase
+    	String[] testSuiteName = {TestKgram.class.getName()};
+    	Date d1=new Date();
+    	TestRunner.main(testSuiteName);
+    	Date d2=new Date();
+ 
+    } 
+} 

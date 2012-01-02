@@ -129,7 +129,7 @@ public class TestCoreseAPI {
 		
 		String init = "insert data {graph <test> {<John> <name> 'John'}}";
 		try {
-			queryAgent.SPARQLQuery(init);
+			queryAgent.update(init);
 			
 			GraphEngine e = (GraphEngine) semengine1;
 			Graph g = e.getGraph();
@@ -155,7 +155,7 @@ public class TestCoreseAPI {
 			
 			
 			String update = "delete {?x ?p ?y} where {?x ?p ?y}";
-			queryAgent.SPARQLQuery(update);
+			queryAgent.update(update);
 						
 			
 			res = queryAgent.SPARQLQuery(query);

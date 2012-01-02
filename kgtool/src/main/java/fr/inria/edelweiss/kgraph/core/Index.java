@@ -56,6 +56,8 @@ public interface Index {
 	
 	void move(Node g1, Node g2);
 
+	void setDuplicateEntailment(boolean value);
+
 
 
 }

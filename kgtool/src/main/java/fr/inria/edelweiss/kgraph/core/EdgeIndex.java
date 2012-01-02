@@ -34,15 +34,19 @@ implements Index {
 	int index = 0, other = 1;
 	int count = 0;
 	boolean isDebug = !true,
-	isIndexer = false;
+	isIndexer = false,
+	// do not create entailed edge in kg:entailment if it already exist in another graph
+	isOptim = false;
 	
-	Comparator<Entity>  comp;
+	Comparator<Entity>  comp, comp2;
 	Graph graph;
 	Hashtable<Node, Node> types;
 
 	EdgeIndex(Graph g, int n){
 		init(g, n);
-		comp = getComparator();	
+		comp  = getComparator();
+		// skip graph (for entailed edge):
+		comp2 = getComparator2();
 		types = new Hashtable<Node, Node>();
 	}
 	
@@ -124,6 +128,10 @@ implements Index {
 		return keySet();
 	}
 	
+	public void setDuplicateEntailment(boolean b){
+		isOptim = ! b;
+	}
+	
 	public int getIndex(){
 		return index;
 	}
@@ -160,6 +168,14 @@ implements Index {
 			int res = 0;
 			
 			if (i>=list.size()){
+				if (isOptim && i>0 && graph.getProxy().isEntailment(edge.getGraph())){
+					// eliminate entailed edge if already exist in another graph
+					if (same(edge, list.get(i-1))){
+						count++;
+						System.out.println("** EI: " + edge);
+						return null;
+					}
+				}
 				list.add(edge);
 			}
 			else {
@@ -170,6 +186,19 @@ implements Index {
 						count++;
 						return null;
 					}
+					else if (isOptim && graph.getProxy().isEntailment(edge.getGraph())){
+						// eliminate entailed edge if already exist in another graph
+						if (i > 0 && same(edge, list.get(i-1))){
+							count++;
+							System.out.println("** EI: " + edge);
+							return null;
+						}
+						if (same(edge, list.get(i))){
+							count++;
+							System.out.println("** EI: " + edge);
+							return null;
+						}
+					}
 				}
 				
 				list.add(i, edge);
@@ -179,10 +208,14 @@ implements Index {
 			list.add(edge);
 		}
 
-		complete(edge);
+		//complete(edge);
 		return edge;
 	}
 	
+	boolean same(Entity e1, Entity e2){
+		return e1.getNode(0).same(e2.getNode(0)) &&
+			   e1.getNode(1).same(e2.getNode(1));
+	}
 	
 	void complete(Entity ent){
 		if (index == 0 && graph.isType(ent.getEdge())){
@@ -516,6 +549,8 @@ implements Index {
 			}
 		}		
 	}
+	
+	
 	
 	
 /************************************************************************

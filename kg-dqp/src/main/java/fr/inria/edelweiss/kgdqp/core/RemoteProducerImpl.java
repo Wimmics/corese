@@ -159,7 +159,7 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * a priori inutile de le propager cote serveur car il sera déclenche par le moteur local (rien en pratique).
+     * a priori inutile de le propager cote serveur car il sera declenche par le moteur local (rien en pratique).
      * @param qEdge
      * @param index 
      */
@@ -173,7 +173,7 @@ public class RemoteProducerImpl implements Producer {
      * @param gNode
      * @param from
      * @param env
-     * @param exp inutile dans ce cas là
+     * @param exp inutile dans ce cas la
      * @param index sert au sens du parcours
      * @return 
      */
@@ -202,7 +202,7 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * inutile car jamais appelé sur un remoteProducer
+     * inutile car jamais appele sur un remoteProducer
      * @param value
      * @return 
      */
@@ -212,7 +212,7 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * inutile car jamais appelé sur un remoteProducer
+     * inutile car jamais appele sur un remoteProducer
      * @param value
      * @return 
      */
@@ -222,7 +222,7 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * inutile car jamais appelé sur un remoteProducer
+     * inutile car jamais appele sur un remoteProducer
      * @param value
      * @return 
      */
@@ -232,7 +232,7 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * inutile car jamais appelé sur un remoteProducer
+     * inutile car jamais appele sur un remoteProducer
      * @param value
      * @return 
      */

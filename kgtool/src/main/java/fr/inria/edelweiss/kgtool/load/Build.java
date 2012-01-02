@@ -22,6 +22,4 @@ public interface Build {
 	
 	 void start();
 	 
-	 void define(String name, Class<? extends EdgeImpl> cl);
-
 }

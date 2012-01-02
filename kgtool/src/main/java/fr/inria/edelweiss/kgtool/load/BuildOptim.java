@@ -24,15 +24,9 @@ public class BuildOptim extends BuildImpl {
 	
 	public static BuildOptim create(Graph g){
 		BuildOptim b = new BuildOptim(g);
-		b.init();
 		return b;
 	}
 	
-	public void init(){	
-		define(RDF.TYPE, 			EdgeType.class);
-		define(RDFS.SUBCLASSOF, 	EdgeSubClass.class);
-		define(RDFS.LABEL,			EdgeLabel.class);
-		define(RDFS.COMMENT, 		EdgeComment.class);
-	}
+	
 	
 }

@@ -229,7 +229,7 @@ public class Construct
 			graph.addGraphNode(source);
 		}
 
-		EdgeImpl ee =  EdgeCore.create(source, subject, property, object);
+		EdgeImpl ee =  graph.create(source, subject, property, object);
 		return ee;
 	}
 	

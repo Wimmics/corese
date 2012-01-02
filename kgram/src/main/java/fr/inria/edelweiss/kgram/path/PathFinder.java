@@ -304,6 +304,7 @@ public class PathFinder
 	 * Useful if  backjump or have a limit in sparql query
 	 */
 	public Iterable<Mapping> candidate(Node gNode, List<Node> from, Environment mem) {
+		isStop = false;
 		if (isList){
 			return candidate2(gNode, from, mem);
 		}
@@ -317,7 +318,7 @@ public class PathFinder
 	
 	
 	void mstart(Environment mem) {
-		isStop = false;
+		//isStop = false;
 		// buffer store path enumeration
 		mbuffer = new Buffer();
 		// path enumeration in a thread 
@@ -688,12 +689,14 @@ public class PathFinder
 	 * in the later case,  index = 1
 	 */
 	void eval(Record stack, Path path, Node start, Node src){
-		//trace(stack.isEmpty() + " " + path);
+		//trace(start.toString());
 
-		if (isStop) return;
+		if (isStop){
+			return;
+		}
 		
 		if (stack.isEmpty()){
-			
+
 			if (stack.getTarget() != null){
 				// this is a parallel path check, path is finished: stop it
 				if (start.same(stack.getTarget())){
@@ -731,7 +734,7 @@ public class PathFinder
 			
 		case Regex.LABEL:
 		case Regex.NOT: {
-			
+						
 			if (path.size() >= path.getMax()){
 				stack.push(exp);
 				return;
@@ -1136,7 +1139,7 @@ public class PathFinder
 	}
 
 	void trace(String str){
-		System.out.println(str);
+		System.out.println("** PF: " + str);
 	}
 	
 	/**

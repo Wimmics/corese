@@ -1,7 +1,7 @@
 package fr.inria.edelweiss.kgraph.rdf;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.EdgeGraph;
+import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 
 /**
  * Edge class where the  property and graph node are in the class
@@ -10,7 +10,7 @@ import fr.inria.edelweiss.kgraph.core.EdgeGraph;
  * @author Olivier Corby, Edelweiss INRIA 2011
  *
  */
-public class EdgeTypeEntail extends EdgeGraph {
+public class EdgeTypeEntail extends EdgeImpl {
 	protected static Node predicateNode, graph;
 
 	

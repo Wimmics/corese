@@ -50,6 +50,8 @@ public class TestQuery {
 		QueryProcess.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
 
 		graph = Graph.create(true);
+		graph.setOptimize(true);
+		
 		Load ld = Load.create(graph);
 		init(graph, ld);
 	}
@@ -446,22 +448,7 @@ public class TestQuery {
 		}
 	}
 	
-	class MyBuild extends BuildImpl {
-		
-		MyBuild(Graph g){
-			super(g);
-			define(RDFS.SUBCLASSOF, EdgeSubClass.class);
-			define(RDF.TYPE, EdgeType.class);
-			define(RDFS.LABEL, EdgeLabel.class);
-			define(RDFS.COMMENT, EdgeComment.class);
-		}
-		
-		public void process(Node gNode, EdgeImpl edge) {
-			//System.out.println(edge);
-			super.process(gNode, edge);
-		}
-		
-	}
+	
 	
 	
 	@Test
@@ -478,7 +465,7 @@ public class TestQuery {
 			
 			Graph g = Graph.create(true);
 			Load ld = Load.create(g);
-			ld.setBuild(new MyBuild(g));
+			//ld.setBuild(new MyBuild(g));
 						
 			init(g, ld);
 			
@@ -1212,11 +1199,89 @@ public class TestQuery {
 	
 	
 	
+	@Test
+	public void test40(){			
+			
+			Graph graph = Graph.create(true);			
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			 String init = 
+					"prefix ex: <http://test/> " +
+						"prefix foaf: <http://foaf/> " +
+						"insert data {" +
+						"foaf:knows rdfs:domain foaf:Person " +
+						"foaf:knows rdfs:range foaf:Person " +						
+						"ex:a foaf:knows ex:b " +
+						"ex:b rdfs:seeAlso ex:c " +
+						"ex:c foaf:knows ex:d " +
+						"ex:d rdfs:seeAlso ex:e " +					
+						"ex:a ex:rel ex:b " +
+						"ex:b ex:rel ex:c " +
+						"ex:c ex:rel ex:d " +					
+						"ex:c ex:rel ex:e " +																		
+					"}";
+				
+			String	 query = 
+					"prefix ex: <http://test/> " +
+					"prefix foaf: <http://foaf/> " +
+					"select * where {" +
+					"?x (foaf:knows/rdfs:seeAlso @{?this a foaf:Person} || ex:rel+)+ ?y" +
+					"}";
+							 												
+				try {
+					exec.query(init);
+					Mappings map = exec.query(query);
+					assertEquals("Result", 1, map.size());
+
+					
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		
+	}
 	
 	
-	
-	
-	
+	@Test
+	public void test41(){			
+			
+			Graph graph = Graph.create(true);			
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			 String init = 
+					"prefix ex: <http://test/> " +
+					"prefix foaf: <http://foaf/> " +
+					"insert data {" +
+					"ex:a foaf:knows ex:b " +
+					"ex:b foaf:knows ex:c " +
+					
+					"ex:a ex:rel ex:b " +
+					"ex:b ex:rel ex:c " +
+					"" +
+					"ex:b rdfs:seeAlso ex:a " +
+					"ex:c rdfs:seeAlso ex:b " +
+				"}";
+			
+			 String query = 
+				"prefix ex: <http://test/> " +
+				"prefix foaf: <http://foaf/> " +
+				"select * where {" +
+				"ex:a (  foaf:knows+ || (^rdfs:seeAlso) +) ?y" +
+
+				"}";
+							 												
+				try {
+					exec.query(init);
+					Mappings map = exec.query(query);
+					assertEquals("Result", 2, map.size());
+
+					
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		
+	}
 	
 	public IDatatype fun(Object o1, Object o2){
 		IDatatype dt1 = datatype(o1);

@@ -33,6 +33,8 @@ import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.query.SorterImpl;
+import fr.inria.edelweiss.kgraph.rdf.EdgeProperty;
+import fr.inria.edelweiss.kgraph.rdf.EdgePropertyEntail;
 import fr.inria.edelweiss.kgtool.load.BuildOptim;
 import fr.inria.edelweiss.kgtool.load.Load;
 
@@ -333,10 +335,15 @@ public class CoreseTest2 extends TestCase {
 		graph = Graph.create(true);
 		//graph.setIndex(true);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
-		
-		Load load = Load.create(graph);
-		load.setBuild(BuildOptim.create(graph));
+//		graph.getLogBook().setActive(true);
+//		graph.getLogBook().setTrace(true);
 
+		Load load = Load.create(graph);
+		//load.setBuild(BuildOptim.create(graph));
+		graph.setOptimize(true);
+		
+//		graph.getEdgeFactory().define("http://www.inria.fr/acacia/comma#CreatedBy",    EdgeProperty.class);
+//		graph.getEdgeFactory().define("http://www.inria.fr/acacia/comma#SomeRelation", EdgePropertyEntail.class, true);
 		long t1 = new Date().getTime();
 		load.load(data + "kgraph/rdf.rdf",  RDF.RDF);
 		load.load(data + "kgraph/rdfs.rdf", RDFS.RDFS);

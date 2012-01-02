@@ -51,6 +51,17 @@ public class Describe {
 		"# RDFS entailment" + NL +
 		"select (count(*) as ?nb) where {graph kg:entailment {?x ?p ?y}}";
 	
+	static final String nbEntail2 = 
+		"# RDFS entailment" + NL +
+		"select ?p (count(*) as ?nb) from kg:entailment where {?x ?p ?y} " +
+		"group by ?p order by desc(?nb) limit 5";
+	
+	static final String nbNotEntail = 
+		"# Edge not entailed" + NL +
+		"select ?p (count(*) as ?nb)  where {graph ?g {?x ?p ?y filter(?g != kg:entailment)}} " +
+		"group by ?p order by desc(?nb) limit 5";
+	
+	
 	static final String nbRule = 
 		"# Rule inference" + NL +
 		"select (count(*) as ?nb) where {graph kg:rule {?x ?p ?y}}";
@@ -88,7 +99,7 @@ public class Describe {
 	
 	static final String[] queries = 
 	{nbClass, nbClassDirectInst, nbClassInst, nbClassNoDirectInst, nbClassNoInst, 
-		nbPropNoDirectInst, nbPropNoInst, nbEntail, duplicate, duplicate2, nbRule, maxSource, maxTarget, maxInst, maxDepth};
+		nbPropNoDirectInst, nbPropNoInst, nbEntail, nbEntail2, nbNotEntail, duplicate, duplicate2, nbRule, maxSource, maxTarget, maxInst, maxDepth};
 	
 	
 	QueryProcess exec;
@@ -147,6 +158,7 @@ public class Describe {
 		QueryProcess exec = QueryProcess.create(g);
 		try {
 			for (String q : queries){
+				System.out.println(q);
 				map = exec.query(q);
 				info(q + NL, map);
 			}

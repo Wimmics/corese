@@ -43,7 +43,6 @@ public class RemoteProducerImpl implements Producer {
         rp = RemoteProducerServiceClient.getPort(url);
     }
 
-    
     @Override
     public void init(int nbNodes, int nbEdges) {
     }
@@ -57,8 +56,6 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * enumérer la liste des uris de graphe nommés.
-     * select * where {graph ?g {}}
      * @param gNode
      * @param from
      * @param env
@@ -70,10 +67,6 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * test si l'uri de gNode est bien celle d'un graphe nommé. 
-     * si gNode a une valeur g1 dans l'environnement, propager la requete
-     * ask {graph g1 {}} côté serveur
-     * 
      * @param gNode
      * @param from
      * @param env
@@ -107,7 +100,7 @@ public class RemoteProducerImpl implements Producer {
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFilterOptimizer();
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createBindingOptimizer();
         RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFullOptimizer();
-        
+
         String query = qo.getSparqlQuery(qEdge, env);
         Graph g = Graph.create();
         Graph g1 = Graph.create();
@@ -132,10 +125,10 @@ public class RemoteProducerImpl implements Producer {
                     BufferedWriter out = new BufferedWriter(new FileWriter(temp));
                     out.write(sparqlRes);
                     out.close();
-                    
+
                     l.load(temp.getAbsolutePath());
                     temp.delete();
-                    
+
                     Iterator it = g.getEdges().iterator();
                     while (it.hasNext()) {
                         Edge e = (Edge) it.next();
@@ -176,8 +169,6 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * sert au calcul de chemins : enumere les sommets d'un graph.
-     * a propager côte serveur select ?x where {?x <p>{0} ?y}
      * 
      * @param gNode
      * @param from

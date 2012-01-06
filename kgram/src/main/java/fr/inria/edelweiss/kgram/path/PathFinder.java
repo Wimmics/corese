@@ -63,12 +63,16 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
  * ?x s exp ?y ; ?x sa exp ?y
  * -- TODO: only one shortest path because store length into Node
  * 
+ * Path weight:
+ * ?x (rdf:first@2 / rdf:rest@1* / ^rdf:first@2) * ?y
+ *   
  * Constaint:
- * ?x exp @{?this c foaf:Person} ?y
+ * ?x exp @{?this a foaf:Person} ?y
  * ?x exp @[?this != <John>] ?y
  * 
  * Parallel Path:
  * ?x (foaf:knows || ^rdfs:seeAlso) + ?y
+ * 
  * 
  * Check Loop:
  * pf.setCheckLoop(true) => exp+ exp{n,m} without loop
@@ -76,6 +80,7 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
  * pragma {kg:path kg:loop false}
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
+ * @thanx  Corentin Follenfant for the idea of property weight into the regex 
  * 
  *********************************************************/
 
@@ -436,6 +441,7 @@ public class PathFinder
 		Node cstart = get(memory, index);
 		Path path = new Path();
 		path.setMax(max);
+		path.setIsShort(isShort);
 		
 		if (isShort && cstart != null) {
 			// if null, will be done later
@@ -746,8 +752,8 @@ public class PathFinder
 			Edge ee = edge;
 			Environment env = memory;
 			int ii = index, oo = other;
+			int pweight = path.weight(), eweight = exp.getWeight();
 			int size = path.size();
-			int length = size+1;
 
 			boolean 
 				hasFilter = filter!=null,
@@ -779,9 +785,8 @@ public class PathFinder
 				}
 				
 				//cedge++;
-				
-				//System.out.println(ent);
-				
+				//trace(ent);
+
 				Edge rel  = ent.getEdge();
 				Node node = rel.getNode(ii);
 
@@ -819,9 +824,11 @@ public class PathFinder
 						pp.initPath(ee, 0);
 					}
 				}
-				else if (hasShort){
-					Node other = rel.getNode(oo);
-					Integer l = getLength(other);
+				
+				if (hasShort){
+					Node other 	= rel.getNode(oo);
+					Integer l 	= getLength(other);
+					int length 	= pweight + eweight;
 					if (l == null){
 						setLength(other, length);
 					}
@@ -838,12 +845,13 @@ public class PathFinder
 
 				if (hasHandler){
 					handler.enter(ent, exp, size);
-				}	
-				path.add(ent);
+				}
+				
+				path.add(ent, eweight);
 				
 				eval(stack, path, rel.getNode(oo), src);
 				
-				path.remove(size);
+				path.remove(ent, eweight);
 				
 				if (hasHandler){
 					handler.leave(ent, exp, size);
@@ -1138,7 +1146,7 @@ public class PathFinder
 		}
 	}
 
-	void trace(String str){
+	void trace(Object str){
 		System.out.println("** PF: " + str);
 	}
 	

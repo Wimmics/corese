@@ -77,6 +77,9 @@ public interface Environment {
 	 * @return
 	 */
 	int pathLength(Node qNode);
+	
+	int pathWeight(Node qNode);
+	
 
 	 // aggregates
 

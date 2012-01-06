@@ -59,6 +59,7 @@ PARSER_BEGIN(SparqlCorese)
     boolean show = false;
     /** To show some printings about the part of the parser which deals with Expression */
     boolean debug2 = show && false;
+    static final String THIS = "?this";
     
 	public void setASTQuery(ASTQuery aq) {
 		astq = aq;
@@ -1212,9 +1213,7 @@ Exp PropertyListNotEmpty( Expression expression1, Exp stack) :
   {
   	for (int i=0;i<v.size();i++) {
       	expression2 = v.get(i);
-        //triple = Triple.create(expression1, atom, expression2);
         e1 = astq.createTriple(expression1, atom, expression2);
-		//e1 = triple; //.parseGet(parser); //, expression1, atom, expression2);
         if (e1 != null){
         	// add triple at place n (see above for definition of n)
         	stack.add(n++, e1);
@@ -1238,17 +1237,7 @@ Atom Verb2(): { Atom atom; String[] s; Token t; }
   	if (s[2]!="") { atom.setIsdirect(true); }
   }
  
- // ( LOOKAHEAD(2) 
-  //  (
-   // 	<LBRACE> t = <INTEGER> <RBRACE> { atom.setIsset(true); } 
-    //  	| <LBRACKET> t = <INTEGER> <RBRACKET> 
-    //) 
-    //{ 
-    	//atom.setPath(Integer.parseInt(t.image)); 
-  		//atom.setName(atom.getName()); 
-  	//} 
-  //)?
-  
+ 
   { return atom; }
 }
 
@@ -1473,7 +1462,7 @@ Token OpeRegExp() : {Token ope;}
 }
 
 
-Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant cst;}
+Expression PrimaryRegExp():{Token w; Expression exp, test, subject; Exp stack; String t; Constant cst;}
 {
 	( 
 		exp = IRIrefConst() 
@@ -1486,23 +1475,33 @@ Expression PrimaryRegExp():{Expression exp, test; Exp stack; String t; Constant 
 	
 	( 	LOOKAHEAD(2)
 		<AT> 
+		
 		(
-		// filter
-		<LBRACKET> 
-		  { stack = BasicGraphPattern.create(); }
-		  test = Expression(stack) 
-		  {exp = astq.setRegexTest(exp, test);} 
-		<RBRACKET> 	
+		
+		w = <INTEGER> { exp.setWeight(w.image); }
 		
 		|
-		// pattern
-		//<LBRACE> 
+		
+		// [ a foaf:Person ]
+		
+		  { stack = BasicGraphPattern.create(); subject = astq.createVariable(THIS);}
+		  		  
+		   <LBRACKET>
+  			stack = PropertyListNotEmpty(subject, stack)    
+  		   <RBRACKET>
+		   
+		  //test = Expression(stack) 
+		  
+		  {exp = astq.createRegexTest(exp, stack);} 
+		
+		|
+		
+		// { ?this a foaf:Person }
 		  stack = GroupGraphPattern()
 		  
-		  {test = astq.createExist(stack, false);
-		   exp = astq.setRegexTest(exp, test);}
+		 {exp = astq.createRegexTest(exp, stack);} 
+
 		  
-		//<LBRACE>
 		)	
 	) ?   
 	

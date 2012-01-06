@@ -515,9 +515,9 @@ public class Graph {
 	
 	
 	public Node getTopClass(){
-		Node n = getNode(RDFS.RESOURCE);
+		Node n = getNode(OWL.THING);
 		if (n == null){
-			n = getNode(OWL.THING);
+			n = getNode(RDFS.RESOURCE);
 		}
 		if (n == null){
 			n = createNode(RDFS.RESOURCE);

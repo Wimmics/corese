@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -29,6 +33,7 @@ import fr.inria.edelweiss.kgraph.logic.RDFS;
  * 
  */
 public class RDFFormat {
+	static final String XMLNS 		= "xmlns:";
 	static final String DESCRIPTION = "rdf:Description";
 	static final String ID 			= " rdf:about='";
 	static final String NODEID 		= " rdf:NodeID='";
@@ -40,8 +45,14 @@ public class RDFFormat {
 	static final String OWLCLASS 	= "owl:Class";
 	static final String SPACE 		= "   ";
 	static final String NL 			= System.getProperty("line.separator");
-	private static final String OCOM = "<!--";
-	private static final String CCOM = "--!>";
+	private static final String OCOM 	= "<!--";
+	private static final String CCOM 	= "--!>";
+	private static final String LT 		= "<";
+	private static final String XLT 	= "&lt;";
+	private static final String AMP 	= "&(?!amp;)";
+	private static final String XAMP 	= "&amp;";
+
+	
 
 	
 	Graph graph;
@@ -54,10 +65,10 @@ public class RDFFormat {
 	List<String> with, without;
 	
 	RDFFormat(NSManager n){
-		with = new ArrayList<String>();
+		with 	= new ArrayList<String>();
 		without = new ArrayList<String>();
-		nsm = n;
-		sb = new StringBuilder();
+		nsm 	= n;
+		sb 		= new StringBuilder();
 	}
 	
 	
@@ -220,7 +231,7 @@ public class RDFFormat {
 			}
 			
 			String ns = nsm.getNamespace(p);
-			bb.append("xmlns:" + p + "='" + ns + "'");
+			bb.append(XMLNS + p + "='" + toXML(ns) + "'");
 		}
 	}
 	
@@ -234,13 +245,13 @@ public class RDFFormat {
 			IDatatype dt = getValue(node);
 
 			String id = ID;
-			if (dt.isBlank())id = NODEID;
+			if (dt.isBlank()) id = NODEID;
 			String type = type(node);	
 			
 			String open  = "<" + type;
 			String close = "</" + type + ">";
 
-			display(open + id + node.getLabel() + "'>");
+			display(open + id + toXML(node.getLabel()) + "'>");
 
 			for (; it.hasNext();){
 				Entity ent = it.next();
@@ -298,23 +309,30 @@ public class RDFFormat {
 		String close = "</" + pred +">";
 
 		if (dt.isLiteral()){
+			
+			String lit = toXML(dt.getLabel());
+			
 			if (dt.hasLang()){
-				display(SPACE + open + LANG + dt.getLang()+ "'>" + dt + close);
+				display(SPACE + open + LANG + dt.getLang()+ "'>" + lit + close);
 			}
 			else if (dt.getDatatype()!=null){
-				display(SPACE + open + DATATYPE + dt.getDatatypeURI() + "'>" + dt + close);
+				display(SPACE + open + DATATYPE + dt.getDatatypeURI() + "'>" + lit + close);
 			}
 			else {
-				display(SPACE + open + ">" + dt + close);
+				display(SPACE + open + ">" + lit + close);
 			}
 		}
 		else {
+			String uri = toXML(dt.getLabel());
 			String id = RESOURCE;
 			if (dt.isBlank()) id = NODEID ;
-			display(SPACE + open + id + dt + "'/>");
+			display(SPACE + open + id + uri + "'/>");
 		}
 	}
 	
+	String toXML(String str){
+		return StringEscapeUtils.escapeXml(str);
+	}
 
 	IDatatype getValue(Node node){
 		return (IDatatype) node.getValue();

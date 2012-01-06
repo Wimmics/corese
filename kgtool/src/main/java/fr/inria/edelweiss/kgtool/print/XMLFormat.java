@@ -275,16 +275,18 @@ public class XMLFormat  {
 		String close = "</binding>";
 		print(open);
 		String str = dt.getLabel();
+		
 		if (dt.isLiteral()) {
 			String literal = "</literal>";
 			str = toXML(str);
+			
 			if (dt.hasLang()) {
 				print("<literal xml:lang='" + dt.getLang() + "'>" + str +
 						literal);
 			}
 			else if (dt.getDatatype() != null) {
 				if (DatatypeMap.isDouble(dt))
-					str =  nf.format(dt.getDoubleValue());
+					str =  nf.format(dt.doubleValue());
 				print("<literal datatype='" +  dt.getDatatype().getLabel()  +
 						"'>" + str + literal);
 			}

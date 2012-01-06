@@ -151,6 +151,7 @@ public interface ExprType {
 	public static int PSIM 		= 215;
 	public static int GETP		= 216;
 	public static int SETP 		= 217;
+	public static int PWEIGHT 	= 218;
 
 
 

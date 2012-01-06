@@ -61,6 +61,8 @@ public interface Regex {
 	
 	int getMax();
 	
+	int getWeight();
+	
 	Regex getArg(int n);
 
 	Regex reverse();

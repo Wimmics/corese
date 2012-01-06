@@ -22,8 +22,10 @@ import fr.inria.edelweiss.kgram.tool.ProducerDefault;
  */
 public class Path extends ProducerDefault
 {
-	boolean loopNode = true;
+	boolean loopNode = true,
+	isShort = false;
 	int max = Integer.MAX_VALUE;
+	int weight = 0;
 	
 	ArrayList<Entity> path;
 	
@@ -37,12 +39,12 @@ public class Path extends ProducerDefault
 		path = new ArrayList<Entity>(n);
 	}
 	
-	public void add(Entity edge){
-		path.add(edge);
-	}
-	
 	public ArrayList<Entity> getEdges(){
 		return path;
+	}
+	
+	void setIsShort(boolean b){
+		isShort = b;
 	}
 	
 	void setMax(int m){
@@ -61,10 +63,24 @@ public class Path extends ProducerDefault
 		path.clear();
 	}
 	
-	public void remove(int n){
-		path.remove(n);
+	public void add(Entity ent){
+		path.add(ent);
+	}
+
+	public void add(Entity ent, int w){
+		path.add(ent);
+		weight += w;
 	}
 	
+	public void remove(Entity ent, int w){
+		path.remove(path.size()-1);
+		weight -= w;
+	}
+	
+	public void remove(){
+		path.remove(path.size()-1);
+	}
+
 	
 	public Node getSource(){
 		return getEdge(0).getNode(0);
@@ -104,6 +120,7 @@ public class Path extends ProducerDefault
 				path.add(ent);
 			}		
 		}
+		path.setWeight(weight);
 		return path;
 	}
 	
@@ -113,6 +130,14 @@ public class Path extends ProducerDefault
 	
 	public int size(){
 		return path.size();
+	}	
+
+	public int weight(){
+		return weight;
+	}
+	
+	void setWeight(int w){
+		weight = w;
 	}
 	
 	// nb getResultValues()

@@ -738,7 +738,7 @@ public class PathFinder2
 						}						
 						if (next.isBound()) next.incCount(-1);
 
-						path.remove(size);
+						path.remove();
 					}
 				}
 
@@ -1142,7 +1142,7 @@ public class PathFinder2
 				
 				path.add(ent);
 				eval(stack, path, rel.getNode(oo), src, inv);
-				path.remove(size);
+				path.remove();
 				
 				if (isStart){
 					visit.leave(node);

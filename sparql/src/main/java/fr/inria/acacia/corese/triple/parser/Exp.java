@@ -83,6 +83,10 @@ public abstract class Exp extends Statement {
 		return null;
 	}
 	
+	public Expression getFilter(){
+		return null;
+	}
+	
 	public void setAST(ASTQuery ast){
 		
 	}
@@ -211,22 +215,16 @@ public abstract class Exp extends Statement {
 	public void setRec(boolean b){
 	  }
 	
-	/**
-	 * Generate target Triple from triple
-	 */
-	
-	
-	
-	
 	
 	public StringBuffer toString(StringBuffer sb) {
-		if (size() == 1) {
-			sb.append(get(0).toString());
-		} else {
-			sb.append(get(0).toString());
+		if (size() == 0) return sb;
+
+		get(0).toString(sb);
+
+		if (size() > 1) {
 			for (int i=1;i<size();i++) {
 				sb.append(ASTQuery.NL);
-				sb.append(get(i).toString());
+				get(i).toString(sb);
 			}
 		}
 		return sb;

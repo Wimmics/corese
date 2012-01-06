@@ -768,16 +768,7 @@ public class ASTQuery  implements Keyword {
     	return Term.negation(e);
     }
     
-    public  Term createExist(Exp exp, boolean negation) {
-    	Term term = Term.function(Term.EXIST);
-    	term.setExist(Exist.create(exp));
-    	if (negation){
-    		term = negation(term);
-    	}
-    	return term;
-    }
-    
-    
+
     public RDFList createRDFList(List<Expression> list){
     	return createRDFList(list, true);
     }
@@ -1014,12 +1005,38 @@ public class ASTQuery  implements Keyword {
 		return createTerm(ope, exp1, exp2);
 	}
 	
+   
+    public  Term createExist(Exp exp, boolean negation) {
+    	Term term = Term.function(Term.EXIST);
+    	term.setExist(Exist.create(exp));
+    	if (negation){
+    		term = negation(term);
+    	}
+    	return term;
+    }
+    
+    /**
+     *   foaf:knows @[a foaf:Person]
+     *   foaf:knows @{?this a foaf:Person}
+     *   foaf:knows @{filter(?this != ex:John)}
+     */
+    public Expression createRegexTest(Expression prop, Exp test) {
+    	Expression exp;
+    	if (test.size() == 1 && test.get(0).isFilter()){
+    		exp = test.get(0).getFilter();
+    	}
+    	else {
+    		exp = createExist(test, false); 
+    	}
+    	return setRegexTest(prop, exp);
+    }
+    
+	
 	/**
 	 * Filter test associated to path regex exp
 	 */
 	public Expression setRegexTest(Expression exp, Expression test){
 		regexExpr.put(exp, test);
-		//exp.setExpr(test);
 		Expression tt = Term.function(Term.TEST);
 		tt.setExpr(test);
 		Expression seq = sequence(exp, tt);
@@ -1394,7 +1411,7 @@ public class ASTQuery  implements Keyword {
 			union.add(bgp2);
 			
 			// make the union optional
-			Option opt =  Option.create(union);
+			Option opt =  Option.create(BasicGraphPattern.create(union));
 			
 			bodyExpLocal.add(opt);
 			

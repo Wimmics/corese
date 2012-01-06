@@ -206,6 +206,13 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+	public void setWeight(String w){
+	}
+	
+	public int getWeight(){
+		return -1;
+	}
+	
 	public boolean isInverse(){
 		return isInverse;
 	}

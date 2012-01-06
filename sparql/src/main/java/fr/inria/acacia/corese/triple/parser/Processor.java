@@ -53,7 +53,11 @@ public class Processor {
 	private static final String SAMPLE = "sample";
 
 
-	private static final String LENGTH = "pathLength";
+	private static final String PLENGTH = "pathLength";
+	private static final String KGPLENGTH = ExpType.KGRAM + "pathLength";
+	private static final String PWEIGHT = "pathWeight";
+	private static final String KGPWEIGHT = ExpType.KGRAM +"pathWeight";
+
 	private static final String DATATYPE = "datatype";
 	private static final String STR = "str";
 	private static final String URI = "uri";
@@ -62,9 +66,12 @@ public class Processor {
 	private static final String SELF = "self";
 	private static final String DEBUG = "trace";
 
-	static final String EXTERN = "extern";
-	static final String XPATH = "xpath";
-	static final String SQL = "sql";
+	static final String EXTERN 	= "extern";
+	static final String XPATH 	= "xpath";
+	static final String KGXPATH = ExpType.KGRAM + "xpath";
+	static final String SQL 	= "sql";
+	static final String KGSQL 	= ExpType.KGRAM + "sql";
+
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
 	static final String GROUPBY = "groupBy";
@@ -318,9 +325,14 @@ public class Processor {
 		defoper(DEBUG, 		ExprType.DEBUG);
 
 		defoper(MATCH, 	ExprType.SKIP);
-		defoper(LENGTH, ExprType.LENGTH);
+		defoper(PLENGTH, ExprType.LENGTH);
+		defoper(KGPLENGTH, ExprType.LENGTH);
+		defoper(KGPWEIGHT, ExprType.PWEIGHT);
+
 		defoper(XPATH, 	ExprType.XPATH);
+		defoper(KGXPATH, 	ExprType.XPATH);
 		defoper(SQL, 	ExprType.SQL);
+		defoper(KGSQL, 	ExprType.SQL);
 		defoper(KGRAM, 	ExprType.KGRAM);
 		defoper(EXTERN, ExprType.EXTERN);
 		defoper(UNNEST, ExprType.UNNEST);

@@ -273,9 +273,15 @@ public class Mapping
 		if (lPath == null){
 			return -1;
 		}
-		return getPath(qNode).size();
+		return getPath(qNode).length();
 	}
 
+	public int pathWeight(Node qNode){
+		if (lPath == null){
+			return -1;
+		}
+		return getPath(qNode).weight();
+	}
 	
 	boolean isPath(){
 		return lPath != null;

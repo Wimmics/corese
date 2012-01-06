@@ -66,6 +66,11 @@ public class EnvironmentImpl implements Environment {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public int pathWeight(Node node) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 	@Override
 	public void aggregate(Evaluator eval, Filter f) {

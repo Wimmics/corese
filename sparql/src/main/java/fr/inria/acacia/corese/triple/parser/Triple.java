@@ -664,6 +664,11 @@ public class Triple extends Exp {
 		return exp;
 	}
 	
+	public Expression getFilter() {
+		return exp;
+	}
+	
+	
 	public Expression getRegex() {
 		return regex;
 	}

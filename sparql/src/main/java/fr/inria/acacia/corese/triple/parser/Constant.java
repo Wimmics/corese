@@ -26,6 +26,7 @@ public class Constant extends Atom {
 	String srcDatatype = null; // the source datatype if any (not infered)
 	boolean literal = false;
 	boolean isBlank = false;
+	int weight = 1;
 	private Variable var;
 	// draft regexp
 	private Expression exp;
@@ -110,8 +111,13 @@ public class Constant extends Atom {
 				//return name + "@" + lang;
 				sb.append(KeywordPP.LANG + lang);
 			} 
-			else if (hasRealDatatype()) {	
-				sb.append(KeywordPP.SDT + datatype);
+			else if (hasRealDatatype()) {
+				if (datatype.startsWith("http://")){
+					sb.append(KeywordPP.SDT + "<"+ datatype +">");
+				}
+				else {
+					sb.append(KeywordPP.SDT + datatype);
+				}
 			} 
 			else {
 				return sb;
@@ -241,6 +247,23 @@ public class Constant extends Atom {
 		isBlank = b;
 	}
 	
+	public void setWeight(String w){
+		try {
+			setWeight(Integer.parseInt(w));
+		}
+		catch (Exception e){
+		}
+	}
+	
+	public void setWeight(int w){
+		weight = w;
+	}
+
+	
+	public int getWeight(){
+		return weight;
+	}
+	
 	public boolean isNumber(){
 		return false;
 	}
@@ -299,6 +322,7 @@ public class Constant extends Atom {
 		if (isReverse){
 			cst = copy();
 			cst.setReverse(isReverse);
+			cst.setWeight(getWeight());
 		}
 		cst.setretype(cst.getretype());
 		return cst;

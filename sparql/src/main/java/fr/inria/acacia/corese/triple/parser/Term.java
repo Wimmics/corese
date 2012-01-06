@@ -25,6 +25,9 @@ public class Term extends Expression {
 	static final String RE_PARA = "||";
 	static final String RE_ALT = "|";
 	static final String RE_SEQ = "/";
+	static final String OCST = "@{";
+	static final String CCST = "}";
+	static final String SPACE = " ";
 
 	static final String STNOT = Keyword.STNOT;
 	static final String SENOT = Keyword.SENOT;
@@ -162,9 +165,9 @@ public class Term extends Expression {
 				str += getMin();
 			}
 			else {
-				if (getMin()!=0){
+				//if (getMin()!=0){
 					str += getMin();
-				}
+				//}
 				str += ",";
 				if (getMax()!= Integer.MAX_VALUE){
 					str += getMax();
@@ -189,7 +192,12 @@ public class Term extends Expression {
 			return paren(getArg(0).toRegex()) + "?";
 		}
 		else if (isSeq()){
-			return getArg(0).toRegex() + RE_SEQ + getArg(1).toRegex();
+			if (getArg(1).isTest()){
+				return toTest();
+			}
+			else {
+				return getArg(0).toRegex() + RE_SEQ + getArg(1).toRegex();
+			}
 		}
 		else if (isAlt()){
 			return getArg(0).toRegex() + RE_ALT + getArg(1).toRegex();
@@ -198,6 +206,10 @@ public class Term extends Expression {
 			return getArg(0).toRegex() + RE_PARA + getArg(1).toRegex();
 		}
 		return toString();
+	}
+	
+	String toTest(){
+		return getArg(0).toRegex() + OCST + KeywordPP.FILTER + SPACE + getArg(1).getExpr() + CCST;
 	}
 
 	String paren(String s){
@@ -221,7 +233,9 @@ public class Term extends Expression {
 			n = 1;
 		} 
 		else if (isFunction()){
-			sb.append(getName());
+			if (! getName().equals(LIST)){
+				sb.append(getName());
+			}
 			isope = false;
 		}
 

@@ -213,11 +213,19 @@ public class Interpreter implements Evaluator, ExprType {
 		case IF:
 			return ifthenelse(exp, env);
 			
-		case LENGTH:
+		case LENGTH: {
 			Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
 			if (qNode == null) return null;
 			int value = env.pathLength(qNode);
-			return proxy.getValue(value);	
+			return proxy.getValue(value);
+		}
+			
+		case PWEIGHT: {
+			Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
+			if (qNode == null) return null;
+			int value = env.pathWeight(qNode);
+			return proxy.getValue(value);
+		}	
 		
 		case COUNT:
 		case MIN:

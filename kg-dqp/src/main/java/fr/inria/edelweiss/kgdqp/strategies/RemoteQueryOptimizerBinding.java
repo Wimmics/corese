@@ -23,9 +23,11 @@ public class RemoteQueryOptimizerBinding implements RemoteQueryOptimizer {
 
     private static Logger logger = Logger.getLogger(RemoteQueryOptimizerBinding.class);
 
+    RemoteQueryOptimizerBinding() {
+    }
+
     @Override
     public String getSparqlQuery(Edge edge, Environment env) {
-        String results = "";
         String sparqlPrefixes = "";
 
         //prefix handling
@@ -48,16 +50,15 @@ public class RemoteQueryOptimizerBinding implements RemoteQueryOptimizer {
             predicate = env.getNode(edge.getEdgeVariable());
         }
 
-        //   
         if (subject == null) {
             subject = edge.getNode(0);
-        } 
+        }
         if (object == null) {
             object = edge.getNode(1);
-        } 
+        }
         if (predicate == null) {
             predicate = edge.getEdgeNode();
-        } 
+        }
 
         Edge reqEdge = EdgeImpl.create(predicate, subject, object);
 

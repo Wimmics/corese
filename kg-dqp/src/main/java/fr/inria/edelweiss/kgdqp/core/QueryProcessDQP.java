@@ -10,6 +10,8 @@ import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import java.net.URL;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Extension of the KGRAM SPARQL query processor, that handles several 
@@ -20,6 +22,12 @@ import java.net.URL;
  */
 public class QueryProcessDQP extends QueryProcess {
 
+    private final int parallelWaitMP = 0;
+    private final int parallelLessWaitMP = 1;
+    private final int pipelinedMP = 2;
+    
+    final protected Lock lock = new ReentrantLock();
+
     public QueryProcessDQP() {
         super();
     }
@@ -29,7 +37,7 @@ public class QueryProcessDQP extends QueryProcess {
     }
 
     public void addRemote(URL url) {
-        add(new RemoteProducerImpl(url));
+        add(new RemoteProducerImpl(url, lock));
     }
 
     public static QueryProcessDQP create(Graph g) {
@@ -63,16 +71,46 @@ public class QueryProcessDQP extends QueryProcess {
 
     @Override
     public void add(Producer prod) {
-        ParallelMetaProducer meta;
-        if (producer instanceof MetaProducer) {
-            meta = (ParallelMetaProducer) producer;
-        } else {
-            meta = ParallelMetaProducer.create();
-            if (producer != null) {
-                meta.add(producer);
+//        int implem = parallelWaitMP;
+//        int implem = parallelLessWaitMP;
+        int implem = pipelinedMP;
+
+        if (implem == parallelWaitMP) {
+            ParallelMetaProducer meta;
+            if (producer instanceof MetaProducer) {
+                meta = (ParallelMetaProducer) producer;
+            } else {
+                meta = ParallelMetaProducer.create();
+                if (producer != null) {
+                    meta.add(producer);
+                }
+                producer = meta;
             }
-            producer = meta;
+            meta.add(prod);
+        } else if (implem == parallelLessWaitMP) {
+            ParallelMetaProducerLessBlocking meta;
+            if (producer instanceof MetaProducer) {
+                meta = (ParallelMetaProducerLessBlocking) producer;
+            } else {
+                meta = ParallelMetaProducerLessBlocking.create();
+                if (producer != null) {
+                    meta.add(producer);
+                }
+                producer = meta;
+            }
+            meta.add(prod);
+        } else if (implem == pipelinedMP) {
+            PipelinedMetaProducer meta;
+            if (producer instanceof MetaProducer) {
+                meta = (PipelinedMetaProducer) producer;
+            } else {
+                meta = PipelinedMetaProducer.create();
+                if (producer != null) {
+                    meta.add(producer);
+                }
+                producer = meta;
+            }
+            meta.add(prod);
         }
-        meta.add(prod);
     }
 }

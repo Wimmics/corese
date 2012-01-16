@@ -16,6 +16,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -23,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import wsimport.KgramWS.RemoteProducer;
@@ -38,9 +40,11 @@ public class RemoteProducerImpl implements Producer {
 
     private static Logger logger = Logger.getLogger(RemoteProducerImpl.class);
     private RemoteProducer rp;
+    protected Lock lock;
 
-    public RemoteProducerImpl(URL url) {
+    public RemoteProducerImpl(URL url, Lock lock) {
         rp = RemoteProducerServiceClient.getPort(url);
+        this.lock = lock;
     }
 
     @Override
@@ -95,53 +99,48 @@ public class RemoteProducerImpl implements Producer {
         // si gNode == null et from non vide alors "from"
 
         ArrayList<Entity> results = new ArrayList<Entity>();
+        Iterator it = null;
 
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createSimpleOptimizer();
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFilterOptimizer();
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createBindingOptimizer();
         RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFullOptimizer();
-
         String query = qo.getSparqlQuery(qEdge, env);
         Graph g = Graph.create();
         Graph g1 = Graph.create();
         Node source = g1.addGraph("http://ns.inria.fr/edelweiss/2010/kgram/default");
 
         logger.debug("sending query \n" + query + "\n" + "to " + rp.getEndpoint());
-        {
-            InputStream is = null;
-            try {
-                StopWatch sw = new StopWatch();
-                sw.start();
-                String sparqlRes = rp.getEdges(query);
-                logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
-                sw.reset();
-                sw.start();
-                if (sparqlRes != null) {
-                    Load l = Load.create(g);
-                    // bug unicode char encoding
-//                    is = new ByteArrayInputStream(sparqlRes.getBytes());
-//                    l.load(is);
-                    File temp = File.createTempFile("pattern", ".rdf");
-                    BufferedWriter out = new BufferedWriter(new FileWriter(temp));
-                    out.write(sparqlRes);
-                    out.close();
 
-                    l.load(temp.getAbsolutePath());
-                    temp.delete();
+        InputStream is = null;
+        try {
+            StopWatch sw = new StopWatch();
+            sw.start();
+            String sparqlRes = rp.getEdges(query);
+            logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
+            sw.reset();
+            sw.start();
+            if (sparqlRes != null) {
+                Load l = Load.create(g);
+                // bug unicode char encoding    
+                is = new ByteArrayInputStream(sparqlRes.getBytes());
+                l.load(is);
 
-                    Iterator it = g.getEdges().iterator();
-                    while (it.hasNext()) {
-                        Edge e = (Edge) it.next();
-                        //                    logger.info("From Graph " + e.toString());
-                        results.add((Entity) e);
-                    }
-                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+                //                File temp = File.createTempFile("pattern", ".rdf");
+//                BufferedWriter out = new BufferedWriter(new FileWriter(temp));
+//                out.write(sparqlRes);
+//                out.close();//
+//                l.load(temp.getAbsolutePath());
+//                temp.delete();
+
+
+                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return results;
+
+        return g.getEdges();
     }
 
     /**

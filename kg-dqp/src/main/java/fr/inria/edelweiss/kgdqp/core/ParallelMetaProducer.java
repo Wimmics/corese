@@ -134,6 +134,7 @@ public class ParallelMetaProducer extends MetaProducer {
         logger.info("Searching for edge : " + edge.toString());
         // iteration over 
         for (Producer p : this.getProducers()) {
+            //TODO Check index
             CallableGetEdges getEdges = new CallableGetEdges(p, gNode, from, edge, env);
             results.add(exec.submit(getEdges));
             count++;

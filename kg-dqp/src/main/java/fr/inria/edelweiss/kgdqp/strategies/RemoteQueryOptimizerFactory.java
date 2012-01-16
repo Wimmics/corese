@@ -4,6 +4,7 @@
  */
 package fr.inria.edelweiss.kgdqp.strategies;
 
+
 /**
  * A factory to construct edge request optimizers
  * 

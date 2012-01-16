@@ -29,7 +29,6 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
 
     @Override
     public String getSparqlQuery(Edge edge, Environment env) {
-        String results = "";
         String sparqlPrefixes = "";
 
         //prefix handling
@@ -54,6 +53,7 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         if (edge.getEdgeVariable() != null) {
             predicate = env.getNode(edge.getEdgeVariable());
         }
+        
 
         //   
         if (subject == null) {
@@ -106,7 +106,7 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
      * FILTER ((?x > 10) && (?z > 10))
      * 
      */
-    public static boolean bound(Edge edge, Filter filter) {
+    public boolean bound(Edge edge, Filter filter) {
         List<String> vars = new ArrayList<String>();
         if (edge.getNode(0).isVariable()) {
             vars.add(edge.getNode(0).toString());

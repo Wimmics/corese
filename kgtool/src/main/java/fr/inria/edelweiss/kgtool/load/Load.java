@@ -21,6 +21,9 @@ import fr.com.hp.hpl.jena.rdf.arp.ARP;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
+import fr.inria.acacia.corese.exceptions.QueryLexicalException;
+import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
+import fr.inria.acacia.corese.triple.parser.LoadTurtle;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.api.Log;
@@ -46,7 +49,8 @@ public class Load
 	static final String[] RULES 	= {RULE, BRULE};
 	static final String QUERY 	= ".rq";
 	static final String UPDATE 	= ".ru";
-	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", RULE, BRULE, QUERY, UPDATE};
+	static final String TURTLE 	= ".ttl";
+	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, RULE, BRULE, QUERY, UPDATE};
 	static final String HTTP = "http://";
 	static final String FTP  = "ftp://";
 	static final String FILE = "file://";
@@ -196,7 +200,7 @@ public class Load
 		}
 		else {
 			if (debug){
-				logger.debug("** Load: " + nb + " " + path);
+				logger.debug("** Load: " + nb++ + " " + path);
 			}
 			try {
 				load(path, src, null);
@@ -219,7 +223,7 @@ public class Load
 		}
 		else {
 			if (debug){
-				logger.debug("** Load: " + nb + " " + path);
+				logger.debug("** Load: " + nb++ + " " + path);
 			}
 			load(path, src, null);
 		}
@@ -296,14 +300,21 @@ public class Load
 	void synLoad(Reader read,  String path, String base, String src) throws LoadException {
 		try {		
 			writeLock().lock();
-			load(read, path, base, src);
+			if (path.endsWith(TURTLE)){
+				loadTurtle(read, path, base, src);
+			}
+			else {
+				load(read, path, base, src);
+			}
 		}
 		finally {
 			writeLock().unlock();
 		}
 	}
 	
+	
 	void load(Reader read,  String path, String base, String src) throws LoadException {
+		
 		if (hasPlugin){
 			src  = plugin.statSource(src);
 			base = plugin.statBase(base);
@@ -333,6 +344,22 @@ public class Load
 		}
 	}
 	
+	
+	void loadTurtle(Reader read,  String path, String base, String src) throws LoadException {
+		
+		CreateImpl cr = CreateImpl.create(graph);
+		cr.graph(src);
+		
+		LoadTurtle ld = LoadTurtle.create(read, cr, base);
+		try {
+			ld.load();
+		} catch (QueryLexicalException e) {
+			throw LoadException.create(e, path);
+		} catch (QuerySyntaxException e) {
+			throw LoadException.create(e, path);
+		}
+	}
+
 	
 	void loadRule(String path, String src){
 		if (engine == null){

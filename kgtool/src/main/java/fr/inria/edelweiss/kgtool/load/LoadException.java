@@ -42,9 +42,18 @@ public class LoadException extends Exception {
 	public String toString(){
 		if (ex == null) return super.toString();
 		
-		String str = ex.getClass().getName() + " " + ex.getMessage();
+		String str = ex.getClass().getName() + " ";
+		if (ex.getMessage()!=null){
+			str += ex.getMessage();
+		}
+		else {
+			str += ex.toString();
+		}
 		if (getObject() != null){
 			str += "\n" + getObject();
+		}
+		else {
+			str += "\n" + getPath();
 		}
 		return str;
 	}

@@ -25,6 +25,7 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
+import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgraph.core.NodeImpl;
 
 /**
@@ -35,7 +36,8 @@ import fr.inria.edelweiss.kgraph.core.NodeImpl;
  */
 public class ProducerImpl implements Producer {
 	static final int IGRAPH = Graph.IGRAPH;
-	static final int MAX = Graph.NBNODE;
+	static final int START 	= Graph.START;
+	static final int MAX 	= Graph.LENGTH;
 	static final String TOPREL = Graph.TOPREL;
 	
 	List<Entity> empty = new ArrayList<Entity>();
@@ -119,7 +121,10 @@ public class ProducerImpl implements Producer {
 
 		boolean isType = false;
 		
-		for (int i=0; i<MAX; i++){
+		//for (int i=START; i<MAX; i++){
+		for (Index ei : graph.getIndexList()){
+			int i = ei.getIndex();
+			
 			// Edge has a node that is bound or constant ?
 			Node qNode = getNode(edge, gNode, i);
 			if (qNode!=null){

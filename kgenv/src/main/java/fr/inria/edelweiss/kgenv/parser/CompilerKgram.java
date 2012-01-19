@@ -135,6 +135,14 @@ public class CompilerKgram implements ExpType, Compiler {
 		edge.add(subject);
 		edge.add(object);
 		edge.setEdgeNode(predicate);
+		
+		if (tt.getArgs() != null){
+			for (Atom arg : tt.getArgs()){
+				Node sup = getNode(arg);
+				edge.add(sup);
+			}
+		}
+
 	}
 	
 

@@ -191,8 +191,6 @@ public class ASTQuery  implements Keyword {
 
 	NSManager nsm;
 	ASTUpdate astu;
-
-
 	
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
@@ -889,13 +887,23 @@ public class ASTQuery  implements Keyword {
 		return cst;
 	}
 	
+
+	public  Triple createTriple(Atom predicate, List<Atom> list){
+		Triple t = createTriple(list.get(0), predicate, list.get(1));
+		// triple receive list with additional args only (so remove subject and object from list)
+		list.remove(0);
+		list.remove(0);
+		t.setArgs(list);
+		return t;
+	}
+	
 	/**
 	 * Create a triple for SPARQL JJ Parser
 	 * Process the case where the property is a regex
 	 * generate a filter(match($path, regex))
 	 * return {triple . filter}
 	 */
-	public  Exp createTriple(Expression subject, Atom predicate, Expression object){
+	public  Triple createTriple(Expression subject, Atom predicate, Expression object){
 		Triple t = Triple.create(subject, predicate, object);
 		
 		Expression exp = t.getProperty().getExpression();
@@ -946,25 +954,13 @@ public class ASTQuery  implements Keyword {
 			t.setRegex(exp);
 			t.setMode(mode);
 			
-			if (isKgram()){
-				if (isInverse){
-					exp = Term.function(Term.SEINV, exp);
-					t.setRegex(exp);
-				}
-				return t;
+			if (isInverse){
+				exp = Term.function(Term.SEINV, exp);
+				t.setRegex(exp);
 			}
-			else 
-			{
-				Term fun = Term.function(MATCH, var, exp);
-				if (mode != ""){
-					fun.add(new Constant(mode, RDFS.xsdstring));
-				}
-
-				Triple ft = Triple.create(fun);
-				BasicGraphPattern bg = BasicGraphPattern.create(t);
-				bg.add(ft);
-				return bg;
-			}
+			return t;
+			
+			
 		}
 		else return t;
 	}

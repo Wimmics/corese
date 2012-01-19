@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -45,7 +47,7 @@ public class Triple extends Exp {
 	// graph ?src/uri
 	Atom source;
 	// draft for tuple
-	Vector<Expression> vexp;
+	List<Atom> larg;
 	// tuple contain a filter
 	Expression exp, 
 		// path regex
@@ -643,8 +645,12 @@ public class Triple extends Exp {
 		return 4;
 	}
 	
-	public Vector<Expression> getVexp(){
-		return vexp;
+	public List<Atom> getArgs(){
+		return larg;
+	}
+	
+	public void setArgs(List<Atom> l){
+		larg = l;
 	}
 	
 	
@@ -829,9 +835,9 @@ public class Triple extends Exp {
 		v = object.toString();
 		
 		// tuple?
-		if (vexp != null) {
+		if (larg != null) {
 			sb.append(KeywordPP.TUPLE + KeywordPP.OPEN_PAREN + r + SPACE + p + SPACE + v + SPACE);
-			for (Expression e : vexp) {
+			for (Atom e : larg) {
 				sb.append(e.toString() + SPACE);
 			}
 			sb.append(KeywordPP.CLOSE_PAREN + KeywordPP.DOT);

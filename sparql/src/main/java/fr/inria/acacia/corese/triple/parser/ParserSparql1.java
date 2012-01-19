@@ -1,10 +1,8 @@
 package fr.inria.acacia.corese.triple.parser;
 
+
 import java.io.StringReader;
-
 import org.apache.log4j.Logger;
-
-
 import fr.inria.acacia.corese.exceptions.QueryLexicalException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.triple.javacc1.JavaccParseException;
@@ -32,6 +30,11 @@ public class ParserSparql1 {
     public static ParserSparql1 create(ASTQuery aq) {   
     	return new ParserSparql1(aq);
     }
+    
+    
+    public ASTQuery getAST(){
+    	return ast;
+    }
 
     ParserSparql1(ASTQuery aq) {      
     	if (aq.getText() != null){
@@ -40,6 +43,7 @@ public class ParserSparql1 {
     	}
     }
     
+
     private void createParserJavaCC1(String query, ASTQuery aq) {
         // Create an instance of SparqlCorese to read and parse the query
         StringReader queryReader = new StringReader(query);
@@ -47,8 +51,6 @@ public class ParserSparql1 {
         // set the parser and the astquery
         parser.setASTQuery(aq);
     }
-    
- 
     
     public ASTQuery parse() throws QueryLexicalException, QuerySyntaxException {
     	try {
@@ -63,6 +65,6 @@ public class ParserSparql1 {
     		throw new QueryLexicalException(e.getMessage());
 		}
     }
+    
 
-   
 }

@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Set;
@@ -32,21 +34,22 @@ public class NSManager
 	private static Logger logger = Logger.getLogger(NSManager.class);
 	
 	/** prefix seed (ns1, ns2,...) */
-	private static final String seed = "ns";
-	private static final String DOT = ".";
-
-	public static final String NSsep="#";
-	static final char[] end={'#', '/', '?', ':'}; // may end an URI ...
-	static final String[] PROTOCOLS = 
-	{ "http://", "file:", "ftp://", "mailto:", "urn:", "news:", KeywordPP.CORESE_PREFIX };
+	private static final String seed 	= "ns";
+	private static final String DOT 	= ".";
+	public static final String HASH 	= "#";
+	
+	static final char[] end				={'#', '/', '?', ':'}; // may end an URI ...
+//	static final String[] PROTOCOLS = 
+//	{ "http://", "file:", "ftp://", "mailto:", "urn:", "news:", KeywordPP.CORESE_PREFIX };
 	static final String pchar=":";
 	int count=0;
 	Hashtable<String, String> def; // system namespace with prefered prefix
 	Hashtable<String, Integer> index;  // namespace -> number
 	Hashtable<String, String> tns;     // namespace -> prefix
 	Hashtable<String, String> tprefix; // prefix -> namespace
-	String base = "";	// base
-	
+	String base;	
+	URI baseURI;	
+
 	private String uri, exp;
 	private Object object;
 	private Object dt;
@@ -289,60 +292,109 @@ public class NSManager
 	}
 	
 	/**
-	 * namespace + base:
-	 * <Person>)
-	 * 
-	 * @param pname
-	 * @return
+	 * With base
 	 */
+	
 	public String toNamespaceB(String str){
+		
 		String pname = toNamespace(str);
-		if (! pname.equals(str)){
-			if (isBase()){
-				if (pname.matches("[a-zA-Z0-9]*://.*")){
-					// skip schemes like: test://www.example.org (cf W3C update test case) 
-					return pname;
+		
+		if (isBase()){
+			try {
+				URI uri = new URI(str);
+				if (! uri.isAbsolute()){
+					pname = resolve(pname);
 				}
-				// use case:
-				// base <xxx>
-				// prefix : <>
-				pname = getBase() + pname;
-				return pname;
+			} catch (Exception e) {
 			}
-			
-			return pname;
-		}
-		if (pname.matches("[a-zA-Z0-9]*://.*")){
-			// skip schemes like: test://www.example.org (cf W3C update test case) 
-			return pname;
-		}
-		if (isBase() && ! isURN(pname) && !Triple.isVariable(pname)) {
-			String toReturn = getBase() + pname;
-			return toReturn;
 		} 
+		
 		return pname;
 	}
 	
-	boolean isURN(String str) {
-		for (String pr : PROTOCOLS) {
-			if (str.startsWith(pr))
-				return true;
+	boolean isAbsoluteURI(String s){
+		try {
+			return new URI(s).isAbsolute();
+		} catch (URISyntaxException e) {
 		}
 		return false;
 	}
+
+	String resolve(String str){
+		URI uri = baseURI.resolve(str);
+		String res = uri.toString();
+		
+		if (res.matches("file:/[^/].*")){
+			// replace file:/ by file:///
+			res = res.substring(5);
+			res = "file://" + res;
+		}
+		
+		return res;
+	}
+	
+
 	
 	public void setBase(String s) {
 		base = s;
+		if (s == null){
+			baseURI = null;
+		}
+		else try {
+			baseURI = new URI(s);
+		} catch (URISyntaxException e) {
+			baseURI = null;
+			logger.error(e);
+		}
 	}
 	
+	
 	public boolean isBase() {
-		return (base != null);
+		return (baseURI != null);
 	}
 	
 	public String getBase() {
 		return base;
 	}
 	
+	
+//	public String toNamespaceB2(String str){
+//		String pname = toNamespace(str);
+//		if (! pname.equals(str)){
+//			if (isBase()){
+//				if (pname.matches("[a-zA-Z0-9]*://.*")){
+//					// skip schemes like: test://www.example.org (cf W3C update test case) 
+//					return pname;
+//				}
+//				// use case:
+//				// base <xxx>
+//				// prefix : <>
+//				pname = resolve(pname);
+//				return pname;
+//			}
+//			
+//			return pname;
+//		}
+//		if (pname.matches("[a-zA-Z0-9]*://.*")){
+//			// skip schemes like: test://www.example.org (cf W3C update test case) 
+//			return pname;
+//		}
+//		if (isBase() && ! isURN(pname) && !Triple.isVariable(pname)) {
+//			String toReturn = resolve(pname);
+//			return toReturn;
+//		} 
+//		return pname;
+//	}
+//	
+//	
+//	boolean isURN(String str) {
+//		for (String pr : PROTOCOLS) {
+//			if (str.startsWith(pr))
+//				return true;
+//		}
+//		return false;
+//	}
+//	
 	/**
 	 * Return the namespace of this QName
 	 */
@@ -367,10 +419,7 @@ public class NSManager
 		
 	}
 
-	
-	/**
-	 * toNamespace , if it is an external BN uri, return the internal BN uri
-	 */
+
 	public String toNamespaceBN(String str) {
 		return toNamespaceB(str);
 	}
@@ -385,7 +434,7 @@ public class NSManager
 		// if namespace not null, removes it
 		// if refp add a #
 		return ((namespace!=null) && (inNamespace(name, namespace)))?
-				((refp)?NSsep+strip(name):strip(name)):name;
+				((refp)?HASH+strip(name):strip(name)):name;
 	}
 	
 	public String strip(String name){
@@ -427,7 +476,7 @@ public class NSManager
 	
 	
 	public  static String namespace(String type){  //retourne le namespace d'un type
-		if (type.startsWith(NSsep))
+		if (type.startsWith(HASH))
 			return "";
 		int index;
 		for (int i=0; i<end.length; i++){

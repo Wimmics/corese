@@ -43,7 +43,7 @@ public class RDFFormat {
 	static final String RDFSCLASS 	= "rdfs:Class";
 	static final String RDFPROPERTY	= "rdf:Property";
 	static final String OWLCLASS 	= "owl:Class";
-	static final String SPACE 		= "   ";
+	static final String SPACE 		= " ";
 	static final String NL 			= System.getProperty("line.separator");
 	private static final String OCOM 	= "<!--";
 	private static final String CCOM 	= "--!>";
@@ -286,22 +286,29 @@ public class RDFFormat {
 	
 
 	void wprint(Entity ent){
+		if (accept(ent)){
+			edge(ent);
+		}
+	}
+	
+	boolean accept(Entity ent){
 		Node gname = ent.getGraph();
 		
 		if (without.contains(gname.getLabel())){
-			return;
+			return false;
 		}
 
 		if (with.size()>0){
 			if (! with.contains(gname.getLabel())){
-				return;
+				return false;
 			}
 		}
-		print(ent);
+		
+		return true;
 	}
 		
 	
-	void print(Entity ent){
+	void edge(Entity ent){
 		Edge edge = ent.getEdge();
 		String pred = nsm.toPrefix(edge.getEdgeNode().getLabel());
 		IDatatype dt = getValue(edge.getNode(1));
@@ -348,6 +355,10 @@ public class RDFFormat {
 	void display(Object obj){
 		sb.append(obj);
 		sb.append(NL);
+	}
+	
+	void sdisplay(Object obj){
+		sb.append(obj);
 	}
 	
 	void display(){

@@ -49,8 +49,11 @@ public class CoreseDatatype
 	
 	public String toSparql(){
 		String value = toString();
+		
 		if (getDatatype() != null && ! getDatatype().getLabel().equals(RDFS.rdflangString)){
+
 			String datatype = getDatatype().getLabel();
+			
 			if (datatype.startsWith(RDF.XSD)){
 				datatype = datatype.substring(RDF.XSD.length());
 				datatype = "xsd:" + datatype;
@@ -59,13 +62,13 @@ public class CoreseDatatype
 				datatype = "<" + datatype + ">";
 			}
 			
-			value = "\"" + value + "\""+ "^^" + datatype;
+			value =  protect(value) + "^^" + datatype;
 		}
 		else if (getLang() != null && getLang()!=""){
-			value = "\"" + value + "\"" + "@" + getLang();
+			value =  protect(value)  + "@" + getLang();
 		}
 		else if (isLiteral()){
-			value = "\"" + value + "\"";
+			value =  protect(value) ;
 		}
 		else if (isURI()) {
 			value = "<" + value + ">";
@@ -73,6 +76,14 @@ public class CoreseDatatype
 		else if (isBlank()) {}
 		
 		return value;
+	}
+	
+	
+	String protect(String label){
+		if (label.contains("\"") || label.contains("'")){
+			return "\"\"\"" + label + "\"\"\"";
+		}
+		return "\"" + label + "\"";
 	}
 	
 	/**

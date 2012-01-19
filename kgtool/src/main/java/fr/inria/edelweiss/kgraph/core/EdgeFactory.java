@@ -1,17 +1,13 @@
 package fr.inria.edelweiss.kgraph.core;
 
 import java.util.Hashtable;
+import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
-import fr.inria.edelweiss.kgraph.rdf.EdgeEntail;
-import fr.inria.edelweiss.kgraph.rdf.EdgeSubClass;
-import fr.inria.edelweiss.kgraph.rdf.EdgeType;
-import fr.inria.edelweiss.kgraph.rdf.EdgeTypeEntail;
-import fr.inria.edelweiss.kgraph.rdf.EdgeLabel;
-import fr.inria.edelweiss.kgraph.rdf.EdgeComment;
+import fr.inria.edelweiss.kgraph.rdf.*;
 
 /**
  * Create specific Edge for specific property
@@ -106,6 +102,16 @@ public class EdgeFactory {
 		}
 	}
 	
+	public EdgeImpl create(Node source, Node predicate, List<Node> list){
+		EdgeImpl ee = new EdgeExtend();
+		ee.setGraph(source);
+		ee.setEdgeNode(predicate);
+		int i = 0;
+		for (Node n : list){
+			ee.setNode(i++, n);
+		}
+		return ee;
+	}
 	
 	public EdgeImpl optimCreate(Node source, Node subject, Node predicate, Node value){
 		
@@ -140,7 +146,8 @@ public class EdgeFactory {
 	
 	
 	public EdgeImpl stdCreate (Node source, Node subject, Node predicate, Node value){
-		return EdgeCore.create(source, subject, predicate, value);
+		EdgeCore edge =  EdgeCore.create(source, subject, predicate, value);
+		return edge;
 	}
 	
 	public EdgeImpl create(Class<? extends EdgeImpl> cl,
@@ -151,7 +158,6 @@ public class EdgeFactory {
 			edge.setEdgeNode(predicate);
 			edge.setNode(0, subject);
 			edge.setNode(1, value);
-			
 			return edge;
 		} catch (InstantiationException e) {
 			e.printStackTrace();

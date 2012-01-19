@@ -699,7 +699,7 @@ implements Index {
 	}
 	
 	private void clear(Entity ent){
-		for (Index ei : graph.tables){
+		for (Index ei : graph.getIndexList()){
 			if (ei.getIndex()!= IGRAPH) {
 				Entity rem = ei.delete(ent);
 				if (isDebug && rem!=null)

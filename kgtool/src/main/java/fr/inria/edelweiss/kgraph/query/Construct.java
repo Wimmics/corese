@@ -198,7 +198,6 @@ public class Construct
 	
 	/**
 	 * Construct target edge from query edge and map
-	 * TODO: refactor this wrt Node/Property/Graph Node
 	 */
 	EdgeImpl construct(Node gNode, Edge edge, Mapping map){
 		Node pred = edge.getEdgeVariable();
@@ -228,8 +227,26 @@ public class Construct
 			graph.addPropertyNode(property);
 			graph.addGraphNode(source);
 		}
+		
+		EdgeImpl ee;
+		
+		if (edge.nbNode() > 2){
+			// tuple()
+			 ArrayList<Node> list = new ArrayList<Node>();
+			 list.add(subject);
+			 list.add(object);
+			 for (int i=2; i<edge.nbNode(); i++){
+				 Node n = construct(source, edge.getNode(i), map);
+				 graph.add(n);
+				 list.add(n);
+			 }
+			 
+			 ee =  graph.create(source, property, list);
+		}
+		else {
+			 ee =  graph.create(source, subject, property, object);
+		}
 
-		EdgeImpl ee =  graph.create(source, subject, property, object);
 		return ee;
 	}
 	

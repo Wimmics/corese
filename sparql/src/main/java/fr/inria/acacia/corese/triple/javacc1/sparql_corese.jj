@@ -23,11 +23,13 @@ PARSER_BEGIN(SparqlCorese)
 
 	import org.apache.log4j.Logger;
 	
+	import java.util.List;
 	import java.util.ArrayList;
 	import java.util.Vector;
   	import fr.inria.acacia.corese.triple.cst.RDFS;
   	import fr.inria.acacia.corese.triple.parser.*;
   	import fr.inria.acacia.corese.triple.update.*;
+  	import fr.inria.acacia.corese.triple.api.Creator;
   	
   
   /**
@@ -49,6 +51,8 @@ PARSER_BEGIN(SparqlCorese)
     /** An instanciation of the class ASTQuery (a graph representing the query) */
     ASTQuery astq, gast;
     ASTUpdate astu;
+    Creator create;
+    
     /** should we say to the user when he uses something deprecated? (option, sort, or, source, as...) */
     boolean printDeprecated = true;
 	
@@ -64,6 +68,10 @@ PARSER_BEGIN(SparqlCorese)
 	public void setASTQuery(ASTQuery aq) {
 		astq = aq;
 		gast = aq;
+	}
+	
+	public void set(Creator c){
+	   create = c;
 	}
 	
 	/**
@@ -97,10 +105,77 @@ PARSER_BEGIN(SparqlCorese)
         
         astq.setBody(ex);
         return astq;
-    }    
-  }
+    }   
+    
+    
+     public void load() throws JavaccParseException, TokenMgrError {
+        astu = ASTUpdate.create();
+        try {
+       	  LoadPattern();
+       	}
+         catch(ParseException e) {
+        	throw new JavaccParseException(e);
+        }
+    }  
+    
+    
+    Triple createTriple(Expression s, Atom p, Expression o){
+	    if (create != null){
+	    	create.triple(s.getAtom(), p, o.getAtom());
+	    	return null;
+	    }
+	    else {
+	    	return astq.createTriple(s, p, o);
+	    }
+    }
+    
+   Triple createTriple(Atom p, List<Atom> list){
+   		if (create != null){
+	    	create.triple(p, list);
+	    	return null;
+	    }
+	    else {
+			Triple t = astq.createTriple(p, list);
+   	   		return t;	    
+   	   	}
+   }
+    
+    void graphPattern(Atom g){
+       if (create != null){
+           create.graph(g.getConstant());
+       }
+    }
+    
+    void endGraphPattern(Atom g){
+       if (create != null){
+           create.endGraph(g.getConstant());
+       }
+    }
+    
+    Expression list(Exp stack, List<Expression> l, boolean close){
+       RDFList rlist = astq.createRDFList(l, close);
+    
+       if (create != null){
+           create.list(rlist);
+       }
+       else {
+           stack.add(rlist);
+       }
+       
+       return rlist.head();
+    }
+    
+}  
+  
+  
+  
+  
   
 PARSER_END(SparqlCorese)
+
+
+
+
 
 Exp Start(): { Exp stack; }
 {
@@ -141,15 +216,24 @@ Exp Query() : { Exp stack; }
 }
 
 
+Exp LoadPattern() : {Exp stack;}
+{
+	Prolog()
+	stack = BodyQuadPattern() <EOF>
+	{ return stack; }
+}
+
+
 void Prolog() : {}
 {
-	( BaseDecl() ) ?
-  	( PrefixDecl() )*
+     
+	(  BaseDecl() ) ?
+  	(  PrefixDecl() )*
 }
 
 void BaseDecl() : { Token t; String s; Triple triple; }
 {
-  t = <BASE> s = Q_IRI_ref()
+  (<BASE> | <ABASE>)   s = Q_IRI_ref() (<DOT>) ?
   {
 	astq.defBase(s);
   }
@@ -157,7 +241,7 @@ void BaseDecl() : { Token t; String s; Triple triple; }
 
 void PrefixDecl() : { Token t1, t2; String s; Triple triple; }
 {
-  t1 = <PREFIX> t2 = <QNAME_NS> s = Q_IRI_ref()
+    (<PREFIX> | <APREFIX>) t2 = <QNAME_NS> s = Q_IRI_ref() (<DOT>) ?
   {
  	astq.defNamespace(t2.image, s);
   }   
@@ -338,13 +422,10 @@ void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri;}
 
 Exp QuadPattern() : {Exp stack;}
 {
-	{stack = BasicGraphPattern.create();}
 	
 	<LBRACE>
 	
-		( BlockOfTriples(stack) ) ?
-			
-		( GraphGraphPattern(stack)  ( BlockOfTriples(stack) ) ? ) *
+		stack = BodyQuadPattern()
 	
 	<RBRACE>
 	
@@ -355,6 +436,19 @@ Exp QuadPattern() : {Exp stack;}
 }
 
 
+Exp BodyQuadPattern() : {Exp stack;} 
+{
+
+		{stack = BasicGraphPattern.create();}
+
+		( BlockOfTriples(stack) ) ?
+			
+		( GraphGraphPattern(stack)  ( BlockOfTriples(stack) ) ? ) *
+		
+		{return stack; }
+}
+		
+		
 
 
 // *********************** End Update ********************************************************
@@ -1054,6 +1148,7 @@ void GraphGraphPattern(Exp stack) :
 	 <GRAPH>
 	 
   	src = VarOrIRIref(stack) 
+  	{ graphPattern(src); }
   	e = GroupGraphPattern()
   	{ 
   		st =  Source.create(src, e);
@@ -1066,6 +1161,7 @@ void GraphGraphPattern(Exp stack) :
   		}
   		stack.add(st);
   	}
+  	{ endGraphPattern(src); }
 }
 
 void ServicePattern(Exp stack) : 
@@ -1190,8 +1286,34 @@ void TriplesSameSubject(Exp stack) : { Expression expression1; }
   |
   	expression1 = TriplesNode(stack)
   	stack = PropertyList(expression1, stack)
- // | stack = tuple(stack)
+  	
+  | stack = tuple(stack)
   )
+}
+
+
+Exp tuple(Exp stack): { Expression expression1, expression2, expressioni; ArrayList<Atom> list; Atom prop; Triple triple; } {
+	<TUPLE> <LPAREN> 
+	
+	prop = Verb2()
+	expression1 = GraphNode(stack)
+	expression2 = GraphNode(stack)
+	{ 
+        list = new ArrayList<Atom>();
+        list.add(expression1.getAtom());
+        list.add(expression2.getAtom());       
+	}
+	
+	(  expressioni = GraphNode(stack)  
+	  { list.add(expressioni.getAtom()); } 
+	)*
+	  
+	<RPAREN>
+	{ 
+	    triple = createTriple(prop, list); 
+	    if (triple != null){ stack.add(triple);	}	
+		return stack; 
+	}
 }
 
 
@@ -1213,7 +1335,7 @@ Exp PropertyListNotEmpty( Expression expression1, Exp stack) :
   {
   	for (int i=0;i<v.size();i++) {
       	expression2 = v.get(i);
-        e1 = astq.createTriple(expression1, atom, expression2);
+        e1 = createTriple(expression1, atom, expression2);
         if (e1 != null){
         	// add triple at place n (see above for definition of n)
         	stack.add(n++, e1);
@@ -1578,7 +1700,7 @@ Expression BlankNodePropertyList(Exp stack) : { Expression expression1; }
 Expression Collection(Exp stack) : 
 { 
   ArrayList<Expression> list;
-  Expression node;
+  Expression node, head;
   RDFList rlist;
   boolean close;
 }
@@ -1603,9 +1725,8 @@ Expression Collection(Exp stack) :
   	) +
   	<RPAREN>
   	{ 
-  	    rlist = astq.createRDFList(list, close);
-  		stack.add(rlist);
-  		return rlist.head(); 
+  	    head = list(stack, list, close);
+  		return head; 
   	}
 }
 
@@ -2103,13 +2224,15 @@ TOKEN:
    
 | <QNAME_NS: (<NCNAME_PREFIX>)? ":" >
 | <QNAME: (<NCNAME_PREFIX>)? ":" (<NCNAME>)? >
-| <BLANK_NODE_LABEL: "_:" <NCNAME> >
-//|  <BLANK_NODE_ID: "_!:" <NCNAME> >
+| <BLANK_NODE_LABEL: "_:" ( (["0"-"9"]) + | <NCNAME> ) >
+
+// | <BLANK_NODE_LABEL: "_:" <NCNAME> >
 
 | <VAR1: "?" <VARNAME> >
 | <VAR2: "$" <VARNAME> >
-//| <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >
-| <LANGTAG: <AT> (<A2Z>)+(("-"|":") (<A2ZN>)+)* >	// to accept @get:lang
+| <ABASE:   "@base">
+| <APREFIX: "@prefix">
+| <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	
 | <#A2Z: ["a"-"z","A"-"Z"]>
 | <#A2ZN: ["a"-"z","A"-"Z","0"-"9"]>
 }
@@ -2134,9 +2257,8 @@ TOKEN : {
 TOKEN [IGNORE_CASE] :
 {
 // Prologue
-   < BASE: "base" >
+  < BASE: "base" >
 | < PREFIX: "prefix" >
-
 // Result forms
 | < SELECT: "select" >
 | < DESCRIBE: "describe" >
@@ -2432,15 +2554,20 @@ TOKEN:
               ["\u0300"-"\u036F"] | ["\u203F"-"\u2040"] ) >
 |
   // NCNAME but no leading "_", no trailing ".", can have dot inside prefix name.
-  <#NCNAME_PREFIX: <NCCHAR1p> ((<NCCHAR>|".")* <NCCHAR>)? >
+  <#NCNAME_PREFIX: <NCCHAR1p> ((<NCCHAR> | "."   )* <NCCHAR>)? >
 |
   // With a leading "_", no dot at end of local name.
-  <#NCNAME:  <NCCHAR1> ((<NCCHAR>|".")* <NCCHAR>)? >
+  <#NCNAME:  <NCCHAR1> ((<NCCHAR> | "." | <LOCAL_ESC> | <PERCENT> )* <NCCHAR>)? >
 |
   // NCNAME without "-" and ".", allowing leading digits.
   <#VARNAME: ( <NCCHAR1> | ["0"-"9"] )
              ( <NCCHAR1> | ["0"-"9"] | "\u00B7" |
                ["\u0300"-"\u036F"] | ["\u203F"-"\u2040"] )* >
+               
+| <#LOCAL_ESC:  "\\" ( "_" | "~" | "." | "-" | "!" | "$" | "&" | """" | "(" | ")" | ["*"] | ["+"] | "," | ";" | "=" | ":" | "/" | "?" | "#" | "@" | "%" )  >
+
+| <#PERCENT: "%" <HEX> <HEX> >
+
 }
 
 /*

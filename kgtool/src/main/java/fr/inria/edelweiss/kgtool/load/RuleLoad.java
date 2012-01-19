@@ -6,6 +6,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,6 +25,8 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
  */
 
 public class RuleLoad {
+	private static Logger logger = Logger.getLogger(Load.class);	
+
 	static final String NS 		= "http://ns.inria.fr/edelweiss/2011/rule#";
 	static final String BRUL 	= "http://ns.inria.fr/corese/2008/rule#";
 	static final String COS 	= "http://www.inria.fr/acacia/corese#";
@@ -60,10 +63,17 @@ public class RuleLoad {
 		if (list.getLength() == 0){
 			list = doc.getElementsByTagNameNS(BRUL, VALUE);
 		}
+		
 		if (list.getLength() == 0){
-			loadCorese(doc);
+			list = doc.getElementsByTagNameNS(COS, RULE);
+			if (list.getLength() == 0){
+				error();
+				return;
+			}
+			loadCorese(list);
 			return;
 		}
+		
 		for (int i=0; i<list.getLength(); i++){
 			Node node = list.item(i);
 			String rule = node.getTextContent();
@@ -81,11 +91,12 @@ public class RuleLoad {
 	 */
 	public void loadCorese(String file){
 		Document doc = parse(file);
-		loadCorese(doc);
+		NodeList list = doc.getElementsByTagNameNS(COS, RULE);
+		loadCorese(list);
 	}
 		
-	void loadCorese(Document doc){
-		NodeList list = doc.getElementsByTagNameNS(COS, RULE);
+	void loadCorese(NodeList list){
+		
 		for (int i=0; i<list.getLength(); i++){
 			Element node = (Element) list.item(i);
 			NodeList lconst = node.getElementsByTagNameNS(COS, THEN);
@@ -99,6 +110,12 @@ public class RuleLoad {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	void error(){
+		logger.error("Rule Namespace should be one of:");
+		logger.error(NS);
+		logger.error(BRUL);
 	}
 
 	

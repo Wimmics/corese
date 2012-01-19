@@ -16,6 +16,6 @@ public class QueryLexicalException extends EngineException {
 	}
 	
 	public QueryLexicalException(String mes) {
-		super();
+		super(mes);
 	}
 }

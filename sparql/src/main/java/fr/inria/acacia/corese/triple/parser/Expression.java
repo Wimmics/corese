@@ -335,6 +335,14 @@ implements Regex, Filter, Expr {
 		return null;
 	}
 	
+	public Constant getConstant(){
+		return null;
+	}
+	
+	public Atom getAtom(){
+		return null;
+	}
+	
 	// get:gui::?name
 	public Variable getIntVariable() {
         return null;

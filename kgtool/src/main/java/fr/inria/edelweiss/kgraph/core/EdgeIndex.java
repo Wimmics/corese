@@ -172,7 +172,6 @@ implements Index {
 					// eliminate entailed edge if already exist in another graph
 					if (same(edge, list.get(i-1))){
 						count++;
-						System.out.println("** EI: " + edge);
 						return null;
 					}
 				}
@@ -190,12 +189,10 @@ implements Index {
 						// eliminate entailed edge if already exist in another graph
 						if (i > 0 && same(edge, list.get(i-1))){
 							count++;
-							System.out.println("** EI: " + edge);
 							return null;
 						}
 						if (same(edge, list.get(i))){
 							count++;
-							System.out.println("** EI: " + edge);
 							return null;
 						}
 					}
@@ -623,7 +620,6 @@ implements Index {
 	
 	
 	private void update (Node g1, Node g2, int mode){
-		
 		for (Node pred : getProperties()){
 			
 			List<Entity> list = checkGet(pred);

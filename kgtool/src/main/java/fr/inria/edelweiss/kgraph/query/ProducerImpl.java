@@ -35,10 +35,8 @@ import fr.inria.edelweiss.kgraph.core.NodeImpl;
  *
  */
 public class ProducerImpl implements Producer {
-	static final int IGRAPH = Graph.IGRAPH;
-	static final int START 	= Graph.START;
-	static final int MAX 	= Graph.LENGTH;
-	static final String TOPREL = Graph.TOPREL;
+	static final int IGRAPH 	= Graph.IGRAPH;
+	static final String TOPREL 	= Graph.TOPREL;
 	
 	List<Entity> empty = new ArrayList<Entity>();
 	EdgeIterator ei;
@@ -121,33 +119,27 @@ public class ProducerImpl implements Producer {
 
 		boolean isType = false;
 		
-		//for (int i=START; i<MAX; i++){
 		for (Index ei : graph.getIndexList()){
-			int i = ei.getIndex();
+			// last index is IGRAPH
 			
-			// Edge has a node that is bound or constant ?
-			Node qNode = getNode(edge, gNode, i);
-			if (qNode!=null){
-				if (i == 1 && qNode.isConstant() && graph.isType(edge)){
-					// ?x rdf:type c:Engineer
-					// no dichotomy on c:Engineer to get subsumption
-//					node = graph.getNode(qNode.getLabel());
-//					if (node == null){
-//						//TODO:
-//					}
-//					else {
-//						isType = true;
-//					}
-				}
-				else 
-				{
-					node = getValue(qNode, env);
-					if (node != null){
-						n = i;
-						if (i == 0 && ! graph.isType(edge)){
-							node2 = getValue(edge.getNode(1), env);
+			int i = ei.getIndex();
+			if (i < edge.nbNode()){
+				// Edge has a node that is bound or constant ?
+				Node qNode = getNode(edge, gNode, i);
+				if (qNode!=null){
+					if (i == 1 && qNode.isConstant() && graph.isType(edge)){
+						// ?x rdf:type c:Engineer
+						// no dichotomy on c:Engineer to get subsumption
+					}
+					else {
+						node = getValue(qNode, env);
+						if (node != null){
+							n = i;
+							if (i == 0 && ! graph.isType(edge)){
+								node2 = getValue(edge.getNode(1), env);
+							}
+							break;
 						}
-						break;
 					}
 				}
 			}

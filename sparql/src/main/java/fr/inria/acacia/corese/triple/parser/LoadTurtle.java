@@ -1,7 +1,9 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -35,20 +37,20 @@ public class LoadTurtle {
     ASTQuery ast;
  
     
-    LoadTurtle(Reader r, Creator c, String base) {
+    LoadTurtle(InputStream r, Creator c, String base) {
     	setLoader(r, c, base);
     }
 
     
-    public static LoadTurtle create(Reader read, Creator cr, String base) { 
+    public static LoadTurtle create(InputStream read, Creator cr, String base) { 
     	LoadTurtle p =  new LoadTurtle(read, cr, base);
     	return p;
     }
     
     public static LoadTurtle create(String file, Creator cr) { 
-    	FileReader read;
+    	FileInputStream read;
 		try {
-			read = new FileReader(file);
+			read = new FileInputStream(file);
 		   	LoadTurtle p =  new LoadTurtle(read, cr, file);
 	    	return p;
 		} catch (FileNotFoundException e) {
@@ -67,11 +69,11 @@ public class LoadTurtle {
     }
     
     
-    private void setLoader(Reader read, Creator c, String base) {
+    private void setLoader(InputStream stream, Creator c, String base) {
     	try {
     		ASTQuery ast = ASTQuery.create();
     		ast.getNSM().setBase(base);
-			parser = new SparqlCorese(read);
+			parser = new SparqlCorese(stream);
 	        parser.setASTQuery(ast);
 	        parser.set(c);
 		}

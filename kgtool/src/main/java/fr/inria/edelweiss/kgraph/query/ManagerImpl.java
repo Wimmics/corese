@@ -35,7 +35,11 @@ public class ManagerImpl implements Manager {
 	Graph graph;
 	Loader load;
 	QueryProcess exec;
-	List<String> from, named;
+	List<String> 
+	// list of graphs the union of which is the default graph (use case: copy default to g)
+	from, 
+	// named graphs
+	named;
 	
 	static final int COPY = 0;
 	static final int MOVE = 1;
@@ -248,11 +252,16 @@ public class ManagerImpl implements Manager {
 			if (target != null){
 				update(ope, mode, source, target);
 			}
-			else {
-				// skip copy to default
+			else if (from != null && from.size()>0){
+				// copy g to default
+				// use from as default specification
+				String name = ope.expand(from.get(0));
+				update(ope, mode, source, name);
 			}
 		}
 		else if (target != null && from != null) {
+			// copy default to g
+			// use from as default specification
 			for (String gg : from){
 				String name = ope.expand(gg);
 				update(ope, mode, name, target);

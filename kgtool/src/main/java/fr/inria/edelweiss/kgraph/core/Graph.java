@@ -39,10 +39,9 @@ public class Graph {
 	public static final String TOPREL = 
 		fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
 	
-	public static final int START  = 0;
 	public static final int IGRAPH = -1;
-	public static final int NBNODE = 3;
-	public static final int LENGTH = NBNODE;
+	// NB of Index (subject, object, graph)
+	public static final int LENGTH = 3;
 	
 	static final int COPY 	= 0;
 	static final int MOVE 	= 1;
@@ -66,7 +65,9 @@ public class Graph {
 	 
 	ReentrantReadWriteLock lock;
 	
-	Index[] tables, dtables;
+	ArrayList<Index> tables; 
+	// default graph (deprecated)
+	Index[] dtables;
 	// Table of index 0
 	Index table, 
 	// for rdf:type, no named graph to speed up type test
@@ -125,9 +126,9 @@ public class Graph {
 	Graph(){
 		lock = new ReentrantReadWriteLock();
 		
-		tables  = new Index[LENGTH];
+		tables  = new ArrayList<Index>(LENGTH);
 		dtables = new Index[LENGTH];
-		for (int i=START; i<LENGTH; i++){
+		for (int i=0; i<LENGTH; i++){
 			// One table per node index
 			// edges are sorted according to ith Node
 			int j = i;
@@ -260,9 +261,9 @@ public class Graph {
 		return hasDefault;
 	}
 	
-	public Index[] getTables(){
-		return tables;
-	}
+//	public List<Index> getTables(){
+//		return tables;
+//	}
 	
 	public String toString(){
 		String str = "";
@@ -409,7 +410,7 @@ public class Graph {
 			ei.index();
 		}
 		if (hasDefault){
-			for (int i=START; i<LENGTH; i++){
+			for (int i=0; i<tables.size(); i++){
 				dtables[i].index();
 			}
 		}
@@ -463,7 +464,7 @@ public class Graph {
 			
 			if (hasDefault){
 				dtable.add(edge);
-				for (int i=START; i<LENGTH; i++){
+				for (int i=0; i<tables.size(); i++){
 					if (i != 0){
 						dtables[i].declare(edge);
 					}
@@ -803,6 +804,12 @@ public class Graph {
 		return EdgeIterator.create(getEdges(node, 0));
 	}
 	
+	public Iterable<Entity> getNodeEdges(Node gNode, Node node){
+		EdgeIterator it = EdgeIterator.create(getEdges(node, 0));
+		it.setGraph(gNode);
+		return it;
+	}
+	
 
 	Index getIndex(int n, boolean def){
 		if (def){
@@ -811,19 +818,23 @@ public class Graph {
 		return getIndex(n);
 	}	
 	
-	public Index[] getIndexList(){
+	public List<Index> getIndexList(){
 		return tables;
 	}
 	
+	// synchronized
 	Index getIndex(int n){
 		if (n == IGRAPH){
-			return tables[LENGTH-1];
+			return tables.get(tables.size()-1);
 		}
-		return tables[n];
+		if (n+1 >= tables.size() ){
+			//setIndex(n, new EdgeIndex(this, n));	
+		}
+		return tables.get(n);
 	}
 	
 	void setIndex(int n, EdgeIndex e){
-		tables[n] = e;
+		tables.add(n, e);
 	}
 	
 	public Iterable<Entity> getEdges(Node node, int n){
@@ -1146,7 +1157,7 @@ public class Graph {
 		if (g2 == null){
 			g2 = addGraph(target);
 		}
-
+		
 		switch (mode){
 		case ADD:  getIndex(IGRAPH).add(g1, g2); break;
 		case MOVE: getIndex(IGRAPH).move(g1, g2); break;

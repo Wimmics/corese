@@ -15,6 +15,11 @@ public class TripleFormat extends RDFFormat {
 	static final String DOT 	= " .";
 	static final String OPEN 	= "<";
 	static final String CLOSE 	= ">";
+	static final String GRAPH 	= "graph";
+	static final String OGRAPH 	= "{";
+	static final String CGRAPH 	= "}";
+
+	boolean isGraph = false;
 
 
 	TripleFormat(Graph g, NSManager n) {
@@ -30,15 +35,20 @@ public class TripleFormat extends RDFFormat {
 		return new TripleFormat(g, NSManager.create());
 	}
 
+	public void setGraph(boolean b){
+		isGraph = b;
+	}
 	
 	public StringBuilder getStringBuilder(){
 		if (graph == null && map == null){
 			return null;
 		}
 		
-		for (Entity ent : getNodes()){
-			Node node = ent.getNode();
-			print(node);
+		if (isGraph){
+			graphNodes();
+		}
+		else {
+			nodes();
 		}
 		
 		StringBuilder bb = new StringBuilder();
@@ -51,6 +61,29 @@ public class TripleFormat extends RDFFormat {
 		bb.append(sb); 
 		
 		return bb;
+	}
+	
+	
+	void nodes(){
+		for (Entity ent : getNodes()){
+			Node node = ent.getNode();
+			print(null, node);
+		}
+	}
+	
+	
+	void graphNodes(){
+		for (Node gNode : graph.getGraphNodes()){
+			sdisplay(GRAPH);
+			sdisplay(SPACE);
+			subject(gNode);
+			sdisplay(OGRAPH);
+			for (Entity ent : graph.getNodes(gNode)){
+				Node node = ent.getNode();
+				print(gNode, node);
+			}
+			display(CGRAPH);
+		}
 	}
 	
 	void header(StringBuilder bb){
@@ -71,10 +104,10 @@ public class TripleFormat extends RDFFormat {
 	
 	
 	
-	void print(Node node){
+	void print(Node gNode, Node node){
 		boolean first = true;
 		
-		for (Entity ent : getEdges(node)){
+		for (Entity ent : getEdges(gNode, node)){
 			
 			if (ent!=null && accept(ent)){
 				
@@ -98,10 +131,25 @@ public class TripleFormat extends RDFFormat {
 		}
 	}
 	
+	Iterable<Entity> getEdges(Node gNode, Node node){
+		if (isGraph){
+			return graph.getNodeEdges(gNode, node);	
+		}
+		else {
+			return graph.getNodeEdges(node);
+		}
+	}
+	
+	
 	
 	void subject(Entity ent){
+		subject(ent.getNode(0));
+	}
 		
-		IDatatype dt0 = getValue(ent.getNode(0));
+		
+		
+	void subject(Node  node){
+		IDatatype dt0 = getValue(node);
 		
 		if (dt0.isBlank()){
 			String sub = dt0.getLabel();

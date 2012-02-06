@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.core;
 import java.util.Hashtable;
 import java.util.List;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
@@ -149,6 +150,18 @@ public class EdgeFactory {
 		EdgeCore edge =  EdgeCore.create(source, subject, predicate, value);
 		return edge;
 	}
+	
+	public EdgeImpl extCreate (Node source, Node subject, Node predicate, Node value){
+		EdgeImpl ee = new EdgeExtend();
+		ee.setGraph(source);
+		ee.setEdgeNode(predicate);
+		ee.setNode(0, subject);
+		ee.setNode(1, value);
+		Node date = graph.getNode(DatatypeMap.newDate(), true, true);
+		ee.setNode(2, date);
+		return ee;
+	}
+	
 	
 	public EdgeImpl create(Class<? extends EdgeImpl> cl,
 			Node source, Node subject, Node predicate, Node value){

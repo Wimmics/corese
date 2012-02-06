@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgtool.load;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -246,15 +247,15 @@ public class Load
 			return;
 		}
 		
-		Reader read = null;
+		InputStream stream = null;
 
 		try {
 			if (isURL(path)){
 				URL url = new URL(path);
-				read = new InputStreamReader(url.openStream());
+				stream = url.openStream();
 			}
 			else {
-				read = new FileReader(path);
+				stream = new FileInputStream(path);
 			}
 		}
 		catch (Exception e){
@@ -273,7 +274,7 @@ public class Load
 			source = base;
 		}
 		
-		synLoad(read, path, base, source);
+		synLoad(stream, path, base, source);
 	}
 	
 	void error(Object mes){
@@ -289,22 +290,24 @@ public class Load
 	public void load(InputStream stream, String source) throws LoadException{
 		log("stream");
 		if (source == null) source = Entailment.DEFAULT;
-		Reader read = new InputStreamReader(stream);
-		synLoad(read, source, source, source);
+		synLoad(stream, source, source, source);
 	}
 	
 	Lock writeLock(){
 		return graph.writeLock();
 	}
 	
-	void synLoad(Reader read,  String path, String base, String src) throws LoadException {
+	void synLoad(InputStream stream,  String path, String base, String src) throws LoadException {
 		try {		
 			writeLock().lock();
 			if (path.endsWith(TURTLE)){
-				loadTurtle(read, path, base, src);
+				loadTurtle(stream, path, base, src);
 			}
+			else if (isRule(path)){
+				loadRule(stream, src);
+			} 
 			else {
-				load(read, path, base, src);
+				load(stream, path, base, src);
 			}
 		}
 		finally {
@@ -313,7 +316,7 @@ public class Load
 	}
 	
 	
-	void load(Reader read,  String path, String base, String src) throws LoadException {
+	void load(InputStream stream,  String path, String base, String src) throws LoadException {
 		
 		if (hasPlugin){
 			src  = plugin.statSource(src);
@@ -333,8 +336,8 @@ public class Load
 		arp.setStatementHandler(this);
 		arp.setErrorHandler(this);
 		try {
-			arp.load(read, base);
-			read.close();
+			arp.load(stream, base);
+			stream.close();
 		} 
 		catch (SAXException e) {
 			throw LoadException.create(e, arp.getLocator(), path);
@@ -345,12 +348,12 @@ public class Load
 	}
 	
 	
-	void loadTurtle(Reader read,  String path, String base, String src) throws LoadException {
+	void loadTurtle(InputStream stream,  String path, String base, String src) throws LoadException {
 		
 		CreateImpl cr = CreateImpl.create(graph);
 		cr.graph(src);
 		
-		LoadTurtle ld = LoadTurtle.create(read, cr, base);
+		LoadTurtle ld = LoadTurtle.create(stream, cr, base);
 		try {
 			ld.load();
 		} catch (QueryLexicalException e) {
@@ -361,12 +364,20 @@ public class Load
 	}
 
 	
-	void loadRule(String path, String src){
+	void loadRule(String path, String src) throws LoadException{
 		if (engine == null){
 			engine = RuleEngine.create(graph);
 		}
 		RuleLoad load = RuleLoad.create(engine);
-		load.load(path);
+		load.loadWE(path);
+	}
+	
+	void loadRule(InputStream stream, String src) throws LoadException{
+		if (engine == null){
+			engine = RuleEngine.create(graph);
+		}
+		RuleLoad load = RuleLoad.create(engine);
+		load.loadWE(stream);
 	}
 	
 	void loadQuery(String path, String src){

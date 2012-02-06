@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgtool.load;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -56,7 +58,35 @@ public class RuleLoad {
 	}
 	
 	public void load(String file){
+		Document doc;
+		try {
+			doc = parse(file);
+			load(doc);
+		} catch (LoadException e) {
+			logger.error(e);
+		}
+	}
+	
+	public void loadWE(String file) throws LoadException{
 		Document doc = parse(file);
+		load(doc);
+	}
+	
+	public void loadWE(InputStream stream) throws LoadException{
+		Document doc = parse(stream);
+		load(doc);
+	}
+
+	public void load(InputStream stream) {
+		try {
+			Document doc = parse(stream);
+			load(doc);
+		} catch (LoadException e) {
+			logger.error(e);
+		}
+	}
+		
+	void load(Document doc){	
 		
 		NodeList list = doc.getElementsByTagNameNS(NS, BODY);
 		
@@ -90,9 +120,15 @@ public class RuleLoad {
 	 * Corese format
 	 */
 	public void loadCorese(String file){
-		Document doc = parse(file);
-		NodeList list = doc.getElementsByTagNameNS(COS, RULE);
-		loadCorese(list);
+		Document doc;
+		try {
+			doc = parse(file);
+			NodeList list = doc.getElementsByTagNameNS(COS, RULE);
+			loadCorese(list);
+		} catch (LoadException e) {
+			e.printStackTrace();
+		}
+
 	}
 		
 	void loadCorese(NodeList list){
@@ -137,7 +173,26 @@ public class RuleLoad {
 	}
 	
 	
-	private  Document parse(String xmlFileName){
+	private  Document parse(InputStream stream) throws LoadException{
+		DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+		fac.setNamespaceAware(true); 
+		DocumentBuilder builder;
+		try {
+			builder = fac.newDocumentBuilder();
+			Document doc = builder.parse(stream);
+			return doc;
+		} catch (ParserConfigurationException e) {
+			throw LoadException.create(e);
+		} catch (SAXException e) {
+			throw LoadException.create(e);
+		} catch (IOException e) {
+			throw LoadException.create(e);
+		}
+	}
+
+	
+	
+	private  Document parse(String xmlFileName) throws LoadException{
 	     
 		DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
 		fac.setNamespaceAware(true); 
@@ -147,16 +202,12 @@ public class RuleLoad {
 			Document doc = builder.parse(xmlFileName);
 			return doc;
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw LoadException.create(e);
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw LoadException.create(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw LoadException.create(e);
 		}
-		return null;
 	}
 
 }

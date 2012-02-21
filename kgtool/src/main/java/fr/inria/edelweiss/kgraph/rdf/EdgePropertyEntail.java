@@ -16,17 +16,6 @@ public class EdgePropertyEntail extends EdgeImpl {
 	
 	public EdgePropertyEntail(){}
 	
-	EdgePropertyEntail (Node g, Node subject, Node pred, Node object){
-		setNode(0, subject);
-		setNode(1, object);
-		setEdgeNode(pred);
-		setGraph(g);
-	}
-	 
-	public static EdgeTypeEntail create(Node g, Node subject, Node pred, Node object){
-		return new EdgeTypeEntail(g, subject, pred, object);
-	}
-	
 	public Node getEdgeNode() {
 		return predicateNode;
 	}

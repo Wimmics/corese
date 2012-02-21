@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -116,18 +117,21 @@ public class JSONFormat extends XMLFormat {
 		open += "{ \"type\": "  ;
 		print(open);
 		String str = dt.getLabel();
+		
 		if (dt.isLiteral()) {			
 			str = toXML(str);
+			
 			if (dt.hasLang()) {
 				print("\"literal\", \"xml:lang\": \"" + dt.getLang() + "\"" );
 			}
-			else if (dt.getDatatype() != null) {
-				if (DatatypeMap.isDouble(dt))
-					str =  nf.format(dt.getDoubleValue());
-				print("\"typed-literal\", \"datatype\": \"" + dt.getDatatype().getLabel() + "\"");
+			else if (dt.getCode() == IDatatype.LITERAL){
+				print("\"literal\"" );
 			}
 			else {
-				print("\"literal\"" );
+				if (DatatypeMap.isDouble(dt)){
+					str =  nf.format(dt.doubleValue());
+				}
+				print("\"typed-literal\", \"datatype\": \"" + dt.getDatatype().getLabel() + "\"");
 			}
 		}
 		else if (dt.isBlank()) {

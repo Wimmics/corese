@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgtool.print;
 
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 
@@ -25,6 +26,11 @@ public class TSVFormat extends CSVFormat {
 			if (dt.isNumber()){
 				return dt.getLabel();
 			}
+			if (dt.getCode() == IDatatype.LITERAL && ! dt.hasLang()){
+				// untyped plain literal
+				return QUOTE + dt.getLabel() + QUOTE;
+			}
+			return dt.toSparql(false);
 		}
 		return node.toString();
 	}

@@ -277,6 +277,35 @@ public class Graph {
 		return str;
 	}
 	
+	public String toString2(){
+		String str = "";
+		int uri = 0, blank = 0, string = 0, lit = 0, date = 0, num = 0;
+		
+		for (Entity e : getNodes()){
+			if (e.getNode().isBlank()) blank++;
+			else uri++;
+		}
+		
+		for (Entity e : getLiteralNodes()){
+			IDatatype dt = (IDatatype) e.getNode().getValue();
+			if (dt.isNumber()) num++;
+			else if (dt.getCode() == IDatatype.STRING) 	string++;
+			else if (dt.getCode() == IDatatype.LITERAL) lit++;
+			else if (dt.getCode() == IDatatype.DATE) 	date++;
+
+		}
+		
+		str += "uri: " + uri;
+		str += "\nblank: " + blank; 
+		
+		str += "\nnum: " + num; 
+		str += "\nstring: " + string; 
+		str += "\nliteral: " + lit; 
+		str += "\ndate: " + date; 
+
+		return str;
+	}
+	
 
 	public Entailment getProxy(){
 		if (proxy == null){
@@ -384,11 +413,12 @@ public class Graph {
 	public void initPath(){
 		for (Entity ent : individual.values()){
 			ent.getNode().setProperty(Node.LENGTH, null);
+			ent.getNode().setProperty(Node.REGEX, null);
 		}
 		for (Entity ent : literal.values()){
 			ent.getNode().setProperty(Node.LENGTH, null);
+			ent.getNode().setProperty(Node.REGEX, null);
 		}
-		
 	}
 	
 	
@@ -895,6 +925,12 @@ public class Graph {
 
 	public Node addLiteral(String label, String datatype, String lang){
 		IDatatype dt = DatatypeMap.createLiteral(label, datatype, lang);
+		if (dt == null) return null;
+		return addNode(dt);
+	}
+	
+	public Node addLiteral(String label, String datatype){
+		IDatatype dt = DatatypeMap.createLiteral(label, datatype, null);
 		if (dt == null) return null;
 		return addNode(dt);
 	}

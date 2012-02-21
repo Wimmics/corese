@@ -126,10 +126,14 @@ implements Comparator<Mapping>
 		return getValue(qNode.getLabel());
 	}
 	
-	public Object getValue(String var){
+	public Node getNode(String var){
 		if (size() == 0) return null;
 		Mapping map = get(0);
-		Node node = map.getNode(var);
+		return map.getNode(var);
+	}
+	
+	public Object getValue(String var){
+		Node node = getNode(var);
 		if (node == null) return null;
 		return node.getValue();
 	}

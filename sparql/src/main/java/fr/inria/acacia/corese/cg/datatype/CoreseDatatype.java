@@ -48,13 +48,18 @@ public class CoreseDatatype
 	}
 	
 	public String toSparql(){
+		return toSparql(true);
+	}
+	
+
+	public String toSparql(boolean prefix){
 		String value = toString();
 		
 		if (getDatatype() != null && ! getDatatype().getLabel().equals(RDFS.rdflangString)){
 
 			String datatype = getDatatype().getLabel();
 			
-			if (datatype.startsWith(RDF.XSD)){
+			if (prefix && datatype.startsWith(RDF.XSD)){
 				datatype = datatype.substring(RDF.XSD.length());
 				datatype = "xsd:" + datatype;
 			}

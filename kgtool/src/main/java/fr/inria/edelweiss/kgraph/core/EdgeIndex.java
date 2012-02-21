@@ -3,7 +3,6 @@ package fr.inria.edelweiss.kgraph.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.apache.log4j.Logger;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 /**
  * Table property node -> List<Edge>

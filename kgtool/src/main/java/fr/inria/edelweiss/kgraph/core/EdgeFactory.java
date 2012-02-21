@@ -30,7 +30,9 @@ public class EdgeFactory {
 	
 	Graph graph;
 	
-	boolean isOptim = false;
+	boolean 
+		isOptim = false,
+		isGraph = false;
 		
 	class Table extends Hashtable<String, Class<? extends EdgeImpl>> {}
 	
@@ -62,6 +64,11 @@ public class EdgeFactory {
 			create();
 		}
 		table1.put(name, cl);
+	}
+	
+	// not with rules
+	public void setGraph(boolean b){
+		isGraph = b;
 	}
 	
 	// entailed edge: graph and property are static
@@ -132,7 +139,7 @@ public class EdgeFactory {
 			return ee;
 		}
 		else {
-			Class<? extends EdgeImpl> cl = table1.get(predicate.getLabel());
+			Class<? extends EdgeImpl> cl = getClass(predicate.getLabel());
 
 			if (cl != null){
 				ee =  create(cl, source, subject, predicate, value);
@@ -143,7 +150,10 @@ public class EdgeFactory {
 		return stdCreate(source, subject, predicate, value);
 	}
 	
-	
+	Class<? extends EdgeImpl> getClass(String name){
+		if (isGraph) return EdgeSameGraph.class;
+		return table1.get(name);
+	}
 	
 	
 	public EdgeImpl stdCreate (Node source, Node subject, Node predicate, Node value){

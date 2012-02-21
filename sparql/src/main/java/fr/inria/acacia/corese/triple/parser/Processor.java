@@ -30,6 +30,7 @@ public class Processor {
 	public static final String BOUND = "bound";
 	public static final String COUNT = "count";
 	public static final String LIST  = "list";
+	public static final String IN  	 = "in";
 
 	private static final String MIN = "min";
 	private static final String MAX = "max";
@@ -67,7 +68,7 @@ public class Processor {
 	private static final String DEBUG = "trace";
 
 	static final String EXTERN 	= "extern";
-	static final String XPATH 	= "xpath";
+	public static final String XPATH 	= "xpath";
 	static final String KGXPATH = ExpType.KGRAM + "xpath";
 	static final String SQL 	= "sql";
 	static final String KGSQL 	= ExpType.KGRAM + "sql";
@@ -278,7 +279,7 @@ public class Processor {
 		defoper(">=", 	ExprType.GE);
 		defoper("~", 	ExprType.CONT);
 		defoper("^", 	ExprType.START);
-		defoper("in", 	ExprType.IN);
+		defoper(IN, 	ExprType.IN);
 		defoper("+", 	ExprType.PLUS);
 		defoper("-", 	ExprType.MINUS);
 		defoper("*", 	ExprType.MULT);

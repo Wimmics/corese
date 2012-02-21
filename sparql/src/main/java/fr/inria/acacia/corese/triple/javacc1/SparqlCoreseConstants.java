@@ -216,7 +216,7 @@ public interface SparqlCoreseConstants {
     "\"a\"",
     "\"i\"",
     "\"s\"",
-    "\"sa\"",
+    "<SHORTALL>",
     "\"d\"",
     "\"b\"",
     "\"base\"",

@@ -923,41 +923,57 @@ public class ASTQuery  implements Keyword {
 			
 			var.setPath(true);
 			String mode = "";
-			boolean isInverse = false;
+			boolean isInverse = false, 
+			isDistinct = false, 
+			isShort = false;
+			
 			while (true){
 				if (exp.isFunction()){
-					if (exp.getName().equals(SINV)){
+					
+					if (exp.getName().equals(DISTINCT)){
 						exp = exp.getArg(0);
-						isInverse = true;
-						mode += "i";
+						//mode += DISTINCT;
+						isDistinct = true;
 					}
 					else if (exp.getName().equals(SSHORT)){
 						exp = exp.getArg(0);
 						mode += "s";
+						isShort = true;
 					}
-					else if (exp.getName().equals(SSHORTALL)){
+					else if (exp.getName().equals(SSHORTALL) || exp.getName().equals(SHORT)){
 						exp = exp.getArg(0);
 						mode += "sa";
+						isShort = true;
 					}
-					else if (exp.getName().equals(SDEPTH)){
-						exp = exp.getArg(0);
-						mode += "d";
-					}
-					else if (exp.getName().equals(SBREADTH)){
-						exp = exp.getArg(0);
-						mode += "b";
-					}
+//					else if (exp.getName().equals(SINV)){
+//					exp = exp.getArg(0);
+//					isInverse = true;
+//					mode += "i";
+//				}
+//					else if (exp.getName().equals(SDEPTH)){
+//						exp = exp.getArg(0);
+//						mode += "d";
+//					}
+//					else if (exp.getName().equals(SBREADTH)){
+//						exp = exp.getArg(0);
+//						mode += "b";
+//					}
 					else break;
 				}
 				else break;
 			}
+			
+//			if (isInverse){
+//				exp = Term.function(Term.SEINV, exp);
+//				t.setRegex(exp);
+//			}
+			
+			exp.setDistinct(isDistinct);
+			exp.setShort(isShort);
 			t.setRegex(exp);
 			t.setMode(mode);
 			
-			if (isInverse){
-				exp = Term.function(Term.SEINV, exp);
-				t.setRegex(exp);
-			}
+
 			return t;
 			
 			

@@ -512,14 +512,11 @@ implements Regex, Filter, Expr {
 
 	
 	public int getIndex() {
-		
 		return -1;
 	}
 
 	
-	public void setIndex(int index) {
-		
-		
+	public void setIndex(int index) {		
 	}
 
 	
@@ -535,12 +532,19 @@ implements Regex, Filter, Expr {
 		return null;
 	}
 
+	public void setDistinct(boolean b) {
+	}
 	
 	public boolean isDistinct() {
-		
 		return false;
 	}
-
+	
+	public void setShort(boolean b) {
+	}
+	
+	public boolean isShort() {
+		return false;
+	}
 	
 	public String getModality() {
 		

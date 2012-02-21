@@ -312,7 +312,8 @@ public class CoreseTest2 extends TestCase {
 		//exec.set(SorterImpl.create(graph));
 		try {
 			Mappings lMap = exec.query(query);
-			//System.out.println(lMap);
+			
+			//exec.compile(exec.getAST(lMap).toString());
 						
 			return lMap;
 		} catch (EngineException e) {
@@ -330,20 +331,15 @@ public class CoreseTest2 extends TestCase {
 		return null;
 	}
 	
+	
 	void init(){
 		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
 		graph = Graph.create(true);
-		//graph.setIndex(true);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
-//		graph.getLogBook().setActive(true);
-//		graph.getLogBook().setTrace(true);
 
 		Load load = Load.create(graph);
-		//load.setBuild(BuildOptim.create(graph));
 		graph.setOptimize(true);
 		
-//		graph.getEdgeFactory().define("http://www.inria.fr/acacia/comma#CreatedBy",    EdgeProperty.class);
-//		graph.getEdgeFactory().define("http://www.inria.fr/acacia/comma#SomeRelation", EdgePropertyEntail.class, true);
 		long t1 = new Date().getTime();
 		load.load(data + "kgraph/rdf.rdf",  RDF.RDF);
 		load.load(data + "kgraph/rdfs.rdf", RDFS.RDFS);
@@ -359,7 +355,28 @@ public class CoreseTest2 extends TestCase {
 	}
 	
 	
+	void init2(){
+		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+		graph = Graph.create(true);
+		graph.set(Entailment.DATATYPE_INFERENCE, true);
 
+		Load load = Load.create(graph);
+		graph.setOptimize(true);
+		
+		long t1 = new Date().getTime();
+		load.load(data + "kgraph/rdf.rdf",  RDF.RDF);
+		load.load(data + "kgraph/rdfs.rdf", RDFS.RDFS);
+		load.load(data + "commattl/comma.ttl");
+		load.load(data + "commattl/commatest.ttl");
+		load.load(data + "commattl/model.ttl");
+		load.load(data + "commattl/testrdf.ttl");
+		load.load(data + "commattl/data");
+		load.load(data + "commattl/data2");
+		long t2 = new Date().getTime();
+		System.out.println((t2-t1) / 1000.0 + "s");
+		System.out.println(graph);
+	}
+	
 
 
 	

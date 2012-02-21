@@ -106,7 +106,7 @@ query =  "select * where {?x c:isMemberOf @{graph $path {?a c:isMemberOf ?this} 
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  16));
 
 
-query =  "select * where {?x c:isMemberOf @[?this = <http://www.inria.fr/>] + ?org}";			  
+query =  "select * where {?x c:isMemberOf @{filter(?this = <http://www.inria.fr/>)} + ?org}";			  
 
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  5));
 

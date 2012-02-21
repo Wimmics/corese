@@ -89,6 +89,9 @@ public interface IDatatype
 	 */
 	public String toSparql();
 	
+	public String toSparql(boolean prefix);
+
+	
 	/**
 	 * @return true if we have an URI
 	 */

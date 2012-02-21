@@ -355,7 +355,10 @@ public class Interpreter implements Evaluator, ExprType {
 			}
 			else {
 				Object res = proxy.eval(exp, env, o1, o2);
-				if (proxy.isTrue(res)){
+				if (res == null){
+					error = true;
+				}
+				else if (proxy.isTrue(res)){
 					return res;
 				}
 			}

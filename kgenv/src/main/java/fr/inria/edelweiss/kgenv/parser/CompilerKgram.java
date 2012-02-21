@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -27,7 +28,7 @@ import fr.inria.edelweiss.kgram.tool.Message;
  */
 public class CompilerKgram implements ExpType, Compiler {
 	static int count = 0;
-
+	static final String EQUAL = "=";
 
 	ASTQuery ast;
 	EdgeImpl edge;
@@ -78,7 +79,8 @@ public class CompilerKgram implements ExpType, Compiler {
 	 * Generate one filter
 	 */
 	public Filter compile(Expression exp) {
-		Expression cpl = exp.process(ast);
+		Expression ee = process(exp);		
+		Expression cpl = ee.process(ast);
 		if (cpl == null){
 			Message.log(Message.REWRITE, exp );
 			Message.log(ast);
@@ -86,7 +88,24 @@ public class CompilerKgram implements ExpType, Compiler {
 		}
 		cpl.compile(ast);
 		return cpl;
-
+	}
+	
+	/**
+	 * xpath() = exp
+	 * ->
+	 * exp in list(xpath())
+	 */
+	Expression process(Expression exp){
+		if (exp.isTerm() && 
+				exp.getName().equals(EQUAL) && 
+				exp.getArg(0).isFunction() &&
+				exp.getArg(0).getName().equals(Processor.XPATH)){
+			Term list = Term.list();
+			list.add(exp.getArg(0));
+			Term t = Term.create(Processor.IN, exp.getArg(1), list);	
+			return t;
+		}
+		return exp;
 	}
 	
 	Node getNode(Atom at){

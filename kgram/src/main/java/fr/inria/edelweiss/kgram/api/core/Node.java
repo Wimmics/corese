@@ -11,13 +11,14 @@ public interface Node {
 	
 	public static final int DEPTH 	= 0;
 	public static final int LENGTH 	= 1;
-	public static final int STATUS 	= 2;
+	public static final int REGEX 	= 2;
 	public static final int OBJECT 	= 3;
 
 	
 	public static final int PSIZE 	= 4;
 
-	
+	public static final int STATUS 	= 4;
+
 	/**
 	 * Query nodes have an index computed by KGRAM
 	 * @return

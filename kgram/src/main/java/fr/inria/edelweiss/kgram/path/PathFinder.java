@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.event.ResultListener;
+import fr.inria.edelweiss.kgram.path.Visit.Table;
 import fr.inria.edelweiss.kgram.tool.EdgeInv;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 
@@ -60,15 +61,15 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
  * graph $path {?a ?p ?b}
  * 
  * Shortest path: 
- * ?x s exp ?y ; ?x sa exp ?y
- * -- TODO: only one shortest path because store length into Node
+ * ?x distinct short exp ?y ; ?x short exp ?y
+ * -- TODO: complete short to get only shortest
  * 
  * Path weight:
  * ?x (rdf:first@2 / rdf:rest@1* / ^rdf:first@2) * ?y
  *   
  * Constaint:
  * ?x exp @{?this a foaf:Person} ?y
- * ?x exp @[?this != <John>] ?y
+ * ?x exp @[a foaf:Person] ?y
  * 
  * Parallel Path:
  * ?x (foaf:knows || ^rdfs:seeAlso) + ?y
@@ -121,6 +122,7 @@ public class PathFinder
 	hasListener = false,
 	// true if breadth first (else depth first)
 	isBreadth,
+	isDistinct = false,
 	defaultBreadth = !true,
 	// true if accept subproperty in regexp
 	isSubProperty,
@@ -141,6 +143,8 @@ public class PathFinder
 	private Regex  regexp1, regexp;
 	// depth or width first 
 	private String mode = "";
+	
+	private final static String DISTINCT="distinct";
 	private final static String DEPTH	="d";
 	private final static String BREADTH	="b";
 
@@ -366,15 +370,28 @@ public class PathFinder
 		isOne = false;
 		other = 1;
 
-		if (mode != null){
-			if (mode.indexOf(DEPTH) >= 0)   isBreadth = false;
-			if (mode.indexOf(BREADTH) >= 0) isBreadth = true;
-			isSubProperty = mode.indexOf(PROPERTY) == -1;
-			isShort =       mode.indexOf(SHORT) != -1;
-			if (isShort && ! isBreadth){
-				isOne = mode.indexOf(ALL) == -1;
+//		if (mode != null){			
+//			if (mode.indexOf(DEPTH) >= 0)   isBreadth = false;
+//			if (mode.indexOf(BREADTH) >= 0) isBreadth = true;
+//			isSubProperty = mode.indexOf(PROPERTY) == -1;
+//			isShort =       mode.indexOf(SHORT) != -1;
+//			if (isShort && ! isBreadth){
+//				isOne = mode.indexOf(ALL) == -1;
+//			}
+//		}
+		
+		if (exp.isShort()){
+			isShort = true;
+			if (exp.isDistinct()){
+				isOne = true;
 			}
 		}
+		else if (exp.isDistinct()){
+			isDistinct = true;
+			// to speed up, eliminate longer path to same target
+			isShort = true;
+		}
+
 			
 		userMin = pmin;
 		userMax = pmax;
@@ -439,7 +456,7 @@ public class PathFinder
 		
 		// the start concept for path
 		Node cstart = get(memory, index);
-		Path path = new Path();
+		Path path = new Path(isReverse);
 		path.setMax(max);
 		path.setIsShort(isShort);
 		
@@ -471,20 +488,14 @@ public class PathFinder
 		int length = 3;
 		if (src!=null) length = 4;
 		
-		int fst = 0, lst = path.size()-1;
-		if (isReverse){
-			fst = lst;
-			lst = 0;
-		}
-		
 		Node n1, n2;
 		if (path.size() == 0){
 			n1 = start;
 			n2 = start;
 		}
 		else {
-			n1 = path.getEdge(fst).getNode(0);
-			n2 = path.getEdge(lst).getNode(1);
+			n1 = path.firstNode();
+			n2 = path.lastNode();
 		}
 		
 		if (! check(n1, n2)){
@@ -521,12 +532,28 @@ public class PathFinder
 		return map;
 	}
 	
-	void setLength(Node n, int l){
-		n.setProperty(Node.LENGTH, l);
+	void setLength(Node n, Regex exp, int l){
+		Regex e = getRegex(n);
+		if (e == null || e == exp){
+			n.setProperty(Node.LENGTH, l);
+			setRegex(n, exp);
+		}
 	}
 	
-	Integer getLength(Node n){
-		return (Integer) n.getProperty(Node.LENGTH);
+	Integer getLength(Node n, Regex exp){
+		Regex e = getRegex(n);
+		if (e == null || e == exp){
+			return (Integer) n.getProperty(Node.LENGTH);
+		}
+		return null;
+	}
+	
+	void setRegex(Node n, Regex e){
+		n.setProperty(Node.REGEX, e);
+	}
+	
+	Regex getRegex(Node n){
+		return (Regex) n.getProperty(Node.REGEX);
 	}
 	
 	/**
@@ -539,17 +566,6 @@ public class PathFinder
 		return node;
 	}
 
-	
-	/**
-	 * Create a new Mapping 
-	 * draft: or reuse an existing one that have been used already by Eval (not used)
-	 */
-	private Mapping getMapping(int length){
-		Node[] qNodes = new Node[length];
-		Node[] tNodes = new Node[length];
-		Mapping map =  Mapping.create(qNodes, tNodes);	
-		return map;
-	}
 	
 	/**
 	 * Check if target node match its query node and its binding
@@ -592,7 +608,6 @@ public class PathFinder
 			return vec;
 		}		
 		else return getNodes(csrc, edge, from, null);
-		//else return getNodes(csrc, edge, from, automaton.getStart());
 	}
 	
 	
@@ -712,11 +727,13 @@ public class PathFinder
 				return;
 			}
 			
-			result(path, start, src);			
+			result(stack, path, start, src);			
 			return;
 		}
 			
 		Regex exp = stack.pop();
+		
+		//System.out.println(exp.toString() + " " + start);
 							
 		switch (exp.retype()){
 			
@@ -764,7 +781,7 @@ public class PathFinder
 				hasOne 	  = isOne;
 
 			Visit visit = stack.getVisit();
-			Node gg = gNode;
+			Node gg = gNode, previous = null;
 			ResultListener handler = listener;
 			
 			for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, src, start, ii)){
@@ -811,26 +828,30 @@ public class PathFinder
 					// all relations need same source in one path
 					continue;
 				}				
-					
-				
-				
+									
 				if (isStart){
-					//trace("** Visit: " + node);
+					// bind start node
 					visit.start(node);
 					// in case there is e1 || e2
 					stack.pushStart(node);
 					if (hasShort) {
-						// reset node length to zero
-						pp.initPath(ee, 0);
+						// reset node length to zero when start changes
+						if (previous==null || ! previous.same(node)){
+							pp.initPath(ee, 0);
+						}
+						previous = node;
 					}
 				}
 				
+				
 				if (hasShort){
+					// shortest path
 					Node other 	= rel.getNode(oo);
-					Integer l 	= getLength(other);
+					Integer l 	= getLength(other, exp);
 					int length 	= pweight + eweight;
+					
 					if (l == null){
-						setLength(other, length);
+						setLength(other, exp, length);
 					}
 					else if (length > l){
 						continue;
@@ -839,7 +860,7 @@ public class PathFinder
 						continue;
 					}
 					else {
-						setLength(other, length);
+						setLength(other, exp, length);
 					}
 				}
 
@@ -1012,10 +1033,24 @@ public class PathFinder
 		return 0;
 	}
 	
-	void result(Path path, Node start, Node src){
+	boolean isDistinct(Record stack, Node start, Node target){
+		boolean b = stack.getVisit().isDistinct(start, target);
+		if (b){
+			stack.getVisit().addDistinct(start, target);
+		}
+		return b;
+	}
+	
+	void result(Record stack, Path path, Node start, Node src){
 		
 		if (path.size()>0){
-
+			if (isDistinct){
+				// distinct (start,target)
+				if (! isDistinct(stack, path.firstNode(), path.lastNode())){
+					return;
+				}
+			}
+			
 			boolean store = true;
 			if (hasListener){
 				store = listener.process(path);
@@ -1073,10 +1108,11 @@ public class PathFinder
 		// use case: (p*/q)*
 		// we must save each visited of p*
 		// because it expands to p*/q . p*/q ...
-		// and each occurrence of p* has its own visited 
-		//List<Node> save = visited.unset(exp);
-		//eval(stack, path, start, src);
-		//visited.set(exp, save);
+		// and each occurrence of p* must have its own visited 
+		
+//		 Table save = stack.getVisit().unset(exp);
+//		 eval(stack, path, start, src);
+//		 stack.getVisit().set(exp, save);
 
 		// first step: zero length 
 		eval(stack, path, start, src);

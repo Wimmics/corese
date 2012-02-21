@@ -24,6 +24,7 @@ public class Visit {
 	Hashtable<Regex, List<Node>> etable;
 	Hashtable<Regex, Table> eetable;
 	Hashtable<Regex, Integer> ctable;
+	DTable tdistinct;
 	ArrayList<Regex> list;
 
 	boolean isReverse = false;
@@ -34,6 +35,7 @@ public class Visit {
 		eetable = new Hashtable<Regex, Table>();
 		ctable  = new Hashtable<Regex, Integer> ();
 		list    = new ArrayList<Regex>();
+		tdistinct = new DTable();
 		isReverse = b;
 	}
 	
@@ -47,9 +49,17 @@ public class Visit {
 	
 	class Table1 extends Hashtable<Node, Node>  {}
 	
+	
 	class Table extends TreeMap<Node, Node>  {	
 		
 		Table(){
+			super(new Compare());
+		}
+	}
+	
+	class DTable extends TreeMap<Node, Table>  {	
+		
+		DTable(){
 			super(new Compare());
 		}
 	}
@@ -71,6 +81,11 @@ public class Visit {
 		table.clear();
 	}
 	
+	
+	/*********************
+	 *
+	 * States are deprecated
+	 */
 	List<Node> get(State state){
 		return table.get(state);
 	}
@@ -168,9 +183,49 @@ public class Visit {
 	 * 
 	 * With Regex
 	 * 
+	 **************************************/
+	
+	/**
+	 * Test whether path loops 
 	 */
+	boolean loop(Regex exp, Node start) {
+		if (isReverse){
+			insert(exp, start);
+			if (revLoop(exp)){
+				remove(exp, start);
+				return true;
+			}
+		}
+		else if (eLoop(exp, start)){
+			return true;
+		}
+		else {
+			insert(exp, start);
+		}
 	
+		return false;
+	}
+	 
+	void insert(Regex exp, Node start){
+		if (start == null){
+			// subscribe exp to start() above because start node is not bound yet
+			list.add(exp);
+		}
+		else {
+			add(exp, start);
+		}
+	}
 	
+	void add(Regex exp, Node node){
+		if (isReverse){
+			ladd(exp, node);
+		}
+		else {
+			eadd(exp, node);
+		}
+	}	
+
+	// reverse case: add node in list
 	void ladd(Regex exp, Node node){
 		List<Node> list = etable.get(exp);
 		if (list == null){
@@ -180,7 +235,7 @@ public class Visit {
 		list.add(node);
 	}
 	
-	
+	// forward case: add in table
 	void eadd(Regex exp, Node node){
 		if (speedUp){
 			node.setProperty(Node.STATUS, true);
@@ -199,26 +254,18 @@ public class Visit {
 		return list.contains(exp);
 	}
 	
-	void insert(Regex exp, Node start){
-		if (start == null){
-			// subscribe exp to start() above because start node is not bound yet
-			list.add(exp);
-		}
-		else {
-			add(exp, start);
+
+	
+	void set(Regex exp, Table t){
+		if (t!=null){
+			eetable.put(exp, t); 
 		}
 	}
 	
-	void set(Regex exp, List<Node> list){
-		if (list!=null){
-			etable.put(exp, list); 
-		}
-	}
-	
-	List<Node> unset(Regex exp){
-		List<Node> list = etable.get(exp);
-		etable.remove(exp);
-		return list;
+	Table unset(Regex exp){
+		Table t = eetable.get(exp);
+		eetable.remove(exp);
+		return t;
 	}
 	
 	/**
@@ -246,15 +293,7 @@ public class Visit {
 		}
 	}
 	
-	void add(Regex exp, Node node){
-		//ladd(exp, node);
-		if (isReverse){
-			ladd(exp, node);
-		}
-		else {
-			eadd(exp, node);
-		}
-	}
+
 	
 	/**
 	 * Remove node from visited list
@@ -265,8 +304,6 @@ public class Visit {
 			return;
 		}
 		
-		//lremove(exp, node);
-
 		if (isReverse){
 			lremove(exp, node);
 		}
@@ -275,6 +312,7 @@ public class Visit {
 		}
 	}
 	
+	// reverse case
 	void lremove(Regex exp, Node node){
 		List<Node> list = etable.get(exp);
 		if (! list.get(list.size()-1).equals(node)){
@@ -283,6 +321,7 @@ public class Visit {
 		list.remove(list.size()-1);
 	}
 	
+	// forward case
 	void eremove(Regex exp, Node node){
 		if (speedUp){
 			node.setProperty(Node.STATUS, false);
@@ -293,27 +332,7 @@ public class Visit {
 	}
 	
 	
-	/**
-	 * Test whether path loops 
-	 */
-	boolean loop(Regex exp, Node start) {
-		if (isReverse){
-			insert(exp, start);
-			if (revLoop(exp)){
-				remove(exp, start);
-				return true;
-			}
-		}
-		else if (eLoop(exp, start)){
-			return true;
-		}
-		else {
-			insert(exp, start);
-		}
-	
-		return false;
-	}
-	 
+	// forward case
 	boolean eLoop(Regex exp, Node start){
 		if (speedUp){
 			return (start!= null && start.getProperty(Node.STATUS) == Boolean.TRUE);
@@ -324,19 +343,6 @@ public class Visit {
 		}
 		return table.containsKey(start);
 	}
-	
-	 boolean stdLoop(Regex exp, Node start){
-		 List<Node> list = etable.get(exp);
-		 if (list == null) return false;
-		 int size = list.size();
-		 
-		 for (int i = 0; i<size; i++){
-			 if (list.get(i).equals(start)){
-				 return true;
-			 }
-		 }
-		 return false;
-	 }
 	 
 	/**
 	 * Test if there is a loop on path of exp
@@ -387,6 +393,26 @@ public class Visit {
 		 if (i == null) return 0;
 		 return i;
 	 }
-	
+	 
+	 /****************************************/
+	 
+	 /**
+	  * ?x distinct(exp+) ?y
+	  */
+	 boolean isDistinct(Node start, Node node){
+		 Table t = tdistinct.get(start);
+		 if (t == null) return true;
+		 return ! t.containsKey(node);
+	 }
+	 
+	 void addDistinct(Node start, Node node){
+		 Table t = tdistinct.get(start);
+		 if (t == null){
+			 t = new Table();
+			 tdistinct.put(start, t);
+		 }
+		 t.put(node, node);
+	 }
+	 
 
 }

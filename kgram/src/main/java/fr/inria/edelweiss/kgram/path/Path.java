@@ -23,7 +23,8 @@ import fr.inria.edelweiss.kgram.tool.ProducerDefault;
 public class Path extends ProducerDefault
 {
 	boolean loopNode = true,
-	isShort = false;
+	isShort = false, 
+	isReverse = false;
 	int max = Integer.MAX_VALUE;
 	int weight = 0;
 	
@@ -33,6 +34,11 @@ public class Path extends ProducerDefault
 
 	public Path(){
 		path = new ArrayList<Entity>();
+	}
+	
+	public Path(boolean b){
+		this();
+		isReverse = b;
 	}
 	
 	Path(int n){
@@ -81,7 +87,7 @@ public class Path extends ProducerDefault
 		path.remove(path.size()-1);
 	}
 
-	
+	// after reverse path
 	public Node getSource(){
 		return getEdge(0).getNode(0);
 	}
@@ -89,6 +95,27 @@ public class Path extends ProducerDefault
 	public Node getTarget() {
 		return getEdge(size()-1).getNode(1);
 	}
+	
+	// before reverse path
+	// edge may be EdgeInv in case of ^p
+	// firstNode is the SPARQL binding of subject node
+	public Node firstNode(){
+		int fst = 0;
+		if (isReverse){
+			fst = size()-1;
+		}
+		return get(fst).getNode(0);
+	}
+	
+	// lastNode is the SPARQL binding of object node
+	public Node lastNode() {
+		int lst = size()-1;
+		if (isReverse){
+			lst = 0;
+		}
+		return get(lst).getNode(1);
+	}
+	
 	
 	public Entity get(int n){
 		return path.get(n);

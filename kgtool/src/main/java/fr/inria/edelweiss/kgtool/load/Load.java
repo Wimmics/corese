@@ -58,6 +58,8 @@ public class Load
 	static final String[] protocols	= {HTTP, FTP, FILE};
 	static final String OWL = "http://www.w3.org/2002/07/owl#";
 	static final String IMPORTS = OWL + "imports";
+	
+	int maxFile = Integer.MAX_VALUE;
 
 	Graph graph;
 	Log log;
@@ -69,7 +71,7 @@ public class Load
 	
 	String source;
 	
-	boolean debug = false,
+	boolean debug = !true,
 	hasPlugin = false;
 	
 	int nb = 0;
@@ -133,6 +135,10 @@ public class Load
 		}
 	}
 	
+	public void setMax(int n){
+		maxFile = n;
+	}
+	
 	public Build getBuild(){
 		return build;
 	}
@@ -193,8 +199,10 @@ public class Load
 		File file=new File(path);
 		if (file.isDirectory()){
 			path += File.separator;
+			int i = 0;
 			for (String f : file.list()){
 				if (! suffix(f)) continue ;
+				if (i++ >= maxFile) return;
 				String name = path + f;
 				load(name, src);
 			}
@@ -215,9 +223,10 @@ public class Load
 		File file=new File(path);
 		if (file.isDirectory()){
 			path += File.separator;
-			
+			int i = 0;
 			for (String f : file.list()){
 				if (! suffix(f)) continue ;
+				if (i++ >= maxFile) return;
 				String name = path + f;
 				loadWE(name, src);
 			}

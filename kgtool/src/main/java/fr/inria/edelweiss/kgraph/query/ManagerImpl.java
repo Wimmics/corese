@@ -310,7 +310,11 @@ public class ManagerImpl implements Manager {
 		}
 		String uri = ope.getURI();
 		String src = ope.getTarget();
-		try {
+		if (ope.isSilent()){
+			load.load(uri, src);
+		}
+		else 
+			try {
 			load.loadWE(uri, src);
 		} catch (LoadException e) {
 			return ope.isSilent();

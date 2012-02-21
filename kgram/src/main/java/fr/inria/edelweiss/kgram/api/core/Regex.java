@@ -41,9 +41,15 @@ public interface Regex {
 	boolean isOpt();
 
 	boolean isNot();
-	
+		
+	boolean isDistinct();
+
+	boolean isShort();
+
+	// @deprecated
 	boolean isInverse();
-	
+
+	// @deprecated
 	void setInverse(boolean b);
 	
 	// SPARQL 1.1 reverse ^

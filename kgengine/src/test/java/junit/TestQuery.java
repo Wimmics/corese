@@ -28,7 +28,10 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.BuildImpl;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgraph.rdf.*;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 
 
 import static org.junit.Assert.assertEquals;
@@ -41,6 +44,7 @@ public class TestQuery {
 	
 	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
 	static String test = "/home/corby/workspace/coreseV2/text/";
+	static String root = "/home/corby/workspace/kgengine/src/test/resources/data/";
 
 	static Graph graph;
 	
@@ -1225,7 +1229,7 @@ public class TestQuery {
 					"prefix ex: <http://test/> " +
 					"prefix foaf: <http://foaf/> " +
 					"select * where {" +
-					"?x (foaf:knows/rdfs:seeAlso @{?this a foaf:Person} || ex:rel+)+ ?y" +
+					"?x (foaf:knows/rdfs:seeAlso @[a foaf:Person] || ex:rel+)+ ?y" +
 					"}";
 							 												
 				try {
@@ -1253,11 +1257,8 @@ public class TestQuery {
 					"prefix foaf: <http://foaf/> " +
 					"insert data {" +
 					"ex:a foaf:knows ex:b " +
-					"ex:b foaf:knows ex:c " +
-					
-					"ex:a ex:rel ex:b " +
-					"ex:b ex:rel ex:c " +
-					"" +
+					"ex:b foaf:knows ex:c " +								
+
 					"ex:b rdfs:seeAlso ex:a " +
 					"ex:c rdfs:seeAlso ex:b " +
 				"}";
@@ -1282,6 +1283,312 @@ public class TestQuery {
 				}
 		
 	}
+	
+	
+	@Test
+	public void test42(){			
+			
+			Graph graph = Graph.create(true);			
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			 String init = 
+					"prefix ex: <http://test/> " +
+					"prefix foaf: <http://foaf/> " +
+					"insert data {" +
+					"ex:a foaf:knows ex:b " +
+					"ex:b foaf:knows ex:c " +
+				
+					"ex:b rdfs:seeAlso ex:a " +
+					"ex:c rdfs:seeAlso ex:b " +
+				"}";
+			
+			 String query = 
+				"prefix ex: <http://test/> " +
+				"prefix foaf: <http://foaf/> " +
+				"select * where {" +
+				"ex:a (  foaf:knows || ^rdfs:seeAlso )+ ?y" +
+
+				"}";
+							 												
+				try {
+					exec.query(init);
+					Mappings map = exec.query(query);
+					assertEquals("Result", 2, map.size());
+
+					
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		
+	}
+	
+	
+	@Test
+	public void test43(){			
+			
+			Graph graph = Graph.create(true);			
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			 String init = 
+					"prefix ex: <http://test/> " +
+					"prefix foaf: <http://foaf/> " +
+					"insert data {" +
+					"ex:a foaf:knows ex:b " +
+					"ex:b foaf:knows ex:e " +
+					"ex:e foaf:knows ex:c " +
+
+					"ex:b rdfs:seeAlso ex:a " +
+					"ex:c rdfs:seeAlso ex:b " +
+				"}";
+			
+			 String query = 
+				"prefix ex: <http://test/> " +
+				"prefix foaf: <http://foaf/> " +
+				"select * where {" +
+				"ex:a ( foaf:knows+ || (^rdfs:seeAlso)+ ) ?y" +
+
+				"}";
+							 												
+				try {
+					exec.query(init);
+					Mappings map = exec.query(query);
+					assertEquals("Result", 2, map.size());
+
+					
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		
+	}
+	
+	
+	@Test
+	public void test44(){			
+			
+			Graph graph = Graph.create(true);			
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			 String init = 
+					"prefix ex: <http://test/> " +
+					"prefix foaf: <http://foaf/> " +
+					"insert data {" +
+					"foaf:knows rdfs:domain foaf:Person " +
+					"foaf:knows rdfs:range  foaf:Person " +
+					
+					"ex:a foaf:knows ex:b " +
+					"ex:b foaf:knows ex:c " +
+
+					"ex:a rdfs:seeAlso ex:b " +
+					"ex:b rdfs:seeAlso ex:c " +
+				"}";
+			
+			 String query = 
+				"prefix ex: <http://test/> " +
+				"prefix foaf: <http://foaf/> " +
+				"select * (kg:pathWeight($path) as ?w) where {" +
+				"ex:a ( foaf:knows@2 | rdfs:seeAlso@1 )@[a rdfs:Resource] +  :: $path ?x " +
+				"filter(kg:pathWeight($path) = 3)" +
+
+				"}";
+							 												
+				try {
+					exec.query(init);
+					Mappings map = exec.query(query);
+					assertEquals("Result", 2, map.size());
+
+					
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		
+	}
+	
+	@Test
+	public void test45(){			
+			
+			Graph graph = Graph.create(true);			
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			 String init = 
+					"prefix c: <http://test/> " +
+					"insert data {" +
+					"tuple(c:name <John>  'John' 1)" +
+					"tuple(c:name <Jim>   'Jim' 1)" +
+					"tuple(c:name <James> 'James')" +
+					"}" ;
+			 
+			 String query = 
+				"prefix c: <http://test/> " +
+				 "select * where {" +
+					"graph ?g { tuple(c:name ?x ?n 1) }" +
+				 "}";
+
+			 try {
+					exec.query(init);
+					Mappings map = exec.query(query);
+					assertEquals("Result", 2, map.size());
+
+					
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 
+	}
+	
+	@Test
+	public void test46(){			
+			
+			Graph graph = Graph.create(true);	
+			Load load  = Load.create(graph);
+			load.load(root + "test/test1.ttl");
+			load.load(root + "test/test1.rul");
+
+			RuleEngine  re = load.getRuleEngine();
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			 String query = 
+					"prefix c: <http://www.inria.fr/test/> " +
+					 "select * where {" +
+						"graph ?g { tuple(c:name ?x ?n 1) }" +
+					 "}";
+			 
+			 String query2 = 
+					"prefix c: <http://www.inria.fr/test/> " +
+					 "select * where {" +
+						"graph ?g { " +
+						"tuple(c:name ?x ?n 1) " +
+						"tuple(c:name ?y ?m 2) " +
+						"}" +
+					 "}";
+			 
+			 String query3 = 
+					"prefix c: <http://www.inria.fr/test/> " +
+					 "select * where {" +
+						"graph ?g { " +
+						"tuple(c:name ?x 'JohnJohn' 1) " +
+						"tuple(c:name ?x  'John' ?v)" +
+						"}" +
+					 "}";
+			 
+			 
+			 String query4 = 
+					"prefix c: <http://www.inria.fr/test/> " +
+					 "construct {" +
+						"tuple(c:name ?x 'JohnJohn' ?y) " +
+					 "} where {" +
+						"graph ?g { " +
+						"tuple(c:name ?x 'JohnJohn' ?y) " +
+						"tuple(c:name ?x  'John' ?v)" +
+						"}" +
+					 "}";
+			 
+			 
+			 try {
+					Mappings map = exec.query(query);
+					assertEquals("Result", 1, map.size());
+					
+					map = exec.query(query2);
+					assertEquals("Result", 1, map.size());
+					
+					re.process();
+					
+					map = exec.query(query3);
+					assertEquals("Result", 1, map.size());
+					
+					map = exec.query(query4);
+					TripleFormat tf = TripleFormat.create(exec.getGraph(map));
+					System.out.println(tf);
+					
+
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	}
+	
+	@Test
+	public void test47(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);		
+
+		String init = 
+			"prefix i: <http://www.inria.fr/test/> " +
+			"" +
+			"insert data {" +
+			"<doc> i:contain " +
+				"'<doc>" +
+				"<person><name>John</name><lname>K</lname></person>" +
+				"<person><name>James</name><lname>C</lname></person>" +
+				"</doc>'^^rdf:XMLLiteral   " +
+			"}";
+		
+		String query = 		"" +
+		"prefix i: <http://www.inria.fr/test/> " +
+				"construct {" +
+				"[i:name ?name]" +
+				"} where {" +
+				"select (concat(?n, '.', ?l) as ?name) where {" +
+					"?x i:contain ?xml " +
+					"{select  (xpath(?xml, '/doc/person') as ?p) where {}}" +
+					"{select  (xpath(?p, 'name/text()')  as ?n)  where {}}" +
+					"{select  (xpath(?p, 'lname/text()') as ?l)  where {}}" +
+				"}}";
+		
+		
+		try {
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			System.out.println(map);			
+			assertEquals("Result", 2, map.size());
+
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
+	
+	@Test
+	public void test48(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String init = "insert data {" +
+		"<John> foaf:knows <Jack> " +
+		"<Jack> foaf:knows <Jim> " +
+		"<John> foaf:knows <Jim> " +
+		
+		"<A> rdfs:seeAlso <B> " +
+		"<John> rdfs:seeAlso <Jack> " +
+		"}";
+
+		String query = "select * where {" +
+		"?x distinct(foaf:knows|rdfs:seeAlso)+ ?y" +
+		"}";
+
+		try {
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			assertEquals("Result", 4, map.size());
+
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
 	
 	public IDatatype fun(Object o1, Object o2){
 		IDatatype dt1 = datatype(o1);

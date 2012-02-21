@@ -3,6 +3,9 @@ package junit;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,6 +22,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 
 
 /**
@@ -41,13 +45,22 @@ public class TestRuleEngine {
 		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
 
 		graph = Graph.create(true);
-		Loader load = Load.create(graph);
+		Load load = Load.create(graph);
 
 		load.load(data + "engine/ontology/test.rdfs");
 		load.load(data + "engine/data/test.rdf");
 		
-		load.load(data + "engine/rule/test2.brul");
-		load.load(data + "engine/rule/meta.brul");
+		try {
+			load.loadWE(data + "engine/rule/test2.brul");
+			load.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
+		} catch (LoadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		fengine = load.getRuleEngine();
 
 		QueryProcess exec = QueryProcess.create(graph);

@@ -44,7 +44,24 @@ public class TestJunit {
 		graph = Graph.create();
 		Load ld = Load.create(graph);
 		ld.load(data + "comma/model.rdf");
+		init2();		
 	}
+	
+	static void init2(){
+		String init = "insert data {" +
+		"<http://ex.org/a&b> c:name 'John & Jack < 10'" +
+		"}";
+
+		QueryProcess exec = QueryProcess.create(graph);
+		try {
+			exec.query(init);
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	
 	
 	Graph getGraph(){
 		return graph;

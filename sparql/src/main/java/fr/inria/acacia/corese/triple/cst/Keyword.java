@@ -22,6 +22,9 @@ public interface Keyword {
 	final static public String SINV = "i";
 	final static public String SSHORT = "s";
 	final static public String SSHORTALL = "sa";
+	final static public String SHORT = "short";
+
+	final static public String DISTINCT = "distinct";
 
 	final static public String SDEPTH = "d";
 	final static public String SBREADTH = "b";

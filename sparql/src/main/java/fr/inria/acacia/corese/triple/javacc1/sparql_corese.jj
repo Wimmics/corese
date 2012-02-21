@@ -1474,7 +1474,8 @@ Expression RegExp():{Token t; String s; Expression exp;}
 	  exp = AddRegExp()   | 
 	
 	(
-		t = <INV> | t = <SHORT> | t = <SHORTALL> | t = <DEPTH> | t = <BREADTH>)
+		t = <INV> | t = <SHORT> | t = <SHORTALL> | t = <DEPTH> | t = <BREADTH> | t = <DISTINCT> 
+	)
 	
 	  	exp = RegExp()  { exp = astq.createOperator(t.image, exp); }
 )
@@ -2246,8 +2247,8 @@ TOKEN : {
 
 	<KW_A: "a" > 
 |	<INV: "i" >
-|	<SHORT: "s" >
-|	<SHORTALL: "sa" >
+|	<SHORT:    "s"   >
+|	<SHORTALL: ("sa" | "short")>
 |	<DEPTH: "d" >
 |   <BREADTH: "b">
 

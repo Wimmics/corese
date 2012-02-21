@@ -64,6 +64,7 @@ public class Term extends Expression {
 	isPlus = false;
 	boolean isSystem = false;
 	boolean isDistinct = false;
+	boolean isShort = false;
 	String  modality;
 	
 	public Term() {
@@ -136,6 +137,14 @@ public class Term extends Expression {
 	
 	public boolean isDistinct(){
 		return isDistinct;
+	}
+	
+	public void setShort(boolean b){
+		isShort = b;
+	}
+	
+	public boolean isShort(){
+		return isShort;
 	}
 	
 	public void setModality(String s){
@@ -391,6 +400,8 @@ public class Term extends Expression {
 		setMin(t.getMin());
 		setPlus(t.isPlus());
 		setExpr(t.getExpr());
+		setShort(t.isShort());
+		setDistinct(t.isDistinct());
 	}
 	
 	

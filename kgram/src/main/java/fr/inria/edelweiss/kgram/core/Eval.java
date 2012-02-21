@@ -288,7 +288,7 @@ public class Eval implements  ExpType, Plugin {
 		
 		if (query.getOrderBy().size()>0 || query.getGroupBy().size()>0){
 			memory.push(map, -1);
-			Mapping m = memory.store(query, true);
+			Mapping m = memory.store(query, true, true);
 			memory.pop(map);
 			map = m;
 		}

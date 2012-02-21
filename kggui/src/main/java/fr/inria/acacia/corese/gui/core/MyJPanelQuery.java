@@ -952,17 +952,25 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 				
 				sujetUri = edge.getNode(0).getLabel();
 				objetUri = edge.getNode(1).getLabel();
-				IDatatype dt = (IDatatype) edge.getNode(1).getValue();
+				
+				IDatatype dts = (IDatatype) edge.getNode(0).getValue();
+				IDatatype dto = (IDatatype) edge.getNode(1).getValue();
 				
 				predicat = nsm.toPrefix(edge.getEdgeNode().getLabel());
 				
-				sujet = nsm.toPrefix(sujetUri);
-				if (dt.isURI()){
+				if (dts.isURI()){
+					sujet = nsm.toPrefix(sujetUri);
+				}
+				else {
+					sujet = sujetUri;
+				}
+				
+				if (dto.isURI()){
 					objet = nsm.toPrefix(objetUri);
 				}
-				else if (dt.isLiteral() && 
-						(dt.getDatatype() == null ||
-						(dt.getDatatypeURI().equals(RDFS.xsdstring)))){
+				else if (dto.isLiteral() && 
+						(dto.getDatatype() == null ||
+						(dto.getDatatypeURI().equals(RDFS.xsdstring)))){
 					objet = "\"" + objetUri + "\"";
 				}
 				else {
@@ -1002,7 +1010,7 @@ public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, D
 					if (edge.getNode(1).isBlank()){
 						target.setAttribute(UI_CLASS, BLANK);
 					}
-					else if (dt.isLiteral()){
+					else if (dto.isLiteral()){
 						target.setAttribute(UI_CLASS, LITERAL);
 					}
 					else if (g.isType(edge.getEdgeNode()) || g.isSubClassOf(edge.getEdgeNode())){

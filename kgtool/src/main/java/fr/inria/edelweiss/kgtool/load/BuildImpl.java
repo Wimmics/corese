@@ -20,11 +20,13 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
  * 
  */
 public class BuildImpl implements Build {
+	static final String STAR = "*";
 	
 	Graph graph;
 	Node source;
 	ArrayList<String> exclude;
 	Hashtable<String, String> blank;
+	boolean skip = false;
 
 	public BuildImpl(){
 	}
@@ -65,8 +67,20 @@ public class BuildImpl implements Build {
 		source = graph.addGraph(src);
 	}
 	
+	public void setSkip(boolean b){
+		skip = b;
+	}
+	
 	public void exclude(String ns){
-		exclude.add(ns);
+		if (ns == null){
+			exclude.clear();
+		}
+		else if (ns.equals(STAR)){
+			skip = true;
+		}
+		else {
+			exclude.add(ns);
+		}
 	}
 	
 	public void start(){
@@ -75,6 +89,7 @@ public class BuildImpl implements Build {
 	}
 	
 	public boolean accept(String pred){
+		if (skip) return false;
 		if (exclude.size() == 0) return true;
 		for (String ns : exclude){
 			if (pred.startsWith(ns)){

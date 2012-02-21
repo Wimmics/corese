@@ -272,14 +272,18 @@ public class Memory implements Environment {
 	 * as a Mapping
 	 */
 	Mapping store(Query q){
-		return store(query, false);
+		return store(query, false, false);
+	}
+	
+	Mapping store(Query q, boolean subEval){
+		return store(query, subEval, false);
 	}
 	
 	/**
 	 * subEval = true : result of minus() or inpath()
 	 * in this case we do not need select exp 
 	 */
-	Mapping store(Query q, boolean subEval){
+	Mapping store(Query q, boolean subEval, boolean func){
 		int nb = nbNode;
 		if (! subEval){
 			nb += q.nbFun();
@@ -289,7 +293,6 @@ public class Memory implements Environment {
 		// order by
 		snode = new Node[q.getOrderBy().size()],
 		gnode = new Node[q.getGroupBy().size()];
-
 		Path[] lp = null;
 		
 		int n = 0, i = 0;
@@ -321,8 +324,13 @@ public class Memory implements Environment {
 			i++;
 		}
 		
-		if (! subEval){
-
+		if (subEval){
+			if (func){
+				orderGroup(q.getOrderBy(), snode);
+				orderGroup(q.getGroupBy(), gnode);
+			}
+		}
+		else {
 			for (Exp e : q.getSelectFun()){
 
 				Filter f = e.getFilter();
@@ -339,7 +347,6 @@ public class Memory implements Environment {
 					n++;
 				}
 			}
-			
 			orderGroup(q.getOrderBy(), snode);
 			orderGroup(q.getGroupBy(), gnode);
 			

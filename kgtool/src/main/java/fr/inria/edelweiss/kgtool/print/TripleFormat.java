@@ -40,8 +40,9 @@ public class TripleFormat extends RDFFormat {
 	}
 	
 	public StringBuilder getStringBuilder(){
+		sb 	= new StringBuilder();
 		if (graph == null && map == null){
-			return null;
+			return sb;
 		}
 		
 		if (isGraph){

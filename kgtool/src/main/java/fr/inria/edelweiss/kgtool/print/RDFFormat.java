@@ -68,7 +68,6 @@ public class RDFFormat {
 		with 	= new ArrayList<String>();
 		without = new ArrayList<String>();
 		nsm 	= n;
-		sb 		= new StringBuilder();
 	}
 	
 	
@@ -193,8 +192,9 @@ public class RDFFormat {
 	
 	
 	public StringBuilder getStringBuilder(){
+		sb 	= new StringBuilder();
 		if (graph == null && map == null){
-			return null;
+			return sb;
 		}
 		
 		for (Entity ent : getNodes()){

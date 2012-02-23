@@ -312,6 +312,7 @@ public class Constant extends Atom {
 		}
 		else {
 			cst = new Constant(getLabel());
+			cst.setQName(isQName);
 		}
 		cst.setLongName(getLongName());
 		return cst;

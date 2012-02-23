@@ -34,6 +34,7 @@ public class Term extends Expression {
 	
 	public static final String SEINV = "i";
 	public static final String SREV = Keyword.SBE;
+	public static final String SNOT = Keyword.SENOT;
 	public static final String SEAND = Keyword.SEAND;
 	static final String SEDIV = Keyword.SDIV;
 	static final String SEOR  = Keyword.SEOR;
@@ -192,10 +193,10 @@ public class Term extends Expression {
 			return paren(getArg(0).toRegex()) + "*";
 		}
 		else if (isNot()){
-			return "!" + paren(getArg(0).toRegex());
+			return SNOT + paren(getArg(0).toRegex());
 		}
 		else if (isReverse()){
-			return "^" + paren(getArg(0).toRegex());
+			return SREV + paren(getArg(0).toRegex());
 		}
 		else if (isOpt()){
 			return paren(getArg(0).toRegex()) + "?";

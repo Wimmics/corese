@@ -350,7 +350,11 @@ implements Regex, Filter, Expr {
 	
 	
 	public String toRegex() {
-		return toString();
+		String str = toString();
+		if (isReverse()){
+			str = Term.SREV + str;
+		}
+		return str;
 	}
 	
 	/**

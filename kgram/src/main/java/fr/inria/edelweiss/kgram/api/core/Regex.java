@@ -26,6 +26,8 @@ public interface Regex {
 	
 	String getLongName();
 	
+	String toRegex();
+	
 	int retype();
 	
 	int getArity();

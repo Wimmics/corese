@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.gui.core;
 
+import fr.inria.acacia.corese.gui.query.MyJPanelQuery;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -504,15 +505,15 @@ public class MainFrame extends JFrame implements ActionListener{
         checkBoxRule = new JCheckBox("Rule");
         checkBoxVerbose = new JCheckBox("Verbose");
         validate = new JMenuItem("Validate");
-        
+
         undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-        redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK)); 
-        cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK)); 
+        redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+        cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
-        newQuery.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK)); 
-        duplicate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK)); 
-        saveQuery.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK)); 
+        newQuery.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        duplicate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+        saveQuery.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         help.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.ALT_MASK));
         next.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK));
         complete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
@@ -521,14 +522,14 @@ public class MainFrame extends JFrame implements ActionListener{
         next.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK));
         success.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK));
         quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.ALT_MASK));
-        
-        
+
+
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
         JMenu engineMenu = new JMenu("Engine");
         JMenu debugMenu = new JMenu("Debug");
         JMenu aboutMenu = new JMenu("?");
-        
+
         //On ajoute tout au menu
         fileMenu.add(loadRDFs);
         fileMenu.add(loadRule);
@@ -563,77 +564,82 @@ public class MainFrame extends JFrame implements ActionListener{
         aboutMenu.add(tuto);
         aboutMenu.add(doc);
 
-        
-        
-        
+
+
+
         aboutMenu.add(help);
         ActionListener l_HelpListener = new ActionListener() {
-        	public void actionPerformed(ActionEvent l_Event) {
-        		set(Event.HELP);       		
-        	}
+
+            public void actionPerformed(ActionEvent l_Event) {
+                set(Event.HELP);
+            }
         };
         help.addActionListener(l_HelpListener);
-        
+
         debugMenu.add(next);
         ActionListener l_NextListener = new ActionListener() {
-        	public void actionPerformed(ActionEvent l_Event) {
-        		set(Event.STEP);        		
-        	}
+
+            public void actionPerformed(ActionEvent l_Event) {
+                set(Event.STEP);
+            }
         };
         next.addActionListener(l_NextListener);
 
-        
+
         debugMenu.add(complete);
         ActionListener l_SkipListener = new ActionListener() {
-        	public void actionPerformed(ActionEvent l_Event) {
-        		set(Event.COMPLETE);
-        		
-        	}
+
+            public void actionPerformed(ActionEvent l_Event) {
+                set(Event.COMPLETE);
+
+            }
         };
         complete.addActionListener(l_SkipListener);
-        
-        
+
+
         debugMenu.add(forward);
         ActionListener l_PlusListener = new ActionListener() {
-        	public void actionPerformed(ActionEvent l_Event) {
-        		set(Event.FORWARD);
-        		
-        	}
+
+            public void actionPerformed(ActionEvent l_Event) {
+                set(Event.FORWARD);
+
+            }
         };
         forward.addActionListener(l_PlusListener);
-        
+
         debugMenu.add(map);
         ActionListener l_MapListener = new ActionListener() {
-        	public void actionPerformed(ActionEvent l_Event) {
-        		set(Event.MAP);
-        		
-        	}
+
+            public void actionPerformed(ActionEvent l_Event) {
+                set(Event.MAP);
+
+            }
         };
         map.addActionListener(l_MapListener);
-        
+
         debugMenu.add(success);
         ActionListener l_SuccessListener = new ActionListener() {
-  			
-  			
-  			public void actionPerformed(ActionEvent e) {
-  				set(Event.SUCCESS);			
-  			}
-  		};
-  		success.addActionListener(l_SuccessListener);
-        
-  		debugMenu.add(quit);
+
+            public void actionPerformed(ActionEvent e) {
+                set(Event.SUCCESS);
+            }
+        };
+        success.addActionListener(l_SuccessListener);
+
+        debugMenu.add(quit);
         ActionListener l_QuitListener = new ActionListener() {
-        	public void actionPerformed(ActionEvent l_Event) {
-        		set(Event.QUIT);       		
-        	}
+
+            public void actionPerformed(ActionEvent l_Event) {
+                set(Event.QUIT);
+            }
         };
         quit.addActionListener(l_QuitListener);
-        
+
         debugMenu.add(checkBoxLoad);
-        checkBoxLoad.addItemListener (
-        		new ItemListener() {
-        			public void itemStateChanged(ItemEvent e) {
-        				
+        checkBoxLoad.addItemListener(
+                new ItemListener() {
+
+                    public void itemStateChanged(ItemEvent e) {
 //        				if(checkBoxLoad.isSelected() == true){        					
 //        					ell = MyLoadListener.create();
 //        					getMyCorese().addEventListener(ell);
@@ -641,16 +647,15 @@ public class MainFrame extends JFrame implements ActionListener{
 //        				else{
 //        					getMyCorese().removeEventListener(ell);        				
 //        				}
-        			}
-        		}
-        );
-        
-        
+                    }
+                });
+
+
         debugMenu.add(checkBoxQuery);
-        checkBoxQuery.addItemListener (
-        		new ItemListener() {
-        			public void itemStateChanged(ItemEvent e) {
-        				
+        checkBoxQuery.addItemListener(
+                new ItemListener() {
+
+                    public void itemStateChanged(ItemEvent e) {
 //        				if(checkBoxQuery.isSelected() == true){
 //        					eql = MyQueryListener.create();
 //        					getMyCorese().addEventListener(eql);

@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
-import fr.inria.acacia.corese.gui.core.MyJPanelQuery;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
 //import fr.inria.acacia.corese.util.Time;
 import fr.inria.edelweiss.kgengine.GraphEngine;

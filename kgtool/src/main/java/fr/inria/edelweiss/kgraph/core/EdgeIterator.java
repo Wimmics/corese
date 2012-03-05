@@ -56,6 +56,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	public Iterator<Entity> iterator() {
 		// TODO Auto-generated method stub
 		it = iter.iterator();
+		last = null;
 		return this;
 	}
 

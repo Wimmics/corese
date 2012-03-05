@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.event.ResultListener;
+import fr.inria.edelweiss.kgram.path.Visit.TTable;
 import fr.inria.edelweiss.kgram.path.Visit.Table;
 import fr.inria.edelweiss.kgram.tool.EdgeInv;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
@@ -831,7 +832,7 @@ public class PathFinder
 									
 				if (isStart){
 					// bind start node
-					visit.start(node);
+					visit.nstart(node);
 					// in case there is e1 || e2
 					stack.pushStart(node);
 					if (hasShort) {
@@ -878,7 +879,7 @@ public class PathFinder
 					handler.leave(ent, exp, size);
 				}								
 				if (isStart){
-					visit.leave(node);
+					visit.nleave(node);
 					stack.popStart();
 				}
 			
@@ -1099,7 +1100,7 @@ public class PathFinder
 	 */
 	void star(Regex exp, Record stack, Path path, Node start, Node src){
 		
-		if (stack.getVisit().loop(exp, start)){
+		if (stack.getVisit().nloop(exp, start)){
 			// start already met in exp path: stop
 			stack.push(exp);
 			return;
@@ -1110,12 +1111,12 @@ public class PathFinder
 		// because it expands to p*/q . p*/q ...
 		// and each occurrence of p* must have its own visited 
 		
-//		 Table save = stack.getVisit().unset(exp);
-//		 eval(stack, path, start, src);
-//		 stack.getVisit().set(exp, save);
+		 TTable save = stack.getVisit().nunset(exp);
+		 eval(stack, path, start, src);
+		 stack.getVisit().nset(exp, save);
 
 		// first step: zero length 
-		eval(stack, path, start, src);
+		//eval(stack, path, start, src);
 
 		// restore exp*
 		stack.push(exp);
@@ -1126,7 +1127,7 @@ public class PathFinder
 		// restore stack (exp* on top)
 		stack.pop();
 
-		stack.getVisit().remove(exp, start);	
+		stack.getVisit().nremove(exp, start);	
 	}
 	
 	
@@ -1140,7 +1141,7 @@ public class PathFinder
 			
 			if (checkLoop){
 				//trace("** Visit: " + start);
-				if (stack.getVisit().loop(exp, start)){
+				if (stack.getVisit().nloop(exp, start)){
 					stack.push(exp);
 					return;
 				}
@@ -1156,20 +1157,28 @@ public class PathFinder
 			stack.getVisit().count(exp, -1);
 			
 			if (checkLoop){
-				stack.getVisit().remove(exp, start);		
+				stack.getVisit().nremove(exp, start);		
 			}
 			
 		}
 		else {
 			//trace("** Visit: " + start);
-			if (stack.getVisit().loop(exp, start)){
+			if (stack.getVisit().nloop(exp, start)){
 				//trace("** Loop: " + start);
 				stack.push(exp);
 				return;
 			}
 			
+			
 			// (1) leave
-			eval(stack, path, start, src);
+			 TTable save = stack.getVisit().nunset(exp);
+			 stack.getVisit().set(exp, 0);
+			 eval(stack, path, start, src);
+			 stack.getVisit().set(exp, 1);
+			 stack.getVisit().nset(exp, save);
+			
+			// (1) leave
+			//eval(stack, path, start, src);
 
 			// (2) continue
 			stack.push(exp);
@@ -1178,7 +1187,7 @@ public class PathFinder
 			eval(stack, path, start, src);
 			stack.pop();
 
-			stack.getVisit().remove(exp, start);		
+			stack.getVisit().nremove(exp, start);		
 		}
 	}
 
@@ -1195,7 +1204,7 @@ public class PathFinder
 		if (stack.getVisit().count(exp) >= exp.getMin()){			
 			
 			if (checkLoop(exp)){
-				if (stack.getVisit().loop(exp, start)){
+				if (stack.getVisit().nloop(exp, start)){
 					stack.push(exp);
 					return;
 				}
@@ -1220,7 +1229,7 @@ public class PathFinder
 			}
 			
 			if (checkLoop(exp)){
-				stack.getVisit().remove(exp, start);		
+				stack.getVisit().nremove(exp, start);		
 			}
 			
 		}
@@ -1231,12 +1240,12 @@ public class PathFinder
 				if (checkLoop(exp)){
 					// use case: ?x exp{2,} <uri>
 					// path goes backward
-					stack.getVisit().insert(exp, start);
+					stack.getVisit().ninsert(exp, start);
 				}
 			}
 			// TODO: draft
 			else if (checkLoop){
-				if (stack.getVisit().loop(exp, start)){
+				if (stack.getVisit().nloop(exp, start)){
 					stack.push(exp);
 					return;
 				}
@@ -1255,12 +1264,12 @@ public class PathFinder
 				if (checkLoop(exp)){
 					// use case: ?x exp{2,} <uri>
 					// path goes backward
-					stack.getVisit().remove(exp, start);
+					stack.getVisit().nremove(exp, start);
 				}
 			}
 			// TODO: draft
 			else if (checkLoop){
-				stack.getVisit().remove(exp, start);		
+				stack.getVisit().nremove(exp, start);		
 			}
 		}
 		

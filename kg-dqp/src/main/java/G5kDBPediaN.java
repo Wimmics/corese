@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,47 +32,33 @@ import wsimport.KgramWS.RemoteProducerServiceClient;
  *
  * @author gaignard
  */
-public class G5kDBPedia2 {
+public class G5kDBPediaN {
 
     public static void main(String args[]) throws MalformedURLException, EngineException {
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://"+args[0]+":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://"+args[1]+":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-
-        kg1.initEngine();
-        kg2.initEngine();
-
-        File rep1 = new File("/home/agaignard/data/DBPedia-fragmentation/2-stores/persondata.1.rdf");
-        File rep2 = new File("/home/agaignard/data/DBPedia-fragmentation/2-stores/persondata.2.rdf");
-
-
-        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
-        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-
-        Map<String, Object> reqCtxt2 = ((BindingProvider) kg2).getRequestContext();
-        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-
-        final DataHandler data1 = new DataHandler(new FileDataSource(rep1));
-        final DataHandler data2 = new DataHandler(new FileDataSource(rep2));
 
         ExecutorService executor = Executors.newCachedThreadPool();
-        executor.submit(new Runnable() {
 
-            @Override
-            public void run() {
-                kg1.uploadRDF(data1);
+        ArrayList<RemoteProducer> kgs = new ArrayList<RemoteProducer>();
+        int i = 1;
+        for (String arg : args) {
+            final RemoteProducer rp = RemoteProducerServiceClient.getPort("http://" + arg + ":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+            kgs.add(rp);
+            rp.initEngine();
 
-            }
-        });
-        executor.submit(new Runnable() {
+            Map<String, Object> reqCtxt1 = ((BindingProvider) rp).getRequestContext();
+            reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+            reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 
-            @Override
-            public void run() {
-                kg2.uploadRDF(data2);
-
-            }
-        });
+            File rep = new File("/home/agaignard/data/DBPedia-fragmentation/" + args.length + "-stores/persondata." + i + ".rdf");
+            final DataHandler data1 = new DataHandler(new FileDataSource(rep));
+            i++;
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    rp.uploadRDF(data1);
+                }
+            });
+        }
         executor.shutdown();
         while (!executor.isTerminated()) {
         }
@@ -81,10 +68,9 @@ public class G5kDBPedia2 {
         IEngine engine = ef.newInstance();
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://"+args[0]+":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://"+args[1]+":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-//        exec.addRemote(new URL("http://localhost:8093/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-//        exec.addRemote(new URL("http://localhost:8094/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+         for (String arg : args) { 
+            exec.addRemote(new URL("http://" + arg + ":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+         }
 
         StopWatch sw = new StopWatch();
         sw.start();

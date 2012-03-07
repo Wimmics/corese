@@ -135,7 +135,7 @@ public class G5KdbpediaBlind {
         sw.start();
         IResults res = exec.SPARQLQuery(sparqlQuery);
         System.out.println("--------");
-        System.out.println("Results in " + sw.getTime() + "ms");
+        System.out.println("Results in " + sw.getTime() + " ms");
         GraphEngine gEng = (GraphEngine) engine;
         System.out.println("Graph size " + gEng.getGraph().size());
         System.out.println("Results size " + res.size());

@@ -33,23 +33,6 @@ import wsimport.KgramWS.RemoteProducerServiceClient;
  */
 public class G5kDBPedia1 {
 
-    static String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
-            + "PREFIX dbpedia: <http://dbpedia.org/ontology/> \n"
-            + "SELECT distinct ?x ?name ?date WHERE \n"
-            + "{"
-            + "     ?x foaf:name ?name ."
-            //                + "     ?x ?y ?name2 ."
-            //                + "     ?x dbpedia:birthPlace ?place ."
-            + "     ?x dbpedia:birthDate ?date ."
-            //                + "     ?y foaf:name ?name2 ."
-            //                + "     ?z foaf:name ?name3 ."
-            //                + "     OPTIONAL {?x foaf:mbox ?m}"
-            + " FILTER ((?name ~ 'Bobby A') )"
-//            + " FILTER ((?name ~ 'Bobb') )"
-            + "}";
-//                + "GROUP BY ?x ORDER BY ?x "
-//                + "LIMIT 6";
-
     public static void main(String args[]) throws MalformedURLException, EngineException {
         final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://"+args[0]+":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 //        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
@@ -57,7 +40,7 @@ public class G5kDBPedia1 {
         kg1.initEngine();
 //        kg2.initEngine();
 
-        File rep1 = new File("/home/agaignard/data/DBPedia-fragmentation/1-store/persondata.rdf");
+        File rep1 = new File("/home/agaignard/data/DBPedia-fragmentation/1-store/persondata.1.rdf");
 //        File rep1 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/1-store/persondata.rdf");
 //        File rep2 = new File("persondata_en_rep_small.1.2.rdf");
 
@@ -106,9 +89,9 @@ public class G5kDBPedia1 {
 
         StopWatch sw = new StopWatch();
         sw.start();
-        IResults res = exec.SPARQLQuery(sparqlQuery);
+        IResults res = exec.SPARQLQuery(Queries.QueryBobbyA);
         System.out.println("--------");
-        System.out.println("Results in " + sw.getTime() + "ms");
+        System.out.println("Results in " + sw.getTime() + " ms");
         GraphEngine gEng = (GraphEngine) engine;
         System.out.println("Graph size " + gEng.getGraph().size());
         System.out.println("Results size " + res.size());

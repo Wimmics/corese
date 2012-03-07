@@ -44,27 +44,27 @@ public class ExpeDBPedia4 {
             //                + "     ?y foaf:name ?name2 ."
             //                + "     ?z foaf:name ?name3 ."
             //                + "     OPTIONAL {?x foaf:mbox ?m}"
-            + " FILTER ((?name ~ 'Bobby A') )"
-//            + " FILTER ((?name ~ 'Bobb') )"
+//            + " FILTER ((?name ~ 'Bobby A') )"
+            + " FILTER ((?name ~ 'Bob') )"
             + "}";
 //                + "GROUP BY ?x ORDER BY ?x "
 //                + "LIMIT 6";
 
     public static void main(String args[]) throws MalformedURLException, EngineException {
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg3 = RemoteProducerServiceClient.getPort("http://localhost:8093/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg4 = RemoteProducerServiceClient.getPort("http://localhost:8094/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg3 = RemoteProducerServiceClient.getPort("http://localhost:8093/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg4 = RemoteProducerServiceClient.getPort("http://localhost:8094/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
         kg1.initEngine();
         kg2.initEngine();
         kg3.initEngine();
         kg4.initEngine();
 
-        File rep1 = new File("/home/gaignard/experiments/DBPedia-fragmentation/4-stores/persondata.1.1.rdf");
-        File rep2 = new File("/home/gaignard/experiments/DBPedia-fragmentation/4-stores/persondata.1.2.rdf");
-        File rep3 = new File("/home/gaignard/experiments/DBPedia-fragmentation/4-stores/persondata.2.1.rdf");
-        File rep4 = new File("/home/gaignard/experiments/DBPedia-fragmentation/4-stores/persondata.2.2.rdf");
+        File rep1 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/338K/4-stores/persondata.1.1.rdf");
+        File rep2 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/338K/4-stores/persondata.1.2.rdf");
+        File rep3 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/338K/4-stores/persondata.2.1.rdf");
+        File rep4 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/338K/4-stores/persondata.2.2.rdf");
 
 
         Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
@@ -126,10 +126,10 @@ public class ExpeDBPedia4 {
         IEngine engine = ef.newInstance();
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://localhost:8093/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://localhost:8094/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8093/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8094/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
         StopWatch sw = new StopWatch();
         sw.start();

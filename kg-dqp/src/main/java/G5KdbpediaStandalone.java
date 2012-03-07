@@ -23,23 +23,6 @@ import org.apache.commons.lang.time.StopWatch;
  */
 public class G5KdbpediaStandalone {
 
-    static String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
-            + "PREFIX dbpedia: <http://dbpedia.org/ontology/> \n"
-            + "SELECT distinct ?x ?name ?date WHERE \n"
-            + "{"
-            + "     ?x foaf:name ?name ."
-            //                + "     ?x ?y ?name2 ."
-            //                + "     ?x dbpedia:birthPlace ?place ."
-            + "     ?x dbpedia:birthDate ?date ."
-            //                + "     ?y foaf:name ?name2 ."
-            //                + "     ?z foaf:name ?name3 ."
-            //                + "     OPTIONAL {?x foaf:mbox ?m}"
-            + " FILTER ((?name ~ 'Bobby A') )"
-//            + " FILTER ((?name ~ 'Bobb') )"
-            + "}";
-//                + "GROUP BY ?x ORDER BY ?x "
-//                + "LIMIT 6";
-
     public static void main(String args[]) throws MalformedURLException, EngineException {
 //        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://"+args[0]+":8090/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 //        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://"+args[1]+":8090/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
@@ -51,7 +34,7 @@ public class G5KdbpediaStandalone {
 //        kg3.initEngine();
 //        kg4.initEngine();
 
-        File rep1 = new File("/home/agaignard/data/1.7M/persondata_en.rdf");
+        File rep1 = new File("/home/agaignard/data/1.7M/1-stores/persondata.1.rdf");
 //        File rep2 = new File("/home/agaignard/data/1.7M-4-prop/dbpediaBirthPlace.rdf");
 //        File rep3 = new File("/home/agaignard/data/1.7M-4-prop/dbpediaNames.rdf");
 //        File rep4 = new File("/home/agaignard/data/1.7M-4-prop/dbpediaRemaining.rdf");
@@ -116,39 +99,41 @@ public class G5KdbpediaStandalone {
         EngineFactory ef = new EngineFactory();
         IEngine engine = ef.newInstance();
         engine.load(rep1.getAbsolutePath());
-        
+
         QueryExec exec = QueryExec.create(engine);
-        
+
 //        exec.addRemote(new URL("http://"+args[0]+":8090/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 //        exec.addRemote(new URL("http://"+args[1]+":8090/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 //        exec.addRemote(new URL("http://"+args[2]+":8090/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 //        exec.addRemote(new URL("http://"+args[3]+":8090/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
-        StopWatch sw = new StopWatch();
-        sw.start();
-        IResults res = exec.SPARQLQuery(sparqlQuery);
-        System.out.println("--------");
-        System.out.println("Results in " + sw.getTime() + "ms");
-        GraphEngine gEng = (GraphEngine) engine;
-        System.out.println("Graph size " + gEng.getGraph().size());
-        System.out.println("Results size " + res.size());
-        String[] variables = res.getVariables();
+        for (int i = 0; i < 20; i++) {
+            StopWatch sw = new StopWatch();
+            sw.start();
+            IResults res = exec.SPARQLQuery(Queries.QueryBobbyA);
+            System.out.println("--------");
+            System.out.println("Results in " + sw.getTime() + "ms");
+            GraphEngine gEng = (GraphEngine) engine;
+            System.out.println("Graph size " + gEng.getGraph().size());
+            System.out.println("Results size " + res.size());
+            String[] variables = res.getVariables();
 
-        for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
-            IResult r = en.nextElement();
-            HashMap<String, String> result = new HashMap<String, String>();
-            for (String var : variables) {
-                if (r.isBound(var)) {
-                    IResultValue[] values = r.getResultValues(var);
-                    for (int j = 0; j < values.length; j++) {
-                        System.out.println(var + " = " + values[j].getStringValue());
+            for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
+                IResult r = en.nextElement();
+                HashMap<String, String> result = new HashMap<String, String>();
+                for (String var : variables) {
+                    if (r.isBound(var)) {
+                        IResultValue[] values = r.getResultValues(var);
+                        for (int j = 0; j < values.length; j++) {
+                            System.out.println(var + " = " + values[j].getStringValue());
 //                            result.put(var, values[j].getStringValue());
+                        }
+                    } else {
+                        //System.out.println(var + " = Not bound");
                     }
-                } else {
-                    //System.out.println(var + " = Not bound");
                 }
             }
+            System.out.println(sw.getTime() + " ms");
         }
-        System.out.println(sw.getTime() + " ms");
     }
 }

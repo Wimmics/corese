@@ -15,4 +15,8 @@
                 <foaf:name>Filip</foaf:name>
                 <foaf:knows rdf:resource="http://i3s/Mathieu"/>
         </foaf:Person>
+        <foaf:Person rdf:about="http://i3s/Tram">
+                <foaf:name>Tram</foaf:name>
+                <foaf:knows rdf:resource="http://i3s/Mireille"/>
+        </foaf:Person>
 </rdf:RDF>

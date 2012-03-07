@@ -10,8 +10,6 @@ import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import java.net.URL;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Extension of the KGRAM SPARQL query processor, that handles several 
@@ -26,8 +24,6 @@ public class QueryProcessDQP extends QueryProcess {
     private final int parallelLessWaitMP = 1;
     private final int pipelinedMP = 2;
     
-    final protected Lock lock = new ReentrantLock();
-
     public QueryProcessDQP() {
         super();
     }
@@ -37,7 +33,11 @@ public class QueryProcessDQP extends QueryProcess {
     }
 
     public void addRemote(URL url) {
-        add(new RemoteProducerImpl(url, lock));
+        add(new RemoteProducerImpl(url));
+    }
+    
+    public void addRemoteSQL(String url, String driver, String login, String password) {
+        add(new RemoteSqlProducerImpl(url, driver, login, password));
     }
 
     public static QueryProcessDQP create(Graph g) {
@@ -74,7 +74,7 @@ public class QueryProcessDQP extends QueryProcess {
 //        int implem = parallelWaitMP;
 //        int implem = parallelLessWaitMP;
         int implem = pipelinedMP;
-
+        
         if (implem == parallelWaitMP) {
             ParallelMetaProducer meta;
             if (producer instanceof MetaProducer) {

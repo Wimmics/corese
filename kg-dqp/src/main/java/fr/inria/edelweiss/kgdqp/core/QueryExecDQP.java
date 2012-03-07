@@ -7,9 +7,9 @@ import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import java.net.URL;
 
 /**
- * Extension of the KGRAM SPARQL query evaluator, 
- * that handles several remote KGRAM producers. 
- * 
+ * Extension of the KGRAM SPARQL query evaluator, that handles several remote
+ * KGRAM producers.
+ *
  * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
  *
  */
@@ -18,11 +18,11 @@ public class QueryExecDQP extends QueryExec {
     public QueryExecDQP() {
         super();
     }
-    
-    public static QueryExecDQP create(){
-		return new QueryExecDQP();
-	}
-    
+
+    public static QueryExecDQP create() {
+        return new QueryExecDQP();
+    }
+
     /**
      * Corese implementation
      */
@@ -35,9 +35,8 @@ public class QueryExecDQP extends QueryExec {
 
     /**
      * Draft with several engine
-     * 
-     * TODO:
-     * add is done in first engine (see constructor in set() )
+     *
+     * TODO: add is done in first engine (see constructor in set() )
      */
     @Override
     public void add(IEngine eng) {
@@ -56,9 +55,8 @@ public class QueryExecDQP extends QueryExec {
 
     /**
      * Draft with several engine
-     * 
-     * TODO:
-     * add is done in first engine (see constructor in set() )
+     *
+     * TODO: add is done in first engine (see constructor in set() )
      */
     public void addRemote(URL producerURL) {
         if (exec == null) {
@@ -70,5 +68,17 @@ public class QueryExecDQP extends QueryExec {
             }
         }
         ((QueryProcessDQP) exec).addRemote(producerURL);
+    }
+
+    public void addRemoteSQL(String producerURL, String driver, String login, String password) {
+        if (exec == null) {
+            exec = new QueryProcessDQP();
+            exec.setListGroup(isListGroup);
+            exec.setDebug(isDebug);
+            for (EventListener el : list) {
+                exec.addEventListener(el);
+            }
+        }
+        ((QueryProcessDQP) exec).addRemoteSQL(producerURL, driver, login, password);
     }
 }

@@ -35,10 +35,11 @@ public class ExpeNlog1DFirst {
 
     public static void main(String args[]) throws MalformedURLException, EngineException {
 
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://neurolog.irisa.fr:8445/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
         kg1.initEngine();
 
-        File rep1 = new File("/home/gaignard/experiments/NeuroLOG-LinkedData/linkedData-single-source.rdf");
+        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-single-source.rdf");
 
         Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
         reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
@@ -87,20 +88,79 @@ public class ExpeNlog1DFirst {
                 //                + "     ?d DBIOL:subject-ref_sex ?sex ."
                 //                + "     ?d DBIOL:dataset-ref_mr_dataset_nature ?n ."
                 //                + "FILTER (?d ~ 'SS')"
-                                + "FILTER (?name ~ 'FLAIR')"
-//                + "FILTER ((?d ~ 'IFR') && (?name ~ 'FLAIR'))"
+                + "FILTER (?name ~ 'FLAIR')"
+                //                + "FILTER ((?d ~ 'IFR') && (?name ~ 'FLAIR'))"
                 + "}";
+
+        String sparqlFlair = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX dataset: <http://www.irisa.fr/visages/team/farooq/ontologies/dataset-owl-lite.owl#>"
+                + "PREFIX study: <http://www.irisa.fr/visages/team/farooq/ontologies/study-owl-lite.owl#>"
+                + "PREFIX DBIOL: <http://www.irisa.fr/visages/team/farooq/ontologies/database-integration-owl-lite.owl#>"
+                + "PREFIX human: <http://www.irisa.fr/visages/team/farooq/ontologies/human-owl-lite.owl#>"
+                + "PREFIX linguistic-expression: <http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#>"
+                + "PREFIX iec: <http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#>"
+                + "SELECT distinct ?study ?subject ?d ?name WHERE"
+                + "{"
+                //                + "     ?x rdf:type dataset:MR-dataset ."
+                + "     ?d linguistic-expression:has-for-name ?name ."
+                + "     ?subject iec:is-referred-to-by ?d ."
+                + "     ?study study:involves-as-patient ?subject ."
+                //                + "     ?d DBIOL:subject-ref_sex ?sex ."
+                //                + "     ?d DBIOL:dataset-ref_mr_dataset_nature ?n ."
+                //                + "FILTER (?d ~ 'SS')"
+                + "FILTER (?name ~ 'FLAIR')"
+                //                + "FILTER ((?d ~ 'IFR') && (?name ~ 'FLAIR'))"
+                + "}";
+
+        String sparqlGado = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX dataset: <http://www.irisa.fr/visages/team/farooq/ontologies/dataset-owl-lite.owl#>"
+                + "PREFIX study: <http://www.irisa.fr/visages/team/farooq/ontologies/study-owl-lite.owl#>"
+                + "PREFIX DBIOL: <http://www.irisa.fr/visages/team/farooq/ontologies/database-integration-owl-lite.owl#>"
+                + "PREFIX human: <http://www.irisa.fr/visages/team/farooq/ontologies/human-owl-lite.owl#>"
+                + "PREFIX linguistic-expression: <http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#>"
+                + "PREFIX examination-subject: <http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#>"
+                + "PREFIX iec: <http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#>"
+                + "SELECT distinct ?patient ?dataset ?dsName WHERE"
+                + "{"
+                + "     ?dataset linguistic-expression:has-for-name ?dsName ."
+                + "     ?patient iec:is-referred-to-by ?dataset ."
+                + "     ?patient examination-subject:has-for-subject-identifier ?clinID ."
+                + "     FILTER ((?clinID ~ 'MS') && (?dsName ~ 'GADO'))" 
+               + "}";
+        
+        String sparqlT2 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX dataset: <http://www.irisa.fr/visages/team/farooq/ontologies/dataset-owl-lite.owl#>"
+                + "PREFIX study: <http://www.irisa.fr/visages/team/farooq/ontologies/study-owl-lite.owl#>"
+                + "PREFIX DBIOL: <http://www.irisa.fr/visages/team/farooq/ontologies/database-integration-owl-lite.owl#>"
+                + "PREFIX human: <http://www.irisa.fr/visages/team/farooq/ontologies/human-owl-lite.owl#>"
+                + "PREFIX linguistic-expression: <http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#>"
+                + "PREFIX examination-subject: <http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#>"
+                + "PREFIX iec: <http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#>"
+                + "SELECT distinct ?patient ?dsName ?clinID WHERE"
+                + "{"
+                
+//                + "     ?x study:involves-as-patient ?patient ."
+                
+//                + "     ?patient human:has-for-birth-date ?d ."
+//                + "     ?patient examination-subject:has-for-subject-identifier ?clinID ."
+                
+//                + "     ?dataset DBIOL:dataset-ref_mr_dataset_nature ?n ."
+                + "     ?dataset linguistic-expression:has-for-name ?dsName ."
+                + "     ?patient iec:is-referred-to-by ?dataset ."
+                
+                + "     FILTER ((?dsName ~ 'T2'))" 
+               + "}";
 
 
         EngineFactory ef = new EngineFactory();
         IEngine engine = ef.newInstance();
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
         StopWatch sw = new StopWatch();
         sw.start();
-        IResults res = exec.SPARQLQuery(sparqlQuery2);
+        IResults res = exec.SPARQLQuery(sparqlGado);
         System.out.println("--------");
         System.out.println("Results in " + sw.getTime() + "ms");
         GraphEngine gEng = (GraphEngine) engine;

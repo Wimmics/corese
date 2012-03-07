@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,11 +19,11 @@ public class SyncEdgeBuffer implements Iterable<Entity>, Iterator<Entity> {
     private final Logger logger = Logger.getLogger(SyncEdgeBuffer.class);
     private BlockingQueue<Entity> queue = new LinkedBlockingQueue<Entity>(100);
     private ExecutorService executorService = null;
-    private AtomicInteger nbPendingTasks = new AtomicInteger(0);
+    private int nbPendingTasks = 0;
 
     SyncEdgeBuffer(int nbTasks, ExecutorService exec) {
         this.executorService = exec;
-        nbPendingTasks.set(nbTasks);
+        nbPendingTasks = nbTasks;
     }
 
     @Override
@@ -35,7 +34,7 @@ public class SyncEdgeBuffer implements Iterable<Entity>, Iterator<Entity> {
             res = queue.take();
 //            logger.info("end-take on "+this.hashCode());
             while (res instanceof Stop) {
-                nbPendingTasks.decrementAndGet();
+                nbPendingTasks--;
 //                logger.info(this.hashCode()+" content : "+this.toString());
                 res = queue.peek();
                 if (res instanceof Stop) {
@@ -53,23 +52,23 @@ public class SyncEdgeBuffer implements Iterable<Entity>, Iterator<Entity> {
 //        logger.info("HasNext "+nbPendingTasks.get()+" pending tasks on "+this.hashCode());
         Entity next = queue.peek();
         if (next == null) {
-            if (nbPendingTasks.get() == 0) {
+            if (nbPendingTasks == 0) {
 //                logger.info("FINNISHED "+this.hashCode());
-                executorService.shutdown();                
+                executorService.shutdown();
                 return false;
             } else {
                 return true;
             }
         } else {
             while (next instanceof Stop) {
-                nbPendingTasks.decrementAndGet();
+                nbPendingTasks--;
 //                logger.info("pending tasks -- = "+nbPendingTasks.get()+ " on "+this.hashCode());
                 queue.poll();
                 next = queue.peek();
 //                logger.info("Removed stop ; next is "+next+" pending tasks = "+nbPendingTasks.get());
 //                logger.info(this.toString());
             }
-            if ((next == null) && (nbPendingTasks.get() == 0)) {
+            if ((next == null) && (nbPendingTasks == 0)) {
 //                logger.info("FINNISHED after cleaning STOPs on "+this.hashCode());
                 executorService.shutdown();
                 return false;

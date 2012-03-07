@@ -20,9 +20,9 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
- * Meta Producer that handles concurent accesses to several Producers
- * Uses a generic MetaIterator that iterates over Producer iterators
- * 
+ * Meta Producer that handles concurent accesses to several Producers Uses a
+ * generic MetaIterator that iterates over Producer iterators
+ *
  * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
  *
  */
@@ -152,7 +152,9 @@ public class ParallelMetaProducer extends MetaProducer {
         //retrieving results
         for (Future<Iterable<Entity>> f : results) {
             try {
-                meta = add(meta, f.get());
+                if (f.get() != null) {
+                    meta = add(meta, f.get());
+                }
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             } catch (ExecutionException ex) {

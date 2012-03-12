@@ -12,8 +12,8 @@ import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
+import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -56,8 +56,8 @@ public class FoafSimpleTest {
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
 
-        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
         kg1.initEngine();
         kg2.initEngine();
@@ -106,36 +106,45 @@ public class FoafSimpleTest {
     // The methods must be annotated with annotation @Test. For example:
     //
 
-    
-    
     @Test
-    @Ignore
+//    @Ignore
     public void remoteFoafQuery() throws EngineException, MalformedURLException, IOException {
 
-        String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
-                + "SELECT distinct ?x ?z WHERE"
+        String sparqlSeqQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT distinct ?y WHERE"
                 + "{"
-                + "     ?x foaf:knows ?y ."
-                + "     ?y foaf:knows ?z ."
-                //                + "     OPTIONAL {?x foaf:mbox ?m}"
-//                                + " FILTER ((?x ~ 'Alban') || (?y ~ 'Tram'))"
-//                                + " FILTER (?x ~ 'Alban')"
-                + " FILTER (?x != ?z)"
+                //                + " <http://i3s/Alban> (foaf:knows/foaf:knows) ?y ."
+                //                + " <http://i3s/Simon> (foaf:knows+) ?y ."
+                //                + " <http://i3s/Alban> (foaf:knows+)/foaf:name ?y ."
+//                                + " <http://i3s/Mireille> ^foaf:knows ?y "
+                //                + " <http://i3s/Alban> (foaf:knows+) ?y ."
+                //                + " <http://i3s/Alban> (foaf:knows*) ?y ."
+                //                + " <http://i3s/Alban> (foaf:knows?) ?y ."
+                //                + " <http://i3s/Alban> foaf:knows{2,3} ?y ."
+                //                + " <http://i3s/Alban> foaf:knows{2,3}/foaf:name ?y ."
+                //                + " <http://i3s/Alban> (foaf:knows{3}) ?y ."
+                //                + " <http://i3s/Alban> (foaf:knows{3,}) ?y ."
+                //                + " <http://i3s/Alban> (foaf:knows{,2}) ?y ."
+//                                + " <http://i3s/Alban> (foaf:knows | foaf:knows/foaf:name){2,3} ?y ."
+//                                + " <http://i3s/Tram> (^foaf:knows)+ ?y ."
+                + " <http://i3s/Alban> ! (foaf:name) ?y ." //OK
+//                + " <http://i3s/Alban> ! (foaf:knows | foaf:name )?y ." //TODO
+//                + " <http://i3s/Alban> ! (foaf:knows / foaf:name )?y ." //TODO
+//                                + "FILTER( ?y ~ 'a')"
                 + "}";
-//                + "GROUP BY ?x ORDER BY ?x "
-//                + "LIMIT 6";
 
         EngineFactory ef = new EngineFactory();
         IEngine engine = ef.newInstance();
 
-        QueryExec exec2 = QueryExec.create(engine);
+//        QueryExec exec2 = QueryExec.create(engine);
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://cavaco.unice.fr:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://cavaco.unice.fr:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
         StopWatch sw = new StopWatch();
         sw.start();
-        IResults res = exec.SPARQLQuery(sparqlQuery);
+        IResults res = exec.SPARQLQuery(sparqlSeqQuery);
+
         System.out.println("--------");
         System.out.println("Results in " + sw.getTime() + "ms");
         GraphEngine gEng = (GraphEngine) engine;

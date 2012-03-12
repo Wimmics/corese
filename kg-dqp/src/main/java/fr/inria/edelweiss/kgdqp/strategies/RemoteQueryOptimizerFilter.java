@@ -32,17 +32,7 @@ public class RemoteQueryOptimizerFilter implements RemoteQueryOptimizer {
 
         //Filter pushing filter to the remote producer
         //Add the filter only if it is applicable
-        //Filter decomposition in conjunctive / disjunctive clauses ?
-        // bug : List<Filter> kgFilters = env.getQuery().getBody().getFilters(); not working as well as env.getQuery().getFilters();
-        List<Filter> kgFilters = new ArrayList<Filter>();
-        for (Exp exp : env.getQuery().getBody()) {
-            if (exp.isFilter()) {
-                Filter kgFilter = exp.getFilter();
-                if (bound(edge, kgFilter)) {
-                    kgFilters.add(kgFilter);
-                }
-            }
-        }
+        List<Filter> kgFilters = getApplicableFilter(env);
 
         if (kgFilters.size() > 0) {
             sparqlfilter = "FILTER (\n";
@@ -82,26 +72,21 @@ public class RemoteQueryOptimizerFilter implements RemoteQueryOptimizer {
         return sparql;
     }
 
-    /*
-     * ?x p ?y 
-     * FILTER ((?x > 10) && (?z > 10))
-     * 
-     */
-    public static boolean bound(Edge edge, Filter filter) {
-        List<String> vars = new ArrayList<String>();
-        if (edge.getNode(0).isVariable()) {
-            vars.add(edge.getNode(0).toString());
-        }
-        if (edge.getNode(1).isVariable()) {
-            vars.add(edge.getNode(1).toString());
-        }
+    public List<Filter> getApplicableFilter(Environment env) {
+        // KGRAM exp for current edge
+        Exp exp = env.getExp();;
+        List<Filter> lFilters = new ArrayList<Filter>();
+        for (Filter f : exp.getFilters()) {
+            // filters attached to current edge
+            if (f.getExp().isExist()) {
+                // skip exists { PAT }
+                continue;
+            }
 
-        List<String> varsFilter = filter.getVariables();
-        for (String var : varsFilter) {
-            if (!vars.contains(var)) {
-                return false;
+            if (exp.bind(f)) {
+                lFilters.add(f);
             }
         }
-        return true;
+        return lFilters;
     }
 }

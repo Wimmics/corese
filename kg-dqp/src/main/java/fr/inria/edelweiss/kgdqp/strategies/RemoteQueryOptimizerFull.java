@@ -19,8 +19,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
- * An optimizer that combines filter and binding optimizations. 
- * 
+ * An optimizer that combines filter and binding optimizations.
+ *
  * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
  */
 public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
@@ -41,44 +41,37 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
                 sparqlPrefixes += "PREFIX " + p + ": " + "<" + namespaceMgr.getNamespace(p) + ">\n";
             }
         }
-        
+
 
         //binding handling
         Node subject = env.getNode(edge.getNode(0));
         Node object = env.getNode(edge.getNode(1));
         Node predicate = null;
 
-        ArrayList<String> filters = new ArrayList<String>();
+        List<Filter> filters = new ArrayList<Filter>();
 
         if (edge.getEdgeVariable() != null) {
             predicate = env.getNode(edge.getEdgeVariable());
         }
-        
+
 
         //   
         if (subject == null) {
             subject = edge.getNode(0);
-        } 
+        }
         if (object == null) {
             object = edge.getNode(1);
-        } 
+        }
         if (predicate == null) {
             predicate = edge.getEdgeNode();
-        } 
+        }
 
         Edge reqEdge = EdgeImpl.create(predicate, subject, object);
-        
-        
+
+
         //filter handling
-        for (Exp exp : env.getQuery().getBody()) {
-            if (exp.isFilter()) {
-                Filter kgFilter = exp.getFilter();
-                if (bound(reqEdge, kgFilter)) {
-                    filters.add(((Term) kgFilter).toSparql());
-                }
-            }
-        }
-        
+        filters = getApplicableFilter(env);
+
         String sparql = sparqlPrefixes;
         sparql += "construct  { " + reqEdge + " } \n where { \n";
         sparql += "\t " + reqEdge + " .\n ";
@@ -86,11 +79,11 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         if (filters.size() > 0) {
             sparql += "\t  FILTER (\n";
             int i = 0;
-            for (String filter : filters) {
+            for (Filter filter : filters) {
                 if (i == (filters.size() - 1)) {
-                    sparql += "\t\t " + filter + "\n";
+                    sparql += "\t\t " + ((Term)filter).toSparql() + "\n";
                 } else {
-                    sparql += "\t\t " + filter + "&&\n";
+                    sparql += "\t\t " + ((Term)filter).toSparql() + "&&\n";
                 }
                 i++;
             }
@@ -98,29 +91,28 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         }
         sparql += "}";
 
+        System.out.println("");
+        System.out.println(sparql);
+        System.out.println("");
+        
         return sparql;
     }
-    
-    /*
-     * ?x p ?y 
-     * FILTER ((?x > 10) && (?z > 10))
-     * 
-     */
-    public boolean bound(Edge edge, Filter filter) {
-        List<String> vars = new ArrayList<String>();
-        if (edge.getNode(0).isVariable()) {
-            vars.add(edge.getNode(0).toString());
-        }
-        if (edge.getNode(1).isVariable()) {
-            vars.add(edge.getNode(1).toString());
-        }
 
-        List<String> varsFilter = filter.getVariables();
-        for (String var : varsFilter) {
-            if (!vars.contains(var)) {
-                return false;
+    public List<Filter> getApplicableFilter(Environment env) {
+        // KGRAM exp for current edge
+        Exp exp = env.getExp();;
+        List<Filter> lFilters = new ArrayList<Filter>();
+        for (Filter f : exp.getFilters()) {
+            // filters attached to current edge
+            if (f.getExp().isExist()) {
+                // skip exists { PAT }
+                continue;
+            }
+
+            if (exp.bind(f)) {
+                lFilters.add(f);
             }
         }
-        return true;
+        return lFilters;
     }
 }

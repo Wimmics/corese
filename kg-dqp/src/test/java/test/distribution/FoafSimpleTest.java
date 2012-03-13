@@ -116,7 +116,7 @@ public class FoafSimpleTest {
                 //                + " <http://i3s/Alban> (foaf:knows/foaf:knows) ?y ."
                 //                + " <http://i3s/Simon> (foaf:knows+) ?y ."
                 //                + " <http://i3s/Alban> (foaf:knows+)/foaf:name ?y ."
-//                                + " <http://i3s/Mireille> ^foaf:knows ?y "
+                //                                + " <http://i3s/Mireille> ^foaf:knows ?y "
                 //                + " <http://i3s/Alban> (foaf:knows+) ?y ."
                 //                + " <http://i3s/Alban> (foaf:knows*) ?y ."
                 //                + " <http://i3s/Alban> (foaf:knows?) ?y ."
@@ -125,13 +125,23 @@ public class FoafSimpleTest {
                 //                + " <http://i3s/Alban> (foaf:knows{3}) ?y ."
                 //                + " <http://i3s/Alban> (foaf:knows{3,}) ?y ."
                 //                + " <http://i3s/Alban> (foaf:knows{,2}) ?y ."
-//                                + " <http://i3s/Alban> (foaf:knows | foaf:knows/foaf:name){2,3} ?y ."
-//                                + " <http://i3s/Tram> (^foaf:knows)+ ?y ."
-                + " <http://i3s/Alban> ! (foaf:name) ?y ." //OK
-//                + " <http://i3s/Alban> ! (foaf:knows | foaf:name )?y ." //TODO
-//                + " <http://i3s/Alban> ! (foaf:knows / foaf:name )?y ." //TODO
-//                                + "FILTER( ?y ~ 'a')"
+                //                                + " <http://i3s/Alban> (foaf:knows | foaf:knows/foaf:name){2,3} ?y ."
+                //                                + " <http://i3s/Tram> (^foaf:knows)+ ?y ."
+//                                + " <http://i3s/Alban> ! (foaf:knows) ?y ." //OK
+//                + " ?x foaf:givenname 'Alban'^^xsd:string ." //OK
+                + " <http://i3s/Alban> ! (foaf:knows | foaf:name | foaf:mbox) ?y ." 
+//                                + " <http://i3s/Alban> ! (foaf:knows | foaf:name / foaf:mbox ) ?y ." 
+                //                                + "FILTER( ?y ~ 'a')"
                 + "}";
+
+//        String sparqlSampleQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+//                + "SELECT distinct ?x ?y WHERE"
+//                + "{"
+//                + "?x foaf:knows ?u ."
+//                + "?x foaf:knows ?z ."
+//                + "?u foaf:name ?y ."
+//                + "FILTER(( ?u ~ 'a') && (?x ~ 'a'))"
+//                + "}";
 
         EngineFactory ef = new EngineFactory();
         IEngine engine = ef.newInstance();

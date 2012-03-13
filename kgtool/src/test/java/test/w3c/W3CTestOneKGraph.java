@@ -7,6 +7,8 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.CoreseException;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -17,7 +19,9 @@ import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.BuildOptim;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
 
 public class W3CTestOneKGraph {
 	
@@ -32,7 +36,7 @@ public class W3CTestOneKGraph {
 "/home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/";
 		DatatypeMap.setSPARQLCompliant(true);
 
-	    Graph graph = Graph.create(true);
+	    Graph graph = Graph.create();
 		Load load = Load.create(graph);
 		BuildOptim bb = BuildOptim.create(graph);
 		load.setBuild(bb);
@@ -48,9 +52,15 @@ public class W3CTestOneKGraph {
 //WWW/2009/sparql/docs/tests/data-sparql11/entailment/rdfs04.srx
 
 
-		load.load(root + "entailment/rdfs04.rdf");
+		load.load(data + "i18n/normalization-02.rdf");
+		try {
+			load.loadWE("/home/corby/workspace/coreseV2/src/test/resources/data/w3c-sparql11/data/earl.ttl");
+		} catch (LoadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//System.out.println(graph.getIndex());
-		String query = new W3CTest11KGraph().read(root + "entailment/rdfs04.rq");
+		String query = new W3CTest11KGraph().read(data + "i18n/normalization-02.rq");
 		System.out.println(query);
 	
 		
@@ -66,6 +76,13 @@ public class W3CTestOneKGraph {
 		System.out.println(res);
 		System.out.println(res.size());
 		
+		//System.out.println( RDFFormat.create(graph));
+//		System.out.println( XMLFormat.create(res));
+		
+//		ASTQuery ast = exec.getAST(res);
+//		Triple t = ast.getBody().get(0).getTriple();
+//		System.out.println(t.getObject().getLongName());
+
 //		Graph gg = exec.getGraph(res);
 //		
 //		System.out.println( RDFFormat.create(gg, exec.getAST(res.getQuery()).getNSM()));

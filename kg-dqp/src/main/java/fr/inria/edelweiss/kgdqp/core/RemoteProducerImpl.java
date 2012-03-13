@@ -182,19 +182,6 @@ public class RemoteProducerImpl implements Producer {
         sparql += "construct  { " + qEdge.getNode(0) + qEdge.getEdgeNode() + qEdge.getNode(1) + " } \n where { \n";
         sparql += "\t " + qEdge.getNode(0) + " " + qEdge.getEdgeNode() + "{0}" + " " + qEdge.getNode(1) + " .\n ";
 
-        if (filters.size() > 0) {
-            sparql += "\t  FILTER (\n";
-            int i = 0;
-            for (String filter : filters) {
-                if (i == (filters.size() - 1)) {
-                    sparql += "\t\t " + filter + "\n";
-                } else {
-                    sparql += "\t\t " + filter + "&&\n";
-                }
-                i++;
-            }
-            sparql += "\t  )\n";
-        }
         sparql += "}";
 
         Graph g = Graph.create();
@@ -237,9 +224,8 @@ public class RemoteProducerImpl implements Producer {
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env, Regex exp, Node src, Node start, int index) {
 
-        String sparqlPrefixes = "";
-
         //prefix handling
+        String sparqlPrefixes = "";
         if (env.getQuery().getAST() instanceof ASTQuery) {
             ASTQuery ast = (ASTQuery) env.getQuery().getAST();
             NSManager namespaceMgr = ast.getNSM();
@@ -250,13 +236,9 @@ public class RemoteProducerImpl implements Producer {
             }
         }
 
-        //filter handling
-        ArrayList<String> filters = new ArrayList<String>();
-
-        //Specifc to path processing
+        //Specific to path processing
         Node subject = null;
         Node object = null;
-
         if (start == null) {
             subject = qEdge.getNode(0);
             object = qEdge.getNode(1);
@@ -270,69 +252,38 @@ public class RemoteProducerImpl implements Producer {
             object = start;
         }
 
-        String negProp = null;
+        // Query rewriting
         String transformedExp = exp.toRegex();
-        if (exp.isReverse()) {
-            transformedExp = "^(" + exp.toRegex() + ")";
-            System.out.println(transformedExp);
-        } else if (exp.isNot()) {
-            negProp = transformedExp.substring(2, transformedExp.lastIndexOf(")"));
-            System.out.println(negProp);
-//            throw new UnsupportedOperationException("Unsupported negation of properties in paths");
-            String propSparql = sparqlPrefixes;
-            propSparql += "SELECT DISTINCT ?p WHERE {?x ?p ?y MINUS{?x " + negProp + " ?y}}";
-            Graph g = Graph.create();
-            InputStream is = null;
-            try {
-                String sparqlRes = rp.getEdges(propSparql);
-                if (sparqlRes != null) {
-                    Load l = Load.create(g);
-                    is = new ByteArrayInputStream(sparqlRes.getBytes());
-                    l.load(is);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            String ex = exp.toRegex();
-            transformedExp = "(";
-
-            Iterator<Entity> it = g.getEdges().iterator();
-            while (it.hasNext()) {
-                transformedExp += "<" + it.next().getEdge().getLabel() + "> | ";
-            }
-            transformedExp = transformedExp.substring(0, transformedExp.lastIndexOf("|"));
-            transformedExp += ")";
-        }
-
         String sparql = sparqlPrefixes;
         if (exp.isReverse()) {
             sparql += "construct  { " + object + " <" + exp.getName() + "> " + subject + " } \n where { \n";
+            sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
         } else if (exp.isNot()) {
-            sparql += "construct  { " + subject + " " + exp.toRegex() + " " + object + " } \n where { \n";
+            boolean valid = checkNeg(exp);
+            if (!valid) {
+                logger.warn("Invalid negation in path expression " + exp.toString());
+                return new ArrayList<Entity>();
+            } else {
+                List<String> negProps = getFlatRegEx(exp);
+                sparql += "construct  { " + subject + " ?_p " + object + " } \n where { \n";
+                sparql += "\t " + subject + " ?_p " + object + " .\n ";
+                sparql += "\tFILTER ( \n";
+                for (String negP : negProps) {
+                    sparql += "\t\t (?_p != " + negP + " ) && \n ";
+                }
+                sparql = sparql.substring(0, sparql.lastIndexOf("&&"));
+                sparql += " )";
+
+            }
         } else {
             sparql += "construct  { " + subject + " <" + exp.getName() + "> " + object + " } \n where { \n";
+            sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
         }
-        sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
+        sparql += "\n}";
 
-        if (filters.size() > 0) {
-            sparql += "\t  FILTER (\n";
-            int i = 0;
-            for (String filter : filters) {
-                if (i == (filters.size() - 1)) {
-                    sparql += "\t\t " + filter + "\n";
-                } else {
-                    sparql += "\t\t " + filter + "&&\n";
-                }
-                i++;
-            }
-            sparql += "\t  )\n";
-        }
-        sparql += "}";
-
+        // Remote query processing
         Graph g = Graph.create();
-
         logger.info("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
-
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
@@ -350,9 +301,7 @@ public class RemoteProducerImpl implements Producer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return g.getEdges();
-
     }
 
     /**
@@ -399,25 +348,44 @@ public class RemoteProducerImpl implements Producer {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    /*
-     * ?x p ?y FILTER ((?x > 10) && (?z > 10))
-     *
+    /**
+     * Transforms a regular expression eventually containing nested expressions into a flat list of expressions.
+     * @param exp a regular expression eventually containing nested expressions.
+     * @return a flat list of initially nested expressions.
      */
-    public boolean bound(Edge edge, Filter filter) {
-        List<String> vars = new ArrayList<String>();
-        if (edge.getNode(0).isVariable()) {
-            vars.add(edge.getNode(0).toString());
-        }
-        if (edge.getNode(1).isVariable()) {
-            vars.add(edge.getNode(1).toString());
-        }
-
-        List<String> varsFilter = filter.getVariables();
-        for (String var : varsFilter) {
-            if (!vars.contains(var)) {
-                return false;
+    private List<String> getFlatRegEx(Regex exp) {
+        ArrayList<String> res = new ArrayList<String>();
+        if (exp.getArity() == -1) {
+            res.add(exp.getName());
+        } else if (exp.getArity() == 0) {
+            res.add(exp.getName());
+        } else {
+            for (int i = 0; i < exp.getArity(); i++) {
+                res.addAll(getFlatRegEx(exp.getArg(i)));
             }
         }
-        return true;
+        return res;
+    }
+
+    /**
+     * Checks that a negation only covers | operators.
+     * @param exp a regular exression.
+     * @return true if the  negation expresison is valid.
+     */
+    private boolean checkNeg(Regex exp) {
+        boolean res = true;
+        if (exp.getArity() == -1) {
+            return true;
+        } else if (exp.getArity() == 0) {
+            return true;
+        } else {
+            if (!(exp.getName().equals("!") || exp.getName().equals("|"))) {
+                return false;
+            }
+            for (int i = 0; i < exp.getArity(); i++) {
+                res = res && checkNeg(exp.getArg(i));
+            }
+        }
+        return res;
     }
 }

@@ -19,4 +19,7 @@
                 <foaf:name>Tram</foaf:name>
                 <foaf:knows rdf:resource="http://i3s/Mireille"/>
         </foaf:Person>
+        <foaf:Person rdf:about="http://i3s/Alban">
+                <foaf:givenname>Alban</foaf:givenname>
+        </foaf:Person>
 </rdf:RDF>

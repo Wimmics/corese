@@ -74,6 +74,12 @@ public class Constant extends Atom {
 		return cst;
 	}
 	
+	public static Constant createBlank(String label){
+		Constant cst = new Constant(label);
+		cst.setBlank(true);
+		return cst;
+	}
+	
 	public static Constant createResource(String str){
 		Constant cst =  new Constant(str);
 		if (nsm==null){

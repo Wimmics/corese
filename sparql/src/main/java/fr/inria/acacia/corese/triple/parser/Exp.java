@@ -277,6 +277,10 @@ public abstract class Exp extends Statement {
 		return false;
 	}
 	
+	public boolean isRDFList(){
+		return false;
+	}
+	
 	public boolean isUnion(){
 		return false;
 	}

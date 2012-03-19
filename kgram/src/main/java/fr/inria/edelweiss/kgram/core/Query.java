@@ -897,12 +897,12 @@ public class Query extends Exp {
 		compile();
 		setAggregate();
 		index(this, getBody(), true, false, -1);
-		if (getHaving()!=null){
-			index(this, getHaving().getFilter());
-		}
-		for (Filter f : getPathFilter()){
-			index(this, f);
-		}
+//		if (getHaving()!=null){
+//			index(this, getHaving().getFilter());
+//		}
+//		for (Filter f : getPathFilter()){
+//			index(this, f);
+//		}
 		for (Exp ee : getSelectFun()){
 			// use case: query node created to hold fun result
 			Node snode = ee.getNode();
@@ -912,8 +912,18 @@ public class Query extends Exp {
 				index(this, ee.getFilter());
 			}
 		}
-		index(getOrderBy());
-		index(getGroupBy());
+		
+//		for (Filter f : getPathFilter()){
+//			index(this, f);
+//		}
+//		index(getOrderBy());
+//		index(getGroupBy());
+//		if (getHaving()!=null){
+//			index(this, getHaving().getFilter());
+//		}
+		
+		complete2();
+		
 		if (getGraphNode()!=null){
 			index(getGraphNode());
 		}
@@ -923,6 +933,18 @@ public class Query extends Exp {
 		
 		for (Query q : getQueries()){
 			q.complete();
+		}
+	}
+	
+	
+	void complete2(){
+		for (Filter f : getPathFilter()){
+			index(this, f);
+		}
+		index(getOrderBy());
+		index(getGroupBy());
+		if (getHaving()!=null){
+			index(this, getHaving().getFilter());
 		}
 	}
 	
@@ -1220,25 +1242,28 @@ public class Query extends Exp {
 				// use case: query node created to hold fun result
 				// see Transformer compiler.compileSelectFun()
 				Node sNode = ee.getNode();
-				//index(sNode);
 				// get the outer node for this select sNode
 				// use case:
 				// ?x ?p ?y 
 				// {select * where {?y ?r ?t}}
 				// get the index of outer sNode ?y 
-				//Node oNode = query.getProperAndSubSelectNode(sNode.getLabel());
-				//n = qIndex(query, oNode);
 				
 				n = qIndex(qq, sNode);
 
 				min = Math.min(min, n);
+				
+				if (ee.getFilter()!=null){
+					index(qq, ee.getFilter());
+				}
+				
 			}
 //			if (qq.getGraphNode()!=null){
 //				index(qq.getGraphNode());
 //			}
-			if (qq.getHaving()!=null){
-				index(qq, qq.getHaving().getFilter());
-			}
+//			if (qq.getHaving()!=null){
+//				index(qq, qq.getHaving().getFilter());
+//			}
+			qq.complete2();
 			
 			break;
 			

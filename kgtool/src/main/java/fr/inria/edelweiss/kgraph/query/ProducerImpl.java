@@ -48,6 +48,11 @@ public class ProducerImpl implements Producer {
 	MatcherImpl match;
 	QueryEngine qengine;
 	
+	// if true, perform local match
+	boolean isMatch = false;
+	
+	
+	
 	public ProducerImpl(){
 		this(Graph.create());
 	}
@@ -65,7 +70,14 @@ public class ProducerImpl implements Producer {
 	}
 	
 	public void setMode(int n){
-		
+	}
+	
+	void setMatch(boolean b){
+		isMatch = b;
+	}
+	
+	boolean isMatch(){
+		return isMatch;
 	}
 	
 	public void set(Matcher m){
@@ -150,7 +162,7 @@ public class ProducerImpl implements Producer {
 			// graph ?g { }
 			// <<bind>> ?g to uri 
 			if (gNode != null) {
-				return getEdgesFrom(predicate, from);
+				return complete(getEdgesFrom(predicate, from), edge, env);
 			}
 			else if (! isFromOK(from)){
 				// from are unknown
@@ -171,13 +183,32 @@ public class ProducerImpl implements Producer {
 			if (it == null){
 				return empty;
 			}
+			it = complete(it, edge, env);
 			return it;
 		}
 		
 		// check gNode/from/named
-		it = complete(it, gNode, getNode(gNode, env), from);		
+		it = complete(it, gNode, getNode(gNode, env), from);
+		it = complete(it, edge, env);
 		return it;
 	}
+	
+	
+	/**
+	 * Iterator of Entity that performs local match.match()
+	 * Enable to have a local ontology in case of several graphs with local ontologies
+	 */
+	Iterable<Entity> complete(Iterable<Entity> it, Edge edge, Environment env){
+		if (isMatch){
+			MatchIterator mit = new MatchIterator(it, edge, env, match);
+			return mit;
+		}
+		else {
+			return it;
+		}
+	}
+	
+	
 	
 	Node getNode(Node gNode, Environment env){
 		if (gNode == null) return null;
@@ -412,7 +443,7 @@ public class ProducerImpl implements Producer {
 			else {
 				// all nodes
 				MetaIterator<Entity> meta = new MetaIterator<Entity>();
-				meta.next(graph.getNodes());
+				meta.next(graph.getRBNodes());
 				meta.next(graph.getLiteralNodes());
 				return meta;
 			}

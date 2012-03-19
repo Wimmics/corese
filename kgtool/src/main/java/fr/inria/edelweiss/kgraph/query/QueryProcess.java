@@ -40,6 +40,8 @@ public class QueryProcess extends QuerySolver {
 	Construct constructor;
 	Loader load;
 	ReentrantReadWriteLock lock;
+	// Producer may perform match locally
+	boolean isMatch = false;
 		
 	public QueryProcess (){
 	}
@@ -69,8 +71,21 @@ public class QueryProcess extends QuerySolver {
 
 
 	public static QueryProcess create(Graph g){
+		return create(g, false);
+	}
+	
+	/**
+	 * isMatch = true: 
+	 * Each Producer perform local Matcher.match() on its own graph for subsumption
+	 * Hence each graph can have its own ontology 
+	 * isMatch = false: (default)
+	 * Global producer perform Matcher.match()
+	 */
+	public static QueryProcess create(Graph g, boolean isMatch){
 		ProducerImpl p =  ProducerImpl.create(g);
+		p.setMatch(isMatch);
 		QueryProcess exec = QueryProcess.create(p);
+		exec.setMatch(isMatch);
 		return exec;
 	}
 	
@@ -91,14 +106,31 @@ public class QueryProcess extends QuerySolver {
 	public Loader getLoader(){
 		return load;
 	}
+	
+	void setMatch(boolean b){
+		isMatch = b;
+	}
         
-	public void add(Graph g){
-		add(ProducerImpl.create(g));
+	public Producer add(Graph g){
+		ProducerImpl p = ProducerImpl.create(g);
+		Matcher match  =  MatcherImpl.create(g);
+		p.set(match);
+		if (isMatch){
+			p.setMatch(true);
+		}
+		add(p);
+		return p;
 	}
 	
 	public static QueryProcess create(ProducerImpl prod){
 		Matcher match =  MatcherImpl.create(prod.getGraph());
 		prod.set(match);
+		if (prod.isMatch()){
+			// there is local match in Producer
+			// create global match with Relax mode 
+			match =  MatcherImpl.create(prod.getGraph());
+			match.setMode(Matcher.RELAX);
+		}
 		QueryProcess exec = QueryProcess.create(prod,  match);
 		return exec;
 	}

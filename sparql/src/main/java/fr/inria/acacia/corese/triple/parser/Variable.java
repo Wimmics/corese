@@ -24,6 +24,8 @@ public class Variable extends Atom {
 	private boolean isVisited = false;
 	private int index = -1;
 	List<Variable> lVar;
+	// var as IDatatype for comparing variables in KGRAM
+	IDatatype dt;
 	
 	public Variable(String str){
 		super(str);
@@ -177,7 +179,19 @@ public class Variable extends Atom {
 	}
 	
 	public IDatatype getDatatypeValue(){
-		return Constant.create(name).getDatatypeValue();
+		if (dt == null){
+			dt = Constant.create(name).getDatatypeValue();
+		}
+		return dt;
+	}
+	
+	public Constant getConstant(){
+		if (isBlankNode()){
+			return Constant.createBlank(getLabel());
+		}
+		else {
+			return Constant.create(getLabel());
+		}
 	}
 
 	

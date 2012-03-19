@@ -16,6 +16,10 @@ public class RDFList extends And  {
 		return new RDFList();
 	}
 	
+	public boolean isRDFList(){
+		return true;
+	}
+	
 	public Expression head(){
 		return first;
 	}

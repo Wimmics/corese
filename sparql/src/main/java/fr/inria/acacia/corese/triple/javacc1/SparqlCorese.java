@@ -73,8 +73,9 @@
         Exp ex;
         astu = ASTUpdate.create();
         try {
-        if (astq.isRule()) ex = Rule();
-                else ex = Start();
+//        if (astq.isRule()) ex = Rule();
+//                else 
+                	ex = Start();
         } catch(ParseException e) {
                 throw new JavaccParseException(e);
         }

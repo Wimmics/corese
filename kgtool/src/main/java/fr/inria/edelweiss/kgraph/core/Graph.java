@@ -73,7 +73,7 @@ public class Graph {
 	// for rdf:type, no named graph to speed up type test
 	dtable;
 	// resource and blank nodes
-	Hashtable<String, Entity> individual;
+	Hashtable<String, Entity> individual, blank;
 	SortedMap<IDatatype, Entity> literal;
 	// graph property nodes
 	Hashtable<String, Node> graph, property;
@@ -142,6 +142,7 @@ public class Graph {
 		dtable 		= dtables[0];
 		literal 	= Collections.synchronizedSortedMap(new TreeNode());
 		individual 	= new Hashtable<String, Entity>();
+		blank 		= new Hashtable<String, Entity>();
 		graph 		= new Hashtable<String, Node>();
 		property 	= new Hashtable<String, Node>();
 		gindex 		= new NodeIndex();	
@@ -268,11 +269,12 @@ public class Graph {
 	public String toString(){
 		String str = "";
 		str += "Edge:       " 	+ size() + "\n";
-		str += "Node:       " 	+ (individual.size() + literal.size()) + "\n";
+		str += "Node:       " 	+ (individual.size() + blank.size() + literal.size()) + "\n";
 		str += "Graph:      "	+ graph.size() + "\n";
 		str += "Property:   " + table.size() + "\n";
 		str += "Literal:    " 	+ literal.size() + "\n";
 		str += "Individual: " + individual.size() + "\n";
+		str += "Blank: " 	  + blank.size() + "\n";
 		str += "Duplicate:  "+ table.duplicate() + "\n";
 		return str;
 	}
@@ -282,8 +284,11 @@ public class Graph {
 		int uri = 0, blank = 0, string = 0, lit = 0, date = 0, num = 0;
 		
 		for (Entity e : getNodes()){
-			if (e.getNode().isBlank()) blank++;
-			else uri++;
+			uri++;
+		}
+		
+		for (Entity e : getBlankNodes()){
+			blank++;
 		}
 		
 		for (Entity e : getLiteralNodes()){
@@ -415,6 +420,10 @@ public class Graph {
 			ent.getNode().setProperty(Node.LENGTH, null);
 			ent.getNode().setProperty(Node.REGEX, null);
 		}
+		for (Entity ent : blank.values()){
+			ent.getNode().setProperty(Node.LENGTH, null);
+			ent.getNode().setProperty(Node.REGEX, null);
+		}
 		for (Entity ent : literal.values()){
 			ent.getNode().setProperty(Node.LENGTH, null);
 			ent.getNode().setProperty(Node.REGEX, null);
@@ -510,6 +519,14 @@ public class Graph {
 		return table.exist(edge);
 	}
 	
+	public Entity addEdge(Edge edge){
+		if (edge instanceof EdgeImpl){
+			return addEdge((EdgeImpl) edge);
+		}
+		return null;
+	}
+
+	
 	public Entity addEdge(EdgeImpl edge){
 		Entity ent = add(edge);
 		if (ent != null){
@@ -520,6 +537,9 @@ public class Graph {
 		}
 		return ent;
 	}
+	
+
+
 	
 	public EdgeImpl create(Node source, Node subject, Node predicate, Node value){
 		return fac.create(source, subject, predicate, value);
@@ -539,6 +559,10 @@ public class Graph {
 	
 	public int nbIndividuals(){
 		return individual.size();
+	}
+	
+	public int nbBlanks(){
+		return blank.size();
 	}
 	
 	public int nbLiterals(){
@@ -622,6 +646,9 @@ public class Graph {
 		if (dt.isLiteral()){
 			return getLiteralNode(dt, create, add);
 		}
+		else if (dt.isBlank()){
+			return getBlankNode(dt, create, add);
+		}
 		else {
 			return getResourceNode(dt, create, add);
 		}
@@ -640,6 +667,16 @@ public class Graph {
 	}
 	
 	
+	public Node getBlankNode(IDatatype dt, boolean create, boolean add){
+		Node node = getBlankNode(dt.getLabel());
+		if (node != null) return node;
+		if (node == null && create){
+			node = createNode(dt);
+		}
+		if (add) add(node);
+		return node;
+	}
+	
 	public Node getLiteralNode(IDatatype dt, boolean create, boolean add){
 		Node node = getLiteralNode(dt);
 		if (node != null) return node;
@@ -649,6 +686,7 @@ public class Graph {
 		}
 		return node;
 	}
+	
 
 
 	/**
@@ -675,9 +713,10 @@ public class Graph {
 	}
 	
 
-	
+	// resource or blank
 	public boolean isIndividual(Node node){
-		return individual.containsKey(node.getLabel());
+		return individual.containsKey(node.getLabel()) ||
+		blank.containsKey(node.getLabel());
 	}
 	
 	// resource node
@@ -685,30 +724,64 @@ public class Graph {
 		return (Node) individual.get(name);
 	}
 	
+	public Node getBlankNode(String name){
+		return (Node) blank.get(name);
+	}
+	
+	
+	Node basicAddGraph(String name){
+		Node node = getGraphNode(name);
+		if (node != null) return node;
+		node = getCreateResource(name);
+		addGraphNode(node);
+		return node;
+	}
 
+	Node basicAddResource(String label){
+		Node node = getNode(label);
+		if (node != null) return node;
+		node = getCreateResource(label);
+		add(node);
+		return node;
+	}
+
+
+	Node basicAddProperty(String label){
+		Node node = getNode(label);
+		if (node != null){
+			addPropertyNode(node);
+			return node;
+		}
+		node = getCreateResource(label);
+		addPropertyNode(node);
+		return node;
+	}
+
+	Node basicAddBlank(String label){
+		Node node = getBlankNode(label);
+		if (node == null){
+			IDatatype dt = DatatypeMap.createBlank(label);
+			if (dt!=null){
+				node = addNode(dt);
+			}
+		}
+		return node;
+	}
 	
 	// resource node
 	public void add(Node node){
 		IDatatype  dt = datatype(node);
 		if (dt.isLiteral()){
-			//addLiteralNode(node.getLabel(), node);
 			addLiteralNode(dt, node);
+		}
+		else if (dt.isBlank()){
+			blank.put(node.getLabel(), (Entity)node);
 		}
 		else {
 			individual.put(node.getLabel(), (Entity) node);
 		}
 	}
-	
-	// literal node
-//	public Node getLiteralNode(String name){
-//		return (Node) literal.get(name);
-//	}
-//	
-//	public void addLiteralNode(String name, Node node){
-//		literal.put(name, (Entity) node);
-//	}
-	
-	
+
 	public void addLiteralNode(IDatatype dt, Node node){
 		literal.put(dt, (Entity) node);
 	}
@@ -774,10 +847,6 @@ public class Graph {
 		return edge;
 	}
 	
-	public Iterable<Entity> getEdges(Node predicate, Node node, int n){
-		return getEdges(predicate, node, null, n);
-	}
-	
 	public Iterable<Node> getNodes(Node pred, Node node, int n){
 		Iterable<Entity> it = getEdges(pred, node, n);
 		if (it == null){
@@ -787,14 +856,50 @@ public class Graph {
 		return NodeIterator.create(it, index);
 	}
 	
+	public Iterable<Entity> getEdges(Node predicate, Node node, int n){
+		return getEdges(predicate, node, null, n);
+	}
+	
 	public Iterable<Entity> getEdges(Node predicate, Node node, Node node2, int n){
 		if (isTopRelation(predicate)){
 			return getEdges(node, n);
 		}
 		else {
-			return getIndex(n).getEdges(predicate, node, node2);
+			return basicEdges(predicate, node, node2, n);
 		}
 	}
+	
+	public Iterable<Entity> basicEdges(Node predicate, Node node, Node node2, int n){
+		return getIndex(n).getEdges(predicate, node, node2);
+	}
+
+	
+	/**
+	 * with rdfs:subPropertyOf
+	 */
+	public Iterable<Entity> getAllEdges(Node predicate, Node node, Node node2, int n){
+		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+		
+		for (Node pred : getProperties(predicate)){
+			Iterable<Entity> it = getIndex(n).getEdges(pred, node);
+			if (it != null){
+				meta.next(it);
+			}
+		}
+		if (meta.isEmpty()) return new ArrayList<Entity>();
+		return meta;
+	}
+	
+	public Iterable<Node> getProperties(Node p){
+		ArrayList<Node> list = new ArrayList<Node>();
+		for (Node n : getProperties()){
+			if (getEntailment().isSubPropertyOf(n, p)){
+				list.add(n);
+			}
+		}
+		return list;
+	}
+	
 	
 	public Iterable<Entity> getDefaultEdges(Node predicate, Node node, Node node2, int n){
 		if (isTopRelation(predicate)){
@@ -891,7 +996,7 @@ public class Graph {
 	}
 	
 	public int size (Node predicate){
-		if (isTopRelation(predicate)) return graph.size();
+		if (isTopRelation(predicate)) return size();
 		Node pred = getPropertyNode(predicate.getLabel());
 		if (pred == null) return 0;
 		return table.size(pred);
@@ -909,10 +1014,23 @@ public class Graph {
 		return individual.values();
 	}
 	
+	public Iterable<Entity> getBlankNodes(){
+		return blank.values();
+	}
+	
+	// resource & blank
+	public Iterable<Entity> getRBNodes(){
+		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+		meta.next(getNodes());
+		meta.next(getBlankNodes());
+		return meta;
+	}
+
+	
 	public Iterable<Entity> getLiteralNodes(){
 		return literal.values();
 	}
-	
+		
 	public Iterable<Entity> getAllNodes(){
 		indexNode();
 		return gindex.getNodes();
@@ -923,41 +1041,7 @@ public class Graph {
 		return gindex.getNodes(gNode);
 	}
 
-	public Node addLiteral(String label, String datatype, String lang){
-		IDatatype dt = DatatypeMap.createLiteral(label, datatype, lang);
-		if (dt == null) return null;
-		return addNode(dt);
-	}
 	
-	public Node addLiteral(String label, String datatype){
-		IDatatype dt = DatatypeMap.createLiteral(label, datatype, null);
-		if (dt == null) return null;
-		return addNode(dt);
-	}
-	
-	public Node addLiteral(String label){
-		return addLiteral(label, null, null);
-	}
-	
-	public Node addLiteral(int n){
-		return addNode(DatatypeMap.newInstance(n));
-	}
-	
-	public Node addLiteral(long n){
-		return addNode(DatatypeMap.newInstance(n));
-	}
-	
-	public Node addLiteral(double n){
-		return addNode(DatatypeMap.newInstance(n));
-	}
-	
-	public Node addLiteral(float n){
-		return addNode(DatatypeMap.newInstance(n));
-	}
-	
-	public Node addLiteral(boolean n){
-		return addNode(DatatypeMap.newInstance(n));
-	}
 	
 	/**
 	 * May infer datatype from property range
@@ -975,45 +1059,15 @@ public class Graph {
 		return addNode(dt);
 	}
 	
-	public Node addBlank(String label){
-		Node node = getNode(label);
-		if (node == null){
-			IDatatype dt = DatatypeMap.createBlank(label);
-			if (dt!=null){
-				node = addNode(dt);
-			}
-		}
-		return node;
-	}
-	
-	public Node addBlank(){
-		return addBlank(newBlankID());
-	}
 
 	
 	public String newBlankID(){
 		return BLANK + blankid++;
 	}
 	
-	public Node addProperty(String label){
-		Node node = getNode(label);
-		if (node != null){
-			addPropertyNode(node);
-			return node;
-		}
-		node = getCreateResource(label);
-		addPropertyNode(node);
-		return node;
-	}
+
 	
-	// graph nodes
-	public Node addGraph(String name){
-		Node node = getGraphNode(name);
-		if (node != null) return node;
-		node = getCreateResource(name);
-		addGraphNode(node);
-		return node;
-	}
+
 	
 	public void deleteGraph(String name){
 		Node node = getGraphNode(name);
@@ -1023,13 +1077,7 @@ public class Graph {
 	}
 	
 	
-	public Node addResource(String label){
-		Node node = getNode(label);
-		if (node != null) return node;
-		node = getCreateResource(label);
-		add(node);
-		return node;
-	}
+
 	
 	Node createNode(IDatatype dt){
 		return new NodeImpl(dt);
@@ -1255,6 +1303,103 @@ public class Graph {
 	public Distance getPropertyDistance() {
 		return propertyDistance;
 	}
+	
+	
+	/****************************************************
+	 * 
+	 *                  User API
+	 *                  
+	 *  TODO: 
+	 *  no code here, use call to basic methods
+	 *  secure addEdge wrt addGraph/addProperty
+	 *  api with IDatatype
+	 *  
+	 * **************************************************/
+	
+	public Edge addEdge(Node source, Node subject, Node predicate, Node value){
+		EdgeImpl e = fac.create(source, subject, predicate, value);
+		Entity ee = addEdge(e);
+		if (ee != null){
+			return ee.getEdge();
+		}
+		return null;
+	}
+	
+	public Edge addEdge(Node subject, Node predicate, Node value){
+		Node g = addGraph(Entailment.DEFAULT);
+		return addEdge(g, subject, predicate, value);
+	}
+	
+	/**
+	 * Graph in itself is not considered as a graph node for SPARQL path
+	 * unless explicitely referenced as a subject or object
+	 * Hence ?x :p* ?y does not return graph nodes
+	 */
+	public Node addGraph(String name){
+		return basicAddGraph(name);
+	}
+
+	public Node addResource(String label){
+		return basicAddResource(label);
+	}
+
+	/**
+	 * Property in itself is not considered as a graph node for SPARQL path
+	 * unless explicitely referenced as a subject or object
+	 * Hence ?x :p* ?y does not return property nodes
+	 */
+	public Node addProperty(String label){
+		return basicAddProperty(label);
+	}
+
+	public Node addBlank(String label){
+		return basicAddBlank(label);
+	}
+
+
+	public Node addBlank(){
+		return basicAddBlank(newBlankID());
+	}
+
+
+	public Node addLiteral(String label, String datatype, String lang){
+		IDatatype dt = DatatypeMap.createLiteral(label, datatype, lang);
+		if (dt == null) return null;
+		return addNode(dt);
+	}
+	
+	public Node addLiteral(String label, String datatype){
+		IDatatype dt = DatatypeMap.createLiteral(label, datatype, null);
+		if (dt == null) return null;
+		return addNode(dt);
+	}
+	
+	public Node addLiteral(String label){
+		return addLiteral(label, null, null);
+	}
+	
+	public Node addLiteral(int n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	public Node addLiteral(long n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	public Node addLiteral(double n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	public Node addLiteral(float n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	public Node addLiteral(boolean n){
+		return addNode(DatatypeMap.newInstance(n));
+	}
+	
+	
+	
 	
 	
 }

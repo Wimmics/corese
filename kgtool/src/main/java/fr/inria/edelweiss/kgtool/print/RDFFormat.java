@@ -154,7 +154,7 @@ public class RDFFormat {
 	
 	Iterable<Entity> getNodes(){
 		if (map != null) return map.getMapNodes();
-		return graph.getNodes();
+		return graph.getRBNodes();
 	}
 	
 	Iterable<Entity> getEdges(Node node){
@@ -197,6 +197,8 @@ public class RDFFormat {
 			return sb;
 		}
 		
+		error();
+		
 		for (Entity ent : getNodes()){
 			Node node = ent.getNode();
 			print(node);
@@ -209,7 +211,6 @@ public class RDFFormat {
 		header(bb);
 		bb.append(">");
 		bb.append(NL);
-		error();
 		bb.append(NL);
 		bb.append(sb); 
 		bb.append("</rdf:RDF>");
@@ -389,6 +390,7 @@ public class RDFFormat {
 				}
 			}
 			display(CCOM);
+			display();
 		}
 	}
 	

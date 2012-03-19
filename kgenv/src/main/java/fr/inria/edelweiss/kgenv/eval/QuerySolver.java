@@ -241,6 +241,17 @@ public class QuerySolver  {
 		return compile(squery, null, null);
 	}
 	
+	// rule: construct where 
+	public Query compileRule(String squery) throws EngineException {
+		Transformer transformer =  transformer();			
+		transformer.setNamespaces(NAMESPACES);
+		transformer.setBase(defaultBase);
+		Query query = transformer.transform(squery, true);
+		return query;	
+		
+		//return compile(squery, null, null);
+	}
+	
 	public Query compile(ASTQuery ast) {
 		Transformer transformer =  transformer();			
 		transformer.setSPARQLCompliant(isSPARQLCompliant);

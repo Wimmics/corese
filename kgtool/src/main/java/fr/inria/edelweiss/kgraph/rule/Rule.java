@@ -1,11 +1,15 @@
 package fr.inria.edelweiss.kgraph.rule;
 
+import java.util.List;
+
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.api.core.Node;
 
 public class Rule {
 	static int COUNT = 0;
 	
 	Query query;
+	List<Node> predicates;
 	String name;
 	int num;
 	
@@ -23,6 +27,14 @@ public class Rule {
 	public static Rule create(Query q){
 		Rule r = new Rule("rule", q);
 		return r;
+	}
+	
+	void set(List<Node> list){
+		predicates = list;
+	}
+	
+	List<Node> getPredicates(){
+		return predicates;
 	}
 	
 	Query getQuery(){

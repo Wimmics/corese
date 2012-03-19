@@ -493,16 +493,23 @@ public class Entailment {
 	
 	
 	public boolean isSubClassOf(Node node, Node sup){
-		return isSubClassOf(node, sup, new Table());
+		if (node.same(sup)) return true;
+		Node pred = graph.getPropertyNode(RDFS.SUBCLASSOF);
+		if (pred == null) return false;
+		return isSubOf(pred, node, sup, new Table());
+	}
+	
+	public boolean isSubPropertyOf(Node node, Node sup){
+		if (node.same(sup)) return true;
+		Node pred = graph.getPropertyNode(RDFS.SUBPROPERTYOF);
+		if (pred == null) return false;
+		return isSubOf(pred, node, sup, new Table());
 	}
 
 	/**
 	 * Take loop into account
 	 */
-	public boolean isSubClassOf(Node node, Node sup, Table t){
-		if (node.same(sup)) return true;
-		Node pred = graph.getPropertyNode(RDFS.SUBCLASSOF);
-		if (pred == null) return false;
+	boolean isSubOf(Node pred, Node node, Node sup, Table t){
 		Iterable<Entity> it = graph.getEdges(pred, node, 0);
 		
 		if (it == null) return false;
@@ -520,7 +527,7 @@ public class Entailment {
 			if (t.visited(nn)){
 				continue;
 			}
-			if (isSubClassOf(nn, sup, t)){
+			if (isSubOf(pred, nn, sup, t)){
 				return true;
 			}
 		}

@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.rule;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -41,7 +43,10 @@ public class RuleEngine {
 	Graph graph;
 	QueryProcess exec;
 	List<Rule> rules;
-	boolean debug = false;
+	
+	RTable rtable;
+	
+	boolean debug = false, isOptim = !true;
 	int loop = 0;
 	
 	
@@ -143,7 +148,7 @@ public class RuleEngine {
 	}
 	
 	public Query defRule(String name, String rule) throws EngineException {
-		Query qq = exec.compile(rule);
+		Query qq = exec.compileRule(rule);
 		if (qq != null && qq.isConstruct()) {
 			rules.add(Rule.create(name, qq));
 			return qq;
@@ -167,6 +172,10 @@ public class RuleEngine {
 	 *  Process rule base at saturation 
 	 */
 	int entail(){
+		
+		if (isOptim){
+			init();
+		}
 
 		int size = graph.size(),
 		start = size;
@@ -177,7 +186,9 @@ public class RuleEngine {
 		graph.init();
 		
 		List<Entity> list = null, current;
-
+		
+		ITable t = null;		
+		
 		while (go){
 			
 			exec.getProducer().setMode(loop);
@@ -188,15 +199,29 @@ public class RuleEngine {
 			
 			for (Rule rule : rules){
 				// graph.entail() is done once before rule application
-				graph.setUpdate(false);
-				Query qq = rule.getQuery();
-				if (debug || qq.isDebug()){
-					qq.setDebug(true);
+				
+				if (isOptim) {
+					t = record(rule);
 				}
 				
-				process(rule, list);
+				if (! isOptim  || 
+					(loop == 0 || accept(rule, getRecord(rule), t))){
+
+					graph.setUpdate(false);
+					if (debug){
+						rule.getQuery().setDebug(true);
+					}
+									
+					process(rule, list);
+				}
+				
+				if (isOptim) {
+					setRecord(rule, t);
+				}	
 				
 			}
+			
+
 			
 			if (graph.size() > size){
 				// There are new edges: entailment again
@@ -281,6 +306,81 @@ public class RuleEngine {
 		return null;
 	}
 	
+	
+	
+	/****************************************************
+	 * 
+	 * Compute rule predicates
+	 * Accept rule if some predicate has new triple in graph
+	 * 
+	 * **************************************************/
+	
+	/**
+	 * Compute table of rule predicates, for all rules
+	 */
+	void init(){
+		rtable = new RTable();
+		
+		for (Rule rule : rules){
+			init(rule);
+		}
+		
+	}
+	
+	/**
+	 * Store list of predicates of this rule
+	 */
+	void init(Rule rule){	
+		rule.set(rule.getQuery().getNodeList());
+	}
+	
+	
+	
+	class ITable extends Hashtable<String, Integer>{
+		
+	}
+	
+	class RTable extends Hashtable<Rule, ITable>{
+		
+	}
+	
+	
+	/**
+	 * Record predicates cardinality in graph
+	 */
+	ITable record(Rule r){
+		ITable itable = new ITable();
+		
+		for (Node pred : r.getPredicates()){
+			int size = graph.size(pred);
+			itable.put(pred.getLabel(), size);
+		}
+		
+		return itable;
+	}
+	
+	
+	/**
+	 * Rule is accepted if one of its predicate has a new triple in graph
+	 */
+	boolean accept(Rule rule, ITable itable, ITable iitable){
+		for (Node pred : rule.getPredicates()){
+			String name = pred.getLabel();
+			if (iitable.get(name) > itable.get(name)){
+				return true;
+			}
+		}
+		//System.out.println("** RE: " + rule.getQuery().getAST());
+		return false;
+	}
+	
+	ITable getRecord(Rule r){
+		return rtable.get(r);
+	}
+	
+	void setRecord(Rule r, ITable t){
+		rtable.put(r, t);
+	}
 	
 
 }

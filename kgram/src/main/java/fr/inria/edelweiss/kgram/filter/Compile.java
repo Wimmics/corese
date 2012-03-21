@@ -52,6 +52,9 @@ public class Compile implements ExprType {
 		checker = new Checker(query);
 	}
 	
+	public boolean check(String v1, String v2, Exp exp){
+		return checker.check(v1, v2, exp.getFilter().getExp());
+	}
 	
 	public boolean check(Exp exp){
 		return checker.check(exp.getFilter().getExp());

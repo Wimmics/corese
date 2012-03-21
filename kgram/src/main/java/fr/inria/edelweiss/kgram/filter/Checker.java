@@ -41,7 +41,14 @@ public class Checker implements ExprType {
 		query = q;
 	}
 	
-	
+	/**
+	 * var1=cst || var2=cst
+	 */
+	public boolean check(String v1, String v2, Expr ee){
+		Pattern p = path(v1, v2);
+		boolean b = matcher.match(p, ee);
+		return b;
+	}
 	
 	/**
 	 * Check one filter 
@@ -227,6 +234,16 @@ public class Checker implements ExprType {
 	}
 	
 	
+	/**
+	 * ?from=cst || ?to=cst
+	 */
+	Pattern path(String v1, String v2){
+		Pattern e1 = term(EQ, Pattern.variable(v1), constant());
+		Pattern e2 = term(EQ, Pattern.variable(v2), constant());
+		Pattern e3 = or(e1, e2);
+		return e3;
+	}
+	
 	// always false
 	Pattern neqSelf(){
 		// EXP != EXP
@@ -313,11 +330,16 @@ public class Checker implements ExprType {
 		return and(term(EQ, e1, e2), not(term(GE, e1, e2)));
 	}
 	
+	// PRAGMA: not for simple variable
 	Pattern variable(String name){
 		Pattern var = Pattern.variable(name);
 		Pattern pat = pat(ANY, ANY, var);
 		pat.setRec(true);
 		return pat;
+	}
+	
+	Pattern constant(){
+		return Pattern.constant();
 	}
 	
 	

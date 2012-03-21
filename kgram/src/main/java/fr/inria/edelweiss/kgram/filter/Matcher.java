@@ -46,7 +46,6 @@ public class Matcher implements ExprType {
 	 * 
 	 */
 	boolean process(Expr qe, Expr te, Bind bind){
-		//System.out.println("** M start: " + qe + " " + te);
 		
 		if (qe.type() == ALTER){
 			for (Expr ee : qe.getExpList()){

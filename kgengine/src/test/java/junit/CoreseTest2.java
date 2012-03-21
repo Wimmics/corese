@@ -269,7 +269,7 @@ public class CoreseTest2 extends TestCase {
 		int nb = test(query);
 		long d2 = new Date().getTime();
 		double dd = (d2-d1) / 1000.0;
-		if (dd > 1){
+		if (dd > .5){
 			System.out.println(dd + " " + query);
 		}
 

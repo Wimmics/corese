@@ -15,7 +15,10 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Matcher;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.StatListener;
@@ -24,11 +27,14 @@ import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
+import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgtool.load.BuildImpl;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgraph.rdf.*;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -45,6 +51,7 @@ public class TestQuery {
 	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
 	static String test = "/home/corby/workspace/coreseV2/text/";
 	static String root = "/home/corby/workspace/kgengine/src/test/resources/data/";
+	static String text = "/home/corby/workspace/kgengine/src/test/resources/text/";
 
 	static Graph graph;
 	
@@ -1586,6 +1593,383 @@ public class TestQuery {
 			e.printStackTrace();
 		}
 	
+	}
+	
+	
+	
+	@Test
+	public void test49(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);		
+
+		String init = 
+			"prefix i: <http://www.inria.fr/test/> " +
+			"" +
+			"insert data {" +
+			"<doc> i:contain " +
+				"'<doc>" +
+				"<phrase><subject>Cat</subject><verb>on</verb><object>mat</object></phrase>" +
+				"<phrase><subject>Cat</subject><verb>eat</verb><object>mouse</object></phrase>" +
+				"</doc>'^^rdf:XMLLiteral   " +
+			"}";
+		
+		String query = 		"" +
+		"base      <http://www.example.org/schema/>" +
+		"prefix s: <http://www.example.org/schema/>" +
+		"prefix i: <http://www.inria.fr/test/> " +
+				"construct {?su ?pr ?o} " +
+				"where {" +
+				"select debug * where {" +
+					//"?x i:contain ?xml " +
+					"{select  (xpath(?xml, '/doc/phrase')   as ?st)  where {}}" +
+					"{select  (xpath(?st, 'subject/text()')  as ?s)  where {}}" +
+					"{select  (xpath(?st, 'verb/text()')     as ?p)  where {}}" +
+					"{select  (xpath(?st, 'object/text()')   as ?o)  where {}}" +
+					"{select  (uri(?s) as ?su) (uri(?p) as ?pr)      where {}}" +
+				"}}" +
+				"bindings ?xml {(<file://" +
+				text + "phrase.xml>" +
+				")}";
+		
+		
+		try {
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			System.out.println(map);
+			ResultFormat f = ResultFormat.create(map);
+			System.out.println(f);
+			assertEquals("Result", 2, map.size());
+
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			assertEquals("Result", 2, null);
+		}
+	
+	}
+	
+	
+	@Test
+	public void test50(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);		
+
+		String init = 
+			"prefix : <http://example.org/> "+
+			"" +
+			"insert data {" +
+			":A0 :P :A1, :A2 . " +
+			":A1 :P :A0, :A2 . " +
+			":A2 :P :A0, :A1"+
+			"}";
+		
+		String query = 		
+			"prefix : <http://example.org/>"+
+			"select * where { :A0 ((:P)*)* ?X }" ;
+		
+		
+		try {
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			System.out.println(map);
+			assertEquals("Result", 13, map.size());
+
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
+
+	@Test
+	public void test51(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);		
+
+		String init = 
+			"prefix : <http://example.org/> "+
+			"" +
+			"insert data {" +
+			":A0 :P :A1, :A2 . " +
+			":A1 :P :A0, :A2 . " +
+			":A2 :P :A0, :A1"+
+			"}";
+		
+		String query = 		
+			"prefix : <http://example.org/>"+
+			"select * where { ?X ((:P)*)* :A1 }" ;
+		
+		
+		try {
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			assertEquals("Result", 13, map.size());
+
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
+	@Test
+	public void test52(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);		
+
+		String init = 
+			"prefix : <http://example.org/> "+
+			"" +
+			"insert data {" +
+			":a :p :b, :c ." +
+			":b :q :d" +
+			":c :q :d" +
+			":d :p :e" +
+			":e :q :f " +
+			""+
+			"} ";
+		
+		String query = 		
+			"prefix : <http://example.org/>"+
+			"select * where { :a (:p{1,2}/:q)+ ?y }" ;
+		
+		
+		try {
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			assertEquals("Result", 4, map.size());
+
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	@Test
+	public void test53(){
+		String query = "select  * (kg:similarity() as ?sim) where {" +
+				"?x rdf:type c:Engineer " +
+				"}" +
+				"order by desc(?sim)" +
+				"pragma {kg:match kg:mode 'strict'}";
+		
+		QueryProcess exec = QueryProcess.create(graph);
+		try {
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			
+			assertEquals("Result", 7, map.size());
+	
+	
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+	}
+	
+	
+	@Test
+	public void test54(){
+		String query = "select * where {" +
+				"graph ?g {?s <name> ?o} " +
+				"?s <age> ?a" +
+				"}";
+		Graph graph = Graph.create();
+		
+		Node g = graph.addResource("test");
+		Node s = graph.addResource("URIJohn");
+		Node p = graph.addProperty("age");
+		Node o = graph.addLiteral(24);
+		Node p2 = graph.addProperty("name");
+		Node o2 = graph.addLiteral("John");
+		
+		Edge e = graph.addEdge(g, s, p, o);
+		graph.addEdge(s, p2, o2);
+
+		
+		QueryProcess exec = QueryProcess.create(graph);
+		
+		try {
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			
+			assertEquals("Result", 1, map.size());
+	
+	
+		} catch (EngineException ee) {
+			assertEquals("Result", true, ee);
+		}
+	}	
+	
+	
+	
+	/**
+	 * Two graphs with partial ontology each
+	 * Each graph answer with its viewpoint on the ontology
+	 */
+	@Test
+	public void test55(){
+		
+		
+		String o1 = "prefix foaf: <http://foaf.org/>" +
+		"insert data {" +
+		"foaf:Human rdfs:subClassOf foaf:Person " +
+		"}";
+
+		String o2 = "prefix foaf: <http://foaf.org/>" +
+		"insert data {" +
+		"foaf:Man rdfs:subClassOf foaf:Person " +
+		"}";
+		
+		String init1 = "prefix foaf: <http://foaf.org/>" +
+		"insert data {" +
+		"<John> a foaf:Human"+
+		"}";
+		
+		String init2 = "prefix foaf: <http://foaf.org/>" +
+		"insert data {" +
+		"<Jack> a foaf:Man"+
+		"}";
+		
+		
+		
+		
+		String query = "prefix foaf: <http://foaf.org/>" +
+				"select * where {" +
+				"?x a foaf:Person" +
+				"}";
+
+		Graph o  = Graph.create(true);
+		Graph g1 = Graph.create(true);
+		Graph g2 = Graph.create(true);
+
+		QueryProcess exec1 = QueryProcess.create(g1);
+		QueryProcess exec2 = QueryProcess.create(g2);
+		
+		QueryProcess exec  = QueryProcess.create(g1, true);
+		exec.add(g2);
+		
+
+		try {
+			exec1.query(o1);
+			exec1.query(init1);
+			
+			exec2.query(o2);
+			exec2.query(init2);
+			
+//			exec.query(o1);
+//			exec.query(o2);
+
+			
+			Mappings map = exec.query(query);
+			assertEquals("Result", 2, map.size());
+			System.out.println(map);
+			
+			
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void test56(){
+		Graph graph = Graph.create();
+		QueryProcess exec = QueryProcess.create(graph);
+		exec.setOptimize(true);
+		
+		String init = "insert data {" +
+				"graph <g1> {<John> foaf:knows <Jim> }" +
+				"graph <g2> {<Jim> foaf:knows <Jack>}" +
+				"}";
+		
+		String query = "select  * where {" +
+				"?x foaf:knows+ ?y " +
+				"filter(?y = <Jack> || <John> = ?x)" +
+				"}" ;	
+		
+		try {
+			exec.query(init);
+			Mappings map = exec.query(query);
+			assertEquals("Result", 4, map.size());
+
+			
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	
+	@Test
+	public void test57(){
+		Graph graph = Graph.create();
+		QueryProcess.definePrefix("e", "htp://example.org/");
+		QueryProcess exec = QueryProcess.create(graph);
+		
+		RuleEngine re = RuleEngine.create(graph);
+		
+		String rule = 
+			"construct {[a e:Parent; e:term(?x ?y)]}" +
+			"where     {[a e:Father; e:term(?x ?y)]}";
+		
+		String rule2 = 
+			"construct {[a e:Father;   e:term(?x ?y)]}" +
+			"where     {[a e:Parent;   e:term(?x ?y)]}";
+		
+		
+		String rule3 = 
+			"construct {[a e:Parent]}" +
+			"where     {[a e:Father]}";
+		
+		String rule4 = 
+			"construct {[a e:Father]}" +
+			"where     {[a e:Parent]}";
+		
+		
+		try {
+			re.defRule(rule);
+			re.defRule(rule2);
+		} catch (EngineException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		String init = "insert data {" +
+				"[ a e:Father ; e:term(<John> <Jack>) ]" +
+				"}";
+		
+		String query = "select  * where {" +
+				//"?x foaf:knows ?z " +
+				"[a e:Parent; e:term(?x ?y)]" +
+				"}" ;	
+		
+		try {
+			exec.query(init);
+			re.setDebug(true);
+			re.process();
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			assertEquals("Result", 1, map.size());
+
+			
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	

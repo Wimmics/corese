@@ -69,7 +69,10 @@ public class Query extends Exp {
 
 	boolean isDebug = false, isCheck = false,
 	isAggregate = false, isFunctional = false, isRelax = false, 
-	isDistribute = false, isTest = false, // sort edges to be connected
+	isDistribute = false, 
+	isOptimize = false,
+	isTest = false, 
+	// sort edges to be connected
 	isSort = true, isConstruct = false,
 	isDelete = false, isUpdate = false, // true:  path do not loop on node
 	isCheckLoop = false, isPipe = false, 
@@ -573,6 +576,14 @@ public class Query extends Exp {
 	
 	public void setTest(boolean b){
 		isTest = b;
+	}
+	
+	public boolean isOptimize(){
+		return isOptimize;
+	}
+	
+	public void setOptimize(boolean b){
+		isOptimize = b;
 	}
 	
 	public void setAggregate(){
@@ -1472,7 +1483,10 @@ public class Query extends Exp {
 				sortFilter(exp, lVar);
 				// check patterns
 				//processFilter(exp, option);
-
+				if (isOptimize()){
+					checkPath(exp);
+				}
+				
 				if (exp.size()!=num){
 				}
 				
@@ -1525,7 +1539,74 @@ public class Query extends Exp {
 		}
 	}
 	
-
+	/**
+	 * search for:
+	 * path(?from path ?to) . filter(?from = cst || ?to = cst)
+	 * compile to:
+	 * {path(?from path ?to) . filter(?from = cst)} UNION {path(?from path ?to) . filter(?to = cst)}
+	 * 
+	 * By safety consider only path at index 0 to avoid unnecessary duplication of code (if ?x is already bound)
+	 */
+	void checkPath(Exp exp){
+		int i = 0;
+		boolean b = false;
+		
+		for (Exp ee : exp){
+			if (ee.isPath() && i < exp.size()-1 && exp.get(i+1).isFilter()){
+				b = checkPath(ee, exp.get(i+1));
+				if (b){
+					break;
+				}
+			}
+			i++;
+		}
+		
+		if (b){
+			// found path + filter
+			// compile to UNION on both filters
+			Exp union = createUnion(exp, i);
+			exp.set(i, union);
+		}
+	}
+	
+	boolean checkPath(Exp exp, Exp filter){
+		Edge edge = exp.getEdge();
+		Node n1 = edge.getNode(0);
+		Node n2 = edge.getNode(1);
+		
+		boolean b = false;
+		if (n1.isVariable() && n2.isVariable()){
+			b = compiler.check(n1.getLabel(), n2.getLabel(), filter);
+		}
+		return b;
+	}
+	
+	/**
+	 * path(?from path ?to) . filter(?from = cst || ?to = cst)
+	 * create 
+	 * {path(?from path ?to) . filter(?from = cst)} UNION {path(?from path ?to) . filter(?to = cst)}
+	 */
+	Exp createUnion(Exp exp, int i){
+		Edge ee = exp.get(i).getEdge();
+		Node n1 = ee.getNode(0);
+		
+		Expr ff = exp.get(i+1).getFilter().getExp();
+		Filter f1 = ff.getExp(0).getFilter();
+		Filter f2 = ff.getExp(1).getFilter();
+		List<String> list = f1.getVariables();
+		
+		if (! list.get(0).equals(n1.getLabel())){
+			Filter tmp = f1;
+			f1 = f2;
+			f2 = tmp;
+		}
+		
+		Exp e1 = Exp.create(AND, exp.get(i), Exp.create(FILTER, f1));
+		Exp e2 = Exp.create(AND, exp.get(i), Exp.create(FILTER, f2));
+		Exp e3 = Exp.create(UNION, e1, e2);
+		return e3;
+	}
+	
 	
 	void processFilter(Exp exp, boolean option){
 		boolean correct =	checkFilter(exp);

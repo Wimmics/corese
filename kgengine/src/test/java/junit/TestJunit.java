@@ -188,8 +188,10 @@ public class TestJunit {
 		QueryProcess exec = QueryProcess.create(graph);
 		
 		String init = "insert data {" +
-				"<John> <name> 'John' " +
-				"<name> rdfs:domain <Person>" +
+				"<John> <name> 'John' ; " +
+				"foaf:knows [foaf:knows <Jack>]" +
+				"<name> rdfs:domain <Person> " +
+				"" +
 				"}";
 		
 		try {

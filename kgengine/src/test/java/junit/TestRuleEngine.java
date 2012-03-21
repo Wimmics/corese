@@ -23,6 +23,7 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.RuleLoad;
 
 
 /**
@@ -158,9 +159,71 @@ public class TestRuleEngine {
 	
 	
 	
-	
-	
-	
+	/**
+	 * Rule engine with QueryExec on two graphs
+	 */
+	@Test
+	public void test6(){
+		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
+
+		Graph g1 = Graph.create(true);
+		Graph g2 = Graph.create(true);
+
+		Load load1 = Load.create(g1);
+		Load load2 = Load.create(g2);
+		
+		load1.load(data + "engine/ontology/test.rdfs");
+		load2.load(data + "engine/data/test.rdf");
+
+		QueryProcess exec = QueryProcess.create(g1);
+		exec.add(g2);
+		RuleEngine re = RuleEngine.create(g2, exec);
+		re.setOptimize(true);
+		
+		load2.setEngine(re);
+		
+		try {
+			load2.loadWE(data + "engine/rule/test2.brul");
+			load2.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
+		} catch (LoadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		Engine rengine = Engine.create(exec);
+
+		rengine.load(data + "engine/rule/test2.brul");
+		rengine.load(data + "engine/rule/meta.brul");
+		
+		
+		
+		String query = 
+			"prefix c: <http://www.inria.fr/acacia/comma#>" +
+			"select     * where {" +
+			"?x c:hasGrandParent c:Pierre " +
+			"}";
+		
+		
+		LBind bind = rengine.SPARQLProve(query);
+		assertEquals("Result", 4, bind.size());
+		System.out.println(bind);
+		
+
+		re.process();
+		
+		try {
+			Mappings map = exec.query(query);
+			assertEquals("Result", 4, map.size());
+			System.out.println(map);
+		} catch (EngineException e) {
+			assertEquals("Result", 4, e);
+		}
+		
+	}
 	
 	
 

@@ -33,6 +33,7 @@ public class Pragma  {
 	protected static final String PRAGMA= KG + "pragma";
 
 	// kgram
+	static final String OPTIM 	= KG + "optimize";
 	static final String TEST 	= KG + "test";
 	static final String DEBUG 	= KG + "debug";
 	static final String SORT	= KG + "sort";
@@ -135,6 +136,9 @@ public class Pragma  {
 		if (subject.equals(SELF)){
 			if (property.equals(TEST)){
 				query.setTest(value(object));
+			}
+			else if (property.equals(OPTIM)){
+				query.setOptimize(value(object));
 			}
 			else if (property.equals(DEBUG)){
 				query.setDebug(value(object));	

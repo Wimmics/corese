@@ -46,7 +46,7 @@ public class RuleEngine {
 	
 	RTable rtable;
 	
-	boolean debug = false, isOptim = !true;
+	boolean debug = false, isOptim = true;
 	int loop = 0;
 	
 	
@@ -256,6 +256,7 @@ public class RuleEngine {
 
 		Query qq = rule.getQuery();
 		Construct cons =  Construct.create(qq, Entailment.RULE);
+		cons.setRule(rule, rule.getIndex());
 		cons.setList(list);
 
 		int start = graph.size();

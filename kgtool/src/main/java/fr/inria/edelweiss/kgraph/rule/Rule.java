@@ -45,7 +45,7 @@ public class Rule {
 		return name;
 	}
 	
-	int getNum(){
+	int getIndex(){
 		return num;
 	}
 

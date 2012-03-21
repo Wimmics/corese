@@ -46,7 +46,7 @@ public class RuleEngine {
 	
 	RTable rtable;
 	
-	boolean debug = false, isOptim = true;
+	boolean debug = false, isOptim = false;
 	int loop = 0;
 	
 	
@@ -66,6 +66,10 @@ public class RuleEngine {
 		if (exec!=null){
 			exec.set(s);
 		}
+	}
+	
+	public void setOptimize(boolean b){
+		isOptim = b;
 	}
 	
 	public static RuleEngine create(Graph g){

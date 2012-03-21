@@ -56,6 +56,7 @@ public class QuerySolver  {
 	isListPath = false,
 	isCheckLoop = false,
 	isDebug = false,
+	isOptimize = false,
 	isSPARQLCompliant = false;
 	
 	boolean isSequence = false;
@@ -199,6 +200,7 @@ public class QuerySolver  {
 		q.setListPath(isListPath);
 		q.setCheckLoop(isCheckLoop);
 		if (isDebug) q.setDebug(isDebug);
+		if (isOptimize) q.setOptimize(isOptimize);
 	}
 	
 
@@ -370,6 +372,10 @@ public class QuerySolver  {
 	
 	public boolean isDebug(){
 		return isDebug;
+	}
+	
+	public void setOptimize(boolean b){
+		isOptimize = b;
 	}
 	
 

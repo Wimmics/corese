@@ -37,9 +37,11 @@ public class Construct
 	implements Comparator<Node>{
 	private static Logger logger = Logger.getLogger(Construct.class);	
 
-	static final String BLANK = "_:b";
+	static final String BLANK = "_:b_";
+	static final String DOT   = ".";
 
-	int count = 0;
+	int count = 0, ruleIndex = 0, index = 0;
+	String root;
 	
 	Query query;
 	Graph graph;
@@ -47,7 +49,12 @@ public class Construct
 	List<Entity> list;
 	List<String> from;
 	
-	boolean isDebug = false, isDelete = false, isInsert = false;
+	boolean isDebug = false, 
+	isDelete = false,
+	isRule = false,
+	isInsert = false;
+	
+	Object rule;
 	
 	Hashtable<Node, Node> table;
 	
@@ -81,6 +88,12 @@ public class Construct
 	
 	public void setInsert(boolean b){
 		isInsert = b;
+	}
+	
+	public void setRule(Object r, int n){
+		isRule = true;
+		rule = r;
+		root = BLANK + n + DOT;
 	}
 	
 	public void setDebug(boolean b){
@@ -235,10 +248,13 @@ public class Construct
 			 ArrayList<Node> list = new ArrayList<Node>();
 			 list.add(subject);
 			 list.add(object);
+			 
 			 for (int i=2; i<edge.nbNode(); i++){
 				 Node n = construct(source, edge.getNode(i), map);
-				 graph.add(n);
-				 list.add(n);
+				 if (n != null){
+					 graph.add(n);
+					 list.add(n);
+				 }
 			 }
 			 
 			 ee =  graph.create(source, property, list);
@@ -271,7 +287,7 @@ public class Construct
 
 			if (node == null){
 				if (qNode.isBlank()){
-					dt = blank(map);
+					dt = blank(qNode, map);
 				}
 				else if (qNode.isConstant()){
 					// constant
@@ -293,11 +309,56 @@ public class Construct
 		return node;
 	}
 	
-	//TODO: check blank wrt target graph
-	IDatatype blank(Mapping map){
-		IDatatype dt = DatatypeMap.createBlank(blankID());
+	IDatatype blank(Node qNode, Mapping map){
+		String str;
+		if (isRule){
+			str = blankRule(qNode, map);
+		}
+		else {
+			str = blankID();
+		}
+		IDatatype dt = DatatypeMap.createBlank(str);
 		return dt;
 	}
+
+
+	
+	/**
+	 * Create a unique BN ID according to (Rule, qNode & Mapping)
+	 * If the rule runs twice on same mapping, it will create same BN
+	 * graph will detect it, hence engine will not loop
+	 * 
+	 */
+	String blankRule(Node qNode, Mapping map){
+		// _:b + rule ID + "." + qNode ID
+		StringBuffer sb = new StringBuffer(root);
+		sb.append(getIndex(qNode));
+		
+		for (Node node : map.getQueryNodes()){
+			if (node.isVariable() && ! node.isBlank()){
+				// node value ID
+				sb.append(DOT);
+				sb.append(map.getNode(node).getIndex());
+			}
+		}
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * Generate an index for construct Node
+	 */
+	int getIndex(Node qNode){
+		int n = qNode.getIndex();
+		if (n == -1){
+			n = index++;
+			qNode.setIndex(n);
+		}
+		return n;
+	}
+	
+	
+
 	
 	String blankID(){
 		if (isInsert){

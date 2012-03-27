@@ -162,38 +162,23 @@ public class TestEngine {
 			
 			res = exec.SPARQLQuery(update);
 			
-			//res = exec.SPARQLQuery("select where {} pragma {kg:kgram kg:entail false}");
+			
+			
+			query = "select * where {" +
+					"?x c:FirstName 'Olivier'" +
+					"} ";
+			
+			String query2 = "select * where {" +
+			"?x c:FamilyName 'Giboin'" +
+			"} ";
+			
+			IResults r1 = exec.SPARQLQuery(query);
+			IResults r2 = exec.SPARQLQuery(query2);
+			
+			IResults r3 = r1.union(r2);
+			
+			System.out.println(r3);
 
-			
-			//ge.getGraph().setEntailment(false);
-			
-			System.out.println(2);
-			String delete = //"delete where {graph kg:entail {?x ?p ?y}};" +
-				"drop graph kg:entailment; " +
-				"delete where {?p rdfs:range ?r ?q rdfs:domain ?d}" ;
-				;
-			
-			res = exec.SPARQLQuery(delete);
-			
-			query = "select distinct ?p " +
-					"from kg:entailment " +
-					"where { ?x ?p ?y ?z ?q ?t filter(?y = ?z)}";
-			
-			
-			
-
-			System.out.println(3);
-			res = exec.SPARQLQuery(query);
-
-			System.out.println(res);
-			
-			
-			res = exec.SPARQLQuery("create graph kg:entailment;");
-			res = exec.SPARQLQuery(query);
-
-			System.out.println(res);
-			
-			
 
 //			QueryResults qr = (QueryResults) res;
 //			

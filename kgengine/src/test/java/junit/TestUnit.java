@@ -89,67 +89,41 @@ public class TestUnit {
 	
 	
 	@Test
-	public void test57(){
+	public void test48(){			
+		
 		Graph graph = Graph.create();
-		QueryProcess.definePrefix("e", "htp://example.org/");
-		QueryProcess exec = QueryProcess.create(graph);
-		
-		RuleEngine re = RuleEngine.create(graph);
-		
-		String rule = 
-			"construct {[a e:Parent; e:term(?x ?y)]}" +
-			"where     {[a e:Father; e:term(?x ?y)]}";
-		
-		String rule2 = 
-			"construct {[a e:Father;   e:term(?x ?y)]}" +
-			"where     {[a e:Parent;   e:term(?x ?y)]}";
-		
-		
-		String rule3 = 
-			"construct {[a e:Parent]}" +
-			"where     {[a e:Father]}";
-		
-		String rule4 = 
-			"construct {[a e:Father]}" +
-			"where     {[a e:Parent]}";
-		
-		
-		try {
-			re.defRule(rule);
-			re.defRule(rule2);
-		} catch (EngineException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		QueryProcess.definePrefix("foaf", "http://foaf.org/");
+		QueryProcess exec = QueryProcess.create(graph);	
 		
 		String init = "insert data {" +
-				"[ a e:Father ; e:term(<John> <Jack>) ]" +
-				"[ a e:Father ; e:term(<Jack> <Jim>) ]" +
-				"[ a e:Father ; e:term(<John> <Jim>) ]" +
-				"}";
+		"<John> foaf:knows _:b" +
 		
-		String query = "select  * where {" +
-				//"?x foaf:knows ?z " +
-				"[a e:Parent; e:term(?x ?y)]" +
-				"}" ;	
 		
+		"}";
+
+		String query = "select  *  where {" +
+		"?x foaf:knows ?y " +
+		"}";
+		
+		String update = "insert data {<John> foaf:knows _:b}";
+
 		try {
-			exec.query(init);
-			re.setDebug(true);
-			re.process();
-			Mappings map = exec.query(query);
-			System.out.println(map);
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			//exec.setDebug(true);
+			map =exec.query(update);
+			map =exec.query(query);
+
+			ResultFormat f = ResultFormat.create(map);
+			System.out.println(f);
 			assertEquals("Result", 1, map.size());
 
-			
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+	
 	}
-	
-	
 	
 	
 	

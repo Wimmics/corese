@@ -1973,6 +1973,41 @@ public class TestQuery {
 	}
 	
 	
+	@Test
+	public void test58(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String init = "insert data {" +
+		"<John> foaf:knows <Jack> " +
+		
+		"<John> foaf:knows <Jim> " +
+		"<Jim> foaf:knows <Jack> " +
+		
+		
+		"}";
+
+		String query = "select * (pathLength($path) as ?l) where {" +
+		"?x short(foaf:knows|rdfs:seeAlso)+ :: $path ?y" +
+		"}";
+
+		try {
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			ResultFormat f = ResultFormat.create(map);
+			System.out.println(f);
+			assertEquals("Result", 3, map.size());
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
+	
 	
 	public IDatatype fun(Object o1, Object o2){
 		IDatatype dt1 = datatype(o1);

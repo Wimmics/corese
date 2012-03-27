@@ -16,14 +16,20 @@ import fr.inria.edelweiss.kgram.path.Path;
 /**
  * SNA Processor
  * 
- * ?x sa(foaf:knows+) :: $path ?y
- * group by ?x ?y
+ * Execute query:
+ * ?x sa(foaf:knows*) ?y
  * bindings ?x {(<someone>)}
  * 
- * Compute betweeness of intermediate nodes  with shortest paths between x, y 
- * For each x,y : consider all shortest paths ; store and count intermediate nodes
+ * ResultListener handle paths on the fly 
+ * Manage a stack of path node index 
  * 
- * Based on Guillaume Erétéo SNA query library
+ * Compute in one pass with query above:
+ * Betweeness of intermediate nodes  with shortest paths between x, y 
+ * For each x,y : consider all shortest paths ; store and count intermediate nodes
+ * Centrality, Degree, InDegree, OutDegree, Geodesic
+ * 
+ * 
+ * Based on Guillaume Erétéo/Isicil SNA query library
  * 
  * Olivier Corby, Edelweiss, INRIA, 2011
  *
@@ -37,12 +43,17 @@ public class SSNA implements ResultListener {
 			
 	int maxNode = MAXNODE;
 		
+	int  
+	// number of shortest path from node and to node
+	acount[],
+	aindeg[],
+	aoutdeg[],
 	// number of target node where node occur
-	int  acdeg[], 
-	// index of nodes of current path
-	lindex[];
+	acdeg[], 
+	// stack of index of nodes of current path
+	pathNodeIndex[];
 	// sum of degrees for each node
-	float adeg[];
+	float adeg[], acent[];
 	
 	
 	Node[] 	     
@@ -80,16 +91,23 @@ public class SSNA implements ResultListener {
 		maxNode = lnode;
 		records = new Record[lnode];
 		acdeg 	= new int[lnode];
+		acount 	= new int[lnode];
+		aindeg 	= new int[lnode];
+		aoutdeg = new int[lnode];
 		adeg 	= new float[lnode];
+		acent 	= new float[lnode];
 
 		allNodes	= new Node[lnode];
 		
 		for (int i = 0; i<lnode; i++){
 			acdeg[i] = 0;
 			adeg[i]  = 0;
+			acount[i] = 0;
+			aindeg[i] = 0;
+			aoutdeg[i] = 0;
 		}
 		
-		lindex = new int[lnode];
+		pathNodeIndex = new int[lnode];
 						
 		handler = new SSNAHandler();
 	}
@@ -151,7 +169,9 @@ public class SSNA implements ResultListener {
 	}
 
 	
-
+	Node getNode(int i){
+		return allNodes[i];
+	}
 	
 	
 	List<Node> result(){
@@ -217,6 +237,22 @@ public class SSNA implements ResultListener {
 	
 	float getDegree(int n){
 		return adeg[n];
+	}
+	
+	float getCentrality(Node n){
+		return acent[index(n)];
+	}
+	
+	int getCount(Node n){
+		return acount[index(n)];
+	}
+	
+	int getInDegree(Node n){
+		return aindeg[index(n)];
+	}
+	
+	int getOutDegree(Node n){
+		return aoutdeg[index(n)];
 	}
 	
 	void setDegree(int n, float d){
@@ -332,13 +368,14 @@ public class SSNA implements ResultListener {
 	 */
 	void enter(Node node){
 		int id = index(node);
-		lindex[index] = id;
+		pathNodeIndex[index] = id;
 		allNodes[id] = node;
 		index++;
 	}
 
 	void leave(){
-		lindex[index--] = -1;
+		index--;
+		pathNodeIndex[index] = -1;
 	}
 	
 	/****************************************************************************
@@ -367,7 +404,7 @@ public class SSNA implements ResultListener {
 		}
 		
 		// intermediate nodes between source, target
-		Record r = getRecord(target);
+		Record r = getRecord(source, target);
 				
 		if (size < r.size()){
 			// this is a shorter path: reset counters
@@ -400,11 +437,11 @@ public class SSNA implements ResultListener {
 	/**
 	 * 
 	 */
-	Record getRecord(Node target){
+	Record getRecord(Node source, Node target){
 		int id = index(target);
 		Record r = records[id];
 		if (r == null){
-			r = new Record(target);
+			r = new Record(source, target);
 			records[id] = r;
 		}
 		return r;
@@ -413,27 +450,52 @@ public class SSNA implements ResultListener {
 	
 
 	/**
-	 * For one x and for each y
-	 * Process intermediate nodes between x,y
-	 * Compute degrees of intermediate nodes
+	 * For one source and for each target
+	 * Process intermediate nodes between s,t
+	 * Compute:
+	 *  degrees of intermediate nodes
+	 *  centrality of s
+	 * 
 	 */
 	void process(){
 		if (isFake()){
 			return;
 		}
 		
-		int i = 0;
+		int i = 0, 
+		sumSize = 0,
+		count = 0;
+		
+		Node source = null, target;
 		
 		for (Record r : records){
-			// process one target y
+			// process one target 
 			if (r!=null){
+				if (source == null) source = r.getSource();
+				
 				if (r.size()>1){
 					r.process();
+					handler.geodesic(r.getSource(), r.getTarget(), r.size(), r.getCount());
 				}
+				
+				sumSize += r.size();
+				count++;
+				
+				target = r.getTarget();
+				int tid = index(target);
+				acount[tid] += 1;
+				aindeg[tid] += 1;
 			}
+			
 			records[i] = null;
 			i++;
 		}
+		
+		float cent = (float) sumSize / (float) count;
+		int id = index(source);
+		acent[id]   = cent;
+		acount[id] += count;
+		aoutdeg[id] = count;
 	}
 	
 	
@@ -449,13 +511,16 @@ public class SSNA implements ResultListener {
 	 */
 	class Record {
 		
-		int size = 0, count = 0;
-		Node target;
+		int 
+		size = 0, 
+		count = 0;
+		Node source, target;
 		// one counter for each intermediate node
 		int[] counter;
 		
 
-		Record(Node t){
+		Record(Node s, Node t){
+			source = s;
 			target = t;
 			counter = new int[maxNode];
 			init(counter);
@@ -489,14 +554,14 @@ public class SSNA implements ResultListener {
 		 * path is represented as array of index of node 
 		 * lindex[i] = index of ith node
 		 * counter[id] is counter of node with index = id
+		 * PRAGMA: this loop is at the core of SNA, hence we enumerate index array to speed up
 		 */
 		void count(){
 			int max = index-1;
 
 			for (int i = 0; i<max; i++){
 				// lindex[i] = index of ith node of path
-				// this loop is at the core of SNA, hence we enumerate index array to speed up
-				counter[lindex[i]] += 1;
+				counter[pathNodeIndex[i]] += 1;
 			}
 		}
 		
@@ -514,6 +579,17 @@ public class SSNA implements ResultListener {
 			return size;
 		}
 		
+		int getCount(){
+			return count;
+		}
+		
+		Node getTarget(){
+			return target;
+		}
+		
+		Node getSource(){
+			return source;
+		}
 		
 		/**
 		 * Compute degree of intermediate nodes between x,y
@@ -525,6 +601,7 @@ public class SSNA implements ResultListener {
 				if (cc != 0){
 					float deg = (float) cc / fcount;
 					addDegree(i, deg);
+					handler.geodesic(source, target, getNode(i), size, cc);
 				}
 				i++;
 			}

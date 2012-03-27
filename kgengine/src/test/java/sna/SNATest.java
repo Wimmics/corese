@@ -23,6 +23,13 @@ import fr.inria.edelweiss.kgtool.load.QueryLoad;
  *  Semantic SNA
  *  Implemented as ResultListener on KGRAM, process path on the fly
  *  
+ *  Optimizations:
+ *  - PathFinder send path to ResultListener on the fly, no Mapping created 
+ *  (hence query return no result Mapping) no thread.
+ *  - Visit check loop with boolean in Node (work only with simple regex)
+ *  - Graph manage copy as default graph (with no graph name duplicate)
+ *  
+ *  
  * Olivier Corby, Edelweiss, INRIA, 2011
  * 
  */
@@ -88,7 +95,11 @@ public class SNATest {
 			sna.reset();
 			Mappings ms = exec.query(qsna, map);
 			//System.out.println(n + ": " + node + " " + sna.nbResult());
-			sna.process();			
+			
+			
+			sna.process();	
+			
+			
 			n++;
 			//if (n == 2) break;
 		}
@@ -100,7 +111,8 @@ public class SNATest {
 		long t2 = new Date().getTime();
 		
 		for (Node node : list){
-			System.out.println(node + " " + sna.getDegree(node));
+			System.out.println(node + " " + sna.getDegree(node) + " " + sna.getCentrality(node) + " " + sna.getCount(node) 
+					+ " " + sna.getInDegree(node) + " " + sna.getOutDegree(node));
 		}
 		
 		System.out.println("** NB Node: " + list.size());
@@ -169,8 +181,8 @@ public class SNATest {
 
 ** NB Node: 167
 ** Max Path Length: 57
-** NB Path : 8830605
-** Time: 17.429
+** NB Path : 8830606
+** Time: 17.332
 
 *
 *

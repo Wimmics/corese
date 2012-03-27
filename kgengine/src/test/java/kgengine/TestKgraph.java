@@ -71,8 +71,8 @@ public class TestKgraph {
 		 
 		 query = 
 				"prefix c: <http://www.inria.fr/acacia/comma#>" +
-				"select * where { " +
-				"?x c:hasSister ?y " +
+				"select ?y ?t where { " +
+				"c:Anne c:hasParent+ ?y " +
 				//"?y c:hasGrandParent ?z" +
 				"}";
 
@@ -86,10 +86,13 @@ public class TestKgraph {
 		 
 		 
 		 ge.load(data + "engine/rule/test2.brul");
-		 ge.load(data + "engine/rule/meta.brul");
+		 //ge.load(data + "engine/rule/meta.brul");
 		 
 		 //for (int i=0; i<10; i++)
-		 res = ge.SPARQLProve(query);
+		 //res = ge.SPARQLProve(query);
+		 res = ge.SPARQLQuery(query);
+
+		 
 		 
 		 System.out.println(res);
 		 Date d2 = new Date();

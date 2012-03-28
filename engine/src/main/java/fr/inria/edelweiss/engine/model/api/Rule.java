@@ -27,6 +27,6 @@ public interface Rule {
 	/**
 	 * the conclusion of the rule match the clause ?
 	 */
-	public Clause match(Clause clause,Bind bind);
+	public List<Clause> match(Clause clause,Bind bind);
 
 }

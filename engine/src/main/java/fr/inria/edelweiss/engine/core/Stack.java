@@ -81,12 +81,16 @@ class Stack  {
 			boolean equiv = true;
 			Constant value1 = b1.getValue(elem1);
 			Constant value2 = b2.getValue(elem2);
+//			System.out.println("var " + elem1 + " value " + value1);
+//			System.out.println("var " + elem2 + " value " + value2);
+//			System.out.println("__");
 			if (value1 == null){ 
 				if (value2 != null) equiv = false;
 			}
 			else if (value2 == null) equiv = false;
-			else if (! value1.getDatatypeValue().sameTerm(value2.getDatatypeValue()))
+			else if (! value1.getDatatypeValue().sameTerm(value2.getDatatypeValue())){
 				equiv = false;
+			}
 
 			if (! equiv){
 				return false;

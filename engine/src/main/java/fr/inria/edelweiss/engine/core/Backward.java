@@ -44,7 +44,7 @@ public class Backward {
 	    	trace = !true, 
 	    	debug = !true;
 	    
-	    int count = 0;
+	    int count = 0, loop;
 	   
 	    public Backward(RuleBase ruleBase, EventsTreatment proc) {
 			this.ruleBase = ruleBase;
@@ -69,6 +69,9 @@ public class Backward {
 			return prove(query, query.getClauses(), bind, 0, 0);
 		}
 		
+		int getLoop(){
+			return loop;
+		}
 		
 		/**
 		 * Query is the AST of the clauses to prove
@@ -86,7 +89,7 @@ public class Backward {
 		public LBind prove(Query query, List<Clause> clauses, 
 				Bind bind, int n, int level){
 			LBind lb;
-
+			loop++;
 			if (level > count){
 				count = level;
 				//System.out.println(level);
@@ -128,6 +131,7 @@ public class Backward {
 
 			//Iteration of the clauses of the query
 			Clause clause = clauses.get(n);
+			
 
 //			if (hasEvent){ 
 //				// announce current clause
@@ -143,7 +147,7 @@ public class Backward {
 			LBind lbQuery = sparql.searchTriples(query, clause, bind);
 			
 			if (debug){
-				System.out.println("sparql: "+ clause);
+				System.out.println("sparql: "+ clause + " level: " + level);
 				System.out.println("bind: " + bind);
 				System.out.println("result: " + lbQuery);
 				System.out.println("__");
@@ -160,14 +164,14 @@ public class Backward {
 			LBind lbProve;
 									
 			if (clause.isGround()){
-				// e.g. clause = xxx rdf:type owl:TranstiveProperty
+				// e.g. clause = xxx rdf:type owl:TransitiveProperty
 				// no backward for this clause, search only in RDF store
 				lbProve = lbQuery;
 				lbQuery = new LBindImpl();
 			}
 			else {
 				// prove clause using the backward algorithm
-				lbProve = backward(clause, bind, level, n);
+					lbProve = backward(clause, bind, level, n);
 			}
 
 			// now we check filters that concern current clause in backward
@@ -185,6 +189,12 @@ public class Backward {
 			else {								
 				//union of the two lists of binds above, SPARQL and backward
 				lb = lbQuery.union(lbProve);
+			}
+			
+			if (debug){
+				System.out.println("union: sparql: " + lbQuery);
+				System.out.println("union: prove: " + lbProve);
+				System.out.println("union: " + lb);
 			}
 
 
@@ -268,12 +278,12 @@ public class Backward {
             	}
             	
 
-            	// get the clause of the rule matching the clause of the query
-            	// TODO: what if several clauses would match ?
-            	Clause clauseRule = rule.match(clause, bind);
+            	// get  clauses of  rule matching the clause of the query
+            	List<Clause> list = rule.match(clause, bind);
 
-            	if (clauseRule != null){
-                	//the rule match the clause, with considering the bind
+            	for (Clause clauseRule : list){
+            		
+                	// rule match the clause,  considering the bind
             		
 //            		if (hasEvent){
 //                		RuleEvent e = 
@@ -288,8 +298,17 @@ public class Backward {
             		// generate a new bind were bindings are attached to the
             		// rule clause variables 
             		// (rename clause variables into rule variables)
+            		
+            		//if (debug) System.out.println("back unify");
+            		
             		Bind unified =  bind.unify(clauseRule, clause);
             		
+            		if (debug){
+//            			System.out.println("back unify: " + clauseRule);
+//            			System.out.println("back unify: " + clause);
+//            			System.out.println("back unify: " + unified);
+            		}
+
             		if (unified != null){
                    		stack.push(rule, clause, clauseRule, bind);
 
@@ -315,7 +334,19 @@ public class Backward {
             			 * check that ?y = ?z in the bind
             			 * 
             			 */
+            			
+            			if (debug){
+                   			System.out.println("back result: " + lb1);
+            			}
+            			
             			lb = lb.union(lb1.rename(clauseRule, clause, bind));
+            			
+            			if (debug){
+                   			System.out.println(clauseRule);
+                 			System.out.println(clause);
+                			System.out.println("back union: " + lb);
+            			}
+            			
             		}
                   
                 }

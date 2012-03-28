@@ -67,19 +67,28 @@ public class RuleImpl implements Rule {
 			//list to contain the clauses of the conclusion of the rule
 			head = new ArrayList<Clause>();
 
-			//iterate the list of elements of the expression above
-			for (Exp exp : headRule.getBody()){
-				if (exp.isTriple()){
-					//create the clause which contain the head of the rule
-					head.add(new ClauseImpl(ruleInstance, exp));
-				}
-				else {
-					logger.error("** Parsing, not a triple: " + exp);
-				}
-			}
+			getTriples(headRule, head);
 		}
 		return head;
 	}
+	
+	
+	void getTriples(Exp head, List<Clause> list){
+		for (Exp exp : head.getBody()){
+			if (exp.isTriple()){
+				//create the clause which contain the head of the rule
+				list.add(ClauseImpl.conclusion(ruleInstance, exp));
+			}
+			else if (exp.isRDFList()){
+				getTriples(exp, list);
+;			}
+			else {
+				logger.error("** Parsing, not a triple: " + exp.getClass().getName());
+				logger.error("** " + exp);
+			}
+		}
+	}
+	
 	
 	/**
      * clause: John grandFather ?y
@@ -87,16 +96,18 @@ public class RuleImpl implements Rule {
      * case rule = construct {?a grandFather ?c} where {?a father ?b . ?b father ?c}
      * RETURNS : ?a grandFather ?c
      */
-	public Clause match(Clause clause, Bind bind) { 
+	public List<Clause> match(Clause clause, Bind bind) { 
+		
+		ArrayList<Clause> list = new ArrayList<Clause>() ;
 		
 		//iterate the list of clauses of the conclusion of the rule
 		for (Clause clauseRule : getHead()){
 			if (bind.match(clauseRule, clause)){
-				return clauseRule;
+				list.add(clauseRule);
 			}
 		}
 
-		return null;
+		return list;
 	}
 	
 

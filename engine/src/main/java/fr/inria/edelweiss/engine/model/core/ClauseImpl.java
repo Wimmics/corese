@@ -23,7 +23,7 @@ public class ClauseImpl implements Clause {
 	/**
 	 * constructor instantiating the attributes of the instance of the clause
 	 */
-	public ClauseImpl(ASTQuery ast, Exp exp) {
+	public ClauseImpl(ASTQuery ast, Exp exp, boolean isBlank) {
 				
 		//get the triple to transform to an object clause
 		triple=(Triple)exp;
@@ -34,11 +34,12 @@ public class ClauseImpl implements Clause {
 		// Use case:  SPARQL query return result using select *
 		// must transform blanks into std variables
 		Atom sub = triple.getSubject();
-		if (sub.isBlankNode()){
+		Atom obj = triple.getObject();
+
+		if (sub.isBlankNode() && ! isBlank){
 			sub.getVariable().setBlankNode(false);
 		}
-		Atom obj = triple.getObject();
-		if (obj.isBlankNode()){
+		if (obj.isBlankNode() && ! isBlank){
 			obj.getVariable().setBlankNode(false);
 		}
 		
@@ -49,8 +50,20 @@ public class ClauseImpl implements Clause {
 		if (triple.getSource() != null){
 			elements.add(triple.getSource());
 		}
-		//checkGround();
+		
 	}
+	
+	// construct need blank
+	public static ClauseImpl conclusion(ASTQuery ast, Exp exp){
+		return new ClauseImpl(ast, exp, true);
+	}
+	
+	// where need no blank but variable
+	public static ClauseImpl condition(ASTQuery ast, Exp exp){
+		return new ClauseImpl(ast, exp, false);
+	}
+	
+
 	
 	public String toString(){
 		return triple.toString();

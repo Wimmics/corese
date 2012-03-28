@@ -42,6 +42,7 @@ public class Engine
     private QuerySolver exec;
     
     private EventsTreatment proc;
+	private Backward backward;
     
     
     public static Engine create(){
@@ -84,6 +85,10 @@ public class Engine
     public LBind SPARQLProve(String squery){
     	return query(squery);
     }
+    
+    public int getLoop(){
+    	return backward.getLoop();
+    }
 
     
     public LBind query(String squery){
@@ -110,13 +115,13 @@ public class Engine
     	//if (exec == null) exec = QueryExec.create(server);
     	proc = new EventsTreatmentImpl(exec);
 
-    	Backward backward = new Backward(ruleBase, proc);
+    	backward = new Backward(ruleBase, proc);
     	
 //   	    if (server!=null){
 //   	    	backward.setEventManager(server.getEventManager());
 //   	    }
    	    
-    	QueryImpl query = new QueryImpl(ast);
+    	QueryImpl query =  QueryImpl.create(ast);
     	query.setVariables(exec.compile(ast).getVariables());
     	
     	Bind bind = new BindImpl(); 

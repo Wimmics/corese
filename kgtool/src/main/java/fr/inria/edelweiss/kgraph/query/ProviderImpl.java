@@ -10,6 +10,10 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
+//import fr.inria.wimmics.sparql.soap.client.SparqlResult;
+//import fr.inria.wimmics.sparql.soap.client.SparqlSoapClient;
+
+
 /**
  * Implements service expression using local QueryExec
  * 
@@ -47,5 +51,16 @@ public class ProviderImpl implements Provider {
 		}
 		return map;
 	}
-
+	
+//	public String callSoapEndPoint() {
+//		SparqlSoapClient client = new SparqlSoapClient();
+//		SparqlResult result = client.sparqlQuery("http://dbpedia.inria.fr/sparql", "select ?x ?r ?y where { ?x ?r ?y} limit 100");
+//		String stringResult = result.toString();
+//		return stringResult;
+//	}
+//
+//	public static void main(String[] args) {
+//		ProviderImpl impl = new ProviderImpl();
+//		System.out.println(impl.callSoapEndPoint());
+//	}
 }

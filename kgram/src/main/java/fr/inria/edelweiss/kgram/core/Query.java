@@ -177,7 +177,7 @@ public class Query extends Exp {
 		mode = m;
 	}
 	
-	void addError(String mes, Object obj){
+	public void addError(String mes, Object obj){
 		getGlobalQuery().setError(mes, obj);
 	}
 	
@@ -1476,15 +1476,17 @@ public class Query extends Exp {
 				
 				if (exp.type() == AND){
 					// sort edges as connected when possible
-					//exp.sort(this, lVar, lBind);
 					sort.sort(this, exp, lVar, lBind);
 				}
 				// put filters where they are bound
 				sortFilter(exp, lVar);
 				// check patterns
-				//processFilter(exp, option);
-				if (isOptimize()){
-					checkPath(exp);
+				if (isCheck){
+					processFilter(exp, option);
+					checkPath(exp, false);
+				}
+				if (isOptimize){
+					checkPath(exp, true);
 				}
 				
 				if (exp.size()!=num){
@@ -1547,12 +1549,12 @@ public class Query extends Exp {
 	 * 
 	 * By safety consider only path at index 0 to avoid unnecessary duplication of code (if ?x is already bound)
 	 */
-	void checkPath(Exp exp){
+	void checkPath(Exp exp, boolean compile){
 		int i = 0;
 		boolean b = false;
 		
 		for (Exp ee : exp){
-			if (ee.isPath() && i < exp.size()-1 && exp.get(i+1).isFilter()){
+			if ((ee.isPath() || ee.isEdge()) && i < exp.size()-1 && exp.get(i+1).isFilter()){
 				b = checkPath(ee, exp.get(i+1));
 				if (b){
 					break;
@@ -1563,9 +1565,15 @@ public class Query extends Exp {
 		
 		if (b){
 			// found path + filter
-			// compile to UNION on both filters
 			Exp union = createUnion(exp, i);
-			exp.set(i, union);
+			if (compile){
+				// compile to UNION on both filters
+				exp.set(i, union);
+			}
+			else {
+				addInfo("Expensive pattern: \n", exp.get(i) + "\n" + exp.get(i+1));
+				addInfo("Alternative: \n", union);
+			}
 		}
 	}
 	

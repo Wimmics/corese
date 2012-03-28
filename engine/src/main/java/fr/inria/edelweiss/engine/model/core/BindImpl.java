@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 //import fr.inria.acacia.corese.api.IResult;
 //import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.triple.api.ElementClause;
@@ -72,7 +73,10 @@ implements Bind {
      * RETURNS : {?a = John}
      */
 	public Bind unify(Clause freeClause, Clause boundClause) {
-		
+//		System.out.println(freeClause);
+//		System.out.println(boundClause);
+//		System.out.println(this);
+
 		//the bind to return containing the mappings between the rule and the clause
 		Bind bind = new BindImpl();
 		
@@ -89,20 +93,43 @@ implements Bind {
 			Constant value=null;
 			
 			if (argFree.isVariable()){
+				
 				value = getValue(argBound);
+				// TODO: draft
+				if (value == null && argBound.getAtom().isBlankNode()){
+					// transform blank node variable as blank node constant
+					value = argBound.getAtom().getConstant();
+					//System.out.println("** BI: " + argFree + " " + value);
+				}
 			}
 			
 			if (value != null){
 				
 				Constant cst = bind.getValue(argFree.getName());
-				
+
 				if (cst != null){
 					// argFree already bound : check values are the same
 					// same variable must be bound to same value
+										
 					boolean b = cst.getDatatypeValue().sameTerm(value.getDatatypeValue());
 					
 					if (! b) return null;
+										
 				}
+				
+				
+				// check this Bind
+//				cst = getValue(argFree.getName());
+//				
+//				if (cst != null){
+//					// argFree already bound in this Bind : check values are the same
+//					// same variable must be bound to same value
+//										
+//					boolean b = cst.getDatatypeValue().sameTerm(value.getDatatypeValue());
+//					
+//					if (! b) return null;
+//				}
+
 				
 				bind.put(argFree.getName(), value);
 			}

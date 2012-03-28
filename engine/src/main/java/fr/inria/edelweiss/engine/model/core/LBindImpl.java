@@ -143,7 +143,7 @@ public class LBindImpl implements LBind {
 			//To iterate the element of the conclusion of the rule
 			
 			Bind bind2 = bind.unify(clauseQuery, ruleConclusion);
-			
+						
 			if (bind2 != null){
 				// add  the old bind to the new bind : 
 				// because we omit it in the method Backward.backward

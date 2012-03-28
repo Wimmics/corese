@@ -91,10 +91,20 @@ public class QueryImpl implements Query {
 		return ast;
 	}
 	
+	// for the initial query
+	public static QueryImpl create(ASTQuery ast){
+		return new QueryImpl(ast, true);
+	}
+	
+
+	public QueryImpl(ASTQuery ast) {
+		this(ast, false); 
+	}
+	
 	/**
 	 * constructor which create instances of the objects clauses and filters
 	 */
-	public QueryImpl(ASTQuery sparqlQuery) {
+	public QueryImpl(ASTQuery sparqlQuery, boolean isQuery) {
 		ast = sparqlQuery;
 		//initialize the elements of the query
 		clauses=new ArrayList<Clause>();
@@ -122,7 +132,7 @@ public class QueryImpl implements Query {
 
 		for (Exp exp : expBody.getBody()){
 			
-				process(sparqlQuery, exp);
+				process(sparqlQuery, exp, isQuery);
 		}
 
 		//case select : set the name of the variables
@@ -134,14 +144,15 @@ public class QueryImpl implements Query {
 	}
 	
 	
-	void process(ASTQuery sparqlQuery, Exp exp){
+	void process(ASTQuery sparqlQuery, Exp exp, boolean isQuery){
 		if (exp.isTriple()){
 
 			if (! exp.isFilter()){
 				//case the expression is a triple
 
 				//create a new object Clause as an element of the query
-				Clause clause=new ClauseImpl(sparqlQuery, exp);
+				Clause clause = ClauseImpl.condition(sparqlQuery, exp);
+				
 
 				//add the clause to the query
 				addClause(clause);
@@ -159,7 +170,7 @@ public class QueryImpl implements Query {
 		else if (exp.isScope()){
 			Exp body = exp.get(0);
 			for (Exp ee : body.getBody()){
-				Clause clause = new ClauseImpl(sparqlQuery, ee);
+				Clause clause =  ClauseImpl.condition(sparqlQuery, ee);
 				clause.setGround(true);
 				addClause(clause);
 			}
@@ -172,13 +183,13 @@ public class QueryImpl implements Query {
 				if (ee.isTriple()){
 					Triple t = ee.getTriple();
 					t.setVSource(src.getSource());
-					process(sparqlQuery, ee);
+					process(sparqlQuery, ee, isQuery);
 				}
 			}
 		}
 		else if (exp.isAnd()){
 			for (Exp ee : exp.getBody()){
-				process(sparqlQuery, ee);
+				process(sparqlQuery, ee, isQuery);
 			}
 		}
 		else {

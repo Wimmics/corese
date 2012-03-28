@@ -24,6 +24,7 @@ public class Sorter {
 
 		for (int i = 0; i < exp.size(); i++) {
 			Exp e1 = exp.get(i);
+			
 			if (e1.isSortable()){
 				if (lNode.size() == 0 && lVar.size() == 0 && leaveFirst()){
 					// let first edge at its place
@@ -53,8 +54,32 @@ public class Sorter {
 					}
 				}
 				
+				if (i > 0 && q.isCheck()){
+					check(q, e1, lNode);
+				}
 				e1.bind(lNode);
 			}
+		}
+	}
+	
+	
+	void check(Query q, Exp exp, List<Node> list){
+		if (! (exp.isEdge() || exp.isPath())){
+			return;
+		}
+
+		boolean connect = false;
+		
+		for (int i = 0; i<exp.nbNode(); i++){
+			Node n = exp.getNode(i);
+			if (list.contains(n)){
+				connect = true;
+				break;
+			}
+		}
+		
+		if (! connect){
+			q.addInfo("Disconnected: ", exp);
 		}
 	}
 	

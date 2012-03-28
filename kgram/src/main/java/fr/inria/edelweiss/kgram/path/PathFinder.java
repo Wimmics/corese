@@ -532,29 +532,6 @@ public class PathFinder
 		return map;
 	}
 	
-	void setLength(Node n, Regex exp, int l){
-		Regex e = getRegex(n);
-		if (e == null || e == exp){
-			n.setProperty(Node.LENGTH, l);
-			setRegex(n, exp);
-		}
-	}
-	
-	Integer getLength(Node n, Regex exp){
-		Regex e = getRegex(n);
-		if (e == null || e == exp){
-			return (Integer) n.getProperty(Node.LENGTH);
-		}
-		return null;
-	}
-	
-	void setRegex(Node n, Regex e){
-		n.setProperty(Node.REGEX, e);
-	}
-	
-	Regex getRegex(Node n){
-		return (Regex) n.getProperty(Node.REGEX);
-	}
 	
 	/**
 	 * Generate a unique Blank Node wrt query that represents the path
@@ -838,6 +815,7 @@ public class PathFinder
 						// reset node length to zero when start changes
 						if (previous==null || ! previous.same(node)){
 							pp.initPath(ee, 0);
+							visit.initPath();
 						}
 						previous = node;
 					}
@@ -847,11 +825,11 @@ public class PathFinder
 				if (hasShort){
 					// shortest path
 					Node other 	= rel.getNode(oo);
-					Integer l 	= getLength(other, exp);
+					Integer l 	= visit.getLength(other, exp);
 					int length 	= pweight + eweight;
 					
 					if (l == null){
-						setLength(other, exp, length);
+						visit.setLength(other, exp, length);
 					}
 					else if (length > l){
 						continue;
@@ -860,7 +838,7 @@ public class PathFinder
 						continue;
 					}
 					else {
-						setLength(other, exp, length);
+						visit.setLength(other, exp, length);
 					}
 				}
 

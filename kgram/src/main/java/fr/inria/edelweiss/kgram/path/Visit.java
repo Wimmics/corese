@@ -26,6 +26,7 @@ public class Visit {
 	ETable ttable;
 	Hashtable<Regex, Integer> ctable;
 	DTable tdistinct;
+	LTable ltable;
 	ArrayList<Regex> list;
 
 	boolean isReverse = false;
@@ -37,8 +38,9 @@ public class Visit {
 		ttable  = new ETable(b);
 		ctable  = new Hashtable<Regex, Integer> ();
 		list    = new ArrayList<Regex>();
-		tdistinct = new DTable();
-		isReverse = b;
+		tdistinct 	= new DTable();
+		ltable 		= new LTable();
+		isReverse 	= b;
 	}
 	
 	class Table1 extends Hashtable<Node, Node>  {}
@@ -306,11 +308,12 @@ public class Visit {
 		 return i;
 	 }
 	 
-	 /****************************************/
-	 
-	 /**
+	 /****************************************
+	  * 
 	  * ?x distinct(exp+) ?y
+	  * 
 	  */
+	 
 	 boolean isDistinct(Node start, Node node){
 		 Table t = tdistinct.get(start);
 		 if (t == null) return true;
@@ -328,6 +331,107 @@ public class Visit {
 	 
 	 
 	
+	 /**********************************************
+	  * ?x short(regex) ?y
+	  * ?x distinct(regex) ?y
+	  *
+	  */
+	 
+	 
+	 /**
+	  * Table for managing path length for each node 
+	  */
+	 class LTable extends TreeMap<Node, Record>  {	
+			
+			LTable(){
+				super(new Compare());
+			}
+			
+			
+			void setLength(Node n, Regex exp, int l){
+				Record r = get(n);
+				if (r == null){
+					r = new Record(exp, l);
+					put(n, r);
+				}
+				else if (r.exp == exp){
+					r.len = l;
+				}
+			}
+			
+			Integer getLength(Node n, Regex exp){
+				Record r = get(n);
+				if (r != null && r.exp == exp){
+					return r.len;
+				}
+				else {
+					return null;
+				}
+			}	
+	}
+	 
+	 class Record {
+		 Regex exp;
+		 Integer len;
+		 
+		 Record(Regex e, Integer l){
+			 exp = e;
+			 len = l;
+		 }
+		 
+	 }
+	 
+	 void initPath(){
+		 ltable.clear();
+	 }
+		
+	 
+	 void setLength(Node n, Regex exp, int l){
+		 if (speedUp){
+			 Regex e = getRegex(n);
+			 if (e == null || e == exp){
+				 n.setProperty(Node.LENGTH, l);
+				 setRegex(n, exp);
+			 }
+		 }
+		 else {
+			 ltable.setLength(n, exp, l);
+		 }
+	 }
+
+	 Integer getLength(Node n, Regex exp){
+		 if (speedUp){
+			 Regex e = getRegex(n);
+			 if (e == null || e == exp){
+				 return (Integer) n.getProperty(Node.LENGTH);
+			 }
+			 return null;
+		 }
+		 else {
+			 return ltable.getLength(n, exp);
+		 }
+	 }
+
+	 void setRegex(Node n, Regex e){
+		 n.setProperty(Node.REGEX, e);
+	 }
+
+	 Regex getRegex(Node n){
+		 return (Regex) n.getProperty(Node.REGEX);
+	 }
+
+	
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 	
 	
 	/*************************************

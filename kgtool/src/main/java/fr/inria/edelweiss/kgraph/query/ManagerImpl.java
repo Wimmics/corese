@@ -314,9 +314,10 @@ public class ManagerImpl implements Manager {
 			load.load(uri, src);
 		}
 		else 
-			try {
+			try {	
 			load.loadWE(uri, src);
 		} catch (LoadException e) {
+			logger.error("Load error: " + ope.getURI() + "\n" + e);
 			return ope.isSilent();
 		}
 		return true;

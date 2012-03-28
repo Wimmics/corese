@@ -104,7 +104,10 @@ public class Checker implements ExprType {
 	
 	
 	void log(Expr ee, String mes){
+		
 		if (isPattern(ee) && ee.oper() == AND){
+			query.addInfo(mes + ": " , ee.getExp(0) + " && " + ee.getExp(1));
+			
 			log(mes + " " + ee.getExp(0) + " && " + ee.getExp(1));
 			if (mes.equals(AFALSE)){
 				query.addFailure(ee.getExp(0).getFilter());
@@ -112,6 +115,8 @@ public class Checker implements ExprType {
 			}				
 		}
 		else {
+			query.addInfo(mes + ": ", ee);
+			
 			log(mes + " " + ee);
 			if (mes.equals(AFALSE)){
 				query.addFailure(ee.getFilter());

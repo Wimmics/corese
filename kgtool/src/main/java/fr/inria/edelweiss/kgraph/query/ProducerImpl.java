@@ -173,12 +173,14 @@ public class ProducerImpl implements Producer {
 		Iterable<Entity> it;
 		
 		if (isType){
+			// deprecated
 			it = getTypeEdges(predicate, node, env);
 		}
 		else if (gNode != null || from.size()>0 || ! graph.hasDefault()){
 			it = graph.getEdges(predicate, node, node2, n);
 		}
 		else {
+			// deprecated
 			it = graph.getDefaultEdges(predicate, node, node2, n);
 			if (it == null){
 				return empty;

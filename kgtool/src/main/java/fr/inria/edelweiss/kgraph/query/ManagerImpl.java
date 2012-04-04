@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Update;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -35,6 +36,7 @@ public class ManagerImpl implements Manager {
 	Graph graph;
 	Loader load;
 	QueryProcess exec;
+	// dataset on which query is executed (cf W3C test case)
 	List<String> 
 	// list of graphs the union of which is the default graph (use case: copy default to g)
 	from, 
@@ -110,11 +112,11 @@ public class ManagerImpl implements Manager {
 	}
 	
 	
-	public Mappings query(ASTQuery ast){
-		return exec.update(ast, from, named);
+	public Mappings query(Query q, ASTQuery ast){
+		return exec.update(q, ast, from, named);
 	}
 	
-	public boolean process(Basic ope){
+	public boolean process(Query q, Basic ope){
 		String uri 			= ope.getGraph();
 		boolean isDefault 	= ope.isDefault();
 		boolean isNamed 	= ope.isNamed();
@@ -125,7 +127,7 @@ public class ManagerImpl implements Manager {
 
 		switch (ope.type()){
 		
-		case Update.LOAD: 	return load(ope); 
+		case Update.LOAD: 	return load(q, ope); 
 			
 		case Update.CREATE: return create(ope);
 			
@@ -218,23 +220,43 @@ public class ManagerImpl implements Manager {
 	}
 	
 	private boolean clear(Basic ope, boolean drop) {
-		if (named!=null && (ope.isNamed() || ope.isAll())){
+		
+		if (named != null && (ope.isNamed() || ope.isAll())){
 			for (String gg : named){
-				graph.clear(ope.expand(gg), ope.isSilent());
-				if (drop) graph.deleteGraph(ope.expand(gg));
+				clear(gg, ope, drop);
 			}
 		}
+		
 		if (from != null && (ope.isDefault() || ope.isAll())){
 			for (String gg : from){
-				graph.clear(ope.expand(gg), ope.isSilent());
-				if (drop) graph.deleteGraph(ope.expand(gg));
+				clear(gg, ope, drop);
 			}
 		}
-		if (ope.getGraph()!=null){
+		
+		if (ope.getGraph() != null){
 			graph.clear(ope.getGraph(), ope.isSilent());
 			if (drop) graph.deleteGraph(ope.getGraph());
 		}
+		else if (named == null && from == null){
+			// no prescribed dataset
+			if (ope.isNamed() || ope.isAll()){
+				graph.clearNamed();
+				if (drop){
+					graph.dropGraphNames();
+				}
+			}
+			else if (ope.isDefault()){
+				graph.clearDefault();
+			}
+
+		}
 		return true;
+	}
+	
+	
+	void clear(String g, Basic ope, boolean drop){
+		graph.clear(ope.expand(g), ope.isSilent());
+		if (drop) graph.deleteGraph(ope.expand(g));
 	}
 
 	/**
@@ -303,7 +325,7 @@ public class ManagerImpl implements Manager {
 		return true;
 	}
 
-	private boolean load(Basic ope) {
+	private boolean load(Query q, Basic ope) {
 		if (load == null){
 			logger.error("Load " + ope.getURI() + ": Loader is undefined");
 			return ope.isSilent();
@@ -318,8 +340,14 @@ public class ManagerImpl implements Manager {
 			load.loadWE(uri, src);
 		} catch (LoadException e) {
 			logger.error("Load error: " + ope.getURI() + "\n" + e);
+			q.addError("Load error: ", ope.getURI() + "\n" + e);
 			return ope.isSilent();
 		}
+		
+		if (load.isRule(uri) && load.getRuleEngine()!=null && src!=null && src.equals(Entailment.RULE)){
+			load.getRuleEngine().entail();
+		}
+		
 		return true;
 	}
 

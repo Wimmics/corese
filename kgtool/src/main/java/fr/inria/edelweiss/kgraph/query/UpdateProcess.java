@@ -63,13 +63,13 @@ public class UpdateProcess {
 			if (u.isBasic()){
 				// load copy ...
 				Basic b = u.getBasic();
-				suc = manager.process(b);
+				suc = manager.process(q, b);
 				
 			}
 			else {
 				// delete insert data where
 				Composite c = u.getComposite();
-				suc = process(c);
+				suc = process(q, c);
 			}
 			
 			if (! suc){
@@ -90,15 +90,15 @@ public class UpdateProcess {
 	}
 	
 	
-	boolean process(Composite ope){
+	boolean process(Query q, Composite ope){
 		
 		switch (ope.type()){
 		
-		case Update.INSERT: 	insert(ope); break;
+		case Update.INSERT: 	insert(q, ope); break;
 			
-		case Update.DELETE: 	delete(ope); break;
+		case Update.DELETE: 	delete(q, ope); break;
 		
-		case Update.COMPOSITE: 	composite(ope); break;
+		case Update.COMPOSITE: 	composite(q, ope); break;
 			
 		}
 		return true;
@@ -111,7 +111,7 @@ public class UpdateProcess {
 	 * Ground pattern (no variable)
 	 * Processed as a construct query in the target graph
 	 */
-	void insert(Composite ope){
+	void insert(Query q, Composite ope){
 		
 		ASTQuery ast = createAST(ope);
 		ast.setInsert(true);
@@ -129,7 +129,7 @@ public class UpdateProcess {
 		}
 		
 		// Processed as a construct (add) on target graph
-		manager.query(ast);
+		manager.query(q, ast);
 
 	}
 	
@@ -139,7 +139,7 @@ public class UpdateProcess {
 	 * Processed by Construct as a delete query in the target graph
 	 * 
 	 */	
-	void delete(Composite ope){
+	void delete(Query q, Composite ope){
 		
 		ASTQuery ast = createAST(ope);
 		ast.setDelete(true);
@@ -158,7 +158,7 @@ public class UpdateProcess {
 			ast.setDelete(exp);
 		}
 		
-		manager.query(ast);
+		manager.query(q, ast);
 
 	}
 	
@@ -170,7 +170,7 @@ public class UpdateProcess {
 	 * using
 	 * where {pat}
 	 */
-	void composite(Composite ope){
+	void composite(Query q, Composite ope){
 		
 		// the graph where insert/delete occurs
 		Constant src = ope.getWith();
@@ -203,7 +203,7 @@ public class UpdateProcess {
 				}
 		}
 
-		Mappings map = manager.query(ast);
+		Mappings map = manager.query(q, ast);
 		if (isDebug) logger.debug(map);	
 	}
 	

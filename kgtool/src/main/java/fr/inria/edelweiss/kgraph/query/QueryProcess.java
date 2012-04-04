@@ -170,9 +170,26 @@ public class QueryProcess extends QuerySolver {
 		return query(squery, null, null, null);
 	}
 	
-	public Mappings query(String squery, Mapping map, List<String> from, List<String> named) throws EngineException{
-		Query q = compile(squery, from, named);
-		return query(q, map, from, named);
+	/**
+	 * defaut and named specify a Dataset
+	 * if the query has no from/using (resp. named), kgram use defaut (resp. named) if it exist
+	 * for update, defaut is also used in the delete clause (when there is no with in the query)
+	 * W3C sparql test cases use this function
+	 */
+	public Mappings query(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
+		Query q = compile(squery, defaut, named);
+		return query(q, map, defaut, named);
+	}	
+	
+	/**
+	 * defaut and named specify a Dataset
+	 * if the query has no from/using (resp. using named), kgram use this defaut (resp. named) if it exist
+	 * for update, this using is *not* used in the delete clause 
+	 * W3C sparql protocol use this function
+	 */
+	public Mappings protocol(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
+		Query q = compile(squery, defaut, named);
+		return query(q, map, defaut, named);
 	}	
 	
 	public Mappings query(Query q) {
@@ -311,8 +328,19 @@ public class QueryProcess extends QuerySolver {
 		}
 	}
 	
-	
+	/**
+	 * from and named (if any) specify the Dataset over which update take place
+	 * where {}  clause is computed on this Dataset
+	 * delete {} clause is computed on this Dataset
+	 * insert {} take place in Entailment.DEFAULT, unless there is a graph pattern or a with
+	 * 
+	 * This explicit Dataset is introduced because Corese manages the default graph as the union of
+	 * named graphs whereas in some case (W3C test case) there is a specific default graph
+	 * hence, "from" represents the explicit default graph
+	 * 
+	 */
 	Mappings update(Query query,  List<String> from, List<String> named) throws EngineException{
+		// TODO: check complete() -- W3C test case require += default + entailment + rule
 		complete(from);
 		ManagerImpl man = ManagerImpl.create(this, from, named);
 		UpdateProcess up = UpdateProcess.create(man);
@@ -351,8 +379,10 @@ public class QueryProcess extends QuerySolver {
 	
 	/**
 	 * Called by Manager (delete/insert operations)
+	 * query is the global Query
+	 * ast is the current update action
 	 */
-	Mappings update(ASTQuery ast, List<String> from, List<String> named) {
+	public Mappings update(Query query, ASTQuery ast, List<String> from, List<String> named) {
 		Mappings lMap = super.query(ast, from, named);
 		Query q = lMap.getQuery();
 		
@@ -370,11 +400,14 @@ public class QueryProcess extends QuerySolver {
 	
 
 		
-		
+	/**
+	 * Implement SPARQL compliance
+	 */
 	Mappings sparqlQueryUpdate(String squery, List<String> from, List<String> named, int entail) throws EngineException{
 		getEvaluator().setMode(Evaluator.SPARQL_MODE);
 
 		if (entail != STD_ENTAILMENT){
+			// include RDF/S entailments in the default graph
 			if (from == null){
 				from = new ArrayList<String>();
 			}
@@ -428,7 +461,7 @@ public class QueryProcess extends QuerySolver {
 
 	 */
 	
-	void construct(Mappings lMap){
+	public void construct(Mappings lMap){
 		Query query = lMap.getQuery();
 		Construct cons =  Construct.create(query);
 		cons.setDebug(isDebug() || query.isDebug());

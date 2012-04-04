@@ -174,8 +174,9 @@ public class RuleEngine {
 	
 	/**
 	 *  Process rule base at saturation 
+	 *  PRAGMA: not synchronized on write lock
 	 */
-	int entail(){
+	public int entail(){
 		
 		if (isOptim){
 			init();

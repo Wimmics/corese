@@ -146,9 +146,9 @@ public class QuerySolver  {
 	}
 	
 	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
+		ast.setDefaultFrom(from);
+		ast.setDefaultNamed(named);
 		Transformer transformer =  transformer();
-		transformer.setFrom(from);
-		transformer.setNamed(named);
 		Query query = transformer.transform(ast);
 		// keep null below (cf QueryProcess)
 		return query(query, null);
@@ -175,7 +175,7 @@ public class QuerySolver  {
 		init(query);
 		debug(query);
 		
-                if (producer instanceof MetaProducer){
+        if (producer instanceof MetaProducer){
 			query.setDistribute(true);
 			if (isSequence){
 				return queries(query, map);

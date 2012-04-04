@@ -9,11 +9,16 @@
     <parent>
         <groupId>fr.inria.edelweiss</groupId>
         <artifactId>kg-parent</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
         <relativePath>..</relativePath>
     </parent>
 
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>fr.inria.edelweiss</groupId>-->
+<!--            <artifactId>sparql</artifactId>-->
+<!--            <version>1.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>arp</groupId>
             <artifactId>arp</artifactId>

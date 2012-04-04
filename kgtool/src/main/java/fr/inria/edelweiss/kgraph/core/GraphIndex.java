@@ -249,4 +249,11 @@ implements Index, Iterable<Entity> {
 		
 	}
 
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

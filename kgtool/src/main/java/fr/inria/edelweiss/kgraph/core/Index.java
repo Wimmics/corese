@@ -48,6 +48,9 @@ public interface Index {
 	
 	// ************** Update
 	
+	
+	void clear();
+
 	void clear(Node gNode);
 	
 	void copy(Node g1, Node g2);

@@ -96,6 +96,8 @@ public class Graph {
 	
 	// SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
 	
+
+	
 	class TreeNode extends TreeMap<IDatatype, Entity>  {
 		
 		TreeNode(){
@@ -1214,7 +1216,41 @@ public class Graph {
 		return res;
 	}
 	
+	// clear all except graph names.
+	// they must be cleared explicitely
+	void clear(){
+		clearIndex();
+		individual.clear();
+		blank.clear();
+		literal.clear();
+		property.clear();
+		for (Index t : tables){
+			t.clear();
+		}
+		if (inference!=null){
+			inference.clear();
+		}
+		clearDistance();
+		isIndex = true;
+		isUpdate = false; 
+		isDelete = false; 
+		size = 0;
+	}
 	
+	public boolean clearDefault(){
+		clear();
+		return true;
+	}
+	
+	public boolean clearNamed(){
+		clear();
+		return true;
+	}
+	
+	public boolean dropGraphNames(){
+		graph.clear();
+		return true;
+	}
 	
 	public boolean clear(String uri, boolean isSilent){
 		if (uri != null){
@@ -1329,6 +1365,17 @@ public class Graph {
 		Node g = addGraph(Entailment.DEFAULT);
 		return addEdge(g, subject, predicate, value);
 	}
+	
+	// tuple
+	public Edge addEdge(Node source, Node predicate, List<Node> list){
+		EdgeImpl e = fac.create(source, predicate, list);
+		Entity ee = addEdge(e);
+		if (ee != null){
+			return ee.getEdge();
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * Graph in itself is not considered as a graph node for SPARQL path

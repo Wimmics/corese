@@ -178,7 +178,7 @@ public class Load
 		return true;
 	}
 	
-	boolean isRule(String path){
+	public boolean isRule(String path){
 		for (String suf : RULES){
 			if (path.endsWith(suf)){
 				return true;

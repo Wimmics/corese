@@ -7,6 +7,8 @@ public interface Loader {
 	
 	void init(Object o);
 	
+	boolean isRule(String path);
+	
 	void load(String path);
 	
 	void load(String path, String source);

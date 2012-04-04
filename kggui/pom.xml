@@ -4,14 +4,14 @@
         <parent>
         <groupId>fr.inria.edelweiss</groupId>
         <artifactId>kg-parent</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
         <relativePath>..</relativePath>
         </parent>
 	
         <groupId>fr.inria.edelweiss</groupId>
 	<artifactId>kggui</artifactId>
 	<properties>
-		<corese-version>3.0.6</corese-version>
+		<corese-version>3.0.7</corese-version>
 	</properties>
 	<dependencies>
 		<!--<dependency>

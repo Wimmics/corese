@@ -2,6 +2,7 @@ package test.w3c;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,6 +12,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 
 import fr.inria.acacia.corese.api.IDatatype;
@@ -92,6 +97,7 @@ public class W3CTest11KGraph {
 		"optional {?x sd:entailmentRegime ?ent}" +
 		"optional {?x mf:result ?r}" +
 		"optional {?x rdf:type ?t}" +
+		"optional {?x mf:feature ?fq}" +
 		"" +
 		"optional { ?a qt:serviceData [qt:endpoint ?ep ; qt:data ?ed] }" +
 		
@@ -206,7 +212,7 @@ public class W3CTest11KGraph {
 	void test1(){
 		sparql1=true;
 
-		skip(root + "service");
+		test(root + "service");
 		
 		test(root + "syntax-fed");
 		test(root + "entailment");
@@ -248,7 +254,7 @@ public class W3CTest11KGraph {
 	
 	void test(){
 		sparql1=true;
-		 test(root + "json-res", false);
+		 test(root + "service", false);
 		
 	}
 	
@@ -411,7 +417,7 @@ public class W3CTest11KGraph {
 					String test	 = getValue(map, "?x");
 					earl.skip(test);
 				}
-				else if (query(path, map)){
+				else if (query(path, map, update)){
 					ok++;
 				}
 				else {
@@ -469,15 +475,10 @@ public class W3CTest11KGraph {
 	 * 
 	 * @return
 	 */
-	boolean query(String path, Mapping map){
+	boolean query(String path, Mapping map, boolean isUpdate){
 		//System.out.println(map);
 				
 		String defbase = uri(path + File.separator);
-
-//		List<String> fnamed   = getValueList(map, "?g");
-//		List<String> fnames   = getValueList(map, "?name");
-//		List<String> frnamed  = getValueList(map, "?gr");
-//		List<String> frnames  = getValueList(map, "?nres");
 		
 		Dataset input  = new Dataset().init(map.getMappings(), "?name", "?g");
 		Dataset output = new Dataset().init(map.getMappings(), "?nres", "?gr");
@@ -489,6 +490,8 @@ public class W3CTest11KGraph {
 		String fresult 	  = getValue(map, "?r");
 		String ent 		  = getValue(map, "?ent");
 		String type		  = getValue(map, "?t");
+		String fq		  = getValue(map, "?fq");
+
 		
 		String[] ep  = getValues(map, "?ep");
 		String[] ed  = getValues(map, "?ed");
@@ -507,13 +510,7 @@ public class W3CTest11KGraph {
 			isBlankResult = nr.isBlank();
 		}
 		
-		
-//		String man = getValue(map, "?man");
-//		if (man == null){
-//			System.out.println("**************************");
-//			System.out.println(map);
-//		}
-		
+	
 		if (fquery == null) fquery = getValue(map, "?a");
 		
 		//if (!fquery.contains("add-03"))return true;
@@ -554,7 +551,7 @@ public class W3CTest11KGraph {
 		 * Load Result
 		 * 
 		 ***********************************************************/
-		ArrayList<Result> w3XMLResult = null;
+		Mappings w3XMLResult = null;
 		Mappings w3RDFResult = null;
 		Graph gres = null;
 		int nbres = -1;
@@ -567,8 +564,25 @@ public class W3CTest11KGraph {
 		}
 		else if (fresult!=null && fresult.endsWith(".srx")){
 			// XML Result
-			w3XMLResult = new XMLResult().parse(fresult);
-			nbres = w3XMLResult.size();
+			try {
+				Producer p = ProducerImpl.create(Graph.create());
+				FileInputStream stream = new FileInputStream(fresult);
+				w3XMLResult =  fr.inria.edelweiss.kgenv.result.XMLResult.create(p).parse(stream);
+				nbres = w3XMLResult.size();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		else if (fresult!=null && fresult.endsWith(".srj")){
 			isJSON = true;
@@ -658,6 +672,10 @@ public class W3CTest11KGraph {
 			Provider p = endpoint(ep, ed);
 			exec.set(p);
 		}
+		else if (fq != null){
+			Provider p = ProviderImpl.create();
+			exec.set(p);
+		}
 		
 		
 		/***********************************************************
@@ -666,7 +684,9 @@ public class W3CTest11KGraph {
 		 * Consider from [named] to build Dataset
 		 * 
 		 ***********************************************************/
-		List <String> defaultGraph=null, namedGraph=null;	
+		//List <String> defaultGraph=null, namedGraph=null;
+		fr.inria.edelweiss.kgenv.eval.Dataset ds = fr.inria.edelweiss.kgenv.eval.Dataset.create();
+		ds.setUpdate(isUpdate);
 
 		if (fdefault.size() == 0){
 			for (Node node : qq.getFrom()){
@@ -686,8 +706,10 @@ public class W3CTest11KGraph {
 
 		if (fdefault.size()>0){
 			// Load RDF files for default graph
-			defaultGraph = fdefault;
+			//defaultGraph = fdefault;
+			ds.defFrom();
 			for (String file : fdefault){
+				ds.addFrom(file);
 				load.load(file, file);
 			}
 		}
@@ -712,12 +734,13 @@ public class W3CTest11KGraph {
 		
 		if (input.getURIs().size()>0){				
 			// Load RDF files for named graphs
-			namedGraph = new ArrayList<String>();
+			//namedGraph = new ArrayList<String>();
+			ds.defNamed();
 			int i = 0;
 			for (String file : input.getURIs()){
 				String name = input.getNameOrURI(i++);
 				load.load(file, name);
-				namedGraph.add(name);
+				ds.addNamed(name);
 			}
 		}
 		
@@ -725,13 +748,13 @@ public class W3CTest11KGraph {
 		
 		if (rdfs || rdf){
 			// load RDF/S definitions & inference rules
-			if (defaultGraph == null) defaultGraph = new ArrayList<String>();
+			if (ds.getFrom() == null) ds.defFrom(); //defaultGraph = new ArrayList<String>();
 
 			if (rdfs) {
 				entail = QueryProcess.RDFS_ENTAILMENT;
 				load.load(more + "rdfs.rdf", RDFS.RDFS);
 				ld.load(more + "rdfs.rul");
-				defaultGraph.add(RDFS.RDFS);
+				ds.addFrom(RDFS.RDFS);
 			}
 			else {
 				entail = QueryProcess.RDF_ENTAILMENT;
@@ -740,7 +763,7 @@ public class W3CTest11KGraph {
 			}
 
 			load.load(more + "rdf.rdf", RDF.RDF);					
-			defaultGraph.add(RDF.RDF);
+			ds.addFrom(RDF.RDF);
 			
 			//re.setDebug(true);
 			re.process();								
@@ -754,7 +777,7 @@ public class W3CTest11KGraph {
 		 *****************************************************/
 		try {
 
-			Mappings res = exec.sparql(query, defaultGraph, namedGraph, entail);
+			Mappings res = exec.sparql(query, ds, entail);
 						
 			// CHECK RESULT
 			boolean result = true;
@@ -863,10 +886,10 @@ public class W3CTest11KGraph {
 			String name = ed[j++];
 
 			// rdf version
-			String ff = ttl2rdf(name);
+			//String ff = ttl2rdf(name);
 			Graph g = Graph.create();
 			Load load = Load.create(g);
-			load.load(ff, name);
+			load.load(name);
 			p.add(nep, g);
 		}
 
@@ -904,11 +927,11 @@ public class W3CTest11KGraph {
 	/**
 	 * KGRAM vs W3C result
 	 */
-	boolean validate(Mappings kgram, ArrayList<Result> w3c){
+	boolean validate(Mappings kgram, Mappings w3c){
 		boolean result = true, printed = false;
-		Hashtable<Mapping, Result> table = new Hashtable<Mapping, Result>();
+		Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
 		
-		for (Result w3cres : w3c){
+		for (Mapping w3cres : w3c){
 			// for each w3c result
 			boolean ok = false;
 						
@@ -924,7 +947,7 @@ public class W3CTest11KGraph {
 					for (Node qNode : kgram.getSelect()){
 						// check that kgram has no additional binding 
 						if (kres.getNode(qNode)!=null){ 
-							if (w3cres.get(qNode.getLabel()) == null){
+							if (w3cres.getNode(qNode) == null){
 								ok = false;
 							}
 						}
@@ -946,9 +969,9 @@ public class W3CTest11KGraph {
 					System.out.println(kgram);
 					printed = true;
 				}
-				for (String var : w3cres.keySet()){
+				for (Node var : w3cres.getQueryNodes()){
 					// for each w3c variable/value
-					Value  val = w3cres.get(var);
+					Node  val = w3cres.getNode(var);
 					System.out.println(var + " [" + val +"]");
 				}
 				System.out.println("--");
@@ -961,25 +984,25 @@ public class W3CTest11KGraph {
 	
 	
 	// compare two results
-	boolean compare (Mapping kres, Result w3cres){
+	boolean compare (Mapping kres, Mapping w3cres){
 		TBN tbn = new TBN();
 		boolean ok = true;
 		
-		for (String var : w3cres.keySet()){
+		for (Node var : w3cres.getQueryNodes()){
 			if (! ok) break;
 			
 			// for each w3c variable/value
-			Value  w3cval = w3cres.get(var);
+			IDatatype  w3cval = datatype(w3cres.getNode(var));
 			// find same value in kgram
 			if (w3cval != null){
-				String cvar = "?"+var;
-				Node kNode = kres.getNode(cvar);
+				String cvar = var.getLabel();
+				Node kNode = kres.getNode(var);
 				if (kNode == null){
 					ok = false;
 				}
 				else {
 					IDatatype kdt = datatype(kNode);
-					IDatatype wdt = w3cval.getDatatypeValue();
+					IDatatype wdt = w3cval;
 					ok = compare(kdt, wdt, tbn);
 				}
 			}
@@ -1015,7 +1038,7 @@ public class W3CTest11KGraph {
 				if (! ok){
 					// compare them at 10^-10
 					ok = 
-						Math.abs((kdt.getDoubleValue()-wdt.getDoubleValue())) < 10e-10;
+						Math.abs((kdt.doubleValue()-wdt.doubleValue())) < 10e-10;
 					if (ok){
 						System.out.println("** Consider as equal: " + kdt.toSparql() + " = " + wdt.toSparql());
 					}
@@ -1046,50 +1069,6 @@ public class W3CTest11KGraph {
 	
 	
 	
-	// w3c result was rdf format
-	// result is 
-	// results may be sorted
-	boolean validate(Mappings kgram, Mappings w3c){
-		boolean result = true, printed = false,
-			sorted = kgram.getQuery().getOrderBy().size()>0;
-		int j = 0;
-		
-		for (Mapping w3cres : w3c){
-			// for each w3c result
-			List<Node> lVar = w3cres.getNodes("?var");
-			List<Node> lVal = w3cres.getNodes("?val");
-			boolean ok = false;
-			
-			if (sorted){
-				ok = compare(lVar, lVal, kgram.get(j++));
-			}
-			else {
-				for (Mapping kres : kgram){
-					if (ok) break;
-					ok = compare(lVar, lVal, kres);				
-				}
-			}
-				
-			
-			if (! ok){
-				System.out.println("** Failure");
-				if (printed == false){
-					System.out.println(kgram);
-					printed = true;
-				}
-				result = false;
-				int k = 0;
-				for (Node var : lVar){
-					// for each w3c variable/value
-					Node  vv = lVal.get(k++); //w3cres.getNode(var);
-					System.out.println(var + " [" + vv +"]");
-				}
-				System.out.println("--");
-			}			
-			
-		}
-		return result;
-	}
 
 	
 	boolean compare(List<Node> lVar, List<Node> lVal, Mapping kres){

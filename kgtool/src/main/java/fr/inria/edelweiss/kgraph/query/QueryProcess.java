@@ -139,11 +139,13 @@ public class QueryProcess extends QuerySolver {
 	public static QueryProcess create(Producer prod, Matcher match){
 		Interpreter eval  = createInterpreter(prod, match);
 		QueryProcess exec = new QueryProcess(prod, eval, match);
+		exec.set(ProviderImpl.create());
  		return exec;
 	}
 	
-	public static QueryProcess create(Producer prod, Evaluator ev, Matcher match){
-		QueryProcess exec = new QueryProcess(prod, ev, match);
+	public static QueryProcess create(Producer prod, Evaluator eval, Matcher match){
+		QueryProcess exec = new QueryProcess(prod, eval, match);
+		exec.set(ProviderImpl.create());
 		return exec;
 	}
 	

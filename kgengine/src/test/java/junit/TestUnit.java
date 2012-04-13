@@ -2,28 +2,47 @@ package junit;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Date;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.Test;
+import org.xml.sax.SAXException;
+
+import fr.inria.acacia.corese.api.IDatatype;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgenv.eval.Dataset;
+import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
+import fr.inria.edelweiss.kgraph.query.Construct;
 import fr.inria.edelweiss.kgraph.query.MatcherImpl;
+import fr.inria.edelweiss.kgraph.query.ProducerImpl;
+import fr.inria.edelweiss.kgraph.query.ProviderImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.print.RDFFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
 
 public class TestUnit {
 	
@@ -87,44 +106,99 @@ public class TestUnit {
 		return graph;
 	}
 	
-	
 	@Test
-	public void test48(){			
+	public void test7() throws ParserConfigurationException, SAXException, IOException{
+		Graph g1 = Graph.create(true);
+		Load load1 = Load.create(g1);
+		//load1.load(root + "sdk/sdk.rdf");
 		
-		Graph graph = Graph.create();
-		QueryProcess.definePrefix("foaf", "http://foaf.org/");
-		QueryProcess exec = QueryProcess.create(graph);	
+		String init = 
+			"load rdfs:";
 		
-		String init = "insert data {" +
-		"<John> foaf:knows _:b" +
-		
-		
-		"}";
+		//String query = "select * (count(?y) as ?c) where {?x ?p ?y} group by ?x order by desc(?c)";
+		//String query = "select *  where {?x a ?y ; ?p ?y} having (exists {?p ?p ?z})";
+		//String query = "construct {graph ?g {?x  ?p ?y}}  where {graph ?g {?x  ?p ?y} } ";
+		String query = "select * where {" +
+				"?p ?p ?r " +
+				"service <http://localhost:8080/corese/sparql> {?x ?p ?y} " +
+				"?x a ?r} ";
+		//String query = "ask {?x <p> ?y filter(isLiteral(?y)) } ";
 
-		String query = "select  *  where {" +
-		"?x foaf:knows ?y " +
-		"}";
-		
-		String update = "insert data {<John> foaf:knows _:b}";
 
+		String del = "clear all";
+		
+		QueryProcess exec = QueryProcess.create(g1);
+		
 		try {
-			Mappings map =exec.query(init);
-			map =exec.query(query);
-			//exec.setDebug(true);
-			map =exec.query(update);
-			map =exec.query(query);
+			exec.query(init);
+			
+			ProviderImpl p = ProviderImpl.create();
+			//p.add(g1);
+			exec.set(p);
+			
+			//exec.set(new VisitorImpl());
+			
+			Mappings map = exec.query(query);
+			//System.out.println(map);
+			//System.out.println(map);
+			System.out.println(map.size());
 
-			ResultFormat f = ResultFormat.create(map);
-			System.out.println(f);
-			assertEquals("Result", 1, map.size());
+			
+			
+			
+//			XMLFormat f = XMLFormat.create(map);
+//			String str = f.toString();
+//			
+//			XMLResult p = XMLResult.create(ProducerImpl.create(Graph.create()));
+//			Mappings maps = p.parse(new ByteArrayInputStream(str.getBytes()));
+//			System.out.println(maps);
+//			System.out.println(maps.size());
 
+			
+			
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
 	}
 	
+	
+	public void test8(){
+		Graph g = Graph.create(true);
+		QueryProcess exec = QueryProcess.create(g);
+		
+		String init = "insert data {" +
+		"<a> foaf:knows <e> " +
+				"<a> foaf:knows <c> " +
+				"<a> foaf:knows <b> <b> foaf:knows <c>}";
+		
+		String query = 
+			//"construct {?x ?p ?y}" +
+			"select * (min(?l) as ?min)" +				
+				"where {" +
+				"{select * (pathLength($path) as ?l)  where {" +
+				"?a short(foaf:knows+) :: $path ?b } }" +
+				"graph $path {?x ?p ?y}" +
+				"} " +
+				//"having (?l = min(?l))" +
+				"bindings ?a ?b {" +
+				"(<a> <c>)" +
+				"}";
+		
+		try {
+			exec.query(init);
+			Mappings map = exec.query(query);
+			
+			ResultFormat f = ResultFormat.create(map);
+			System.out.println(f);
+			
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	
+	}
 	
 	
 	

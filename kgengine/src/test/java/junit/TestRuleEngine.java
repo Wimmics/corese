@@ -226,8 +226,37 @@ public class TestRuleEngine {
 	}
 	
 	
+	
+	
+	@Test
+	public void test7(){
+		Graph g1 = Graph.create(true);
+		Load load1 = Load.create(g1);
+		load1.load(root + "sdk/sdk.rdf");
+		
+		String init = "load <" + root + "rule/server.rul> into graph kg:rule";
+		String query = "select * where {?x a ?class}";
+		QueryProcess exec = QueryProcess.create(g1);
+		
+		try {
+			exec.query(init);
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			assertEquals("Result", 6, map.size());
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
 
-
+	
+	
+	
+	
+	
 }
 		
 		

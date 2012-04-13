@@ -85,7 +85,7 @@ public class QueryEngine {
 	
 	public Mappings process(Query q, Mapping m){
 		try {
-			Mappings map = exec.query(q, m, null, null);
+			Mappings map = exec.query(q, m, null);
 			return map;
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block

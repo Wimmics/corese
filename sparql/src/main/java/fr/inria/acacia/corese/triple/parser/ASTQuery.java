@@ -1972,6 +1972,11 @@ public class ASTQuery  implements Keyword {
     	valueBindings.add(list);
    }
     
+    public void clearBindings(){
+    	valueBindings = null;
+    	varBindings = null;
+    }
+    
     public List<List<Constant>> getValueBindings(){
     	return valueBindings;
     }

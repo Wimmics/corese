@@ -73,9 +73,9 @@
         Exp ex;
         astu = ASTUpdate.create();
         try {
-//        if (astq.isRule()) ex = Rule();
-//                else 
-                	ex = Start();
+            //if (astq.isRule()) ex = Rule();
+                //else 
+                ex = Start();
         } catch(ParseException e) {
                 throw new JavaccParseException(e);
         }
@@ -2588,11 +2588,13 @@
   }
 
   final public void ServicePattern(Exp stack) throws ParseException {
-          Atom src; Exp e; Service st;
+          Atom src; Exp e; Service st; boolean silent;
+         silent = false;
     jj_consume_token(SERVICE);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case SILENT:
       jj_consume_token(SILENT);
+                                silent = true;
       break;
     default:
       jj_la1[141] = jj_gen;
@@ -2600,7 +2602,7 @@
     }
     src = VarOrIRIref(stack);
     e = GroupGraphPattern();
-                st =  Service.create(src, e);
+                st =  Service.create(src, e, silent);
                 stack.add(st);
   }
 
@@ -4917,16 +4919,6 @@
     finally { jj_save(13, xla); }
   }
 
-  final private boolean jj_3R_223() {
-    if (jj_scan_token(PLUS)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_86() {
-    if (jj_scan_token(D_ASQUERY)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_85() {
     if (jj_scan_token(D_FLAT)) return true;
     return false;
@@ -4937,13 +4929,13 @@
     return false;
   }
 
-  final private boolean jj_3R_71() {
-    if (jj_scan_token(WHERE)) return true;
+  final private boolean jj_3R_84() {
+    if (jj_scan_token(D_JSON)) return true;
     return false;
   }
 
-  final private boolean jj_3R_84() {
-    if (jj_scan_token(D_JSON)) return true;
+  final private boolean jj_3R_71() {
+    if (jj_scan_token(WHERE)) return true;
     return false;
   }
 
@@ -6327,11 +6319,6 @@
     return false;
   }
 
-  final private boolean jj_3R_186() {
-    if (jj_scan_token(SERVICE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_53() {
     if (jj_3R_52()) return true;
     return false;
@@ -6339,6 +6326,11 @@
 
   final private boolean jj_3R_55() {
     if (jj_scan_token(WHERE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_186() {
+    if (jj_scan_token(SERVICE)) return true;
     return false;
   }
 
@@ -6488,6 +6480,16 @@
 
   final private boolean jj_3R_87() {
     if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_223() {
+    if (jj_scan_token(PLUS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_86() {
+    if (jj_scan_token(D_ASQUERY)) return true;
     return false;
   }
 

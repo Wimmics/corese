@@ -1858,6 +1858,10 @@ public class ASTQuery  implements Keyword {
         prefixExp.add(t);
     }
     
+    public void setPrefixExp(Exp exp) {
+        prefixExp = exp;
+    }
+    
    
     public void defNamespace(String prefix, String ns){
     	if (prefix.endsWith(":")){

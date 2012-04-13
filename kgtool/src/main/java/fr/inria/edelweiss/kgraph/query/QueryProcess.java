@@ -8,11 +8,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -22,7 +24,6 @@ import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-//import java.net.URL;
 
 
 /**
@@ -163,12 +164,21 @@ public class QueryProcess extends QuerySolver {
 	 ****************************************************************/
 	
 	public Mappings update(String squery) throws EngineException{
-		return query(squery, null, null, null);
+		return query(squery, null, null);
 	}
 	
 	public Mappings query(String squery) throws EngineException{
-		return query(squery, null, null, null);
+		return query(squery, null, null);
 	}
+	
+	/**
+	 * Prefer Dataset below
+	 * @deprecated
+	 */
+	public Mappings query(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
+		Dataset ds = Dataset.create(defaut, named);
+		return query(squery, map, ds);
+	}	
 	
 	/**
 	 * defaut and named specify a Dataset
@@ -176,10 +186,19 @@ public class QueryProcess extends QuerySolver {
 	 * for update, defaut is also used in the delete clause (when there is no with in the query)
 	 * W3C sparql test cases use this function
 	 */
-	public Mappings query(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
-		Query q = compile(squery, defaut, named);
-		return query(q, map, defaut, named);
+	public Mappings query(String squery, Mapping map, Dataset ds) throws EngineException{
+		Query q = compile(squery, ds);
+		return query(q, map, ds);
 	}	
+	
+	public Mappings query(String squery, Dataset ds) throws EngineException{
+		return query(squery, null, ds);
+	}
+	
+	public Mappings query(String squery, Mapping map) throws EngineException{
+		return query(squery, map, null);
+	}
+	
 	
 	/**
 	 * defaut and named specify a Dataset
@@ -187,10 +206,7 @@ public class QueryProcess extends QuerySolver {
 	 * for update, this using is *not* used in the delete clause 
 	 * W3C sparql protocol use this function
 	 */
-	public Mappings protocol(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
-		Query q = compile(squery, defaut, named);
-		return query(q, map, defaut, named);
-	}	
+
 	
 	public Mappings query(Query q) {
 		return qquery(q, null);
@@ -198,7 +214,7 @@ public class QueryProcess extends QuerySolver {
 
 	public Mappings qquery(Query q, Mapping map) {
 		try {
-			return query(q, map, null, null);
+			return query(q, map, null);
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -214,12 +230,12 @@ public class QueryProcess extends QuerySolver {
 	 * - variable in select with group by
 	 * - specify the dataset
 	 */
-	public Mappings sparql(String squery, List<String> from, List<String> named) throws EngineException{
-		return sparqlQueryUpdate(squery, from, named, STD_ENTAILMENT);
+	public Mappings sparql(String squery, Dataset ds) throws EngineException{
+		return sparqlQueryUpdate(squery, ds, STD_ENTAILMENT);
 	}
 	
-	public Mappings sparql(String squery, List<String> from, List<String> named, int entail) throws EngineException{
-		return sparqlQueryUpdate(squery, from, named, entail);
+	public Mappings sparql(String squery, Dataset ds, int entail) throws EngineException{
+		return sparqlQueryUpdate(squery, ds, entail);
 	}
 	
 	
@@ -247,19 +263,19 @@ public class QueryProcess extends QuerySolver {
 	 ******************************************/
 	
 	public Mappings sparqlQuery(String squery) throws EngineException{
-		Query q = compile(squery, null, null);
+		Query q = compile(squery, null);
 		if (q.isUpdate()){
 			throw new EngineException("Unauthorized Update in SPARQL Query:\n" + squery);
 		}
-		return query(q, null, null, null);
+		return query(q);
 	}
 	
 	public Mappings sparqlUpdate(String squery) throws EngineException{
-		Query q = compile(squery, null, null);
+		Query q = compile(squery, null);
 		if (! q.isUpdate()){
 			throw new EngineException("Unauthorized Query in SPARQL Update:\n" + squery);
 		}
-		return query(q, null, null, null);
+		return query(q);
 	}
 
 	public Mappings sparqlQueryUpdate(String squery) throws EngineException{
@@ -272,13 +288,13 @@ public class QueryProcess extends QuerySolver {
 	 * 
 	 ****************************************************************************/
 	
-	Mappings query(Query q, Mapping map, List<String> from, List<String> named) throws EngineException{
+	Mappings query(Query q, Mapping map, Dataset ds) throws EngineException{
 		
 		pragma(q);
 
 		if (q.isUpdate()){
 			log(Log.UPDATE, q);
-			return synUpdate(q, from, named);
+			return synUpdate(q, ds);
 		}
 		else {
 			Mappings lMap =  synQuery(q, map);
@@ -318,10 +334,10 @@ public class QueryProcess extends QuerySolver {
 	
 	
 	
-	Mappings synUpdate(Query query,  List<String> from, List<String> named) throws EngineException{
+	Mappings synUpdate(Query query,  Dataset ds) throws EngineException{
 		try {
 			writeLock();
-			return update(query, from, named);
+			return update(query, ds);
 		}
 		finally {
 			writeUnlock();
@@ -335,14 +351,16 @@ public class QueryProcess extends QuerySolver {
 	 * insert {} take place in Entailment.DEFAULT, unless there is a graph pattern or a with
 	 * 
 	 * This explicit Dataset is introduced because Corese manages the default graph as the union of
-	 * named graphs whereas in some case (W3C test case) there is a specific default graph
-	 * hence, "from" represents the explicit default graph
+	 * named graphs whereas in some case (W3C test case, protocol) there is a specific default graph
+	 * hence, ds.getFrom() represents the explicit default graph
 	 * 
 	 */
-	Mappings update(Query query,  List<String> from, List<String> named) throws EngineException{
-		// TODO: check complete() -- W3C test case require += default + entailment + rule
-		complete(from);
-		ManagerImpl man = ManagerImpl.create(this, from, named);
+	Mappings update(Query query,  Dataset ds) throws EngineException{
+		if (ds!=null && ds.isUpdate()) {
+			// TODO: check complete() -- W3C test case require += default + entailment + rule
+			complete(ds);
+		}
+		ManagerImpl man = ManagerImpl.create(this, ds);
 		UpdateProcess up = UpdateProcess.create(man);
 		up.setDebug(isDebug());
 		Mappings lMap = up.update(query);
@@ -351,13 +369,11 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	
-	void complete(List<String> from){
-		if (from != null){
+	void complete(Dataset ds){
+		if (ds != null && ds.getFrom() != null){
 			// add the default graphs where insert or entailment may have been done previously
 			for (String src : Entailment.GRAPHS){
-				if (! from.contains(src)){
-					from.add(src);
-				}
+				ds.addFrom(src);
 			}		
 		}
 	}
@@ -382,13 +398,13 @@ public class QueryProcess extends QuerySolver {
 	 * query is the global Query
 	 * ast is the current update action
 	 */
-	public Mappings update(Query query, ASTQuery ast, List<String> from, List<String> named) {
-		Mappings lMap = super.query(ast, from, named);
+	public Mappings update(Query query, ASTQuery ast, Dataset ds) {
+		Mappings lMap = super.query(ast, ds);
 		Query q = lMap.getQuery();
 		
 		// PRAGMA: update can be both delete & insert
 		if (q.isDelete()){
-			delete(lMap, from, named);
+			delete(lMap, ds);
 		}
 		if (q.isConstruct()){ 
 			// insert
@@ -403,26 +419,25 @@ public class QueryProcess extends QuerySolver {
 	/**
 	 * Implement SPARQL compliance
 	 */
-	Mappings sparqlQueryUpdate(String squery, List<String> from, List<String> named, int entail) throws EngineException{
+	Mappings sparqlQueryUpdate(String squery, Dataset ds, int entail) throws EngineException{
 		getEvaluator().setMode(Evaluator.SPARQL_MODE);
 
 		if (entail != STD_ENTAILMENT){
 			// include RDF/S entailments in the default graph
-			if (from == null){
-				from = new ArrayList<String>();
+			if (ds == null){
+				ds = Dataset.create();
 			}
-			complete(from);
+			if (ds.getFrom() == null){
+				ds.defFrom();
+			}
+			complete(ds);
 		}
 		
-		if (from != null && named == null){
-			named = new ArrayList<String>();
-			named.add("");
-		}
-		else if (from == null && named != null){
-			from = new ArrayList<String>();
-			from.add("");
-		}
-		Mappings map =  query(squery, null, from, named);
+		// SPARQL compliance
+		ds.complete();
+		
+		Mappings map =  query(squery, null, ds);
+		
 		if (! map.getQuery().isCorrect()){
 			map.clear();
 		}
@@ -477,12 +492,12 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	
-	void delete(Mappings lMap, List<String> from, List<String> named){
+	void delete(Mappings lMap, Dataset ds){
 		Query query = lMap.getQuery();
 		Construct cons =  Construct.create(query);
 		cons.setDebug(isDebug() || query.isDebug());
 		Graph g = getGraph();
-		Graph gg = cons.delete(lMap, g, from, named);
+		Graph gg = cons.delete(lMap, g, ds);
 		lMap.setGraph(gg);
 	}
 	

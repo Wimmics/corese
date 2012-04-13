@@ -59,7 +59,7 @@ public class ParserSparql1 {
     	}  
     	 catch (JavaccParseException e) {
     		 logger.debug(ast.getText());
-     		throw new QuerySyntaxException(e.getMessage());
+     		throw new QuerySyntaxException(e);
 		} catch (TokenMgrError e) {
 			logger.debug(ast.getText());
     		throw new QueryLexicalException(e.getMessage());

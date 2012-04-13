@@ -3,10 +3,6 @@ package fr.inria.edelweiss.kgenv.result;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -16,194 +12,184 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgenv.parser.CompilerKgram;
+import fr.inria.edelweiss.kgenv.parser.CompilerFacKgram;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 
 /**
- *  SPARQL XML Result Format Parser
- *  Used by service to convert XML Result to Mapping
- *  
- * @author Olivier Corby, Edelweiss, INRIA 2011
+ * SPARQL XML Results Format Parser into Mappings
+ * 
+ * @author Olivier Corby, Wimmics, INRIA 2012
+ *
  */
 public class XMLResult {
 	
-	CompilerKgram compiler;
+	// create target Node
 	Producer producer;
+	// create query Node
+	fr.inria.edelweiss.kgenv.parser.Compiler compiler;
 	
 	XMLResult(Producer p){
-		compiler = CompilerKgram.create();
 		producer = p;
+		compiler = new CompilerFacKgram().newInstance();
 	}
 	
+	/**
+	 * Producer in order to create Node using p.getNode() method
+	 * Use case: ProducerImpl.create(Graph.create());
+	 */
 	public static XMLResult create(Producer p){
 		return new XMLResult(p);
 	}
 	
-	public void set(Producer p){
-		producer = p;
+	/**
+	 *  parse SPARQL XML Result as Mappings
+	 */
+	public Mappings parse(InputStream stream) throws ParserConfigurationException, SAXException, IOException{
+		Mappings maps = new Mappings();
+		
+		MyHandler handler = new MyHandler(maps);
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(stream, handler);    
+		
+		return maps;
 	}
 	
 	
-	public Mappings parse(String xml){
-		MyHandler handler = new MyHandler();
-		SAXParserFactory factory=SAXParserFactory.newInstance();
-		try {
-			SAXParser parser=factory.newSAXParser();
-			InputStream in = new ByteArrayInputStream(xml.getBytes()); 
-			parser.parse(in, handler);    
-		}
-		catch (SAXException e){
-			System.out.println(e.getMessage());
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return handler.getMappings();
+	public Mappings parseString(String str) throws ParserConfigurationException, SAXException, IOException{
+		return parse(new ByteArrayInputStream(str.getBytes()));
 	}
-	
-	
-	public class MyHandler extends DefaultHandler {
-		ArrayList<Result> vec;
-		Result res;
-		Value value;
-		Constant cst;
-		String var;
-		List<Node> lVar, lValue;
-		Mappings lMap;
-		Mapping map;
-		 
-		// when character is content
-		boolean isContent = false, ask = false, isBoolean = false;
-		
-		MyHandler(){
-			lMap 		= new Mappings();
-			vec 		= new ArrayList<Result>();
-		}
-		
-		Mappings getMappings(){
-			return lMap;
-		}
-		
-		Node getVar(String name){
-			return compiler.createNode(Variable.create("?" + name));
-		}
-		
-		Node getValue(Constant cst){
-			return producer.getNode(cst.getDatatypeValue());
-		}
-		
-		ArrayList<Result> getResult(){
-			return vec;
-		}
-		
-		boolean getAsk(){
-			return ask;
-		}
-		
-		boolean isAsk(){
-			return isBoolean;
-		}
 
+	
+	
+    /**
+     * 
+     * SAX Handler 
+     */
+	public class MyHandler extends DefaultHandler {
+		Mappings maps;
+		Mapping map;
+		String var;
+		 
+		boolean 
+		// true for variable binding
+		isContent = false,  
+		// true for ask SPARQL Query
+		isBoolean = false, 
+		isURI = false,
+		isLiteral = false,
+		isBlank   = false;
+		
+		String text, datatype, lang;
+		
+		MyHandler(Mappings m){
+			maps = m;
+		}
+		
 	    public void startDocument (){
 
 	    }
+	    
+	    // called for each binding
+	    void clear(){
+			isURI     = false;
+	    	isLiteral = false;
+			isBlank   = false;
+			text 	  = null;
+			datatype  = null;
+			lang 	  = null;
+	    }
+	    
+	    /**
+	     *  result is represented by Mapping
+	     *  add one binding to current Mapping
+	     */
+	    void add(Mapping map, String var, IDatatype dt){
+	    	Node nvar = compiler.createNode(Variable.create("?" + var));
+			Node nval = producer.getNode(dt);
+			map.addNode(nvar, nval);
+	    }
+	    
 	 
 	    public void startElement(String namespaceURI, String simpleName, 
 	    		String qualifiedName, Attributes atts){
+	    	
 	    	isContent = false;
-	    	if (qualifiedName.equals("boolean")){
-	    		isBoolean = true;
-	    		isContent = true;
-	    	}
-	    	else if (qualifiedName.equals("result")){
-	    		res = new Result();
-	    		vec.add(res);
-	    		lValue = new ArrayList<Node>();
-	    		lVar = new ArrayList<Node>();
+	    	
+	    	if (qualifiedName.equals("result")){
+	    		map =  Mapping.create();
+	    		maps.add(map);
 	    	}
 	    	else if (qualifiedName.equals("binding")){
 	    		var = atts.getValue("name");
+	    		clear();
 	    	}
 	    	else if (qualifiedName.equals("uri")){
 	    		isContent = true;
-	    		value = Value.createURI(null);
-	    		cst = Constant.createResource();
+	    		isURI = true;
 	    	}
 	    	else if (qualifiedName.equals("literal")){
 	    		isContent = true;
-	    		value = Value.createLiteral(null,
-	    				atts.getValue("datatype"),
-	    				atts.getValue("xml:lang"));
-	    		cst = Constant.create(null, atts.getValue("datatype"), atts.getValue("xml:lang"));
+	    		isLiteral = true;
+	    		datatype = atts.getValue("datatype");
+	    		lang 	 = atts.getValue("xml:lang");
 	    	}
 	    	else if (qualifiedName.equals("bnode")){
 	    		isContent = true;
-	    		value = Value.createBlank(null);
-	    		cst = Constant.createBlank();
+	    		isBlank = true;
+	    	}
+	    	else if (qualifiedName.equals("boolean")){
+	    		isBoolean = true;
+	    		isContent = true;
 	    	}
 	    }
+	    
+	    
+	    public void endElement(String namespaceURI, String simpleName, String qualifiedName){
 
-	    public void endElement(String namespaceURI, String simpleName, 
-	    		String qualifiedName){
-	    	if (qualifiedName.equals("literal")){
-	    		if (isContent){
-	    			// had no characters, hence boolean still true
-	    			// fake empty string
-	    			isContent = false;
-	    			value.setValue("");
-	    			cst.setName("");
-	    			if (cst.isResource()){
-	    				cst.setLongName("");
-	    			}
-	    			res.put(var, value);
-	    			
-	    			Node nvar = getVar(var);
-	    			Node nval = getValue(cst);
-	    			lVar.add(nvar);
-	    			lValue.add(nval);
+	    	if (isContent){
+	    		
+	    		isContent = false;
+
+	    		if (text == null){
+	    			// may happen with empty literal 
+	    			text = "";
+	    		}
+
+	    		if (isURI){
+	    			add(map, var, DatatypeMap.createResource(text));
+	    		}
+	    		else if (isBlank){
+	    			add(map, var, DatatypeMap.createBlank(text));
+	    		}
+	    		else if (isLiteral){
+	    			add(map, var, DatatypeMap.createLiteral(text, datatype, lang));
+	    		}
+	    		else if (isBoolean && text.equals("true")){
+	    			maps.add(Mapping.create());
 	    		}
 	    	}
-	    	else if (qualifiedName.equals("result")){
-	    		Mapping map = Mapping.create(lVar, lValue);
-	    		lMap.add(map);
-	    	}
-
 	    }
 	    
-	    
+
+	    /**
+	     * In some case, there may be several calls to this function
+	     * in one element.
+	     */
 	    public void characters (char buf [], int offset, int len){
 	    	if (isContent){
-	    		isContent = false;
-	    		String s=new String(buf, offset, len);
-	    		if (isBoolean){
-	    			ask = s.equals("true");
-	    			// simulate one (true) result:
-	    			if (ask){
-	    				vec.add(new Result());
-	    			}
+	    		String s = new String(buf, offset, len);
+	    		if (text == null){
+	    			text = s;
 	    		}
 	    		else {
-    				cst.setName(s);
-	    			if (value.isLiteral()){
-	    				value.setValue(s);
-	    			}
-	    			else {
-	    				value.setURI(s);
-	    				cst.setLongName(s);
-	    			}
-	    			//System.out.println("** Test " + var + " " + value);
-	    			res.put(var, value);
-	    			
-	    			Node nvar = getVar(var);
-	    			Node nval = getValue(cst);
-	    			lVar.add(nvar);
-	    			lValue.add(nval);
+	    			text += s;
 	    		}
 	    	}
 	    }

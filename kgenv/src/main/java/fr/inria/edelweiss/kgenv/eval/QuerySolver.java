@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
@@ -15,6 +16,7 @@ import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Eval;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -50,6 +52,7 @@ public class QuerySolver  {
 	protected Evaluator evaluator;
 	protected Matcher matcher;
 	protected Sorter sort;
+	protected QueryVisitor visit;
 
 	
 	boolean isListGroup = false,
@@ -118,6 +121,10 @@ public class QuerySolver  {
 		sort = s;
 	}
 	
+	public void set(QueryVisitor v){
+		visit = v;
+	}
+	
 	public void set(Provider p){
 		provider = p;
 	}
@@ -142,12 +149,20 @@ public class QuerySolver  {
 		if (sort != null) {
 			transformer.set(sort);
 		}
+		transformer.set(visit);
 		return transformer;
 	}
 	
 	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
-		ast.setDefaultFrom(from);
-		ast.setDefaultNamed(named);
+		Dataset ds = Dataset.create(from, named);
+		return query(ast, ds);
+	}
+	
+	public Mappings query(ASTQuery ast, Dataset ds) {
+		if (ds!=null){
+			ast.setDefaultFrom(ds.getFrom());
+			ast.setDefaultNamed(ds.getNamed());
+		}
 		Transformer transformer =  transformer();
 		Query query = transformer.transform(ast);
 		// keep null below (cf QueryProcess)
@@ -163,7 +178,12 @@ public class QuerySolver  {
 	}
 
 	public Mappings query(String squery, Mapping map, List<String> from, List<String> named) throws EngineException{
-		Query query = compile(squery, from, named);
+		Dataset ds = Dataset.create(from, named);
+		return query(squery, map, ds);
+	}
+	
+	public Mappings query(String squery, Mapping map, Dataset ds) throws EngineException{
+		Query query = compile(squery, ds);
 		return query(query, map);
 	}
 	
@@ -240,7 +260,7 @@ public class QuerySolver  {
 
 	
 	public Query compile(String squery) throws EngineException {
-		return compile(squery, null, null);
+		return compile(squery, null);
 	}
 	
 	// rule: construct where 
@@ -250,8 +270,6 @@ public class QuerySolver  {
 		transformer.setBase(defaultBase);
 		Query query = transformer.transform(squery, true);
 		return query;	
-		
-		//return compile(squery, null, null);
 	}
 	
 	public Query compile(ASTQuery ast) {
@@ -262,17 +280,31 @@ public class QuerySolver  {
 		return query;
 	}
 	
-	public Query compile(String squery, List<String> from, List<String> named) throws EngineException {
+	public Query compile(String squery, Dataset ds) throws EngineException {
 		Transformer transformer =  transformer();			
 		transformer.setSPARQLCompliant(isSPARQLCompliant);
 		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
-		transformer.setFrom(from);
-		transformer.setNamed(named);
+		transformer.set(ds);
 
 		Query query = transformer.transform(squery);
 		return query;
 	}
+	
+	
+	public Mappings filter(Mappings map, String filter) throws EngineException{
+		Query q = compileFilter(filter);
+		Eval kgram = Eval.create(producer, evaluator, matcher);
+		kgram.filter(map, q);
+		return map;
+	}
+	
+	Query compileFilter(String filter) throws EngineException {
+		String str = "select * where {} having(" + filter + ")";
+		Query q = compile(str);
+		return q;
+	}
+
 		
 	public Mappings query(Query query){
 		return query(query, null);

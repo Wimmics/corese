@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -113,10 +114,11 @@ public class Construct
 		return construct(lMap, Graph.create());
 	}
 	
-	public Graph delete(Mappings lMap, Graph g, 
-			List<String> from, List<String> named){
+	public Graph delete(Mappings lMap, Graph g, Dataset ds){
 		setDelete(true);
-		this.from = from;
+		if (ds!=null && ds.isUpdate()){
+			this.from = ds.getFrom();
+		}
 		return construct(lMap, g);
 	}
 	

@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Update;
+import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Loader;
@@ -37,11 +38,7 @@ public class ManagerImpl implements Manager {
 	Loader load;
 	QueryProcess exec;
 	// dataset on which query is executed (cf W3C test case)
-	List<String> 
-	// list of graphs the union of which is the default graph (use case: copy default to g)
-	from, 
-	// named graphs
-	named;
+	Dataset ds;
 	
 	static final int COPY = 0;
 	static final int MOVE = 1;
@@ -73,10 +70,9 @@ public class ManagerImpl implements Manager {
 		return new ManagerImpl(exec);
 	}
 	
-	public static ManagerImpl create(QueryProcess exec, List<String> from, List<String> named){
+	public static ManagerImpl create(QueryProcess exec, Dataset ds){
 		ManagerImpl m = new ManagerImpl(exec);
-		m.setFrom(from);
-		m.setNamed(named);
+		m.set(ds);
 		return m;
 	}
 	
@@ -99,13 +95,10 @@ public class ManagerImpl implements Manager {
 		return null;
 	}
 	
-	public void setFrom(List<String> l){
-		from = l;
+	public void set(Dataset ds){
+		this.ds = ds;
 	}
 	
-	public void setNamed(List<String> l){
-		named = l;
-	}
 	
 	public boolean isDebug (){
 		return exec.isDebug();
@@ -113,7 +106,7 @@ public class ManagerImpl implements Manager {
 	
 	
 	public Mappings query(Query q, ASTQuery ast){
-		return exec.update(q, ast, from, named);
+		return exec.update(q, ast, ds);
 	}
 	
 	public boolean process(Query q, Basic ope){
@@ -221,15 +214,17 @@ public class ManagerImpl implements Manager {
 	
 	private boolean clear(Basic ope, boolean drop) {
 		
-		if (named != null && (ope.isNamed() || ope.isAll())){
-			for (String gg : named){
-				clear(gg, ope, drop);
+		if (ds!=null && ! ds.isEmpty()){
+			if (ds.hasNamed() && (ope.isNamed() || ope.isAll())){
+				for (String gg : ds.getNamed()){
+					clear(gg, ope, drop);
+				}
 			}
-		}
-		
-		if (from != null && (ope.isDefault() || ope.isAll())){
-			for (String gg : from){
-				clear(gg, ope, drop);
+
+			if (ds.hasFrom() && (ope.isDefault() || ope.isAll())){
+				for (String gg : ds.getFrom()){
+					clear(gg, ope, drop);
+				}
 			}
 		}
 		
@@ -237,7 +232,7 @@ public class ManagerImpl implements Manager {
 			graph.clear(ope.getGraph(), ope.isSilent());
 			if (drop) graph.deleteGraph(ope.getGraph());
 		}
-		else if (named == null && from == null){
+		else if (ds == null || ds.isEmpty()){
 			// no prescribed dataset
 			if (ope.isNamed() || ope.isAll()){
 				graph.clearNamed();
@@ -274,17 +269,17 @@ public class ManagerImpl implements Manager {
 			if (target != null){
 				update(ope, mode, source, target);
 			}
-			else if (from != null && from.size()>0){
+			else if (ds!=null && ds.hasFrom()){
 				// copy g to default
 				// use from as default specification
-				String name = ope.expand(from.get(0));
+				String name = ope.expand(ds.getFrom().get(0));
 				update(ope, mode, source, name);
 			}
 		}
-		else if (target != null && from != null) {
+		else if (target != null && ds!=null && ds.hasFrom()) {
 			// copy default to g
 			// use from as default specification
-			for (String gg : from){
+			for (String gg : ds.getFrom()){
 				String name = ope.expand(gg);
 				update(ope, mode, name, target);
 			}

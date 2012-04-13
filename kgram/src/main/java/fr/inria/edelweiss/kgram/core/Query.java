@@ -1307,7 +1307,8 @@ public class Query extends Exp {
 					// hasFree = false : 
 					// except graph ?g {ei ej} because ek in graph share ?g implicitly !!!
 					// pragma {kg:kgram kg:test true}
-					if (! isTest()) exp.setFree(true);
+					if (isOptimize()) 
+						exp.setFree(true);
 					if (isDebug()) Message.log(Message.FREE, exp);
 				}
 			}
@@ -1413,8 +1414,15 @@ public class Query extends Exp {
 	 * remove redundant NODE wrt EDGE
 	 */
 	void compile(){
+//		VString bound =  new VString();
+//		compile(this, bound, false);
+		compile(this);
+	}
+	
+	
+	void compile(Exp exp){
 		VString bound =  new VString();
-		compile(this, bound, false);
+		compile(exp, bound, false);
 	}
 
 

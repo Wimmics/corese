@@ -139,8 +139,9 @@ public class ProducerImpl implements Producer {
 				// Edge has a node that is bound or constant ?
 				Node qNode = getNode(edge, gNode, i);
 				if (qNode!=null){
-					if (i == 1 && qNode.isConstant() && graph.isType(edge)){
-						// ?x rdf:type c:Engineer
+					if (i == 1 && qNode.isConstant() && 
+						graph.isType(edge) && graph.hasEntailment()){
+						// RDFS entailment on ?x rdf:type c:Engineer
 						// no dichotomy on c:Engineer to get subsumption
 					}
 					else {
@@ -586,7 +587,6 @@ public class ProducerImpl implements Producer {
 				return new NodeImpl(dt);
 			}
 			else {
-				//node = local.getLiteralNode(name, dt, true, true);
 				node = local.getNode(dt, true, true);
 			}			
 		}

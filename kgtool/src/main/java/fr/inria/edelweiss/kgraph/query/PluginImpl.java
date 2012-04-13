@@ -14,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
@@ -306,7 +307,7 @@ public class PluginImpl extends ProxyImpl {
 		String query = dt.getLabel();
 		QueryProcess exec = QueryProcess.create(graph);
 		try {
-			Mappings map = exec.query(query);
+			Mappings map = exec.sparqlQuery(query);
 			return map;
 		} catch (EngineException e) {
 			return new Mappings();

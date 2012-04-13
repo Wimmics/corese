@@ -46,7 +46,7 @@ public class RDFFormat {
 	static final String SPACE 		= " ";
 	static final String NL 			= System.getProperty("line.separator");
 	private static final String OCOM 	= "<!--";
-	private static final String CCOM 	= "--!>";
+	private static final String CCOM 	= "-->";
 	private static final String LT 		= "<";
 	private static final String XLT 	= "&lt;";
 	private static final String AMP 	= "&(?!amp;)";

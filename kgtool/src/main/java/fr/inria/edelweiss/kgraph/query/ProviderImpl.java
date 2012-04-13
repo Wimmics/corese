@@ -122,9 +122,20 @@ public class ProviderImpl implements Provider {
 	Mappings send(Node serv, Query q, Environment env){
 		try {
 			bindings(q, env);
+			
+			Query g = q.getOuterQuery();
+			ASTQuery ag = (ASTQuery) g.getAST();
 			ASTQuery ast = (ASTQuery) q.getAST();
+
+			ast.setDebug(g.isDebug());
+			ast.setPrefixExp(ag.getPrefixExp());
+			
 			String query = ast.toString();
-			//System.out.println("** PI: " + query);
+			
+			if (g.isDebug()){
+				logger.info("** Provider: \n" + query);
+			}
+			
 			StringBuffer sb = doPost(serv.getLabel(), query);
 			Mappings map = parse(sb);
 			return map;

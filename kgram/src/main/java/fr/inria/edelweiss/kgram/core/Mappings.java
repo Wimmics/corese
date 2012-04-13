@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
-import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
@@ -22,8 +22,8 @@ import fr.inria.edelweiss.kgram.event.EventManager;
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2009
  */
-public class Mappings extends ArrayList<Mapping> 
-implements Comparator<Mapping>
+public class Mappings  
+implements Comparator<Mapping> , Iterable<Mapping>
 {
 	/**
 	 * 
@@ -41,6 +41,7 @@ implements Comparator<Mapping>
 	// if true, store all Mapping of the group
 	isListGroup = false;
 	Query query;
+	List<Mapping>  list;
 	Group group, distinct;
 	Node fake;
 	Object object;
@@ -55,13 +56,16 @@ implements Comparator<Mapping>
 
 
 	public Mappings(){
+		list = new ArrayList<Mapping> ();
 	}
 	
 	Mappings(Mapping map){
+		this();
 		add(map);
 	}
 
 	Mappings(Query q){
+		this();
 		query = q;
 	}
 
@@ -87,6 +91,42 @@ implements Comparator<Mapping>
 		}
 	}
 	
+	public void add(Mapping m){
+		list.add(m);
+	}
+	
+	List<Mapping> getList(){
+		return list;
+	}
+	
+	void setList(List<Mapping> l){
+		list = l;
+	}
+	
+	public void add(Mappings lm){
+		list.addAll(lm.getList());
+	}
+	
+	public Iterator<Mapping> iterator(){
+		return list.iterator();
+	}
+	
+	public int size(){
+		return list.size();
+	}
+	
+	public Mapping get(int n){
+		return list.get(n);
+	}
+	
+	void remove(int n){
+		list.remove(n);
+	}
+	
+	public void clear(){
+		list.clear();
+	}
+	
 	public Query getQuery(){
 		return query;
 	}
@@ -100,18 +140,29 @@ implements Comparator<Mapping>
 	}
 
 	public String toString(){
-		if (select == null) return super.toString();
 		
 		String str = "";
 		int i = 1;
 		for (Mapping map : this){
 			str += ((i<10)?"0":"") + i + " ";
-			for (Node qNode : select){
-				Node node = map.getNode(qNode);
-				if (node!=null){
-					str += qNode + " = " + node + "; ";
+			
+			if (select !=null){
+				for (Node qNode : select){
+					Node node = map.getNode(qNode);
+					if (node!=null){
+						str += qNode + " = " + node + "; ";
+					}
 				}
 			}
+			else {
+				for (Node qNode : map.getQueryNodes()){
+					Node node = map.getNode(qNode);
+					if (node!=null){
+						str += qNode + " = " + node + "; ";
+					}
+				}
+			}
+			
 			i++;
 			str += "\n";
 		}
@@ -200,7 +251,7 @@ implements Comparator<Mapping>
 
 
 	void sort(){
-		Collections.sort(this, this);
+		Collections.sort(list, this);
 	}
 
 
@@ -426,6 +477,22 @@ implements Comparator<Mapping>
 				mem.pop(map);
 			}
 		}
+	}
+	
+	
+	/**
+	 * Eliminate all Mapping that do not match filter
+	 */
+	void filter(Evaluator eval, Filter f, Memory mem){
+		ArrayList<Mapping> l = new ArrayList<Mapping>();
+		for (Mapping map : getList()){
+			mem.push(map, -1);
+			if (eval.test(f, mem)){
+				l.add(map);
+			}
+			mem.pop(map);
+		}
+		setList(l);
 	}
 	
 	

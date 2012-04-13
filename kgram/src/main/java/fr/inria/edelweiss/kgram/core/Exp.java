@@ -34,7 +34,8 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		isFail = false,
 		isPath = false,
 		isFree = false,
-		isAggregate = false;
+		isAggregate = false,
+		isSilent = false;
 	VExp args;
 	Edge edge;
 	Node node;
@@ -270,6 +271,14 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	public void setAggregate(boolean b){
 		isAggregate = b;
+	}
+	
+	public boolean isSilent(){
+		return isSilent;
+	}
+	
+	public void setSilent(boolean b){
+		isSilent = b;
 	}
 	
 	public boolean isNode(){

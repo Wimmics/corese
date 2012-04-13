@@ -9,6 +9,8 @@ import java.util.List;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.*;
+import fr.inria.edelweiss.kgenv.api.QueryVisitor;
+import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgram.api.core.*;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -36,6 +38,7 @@ public class Transformer implements ExpType {
 
 	CompilerFactory fac;
 	Compiler compiler;
+	QueryVisitor visit;
 	Sorter sort;
 	//Table table;
 	ASTQuery ast;
@@ -67,15 +70,26 @@ public class Transformer implements ExpType {
 	}
 	
 
-	public void setFrom(List<String> list){
-		from = list;
-	}
-	public void setNamed(List<String> list){
-		named = list;
+//	public void setFrom(List<String> list){
+//		from = list;
+//	}
+//	public void setNamed(List<String> list){
+//		named = list;
+//	}
+	
+	public void set(Dataset ds){
+		if (ds!=null){
+			named = ds.getNamed();
+			from = ds.getFrom();
+		}
 	}
 	
 	public void set(Sorter s){
 		sort = s;
+	}
+	
+	public void set(QueryVisitor v){
+		visit = v;
 	}
 	
 	public Query transform(String squery) throws EngineException{
@@ -104,7 +118,12 @@ public class Transformer implements ExpType {
 	public Query transform (ASTQuery ast){
 		this.ast = ast;
 		ast.setSPARQLCompliant(isSPARQLCompliant);
+		// compile describe
 		ast.compile();
+		
+		if (visit!=null){
+			visit.visit(ast);
+		}
 
 		if (fac == null) fac = new CompilerFacKgram();			
 		ast.setKgram(true);
@@ -161,6 +180,10 @@ public class Transformer implements ExpType {
 		}
 		
 		filters(q);
+		
+		if (visit != null){
+			visit.visit(q);
+		}
 
 		return q;
 	}
@@ -801,7 +824,9 @@ public class Transformer implements ExpType {
 		    a.setBody(service.get(0));
 			Query q = compileQuery(a);
 			q.setService(true);
+			q.setSilent(service.isSilent());
 			exp = Exp.create(SERVICE, node, q);
+			exp.setSilent(service.isSilent());
 		}
 		break;
 

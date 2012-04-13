@@ -1,13 +1,17 @@
 package junit;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 
 
@@ -21,6 +25,7 @@ import fr.inria.acacia.corese.triple.javacc1.ParseException;
 import fr.inria.acacia.corese.triple.parser.Model;
 import fr.inria.acacia.corese.triple.parser.Processor;
 
+import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.StatListener;
@@ -37,6 +42,7 @@ import fr.inria.edelweiss.kgraph.rdf.EdgeProperty;
 import fr.inria.edelweiss.kgraph.rdf.EdgePropertyEntail;
 import fr.inria.edelweiss.kgtool.load.BuildOptim;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
 
 public class CoreseTest2 extends TestCase {
 
@@ -314,7 +320,7 @@ public class CoreseTest2 extends TestCase {
 			Mappings lMap = exec.query(query);
 			
 			//exec.compile(exec.getAST(lMap).toString());
-						
+									
 			return lMap;
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block

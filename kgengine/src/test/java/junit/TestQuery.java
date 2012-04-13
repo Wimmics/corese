@@ -1,8 +1,14 @@
 package junit;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
@@ -14,6 +20,7 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
+import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -36,6 +43,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgraph.rdf.*;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 
@@ -2007,6 +2015,49 @@ public class TestQuery {
 	}
 	
 	
+	@Test
+	public void test59(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String init = "insert data {" +
+		"<John> foaf:knows <Jack> " +
+		
+		"<John> foaf:name 'Jack' ;" +
+		"foaf:age 12 ;" +
+		"foaf:date '2012-04-01'^^xsd:date ;" +
+		"foaf:knows [] " +
+		"}";
+
+		String query = "select * where {?x ?p ?y}";
+
+		try {
+			Mappings map =exec.query(init);
+			map =exec.query(query);
+			XMLFormat f = XMLFormat.create(map);
+						
+			XMLResult xml = XMLResult.create(exec.getProducer());
+			Mappings m = xml.parseString(f.toString());
+			System.out.println(m);
+			
+			assertEquals("Result", 5, map.size());
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
 	
 	
 	public IDatatype fun(Object o1, Object o2){

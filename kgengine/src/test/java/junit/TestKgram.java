@@ -509,7 +509,7 @@ query =
 	"?g  xpath('/rdf:RDF//*/@rdf:about') ?x " +
 	"} limit 1";
 
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
+//suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
 
 query = "select * where {" +
 "c:Document (^rdfs:range/rdfs:domain?)*::$path ?any " +

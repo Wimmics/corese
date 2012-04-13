@@ -396,8 +396,15 @@ public class Graph {
 		isDelete = b;
 	}
 	
+	/**
+	 * @deprecated
+	 */
 	public boolean isEntailment(){
 		return isEntail;
+	}
+	
+	public boolean hasEntailment(){
+		return inference!=null;
 	}
 	
 	/**

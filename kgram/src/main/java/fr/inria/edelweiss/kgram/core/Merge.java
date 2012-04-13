@@ -113,7 +113,7 @@ public class Merge extends Group {
 				boolean found = false;
 				for (Mappings lm2 : nlist){
 					if (match(lm1, lm2)){
-						lm2.addAll(lm1);
+						lm2.add(lm1);
 						found = true;
 						merge = true;
 						break;

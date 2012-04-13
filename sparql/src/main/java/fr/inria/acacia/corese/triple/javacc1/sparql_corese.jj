@@ -1166,15 +1166,15 @@ void GraphGraphPattern(Exp stack) :
 }
 
 void ServicePattern(Exp stack) : 
-	{ Atom src; Exp e; Service st;}
+	{ Atom src; Exp e; Service st; boolean silent;}
 {
-	
-	 <SERVICE>  (<SILENT>)?
+	{silent = false;}
+	 <SERVICE>  (<SILENT> { silent = true;} )?
 	 
   	src = VarOrIRIref(stack) 
   	e = GroupGraphPattern()
   	{ 
-  		st =  Service.create(src, e);
+  		st =  Service.create(src, e, silent);
   		stack.add(st);
   	}
 }

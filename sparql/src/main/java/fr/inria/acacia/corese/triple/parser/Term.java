@@ -52,6 +52,7 @@ public class Term extends Expression {
 	static final String SBOUND = "bound";
 	static final String EXIST = "exists";
 	static final String LIST = "list";
+	static final String SERVICE = "service";
 
 
 	Processor proc;

@@ -51,7 +51,7 @@ public class XMLFormat  {
 	private static final String ODATA = "<![CDATA[";
 	private static final String CDATA = "]]>";
 	private static final String OCOM = "<!--";
-	private static final String CCOM = "--!>";
+	private static final String CCOM = "-->";
 
 
 	
@@ -93,11 +93,17 @@ public class XMLFormat  {
 	}
 	
 	public String toString(){
+		StringBuffer sb = toStringBuffer();
+		return sb.toString();
+	}
+	
+	public StringBuffer toStringBuffer(){
 		StringWriter sw = new StringWriter();
 		pw = new PrintWriter(sw);
 		print();
-		return sw.toString();
+		return sw.getBuffer();
 	}
+
 
 	public void setAST(ASTQuery q){
 		ast = q;   

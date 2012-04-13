@@ -219,6 +219,17 @@ public class Eval implements  ExpType, Plugin {
 		return results;
 	}
 	
+	public Mappings filter(Mappings map, Query q){
+		Query qq = map.getQuery();
+		init(qq);
+		qq.compile(q.getHaving());
+		qq.index(qq, q.getHaving().getFilter());
+		//q.complete();
+		
+		map.filter(evaluator, q.getHaving().getFilter(), memory);
+		return map;
+	}
+	
 	
 	void eval(Node gNode, Query q){
 		if (q.isFunctional()){
@@ -1269,7 +1280,7 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		}
 				
 		if (provider != null){
-			Mappings lMap = provider.service(node, exp.rest());
+			Mappings lMap = provider.service(node, exp.rest(), env);
 			for (Mapping map : lMap){
 				complete(query, map);
 				if (env.push(map, n, false)){

@@ -7,11 +7,10 @@ package fr.inria.edelweiss.kgdqp.strategies;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Term;
+import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.core.Exp;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class RemoteQueryOptimizerFilter implements RemoteQueryOptimizer {
 
         //Filter pushing filter to the remote producer
         //Add the filter only if it is applicable
-        List<Filter> kgFilters = getApplicableFilter(env);
+        List<Filter> kgFilters = Util.getApplicableFilter(env, edge);
 
         if (kgFilters.size() > 0) {
             sparqlfilter = "FILTER (\n";
@@ -70,23 +69,5 @@ public class RemoteQueryOptimizerFilter implements RemoteQueryOptimizer {
         sparql += "}";
 
         return sparql;
-    }
-
-    public List<Filter> getApplicableFilter(Environment env) {
-        // KGRAM exp for current edge
-        Exp exp = env.getExp();;
-        List<Filter> lFilters = new ArrayList<Filter>();
-        for (Filter f : exp.getFilters()) {
-            // filters attached to current edge
-            if (f.getExp().isExist()) {
-                // skip exists { PAT }
-                continue;
-            }
-
-            if (exp.bind(f)) {
-                lFilters.add(f);
-            }
-        }
-        return lFilters;
     }
 }

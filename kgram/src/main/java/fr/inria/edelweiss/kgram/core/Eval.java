@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
+import java.util.Iterator;
 
 /**
  * KGRAM Knowledge Graph Abstract Machine 
@@ -52,7 +53,7 @@ import fr.inria.edelweiss.kgram.tool.ResultsImpl;
  */
 public class Eval implements  ExpType, Plugin {
 	private static Logger logger = Logger.getLogger(Eval.class);
-	
+        
 	static final int STOP = -2;
 	
 	ResultListener listener;
@@ -1636,12 +1637,16 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		//Producer prod = producer;
 		Query qq = query;
 		
-		for (Entity map : p.getEdges(gNode, qq.getFrom(gNode), qEdge,  env)){			
-			
+                Iterable<Entity> entities = p.getEdges(gNode, qq.getFrom(gNode), qEdge,  env);
+                Iterator<Entity> it = entities.iterator();
+                
+                while (it.hasNext()) {
+//		for (Entity map : p.getEdges(gNode, qq.getFrom(gNode), qEdge,  env)){			
+                        Entity map = it.next();
+                    
 			if (map != null){
 				nbEdge++;
 				boolean trace = false;
-
 				Edge edge = map.getEdge();
 				graph = map.getGraph();
 				
@@ -1712,7 +1717,7 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 //			}
 			
 		}
-		
+
 		return backtrack;
 	}
 

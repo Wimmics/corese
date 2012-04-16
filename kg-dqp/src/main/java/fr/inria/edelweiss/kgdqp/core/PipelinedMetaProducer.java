@@ -54,7 +54,7 @@ public class PipelinedMetaProducer extends MetaProducer {
         SyncEdgeBuffer buffer = new SyncEdgeBuffer(pending, executorS);
         buffers.add(buffer);
 //        SyncEdgeBufferV2 buffer = new SyncEdgeBufferV2(futures);
-        logger.info("added new buffer for " + edge);
+//        logger.info("added new buffer for " + edge);
         // iteration over 
         for (Producer p : this.getProducers()) {
             //TODO Check index

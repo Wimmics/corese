@@ -48,7 +48,7 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
         MetaIterator<Entity> meta = null;
         List<Future<Iterable<Entity>>> futures = new ArrayList<Future<Iterable<Entity>>>();
 
-        logger.info("Searching for edge : " + edge.toString());
+//        logger.info("Searching for edge : " + edge.toString());
         // iteration over 
         for (Producer p : this.getProducers()) {
             //TODO Check index
@@ -72,7 +72,7 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
         }
         executorS.shutdown();
         sw.stop();
-        logger.info("Global results retrieved in " + sw.getTime() + "ms.");
+//        logger.info("Global results retrieved in " + sw.getTime() + "ms.");
 
         return meta;
     }

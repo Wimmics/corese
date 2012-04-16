@@ -43,7 +43,7 @@ public class CallableGetEdges implements Callable<Iterable<Entity>> {
         sw.start();
         Iterable<Entity> res =  p.getEdges(gNode, from, qEdge, env);
         sw.stop();
-        logger.info("Finished CallableGetEdge in "+sw.getTime()+" ms.");
+//        logger.info("Finished CallableGetEdge in "+sw.getTime()+" ms.");
         return res;
     }
     

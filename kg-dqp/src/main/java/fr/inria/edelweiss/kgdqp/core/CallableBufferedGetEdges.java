@@ -53,7 +53,7 @@ public class CallableBufferedGetEdges implements Callable<Iterable<Entity>> {
         }
         buffer.put(new Stop());
         sw.stop();
-        logger.info("Finished CallableGetEdge in "+sw.getTime()+" ms.");
+//        logger.info("Finished CallableGetEdge in "+sw.getTime()+" ms.");
         return res;
     }
 }

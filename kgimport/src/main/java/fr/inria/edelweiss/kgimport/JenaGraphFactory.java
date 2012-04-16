@@ -51,14 +51,14 @@ public class JenaGraphFactory {
         StmtIterator it = m.listStatements();
         while (it.hasNext()) {
             Statement st = it.next();
-            logger.info(st.asTriple().toString());
+//            logger.info(st.asTriple().toString());
 
             //subject
             subject = getNode(st.getSubject());
 
             //property
             if (st.getPredicate().isProperty()) {
-                logger.debug("Property URI " + st.getPredicate().getURI());
+//                logger.debug("Property URI " + st.getPredicate().getURI());
                 predicate = g.addProperty(st.getPredicate().getURI());
             } else {
                 logger.warn("Predicate " + st.getPredicate().toString() + " not recognized as a JENA property.");
@@ -82,9 +82,9 @@ public class JenaGraphFactory {
         if (jenaNode.isAnon()) {
                 kgNode = g.addBlank(jenaNode.asNode().getBlankNodeId().toString());
             } else if (jenaNode.isLiteral()) {
-                logger.debug("Object as literal " + jenaNode.toString());
+//                logger.debug("Object as literal " + jenaNode.toString());
                 Literal l = jenaNode.asLiteral();
-                logger.debug("lexical form " + l.getLexicalForm());
+//                logger.debug("lexical form " + l.getLexicalForm());
                 Object value = null;
                 try {
                     value = l.getValue();
@@ -109,16 +109,16 @@ public class JenaGraphFactory {
                     kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
                 } else if (l.getDatatypeURI() != null) {
                     kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
-                    logger.debug("Literal value " + value + " : " + value.getClass().getCanonicalName() + " handled by KGRAM graphs through "+l.getDatatypeURI());
+//                    logger.debug("Literal value " + value + " : " + value.getClass().getCanonicalName() + " handled by KGRAM graphs through "+l.getDatatypeURI());
                 } else {  
                     logger.error("Literal value " + value + " : " + value.getClass().getCanonicalName() + " not handled by KGRAM graphs");
                 }
 
             } else if (jenaNode.isResource()) {
-                logger.debug("Object as resource " + jenaNode.toString());
+//                logger.debug("Object as resource " + jenaNode.toString());
                 kgNode = g.addResource(jenaNode.asResource().toString());
             } else if (jenaNode.isURIResource()) {
-                logger.debug("Object as resource " + jenaNode.asResource().getURI());
+//                logger.debug("Object as resource " + jenaNode.asResource().getURI());
                 kgNode = g.addResource(jenaNode.asResource().getURI());
             } else {
                 logger.warn("Object " + jenaNode.toString() + " not recognized by JENA as a blank node, a literal or a resource.");

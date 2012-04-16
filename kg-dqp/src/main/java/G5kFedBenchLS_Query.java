@@ -12,7 +12,7 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,37 +32,39 @@ import wsimport.KgramWS.RemoteProducerServiceClient;
  *
  * @author gaignard
  */
-public class G5kDBPediaN {
+public class G5kFedBenchLS_Query {
 
-    public static void main(String args[]) throws MalformedURLException, EngineException {
+    public static void main(String args[]) throws MalformedURLException, EngineException, FileNotFoundException, IOException {
 
-        ExecutorService executor = Executors.newCachedThreadPool();
-
-        ArrayList<RemoteProducer> kgs = new ArrayList<RemoteProducer>();
-        int i = 1;
-        for (String arg : args) {
-            final RemoteProducer rp = RemoteProducerServiceClient.getPort("http://" + arg + ":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-            kgs.add(rp);
-            rp.initEngine();
-
-            Map<String, Object> reqCtxt1 = ((BindingProvider) rp).getRequestContext();
-            reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-            reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-
-            File rep = new File("/home/agaignard/data/DBPedia-fragmentation/" + args.length + "-stores/persondata." + i + ".rdf");
-            final DataHandler data1 = new DataHandler(new FileDataSource(rep));
-            i++;
-            executor.submit(new Runnable() {
-
-                @Override
-                public void run() {
-                    rp.uploadRDF(data1);
-                }
-            });
-        }
-        executor.shutdown();
-        while (!executor.isTerminated()) {
-        }
+//        ExecutorService executor = Executors.newCachedThreadPool();
+//
+//        ArrayList<RemoteProducer> kgs = new ArrayList<RemoteProducer>();
+//        int i = 1;
+//        for (String arg : args) {
+//            final RemoteProducer rp = RemoteProducerServiceClient.getPort("http://" + arg + ":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//            kgs.add(rp);
+//            rp.initEngine();
+//
+//
+//
+//            File rep = new File("/home/agaignard/data/FedBench-dataset/producer-" + i);
+//            i++;
+//
+//            for (File f : rep.listFiles()) {
+//                final String path = f.getAbsolutePath();
+//                executor.submit(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        rp.loadRDF(path);
+//                    }
+//                });
+//
+//            }
+//
+//        }
+//        executor.shutdown();
+//        while (!executor.isTerminated()) {
+//        }
 
         ///////////////////////
         EngineFactory ef = new EngineFactory();
@@ -73,15 +75,32 @@ public class G5kDBPediaN {
             exec.addRemote(new URL("http://" + arg + ":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
         }
 
-        for (int k = 0; k < 4; k++) {
+
+        for (int i = 1; i < 8; i++) {
+
+            StringBuffer fileData = new StringBuffer(1000);
+            BufferedReader reader = new BufferedReader(
+                    new FileReader("fedBenchQueries/LS"+i+".sparql"));
+            char[] buf = new char[1024];
+            int numRead = 0;
+            while ((numRead = reader.read(buf)) != -1) {
+                String readData = String.valueOf(buf, 0, numRead);
+                fileData.append(readData);
+                buf = new char[1024];
+            }
+            reader.close();
+            String sparqlQuery = fileData.toString();
+
             StopWatch sw = new StopWatch();
             sw.start();
-            IResults res = exec.SPARQLQuery(Queries.QueryBobbyA);
-//            IResults res = exec.SPARQLQuery(Queries.QueryBob);
+            IResults res = exec.SPARQLQuery(sparqlQuery);
             System.out.println("--------");
-            System.out.println("Run#"+k+" Results in " + sw.getTime() + " ms");
-            System.out.println("Run#"+k+" Results size " + res.size());
+            System.out.println("Results LS "+i+" in " + sw.getTime() + " ms");
+            GraphEngine gEng = (GraphEngine) engine;
+//            System.out.println("Graph size " + gEng.getGraph().size());
+            System.out.println("Results LS "+i+" size " + res.size());
 //            String[] variables = res.getVariables();
+//
 //            for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
 //                IResult r = en.nextElement();
 //                HashMap<String, String> result = new HashMap<String, String>();
@@ -98,7 +117,8 @@ public class G5kDBPediaN {
 //                }
 //            }
 //            System.out.println(sw.getTime() + " ms");
-            sw.reset();
+//            System.out.println("");
+//            System.out.println("");
         }
     }
 }

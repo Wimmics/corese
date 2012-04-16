@@ -40,7 +40,7 @@ public class G5kDBPedia1 {
         kg1.initEngine();
 //        kg2.initEngine();
 
-        File rep1 = new File("/home/agaignard/data/DBPedia-fragmentation/1-store/persondata.1.rdf");
+        File rep1 = new File("/home/agaignard/data/DBPedia-fragmentation/1-stores/persondata.1.rdf");
 //        File rep1 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/1-store/persondata.rdf");
 //        File rep2 = new File("persondata_en_rep_small.1.2.rdf");
 

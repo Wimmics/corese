@@ -107,10 +107,11 @@ public class G5KdbpediaStandalone {
 //        exec.addRemote(new URL("http://"+args[2]+":8090/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 //        exec.addRemote(new URL("http://"+args[3]+":8090/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 4; i++) {
             StopWatch sw = new StopWatch();
             sw.start();
             IResults res = exec.SPARQLQuery(Queries.QueryBobbyA);
+//            IResults res = exec.SPARQLQuery(Queries.QueryBob);
             System.out.println("--------");
             System.out.println("Results in " + sw.getTime() + "ms");
             GraphEngine gEng = (GraphEngine) engine;
@@ -118,22 +119,22 @@ public class G5KdbpediaStandalone {
             System.out.println("Results size " + res.size());
             String[] variables = res.getVariables();
 
-            for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
-                IResult r = en.nextElement();
-                HashMap<String, String> result = new HashMap<String, String>();
-                for (String var : variables) {
-                    if (r.isBound(var)) {
-                        IResultValue[] values = r.getResultValues(var);
-                        for (int j = 0; j < values.length; j++) {
-                            System.out.println(var + " = " + values[j].getStringValue());
-//                            result.put(var, values[j].getStringValue());
-                        }
-                    } else {
-                        //System.out.println(var + " = Not bound");
-                    }
-                }
-            }
-            System.out.println(sw.getTime() + " ms");
+//            for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
+//                IResult r = en.nextElement();
+//                HashMap<String, String> result = new HashMap<String, String>();
+//                for (String var : variables) {
+//                    if (r.isBound(var)) {
+//                        IResultValue[] values = r.getResultValues(var);
+//                        for (int j = 0; j < values.length; j++) {
+//                            System.out.println(var + " = " + values[j].getStringValue());
+////                            result.put(var, values[j].getStringValue());
+//                        }
+//                    } else {
+//                        //System.out.println(var + " = Not bound");
+//                    }
+//                }
+//            }
+//            System.out.println(sw.getTime() + " ms");
         }
     }
 }

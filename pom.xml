@@ -5,7 +5,7 @@
     <groupId>fr.inria.edelweiss</groupId>
     <artifactId>kg-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <name>kg-parent</name>
 
     <developers>
@@ -44,6 +44,7 @@
         <module>kgimport</module>
         <module>sparql</module>
         <module>rif</module>
+<!--        <module>kgendpoint</module>-->
     </modules>
     
     <dependencyManagement>
@@ -115,9 +116,9 @@
                 <version>1.1</version>
             </dependency>
             <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.3</version>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -143,5 +144,17 @@
             </plugins>
         </pluginManagement>
     </build>
+    <repositories>
+        <repository>
+            <id>maven-repository.java.net</id>
+            <name>Java.net Repository for Maven 1</name>
+            <url>http://download.java.net/maven/1/</url>
+            <layout>legacy</layout>
+        </repository>
+        <repository>
+            <id>maven2-repository.java.net</id>
+            <name>Java.net Repository for Maven 2</name>
+            <url>http://download.java.net/maven/2/</url>  
+        </repository>
+    </repositories>
 </project>
-

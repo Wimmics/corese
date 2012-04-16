@@ -243,7 +243,7 @@ public class Query extends Exp {
 		outerQuery = q;
 	}
 	
-	Query getOuterQuery(){
+	public Query getOuterQuery(){
 		if (outerQuery == null) return this;
 		return outerQuery;
 	}

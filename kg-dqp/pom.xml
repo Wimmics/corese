@@ -5,7 +5,7 @@
     <parent>
         <groupId>fr.inria.edelweiss</groupId>
         <artifactId>kg-parent</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
         <relativePath>..</relativePath>
     </parent>
     <groupId>fr.inria.edelweiss</groupId>
@@ -23,12 +23,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>kgimport</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -39,6 +48,16 @@
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.18</version>
+        </dependency>
+<!--        <dependency>
+            <groupId>com.businessobjects</groupId>
+            <artifactId>datafederator-jdbc-connector</artifactId>
+            <version>1.0</version>
+        </dependency>-->
     </dependencies>
 
     <build>
@@ -95,6 +114,7 @@
                         <phase>package</phase>
                         <configuration>
                             <descriptorId>jar-with-dependencies</descriptorId>
+                            <finalName>kg-dqp-1.0.7-fedbench.jar</finalName>
 <!--                            <archive>
                                 <manifest>
                                     <mainClass></mainClass>

@@ -1,6 +1,8 @@
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ * @author Andrien Basse
+ * @author Alban Gaignard
  */
 package fr.inria.edelweiss.kgdqp.index;
 
@@ -59,7 +61,7 @@ public class IndexPropriete {
     }
 
     /*
-     * Remplissage de l'index des proprietés
+     * Remplissage de l'index des proprietes
      */
     public void hashPropriete() {
         String requeteCardinality = "select distinct * projection 2000000 "
@@ -103,8 +105,8 @@ public class IndexPropriete {
         System.out.println("Existency index calculated in "+sw.getTime()+" ms");
     }
     /*
-     * Verifie si  une propriété est instanciée dans la source ou pas.
-     * return un booléan
+     * Verifie si  une propriete est instanciee dans la source ou pas.
+     * return un boolean
      */
 
     public boolean verifierProp(String propriete) {

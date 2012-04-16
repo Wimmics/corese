@@ -4,8 +4,11 @@
  */
 package fr.inria.edelweiss.kgdqp.core;
 
+import com.sun.xml.internal.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.developer.StreamingDataHandler;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgdqp.strategies.SourceSelector;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizer;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizerFactory;
 import fr.inria.edelweiss.kgram.api.core.*;
@@ -17,10 +20,9 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import javax.activation.DataHandler;
+import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import wsimport.KgramWS.RemoteProducer;
@@ -36,6 +38,7 @@ public class RemoteProducerImpl implements Producer {
 
     private static Logger logger = Logger.getLogger(RemoteProducerImpl.class);
     private RemoteProducer rp;
+    private HashMap<String, Boolean> cacheIndex = new HashMap<String, Boolean>();
 
     public RemoteProducerImpl(URL url) {
         rp = RemoteProducerServiceClient.getPort(url);
@@ -102,21 +105,44 @@ public class RemoteProducerImpl implements Producer {
         String query = qo.getSparqlQuery(qEdge, env);
         Graph g = Graph.create();
 
-        logger.debug("sending query \n" + query + "\n" + "to " + rp.getEndpoint());
-
         InputStream is = null;
         try {
-            StopWatch sw = new StopWatch();
-            sw.start();
-            String sparqlRes = rp.getEdges(query);
-            logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
-            sw.reset();
-            sw.start();
-            if (sparqlRes != null) {
-                Load l = Load.create(g);
-                is = new ByteArrayInputStream(sparqlRes.getBytes());
-                l.load(is);
-                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+//            StopWatch sw = new StopWatch();
+//            sw.start();
+
+            if (SourceSelector.ask(qEdge, this, env)) {
+//            if (true) {
+//                logger.info("sending query \n" + query + "\n" + "to " + rp.getEndpoint());
+
+//  Version no-streaming                
+                String sparqlRes = rp.getEdges(query);
+                if (sparqlRes != null) {
+                    Load l = Load.create(g);
+                    is = new ByteArrayInputStream(sparqlRes.getBytes());
+                    l.load(is);
+//                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+                }
+//                logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
+//                logger.info("Received results  from " + rp.getEndpoint());
+//                System.out.println("Received results  from " + rp.getEndpoint());
+//                sw.reset();
+//                sw.start();                
+
+                // Version streaming 
+//                Map<String, Object> reqCtxt = ((BindingProvider) rp).getRequestContext();
+//                reqCtxt.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//                reqCtxt.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//                StreamingDataHandler streamingDh = (StreamingDataHandler) rp.getEdges(query);
+//                if (streamingDh != null) {
+//                    is = streamingDh.readOnce();
+//                    Load l = Load.create(g);
+////                    is = new ByteArrayInputStream(sparqlRes.getBytes());
+//                    l.load(is);
+////                    logger.info("Results (cardinality " + g.size() + ")");
+////                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+//                }
+            } else {
+//                logger.info("negative ASK (" + qEdge + ") -> pruning data source " + rp.getEndpoint());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -283,20 +309,20 @@ public class RemoteProducerImpl implements Producer {
 
         // Remote query processing
         Graph g = Graph.create();
-        logger.info("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
+//        logger.info("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
             sw.start();
             String sparqlRes = rp.getEdges(sparql);
-            logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
+//            logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
             sw.reset();
             sw.start();
             if (sparqlRes != null) {
                 Load l = Load.create(g);
                 is = new ByteArrayInputStream(sparqlRes.getBytes());
                 l.load(is);
-                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+//                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -349,7 +375,9 @@ public class RemoteProducerImpl implements Producer {
     }
 
     /**
-     * Transforms a regular expression eventually containing nested expressions into a flat list of expressions.
+     * Transforms a regular expression eventually containing nested expressions
+     * into a flat list of expressions.
+     *
      * @param exp a regular expression eventually containing nested expressions.
      * @return a flat list of initially nested expressions.
      */
@@ -369,8 +397,9 @@ public class RemoteProducerImpl implements Producer {
 
     /**
      * Checks that a negation only covers | operators.
+     *
      * @param exp a regular exression.
-     * @return true if the  negation expresison is valid.
+     * @return true if the negation expresison is valid.
      */
     private boolean checkNeg(Regex exp) {
         boolean res = true;
@@ -387,5 +416,13 @@ public class RemoteProducerImpl implements Producer {
             }
         }
         return res;
+    }
+
+    public HashMap<String, Boolean> getCacheIndex() {
+        return cacheIndex;
+    }
+
+    public RemoteProducer getRp() {
+        return rp;
     }
 }

@@ -54,6 +54,12 @@
   <message name="initEngineResponse">
     <part name="parameters" element="tns:initEngineResponse"/>
   </message>
+  <message name="initEngineFromSQL">
+    <part name="parameters" element="tns:initEngineFromSQL"/>
+  </message>
+  <message name="initEngineFromSQLResponse">
+    <part name="parameters" element="tns:initEngineFromSQLResponse"/>
+  </message>
   <message name="runRule">
     <part name="parameters" element="tns:runRule"/>
   </message>
@@ -92,6 +98,10 @@
     <operation name="initEngine">
       <input message="tns:initEngine"/>
       <output message="tns:initEngineResponse"/>
+    </operation>
+    <operation name="initEngineFromSQL">
+      <input message="tns:initEngineFromSQL"/>
+      <output message="tns:initEngineFromSQLResponse"/>
     </operation>
     <operation name="runRule">
       <input message="tns:runRule"/>
@@ -164,6 +174,15 @@
       </output>
     </operation>
     <operation name="initEngine">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="initEngineFromSQL">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>

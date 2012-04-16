@@ -1,30 +1,40 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.StreamingDataHandler;
-import fr.inria.acacia.corese.api.EngineFactory;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.edelweiss.kgramenv.util.QueryExec;
+import fr.inria.edelweiss.kgimport.JenaGraphFactory;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.soap.MTOM;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
- * KGRAM engine exposed as a web service. 
- * The engine can be remotely initialized, populated with an RDF file, 
- * and queried through SPARQL requests. 
- * 
+ * KGRAM engine exposed as a web service. The engine can be remotely
+ * initialized, populated with an RDF file, and queried through SPARQL requests.
+ *
  * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
  */
 @WebService
@@ -32,17 +42,50 @@ import org.apache.log4j.Logger;
 public class RemoteProducer extends ProducerImpl {
 
     private String endpoint;
-    private IEngine engine;
-    private EngineFactory ef = new EngineFactory();
+//    private IEngine engine;
+//    private EngineFactory ef = new EngineFactory();
+    private Graph graph = Graph.create();
+    private QueryProcess exec = QueryProcess.create(graph);
     private Logger logger = Logger.getLogger(RemoteProducer.class);
+    private HashMap<String, String> rdfSqlMappings = new HashMap<String, String>();
+    //<http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#has-for-name>
+    private final String sql_has_for_name = " insert  { ?s <http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#has-for-name> ?o } where { \n"
+            + "   {  select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', '"
+            //            + "         SELECT Dataset.dataset_id, Dataset.name FROM Dataset WHERE ???')"
+            + "SELECT Dataset.dataset_id, Dataset.name FROM Dataset ')\n"
+            + "as (?x, ?o)) where {} "
+            + "} .\n"
+            + "{ "
+            + "     select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-\",?x)) as ?s) where {}"
+            + "} }";
+    //<http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#is-referred-to-by>
+    private final String sql_is_referred_to_by = " insert  { ?s <http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#is-referred-to-by> ?o } where { \n"
+            + "{ select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', '"
+            + "  SELECT Dataset.Subject_subject_id, Dataset.dataset_id FROM Dataset ')\n"
+            + "  as (?x, ?y)) where {} "
+            + "} .\n"
+            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?x)) as ?s) where {} }\n"
+            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-\",?y)) as ?o) where {} }"
+            + "}";
+    //<http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#has-for-subject-identifier>
+    private final String sql_has_for_subject_identifier = " insert  { ?s <http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#has-for-subject-identifier> ?o } where { \n"
+            + "{ select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', '"
+            + " SELECT Subject.subject_id, Subject.subject_common_identifier FROM Subject ')\n"
+            + " as (?x, ?y)) where {} "
+            + "} .\n"
+            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?x)) as ?s) where {} }\n"
+            + "{ select(?y as ?o) where {} }"
+            + "}";
 
     public RemoteProducer(Graph g) {
         super(g);
+        initMappings();
         initEngine();
     }
 
     public RemoteProducer() {
         super();
+        initMappings();
         initEngine();
     }
 
@@ -56,7 +99,8 @@ public class RemoteProducer extends ProducerImpl {
 
     /**
      * Transfers an RDF file and load it into KGRAM.
-     * @param data streamed RDF file to be loaded by KGRAM. 
+     *
+     * @param data streamed RDF file to be loaded by KGRAM.
      */
     @WebMethod
     public void uploadRDF(@XmlMimeType(value = "application/octet-stream") DataHandler data) {
@@ -71,14 +115,13 @@ public class RemoteProducer extends ProducerImpl {
             streamingDh.close();
 
             logger.debug("Loading " + localFile.getAbsolutePath() + " into KGRAM");
-            engine.load(localFile.getAbsolutePath());
+            Load ld = Load.create(graph);
+            ld.load(localFile.getAbsolutePath());
 
             localFile.delete();
             sw.stop();
             logger.info("Uploaded content to KGRAM: " + sw.getTime() + " ms");
-        } catch (EngineException ex) {
-            logger.error("Error while loading RDF content into KGRAM.");
-            ex.printStackTrace();
+            logger.info("Graph size " + graph.size());
         } catch (IOException ex) {
             logger.error("Error while uploading RDF content.");
             ex.printStackTrace();
@@ -87,61 +130,125 @@ public class RemoteProducer extends ProducerImpl {
 
     @WebMethod
     public void loadRDF(String remotePath) {
+        logger.info("Loading " + remotePath);
+        Graph g = Graph.create();
+        if (remotePath.endsWith(".rdf")) {
+            Load ld = Load.create(g);
+            ld.load(remotePath);
+        } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {
+            FileInputStream fis = null;
+            try {
+                File f = new File(remotePath);
+                fis = new FileInputStream(f);
+                Model model = ModelFactory.createDefaultModel();
+                model.read(fis, null, "N-TRIPLE");
+                System.out.println("Loaded " + f.getAbsolutePath());
+                g = JenaGraphFactory.createGraph(model);
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } finally {
+                try {
+                    fis.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        exec.add(g);
+        logger.info("Successfully loaded " + remotePath);
     }
 
     /**
-     * Processes a SPARQL query and return the SPARQL results. 
-     * @param sparqlQuery the query to be processed. 
-     * @return the corresponding SPARQL results. 
+     * Processes a SPARQL query and return the SPARQL results.
+     *
+     * @param sparqlQuery the query to be processed.
+     * @return the corresponding SPARQL results.
      */
     @WebMethod
+//    public @XmlMimeType(value = "application/octet-stream")
+//    DataHandler getEdges(String sparqlQuery) {
     public String getEdges(String sparqlQuery) {
-        StopWatch sw = new StopWatch();
-        sw.start();
+//        StopWatch sw = new StopWatch();
+//        sw.start();
 
 //        logger.debug("Received query: \n" + sparqlQuery);
         try {
-            QueryExec exec = QueryExec.create(engine);
-            exec.add(engine);
+            Mappings results = exec.query(sparqlQuery);
 
-            IResults results = exec.SPARQLQuery(sparqlQuery);
-            String sparqlRes = results.toSPARQLResult();
-
-            if (results.getSuccess()) {
-                sw.stop();
-                logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
-                return sparqlRes;
-            } else {
-                logger.debug("No results found");
-                sw.stop();
-                logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
+//            RDF serialization
+            RDFFormat rdfFormat = RDFFormat.create(results);
+            if (rdfFormat == null) {
                 return null;
+            } else {
+                String sResults = rdfFormat.toString();
+//                byte[] bytes = sResults.getBytes();
+//                final DataHandler data = new DataHandler(bytes, "application/octet-stream");
+                return sResults;
+//                logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
+//                return sResults;
             }
+
         } catch (EngineException ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
-            sw.stop();
-            logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
+//            sw.stop();
             return null;
         }
     }
 
     /**
-     * Initializes the KGRAM engine with a new instance. 
+     * Initializes the KGRAM engine with a new instance.
      */
     @WebMethod
     public void initEngine() {
         try {
             //need to use the EngineFactory ?
 //            engine = GraphEngine.create(this.getGraph());
+//            graph = Graph.create(true); //with entailments
+            graph = Graph.create();
+            exec = QueryProcess.create(graph);
+
             StopWatch sw = new StopWatch();
             sw.start();
             logger.info("Initializing GraphEngine");
-            engine = ef.newInstance();
-            engine.load(RemoteProducer.class.getClassLoader().getResourceAsStream("kgram-foaf.rdfs"), null);
-            engine.load(RemoteProducer.class.getClassLoader().getResourceAsStream("dbpedia_3.6.owl"), null);
+            Load ld = Load.create(graph);
+            ld.load(RemoteProducer.class.getClassLoader().getResourceAsStream("kgram-foaf.rdfs"), null);
+            ld.load(RemoteProducer.class.getClassLoader().getResourceAsStream("dbpedia_3.6.owl"), null);
             sw.stop();
             logger.info("Initialized GraphEngine: " + sw.getTime() + " ms");
+//            engine.runRuleEngine();
+        } catch (LoadException ex) {
+            logger.error("Error while initialiazing the remote KGRAM engine");
+            ex.printStackTrace();
+            java.util.logging.Logger.getLogger(RemoteProducer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Initializes the KGRAM engine with a new instance.
+     */
+    @WebMethod
+    public void initEngineFromSQL(String url, String driver, String login, String password) {
+        try {
+
+            StopWatch sw = new StopWatch();
+            sw.start();
+            logger.info("Initializing GraphEngine");
+
+            for (Map.Entry<String, String> entry : rdfSqlMappings.entrySet()) {
+                String sql = entry.getValue();
+                sql = sql.replaceAll("db:%DATABASE%", "<" + url + ">");
+                sql = sql.replaceAll("%DRIVER%", "<" + driver + ">");
+                sql = sql.replaceAll("%LOGIN%", login);
+                sql = sql.replaceAll("%PASSWORD%", password);
+
+                entry.setValue(sql);
+
+                exec.query(sql);
+            }
+
+            sw.stop();
+            logger.info("Initialized GraphEngine from SQL: " + sw.getTime() + " ms");
 //            engine.runRuleEngine();
         } catch (EngineException ex) {
             logger.error("Error while initialiazing the remote KGRAM engine");
@@ -149,6 +256,70 @@ public class RemoteProducer extends ProducerImpl {
         }
     }
 
+    private void initMappings() {
+        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#has-for-name", sql_has_for_name);
+        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#is-referred-to-by", sql_is_referred_to_by);
+        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#has-for-subject-identifier", sql_has_for_subject_identifier);
+    }
+
+//    @WebMethod
+//    public ArrayList<PropCard> buildCardinalityIndex() {
+//        ArrayList<PropCard> propCardIndex = null;
+//        try {
+//            propCardIndex = new ArrayList<PropCard>();
+//            StopWatch sw = new StopWatch();
+//            sw.start();
+//            logger.info("Building the cardinality index");
+//            String cardQ = "select distinct * projection 2000000 "
+//                    + "where"
+//                    + "{"
+//                    + "?sujet ?propriete ?objet"
+//                    + "}"
+//                    + "order by ?propriete"
+//                    + " limit 1000000";
+//            IResults res = engine.SPARQLQuery(cardQ);
+//            for (IResult r : res) {
+//                String propriete = r.getStringValue("?propriete");
+//                if (containsKey(propCardIndex,propriete)) {
+//                    long card = propCardIndex.get(propriete);
+//                    card = card + 1;
+//                    propCardIndex.put(propriete, card);
+//                } else {
+//                    propCardIndex.put(propriete, new Long(1));
+//                }
+//            }
+//        } catch (EngineException ex) {
+//            logger.error("Error while initialiazing the remote KGRAM engine");
+//            ex.printStackTrace();
+//        }
+//        return propCardIndex;
+//    }
+//
+//    @WebMethod
+//    public ArrayList<String> buildExistencyIndex() {
+//        ArrayList<String> propExistencyIndex = null;
+//        try {
+//            StopWatch sw = new StopWatch();
+//            sw.start();
+//            logger.info("Building the existency index");
+//            String existQ = "select distinct ?propriete projection 2000000 "
+//                    + "where"
+//                    + "{"
+//                    + "?sujet ?propriete ?objet"
+//                    + "}"
+//                    + "order by ?propriete"
+//                    + " limit 1000000";
+//            IResults res = engine.SPARQLQuery(existQ);
+//            for (IResult r : res) {
+//                String propriete = r.getStringValue("?propriete");
+//                propExistencyIndex.add(propriete);
+//            }
+//        } catch (EngineException ex) {
+//            logger.error("Error while initialiazing the remote KGRAM engine");
+//            ex.printStackTrace();
+//        }
+//        return propExistencyIndex;
+//    }
     public void load() {
     }
 
@@ -157,4 +328,12 @@ public class RemoteProducer extends ProducerImpl {
 
     public void reset() {
     }
+//    public boolean containsKey(ArrayList<PropCard> list, String prop) {
+//        for (PropCard pair : list) {
+//            if (((String)pair.getValue()).equals(prop)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 }

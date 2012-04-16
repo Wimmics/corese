@@ -5,7 +5,7 @@
     <parent>
         <groupId>fr.inria.edelweiss</groupId>
         <artifactId>kg-parent</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
         <relativePath>..</relativePath>
     </parent>
     <groupId>fr.inria.edelweiss</groupId>
@@ -20,6 +20,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgengine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>kgimport</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -49,6 +54,11 @@
         <dependency>
             <groupId>javax.jws</groupId>
             <artifactId>jsr181-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.businessobjects</groupId>
+            <artifactId>datafederator-jdbc-connector</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 

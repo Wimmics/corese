@@ -11,6 +11,10 @@
 
   <xs:element name="initEngine" type="tns:initEngine"/>
 
+  <xs:element name="initEngineFromSQL" type="tns:initEngineFromSQL"/>
+
+  <xs:element name="initEngineFromSQLResponse" type="tns:initEngineFromSQLResponse"/>
+
   <xs:element name="initEngineResponse" type="tns:initEngineResponse"/>
 
   <xs:element name="load" type="tns:load"/>
@@ -88,6 +92,19 @@
   </xs:complexType>
 
   <xs:complexType name="resetResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="initEngineFromSQL">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg2" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg3" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="initEngineFromSQLResponse">
     <xs:sequence/>
   </xs:complexType>
 

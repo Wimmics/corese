@@ -26,10 +26,11 @@ public class ObjectFactory {
 
     private final static QName _SetEndpoint_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "setEndpoint");
     private final static QName _RunRuleResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "runRuleResponse");
-    private final static QName _LoadResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "loadResponse");
     private final static QName _RunRule_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "runRule");
+    private final static QName _LoadResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "loadResponse");
     private final static QName _InitEngineResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "initEngineResponse");
     private final static QName _SetEndpointResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "setEndpointResponse");
+    private final static QName _InitEngineFromSQLResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "initEngineFromSQLResponse");
     private final static QName _UploadRDF_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "uploadRDF");
     private final static QName _GetEndpointResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "getEndpointResponse");
     private final static QName _GetEndpoint_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "getEndpoint");
@@ -38,9 +39,10 @@ public class ObjectFactory {
     private final static QName _GetEdgesResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "getEdgesResponse");
     private final static QName _LoadRDFResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "loadRDFResponse");
     private final static QName _LoadRDF_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "loadRDF");
+    private final static QName _InitEngineFromSQL_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "initEngineFromSQL");
     private final static QName _Reset_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "reset");
-    private final static QName _ResetResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "resetResponse");
     private final static QName _Load_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "load");
+    private final static QName _ResetResponse_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "resetResponse");
     private final static QName _GetEdges_QNAME = new QName("http://webservice.kgramserver.edelweiss.inria.fr/", "getEdges");
 
     /**
@@ -48,126 +50,6 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
-    }
-
-    /**
-     * Create an instance of {@link GetEdgesResponse }
-     * 
-     */
-    public GetEdgesResponse createGetEdgesResponse() {
-        return new GetEdgesResponse();
-    }
-
-    /**
-     * Create an instance of {@link UploadRDF }
-     * 
-     */
-    public UploadRDF createUploadRDF() {
-        return new UploadRDF();
-    }
-
-    /**
-     * Create an instance of {@link LoadRDF }
-     * 
-     */
-    public LoadRDF createLoadRDF() {
-        return new LoadRDF();
-    }
-
-    /**
-     * Create an instance of {@link InitEngineResponse }
-     * 
-     */
-    public InitEngineResponse createInitEngineResponse() {
-        return new InitEngineResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetEndpoint }
-     * 
-     */
-    public GetEndpoint createGetEndpoint() {
-        return new GetEndpoint();
-    }
-
-    /**
-     * Create an instance of {@link GetEndpointResponse }
-     * 
-     */
-    public GetEndpointResponse createGetEndpointResponse() {
-        return new GetEndpointResponse();
-    }
-
-    /**
-     * Create an instance of {@link UploadRDFResponse }
-     * 
-     */
-    public UploadRDFResponse createUploadRDFResponse() {
-        return new UploadRDFResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetEdges }
-     * 
-     */
-    public GetEdges createGetEdges() {
-        return new GetEdges();
-    }
-
-    /**
-     * Create an instance of {@link SetEndpoint }
-     * 
-     */
-    public SetEndpoint createSetEndpoint() {
-        return new SetEndpoint();
-    }
-
-    /**
-     * Create an instance of {@link RunRuleResponse }
-     * 
-     */
-    public RunRuleResponse createRunRuleResponse() {
-        return new RunRuleResponse();
-    }
-
-    /**
-     * Create an instance of {@link LoadRDFResponse }
-     * 
-     */
-    public LoadRDFResponse createLoadRDFResponse() {
-        return new LoadRDFResponse();
-    }
-
-    /**
-     * Create an instance of {@link Load }
-     * 
-     */
-    public Load createLoad() {
-        return new Load();
-    }
-
-    /**
-     * Create an instance of {@link Reset }
-     * 
-     */
-    public Reset createReset() {
-        return new Reset();
-    }
-
-    /**
-     * Create an instance of {@link LoadResponse }
-     * 
-     */
-    public LoadResponse createLoadResponse() {
-        return new LoadResponse();
-    }
-
-    /**
-     * Create an instance of {@link RunRule }
-     * 
-     */
-    public RunRule createRunRule() {
-        return new RunRule();
     }
 
     /**
@@ -179,11 +61,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InitEngine }
+     * Create an instance of {@link GetEdgesResponse }
      * 
      */
-    public InitEngine createInitEngine() {
-        return new InitEngine();
+    public GetEdgesResponse createGetEdgesResponse() {
+        return new GetEdgesResponse();
+    }
+
+    /**
+     * Create an instance of {@link InitEngineFromSQLResponse }
+     * 
+     */
+    public InitEngineFromSQLResponse createInitEngineFromSQLResponse() {
+        return new InitEngineFromSQLResponse();
+    }
+
+    /**
+     * Create an instance of {@link LoadRDFResponse }
+     * 
+     */
+    public LoadRDFResponse createLoadRDFResponse() {
+        return new LoadRDFResponse();
+    }
+
+    /**
+     * Create an instance of {@link LoadRDF }
+     * 
+     */
+    public LoadRDF createLoadRDF() {
+        return new LoadRDF();
     }
 
     /**
@@ -192,6 +98,118 @@ public class ObjectFactory {
      */
     public ResetResponse createResetResponse() {
         return new ResetResponse();
+    }
+
+    /**
+     * Create an instance of {@link InitEngineResponse }
+     * 
+     */
+    public InitEngineResponse createInitEngineResponse() {
+        return new InitEngineResponse();
+    }
+
+    /**
+     * Create an instance of {@link InitEngine }
+     * 
+     */
+    public InitEngine createInitEngine() {
+        return new InitEngine();
+    }
+
+    /**
+     * Create an instance of {@link RunRule }
+     * 
+     */
+    public RunRule createRunRule() {
+        return new RunRule();
+    }
+
+    /**
+     * Create an instance of {@link SetEndpoint }
+     * 
+     */
+    public SetEndpoint createSetEndpoint() {
+        return new SetEndpoint();
+    }
+
+    /**
+     * Create an instance of {@link GetEndpointResponse }
+     * 
+     */
+    public GetEndpointResponse createGetEndpointResponse() {
+        return new GetEndpointResponse();
+    }
+
+    /**
+     * Create an instance of {@link UploadRDF }
+     * 
+     */
+    public UploadRDF createUploadRDF() {
+        return new UploadRDF();
+    }
+
+    /**
+     * Create an instance of {@link LoadResponse }
+     * 
+     */
+    public LoadResponse createLoadResponse() {
+        return new LoadResponse();
+    }
+
+    /**
+     * Create an instance of {@link RunRuleResponse }
+     * 
+     */
+    public RunRuleResponse createRunRuleResponse() {
+        return new RunRuleResponse();
+    }
+
+    /**
+     * Create an instance of {@link Reset }
+     * 
+     */
+    public Reset createReset() {
+        return new Reset();
+    }
+
+    /**
+     * Create an instance of {@link GetEdges }
+     * 
+     */
+    public GetEdges createGetEdges() {
+        return new GetEdges();
+    }
+
+    /**
+     * Create an instance of {@link Load }
+     * 
+     */
+    public Load createLoad() {
+        return new Load();
+    }
+
+    /**
+     * Create an instance of {@link InitEngineFromSQL }
+     * 
+     */
+    public InitEngineFromSQL createInitEngineFromSQL() {
+        return new InitEngineFromSQL();
+    }
+
+    /**
+     * Create an instance of {@link GetEndpoint }
+     * 
+     */
+    public GetEndpoint createGetEndpoint() {
+        return new GetEndpoint();
+    }
+
+    /**
+     * Create an instance of {@link UploadRDFResponse }
+     * 
+     */
+    public UploadRDFResponse createUploadRDFResponse() {
+        return new UploadRDFResponse();
     }
 
     /**
@@ -213,21 +231,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link LoadResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "loadResponse")
-    public JAXBElement<LoadResponse> createLoadResponse(LoadResponse value) {
-        return new JAXBElement<LoadResponse>(_LoadResponse_QNAME, LoadResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link RunRule }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "runRule")
     public JAXBElement<RunRule> createRunRule(RunRule value) {
         return new JAXBElement<RunRule>(_RunRule_QNAME, RunRule.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LoadResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "loadResponse")
+    public JAXBElement<LoadResponse> createLoadResponse(LoadResponse value) {
+        return new JAXBElement<LoadResponse>(_LoadResponse_QNAME, LoadResponse.class, null, value);
     }
 
     /**
@@ -246,6 +264,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "setEndpointResponse")
     public JAXBElement<SetEndpointResponse> createSetEndpointResponse(SetEndpointResponse value) {
         return new JAXBElement<SetEndpointResponse>(_SetEndpointResponse_QNAME, SetEndpointResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InitEngineFromSQLResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "initEngineFromSQLResponse")
+    public JAXBElement<InitEngineFromSQLResponse> createInitEngineFromSQLResponse(InitEngineFromSQLResponse value) {
+        return new JAXBElement<InitEngineFromSQLResponse>(_InitEngineFromSQLResponse_QNAME, InitEngineFromSQLResponse.class, null, value);
     }
 
     /**
@@ -321,6 +348,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InitEngineFromSQL }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "initEngineFromSQL")
+    public JAXBElement<InitEngineFromSQL> createInitEngineFromSQL(InitEngineFromSQL value) {
+        return new JAXBElement<InitEngineFromSQL>(_InitEngineFromSQL_QNAME, InitEngineFromSQL.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Reset }{@code >}}
      * 
      */
@@ -330,21 +366,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ResetResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "resetResponse")
-    public JAXBElement<ResetResponse> createResetResponse(ResetResponse value) {
-        return new JAXBElement<ResetResponse>(_ResetResponse_QNAME, ResetResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Load }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "load")
     public JAXBElement<Load> createLoad(Load value) {
         return new JAXBElement<Load>(_Load_QNAME, Load.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResetResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://webservice.kgramserver.edelweiss.inria.fr/", name = "resetResponse")
+    public JAXBElement<ResetResponse> createResetResponse(ResetResponse value) {
+        return new JAXBElement<ResetResponse>(_ResetResponse_QNAME, ResetResponse.class, null, value);
     }
 
     /**

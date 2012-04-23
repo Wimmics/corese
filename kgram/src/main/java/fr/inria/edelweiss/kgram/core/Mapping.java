@@ -624,7 +624,7 @@ public class Mapping
 	public boolean isBound(Node qNode) {
 		// TODO Auto-generated method stub
 		int n = getIndex(qNode.getLabel());
-		return n != -1;
+		return n != -1 && nodes[n] != null;
 	}
 
 //	public boolean isSafeIndex() {

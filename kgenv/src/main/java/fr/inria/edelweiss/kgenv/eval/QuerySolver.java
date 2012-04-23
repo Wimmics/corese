@@ -129,6 +129,10 @@ public class QuerySolver  {
 		provider = p;
 	}
 	
+	public Provider getProvider(){
+		return provider;
+	}
+	
 	public void setSPARQL1(boolean b){
 	}
 	

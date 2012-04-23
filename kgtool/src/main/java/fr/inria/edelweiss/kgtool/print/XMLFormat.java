@@ -290,7 +290,7 @@ public class XMLFormat  {
 				print("<literal xml:lang='" + dt.getLang() + "'>" + str +
 						literal);
 			}
-			else if (dt.getDatatype() != null) {
+			else if (dt.getDatatype() != null && dt.getCode() != IDatatype.LITERAL) {
 				if (DatatypeMap.isDouble(dt))
 					str =  nf.format(dt.doubleValue());
 				print("<literal datatype='" +  dt.getDatatype().getLabel()  +

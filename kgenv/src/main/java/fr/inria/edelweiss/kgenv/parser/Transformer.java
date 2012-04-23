@@ -38,7 +38,7 @@ public class Transformer implements ExpType {
 
 	CompilerFactory fac;
 	Compiler compiler;
-	QueryVisitor visit;
+	List<QueryVisitor> visit;
 	Sorter sort;
 	//Table table;
 	ASTQuery ast;
@@ -88,8 +88,18 @@ public class Transformer implements ExpType {
 		sort = s;
 	}
 	
-	public void set(QueryVisitor v){
-		visit = v;
+	public void add(QueryVisitor v){
+		if (visit == null){
+			visit = new ArrayList<QueryVisitor>();
+		}
+		visit.add(v);
+	}
+	
+	public void add(List<QueryVisitor> v){
+		if (visit == null){
+			visit = new ArrayList<QueryVisitor>();
+		}
+		visit.addAll(v);
 	}
 	
 	public Query transform(String squery) throws EngineException{
@@ -118,11 +128,19 @@ public class Transformer implements ExpType {
 	public Query transform (ASTQuery ast){
 		this.ast = ast;
 		ast.setSPARQLCompliant(isSPARQLCompliant);
+		
+		if (ast.getPragma() != null){
+			Pragma p = new Pragma(this, ast);
+			p.compile();
+		}
+		
 		// compile describe
 		ast.compile();
 		
 		if (visit!=null){
-			visit.visit(ast);
+			for (QueryVisitor v : visit){
+				v.visit(ast);
+			}
 		}
 
 		if (fac == null) fac = new CompilerFacKgram();			
@@ -131,9 +149,7 @@ public class Transformer implements ExpType {
 		Exp exp = compile(ast);
 		Query q =  create(exp);
 		q.setAST(ast);
-		
-		extension(q);
-		
+				
 		if (ast.isConstruct() || ast.isDescribe()){
 			// use case: kgraph only
 			Exp cons = construct(ast);
@@ -182,7 +198,9 @@ public class Transformer implements ExpType {
 		filters(q);
 		
 		if (visit != null){
-			visit.visit(q);
+			for (QueryVisitor v : visit){
+				v.visit(q);
+			}	
 		}
 
 		return q;
@@ -1168,29 +1186,7 @@ public class Transformer implements ExpType {
 		q.setFilter(Query.PATHNODE, t.compile(ast));
 	}
 	
-	/**********************************************/
-	
-	
-	void extension(Query q){
-		ASTQuery ast = (ASTQuery) q.getAST();
-		if (ast.getPragma()!=null){
-			extension(q, ast.getPragma());
-		}
-	}
-	
-	void extension(Query q, fr.inria.acacia.corese.triple.parser.Exp exp){
-		//System.out.println(exp);
-		if (exp.isQuery()){
-			Query qq = compileQuery(exp.getQuery());
-			q.addQuery(qq);
-		}
-		else if (exp.isBGP()){
-			for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
-				extension(q, ee);
-			}
-		} 
-	}
-	
+
 	
 	/*********************************************
 	 * 

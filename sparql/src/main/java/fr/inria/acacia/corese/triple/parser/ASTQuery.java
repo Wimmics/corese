@@ -149,7 +149,7 @@ public class ASTQuery  implements Keyword {
  
 	
     /** Source body of the query returned by javacc parser */
-    Exp bodyExp;
+    Exp bodyExp, bodySave;
 	/** Compiled triple query expression */
 	Exp query ;
 	// compiled construct (graph ?g removed)
@@ -1787,6 +1787,14 @@ public class ASTQuery  implements Keyword {
 
     public Exp getBody() {
         return bodyExp;
+    }
+    
+    public Exp getSaveBody() {
+        return bodySave;
+    }
+    
+    public void setSaveBody(Exp exp) {
+    	bodySave = exp;
     }
     
     public Exp getHead() {

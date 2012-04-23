@@ -49,7 +49,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	public IDatatype cast(IDatatype target, IDatatype javaType) {
 		if (target.getLabel().equals(RDF.xsdboolean)){
 			try {
-				Float f = new Float(getValue());
+				Float f = new Float(getLabel());
 				if (f == 0)      return CoreseBoolean.FALSE;
 				else if (f == 1) return CoreseBoolean.TRUE;
 				else return null;
@@ -66,9 +66,9 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	}
 
 
-	public String getValue(){
-		return value;
-	}
+//	public String getValue(){
+//		return value;
+//	}
 	
 	public String getLabel(){
 		return value;
@@ -83,7 +83,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	}
 
 	public boolean isTrue() throws CoreseDatatypeException {
-		return getValue().length() > 0;
+		return getLabel().length() > 0;
 	}
 
 	public boolean isTrueAble() {
@@ -118,11 +118,11 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 
 
 	public boolean startsWith(String label){
-		return getValue().startsWith(label);
+		return getLabel().startsWith(label);
 	}
 
 	public String getNormalizedLabel(){
-		return getValue();
+		return getLabel();
 	}
 
 	public static String getNormalizedLabel(String label){
@@ -131,13 +131,13 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 
 
 	public boolean equals(String siod){
-		return getValue().equals(siod);
+		return getLabel().equals(siod);
 	}
 
 
 
 	int intCompare(CoreseStringableImpl icod) {
-		return getValue().compareTo(icod.getValue());
+		return getLabel().compareTo(icod.getLabel());
 	}
 
 

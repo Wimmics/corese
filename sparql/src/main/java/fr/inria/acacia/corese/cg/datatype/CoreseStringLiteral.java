@@ -40,7 +40,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
   public boolean semiEquals(IDatatype iod) {
     if (iod instanceof CoreseStringLiteral){
       CoreseStringLiteral lit=(CoreseStringLiteral)iod;
-      boolean b2 = getValue().compareTo(lit.getValue()) == 0;
+      boolean b2 = getLabel().compareTo(lit.getLabel()) == 0;
       return b2;
     }
     else return sameTerm(iod);

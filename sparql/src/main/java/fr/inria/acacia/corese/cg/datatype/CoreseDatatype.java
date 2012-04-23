@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Node;
 
 /**
  * <p>Title: Corese</p>
@@ -23,18 +25,21 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 public class CoreseDatatype 
 	implements IDatatype 
 	{
+	private static Logger logger = Logger.getLogger(CoreseDatatype.class);
+
 	static final CoreseURI datatype=new CoreseURI(RDF.RDFSRESOURCE);
-		
-	final static CoreseString empty=new CoreseString("");
-	final static CoreseDatatypeException failure  = new CoreseDatatypeException("Datatype Exception, statically created");
+	static final CoreseString empty=new CoreseString("");
+	static final CoreseDatatypeException failure  = new CoreseDatatypeException("Datatype Exception, statically created");
 	static final Hashtable<String, CoreseString> lang2dataLang = new Hashtable<String, CoreseString>(); // 'en' -> CoreseString('en')
     static final Hashtable<String, CoreseURI>    hdt = new Hashtable<String, CoreseURI>(); // datatype name -> CoreseURI datatype
+	static final DatatypeMap dm = DatatypeMap.create();
+
 	static final     int LESSER = -1, GREATER = 1;
 	static boolean SPARQLCompliant = false; 
-	static DatatypeMap dm = DatatypeMap.create();
 	
-	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(CoreseDatatype.class);
+	static int cindex = 0;
+	private int index = -1;
+	
 		
 	/**
 	 * Default lang is "" for literals, But for URI which is null (see CoreseURI)
@@ -859,9 +864,103 @@ public class CoreseDatatype
 	public boolean isPath(){
 		return false;
 	}
-
-//	public IPath getPath(){
-//		return null;
-//	}
 	
+	
+	
+	/****************************************************************
+	 * 
+	 * Draft IDatatype implements Node
+	 * To get rid of both Node & IDatatype objects
+	 * IDatatype would be a node in graph directly
+	 * 
+	 ****************************************************************/
+
+
+	public int getIndex() {
+		if (index == -1){
+			index = cindex++;
+		}
+		return index;
+	}
+
+
+	public void setIndex(int n) {
+		index = n;
+	}
+
+
+	public boolean same(Node n) {
+		if (n instanceof IDatatype){
+			IDatatype dt = (IDatatype) n;
+			return sameTerm(dt);
+		}
+		else if (n.getValue() instanceof IDatatype){
+			IDatatype dt = (IDatatype) n.getValue();
+			return sameTerm(dt);
+		}
+		return this == n;
+	}
+
+
+	public int compare(Node n) {
+		if (n instanceof IDatatype){
+			IDatatype dt = (IDatatype) n;
+			return compareTo(dt);
+		}
+		else if (n.getValue() instanceof IDatatype){
+			IDatatype dt = (IDatatype) n.getValue();
+			return compareTo(dt);
+		}
+		return -1;
+	}
+
+
+	public boolean isVariable() {
+		return false;
+	}
+
+
+	public boolean isConstant() {
+		return true;
+	}
+
+
+	public Object getValue() {
+		return this;
+	}
+
+
+	public Object getProperty(int p) {
+		return null;
+	}
+
+
+	public void setProperty(int p, Object o) {
+	}
+
+	@Override
+	public Edge getEdge() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node getNode() {
+		// TODO Auto-generated method stub
+		return this;
+	}
+
+	@Override
+	public Node getNode(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node getGraph() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

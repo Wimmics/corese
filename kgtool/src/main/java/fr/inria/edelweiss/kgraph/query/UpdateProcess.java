@@ -113,7 +113,7 @@ public class UpdateProcess {
 	 */
 	void insert(Query q, Composite ope){
 		
-		ASTQuery ast = createAST(ope);
+		ASTQuery ast = createAST(q, ope);
 		ast.setInsert(true);
 		
 		Exp exp = ope.getData();
@@ -141,7 +141,7 @@ public class UpdateProcess {
 	 */	
 	void delete(Query q, Composite ope){
 		
-		ASTQuery ast = createAST(ope);
+		ASTQuery ast = createAST(q, ope);
 		ast.setDelete(true);
 		
 		Exp exp = ope.getData();
@@ -175,7 +175,7 @@ public class UpdateProcess {
 		// the graph where insert/delete occurs
 		Constant src = ope.getWith();
 
-		ASTQuery ast = createAST(ope);
+		ASTQuery ast = createAST(q, ope);
 
 		for (Composite cc : ope.getUpdates()){
 				
@@ -212,9 +212,11 @@ public class UpdateProcess {
 	 * Create an AST with the where part (empty for data update)
 	 * 
 	 */
-	ASTQuery createAST(Composite ope){
+	ASTQuery createAST(Query q, Composite ope){
 		ASTQuery ast = ASTQuery.create();
+		ASTQuery ga  = (ASTQuery) q.getAST();
 		ast.setNSM(ope.getNSM());
+		ast.setPrefixExp(ga.getPrefixExp());
 		ast.setSelectAll(true);
 		// where {pat}
 		ast.setBody(ope.getBody());		

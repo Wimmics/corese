@@ -20,7 +20,10 @@ import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Term;
+import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -50,17 +53,27 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  */
 public class ProviderImpl implements Provider {
 	
-	private static Logger logger = Logger.getLogger(ProviderImpl.class);	
+	private static Logger logger = Logger.getLogger(ProviderImpl.class);
+	
+	static final String LOCALHOST = "http://localhost:8080/corese/sparql";
 
 	HashMap<String, QueryProcess> table;
 	QueryProcess defaut;
+	CompileService compiler;
 	
 	ProviderImpl(){
 		table = new HashMap<String, QueryProcess>();
+		compiler = new CompileService();
 	}
 	
 	public static ProviderImpl create(){
-		return new ProviderImpl();
+		ProviderImpl p = new ProviderImpl();
+		p.set(LOCALHOST, 1.1);
+		return p;
+	}
+	
+	public void set(String uri, double version){
+		compiler.set(uri, version);
 	}
 	
 	/**
@@ -121,23 +134,30 @@ public class ProviderImpl implements Provider {
 	 */
 	Mappings send(Node serv, Query q, Environment env){
 		try {
-			bindings(q, env);
-			
-			Query g = q.getOuterQuery();
-			ASTQuery ag = (ASTQuery) g.getAST();
-			ASTQuery ast = (ASTQuery) q.getAST();
+			compile(serv, q, env);
 
-			ast.setDebug(g.isDebug());
-			ast.setPrefixExp(ag.getPrefixExp());
+			Query g = q.getOuterQuery();
+			ASTQuery ast = (ASTQuery) q.getAST();
 			
 			String query = ast.toString();
-			
+
 			if (g.isDebug()){
 				logger.info("** Provider: \n" + query);
 			}
 			
+			//logger.info("** Provider: \n" + query);
+
 			StringBuffer sb = doPost(serv.getLabel(), query);
+			
+			if (g.isDebug()){
+				logger.info("** Provider: \n" + sb);
+			}
+
 			Mappings map = parse(sb);
+			
+//			if (g.isDebug()){
+//				logger.info("** Provider: \n" + map);
+//			}
 			return map;
 		} catch (IOException e) {
 			logger.error(e);
@@ -149,34 +169,14 @@ public class ProviderImpl implements Provider {
 		return null;
 	}
 	
-	/**
-	 * Search select variable of query that is bound in env
-	 * Generate binding for such variable
-	 * Set bindings in ASTQuery
-	 */
-	void bindings(Query q, Environment env){
-		ASTQuery ast = (ASTQuery) q.getAST();
-		ast.clearBindings();
-		ArrayList<Variable> lvar = new ArrayList<Variable>();
-		ArrayList<Constant> lval = new ArrayList<Constant>();
-
-		for (Node qv : q.getSelect()){
-			String var = qv.getLabel();
-			Node val   = env.getNode(var);
-			
-			if (val != null){
-				lvar.add(Variable.create(var));
-				IDatatype dt = (IDatatype) val.getValue();
-				Constant cst = Constant.create(dt);
-				lval.add(cst);
-			}
-		}
-		
-		if (lvar.size()>0){
-			ast.setVariableBindings(lvar);
-			ast.setValueBindings(lval);
-		}
+	
+	void compile(Node serv, Query q, Environment env){
+		compiler.compile(serv, q, env);
 	}
+
+
+	
+	
 	
 	
 	/**********************************************************************
@@ -210,8 +210,9 @@ public class ProviderImpl implements Provider {
         urlConn.setRequestMethod("POST"); 
         urlConn.setDoOutput(true);
         urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        urlConn.setRequestProperty("Accept", "application/rdf+xml, text/xml");
-        urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
+        urlConn.setRequestProperty("Accept", "application/rdf+xml, text/xml, application/sparql-results+xml");
+        //urlConn.setRequestProperty("Accept", "text/xml");
+       urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
         
         OutputStreamWriter out = new OutputStreamWriter(urlConn.getOutputStream());
         out.write(qstr);
@@ -237,23 +238,6 @@ public class ProviderImpl implements Provider {
 		return sb;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 //	public String callSoapEndPoint() {

@@ -55,6 +55,8 @@ public class Distance {
 	hasEquiv = false;
 	
 	private Hashtable<Node, Node> table;
+	private Hashtable<Node, Integer> depth;
+
 
 	static Logger logger = Logger.getLogger(Distance.class);
 	
@@ -78,6 +80,7 @@ public class Distance {
 		
 		topList = new NodeList(top);
 		table 	= new Hashtable<Node, Node>();
+		depth 	= new Hashtable<Node, Integer>();
 		sameAs  = graph.getPropertyNode(OWL.SAMEAS);
 		hasSame = sameAs != null;
 		hasEquiv = equivAs != null;
@@ -125,13 +128,15 @@ public class Distance {
 		CSTEP = d;
 	}
 	
-	Integer getDepth(Node n){
-		Integer d = (Integer) n.getProperty(Node.DEPTH) ;
+	public Integer getDepth(Node n){
+		//Integer d = (Integer) n.getProperty(Node.DEPTH) ;
+		Integer d = depth.get(n) ;
 		return d ;
 	}
 	
 	void setDepth(Node n, Integer i){
-		n.setProperty(Node.DEPTH, i);
+		//n.setProperty(Node.DEPTH, i);
+		depth.put(n, i);
 	}
 	
 	void init(){
@@ -203,11 +208,12 @@ public class Distance {
 	}
 	
 	void reset(){
-		for (Node sup : topList){
-			if (getDepth(sup)!=null){
-				reset(sup);
-			}
-		}
+		depth.clear();
+//		for (Node sup : topList){
+//			if (getDepth(sup)!=null){
+//				reset(sup);
+//			}
+//		}
 	}
 	
 	void reset(Node sup){

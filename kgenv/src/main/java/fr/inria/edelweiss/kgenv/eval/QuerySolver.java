@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgenv.eval;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -52,7 +53,7 @@ public class QuerySolver  {
 	protected Evaluator evaluator;
 	protected Matcher matcher;
 	protected Sorter sort;
-	protected QueryVisitor visit;
+	protected List<QueryVisitor> visit;
 
 	
 	boolean isListGroup = false,
@@ -122,7 +123,15 @@ public class QuerySolver  {
 	}
 	
 	public void set(QueryVisitor v){
-		visit = v;
+		add(v);
+	}
+	
+	
+	public void add(QueryVisitor v){
+		if (visit == null){
+			visit = new ArrayList<QueryVisitor>();
+		}
+		visit.add(v);
 	}
 	
 	public void set(Provider p){
@@ -153,7 +162,9 @@ public class QuerySolver  {
 		if (sort != null) {
 			transformer.set(sort);
 		}
-		transformer.set(visit);
+		if (visit!=null){
+			transformer.add(visit);
+		}
 		return transformer;
 	}
 	

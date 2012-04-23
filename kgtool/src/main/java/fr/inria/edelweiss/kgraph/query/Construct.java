@@ -69,7 +69,7 @@ public class Construct
 		count = 0;
 		IDatatype dt;
 		dt = DatatypeMap.createResource(src);
-		defaultGraph = new NodeImpl(dt);
+		defaultGraph =  NodeImpl.create(dt);
 	}
 	
 	

@@ -2,6 +2,8 @@ package fr.inria.acacia.corese.api;
 
 import fr.inria.acacia.corese.cg.datatype.ICoresePolymorphDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
 
 /**
  * This is an interface for all Corese datatypes.<br />
@@ -10,10 +12,10 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
  * that are comparable with an other datatype(instance). Each can also have a value space (which is
  * a string or not and so allow regular expression matching) that have an order relation.
  * 
- * @author Olivier Savoie & Olivier Corby & Virginie Bottollier
+ * @author Olivier Corby & Olivier Savoie & Virginie Bottollier
  */
 public interface IDatatype 
-	extends ICoresePolymorphDatatype
+	extends ICoresePolymorphDatatype, Node, Entity
 	{
 	
 	static final int LITERAL =	0;

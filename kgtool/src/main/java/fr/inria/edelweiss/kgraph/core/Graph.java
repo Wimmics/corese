@@ -1089,7 +1089,7 @@ public class Graph {
 
 	
 	Node createNode(IDatatype dt){
-		return new NodeImpl(dt);
+		return  NodeImpl.create(dt);
 	}
 	
 	// resource nodes

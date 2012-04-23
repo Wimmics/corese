@@ -13,5 +13,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 public interface Provider {
 	
 	Mappings service(Node serv, Exp exp, Environment env);
+	
+	void set(String uri, double version);
 
 }

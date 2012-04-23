@@ -20,12 +20,13 @@ public class NodeImpl implements Node, Entity {
 	Object[] properties;
 	
 	
-	public NodeImpl(IDatatype val){
+	NodeImpl(IDatatype val){
 		dt = val;
 	}	
 	
-	public static NodeImpl create(IDatatype val){
-		return new NodeImpl(val);
+	public static Node create(IDatatype val){
+		//return new NodeImpl(val);
+		return val;
 	}
 	
 	public String toString(){

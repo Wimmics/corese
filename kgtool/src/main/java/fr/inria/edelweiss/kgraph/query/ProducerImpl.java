@@ -584,7 +584,7 @@ public class ProducerImpl implements Producer {
 		if (node == null){
 			if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)){
 				// blank generated for path node: do not store it
-				return new NodeImpl(dt);
+				return  NodeImpl.create(dt);
 			}
 			else {
 				node = local.getNode(dt, true, true);

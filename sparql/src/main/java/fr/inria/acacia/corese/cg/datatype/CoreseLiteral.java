@@ -52,7 +52,7 @@ public class CoreseLiteral extends CoreseStringLiteral {
 
 	public String getLang(){
 		if (dataLang == null) return null;
-		else return dataLang.getValue();
+		else return dataLang.getLabel();
 	}
 
 	public IDatatype getDataLang(){

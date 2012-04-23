@@ -32,6 +32,10 @@ public class CoreseBlankNode extends CoreseResource {
 		return true;
 	}
 	
+	public boolean isConstant() {
+		return false;
+	}
+	
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case BLANK: return getLabel().compareTo(iod.getLabel());

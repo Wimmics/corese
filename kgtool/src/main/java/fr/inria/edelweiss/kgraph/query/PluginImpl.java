@@ -33,12 +33,19 @@ public class PluginImpl extends ProxyImpl {
 	
 	static Logger logger = Logger.getLogger(PluginImpl.class);
 	
+	// for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
+	// idem for setObject()
+	static Table table;
+	
 	Graph graph;
 	MatcherImpl match;
 	Loader ld;
 	
 	PluginImpl(Graph g, Matcher m){
 		graph = g;
+		if (table == null){
+			table = new Table();
+		}
 		if (m instanceof MatcherImpl){
 			match = (MatcherImpl) m;
 		}
@@ -99,10 +106,10 @@ public class PluginImpl extends ProxyImpl {
 		switch (exp.oper()){
 		
 		case GETP:
-			return getProperty(o1, (IDatatype) o2);
+			return getProperty(o1, ((IDatatype) o2).intValue());
 			
 		case SETP:
-			return setProperty(o1, (IDatatype) o2, null);		
+			return setProperty(o1, ((IDatatype) o2).intValue(), null);		
 		
 		case SET:
 			return setObject(o1, o2);	
@@ -131,7 +138,7 @@ public class PluginImpl extends ProxyImpl {
 		switch (exp.oper()){
 		
 		case SETP:
-			return setProperty(o1, (IDatatype) o2, o3);	
+			return setProperty(o1, ((IDatatype) o2).intValue(), o3);	
 		
 		}
 		
@@ -234,36 +241,72 @@ public class PluginImpl extends ProxyImpl {
 	}
 	
 	
+//	Object getObject(Object o){
+//		Node n = node(o);
+//		if (n == null) return null;
+//		return n.getObject();
+//	}
+//	
+//	IDatatype setObject(Object o, Object v){
+//		Node n = node(o);
+//		if (n == null) return null;
+//		n.setObject(v);
+//		return TRUE;
+//	}
+//	
+//	IDatatype setProperty(Object o, IDatatype dt, Object v){
+//		Node n = node(o);
+//		if (n == null) return null;
+//		
+//		int i = dt.intValue();
+//		n.setProperty(i+Node.PSIZE, v);
+//		return TRUE;
+//	}
+//	
+//
+//	Object getProperty(Object o, IDatatype dt){
+//		Node n = node(o);
+//		if (n == null) return null;
+//		
+//		int i = dt.intValue();
+//		return n.getProperty(i+Node.PSIZE);
+//	}
+	
+	
+	class Table extends Hashtable<Integer, PTable>{}
+	
+	class PTable extends Hashtable<Object, Object>{}
+	
+	PTable getPTable(Integer n){
+		PTable t = table.get(n);
+		if (t == null){
+			t = new PTable();
+			table.put(n, t);
+		}
+		return t;
+	}
+	
 	Object getObject(Object o){
-		Node n = node(o);
-		if (n == null) return null;
-		return n.getObject();
+		return getProperty(o, Node.OBJECT);
 	}
 	
 	IDatatype setObject(Object o, Object v){
-		Node n = node(o);
-		if (n == null) return null;
-		n.setObject(v);
+		setProperty(o, Node.OBJECT, v);
 		return TRUE;
 	}
 	
-	IDatatype setProperty(Object o, IDatatype dt, Object v){
-		Node n = node(o);
-		if (n == null) return null;
-		
-		int i = dt.intValue();
-		n.setProperty(i+Node.PSIZE, v);
+	IDatatype setProperty(Object o, Integer n, Object v){
+		PTable t = getPTable(n);
+		t.put(o, v);
 		return TRUE;
 	}
 	
 
-	Object getProperty(Object o, IDatatype dt){
-		Node n = node(o);
-		if (n == null) return null;
-		
-		int i = dt.intValue();
-		return n.getProperty(i+Node.PSIZE);
+	Object getProperty(Object o, Integer n){
+		PTable t = getPTable(n);
+		return t.get(o);
 	}
+
 	
 	
 	Node node(Object o){

@@ -2,9 +2,11 @@ package fr.inria.edelweiss.kgenv.parser;
 
 import java.lang.reflect.InvocationTargetException;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -44,6 +46,7 @@ public class Pragma  {
 	static final String LOAD 	= KG + "load";
 	static final String LIST 	= KG + "list";
 	static final String DISPLAY	= KG + "display";
+	static final String EXPAND 	= KG + "expand";
 
 	protected static final String STATUS	= KG + "status";
 	protected static final String DESCRIBE	= KG + "describe";
@@ -65,7 +68,8 @@ public class Pragma  {
 
 	protected Eval kgram;
 	protected Query query;
-	ASTQuery ast;
+	protected Transformer transform;
+	protected ASTQuery ast;
 	
 	public Pragma(Eval e, Query q, ASTQuery a){
 		kgram = e;
@@ -78,6 +82,11 @@ public class Pragma  {
 		ast = a;
 	}
 	
+	public Pragma(Transformer t, ASTQuery a){
+		ast = a;
+		transform = t;
+	}
+	
 	public void parse(){
 		//System.out.println("** Pragma1: " + ast.getPragma());
 		parse(null, ast.getPragma());
@@ -88,7 +97,7 @@ public class Pragma  {
 		
 		for (fr.inria.acacia.corese.triple.parser.Exp pragma : exp.getBody()){
 			
-			if (query.isDebug()) Message.log(Message.PRAGMA, pragma);
+			if (query != null && query.isDebug()) Message.log(Message.PRAGMA, pragma);
 			
 			if (pragma.isTriple()){
 				triple(g, pragma.getTriple());
@@ -98,6 +107,51 @@ public class Pragma  {
 				parse(gp.getSource(), gp.getBody().get(0));
 			}
 		}
+	}
+	
+	
+	public void compile(){
+		//System.out.println("** Compile: " + ast.getPragma());
+		compile(null, ast.getPragma());
+	}
+	
+	
+	public void compile(Atom g, fr.inria.acacia.corese.triple.parser.Exp exp){
+		
+		for (fr.inria.acacia.corese.triple.parser.Exp pragma : exp.getBody()){
+			
+			if (ast.isDebug()) Message.log(Message.PRAGMA, pragma);
+
+			if (pragma.isTriple()){
+				ctriple(g, pragma.getTriple());
+			}
+			else if (pragma.isGraph()){
+				Source gp = (Source) pragma;
+				compile(gp.getSource(), gp.getBody().get(0));
+			}
+		}
+	}
+	
+	
+	public void ctriple(Atom g, Triple t){
+			
+			String subject  = t.getSubject().getLongName();
+			String property = t.getProperty().getLongName();
+			String object   = t.getObject().getLongName();
+			if (object == null) object = t.getObject().getName();
+			
+			if (subject.equals(PATH)){
+				if (property.equals(EXPAND)){
+					Constant cst = t.getObject().getConstant();
+					IDatatype dt = cst.getDatatypeValue();
+					if (dt.isNumber()){
+						transform.add(ExpandPath.create(dt.intValue()));
+					}
+					else {
+						transform.add(ExpandPath.create());
+					}
+				}
+			}
 	}
 	
 	

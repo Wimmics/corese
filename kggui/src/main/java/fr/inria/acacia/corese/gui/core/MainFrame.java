@@ -63,7 +63,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	 */
 	private static final long serialVersionUID = 1L; 
 	
-	private static final String TITLE = "Corese/KGRAM GUI - 3.0 - 2011-11-11";
+	private static final String TITLE = "Corese/KGRAM 3.0 - INRIA - Wimmics - 2012-04-22";
 
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;

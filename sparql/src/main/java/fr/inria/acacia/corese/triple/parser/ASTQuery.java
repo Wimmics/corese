@@ -2246,6 +2246,7 @@ public class ASTQuery  implements Keyword {
 	
 	
 	public void set(ASTUpdate u){
+        setResultForm(ASTQuery.QT_UPDATE);
 		astu = u;
 		u.set(this);
 	}

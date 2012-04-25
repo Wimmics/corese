@@ -229,6 +229,37 @@ public class Transformer implements ExpType {
 		return q;
 	}
 	
+	/**
+	 * Compile service  as a subquery if it is a pattern
+	 * and as a subquery if it already is one
+	 */
+	Exp compileService(Service service){
+		Node src = compile(service.getService());
+		Exp node = Exp.create(NODE, src);
+		
+		fr.inria.acacia.corese.triple.parser.Exp body = service.get(0);
+		ASTQuery aa;
+		
+		if (body.isBGP() && body.size()==1 && body.get(0).isQuery()){
+			// service body is a subquery
+			aa = body.get(0).getQuery();
+		}
+		else {
+			// service body is a pattern
+			aa = ast.subCreate();
+			aa.setSelectAll(true);
+			aa.setBody(body);
+		}
+		
+		Query q = compileQuery(aa);
+		q.setService(true);
+		q.setSilent(service.isSilent());
+		
+		Exp exp = Exp.create(SERVICE, node, q);
+		exp.setSilent(service.isSilent());
+		return exp;
+	}
+	
 	
 	Query create(Exp exp){
 		Query q = Query.create(exp);
@@ -833,18 +864,8 @@ public class Transformer implements ExpType {
 		case SERVICE: {
 			// compiled as subquery
 			
-			Service service = (Service) query;
-			Node src = compile(service.getService());
-			Exp node = Exp.create(NODE, src);
-			
-			ASTQuery a = ast.subCreate();
-			a.setSelectAll(true);
-		    a.setBody(service.get(0));
-			Query q = compileQuery(a);
-			q.setService(true);
-			q.setSilent(service.isSilent());
-			exp = Exp.create(SERVICE, node, q);
-			exp.setSilent(service.isSilent());
+			exp = compileService((Service) query);
+
 		}
 		break;
 

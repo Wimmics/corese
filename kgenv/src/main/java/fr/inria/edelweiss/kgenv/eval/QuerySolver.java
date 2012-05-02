@@ -152,11 +152,6 @@ public class QuerySolver  {
 		defaultBase = str;
 	}
 	
-	
-	public Mappings query(ASTQuery ast) {
-		return query(ast, null, null);
-	}
-	
 	protected Transformer transformer(){
 		Transformer transformer = Transformer.create();
 		if (sort != null) {
@@ -168,21 +163,23 @@ public class QuerySolver  {
 		return transformer;
 	}
 	
-	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
-		Dataset ds = Dataset.create(from, named);
-		return query(ast, ds);
+	/**
+	 * Does not perform construct {} if any
+	 * it return the Mappings in this case
+	 */
+	public Mappings basicQuery(ASTQuery ast) {
+		return basicQuery(ast, null);
 	}
-	
-	public Mappings query(ASTQuery ast, Dataset ds) {
+	public Mappings basicQuery(ASTQuery ast, Dataset ds) {
 		if (ds!=null){
 			ast.setDefaultFrom(ds.getFrom());
 			ast.setDefaultNamed(ds.getNamed());
 		}
 		Transformer transformer =  transformer();
 		Query query = transformer.transform(ast);
-		// keep null below (cf QueryProcess)
 		return query(query, null);
 	}
+	
 	
 	public Mappings query(String squery) throws EngineException{
 		return query(squery, null, null, null);

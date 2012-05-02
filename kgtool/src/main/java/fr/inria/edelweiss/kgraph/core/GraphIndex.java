@@ -256,4 +256,10 @@ implements Index, Iterable<Entity> {
 		
 	}
 
+
+	@Override
+	public void delete(Node pred) {
+		// TODO Auto-generated method stub
+	}
+
 }

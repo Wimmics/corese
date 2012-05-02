@@ -423,7 +423,44 @@ public class TestQuery {
 	}
 	
 	
-	
+	@Test
+	public void test111(){
+				
+		String query = 
+		"select * (count(?doc) as ?c)" +
+		"(kg:setProperty(?x, 0, ?c) as ?t)" +
+		"where {" +
+		"?x c:hasCreated ?doc" +
+		"" +
+		"}" +
+		"group by ?x" ;
+		
+		String query2 = 
+			"select distinct ?x" +
+			"(kg:getProperty(?x, 0) as ?v)" +
+			"where {" +
+			"?x c:hasCreated ?doc filter(kg:getProperty(?x, 0) > 0)" +
+			"}" +
+			"order by desc(kg:getProperty(?x, 0))";
+			
+		
+		try {
+		
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			exec.query(query);
+			Mappings map = exec.query(query2);
+
+			assertEquals("Result", 3, map.size()); 	
+			
+			IDatatype dt = getValue(map, "?v");
+			
+			assertEquals("Result", 2, dt.intValue()); 		
+
+		} catch (EngineException e) {
+			assertEquals("Result", true, e);
+		}
+	}
 	
 	
 	@Test
@@ -516,7 +553,7 @@ public class TestQuery {
 			QueryProcess exec = QueryProcess.create(graph);
 			Mappings map = exec.query(query);
 			IDatatype dt = getValue(map, "?max");
-			assertEquals("Result", 13, dt.getIntegerValue()); 	
+			assertEquals("Result", 13, dt.intValue()); 	
 
 		} catch (EngineException e) {
 			assertEquals("Result", true, e);
@@ -1795,7 +1832,7 @@ public class TestQuery {
 				"}";
 		Graph graph = Graph.create();
 		
-		Node g = graph.addResource("test");
+		Node g = graph.addGraph("test");
 		Node s = graph.addResource("URIJohn");
 		Node p = graph.addProperty("age");
 		Node o = graph.addLiteral(24);
@@ -2058,6 +2095,130 @@ public class TestQuery {
 		}
 	
 	}
+	
+	
+	
+	
+	@Test
+	public void test60(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String query = 
+			"prefix foaf: <http://xmlns.com/foaf/0.1/>" + 
+			"select * where {" +
+				"service <http://fr.dbpedia.org/sparql> {" +
+					"?x foaf:name 'Olivier'@fr" +
+				"}" +
+			"}";
+		
+		
+		try {
+			Mappings map = exec.query(query);
+			ResultFormat f = ResultFormat.create(map);
+			//System.out.println(f);
+			assertEquals("Result", 2, map.size());
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+	}
+	
+	
+	
+	@Test
+	public void test61(){			
+		DatatypeMap.setLiteralAsString(false);
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String query = 
+			"prefix foaf: <http://xmlns.com/foaf/0.1/>" +
+			"prefix p: <http://fr.dbpedia.org/property/>" + 
+			"select  * where {" +
+				"service <http://fr.dbpedia.org/sparql> {"+
+				"<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y .}" +
+			"}" +
+			"pragma {kg:path kg:expand 20}";
+		
+		
+		try {
+			Mappings map = exec.query(query);
+			ResultFormat f = ResultFormat.create(map);
+			//System.out.println(f);
+			assertEquals("Result", 15, map.size());
+			
+			
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+	}
+	
+	
+
+	@Test
+	public void test62(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String init = 
+			"prefix foaf: <http://xmlns.com/foaf/0.1/>" + 
+			"insert data {" +
+				"<John> foaf:age 12 " +
+				"<James> foaf:age 20" +
+				"}";
+		
+		String query = 
+			"prefix foaf: <http://xmlns.com/foaf/0.1/>" + 
+			"select * where {" +
+				"?x foaf:age ?age" +
+			"}";		
+		
+		try {
+			Mappings map = exec.query(init);
+			map = exec.query(query);
+			assertEquals("Result", 2, map.size());
+
+			exec.filter(map, "?age > 15");
+			assertEquals("Result", 1, map.size());
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	public IDatatype fun(Object o1, Object o2){

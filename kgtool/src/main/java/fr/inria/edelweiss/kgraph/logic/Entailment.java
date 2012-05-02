@@ -293,6 +293,7 @@ public class Entailment {
 	void defProperty(Node pNode) {
 		Node gNode = graph.addGraph(ENTAIL);
 		Node tNode = graph.addResource(RDF.PROPERTY);
+		graph.add(pNode);
 		EdgeImpl ee =  create(gNode, pNode, hasType, tNode);
 		recordWithoutEntailment(gNode, null, ee);
 		
@@ -708,7 +709,6 @@ public class Entailment {
 			for (Entity ent : graph.getEdges(pred)){
 				
 				if (isFirst){
-					//isFirst = false;
 					// ?p rdf:type rdf:Property
 					defProperty(pred);
 				}

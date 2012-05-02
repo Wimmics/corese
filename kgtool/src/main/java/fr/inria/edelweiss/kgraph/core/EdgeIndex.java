@@ -701,5 +701,9 @@ implements Index {
 			}
 		}
 	}
+
+	public void delete(Node pred) {
+		
+	}
 	
 }

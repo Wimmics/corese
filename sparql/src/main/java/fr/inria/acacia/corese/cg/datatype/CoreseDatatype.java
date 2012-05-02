@@ -49,7 +49,8 @@ public class CoreseDatatype
 	}
 	
 	public String toString(){
-		return getNormalizedLabel();
+		//return getNormalizedLabel();
+		return toSparql();
 	}
 	
 	public String toSparql(){
@@ -58,7 +59,7 @@ public class CoreseDatatype
 	
 
 	public String toSparql(boolean prefix){
-		String value = toString();
+		String value = getLabel();
 		
 		if (getDatatype() != null && ! getDatatype().getLabel().equals(RDFS.rdflangString)){
 

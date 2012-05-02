@@ -809,11 +809,13 @@ public class Triple extends Exp {
 		r = subject.toString();
 		
 		// property
-		p = predicate.getName();
-		
-		// if we have something like <Engineer> (because there is a base), add < and >
-		if (isABaseWord(p))
-			p = KeywordPP.OPEN + p + KeywordPP.CLOSE;
+		p = predicate.toString();
+
+//		p = predicate.getName();
+//
+//		// if we have something like <Engineer> (because there is a base), add < and >
+//		if (isABaseWord(p))
+//			p = KeywordPP.OPEN + p + KeywordPP.CLOSE;
 		
 		if (isPath()){
 			p = getRegex().toRegex();

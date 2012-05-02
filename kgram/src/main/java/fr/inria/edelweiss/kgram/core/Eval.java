@@ -2040,7 +2040,7 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 	private	void pop(Query subQuery, Mapping ans){
 		Memory env = memory;
 		Query qq = query;
-		
+
 		for (Node subNode : subQuery.getSelect()){
 			if (ans.isBound(subNode)){
 				Node outNode = qq.getOuterNode(subNode);

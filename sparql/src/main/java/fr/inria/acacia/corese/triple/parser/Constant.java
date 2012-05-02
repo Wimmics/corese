@@ -129,6 +129,9 @@ public class Constant extends Atom {
 				return sb;
 			}
 		}
+		else if (isBlank()) {
+			sb.append(name);
+		} 
 		else if (isQName) {
 			sb.append(name);
 		} 

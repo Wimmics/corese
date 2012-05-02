@@ -807,17 +807,31 @@ public class PathFinder
 				}				
 									
 				if (isStart){
-					// bind start node
+//					// bind start node
+//					visit.nstart(node);
+//					// in case there is e1 || e2
+//					stack.pushStart(node);
+					
+					boolean isNew = previous == null || ! previous.same(node);
+					previous = node;
+
+					if (isNew){
+						// clean the table of visited nodes as we have a new start node
+						visit.start();
+					}
+					
+					// visit start node
 					visit.nstart(node);
 					// in case there is e1 || e2
 					stack.pushStart(node);
+					
+					
 					if (hasShort) {
 						// reset node length to zero when start changes
-						if (previous==null || ! previous.same(node)){
+						if (isNew){
 							pp.initPath(ee, 0);
 							visit.initPath();
 						}
-						previous = node;
 					}
 				}
 				
@@ -854,7 +868,8 @@ public class PathFinder
 				
 				if (hasHandler){
 					handler.leave(ent, exp, size);
-				}								
+				}
+				
 				if (isStart){
 					visit.nleave(node);
 					stack.popStart();
@@ -1076,12 +1091,15 @@ public class PathFinder
 	 * exp*
 	 */
 	void star(Regex exp, Record stack, Path path, Node start, Node src){
+
+		// start is the first node of exp*
+		boolean isFirst = stack.getVisit().nfirst(exp);
 		
 		if (stack.getVisit().nloop(exp, start)){
 			// start already met in exp path: stop
 			stack.push(exp);
 			return;
-		}		
+		}
 		
 		// use case: (p*/q)*
 		// we must save each visited of p*
@@ -1103,8 +1121,11 @@ public class PathFinder
 		eval(stack, path, start, src);
 		// restore stack (exp* on top)
 		stack.pop();
-
-		stack.getVisit().nremove(exp, start);	
+		
+		stack.getVisit().nremove(exp, start);
+		if (isFirst){
+			stack.getVisit().nunset(exp);
+		}
 	}
 	
 	
@@ -1113,8 +1134,11 @@ public class PathFinder
 	 * exp+
 	 */
 	void plus(Regex exp, Record stack, Path path, Node start, Node src){
+		
+		// start is the first node of exp+
+		boolean isFirst = stack.getVisit().nfirst(exp);
 
-		if (stack.getVisit().count(exp) == 0){
+		if (stack.getVisit().isCounting && stack.getVisit().count(exp) == 0){
 			
 			if (checkLoop){
 				//trace("** Visit: " + start);
@@ -1164,8 +1188,14 @@ public class PathFinder
 			eval(stack, path, start, src);
 			stack.pop();
 
+			//count
 			stack.getVisit().nremove(exp, start);		
 		}
+		
+		if (isFirst){
+			stack.getVisit().nunset(exp);
+		}
+		
 	}
 
 	void trace(Object str){

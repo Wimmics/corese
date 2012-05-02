@@ -27,20 +27,22 @@ public class Visit {
 	Hashtable<Regex, Integer> ctable;
 	DTable tdistinct;
 	LTable ltable;
-	ArrayList<Regex> list;
+	ArrayList<Regex> regexList;
 
-	boolean isReverse = false;
+	boolean isReverse = false,
+	// isCounting = false : new sparql semantics  
+	isCounting = !false;
 	
 	Visit(boolean b){
-		table   = new Hashtable<State, List<Node>>();
-		etable  = new Hashtable<Regex, List<Node>>();
-		eetable = new Hashtable<Regex, Table>();
-		ttable  = new ETable(b);
-		ctable  = new Hashtable<Regex, Integer> ();
-		list    = new ArrayList<Regex>();
+		isReverse 	= b && isCounting;
+		table   	= new Hashtable<State, List<Node>>();
+		etable  	= new Hashtable<Regex, List<Node>>();
+		eetable 	= new Hashtable<Regex, Table>();
+		ttable  	= new ETable(isReverse);
+		ctable  	= new Hashtable<Regex, Integer> ();
+		regexList   = new ArrayList<Regex>();
 		tdistinct 	= new DTable();
 		ltable 		= new LTable();
-		isReverse 	= b;
 	}
 	
 	class Table1 extends Hashtable<Node, Node>  {}
@@ -80,10 +82,13 @@ public class Visit {
 			if (table == null) {
 				return false;
 			}
-			return table.loop(exp, start);
+			boolean b = table.loop(exp, start);
+			return b;
 		}
 		
-		
+		boolean exist(Regex exp){
+			return containsKey(exp);
+		}
 		
 	}
 	
@@ -218,20 +223,29 @@ public class Visit {
 		return false;
 	}
 	
+	boolean nfirst(Regex exp){
+		return ! ttable.exist(exp);
+	}
+	
 	void ninsert(Regex exp, Node start){
 		if (start == null){
 			// subscribe exp to start() above because start node is not bound yet
-			list.add(exp);
+			declare(exp);
 		}
 		else {
 			ttable.add(exp, start);
 		}
 	}
 	
-
+	
+	void declare(Regex exp){
+		if (! regexList.contains(exp)){
+			regexList.add(exp);
+		}
+	}
 	
 	boolean knows(Regex exp){
-		return list.contains(exp);
+		return regexList.contains(exp);
 	}
 	
 	void nset(Regex exp, TTable t){
@@ -259,7 +273,7 @@ public class Visit {
 	 * add node to the visited list of exp to prevent loops
 	 */
 	void nstart(Node node){
-		for (Regex exp : list){
+		for (Regex exp : regexList){
 			ttable.add(exp, node);
 		}
 	}
@@ -271,11 +285,10 @@ public class Visit {
 	 * leave the binding
 	 */
 	void nleave(Node node){
-		for (Regex exp : list){
+		for (Regex exp : regexList){
 			ttable.remove(exp, node);
 		}
 	}
-
 
 	
 	/**
@@ -283,12 +296,16 @@ public class Visit {
 	 */
 	void nremove (Regex exp, Node node){
 		if (node == null){
-			list.remove(exp);
+			regexList.remove(exp);
 			return;
 		}
-		
-		ttable.remove(exp, node);
+		if (isCounting){
+			ttable.remove(exp, node);
+		}
 	}
+	
+	
+	
 	
 	
 	 void set(Regex exp, int n){
@@ -384,30 +401,38 @@ public class Visit {
 	 void initPath(){
 		 ltable.clear();
 	 }
-		
+
+	 void start(){
+		 if (! isCounting){
+			 ttable.clear();
+		 }
+	 }
+
 	 
 	 void setLength(Node n, Regex exp, int l){
-		 if (speedUp){
-			 Regex e = getRegex(n);
-			 if (e == null || e == exp){
-				 n.setProperty(Node.LENGTH, l);
-				 setRegex(n, exp);
-			 }
-		 }
-		 else {
+//		 if (speedUp){
+//			 Regex e = getRegex(n);
+//			 if (e == null || e == exp){
+//				 n.setProperty(Node.LENGTH, l);
+//				 setRegex(n, exp);
+//			 }
+//		 }
+//		 else 
+		 {
 			 ltable.setLength(n, exp, l);
 		 }
 	 }
 
 	 Integer getLength(Node n, Regex exp){
-		 if (speedUp){
-			 Regex e = getRegex(n);
-			 if (e == null || e == exp){
-				 return (Integer) n.getProperty(Node.LENGTH);
-			 }
-			 return null;
-		 }
-		 else {
+//		 if (speedUp){
+//			 Regex e = getRegex(n);
+//			 if (e == null || e == exp){
+//				 return (Integer) n.getProperty(Node.LENGTH);
+//			 }
+//			 return null;
+//		 }
+//		 else 
+		 {
 			 return ltable.getLength(n, exp);
 		 }
 	 }
@@ -458,12 +483,12 @@ public class Visit {
 	}
 	 
 	void start(Node node){
-		for (Regex exp : list){
+		for (Regex exp : regexList){
 			add(exp, node);
 		}
 	}
 	void leave(Node node){
-		for (Regex exp : list){
+		for (Regex exp : regexList){
 			remove(exp, node);
 		}
 	}
@@ -483,7 +508,7 @@ public class Visit {
 	void insert(Regex exp, Node start){
 		if (start == null){
 			// subscribe exp to start() above because start node is not bound yet
-			list.add(exp);
+			regexList.add(exp);
 		}
 		else {
 			add(exp, start);
@@ -525,7 +550,7 @@ public class Visit {
 
 	void remove (Regex exp, Node node){
 		if (node == null){
-			list.remove(exp);
+			regexList.remove(exp);
 			return;
 		}
 		

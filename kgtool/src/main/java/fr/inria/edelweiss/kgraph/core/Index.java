@@ -34,6 +34,8 @@ public interface Index {
 	
 	Entity delete(Entity edge);
 
+	void delete(Node pred);
+
 	boolean exist(Entity edge);
 
 	void declare(Entity edge);

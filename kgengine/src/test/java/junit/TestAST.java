@@ -31,6 +31,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.edelweiss.kgtool.print.ResultFormat;
 
 /**
  * 
@@ -107,19 +108,25 @@ public class TestAST {
 		lValue.add(ast.createConstant("a"));
 
 		ast.setValueBindings(lValue);
-		
+		System.out.println(ast);
+
 		Graph g = Graph.create();
 		QueryProcess exec = QueryProcess.create(g);
 
 		try {
-			String query = 
+			String init = 
 				"prefix ns: <http://ns.inria.fr/schema/>" +
 				"insert data {<a> rdf:type <Person> ; ns:test (1 2)}";
-			exec.query(query);
+			exec.query(init);
+			
+			RDFFormat ff = RDFFormat.create(g);
+			System.out.println(ff);
 
 			Mappings map = exec.query(ast);
-			
-			assertEquals("Result", map.size(), 2);
+			System.out.println(map);
+		
+			assertEquals("Result", 2, map.size());
+
 
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
@@ -127,6 +134,10 @@ public class TestAST {
 		}
 	}
 
+	
+	
+	
+	
 	
 	
 	@Test
@@ -717,14 +728,147 @@ public void test21(){
 
 	
 	
+	@Test
+	public void test29(){
+
+		NSManager nsm = NSManager.create();
+		nsm.definePrefix("foaf", "http://foaf.org/");
+		
+
+		ASTQuery ast = ASTQuery.create();
+		ast.setNSM(nsm);
+
+		Triple t1 = Triple.create(Variable.create("?x"), ast.createQName("foaf:knows"), Variable.create("?y"));
+		Triple t2 = Triple.create(Variable.create("?y"), ast.createQName("foaf:knows"), Variable.create("?x"));
+
+		ast.setBody(BasicGraphPattern.create(t1));
+		ast.setConstruct(BasicGraphPattern.create(t2));
+
+
+		String init = 
+			"prefix foaf: <http://foaf.org/>" +
+			"insert data {<John> foaf:knows <Jim>" +
+			"<John> owl:sameAs <Johnny>}";
+		
+		String query = 
+			"prefix foaf: <http://foaf.org/>" +
+			"construct {?y foaf:knows ?x}" +
+			"where {?x foaf:knows ?y}";
+		
+
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+
+		try {
+			exec.query(init);
+			Mappings map =  exec.query(ast);
+			RDFFormat f = RDFFormat.create(map);
+			
+			System.out.println(ast);
+			System.out.println(map);
+			System.out.println(f);
+			assertEquals("Result", map.size(), 1);
+			
+	
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			assertEquals("Result", true, e);
+		}
+	}
+
+
 	
 	
 	
+	@Test
+	public void test30(){
+
+		NSManager nsm = NSManager.create();
+		nsm.definePrefix("foaf", "http://foaf.org/");
+		
+
+		ASTQuery ast = ASTQuery.create();
+		ast.setNSM(nsm);
+
+		Triple t1 = Triple.create(Variable.create("?x"), ast.createQName("foaf:knows"), Variable.create("?y"));
+
+		ast.setBody(BasicGraphPattern.create(t1));
+		
+		ast.setDescribe(Variable.create("?x"));
+
+		String init = 
+			"prefix foaf: <http://foaf.org/>" +
+			"insert data {<John> foaf:knows <Jim>" +
+			"<John> owl:sameAs <Johnny>}";
+		
+		String query = 
+			"prefix foaf: <http://foaf.org/>" +
+			"construct {?y foaf:knows ?x}" +
+			"where {?x foaf:knows ?y}";
+		
+
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+
+		try {
+			exec.query(init);
+			Mappings map =  exec.query(ast);
+			RDFFormat f = RDFFormat.create(map);
+			
+			System.out.println(ast);
+			System.out.println(map);
+			System.out.println(f);
+			assertEquals("Result", map.size(), 2);
+			
+	
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			assertEquals("Result", true, e);
+		}
+	}
+
 	
 	
+	@Test
+	public void test31(){
+
+		NSManager nsm = NSManager.create();
+		nsm.definePrefix("foaf", "http://foaf.org/");
+		
+
+		ASTQuery ast = ASTQuery.create();
+		ast.setNSM(nsm);
+
+		Triple t1 = Triple.create(Variable.create("?x"), ast.createQName("foaf:knows"), Variable.create("?y"));
+
+		ast.setBody(BasicGraphPattern.create(t1));
+		
+		ast.setAsk(true);
+
+		String init = 
+			"prefix foaf: <http://foaf.org/>" +
+			"insert data {<John> foaf:knows <Jim>" +
+			"<John> owl:sameAs <Johnny>}";
+
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+
+		try {
+			exec.query(init);
+			Mappings map =  exec.query(ast);
+			ResultFormat f = ResultFormat.create(map);
+			
+			System.out.println(ast);
+			System.out.println(map);
+			System.out.println(f);
+			assertEquals("Result", map.size(), 1);
+			
 	
-	
-	
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			assertEquals("Result", true, e);
+		}
+	}
 	
 	
 	

@@ -203,7 +203,7 @@ implements EventsTreatment {
 	
 	LBind query(ASTQuery ast, Bind bind){
 
-		Mappings res = exec.query(ast);
+		Mappings res = exec.basicQuery(ast);
 
 		//System.out.println("** ET: " + res);
 		//create the list of binds to register the results

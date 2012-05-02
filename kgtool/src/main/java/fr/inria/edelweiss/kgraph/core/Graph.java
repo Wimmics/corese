@@ -20,6 +20,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.api.IGraph;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.*;
 
@@ -33,7 +34,8 @@ import fr.inria.edelweiss.kgraph.logic.*;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Graph {
+public class Graph //implements IGraph 
+{
 	private static Logger logger = Logger.getLogger(Graph.class);	
 	
 	public static final String TOPREL = 
@@ -85,7 +87,9 @@ public class Graph {
 	// true when graph is modified and need index()
 	boolean 
 	isUpdate = false, 
-	isDelete = false, 
+	isDelete = false,
+	// any delete occurred ?
+	isDeletion = false,
 	isIndex  = true, 
 	// automatic entailment when init()
 	isEntail = true,
@@ -129,7 +133,7 @@ public class Graph {
 		lock = new ReentrantReadWriteLock();
 		
 		tables  = new ArrayList<Index>(LENGTH);
-		dtables = new Index[LENGTH];
+		//dtables = new Index[LENGTH];
 		for (int i=0; i<LENGTH; i++){
 			// One table per node index
 			// edges are sorted according to ith Node
@@ -138,10 +142,10 @@ public class Graph {
 				j = IGRAPH;
 			}
 			setIndex(i, new EdgeIndex(this, j));	
-			dtables[i] = new EdgeIndex(this, j, true);
+			//dtables[i] = new EdgeIndex(this, j, true);
 		}
 		table 		= getIndex(0);
-		dtable 		= dtables[0];
+		//dtable 		= dtables[0];
 		literal 	= Collections.synchronizedSortedMap(new TreeNode());
 		individual 	= new Hashtable<String, Entity>();
 		blank 		= new Hashtable<String, Entity>();
@@ -362,7 +366,11 @@ public class Graph {
 			index();
 		}
 		if (isUpdate){
-			// load or sparql update
+			// use case: previously load or sparql update
+			// entailment: 
+			// clean meta properties 
+			// redefine meta properties
+			// perform entailments
 			update();
 			if (isEntail){
 				entail();
@@ -394,6 +402,7 @@ public class Graph {
 	private void setDelete(boolean b){
 		setUpdate(b);
 		isDelete = b;
+		isDeletion = true;
 	}
 	
 	/**
@@ -423,6 +432,7 @@ public class Graph {
 	/**
 	 * Property Path start a new shortest path
 	 * Only with one user (no thread here)
+	 * @deprecated
 	 */
 	public void initPath(){
 		for (Entity ent : individual.values()){
@@ -457,11 +467,11 @@ public class Graph {
 		for (Index ei : getIndexList()){
 			ei.index();
 		}
-		if (hasDefault){
-			for (int i=0; i<tables.size(); i++){
-				dtables[i].index();
-			}
-		}
+//		if (hasDefault){
+//			for (int i=0; i<tables.size(); i++){
+//				dtables[i].index();
+//			}
+//		}
 		isIndex = false;
 	}
 	
@@ -510,14 +520,14 @@ public class Graph {
 				}
 			}
 			
-			if (hasDefault){
-				dtable.add(edge);
-				for (int i=0; i<tables.size(); i++){
-					if (i != 0){
-						dtables[i].declare(edge);
-					}
-				}
-			}
+//			if (hasDefault){
+//				dtable.add(edge);
+//				for (int i=0; i<tables.size(); i++){
+//					if (i != 0){
+//						dtables[i].declare(edge);
+//					}
+//				}
+//			}
 			
 			size++;
 		}
@@ -1027,23 +1037,54 @@ public class Graph {
 		return blank.values();
 	}
 	
-	// resource & blank
+	/**
+	 *  resource & blank
+	 *  TODO: a node may have been deleted (by a delete triple)
+	 *  but still be in the table
+	 */
 	public Iterable<Entity> getRBNodes(){
 		MetaIterator<Entity> meta = new MetaIterator<Entity>();
 		meta.next(getNodes());
 		meta.next(getBlankNodes());
 		return meta;
 	}
-
-	
+		
 	public Iterable<Entity> getLiteralNodes(){
 		return literal.values();
 	}
 		
 	public Iterable<Entity> getAllNodes(){
+		if (isDeletion){
+			// recompute existing nodes
+			return getAllNodesIndex();
+		}
+		else {
+			// get nodes from tables
+			return getAllNodesDirect();
+		}
+	}
+	
+	/**
+	 * 	TODO: a node may have been deleted (by a delete triple)
+	 *  but still be in the table
+	 */
+	public Iterable<Entity> getAllNodesDirect(){
+		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+		meta.next(getNodes());
+		meta.next(getBlankNodes());
+		meta.next(getLiteralNodes());
+		return meta;
+	}
+	
+	/**
+	 * Prepare an index of nodes for each graph, enumerate all nodes
+	 * TODO: there are duplicates (same node in several graphs) 
+	 */
+	public Iterable<Entity> getAllNodesIndex(){
 		indexNode();
 		return gindex.getNodes();
 	}
+	
 	
 	public Iterable<Entity> getNodes(Node gNode){
 		indexNode();
@@ -1171,56 +1212,100 @@ public class Graph {
 	 * 
 	 *****************************************************************/
 	
-	
+
 	public Entity delete(EdgeImpl edge){
+		Entity res = null;
+		
 		if (edge.getGraph() == null){
-			return deleteAll(edge);
+			res = deleteAll(edge);
+		}
+		else {
+			res = basicDelete(edge);
 		}
 		
-		Entity res = null;
-		for (Index ie : tables){
-			Entity ent = ie.delete(edge);
-			if (isDebug){
-				logger.debug("delete: " + ie.getIndex() + " " + edge);
-				logger.debug("delete: " + ie.getIndex() + " " + ent);
-			}
-			if (ent != null){
-				setDelete(true);
-				res = ent;
-			}
+		if (res != null){
+			deleted(res);
 		}
 		return res;
 	}
+
 	
 	public Entity delete(EdgeImpl edge, List<String> from){
 		Entity res = null;	
+		
 		for (String str : from){
 			Node node = getGraphNode(str);
 
 			if (node != null){
 				edge.setGraph(node);
-				Entity ent = delete(edge);
+				Entity ent = basicDelete(edge);
 				if (res == null){
 					if (ent != null) setDelete(true);
 					res = ent;
 				}
 			}
 		}
+		
+		if (res != null){
+			deleted(res);
+		}
 		return res;
 	}
 	
 	
+	/**
+	 * Does not delete nodes
+	 */
+	Entity basicDelete(EdgeImpl edge){
+		Entity res = null;
+		
+		for (Index ie : tables){
+				Entity ent = ie.delete(edge);
+				if (isDebug){
+					logger.debug("delete: " + ie.getIndex() + " " + edge);
+					logger.debug("delete: " + ie.getIndex() + " " + ent);
+				}
+				if (ent != null){
+					setDelete(true);
+					res = ent;
+				}
+		}
+		return res;
+	}
+	
+	
+	
+	/**
+	 * delete occurrences of this edge in all graphs
+	 */
 	Entity deleteAll(EdgeImpl edge){
 		Entity res = null;
+		
 		for (Node graph : getGraphNodes()){
 			edge.setGraph(graph);
-			Entity ent = delete(edge);
+			Entity ent = basicDelete(edge);
 			if (res == null){
 				if (ent != null) setDelete(true);
 				res = ent;
 			}
 		}
+
 		return res;
+	}
+	
+	/**
+	 * This edge has been deleted
+	 * TODO: Delete its nodes from tables if needed
+	 */
+	void deleted(Entity ent){
+		Edge edge = ent.getEdge();
+		for (int i=0; i<edge.nbNode(); i++){
+			delete(edge.getNode(i));
+		}
+	}
+	
+	void delete(Node node){
+		
 	}
 	
 	// clear all except graph names.

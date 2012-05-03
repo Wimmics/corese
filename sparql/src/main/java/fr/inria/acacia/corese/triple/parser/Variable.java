@@ -37,8 +37,14 @@ public class Variable extends Atom {
 	
 	public StringBuffer toString(StringBuffer sb){
 		if (isBlankNode()) {
-			// variable for blank node, replace ?_ by _:
-			sb.append( KeywordPP.BN + name.substring(2,name.length()));
+			if (isBlankVariable(name)){
+				// variable for blank node, replace ?_ by _:
+				sb.append( KeywordPP.BN + name.substring(2,name.length()));
+			}
+			else {
+				// remove ?
+				sb.append(KeywordPP.BN + name.substring(1,name.length()));
+			}
 		} 
 		else { 
 			sb.append( name);

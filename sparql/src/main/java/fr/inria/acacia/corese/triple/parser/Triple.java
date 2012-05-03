@@ -810,13 +810,7 @@ public class Triple extends Exp {
 		
 		// property
 		p = predicate.toString();
-
-//		p = predicate.getName();
-//
-//		// if we have something like <Engineer> (because there is a base), add < and >
-//		if (isABaseWord(p))
-//			p = KeywordPP.OPEN + p + KeywordPP.CLOSE;
-		
+				
 		if (isPath()){
 			p = getRegex().toRegex();
 			
@@ -825,10 +819,13 @@ public class Triple extends Exp {
 			}
 		}
 		else if (variable != null) {
-			if (p.equals(getRootPropertyURI()) || p.equals(getRootPropertyQN()))
+			if (predicate.getLongName().equals(getRootPropertyURI()) || 
+				predicate.getName().equals(getRootPropertyQN())){
 				p = variable.getName();
-			else
+			}
+			else {
 				p += "::" + variable.getName();
+			}
 		}
 		
 

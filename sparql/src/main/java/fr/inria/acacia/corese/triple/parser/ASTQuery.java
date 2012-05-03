@@ -1871,6 +1871,10 @@ public class ASTQuery  implements Keyword {
     }
     
    
+    public void definePrefix(String prefix, String ns){
+    	defNamespace(prefix, ns);
+    }
+
     public void defNamespace(String prefix, String ns){
     	if (prefix.endsWith(":")){
     		prefix = prefix.substring(0, prefix.length() - 1); // remove :

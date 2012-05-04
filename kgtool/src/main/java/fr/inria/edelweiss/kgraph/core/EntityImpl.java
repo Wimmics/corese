@@ -38,4 +38,9 @@ public class EntityImpl implements Entity {
 		return null;
 	}
 
+	@Override
+	public int nbNode() {
+		return 0;
+	}
+
 }

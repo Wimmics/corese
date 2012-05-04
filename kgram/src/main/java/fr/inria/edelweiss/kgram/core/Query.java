@@ -181,15 +181,34 @@ public class Query extends Exp {
 		getGlobalQuery().setError(mes, obj);
 	}
 	
+	public void addError(String mes, Object obj, boolean duplicate){
+		getGlobalQuery().setError(mes, obj, duplicate);
+	}
+	
 	void setError(String mes, Object obj){
+		setError(mes, obj, true);
+	}
+
+	void setError(String mes, Object obj, boolean duplicate){
 		if (errors == null){
 			errors = new ArrayList<String>();
 		}
+		String str = mes;
 		if (obj != null){
-			mes += obj;
+			str += obj;
 		}
-		if (! errors.contains(mes)){
-			errors.add(mes);
+		
+		if (! errors.contains(str)){
+			
+			if (! duplicate){
+				for (String m : errors){
+					if (m.startsWith(mes)){
+						return;
+					}
+				}
+			}
+			
+			errors.add(str);
 		}
 	}
 	

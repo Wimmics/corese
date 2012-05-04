@@ -963,5 +963,11 @@ public class CoreseDatatype
 		return null;
 	}
 
+	@Override
+	public int nbNode() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 
 }

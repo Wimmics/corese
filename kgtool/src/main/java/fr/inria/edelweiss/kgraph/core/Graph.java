@@ -987,7 +987,7 @@ public class Graph //implements IGraph
 		return tables.get(n);
 	}
 	
-	void setIndex(int n, EdgeIndex e){
+	void setIndex(int n, Index e){
 		tables.add(n, e);
 	}
 	

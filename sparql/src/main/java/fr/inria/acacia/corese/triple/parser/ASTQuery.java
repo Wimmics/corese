@@ -1536,7 +1536,8 @@ public class ASTQuery  implements Keyword {
             String v = t.getObject().getName();
             
             // if v starts with "<function://", we have add a ".", so we have to remove it now
-            if (v.startsWith(KeywordPP.CORESE_PREFIX)) {
+            if (v.startsWith(KeywordPP.CORESE_PREFIX) &&
+            	v.endsWith(".")) {
             	v = v.substring(0, v.length()-1) ;
             }
 

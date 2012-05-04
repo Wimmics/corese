@@ -142,13 +142,38 @@ public class CoreseDate extends CoreseDatatype {
 		
 		if (items.length == 2) { // parse time : 12:34:05
 			
-			// [-]CCYY-MM-DDThh:mm:ss[Z|(+|-)hh:mm]
+			// [-]CCYY-MM-DD T hh:mm:ss[Z|(+|-)hh:mm]
 			// time :  hh:mm:ss 
 			// time2 : [Z|(+|-)hh:mm]
 			
-			String time = items[1].substring(0,8);
+//			String time = items[1].substring(0,8);
+//			
+//			String zone = items[1].substring(8,items[1].length());	// not used yet
 			
-			String zone = items[1].substring(8,items[1].length());	// not used yet
+			String strtime = items[1];
+						
+			int size = 8;
+			
+			if (strtime.length() > 9 && strtime.charAt(8) == '.'){
+				// check milliseconds:  12:13:14.56
+				// set size as length of time + ms
+				for (int i=9; i<strtime.length(); i++){
+					char next = strtime.charAt(i);
+
+					if (! (next >= '0' && next <= '9')){
+						break;
+					}
+					else {
+						size = i;
+					}
+				}
+			}
+								
+			String time = strtime.substring(0, size);
+
+			String zone = strtime.substring(size, strtime.length());	// not used yet
+
+			
 
 			if (zone.length()>0){
 				cal.setDZone(zone);

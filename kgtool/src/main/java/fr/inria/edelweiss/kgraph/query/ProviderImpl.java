@@ -142,7 +142,7 @@ public class ProviderImpl implements Provider {
 			String query = ast.toString();
 
 			if (g.isDebug()){
-				logger.info("** Provider: \n" + query);
+				logger.info("** Provider query: \n" + query);
 			}
 			
 			//logger.info("** Provider: \n" + query);
@@ -150,7 +150,11 @@ public class ProviderImpl implements Provider {
 			StringBuffer sb = doPost(serv.getLabel(), query);
 			
 			if (g.isDebug()){
-				logger.info("** Provider: \n" + sb);
+				logger.info("** Provider result: \n" + sb);
+			}
+			
+			if (sb.length() == 0){
+				throw new IOException("Endpoint result is empty");
 			}
 
 			Mappings map = parse(sb);
@@ -210,9 +214,8 @@ public class ProviderImpl implements Provider {
         urlConn.setRequestMethod("POST"); 
         urlConn.setDoOutput(true);
         urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        urlConn.setRequestProperty("Accept", "application/rdf+xml, text/xml, application/sparql-results+xml");
-        //urlConn.setRequestProperty("Accept", "text/xml");
-       urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
+        urlConn.setRequestProperty("Accept", "application/rdf+xml,  application/sparql-results+xml");
+        urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
         
         OutputStreamWriter out = new OutputStreamWriter(urlConn.getOutputStream());
         out.write(qstr);
@@ -225,7 +228,7 @@ public class ProviderImpl implements Provider {
 	
 	
 	StringBuffer getBuffer(InputStream stream) throws IOException{
-		InputStreamReader r = new InputStreamReader(stream);
+		InputStreamReader r = new InputStreamReader(stream, "UTF-8");
 		BufferedReader br = new BufferedReader(r);
 		StringBuffer sb = new StringBuffer();
 

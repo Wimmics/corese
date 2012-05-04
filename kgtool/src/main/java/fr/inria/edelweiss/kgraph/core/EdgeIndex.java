@@ -36,7 +36,7 @@ implements Index {
 	// do not create entailed edge in kg:entailment if it already exist in another graph
 	isOptim = false;
 	
-	Comparator<Entity>  comp, comp2;
+	Comparator<Entity>  comp; //, comp2;
 	Graph graph;
 	Hashtable<Node, Node> types;
 
@@ -44,15 +44,18 @@ implements Index {
 		init(g, n);
 		comp  = getComparator();
 		// skip graph (for entailed edge):
-		comp2 = getComparator2();
+		//comp2 = getComparator2();
 		types = new Hashtable<Node, Node>();
 	}
 	
-	EdgeIndex(Graph g, int n, boolean skip){
-		init(g, n);
-		comp = getComparator2();
-		isIndexer = true;
-	}
+	/**
+	 * 
+	 */
+//	EdgeIndex(Graph g, int n, boolean skip){
+//		init(g, n);
+//		comp = getComparator2();
+//		isIndexer = true;
+//	}
 	
 	void init(Graph g, int n){
 		graph = g;
@@ -65,28 +68,10 @@ implements Index {
 	}
 	
 	
-	Comparator<Entity> getComparator(){
-		
-		return new Comparator<Entity>(){
-			
-			public int compare(Entity o1, Entity o2) {
-				int res = o1.getNode(index).compare(o2.getNode(index));
-				if (res == 0){
-					res = o1.getNode(other).compare(o2.getNode(other));
-					if (res == 0 && index == 0){
-						if (o1.getGraph() == null || o2.getGraph() == null) res = 0;
-						else res = o1.getGraph().compare(o2.getGraph());
-					}
-				}
-				return res;
-			}
-		};
-	}
-	
-	
 	/**
-	 * declare equal when N0 N1 are equal but in different graphs
-	 * optimize rdf:type test
+	 * Compare edges for dichotomy
+	 * edges are ordered according to index node
+	 * @deprecated
 	 */
 	Comparator<Entity> getComparator2(){
 		
@@ -96,8 +81,59 @@ implements Index {
 				int res = o1.getNode(index).compare(o2.getNode(index));
 				if (res == 0){
 					res = o1.getNode(other).compare(o2.getNode(other));
+					
+					if (res == 0 && index == 0){
+						res = o1.getGraph().compare(o2.getGraph());
+					}
 				}
 				return res;
+			}
+		};
+	}
+	
+	
+	/**
+	 * check all arguments for arity n
+	 */
+	Comparator<Entity> getComparator(){
+		
+		return new Comparator<Entity>(){
+			
+			public int compare(Entity o1, Entity o2) {
+				
+				// first check the index node
+				int res = o1.getNode(index).compare(o2.getNode(index));
+				
+				if (res != 0){
+					return res;
+				}
+				
+				int min = Math.min(o1.nbNode(), o2.nbNode());
+				
+				for (int i=0; i<min; i++){
+					// check other common arity nodes
+					if (i != index){
+						res = o1.getNode(i).compare(o2.getNode(i));
+						if (res != 0){
+							return res;
+						}
+					}
+				}
+				
+				if (o1.nbNode() == o2.nbNode()){
+					// same arity, common arity nodes are equal
+					// check graph
+					return o1.getGraph().compare(o2.getGraph());
+				}
+				
+				if (o1.nbNode() < o2.nbNode()){
+					// smaller arity edge is before
+					return -1;
+				}
+				else {
+					return 1;
+				}				
+				
 			}
 		};
 	}

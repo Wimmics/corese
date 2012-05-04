@@ -50,4 +50,12 @@ public class EntityImpl implements Entity {
 		return null;
 	}
 
+	@Override
+	public int nbNode() {
+		if (edge != null){
+			return edge.nbNode();
+		}
+		return 0;
+	}
+
 }

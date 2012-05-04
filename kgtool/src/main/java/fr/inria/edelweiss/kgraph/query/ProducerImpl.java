@@ -23,6 +23,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.api.IGraph;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
@@ -171,24 +172,24 @@ public class ProducerImpl implements Producer {
 			}
 		}		
 						
-		Iterable<Entity> it;
+		Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
 		
-		if (isType){
-			// deprecated
-			it = getTypeEdges(predicate, node, env);
-		}
-		else if (gNode != null || from.size()>0 || ! graph.hasDefault()){
-			it = graph.getEdges(predicate, node, node2, n);
-		}
-		else {
-			// deprecated
-			it = graph.getDefaultEdges(predicate, node, node2, n);
-			if (it == null){
-				return empty;
-			}
-			it = complete(it, edge, env);
-			return it;
-		}
+//		if (isType){
+//			// deprecated
+//			it = getTypeEdges(predicate, node, env);
+//		}
+//		else { //if (gNode != null || from.size()>0){ // || ! graph.hasDefault()){
+//			it = graph.getEdges(predicate, node, node2, n);
+//		}
+//		else {
+//			// deprecated
+//			it = graph.getDefaultEdges(predicate, node, node2, n);
+//			if (it == null){
+//				return empty;
+//			}
+//			it = complete(it, edge, env);
+//			return it;
+//		}
 		
 		// check gNode/from/named
 		it = complete(it, gNode, getNode(gNode, env), from);
@@ -240,25 +241,25 @@ public class ProducerImpl implements Producer {
 	}
 	
 	
-	Iterable<Entity> getTypeEdges(Node predicate, Node type, Environment env){
-		MetaIterator<Entity> meta = new MetaIterator<Entity>();
-		
-		for (Node node : graph.getTypeNodes()){
-
-			if (node.same(type) || match.isSubClassOf(node, type, env)){
-				Iterable<Entity> it = graph.getEdges(predicate, node, 1);
-				if (it != null){
-					meta.next(it);
-				}
-			}
-		}
-		
-		if (meta.isEmpty()){
-			return empty;
-		}
-		
-		return meta;
-	}
+//	Iterable<Entity> getTypeEdges(Node predicate, Node type, Environment env){
+//		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+//		
+//		for (Node node : graph.getTypeNodes()){
+//
+//			if (node.same(type) || match.isSubClassOf(node, type, env)){
+//				Iterable<Entity> it = graph.getEdges(predicate, node, 1);
+//				if (it != null){
+//					meta.next(it);
+//				}
+//			}
+//		}
+//		
+//		if (meta.isEmpty()){
+//			return empty;
+//		}
+//		
+//		return meta;
+//	}
 
 	
 	
@@ -358,14 +359,15 @@ public class ProducerImpl implements Producer {
 //		}
 		
 
-		Iterable<Entity> it;
-		if (gNode != null || from.size()>0 || ! graph.hasDefault()){
-			it = graph.getEdges(predicate, start, null, index);
-		}
-		else {
-			it = graph.getDefaultEdges(predicate, start, null, index);			
-			return it;
-		}
+		Iterable<Entity> it = graph.getEdges(predicate, start, null, index);
+		
+//		if (gNode != null || from.size()>0 || ! graph.hasDefault()){
+//			it = graph.getEdges(predicate, start, null, index);
+//		}
+//		else {
+//			it = graph.getDefaultEdges(predicate, start, null, index);			
+//			return it;
+//		}
 		// gNode, from
 		it = complete(it, gNode, src, from);
 		return it;
@@ -444,11 +446,7 @@ public class ProducerImpl implements Producer {
 				return getNodes(gNode, from, env);
 			}
 			else {
-				// all nodes
-				MetaIterator<Entity> meta = new MetaIterator<Entity>();
-				meta.next(graph.getRBNodes());
-				meta.next(graph.getLiteralNodes());
-				return meta;
+				return graph.getAllNodes();
 			}
 		}
 		else {
@@ -609,7 +607,7 @@ public class ProducerImpl implements Producer {
 
 	@Override
 	public void initPath(Edge edge, int index) {
-		graph.initPath();
+		//graph.initPath();
 	}
 
 	@Override

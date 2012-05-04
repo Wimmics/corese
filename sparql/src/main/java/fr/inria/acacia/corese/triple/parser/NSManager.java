@@ -216,7 +216,7 @@ public class NSManager
 				tns.put(ns, prefix);
 			}
 			defPrefix(prefix, ns);
-			index.put(ns, new Integer(tns.size()));
+			index.put(ns, tns.size());
 		}
 		return prefix;
 	}

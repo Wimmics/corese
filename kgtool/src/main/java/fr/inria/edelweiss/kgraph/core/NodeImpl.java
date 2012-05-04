@@ -149,4 +149,9 @@ public class NodeImpl implements Node, Entity {
 		properties[p] = o;
 	}
 
+	@Override
+	public int nbNode() {
+		return 0;
+	}
+
 }

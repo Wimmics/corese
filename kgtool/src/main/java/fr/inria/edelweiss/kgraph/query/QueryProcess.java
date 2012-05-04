@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -14,7 +13,6 @@ import fr.inria.edelweiss.kgenv.parser.Transformer;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -245,7 +243,27 @@ public class QueryProcess extends QuerySolver {
 		if (ast.isUpdate()){
 			return update(ast);
 		}
-		return synQuery(ast);
+		return query(ast, null);
+	}
+	
+	
+	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
+		Dataset ds = Dataset.create(from, named);
+		return query(ast, ds);
+	}
+	
+	public Mappings query(ASTQuery ast, Dataset ds) {
+		if (ds!=null){
+			ast.setDefaultFrom(ds.getFrom());
+			ast.setDefaultNamed(ds.getNamed());
+		}
+		Transformer transformer =  transformer();
+		Query query = transformer.transform(ast);
+		try {
+			return query(query, null, ds);
+		} catch (EngineException e) {
+			return Mappings.create(query);
+		}
 	}
 	
 	/**
@@ -383,15 +401,7 @@ public class QueryProcess extends QuerySolver {
 	
 
 	
-	Mappings synQuery(ASTQuery ast){
-		try {
-			readLock();
-			return super.query(ast);
-		}
-		finally {
-			readUnlock();
-		}
-	}
+
 	
 
 	
@@ -401,7 +411,7 @@ public class QueryProcess extends QuerySolver {
 	 * ast is the current update action
 	 */
 	public Mappings update(Query query, ASTQuery ast, Dataset ds) {
-		Mappings lMap = super.query(ast, ds);
+		Mappings lMap = basicQuery(ast, ds);
 		Query q = lMap.getQuery();
 		
 		// PRAGMA: update can be both delete & insert

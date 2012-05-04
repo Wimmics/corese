@@ -53,6 +53,8 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  */
 public class ProviderImpl implements Provider {
 	
+	private static final String SERVICE_ERROR = "Service error: ";
+
 	private static Logger logger = Logger.getLogger(ProviderImpl.class);
 	
 	static final String LOCALHOST = "http://localhost:8080/corese/sparql";
@@ -133,10 +135,10 @@ public class ProviderImpl implements Provider {
 	 * Send query to sparql endpoint using a POST HTTP query
 	 */
 	Mappings send(Node serv, Query q, Environment env){
+		Query g = q.getOuterQuery();
 		try {
 			compile(serv, q, env);
 
-			Query g = q.getOuterQuery();
 			ASTQuery ast = (ASTQuery) q.getAST();
 			
 			String query = ast.toString();
@@ -158,17 +160,20 @@ public class ProviderImpl implements Provider {
 			}
 
 			Mappings map = parse(sb);
-			
+
 //			if (g.isDebug()){
 //				logger.info("** Provider: \n" + map);
 //			}
 			return map;
 		} catch (IOException e) {
 			logger.error(e);
+			g.addError(SERVICE_ERROR, e);
 		} catch (ParserConfigurationException e) {
 			logger.error(e);
+			g.addError(SERVICE_ERROR, e);
 		} catch (SAXException e) {
 			logger.error(e);
+			g.addError(SERVICE_ERROR, e);
 		}
 		return null;
 	}

@@ -1007,18 +1007,17 @@ void FilteredBasicGraphPattern(Exp stack) : {}
 	)?
 }
 
+
 void BlockOfTriples(Exp stack) : {boolean b1, b2;}
 {   
+		(
 		TriplesSameSubject(stack) 
-		{b1 = false; b2 = false;}	
-		(<DOT> {b1 = true;} ) ?
-		(BlockOfTriples(stack) {b2 = true;} ) ?
-		{if (b2 && ! b1 && astq.isSPARQLCompliant()) {
-			astq.setCorrect(false);
-			}
-		}
-	
+				
+		( <DOT> ) ?
+		)+
+		
 }
+
 
 
 

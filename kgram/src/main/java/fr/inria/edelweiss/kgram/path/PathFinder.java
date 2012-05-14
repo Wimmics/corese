@@ -132,6 +132,7 @@ public class PathFinder
 	// if true: return list of path instead of thread buffer: 50% faster but enumerate all path
 	isList = false,
 	checkLoop = false,
+	isCountPath = false,
 	trace = true;
 	
 	private int  maxLength = Integer.MAX_VALUE, 
@@ -203,6 +204,10 @@ public class PathFinder
 	
 	public void setCheckLoop(boolean b){
 		checkLoop = b;
+	}
+	
+	public void setCountPath(boolean b){
+		isCountPath = b;
 	}
 	
 	public void setList(boolean b){
@@ -668,7 +673,7 @@ public class PathFinder
 	 *  rewrite   ^(p/q)    as   ^q/^p
 	 */
 	void eval(Regex exp, Path path, Node start, Node src){
-		Record stack = new Record(Visit.create(isReverse));
+		Record stack = new Record(Visit.create(isReverse, isCountPath));
 		stack.push(exp);
 		try {
 			eval(stack, path, start, src);
@@ -936,7 +941,7 @@ public class PathFinder
 				// e1 has computed a path from former start to this start (which is now target of e2)
 				// check there is a parallel path e2 from start to target
 				// create new Record to check loop specific to path e2 
-				Record st = new Record(Visit.create(isReverse));
+				Record st = new Record(Visit.create(isReverse, isCountPath));
 				// push e2
 				st.push(exp.getArg(0));
 				st.setTarget(target);
@@ -1138,10 +1143,10 @@ public class PathFinder
 		// start is the first node of exp+
 		boolean isFirst = stack.getVisit().nfirst(exp);
 
-		if (stack.getVisit().isCounting && stack.getVisit().count(exp) == 0){
+		if (stack.getVisit().count(exp) == 0){
 			
-			if (checkLoop){
-				//trace("** Visit: " + start);
+			if ( ! isCountPath ){ // checkLoop ||
+				// std sparql
 				if (stack.getVisit().nloop(exp, start)){
 					stack.push(exp);
 					return;
@@ -1157,13 +1162,12 @@ public class PathFinder
 			stack.pop();
 			stack.getVisit().count(exp, -1);
 			
-			if (checkLoop){
+			if ( ! isCountPath){ // checkLoop ||
 				stack.getVisit().nremove(exp, start);		
 			}
 			
 		}
 		else {
-			//trace("** Visit: " + start);
 			if (stack.getVisit().nloop(exp, start)){
 				//trace("** Loop: " + start);
 				stack.push(exp);

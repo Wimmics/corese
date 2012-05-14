@@ -79,6 +79,8 @@ public class Query extends Exp {
 	isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
 	// PathFinder list path instead of thread buffer: 50% faster but enumerate all path
 	isListPath = false,
+	// former path semantics was true
+	isCountPath = false,
 	isCorrect = true, isConnect = false;
 	
 	int mode = Matcher.UNDEF;
@@ -707,6 +709,14 @@ public class Query extends Exp {
 	
 	public boolean isListPath(){
 		return isListPath;
+	}
+	
+	public void setCountPath(boolean b){
+		isCountPath = b;
+	}
+	
+	public boolean isCountPath(){
+		return isCountPath;
 	}
 	
 	public void setMapping(List<Mapping> list){

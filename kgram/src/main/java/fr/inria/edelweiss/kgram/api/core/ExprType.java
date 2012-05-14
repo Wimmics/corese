@@ -133,9 +133,9 @@ public interface ExprType {
 	
 	// extension
 	
-	public static int DISPLAY = 200;
-	public static int NUMBER  = 201;
-	public static int SIM 	  = 202;
+	public static int DISPLAY 	= 200;
+	public static int NUMBER  	= 201;
+	public static int SIM 	  	= 202;
 	public static int EXTEQUAL	= 203;
 	public static int EXTCONT   = 204;
 	public static int PROCESS   = 205;
@@ -152,6 +152,7 @@ public interface ExprType {
 	public static int GETP		= 216;
 	public static int SETP 		= 217;
 	public static int PWEIGHT 	= 218;
+	public static int ANCESTOR 	= 219;
 
 
 

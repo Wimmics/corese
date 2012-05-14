@@ -321,11 +321,14 @@ public class Distance {
 	}
 	
 	public double distance(Node c1, Node c2)	{
-		return distance(c1, c2, true);
+		return (Double) distance(c1, c2, true);
 	}
 	
 	
-	
+	public Node ancestor(Node c1, Node c2)	{
+		if (c1.equals(c2)) return c1;
+		return (Node) distance(c1, c2, false);
+	}
 	
 	
 	
@@ -368,9 +371,9 @@ public class Distance {
 		}
 		
 	}
+		
 	
-	
-	double distance(Node n1, Node n2, boolean step)	{
+	Object distance(Node n1, Node n2, boolean isDist)	{
 		
 		Table t1 = new Table();
 		Table t2 = new Table();
@@ -399,7 +402,7 @@ public class Distance {
 				endC1 = true; 
 			}
 			else {
-				return 0.0;
+				return result(null, 0.0, isDist);
 			}
 		}
 		
@@ -408,7 +411,7 @@ public class Distance {
 				endC2 = true;
 			}
 			else {
-				return 0.0;
+				return result(null, 0.0, isDist);
 			}
 		}
 		
@@ -423,7 +426,7 @@ public class Distance {
 			
 			if (! endC1 && max1 >= max2) {
 				// distance from current to their fathers
-				endC1=distance(current1, t1, max2, step);
+				endC1=distance(current1, t1, max2);
 				max1=getMax(current1); // max depth of current 1
 			}
 			
@@ -433,6 +436,8 @@ public class Distance {
 			// tous les types plus profonds que lui de maniere a trouver en premier
 			// le type commun le plus profond
 			
+			double dd;
+			
 			for (Node node : current2) {
 				
 				if (getDDepth(node) < max1){
@@ -440,17 +445,22 @@ public class Distance {
 				}
 				
 				if (t1.contains(node)){
-					return distance(node, t1, t2);
+					dd = distance(node, t1, t2);
+					return result(node, dd, isDist);
 				}
 				
-				double dd = extDistance(node, t1, t2);
-				if (dd != -1) return dd;
+				if (isDist){
+					dd = extDistance(node, t1, t2);
+					if (dd != -1){
+						return result(node, dd, isDist);
+					}
+				}
 				
 			}		
 			
 			if (!endC2 && max2 >= max1)     {
 				// distance from current to their fathers
-				endC2=distance(current2, t2, max1, step);
+				endC2=distance(current2, t2, max1);
 				max2=getMax(current2); // max depth of current 2
 			}			
 			
@@ -461,15 +471,30 @@ public class Distance {
 				}
 				
 				if (t2.contains(node)){
-					return distance(node, t1, t2);
+					dd = distance(node, t1, t2);
+					return result(node, dd, isDist);
 				}
 				
-				double dd = extDistance(node, t2, t1);
-				if (dd != -1) return dd;
+				if (isDist){
+					dd = extDistance(node, t2, t1);
+					if (dd != -1){
+						return result(node, dd, isDist);
+					}
+				}
 			}
 
 		}
-		return 0.0;
+		
+		return result(null, 0.0, isDist);
+	}
+	
+	Object result(Node n, double d, boolean isDist){
+		if (isDist){
+			return d;
+		}
+		else {
+			return n;
+		}
 	}
 	
 	
@@ -536,7 +561,8 @@ public class Distance {
 	 *
 	 * @return true if reach root 
 	 */
-	boolean distance(NodeList current, Table ht, int max, boolean step){
+	boolean distance(NodeList current, Table ht, int max){
+		boolean step = true;
 		NodeList father=new NodeList();
 		boolean endC1=false;
 		father.clear();

@@ -37,7 +37,7 @@ public class Rule {
 		return predicates;
 	}
 	
-	Query getQuery(){
+	public Query getQuery(){
 		return query;
 	}
 	

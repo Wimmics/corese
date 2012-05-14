@@ -151,6 +151,10 @@ public class RuleEngine {
 		}
 	}
 	
+	public List<Rule> getRules(){
+		return rules;
+	}
+	
 	public Query defRule(String name, String rule) throws EngineException {
 		Query qq = exec.compileRule(rule);
 		if (qq != null && qq.isConstruct()) {

@@ -13,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
@@ -78,6 +79,20 @@ public class RuleLoad {
 	}
 
 	public void load(InputStream stream) {
+		try {
+			Document doc = parse(stream);
+			load(doc);
+		} catch (LoadException e) {
+			logger.error(e);
+		}
+	}
+	
+	public void loadWE(Reader stream) throws LoadException{
+		Document doc = parse(stream);
+		load(doc);
+	}
+
+	public void load(Reader stream) {
 		try {
 			Document doc = parse(stream);
 			load(doc);
@@ -174,6 +189,15 @@ public class RuleLoad {
 	
 	
 	private  Document parse(InputStream stream) throws LoadException{
+		return parse(new InputSource(stream));
+	}
+	
+	private  Document parse(Reader stream) throws LoadException{
+		return parse(new InputSource(stream));
+	}
+	
+	
+	private  Document parse(InputSource stream) throws LoadException{
 		DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
 		fac.setNamespaceAware(true); 
 		DocumentBuilder builder;
@@ -189,7 +213,6 @@ public class RuleLoad {
 			throw LoadException.create(e);
 		}
 	}
-
 	
 	
 	private  Document parse(String xmlFileName) throws LoadException{

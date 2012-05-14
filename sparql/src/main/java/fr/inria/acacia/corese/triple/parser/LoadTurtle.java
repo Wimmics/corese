@@ -40,17 +40,25 @@ public class LoadTurtle {
     LoadTurtle(InputStream r, Creator c, String base) {
     	setLoader(r, c, base);
     }
-
+    
+    LoadTurtle(Reader r, Creator c, String base) {
+    	setLoader(r, c, base);
+    }
     
     public static LoadTurtle create(InputStream read, Creator cr, String base) { 
     	LoadTurtle p =  new LoadTurtle(read, cr, base);
     	return p;
     }
     
+    public static LoadTurtle create(Reader read, Creator cr, String base) { 
+    	LoadTurtle p =  new LoadTurtle(read, cr, base);
+    	return p;
+    }
+    
     public static LoadTurtle create(String file, Creator cr) { 
-    	FileInputStream read;
+    	FileReader read;
 		try {
-			read = new FileInputStream(file);
+			read = new FileReader(file);
 		   	LoadTurtle p =  new LoadTurtle(read, cr, file);
 	    	return p;
 		} catch (FileNotFoundException e) {
@@ -70,10 +78,19 @@ public class LoadTurtle {
     
     
     private void setLoader(InputStream stream, Creator c, String base) {
+    	parser = new SparqlCorese(stream);
+		setLoader( parser, c, base);  
+    }
+    
+    private void setLoader(Reader stream, Creator c, String base) {
+    	parser = new SparqlCorese(stream);
+		setLoader( parser, c, base);  
+    }
+    
+    private void setLoader(SparqlCorese parser, Creator c, String base) {
     	try {
     		ASTQuery ast = ASTQuery.create();
     		ast.getNSM().setBase(base);
-			parser = new SparqlCorese(stream);
 	        parser.setASTQuery(ast);
 	        parser.set(c);
 		}
@@ -81,6 +98,7 @@ public class LoadTurtle {
 			e.printStackTrace();
 		}
     }
+    
     
     public void load() throws QueryLexicalException, QuerySyntaxException {
     	try {

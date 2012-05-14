@@ -35,6 +35,7 @@ public class XMLFormat  {
 	PrintWriter pw;
 
 	public  static final String SPARQLRES   =  "http://www.w3.org/2005/sparql-results#";
+	private static final String XMLDEC ="<?xml version=\"1.0\" ?>";
 	private static final String OHEADER ="<sparql xmlns='" + SPARQLRES + "'>";
 	private static final String CHEADER="</sparql>";
 	private static final String OHEAD="<head>";
@@ -129,11 +130,12 @@ public class XMLFormat  {
 		print(false, "");
 	}
 	
-	enum Title  {OHEADER, CHEADER, OHEAD, CHEAD, OVAR, CVAR, 
+	enum Title  {XMLDEC, OHEADER, CHEADER, OHEAD, CHEAD, OVAR, CVAR, 
 		ORESULT, CRESULT, ORESULTS, CRESULTS};
 	
 	public String getTitle(Title t){
 		switch (t){
+		case XMLDEC: return XMLDEC;
 		case OHEADER: return OHEADER;
 		case CHEADER: return CHEADER;
 		case OHEAD: return OHEAD;
@@ -157,6 +159,7 @@ public class XMLFormat  {
 	}
 	
 	public void print(boolean printInfoInFile, String fileName) {
+		println(getTitle(Title.XMLDEC));
 		println(getTitle(Title.OHEADER));
 		error();
 		println(getTitle(Title.OHEAD));

@@ -221,7 +221,8 @@ public class ProviderImpl implements Provider {
         urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         urlConn.setRequestProperty("Accept", "application/rdf+xml,  application/sparql-results+xml");
         urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
-        
+        urlConn.setRequestProperty("Accept-Charset", "UTF-8");
+
         OutputStreamWriter out = new OutputStreamWriter(urlConn.getOutputStream());
         out.write(qstr);
         out.flush();

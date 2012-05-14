@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
  */
 public class Visit {
 	public static boolean speedUp = false;
+
 	
 	Hashtable<State, List<Node>> table;
 	Hashtable<Regex, List<Node>> etable;
@@ -31,10 +32,11 @@ public class Visit {
 
 	boolean isReverse = false,
 	// isCounting = false : new sparql semantics  
-	isCounting = !false;
+	isCounting = false;
 	
-	Visit(boolean b){
-		isReverse 	= b && isCounting;
+	Visit(boolean isRev, boolean isCount){
+		isCounting  = isCount;
+		isReverse 	= isRev && isCount;
 		table   	= new Hashtable<State, List<Node>>();
 		etable  	= new Hashtable<Regex, List<Node>>();
 		eetable 	= new Hashtable<Regex, Table>();
@@ -184,16 +186,13 @@ public class Visit {
 		}
 	}
 	
-	static Visit create(boolean b){
-		return new Visit(b);
+	static Visit create(boolean isReverse, boolean isCount){
+		return new Visit(isReverse, isCount);
 	}
 	
 	void clear(){
 		table.clear();
 	}
-	
-	
-
 	
 	
 	/**************************************
@@ -725,9 +724,6 @@ public class Visit {
 			}
 		}
 		return false;
-	} 
+	}
 	
-	
-	
-
 }

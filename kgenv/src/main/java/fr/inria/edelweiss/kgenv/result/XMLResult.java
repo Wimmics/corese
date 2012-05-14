@@ -63,7 +63,7 @@ public class XMLResult {
 	
 	
 	public Mappings parseString(String str) throws ParserConfigurationException, SAXException, IOException{
-		return parse(new ByteArrayInputStream(str.getBytes()));
+		return parse(new ByteArrayInputStream(str.getBytes("UTF-8")));
 	}
 
 	

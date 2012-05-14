@@ -122,6 +122,10 @@ public class PluginImpl extends ProxyImpl {
 			// prop similarity
 			return pSimilarity((IDatatype) o1, (IDatatype) o2);
 			
+			
+		case ANCESTOR:
+			// common ancestor
+			return ancestor((IDatatype) o1, (IDatatype) o2);
 						
 		}
 		
@@ -157,6 +161,15 @@ public class PluginImpl extends ProxyImpl {
 		return getValue(dd);
 	}
 	
+	IDatatype ancestor(IDatatype dt1, IDatatype dt2 ){		
+		Node n1 = graph.getNode(dt1.getLabel());
+		Node n2 = graph.getNode(dt2.getLabel());
+		if (n1 == null || n2 == null) return null;
+		
+		Distance distance = graph.setClassDistance();
+		Node n = distance.ancestor(n1, n2);
+		return (IDatatype) n.getValue();
+	}
 	
 	IDatatype pSimilarity(IDatatype dt1, IDatatype dt2 ){		
 		Node n1 = graph.getNode(dt1.getLabel());
@@ -319,6 +332,9 @@ public class PluginImpl extends ProxyImpl {
 		Node n = node(o);
 		if (n == null || graph.getClassDistance() == null) return null;
 		Integer d = graph.getClassDistance().getDepth(n);
+		if (d == null){
+			return  null;
+		}
 		return getValue(d);
 	}
 	

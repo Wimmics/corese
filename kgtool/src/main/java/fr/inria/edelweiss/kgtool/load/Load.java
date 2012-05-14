@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
@@ -256,21 +257,23 @@ public class Load
 			return;
 		}
 		
+		Reader read = null;
 		InputStream stream = null;
-
+		
 		try {
 			if (isURL(path)){
 				URL url = new URL(path);
 				stream = url.openStream();
+				read = reader(stream);
 			}
 			else {
-				stream = new FileInputStream(path);
+				read = new FileReader(path);
 			}
 		}
 		catch (Exception e){
 			throw LoadException.create(e, path);
 		}
-				
+						
 		if (base != null){
 			// ARP needs an URI for base
 			base = uri(base);
@@ -283,8 +286,13 @@ public class Load
 			source = base;
 		}
 		
-		synLoad(stream, path, base, source);
+		synLoad(read, path, base, source);
 	}
+	
+	Reader reader(InputStream stream) throws UnsupportedEncodingException{
+		return new InputStreamReader(stream);
+	}
+	
 	
 	void error(Object mes){
 		logger.error(mes);
@@ -295,18 +303,25 @@ public class Load
 		load(stream, Entailment.DEFAULT);
 	}
 
-	// not for rules
 	public void load(InputStream stream, String source) throws LoadException{
 		log("stream");
 		if (source == null) source = Entailment.DEFAULT;
-		synLoad(stream, source, source, source);
+		try {
+			Reader read = reader(stream);
+			synLoad(read, source, source, source);
+		} catch (UnsupportedEncodingException e) {
+			throw new LoadException(e);
+		}
 	}
 	
 	Lock writeLock(){
 		return graph.writeLock();
 	}
 	
-	void synLoad(InputStream stream,  String path, String base, String src) throws LoadException {
+	
+
+	
+	void synLoad(Reader stream,  String path, String base, String src) throws LoadException {
 		try {		
 			writeLock().lock();
 			if (path.endsWith(TURTLE)){
@@ -324,8 +339,7 @@ public class Load
 		}
 	}
 	
-	
-	void load(InputStream stream,  String path, String base, String src) throws LoadException {
+	void load(Reader stream,  String path, String base, String src) throws LoadException {
 		
 		if (hasPlugin){
 			src  = plugin.statSource(src);
@@ -357,7 +371,7 @@ public class Load
 	}
 	
 	
-	void loadTurtle(InputStream stream,  String path, String base, String src) throws LoadException {
+	void loadTurtle(Reader stream,  String path, String base, String src) throws LoadException {
 		
 		CreateImpl cr = CreateImpl.create(graph);
 		cr.graph(src);
@@ -381,7 +395,8 @@ public class Load
 		load.loadWE(path);
 	}
 	
-	void loadRule(InputStream stream, String src) throws LoadException{
+	
+	void loadRule(Reader stream, String src) throws LoadException{
 		if (engine == null){
 			engine = RuleEngine.create(graph);
 		}

@@ -58,6 +58,7 @@ public class QuerySolver  {
 	
 	boolean isListGroup = false,
 	isListPath = false,
+	isCountPath = false,
 	isCheckLoop = false,
 	isDebug = false,
 	isOptimize = false,
@@ -230,6 +231,7 @@ public class QuerySolver  {
 	void init(Query q){
 		q.setListGroup(isListGroup);
 		q.setListPath(isListPath);
+		q.setCountPath(isCountPath);
 		q.setCheckLoop(isCheckLoop);
 		if (isDebug) q.setDebug(isDebug);
 		if (isOptimize) q.setOptimize(isOptimize);
@@ -394,6 +396,10 @@ public class QuerySolver  {
 	
 	public void setListPath(boolean b){
 		isListPath = b;
+	}
+	
+	public void setCountPath(boolean b){
+		isCountPath = b;
 	}
 	
 	public void setPathLoop(boolean b){

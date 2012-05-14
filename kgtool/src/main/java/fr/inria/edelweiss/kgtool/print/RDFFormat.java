@@ -33,6 +33,9 @@ import fr.inria.edelweiss.kgraph.logic.RDFS;
  * 
  */
 public class RDFFormat {
+	private static final String XMLDEC ="<?xml version=\"1.0\" ?>";
+	private static final String RDF_OPEN = "<rdf:RDF";
+	private static final String RDF_CLOSE = "</rdf:RDF>";
 	static final String XMLNS 		= "xmlns:";
 	static final String DESCRIPTION = "rdf:Description";
 	static final String ID 			= " rdf:about='";
@@ -206,14 +209,16 @@ public class RDFFormat {
 		
 		StringBuilder bb = new StringBuilder();
 		
-		bb.append("<rdf:RDF"); 
+		bb.append(XMLDEC); 
+		bb.append(NL);
+		bb.append(RDF_OPEN); 
 		bb.append(NL);
 		header(bb);
 		bb.append(">");
 		bb.append(NL);
 		bb.append(NL);
 		bb.append(sb); 
-		bb.append("</rdf:RDF>");
+		bb.append(RDF_CLOSE);
 		
 		return bb;
 	}

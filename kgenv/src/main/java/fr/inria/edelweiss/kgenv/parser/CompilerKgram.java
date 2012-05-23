@@ -115,6 +115,9 @@ public class CompilerKgram implements ExpType, Compiler {
 	
 	/**
 	 * isReuse = true means reuse existing Node if any
+	 * Generate a new Node for resources and for literals
+	 * For resources it is to enable to approximate match a query Class with 
+	 * different target classes 
 	 */
 	Node getNode(Atom at, boolean isReuse){
 		if (at.isVariable()){
@@ -125,19 +128,19 @@ public class CompilerKgram implements ExpType, Compiler {
 			}
 			return node;
 		}
-		else if (at.isResource() && isReuse){
-			Node node = resTable.get(at.getName());
-			if (node == null){
-				node = new NodeImpl(at);
-				resTable.put(at.getName(), node);
-			}
-			return node;
-		}
+//		else if (at.isResource() && isReuse){
+//			Node node = resTable.get(at.getName());
+//			if (node == null){
+//				node = new NodeImpl(at);
+//				resTable.put(at.getName(), node);
+//			}
+//			return node;
+//		}
 		return new NodeImpl(at);
 	}
 	
-	public void compile(Triple tt) {
-		edge = new EdgeImpl(tt);
+	public Edge compile(Triple tt) {
+		EdgeImpl edge = new EdgeImpl(tt);
 		Node subject = getNode(tt.getSubject());
 		if (tt.getVariable()!=null){
 			Node variable = getNode(tt.getVariable());
@@ -150,6 +153,7 @@ public class CompilerKgram implements ExpType, Compiler {
 		// to accept type subsumption 
 		// if it would be same Node, it would need to be bound to same value
 		// cf Neurolog pb
+		// TODO: fix it for relax
 		Node object = getNode(tt.getObject(), ! tt.isType());
 		edge.add(subject);
 		edge.add(object);
@@ -161,6 +165,8 @@ public class CompilerKgram implements ExpType, Compiler {
 				edge.add(sup);
 			}
 		}
+		
+		return edge;
 
 	}
 	
@@ -170,12 +176,8 @@ public class CompilerKgram implements ExpType, Compiler {
 		return getNode(new Variable(name));
 	}
 	
-	public Node createNode(Variable var){
-		return getNode(var);
-	}
-	
-	public Node createNode(Constant val){
-		return getNode(val);
+	public Node createNode(Atom at){
+		return getNode(at);
 	}
 	
 	public List<Filter> getFilters(){ 

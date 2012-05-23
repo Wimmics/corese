@@ -61,7 +61,7 @@ public class PragmaImpl extends Pragma {
 	}
 	
 	
-	public void triple(Atom g, Triple t){
+	public void triple(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
 
 		String subject  = t.getSubject().getLongName();
 		String property = t.getProperty().getLongName();
@@ -91,12 +91,12 @@ public class PragmaImpl extends Pragma {
 			if (property.equals(PSTEP)){
 				// kg:similarity kg:pstep 0.5
 				graph.setPropertyDistance(null);
-				Distance.setPropertyStep(dt.getDoubleValue());
+				Distance.setPropertyStep(dt.doubleValue());
 			}
 			else if (property.equals(CSTEP)){
 				// kg:similarity kg:cstep 2
 				graph.setClassDistance(null);
-				Distance.setClassStep(dt.getDoubleValue());
+				Distance.setClassStep(dt.doubleValue());
 			}
 		}
 		else if (subject.equals(PRAGMA)){

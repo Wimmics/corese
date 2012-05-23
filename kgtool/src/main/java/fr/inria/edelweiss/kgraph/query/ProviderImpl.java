@@ -101,14 +101,19 @@ public class ProviderImpl implements Provider {
 	 * Otherwise send query to spaql endpoint
 	 * If endpoint fails, use default QueryProcess if it exists
 	 */
+	
 	public Mappings service(Node serv, Exp exp, Environment env) {
+		return service(serv, exp, null, env);
+	}
+	
+	public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
 		Query q = exp.getQuery();
 		
 		QueryProcess exec = table.get(serv.getLabel());
 
 		if (exec == null){
 
-			Mappings map = send(serv, q, env);
+			Mappings map = send(serv, q, lmap, env);
 			if (map != null){
 				return map;
 			}
@@ -133,16 +138,18 @@ public class ProviderImpl implements Provider {
 	
 	/**
 	 * Send query to sparql endpoint using a POST HTTP query
-	 */
-	Mappings send(Node serv, Query q, Environment env){
+	 */		 	
+	Mappings send(Node serv, Query q, Mappings lmap, Environment env){
 		Query g = q.getOuterQuery();
 		try {
-			compile(serv, q, env);
+		
+			// generate bindings from env if any
+			compile(serv, q, lmap, env);						
 
 			ASTQuery ast = (ASTQuery) q.getAST();
-			
+						
 			String query = ast.toString();
-
+						
 			if (g.isDebug()){
 				logger.info("** Provider query: \n" + query);
 			}
@@ -179,8 +186,11 @@ public class ProviderImpl implements Provider {
 	}
 	
 	
-	void compile(Node serv, Query q, Environment env){
-		compiler.compile(serv, q, env);
+	void compile(Node serv, Query q, Mappings lmap, Environment env){
+		// share prefix
+		compiler.prepare(q);
+		// bindings
+		compiler.compile(serv, q, lmap, env);
 	}
 
 

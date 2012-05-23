@@ -198,8 +198,8 @@ public class Eval implements  ExpType, Plugin {
 		}
 		if (! q.isFail()){
 			
-			if (q.getMapping()!=null){
-				for (Mapping m : q.getMapping()){
+			if (q.getMappings()!=null){
+				for (Mapping m : q.getMappings()){
 					binding(m);
 					eval(gNode, q);
 					free(m);
@@ -790,7 +790,13 @@ private	int eval(Producer p, Node gNode, Stack stack, int n, boolean option)  {
 					backtrack = minus(p, gNode, exp, stack, n, true);
 				}
 				break;
-
+				
+				
+			case JOIN:
+				
+				backtrack = join(p, gNode, exp, stack, n, true);
+				break;
+				
 				
 			case NOT:
 				/**
@@ -882,6 +888,13 @@ private	int eval(Producer p, Node gNode, Stack stack, int n, boolean option)  {
 					backtrack = query(gNode, exp, stack, n, option);
 				}
 				break;	
+				
+				
+			case VALUES:
+				
+				backtrack = values(p, gNode, exp, stack, n, option);
+				
+				break;
 
 				
 			case POP:
@@ -1221,7 +1234,48 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		return backtrack;
 	}
 	
+	/**
+	 * JOIN(e1, e2)
+	 * Eval e1, eval e2, generate all joins that are compatible in cartesian product
+	 */
+	private	int join(Producer p, Node gNode, Exp exp, Stack stack, int n,  boolean option){
+		int backtrack = n-1;
+		Memory env = memory;
+		
+		Mappings map1 = subEval(p, gNode, gNode, exp.first());
+//		System.out.println("map1");
+//		System.out.println(map1);
 
+		exp.rest().setMappings(map1);
+		Mappings map2 = subEval(p, gNode, gNode, exp.rest());
+		
+//		System.out.println("__");
+//		System.out.println(lMap2);
+//		System.out.println("__");
+
+		for (Mapping m1 : map1){
+			
+			if (env.push(m1, n)){
+								
+				for (Mapping m2 : map2){
+					
+					if (env.push(m2, n)){
+						
+						backtrack = eval(p, gNode, stack, n+1, option);
+						env.pop(m2);
+						if (backtrack < n){
+							return backtrack;
+						}
+					}
+				}
+				
+				env.pop(m1);
+
+			}
+		}	
+		return backtrack;
+	}
+	
 	
 	private	int union(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean option){
 		int backtrack = n-1;
@@ -1282,7 +1336,7 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		}
 				
 		if (provider != null){
-			Mappings lMap = provider.service(node, exp.rest(), env);
+			Mappings lMap = provider.service(node, exp.rest(), exp.getMappings(), env);
 			for (Mapping map : lMap){
 				complete(query, map);
 				if (env.push(map, n, false)){
@@ -1618,6 +1672,25 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		return backtrack;
 	}
 
+	private	int values(Producer p, Node gNode, Exp exp, Stack stack, int n,  boolean option) {
+		int backtrack = n-1;
+		
+		for (Mapping map : exp.getMappings()){
+			
+			//System.out.println("** E: " + map);
+			if (memory.push(map, n)){
+				backtrack = eval(p, gNode, stack, n+1, option);
+				memory.pop(map);
+
+				if (backtrack < n){
+					return backtrack;
+				}
+			}
+		}
+		
+		return backtrack;
+		
+	}
 	
 	/** 
 	 * Enumerate candidate edges

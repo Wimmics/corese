@@ -43,9 +43,9 @@ public class Query extends Exp {
 		querySelectNodes,
 		// all bindings nodes
 		bindingNodes;
+	List<Node> relaxEdges;
 	List<Exp> selectExp, orderBy, groupBy;
 	List<Filter> failure, pathFilter;
-	List<Mapping> bindings;
 	List<String> errors, info;
 	Exp having, construct, delete;
 	// gNode is a local graph node when subquery has no ?g in its select 
@@ -109,6 +109,7 @@ public class Query extends Exp {
 		patternSelectNodes 	= new ArrayList<Node>();
 		querySelectNodes 	= new ArrayList<Node>();
 		bindingNodes 		= new ArrayList<Node>();
+		relaxEdges 			= new ArrayList<Node>();
 
 		sort = new Sorter();
 
@@ -243,7 +244,7 @@ public class Query extends Exp {
 		query = q;
 		inherit(q);
 	}
-	
+			
 	/**
 	 * inherit from and from named
 	 */
@@ -557,6 +558,18 @@ public class Query extends Exp {
 		isRelax = b;
 	}
 	
+	/**
+	 * To relax types on other property than rdf:type
+	 */
+	public boolean isRelax(Edge q) {
+		boolean b = isRelax && relaxEdges.contains(q.getEdgeNode());
+		return b;
+	}
+	
+	public void addRelax(Node n){
+		relaxEdges.add(n);
+	}
+	
 	public boolean isDistribute(){
 		if (query != null)
 			return query.isDistribute();
@@ -717,14 +730,6 @@ public class Query extends Exp {
 	
 	public boolean isCountPath(){
 		return isCountPath;
-	}
-	
-	public void setMapping(List<Mapping> list){
-		bindings = list;
-	}
-	
-	public List<Mapping> getMapping(){
-		return bindings;
 	}
 	
 	public boolean isCorrect(){
@@ -1133,6 +1138,12 @@ public class Query extends Exp {
 		case NODE:
 			store(exp.getNode(), exist, false);
 			break ;
+			
+		case VALUES:
+			for (Node node : exp.getNodeList()){
+				store(node, exist, false);
+			}
+			break;
 
 		case EDGE:
 		case PATH:
@@ -1230,6 +1241,13 @@ public class Query extends Exp {
 				min = Math.min(min, n);
 			}
 			
+			break;
+			
+		case VALUES:
+			for (Node node : exp.getNodeList()){
+				n = qIndex(query, node);
+				min = Math.min(min, n);
+			}
 			break;
 
 		case NODE:
@@ -2045,7 +2063,7 @@ public class Query extends Exp {
 	public  Iterable<String> getFilterNames(){
 		return ftable.keySet();
 	}
-	
-	
+
+
 	
 }

@@ -166,7 +166,8 @@ public class ASTQuery  implements Keyword {
 	List<Variable> selectVar = new ArrayList<Variable>();
 	List<Expression> sort 	 = new ArrayList<Expression>();
 	List<Expression> lGroup  = new ArrayList<Expression>();
-	
+	List<Expression> relax   = new ArrayList<Expression>();
+
 	List<Atom> from  		= new ArrayList<Atom>();
 	List<Atom> named 		= new ArrayList<Atom>();
 	List<Atom> defFrom, defNamed; 
@@ -178,6 +179,7 @@ public class ASTQuery  implements Keyword {
 	
 	List<Variable> varBindings;
 	List<List<Constant>> valueBindings;
+	Values values;
 	
 	List<Boolean> reverseTable = new ArrayList<Boolean>();
 	
@@ -449,6 +451,14 @@ public class ASTQuery  implements Keyword {
 
 	public void setMore(boolean more) {
 		this.more = more;
+	}
+	
+	public void setRelax(List<Expression> l) {
+		relax = l;
+	}
+	
+	public List<Expression> getRelax() {
+		return relax;
 	}
 
 	public void setNamed(List<Atom> named) {
@@ -1697,30 +1707,8 @@ public class ASTQuery  implements Keyword {
     void getFinal(StringBuffer sb){
     	String SPACE = " ";
 
-    	if (getVariableBindings() != null){
-    		sb.append(KeywordPP.BINDINGS);
-    		sb.append(SPACE);
-
-    		for (Atom var : getVariableBindings()){
-    			sb.append(var.getName());
-    			sb.append(SPACE);
-    		}
-    		sb.append(KeywordPP.OPEN_BRACKET);
-    		sb.append(NL);
-
-    		for (List<Constant> list : getValueBindings()){
-    			sb.append(KeywordPP.OPEN_PAREN);
-
-    			for (Constant value : list){
-    				sb.append(value);
-    				sb.append(SPACE);
-    			}
-    			sb.append(KeywordPP.CLOSE_PAREN);
-    			sb.append(NL);
-    		}
-
-    		sb.append(KeywordPP.CLOSE_BRACKET);
-    		sb.append(NL);
+    	if (getValues()!=null){
+    		getValues().toString(sb);
     	}
 
     	if (getPragma()!=null){
@@ -1974,31 +1962,42 @@ public class ASTQuery  implements Keyword {
     public void setGroup(String var) {
     }
     
-    public void setVariableBindings(List<Variable> list){
-    	varBindings = list;
-    }
+//    public void setVariableBindings(List<Variable> list){
+//    	varBindings = list;
+//    }
     
     public List<Variable> getVariableBindings(){
-    	return varBindings;
+    	if (values != null){
+    		return values.getVariables();
+    	}
+    	return null;
     }
     
-    public void setValueBindings(List<Constant> list){
-    	if (valueBindings == null){
-    		valueBindings = new ArrayList<List<Constant>>();
-    	}
-    	valueBindings.add(list);
-   }
+//    public void setValueBindings(List<Constant> list){
+//    	if (valueBindings == null){
+//    		valueBindings = new ArrayList<List<Constant>>();
+//    	}
+//    	valueBindings.add(list);
+//   }
     
     public void clearBindings(){
-    	valueBindings = null;
-    	varBindings = null;
+    	values = null;
     }
     
     public List<List<Constant>> getValueBindings(){
-    	return valueBindings;
+    	if (values != null){
+    		return values.getValues();
+    	}
+    	return null;
     }
     
+    public void setValues(Values v){
+    	values = v;
+    }
     
+    public Values getValues(){
+    	return values;
+    }
 
    
    public void defSelect(Variable var, Expression exp){
@@ -2300,6 +2299,8 @@ public class ASTQuery  implements Keyword {
     int getStackSize(){
         return stack.size();
     }
+
+
 
 	
 }

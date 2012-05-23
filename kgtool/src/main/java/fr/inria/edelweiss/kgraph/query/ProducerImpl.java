@@ -118,6 +118,11 @@ public class ProducerImpl implements Producer {
 		return node;
 	}
 	
+	
+	boolean isType(Edge edge, Environment env){
+		return graph.isType(edge) || env.getQuery().isRelax(edge);
+	}
+	
 	@Override
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
 			Environment env) {
@@ -140,8 +145,10 @@ public class ProducerImpl implements Producer {
 				// Edge has a node that is bound or constant ?
 				Node qNode = getNode(edge, gNode, i);
 				if (qNode!=null){
-					if (i == 1 && qNode.isConstant() && 
-						graph.isType(edge) && graph.hasEntailment()){
+					if (i == 1 && 
+						qNode.isConstant() && 
+						isType(edge, env) && 
+						graph.hasEntailment()){
 						// RDFS entailment on ?x rdf:type c:Engineer
 						// no dichotomy on c:Engineer to get subsumption
 					}
@@ -149,7 +156,7 @@ public class ProducerImpl implements Producer {
 						node = getValue(qNode, env);
 						if (node != null){
 							n = i;
-							if (i == 0 && ! graph.isType(edge)){
+							if (i == 0 && ! isType(edge, env)){
 								node2 = getValue(edge.getNode(1), env);
 							}
 							break;
@@ -158,7 +165,7 @@ public class ProducerImpl implements Producer {
 				}
 			}
 		}
-		
+				
 		if (node == null  && from.size()>0){
 			// from named <uri>
 			// graph ?g { }

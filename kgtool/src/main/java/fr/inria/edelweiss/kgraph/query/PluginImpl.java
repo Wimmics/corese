@@ -216,7 +216,8 @@ public class PluginImpl extends ProxyImpl {
 						}
 					}
 					
-					if (graph.isType(qEdge) && qEdge.getNode(1).isConstant()){
+					if ((graph.isType(qEdge) || env.getQuery().isRelax(qEdge)) && 
+							qEdge.getNode(1).isConstant()){
 
 						Node qtype = graph.getNode(qEdge.getNode(1).getLabel());
 						Node ttype = graph.getNode(edge.getNode(1).getLabel());

@@ -273,6 +273,10 @@ public abstract class Exp extends Statement {
 		return false;
 	}
 	
+	public boolean isValues(){
+		return false;
+	}
+	
 	public boolean isBGP(){
 		return false;
 	}
@@ -282,6 +286,10 @@ public abstract class Exp extends Statement {
 	}
 	
 	public boolean isUnion(){
+		return false;
+	}
+	
+	public boolean isJoin(){
 		return false;
 	}
 	

@@ -44,6 +44,8 @@ public interface ExpType {
 	static final int POP 		= 29; 
 	static final int SERVICE 	= 30; 
 	static final int RESTORE 	= 31; 
+	static final int JOIN 		= 32; 
+	static final int VALUES 	= 33; 
 
 
 
@@ -52,7 +54,7 @@ public interface ExpType {
 		"EMPTY", "AND", "UNION", "GRAPH", "OPTION", "EDGE", "FILTER", "NODE", 
 		"NOT", "WATCH", "CONTINUE", "BACKJUMP", "EXTERN", "QUERY", "FORALL", "EXIST",
 		"GRAPHNODE", "OPTIONAL", "SCAN", "IF", "PATH", "XPATH", "ACCEPT", "BIND", 
-		"EVAL", "SCOPE", "TEST", "NEXT", "MINUS", "POP", "SERVICE", "RESTORE"
+		"EVAL", "SCOPE", "TEST", "NEXT", "MINUS", "POP", "SERVICE", "RESTORE", "JOIN", "VALUES"
 	};
 	
 }

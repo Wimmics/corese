@@ -37,7 +37,7 @@ public class Term extends Expression {
 	public static final String SNOT = Keyword.SENOT;
 	public static final String SEAND = Keyword.SEAND;
 	static final String SEDIV = Keyword.SDIV;
-	static final String SEOR  = Keyword.SEOR;
+	public static final String SEOR  = Keyword.SEOR;
 	public static final String SEQ   = Keyword.SEQ;
 	public static final String STAR = "star";
 	public static final String TEST = "test";

@@ -85,6 +85,10 @@ public class MatcherImpl implements Matcher {
 			return matchType(q, r, env);
 		}
 		
+		if (env.getQuery().isRelax(q)){
+			return matchType(q, r, env);
+		}
+		
 		if (! q.getLabel().equals(Graph.TOPREL) && 
 			! q.getLabel().equals(r.getLabel())) {
 			return false;

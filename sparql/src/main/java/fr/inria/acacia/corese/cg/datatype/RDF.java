@@ -20,6 +20,7 @@ public interface RDF {
 	static final String BLANKSEED   	= "_:";
 	
 	static final String qxsdString 	 = "xsd:string";
+	static final String qxsdInteger  = "xsd:integer";
 	static final String qxsdlangString 	 = "rdf:langString";
 	static final String qrdfsLiteral = "rdfs:Literal";
 

@@ -789,6 +789,7 @@ public class Triple extends Exp {
 		return sb;
 	}
 	
+	
 	public StringBuffer toString(StringBuffer sb) {
 		
 		if (isExpression()) {
@@ -796,21 +797,15 @@ public class Triple extends Exp {
 		}
 				
 		String SPACE = " ";
-		String s = "";
-		String r;
-		String p;
-		String v;
 		
 		if (source != null){
 			sb.append(source.toString() + " ");
 		}
 		
-		// resource
-		r = subject.toString();
-		
-		// property
-		p = predicate.toString();
-				
+		String r = subject.toString();
+		String p = predicate.toString();
+		String v = object.toString();
+	
 		if (isPath()){
 			p = getRegex().toRegex();
 			
@@ -819,35 +814,35 @@ public class Triple extends Exp {
 			}
 		}
 		else if (variable != null) {
-			if (predicate.getLongName().equals(getRootPropertyURI()) || 
-				predicate.getName().equals(getRootPropertyQN())){
+			if (isTopProperty()){
 				p = variable.getName();
 			}
 			else {
 				p += "::" + variable.getName();
 			}
 		}
-		
-
-		
-		// value
-		v = object.toString();
-		
-		// tuple?
+				
 		if (larg != null) {
-			sb.append(KeywordPP.TUPLE + KeywordPP.OPEN_PAREN + r + SPACE + p + SPACE + v + SPACE);
+			// tuple()
+			sb.append(KeywordPP.TUPLE + KeywordPP.OPEN_PAREN + p + SPACE + r + SPACE + v + SPACE);
 			for (Atom e : larg) {
 				sb.append(e.toString() + SPACE);
 			}
 			sb.append(KeywordPP.CLOSE_PAREN + KeywordPP.DOT);
-			return sb;
+		}
+		else {
+			sb.append(r + SPACE + p + SPACE + v + KeywordPP.DOT);
 		}
 		
-		sb.append(r + SPACE + p + SPACE + v + KeywordPP.DOT);
 		return sb;
 	}
 	
 
+	boolean isTopProperty(){
+		return 
+		predicate.getLongName().equals(getRootPropertyURI()) || 
+		predicate.getName().equals(getRootPropertyQN());
+	}
 	
 	public void setExp(boolean b) {
 		isexp = b;

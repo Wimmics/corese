@@ -14,6 +14,8 @@ public interface Provider {
 	
 	Mappings service(Node serv, Exp exp, Environment env);
 	
+	Mappings service(Node serv, Exp exp, Mappings map, Environment env);
+
 	void set(String uri, double version);
 
 }

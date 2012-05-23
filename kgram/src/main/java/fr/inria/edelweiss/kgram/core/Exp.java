@@ -50,6 +50,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	Object object;
 	Regex regex;
 	Exp next;
+	Mappings map;
 
 	
 	int min=-1, max=-1;
@@ -169,6 +170,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	public boolean remove(Exp e){
 		return args.remove(e);
+	}
+	
+	public Exp remove(int n){
+		return args.remove(n);
 	}
 	
 	/**
@@ -369,6 +374,14 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	public void setRegex(Regex f){
 		regex = f;
+	}
+	
+	public Mappings getMappings(){
+		return map;
+	}
+	
+	public void setMappings(Mappings m){
+		map = m;
 	}
 	
 	public Filter getFilter(){

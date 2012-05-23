@@ -20,10 +20,30 @@ public class Sorter {
 	 * lVar is the list of var that are already bound
 	 */
 	public void sort(Query q, Exp exp, List<String> lVar, List<Exp> lBind){
+		int hasService = sorting(q, exp, lVar, lBind);
+		if (hasService > 0 && q.isOptimize()){
+			// replace pattern . service by join(pattern, service)
+			service(exp, hasService);
+		}
+	}
+	
+	/**
+	 * It is a service and it has an URI (not a variable)
+	 */
+	boolean isService(Exp exp){
+		return exp.type() == Exp.SERVICE && ! exp.first().getNode().isVariable();
+	}
+	
+	int sorting(Query q, Exp exp, List<String> lVar, List<Exp> lBind){
+		int hasService = 0;
+		
 		List<Node> lNode = new ArrayList<Node>();
 
 		for (int i = 0; i < exp.size(); i++) {
 			Exp e1 = exp.get(i);
+			if (isService(e1)){
+				hasService += 1;
+			}
 			
 			if (e1.isSortable()){
 				if (lNode.size() == 0 && lVar.size() == 0 && leaveFirst()){
@@ -60,6 +80,8 @@ public class Sorter {
 				e1.bind(lNode);
 			}
 		}
+		
+		return hasService;
 	}
 	
 	
@@ -117,7 +139,7 @@ public class Sorter {
 	 * Edge with node in bindings has advantage
 	 */
 	protected boolean beforeBind(Query q, Exp e2, Exp e1){
-		List<Mapping> list = q.getMapping();
+		Mappings list = q.getMappings();
 		if (list != null && list.size()>0){
 			Mapping map = list.get(0);
 			if (e1.bind(map)) return false;
@@ -127,8 +149,59 @@ public class Sorter {
 	}
 	
 	
+	/**
+	 * Draft:
+	 * for each service in exp
+	 * replace pattern . service by
+	 * join(pattern, service)
+	 * it may be join(service, service)
+	 */
+	void service(Exp exp, int nbs){
+		
+		if (nbs < 1 || (nbs == 1 && isService(exp.get(0)))){ 
+			// nothing to do
+			return;
+		}
+		
+		int count = 0;
+		int i = 0;
+		
+		Exp and = Exp.create(Exp.AND);
 
-	
+		while (count < nbs){
+			// there are services
+			
+			while (! isService(exp.get(i))){ 
+				// find next service
+				and.add(exp.get(i));
+				exp.remove(i);				
+			}
+			
+			// exp.get(i) is a service
+			count++;
+
+			if (and.size() == 0){
+				and.add(exp.get(i));
+			}
+			else {
+				Exp join = Exp.create(Exp.JOIN, and, exp.get(i));
+				and = Exp.create(Exp.AND);
+				and.add(join);
+			}
+			
+			exp.remove(i);
+
+		}
+		
+		while (exp.size()>0){
+			// no more service
+			and.add(exp.get(0));
+			exp.remove(0);
+		}
+		
+		exp.add(and);
+		
+	}
 	
 	
 	

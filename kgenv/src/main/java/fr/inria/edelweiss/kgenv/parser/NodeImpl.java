@@ -40,7 +40,7 @@ public class NodeImpl implements Node {
 		return atom;
 	}
 	
-	public Object getValue(){
+	public IDatatype getValue(){
 		return atom.getDatatypeValue();
 	}
 	
@@ -50,8 +50,8 @@ public class NodeImpl implements Node {
 
 	@Override
 	public int compare(Node node) {
-		if (getValue() instanceof IDatatype && node.getValue() instanceof IDatatype){
-			IDatatype dt1 = (IDatatype) getValue();
+		if (node.getValue() instanceof IDatatype){
+			IDatatype dt1 = getValue();
 			IDatatype dt2 = (IDatatype) node.getValue();
 			return dt1.compareTo(dt2);
 		}
@@ -89,20 +89,29 @@ public class NodeImpl implements Node {
 		return atom.isBlank() || (isVariable() && atom.getVariable().isBlankNode());
 	}
 
-//	@Override
-//	public boolean match(Node qNode) {
-//		// TODO Auto-generated method stub
-//		return true;
-//	}
 
 	@Override
 	public boolean same(Node n) {
-		// TODO Auto-generated method stub
+		if (isVariable()){
+			if (n.isVariable()){
+				return getLabel().equals(n.getLabel());
+			}
+			else {
+				return false;
+			}
+		}
+		else if (n.isVariable()){
+			return false;
+		}
+		
 		return compare(n) == 0;
-//		if (isVariable() && n.isVariable())
-//			return getLabel().equals(n.getLabel());
-//		return this == n;
 	}
+	
+	public boolean equals(Object o) {
+		if (! (o instanceof Node)) return false;
+		return same((Node) o);
+	}
+	
 
 	@Override
 	public void setIndex(int n) {

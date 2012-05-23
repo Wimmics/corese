@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -112,20 +113,28 @@ public class Constant extends Atom {
 	
 	public StringBuffer toString(StringBuffer sb) {
 		if (isLiteral()){
-			sb.append(KeywordPP.QUOTE + name + KeywordPP.QUOTE);
+			
+			
 			if (lang != null) {
 				//return name + "@" + lang;
+				toString(name, sb);
 				sb.append(KeywordPP.LANG + lang);
 			} 
 			else if (hasRealDatatype()) {
 				if (datatype.startsWith("http://")){
+					toString(name, sb);
 					sb.append(KeywordPP.SDT + "<"+ datatype +">");
 				}
+				else if (datatype.equals(RDF.qxsdInteger)){
+					sb.append(name);
+				}
 				else {
+					toString(name, sb);
 					sb.append(KeywordPP.SDT + datatype);
 				}
 			} 
 			else {
+				toString(name, sb);
 				return sb;
 			}
 		}
@@ -139,6 +148,26 @@ public class Constant extends Atom {
 			sb.append(KeywordPP.OPEN + getLongName() + KeywordPP.CLOSE);
 		}
 		return sb;
+	}
+	
+	public StringBuffer toString2(StringBuffer sb) {
+		String str = getDatatypeValue().toString();
+		sb.append(str);
+		return sb;
+	}
+	
+	void toString(String str, StringBuffer sb){
+		if (name.contains(KeywordPP.QUOTE)){
+			if (name.contains(KeywordPP.DQUOTE)){
+				sb.append(KeywordPP.TQUOTE + name + KeywordPP.TQUOTE);
+			}
+			else {
+				sb.append(KeywordPP.DQUOTE + name + KeywordPP.DQUOTE);
+			}
+		}
+		else {
+			sb.append(KeywordPP.QUOTE + name + KeywordPP.QUOTE);
+		}
 	}
 	
 	public Constant getConstant() {

@@ -549,13 +549,13 @@ Exp DescribeQuery() : { Exp stack; Variable v; String s; Atom at;}
   }
 }
 
-Exp AskQuery() : { Exp stack; }
+Exp AskQuery() : { Exp stack; Values values;}
 {
   <ASK>
   Debug()
   ( DatasetClause() )*
   stack = WhereClause()
-  (Bindings()) ?
+  (values = ValueBindings()  {astq.setValues(values); } ) ?
   
   {
   	astq.setResultForm(ASTQuery.QT_ASK);
@@ -796,31 +796,96 @@ Exp WhereClause() : { Exp stack; }
    { return stack; }
 }
 
-void SolutionModifier() : {}
+void SolutionModifier() : {Values values;}
 {
    (Relax()) ?  
    (OrderGroup()) ? ( LimitOffset()) ? 
-   (Bindings()) ?
+   (values = ValueBindings() {astq.setValues(values); } ) ?
    (Display()) * 
    (Pragma()) *
 }
 
 
-void Bindings() : {Variable var; Constant val; ArrayList<Variable> list; ArrayList<Constant>  value;}
+Values ValueBindings() : {Values values;}
 {
-	{list = new ArrayList<Variable>();}
+	(
+	values = Values()
+	|
+	values = Bindings()
+	)	
+	
+	{return values;}
+}
 
-	<BINDINGS> (var = Var() {list.add(var); }) *
-				{ astq.setVariableBindings(list); }
+Values Values() : {Variable var; Constant val; ArrayList<Variable> list = null; ArrayList<Constant>  value; Values values = null;}
+{
+	{list = new ArrayList<Variable>();
+	values = Values.create();}
+
+ <VALUES> 
+ 
+	( 
+	(	
+		<LPAREN> 
+			(var = Var() {list.add(var); }) *
+			{ values.setVariables(list); }
+		<RPAREN>
+			
+		<LBRACE> 
+		(
+			<LPAREN> 
+				{ value = new ArrayList<Constant>(); }
+				( val = Value() { value.add(val); } ) * 
+				{ values.addValues(value); }
+			<RPAREN>
+		)*
+		<RBRACE>
+	)
+
+	|
+	
+	(
+		var = Var() {list.add(var); }
+			{ values.setVariables(list); }
+		
+		<LBRACE> 
+			(
+			{ value = new ArrayList<Constant>(); }
+			val = Value() { value.add(val); } 
+			{ values.addValues(value); }
+			) *
+		<RBRACE>
+	)
+	)
+	
+	{ return values; }
+
+	
+}
+
+
+
+Values Bindings() : {Variable var; Constant val; ArrayList<Variable> list; ArrayList<Constant>  value; Values values;}
+{
+	{list = new ArrayList<Variable>();
+	 values = Values.create();
+	}
+
+	<BINDINGS> 
+	(var = Var() {list.add(var); }) *
+	 { values.setVariables(list); }
 	<LBRACE> 
 	(
 		<LPAREN> 
 			{ value = new ArrayList<Constant>(); }
 			( val = Value() { value.add(val); } ) * 
-			{ astq.setValueBindings(value); }
+			{ values.addValues(value); }
 		<RPAREN>
 	)*
 	<RBRACE>
+	
+	{ return values; }
+	
 }
 
 
@@ -885,7 +950,7 @@ void GroupClause(): { Variable var; Expression exp; Exp stack;}
   	 <GROUP> <BY>
   (
   
-  (
+  ( LOOKAHEAD(2)
   	( 
   	//exp = BrackettedExpression(stack) |
   	
@@ -1021,7 +1086,7 @@ void BlockOfTriples(Exp stack) : {boolean b1, b2;}
 
 
 
-void GraphPatternNotTriples(Exp stack) : {ASTQuery ast;}
+void GraphPatternNotTriples(Exp stack) : {ASTQuery ast; Values values;}
 {
       OptionalGraphPattern(stack)
     | MinusGraphPattern(stack)
@@ -1036,6 +1101,7 @@ void GraphPatternNotTriples(Exp stack) : {ASTQuery ast;}
  	| ExistGraphPattern(stack)
  	| <LBRACE> SubQuery(stack) <RBRACE>
  	| Bind(stack) 
+ 	| values = Values() { stack.add(values); }
 }
 
 void SubQuery(Exp stack) : {ASTQuery ast; Query q; Exp exp;}
@@ -2368,7 +2434,8 @@ TOKEN [IGNORE_CASE] :
 | <PROJECTION: "projection" >
 | <GROUP: "group" >
 | <HAVING: "having" >
-| <BINDINGS: "bindings">
+| <BINDINGS: "bindings" >
+| <VALUES: "values"  >
 | <BIND: "bind">
 | <UNDEF: "undef">
 | <COUNT: "count" >

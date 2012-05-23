@@ -11,6 +11,8 @@ public interface KeywordPP {
 	public final static String SDT = "^^";
 	public final static String LANG = "@";
     public final static String QUOTE = "'";    
+    public final static String DQUOTE = "\"";    
+    public final static String TQUOTE = "\"\"\"";    
     public final static String BN = RDF.BLANKSEED ; 
 
     public static final String CORESE_PREFIX = "function://";
@@ -47,14 +49,15 @@ public interface KeywordPP {
     public final static String PROJECTION = "projection";
     public final static String RESULT = "result";
     public final static String THRESHOLD = "threshold";
-    public final static String FROM = "from";
+    public final static String FROM  = "from";
     public final static String NAMED = "named";
     public final static String WHERE = "where";
     public final static String GRAPH = "graph";
     public final static String STATE = "state";
-    public final static String LEAF = "leaf";
+    public final static String LEAF  = "leaf";
     public final static String TUPLE = "tuple";
-    
+    public final static String JOIN  = "join";
+
     public final static String SCORE = "score";
     public final static String FILTER = "filter";
     public final static String OPTIONAL = "optional";
@@ -68,7 +71,8 @@ public interface KeywordPP {
     public final static String LIMIT = "limit";
     public final static String HAVING = "having";
     public final static String OFFSET = "offset";
-    public final static String BINDINGS = "bindings";
+    public final static String BINDINGS = "values";
+    public final static String UNDEF = "UNDEF";
     public final static String PRAGMA = "pragma";
 
     public final static String SPACE = " ";

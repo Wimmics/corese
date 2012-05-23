@@ -7,6 +7,7 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -47,6 +48,7 @@ public class Pragma  {
 	static final String LIST 	= KG + "list";
 	static final String DISPLAY	= KG + "display";
 	static final String EXPAND 	= KG + "expand";
+	static final String PRELAX 	= KG + "relax";
 
 	protected static final String STATUS	= KG + "status";
 	protected static final String DESCRIBE	= KG + "describe";
@@ -100,7 +102,7 @@ public class Pragma  {
 			if (query != null && query.isDebug()) Message.log(Message.PRAGMA, pragma);
 			
 			if (pragma.isTriple()){
-				triple(g, pragma.getTriple());
+				triple(g, pragma.getTriple(), exp);
 			}
 			else if (pragma.isGraph()){
 				Source gp = (Source) pragma;
@@ -123,7 +125,7 @@ public class Pragma  {
 			if (ast.isDebug()) Message.log(Message.PRAGMA, pragma);
 
 			if (pragma.isTriple()){
-				ctriple(g, pragma.getTriple());
+				ctriple(g, pragma.getTriple(), exp);
 			}
 			else if (pragma.isGraph()){
 				Source gp = (Source) pragma;
@@ -133,13 +135,13 @@ public class Pragma  {
 	}
 	
 	
-	public void ctriple(Atom g, Triple t){
+	public void ctriple(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
 			
 			String subject  = t.getSubject().getLongName();
 			String property = t.getProperty().getLongName();
 			String object   = t.getObject().getLongName();
 			if (object == null) object = t.getObject().getName();
-			
+
 			if (subject.equals(PATH)){
 				if (property.equals(EXPAND)){
 					Constant cst = t.getObject().getConstant();
@@ -150,6 +152,13 @@ public class Pragma  {
 					else {
 						transform.add(ExpandPath.create());
 					}
+				}
+			} 
+			else if (subject.equals(SELF)){
+				if (property.equals(PRELAX)){
+					// kg:kgram kg:relax (foaf:type)
+					RDFList list = getList(t.getObject(), pragma);
+					ast.setRelax(list.getList());
 				}
 			}
 	}
@@ -180,7 +189,7 @@ public class Pragma  {
 	}
 	
 	
-	public void triple(Atom g, Triple t){
+	public void triple(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
 		
 		String subject  = t.getSubject().getLongName();
 		String property = t.getProperty().getLongName();
@@ -206,6 +215,7 @@ public class Pragma  {
 			else if (property.equals(LIST) && value(object)){
 				query.setListGroup(true);
 			}
+			
 		}
 		else if (subject.equals(MATCH)){
 			if (property.equals(MODE)){
@@ -249,6 +259,22 @@ public class Pragma  {
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	RDFList getList(Atom head, fr.inria.acacia.corese.triple.parser.Exp pragma){
+		for (fr.inria.acacia.corese.triple.parser.Exp exp : pragma.getBody()){
+			if (exp.isRDFList()){
+				RDFList list = (RDFList) exp;
+				if (list.head().getName().equals(head.getName())){
+					return list;
+				}
+			}
+		}
+		return null;
+	}
+	
+
 	public boolean value(String value){
 		return value.equals("true");
 	}

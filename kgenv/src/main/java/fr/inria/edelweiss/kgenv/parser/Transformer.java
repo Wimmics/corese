@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.*;
@@ -14,6 +16,7 @@ import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgram.api.core.*;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 
@@ -31,6 +34,8 @@ import fr.inria.edelweiss.kgram.core.Sorter;
  *
  */
 public class Transformer implements ExpType {	
+	private static Logger logger = Logger.getLogger(Transformer.class);
+
 	public static final String ROOT = "?_kgram_";
 	public static final String THIS = "?this";
 
@@ -168,8 +173,10 @@ public class Transformer implements ExpType {
 
 		path(q, ast);
 		
-		// before complete (because select include binding nodes)
-		bindings(q, ast);
+		if (ast.getValues()!=null){
+			// before complete (because select include binding nodes)
+			bindings(q, ast);
+		}
 
 		// retrieve select nodes for query:
 		complete(q, ast);
@@ -196,6 +203,7 @@ public class Transformer implements ExpType {
 		}
 		
 		filters(q);
+		relax(q);
 		
 		if (visit != null){
 			for (QueryVisitor v : visit){
@@ -300,42 +308,53 @@ public class Transformer implements ExpType {
 		}
 	}
 	
-	
 	void bindings(Query q, ASTQuery ast){
-		   if (ast.getValueBindings() == null) return ;
-		   
-		   List<Node> lNode = bind(q, ast);
-		   q.setBindingNodes(lNode);
-		   Node[] nodes = getNodes(lNode);
-		   
-		   List<Mapping> lMap = new ArrayList<Mapping>();
-		   
-		   for (List<Constant> lVal :  ast.getValueBindings()){
-			   if (ast.getVariableBindings().size() != lVal.size()){
-				   q.setCorrect(false);
-			   }
-			   else {
-				   List<Node> list = bind(lVal);
-				   Mapping map = create(nodes, list);
-				   lMap.add(map);
-			   }
-		   }
-		   
-		   q.setMapping(lMap);
-	   }
+		Exp bind = bindings(ast.getValues());
+		if (bind != null){
+			q.setMappings(bind.getMappings());
+			q.setBindingNodes(bind.getNodeList());
+
+			for (Node n : bind.getNodeList()){
+				q.index(n);
+			}
+		}
+		else {
+			q.setCorrect(false);
+			q.addError("Value Bindings: ", "#values != #variables");
+		}
+	}
+	
+	Exp bindings(Values values){		   
+		List<Node> lNode = bind(values);
+		Node[] nodes = getNodes(lNode);
+
+		Mappings lMap = new Mappings();
+
+		for (List<Constant> lVal :  values.getValues()){
+			if (values.getVariables().size() != lVal.size()){
+				// error: not right number of values
+				return null;
+			}
+			else {
+				List<Node> list = bind(lVal);
+				Mapping map = create(nodes, list);
+				lMap.add(map);
+			}
+		}
+		
+		Exp bind = Exp.create(VALUES);
+		bind.setNodeList(lNode);
+		bind.setMappings(lMap);
+		return bind;
+	}
 
 	
-	List<Node> bind(Query q, ASTQuery ast){
+	List<Node> bind(Values values){
 
 		List<Node> lNode = new ArrayList<Node>();
 
-		for (Variable var : ast.getVariableBindings()){
-			Node qNode = q.getProperAndSubSelectNode(var.getLabel());
-			if (qNode == null){
-				// TODO: select !!!
-				qNode = compiler.createNode(var);
-				q.index(qNode);
-			}
+		for (Variable var : values.getVariables()){
+			Node qNode = compiler.createNode(var);
 			lNode.add(qNode);
 		}
 		
@@ -673,10 +692,12 @@ public class Transformer implements ExpType {
 
 	List<Exp> orderBy(Query qCurrent,  List<Expression> input, ASTQuery ast){
 		List<Exp> list = new ArrayList<Exp>();
+		
 		for (Expression ee : input){
 			if (ee.isVariable()){
 				Exp exp = qCurrent.getSelectExp(ee.getName());
 				Node node;
+				
 				if (exp != null){
 					node = exp.getNode();
 				}
@@ -741,198 +762,160 @@ public class Transformer implements ExpType {
 	 * Compile AST statements into KGRAM statements
 	 * Compile triple into Edge, filter into Filter
 	 */
-	Exp compile(
-			fr.inria.acacia.corese.triple.parser.Exp query, boolean opt){
+	Exp compile(fr.inria.acacia.corese.triple.parser.Exp query, boolean opt){
 		return compile(query, opt, 0);
-	}
+	}	
 	
-	Exp compile(
-			fr.inria.acacia.corese.triple.parser.Exp query, boolean opt, int level){
+	
+	Exp compile(fr.inria.acacia.corese.triple.parser.Exp query, boolean opt, int level){
 
-		List<Filter> qvec;
-		ArrayList<Atom> list;
 		Exp exp = null;
-
-		query.setAST(ast);
-
 		int type = getType(query);
-		opt = opt || type == OPTION || type == OPTIONAL || 
-		type == UNION || type == MINUS;
+		opt = opt || isOption(type);
 
 		switch(type){
 
-
 		case FILTER:
-
-			qvec = compiler.compileFilter((Triple)query);
-
-			if (qvec.size()==1){
-				exp = Exp.create(FILTER, qvec.get(0));
-				compileExist(qvec.get(0).getExp(), opt);
-			}
-			else {
-				exp =  Exp.create(AND);
-				for (Filter qm : qvec){
-					Exp f = Exp.create(FILTER, qm);
-					compileExist(qm.getExp(), opt);
-					exp.add(f);
-				}
-			}
-
-
+			exp = compileFilter((Triple) query, opt);
 			break;
-
-
 
 		case EDGE:
-			// match Edge 
-
-			Triple tt = (Triple) query ;
-
-			if (opt){
-				// union/option
-				tt.setOption(true);
-			}
-
-			compiler.compile(tt);
-
-			Edge r  = compiler.getEdge();
-			Node  c = compiler.getNode();
-
-			Exp t = Exp.create(EMPTY);
-
-			if (r != null){
-				
-				t = Exp.create(EDGE, r);
-
-				if (tt.isXPath()){
-					t.setType(EVAL);
-					//t.setRegex(tt.getRegex());
-					Filter xpath = compiler.compile(tt.getXPath());
-					t.setFilter(xpath);
-				}
-				else if (tt.isPath()){
-					t.setType(PATH);
-					Expression regex = tt.getRegex();
-					if (regex == null){
-						// there may be a match($path, regex)
-					}
-					else {
-						regex.compile(ast);
-						t.setRegex(regex);
-					}
-					t.setObject(tt.getMode());
-				}
-				else if (ast.isCheck()) {
-					check(tt, r);
-				}
-				
-			}
-			else if (c != null)  {
-				t = Exp.create(NODE, c);
-			}
-
-			exp = t;
-			
-			// type checking may be compiled as filters (in union or option)
-//			qvec = compiler.getFilters();
-//
-//			if (qvec.size()>0){
-//				Exp a = Exp.create(AND, t);
-//
-//				for (Filter qm : qvec){
-//					Exp f = Exp.create(FILTER, qm);
-//					compileExist(qm.getExp(), opt);
-//					a.add(f);
-//				}
-//				exp = a;
-//			}
-//			else {
-//				exp = t;
-//			}
-
+			exp = compileEdge((Triple) query, opt);
 			break;
-
 
 		case QUERY:
-
 			exp = compileQuery(query.getQuery());
-
 			break;
-			
-			
-		case SERVICE: {
-			// compiled as subquery
-			
-			exp = compileService((Service) query);
 
-		}
-		break;
+		case SERVICE: 
+			exp = compileService((Service) query);		
+			break;
 
+		case VALUES:			
+			exp = bindings((Values) query);
+			if (exp == null){
+				// TODO:
+				logger.error("** Value Bindings: #values != #variables");
+				return null;
+			}
+			break;
 
 		default:
-			
-	/**************************
-	 * 
-	 * Compile Body
-	 * 
-	 **************************/
+
+			/**************************
+			 * 
+			 * Compile Body
+			 * 
+			 **************************/
 
 			exp = Exp.create(cpType(type));
 
-		boolean hasBind = false;
-		
+			boolean hasBind = false;
 
-		for (fr.inria.acacia.corese.triple.parser.Exp ee : query.getBody()){
+			for (fr.inria.acacia.corese.triple.parser.Exp ee : query.getBody()){
 
-			Exp tmp = compile(ee, opt, level+1);
-			
-			if (tmp.isQuery() && tmp.getQuery().isBind()){
-				hasBind = true;
+				Exp tmp = compile(ee, opt, level+1);
+
+				if (tmp != null){				
+
+					if (tmp.isQuery() && tmp.getQuery().isBind()){
+						hasBind = true;
+					}
+
+					if (ee.isScope()){								
+						// add AND as a whole
+						exp.add(tmp);
+
+					}
+					else {
+						// add elements of AND one by one
+						exp.insert(tmp);
+					}
+				}
 			}
-			if (ee.isScope()){
-				// add AND as a whole
-				exp.add(tmp);
+
+			// PRAGMA: do it after loop above to have filter compiled
+			query.validate(ast);		
+
+			if (hasBind && level>0){
+				// pop bind(f(?x) as ?y) at the end of group pattern
+				// unless body pattern which keep binding for select
+				pop(exp);
+			}
+
+			exp = complete(exp, query, opt);
+		}
+
+		return exp;
+
+	}
+	
+
+	Exp compileEdge(Triple tt, boolean opt){
+		Edge r = compiler.compile(tt);
+		Exp exp = Exp.create(EDGE, r);
+
+		if (tt.isXPath()){
+			// deprecated ?x xpath() ?y
+			exp.setType(EVAL);
+			Filter xpath = compiler.compile(tt.getXPath());
+			exp.setFilter(xpath);
+		}
+		else if (tt.isPath()){
+			exp.setType(PATH);
+			Expression regex = tt.getRegex();
+			if (regex == null){
+				// deprecated: there may be a match($path, regex)
 			}
 			else {
-				// add elements of AND one by one
-				exp.insert(tmp);
+				regex.compile(ast);
+				exp.setRegex(regex);
 			}
+			exp.setObject(tt.getMode());
 		}
-		
-		// PRAGMA: do it after loop above to have filter compiled
-		query.validate(ast);		
-	
-		if (hasBind && level>0){
-			// pop bind(f(?x) as ?y) at the end of group pattern
-			// unless body pattern which keep binding for select
-			pop(exp);
+		else if (ast.isCheck()) {
+			check(tt, r);
 		}
 
+		return exp;
+	}
+
+	
+	/**
+	 * Complete compilation
+	 */
+	Exp complete(Exp exp, fr.inria.acacia.corese.triple.parser.Exp query, boolean opt){
+		// complete path (deprecated)
 		path(exp);
 
-		if (query.isMinus()){
+		switch (getType(query)){
+
+		case MINUS:
 			// add a fake graph node 
 			// use case:
 			// graph ?g {PAT minus {PAT}}
 			exp.setNode(createNode());
-		}
-		else if (query.isScope()){
-			// place holder to process scoped expression
-			// exp is an AND
+			break;
 
-			//exp = Exp.create(IF, exp.first(), exp.rest(), exp.last());				
+		case GRAPH:
+			// bind the graph variable/uri
+			// use case: graph ?g {}
+			// no edge in graph pattern
 
-			Exp tmp = Exp.create(EXTERN);
-			tmp.setObject("?x");
-			
-		}
+			Source srcexp = (Source) query;
+			Node src = compile(srcexp.getSource());
+			// create a NODE kgram expression for graph ?g
+			Exp node = Exp.create(NODE, src);
+			Exp gnode = Exp.create(GRAPHNODE, node);
+			exp.add(0, gnode);
+			break;
 
-		else if (query.isNegation()){
+
+		case NOT:
 			exp = Exp.create(NOT, exp);
-		}
+			break;
 
-		else if (query.isForall()){
+		case FORALL:
 			Exp first = Exp.create(AND);
 			Forall fa = (Forall) query;
 
@@ -942,9 +925,9 @@ public class Transformer implements ExpType {
 			}
 
 			exp = Exp.create(FORALL, first, exp);
-		}
+			break;	
 
-		else if (query.isIfThenElse()){
+		case IF:
 			IfThenElse ee = (IfThenElse) query;
 			Exp e1 = compile(ee.getIf(), opt);
 			Exp e2 = compile(ee.getThen(), opt);
@@ -957,58 +940,37 @@ public class Transformer implements ExpType {
 			if (e3 !=null){
 				exp.add(e3);
 			}
+			break;
 		}
-		else if (type == GRAPH){
-			// bind the graph variable/uri
-
-				// use case: graph ?g {}
-				// no edge in graph pattern
-				
-			Source srcexp = (Source) query;
-			Node src = compile(srcexp.getSource());
-
-			// create a NODE kgram expression for graph ?g
-			Exp node = Exp.create(NODE, src);
-			Exp gnode = Exp.create(GRAPHNODE, node);
-
-			exp.add(0, gnode);
-
-			src = null;
-
-
-		}
-//		else if (type == SERVICE){
-//			Service service = (Service) query;
-//			Node src = compile(service.getService());
-//			Exp node = Exp.create(NODE, src);
-//			exp.add(0, node);
-//		}
-
-		}
-
+		
 		return exp;
-
 	}
-	
 
 	
-	Node compile(Atom at){
-		// create triple(?g rdf:type rdfs:Resource)
-		Triple triple = Triple.create(at, Constant.create(RDFS.RDFTYPE), Constant.create(RDFS.RDFSRESOURCE));
-		//triple.setType(true);
-		compiler.compile(triple);
-		// src is the query concept for ?g 
-		Node src = compiler.getNode();
-		if (src == null){
-			Edge ee = compiler.getEdge();
-			if (ee!=null){
-				src = ee.getNode(0);
+	Exp compileFilter(Triple triple, boolean opt){
+		List<Filter> qvec = compiler.compileFilter(triple);
+		Exp exp;
+		
+		if (qvec.size()==1){
+			exp = Exp.create(FILTER, qvec.get(0));
+			compileExist(qvec.get(0).getExp(), opt);
+		}
+		else {
+			exp =  Exp.create(AND);
+			for (Filter qm : qvec){
+				Exp f = Exp.create(FILTER, qm);
+				compileExist(qm.getExp(), opt);
+				exp.add(f);
 			}
 		}
-		return src;
+		return exp;
 	}
 	
 	
+	Node compile(Atom at){
+		return compiler.createNode(at);
+	}
+		
 	
 	void pop(Exp exp){
 		List<Exp> list = new ArrayList<Exp>();
@@ -1061,6 +1023,9 @@ public class Transformer implements ExpType {
 	}
 
 
+	/**
+	 * Assign  pathLength($path) <= 10 to its path
+	 */
 	void path(Exp exp){		
 		for (Exp ee : exp){
 			if (ee.isPath()){
@@ -1121,7 +1086,17 @@ public class Transformer implements ExpType {
 		}
 	}
 
-
+	boolean isOption(int type){
+		switch (type){
+		case OPTION:
+		case OPTIONAL:
+		case UNION:
+		case MINUS: return true;
+		
+		default: return false;
+		}
+	}
+	
 	int getType(fr.inria.acacia.corese.triple.parser.Exp query){
 		if (query.isFilter()){
 			return FILTER;
@@ -1131,6 +1106,9 @@ public class Transformer implements ExpType {
 		}
 		else if (query.isUnion()){
 			return UNION;
+		}
+		else if (query.isJoin()){
+			return JOIN;
 		}
 		else if (query.isOptional()){
 			if (query.isSPARQL()) return OPTIONAL;
@@ -1159,6 +1137,9 @@ public class Transformer implements ExpType {
 		} 
 		else if (query.isNegation()){
 			return NOT;
+		} 
+		else if (query.isValues()){
+			return VALUES;
 		} 
 		else if (query.isAnd()){
 			return AND;
@@ -1207,7 +1188,16 @@ public class Transformer implements ExpType {
 		q.setFilter(Query.PATHNODE, t.compile(ast));
 	}
 	
-
+	void relax(Query q){
+		ASTQuery ast = (ASTQuery) q.getAST();
+		for (Expression exp : ast.getRelax()){
+			if (exp.isConstant()){
+				Constant p = exp.getConstant();
+				Node n = compiler.createNode(p);
+				q.addRelax(n);
+			}
+		}
+	}
 	
 	/*********************************************
 	 * 

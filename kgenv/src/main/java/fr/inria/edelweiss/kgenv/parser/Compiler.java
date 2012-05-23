@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgenv.parser;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Triple;
@@ -25,15 +26,10 @@ public interface Compiler {
 	void setAST(ASTQuery ast);
 	
 	boolean isFail();
-	
-	//void compileConstruct();
-		
+			
 	Node createNode(String name);
 	
-	Node createNode(Variable name);
-	
-	Node createNode(Constant value);
-
+	Node createNode(Atom at);
 
 	Node getNode();
 	
@@ -45,10 +41,7 @@ public interface Compiler {
 
 	List<Filter> compileFilter(Triple t);
 	
-	void compile(Triple t);
-	
-	
-	
+	Edge compile(Triple t);
 	
 	Regex getRegex(Filter f);
 		

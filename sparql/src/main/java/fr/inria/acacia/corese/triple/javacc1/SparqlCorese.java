@@ -365,6 +365,7 @@
         Exp stack; Basic ope;
         Constant graph, uri, target;
         boolean silent, defaut, named, all;
+      astq.reset();
                 stack = BasicGraphPattern.create();
                 graph = null; uri = null; target = null;
                 silent = false;
@@ -572,7 +573,9 @@
     case INSERT:
       jj_consume_token(INSERT);
       jj_consume_token(DATA);
+                  astq.setInsertData(true);
       exp = QuadPattern();
+                 astq.setInsertData(false);
                  ope = Composite.create(Update.INSERT, exp);
       break;
     case DELETE:
@@ -5040,31 +5043,6 @@
     finally { jj_save(14, xla); }
   }
 
-  final private boolean jj_3R_98() {
-    if (jj_scan_token(D_FLAT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_97() {
-    if (jj_scan_token(D_JSON)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_138() {
-    if (jj_3R_157()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_84() {
-    if (jj_scan_token(WHERE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_96() {
-    if (jj_scan_token(D_RDF)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_195() {
     if (jj_3R_212()) return true;
     return false;
@@ -5116,12 +5094,6 @@
     return false;
   }
 
-  final private boolean jj_3R_60() {
-    if (jj_scan_token(INSERT)) return true;
-    if (jj_scan_token(DATA)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_168() {
     if (jj_3R_164()) return true;
     return false;
@@ -5159,6 +5131,12 @@
 
   final private boolean jj_3R_170() {
     if (jj_3R_195()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_60() {
+    if (jj_scan_token(INSERT)) return true;
+    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -5219,16 +5197,6 @@
     return false;
   }
 
-  final private boolean jj_3R_38() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_60()) {
-    jj_scanpos = xsp;
-    if (jj_3R_61()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_90() {
     if (jj_3R_43()) return true;
     return false;
@@ -5271,6 +5239,16 @@
 
   final private boolean jj_3R_183() {
     if (jj_3R_206()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_38() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_60()) {
+    jj_scanpos = xsp;
+    if (jj_3R_61()) return true;
+    }
     return false;
   }
 
@@ -5319,11 +5297,6 @@
     return false;
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_133() {
     if (jj_3R_153()) return true;
     return false;
@@ -5361,6 +5334,11 @@
 
   final private boolean jj_3_11() {
     if (jj_3R_54()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_38()) return true;
     return false;
   }
 
@@ -6679,6 +6657,31 @@
 
   final private boolean jj_3R_99() {
     if (jj_scan_token(D_ASQUERY)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_98() {
+    if (jj_scan_token(D_FLAT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_84() {
+    if (jj_scan_token(WHERE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_97() {
+    if (jj_scan_token(D_JSON)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_138() {
+    if (jj_3R_157()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_96() {
+    if (jj_scan_token(D_RDF)) return true;
     return false;
   }
 

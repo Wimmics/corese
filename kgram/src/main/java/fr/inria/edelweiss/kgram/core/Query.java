@@ -27,7 +27,9 @@ public class Query extends Exp {
 
 	public static boolean test = true;
 	
-	int limit = Integer.MAX_VALUE, offset = 0, slice = 100;
+	int limit = Integer.MAX_VALUE, offset = 0, 
+	// if slice > 0 : service gets mappings from previous pattern by slices
+	slice = 0;
 	boolean distinct = false;
 	int iNode = 0, iEdge = 0, iPath = 0;
 	List<Node> from, named, selectNode;

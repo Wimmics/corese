@@ -4,6 +4,7 @@ package fr.inria.edelweiss.kgenv.eval;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.ResultSet;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -35,6 +36,8 @@ import fr.inria.lang.StringHelper;
  *
  */
 public class ProxyImpl implements Proxy, ExprType {
+	private static final String URN_UUID = "urn:uuid:";
+
 	private static Logger logger = Logger.getLogger(ProxyImpl.class);	
 
 	protected static IDatatype TRUE = DatatypeMap.TRUE;
@@ -158,7 +161,11 @@ public class ProxyImpl implements Proxy, ExprType {
 		
 		case BNODE:  return DatatypeMap.createBlank();
 		
-		case PATHNODE: return pathNode(env);		
+		case PATHNODE: return pathNode(env);	
+		
+		case FUUID:	return uuid();
+			
+		case STRUUID: return struuid();
 			
 		default: if (plugin!=null){
 				return plugin.function(exp, env);
@@ -170,6 +177,18 @@ public class ProxyImpl implements Proxy, ExprType {
 	
 	
 
+
+	public IDatatype struuid() {
+		UUID uuid = UUID.randomUUID();
+		String str = uuid.toString();
+		return DatatypeMap.createLiteral(str);	
+	}
+
+	public IDatatype uuid() {
+		UUID uuid = UUID.randomUUID();
+		String str = URN_UUID + uuid;
+		return DatatypeMap.createResource(str);
+	}
 
 	public Object function(Expr exp, Environment env, Object o1) {
 		
@@ -250,15 +269,17 @@ public class ProxyImpl implements Proxy, ExprType {
 		switch(exp.oper()){
 				
 		case CONTAINS: 
-			// SPARQL 1.1 distinguishes cases  
+			if (! compatible(dt, dt1)) return null;
 			b = dt.getLabel().contains(dt1.getLabel());
 			return (b) ? TRUE : FALSE;
 
 		case STARTS: 
+			if (! compatible(dt, dt1)) return null;
 			b = dt.startsWith(dt1); 
 			return (b) ? TRUE : FALSE;
 
 		case ENDS:
+			if (! compatible(dt, dt1)) return null;
 			b = dt.getLabel().endsWith(dt1.getLabel());
 			return (b) ? TRUE : FALSE;
 			
@@ -287,7 +308,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			return DatatypeMap.createLiteral(dt.getLabel(), null, dt1.getLabel());	
 			
 		case REGEX: {
-			if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt)){
+			if (! isStringLiteral(dt)){
 				return null;
 			}
 			Processor proc = getProcessor(exp);
@@ -370,7 +391,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		
 			case REGEX: 
 				// it may have a 3rd argument stored as getModality()
-				if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt)){
+				if (! isStringLiteral(dt)){
 					return null;
 				}
 				Processor proc = getProcessor(exp);
@@ -391,7 +412,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			case STRREPLACE:
 				
 				if (args.length != 3) return null;
-				if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt)){
+				if (! isStringLiteral(dt)){
 					return null;
 				}
 				return strreplace(exp, dt, dt1, datatype(args[2]));
@@ -410,6 +431,10 @@ public class ProxyImpl implements Proxy, ExprType {
 		return null;
 	}
 	
+	boolean isStringLiteral(IDatatype dt){
+		return ! SPARQLCompliant || DatatypeMap.isStringLiteral(dt);
+	}
+	
 	IDatatype encode(IDatatype dt){
 		try {
 			String str = URLEncoder.encode(dt.getLabel(), UTF8);
@@ -423,11 +448,11 @@ public class ProxyImpl implements Proxy, ExprType {
 	// first index is 1
 	IDatatype substr(IDatatype dt, IDatatype ind, IDatatype len){
 		String str = dt.getLabel();
-		int start = ind.getIntegerValue();
+		int start = ind.intValue();
 		start = Math.max(start-1, 0);
 		int end = str.length();
 		if (len!=null){
-			end = len.getIntegerValue();
+			end = len.intValue();
 		}
 		end = start + end;
 		if (end > str.length()){
@@ -465,10 +490,26 @@ public class ProxyImpl implements Proxy, ExprType {
 	boolean isURI(String str){
 		return str.matches("[a-zA-Z0-9]+://.*");
 	}
+	
+	/**
+	 * Compatibility for strbefore (no lang or same lang)
+	 */
+	boolean compatible(IDatatype dt1, IDatatype dt2){
+		if (! dt1.hasLang()){
+			return ! dt2.hasLang();
+		}
+		else if (! dt2.hasLang()){
+			return true;
+		}
+		else {
+			return dt1.getLang().equals(dt2.getLang());
+		}
+	}
+
 
 	IDatatype strbefore(IDatatype dt1, IDatatype dt2){
 		
-		if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt1)){
+		if (! isStringLiteral(dt1) || ! compatible(dt1, dt2)){
 			return null;
 		}
 		
@@ -482,14 +523,14 @@ public class ProxyImpl implements Proxy, ExprType {
 	
 	
 	IDatatype strafter(IDatatype dt1, IDatatype dt2){
-		if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt1)){
+		if (! isStringLiteral(dt1) || ! compatible(dt1, dt2)){
 			return null;
 		}
 		
 		int index = dt1.getLabel().indexOf(dt2.getLabel());
 		String str = "";
 		if (index != -1){
-			str = dt1.getLabel().substring(index+1);
+			str = dt1.getLabel().substring(index+dt2.getLabel().length());
 		}
 		return result(str, dt1, dt2);
 	}
@@ -503,7 +544,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
 	
 	IDatatype result(String str, IDatatype dt1, IDatatype dt2){
-		if (dt1.hasLang()){
+		if (dt1.hasLang() && str != ""){
 			return DatatypeMap.createLiteral(str, null, dt1.getLang());
 		}
 		else if (DatatypeMap.isString(dt1)){
@@ -533,7 +574,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			
 			dt = datatype(obj);
 			
-			if (SPARQLCompliant && ! DatatypeMap.isStringLiteral(dt)){
+			if (! isStringLiteral(dt)){
 				return null;
 			}
 			
@@ -617,7 +658,8 @@ public class ProxyImpl implements Proxy, ExprType {
 		// apply the aggregate on current group Mapping, 
 		env.aggregate(walk, exp.getFilter());
 
-		return walk.getResult();
+		Object res = walk.getResult();
+		return res;
 	}
 	
 	

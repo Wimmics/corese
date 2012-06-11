@@ -286,7 +286,17 @@ public class Memory implements Environment {
 	Mapping store(Query q, boolean subEval, boolean func){
 		int nb = nbNode;
 		if (! subEval){
-			nb += q.nbFun();
+			//nb += q.nbFun();
+			/**
+			 * select (exp as var)
+			 * it may happen that var is already bound in memory (bindings, subquery), 
+			 * so we should not allocate a supplementary cell for var in Mapping node array
+			 */
+			for (Exp exp : q.getSelectWithExp()){
+				if (exp.getFilter() != null && ! isBound(exp.getNode())){
+					nb++;
+				}
+			}
 		}
 		Edge[] qedge = new Edge[nbEdge], tedge = new Edge[nbEdge];
 		Node[] qnode = new Node[nb], tnode = new Node[nb], 
@@ -331,22 +341,54 @@ public class Memory implements Environment {
 			}
 		}
 		else {
+			int count = 0;
 			for (Exp e : q.getSelectFun()){
 
 				Filter f = e.getFilter();
+				
 				if (f != null){
 					// select fun(?x) as ?y
 					Node node = null;
+					boolean isBound = isBound(e.getNode());
+					
 					if (! e.isAggregate()){
 						node = eval.eval(f, this);
 						// bind fun(?x) as ?y
-						push(e.getNode(), node);
+						boolean success = push(e.getNode(), node);
+
+						if (success){
+							count++;
+						}
+						else {
+							// use case: var was already bound and there is a select (exp as var)
+							// and the two values of var are different
+							// pop previous exp nodes and return null
+							int j = 0;
+							
+							for (Exp ee : q.getSelectFun()){
+								// pop previous exp nodes if any
+								if (j >= count){
+									// we have poped all exp nodes
+									return null;
+								}
+								
+								if (ee.getFilter() != null){
+									pop(ee.getNode());
+									j++;
+								}
+							}
+						}
 					}
-					qnode[n] = e.getNode();
-					tnode[n] = node;
-					n++;
+					
+					if (! isBound){
+						// use case: select (exp as var) where var is already bound
+						qnode[n] = e.getNode();
+						tnode[n] = node;
+						n++;
+					}
 				}
 			}
+						
 			orderGroup(q.getOrderBy(), snode);
 			orderGroup(q.getGroupBy(), gnode);
 			
@@ -364,7 +406,6 @@ public class Memory implements Environment {
 		map.setPath(lp);
 		map.setOrderBy(snode);
 		map.setGroupBy(gnode);
-
 		return map;
 	}
 	

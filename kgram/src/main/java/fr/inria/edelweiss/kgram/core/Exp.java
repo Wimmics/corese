@@ -1166,8 +1166,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 				if (bind.type() == BIND){
 					if (bind.size() == 2){
 						// filter has BIND
-						add(i, bind);
-						i++;
+						// TODO: when there is a UNION, variables of BIND may not be all bound (cf Julien)
+						// so we cannot bind here
+//						add(i, bind);
+//						i++;
 					}
 					else {
 						lBind.add(bind);

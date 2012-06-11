@@ -106,11 +106,13 @@ public class Processor {
 	static final String ENDS 	= "strends";
 	static final String STARTS 	= "strstarts";
 	static final String CONTAINS = "contains";
-	static final String ENCODE = "encode_for_uri";
+	static final String ENCODE 	= "encode_for_uri";
 	static final String CONCAT 	= "concat"; 
 	static final String STRBEFORE 	= "strbefore"; 
 	static final String STRAFTER 	= "strafter"; 
 	static final String STRREPLACE 	= "replace"; 
+	static final String UUID 		= "uuid"; 
+	static final String STRUUID 	= "struuid"; 
 
 	
 	static final String RANDOM 	= "rand"; 
@@ -374,6 +376,8 @@ public class Processor {
 		defoper(STRBEFORE, ExprType.STRBEFORE);
 		defoper(STRAFTER, ExprType.STRAFTER);
 		defoper(STRREPLACE, ExprType.STRREPLACE);
+		defoper(UUID, ExprType.FUUID);
+		defoper(STRUUID, ExprType.STRUUID);
 
 		
 		defoper(RANDOM, ExprType.RANDOM);

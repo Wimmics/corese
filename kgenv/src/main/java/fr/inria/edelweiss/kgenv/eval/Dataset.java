@@ -3,6 +3,8 @@ package fr.inria.edelweiss.kgenv.eval;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.edelweiss.kgram.api.core.ExpType;
+
 /**
  * 
  * SPARQL Dataset
@@ -12,6 +14,8 @@ import java.util.List;
  *
  */
 public class Dataset {
+	protected static final String KG = ExpType.KGRAM;
+	static final String EMPTY = KG + "empty";
 	
 	List<String> from, named;
 	
@@ -35,6 +39,13 @@ public class Dataset {
 	public static Dataset create(List<String> f, List<String> n){
 		if (f==null && n==null) return null;
 		return new Dataset(f, n);
+	}
+	
+	public String toString(){
+		String str = "";
+		str += "from:  " + from + "\n";
+		str += "named: " + named ;
+		return str;
 	}
 	
 	public void defFrom(){
@@ -72,13 +83,20 @@ public class Dataset {
 		return named;
 	}
 	
+	public void clean(){
+		from.remove(EMPTY);
+	}
+
+	
 	public void addFrom(String s){
+		if (from == null) defFrom();
 		if (! from.contains(s)){
 			from.add(s);
 		}
 	}
 	
 	public void addNamed(String s){
+		if (named == null) defNamed();
 		if (! named.contains(s)){
 			named.add(s);
 		}
@@ -91,12 +109,10 @@ public class Dataset {
 	 */
 	public void complete(){
 		if (getFrom() != null && getNamed() == null){
-			defNamed();
-			addNamed("");
+			addNamed(EMPTY);
 		}
 		else if (getFrom() == null && getNamed() != null){
-			defFrom();
-			addFrom("");
+			addFrom(EMPTY);
 		}
 	}
 

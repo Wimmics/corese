@@ -966,7 +966,7 @@ private	int eval(Producer p, Node gNode, Stack stack, int n, boolean option)  {
 				// scan a partial result (for trace/debug)
 
 				Mapping scan = env.store(query);
-				logger.debug(scan);
+				if (scan != null) logger.debug(scan);
 				backtrack = eval(p, gNode, stack, n+1, option);
 				break;
 
@@ -1407,6 +1407,7 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		int backtrack = n-1;
 		Node nextGraph = exp.first().getNode();
 		List<Node> from = query.getFrom(gNode);
+
 		Memory env = memory;
 
 		if (exp.status()){ 
@@ -1434,14 +1435,13 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 				return env.getIndex(nextGraph);
 			}
 		}
-		
-		// set new graph 
+			
+		// leaving: set new graph 
 		if (exp.status()){
 			// leave graph ?g {} ; restore previous graph node (or null)
 			backtrack = eval(nextGraph, stack, n+1, true);
 		}
 		else if (query.getFrom(nextGraph).size()>0){
-			//else if (from.size()>0){
 			// from named graph ?g {}
 			// enumerate target named graphs
 			backtrack = graphNodes(nextGraph, nextGraph, exp, stack, n, n+1, option);
@@ -1487,7 +1487,7 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 				if (backtrack < next-1){
 					return backtrack;
 				}
-			}	
+			}
 		}
 		return backtrack;
 	}
@@ -2067,9 +2067,8 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		Memory env = memory;
 		Matcher mm = match;
 		Query qq = query;
-		
+
 		for (Exp exp : subQuery.getSelectFun()){
-			
 			Node subNode = exp.getNode();
 			Node node = res.getNode(subNode);
 			Node outNode; //= query.getNode(subNode);

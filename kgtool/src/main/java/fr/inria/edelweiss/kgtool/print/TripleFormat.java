@@ -34,6 +34,12 @@ public class TripleFormat extends RDFFormat {
 	public static TripleFormat create(Graph g){
 		return new TripleFormat(g, NSManager.create());
 	}
+	
+	public static TripleFormat create(Graph g, boolean isGraph){
+		TripleFormat t = new TripleFormat(g, NSManager.create());
+		t.setGraph(isGraph);
+		return t;
+	}
 
 	public void setGraph(boolean b){
 		isGraph = b;
@@ -179,6 +185,7 @@ public class TripleFormat extends RDFFormat {
 	void edge(Entity ent){
 		Edge edge = ent.getEdge();
 		
+
 		String pred = nsm.toPrefix(edge.getEdgeNode().getLabel());
 		
 		sdisplay(pred);
@@ -198,7 +205,7 @@ public class TripleFormat extends RDFFormat {
 		}
 		else {
 			uri(dt1.getLabel());
-		}
+		}		
 
 	}
 	

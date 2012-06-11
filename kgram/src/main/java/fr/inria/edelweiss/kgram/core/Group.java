@@ -120,6 +120,10 @@ public class Group implements Comparator<Mappings>{
 		return new Group(list);
 	}
 	
+	public static Group instance(List<Exp> list){
+		return new Group(list);
+	}
+	
 	Group(List<Exp> list){
 		criteria = list;
 		nodes = new ArrayList<Node>();

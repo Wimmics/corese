@@ -27,24 +27,24 @@ public class Query extends Exp {
 
 	public static boolean test = true;
 	
-	int limit = Integer.MAX_VALUE, offset = 0;
+	int limit = Integer.MAX_VALUE, offset = 0, slice = 100;
 	boolean distinct = false;
 	int iNode = 0, iEdge = 0, iPath = 0;
 	List<Node> from, named, selectNode;
 	// all nodes (on demand)
 	List<Node> 
-		// std patterns (including bindings) but select, minus and exists
+		// std patterns (including bindings) but  minus and exists (no select)
 		patternNodes,  
-		// std patterns  + minus + exists but select
+		// minus + exists (no select)
 		queryNodes,
 		// select nodes in std pattern
 		patternSelectNodes, 
-		// all select nodes
+		//  select nodes in minus and exists
 		querySelectNodes,
-		// all bindings nodes
+		// final query bindings nodes
 		bindingNodes;
 	List<Node> relaxEdges;
-	List<Exp> selectExp, orderBy, groupBy;
+	List<Exp> selectExp, selectWithExp, orderBy, groupBy;
 	List<Filter> failure, pathFilter;
 	List<String> errors, info;
 	Exp having, construct, delete;
@@ -81,7 +81,9 @@ public class Query extends Exp {
 	isListPath = false,
 	// former path semantics was true
 	isCountPath = false,
-	isCorrect = true, isConnect = false;
+	isCorrect = true, isConnect = false,
+	// join service send Mappings from first pattern to service
+	isMap = true;
 	
 	int mode = Matcher.UNDEF;
 
@@ -94,6 +96,7 @@ public class Query extends Exp {
 		from 		= new ArrayList<Node>();
 		named 		= new ArrayList<Node>();
 		selectExp 	= new ArrayList<Exp>();
+		selectWithExp 	= new ArrayList<Exp>();
 		orderBy 	= new ArrayList<Exp>();
 		groupBy 	= new ArrayList<Exp>();
 		failure 	= new ArrayList<Filter>();
@@ -480,7 +483,21 @@ public class Query extends Exp {
 	}
 	
 	
+	public void setSlice(int n){
+		slice = n;
+	}
 	
+	public int getSlice(){
+		return slice;
+	}
+	
+	public void setMap(boolean b){
+		isMap = b;
+	}
+	
+	public boolean isMap(){
+		return isMap;
+	}
 	
 	public void setLimit(int n){
 		limit = n;
@@ -654,6 +671,21 @@ public class Query extends Exp {
 	
 	public List<Exp> getSelectFun(){
 		return selectExp;
+	}
+	
+	public List<Exp> getSelectWithExp(){
+		return selectWithExp;
+	}
+	
+	/**
+	 * Copy select (exp as var) in a sublist for optimization purpose
+	 */
+	public void setSelectWithExp(List<Exp> s){
+		for (Exp exp : s){
+			if (exp.getFilter() != null){
+				selectWithExp.add(exp);
+			}
+		}
 	}
 	
 	public void addSelect(Exp exp){

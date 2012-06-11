@@ -733,12 +733,8 @@ public class Graph //implements IGraph
 
 	// resource or blank
 	public boolean isIndividual(Node node) {
-            if ((individual != null) && (blank != null)) {
-                return individual.containsKey(node.getLabel())
-                    || blank.containsKey(node.getLabel());
-            } else {
-                return false;
-            }
+		return individual.containsKey(node.getLabel())
+        	|| blank.containsKey(node.getLabel());
         }
 
 	// resource node
@@ -995,7 +991,7 @@ public class Graph //implements IGraph
 	}
 	
 	public Iterable<Entity> getEdges(Node node, int n){
-		return getEdges(node, n, false);
+		return getSortedEdges(node, n);
 	}
 	
 	public Iterable<Entity> getEdges(Node node, int n, boolean def){
@@ -1003,6 +999,19 @@ public class Graph //implements IGraph
 		
 		for (Node pred : table.getProperties()){
 			Iterable<Entity> it = getIndex(n, def).getEdges(pred, node);
+			if (it != null){
+				meta.next(it);
+			}
+		}
+		if (meta.isEmpty()) return new ArrayList<Entity>();
+		return meta;
+	}
+	
+	public Iterable<Entity> getSortedEdges(Node node, int n){
+		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+		
+		for (Node pred : table.getSortedProperties()){
+			Iterable<Entity> it = getIndex(n).getEdges(pred, node);
 			if (it != null){
 				meta.next(it);
 			}
@@ -1151,16 +1160,18 @@ public class Graph //implements IGraph
 	
 	public boolean compare(Graph g2, boolean isGraph){
 		Graph g1 = this;
-		if (isDebug){
-			logger.debug(g1.getIndex());
-			logger.debug(g2.getIndex());
-		}
+//		if (isDebug){
+//			logger.debug(g1.getIndex());
+//			logger.debug(g2.getIndex());
+//		}
 		if (g1.isIndex()) index();
 		if (g2.isIndex()) g2.index();
 		if (g1.size()!=g2.size()){
 			if (isDebug) logger.debug("** Graph Size: " + size() + " " + g2.size());
 			return false;
 		}
+		
+		TBN t = new TBN();
 
 		for (Node pred1  : g1.getProperties()){
 			
@@ -1184,7 +1195,7 @@ public class Graph //implements IGraph
 					if (! it.hasNext()) return false;
 
 					Entity ent2 = it.next();
-					if (! compare(ent1, ent2, isGraph)){
+					if (! compare(ent1, ent2, t, isGraph)){
 						if (isDebug){
 							logger.debug(ent1);
 							logger.debug(ent2);
@@ -1199,13 +1210,54 @@ public class Graph //implements IGraph
 	}
 
 	
-	boolean compare(Entity ent1, Entity ent2, boolean isGraph){
+	boolean compare(Entity ent1, Entity ent2, TBN t, boolean isGraph){
+		
 		for (int j=0; j<ent1.getEdge().nbNode(); j++){
-			if (! ent1.getEdge().getNode(j).same(ent2.getEdge().getNode(j))){
+			
+			Node n1 = ent1.getEdge().getNode(j);
+			Node n2 = ent2.getEdge().getNode(j);
+
+			if (! compare(n1, n2, t)){
 				return false;
 			}
 		}
+		
 		return true;
+	}
+	
+	/**
+	 * Blanks may have different label but should be mapped to same blank
+	 */
+	boolean compare(Node n1, Node n2, TBN t){
+		boolean ok = false;
+		if (n1.isBlank()){
+			if (n2.isBlank()){
+				// blanks may not have same ID but 
+				// if repeated they should  both be the same
+				ok = t.same(n1, n2);
+			}
+		}
+		else if (n2.isBlank()){
+		}
+		else {
+			ok = n1.same(n2);
+		}
+		
+		return ok;
+	}
+	
+	
+	class TBN extends Hashtable<Node,Node>{
+
+		boolean same(Node dt1, Node dt2){
+			if (containsKey(dt1)){
+				return get(dt1).same(dt2);
+			}
+			else {
+				put(dt1, dt2);
+				return true;
+			}
+		}
 	}
 	
 	
@@ -1538,6 +1590,10 @@ public class Graph //implements IGraph
 	
 	public Node addLiteral(boolean n){
 		return addNode(DatatypeMap.newInstance(n));
+	}
+
+	public void setDebug(boolean b) {
+		isDebug = b;
 	}
 	
 	

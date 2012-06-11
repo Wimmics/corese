@@ -321,7 +321,7 @@ public class QueryProcess extends QuerySolver {
 
 			if (q.isConstruct()){
 				// construct where
-				construct(lMap);
+				construct(lMap, null);
 			}
 			log(Log.QUERY, q, lMap);
 			return lMap;
@@ -391,6 +391,7 @@ public class QueryProcess extends QuerySolver {
 	
 	void complete(Dataset ds){
 		if (ds != null && ds.getFrom() != null){
+			ds.clean();
 			// add the default graphs where insert or entailment may have been done previously
 			for (String src : Entailment.GRAPHS){
 				ds.addFrom(src);
@@ -420,7 +421,7 @@ public class QueryProcess extends QuerySolver {
 		}
 		if (q.isConstruct()){ 
 			// insert
-			construct(lMap);
+			construct(lMap, ds);
 		}
 		
 		return lMap;
@@ -447,7 +448,7 @@ public class QueryProcess extends QuerySolver {
 		
 		// SPARQL compliance
 		ds.complete();
-		
+
 		Mappings map =  query(squery, null, ds);
 		
 		if (! map.getQuery().isCorrect()){
@@ -488,14 +489,14 @@ public class QueryProcess extends QuerySolver {
 
 	 */
 	
-	public void construct(Mappings lMap){
+	public void construct(Mappings lMap, Dataset ds){
 		Query query = lMap.getQuery();
 		Construct cons =  Construct.create(query);
 		cons.setDebug(isDebug() || query.isDebug());
 		Graph gg;
 		if (getAST(query).isAdd()){
 			Graph g = getGraph();
-			gg = cons.insert(lMap, g);
+			gg = cons.insert(lMap, g, ds);
 		}
 		else {
 			gg = cons.construct(lMap);

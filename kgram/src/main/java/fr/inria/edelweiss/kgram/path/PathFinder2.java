@@ -405,7 +405,7 @@ public class PathFinder2
 
 		// the path that is recursively built
 		Path path = new Path();
-		visited =  Visit.create(isReverse);
+		visited =  Visit.create(isReverse, true);
 		//path.checkLoopNode(loopNode);
 		// try paths with length between min and max
 		int imin = min, imax = max;

@@ -271,7 +271,7 @@ public class RuleEngine {
 		int start = graph.size();
 
 		Mappings lMap =  exec.query(qq, map);
-		cons.insert(lMap, graph);	
+		cons.insert(lMap, graph, null);	
 
 		if (debug || qq.isDebug()){
 			logger.debug("** Mappings: " + lMap.size());

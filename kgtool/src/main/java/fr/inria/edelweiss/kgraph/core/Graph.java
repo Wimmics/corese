@@ -20,7 +20,6 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.api.IGraph;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.*;
 
@@ -733,11 +732,15 @@ public class Graph //implements IGraph
 	
 
 	// resource or blank
-	public boolean isIndividual(Node node){
-		return individual.containsKey(node.getLabel()) ||
-		blank.containsKey(node.getLabel());
-	}
-	
+	public boolean isIndividual(Node node) {
+            if ((individual != null) && (blank != null)) {
+                return individual.containsKey(node.getLabel())
+                    || blank.containsKey(node.getLabel());
+            } else {
+                return false;
+            }
+        }
+
 	// resource node
 	public Node getNode(String name){
 		return (Node) individual.get(name);

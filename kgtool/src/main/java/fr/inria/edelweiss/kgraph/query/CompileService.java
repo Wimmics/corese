@@ -13,6 +13,7 @@ import fr.inria.acacia.corese.triple.parser.Values;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -30,7 +31,7 @@ public class CompileService {
 	/**
 	 * Generate bindings for the service, if any
 	 */
-	void compile(Node serv, Query q, Mappings lmap, Environment env){
+	void compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
 		ASTQuery ast = (ASTQuery) q.getAST();
 
 		if (ast.getValues() != null){
@@ -47,7 +48,7 @@ public class CompileService {
 			}
 		}
 		else if (isSparql0(serv)){
-			filter(q, lmap);
+			filter(q, lmap, start, limit);
 		}
 		else {
 			bindings(q, lmap);
@@ -61,6 +62,17 @@ public class CompileService {
 		ASTQuery ag  = (ASTQuery) g.getAST();
 		ast.setPrefixExp(ag.getPrefixExp());
 	}
+	
+	int slice(Query q){
+		Query g  = q.getOuterQuery();
+		return g.getSlice();
+	}
+	
+	boolean isMap(Query q){
+		Query g  = q.getOuterQuery();
+		return g.isMap();
+	}
+	
 	
 	void set(String uri, double version){
 		table.put(uri, version);
@@ -230,12 +242,19 @@ public class CompileService {
 	/**
 	 * Generate bindings from Mappings as filter
 	 */
-	void filter(Query q, Mappings lmap){
+	void filter(Query q, Mappings lmap, int start, int limit){
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ArrayList<Term> lt;
 		Term filter = null;
-
-		for (Mapping map : lmap){
+		//Group group =  Group.instance(q.getSelectFun());
+		
+		for (int j = start; j < lmap.size() && j < limit; j++){
+			
+			Mapping map = lmap.get(j);
+			
+//			if (! group.isDistinct(map)){
+//				continue;
+//			}
 			
 			lt = new ArrayList<Term>();
 			
@@ -276,7 +295,9 @@ public class CompileService {
 		
 		BasicGraphPattern body = BasicGraphPattern.create();
 		body.add(ast.getSaveBody());
-		body.add(Triple.create(filter));
+		if (filter != null) {
+			body.add(Triple.create(filter));
+		}
 		ast.setBody(body);
 		
 	}

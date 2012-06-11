@@ -280,8 +280,9 @@ void UpdateQuery2() : {
 	boolean silent, defaut, named, all;
 	}
 {
-
-	{
+    { astq.reset(); }
+    
+	{	
 		stack = BasicGraphPattern.create();
 		graph = null; uri = null; target = null;
 		silent = false;
@@ -340,9 +341,14 @@ void DeleteInsertData() : {Exp exp; Composite ope, upd;}
 {
 	
 	(
-		<INSERT> <DATA>    exp = QuadPattern() 
+		<INSERT> <DATA>  
+		  
+		{ astq.setInsertData(true); } 
 		
-		{ope = Composite.create(Update.INSERT, exp); }
+		exp = QuadPattern() 
+		
+		{astq.setInsertData(false); 
+		 ope = Composite.create(Update.INSERT, exp); }
 	
 	|
 	
@@ -2625,7 +2631,7 @@ TOKEN:
   <#NCNAME_PREFIX: <NCCHAR1p> ((<NCCHAR> | "."   )* <NCCHAR>)? >
 |
   // With a leading "_", no dot at end of local name.
-  <#NCNAME:  <NCCHAR1> ((<NCCHAR> | "." | <LOCAL_ESC> | <PERCENT> )* <NCCHAR>)? >
+  <#NCNAME:  <NCCHAR1> ((<NCCHAR> | "." | ":" | <LOCAL_ESC> | <PERCENT> )* <NCCHAR>)? >
 |
   // NCNAME without "-" and ".", allowing leading digits.
   <#VARNAME: ( <NCCHAR1> | ["0"-"9"] )

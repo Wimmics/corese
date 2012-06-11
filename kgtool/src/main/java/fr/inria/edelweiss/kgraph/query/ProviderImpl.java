@@ -62,6 +62,8 @@ public class ProviderImpl implements Provider {
 	HashMap<String, QueryProcess> table;
 	QueryProcess defaut;
 	CompileService compiler;
+
+	private int limit = 30;
 	
 	ProviderImpl(){
 		table = new HashMap<String, QueryProcess>();
@@ -113,7 +115,7 @@ public class ProviderImpl implements Provider {
 
 		if (exec == null){
 
-			Mappings map = send(serv, q, lmap, env);
+			Mappings map = globalSend(serv, q, lmap, env);
 			if (map != null){
 				return map;
 			}
@@ -137,14 +139,51 @@ public class ProviderImpl implements Provider {
 	}
 	
 	/**
+	 * Cut into pieces when to many Mappings
+	 */
+	Mappings globalSend(Node serv, Query q, Mappings lmap, Environment env){
+		
+		// share prefix
+		compiler.prepare(q);
+		
+		int slice = compiler.slice(q);
+
+		if (lmap == null || slice == 0){
+			return send(serv, q, lmap, env, 0, 0);
+		}
+		else if (lmap.size() > slice ){
+			int size = 0;
+			Mappings res = null;
+			
+			while (size < lmap.size()){
+				Mappings map =  send(serv, q, lmap, env, size, size + slice); //lmap.size());
+				size += slice;
+				if (res == null){
+					res = map;
+				}
+				else if (map != null){
+					res.add(map);
+				}
+			}
+			return res;
+		}
+		else {
+			return send(serv, q, lmap, env, 0, lmap.size());
+		}
+	}
+	
+	
+	
+	
+	/**
 	 * Send query to sparql endpoint using a POST HTTP query
 	 */		 	
-	Mappings send(Node serv, Query q, Mappings lmap, Environment env){
+	Mappings send(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
 		Query g = q.getOuterQuery();
 		try {
 		
 			// generate bindings from env if any
-			compile(serv, q, lmap, env);						
+			compiler.compile(serv, q, lmap, env, start, limit);
 
 			ASTQuery ast = (ASTQuery) q.getAST();
 						
@@ -159,7 +198,7 @@ public class ProviderImpl implements Provider {
 			StringBuffer sb = doPost(serv.getLabel(), query);
 			
 			if (g.isDebug()){
-				logger.info("** Provider result: \n" + sb);
+				//logger.info("** Provider result: \n" + sb);
 			}
 			
 			if (sb.length() == 0){
@@ -168,12 +207,13 @@ public class ProviderImpl implements Provider {
 
 			Mappings map = parse(sb);
 
-//			if (g.isDebug()){
-//				logger.info("** Provider: \n" + map);
-//			}
+			if (g.isDebug()){
+				logger.info("** Provider result: \n" + map.size());
+			}
 			return map;
 		} catch (IOException e) {
 			logger.error(e);
+			logger.error(q.getAST());
 			g.addError(SERVICE_ERROR, e);
 		} catch (ParserConfigurationException e) {
 			logger.error(e);
@@ -186,12 +226,7 @@ public class ProviderImpl implements Provider {
 	}
 	
 	
-	void compile(Node serv, Query q, Mappings lmap, Environment env){
-		// share prefix
-		compiler.prepare(q);
-		// bindings
-		compiler.compile(serv, q, lmap, env);
-	}
+
 
 
 	

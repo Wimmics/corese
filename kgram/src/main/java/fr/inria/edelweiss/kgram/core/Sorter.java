@@ -21,7 +21,7 @@ public class Sorter {
 	 */
 	public void sort(Query q, Exp exp, List<String> lVar, List<Exp> lBind){
 		int hasService = sorting(q, exp, lVar, lBind);
-		if (hasService > 0 && q.isOptimize()){
+		if (hasService > 0){ // && q.isOptimize()){
 			// replace pattern . service by join(pattern, service)
 			service(exp, hasService);
 		}

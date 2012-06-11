@@ -48,7 +48,8 @@ public class Construct
 	Graph graph;
 	Node defaultGraph;
 	List<Entity> list;
-	List<String> from;
+	//List<String> from;
+	Dataset ds;
 	
 	boolean isDebug = false, 
 	isDelete = false,
@@ -63,6 +64,11 @@ public class Construct
 		this(q, Entailment.DEFAULT);
 	}
 	
+	Construct(Query q, Dataset ds){
+		this(q, Entailment.DEFAULT);
+		this.ds = ds;
+	}
+	
 	Construct(Query q, String src){
 		query = q;
 		table = new Hashtable<Node, Node>();
@@ -75,6 +81,11 @@ public class Construct
 	
 	public static Construct create(Query q){
 		Construct cons = new Construct(q);
+		return cons;
+	}
+	
+	public static Construct create(Query q, Dataset ds){
+		Construct cons = new Construct(q, ds);
 		return cons;
 	}
 	
@@ -117,13 +128,16 @@ public class Construct
 	public Graph delete(Mappings lMap, Graph g, Dataset ds){
 		setDelete(true);
 		if (ds!=null && ds.isUpdate()){
-			this.from = ds.getFrom();
+			this.ds = ds;
 		}
 		return construct(lMap, g);
 	}
 	
-	public Graph insert(Mappings lMap, Graph g){
+	public Graph insert(Mappings lMap, Graph g, Dataset ds){
 		setInsert(true);
+		if (ds!=null && ds.isUpdate()){
+			this.ds = ds;
+		}
 		return construct(lMap, g);
 	}
 	
@@ -172,9 +186,9 @@ public class Construct
 				if (edge != null){
 					if (isDelete){
 						if (isDebug) logger.debug("** Delete: " + edge);
-						if (gNode == null && from!=null && from.size()>0){
+						if (gNode == null && ds!=null && ds.hasFrom()){
 							// delete in default graph
-							graph.delete(edge, from);
+							graph.delete(edge, ds.getFrom());
 						}
 						else {
 							// delete in all named graph
@@ -184,8 +198,22 @@ public class Construct
 					else {
 						if (isDebug) logger.debug("** Construct: " + edge);
 						Entity ent = graph.addEdge(edge);
-						if (ent != null && list != null){
-							list.add(ent);
+						
+						if (ent != null){
+							
+							if (list != null){
+								list.add(ent);
+							}
+							
+							if (isInsert){
+								// When insert in new graph g, update dataset named += g
+								if (ds!=null){
+									String name = ent.getGraph().getLabel();
+									if (! name.equals(Entailment.DEFAULT)){
+										ds.addNamed(ent.getGraph().getLabel());
+									}
+								}
+							}
 						}
 					}
 				}
@@ -215,6 +243,7 @@ public class Construct
 	 * Construct target edge from query edge and map
 	 */
 	EdgeImpl construct(Node gNode, Edge edge, Mapping map){
+
 		Node pred = edge.getEdgeVariable();
 		if (pred == null){
 			pred = edge.getEdgeNode();
@@ -277,7 +306,6 @@ public class Construct
 	}
 		
 	Node construct(Node gNode, Node qNode, Mapping map){
-
 		// search target node
 		Node node = table.get(qNode);
 		

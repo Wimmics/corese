@@ -96,6 +96,8 @@ public interface ExprType {
 	public static int STRBEFORE  = 77;
 	public static int STRAFTER 	 = 78;
 	public static int STRREPLACE = 79;
+	public static int FUUID 	 = 80;
+	public static int STRUUID 	 = 81;
 
 
 

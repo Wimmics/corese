@@ -6,6 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -22,6 +27,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -31,6 +37,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.path.Visit;
 import fr.inria.edelweiss.kgraph.core.Graph;
+//import fr.inria.edelweiss.kgraph.core.NodeImpl;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
@@ -43,6 +50,7 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.BuildOptim;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.load.RuleLoad;
 import fr.inria.edelweiss.kgtool.print.CSVFormat;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
@@ -69,13 +77,18 @@ import fr.inria.edelweiss.kgtool.print.XMLFormat;
 public class W3CTest11KGraph {
 	// root of test case RDF data
 	static final String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+	// local copy:
+	static final String froot  = data + "w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/";
+	// W3C test case:
+	static final String wroot = "http://www.w3.org/2009/sparql/docs/tests/data-sparql11/";
 	
-	static final String root  = data + "w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/";
+	static final String root = froot;
+	
 	static final String more  = data + "w3c-sparql11/data/";
 
 	static final String root0 = data + "test-suite-archive/data-r2/";
 	
-	
+	static final String DC = "http://purl.org/dc/elements/1.1/";
 	 
 	
 	// query
@@ -215,7 +228,6 @@ public class W3CTest11KGraph {
 		test(root + "service");
 		
 		test(root + "syntax-fed");
-		test(root + "entailment");
 		test(root + "syntax-query");			 
 		test(root + "negation");
 		test(root + "project-expression");
@@ -230,6 +242,8 @@ public class W3CTest11KGraph {
 		test(root + "bind");
 		test(root + "bindings");
 		test(root + "exists");
+		
+		test(root + "entailment");
 
 	}
 	
@@ -254,13 +268,15 @@ public class W3CTest11KGraph {
 	
 	void test(){
 		sparql1=true;
-		 test(root + "service", false);
-		
+		 //test(root + "functions", false);
+		 //test(froot + "basic-update", true);		 
+		 test(root + "entailment", false);		 
+
 	}
 	
 	void testelem(){
 		sparql1=false;
-		test(root0 + "syntax-sparql1");
+		test(root0 + "dataset");
 	}
 	
 	void process(){
@@ -268,6 +284,8 @@ public class W3CTest11KGraph {
 		gko=0;
 		
 		// 28 errors  416 success
+		// 29 errors 04/05/12
+		// 31 errors 11/05/12 because of optional DOT 
 		//test0();
 		//testelem();
 		
@@ -278,7 +296,7 @@ public class W3CTest11KGraph {
 		else {
 			test();
 		}
-//		
+		
 		ArrayList<String> vec = new ArrayList<String>();
 		for (String key : tok.keySet()){
 			vec.add(key);
@@ -383,7 +401,6 @@ public class W3CTest11KGraph {
 	 * SPARQL Query the graph to get the query list, input and output list.
 	 */
 	void test(String path, boolean update, boolean process){
-		//String manifest = path + "/manifest.rdf";
 		String manifest = path + "/manifest.ttl";
 
 		try {
@@ -513,28 +530,29 @@ public class W3CTest11KGraph {
 	
 		if (fquery == null) fquery = getValue(map, "?a");
 		
-		//if (!fquery.contains("add-03"))return true;
+		//if (!fquery.contains("rdfs04"))return true;
 		
 		if (trace) System.out.println(pp(fquery));	
 		
 		if (fresult!=null) fresult = clean(fresult); // remove file://
 		fquery =  clean(fquery);
-		String query = read(fquery);
+		QueryLoad ql = QueryLoad.create();
+		String query = ql.read(fquery);
 		if (query == null || query == ""){
 			System.out.println("** ERROR 1: " + fquery + " " + query);
 		}
 						
 		Graph graph = Graph.create();
+		
 		if (rdf || rdfs){
 			graph.setEntailment();
-			graph.set(RDFS.RDFS, rdfs);
 			if (rdfs){
+				// infer types using rdf:type/rdfs:subClassOf*
+				// TODO: clean this
 				graph.set(RDFS.SUBCLASSOF, true);
 			}
 		}
 		
-		RuleEngine re = RuleEngine.create(graph);
-		RuleLoad ld   = RuleLoad.create(re);
 		Load load     = Load.create(graph);
 		graph.setOptimize(true);
 		load.reset();
@@ -566,8 +584,14 @@ public class W3CTest11KGraph {
 			// XML Result
 			try {
 				Producer p = ProducerImpl.create(Graph.create());
-				FileInputStream stream = new FileInputStream(fresult);
-				w3XMLResult =  fr.inria.edelweiss.kgenv.result.XMLResult.create(p).parse(stream);
+				InputStream stream = getStream(fresult);
+				if (stream != null){
+					w3XMLResult =  fr.inria.edelweiss.kgenv.result.XMLResult.create(p).parse(stream);
+				}
+				else {
+					System.out.println("** Stream Error: " + fresult);
+					w3XMLResult = new Mappings();
+				}
 				nbres = w3XMLResult.size();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -684,7 +708,7 @@ public class W3CTest11KGraph {
 		 * Consider from [named] to build Dataset
 		 * 
 		 ***********************************************************/
-		//List <String> defaultGraph=null, namedGraph=null;
+
 		fr.inria.edelweiss.kgenv.eval.Dataset ds = fr.inria.edelweiss.kgenv.eval.Dataset.create();
 		ds.setUpdate(isUpdate);
 
@@ -713,23 +737,6 @@ public class W3CTest11KGraph {
 				load.load(file, file);
 			}
 		}
-
-
-//		if (fnamed.size()>0){				
-//			// Load RDF files for named graphs
-//			namedGraph = new ArrayList<String>();
-//			int i = 0;
-//			for (String file : fnamed){
-//				//String ff = ttl2rdf(file);
-//				String name = file;
-//				if (fnames.size()>0){
-//					// the name of a named graph
-//					name = fnames.get(i++);
-//				}
-//				load.load(file, name);
-//				namedGraph.add(name);
-//			}
-//		}
 		
 		
 		if (input.getURIs().size()>0){				
@@ -747,13 +754,12 @@ public class W3CTest11KGraph {
 				
 		
 		if (rdfs || rdf){
-			// load RDF/S definitions & inference rules
-			if (ds.getFrom() == null) ds.defFrom(); //defaultGraph = new ArrayList<String>();
-
+			// load RDF/S definitions & RDFS inference rules
+			
 			if (rdfs) {
 				entail = QueryProcess.RDFS_ENTAILMENT;
-				load.load(more + "rdfs.rdf", RDFS.RDFS);
-				ld.load(more + "rdfs.rul");
+				load.load(RDFS.RDFS);
+				load.load(more + "rdfs.rul");
 				ds.addFrom(RDFS.RDFS);
 			}
 			else {
@@ -762,11 +768,16 @@ public class W3CTest11KGraph {
 				load.exclude(RDFS.RDFS);
 			}
 
-			load.load(more + "rdf.rdf", RDF.RDF);					
+			// exclude dublin core:
+			load.exclude(DC);
+			load.load(RDF.RDF, RDF.RDF);					
 			ds.addFrom(RDF.RDF);
 			
 			//re.setDebug(true);
-			re.process();								
+			RuleEngine re = load.getRuleEngine();
+			if (re != null){
+				re.process();
+			}
 		}
 			
 
@@ -777,6 +788,8 @@ public class W3CTest11KGraph {
 		 *****************************************************/
 		try {
 
+			//exec.setOptimize(true);
+			//exec.setDebug(true);
 			Mappings res = exec.sparql(query, ds, entail);
 						
 			// CHECK RESULT
@@ -812,18 +825,18 @@ public class W3CTest11KGraph {
 			else if (gres != null){
 				// construct where
 				Graph kg = exec.getGraph(res);
-
-				if (kg != null && ! kg.compare(gres)){
+				gres.setDebug(true);
+				if (kg != null && ! gres.compare(kg)){
 					if (!sparql1 && path.contains("construct")){
 						// ok verified by hand 2011-03-15 because of blanks in graph
 					}
 					else {
 						result = false;
 					
-//						System.out.println("w3c:");
-//						System.out.println( TripleFormat.create(gres));
-//						System.out.println("kgram:");
-//						TripleFormat tf = TripleFormat.create(kg);
+//						System.out.println("w3c: " + gres.size());
+//						System.out.println( TripleFormat.create(gres, true));
+//						System.out.println("kgram: " + kg.size());
+//						TripleFormat tf = TripleFormat.create(kg, true);
 //						System.out.println(tf);
 					}
 				}
@@ -844,9 +857,12 @@ public class W3CTest11KGraph {
 			else if (w3RDFResult!=null){
 				// old rdf result format
 				result = validate(res, w3RDFResult);
+
 			}
 			else {
 				// XML Result Format
+//				System.out.println("** kgram: \n" + res);
+//				System.out.println("** w3c: \n" + w3XMLResult);
 				result = validate(res, w3XMLResult);
 			}
 			
@@ -877,7 +893,28 @@ public class W3CTest11KGraph {
 		}
 	}
 	
-	
+	InputStream getStream(String path){
+		try {
+			URL uri = new URL(path);
+			return uri.openStream();
+		}  catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		
+		FileInputStream stream;
+		try {
+			stream = new FileInputStream(path);
+			return stream;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	Provider endpoint(String[] ep, String[] ed){
 		ProviderImpl p =  ProviderImpl.create();
@@ -1130,6 +1167,11 @@ public class W3CTest11KGraph {
 	}
 	
 	String uri(String file){
+		try {
+			URL url = new URL(file);
+			return file;
+		} catch (MalformedURLException e) {
+		}
 		return "file://" + file;
 	}
 	
@@ -1210,11 +1252,45 @@ public class W3CTest11KGraph {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return map;
+		Mappings res = translate(map);
+		return res;
 
 	}
 
+	/**
+	 * W3C map to KGRAM map
+	 */
+	Mappings translate(Mappings ms){
+		Mappings res = new Mappings();
+		for (Mapping map : ms){
+			Mapping m = translate(map);
+			res.add(m);
+		}
+		
+		return res;
+	}
+	
+	Mapping translate(Mapping m){
+		if (m.getMappings()==null){
+			return m;
+		}
+		
+		Mapping res = Mapping.create();
+		
+		for (Mapping map : m.getMappings()){
+			Node var = map.getNode("?var");
+			Node val = map.getNode("?val");
+			if (var!=null && val!=null){
+				NodeImpl q = NodeImpl.createVariable("?" + var.getLabel());
+				res.addNode(q, val);
+			}
+		}
+		
+		return res;
+	}
 
+	
+	
 	
 
 	

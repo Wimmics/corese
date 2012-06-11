@@ -42,5 +42,4 @@ public class Bind extends Hashtable<String,String> {
 		}
 		return str;
 	}
-
 }

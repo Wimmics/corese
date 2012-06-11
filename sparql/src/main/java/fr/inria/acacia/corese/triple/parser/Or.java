@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
@@ -67,6 +69,30 @@ public class Or extends Exp {
 		return sb;
 	}
 	
-	
+	/**
+	 * Each branch of union binds its variable (in parallel)
+	 */
+	public boolean validate(ASTQuery ast, boolean exist){
+		boolean ok = true;
+		
+		List<Variable> list = ast.getStack();
+		List<List<Variable>> ll = new ArrayList();
+		
+		for (Exp exp : getBody()){
+			ast.newStack();
+			boolean b = exp.validate(ast, exist);
+			if (! b){
+				ok = false;
+			}
+			ll.add(ast.getStack());
+		}
+		
+		ast.setStack(list);
+		
+		for (List<Variable> l : ll){
+			ast.addStack(l);
+		}
+		return ok;	
+	}
 	
 }

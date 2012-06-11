@@ -20,4 +20,11 @@ public class Exist extends BasicGraphPattern {
 		return sb;
 	}
 	
+	public boolean validate(ASTQuery ast, boolean exist) {
+		if (getBody().size() > 0){
+			return getBody().get(0).validate(ast, true);
+		}
+		return true;
+	}
+	
 }

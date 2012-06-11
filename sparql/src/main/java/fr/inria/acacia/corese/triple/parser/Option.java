@@ -74,6 +74,11 @@ public class Option extends Exp {
 		return sb;
 	}
 	
+	public boolean validate(ASTQuery ast, boolean exist){
+		if (getBody().size()>0){
+			return getBody().get(0).validate(ast, exist);
+		}
+		return true;
+	}
 
-	
 }

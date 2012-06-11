@@ -141,11 +141,41 @@ public class BasicGraphPattern extends And {
     				this.toString());
     }
     
+    
+    
+	/**
+	 * check bind(EXP, VAR) : var not in scope
+	 */
+	public boolean validate(ASTQuery ast, boolean exist) {
+		boolean ok = true;
+		List<Variable> list = null;
+		
+		for (Exp exp : getBody()){
+    		if (exp.isBGP()){
+    			// in a new BGP, there is no binding
+    			list = ast.getStack();
+    			ast.newStack();
+   		}
+    		
+    		boolean b = exp.validate(ast, exist);
+    		if (! b){
+    			ok = false;
+    		}
+    		
+    		if (exp.isBGP()){
+    			ast.addStack(list);
+    		}
+    	}
+
+    	return ok;
+	}
+    
+    
     /**
      * SPARQL Constraint:
      * Two occurrences of same blank not separated by a pattern
      */
-    public boolean validate (ASTQuery ast){
+    public boolean validateBlank (ASTQuery ast){
     	boolean isBefore = true;
     	Table table = new Table();
     	
@@ -189,6 +219,7 @@ public class BasicGraphPattern extends And {
     	
     	return true;
     }
+     
     
     class Table extends Hashtable<String, String> {
     	void put(String s){

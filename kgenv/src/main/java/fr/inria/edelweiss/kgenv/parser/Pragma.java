@@ -33,6 +33,7 @@ public class Pragma  {
 	static final String MATCH 			= KG + "match";
 	static final String PATH 			= KG + "path";
 	static final String QUERY 			= KG + "query";
+	static final String SERVICE 		= KG + "service";
 	protected static final String PRAGMA= KG + "pragma";
 
 	// kgram
@@ -49,6 +50,8 @@ public class Pragma  {
 	static final String DISPLAY	= KG + "display";
 	static final String EXPAND 	= KG + "expand";
 	static final String PRELAX 	= KG + "relax";
+	static final String SLICE 	= KG + "slice";
+	static final String MAP 	= KG + "map";
 
 	protected static final String STATUS	= KG + "status";
 	protected static final String DESCRIBE	= KG + "describe";
@@ -156,9 +159,14 @@ public class Pragma  {
 			} 
 			else if (subject.equals(SELF)){
 				if (property.equals(PRELAX)){
-					// kg:kgram kg:relax (foaf:type)
-					RDFList list = getList(t.getObject(), pragma);
-					ast.setRelax(list.getList());
+					if (t.getObject().isBlankNode()){
+						// kg:kgram kg:relax (foaf:type)
+						RDFList list = getList(t.getObject(), pragma);
+						ast.setRelax(list.getList());
+					}
+					else {
+						ast.addRelax(t.getObject());
+					}
 				}
 			}
 	}
@@ -255,6 +263,12 @@ public class Pragma  {
 		else if (subject.equals(PRAGMA)){
 			if (property.equals(HELP) && value(object)){
 				query.addInfo(help(), null);
+			}
+		}
+		else if (subject.equals(SERVICE)){
+			if (property.equals(SLICE)){
+				int slice = t.getObject().getDatatypeValue().intValue();
+				query.setSlice(slice);
 			}
 		}
 	}

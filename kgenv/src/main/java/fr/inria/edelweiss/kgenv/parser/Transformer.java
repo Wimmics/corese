@@ -139,6 +139,10 @@ public class Transformer implements ExpType {
 			p.compile();
 		}
 		
+		// type check:
+		// check scope for bind()
+		ast.validate();
+		
 		// compile describe
 		ast.compile();
 		
@@ -493,7 +497,7 @@ public class Transformer implements ExpType {
 	 * - once for the global query  
 	 */
 	List<Exp> select(Query qCurrent, ASTQuery ast){
-		List<Exp> select = new ArrayList<Exp>();
+		List<Exp> select    = new ArrayList<Exp>();
 		// list of query nodes created for variables in filter that need
 		// an outer node value
 		List<Node> lNodes = new ArrayList<Node>();
@@ -518,7 +522,6 @@ public class Transformer implements ExpType {
 			if (ee != null){
 				// select fun() as var
 				Filter f = compileSelect(ee, ast);
-				//f = compile(ee);
 
 				if (f != null){
 					// select fun() as var
@@ -529,15 +532,43 @@ public class Transformer implements ExpType {
 				}
 			}
 
-			select.add(exp);
+			// TODO: check var in select * to avoid duplicates
+			
+			//select.add(exp);
+			add(select, exp);
 		}	
 
 		for (Node node : lNodes){
+			// additional variables for exp in select (exp as var)
 			Exp exp = Exp.create(NODE, node);
 			exp.status(true);
 			select.add(exp);
 		}
+		
+		qCurrent.setSelectWithExp(select);
 		return select;
+	}
+	
+	/**
+	 * select * (exp as var)
+	 * if var is already in select *, add exp to var
+	 */
+	void add(List<Exp> select, Exp exp){
+		boolean found = false;
+		
+		for (Exp e : select){
+			if (e.getNode().same(exp.getNode())){
+				if (exp.getFilter() != null){
+					e.setFilter(exp.getFilter());
+				}
+				found = true;
+				break;
+			}
+		}
+		
+		if (! found){
+			select.add(exp);
+		}
 	}
 	
 	
@@ -835,7 +866,7 @@ public class Transformer implements ExpType {
 			}
 
 			// PRAGMA: do it after loop above to have filter compiled
-			query.validate(ast);		
+			query.validateBlank(ast);		
 
 			if (hasBind && level>0){
 				// pop bind(f(?x) as ?y) at the end of group pattern

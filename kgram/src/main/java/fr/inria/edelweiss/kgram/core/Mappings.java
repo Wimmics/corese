@@ -198,6 +198,9 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * in case of aggregates, accept Mapping now, distinct will be computed below
 	 */
 	void submit(Mapping a){
+		if (a == null){
+			return;
+		}
 		if (query.isAggregate() || accept(a)){
 			add(a);
 		}
@@ -743,6 +746,8 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 */
 	void process(Evaluator eval, Filter f){
 		for (Mapping map : this){
+			// in case there is a nested aggregate
+			map.setMappings(this);
 			eval.eval(f, map);
 		}
 	}

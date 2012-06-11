@@ -117,6 +117,17 @@ public class Source extends And {
 	  }
 	  return true;
   }
+  
+  
+  public boolean validate(ASTQuery ast, boolean exist){
+	  if (asource.isVariable()){
+		  ast.bind(asource.getVariable());
+		  if (! exist){
+			  ast.defSelect(asource.getVariable());
+		  }
+	  }
+	  return super.validate(ast, exist);
+  }
 
   
 

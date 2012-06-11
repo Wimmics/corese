@@ -97,6 +97,16 @@ public class Values extends Exp {
 	public List<List<Constant>> getValues() {
 		return lval;
 	}
+	
+	public boolean validate(ASTQuery ast, boolean exist){
+		for (Variable var : getVariables()){
+			ast.bind(var);
+			if (! exist){
+				ast.defSelect(var);
+			}
+		}
+		return true;
+	}
 
 
 }

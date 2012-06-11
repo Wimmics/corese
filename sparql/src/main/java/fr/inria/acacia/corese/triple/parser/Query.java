@@ -1,6 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
-public class Query extends BasicGraphPattern {
+public class Query extends Exp {
 	
 	ASTQuery ast;
 	
@@ -27,5 +27,40 @@ public class Query extends BasicGraphPattern {
 	public boolean isQuery(){
 		return true;
 	}
+	
+	
+	/**
+	 * If Subquery is a bind, check scope.
+	 */
+	public boolean validate(ASTQuery a, boolean exist){
+		
+		if (ast.isBind()){
+			Variable var = ast.getSelectVar().get(0);
+			if (a.isBound(var)){
+				a.addError("Scope error: " + var);
+				a.setCorrect(false);
+				return false;
+			}
+		}
+				
+		boolean b = ast.validate();
+		
+		if (! b){
+			a.setCorrect(false);
+		}
+		
+		for (Variable var : ast.getSelectVar()){
+			a.bind(var);
+			a.defSelect(var);
+		}
+		// select *
+		for (Variable var : ast.getSelectAllVar()){
+			a.bind(var);
+			a.defSelect(var);
+		}
+				
+		return b;
+	}
+
 
 }

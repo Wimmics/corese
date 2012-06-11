@@ -92,10 +92,9 @@ public class ASTQuery  implements Keyword {
 	boolean selectAll = false,
 	// additional SPARQL constraints (dot, arg of type string type, ...)
 	isSPARQLCompliant = false;
-//    boolean hasGet=false;   // is there a get:gui ?
-//    boolean hasGetSuccess=false; // if get:gui, does the first one has a value ?
     // validation mode (check errors)
     private boolean validate = false; 
+    boolean isInsertData = false;
 	boolean sorted = true; // if the relations must be sorted (default true)
 	boolean debug = false, isCheck = false;
     boolean nosort = false, 
@@ -164,6 +163,8 @@ public class ASTQuery  implements Keyword {
     ASTQuery globalAST;
 	Expression having;
 	List<Variable> selectVar = new ArrayList<Variable>();
+	// select *
+	List<Variable> selectAllVar = new ArrayList<Variable>();
 	List<Expression> sort 	 = new ArrayList<Expression>();
 	List<Expression> lGroup  = new ArrayList<Expression>();
 	List<Expression> relax   = new ArrayList<Expression>();
@@ -173,7 +174,7 @@ public class ASTQuery  implements Keyword {
 	List<Atom> defFrom, defNamed; 
 	
     List<Atom> adescribe = new ArrayList<Atom>();
-	List<String> stack = new ArrayList<String>(); // bound variables
+	List<Variable> stack = new ArrayList<Variable>(); // bound variables
 	List<String> vinfo;
 	List<String> errors;
 	
@@ -190,6 +191,7 @@ public class ASTQuery  implements Keyword {
     // pragma {}
     Hashtable<String, Exp> pragma;
     Hashtable<String, Exp> blank;
+    Hashtable<String, Variable> blankNode;
 
 	NSManager nsm;
 	ASTUpdate astu;
@@ -203,6 +205,7 @@ public class ASTQuery  implements Keyword {
     }
 	
 	ASTQuery(String query) {
+		this();
 		setText(query);
     }
 	
@@ -331,13 +334,41 @@ public class ASTQuery  implements Keyword {
 	}
 	
 	
-	public void setValidate(boolean b){
-		validate = b;
+	public void setInsertData(boolean b){
+		isInsertData = b;
+	}
+	
+	public boolean isInsertData(){
+		return isInsertData;
 	}
 	
 	public boolean isValidate(){
 		return validate;
 	}
+	
+	public void setValidate(boolean b){
+		validate = b;
+	}
+	
+	/**
+	 * collect var for select *
+	 * check scope for BIND()
+	 */
+	public boolean validate(){
+		if (getValues() != null){
+			for (Variable var : getValues().getVariables()){
+				defSelect(var);
+			}
+		}
+		
+		if (getBody()!=null){
+			boolean b = getBody().validate(this);
+			return b;
+		}
+		return true;
+	}
+	
+	
     
  
 	/**
@@ -455,6 +486,10 @@ public class ASTQuery  implements Keyword {
 	
 	public void setRelax(List<Expression> l) {
 		relax = l;
+	}
+	
+	public void addRelax(Expression e) {
+		relax.add(e);
 	}
 	
 	public List<Expression> getRelax() {
@@ -626,6 +661,10 @@ public class ASTQuery  implements Keyword {
 	
 	public List<Variable> getSelectVar() {
 		return selectVar;
+	}
+	
+	public List<Variable> getSelectAllVar() {
+		return selectAllVar;
 	}
 
 	public boolean isSelectAll() {
@@ -1234,30 +1273,46 @@ public class ASTQuery  implements Keyword {
 		return var;
 	}
     
-    public Variable newBlankNode(Exp exp, String label) {
-    	if (blank == null) blank = new Hashtable<String, Exp>();
-    	Exp ee = blank.get(label);
-    	if (ee == null){
-    		blank.put(label, exp);
+    /**
+     * Reset tables when start a new query (update) 
+     */
+    public void reset(){
+    	if (blank != null){
+    		blank.clear();
     	}
-    	else if (ee != exp){
-    		setCorrect(false);
-    		logger.error("Blank Node used in different patterns: " + label);
+    	if (blankNode != null){
+    		blankNode.clear();
+    	}
+    }
+    
+    /**
+     * Same blank label must not be used in different BGP exp
+     * except in insert data {}
+     */
+    public Variable newBlankNode(Exp exp, String label) {
+    	if (blank == null){
+    		blank = new Hashtable<String, Exp>();
+    		blankNode = new Hashtable<String, Variable>();
+    	}
+    	
+    	if (! isInsertData()){
+    		Exp ee = blank.get(label);
+
+    		if (ee == null){
+    			blank.put(label, exp);
+    		}
+    		else if (ee != exp){
+    			setCorrect(false);
+    			logger.error("Blank Node used in different patterns: " + label);
+    			addError("Blank Node used in different patterns: ", label);
+    		}
     	}
 
-    	Variable var;
-    	if (exp instanceof BasicGraphPattern) {
-    		BasicGraphPattern pat = (BasicGraphPattern)exp;
-    		var = pat.getBNode(label);
-    		if (var==null) {
-    			// create a new blank node and put it in the table
-    			var = newBlankNode();
-    			pat.addBNodes(label, var);
-    		}
-    	} 
-    	else {
-    		logger.error("ERROR - stack not instance of BasicGraphPattern: "+exp.getClass());
-    		var = newBlankNode();
+    	Variable var = blankNode.get(label);
+    	if (var == null){
+    		// create a new blank node and put it in the table
+			var = newBlankNode();
+			blankNode.put(label, var);
     	}
     	return var;
     }
@@ -1575,10 +1630,13 @@ public class ASTQuery  implements Keyword {
     	// Select
     	if (isSelect()) {
     		sb.append(KeywordPP.SELECT + SPACE);
+    		
     		if (isDebug())
     			sb.append(KeywordPP.DEBUG + SPACE);
+    		
     		if (isMore())
     			sb.append(KeywordPP.MORE + SPACE);
+    		
     		if (isDistinct())
     			sb.append(KeywordPP.DISTINCT + SPACE);
 
@@ -1587,10 +1645,10 @@ public class ASTQuery  implements Keyword {
     		}
     		
     		if (select != null && select.size()>0){
-    			for (Atom s : getSelectVar()){
-    				if (getExpression(s.getName()) != null) {
+    			for (Variable s : getSelectVar()){
+    				if (getExpression(s) != null) {
     					sb.append("(");
-    					getExpression(s.getName()).toString(sb);
+    					getExpression(s).toString(sb);
     					sb.append(" as "  + s + ")");
     				}
     				else {
@@ -2011,22 +2069,28 @@ public class ASTQuery  implements Keyword {
    }
       
     public void setSelect(Variable var) {
-    	if (! contains(selectVar, var)){
-          selectVar.add(var);
+    	if (! selectVar.contains(var)){
+            selectVar.add(var);
+     	}    
+    }
+    
+    /**
+     * Use case: collect select *
+     */
+    void defSelect(Variable var){
+    	if (isSelectAll()){
+    		addSelect(var);
     	}
     }
     
-    boolean contains(List<Variable> list, Variable var){
-    	for (Variable vv : list){
-    		if (vv.getName().equals(var.getName())){
-    			return true;
-    		}
-    	}
-    	return false;
+    void addSelect(Variable var){
+    	if (! selectAllVar.contains(var)){
+            selectAllVar.add(var);
+     	}
     }
-    
+       
     public boolean checkSelect(Variable var){
-    	if (contains(selectVar, var)){
+    	if (selectVar.contains(var)){
     		setCorrect(false);
     		return false;
     	}
@@ -2036,6 +2100,9 @@ public class ASTQuery  implements Keyword {
         
     public void setSelect(Variable var, Expression e) {
     	setSelect(var);
+    	if (getExpression(var) != null){
+    		addError("Duplicate select : " + e + " as " + var);
+    	}
     	selectFunctions.put(var.getName(), e);
     	selectExp.put(e, e);
     	
@@ -2047,13 +2114,7 @@ public class ASTQuery  implements Keyword {
     		// now generate get() for sub variables
     		int n = 0;
     		for (Variable vv : var.getVariableList()){
-    			if (isKgram()){
-    				setSelect(vv);
-    			}
-    			else {
-    				Term get = createGet(var, n++);
-    				setSelect(vv, get);
-    			}
+				setSelect(vv);
     		}
     	}
     }
@@ -2231,6 +2292,10 @@ public class ASTQuery  implements Keyword {
 		return selectFunctions.get(name);
 	}
 	
+	public Expression getExpression(Variable var){
+		return selectFunctions.get(var.getName());
+	}
+	
 	public Expression getExtExpression(String name){
 		Expression sexp = getExpression(name);
 		if (sexp == null) return null;
@@ -2273,34 +2338,33 @@ public class ASTQuery  implements Keyword {
     }
 	
     
-    void bind(String var){
-        if (! stack.contains(var)){
-            stack.add(var);
-        }
-    }
-    
-    boolean isBound(String var){
-        return stack.contains(var);
+    void bind(Variable var){
+    	if (! stack.contains(var)){
+    		stack.add(var);
+    	}
     }
 
-    public List<String> getStack() {
+    boolean isBound(Variable var){
+    	return stack.contains(var);
+    }
+
+    public List<Variable> getStack() {
     	return stack;
     }
-
-    public void setStack(List<String> stack) {
-        this.stack = stack;
+    
+    void newStack(){
+    	stack = new ArrayList<Variable>();
     }
-    void clear(){
-        stack.clear();
-    }
-    boolean hasOptionVar(Expression exp){
-        return  exp.isOptionVar(stack);
-    }
-    int getStackSize(){
-        return stack.size();
+    
+    void setStack(List<Variable> list){
+    	stack = list;
     }
 
+    void addStack(List<Variable> list){
+    	for (Variable var : list){
+    		bind(var);
+    	}
+    }
 
 
-	
 }

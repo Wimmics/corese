@@ -247,274 +247,9 @@ public class Triple extends Exp {
 			return false;
 	}
 	
-	
-	/***************************************************************************
-	 *
-	 * 2. Semantics
-	 * expand prefix to uri namespace
-	 * expand path and generate OR
-	 */
-//	Exp validate(Parser parser){
-////		if (isall) {
-////			parser.setAll(true);
-////		}
-//		if (predicate != null) istype = parser.isDefType(predicate);
-//		Exp stmt=this;
-//		//processIS();
-//		if (isExp()){
-//			//exp=defExpression(parser);
-//		}
-//		else {
-//			stmt=defRelation(parser);
-//		}
-//		return stmt;
-//	}
-	
-	
-	
-	/**
-	 * 2. Semantics after validate
-	 * Generate target expression or relation, expand path
-	 * @param parser
-	 * @return
-	 */
-//	Exp defExpression(Parser parser) {
-//		return this;
-//	}
-	
-	/**
-	 * Return an  expression from this triple
-	 * If property[2] generate (or (x p y) (x p z p y))
-	 * isliteral = true if value between "" or has datatype or
-	 * range is Literal
-	 */
-//	Exp defRelation(Parser parser){
-//		boolean literalp= false;
-//		// to accept 12 as a (datatype) literal value, need to check range
-//		// i.e. 12 vs "12"
-//		Exp exp;
-//		if (isset){
-//			if (id == -1 ) id=nextID();//parser.getTripleId();
-//			exp= defSet(parser);
-//		}
-//		else if (star > 1){
-//			exp = defPath(parser, literalp);
-//		}
-//		else {
-//			exp=this;
-//		}
-//		return exp;
-//	}
-//	
-//	Exp defPath(Parser parser, boolean literalp) {
-//		if (id == -1)
-//			id = nextID();//parser.getTripleId();
-//		Exp filter = toVariable(); // replace cst by var
-//		Exp exp = new Or(), tmp;
-//		for (int i = 1; i <= star; i++) {
-//			tmp = defPath(parser, i, literalp);
-//			exp.add(new And(tmp));
-//		}
-//		if (filter != null) {
-//			exp = new And(exp);
-//			exp.add(filter);
-//		}
-//		return exp;
-//	}
-//	
-//
-//	
-//	/**
-//	 * From ?x p[k] ?y Generate  one path of length n   ?x p ?v1 ?v1 p ?y ...
-//	 * @param n
-//	 * @param literalp
-//	 * @return
-//	 */
-//	Exp defPath(Parser parser, int n, boolean literalp){
-//		And star=new And();
-//		Triple triple;
-//		String prev=subject.getName(), //tresource,
-//		var=prev;// tresource
-//		Variable vprev=new Variable(prev), vvar=new Variable(var);
-//		for (int i=1; i<n; i++){
-//			var=genVar(i);
-//			vvar=new Variable(var);
-//			triple = create(vprev, predicate, variable, vvar);
-//			prev=var;
-//			vprev=vvar;
-//			triple.source=source;
-//			triple.score=score;
-//			triple.istype = istype;
-//			star.add(triple);
-//		}
-//		triple = create(vvar, predicate, variable, object);
-//		triple.source=source;
-//		triple.score=score;
-//		triple.istype = istype;
-//		star.add(triple);
-//		return star;
-//	}
-	
-	/**
-	 * ?x rdfs:label ?l@en
-	 * ?x rdfs:label toto@en
-	 *
-	 */
-//	Exp defLang(){
-//		Exp exp=new And();
-//		exp.add(this);
-//		
-//		
-//		return exp;
-//	}
-	
-	/**
-	 * ?x relation{n} ?y
-	 * create all paths of length 1 to n
-	 * return an OR of these paths
-	 */
-//	Exp defSet(Parser parser) {
-//		Exp set = new Or();
-//		Exp filter = toVariable();
-//		set = set(parser, set, getStar());
-//		if (filter != null) {
-//			set = new And(set);
-//			set.add(filter);
-//		}
-//		return set;
-//	}
-	
-	/**
-	 * Replace constant by variable :
-	 */
-//	Exp toVariable() {
-//		Triple tfilter1 = null, tfilter2 = null;
-//		if (subject.isConstant()) {
-//			// generate a variable and a filter variable = constant
-//			tfilter1 = toVariable(true);
-//		}
-//		if (object.isConstant()) {
-//			tfilter2 = toVariable(false);
-//		}
-//		if (tfilter1 != null && tfilter2 != null){
-//			And and = new And(tfilter1);
-//			and.add(tfilter2);
-//			return and;
-//		}
-//		else if (tfilter1 != null)
-//			return tfilter1;
-//		else return tfilter2;
-//	}
-	
-	/**
-	 *
-	 * Replace constant arg by variable arg
-	 *    */
-//	Triple toVariable(boolean first) {
-//		String name = ExpParser.SYSVAR + id + ((first)?"_1":"_2");
-//		Variable var = new Variable(name);
-//		Term filter = new Term("=", var, (first)?subject:object);
-//		toVariable(var, first);
-//		Triple tfilter =   Triple.create(filter);
-//		//tfilter.setID(parser.getTripleId());
-//		return tfilter;
-//	}
-	
-//	public static Triple fake(){
-//		int id = nextID();
-//		Triple t =  Triple.create(
-//				new Variable(ExpParser.SYSVAR + "fa"+id), 
-//				Constant.createResource(RDFS.RootPropertyURI), 
-//				new Variable(ExpParser.SYSVAR + "fb"+id));
-//		t.setFake(true);
-//		//t.setID(id);
-//		return t;
-//	}
-	
 
-//	void toVariable(Variable var, boolean first) {
-//		if (first) {
-//			subject = var;
-//		}
-//		else {
-//			object = var;
-//		}
-//	}
-	
-	
-	
-	/**
-	 * all paths from 1 to n
-	 */
-//	Exp set(Parser parser, Exp set, int n){
-//		for (int i=1; i<=n; i++){
-//			set=set(parser, set, new And(), 0, i);
-//		}
-//		return set;
-//	}
-	
-	/**
-	 * create all paths of same size n
-	 * generate 2^n combinaison :
-	 * ?x R ?v1 ?v1 R ?y
-	 * ?x R ?v1 ?y R ?v1
-	 * ?v1 R ?x ?v1 R ?y
-	 * ?v1 R ?x ?y R ?v1
-	 * set = set of paths already created
-	 * cur = current path of length i {and a1 .. ai }
-	 * add ai+1 and inv(ai+1) into current path
-	 * complete recursively untill n
-	 * return set
-	 */
-//	Exp set(Parser parser, Exp set, Exp cur, int i, int n){
-//		if (i==n){
-//			set.add(cur);
-//			return set;
-//		}
-//		Triple triple=copy(parser, i, n, false);
-//		Exp tmp=cur.copy();
-//		tmp.add(triple);
-//		set=set(parser, set, tmp, i+1, n);
-//		triple=copy(parser, i, n, true);
-//		cur.add(triple);
-//		set=set(parser, set, cur, i+1, n);
-//		return set;
-//	}
-	
 
 	
-//	Triple copy(Parser parser, int i, int n, boolean swap){
-//		String x=getVar(i, n);
-//		String y=getVar(i+1, n);
-//		Variable vx=new Variable(x),
-//		vy=new Variable(y);
-//		Triple triple;
-//		if (swap){
-//			triple = create(vy, predicate, variable, vx);
-//	}
-//		else {
-//			triple = create(vx, predicate, variable, vy);
-//		}
-//		// when {1} do not complete both args :
-//		if (i==0)   complete(triple, true, swap);
-//		if (i + 1 == n)
-//			complete(triple, false, swap);
-//		triple.source=source;
-//		triple.score=score;
-//		triple.istype = istype;
-//		return triple;
-//	}
-//	
-	/**
-	 * triple is a copy of this
-	 * set count, join, distinct
-	 * if res : copy res (else value)
-	 * if swap : swap to value (else res)
-	 */
-//	Triple complete(Triple triple, boolean res, boolean swap){
-//		return triple;
-//	}
-//	
 	
 	/**
 	 * Util functions
@@ -906,7 +641,7 @@ public class Triple extends Exp {
 		}
 		return false;
 	}
-	
+			
 	public boolean isOption() {
 		return isoption;
 	}
@@ -1082,6 +817,48 @@ public class Triple extends Exp {
 	
 	private String getRootPropertyURI() {
 		return ASTQuery.getRootPropertyURI();
+	}
+	
+	
+	public boolean validate(ASTQuery ast, boolean exist) {
+		if (isFilter()){
+			// validate exists {}
+			return getExp().validate(ast);
+		}
+		
+		if (getSubject().isVariable()){
+			ast.bind(getSubject().getVariable());
+			if (! exist) {
+				ast.defSelect(getSubject().getVariable());
+			}
+		}
+		
+		if (getVariable() != null){
+			ast.bind(getVariable());
+			if (! exist){
+				ast.defSelect(getVariable());
+			}
+		}
+		
+		if (getObject().isVariable()){
+			ast.bind(getObject().getVariable());
+			if (! exist){
+				ast.defSelect(getObject().getVariable());
+			}
+		}
+		
+		if (larg != null){
+			for (Atom at : larg){
+				if (at.isVariable()){
+					ast.bind(at.getVariable());
+					if (! exist){
+						ast.defSelect(at.getVariable());
+					}
+				}
+			}
+		}
+
+    	return true;
 	}
 	
 	

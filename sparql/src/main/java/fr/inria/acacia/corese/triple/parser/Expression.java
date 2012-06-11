@@ -151,14 +151,15 @@ implements Regex, Filter, Expr {
 	public boolean isFunction(String str){
 		return false;
 	}
-	
-//	void validate(Parser parser){
-//		
-//	}
-	
+		
 	Bind validate(Bind env){
 		return env;
 	}
+	
+	public boolean validate(ASTQuery ast) {
+		return true;
+	}
+
 	
 	public String getLang(){
 		return null;

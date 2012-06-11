@@ -43,5 +43,16 @@ public class Service extends BasicGraphPattern {
 	public Atom getService(){
 		return uri;
 	}
+	
+	  public boolean validate(ASTQuery ast, boolean exist){
+		  if (uri.isVariable()){
+			  ast.bind(uri.getVariable());
+			  if (! exist){
+				  ast.defSelect(uri.getVariable());
+			  }
+		  }
+		  return super.validate(ast, exist);
+	  }
+
 
 }

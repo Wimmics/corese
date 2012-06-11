@@ -300,6 +300,25 @@ public class Term extends Expression {
 		return env;
 	}
 	
+	public boolean validate(ASTQuery ast) {
+		
+		if (isExist()){
+			return getExist().validate(ast);
+		}
+		
+		boolean ok = true;
+		
+		for (Expression exp : getArgs()){
+			boolean b = exp.validate(ast);
+			ok = ok && b;
+		}
+		return ok;
+	}
+	
+	public boolean isExist(){
+		return getExist() != null;
+	}
+	
 	public boolean isSeq(){
 		return getName().equals(RE_SEQ);
 	}

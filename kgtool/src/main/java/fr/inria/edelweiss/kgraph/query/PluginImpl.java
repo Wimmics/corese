@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -96,6 +98,9 @@ public class PluginImpl extends ProxyImpl {
 		
 		case DEPTH:
 			return depth(o);
+			
+		case QNAME:
+			return qname(o, env);
 			 						
 		}
 		return null;
@@ -379,6 +384,18 @@ public class PluginImpl extends ProxyImpl {
 		} catch (EngineException e) {
 			return new Mappings();
 		}
+	}
+	
+	IDatatype qname(Object o, Environment env){
+		IDatatype dt = (IDatatype) o;
+		Query q = env.getQuery();
+		if (q == null){
+			return dt;
+		}
+		ASTQuery ast = (ASTQuery) q.getAST();
+		NSManager nsm = ast.getNSM();
+		String qname = nsm.toPrefix(dt.getLabel());
+		return getValue(qname);
 	}
 	
 

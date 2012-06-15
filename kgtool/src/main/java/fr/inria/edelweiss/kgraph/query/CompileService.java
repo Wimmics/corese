@@ -51,7 +51,7 @@ public class CompileService {
 			filter(q, lmap, start, limit);
 		}
 		else {
-			bindings(q, lmap);
+			bindings(q, lmap, start, limit);
 		}
 		
 	}
@@ -117,7 +117,7 @@ public class CompileService {
 	/**
 	 * Generate bindings as bindings from Mappings
 	 */
-	void bindings(Query q, Mappings lmap){
+	void bindings(Query q, Mappings lmap, int start, int limit){
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ast.clearBindings();
 		ArrayList<Variable> lvar = new ArrayList<Variable>();
@@ -131,7 +131,9 @@ public class CompileService {
 		
 		values.setVariables(lvar);
 				
-		for (Mapping map : lmap){
+		for (int j = start; j < lmap.size() && j < limit; j++){
+			
+			Mapping map = lmap.get(j);			
 			boolean ok = false;
 			lval = new ArrayList<Constant>();
 			

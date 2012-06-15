@@ -222,6 +222,10 @@ public class ProviderImpl implements Provider {
 			logger.error(e);
 			g.addError(SERVICE_ERROR, e);
 		}
+		
+		if (g.isDebug()){
+			logger.info("** Provider error" );
+		}
 		return null;
 	}
 	

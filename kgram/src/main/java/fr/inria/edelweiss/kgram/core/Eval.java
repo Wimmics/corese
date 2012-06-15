@@ -277,7 +277,7 @@ public class Eval implements  ExpType, Plugin {
 		if (lMap != null){
 			for (Mapping map : lMap){
 				map = complete(map);
-				results.submit(map);
+				submit(map);
 			}
 		}
 	}
@@ -1336,9 +1336,17 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		}
 				
 		if (provider != null){
+			// service delegated to provider
 			Mappings lMap = provider.service(node, exp.rest(), exp.getMappings(), env);
+			
 			for (Mapping map : lMap){
+				// push each Mapping in memory and continue
 				complete(query, map);
+				
+				// draft test:
+				//submit(map);
+								
+				// remove comment:
 				if (env.push(map, n, false)){
 					backtrack = eval(gNode, stack, n+1, option);
 					env.pop(map, false);
@@ -1346,10 +1354,9 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 						return backtrack;
 					}
 				}
-			}
+			}		
 		}
 		else {
-			//lMap = service(node, exp.rest());
 			Query q = exp.rest().getQuery();
 			return query(gNode, q, stack, n, option);
 		}	
@@ -2158,11 +2165,15 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 		}
 		if (store) {
 			Mapping ans = memory.store(query, isSubEval);
-			results.submit(ans);
+			submit(ans);
 			if (hasEvent){
 				send(Event.RESULT, query, ans);
 			}		
 		}
+	}
+	
+	void submit(Mapping map){
+		results.submit(map);
 	}
 	
 	public int nbResult(){

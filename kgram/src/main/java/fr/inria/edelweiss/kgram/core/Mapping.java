@@ -51,6 +51,7 @@ public class Mapping
 	Node[] distinct, group;
 	
 	Mappings lMap;
+	Query query;
 	Hashtable<String, Node> table;
 	
 	boolean read = false;
@@ -210,6 +211,14 @@ public class Mapping
 	
 	void setMappings(Mappings l){
 		lMap = l;
+	}
+	
+	void setQuery(Query q){
+		query = q;
+	}
+	
+	public Query getQuery(){
+		return query;
 	}
 	
 	Node[] getOrderBy(){
@@ -751,6 +760,6 @@ public class Mapping
 			eval.eval(f, map);
 		}
 	}
-	
+		
 	
 }

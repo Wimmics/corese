@@ -9,6 +9,7 @@ import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
@@ -744,10 +745,12 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * it applies the aggregate f (e.g. sum(?x)) on the list of Mapping
 	 * with Mapping as environment to get variable binding
 	 */
-	void process(Evaluator eval, Filter f){
+	void process(Evaluator eval, Filter f, Environment env){
 		for (Mapping map : this){
-			// in case there is a nested aggregate
+			// in case there is a nested aggregate, map will be an Environment
+			// it must implement aggregate() and hence must know current Mappings group
 			map.setMappings(this);
+			map.setQuery(env.getQuery());
 			eval.eval(f, map);
 		}
 	}

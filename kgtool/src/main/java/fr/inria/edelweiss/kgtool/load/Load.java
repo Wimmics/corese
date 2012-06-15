@@ -48,9 +48,11 @@ public class Load
 
 	static final String RULE 	= ".rul";
 	static final String BRULE 	= ".brul";
-	static final String[] RULES 	= {RULE, BRULE};
+	static final String IRULE 	= ".rl";
+	static final String[] RULES 	= {RULE, BRULE, IRULE};
 	static final String QUERY 	= ".rq";
 	static final String UPDATE 	= ".ru";
+	static final String[] QUERIES 	= {QUERY, UPDATE};
 	static final String TURTLE 	= ".ttl";
 	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, RULE, BRULE, QUERY, UPDATE};
 	static final String HTTP = "http://";
@@ -188,6 +190,15 @@ public class Load
 		return false;
 	}
 	
+	public boolean isQuery(String path){
+		for (String suf : QUERIES){
+			if (path.endsWith(suf)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void load(String path){
 		load(path, null);
 	}
@@ -252,7 +263,7 @@ public class Load
 			loadRule(path, base);
 			return;
 		}
-		if (path.endsWith(QUERY)){
+		if (isQuery(path)){
 			loadQuery(path, base);
 			return;
 		}
@@ -391,8 +402,20 @@ public class Load
 		if (engine == null){
 			engine = RuleEngine.create(graph);
 		}
-		RuleLoad load = RuleLoad.create(engine);
-		load.loadWE(path);
+		
+		if (path.endsWith(IRULE)){
+			// individual rule
+			QueryLoad ql = QueryLoad.create();
+			String rule = ql.read(path);
+			if (rule != null){
+				engine.addRule(rule);
+			}
+		}
+		else {
+			// rule base
+			RuleLoad load = RuleLoad.create(engine);
+			load.loadWE(path);
+		}
 	}
 	
 	

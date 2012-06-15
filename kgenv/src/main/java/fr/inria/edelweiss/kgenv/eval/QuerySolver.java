@@ -66,6 +66,8 @@ public class QuerySolver  {
 	
 	boolean isSequence = false;
 	
+	int slice = 0;
+	
 	// set default base for SPARQL Query
 	// it is overloaded if query has a base (cf prefix/base)
 	// use case: expand from <data.ttl> in manifest.ttl
@@ -233,6 +235,7 @@ public class QuerySolver  {
 		q.setListPath(isListPath);
 		q.setCountPath(isCountPath);
 		q.setCheckLoop(isCheckLoop);
+		q.setSlice(slice);
 		if (isDebug) q.setDebug(isDebug);
 		if (isOptimize) q.setOptimize(isOptimize);
 	}
@@ -428,6 +431,8 @@ public class QuerySolver  {
 		isOptimize = b;
 	}
 	
-
+	public void setSlice(int n){
+		slice = n;
+	}
 	
 }

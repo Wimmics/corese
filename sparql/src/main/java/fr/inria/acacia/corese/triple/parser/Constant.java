@@ -121,12 +121,12 @@ public class Constant extends Atom {
 				sb.append(KeywordPP.LANG + lang);
 			} 
 			else if (hasRealDatatype()) {
-				if (datatype.startsWith("http://")){
+				if (datatype.equals(RDF.qxsdInteger) || datatype.equals(RDF.xsdinteger)){
+					sb.append(name);
+				}
+				else if (datatype.startsWith("http://")){
 					toString(name, sb);
 					sb.append(KeywordPP.SDT + "<"+ datatype +">");
-				}
-				else if (datatype.equals(RDF.qxsdInteger)){
-					sb.append(name);
 				}
 				else {
 					toString(name, sb);

@@ -37,10 +37,9 @@ public class NSManager
 	private static final String seed 	= "ns";
 	private static final String DOT 	= ".";
 	public static final String HASH 	= "#";
-	
+	static final String NL 			= System.getProperty("line.separator");
+
 	static final char[] end				={'#', '/', '?', ':'}; // may end an URI ...
-//	static final String[] PROTOCOLS = 
-//	{ "http://", "file:", "ftp://", "mailto:", "urn:", "news:", KeywordPP.CORESE_PREFIX };
 	static final String pchar=":";
 	int count=0;
 	Hashtable<String, String> def; // system namespace with prefered prefix
@@ -333,7 +332,31 @@ public class NSManager
 		return res;
 	}
 	
-
+	public String toString(){
+		return toString(false);
+	}
+	
+	public String toString(boolean all){
+		StringBuffer sb = new StringBuffer();
+		if (base != null){
+			sb.append ("base <");
+			sb.append (base);
+			sb.append (">");
+			sb.append(NL);
+		}
+		for (String p : getPrefixSet()){
+			String ns = getNamespace(p);
+			if (all || ! isSystem(ns)){
+				sb.append ("prefix ");
+				sb.append(p);
+				sb.append(": <");
+				sb.append(getNamespace(p));
+				sb.append(">");
+				sb.append(NL);
+			}
+		}
+		return sb.toString();
+	}
 	
 	public void setBase(String s) {
 		base = s;
@@ -358,43 +381,7 @@ public class NSManager
 	}
 	
 	
-//	public String toNamespaceB2(String str){
-//		String pname = toNamespace(str);
-//		if (! pname.equals(str)){
-//			if (isBase()){
-//				if (pname.matches("[a-zA-Z0-9]*://.*")){
-//					// skip schemes like: test://www.example.org (cf W3C update test case) 
-//					return pname;
-//				}
-//				// use case:
-//				// base <xxx>
-//				// prefix : <>
-//				pname = resolve(pname);
-//				return pname;
-//			}
-//			
-//			return pname;
-//		}
-//		if (pname.matches("[a-zA-Z0-9]*://.*")){
-//			// skip schemes like: test://www.example.org (cf W3C update test case) 
-//			return pname;
-//		}
-//		if (isBase() && ! isURN(pname) && !Triple.isVariable(pname)) {
-//			String toReturn = resolve(pname);
-//			return toReturn;
-//		} 
-//		return pname;
-//	}
-//	
-//	
-//	boolean isURN(String str) {
-//		for (String pr : PROTOCOLS) {
-//			if (str.startsWith(pr))
-//				return true;
-//		}
-//		return false;
-//	}
-//	
+
 	/**
 	 * Return the namespace of this QName
 	 */

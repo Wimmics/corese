@@ -69,9 +69,10 @@ public class Processor {
 
 	static final String EXTERN 	= "extern";
 	public static final String XPATH 	= "xpath";
-	static final String KGXPATH = ExpType.KGRAM + "xpath";
 	static final String SQL 	= "sql";
+	static final String KGXPATH = ExpType.KGRAM + "xpath";
 	static final String KGSQL 	= ExpType.KGRAM + "sql";
+	static final String QNAME 	= ExpType.KGRAM + "qname"; 
 
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
@@ -343,6 +344,7 @@ public class Processor {
 		defoper(EXIST,  ExprType.EXIST);
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(GROUPBY, ExprType.GROUPBY);
+		defoper(QNAME, ExprType.QNAME);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

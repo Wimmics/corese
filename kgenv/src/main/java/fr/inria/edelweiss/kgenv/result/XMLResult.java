@@ -3,6 +3,9 @@ package fr.inria.edelweiss.kgenv.result;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -33,10 +36,23 @@ public class XMLResult {
 	Producer producer;
 	// create query Node
 	fr.inria.edelweiss.kgenv.parser.Compiler compiler;
+	HashMap<String, Integer> table;
+
+	private static final int UNKNOWN 	= -1;
+	private static final int RESULT 	= 1;
+	private static final int BINDING 	= 2;
+	private static final int URI 		= 3;
+	private static final int LITERAL 	= 4;
+	private static final int BNODE 		= 5;
+	private static final int BOOLEAN 	= 6;
+
+	public XMLResult(){
+		init();
+	}
 	
 	XMLResult(Producer p){
+		this();
 		producer = p;
-		compiler = new CompilerFacKgram().newInstance();
 	}
 	
 	/**
@@ -45,6 +61,20 @@ public class XMLResult {
 	 */
 	public static XMLResult create(Producer p){
 		return new XMLResult(p);
+	}
+	
+	
+	class VTable extends HashMap<String, Variable> {
+		
+		public Variable get(String name){
+			Variable var = super.get(name);
+			if (var == null){
+				var = new Variable("?" + name);
+				put(name, var);
+			}
+			return var;
+		}
+		
 	}
 	
 	/**
@@ -61,11 +91,48 @@ public class XMLResult {
 		return maps;
 	}
 	
+	public void init(){
+		compiler = new CompilerFacKgram().newInstance();
+		table = new HashMap<String, Integer> ();
+		table.put("result", 	RESULT );
+		table.put("binding", 	BINDING );
+		table.put("uri", 		URI );
+		table.put("bnode", 		BNODE );
+		table.put("literal", 	LITERAL );
+		table.put("boolean", 	BOOLEAN );
+	}
+	
+	int type(String name){
+		Integer val = table.get(name);
+		if (val != null){
+			return val;
+		}
+		return UNKNOWN;
+	}
 	
 	public Mappings parseString(String str) throws ParserConfigurationException, SAXException, IOException{
 		return parse(new ByteArrayInputStream(str.getBytes("UTF-8")));
 	}
 
+	
+	public Node getURI(String str){
+		IDatatype dt = DatatypeMap.createResource(str);
+		Node n = producer.getNode(dt);
+		return n;
+	}
+	
+	
+	public Node getBlank(String str){
+		IDatatype dt = DatatypeMap.createBlank(str);
+		Node n = producer.getNode(dt);
+		return n;
+	}
+	
+	public Node getLiteral(String str, String datatype, String lang){
+		IDatatype dt = DatatypeMap.createLiteral(str, datatype, lang);
+		Node n = producer.getNode(dt);
+		return n;
+	}
 	
 	
     /**
@@ -74,8 +141,10 @@ public class XMLResult {
      */
 	public class MyHandler extends DefaultHandler {
 		Mappings maps;
-		Mapping map;
+		//Mapping map;
+		List<Node> lvar, lval;
 		String var;
+		VTable vtable;
 		 
 		boolean 
 		// true for variable binding
@@ -90,6 +159,9 @@ public class XMLResult {
 		
 		MyHandler(Mappings m){
 			maps = m;
+			vtable = new VTable();
+			lvar = new ArrayList<Node>();
+			lval = new ArrayList<Node>();
 		}
 		
 	    public void startDocument (){
@@ -110,10 +182,10 @@ public class XMLResult {
 	     *  result is represented by Mapping
 	     *  add one binding to current Mapping
 	     */
-	    void add(Mapping map, String var, IDatatype dt){
-	    	Node nvar = compiler.createNode(Variable.create("?" + var));
-			Node nval = producer.getNode(dt);
-			map.addNode(nvar, nval);
+	    void add(String var, Node nval){
+	    	Node nvar = compiler.createNode(vtable.get(var));
+			lvar.add(nvar);
+			lval.add(nval);
 	    }
 	    
 	 
@@ -122,32 +194,44 @@ public class XMLResult {
 	    	
 	    	isContent = false;
 	    	
-	    	if (qualifiedName.equals("result")){
-	    		map =  Mapping.create();
-	    		maps.add(map);
-	    	}
-	    	else if (qualifiedName.equals("binding")){
+	    	switch (type(qualifiedName)){
+	    	
+	    	case RESULT:
+	    		//map =  Mapping.create();
+	    		//maps.add(map);
+	    		lval.clear();
+	    		lvar.clear();
+	    		break;
+	    		
+	    	case BINDING:
 	    		var = atts.getValue("name");
 	    		clear();
-	    	}
-	    	else if (qualifiedName.equals("uri")){
+	    		break;
+	    		
+	    	case URI:
 	    		isContent = true;
 	    		isURI = true;
-	    	}
-	    	else if (qualifiedName.equals("literal")){
+	    		break;
+	    		
+	    	case LITERAL:
 	    		isContent = true;
 	    		isLiteral = true;
 	    		datatype = atts.getValue("datatype");
 	    		lang 	 = atts.getValue("xml:lang");
-	    	}
-	    	else if (qualifiedName.equals("bnode")){
+	    		break;
+	    		
+	    	case BNODE:
 	    		isContent = true;
 	    		isBlank = true;
-	    	}
-	    	else if (qualifiedName.equals("boolean")){
+	    		break;
+	    		
+	    	case BOOLEAN:
 	    		isBoolean = true;
 	    		isContent = true;
+	    		break;
+	    	
 	    	}
+	    	
 	    }
 	    
 	    
@@ -163,17 +247,24 @@ public class XMLResult {
 	    		}
 
 	    		if (isURI){
-	    			add(map, var, DatatypeMap.createResource(text));
+	    			add(var, getURI(text));
 	    		}
 	    		else if (isBlank){
-	    			add(map, var, DatatypeMap.createBlank(text));
+	    			// TODO: should we generate a fresh ID ?
+	    			add(var, getBlank(text));
 	    		}
 	    		else if (isLiteral){
-	    			add(map, var, DatatypeMap.createLiteral(text, datatype, lang));
+	    			add(var, getLiteral(text, datatype, lang));
 	    		}
 	    		else if (isBoolean && text.equals("true")){
 	    			maps.add(Mapping.create());
 	    		}
+	    	}
+	    	else switch(type(qualifiedName)){
+	    	
+	    		case RESULT:
+	    			Mapping map = Mapping.create(lvar, lval);
+	    			maps.add(map);
 	    	}
 	    }
 	    

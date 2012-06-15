@@ -320,7 +320,7 @@ public class Memory implements Environment {
 			if (node != null){
 				qnode[n] = node;
 				tnode[n] = nodes[i];
-				
+
 				if (lPath[i] != null){
 					// node is a $path, store the path in the Mapping lp
 					if (lp == null){
@@ -355,7 +355,6 @@ public class Memory implements Environment {
 						node = eval.eval(f, this);
 						// bind fun(?x) as ?y
 						boolean success = push(e.getNode(), node);
-
 						if (success){
 							count++;
 						}
@@ -849,7 +848,7 @@ public class Memory implements Environment {
 	
 	// sum(?x)
 	public void aggregate(Evaluator eval, Filter f){
-		current().process(eval, f);
+		current().process(eval, f, this);
 	}
 	
 	public Node max(Node qNode){

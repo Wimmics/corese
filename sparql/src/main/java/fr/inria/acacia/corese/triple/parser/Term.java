@@ -254,7 +254,8 @@ public class Term extends Expression {
 
 		for (int i=0; i < n; i++){
 
-			sb.append(getArg(i).toString());
+			//sb.append(getArg(i).toString());
+			getArg(i).toString(sb);
 
 			if (i < n - 1) {
 				if (isope) {						

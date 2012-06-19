@@ -536,6 +536,11 @@ public class Transformer implements ExpType {
 			
 			//select.add(exp);
 			add(select, exp);
+			
+			if (lNodes.contains(exp.getNode())){
+				// undef variable of former exp is current exp as var
+				lNodes.remove(exp.getNode());
+			}
 		}	
 
 		for (Node node : lNodes){

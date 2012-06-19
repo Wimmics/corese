@@ -156,17 +156,17 @@ public class Constant extends Atom {
 		return sb;
 	}
 	
-	void toString(String str, StringBuffer sb){
-		if (name.contains(KeywordPP.QUOTE)){
-			if (name.contains(KeywordPP.DQUOTE)){
-				sb.append(KeywordPP.TQUOTE + name + KeywordPP.TQUOTE);
+	static void toString(String str, StringBuffer sb){
+		if (str.contains(KeywordPP.QUOTE)){
+			if (str.contains(KeywordPP.DQUOTE)){
+				sb.append(KeywordPP.TQUOTE + str + KeywordPP.TQUOTE);
 			}
 			else {
-				sb.append(KeywordPP.DQUOTE + name + KeywordPP.DQUOTE);
+				sb.append(KeywordPP.DQUOTE + str + KeywordPP.DQUOTE);
 			}
 		}
 		else {
-			sb.append(KeywordPP.QUOTE + name + KeywordPP.QUOTE);
+			sb.append(KeywordPP.QUOTE + str + KeywordPP.QUOTE);
 		}
 	}
 	

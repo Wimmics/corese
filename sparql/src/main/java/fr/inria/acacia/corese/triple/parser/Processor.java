@@ -50,7 +50,8 @@ public class Processor {
 	private static final String IF = "if";
 	private static final String COALESCE = "coalesce";
 	public static final String BNODE = "bnode";
-	private static final String GROUPCONCAT = "group_concat";
+	static final String GROUPCONCAT = "group_concat";
+	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
 
 

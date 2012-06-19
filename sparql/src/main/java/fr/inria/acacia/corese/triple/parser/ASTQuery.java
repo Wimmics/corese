@@ -352,24 +352,40 @@ public class ASTQuery  implements Keyword {
 	
 	/**
 	 * collect var for select *
-	 * check scope for BIND()
+	 * check scope for BIND(exp as var) and select exp as var
 	 */
 	public boolean validate(){
+		collect();
+	
+		if (getBody()!=null){
+			// select ?x
+			for (Variable var : getSelectVar()){
+				if (hasExpression(var)){
+					bind(var);
+				}
+			}
+			// select *
+			for (Variable var : getSelectAllVar()){
+				if (hasExpression(var)){
+					bind(var);
+				}
+			}
+			
+			boolean b = getBody().validate(this);
+			return b;
+		}
+		
+		return true;
+	}
+	
+	// collect values for select *
+	void collect(){
 		if (getValues() != null){
 			for (Variable var : getValues().getVariables()){
 				defSelect(var);
 			}
 		}
-		
-		if (getBody()!=null){
-			boolean b = getBody().validate(this);
-			return b;
-		}
-		return true;
 	}
-	
-	
-    
  
 	/**
 	 *
@@ -2294,6 +2310,10 @@ public class ASTQuery  implements Keyword {
 	
 	public Expression getExpression(Variable var){
 		return selectFunctions.get(var.getName());
+	}
+	
+	boolean hasExpression(Variable var){
+		return getExpression(var) != null;
 	}
 	
 	public Expression getExtExpression(String name){

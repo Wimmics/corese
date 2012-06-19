@@ -54,7 +54,7 @@ public class Load
 	static final String UPDATE 	= ".ru";
 	static final String[] QUERIES 	= {QUERY, UPDATE};
 	static final String TURTLE 	= ".ttl";
-	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, RULE, BRULE, QUERY, UPDATE};
+	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, RULE, BRULE, IRULE, QUERY, UPDATE};
 	static final String HTTP = "http://";
 	static final String FTP  = "ftp://";
 	static final String FILE = "file://";
@@ -258,7 +258,7 @@ public class Load
 	public void load(String path, String base, String source) throws LoadException {
 		//if (! suffix(path)) return ;
 		log(path);
-		
+
 		if (isRule(path)){
 			loadRule(path, base);
 			return;

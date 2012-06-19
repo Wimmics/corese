@@ -34,9 +34,10 @@ public class Query extends Exp {
 	 */
 	public boolean validate(ASTQuery a, boolean exist){
 		
-		if (ast.isBind()){
-			Variable var = ast.getSelectVar().get(0);
-			if (a.isBound(var)){
+		for (Variable var : ast.getSelectVar()){
+			// select exp as var
+			// var must not be already in scope
+			if (ast.hasExpression(var) && a.isBound(var)){
 				a.addError("Scope error: " + var);
 				a.setCorrect(false);
 				return false;

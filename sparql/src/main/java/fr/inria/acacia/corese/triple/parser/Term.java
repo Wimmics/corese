@@ -267,6 +267,11 @@ public class Term extends Expression {
 			}
 		}
 
+		if (getModality() != null && getName().equals(Processor.GROUPCONCAT)){
+			sb.append(Processor.SEPARATOR);
+			Constant.toString(getModality(), sb);
+		}
+		
 		sb.append(KeywordPP.CLOSE_PAREN);
 
 		if (isNegation(getName())) {

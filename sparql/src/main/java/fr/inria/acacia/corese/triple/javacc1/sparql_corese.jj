@@ -166,6 +166,58 @@ PARSER_BEGIN(SparqlCorese)
        return rlist.head();
     }
     
+    
+    
+    /**
+	 * Replace escape char by target char
+	 * 
+	 */
+	String remEscapes(String str){
+		StringBuffer retval = new StringBuffer();
+		
+		for (int i = 0; i < str.length(); i++) {
+			
+	       if (str.charAt(i) == '\\' && i+1 < str.length()){
+	        	i += 1;       	
+	        	switch (str.charAt(i)){
+	        	
+	        	 case 'b':
+		              retval.append('\b');
+		              continue;
+		           case 't':
+		              retval.append('\t');
+		              continue;
+		           case 'n':
+		              retval.append('\n');
+		              continue;
+		           case 'f':
+		              retval.append('\f');
+		              continue;
+		           case 'r':
+		              retval.append('\r');
+		              continue;
+		           case '"':
+		              retval.append('\"');
+		              continue;
+		           case '\'':
+		              retval.append('\'');
+		              continue;
+		           case '\\':
+		              retval.append('\\');
+		              continue;
+	        	}
+	        
+	        }
+	        else {
+	        	retval.append(str.charAt(i));
+	        }
+		}
+		
+		return retval.toString();
+	}
+    
+    
+    
 }  
   
   
@@ -1056,7 +1108,23 @@ Exp GroupGraphPattern() : {Exp stack;}
 }
  
 
-void GraphPattern(Exp stack) : {}
+void GraphPattern (Exp stack) : {}
+{
+(
+	(
+	TriplesSameSubject(stack) 
+	|
+	Constraint(stack) 
+	|
+	GraphPatternNotTriples(stack)
+	)
+	(<DOT>)?
+)*
+}
+
+
+// former GraphPattern
+void GP(Exp stack) : {}
 {    
 	FilteredBasicGraphPattern(stack)
   	(
@@ -1065,6 +1133,7 @@ void GraphPattern(Exp stack) : {}
     	GraphPattern(stack)
   	)?  	 
 }
+
 
 
 void FilteredBasicGraphPattern(Exp stack) : {} 
@@ -1077,7 +1146,6 @@ void FilteredBasicGraphPattern(Exp stack) : {}
 		FilteredBasicGraphPattern(stack) 		
 	)?
 }
-
 
 void BlockOfTriples(Exp stack) : {boolean b1, b2;}
 {   
@@ -2208,7 +2276,7 @@ String String() : { Token t; }
   |  t = <STRING_LITERAL_LONG1>
   |  t = <STRING_LITERAL_LONG2> 
   )
-  { return t.image; }
+  { return remEscapes(t.image); }
 }
 
 String IRIref() : { String res; }

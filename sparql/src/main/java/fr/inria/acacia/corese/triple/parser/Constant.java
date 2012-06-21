@@ -156,19 +156,79 @@ public class Constant extends Atom {
 		return sb;
 	}
 	
+	/**
+	 * Escape special chars
+	 * Add surrounding quotes to a string literal
+	 */
 	static void toString(String str, StringBuffer sb){
-		if (str.contains(KeywordPP.QUOTE)){
-			if (str.contains(KeywordPP.DQUOTE)){
-				sb.append(KeywordPP.TQUOTE + str + KeywordPP.TQUOTE);
+		String s = addEscapes(str);
+		String sep = KeywordPP.QUOTE;
+		
+		if (s.contains(KeywordPP.QUOTE)){
+			if (s.contains(KeywordPP.DQUOTE)){
+				sep = KeywordPP.TQUOTE;
 			}
 			else {
-				sb.append(KeywordPP.DQUOTE + str + KeywordPP.DQUOTE);
+				sep = KeywordPP.DQUOTE;
 			}
 		}
-		else {
-			sb.append(KeywordPP.QUOTE + str + KeywordPP.QUOTE);
-		}
+		
+		sb.append(sep);
+		sb.append(s);
+		sb.append(sep);				
 	}
+	
+	
+	
+	/**
+	 *  source: javacc
+	 *  replace special char by escape char for pprint
+	 */
+	 public static String addEscapes(String str) {
+	      StringBuffer retval = new StringBuffer();
+	      char ch;
+	      for (int i = 0; i < str.length(); i++) {
+	        switch (str.charAt(i))
+	        {
+	           case 0 :
+	              continue;
+	           case '\b':
+	              retval.append("\\b");
+	              continue;
+	           case '\t':
+	              retval.append("\\t");
+	              continue;
+	           case '\n':
+	              retval.append("\\n");
+	              continue;
+	           case '\f':
+	              retval.append("\\f");
+	              continue;
+	           case '\r':
+	              retval.append("\\r");
+	              continue;
+	           case '\"':
+	              retval.append("\\\"");
+	              continue;
+	           case '\'':
+	              retval.append("\\\'");
+	              continue;
+	           case '\\':
+	              retval.append("\\\\");
+	              continue;
+	           default:
+	              if ((ch = str.charAt(i)) < 0x20 || ch > 0x7e) {
+	                 String s = "0000" + Integer.toString(ch, 16);
+	                 retval.append("\\u" + s.substring(s.length() - 4, s.length()));
+	              } else {
+	                 retval.append(ch);
+	              }
+	              continue;
+	        }
+	      }
+	      return retval.toString();
+	   }
+
 	
 	public Constant getConstant() {
 		return this;

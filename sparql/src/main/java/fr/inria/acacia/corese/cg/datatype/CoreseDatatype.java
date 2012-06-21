@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 
@@ -91,10 +92,11 @@ public class CoreseDatatype
 	
 	
 	String protect(String label){
-		if (label.contains("\"") || label.contains("'")){
-			return "\"\"\"" + label + "\"\"\"";
+		String str = Constant.addEscapes(label);
+		if (str.contains("\"") || str.contains("'")){
+			return "\"\"\"" + str + "\"\"\"";
 		}
-		return "\"" + label + "\"";
+		return "\"" + str + "\"";
 	}
 	
 	/**

@@ -20,6 +20,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	Node graph;
 	List<Node> from;
 	boolean hasGraph, hasFrom;
+	private boolean hasTag = false;
 	
 	EdgeIterator(){
 	}
@@ -31,20 +32,29 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		hasFrom = false;
 	}
 	
-	public static EdgeIterator create(){
-		return new EdgeIterator();
+	public static EdgeIterator create(Graph g){
+		EdgeIterator ei =   new EdgeIterator();
+		ei.setTag(g.hasTag());		
+		return ei;
 	}
 
 	
-	public static EdgeIterator create(Iterable<Entity> i){
-		return new EdgeIterator(i);
+	public static EdgeIterator create(Graph g, Iterable<Entity> i){
+		EdgeIterator ei =  new EdgeIterator(i);
+		ei.setTag(g.hasTag());
+		return ei;
 	}
 	
-	public EdgeIterator(Iterable<Entity> i, List<Node> list, boolean hasGraph){
+	public EdgeIterator(Graph g, Iterable<Entity> i, List<Node> list, boolean hasGraph){
 		iter = i;
 		from = list;
 		this.hasGraph = hasGraph;
 		hasFrom = from.size()>0;
+		setTag(g.hasTag());
+	}
+	
+	void setTag(boolean b){
+		hasTag = b;
 	}
 	
 	void setGraph(Node g){
@@ -88,14 +98,24 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 			else if (last != null){
 				// eliminate successive duplicates
 				if (! last.getEdgeNode().same(ent.getEdge().getEdgeNode())){
+					// different properties: ok
 					ok = true;
 				}
-				else if (last.nbNode() == ent.nbNode()){
-					ok = false;
-					for (int i=0; i<last.nbNode(); i++){
-						if (! last.getNode(i).same(ent.getNode(i))){
-							ok = true;
-							break;
+				else {
+					int size = last.nbNode();
+					if (size == ent.nbNode()){
+						ok = false;
+						
+						// draft: third argument is a tag, skip it
+						if (hasTag  && size == 3){
+							size = 2;
+						}
+						
+						for (int i=0; i<size; i++){
+							if (! last.getNode(i).same(ent.getNode(i))){
+								ok = true;
+								break;
+							}
 						}
 					}
 				}

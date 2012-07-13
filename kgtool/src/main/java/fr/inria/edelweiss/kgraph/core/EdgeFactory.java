@@ -1,10 +1,13 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
@@ -32,13 +35,18 @@ public class EdgeFactory {
 	
 	boolean 
 		isOptim = false,
+		isTag = false,
 		isGraph = false;
+	
+	int count = 0;
+	String key;
 		
 	class Table extends Hashtable<String, Class<? extends EdgeImpl>> {}
 	
 	
 	EdgeFactory(Graph g){
 		graph = g;
+		key = hashCode() + ".";
 	}
 	
 	static synchronized boolean isAllocated(){
@@ -56,6 +64,14 @@ public class EdgeFactory {
 		else {
 			isOptim = false;
 		}
+	}
+	
+	public void setTag(boolean b){
+		isTag = b;
+	}
+	
+	public boolean hasTag(){
+		return isTag;
 	}
 	
 	// std edge: property is static
@@ -105,11 +121,27 @@ public class EdgeFactory {
 		if (isOptim){
 			return optimCreate(source, subject, predicate, value);
 		}
+		else if (isTag){
+			return tagCreate(source, subject, predicate, value);
+		}
 		else {
 			return stdCreate(source, subject, predicate, value);
 		}
 	}
 	
+	public EdgeImpl createDelete(Node source, Node subject, Node predicate, Node value){
+		return stdCreate(source, subject, predicate, value);
+	}
+
+	
+	
+	/**
+	 * Tuple
+	 */
+	public EdgeImpl createDelete(Node source, Node predicate, List<Node> list){
+		return create(source, predicate, list);
+	}
+
 	public EdgeImpl create(Node source, Node predicate, List<Node> list){
 		EdgeImpl ee = new EdgeExtend();
 		ee.setGraph(source);
@@ -119,6 +151,43 @@ public class EdgeFactory {
 			ee.setNode(i++, n);
 		}
 		return ee;
+	}
+	
+	/**
+	 * 
+	 * Generate a unique tag for each triple
+	 */
+	Node tag(){
+		IDatatype dt = DatatypeMap.newInstance(tagString());
+		Node tag = graph.getNode(dt, true, true);
+		return tag;
+	}
+	
+	String tagString(){
+		Tagger t = graph.getTagger();
+		if (t == null){
+			return key + count++;
+		}
+		return t.tag();
+	}
+	
+	/**
+	 * Draft add a unique tag to each edge
+	 */
+	public EdgeImpl tagCreate(Node source, Node subject, Node predicate, Node value){
+		ArrayList<Node> list = new ArrayList<Node>();
+		
+		list.add(subject);
+		list.add(value);
+		
+		if (! graph.getProxy().isEntailment(source) &&
+			! graph.getProxy().isRule(source)	){
+			// no tag for entailment because it would loop
+			Node tag = tag();
+			list.add(tag);
+		}
+
+		return create(source, predicate, list);
 	}
 	
 	public EdgeImpl optimCreate(Node source, Node subject, Node predicate, Node value){

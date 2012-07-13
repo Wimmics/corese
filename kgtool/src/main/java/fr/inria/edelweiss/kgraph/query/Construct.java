@@ -288,13 +288,32 @@ public class Construct
 				 }
 			 }
 			 
-			 ee =  graph.create(source, property, list);
+			 ee =  create(source, property, list);
 		}
 		else {
-			 ee =  graph.create(source, subject, property, object);
+			 ee =  create(source, subject, property, object);
 		}
 
 		return ee;
+	}
+	
+	
+	EdgeImpl create(Node source, Node property, List<Node> list){
+		if (isDelete){
+			return graph.createDelete(source, property, list);
+		}
+		else {
+			return graph.create(source, property, list);
+		}
+	}
+	
+	EdgeImpl create(Node source, Node subject, Node property, Node object){
+		if (isDelete){
+			return graph.createDelete(source, subject, property, object);
+		}
+		else {
+			return graph.create(source, subject, property, object);
+		}
 	}
 	
 	

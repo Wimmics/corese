@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -23,10 +24,10 @@ import fr.inria.edelweiss.kgram.tool.MetaIterator;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class EdgeIndex extends Hashtable<Node, List<Entity>> 
+public class EdgeIndex2  
 implements Index {
 	static final int IGRAPH = Graph.IGRAPH;
-	private static Logger logger = Logger.getLogger(EdgeIndex.class);	
+	private static Logger logger = Logger.getLogger(EdgeIndex2.class);	
 
 
 	int index = 0, other = 1;
@@ -36,21 +37,263 @@ implements Index {
 	// do not create entailed edge in kg:entailment if it already exist in another graph
 	isOptim = false;
 	
-	Comparator<Entity>  comp, skip;
+	Comparator<Entity>  comp, comp2;
 	Graph graph;
 	Hashtable<Node, Node> types;
-
-	EdgeIndex(Graph g, int n){
-		init(g, n);
-		comp  = getComparator();
-		skip  = getComparator(true);
-		types = new Hashtable<Node, Node>();
-	}
+	Hashtable<Node, Table> table;
+	
 	
 	/**
-	 * 
+	 * List of properties of one property node
+	 *
 	 */
-//	EdgeIndex(Graph g, int n, boolean skip){
+	class Table implements Iterable<Entity> {
+		Node predicate;
+		ArrayList<Entity> list;
+		
+		Table(){
+			list = new ArrayList<Entity>();
+		}
+		
+		Table(Node p){
+			this();
+			predicate = p;
+		}
+
+		public Node getEdgeNode(){
+			return predicate;
+		}
+		
+		public Iterator<Entity> iterator() {
+			return list.iterator();
+		}
+		
+		int size(){
+			return list.size();
+		}
+		
+		void add(Entity e){
+			list.add(e);
+		}
+		
+		void add(int i, Entity e){
+			list.add(i, e);
+		}
+		
+		 Entity get(int i){
+			return list.get(i);
+		}
+		
+		void addAll(Table t){
+			list.addAll(t.getList());
+		}
+		
+		ArrayList<Entity> getList(){
+			return list;
+		}
+		
+		void sort(Comparator<Entity> c){
+			Collections.sort(list, c);
+		}
+		
+		void clear(){
+			list.clear();
+		}
+		
+		void remove(int i){
+			list.remove(i);
+		}
+		
+		
+		
+		
+		
+		
+		int find(Node node){
+			int res = find(node, null, 0, list.size());
+			if (res>= 0 && res<list.size() && 
+				list.get(res).getEdge().getNode(index).same(node)){
+				return res;
+			}
+			return -1;
+		}
+
+		/**
+		 * Find the index of node in list of Edge by dichotomy
+		 */
+		int find(Node node, int first, int last){
+			if (first >= last) {
+				return first;
+			}
+			else {
+				int mid = (first + last) / 2;
+				int res = compare(list.get(mid), node);
+				if (res >= 0) {
+					return find(node, first, mid);
+				}
+				else {
+					return find(node,mid+1, last); 
+				}
+			}		
+		}
+		
+		int find(Node node, Node node2, int first, int last){
+			if (first >= last) {
+				return first;
+			}
+			else {
+				int mid = (first + last) / 2;
+				int res = compare(list.get(mid), node, node2);
+				if (res >= 0) {
+					return find(node, node2, first, mid);
+				}
+				else {
+					return find(node, node2, mid+1, last); 
+				}
+			}		
+		}
+		
+		int compare(Entity ent, Node n1, Node n2){
+			Node tNode = ent.getNode(index);
+			int res = tNode.compare(n1);
+			if (res == 0 && n2 != null){
+				res = ent.getNode(other).compare(n2);
+			}
+			return res;
+
+		}
+		
+		int compare(Entity ent, Node n1){
+			return ent.getNode(index).compare(n1);		
+		}
+		
+		int find(Entity edge, int first, int last){
+			if (first >= last) {
+				return first;
+			}
+			else {
+				int mid = (first + last) / 2;
+				int res = comp.compare(list.get(mid), edge); 
+				if (res >= 0) {
+					return find(edge, first, mid);
+				}
+				else {
+					return find(edge, mid+1, last); 
+				}
+			}		
+		}
+		
+		
+		
+		Entity insert(Entity edge){
+			int i = find(edge, 0, list.size());
+			int res = 0;
+
+			if (i>=list.size()){
+				if (isOptim && i>0 && graph.getProxy().isEntailment(edge.getGraph())){
+					// eliminate entailed edge if already exist in another graph
+					if (same(edge, list.get(i-1))){
+						count++;
+						return null;
+					}
+				}
+				list.add(edge);
+			}
+			else {
+				if (index == 0){
+					res = comp.compare(edge, list.get(i));
+					if (res == 0){
+						// eliminate duplicate at load time for index 0
+						count++;
+						return null;
+					}
+					else if (isOptim && graph.getProxy().isEntailment(edge.getGraph())){
+						// eliminate entailed edge if already exist in another graph
+						if (i > 0 && same(edge, list.get(i-1))){
+							count++;
+							return null;
+						}
+						if (same(edge, list.get(i))){
+							count++;
+							return null;
+						}
+					}
+				}
+
+				list.add(i, edge);
+			}
+
+			return edge;
+
+		}
+		
+		
+		
+		Table reduce(){
+			Table l = new Table(getEdgeNode());
+			Entity pred = null;
+			for (Entity ent : this){
+				if (pred == null){
+					l.add(ent);
+				}
+				else if (comp.compare(ent, pred) != 0){
+					l.add(ent);
+				}
+				else {
+					count++;
+				}
+				pred = ent;
+			}
+			return l;
+		}
+		
+		
+		public Iterable<Entity> getEdges(Node pred, Node node, Node node2){
+			// node is bound, enumerate edges where node = edge.getNode(index)
+			int n = 0;
+			
+			if (node2 == null){
+				n = find(node, 0, list.size());
+			}
+			else {
+				n = find(node, node2, 0, list.size());
+			}
+
+			if (n>=0 && n<list.size()){
+				Node tNode = list.get(n).getNode(index);
+				if (tNode.same(node)){
+					if (node2 != null){
+						Node tNode2 = list.get(n).getNode(other);
+						if (! tNode2.same(node2)){
+							return null; 
+						}
+					}			
+					
+					Iterate it = new Iterate(this, n);
+					return it;
+				}
+			}
+			return null; 
+		}
+		
+		
+		
+		
+		
+	}
+	
+	
+
+	EdgeIndex2(Graph g, int n){
+		init(g, n);
+		comp  = getComparator();
+		// skip graph (for entailed edge):
+		//comp2 = getComparator2();
+		types = new Hashtable<Node, Node>();
+		table = new Hashtable<Node, Table>();
+	}
+	
+//	EdgeIndex2(Graph g, int n, boolean skip){
 //		init(g, n);
 //		comp = getComparator2();
 //		isIndexer = true;
@@ -66,91 +309,59 @@ implements Index {
 		}
 	}
 	
-	
-	/**
-	 * Compare edges for dichotomy
-	 * edges are ordered according to index node
-	 * @deprecated
-	 */
-//	Comparator<Entity> getComparator2(){
-//		
-//		return new Comparator<Entity>(){
-//			
-//			public int compare(Entity o1, Entity o2) {
-//				int res = o1.getNode(index).compare(o2.getNode(index));
-//				if (res == 0){
-//					res = o1.getNode(other).compare(o2.getNode(other));
-//					
-//					if (res == 0 && index == 0){
-//						res = o1.getGraph().compare(o2.getGraph());
-//					}
-//				}
-//				return res;
-//			}
-//		};
-//	}
-	
-	
-	/**
-	 * check all arguments for arity n
-	 */
-	
-	Comparator<Entity> getComparator(){
-		return getComparator(false);
+	public int size(){
+		return table.size();
 	}
 	
-	/**
-	 * skip = true means:
-	 * if arity is different but common arity nodes and graph are equals 
-	 * then return equal
-	 * This is used to retrieve edge with tag for delete 
-	 * in this case the query edge have no tag, it matches all target edge with tag
-	 * 
-	 */
-	Comparator<Entity> getComparator(final boolean skip){
+	public void clear(){
+		table.clear();
+	}
+	
+	Table get(Node n){
+		return table.get(n);
+	}
+	
+	void put(Node n, Table l){
+		table.put(n, l);
+	}
+	
+	Collection<Node> keySet(){
+		return table.keySet();
+	}
+	
+	Comparator<Entity> getComparator(){
 		
 		return new Comparator<Entity>(){
 			
 			public int compare(Entity o1, Entity o2) {
-				
-				// first check the index node
 				int res = o1.getNode(index).compare(o2.getNode(index));
-				
-				if (res != 0){
-					return res;
-				}
-				
-				int min = Math.min(o1.nbNode(), o2.nbNode());
-				
-				for (int i=0; i<min; i++){
-					// check other common arity nodes
-					if (i != index){
-						res = o1.getNode(i).compare(o2.getNode(i));
-						if (res != 0){
-							return res;
-						}
+				if (res == 0){
+					res = o1.getNode(other).compare(o2.getNode(other));
+					if (res == 0 && index == 0){
+						if (o1.getGraph() == null || o2.getGraph() == null) res = 0;
+						else res = o1.getGraph().compare(o2.getGraph());
 					}
 				}
-				
-				if (o1.nbNode() == o2.nbNode()){
-					// same arity, common arity nodes are equal
-					// check graph
-					return o1.getGraph().compare(o2.getGraph());
+				return res;
+			}
+		};
+	}
+	
+	
+	/**
+	 * declare equal when N0 N1 are equal but in different graphs
+	 * optimize rdf:type test
+	 */
+	Comparator<Entity> getComparator2(){
+		
+		return new Comparator<Entity>(){
+			
+			public int compare(Entity o1, Entity o2) {
+				int res = o1.getNode(index).compare(o2.getNode(index));
+				if (res == 0){
+					res = o1.getNode(other).compare(o2.getNode(other));
 				}
-				
-				if (skip){
-					// use case: delete
-					// skip tag node
-					return o1.getGraph().compare(o2.getGraph());
-				}
-				else if (o1.nbNode() < o2.nbNode()){
-					// smaller arity edge is before
-					return -1;
-				}
-				else {
-					return 1;
-				}				
-				
+				return res;
 			}
 		};
 	}
@@ -212,54 +423,15 @@ implements Index {
 	 * Add a property in the table
 	 */
 	public Entity add(Entity edge){
-		List<Entity> list = define(edge.getEdge().getEdgeNode());
+		Table list = define(edge.getEdge().getEdgeNode());
 		
 		if (isSort(edge)){
-			int i = find(list, edge, 0, list.size());
-			int res = 0;
-			
-			if (i>=list.size()){
-				if (isOptim && i>0 && graph.getProxy().isEntailment(edge.getGraph())){
-					// eliminate entailed edge if already exist in another graph
-					if (same(edge, list.get(i-1))){
-						count++;
-						return null;
-					}
-				}
-				list.add(edge);
-				logInsert(edge);
-			}
-			else {
-				if (index == 0){
-					res = comp.compare(edge, list.get(i));
-					if (res == 0){
-						// eliminate duplicate at load time for index 0
-						count++;
-						return null;
-					}
-					else if (isOptim && graph.getProxy().isEntailment(edge.getGraph())){
-						// eliminate entailed edge if already exist in another graph
-						if (i > 0 && same(edge, list.get(i-1))){
-							count++;
-							return null;
-						}
-						if (same(edge, list.get(i))){
-							count++;
-							return null;
-						}
-					}
-				}
-				
-				list.add(i, edge);
-				logInsert(edge);
-			}
+			return list.insert(edge);
 		}
 		else {
 			list.add(edge);
-			logInsert(edge);
 		}
 
-		//complete(edge);
 		return edge;
 	}
 	
@@ -282,17 +454,22 @@ implements Index {
 	/**
 	 * delete/exist
 	 */
-	List<Entity> getByLabel(Entity e){
-		Node pred = graph.getPropertyNode(e.getEdge().getEdgeNode().getLabel());
+	Table getByLabel(Entity e){
+		return getByLabel(e.getEdge().getEdgeNode());
+	}
+	
+	Table getByLabel(Node node){
+		Node pred = graph.getPropertyNode(node.getLabel());
 		if (pred == null) return null;
-		List<Entity> list = get(pred);
+		Table list = get(pred);
 		return list;
 	}
 	
+	
 	public boolean exist(Entity edge){
-		List<Entity> list = getByLabel(edge); 
+		Table list = getByLabel(edge); 
 		if (list==null) return false;
-		int i = find(list, edge, 0, list.size());
+		int i = list.find(edge, 0, list.size());
 		
 		if (i>=list.size()){
 			return false;
@@ -313,7 +490,7 @@ implements Index {
 	 * If the list already contains edges, we add it now. 
 	 */
 	public void declare(Entity edge){
-		List<Entity> list = define(edge.getEdge().getEdgeNode());
+		Table list = define(edge.getEdge().getEdgeNode());
 		if (list.size()>0){
 			add(edge);
 		}
@@ -322,26 +499,26 @@ implements Index {
 	/**
 	 * Create and store an empty list if needed
 	 */
-	private List<Entity> define(Node predicate){
-		List<Entity> list = get(predicate);
+	private Table define(Node predicate){
+		Table list = get(predicate);
 		if (list == null){
-			list = new ArrayList<Entity>(0);
+			list = new Table(predicate);
 			put(predicate, list);
 		}
 		return list;
 	}
 	
-	void set(Node predicate, List<Entity> list){
-		put(predicate, list);
-	}
+//	void set(Node predicate, Table list){
+//		put(predicate, list);
+//	}
 
 	/**
 	 * Sort edges by values of first Node and then by value of second Node
 	 */
 	public void index(){
 		for (Node pred : getProperties()){
-			List<Entity> list = get(pred);
-			Collections.sort(list, comp);
+			Table list = get(pred);
+			list.sort(comp);
 		}
 		if (index == 0){
 			reduce(! isIndexer);
@@ -361,8 +538,8 @@ implements Index {
 	 */
 	private void reduce(boolean bsize){
 		for (Node pred : getProperties()){
-			List<Entity> l1 = get(pred);
-			List<Entity> l2 = reduce(l1);
+			Table l1 = get(pred);
+			Table l2 = l1.reduce();
 			put(pred, l2);
 			if (bsize && l1.size()!=l2.size()){
 				graph.setSize(graph.size() - (l1.size()-l2.size()));
@@ -370,23 +547,7 @@ implements Index {
 		}
 	}
 	
-	private List<Entity> reduce(List<Entity> list){
-		List<Entity> l = new ArrayList<Entity>();
-		Entity pred = null;
-		for (Entity ent : list){
-			if (pred == null){
-				l.add(ent);
-			}
-			else if (comp.compare(ent, pred) != 0){
-				l.add(ent);
-			}
-			else {
-				count++;
-			}
-			pred = ent;
-		}
-		return l;
-	}
+	
 	
 	public int duplicate(){
 		return count;
@@ -397,7 +558,7 @@ implements Index {
 	 * Check that this table has been built and initialized (sorted) for this predicate
 	 * If not, copy edges from table of index 0 and then sort these edges
 	 */
-	List<Entity> checkGet(Node pred){
+	Table checkGet(Node pred){
 		if (index == 0){
 			return get(pred);
 		}
@@ -411,13 +572,13 @@ implements Index {
 	 * Create the index of property pred on nth argument
 	 * It is synchronized on pred hence several synGetCheck can occur in parallel on different pred
 	 */
-	private List<Entity> synCheckGet(Node pred){
+	private Table synCheckGet(Node pred){
 		synchronized (pred){
-			List<Entity> list = get(pred);
+			Table list = get(pred);
 			if (list != null && list.size()==0){
-				List<Entity> std = (List<Entity>) graph.getIndex().getEdges(pred, null);
+				Table std = (Table) graph.getIndex().getEdges(pred, null);
 				list.addAll(std);
-				Collections.sort(list, comp);
+				list.sort(comp);
 			}
 			return list;
 		}
@@ -433,45 +594,21 @@ implements Index {
 	}
 	
 	public int size(Node pred){
-		List<Entity> list = checkGet(pred);
+		Table list = checkGet(pred);
 		if (list == null) return 0;
 		return list.size();
 	}
 	
 
 	public Iterable<Entity> getEdges(Node pred, Node node, Node node2){
-		List<Entity> list = checkGet(pred); 
+		Table list = checkGet(pred); 
 		if (list == null || node == null){
 			return list;
 		}
-		// node is bound, enumerate edges where node = edge.getNode(index)
-		int n = 0;
-		
-		if (node2 == null){
-			n = find(list, node, 0, list.size());
-		}
-		else {
-			n = find(list, node, node2, 0, list.size());
-		}
-
-		if (n>=0 && n<list.size()){
-			Node tNode = list.get(n).getNode(index);
-			if (tNode.same(node)){
-				if (node2 != null){
-					Node tNode2 = list.get(n).getNode(other);
-					if (! tNode2.same(node2)){
-						return null; 
-					}
-				}			
-				
-				Iterate it = new Iterate(list, n);
-				return it;
-			}
-		}
-		return null; 
+		return list.getEdges(pred, node, node2);
 	}
 	
-	void trace(List<Entity> list){
+	void trace(Table list){
 		Node nn = list.get(0).getEdge().getNode(1);
 		for (int i=0; i<list.size(); i++){
 			if (! list.get(i).getEdge().getNode(1).same(nn)){
@@ -487,11 +624,11 @@ implements Index {
 	 * Return an iterator of edges with node as element
 	 */
 	class Iterate implements Iterable<Entity>, Iterator<Entity> {
-		List<Entity> list;
+		Table list;
 		Node node;
 		int ind, start; 
 		
-		Iterate(List<Entity> l, int n){
+		Iterate(Table l, int n){
 			list = l;
 			node = list.get(n).getNode(index);
 			start = n;
@@ -527,96 +664,14 @@ implements Index {
 
 	}
 
-	int find(List<Entity> list, Node node){
-		int res = find(list, node, null, 0, list.size());
-		if (res>= 0 && res<list.size() && 
-			list.get(res).getEdge().getNode(index).same(node)){
-			return res;
-		}
-		return -1;
-	}
-
-	/**
-	 * Find the index of node in list of Edge by dichotomy
-	 */
-	int find(List<Entity> list, Node node, int first, int last){
-		if (first >= last) {
-			return first;
-		}
-		else {
-			int mid = (first + last) / 2;
-			int res = compare(list.get(mid), node);
-			if (res >= 0) {
-				return find(list, node, first, mid);
-			}
-			else {
-				return find(list, node,mid+1, last); 
-			}
-		}		
-	}
 	
-	int find(List<Entity> list, Node node, Node node2, int first, int last){
-		if (first >= last) {
-			return first;
+	
+	public void delete(Node pred){
+		Table list = getByLabel(pred);
+		if (list != null){
+			list.clear();
 		}
-		else {
-			int mid = (first + last) / 2;
-			int res = compare(list.get(mid), node, node2);
-			if (res >= 0) {
-				return find(list, node, node2, first, mid);
-			}
-			else {
-				return find(list, node, node2, mid+1, last); 
-			}
-		}		
 	}
-	
-	int compare(Entity ent, Node n1, Node n2){
-		Node tNode = ent.getNode(index);
-		int res = tNode.compare(n1);
-		if (res == 0 && n2 != null){
-			res = ent.getNode(other).compare(n2);
-		}
-		return res;
-
-	}
-	
-	int compare(Entity ent, Node n1){
-		return ent.getNode(index).compare(n1);		
-	}
-	
-	int find(List<Entity> list, Entity edge, int first, int last){
-		if (first >= last) {
-			return first;
-		}
-		else {
-			int mid = (first + last) / 2;
-			int res = comp.compare(list.get(mid), edge); 
-			if (res >= 0) {
-				return find(list, edge, first, mid);
-			}
-			else {
-				return find(list, edge, mid+1, last); 
-			}
-		}		
-	}
-	
-	int find(Comparator<Entity> c, List<Entity> list, Entity edge, int first, int last){
-		if (first >= last) {
-			return first;
-		}
-		else {
-			int mid = (first + last) / 2;
-			int res = c.compare(list.get(mid), edge); 
-			if (res >= 0) {
-				return find(list, edge, first, mid);
-			}
-			else {
-				return find(list, edge, mid+1, last); 
-			}
-		}		
-	}
-	
 	
 /************************************************************************
  * 
@@ -630,84 +685,29 @@ implements Index {
  * 
  */
 	
-	/**
-	 * DRAFT:
-	 * Comparator used by delete to retrieve an edge to be deleted
-	 * If graph manage tag for triple:
-	 * if delete query triple has no tag, delete all triples
-	 * if delete query triple has a tag, delete only triple with this tag
-	 */
-	Comparator<Entity> getComp(){
-		if (graph.hasTag()){
-			return skip;
-		}
-		else {
-			return comp;
-		}
-	}
-	
 	public Entity delete(Entity edge){
-		List<Entity> list = getByLabel(edge);
-		if (list == null) return null;
-		
-		Comparator<Entity> cmp = getComp();
-	
-		int i = find(cmp, list, edge, 0, list.size());
-		
-		if (i >= list.size()){
+		Table list = getByLabel(edge);
+		if (isDebug) logger.debug("EI: " + index + " " + list);
+		if (list==null) return null;
+		int i = list.find(edge, 0, list.size());
+		if (isDebug) logger.debug("EI: " + i);
+		if (i>=list.size()){
 			return null;
 		}
 		
-		Entity ent = delete(cmp, edge, list, i);
-		logDelete(ent);
-
-		if (graph.hasTag()){
-			// delete all occurrences of triple that match edge
-			// with different tags
-			Entity res = ent;
-			
-			while (i < list.size() && res != null){
-				res = delete(cmp, edge, list, i);
-				logDelete(res);
-			}
-		}
-		
-		return ent;
-		
-	}
-	
-
-	void logDelete(Entity ent){		
-		if (ent != null && getIndex() == 0){
-			graph.logDelete(ent);
-		}
-	}
-	
-	void logInsert(Entity ent){
-		if (getIndex() == 0){
-			graph.logInsert(ent);
-		}
-	}
-	
-	
-	/**
-	 * Delete entity at index i, if it is the same as edge
-	 * tags may differ according to comparator
-	 */
-	Entity delete (Comparator<Entity> cmp, Entity edge, List<Entity> list, int i){
-		Entity ent = null;
-		int res = cmp.compare(edge, list.get(i));
-
+		int res = comp.compare(edge, list.get(i));
+		if (isDebug) logger.debug("EI: " + res);
 		if (res == 0){
-			ent = list.get(i);
+			edge = list.get(i);
 			list.remove(i);
-
 			if (getIndex() == 0){
 				graph.setSize(graph.size() -1 );
 			}
+			return edge;
 		}
-		
-		return ent;
+		else {
+			return null;
+		}
 	}
 	
 	
@@ -745,7 +745,7 @@ implements Index {
 	private void update (Node g1, Node g2, int mode){
 		for (Node pred : getProperties()){
 			
-			List<Entity> list = checkGet(pred);
+			Table list = checkGet(pred);
 			if (list == null){
 				continue ;
 			}
@@ -754,7 +754,7 @@ implements Index {
 				for (Entity ee : list) logger.debug("** EI: " + ee);
 			}
 
-			int n = find(list, g1);
+			int n = list.find(g1);
 			if (isDebug) logger.debug("** EI find: " + g1 + " " + (n != -1));
 			
 			if (n == -1) continue;
@@ -765,7 +765,7 @@ implements Index {
 	}
 	
 	
-	private void update(Node g1, Node g2, List<Entity> list, int n, int mode){
+	private void update(Node g1, Node g2, Table list, int n, int mode){
 		boolean incr = false;
 		if (g2!=null && g2.compare(g1) == -1) incr = true;
 		
@@ -825,10 +825,6 @@ implements Index {
 					logger.debug("** EI clear: " + ei.getIndex() + " " + rem);
 			}
 		}
-	}
-
-	public void delete(Node pred) {
-		
 	}
 	
 }

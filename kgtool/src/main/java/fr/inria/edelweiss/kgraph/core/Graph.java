@@ -20,7 +20,9 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Log;
+import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.logic.*;
 
 /**
@@ -80,6 +82,8 @@ public class Graph //implements IGraph
 	Hashtable<String, Node> graph, property;
 	NodeIndex gindex;
 	Log log;
+	GraphListener listen;
+	Tagger tag;
 	Entailment inference, proxy;
 	EdgeFactory fac;
 	private Distance classDistance, propertyDistance;
@@ -194,6 +198,25 @@ public class Graph //implements IGraph
 		if (log != null){
 			log.log(type, obj1, obj2);
 		}
+	}
+	
+	public void setListener(GraphListener gl){
+		listen = gl;
+	}
+	
+	public GraphListener getListener(){
+		return listen;
+	}
+	
+	public void setTagger(Tagger t){
+		tag = t;
+		if (t != null){
+			setTag(true);
+		}
+	}
+	
+	public Tagger getTagger(){
+		return tag;
 	}
 	
 	public Lock readLock(){
@@ -563,10 +586,18 @@ public class Graph //implements IGraph
 		return fac.create(source, subject, predicate, value);
 	}
 	
+	public EdgeImpl createDelete(Node source, Node subject, Node predicate, Node value){
+		return fac.createDelete(source, subject, predicate, value);
+	}
+		
 	public EdgeImpl create(Node source, Node predicate, List<Node> list){
 		return fac.create(source, predicate, list);
 	}
 		
+	public EdgeImpl createDelete(Node source, Node predicate, List<Node> list){
+		return fac.createDelete(source, predicate, list);
+	}
+	
 	public EdgeImpl create(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value){
 		return null;
 	}
@@ -954,11 +985,11 @@ public class Graph //implements IGraph
 	
 	// without duplicates 
 	public Iterable<Entity> getNodeEdges(Node node){
-		return EdgeIterator.create(getEdges(node, 0));
+		return EdgeIterator.create(this, getEdges(node, 0));
 	}
 	
 	public Iterable<Entity> getNodeEdges(Node gNode, Node node){
-		EdgeIterator it = EdgeIterator.create(getEdges(node, 0));
+		EdgeIterator it = EdgeIterator.create(this, getEdges(node, 0));
 		it.setGraph(gNode);
 		return it;
 	}
@@ -1595,9 +1626,31 @@ public class Graph //implements IGraph
 	public void setDebug(boolean b) {
 		isDebug = b;
 	}
+
+	/**********************************************************/
 	
 	
+	public boolean hasTag() {
+		return getEdgeFactory().hasTag();
+	}
 	
+	public void setTag(boolean b){
+		getEdgeFactory().setTag(b);
+	}
 	
+	/**
+	 * This log would be used to broadcast deletion to peers
+	 */
+	void logDelete(Entity ent){
+		if (listen != null){
+			listen.delete(ent);
+		}
+	}
+	
+	void logInsert(Entity ent){
+		if (listen != null){
+			listen.insert(ent);
+		}
+	}
 	
 }

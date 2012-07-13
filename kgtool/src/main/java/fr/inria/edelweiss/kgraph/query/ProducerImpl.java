@@ -61,7 +61,7 @@ public class ProducerImpl implements Producer {
 		graph = g;
 		local = Graph.create();
 		mapper = new Mapper(this);
-		ei = EdgeIterator.create();
+		ei = EdgeIterator.create(g);
 	}
 	
 	public static ProducerImpl create(Graph g){
@@ -164,7 +164,8 @@ public class ProducerImpl implements Producer {
 				}
 			}
 		}
-				
+						
+		
 		if (node == null  && from.size()>0){
 			// from named <uri>
 			// graph ?g { }
@@ -282,11 +283,11 @@ public class ProducerImpl implements Producer {
 		else if (gNode == null){
 			// eliminate similar edges
 			// check from 
-			it = new EdgeIterator(it, from, false);
+			it = new EdgeIterator(graph, it, from, false);
 		}
 		else if (from.size()>0 && sNode == null){
 			// check from [named]			
-			it = new EdgeIterator(it, from, true);
+			it = new EdgeIterator(graph, it, from, true);
 		}
 		return it;
 	}

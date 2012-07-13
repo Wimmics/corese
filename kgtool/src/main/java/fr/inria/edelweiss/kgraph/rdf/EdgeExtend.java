@@ -20,6 +20,16 @@ public class EdgeExtend extends EdgeCore {
 		nodes = new ArrayList<Node>();
 	}
 	
+	public String toString(){
+		String str = "";
+		if (displayGraph) str += getGraph() + " " ;
+		str +=  getEdgeNode() + " " ;
+		for (Node n : nodes){
+			str += n + " ";
+		}
+		return str;
+	}
+	
 	public void setNode(int i , Node node){
 		super.setNode(i, node);
 		nodes.add(i, node);	

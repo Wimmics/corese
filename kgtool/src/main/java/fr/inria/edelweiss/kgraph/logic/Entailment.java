@@ -572,6 +572,11 @@ public class Entailment {
 	public boolean isEntailment(Node source){
 		return hasLabel(source, ENTAIL);
 	}
+	
+	public boolean isRule(Node source){
+		return hasLabel(source, RULE);
+	}
+	
 	public boolean isType(Edge edge){
 		return getType(edge.getEdgeNode().getLabel()) == TYPE;
 	}

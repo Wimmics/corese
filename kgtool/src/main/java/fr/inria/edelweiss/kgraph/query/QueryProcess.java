@@ -222,6 +222,33 @@ public class QueryProcess extends QuerySolver {
 		return Mappings.create(q);
 	}
 	
+	/**
+	 * RDF Graph g considered as a Query Graph
+	 * Build a SPARQL BGP with g
+	 * Generate and eval q KGRAM Query
+	 */
+	public Mappings query(Graph g) {
+		QueryGraph qg = QueryGraph.create(g);
+		return query(qg);
+	}
+	
+	public Mappings query(QueryGraph qg) {
+		Query q = qg.getQuery();
+		return query(q);
+	}
+	
+	/**
+	 * q is construct {} where {}
+	 * eval the construct
+	 * consider the result as a query graph 
+	 * execute the query graph
+	 */
+	public Mappings queryGraph(String q) throws EngineException {
+		Mappings m = query(q);
+		Graph g = getGraph(m);
+		return query(g);
+	}
+
 	
 	
 	/**

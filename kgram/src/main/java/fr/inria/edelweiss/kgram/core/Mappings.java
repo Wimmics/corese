@@ -141,13 +141,17 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 
 	public String toString(){
+		return toString(false);
+	}
+	
+	public String toString(boolean all){
 		
 		String str = "";
 		int i = 1;
 		for (Mapping map : this){
-			str += ((i<10)?"0":"") + i + " ";
+			str += ((i < 10) ? "0" : "") + i + " ";
 			
-			if (select !=null){
+			if (select != null && ! all){
 				for (Node qNode : select){
 					Node node = map.getNode(qNode);
 					if (node!=null){

@@ -880,9 +880,9 @@ public class CoreseDatatype
 
 
 	public int getIndex() {
-		if (index == -1){
-			index = cindex++;
-		}
+//		if (index == -1){
+//			index = cindex++;
+//		}
 		return index;
 	}
 

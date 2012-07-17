@@ -152,19 +152,32 @@ public class Transformer implements ExpType {
 			}
 		}
 
-		if (fac == null) fac = new CompilerFacKgram();			
-		ast.setKgram(true);
-	
+		if (fac == null){
+			fac = new CompilerFacKgram();
+		}
+		
 		Exp exp = compile(ast);
+		Query q = transform(exp, ast);
+		return q;
+	}
+	
+		
+		
+	public Query transform(Exp exp, ASTQuery ast){
+		if (fac == null){
+			fac = new CompilerFacKgram();
+			compiler = fac.newInstance();
+		}
+		
 		Query q =  create(exp);
 		q.setAST(ast);
-				
+
 		if (ast.isConstruct() || ast.isDescribe()){
 			// use case: kgraph only
 			Exp cons = construct(ast);
 			q.setConstruct(cons);
 			q.setConstruct(true);
-			
+
 		}
 		if (ast.isDelete()){
 			Exp del = delete(ast);
@@ -176,7 +189,7 @@ public class Transformer implements ExpType {
 		}
 
 		path(q, ast);
-		
+
 		if (ast.getValues()!=null){
 			// before complete (because select include binding nodes)
 			bindings(q, ast);
@@ -184,9 +197,9 @@ public class Transformer implements ExpType {
 
 		// retrieve select nodes for query:
 		complete(q, ast);
-		
+
 		having(q, ast);
-		
+
 		if (ast.isRule()){
 			// rule need predicate nodes
 			List<Node> list = visit(q.getBody());
@@ -201,14 +214,14 @@ public class Transformer implements ExpType {
 		q.setDebug(ast.isDebug());
 		q.setCheck(ast.isCheck());
 		q.setRelax(ast.isMore());
-		
+
 		for (Edge edge : table.keySet()){
 			q.set(edge, table.get(edge));
 		}
-		
+
 		filters(q);
 		relax(q);
-		
+
 		if (visit != null){
 			for (QueryVisitor v : visit){
 				v.visit(q);
@@ -217,7 +230,7 @@ public class Transformer implements ExpType {
 
 		return q;
 	}
-	
+
 	
 	/**
 	 * subquery is compiled using a new compiler to get fresh new nodes

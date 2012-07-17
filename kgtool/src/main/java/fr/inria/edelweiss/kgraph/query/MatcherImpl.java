@@ -209,7 +209,7 @@ public class MatcherImpl implements Matcher {
 	}
 	
 	public boolean match(Node q, Node t, Environment env){
-		if (q.isVariable()) return true;
+		if (q.isVariable() || q.isBlank()) return true;
 		
 		IDatatype qdt = (IDatatype) q.getValue();
 		IDatatype tdt = (IDatatype) t.getValue();

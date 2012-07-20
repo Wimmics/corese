@@ -791,9 +791,20 @@ public class CoreseDatatype
 	}
 	
 	
-	// never happens because every datatype has its own equals
+	/**
+	 * Every datatype has its own type safe equals
+	 * TODO: should rename it (but would lose compatibility)
+	 */
 	public boolean equals(IDatatype iod) throws CoreseDatatypeException {
 		throw failure();
+	}
+	
+	// Java equals (for list membership ...)
+	public boolean equals(Object obj) {
+		if (obj instanceof IDatatype) {
+			return sameTerm((IDatatype) obj);
+		}
+		return false;	
 	}
 	
 	public boolean sameTerm(IDatatype iod) {

@@ -1,5 +1,7 @@
 package fr.inria.edelweiss.kgram.tool;
 
+import java.util.Map;
+
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -123,6 +125,10 @@ public class EnvironmentImpl implements Environment {
 	@Override
 	public Exp getExp() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map getMap() {
 		return null;
 	}
 

@@ -370,9 +370,17 @@ public class ASTQuery  implements Keyword {
 					bind(var);
 				}
 			}
+						
+			boolean ok = true;
 			
-			boolean b = getBody().validate(this);
-			return b;
+			for (Exp exp : getBody().getBody()){
+				boolean b = exp.validate(this);
+				if (! b){
+	    			ok = false;
+	    		}
+			}
+			
+			return ok;
 		}
 		
 		return true;

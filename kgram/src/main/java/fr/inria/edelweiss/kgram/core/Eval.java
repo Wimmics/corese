@@ -539,18 +539,6 @@ public class Eval implements  ExpType, Plugin {
 		}
 	}
 	
-	void bind2(Mapping map){
-		for (Node qNode : map.getQueryNodes()){
-			Node qqNode = query.getProperNode(qNode.getLabel());
-			if (qqNode!=null){
-				Node node = map.getNode(qNode);
-				if (node!=null){
-					bind(qqNode, node);
-				}
-			}
-		}
-	}
-	
 	private	PathFinder getPathFinder(Exp exp){
 		List<PathFinder> lp = lPathFinder;
 		for (PathFinder pf : lp){

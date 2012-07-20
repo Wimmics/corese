@@ -4,6 +4,7 @@ package fr.inria.edelweiss.kgraph.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -560,9 +561,15 @@ public class Graph //implements IGraph
 		return table.exist(edge);
 	}
 	
-	public Entity addEdge(Edge edge){
+	public Entity addEdgeWithNode(Edge edge){
 		if (edge instanceof EdgeImpl){
-			return addEdge((EdgeImpl) edge);
+			EdgeImpl ee = (EdgeImpl) edge;
+			addGraphNode(ee.getGraph());
+			addPropertyNode(ee.getEdgeNode());
+			for (int i=0; i<ee.nbNode(); i++){
+				add(ee.getNode(i));
+			}
+			return addEdge(ee);
 		}
 		return null;
 	}
@@ -817,7 +824,6 @@ public class Graph //implements IGraph
 		return node;
 	}
 	
-	// resource node
 	public void add(Node node){
 		IDatatype  dt = datatype(node);
 		if (dt.isLiteral()){
@@ -1183,7 +1189,11 @@ public class Graph //implements IGraph
 		return createNode(dt);
 	}
 	
-	
+	/****************************************************************
+	 * 
+	 * Graph operations
+	 * 
+	 ****************************************************************/
 	
 	public boolean compare(Graph g){
 		return compare(g, false);
@@ -1290,6 +1300,53 @@ public class Graph //implements IGraph
 			}
 		}
 	}
+	
+	/**
+	 * Create a graph for each named graph
+	 */
+	public List<Graph> split(){
+		
+		if (graph.size() == 1){
+			ArrayList<Graph> list = new ArrayList<Graph>();
+			list.add(this);
+			return list;
+		}
+		
+		return gSplit();
+	}
+		
+	
+	List<Graph> gSplit(){
+	
+		GTable map = new GTable();
+		
+		for (Entity ent : getEdges()){
+			Graph g = map.getGraph(ent.getGraph());
+			g.addEdgeWithNode(ent.getEdge());
+		}
+		
+		ArrayList<Graph> list = new ArrayList<Graph>();
+		for (Graph g : map.values()){
+			list.add(g);
+		}
+		
+		return list;
+		
+	}
+	
+	
+	class GTable extends HashMap<Node, Graph> {
+
+		public Graph getGraph(Node gNode) {
+			Graph g = get(gNode);
+			if (g == null){
+				g = Graph.create();
+				put(gNode, g);
+			}
+			return g;
+		}
+	}
+
 	
 	
 	/*****************************************************************

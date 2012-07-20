@@ -74,14 +74,6 @@ public class Transformer implements ExpType {
 		return new Transformer();
 	}
 	
-
-//	public void setFrom(List<String> list){
-//		from = list;
-//	}
-//	public void setNamed(List<String> list){
-//		named = list;
-//	}
-	
 	public void set(Dataset ds){
 		if (ds!=null){
 			named = ds.getNamed();
@@ -156,21 +148,21 @@ public class Transformer implements ExpType {
 			fac = new CompilerFacKgram();
 		}
 		
-		Exp exp = compile(ast);
-		Query q = transform(exp, ast);
+		Query q = compile(ast);
+		q = transform(q, ast);
 		return q;
 	}
 	
 		
 		
-	public Query transform(Exp exp, ASTQuery ast){
+	public Query transform(Query q, ASTQuery ast){
 		if (fac == null){
 			fac = new CompilerFacKgram();
 			compiler = fac.newInstance();
 		}
 		
-		Query q =  create(exp);
-		q.setAST(ast);
+//		Query q =  create(exp);
+//		q.setAST(ast);
 
 		if (ast.isConstruct() || ast.isDescribe()){
 			// use case: kgraph only
@@ -189,11 +181,9 @@ public class Transformer implements ExpType {
 		}
 
 		path(q, ast);
-
-		if (ast.getValues()!=null){
-			// before complete (because select include binding nodes)
-			bindings(q, ast);
-		}
+		// before complete (because select include binding nodes)
+		//bindings(q, ast);
+		
 
 		// retrieve select nodes for query:
 		complete(q, ast);
@@ -237,11 +227,14 @@ public class Transformer implements ExpType {
 	 * to prevent type inference on nodes between outer and sub queries
 	 */
 	Query compileQuery(ASTQuery ast){
-		Exp exp = compile(ast);
-		Query q =  create(exp);
-		q.setAST(ast);
+		Query q = compile(ast);
+		//Query q =  create(exp);
+		//q.setAST(ast);
 
 		path(q, ast);
+		// before complete (because select include binding nodes)
+		//bindings(q, ast);
+		
 		// complete select, order by, group by
 		complete(q, ast);
 
@@ -326,14 +319,15 @@ public class Transformer implements ExpType {
 	}
 	
 	void bindings(Query q, ASTQuery ast){
+		
+		if (ast.getValues() == null){
+			return;
+		}
+
 		Exp bind = bindings(ast.getValues());
 		if (bind != null){
 			q.setMappings(bind.getMappings());
 			q.setBindingNodes(bind.getNodeList());
-
-			for (Node n : bind.getNodeList()){
-				q.index(n);
-			}
 		}
 		else {
 			q.setCorrect(false);
@@ -424,8 +418,23 @@ public class Transformer implements ExpType {
 	/**
 	 * Generate a new compiler for each (sub) query in order to get fresh new nodes
 	 */
-	Exp  compile(ASTQuery ast){
-		return compile(ast, ast.getExtBody());
+	Query compile(ASTQuery ast){
+		Compiler save = compiler;
+		compiler = fac.newInstance();
+		compiler.setAST(ast);
+		
+		Exp ee = compile(ast.getExtBody(), false);
+		Query q = Query.create(ee);
+		q.setAST(ast);
+		// use same compiler
+		bindings(q, ast);
+	
+		if (save != null){
+			compiler = save;
+		}
+		return q; 
+		
+		//return compile(ast, ast.getExtBody());
 	}
 	
 	Exp  construct(ASTQuery ast){

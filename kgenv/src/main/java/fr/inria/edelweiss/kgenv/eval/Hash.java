@@ -5,7 +5,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
-import fr.cryptohash.*;
+//import fr.cryptohash.*;
 
 /**
  * Use cryptographic library from saphir2 project
@@ -16,7 +16,7 @@ import fr.cryptohash.*;
 public class Hash {
 	private static Logger logger = Logger.getLogger(Hash.class);	
 
-	static String SHA224 = "SHA-224";
+	//static String SHA224 = "SHA-224";
 	String name;
 	
 	Hash(String n){
@@ -24,9 +24,9 @@ public class Hash {
 	}
 	
 	String hash(String str){
-		if (name.equals(SHA224)){
-			return sha224(str);
-		}
+//		if (name.equals(SHA224)){
+//			return sha224(str);
+//		}
 		
 		byte[] uniqueKey = str.getBytes();
 		byte[] hash      = null;
@@ -43,14 +43,14 @@ public class Hash {
 		return res;
 	}
 	
-	String sha224(String str){
-		SHA224 hash = new SHA224();
-		byte[] data = str.getBytes();
-		byte[] out = hash.digest(data);
-		if (out == null) return null;
-		String res = toString(out);
-		return res;
-	}
+//	String sha224(String str){
+//		SHA224 hash = new SHA224();
+//		byte[] data = str.getBytes();
+//		byte[] out = hash.digest(data);
+//		if (out == null) return null;
+//		String res = toString(out);
+//		return res;
+//	}
 
 	
 	String toString(byte[] hash){

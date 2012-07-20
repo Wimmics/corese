@@ -146,7 +146,30 @@ public class BasicGraphPattern extends And {
 	/**
 	 * check bind(EXP, VAR) : var not in scope
 	 */
-	public boolean validate(ASTQuery ast, boolean exist) {
+    
+    public boolean validate(ASTQuery ast, boolean exist) {
+		boolean ok = true;
+		
+		List<Variable> list = ast.getStack();
+		// in a new BGP, there is no binding
+		ast.newStack();
+		
+		for (Exp exp : getBody()){
+    		
+    		boolean b = exp.validate(ast, exist);
+    		if (! b){
+    			ok = false;
+    		}
+    		
+    	}
+		
+		ast.setStack(list);
+		
+    	return ok;
+	}
+    
+    
+	public boolean validate2(ASTQuery ast, boolean exist) {
 		boolean ok = true;
 		List<Variable> list = null;
 		
@@ -155,7 +178,7 @@ public class BasicGraphPattern extends And {
     			// in a new BGP, there is no binding
     			list = ast.getStack();
     			ast.newStack();
-   		}
+    		}
     		
     		boolean b = exp.validate(ast, exist);
     		if (! b){

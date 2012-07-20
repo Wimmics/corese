@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -52,7 +53,7 @@ public class Mapping
 	
 	Mappings lMap;
 	Query query;
-	Hashtable<String, Node> table;
+	Map bnode;
 	
 	boolean read = false;
 	
@@ -219,6 +220,14 @@ public class Mapping
 	
 	public Query getQuery(){
 		return query;
+	}
+	
+	void setMap(Map m){
+		bnode = m;
+	}
+	
+	public Map getMap(){
+		return bnode;
 	}
 	
 	Node[] getOrderBy(){

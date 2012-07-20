@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -368,12 +370,20 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 	
 	void aggregate(Query qq, Evaluator evaluator, Memory memory, boolean isFinish){
-		if (size() == 0) return ;
+		
+		if (size() == 0){
+			if (qq.isAggregate()){
+				// SPARQL test cases requires that aggregate on empty result set return one empty result ...
+				add(new Mapping());
+			}
+			return ;
+		}
+		
 		boolean isEvent = hasEvent;
 
 		// select (count(?n) as ?count)
 		aggregate(evaluator, memory, qq.getSelectFun(), true);
-		
+				
 		// order by count(?n)
 		aggregate(evaluator, memory, qq.getOrderBy(), false);
 	
@@ -516,8 +526,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		// get first Mapping in current group
 		Mapping firstMap = get(0);
 		// bind the Mapping in memory to retrieve group by variables
-		//if (n != select) 
-			memory.push(firstMap, -1);
+		memory.aggregate(firstMap);
 		boolean res = true;
 
 		if (n == HAVING){
@@ -755,6 +764,8 @@ implements Comparator<Mapping> , Iterable<Mapping>
 			// it must implement aggregate() and hence must know current Mappings group
 			map.setMappings(this);
 			map.setQuery(env.getQuery());
+			// share same bnode table in all Mapping of current group solution
+			map.setMap(env.getMap());
 			eval.eval(f, map);
 		}
 	}

@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgram.core;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -46,6 +48,9 @@ public class Memory implements Environment {
 	Stack stack;
 	Exp exp;
 	Object object;
+	// bnode(label) must return same bnode in same solution, different otherwise.
+	// hence must clear bnodes after each solution
+	Map bnode;
 	
 	//  query or sub query
 	Query query;
@@ -68,6 +73,7 @@ public class Memory implements Environment {
 	public Memory(Matcher m, Evaluator e){
 		match = m;
 		eval = e;
+		bnode = new HashMap();
 	}
 	
 	void setResults(Mappings r){
@@ -284,6 +290,7 @@ public class Memory implements Environment {
 	 * in this case we do not need select exp 
 	 */
 	Mapping store(Query q, boolean subEval, boolean func){
+		clear();
 		int nb = nbNode;
 		if (! subEval){
 			//nb += q.nbFun();
@@ -405,7 +412,23 @@ public class Memory implements Environment {
 		map.setPath(lp);
 		map.setOrderBy(snode);
 		map.setGroupBy(gnode);
+		clear();
 		return map;
+	}
+	
+	/**
+	 * BNode table cleared for new solution
+	 */
+	public void clear(){
+		bnode.clear();
+	}
+	
+	public Map getMap(){
+		return bnode;
+	}
+	
+	void setMap(Map m){
+		bnode = m;
 	}
 	
 	
@@ -654,6 +677,24 @@ public class Memory implements Environment {
 	boolean push(Mapping res, int n){
 		return push(res, n, true);
 	}
+	
+	/**
+	 * Bind Mapping in order to compute aggregate on one group
+	 * Create a fresh new bnode table for the solution of this group
+	 * use case:
+	 * select (count(?x) as ?c) (bnode(?c) as ?bn) 
+	 * 
+	 */
+	void aggregate(Mapping map){
+		push(map, -1);
+		Map bnode = map.getMap();
+		if (bnode == null){
+			bnode = new HashMap();
+			map.setMap(bnode);
+		}
+		setMap(bnode);
+	}
+	
 	
 	boolean push(Mapping res, int n, boolean isEdge){
 		int k = 0;

@@ -413,7 +413,7 @@ public class Query extends Exp {
 			list.add(node);
 		}
 		for (Node node : patternSelectNodes){
-			if (! contains(list, node)){
+			if (! list.contains(node)){
 				Node ext = getExtNode(node);
 				add(list, ext);
 			}
@@ -456,24 +456,6 @@ public class Query extends Exp {
 		return get(querySelectNodes, name);
 	}
 	
-	public Node getNode(String name){
-		return getExtNode(name);
-	}
-		
-	public Node getExtNode(Node qNode){
-		return getExtNode(qNode.getLabel());
-	}
-	
-	public Node getExtNode(String name){
-		Node node = getPatternNode(name);
-		if (node != null) return node;
-		node = getQueryNode(name);
-		if (node != null) return node;
-		node = getPatternSelectNode(name);
-		if (node != null) return node;
-		node = getQuerySelectNode(name);
-		return node;
-	}
 	
 	Node get(List<Node> list, String name){
 		for (Node node : list){
@@ -968,20 +950,20 @@ public class Query extends Exp {
 		return iPath++;
 	}
 	
-
+	/**
+	 * Only on global query, not on subquery
+	 */
 	public void complete(){
 		if (isCompiled()) return;
 		else setCompiled(true);
 		
+		// sort edges according to var connexity, assign filters
+		// recurse on subquery
 		compile();
 		setAggregate();
+		// recurse on subquery
 		index(this, getBody(), true, false, -1);
-//		if (getHaving()!=null){
-//			index(this, getHaving().getFilter());
-//		}
-//		for (Filter f : getPathFilter()){
-//			index(this, f);
-//		}
+
 		for (Exp ee : getSelectFun()){
 			// use case: query node created to hold fun result
 			Node snode = ee.getNode();
@@ -992,23 +974,14 @@ public class Query extends Exp {
 			}
 		}
 		
-//		for (Filter f : getPathFilter()){
-//			index(this, f);
-//		}
-//		index(getOrderBy());
-//		index(getGroupBy());
-//		if (getHaving()!=null){
-//			index(this, getHaving().getFilter());
-//		}
-		
 		complete2();
 		
-		if (getGraphNode()!=null){
-			index(getGraphNode());
-		}
-		if (getPathNode()!=null){
-			index(getPathNode());
-		}
+//		if (getGraphNode()!=null){
+//			index(getGraphNode());
+//		}
+//		if (getPathNode()!=null){
+//			index(getPathNode());
+//		}
 		
 		for (Query q : getQueries()){
 			q.complete();
@@ -1022,8 +995,20 @@ public class Query extends Exp {
 		}
 		index(getOrderBy());
 		index(getGroupBy());
+		
 		if (getHaving()!=null){
 			index(this, getHaving().getFilter());
+		}
+		
+		for (Node node : getBindingNodes()){
+			index(node);
+		}
+		
+		if (getGraphNode()!=null){
+			index(getGraphNode());
+		}
+		if (getPathNode()!=null){
+			index(getPathNode());
 		}
 	}
 	
@@ -1048,6 +1033,9 @@ public class Query extends Exp {
 		System.out.println("querySelectNodes: " + querySelectNodes);
 	}
 	
+	
+
+	
 	/**
 	 * TODO:
 	 * must also join:
@@ -1061,30 +1049,38 @@ public class Query extends Exp {
 	 * embedding select * must evolve as well
 	 */
 	Node getOuterNode(Node subNode){
-		if (test) return getExtNode(subNode);
-		return getProperAndSubSelectNode(subNode.getLabel());
+		return getExtNode(subNode.getLabel());
+	}
+	
+	public Node getExtNode(Node qNode){
+		return getExtNode(qNode.getLabel());
+	}
+	
+	public Node getNode(String name){
+		return getExtNode(name);
 	}
 	
 	/**
 	 * get node with going in select sub query
-	 * go into in its own select because order by may reuse a select variable
+	 * go into its own select because order by may reuse a select variable
 	 * use case: 
 	 * transformer find node for select & group by
 	 */
-	public Node getProperAndSubSelectNode(String label){
-		if (test) return getProperAndSubSelectNode2(label);
-		// first, look in query without subquery
-		Node node = findNode(label, true);
-		// if not found, look in subquery
-		if (node == null) node = findNode(label, false);
-		return node;
-	}
+	public Node getProperAndSubSelectNode(String name){
+		return getExtNode(name, true);
+	}	
 	
-	public Node getProperAndSubSelectNode2(String name){
+	public Node getExtNode(String name){
+		return getExtNode(name, false);
+	}
+
+	public Node getExtNode(String name, boolean select){
 		Node node = getPatternNode(name);
 		if (node != null) return node;
-		node = getSelectNode(name);
-		if (node != null) return node;
+		if (select){
+			node = getSelectNode(name);
+			if (node != null) return node;
+		}
 		node = getQueryNode(name);
 		if (node != null) return node;
 		node = getPatternSelectNode(name);
@@ -1093,29 +1089,8 @@ public class Query extends Exp {
 		return node;
 	}
 	
-	/**
-	 * get node without going in select sub query
-	 * use case: 
-	 * eval get outer node corresponding to sub query select node
-	 * this query is the outer query, hence we do not go into sub query
-	 */
-	Node getProperNode(String label){
-		if (test) return getProperAndSubSelectNode2(label);
-		return findNode(label, true);
-	}
-	
-	
-	Node findNode(String label, boolean isProper){
-		// search proper nodes first
-		for (Exp exp : this){
-			Node node = exp.getNode(label, isProper);
-			if (node != null) return node;
-		}
-		
-		// for fun() as var aggregates and having:
-		return getSelectNode(label);		
-	}
-	
+
+
 	
 	void store(Node node, boolean exist, boolean select){
 		if (select){
@@ -1349,12 +1324,7 @@ public class Query extends Exp {
 				}
 				
 			}
-//			if (qq.getGraphNode()!=null){
-//				index(qq.getGraphNode());
-//			}
-//			if (qq.getHaving()!=null){
-//				index(qq, qq.getHaving().getFilter());
-//			}
+
 			qq.complete2();
 			
 			break;
@@ -1397,9 +1367,9 @@ public class Query extends Exp {
 		}
 		
 		// index the fake graph node (select/minus)
-		if (exp.getGraphNode()!=null){
-			index(exp.getGraphNode());
-		}
+//		if (exp.getGraphNode()!=null){
+//			index(exp.getGraphNode());
+//		}
 		
 		return min;
 		
@@ -1492,11 +1462,8 @@ public class Query extends Exp {
 	 * sort edges wrt binding
 	 * add BIND ?x = ?y 
 	 * move filter where variable are bound
-	 * remove redundant NODE wrt EDGE
 	 */
 	void compile(){
-//		VString bound =  new VString();
-//		compile(this, bound, false);
 		compile(this);
 	}
 	
@@ -1544,7 +1511,9 @@ public class Query extends Exp {
 
 		default: 
 			
-			if (type == OPTION || type == OPTIONAL ||type == UNION || type == NOT || type == MINUS) option = true;
+			if (type == OPTION || type == OPTIONAL ||type == UNION || type == NOT || type == MINUS){
+				option = true;
+			}
 				
 			
 			if (isSort){

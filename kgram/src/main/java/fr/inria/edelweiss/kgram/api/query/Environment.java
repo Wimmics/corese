@@ -1,5 +1,7 @@
 package fr.inria.edelweiss.kgram.api.query;
 
+import java.util.Map;
+
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -127,6 +129,8 @@ public interface Environment {
 	void setExp(Exp exp);
 	
 	Exp getExp();
+	
+	Map getMap();
 	
 	
 }

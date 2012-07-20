@@ -4,6 +4,7 @@ package fr.inria.edelweiss.kgenv.eval;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.ResultSet;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -134,7 +135,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			
 			default: 
 				if (plugin!=null) 
-					return (IDatatype) plugin.eval(exp, env, dt1, dt2);
+					return  plugin.eval(exp, env, dt1, dt2);
 				return null;
 			
 			}
@@ -219,13 +220,13 @@ public class ProxyImpl implements Proxy, ExprType {
 		case ABS: return abs(dt);
 			
 		case FLOOR:
-			return getValue(Math.floor(dt.getDoubleValue()), dt.getDatatypeURI());
+			return getValue(Math.floor(dt.doubleValue()), dt.getDatatypeURI());
 			
 		case ROUND:
-			return getValue(Math.round(dt.getDoubleValue()), dt.getDatatypeURI());
+			return getValue(Math.round(dt.doubleValue()), dt.getDatatypeURI());
 
 		case CEILING:
-			return getValue(Math.ceil(dt.getDoubleValue()), dt.getDatatypeURI());
+			return getValue(Math.ceil(dt.doubleValue()), dt.getDatatypeURI());
 			
 		case TIMEZONE: return dm.getTimezone(dt);
 		
@@ -242,7 +243,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
 		case LANG: 	return dt.getDataLang(); 
 		
-		case BNODE: return DatatypeMap.createBlank(dt.getLabel());
+		case BNODE: return bnode(dt, env); 
 			
 		case DATATYPE: return dt.getDatatype();
 		
@@ -608,6 +609,23 @@ public class ProxyImpl implements Proxy, ExprType {
 	}
 	
 	
+	/**
+	 * same bnode for same label in same solution, different otherwise
+	 */
+	Object bnode(IDatatype dt, Environment env){
+		Map map = env.getMap();
+		Object bn = map.get(dt.getLabel());
+		if (bn == null){
+			bn = DatatypeMap.createBlank();
+			map.put(dt.getLabel(), bn);
+		}
+		else {
+		}
+
+		return bn;
+	}
+	
+	
 	IDatatype time(Expr exp, IDatatype dt){
 		if (dt.getDatatypeURI().equals(RDF.xsddate) ||
 			dt.getDatatypeURI().equals(RDF.xsddateTime)){
@@ -639,13 +657,13 @@ public class ProxyImpl implements Proxy, ExprType {
 	
 	IDatatype abs(IDatatype dt){
 		if (DatatypeMap.isInteger(dt)){
-			return getValue(Math.abs(dt.getIntegerValue()));
+			return getValue(Math.abs(dt.intValue()));
 		}
 		else if (DatatypeMap.isLong(dt)){
-			return getValue(Math.abs(dt.getlValue()));
+			return getValue(Math.abs(dt.longValue()));
 		}
 		else {
-			return getValue(Math.abs(dt.getDoubleValue()));
+			return getValue(Math.abs(dt.doubleValue()));
 		}
 	}
 
@@ -748,14 +766,17 @@ public class ProxyImpl implements Proxy, ExprType {
 	}
 	
 	Object langMatches(IDatatype ln1, IDatatype ln2) {
-		if (ln2.getLabel().equals("*")) {
-			return getValue(ln1.getLabel().length() > 0);
+		String l1 = ln1.getLabel();
+		String l2 = ln2.getLabel();
+
+		if (l2.equals("*")) {
+			return getValue(l1.length() > 0);
 		}
-		if (ln2.getLabel().indexOf("-")!=-1){
+		if (l2.indexOf("-")!=-1){
 			// en-us need exact match
-			return getValue(ln1.getLowerCaseLabel().equals(ln2.getLowerCaseLabel()));
+			return getValue(l1.toLowerCase().equals(l2.toLowerCase()));
 		}
-		return getValue(ln1.getLabel().regionMatches(true, 0, ln2.getLabel(), 0, 2)); 
+		return getValue(l1.regionMatches(true, 0, l2, 0, 2)); 
 	}
 	
 	public Object self(Object obj){

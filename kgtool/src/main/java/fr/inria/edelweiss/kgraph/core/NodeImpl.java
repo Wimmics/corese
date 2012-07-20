@@ -92,6 +92,13 @@ public class NodeImpl implements Node, Entity {
 		}	
 		return getLabel().equals(node.getLabel());	
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof Node){
+			return same((Node) obj);
+		}
+		return false;
+	}
 
 	@Override
 	public void setIndex(int n) {

@@ -528,55 +528,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		stack = st;
 	}
 	
-	
-//	public Node getNode(String label){
-//		return getNode(label, true);
-//	}
-	
-	/**
-	 * isProper = true means do not go in sub query select node
-	 * (and we never go in sub query body)
-	 */
-	public Node getNode(String label, boolean isProper){
 
-		switch (type()){
-		
-		case NODE:
-			if (getNode().getLabel().equals(label)){
-				return getNode();
-			}
-			break;
-
-		case EDGE:
-		case PATH:
-		case XPATH:
-		case EVAL:
-			for (int i=0; i<nbNode(); i++){ 
-				Node node = getNode(i);
-				if (node != null && node.getLabel().equals(label)){
-					return node;
-				}
-			}
-
-			break;
-			
-		case QUERY:
-			if (isProper) break;
-			
-			Query query = getQuery();
-			Exp exp = query.getSelectExp(label);
-			if (exp != null) return exp.getNode();
-			else return null;
-			
-		default:
-			for (Exp ee : this){
-				Node node = ee.getNode(label, isProper);
-				if (node != null) return node;
-			}
-		}
-		
-		return null;
-	}
 	
 	/**
 	 * use case: select distinct ?x where
@@ -1045,8 +997,8 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		
 		// add select nodes that are not in lNode
 		for (Node qNode : lSelNode){
-			if (! contains(lNode, qNode)){
-				if (contains(lExistNode, qNode)){
+			if (! lNode.contains(qNode)){
+				if (lExistNode.contains(qNode)){
 					/**
 					 * use case:
 					 * select * where {
@@ -1070,7 +1022,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		if (exist){
 			// collect exists {} nodes
 			for (Node qNode : lExistNode){
-				if (! contains(lNode, qNode)){
+				if (! lNode.contains(qNode)){
 					lNode.add(qNode);
 				}
 			}
@@ -1080,23 +1032,15 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	
 	void add(List<Node> lNode, Node node){
-		if (node != null  && node.isVariable() && ! node.isBlank() && ! contains(lNode, node)){
+		if (node != null  && node.isVariable() && ! node.isBlank() && ! lNode.contains(node)){
 			lNode.add(node);
 		}
 	}
 	
-	boolean contains(List<Node> lNode, Node node){
-		for (Node qNode : lNode){
-			if (qNode.getLabel().equals(node.getLabel())){
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	boolean contain(List<Exp> lExp, Node node){
 		for (Exp exp : lExp){
-			if (exp.getNode().getLabel().equals(node.getLabel())){
+			if (exp.getNode().equals(node)){
 				return true;
 			}
 		}
@@ -1105,7 +1049,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	Node get(List<Node> lNode, Node node){
 		for (Node qNode : lNode){
-			if (qNode.getLabel().equals(node.getLabel())){
+			if (qNode.equals(node)){
 				return qNode;
 			}
 		}
@@ -1209,25 +1153,25 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	}
 	
 	
-	void cstBind2(){
-		for (int i=1; i<size(); i++){
-			Exp f = get(i);
-			if (f.isFilter() && f.size()>0){
-				Exp g = get(i-1);
-				Exp bind = f.first();
-				if (bind.type() == BIND && 
-					(g.isEdge() || g.isPath()) &&
-					! getExpList().contains(bind)){
-					
-					bind.status(true);
-					// add bind before edge:
-					add(i-1, bind);
-					// skip the added bind Exp:
-					i++;
-				}
-			}
-		}
-	}
+//	void cstBind2(){
+//		for (int i=1; i<size(); i++){
+//			Exp f = get(i);
+//			if (f.isFilter() && f.size()>0){
+//				Exp g = get(i-1);
+//				Exp bind = f.first();
+//				if (bind.type() == BIND && 
+//					(g.isEdge() || g.isPath()) &&
+//					! getExpList().contains(bind)){
+//					
+//					bind.status(true);
+//					// add bind before edge:
+//					add(i-1, bind);
+//					// skip the added bind Exp:
+//					i++;
+//				}
+//			}
+//		}
+//	}
 	
 	
 	

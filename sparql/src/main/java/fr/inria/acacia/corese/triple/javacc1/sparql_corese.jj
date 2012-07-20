@@ -2699,14 +2699,16 @@ TOKEN:
   <#NCNAME_PREFIX: <NCCHAR1p> ((<NCCHAR> | "."   )* <NCCHAR>)? >
 |
   // With a leading "_", no dot at end of local name.
-  <#NCNAME:  <NCCHAR1> ((<NCCHAR> | "." | ":" | <LOCAL_ESC> | <PERCENT> )* <NCCHAR>)? >
+  //<#NCNAME:  <NCCHAR1> ((<NCCHAR> | "." | ":" | <LOCAL_ESC> | <PERCENT> )* <NCCHAR>)? >
+  <#NCNAME:  <NCCHAR1>   ((<NCCHAR> | "." | ":" | "_" | <LOCAL_ESC> | <PERCENT> )* 
+                          (<NCCHAR> | ":" | <LOCAL_ESC> | <PERCENT> ))? >
 |
   // NCNAME without "-" and ".", allowing leading digits.
   <#VARNAME: ( <NCCHAR1> | ["0"-"9"] )
              ( <NCCHAR1> | ["0"-"9"] | "\u00B7" |
                ["\u0300"-"\u036F"] | ["\u203F"-"\u2040"] )* >
                
-| <#LOCAL_ESC:  "\\" ( "_" | "~" | "." | "-" | "!" | "$" | "&" | """" | "(" | ")" | ["*"] | ["+"] | "," | ";" | "=" | ":" | "/" | "?" | "#" | "@" | "%" )  >
+| <#LOCAL_ESC:  "\\" ( "_" | "~" | "." | "-" | "!" | "$" | "&" | """" | "(" | ")" | ["*"] | ["+"] | "," | ";" | "=" |  "/" | "?" | "#" | "@" | "%" )  >
 
 | <#PERCENT: "%" <HEX> <HEX> >
 

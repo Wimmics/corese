@@ -108,8 +108,10 @@ public class NodeImpl implements Node {
 	}
 	
 	public boolean equals(Object o) {
-		if (! (o instanceof Node)) return false;
-		return same((Node) o);
+		if (o instanceof Node){
+			return same((Node) o);
+		}
+		return false;
 	}
 	
 

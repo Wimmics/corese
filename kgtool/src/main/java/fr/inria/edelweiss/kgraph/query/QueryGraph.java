@@ -60,7 +60,9 @@ public class QueryGraph implements QueryGraphVisitor {
 		graph = visitor.visit(graph);
 		
 		Exp exp = getExp(graph);
-		Query q = t.transform(exp, ast);
+		Query q = Query.create(exp);
+		q.setAST(ast);
+		q = t.transform(q, ast);
 		q.setDebug(isDebug);
 		q = visitor.visit(q);
 		

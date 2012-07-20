@@ -133,6 +133,16 @@ public class Variable extends Atom {
 		return env;
 	}
 	
+	
+//	public boolean validate(ASTQuery ast) {
+//		boolean b = ast.isBound(this);
+//		if (! b){
+//			ast.setError("Unbound Variable: " + this);
+//			ast.setCorrect(false);
+//		}
+//		return true;
+//	}
+	
 	public Variable getVariable() {
 		return this;
 	}

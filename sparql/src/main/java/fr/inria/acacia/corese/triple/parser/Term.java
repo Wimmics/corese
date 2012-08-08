@@ -481,10 +481,14 @@ public class Term extends Expression {
 					break;
 					
 				case PARA: 
-					Term t = Term.function(RE_CHECK, term.getArg(1));
+				case OPTION:
+					// additional argument for checking
+					Term t = Term.function(RE_CHECK, term);
 					t.setretype(CHECK);
 					term.add(t);
 					break;
+					
+					
 			}
 			
 			term.copy(this);

@@ -812,10 +812,6 @@ public class PathFinder
 				}				
 									
 				if (isStart){
-//					// bind start node
-//					visit.nstart(node);
-//					// in case there is e1 || e2
-//					stack.pushStart(node);
 					
 					boolean isNew = previous == null || ! previous.same(node);
 					previous = node;
@@ -824,7 +820,7 @@ public class PathFinder
 						// clean the table of visited nodes as we have a new start node
 						visit.start();
 					}
-					
+										
 					// visit start node
 					visit.nstart(node);
 					// in case there is e1 || e2
@@ -933,28 +929,56 @@ public class PathFinder
 			
 		break;
 			
-			
-		case Regex.CHECK: 
-			
-				Node target = start;
-				// check(e2) from e1 || e2
-				// e1 has computed a path from former start to this start (which is now target of e2)
-				// check there is a parallel path e2 from start to target
-				// create new Record to check loop specific to path e2 
-				Record st = new Record(Visit.create(isReverse, isCountPath));
-				// push e2
-				st.push(exp.getArg(0));
-				st.setTarget(target);
-				// retrieve the common start of path e1 and e2
-				Node prev = stack.getStart();
-				
-				eval(st, path, prev, src);
 
-				if (st.isSuccess()){
-					eval(stack, path, start, src);
-				}
+		
+		case Regex.CHECK: 
+			// additional statement to perform checking after
+			// a standard operation occurs
+			
+				Node target = start;				
+				Regex test = exp.getArg(0);
 				
-				stack.push(exp);
+				switch (test.retype()){
+
+				case Regex.PARA:
+
+					// check(e1 || e2)
+					// e1 has computed a path from former start to this start (which is now target of e2)
+					// check there is a parallel path e2 from start to target
+					// create new Record to check loop specific to path e2 
+					Record st = new Record(Visit.create(isReverse, isCountPath));
+					// push e2
+					st.push(test.getArg(1));
+					st.setTarget(target);
+					// retrieve the common start of path e1 and e2
+					Node prev = stack.getStart();
+
+					eval(st, path, prev, src);
+
+					if (st.isSuccess()){
+						eval(stack, path, start, src);
+					}
+
+					stack.push(exp);
+					break;
+					
+
+					
+				case Regex.OPTION:
+					// check that target has not already been reached by option
+					// because sparql 1.1 option is not counting 
+					
+					if (stack.getVisit().nloop(test, target)){
+						// target already reached: 
+						// do nothing and backtrack
+					}
+					else {
+						eval(stack, path, start, src);
+					}
+										
+					stack.push(exp);
+					break;
+				}
 
 			
 		break;
@@ -1003,13 +1027,8 @@ public class PathFinder
 		
 		case Regex.OPTION:
 			
-			eval(stack, path, start, src);
-			stack.push(exp.getArg(0));
-			eval(stack, path, start, src);	
-			
-			stack.pop();
-			stack.push(exp);
-		break;
+			option(exp, stack, path, start, src);			
+			break;
 		
 		}
 		
@@ -1090,7 +1109,35 @@ public class PathFinder
 			mbuffer.put(map, true);
 		}
 	}
+			
 	
+	
+	void option(Regex exp, Record stack, Path path, Node start, Node src){
+		
+		if (stack.getVisit().nloop(exp, start)){
+			stack.push(exp);
+			return;
+		}		
+		
+		// skip option
+		eval(stack, path, start, src);
+		
+		// with option
+		// push check:
+		stack.push(exp.getArg(1));
+		stack.push(exp.getArg(0));
+		eval(stack, path, start, src);	
+		
+		// pop exp and check
+		stack.pop();
+		stack.pop();
+		stack.push(exp);
+				
+		stack.getVisit().nunset(exp);
+		
+	}
+
+
 	
 	/**
 	 * exp*

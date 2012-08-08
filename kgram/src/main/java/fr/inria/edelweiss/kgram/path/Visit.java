@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgram.path;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
@@ -94,6 +95,9 @@ public class Visit {
 		
 	}
 	
+	TTable getTable(Regex exp){
+		return ttable.get(exp);
+	}
 	
 	class TTable    {	
 		Table table;
@@ -108,6 +112,10 @@ public class Visit {
 			else {
 				table = new Table();
 			}
+		}
+		
+		Collection<Node> values(){
+			return table.values();
 		}
 		
 		void add(Node n){

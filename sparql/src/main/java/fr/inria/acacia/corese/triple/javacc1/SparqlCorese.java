@@ -7051,8 +7051,8 @@
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[193];
-    for (int i = 0; i < 193; i++) {
+    boolean[] la1tokens = new boolean[194];
+    for (int i = 0; i < 194; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -7086,7 +7086,7 @@
         }
       }
     }
-    for (int i = 0; i < 193; i++) {
+    for (int i = 0; i < 194; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

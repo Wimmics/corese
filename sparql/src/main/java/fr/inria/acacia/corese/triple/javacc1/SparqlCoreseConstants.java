@@ -188,9 +188,10 @@ public interface SparqlCoreseConstants {
   int NCCHAR = 187;
   int NCNAME_PREFIX = 188;
   int NCNAME = 189;
-  int VARNAME = 190;
-  int LOCAL_ESC = 191;
-  int PERCENT = 192;
+  int BLANKNAME = 190;
+  int VARNAME = 191;
+  int LOCAL_ESC = 192;
+  int PERCENT = 193;
 
   int DEFAULT = 0;
 
@@ -385,6 +386,7 @@ public interface SparqlCoreseConstants {
     "<NCCHAR>",
     "<NCNAME_PREFIX>",
     "<NCNAME>",
+    "<BLANKNAME>",
     "<VARNAME>",
     "<LOCAL_ESC>",
     "<PERCENT>",

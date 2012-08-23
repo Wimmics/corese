@@ -52,6 +52,7 @@ public class Pragma  {
 	static final String PRELAX 	= KG + "relax";
 	static final String SLICE 	= KG + "slice";
 	static final String MAP 	= KG + "map";
+	static final String COUNT 	= KG + "count";
 
 	protected static final String STATUS	= KG + "status";
 	protected static final String DESCRIBE	= KG + "describe";
@@ -248,6 +249,9 @@ public class Pragma  {
 			}
 		}
 		else if (subject.equals(PATH)){
+			 if (property.equals(COUNT)){
+				query.setCountPath(value(object));
+			}
 			if (property.equals(LIST)){
 				query.setListPath(value(object));
 			}

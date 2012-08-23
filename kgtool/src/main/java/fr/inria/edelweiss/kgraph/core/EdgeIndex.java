@@ -208,6 +208,13 @@ implements Index {
 		return str;
 	}
 	
+	public void clear(){
+		if (index == 0){
+			logClear();
+		}
+		super.clear();
+	}
+	
 	/** 
 	 * Add a property in the table
 	 */
@@ -609,10 +616,10 @@ implements Index {
 			int mid = (first + last) / 2;
 			int res = c.compare(list.get(mid), edge); 
 			if (res >= 0) {
-				return find(list, edge, first, mid);
+				return find(c, list, edge, first, mid);
 			}
 			else {
-				return find(list, edge, mid+1, last); 
+				return find(c, list, edge, mid+1, last); 
 			}
 		}		
 	}
@@ -659,6 +666,7 @@ implements Index {
 		}
 		
 		Entity ent = delete(cmp, edge, list, i);
+				
 		logDelete(ent);
 
 		if (graph.hasTag()){
@@ -689,6 +697,14 @@ implements Index {
 		}
 	}
 	
+	void logClear(){
+		for (Node node : getSortedProperties()){
+			for (Entity ent : get(node)){
+				logDelete(ent);
+			}
+		}
+	}
+	
 	
 	/**
 	 * Delete entity at index i, if it is the same as edge
@@ -696,7 +712,8 @@ implements Index {
 	 */
 	Entity delete (Comparator<Entity> cmp, Entity edge, List<Entity> list, int i){
 		Entity ent = null;
-		int res = cmp.compare(edge, list.get(i));
+		int res = cmp.compare(list.get(i), edge);
+		//int res = cmp.compare(edge, list.get(i));
 
 		if (res == 0){
 			ent = list.get(i);

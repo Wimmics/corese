@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgram.event.EventManager;
 public class Mappings  
 implements Comparator<Mapping> , Iterable<Mapping>
 {
+	private static final String NL = System.getProperty("line.separator");;
 	/**
 	 * 
 	 */
@@ -147,33 +148,40 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 	
 	public String toString(boolean all){
-		
-		String str = "";
+		StringBuffer sb = new StringBuffer();
 		int i = 1;
+		boolean isSelect = select != null && ! all;
+		
 		for (Mapping map : this){
-			str += ((i < 10) ? "0" : "") + i + " ";
+			String str = ((i < 10) ? "0" : "") + i + " ";
+			sb.append(str);
 			
-			if (select != null && ! all){
+			if (isSelect){
 				for (Node qNode : select){
-					Node node = map.getNode(qNode);
-					if (node!=null){
-						str += qNode + " = " + node + "; ";
-					}
+					print(map, qNode, sb);
 				}
 			}
 			else {
 				for (Node qNode : map.getQueryNodes()){
-					Node node = map.getNode(qNode);
-					if (node!=null){
-						str += qNode + " = " + node + "; ";
-					}
+					print(map, qNode, sb);
 				}
 			}
 			
 			i++;
-			str += "\n";
+			sb.append(NL);
 		}
-		return str;
+		return sb.toString();
+	}
+	
+	
+	void print(Mapping map, Node qNode, StringBuffer sb){
+		Node node = map.getNode(qNode);
+		if (node != null){
+			sb.append(qNode);
+			sb.append(" = ");
+			sb.append(node);
+			sb.append("; ");
+		}
 	}
 
 	public List<Node> getSelect(){

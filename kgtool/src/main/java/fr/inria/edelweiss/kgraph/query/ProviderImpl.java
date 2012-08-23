@@ -34,6 +34,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 
 //import fr.inria.wimmics.sparql.soap.client.SparqlResult;
 //import fr.inria.wimmics.sparql.soap.client.SparqlSoapClient;
@@ -195,18 +196,21 @@ public class ProviderImpl implements Provider {
 			
 			//logger.info("** Provider: \n" + query);
 
-			StringBuffer sb = doPost(serv.getLabel(), query);
+			//StringBuffer sb = doPost2(serv.getLabel(), query);
+			
+			InputStream stream = doPost(serv.getLabel(), query);
 			
 			if (g.isDebug()){
 				//logger.info("** Provider result: \n" + sb);
 			}
 			
-			if (sb.length() == 0){
-				throw new IOException("Endpoint result is empty");
-			}
+//			if (sb.length() == 0){
+//				throw new IOException("Endpoint result is empty");
+//			}
 
-			Mappings map = parse(sb);
-
+			//Mappings map = parse(sb);
+			Mappings map = parse(stream);
+		
 			if (g.isDebug()){
 				logger.info("** Provider result: \n" + map.size());
 			}
@@ -216,11 +220,11 @@ public class ProviderImpl implements Provider {
 			logger.error(q.getAST());
 			g.addError(SERVICE_ERROR, e);
 		} catch (ParserConfigurationException e) {
-			logger.error(e);
-			g.addError(SERVICE_ERROR, e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (SAXException e) {
-			logger.error(e);
-			g.addError(SERVICE_ERROR, e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		if (g.isDebug()){
@@ -255,9 +259,21 @@ public class ProviderImpl implements Provider {
 	}
 	
 	
-	public StringBuffer doPost(String server, String query) throws IOException{
+	Mappings parse(InputStream stream) throws ParserConfigurationException, SAXException, IOException{
+		ProducerImpl p  = ProducerImpl.create(Graph.create());
+		XMLResult r 	= SPARQLResult.create(p);
+		Mappings map 	= r.parse(stream);
+		return map;
+	}
+	
+	public StringBuffer doPost2(String server, String query) throws IOException{
 		URLConnection cc = post(server, query);
 		return getBuffer(cc.getInputStream());
+	}
+	
+	public InputStream doPost(String server, String query) throws IOException{
+		URLConnection cc = post(server, query);
+		return cc.getInputStream();
 	}
 	
 	URLConnection post(String server, String query) throws IOException{
@@ -286,8 +302,8 @@ public class ProviderImpl implements Provider {
 		InputStreamReader r = new InputStreamReader(stream, "UTF-8");
 		BufferedReader br = new BufferedReader(r);
 		StringBuffer sb = new StringBuffer();
-
 		String str = null;
+
 		while ((str = br.readLine()) != null){
 			sb.append(str);
 			sb.append("\n");

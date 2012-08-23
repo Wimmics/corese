@@ -54,6 +54,8 @@ public class Graph //implements IGraph
 	
 	static long blankid = 0;
 	static final String BLANK = "_:b";
+
+	private static final String NL = System.getProperty("line.separator");
 	
 	/**
 	 * Synchronization:
@@ -340,6 +342,25 @@ public class Graph //implements IGraph
 		return str;
 	}
 	
+	public String display(){
+		StringBuffer sb = new StringBuffer();
+		
+		if (getIndex() instanceof EdgeIndex){
+			EdgeIndex ie = (EdgeIndex) getIndex();
+			
+			for (Node p : getSortedProperties()){
+				if (sb.length() > 0){
+					sb.append(NL);
+				}
+				List<Entity> list  = ie.get(p);
+				sb.append(p + " (" + list.size() + ") : ");
+				sb.append(list);
+			}
+		}
+		
+		return sb.toString();
+	}
+
 
 	public Entailment getProxy(){
 		if (proxy == null){
@@ -542,16 +563,6 @@ public class Graph //implements IGraph
 					ei.declare(edge);
 				}
 			}
-			
-//			if (hasDefault){
-//				dtable.add(edge);
-//				for (int i=0; i<tables.size(); i++){
-//					if (i != 0){
-//						dtables[i].declare(edge);
-//					}
-//				}
-//			}
-			
 			size++;
 		}
 		return ent;
@@ -1013,7 +1024,7 @@ public class Graph //implements IGraph
 	}
 	
 	// synchronized
-	Index getIndex(int n){
+	public Index getIndex(int n){
 		if (n == IGRAPH){
 			return tables.get(tables.size()-1);
 		}
@@ -1104,7 +1115,7 @@ public class Graph //implements IGraph
 		
 	public Iterable<Entity> getAllNodes(){
 		if (isDeletion){
-			// recompute existing nodes
+			// recompute existing nodes (only if it has not been already recomputed)
 			return getAllNodesIndex();
 		}
 		else {
@@ -1455,10 +1466,7 @@ public class Graph //implements IGraph
 	// they must be cleared explicitely
 	void clear(){
 		clearIndex();
-		individual.clear();
-		blank.clear();
-		literal.clear();
-		property.clear();
+		clearNodes();
 		for (Index t : tables){
 			t.clear();
 		}
@@ -1470,6 +1478,13 @@ public class Graph //implements IGraph
 		isUpdate = false; 
 		isDelete = false; 
 		size = 0;
+	}
+	
+	void clearNodes(){
+		individual.clear();
+		blank.clear();
+		literal.clear();
+		property.clear();
 	}
 	
 	public boolean clearDefault(){
@@ -1587,6 +1602,31 @@ public class Graph //implements IGraph
 	 *  
 	 * **************************************************/
 	
+	/**
+	 * Add a copy of the entity edge
+	 * Use case: entity comes from another graph, create a local copy of nodes
+	 */
+	public Edge copy(Entity ent){
+		Node g = basicAddGraph(ent.getGraph().getLabel());
+		Node p = basicAddProperty(ent.getEdge().getEdgeNode().getLabel());
+		
+		ArrayList<Node> list = new ArrayList<Node>();
+		
+		for (int i = 0; i < ent.nbNode(); i++){
+			Node n = addNode(datatype(ent.getNode(i)));
+			list.add(n);
+		}
+		
+		Edge e = addEdge(g, p, list);
+		return e;	
+	}
+	
+	
+	void copyEdge(Entity ent){
+		
+	}
+	
+	
 	public Edge addEdge(Node source, Node subject, Node predicate, Node value){
 		EdgeImpl e = fac.create(source, subject, predicate, value);
 		Entity ee = addEdge(e);
@@ -1603,7 +1643,14 @@ public class Graph //implements IGraph
 	
 	// tuple
 	public Edge addEdge(Node source, Node predicate, List<Node> list){
-		EdgeImpl e = fac.create(source, predicate, list);
+		EdgeImpl e;
+		if (list.size() == 2){
+			e = fac.create(source, list.get(0), predicate, list.get(1));
+		}
+		else {
+			e = fac.create(source, predicate, list);
+		}
+		
 		Entity ee = addEdge(e);
 		if (ee != null){
 			return ee.getEdge();

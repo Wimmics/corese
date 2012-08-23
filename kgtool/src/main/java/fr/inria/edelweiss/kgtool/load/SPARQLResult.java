@@ -21,15 +21,15 @@ public class SPARQLResult  extends XMLResult {
 	}
 	
 	public Node getURI(String str){
-		Node n = graph.getResource(str);
+		Node n = local.getResource(str);
 		if (n != null){
 			return n;
 		}
-		n = local.getResource(str);
+		n = graph.getResource(str);
 		if (n != null){
 			return n;
 		}
-		
+
 		IDatatype dt = DatatypeMap.createResource(str);
 		n = local.getNode(dt, true, true);
 		return n;

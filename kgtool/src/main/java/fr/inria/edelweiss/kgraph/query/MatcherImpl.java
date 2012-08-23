@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import fr.inria.acacia.corese.api.IDatatype;
@@ -33,19 +34,32 @@ public class MatcherImpl implements Matcher {
 	
 	Graph graph;
 	Entailment entail;
-	Table table ;
+	Cache table ;
 	
 	int mode = SUBSUME;
 	
-	class BTable extends Hashtable<Node,Boolean>{}
+	class BTable extends HashMap<Node, Boolean> {}
 	
-	class Table extends Hashtable<Node, BTable> {
+	class STable extends HashMap<Node, BTable> {}
+
+	/**
+	 * 
+	 * Cache:
+	 * store subsumption between query and target node
+	 */
+	class Cache  {
 		
+		STable table;
+		
+		Cache(Query q){
+			table = new STable();
+		}
+						
 		BTable getTable(Node q){
-			BTable bt = get(q);
+			BTable bt = table.get(q);
 			if (bt == null){
 				bt = new BTable();
-				put(q, bt);
+				table.put(q, bt);
 			}
 			return bt;
 		}
@@ -60,11 +74,10 @@ public class MatcherImpl implements Matcher {
 			bt.put(t, b);
 		}
 	} 
-	
-	
+				
 	
 	MatcherImpl(){
-		table = new Table();
+		//table = new Cache();
 	}
 	
 	public static MatcherImpl create(){
@@ -81,7 +94,7 @@ public class MatcherImpl implements Matcher {
 	@Override
 	public boolean match(Edge q, Edge r, Environment env) {
 		
-		if (q.getLabel().equals(RDF.TYPE)){
+		if (graph.getProxy().isType(q)){ //(q.getLabel().equals(RDF.TYPE)){
 			return matchType(q, r, env);
 		}
 		
@@ -105,8 +118,7 @@ public class MatcherImpl implements Matcher {
 		}
 		return true;
 	}
-	
-	
+		
 	boolean matchType(Edge q, Edge r, Environment env){
 		if (! match(q.getNode(0), r.getNode(0), env)){
 			return false;
@@ -173,7 +185,7 @@ public class MatcherImpl implements Matcher {
 	 * the cache is bound to current query (via the environment)
 	 */
 	public boolean isSubClassOf(Node t, Node q, Environment env){
-		Table table = getTable(env);
+		Cache table = getTable(env);
 		Boolean b = table.get(q, t);
 		if (b == null){
 			// PRAGMA: use graph because entail may be null (cf PluginImpl)
@@ -183,10 +195,10 @@ public class MatcherImpl implements Matcher {
 		return b;
 	}
 	
-	Table getTable(Environment env){
-		Table table = (Table) env.getObject();
+	Cache getTable(Environment env){
+		Cache table = (Cache) env.getObject();
 		if (table == null){
-			table = new Table();
+			table = new Cache(env.getQuery());
 			env.setObject(table);
 		}
 		return table;
@@ -206,6 +218,10 @@ public class MatcherImpl implements Matcher {
 	@Override
 	public void setMode(int mode) {
 		this.mode = mode;
+	}
+	
+	public int getMode(){
+		return mode;
 	}
 	
 	public boolean match(Node q, Node t, Environment env){

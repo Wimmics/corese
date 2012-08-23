@@ -171,7 +171,7 @@ public class ProducerImpl implements Producer {
 			// graph ?g { }
 			// <<bind>> ?g to uri 
 			if (gNode != null) {
-				return complete(getEdgesFrom(predicate, from), edge, env);
+				return complete(getEdgesFrom(predicate, from), gNode, edge, env);
 			}
 			else if (! isFromOK(from)){
 				// from are unknown
@@ -200,7 +200,8 @@ public class ProducerImpl implements Producer {
 		
 		// check gNode/from/named
 		it = complete(it, gNode, getNode(gNode, env), from);
-		it = complete(it, edge, env);
+		// in case of local Matcher
+		it = complete(it, gNode, edge, env);
 		return it;
 	}
 	
@@ -209,9 +210,9 @@ public class ProducerImpl implements Producer {
 	 * Iterator of Entity that performs local match.match()
 	 * Enable to have a local ontology in case of several graphs with local ontologies
 	 */
-	Iterable<Entity> complete(Iterable<Entity> it, Edge edge, Environment env){
+	Iterable<Entity> complete(Iterable<Entity> it, Node gNode, Edge edge, Environment env){
 		if (isMatch){
-			MatchIterator mit = new MatchIterator(it, edge, env, match);
+			MatchIterator mit = new MatchIterator(it, gNode, edge, graph, env, match);
 			return mit;
 		}
 		else {

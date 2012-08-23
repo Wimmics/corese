@@ -30,4 +30,10 @@ public class MatcherDefault implements Matcher {
 		
 	}
 
+	@Override
+	public int getMode() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

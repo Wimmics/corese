@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 
@@ -34,6 +35,7 @@ public class CoreseDatatype
 	static final Hashtable<String, CoreseString> lang2dataLang = new Hashtable<String, CoreseString>(); // 'en' -> CoreseString('en')
     static final Hashtable<String, CoreseURI>    hdt = new Hashtable<String, CoreseURI>(); // datatype name -> CoreseURI datatype
 	static final DatatypeMap dm = DatatypeMap.create();
+	static final NSManager nsm = NSManager.create();
 
 	static final     int LESSER = -1, GREATER = 1;
 	static boolean SPARQLCompliant = false; 
@@ -83,7 +85,13 @@ public class CoreseDatatype
 			value =  protect(value) ;
 		}
 		else if (isURI()) {
-			value = "<" + value + ">";
+			String str = nsm.toPrefix(value, true);
+			if (str == value){
+				value = "<" + value + ">";
+			}
+			else {
+				value = str;
+			}
 		}
 		else if (isBlank()) {}
 		

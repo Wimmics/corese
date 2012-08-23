@@ -73,4 +73,6 @@ public interface Matcher {
 	
 	void setMode(int mode);
 	
+	int getMode();
+	
 }

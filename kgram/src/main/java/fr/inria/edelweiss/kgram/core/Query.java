@@ -1367,9 +1367,9 @@ public class Query extends Exp {
 		}
 		
 		// index the fake graph node (select/minus)
-//		if (exp.getGraphNode()!=null){
-//			index(exp.getGraphNode());
-//		}
+		if (exp.getGraphNode()!=null){
+			index(exp.getGraphNode());
+		}
 		
 		return min;
 		

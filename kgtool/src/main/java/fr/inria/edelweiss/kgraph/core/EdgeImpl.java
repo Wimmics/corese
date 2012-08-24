@@ -16,6 +16,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 public  class EdgeImpl implements Edge, Entity {
 	public static boolean displayGraph = true;
 	private static int MAX = 2;
+	private static int TAGINDEX = 2;
 
 	protected Node subject, object;
 	

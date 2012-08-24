@@ -56,6 +56,8 @@ public class Graph //implements IGraph
 	static final String BLANK = "_:b";
 
 	private static final String NL = System.getProperty("line.separator");
+
+	static final int TAGINDEX = 2;
 	
 	/**
 	 * Synchronization:
@@ -103,6 +105,12 @@ public class Graph //implements IGraph
 	hasDefault = !true;
 	// number of edges
 	int size = 0;
+
+	private int tagCount = 0;
+
+	private String key;
+
+	private boolean hasTag = false;
 	
 	// SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
 	
@@ -159,12 +167,16 @@ public class Graph //implements IGraph
 		property 	= new Hashtable<String, Node>();
 		gindex 		= new NodeIndex();	
 		fac 		= new EdgeFactory(this);
+		key = hashCode() + ".";
 	}
 	
 	public static Graph create(){
 		return new Graph();
 	}
 	
+	/**
+	 * b = true for RDFS entailment
+	 */
 	public static Graph create(boolean b){
 		Graph g = new Graph();
 		if (b) g.setEntailment();
@@ -1734,12 +1746,36 @@ public class Graph //implements IGraph
 	/**********************************************************/
 	
 	
+	/**
+	 * 
+	 * Generate a unique tag for each triple
+	 */
+	Node tag(){
+		IDatatype dt = DatatypeMap.newInstance(tagString());
+		Node tag = getNode(dt, true, true);
+		return tag;
+	}
+	
+	String tagString(){
+		Tagger t = getTagger();
+		if (t == null){
+			return key + tagCount++;
+		}
+		return t.tag();
+	}
+	
 	public boolean hasTag() {
-		return getEdgeFactory().hasTag();
+		return hasTag ;
+	}
+	
+	boolean needTag(Entity ent) {
+		return hasTag() && 
+			ent.nbNode() == TAGINDEX && 
+			! getProxy().isEntailed(ent.getGraph());
 	}
 	
 	public void setTag(boolean b){
-		getEdgeFactory().setTag(b);
+		hasTag = b;
 	}
 	
 	/**

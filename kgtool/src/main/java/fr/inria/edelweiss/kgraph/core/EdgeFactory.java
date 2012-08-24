@@ -64,14 +64,10 @@ public class EdgeFactory {
 		else {
 			isOptim = false;
 		}
-	}
+	}	
 	
-	public void setTag(boolean b){
-		isTag = b;
-	}
-	
-	public boolean hasTag(){
-		return isTag;
+	 boolean hasTag(){
+		return graph.hasTag();
 	}
 	
 	// std edge: property is static
@@ -121,7 +117,7 @@ public class EdgeFactory {
 		if (isOptim){
 			return optimCreate(source, subject, predicate, value);
 		}
-		else if (isTag){
+		else if (hasTag()){
 			return tagCreate(source, subject, predicate, value);
 		}
 		else {
@@ -154,21 +150,10 @@ public class EdgeFactory {
 	}
 	
 	/**
-	 * 
 	 * Generate a unique tag for each triple
 	 */
 	Node tag(){
-		IDatatype dt = DatatypeMap.newInstance(tagString());
-		Node tag = graph.getNode(dt, true, true);
-		return tag;
-	}
-	
-	String tagString(){
-		Tagger t = graph.getTagger();
-		if (t == null){
-			return key + count++;
-		}
-		return t.tag();
+		return graph.tag();
 	}
 	
 	/**
@@ -180,12 +165,11 @@ public class EdgeFactory {
 		list.add(subject);
 		list.add(value);
 		
-		if (! graph.getProxy().isEntailment(source) &&
-			! graph.getProxy().isRule(source)	){
-			// no tag for entailment because it would loop
-			Node tag = tag();
-			list.add(tag);
-		}
+//		if (! graph.getProxy().isEntailed(source)){
+//			// no tag for entailment because it would loop
+//			Node tag = tag();
+//			list.add(tag);
+//		}
 
 		return create(source, predicate, list);
 	}

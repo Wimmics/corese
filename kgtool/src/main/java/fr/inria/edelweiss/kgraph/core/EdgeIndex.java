@@ -221,8 +221,19 @@ implements Index {
 	public Entity add(Entity edge){
 		List<Entity> list = define(edge.getEdge().getEdgeNode());
 		
+		Comparator cc = comp;
+		boolean needTag = index == 0 && graph.needTag(edge);
+		if (needTag){
+			// this edge has no tag yet and it will need one
+			// let's see if there is the same triple (with another tag)
+			// in this case, we skip the insertion
+			// otherwise we tag the triple and we insert it 
+			cc = skip;
+		}
+		
 		if (isSort(edge)){
-			int i = find(list, edge, 0, list.size());
+			// edges are sorted, check presence by dichotomy
+			int i = find(cc, list, edge, 0, list.size());
 			int res = 0;
 			
 			if (i>=list.size()){
@@ -233,12 +244,16 @@ implements Index {
 						return null;
 					}
 				}
+							
+				if (needTag){
+					tag(edge);
+				}
 				list.add(edge);
 				logInsert(edge);
 			}
 			else {
 				if (index == 0){
-					res = comp.compare(edge, list.get(i));
+					res = cc.compare(edge, list.get(i));
 					if (res == 0){
 						// eliminate duplicate at load time for index 0
 						count++;
@@ -256,18 +271,32 @@ implements Index {
 						}
 					}
 				}
+
+				if (needTag){
+					tag(edge);
+				}
 				
 				list.add(i, edge);
 				logInsert(edge);
 			}
 		}
 		else {
+			// edges are not already sorted (load time)
+			// add all edges, duplicates will be removed later when first query occurs
 			list.add(edge);
 			logInsert(edge);
 		}
 
 		//complete(edge);
 		return edge;
+	}
+	
+	
+	
+	Entity tag(Entity ent){
+		EdgeImpl ee = (EdgeImpl) ent;
+		ee.setNode(Graph.TAGINDEX, graph.tag());
+		return ent;
 	}
 	
 	boolean same(Entity e1, Entity e2){
@@ -673,7 +702,8 @@ implements Index {
 			// delete all occurrences of triple that match edge
 			// with different tags
 			Entity res = ent;
-			
+			// TODO: BUG:
+			// may need to go backward also
 			while (i < list.size() && res != null){
 				res = delete(cmp, edge, list, i);
 				logDelete(res);

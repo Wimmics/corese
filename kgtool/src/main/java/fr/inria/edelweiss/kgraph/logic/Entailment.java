@@ -569,6 +569,10 @@ public class Entailment {
 	}
 	
 	
+	public boolean isEntailed(Node source){
+		return isEntailment(source) || isRule(source);
+	}
+	
 	public boolean isEntailment(Node source){
 		return hasLabel(source, ENTAIL);
 	}

@@ -490,7 +490,7 @@ implements Regex, Filter, Expr {
 		retype = n;
 	}
 	
-	int getretype() {
+	public int getretype() {
 		if (isConstant())return Regex.LABEL;
 		if (isNot())	 return Regex.NOT;
 		if (isSeq())	 return Regex.SEQ;

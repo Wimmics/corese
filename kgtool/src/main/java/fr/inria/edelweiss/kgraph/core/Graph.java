@@ -1382,6 +1382,12 @@ public class Graph //implements IGraph
 	 * 
 	 *****************************************************************/
 	
+	public Entity delete(Entity ent){
+		if (! (ent instanceof EdgeImpl)){
+			return null;
+		}
+		return delete((EdgeImpl) ent);
+	}
 
 	public Entity delete(EdgeImpl edge){
 		Entity res = null;

@@ -87,7 +87,7 @@ public class Graph //implements IGraph
 	Hashtable<String, Node> graph, property;
 	NodeIndex gindex;
 	Log log;
-	GraphListener listen;
+	List<GraphListener> listen;
 	Tagger tag;
 	Entailment inference, proxy;
 	EdgeFactory fac;
@@ -215,11 +215,15 @@ public class Graph //implements IGraph
 		}
 	}
 	
-	public void setListener(GraphListener gl){
-		listen = gl;
+	public void addListener(GraphListener gl){
+		if (listen == null){
+			listen = new ArrayList<GraphListener>();
+		}
+		listen.add(gl);
+		gl.addSource(this);
 	}
 	
-	public GraphListener getListener(){
+	public List<GraphListener> getListeners(){
 		return listen;
 	}
 	
@@ -1783,13 +1787,17 @@ public class Graph //implements IGraph
 	 */
 	void logDelete(Entity ent){
 		if (listen != null){
-			listen.delete(ent);
+			for (GraphListener gl : listen){
+				gl.delete(this, ent);
+			}
 		}
 	}
 	
 	void logInsert(Entity ent){
 		if (listen != null){
-			listen.insert(ent);
+			for (GraphListener gl : listen){
+				gl.insert(this, ent);
+			}		
 		}
 	}
 	

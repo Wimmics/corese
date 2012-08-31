@@ -971,88 +971,86 @@ public class ASTQuery  implements Keyword {
 	}
 	
 	/**
-	 * Create a triple for SPARQL JJ Parser
-	 * Process the case where the property is a regex
-	 * generate a filter(match($path, regex))
-	 * return {triple . filter}
+	 * Create a triple or a path for SPARQL JJ Parser
 	 */
 	public  Triple createTriple(Expression subject, Atom predicate, Expression object){
+		Expression exp = predicate.getExpression();
+		Triple t;
+		if (exp == null){
+			t = Triple.create(subject, predicate, object);
+		}
+		else {
+			t = createPath(subject, predicate, object, exp);
+		}
+		return t;
+	}
+	
+	
+	public  Triple createPath(Expression subject, Expression exp, Expression object){		
+		Constant predicate = createProperty(exp);
+		predicate.setExpression(exp);
+		Triple t = createPath(subject, predicate, object, exp);
+		return t;
+	}
+	
+		
+	/**
+	 * Create a Triple that contains a Property Path with exp as PP expression
+	 */
+	public  Triple createPath(Expression subject, Atom predicate, Expression object, Expression exp){		
 		Triple t = Triple.create(subject, predicate, object);
-		
-		Expression exp = t.getProperty().getExpression();
-		
-		if (exp != null){
-			// property path or xpath
-			Variable var = t.getVariable();
-			if (var == null){
-				var = new Variable(SYSVAR + nbd++);
-				var.setBlankNode(true);
-				t.setVariable(var);
-			}
-			if (exp.getName().equals(Term.XPATH)){
-				t.setRegex(exp);
-				return t;
-			}
-			
-			var.setPath(true);
-			String mode = "";
-			boolean isInverse = false, 
-			isDistinct = false, 
-			isShort = false;
-			
-			while (true){
-				if (exp.isFunction()){
-					
-					if (exp.getName().equals(DISTINCT)){
-						exp = exp.getArg(0);
-						//mode += DISTINCT;
-						isDistinct = true;
-					}
-					else if (exp.getName().equals(SSHORT)){
-						exp = exp.getArg(0);
-						mode += "s";
-						isShort = true;
-					}
-					else if (exp.getName().equals(SSHORTALL) || exp.getName().equals(SHORT)){
-						exp = exp.getArg(0);
-						mode += "sa";
-						isShort = true;
-					}
-//					else if (exp.getName().equals(SINV)){
-//					exp = exp.getArg(0);
-//					isInverse = true;
-//					mode += "i";
-//				}
-//					else if (exp.getName().equals(SDEPTH)){
-//						exp = exp.getArg(0);
-//						mode += "d";
-//					}
-//					else if (exp.getName().equals(SBREADTH)){
-//						exp = exp.getArg(0);
-//						mode += "b";
-//					}
-					else break;
+		// property path or xpath
+		Variable var = t.getVariable();
+		if (var == null){
+			var = new Variable(SYSVAR + nbd++);
+			var.setBlankNode(true);
+			t.setVariable(var);
+		}
+		if (exp.getName().equals(Term.XPATH)){
+			t.setRegex(exp);
+			return t;
+		}
+
+		var.setPath(true);
+		String mode = "";
+		boolean isDistinct = false, 
+				isShort = false;
+
+		while (true){
+			if (exp.isFunction()){
+
+				if (exp.getName().equals(DISTINCT)){
+					exp = exp.getArg(0);
+					//mode += DISTINCT;
+					isDistinct = true;
 				}
+				else if (exp.getName().equals(SSHORT)){
+					exp = exp.getArg(0);
+					mode += "s";
+					isShort = true;
+				}
+				else if (exp.getName().equals(SSHORTALL) || exp.getName().equals(SHORT)){
+					exp = exp.getArg(0);
+					mode += "sa";
+					isShort = true;
+				}
+
 				else break;
 			}
-			
-//			if (isInverse){
-//				exp = Term.function(Term.SEINV, exp);
-//				t.setRegex(exp);
-//			}
-			
-			exp.setDistinct(isDistinct);
-			exp.setShort(isShort);
-			t.setRegex(exp);
-			t.setMode(mode);
-			
-
-			return t;
-			
-			
+			else break;
 		}
-		else return t;
+
+
+		exp.setDistinct(isDistinct);
+		exp.setShort(isShort);
+		t.setRegex(exp);
+		t.setMode(mode);
+
+		return t;
+
 	}
+
+	
 	
 	// regex only
 	public  Expression createOperator(String ope, Expression exp) {

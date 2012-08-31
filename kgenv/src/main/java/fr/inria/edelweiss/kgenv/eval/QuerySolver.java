@@ -125,12 +125,12 @@ public class QuerySolver  {
 		sort = s;
 	}
 	
-	public void set(QueryVisitor v){
-		add(v);
+	public void setVisitor(QueryVisitor v){
+		addVisitor(v);
 	}
 	
 	
-	public void add(QueryVisitor v){
+	public void addVisitor(QueryVisitor v){
 		if (visit == null){
 			visit = new ArrayList<QueryVisitor>();
 		}

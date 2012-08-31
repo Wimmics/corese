@@ -545,12 +545,12 @@ public class Triple extends Exp {
 			p = getRegex().toRegex();
 			
 			if (variable != null && ! variable.getName().startsWith(ASTQuery.SYSVAR)){
-				p += " :: " + variable.getName();
+				p += " :: " + variable.toString();
 			}
 		}
 		else if (variable != null) {
 			if (isTopProperty()){
-				p = variable.getName();
+				p = variable.toString();
 			}
 			else {
 				p += "::" + variable.getName();

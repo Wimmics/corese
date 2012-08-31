@@ -39,6 +39,7 @@ public class Term extends Expression {
 	static final String SEDIV = Keyword.SDIV;
 	public static final String SEOR  = Keyword.SEOR;
 	public static final String SEQ   = Keyword.SEQ;
+	public static final String SNEQ   = Keyword.SNEQ;
 	public static final String STAR = "star";
 	public static final String TEST = "test";
 

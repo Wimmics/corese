@@ -35,6 +35,10 @@ public class BasicGraphPattern extends And {
     public BasicGraphPattern(Exp exp){
     	super(exp);
     }
+    
+    public BasicGraphPattern(Exp e1, Exp e2){
+    	super(e1, e2);
+    }
      
     /** Creation of a BasicGraphPattern */
     public static BasicGraphPattern create() {
@@ -43,6 +47,10 @@ public class BasicGraphPattern extends And {
     
     public static BasicGraphPattern create(Exp exp) {
         return new BasicGraphPattern(exp);
+    }
+    
+    public static BasicGraphPattern create(Exp e1, Exp e2) {
+        return new BasicGraphPattern(e1, e2);
     }
     
     public void addFilter(Expression e){

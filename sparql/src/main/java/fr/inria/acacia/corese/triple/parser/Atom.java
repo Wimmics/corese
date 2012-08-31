@@ -44,6 +44,10 @@ public class Atom extends Expression implements ElementClause{
 	public Variable getVariable() {
 		return null;
 	}
+	
+	public Expression getExpression() {
+        return null;
+    }
 
 	boolean isAtom() {
 		return true;

@@ -36,7 +36,7 @@ public class RDFFormat {
 	private static final String XMLDEC ="<?xml version=\"1.0\" ?>";
 	private static final String RDF_OPEN = "<rdf:RDF";
 	private static final String RDF_CLOSE = "</rdf:RDF>";
-	static final String XMLNS 		= "xmlns:";
+	static final String XMLNS 		= "xmlns";
 	static final String DESCRIPTION = "rdf:Description";
 	static final String ID 			= " rdf:about='";
 	static final String NODEID 		= " rdf:NodeID='";
@@ -237,7 +237,12 @@ public class RDFFormat {
 			}
 			
 			String ns = nsm.getNamespace(p);
-			bb.append(XMLNS + p + "='" + toXML(ns) + "'");
+			
+			bb.append(XMLNS);
+			if (! p.equals("")){
+				bb.append(":");
+			}
+			bb.append(p + "='" + toXML(ns) + "'");
 		}
 	}
 	
@@ -316,7 +321,7 @@ public class RDFFormat {
 	
 	void edge(Entity ent){
 		Edge edge = ent.getEdge();
-		String pred = nsm.toPrefix(edge.getEdgeNode().getLabel());
+		String pred = nsm.toPrefixXML(edge.getEdgeNode().getLabel());
 		IDatatype dt = getValue(edge.getNode(1));
 		String open  = "<" + pred;
 		String close = "</" + pred +">";

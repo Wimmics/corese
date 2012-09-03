@@ -2221,14 +2221,14 @@ public class TestQuery1 {
 				"service <http://fr.dbpedia.org/sparql> {"+
 				"<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y .}" +
 			"}" +
-			"pragma {kg:path kg:expand 20}";
+			"pragma {kg:path kg:expand 12}";
 		
 		
 		try {
 			Mappings map = exec.query(query);
 			ResultFormat f = ResultFormat.create(map);
 			//System.out.println(f);
-			assertEquals("Result", 15, map.size());
+			assertEquals("Result", 12, map.size());
 			
 			
 
@@ -2593,6 +2593,48 @@ public class TestQuery1 {
 
 	
 	
+	@Test
+	public void testOption(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);		
+
+		String init = 
+			"prefix : <http://example.org/> "+
+			"" +
+			"insert data {" +
+			":a :p :b, :c ." +
+			
+			":b :p :d, :a " +
+			":c :p :d " +
+			"" +
+			":e :p :b, :c ." +
+			""+
+			"} ";
+		
+		String query = 
+				"prefix : <http://example.org/> " +
+				"select *  where  {" +
+				"?x ((:p/:p) ?)  ?y " +
+				"}";
+		
+		
+		try {
+			
+			exec.query(init);
+			Mappings map = exec.query(query);
+						
+
+			assertEquals("Results", 9, map.size());
+			
+			
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
 	
 	
 	

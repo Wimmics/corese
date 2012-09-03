@@ -1027,13 +1027,13 @@ suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 69));
 //   		  		  
     		  
    query="select * where {" +
-    	 		"?x ?p ?y optional{?x current::?p ?z} filter(!bound(?z)) }";       		
+    	 		"?x ?p ?y optional{?x ?p ?z} filter(!bound(?z)) }";       		
     	        		
     suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 0));
     	        		  
     		  
     		  query="select * where {" +
-    	 		"?x current::c:FirstName '\"?Olivier\"' } " ;
+    	 		"?x c:FirstName '\"?Olivier\"' } " ;
     	 		
    suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
     		  	  
@@ -2910,11 +2910,11 @@ query = "select   distinct ?t1 ?t2     where {"+
      "filter( ?name ~ 'acacia')}}", 10));
 
 
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-"select distinct sorted ?p  where {" + 
-"?x rdf:type c:Manager ?x ?p ?y " + 
-" optional { ?p  rdfs:subPropertyOf::?q c:IsInterestedBy } filter (! bound(?q))}" +
-"order by ?p group by ?p", 15));
+//        suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//"select distinct sorted ?p  where {" + 
+//"?x rdf:type c:Manager ?x ?p ?y " + 
+//" optional { ?p  rdfs:subPropertyOf::?q c:IsInterestedBy } filter (! bound(?q))}" +
+//"order by ?p group by ?p", 15));
 
 
   
@@ -3229,16 +3229,16 @@ query = "select   distinct ?t1 ?t2     where {"+
 //        "optional{?x c:isMemberOf ?org ?org c:Designation ?name}}"
 //        , 5));
              
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-       "select distinct ?doc where {?doc c:CreatedBy ?a  ?doc c:Title ?t  filter(?t ~ 'knowledge') " +
-       "optional{?a c:IsInterestedBy ?topic} " + 
-       "optional { ?a c:IsInterestedBy::?q ?topic } filter (! bound(?q)) }", 3));
-
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select distinct ?doc where {?doc c:CreatedBy ?a  ?doc c:Title ?t  filter(?t ~ 'knowledge') " +
-        "optional{?a c:IsInterestedBy ?topic1} " + 
-        "optional { ?a c:IsInterestedBy::?q ?topic2 } filter(! bound(?q))}", 3));
- 
+//        suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//       "select distinct ?doc where {?doc c:CreatedBy ?a  ?doc c:Title ?t  filter(?t ~ 'knowledge') " +
+//       "optional{?a c:IsInterestedBy ?topic} " + 
+//       "optional { ?a c:IsInterestedBy::?q ?topic } filter (! bound(?q)) }", 3));
+//
+//        suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//        "select distinct ?doc where {?doc c:CreatedBy ?a  ?doc c:Title ?t  filter(?t ~ 'knowledge') " +
+//        "optional{?a c:IsInterestedBy ?topic1} " + 
+//        "optional { ?a c:IsInterestedBy::?q ?topic2 } filter(! bound(?q))}", 3));
+// 
         
         
         
@@ -3298,23 +3298,21 @@ query = "select   distinct ?t1 ?t2     where {"+
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select where {?x rdf:type xsd:string  filter(?x > '1'^^xsd:integer)}", 0));
         
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select  where { ?p rdf:type c:Person " +
-        "?p one::rdf:type ?c } group by ?c projection 1", 1));
+       
         
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select  where { ?p rdf:type c:Person " +
-        "?p one::rdf:type ?c } group by ?c limit 1", 1));
+        "?p rdf:type ?c } group by ?c limit 1", 1));
         
          
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select distinct ?p where { ?p rdf:type owl:TransitiveProperty    " +
-        "?x c:SomeRelation::?p ?y }",0));
-        
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select distinct ?p where { ?p rdf:type owl:TransitiveProperty   " +
-        "?p rdf:type ?c  ?x c:SomeRelation::?p ?y }",0));
-        
+//        suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//        "select distinct ?p where { ?p rdf:type owl:TransitiveProperty    " +
+//        "?x c:SomeRelation::?p ?y }",0));
+//        
+//        suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//        "select distinct ?p where { ?p rdf:type owl:TransitiveProperty   " +
+//        "?p rdf:type ?c  ?x c:SomeRelation::?p ?y }",0));
+//        
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select  ?doc where { ?doc rdf:type c:Document  ?doc c:Title ?t  " +
         "filter(?t ~ \"knowledge\") }", 8));
@@ -3327,9 +3325,9 @@ query = "select   distinct ?t1 ?t2     where {"+
 //        "select where { ?x rdf:type c:Person  ?x direct::rdf:type ?p  " +
 //        "filter( ?p = c:Engineer) }", 7));
  
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select distinct ?p where { ?x rdf:type c:Person    " +
-        "optional{?x c:isMemberOf::?p ?org }}", 2));
+//        suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//        "select distinct ?p where { ?x rdf:type c:Person    " +
+//        "optional{?x c:isMemberOf::?p ?org }}", 2));
 
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "prefix cc:  <http://www.inria.fr/acacia/comma#> " +
@@ -3340,11 +3338,11 @@ query = "select   distinct ?t1 ?t2     where {"+
         "filter(?p ^ 'http://www.inria.fr/acacia/comma#')  " +
         "?doc c:Title ?t filter(?t ~ \"knowledge\") } ", 46));
 
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select ?p where {?doc c:SomeRelation::?p ?v ?doc c:Title ?t " +
-        "filter(?t ~ \"knowledge\") } ", 21));
-        
-        
+//        suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//        "select ?p where {?doc c:SomeRelation::?p ?v ?doc c:Title ?t " +
+//        "filter(?t ~ \"knowledge\") } ", 21));
+//        
+//        
         
 
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
@@ -3385,10 +3383,10 @@ query = "select   distinct ?t1 ?t2     where {"+
         "select  (count (?doc) as ?count)  where { ?doc c:CreatedBy ?p " +
         "filter ( ?p ~ \"corby\" )  } group by ?p ", 7));
         
-        suite.addTest(new CoreseTest2(true, "testQuery",corese,
-        "select * where { ?x c:FamilyName ?name " + 
-        " optional { ?x c:FamilyName::?q ?y } filter(! bound(?q)) }", 0));
-        
+//        suite.addTest(new CoreseTest2(true, "testQuery",corese,
+//        "select * where { ?x c:FamilyName ?name " + 
+//        " optional { ?x c:FamilyName::?q ?y } filter(! bound(?q)) }", 0));
+//        
         suite.addTest(new CoreseTest2(true, "testQueryCount",corese,
         "select (count (?doc) as ?count) where { ?x c:FamilyName ?name filter(?name = \"Corby\" ) " +
         "?x c:hasCreated ?doc } group by ?x", 5));
@@ -3419,10 +3417,10 @@ query = "select   distinct ?t1 ?t2     where {"+
        "{?x c:FamilyName \"Olivier\"} union {?x c:FirstName \"Olivier\"  ?x c:isMemberOf ?org} " +
        "{?x c:isMemberOf ?org} union {?x c:IsInterestedBy ?t} } ", 1));
  
-        suite.addTest(new CoreseTest2(true, "testQuery",corese,
-        "select * where { ?x rdf:type c:Person ?x c:isMemberOf ?org " + 
-     " { { optional { ?x c:IsInterestedBy::?p1 ?t } filter(! bound(?p1)) } union " + 
-        "{ optional { ?x c:isMemberOf::?p2 ?a }    filter (! bound(?p2)) } } } ", 0));
+//        suite.addTest(new CoreseTest2(true, "testQuery",corese,
+//        "select * where { ?x rdf:type c:Person ?x c:isMemberOf ?org " + 
+//     " { { optional { ?x c:IsInterestedBy::?p1 ?t } filter(! bound(?p1)) } union " + 
+//        "{ optional { ?x c:isMemberOf::?p2 ?a }    filter (! bound(?p2)) } } } ", 0));
 
 
         suite.addTest(new CoreseTest2(true, "testQuery",corese,
@@ -3444,30 +3442,30 @@ query = "select   distinct ?t1 ?t2     where {"+
        
         
         
-        suite.addTest(new CoreseTest2(true,"testQuery", corese,
-        "select distinct ?x where { ?x rdf:type c:Person  ?x c:isMemberOf ?org " + 
-        " optional { ?x c:IsInterestedBy::?q ?t } filter(! bound(?q))  " +
-        " ?t rdf:type c:JavaProgrammingTopic }", 0));
-
-        suite.addTest(new CoreseTest2(true,"testQuery",corese,
-        "select * where { ?x rdf:type c:Person  ?x c:FirstName \"Olivier\" " + 
-        " optional { ?x c:isMemberOf::?q ?org  } filter (! bound(?q)) " +
-        "optional{?x c:IsInterestedBy ?t}   ?t rdf:type c:JavaProgrammingTopic }", 11));
+//        suite.addTest(new CoreseTest2(true,"testQuery", corese,
+//        "select distinct ?x where { ?x rdf:type c:Person  ?x c:isMemberOf ?org " + 
+//        " optional { ?x c:IsInterestedBy::?q ?t } filter(! bound(?q))  " +
+//        " ?t rdf:type c:JavaProgrammingTopic }", 0));
+//
+//        suite.addTest(new CoreseTest2(true,"testQuery",corese,
+//        "select * where { ?x rdf:type c:Person  ?x c:FirstName \"Olivier\" " + 
+//        " optional { ?x c:isMemberOf::?q ?org  } filter (! bound(?q)) " +
+//        "optional{?x c:IsInterestedBy ?t}   ?t rdf:type c:JavaProgrammingTopic }", 11));
 
         suite.addTest(new CoreseTest2(true,"testQuery", corese,
         "select where { ?x rdf:type c:Person  ?x c:SomeRelation ?y " +
         "filter(datatype(?y) = xsd:string)   filter(?y ~ \"x\") }", 24));
 
         // here **
-   suite.addTest(new CoreseTest2(true, "testQuery", corese,
-"select distinct ?x where { ?x rdf:type c:Person  ?x c:Designation ?n  ?org c:Include ?x " + 
-" optional { ?x c:IsInterestedBy::?q ?t2 ?t2 rdf:type c:NetworkTopic } filter (! bound(?q))   " + 
- " optional { ?x c:IsInterestedBy::?q2 ?t ?t rdf:type c:ProgrammingTopic } filter (! bound(?q2))  }", 8));
+//   suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//"select distinct ?x where { ?x rdf:type c:Person  ?x c:Designation ?n  ?org c:Include ?x " + 
+//" optional { ?x c:IsInterestedBy::?q ?t2 ?t2 rdf:type c:NetworkTopic } filter (! bound(?q))   " + 
+// " optional { ?x c:IsInterestedBy::?q2 ?t ?t rdf:type c:ProgrammingTopic } filter (! bound(?q2))  }", 8));
 
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select distinct ?x where { ?x rdf:type c:Person  ?x c:Designation ?n  ?org c:Include ?x " + 
-        " optional {?x c:IsInterestedBy::?q ?t2  ?t2 rdf:type c:NetworkTopic } filter (! bound(?q)) " + 
-        " optional{?x c:IsInterestedBy ?t} ?t rdf:type c:ProgrammingTopic } ", 1));
+//        suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//        "select distinct ?x where { ?x rdf:type c:Person  ?x c:Designation ?n  ?org c:Include ?x " + 
+//        " optional {?x c:IsInterestedBy@?q ?t2  ?t2 rdf:type c:NetworkTopic } filter (! bound(?q)) " + 
+//        " optional{?x c:IsInterestedBy ?t} ?t rdf:type c:ProgrammingTopic } ", 1));
 
   
         suite.addTest(new CoreseTest2(true, "testQuery", corese,

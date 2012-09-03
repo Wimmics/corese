@@ -1491,6 +1491,41 @@ public class TestQuery {
 			 
 	}
 	
+	
+	@Test
+	public void test451(){			
+			
+			Graph graph = Graph.create(true);			
+			QueryProcess exec = QueryProcess.create(graph);
+			
+			 String init = 
+					"prefix c: <http://test/> " +
+					"insert data {" +
+					"tuple(c:name <John>  'John' 1)" +
+					"tuple(c:name <John>  'John' 2)" +
+					"}" ;
+			 
+			 String query = 
+				"prefix c: <http://test/> " +
+				 "select * where {" +
+					"graph ?g { tuple(c:name ?x ?n ) }" +
+				 "}";
+
+			 try {
+					exec.query(init);
+					Mappings map = exec.query(query);
+					assertEquals("Result", 2, map.size());
+
+					
+				} catch (EngineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 
+	}
+	
+	
+	
 	@Test
 	public void test46(){			
 			
@@ -2109,7 +2144,7 @@ public class TestQuery {
 			"prefix foaf: <http://xmlns.com/foaf/0.1/>" + 
 			"select * where {" +
 				"service <http://fr.dbpedia.org/sparql> {" +
-					"?x foaf:name 'Olivier'@fr" +
+					"?x foaf:name 'Olivier'@fr ; ?p 'Olivier'@fr " +
 				"}" +
 			"}";
 		
@@ -2118,7 +2153,40 @@ public class TestQuery {
 			Mappings map = exec.query(query);
 			ResultFormat f = ResultFormat.create(map);
 			//System.out.println(f);
-			assertEquals("Result", 2, map.size());
+			assertEquals("Result", 3, map.size());
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+	}
+	
+	
+	@Test
+	public void test601(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String query = 
+			"prefix foaf: <http://xmlns.com/foaf/0.1/>" + 
+			"construct {?x foaf:name 'Olivier'@fr ; ?p 'Olivier'@fr}" +
+			" where {" +
+				"service <http://fr.dbpedia.org/sparql> {" +
+					"?x foaf:name 'Olivier'@fr ; ?p 'Olivier'@fr " +
+				"}" +
+			"}";
+		
+		
+		try {
+			Mappings map = exec.query(query);
+			//ResultFormat f = ResultFormat.create(map);
+			//System.out.println(f);
+			assertEquals("Result", 3, map.size());
+			Graph gg = (Graph) map.getGraph();
+			assertEquals("Result", 3, gg.size());
+
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2197,6 +2265,56 @@ public class TestQuery {
 	
 	
 	
+	@Test
+	public void test63(){			
+		
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String init = 
+			"prefix foaf: <http://xmlns.com/foaf/0.1/>" + 
+			"insert data {" +
+				"<A> foaf:date '2012-05-10'^^xsd:dateTime " +
+				"<B> foaf:date '2012-05-11'^^xsd:dateTime " +
+				"<C> foaf:date '2012-05-10T10:20:30'^^xsd:dateTime " +
+				"<D> foaf:date '2012-05-10T10:30:30.50'^^xsd:dateTime " +
+				"<E> foaf:date '2012-05-10T10:30:30'^^xsd:dateTime " +
+				"}";
+		
+		
+		String query = 
+			"prefix foaf: <http://xmlns.com/foaf/0.1/>" + 
+			"select * where {" +
+				"?x foaf:date ?date" +
+			"}" +
+			"order by desc(?date)";		
+		
+		try {
+			Mappings map = exec.query(init);
+			map = exec.query(query);
+			System.out.println(map);
+			assertEquals("Result", 5, map.size());
+			
+			IDatatype dt0 = (IDatatype) map.get(0).getNode("?x").getValue();
+			IDatatype dt1 = (IDatatype) map.get(1).getNode("?x").getValue();
+			IDatatype dt2 = (IDatatype) map.get(2).getNode("?x").getValue();
+			IDatatype dt3 = (IDatatype) map.get(3).getNode("?x").getValue();
+			IDatatype dt4 = (IDatatype) map.get(4).getNode("?x").getValue();
+			
+			assertEquals("Result", "B", dt0.getLabel());
+			assertEquals("Result", "D", dt1.getLabel());
+			assertEquals("Result", "E", dt2.getLabel());
+			assertEquals("Result", "C", dt3.getLabel());
+			assertEquals("Result", "A", dt4.getLabel());
+
+			// B D E C A
+
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	
 	

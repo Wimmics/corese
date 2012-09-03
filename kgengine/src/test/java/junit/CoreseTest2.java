@@ -28,6 +28,7 @@ import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.StatListener;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -293,7 +294,7 @@ public class CoreseTest2 extends TestCase {
 			}
 			
 			if (nb!=expected){
-				//System.out.println(query + " " + nb + " " + expected);
+				System.out.println("** PB: "  + nb + " " + expected + "\n" + query);
 			}
 					
 			assertEquals(query + " : ", expected, nb);
@@ -319,8 +320,9 @@ public class CoreseTest2 extends TestCase {
 		try {
 			Mappings lMap = exec.query(query);
 			
-			//exec.compile(exec.getAST(lMap).toString());
-									
+//			Query q = exec.compile(query);
+//			Mappings lMap = exec.query(exec.getAST(q).toString());
+												
 			return lMap;
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block

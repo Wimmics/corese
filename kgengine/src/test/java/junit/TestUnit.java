@@ -76,11 +76,282 @@ import fr.inria.edelweiss.kgtool.util.GraphListenerImpl;
 
 public class TestUnit {
 	
-	static String root = "/home/corby/workspace/kgengine/src/test/resources/data/";
-	static String text = "/home/corby/workspace/kgengine/src/test/resources/text/";
-	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+	static String root  = "/home/corby/workspace/kgengine/src/test/resources/data/";
+	static String text  = "/home/corby/workspace/kgengine/src/test/resources/text/";
+	static String data  = "/home/corby/workspace/coreseV2/src/test/resources/data/";
 	static String ndata = "/home/corby/workspace/kgtool/src/test/resources/data/";
 
+	
+	
+	
+	public void test61(){			
+		DatatypeMap.setLiteralAsString(false);
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+		
+		String query = 
+			"prefix foaf: <http://xmlns.com/foaf/0.1/>" +
+			"prefix p: <http://fr.dbpedia.org/property/>" + 
+			"select  ?y where {" +
+				"service <http://fr.dbpedia.org/sparql> {"+
+				"<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y .}" +
+			"}" +
+			"pragma {kg:path kg:expand 12}";
+		
+		
+		try {
+			Mappings map = exec.query(query);
+			ResultFormat f = ResultFormat.create(map);
+			//System.out.println(f);
+			assertEquals("Result", 12, map.size());
+			
+			
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	@Test
+	public void testExpand(){
+		
+		String query = 
+				"prefix ex: <http://example.org/>" +
+				"select  ?x ?c where {" +
+						"?x rdf:type/rdfs:subClassOf* ?c" +
+						//"?x ex:p0 / (!(ex:p1 | ex:p2))*  ?y" +
+						//"ex:list rdf:value/rdf:rest*/rdf:first ?y" +
+				"}" ;
+				//"pragma {kg:path kg:expand 3}";
+		
+		String init = 
+				"prefix ex: <http://example.org/> " +
+				"insert data {" +
+				"ex:a ex:p0 ex:b " +
+				"ex:b ex:p0 ex:c " +
+				"ex:c ex:p1 ex:d " +
+				"" +
+				"ex:list rdf:value (1 2 3) " +
+				"" +
+				"ex:Human rdfs:subClassOf ex:Animal " +
+				"ex:Animal rdfs:subClassOf ex:Living " +
+				"ex:John a ex:Human" +
+				"}" 
+				;
+		
+		
+		
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+		exec.addVisitor(ExpandPath.create(2));
+
+		try {
+			exec.query(init);
+			Mappings map = exec.query(query);
+			exec.getGraph(map);
+			
+//			ASTQuery ast = exec.getAST(map);			
+//			ExpandPath rew = ExpandPath.create(3);
+//			System.out.println(rew.rewrite(ast.getBody()));
+			
+			System.out.println(exec.getAST(map));
+			System.out.println(map.getQuery());
+			System.out.println(map);
+			System.out.println(ResultFormat.create(map));
+			System.out.println(map.size());
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	
+	
+	public void testSyntax(){
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+		
+		String init  = "insert data {<a> a rdfs:Resource}";
+		
+		String cons = "construct {?x rdf:value ?y} where {?x a rdfs:Resource} values ?y {10}";
+		
+		String query = "select * where {?x ?p ?y}";
+		
+		Load ld = Load.create(g);
+		
+		ld.load(root + "test/deco.rl");
+		
+		try {
+			exec.query(init);
+			
+			RuleEngine re = ld.getRuleEngine();
+			re.process();
+			
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	/**
+	 * Total: 0.6
+	 * Without XML parse: 0.4
+	 * 
+	 * 0.553
+	 */
+	public void testService(){
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+		String q = QueryLoad.create().read(root + "alu/nico.rq");
+		
+		try {
+			int size = 1;
+			Date d1 = new Date();
+			for (int i = 0; i<size; i++){
+				//exec.setDebug(true);
+				Mappings map = exec.query(q);
+				if ( i == 0) System.out.println(map);
+			}
+			Date d2 = new Date();
+			System.out.println(((d2.getTime() - d1.getTime()) / 1000.0) / size);
+			//System.out.println(map.size());
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+
+	public void testSAP(){
+		Graph g = Graph.create(true);
+		QueryProcess exec = QueryProcess.create(g);
+		
+		Load ld = Load.create(g);
+		ld.load(root + "sap/q1-light.ttl");
+		ld.load(root + "sap/q2-light.ttl");
+		ld.load(root + "sap/sqlOnto.ttl");
+
+		String q = QueryLoad.create().read(root + "sap/q1.rq");
+
+		try {
+			Date d1 = new Date();
+			Mappings map = exec.query(q);
+			Date d2 = new Date();
+			//System.out.println(map);
+			System.out.println(map.size());
+			System.out.println((d2.getTime() - d1.getTime()) / 1000.0);
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+
+
+
+	public void testCountPath(){
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+		
+		String init ="" +
+				"prefix ex: <http://www.inria.fr/acacia/comma#>" +
+				"insert data {" +
+				"ex:a ex:p ex:b ex:b ex:p ex:c " +
+				"ex:a ex:p ex:d ex:d ex:p ex:c " +
+				"" +
+				"} " ;
+		
+		String query ="" +
+				"prefix ex: <http://www.inria.fr/acacia/comma#> " +
+				"select * where {" +
+					"ex:a ex:p+ ?x" +
+				"}" +
+				"pragma {kg:path kg:count false}" ;
+		
+		try {
+			//exec.setCountPath(true);
+			exec.query(init);
+			Mappings map = exec.query(query);
+			System.out.println(map);
+			System.out.println(map.size());
+			
+			
+
+			
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void testBUG(){			
+		
+		Graph g = Graph.create();	
+		QueryProcess exec = QueryProcess.create(g);	
+		
+		Load ld = Load.create(g);
+		ld.load(root + "test/q1.ttl");
+		
+		QueryLoad ql = QueryLoad.create();
+		String q = ql.read(root + "test/q1.rq");
+		System.out.println(q);
+		
+		try {
+			Mappings map = exec.query(q);
+			System.out.println(exec.getGraph().display());
+
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	public void testDelete(){			
@@ -270,7 +541,6 @@ public void testType(){
 	 * Execute the query
 	 * Use case: find similar Graphs (cf Corentin)
 	 */
-	@Test
 	public void test52(){			
 		
 		Graph graph = Graph.create(true);	
@@ -563,8 +833,9 @@ public void testType(){
 	
 	
 	
-	//
 	
+	
+	//
 	public void test00(){
 		Graph g = init();
 		QueryProcess exec = QueryProcess.create(g);

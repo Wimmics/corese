@@ -16,6 +16,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
@@ -26,10 +27,12 @@ import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.acacia.corese.triple.parser.Values;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 
@@ -102,12 +105,17 @@ public class TestAST {
 		List<Variable> lVar = new ArrayList<Variable>();
 		lVar.add(Variable.create("?a"));
 
-		ast.setVariableBindings(lVar);
+		Values values = Values.create();
+			
+		values.setVariables(lVar);
 
 		List<Constant> lValue = new ArrayList<Constant>();
 		lValue.add(ast.createConstant("a"));
 
-		ast.setValueBindings(lValue);
+		values.addValues(lValue);
+		
+		ast.setValues(values);
+		
 		System.out.println(ast);
 
 		Graph g = Graph.create();
@@ -777,7 +785,54 @@ public void test21(){
 	}
 
 
+	@Test
+	public void test291(){
+
+		NSManager nsm = NSManager.create();
+		nsm.definePrefix("foaf", "http://foaf.org/");
+		
+
+		ASTQuery ast = ASTQuery.create();
+		ast.setNSM(nsm);
+
+		Triple t1 = Triple.create(Constant.createBlank("_:b2"), ast.createQName("rdfs:seeAlso"), Variable.create("?z"));
+		Triple t2 = Triple.create(Variable.create("?z"), ast.createQName("foaf:knows"), Variable.create("?x"));
+
+		ast.setBody(BasicGraphPattern.create(t2));
+		ast.setConstruct(BasicGraphPattern.create(t1));
+
+
+		String init = 
+			"prefix foaf: <http://foaf.org/>" +
+			"insert data {<John> foaf:knows <Jim>" +
+			"<John> owl:sameAs <Johnny>}";
+		
+		String query = 
+			"prefix foaf: <http://foaf.org/>" +
+			"construct {?y foaf:knows ?x}" +
+			"where {?x foaf:knows ?y}";
+		
+
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+
+		try {
+			exec.query(init);
+			Mappings map =  exec.query(ast);
+			RDFFormat f = RDFFormat.create(map);
+			
+			System.out.println(ast);
+			System.out.println(map);
+			System.out.println(f);
+			assertEquals("Result", 1, map.size());
+			
 	
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			assertEquals("Result", true, e);
+		}
+	}
+
 	
 	
 	@Test
@@ -870,6 +925,59 @@ public void test21(){
 		}
 	}
 	
+	
+	
+	@Test
+	public void test32(){
+		
+		ASTQuery ast = ASTQuery.create();
+		ast.definePrefix("foaf", "http://foaf.org/");
+
+		Triple t1 = Triple.create(Constant.createBlank("_:b1"), ast.createQName("foaf:knows"), Variable.create("?y"));
+		Triple t2 = Triple.create(Constant.createBlank("_:b2"), ast.createQName("rdfs:seeAlso"), Variable.create("?y"));
+				
+		ast.setConstruct(BasicGraphPattern.create(t2));
+		ast.setBody(BasicGraphPattern.create(t1));
+		ast.setRule(true);
+		
+		System.out.println(ast);
+
+		String init = 
+			"prefix foaf: <http://foaf.org/>" +
+			"insert data {<John> foaf:knows <Jim>" +
+			"<John> owl:sameAs <Johnny>}";
+		
+		String query = "select * where {?x rdfs:seeAlso ?y}";
+
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+		
+		RuleEngine re = RuleEngine.create(g);
+		re.setDebug(true);
+
+		re.addRule(ast.toString());
+		
+		try {
+			exec.query(init);
+			re.process();
+			
+			Mappings map =  exec.query(query);
+			ResultFormat f = ResultFormat.create(map);
+			
+			System.out.println(map);
+			System.out.println(f);
+			assertEquals("Result", 1, map.size());
+			
+	
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			assertEquals("Result", true, e);
+		}
+	}
+	
+	public Object fun (Object obj){
+		return DatatypeMap.TRUE;
+	}
 	
 	
 	

@@ -255,20 +255,37 @@ public class NSManager
 	}
 	
 	/**
+	 * in XML, if the prefix is empty (:abc)
+	 * do not add the ":"
+	 */
+	public String toPrefixXML(String nsname){
+		return toPrefix(nsname, false, true);
+	}
+	
+	/**
 	 * If skip, if no prefix for this namespace, return nsname,
 	 * else create a prefix
 	 */
+	
 	public String toPrefix(String nsname, boolean skip){
-		String ns=namespace(nsname);
-		if (ns==null || ns.equals("")){
+		return toPrefix(nsname, skip, false);
+	}
+	
+	public String toPrefix(String nsname, boolean skip, boolean xml){
+		String ns = namespace(nsname);
+		if (ns == null || ns.equals("")){
 			return nsname;
 		}
-		String p=getPrefix(ns);
-		if (p==null){
+		String p = getPrefix(ns);
+		if (p == null){
 			if (skip) return nsname;
-			else p=defNamespace(ns);
+			else p = defNamespace(ns);
 		}
-		String str=p + pchar + nsname.substring(ns.length());
+		String str = p;
+		if (! (xml && p.equals(""))){
+			str += pchar;
+		}
+		str += nsname.substring(ns.length());
 		return str;
 	}
 	

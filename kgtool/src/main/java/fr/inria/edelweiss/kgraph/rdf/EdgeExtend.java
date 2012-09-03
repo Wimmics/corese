@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgraph.core.EdgeCore;
  *
  */
 public class EdgeExtend extends EdgeCore {
+	static final String TUPLE = "tuple";
 
 	ArrayList<Node> nodes;
 	
@@ -28,6 +29,19 @@ public class EdgeExtend extends EdgeCore {
 			str += n + " ";
 		}
 		return str;
+	}
+	
+	public String toParse(){
+		StringBuffer sb = new StringBuffer();
+		sb.append(TUPLE);
+		sb.append("(");
+		sb.append(getEdgeNode());
+		for (Node n : nodes){
+			sb.append(" ");
+			sb.append(n);
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 	
 	public void setNode(int i , Node node){

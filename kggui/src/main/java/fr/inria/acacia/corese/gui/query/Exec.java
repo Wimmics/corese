@@ -63,11 +63,12 @@ public class Exec extends Thread {
 		try {
 			IResults l_Results = exec.SPARQLQuery(query);
 			Date d2 = new Date();
-			logger.info("** Results: " + l_Results.size()); // + " ; Time: " + d2.get);
+			//logger.info("** Results: " + l_Results.size()); // + " ; Time: " + d2.get);
 			return l_Results;
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			frame.getPanel().getTextArea().setText(e.toString());
 		} 
 		return null;
 	}

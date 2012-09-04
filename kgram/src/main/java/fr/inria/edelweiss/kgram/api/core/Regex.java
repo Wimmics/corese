@@ -20,6 +20,7 @@ public interface Regex {
 	public static final int PARA	= 8;
 	public static final int TEST	= 9;
 	public static final int CHECK	= 10;
+	public static final int REVERSE	= 11;
 
 	
 	String getName();

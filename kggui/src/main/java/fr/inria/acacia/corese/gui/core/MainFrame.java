@@ -63,7 +63,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	 */
 	private static final long serialVersionUID = 1L; 
 	
-	private static final String TITLE = "Corese/KGRAM 3.0 - INRIA - Wimmics - 2012-04-22";
+	private static final String TITLE = "Corese/KGRAM 3.0 - INRIA - Wimmics - 2012-09-01";
 
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
@@ -74,8 +74,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	private String l_path;
 
 	//Variable true ou false pr déterminer le mode Kgram ou Corese	
-	private boolean isKgram = false;
-	private boolean isKgraph = true;
+	private boolean isKgram = true; //false;
 
 	// Pour le menu 
 	private JMenuItem loadRDF;
@@ -100,7 +99,6 @@ public class MainFrame extends JFrame implements ActionListener{
     private JMenuItem reset;
     private ButtonGroup myRadio;
     private JRadioButton kgramBox;
-    private JRadioButton kgraphBox;
     private JRadioButton coreseBox;
     private JMenuItem apropos;
     private JMenuItem tuto;
@@ -483,13 +481,12 @@ public class MainFrame extends JFrame implements ActionListener{
         refresh = new JMenuItem("Reload");
         refresh.addActionListener(this);
         myRadio = new ButtonGroup();
-        coreseBox = new JRadioButton("Corese - SPARQL 1.0");
-        coreseBox.setSelected(true);
-        coreseBox.addActionListener(this);
-        kgramBox = new JRadioButton("Kgram  - SPARQL 1.1");
+//        coreseBox = new JRadioButton("Corese - SPARQL 1.1");
+//        coreseBox.setSelected(true);
+//        coreseBox.addActionListener(this);
+        kgramBox = new JRadioButton("Corese/Kgram SPARQL 1.1");
+        kgramBox.setSelected(true);
         kgramBox.addActionListener(this);
-        kgraphBox = new JRadioButton("Kgraph - SPARQL 1.1");
-        kgraphBox.addActionListener(this);
         comment = new JMenuItem("Comment");
         comment.addActionListener(this);
         help = new JMenuItem("About debug");
@@ -554,12 +551,10 @@ public class MainFrame extends JFrame implements ActionListener{
         engineMenu.add(runRules);
         engineMenu.add(reset);
         engineMenu.add(refresh);
-        engineMenu.add(coreseBox);
-        myRadio.add(coreseBox);
+//        engineMenu.add(coreseBox);
+//        myRadio.add(coreseBox);
         engineMenu.add(kgramBox);
-        engineMenu.add(kgraphBox);
         myRadio.add(kgramBox);
-        myRadio.add(kgraphBox);
         aboutMenu.add(apropos);
         aboutMenu.add(tuto);
         aboutMenu.add(doc);
@@ -993,9 +988,8 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 		
 		
-		else if(e.getSource()==kgramBox){
+		else if (e.getSource()==kgramBox){
 			isKgram = true;
-			isKgraph = false;
 			//DatatypeMap.setLiteralAsString(true);
 			for(int i=0;i<monTabOnglet.size();i++){
 				MyJPanelQuery temp = monTabOnglet.get(i);
@@ -1003,18 +997,14 @@ public class MainFrame extends JFrame implements ActionListener{
 			}
 		}
 		
-		else if(e.getSource()==coreseBox || e.getSource()==kgraphBox){
-			isKgram=false;
-			isKgraph = false;
-			//DatatypeMap.setLiteralAsString(true);
-			for(int i=0;i<monTabOnglet.size();i++){
-				MyJPanelQuery temp = monTabOnglet.get(i);
-				temp.getButtonTKgram().setEnabled(false);
-			}	
-			if (e.getSource()==kgraphBox){
-				isKgraph = true;
-			}
-		}
+//		else if(e.getSource()==coreseBox ){
+//			isKgram=false;
+//			//DatatypeMap.setLiteralAsString(true);
+//			for(int i=0;i<monTabOnglet.size();i++){
+//				MyJPanelQuery temp = monTabOnglet.get(i);
+//				temp.getButtonTKgram().setEnabled(false);
+//			}	
+//		}
 		
 	}
 	

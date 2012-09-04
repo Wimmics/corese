@@ -225,6 +225,7 @@ public class GraphEngine implements IEngine {
 	
 	public IResults SPARQLProve(String query) throws EngineException {
 		LBind res = bengine.SPARQLProve(query);
+		if (res == null) return  null;
 		Mappings lMap = translate(res);
 		return QueryResults.create(lMap);
 	}

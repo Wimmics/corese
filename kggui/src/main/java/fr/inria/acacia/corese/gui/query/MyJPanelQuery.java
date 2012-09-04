@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.GroupLayout;
@@ -33,6 +34,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import org.miv.graphstream.algorithm.layout2.elasticbox.ElasticBox;
+import org.miv.graphstream.graph.Edge;
 import org.miv.graphstream.graph.Node;
 import org.miv.graphstream.graph.implementations.MultiGraph;
 import org.miv.graphstream.ui.swing.SwingGraphRenderer;
@@ -50,8 +52,10 @@ import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.edelweiss.kgengine.QueryResults;
-import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
+
 import javax.swing.JFrame;
 
 /**
@@ -234,7 +238,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonRun.setText("Query ");
         buttonProve.setText("Prove");
         buttonTKgram.setText("Trace");
-        buttonTKgram.addActionListener(sparqlQueryEditor);
+        //OC: buttonTKgram.addActionListener(sparqlQueryEditor);
 
         //Pour chercher un string dans la fen�tre de r�sultat XML
         buttonSearch.setText("Search");
@@ -411,18 +415,7 @@ public final class MyJPanelQuery extends JPanel {
             QueryResults qr = (QueryResults) l;
             return qr.getEdges();
         }
-        return null;
-//		else {
-//			// corese/kgram
-//			CoreseGraph cg = null;
-//
-//			for (IResult res : l){
-//				cg = (CoreseGraph) res;
-//			}
-//			if (cg == null) return new ArrayList<Entity>();
-//			Iterable<Entity> edges = cg.getEdges();
-//			return edges;
-//		}
+        return new ArrayList<Entity>();
     }
 
     private String getLabel(String name) {
@@ -437,6 +430,11 @@ public final class MyJPanelQuery extends JPanel {
     }
 
     public void display(IResults l_Results, MainFrame coreseFrame) {
+    	if (l_Results == null){
+    		// go to XML for error message
+            tabbedPaneResults.setSelectedIndex(1);
+    		return;
+    	}
         // On affiche la version XML du résultat dans l'onglet XML
         resultXML = l_Results.toString();
         textAreaXMLResult.setText(resultXML.toString());
@@ -451,24 +449,30 @@ public final class MyJPanelQuery extends JPanel {
         DefaultTreeModel treeModel = new DefaultTreeModel(root);
         treeResult = new JTree(treeModel);
         treeResult.setShowsRootHandles(true);
-        int i = 1;
         // Pour chaque resultat de l_Results on crée un noeud "result"
         //if (l_Results.size()<1000)
 
-        for (IResult res : l_Results) {
-            DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
-            // Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
-            for (String var : l_Results.getVariables()) {
-                if (res.getResultValues(var) != null) {
-                    for (IResultValue val : res.getResultValues(var)) {
-                        x.add(new DefaultMutableTreeNode(var));
-                        x.add(new DefaultMutableTreeNode(val.getDatatypeValue().toString()));
-                        root.add(x);
-                    }
-                }
-            }
-            i++;
+
+        boolean oneValue = false;
+        Mappings map = null;
+        
+        if (l_Results instanceof QueryResults){
+            // in old Corese, there may be several values for one variable
+            // use case: group by ?x and pragma {kg:kgram kg:list true}
+        	// this is deprecated
+        	QueryResults qr = (QueryResults) l_Results;
+        	map = qr.getMappings();
+        	oneValue = ! map.getQuery().isListGroup();
         }
+        
+        int i = 1;
+        if (oneValue){
+        	display(root, map);
+        }
+        else {
+        	display(root, l_Results);
+        }
+                       
         TreePath myPath = treeResult.getPathForRow(0);
         treeResult.expandPath(myPath);
         scrollPaneTreeResult.setViewportView(treeResult);
@@ -487,51 +491,54 @@ public final class MyJPanelQuery extends JPanel {
             Iterable<Entity> edges = getEdges(l_Results);
 
             for (Entity ent : edges) {
-                Edge edge = ent.getEdge();
+                fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
                 sujetUri = edge.getNode(0).getLabel();
                 objetUri = edge.getNode(1).getLabel();
 
-//				if (edge instanceof CoreseRelation)
-//					predicat = ((CoreseRelation)edge).getCType().toString();
-//				else
                 predicat = getLabel(edge.getEdgeNode().getLabel());
 
                 sujet = getLabel(sujetUri);
                 objet = getLabel(objetUri);
 
-                if (find(sujetUri, graph.getNodeIterator()) == null) {
-                    graph.addNode(sujetUri).addAttribute("label", sujet);
-                    graph.getNode(sujetUri).setAttribute("ui.class", sujet);
+                Node gsub = graph.getNode(sujetUri);
+               // if (find(sujetUri, graph.getNodeIterator()) == null) {
+                if (gsub == null) {
+                    gsub = graph.addNode(sujetUri);
+                    gsub.addAttribute("label", sujet);
+                    //graph.getNode(sujetUri)
+                    gsub.setAttribute("ui.class", sujet);
                     if (edge.getNode(0).isBlank()) {
-                        graph.getNode(sujetUri).setAttribute("ui.class", "BlankNode");
+                        //graph.getNode(sujetUri)
+                        gsub.setAttribute("ui.class", "BlankNode");
                     }
-                    graph.addEdge("temp" + num, sujetUri, temp);
-                    graph.getEdge("temp" + num).addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
+                    Edge ee = graph.addEdge("temp" + num, sujetUri, temp);
+                    ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
 
                 }
                 num++;
 
-                //Lors de l'ajout d'un Noeud (ou pas) Objet
-                if (find(objetUri, graph.getNodeIterator()) == null) {
-                    graph.addNode(objetUri).addAttribute("label", objet);
-                    graph.getNode(objetUri).setAttribute("ui.class", objet);
+                Node gobj = graph.getNode(objetUri);
+                //if (find(objetUri, graph.getNodeIterator()) == null) {
+                if (gobj == null){
+                    gobj = graph.addNode(objetUri);
+                    gobj.addAttribute("label", objet);
+                    gobj.setAttribute("ui.class", objet);
                     if (edge.getNode(1).isBlank()) {
-                        graph.getNode(objetUri).setAttribute("ui.class", "BlankNode");
+                        gobj.setAttribute("ui.class", "BlankNode");
                     }
                     IDatatype dt = (IDatatype) edge.getNode(1).getValue();
                     if (dt.isLiteral()) {
-                        graph.getNode(objetUri).setAttribute("ui.class", "Literal");
+                        gobj.setAttribute("ui.class", "Literal");
                     }
 
-                    graph.addEdge("temp" + num, objetUri, temp);
-                    //graph.getEdge("temp"+num).addAttribute("label", "http://www.inria.fr/acacia/corese#result");
-                    graph.getEdge("temp" + num).addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
+                    Edge ee = graph.addEdge("temp" + num, objetUri, temp);
+                    ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
                 }
                 num++;
 
-                graph.addEdge("edge" + num, sujetUri, objetUri, true);
-                graph.getEdge("edge" + num).addAttribute("label", predicat);
-                graph.getEdge("edge" + num).addAttribute("ui.class", predicat);
+                Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
+                ee.addAttribute("label", predicat);
+                ee.addAttribute("ui.class", predicat);
 
             }
 
@@ -564,77 +571,114 @@ public final class MyJPanelQuery extends JPanel {
 
             //pointe sur l'onglet Graph
             tabbedPaneResults.setSelectedIndex(0);
-
         }
-
-
     }
+    
+    
+    /**
+     * Display result using Mappings
+     */
+    void display(DefaultMutableTreeNode root, Mappings map){
+    	int i = 1;
+    	for (Mapping res : map) {
+    		DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
+    		// Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
+
+    		for (fr.inria.edelweiss.kgram.api.core.Node var : map.getSelect()) {            	
+    			fr.inria.edelweiss.kgram.api.core.Node node = res.getNode(var);
+    			if (node != null) {
+    				x.add(new DefaultMutableTreeNode(var.getLabel()));
+    				x.add(new DefaultMutableTreeNode(node.getValue().toString()));
+    				root.add(x);
+    			}
+    		}
+    		i++;
+    	}
+    }
+    
+    
+    /**
+     * Display result using IResults
+     * @deprecated
+     */
+    void display(DefaultMutableTreeNode root, IResults l_Results){
+    	int i = 1;
+    	for (IResult res : l_Results) {
+    		DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
+    		// Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
+
+    		for (String var : l_Results.getVariables()) {            	
+    			IResultValue[] lres = res.getResultValues(var);
+    			if (lres != null) {
+
+    				for (IResultValue val : lres) {
+    					x.add(new DefaultMutableTreeNode(var));
+    					x.add(new DefaultMutableTreeNode(val.getDatatypeValue().toString()));
+    					root.add(x);
+    				}
+    			}
+    		}
+    		i++;
+    	}
+    }
+
 
     private ActionListener createListener(final MainFrame coreseFrame, final boolean isTrace) {
 
-        return new ActionListener() {
+    	return new ActionListener() {
 
-            public void actionPerformed(ActionEvent ev) {
-                textAreaXMLResult.setText("");
-                IResults l_Results = null;
-                scrollPaneTreeResult.setViewportView(new JPanel());
-                scrollPaneTreeResult.setRowHeaderView(new JPanel());
+    		public void actionPerformed(ActionEvent ev) {
+    			textAreaXMLResult.setText("");
+    			IResults l_Results = null;
+    			scrollPaneTreeResult.setViewportView(new JPanel());
+    			scrollPaneTreeResult.setRowHeaderView(new JPanel());
 
-                String l_message = new String("Parsing:\n");
-                IEngine engine = coreseFrame.getMyCorese();
-                try {
-                    // Lance d'abbord la validation
-                    if (!coreseFrame.isKgram()) {
-                        engine.SPARQLValidate(sparqlQueryEditor.getTextPaneQuery().getText());
-                    }
-                    try {
-                        if (ev.getSource() == buttonProve) {
-                            l_Results = engine.SPARQLProve(sparqlQueryEditor.getTextPaneQuery().getText());
-                        } // Lance la requête
-                        else if (!coreseFrame.isKgram()) {
-                            l_Results = engine.SPARQLQuery(sparqlQueryEditor.getTextPaneQuery().getText());
-                        } else {
-                            Exec exec = new Exec(coreseFrame, sparqlQueryEditor.getTextPaneQuery().getText(), isTrace);
-                            //l_Results = exec.query();
-                            exec.process();
+    			String l_message = new String("Parsing:\n");
+    			IEngine engine = coreseFrame.getMyCorese();
+    			// Lance d'abbord la validation
+    			//                    if (!coreseFrame.isKgram()) {
+    			//                        engine.SPARQLValidate(sparqlQueryEditor.getTextPaneQuery().getText());
+    			//                    }
+    			try {
+    				if (ev.getSource() == buttonProve) {
+    					l_Results = engine.SPARQLProve(sparqlQueryEditor.getTextPaneQuery().getText());
+    					if (l_Results != null) {
+    						display(l_Results, coreseFrame);
+    					} 
+    				} // Lance la requête
+    				//                        else if (!coreseFrame.isKgram()) {
+    				//                            l_Results = engine.SPARQLQuery(sparqlQueryEditor.getTextPaneQuery().getText());
+    				//                        } 
+    				else {
+    					Exec exec = new Exec(coreseFrame, sparqlQueryEditor.getTextPaneQuery().getText(), isTrace);
+    					exec.process();
 
-                            //Permet de passer a true toutes les options du trace KGram
-                            for (int i = 0; i < coreseFrame.getListCheckbox().size(); i++) {
-                                coreseFrame.getListCheckbox().get(i).setEnabled(true);
-                            }
-                            for (int i = 0; i < coreseFrame.getListJMenuItems().size(); i++) {
-                                coreseFrame.getListJMenuItems().get(i).setEnabled(true);
-                            }
+    					//Permet de passer a true toutes les options du trace KGram
+    					for (int i = 0; i < coreseFrame.getListCheckbox().size(); i++) {
+    						coreseFrame.getListCheckbox().get(i).setEnabled(true);
+    					}
+    					for (int i = 0; i < coreseFrame.getListJMenuItems().size(); i++) {
+    						coreseFrame.getListJMenuItems().get(i).setEnabled(true);
+    					}
 
 
-                        }
+    				}
 
-                        // Si le résultat existe
-                        if (l_Results != null) {
-                            display(l_Results, coreseFrame);
-                        } else if (!coreseFrame.isKgram()) {
-                            textAreaXMLResult.setText(coreseFrame.getMyCapturer().getContent()); // display errors
-                            //coreseFrame.getCapturer()
-                        }
-                    } catch (EngineException e) {
-                        e.printStackTrace();
-                        textAreaXMLResult.setText(coreseFrame.getMyCapturer().getContent() + e.getMessage()); // display errors
-                    }
-                } catch (QuerySyntaxException e) {
-                    tabbedPaneResults.setSelectedIndex(2);
-                    l_message += "____ Syntax error\n" + e.getMessage() + "________\n";
-                } catch (QueryLexicalException e) {
-                    tabbedPaneResults.setSelectedIndex(2);
-                    l_message += "____ Lexical error\n" + e.getMessage() + "________\n";
-                } catch (QuerySemanticException e) {
-                    tabbedPaneResults.setSelectedIndex(2);
-                    l_message += "____ Semantic error\n" + e.getMessage() + "________\n";
-                } catch (EngineException e) {
-                    e.printStackTrace();
-                }
-                textPaneValidation.setText(l_message + "Done.");
-            }
-        };
+    				// Si le résultat existe
+    				//				    if (l_Results != null) {
+    				//				        display(l_Results, coreseFrame);
+    				//				    } 
+    				//				    else if (!coreseFrame.isKgram()) {
+    				//				        textAreaXMLResult.setText(coreseFrame.getMyCapturer().getContent()); // display errors
+    				//				        //coreseFrame.getCapturer()
+    				//				    }
+    			} catch (EngineException e) {
+    				e.printStackTrace();
+    				textAreaXMLResult.setText(coreseFrame.getMyCapturer().getContent() + e.getMessage()); // display errors
+    			}
+    			textPaneValidation.setText(l_message + "Done.");
+    		}
+    	};
 
     }
 
@@ -648,6 +692,10 @@ public final class MyJPanelQuery extends JPanel {
     }
 
     public JTextArea getTextAreaXMLResult() {
+        return textAreaXMLResult;
+    }
+    
+    public JTextArea getTextArea() {
         return textAreaXMLResult;
     }
 

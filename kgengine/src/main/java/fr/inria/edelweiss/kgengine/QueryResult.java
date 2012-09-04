@@ -33,6 +33,10 @@ implements IResult {
 	public String toString(){
 		return answer.toString();
 	}
+	
+	public Mapping getMapping(){
+		return map;
+	}
 
 	
 	public IResultValue getResultValue(String variableName) {

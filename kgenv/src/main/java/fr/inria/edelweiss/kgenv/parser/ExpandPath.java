@@ -1,5 +1,8 @@
 package fr.inria.edelweiss.kgenv.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -34,7 +37,11 @@ public class ExpandPath implements QueryVisitor {
 	
 	private static Logger log = Logger.getLogger(ExpandPath.class);
 	
-	static final String ROOT = "?_VAR_";
+	private static final String ROOT = "?_VAR_";
+	private static final String NEQ = Term.SNEQ;
+	private static final String OR  = Term.SEOR;
+	private static final String AND = Term.SEAND;
+	
 	int max = 5;
 	int varCount = 0;
 	boolean isDebug = false;
@@ -137,6 +144,10 @@ public class ExpandPath implements QueryVisitor {
 		case Regex.OPTION:
 			res = option(path, exp);
 			break;	
+			
+		case Regex.REVERSE:
+			res = reverse(path, exp);
+			break;		
 
 		}
 		
@@ -162,6 +173,17 @@ public class ExpandPath implements QueryVisitor {
 		return tt;
 	}
 
+	
+	/**
+	 *  ?x ^ exp ?y
+	 *  ->
+	 *  ?y exp ?x
+	 */
+	private Exp reverse(Triple t, Expression exp){
+		Exp e = ast.createPath(t.getArg(1), exp.getArg(0), t.getArg(0));
+		return e;
+	}
+	
 	
 	/**
 	 * e1 | e2
@@ -216,7 +238,7 @@ public class ExpandPath implements QueryVisitor {
 	 * exp* rewritten as exp+ except in the case e1/e2* where it is correctly rewritten
 	 */
 	private Exp loop(Triple t, Expression loop){
-		return loop(t.getSubject(), loop.getArg(0), t.getObject(), max);
+		return loop(t.getSubject(), loop.getArg(0), t.getObject(), new ArrayList<Variable>(), max);
 	}
 	
 	
@@ -224,8 +246,9 @@ public class ExpandPath implements QueryVisitor {
 	 * rec create a path bgp of length n between s and o
 	 *  s exp(n) o =
 	 *  {s exp o} union {s exp vi . vi exp(n-1) o} 
+	 *  generate filter to prevent loops on intermediate nodes (vi != vj)
 	 */
-	private Exp loop(Atom subject, Expression exp, Atom object, int n){
+	private Exp loop(Atom subject, Expression exp, Atom object, List<Variable> list, int n){
 
 		Exp res = ast.createPath(subject, exp, object);
 		
@@ -234,12 +257,48 @@ public class ExpandPath implements QueryVisitor {
 		}
 
 		Variable var = variable();
-		Exp e1 = ast.createPath(subject, exp, var);
-		Exp e2 = loop(var, exp, object, n-1);
-		BasicGraphPattern bgp = BasicGraphPattern.create(e1, e2);
-
+		
+		list.add(var);
+		Term diff = filter(list);
+		
+		Exp e1 = ast.createPath(subject, exp, var);				
+		Exp e2 = loop(var, exp, object, list, n-1);
+		
+		BasicGraphPattern bgp = BasicGraphPattern.create(e1);
+		
+		if (diff != null){
+			bgp.add(Triple.create(diff));
+		}
+		
+		bgp.add(e2);
+		
 		Or or = Or.create(res, bgp);
 		return or;
+	}
+	
+	
+	/**
+	 * Generate filter vi != vj
+	 */
+	Term filter(List<Variable> list){
+		Term res = null;
+		
+		for (int i = 0; i<list.size(); i++){
+			Variable v1 = list.get(i);
+			
+			for (int j = i+1; j<list.size(); j++){
+				Variable v2 = list.get(j);
+				Term t = Term.create(NEQ, v1, v2);
+				if (res == null){
+					res = t;
+				}
+				else {
+					res = Term.create(AND, res, t);
+				}
+			}
+		}
+		
+		return res;
 	}
 	
 	
@@ -269,13 +328,13 @@ public class ExpandPath implements QueryVisitor {
 
 		if (exp.isConstant()){
 			// ! p
-			f = Term.create(Term.SNEQ, p, exp); 
+			f = Term.create(NEQ, p, exp); 
 		}
 		else {
 			// ! (p1 | p2)
 			
 			for (Expression ee : exp.getArgs()){
-				Term g = Term.create(Term.SNEQ, p, ee); 
+				Term g = Term.create(NEQ, p, ee); 
 				f = and(f, g);
 			}
 		}

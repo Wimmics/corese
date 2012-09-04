@@ -2155,7 +2155,8 @@ private	int cbind(Producer p, Node gNode, Exp exp, Stack stack,  int n, boolean 
 			Mapping ans = memory.store(query, isSubEval);
 			submit(ans);
 			if (hasEvent){
-				send(Event.RESULT, query, ans);
+				//send(Event.RESULT, query, ans);
+				send(Event.RESULT,  ans);
 			}		
 		}
 	}

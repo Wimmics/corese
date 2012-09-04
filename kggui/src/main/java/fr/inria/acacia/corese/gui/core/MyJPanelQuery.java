@@ -83,6 +83,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  * Onglet Query avec tout ce qu'il contient
  * @author saguilel
  * @author Maraninchi jerôme
+ * @deprecated
  */
 
 public class MyJPanelQuery extends JPanel implements Runnable, ActionListener, DocumentListener, FocusListener, CaretListener{

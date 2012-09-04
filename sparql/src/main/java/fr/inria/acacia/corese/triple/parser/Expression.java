@@ -500,6 +500,7 @@ implements Regex, Filter, Expr {
 		if (isCounter()) return Regex.COUNT;
 		if (isStar()) 	 return Regex.STAR;
 		if (isOpt()) 	 return Regex.OPTION;
+		if (isReverse()) return Regex.REVERSE;
 		if (isTest())	 return Regex.TEST;
 		if (isCheck())	 return Regex.CHECK;
 

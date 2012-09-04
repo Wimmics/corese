@@ -24,6 +24,8 @@ public class MyEvalListener extends EvalListener {
 	
 	public void log(Object obj){
 		String str = obj.toString();
+		//OC:
+		super.log(obj);
 		frame.appendMsg(str);
 	}
 	

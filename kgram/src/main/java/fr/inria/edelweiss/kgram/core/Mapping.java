@@ -343,14 +343,14 @@ public class Mapping
 		
 	public String toString(){
 		String str = "";
-		for (Edge e : edges){
-			str += e + "\n";
-		}
+//		for (Edge e : edges){
+//			str += e + "\n";
+//		}
 		int i = 0;
 		for (Node e : nodes){
-			str += qNodes[i] + " " + e + "\n";
+			str += qNodes[i] + " = " + e + "\n";
 			if (isPath(qNodes[i])){
-				str += qNodes[i] + " " + lPath[i] + "\n";
+				str += qNodes[i] + " : " + lPath[i] + "\n";
 
 			}
 			i++;

@@ -3,6 +3,8 @@ package fr.inria.edelweiss.kgenv.eval;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 
 /**
@@ -16,7 +18,8 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
 public class Dataset {
 	protected static final String KG = ExpType.KGRAM;
 	static final String EMPTY = KG + "empty";
-	
+	static final Constant CEMPTY = Constant.create(EMPTY);
+
 	List<String> from, named;
 	
 	// true when used by update (delete in default graph specified by from)
@@ -113,6 +116,15 @@ public class Dataset {
 		}
 		else if (getFrom() == null && getNamed() != null){
 			addFrom(EMPTY);
+		}
+	}
+	
+	public void complete(ASTQuery ast){
+		if (ast.getFrom().size() > 0 && ast.getNamed().size() == 0){
+			ast.setNamed(CEMPTY);
+		}
+		if (ast.getFrom().size() == 0 && ast.getNamed().size() > 0){
+			ast.setFrom(CEMPTY);
 		}
 	}
 

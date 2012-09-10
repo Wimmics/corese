@@ -171,7 +171,13 @@ public class BasicGraphPattern extends And {
     		
     	}
 		
+		// old:
+		// ast.setStack(list);
+		
+		// new: BGP binds its variables at the end
+		List<Variable> bgpList = ast.getStack();
 		ast.setStack(list);
+		ast.addStack(bgpList);
 		
     	return ok;
 	}

@@ -317,7 +317,7 @@ public class ASTQuery  implements Keyword {
 		return defFrom;
 	}
 	
-	List<Atom> getDefaultNamed(){
+	public List<Atom> getDefaultNamed(){
 		return defNamed;
 	}
 	
@@ -1684,8 +1684,18 @@ public class ASTQuery  implements Keyword {
     		sb.append(KeywordPP.ASK + SPACE);
     	} 
     	else if (isConstruct()) {
-    		sb.append(KeywordPP.CONSTRUCT + SPACE); 
-    		getConstruct().toString(sb); 
+    		if (getConstruct() != null){
+        		sb.append(KeywordPP.CONSTRUCT + SPACE); 
+        		getConstruct().toString(sb); 
+    		}
+    		else if (getInsert() != null){
+        		sb.append(KeywordPP.INSERT + SPACE); 
+        		getInsert().toString(sb); 
+    		}
+    		else if (getDelete() != null){
+        		sb.append(KeywordPP.DELETE + SPACE); 
+        		getDelete().toString(sb); 
+    		}
     	} 
     	else if (isDescribe()) {
     		sb.append(KeywordPP.DESCRIBE + SPACE);

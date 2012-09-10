@@ -13,6 +13,7 @@ import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Composite;
 import fr.inria.acacia.corese.triple.update.Update;
+import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 
@@ -229,7 +230,13 @@ public class UpdateProcess {
 			// using named -> from named
 			ast.setNamed(uri);
 		}
-
+		
+		if (ga.isSPARQLCompliant()){
+			// SPARQL requires that if there is a "using" and no "using named" (or the inverse)
+			// the named list is empty, and hence if there is a graph pattern it must fail
+			Dataset.create().complete(ast);
+		}
+		
 		Constant src = ope.getWith();
 		if (src!=null && ope.getUsing().size()==0){
 			ast.setFrom(src);

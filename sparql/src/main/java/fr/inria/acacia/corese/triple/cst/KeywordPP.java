@@ -25,6 +25,7 @@ public interface KeywordPP {
     public final static String DELETE = "delete";
     public final static String ASK = "ask";
     public final static String CONSTRUCT = "construct";
+    public final static String INSERT = "insert";
     public final static String DESCRIBE = "describe";
     public final static String DEBUG = "debug";
     public final static String NOSORT = "nosort";

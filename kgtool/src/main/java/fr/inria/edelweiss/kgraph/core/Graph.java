@@ -1236,6 +1236,9 @@ public class Graph //implements IGraph
 		if (g2.isIndex()) g2.index();
 		if (g1.size()!=g2.size()){
 			if (isDebug) logger.debug("** Graph Size: " + size() + " " + g2.size());
+//			System.out.println(g1.display());
+//			System.out.println("___");
+//			System.out.println(g2.display());
 			return false;
 		}
 		

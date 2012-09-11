@@ -14,6 +14,9 @@ import fr.inria.acacia.corese.triple.parser.Or;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.acacia.corese.triple.update.ASTUpdate;
+import fr.inria.acacia.corese.triple.update.Composite;
+import fr.inria.acacia.corese.triple.update.Update;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -79,8 +82,25 @@ public class ExpandPath implements QueryVisitor {
 	public void rewrite(ASTQuery ast){
 		this.ast = ast;
 		isDebug = ast.isDebug();
-		Exp body = ast.getBody();
-		rewrite(body);
+		rewrite(ast.getBody());
+		
+		if (ast.isUpdate()){
+			rewrite(ast.getUpdate());
+		}
+	}
+	
+	
+	/**
+	 * Query is a SPARQL Update
+	 * rewrite the body of insert delete where
+	 */
+	public void rewrite(ASTUpdate update){
+		for (Update u : update.getUpdates()){
+			if (u.isComposite()){
+				Composite c = u.getComposite();
+				rewrite(c.getBody());
+			}
+		}
 	}
 	
 
@@ -257,10 +277,9 @@ public class ExpandPath implements QueryVisitor {
 		}
 
 		Variable var = variable();
-		
+		Term diff = filter(var, list);
 		list.add(var);
-		Term diff = filter(list);
-		
+
 		Exp e1 = ast.createPath(subject, exp, var);				
 		Exp e2 = loop(var, exp, object, list, n-1);
 		
@@ -280,6 +299,23 @@ public class ExpandPath implements QueryVisitor {
 	/**
 	 * Generate filter vi != vj
 	 */
+	Term filter(Variable var, List<Variable> list){
+		Term res = null;
+
+		for (Variable v : list){
+			Term t = Term.create(NEQ, var, v);
+			if (res == null){
+				res = t;
+			}
+			else {
+				res = Term.create(AND, res, t);
+			}
+		}
+
+		return res;
+	}
+	
+	
 	Term filter(List<Variable> list){
 		Term res = null;
 		

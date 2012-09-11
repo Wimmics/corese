@@ -56,7 +56,8 @@ public class Transformer implements ExpType {
 	isSPARQL1 = true;
 	String namespaces, base;
 	List<String> from, named;
-
+	BasicGraphPattern pragma;
+	
 	Transformer(){
 		table = new Hashtable<Edge, Query>();
 	}
@@ -126,9 +127,12 @@ public class Transformer implements ExpType {
 		this.ast = ast;
 		ast.setSPARQLCompliant(isSPARQLCompliant);
 		
+		Pragma p = new Pragma(this, ast);
 		if (ast.getPragma() != null){
-			Pragma p = new Pragma(this, ast);
 			p.compile();
+		}
+		if (pragma != null){
+			p.compile(pragma);
 		}
 		
 		// type check:
@@ -298,6 +302,10 @@ public class Transformer implements ExpType {
 
 	public void setNamespaces(String ns){
 		namespaces = ns;
+	}
+	
+	public void setPragma(BasicGraphPattern p){
+		pragma = p;
 	}
 	
 	public void setBase(String ns){

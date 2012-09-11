@@ -25,6 +25,7 @@ import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -181,6 +182,11 @@ public class ProviderImpl implements Provider {
 	 */		 	
 	Mappings send(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
 		Query g = q.getOuterQuery();
+		int timeout = 0;
+		Integer time = (Integer) g.getPragma(Pragma.TIMEOUT);
+		if (time != null){
+			timeout = time;
+		}
 		try {
 		
 			// generate bindings from env if any
@@ -195,20 +201,13 @@ public class ProviderImpl implements Provider {
 			}
 			
 			//logger.info("** Provider: \n" + query);
-
-			//StringBuffer sb = doPost2(serv.getLabel(), query);
 			
-			InputStream stream = doPost(serv.getLabel(), query);
+			InputStream stream = doPost(serv.getLabel(), query, timeout);
 			
 			if (g.isDebug()){
 				//logger.info("** Provider result: \n" + sb);
 			}
-			
-//			if (sb.length() == 0){
-//				throw new IOException("Endpoint result is empty");
-//			}
 
-			//Mappings map = parse(sb);
 			Mappings map = parse(stream);
 		
 			if (g.isDebug()){
@@ -267,16 +266,16 @@ public class ProviderImpl implements Provider {
 	}
 	
 	public StringBuffer doPost2(String server, String query) throws IOException{
-		URLConnection cc = post(server, query);
+		URLConnection cc = post(server, query, 0);
 		return getBuffer(cc.getInputStream());
 	}
 	
-	public InputStream doPost(String server, String query) throws IOException{
-		URLConnection cc = post(server, query);
+	public InputStream doPost(String server, String query, int timeout) throws IOException{
+		URLConnection cc = post(server, query, timeout);
 		return cc.getInputStream();
 	}
 	
-	URLConnection post(String server, String query) throws IOException{
+	URLConnection post(String server, String query, int timeout) throws IOException{
 		String qstr = "query=" + URLEncoder.encode(query, "UTF-8");
 
 		URL queryURL = new URL(server);
@@ -287,6 +286,7 @@ public class ProviderImpl implements Provider {
         urlConn.setRequestProperty("Accept", "application/rdf+xml,  application/sparql-results+xml");
         urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
         urlConn.setRequestProperty("Accept-Charset", "UTF-8");
+        urlConn.setReadTimeout(timeout);
 
         OutputStreamWriter out = new OutputStreamWriter(urlConn.getOutputStream());
         out.write(qstr);
@@ -296,8 +296,7 @@ public class ProviderImpl implements Provider {
 
 	}
 	
-	
-	
+
 	StringBuffer getBuffer(InputStream stream) throws IOException{
 		InputStreamReader r = new InputStreamReader(stream, "UTF-8");
 		BufferedReader br = new BufferedReader(r);

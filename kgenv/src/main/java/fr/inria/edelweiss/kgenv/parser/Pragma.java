@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
+import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Source;
@@ -27,37 +28,38 @@ import fr.inria.edelweiss.kgram.tool.MetaProducer;
  *
  */
 public class Pragma  {
-	protected static final String KG = ExpType.KGRAM;
+	public static final String KG 		= ExpType.KGRAM;
 	// subject
-	protected static final String SELF 	= KG + "kgram";
-	static final String MATCH 			= KG + "match";
-	static final String PATH 			= KG + "path";
-	static final String QUERY 			= KG + "query";
-	static final String SERVICE 		= KG + "service";
-	protected static final String PRAGMA= KG + "pragma";
+	public static final String SELF 	= KG + "kgram";
+	public static final String MATCH 	= KG + "match";
+	public static final String PATH 	= KG + "path";
+	public static final String QUERY 	= KG + "query";
+	public static final String SERVICE  = KG + "service";
+	public static final String PRAGMA= KG + "pragma";
 
 	// kgram
-	static final String OPTIM 	= KG + "optimize";
-	static final String TEST 	= KG + "test";
-	static final String DEBUG 	= KG + "debug";
-	static final String SORT	= KG + "sort";
-	static final String LISTEN 	= KG + "listen";
-	static final String LOOP 	= KG + "loop";
-	static final String NODE 	= KG + "node";
-	static final String EDGE 	= KG + "edge";
-	static final String LOAD 	= KG + "load";
-	static final String LIST 	= KG + "list";
-	static final String DISPLAY	= KG + "display";
-	static final String EXPAND 	= KG + "expand";
-	static final String PRELAX 	= KG + "relax";
-	static final String SLICE 	= KG + "slice";
-	static final String MAP 	= KG + "map";
-	static final String COUNT 	= KG + "count";
+	public static final String OPTIM 	= KG + "optimize";
+	public static final String TEST 	= KG + "test";
+	public static final String DEBUG 	= KG + "debug";
+	public static final String SORT		= KG + "sort";
+	public static final String LISTEN 	= KG + "listen";
+	public static final String LOOP 	= KG + "loop";
+	public static final String NODE 	= KG + "node";
+	public static final String EDGE 	= KG + "edge";
+	public static final String LOAD 	= KG + "load";
+	public static final String LIST 	= KG + "list";
+	public static final String DISPLAY	= KG + "display";
+	public static final String EXPAND 	= KG + "expand";
+	public static final String PRELAX 	= KG + "relax";
+	public static final String SLICE 	= KG + "slice";
+	public static final String TIMEOUT 	= KG + "timeout";
+	public static final String MAP 		= KG + "map";
+	public static final String COUNT 	= KG + "count";
 
-	protected static final String STATUS	= KG + "status";
-	protected static final String DESCRIBE	= KG + "describe";
+	public static final String STATUS	= KG + "status";
+	public static final String DESCRIBE	= KG + "describe";
 
-	protected static final String HELP 	= KG + "help";
+	public static final String HELP 	= KG + "help";
 
 	
 
@@ -94,10 +96,12 @@ public class Pragma  {
 	}
 	
 	public void parse(){
-		//System.out.println("** Pragma1: " + ast.getPragma());
 		parse(null, ast.getPragma());
 	}
 	
+	public void parse(fr.inria.acacia.corese.triple.parser.Exp pragma){
+		parse(null, pragma);
+	}
 	
 	public void parse(Atom g, fr.inria.acacia.corese.triple.parser.Exp exp){
 		
@@ -119,6 +123,11 @@ public class Pragma  {
 	public void compile(){
 		//System.out.println("** Compile: " + ast.getPragma());
 		compile(null, ast.getPragma());
+	}
+	
+	public void compile(BasicGraphPattern p){
+		//System.out.println("** Compile: " + ast.getPragma());
+		compile(null, p);
 	}
 	
 	
@@ -273,6 +282,10 @@ public class Pragma  {
 			if (property.equals(SLICE)){
 				int slice = t.getObject().getDatatypeValue().intValue();
 				query.setSlice(slice);
+			}
+			else if (property.equals(TIMEOUT)){
+				Integer value = t.getObject().getDatatypeValue().intValue();
+				query.setPragma(TIMEOUT, value);
 			}
 		}
 	}

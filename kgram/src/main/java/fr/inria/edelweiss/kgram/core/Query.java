@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgram.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class Query extends Exp {
 	Compile compiler;
 	Sorter sort;
 	
+	HashMap<String, Object> pragma;
 	// Extended filters: pathNode()
 	Hashtable <String, Filter> ftable;
 	// Extended queries for type check
@@ -107,6 +109,7 @@ public class Query extends Exp {
 		compiler 	= new Compile(this);
 		table 		= new Hashtable<Edge, Query>();
 		ftable 		= new Hashtable<String, Filter>();
+		pragma 		= new HashMap<String, Object>(); 
 		queries 	= new ArrayList<Query>();
 
 		patternNodes 		= new ArrayList<Node>();
@@ -2067,6 +2070,19 @@ public class Query extends Exp {
 		return ftable.keySet();
 	}
 
-
+	public Object getPragma(String name){
+		return pragma.get(name);
+	}
+	
+	public void setPragma(String name, Object value){
+		pragma.put(name, value);
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 }

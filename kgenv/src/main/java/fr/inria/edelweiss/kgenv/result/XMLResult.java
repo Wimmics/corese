@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgenv.result;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -86,7 +88,8 @@ public class XMLResult {
 		MyHandler handler = new MyHandler(maps);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
-		parser.parse(stream, handler);    
+		InputStreamReader r = new InputStreamReader(stream, "UTF-8");
+		parser.parse(new InputSource(r), handler);    
 		
 		return maps;
 	}

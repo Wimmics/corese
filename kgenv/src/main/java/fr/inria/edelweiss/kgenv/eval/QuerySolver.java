@@ -9,6 +9,10 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Atom;
+import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
+import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
@@ -72,6 +76,8 @@ public class QuerySolver  {
 	// it is overloaded if query has a base (cf prefix/base)
 	// use case: expand from <data.ttl> in manifest.ttl
 	String defaultBase;
+
+	private BasicGraphPattern pragma;
 	
 	static int count = 0;
 	
@@ -84,6 +90,7 @@ public class QuerySolver  {
 		producer = p;
 		evaluator = e;
 		matcher = m;
+		pragma = BasicGraphPattern.create();
 	}
 
 	public static QuerySolver create(){
@@ -285,6 +292,7 @@ public class QuerySolver  {
 		Transformer transformer =  transformer();			
 		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
+		transformer.setPragma(pragma);
 		Query query = transformer.transform(squery, true);
 		return query;	
 	}
@@ -293,6 +301,7 @@ public class QuerySolver  {
 		Transformer transformer =  transformer();			
 		transformer.setSPARQLCompliant(isSPARQLCompliant);
 		transformer.setNamespaces(NAMESPACES);
+		transformer.setPragma(pragma);
 		Query query = transformer.transform(ast);
 		return query;
 	}
@@ -302,6 +311,7 @@ public class QuerySolver  {
 		transformer.setSPARQLCompliant(isSPARQLCompliant);
 		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
+		transformer.setPragma(pragma);
 		transformer.set(ds);
 
 		Query query = transformer.transform(squery);
@@ -378,9 +388,35 @@ public class QuerySolver  {
 	
 	void pragma(Eval kgram, Query query){
 		ASTQuery ast = (ASTQuery) query.getAST();
-		if (ast!=null && ast.getPragma() != null){
-			new Pragma(kgram, query, ast).parse();
+		Pragma pg = new Pragma(kgram, query, ast);
+		if (pragma != null) {
+			pg.parse(pragma);
 		}
+		if (ast!=null && ast.getPragma() != null){
+			pg.parse();
+		}
+	}
+	
+	public void addPragma(String subject, String property, String value){
+		Triple t = Triple.create(Constant.create(subject), Constant.create(property), Constant.create(value));
+		pragma.add(t);
+	}
+	
+	public void addPragma(String subject, String property, int value){
+		Triple t = Triple.create(Constant.create(subject), Constant.create(property), Constant.create(value));
+		pragma.add(t);
+	}
+	
+	public void addPragma(String subject, String property, boolean value){
+		Triple t = Triple.create(Constant.create(subject), Constant.create(property), Constant.create(value));
+		pragma.add(t);
+	}
+	
+	public void addPragma(Atom subject, Atom property, Atom value){
+		if (pragma == null) {
+			pragma = BasicGraphPattern.create();
+		}
+		pragma.add(Triple.create(subject, property, value));
 	}
 	
 	

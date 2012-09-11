@@ -217,6 +217,7 @@ public class UpdateProcess {
 		ASTQuery ast = ASTQuery.create();
 		ASTQuery ga  = (ASTQuery) q.getAST();
 		ast.setNSM(ope.getNSM());
+		ast.setPragma(ga.getPragma());
 		ast.setPrefixExp(ga.getPrefixExp());
 		ast.setSelectAll(true);
 		// where {pat}

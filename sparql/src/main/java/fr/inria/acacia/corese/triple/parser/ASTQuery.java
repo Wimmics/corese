@@ -1272,6 +1272,10 @@ public class ASTQuery  implements Keyword {
 		return isAdd;
 	}
 	
+	public boolean isInsert(){
+		return isAdd;
+	}
+	
 	public void setAdd(boolean b){
 		isAdd = b;
 	}
@@ -2213,8 +2217,14 @@ public class ASTQuery  implements Keyword {
     	return isDelete;
     }
     
-   
+    public boolean isSPARQLQuery() {
+    	return isSelect() || isAsk() || isDescribe() || (isConstruct() && ! isInsert());
+    }
 
+    public boolean isSPARQLUpdate() {
+    	return isUpdate() || isInsert() || isDelete();
+    }
+    
     public boolean isConstructCompiled() {
         return constructCompiled;
     }

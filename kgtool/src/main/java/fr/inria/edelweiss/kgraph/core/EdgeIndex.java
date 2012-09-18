@@ -248,8 +248,14 @@ implements Index {
 				if (needTag){
 					tag(edge);
 				}
-				list.add(edge);
-				logInsert(edge);
+				
+				if (onInsert(edge)){
+					list.add(edge);
+					logInsert(edge);
+				}
+				else {
+					return null;
+				}
 			}
 			else {
 				if (index == 0){
@@ -276,15 +282,26 @@ implements Index {
 					tag(edge);
 				}
 				
-				list.add(i, edge);
-				logInsert(edge);
+				if (onInsert(edge)){
+					list.add(i, edge);
+					logInsert(edge);
+				}
+				else {
+					return null;
+				}
+					
 			}
 		}
 		else {
 			// edges are not already sorted (load time)
 			// add all edges, duplicates will be removed later when first query occurs
-			list.add(edge);
-			logInsert(edge);
+			if (onInsert(edge)){
+				list.add(edge);
+				logInsert(edge);
+			}
+			else {
+				return null;
+			}
 		}
 
 		//complete(edge);
@@ -714,6 +731,9 @@ implements Index {
 		
 	}
 	
+	boolean onInsert(Entity ent){
+		return graph.onInsert(ent);
+	}
 
 	void logDelete(Entity ent){		
 		if (ent != null && getIndex() == 0){

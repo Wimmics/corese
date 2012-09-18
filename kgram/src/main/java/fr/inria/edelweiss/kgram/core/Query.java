@@ -2074,6 +2074,15 @@ public class Query extends Exp {
 		return pragma.get(name);
 	}
 	
+	public boolean isPragma(String name){
+		Object obj = pragma.get(name);
+		if (obj == null || ! (obj instanceof Boolean)){
+			return false;
+		}
+		Boolean b = (Boolean) obj;
+		return b;
+	}
+	
 	public void setPragma(String name, Object value){
 		pragma.put(name, value);
 	}

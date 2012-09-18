@@ -7,6 +7,8 @@ public interface GraphListener {
 	
 	void addSource(Graph g);
 	
+	boolean onInsert(Graph g, Entity ent);
+
 	void insert(Graph g, Entity ent);
 
 	void delete(Graph g, Entity ent);

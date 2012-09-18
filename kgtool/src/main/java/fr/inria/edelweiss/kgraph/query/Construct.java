@@ -47,7 +47,7 @@ public class Construct
 	Query query;
 	Graph graph;
 	Node defaultGraph;
-	List<Entity> list;
+	List<Entity> lInsert, lDelete;
 	//List<String> from;
 	Dataset ds;
 	
@@ -113,12 +113,20 @@ public class Construct
 	}
 	
 	
-	public void setList(List<Entity> l){
-		list = l;
+	public void setInsertList(List<Entity> l){
+		lInsert = l;
 	}
 	
-	public List<Entity> getList(){
-		return list;
+	public List<Entity> getInsertList(){
+		return lInsert;
+	}
+	
+	public void setDeleteList(List<Entity> l){
+		lDelete = l;
+	}
+	
+	public List<Entity> getDeleteList(){
+		return lDelete;
 	}
 	
 	public Graph construct(Mappings lMap){
@@ -158,7 +166,7 @@ public class Construct
 		for (Mapping map : lMap){
 			// each map has its own blank nodes:
 			clear();
-			construct(gNode, exp, map);
+			construct(gNode, exp, lMap, map);
 			
 		}
 		
@@ -174,7 +182,10 @@ public class Construct
 	 * Recursive construct of exp with map
 	 * Able to process construct graph ?g {exp}
 	 */
-	void construct(Node gNode, Exp exp, Mapping map){
+	void construct(Node gNode, Exp exp, Mappings lMap, Mapping map){
+		if (lInsert != null) lMap.setInsert(lInsert);
+		if (lDelete != null) lMap.setDelete(lDelete);
+		
 		if (exp.isGraph()){
 			gNode = exp.getGraphName();
 			exp = exp.rest();
@@ -186,23 +197,33 @@ public class Construct
 				if (edge != null){
 					if (isDelete){
 						if (isDebug) logger.debug("** Delete: " + edge);
+						List<Entity> list = null;
+						
 						if (gNode == null && ds!=null && ds.hasFrom()){
 							// delete in default graph
-							graph.delete(edge, ds.getFrom());
+							list = graph.delete(edge, ds.getFrom());
 						}
 						else {
 							// delete in all named graph
-							graph.delete(edge);
+							list = graph.delete(edge);
 						}
+
+						if (list != null){
+							lMap.setNbDelete(lMap.nbDelete() + list.size());
+							if (lDelete != null){
+								lDelete.addAll(list);
+							}
+						}
+						
 					}
 					else {
 						if (isDebug) logger.debug("** Construct: " + edge);
 						Entity ent = graph.addEdge(edge);
 						
 						if (ent != null){
-							
-							if (list != null){
-								list.add(ent);
+							lMap.setNbInsert(lMap.nbInsert() + 1);
+							if (lInsert != null){
+								lInsert.add(ent);
 							}
 							
 							if (isInsert){
@@ -219,7 +240,7 @@ public class Construct
 				}
 			}
 			else {
-				construct(gNode, ee, map);
+				construct(gNode, ee, lMap, map);
 			}
 		}
 	}

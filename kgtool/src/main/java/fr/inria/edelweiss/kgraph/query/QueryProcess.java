@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.query;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -9,15 +10,18 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
+import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -169,6 +173,22 @@ public class QueryProcess extends QuerySolver {
 	
 	public Mappings query(String squery) throws EngineException{
 		return query(squery, null, null);
+	}
+	
+	/**
+	 * Loop on update until nothing new is updated
+	 * Only for delete insert
+	 * Dangerous: it loops
+	 */
+	Mappings loop(String squery) throws EngineException {
+		Mappings map = null;
+		boolean loop = true;
+		while (loop){
+			map = query(squery, null, null);
+			System.out.println(map);
+			loop = map.nbUpdate() > 0;
+		}
+		return map;
 	}
 	
 	/**
@@ -382,11 +402,19 @@ public class QueryProcess extends QuerySolver {
 	
 	
 	Mappings synUpdate(Query query,  Dataset ds) throws EngineException{
+		GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
+		
 		try {
 			writeLock();
+			if (gl != null){
+				getGraph().addListener(gl);
+			}
 			return update(query, ds);
 		}
 		finally {
+			if (gl != null){
+				getGraph().removeListener(gl);
+			}
 			writeUnlock();
 		}
 	}
@@ -411,7 +439,7 @@ public class QueryProcess extends QuerySolver {
 		UpdateProcess up = UpdateProcess.create(man);
 		up.setDebug(isDebug());
 		Mappings lMap = up.update(query);
-		lMap.setGraph(getGraph());
+		//lMap.setGraph(getGraph());
 		return lMap;
 	}
 	
@@ -446,11 +474,12 @@ public class QueryProcess extends QuerySolver {
 		if (q.isDelete()){
 			delete(lMap, ds);
 		}
+		
 		if (q.isConstruct()){ 
 			// insert
 			construct(lMap, ds);
 		}
-		
+
 		return lMap;
 	}
 	
@@ -519,7 +548,10 @@ public class QueryProcess extends QuerySolver {
 	public void construct(Mappings lMap, Dataset ds){
 		Query query = lMap.getQuery();
 		Construct cons =  Construct.create(query);
-		cons.setDebug(isDebug() || query.isDebug());
+		if (isDebug() || query.isDebug()){
+			cons.setDebug(true);
+			cons.setInsertList(new ArrayList<Entity>());
+		}
 		Graph gg;
 		if (getAST(query).isAdd()){
 			Graph g = getGraph();
@@ -535,7 +567,10 @@ public class QueryProcess extends QuerySolver {
 	void delete(Mappings lMap, Dataset ds){
 		Query query = lMap.getQuery();
 		Construct cons =  Construct.create(query);
-		cons.setDebug(isDebug() || query.isDebug());
+		if (isDebug() || query.isDebug()){
+			cons.setDebug(true);
+			cons.setDeleteList(new ArrayList<Entity>());
+		}
 		Graph g = getGraph();
 		Graph gg = cons.delete(lMap, g, ds);
 		lMap.setGraph(gg);
@@ -544,11 +579,18 @@ public class QueryProcess extends QuerySolver {
 	
 	
 	
-	
+	/**
+	 * Pragma specific to kgraph (in addition to generic pragma in QuerySolver)
+	 */
 	void pragma(Query query){
 		ASTQuery ast = (ASTQuery) query.getAST();
+		
 		if (ast!=null && ast.getPragma() != null){
-			 PragmaImpl.create(this, query).parse();
+			PragmaImpl.create(this, query).parse();
+		}
+		
+		if (getPragma() != null){
+			PragmaImpl.create(this, query).parse(getPragma());
 		}
 	}
 	

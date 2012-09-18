@@ -219,8 +219,16 @@ public class Graph //implements IGraph
 		if (listen == null){
 			listen = new ArrayList<GraphListener>();
 		}
-		listen.add(gl);
-		gl.addSource(this);
+		if (! listen.contains(gl)){
+			listen.add(gl);
+			gl.addSource(this);
+		}
+	}
+	
+	public void removeListener(GraphListener gl){
+		if (listen != null){
+			listen.remove(gl);
+		}
 	}
 	
 	public List<GraphListener> getListeners(){
@@ -1385,21 +1393,25 @@ public class Graph //implements IGraph
 	 * 
 	 *****************************************************************/
 	
-	public Entity delete(Entity ent){
+	public List<Entity> delete(Entity ent){
 		if (! (ent instanceof EdgeImpl)){
 			return null;
 		}
 		return delete((EdgeImpl) ent);
 	}
 
-	public Entity delete(EdgeImpl edge){
-		Entity res = null;
+	public List<Entity> delete(EdgeImpl edge){
+		List<Entity> res = null;
 		
 		if (edge.getGraph() == null){
 			res = deleteAll(edge);
 		}
 		else {
-			res = basicDelete(edge);
+			Entity ee = basicDelete(edge);
+			if (ee != null){
+				res = new ArrayList<Entity>();
+				res.add(ee);
+			}
 		}
 		
 		if (res != null){
@@ -1409,22 +1421,25 @@ public class Graph //implements IGraph
 	}
 
 	
-	public Entity delete(EdgeImpl edge, List<String> from){
-		Entity res = null;	
-		
+	public List<Entity> delete(EdgeImpl edge, List<String> from){
+		List<Entity> res = null;	
+
 		for (String str : from){
 			Node node = getGraphNode(str);
 
 			if (node != null){
 				edge.setGraph(node);
 				Entity ent = basicDelete(edge);
-				if (res == null){
-					if (ent != null) setDelete(true);
-					res = ent;
-				}
+				if (ent != null){
+					if (res == null){
+						res = new ArrayList<Entity>();
+					}
+					res.add(ent);
+					setDelete(true);
+				}				
 			}
 		}
-		
+
 		if (res != null){
 			deleted(res);
 		}
@@ -1457,15 +1472,19 @@ public class Graph //implements IGraph
 	/**
 	 * delete occurrences of this edge in all graphs
 	 */
-	Entity deleteAll(EdgeImpl edge){
-		Entity res = null;
-		
+	List<Entity> deleteAll(EdgeImpl edge){
+		ArrayList<Entity> res = null;
+
 		for (Node graph : getGraphNodes()){
 			edge.setGraph(graph);
 			Entity ent = basicDelete(edge);
-			if (res == null){
-				if (ent != null) setDelete(true);
-				res = ent;
+			
+			if (ent != null){
+				if (res == null) {
+					res = new ArrayList<Entity>();
+				}
+				res.add(ent);
+				setDelete(true);
 			}
 		}
 
@@ -1476,10 +1495,13 @@ public class Graph //implements IGraph
 	 * This edge has been deleted
 	 * TODO: Delete its nodes from tables if needed
 	 */
-	void deleted(Entity ent){
-		Edge edge = ent.getEdge();
-		for (int i=0; i<edge.nbNode(); i++){
-			delete(edge.getNode(i));
+	void deleted(List<Entity> list){
+		for (Entity ent : list){
+			Edge edge = ent.getEdge();
+			
+			for (int i=0; i<edge.nbNode(); i++){
+				delete(edge.getNode(i));
+			}
 		}
 	}
 	
@@ -1808,6 +1830,18 @@ public class Graph //implements IGraph
 				gl.insert(this, ent);
 			}		
 		}
+	}
+	
+	
+	boolean onInsert(Entity ent){
+		if (listen != null){
+			for (GraphListener gl : listen){
+				if (! gl.onInsert(this, ent)){
+					return false;
+				}
+			}		
+		}
+		return true;
 	}
 	
 }

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -46,6 +47,8 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	isListGroup = false;
 	Query query;
 	List<Mapping>  list;
+	private List<Entity> insert;
+	private List<Entity> delete;
 	Group group, distinct;
 	Node fake;
 	Object object;
@@ -56,6 +59,8 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	// SPARQL: -1 (unbound first)
 	// Corese order: 1 (unbound last)
 	int unbound = -1;
+	private int nbDelete = 0;
+	private int nbInsert = 0;
 	
 
 
@@ -893,6 +898,42 @@ implements Comparator<Mapping> , Iterable<Mapping>
 
 	public Object getGraph() {
 		return graph;
+	}
+	
+	public int nbUpdate() {
+		return nbDelete + nbInsert;
+	}
+
+	public int nbDelete() {
+		return nbDelete;
+	}
+
+	public void setNbDelete(int nbDelete) {
+		this.nbDelete = nbDelete;
+	}
+
+	public int nbInsert() {
+		return nbInsert;
+	}
+
+	public void setNbInsert(int nbInsert) {
+		this.nbInsert = nbInsert;
+	}
+
+	public List<Entity> getInsert() {
+		return insert;
+	}
+
+	public void setInsert(List<Entity> lInsert) {
+		this.insert = lInsert;
+	}
+
+	public List<Entity> getDelete() {
+		return delete;
+	}
+
+	public void setDelete(List<Entity> lDelete) {
+		this.delete = lDelete;
 	}
 
 

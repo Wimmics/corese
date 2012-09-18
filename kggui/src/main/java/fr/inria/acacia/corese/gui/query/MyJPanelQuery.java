@@ -33,6 +33,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+import org.apache.log4j.Logger;
 import org.miv.graphstream.algorithm.layout2.elasticbox.ElasticBox;
 import org.miv.graphstream.graph.Edge;
 import org.miv.graphstream.graph.Node;
@@ -51,10 +52,14 @@ import fr.inria.acacia.corese.exceptions.QueryLexicalException;
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
 
 import javax.swing.JFrame;
 
@@ -428,15 +433,46 @@ public final class MyJPanelQuery extends JPanel {
         }
         return name.substring(ind + 1);
     }
+    
+    
+    String toString(Mappings map){
+    	Query q = map.getQuery();
+    	ASTQuery ast = (ASTQuery) map.getQuery().getAST();
+    	if (ast.isSPARQLQuery()){
+    		// RDF or XML
+        	return ResultFormat.create(map).toString();
+    	}
+    	else {
+    		// XML bindings only (do not display the whole graph)
+    		return XMLFormat.create(map).toString();
+    	}
+    }
 
+    
     public void display(IResults l_Results, MainFrame coreseFrame) {
     	if (l_Results == null){
     		// go to XML for error message
             tabbedPaneResults.setSelectedIndex(1);
     		return;
     	}
-        // On affiche la version XML du résultat dans l'onglet XML
-        resultXML = l_Results.toString();
+    	
+    	boolean oneValue = true;
+        Mappings map = null;
+        
+        if (l_Results instanceof QueryResults){
+            // in old Corese, there may be several values for one variable
+            // use case: group by ?x and pragma {kg:kgram kg:list true}
+        	// this is deprecated
+        	QueryResults qr = (QueryResults) l_Results;
+        	map = qr.getMappings();
+        	oneValue = ! map.getQuery().isListGroup();
+        	resultXML = toString(map);
+        }
+        else {
+        	// On affiche la version XML du résultat dans l'onglet XML
+        	resultXML = l_Results.toString();
+        }
+        
         textAreaXMLResult.setText(resultXML.toString());
 
         int num = 0;
@@ -450,20 +486,7 @@ public final class MyJPanelQuery extends JPanel {
         treeResult = new JTree(treeModel);
         treeResult.setShowsRootHandles(true);
         // Pour chaque resultat de l_Results on crée un noeud "result"
-        //if (l_Results.size()<1000)
-
-
-        boolean oneValue = false;
-        Mappings map = null;
-        
-        if (l_Results instanceof QueryResults){
-            // in old Corese, there may be several values for one variable
-            // use case: group by ?x and pragma {kg:kgram kg:list true}
-        	// this is deprecated
-        	QueryResults qr = (QueryResults) l_Results;
-        	map = qr.getMappings();
-        	oneValue = ! map.getQuery().isListGroup();
-        }
+        //if (l_Results.size()<1000)      
         
         int i = 1;
         if (oneValue){
@@ -479,7 +502,6 @@ public final class MyJPanelQuery extends JPanel {
 
         //pointe sur le résultat XML
         tabbedPaneResults.setSelectedIndex(1);
-
 
         if (l_Results.isConstruct() || l_Results.isDescribe()) {
 

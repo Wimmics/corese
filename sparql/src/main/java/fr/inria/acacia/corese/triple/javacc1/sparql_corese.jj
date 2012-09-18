@@ -280,8 +280,7 @@ Exp LoadPattern() : {Exp stack;}
 void Prolog() : {}
 {
      
-	(  BaseDecl() ) ?
-  	(  PrefixDecl() )*
+	(  BaseDecl() | PrefixDecl() )*
 }
 
 void BaseDecl() : { Token t; String s; Triple triple; }

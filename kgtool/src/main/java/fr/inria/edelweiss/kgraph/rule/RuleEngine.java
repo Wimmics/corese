@@ -266,7 +266,7 @@ public class RuleEngine {
 		Query qq = rule.getQuery();
 		Construct cons =  Construct.create(qq, Entailment.RULE);
 		cons.setRule(rule, rule.getIndex());
-		cons.setList(list);
+		cons.setInsertList(list);
 
 		int start = graph.size();
 

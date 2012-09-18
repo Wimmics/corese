@@ -48,12 +48,14 @@ public class UpdateProcess {
 	/**
 	 * Process an update sparql query
 	 * There may be a list of queries
+	 * return the Mappings of the last update ...
 	 */
 	
 	public Mappings update(Query q){
 		query = q;
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ASTUpdate astu = ast.getUpdate();
+		Mappings map = Mappings.create(q);
 		
 		for (Update u : astu.getUpdates()){
 			if (isDebug){
@@ -70,7 +72,7 @@ public class UpdateProcess {
 			else {
 				// delete insert data where
 				Composite c = u.getComposite();
-				suc = process(q, c);
+				map = process(q, c);
 			}
 			
 			if (! suc){
@@ -82,8 +84,7 @@ public class UpdateProcess {
 			}
 		}
 		
-		Mappings lMap = Mappings.create(q);
-		return lMap;
+		return map;
 	}
 	
 	public void setDebug(boolean b){
@@ -91,18 +92,19 @@ public class UpdateProcess {
 	}
 	
 	
-	boolean process(Query q, Composite ope){
+	Mappings process(Query q, Composite ope){
 		
 		switch (ope.type()){
 		
-		case Update.INSERT: 	insert(q, ope); break;
+		case Update.INSERT: 	return insert(q, ope); 
 			
-		case Update.DELETE: 	delete(q, ope); break;
+		case Update.DELETE: 	return delete(q, ope); 
 		
-		case Update.COMPOSITE: 	composite(q, ope); break;
+		case Update.COMPOSITE: 	return composite(q, ope); 
 			
 		}
-		return true;
+		
+		return Mappings.create(q);
 		
 	}
 	
@@ -112,7 +114,7 @@ public class UpdateProcess {
 	 * Ground pattern (no variable)
 	 * Processed as a construct query in the target graph
 	 */
-	void insert(Query q, Composite ope){
+	Mappings insert(Query q, Composite ope){
 		
 		ASTQuery ast = createAST(q, ope);
 		ast.setInsert(true);
@@ -120,8 +122,8 @@ public class UpdateProcess {
 		Exp exp = ope.getData();
 		if (! exp.validateData()){
 			if (isDebug) logger.debug("** Update: insert not valid: " + exp);
-			query.setCorrect(false);
-			return;
+			q.setCorrect(false);
+			return Mappings.create(q);
 		}
 		
 		if (exp != null){
@@ -130,7 +132,7 @@ public class UpdateProcess {
 		}
 		
 		// Processed as a construct (add) on target graph
-		manager.query(q, ast);
+		return manager.query(q, ast);
 
 	}
 	
@@ -140,7 +142,7 @@ public class UpdateProcess {
 	 * Processed by Construct as a delete query in the target graph
 	 * 
 	 */	
-	void delete(Query q, Composite ope){
+	Mappings delete(Query q, Composite ope){
 		
 		ASTQuery ast = createAST(q, ope);
 		ast.setDelete(true);
@@ -150,8 +152,8 @@ public class UpdateProcess {
 			if (isDebug){
 				logger.debug("** Update: delete not valid: " + exp);
 			}
-			query.setCorrect(false);
-			return;
+			q.setCorrect(false);
+			return Mappings.create(q);
 		}
 		
 		if (exp != null){
@@ -159,7 +161,7 @@ public class UpdateProcess {
 			ast.setDelete(exp);
 		}
 		
-		manager.query(q, ast);
+		return manager.query(q, ast);
 
 	}
 	
@@ -171,7 +173,7 @@ public class UpdateProcess {
 	 * using
 	 * where {pat}
 	 */
-	void composite(Query q, Composite ope){
+	Mappings composite(Query q, Composite ope){
 		
 		// the graph where insert/delete occurs
 		Constant src = ope.getWith();
@@ -198,14 +200,15 @@ public class UpdateProcess {
 					ast.setDelete(exp);
 					
 					if (! exp.validateDelete()){
-						query.setCorrect(false);
-						return;
+						q.setCorrect(false);
+						return Mappings.create(q);
 					}
 				}
 		}
 
 		Mappings map = manager.query(q, ast);
-		if (isDebug) logger.debug(map);	
+		//if (isDebug) logger.debug(map);	
+		return map;
 	}
 	
 	

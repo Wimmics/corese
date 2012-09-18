@@ -3,6 +3,8 @@ package fr.inria.edelweiss.kgraph.query;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Atom;
+import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -13,6 +15,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgtool.util.GraphListenerImpl;
 
 /**
  * Pragma specific to kgraph
@@ -31,6 +34,7 @@ public class PragmaImpl extends Pragma {
 	QueryProcess exec;
 	Graph graph;
 	Entailment entail ;
+
 
 
 	PragmaImpl(QueryProcess ex, Query q){
@@ -60,16 +64,36 @@ public class PragmaImpl extends Pragma {
 		return query;
 	}
 	
-	
-	public void triple(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
+	/**
+	 * [a kg:Insert ; kg:triple(?x rdf:type c:Person)]
+	 * Triple represented by a list
+	 */
+	public void list(Atom g, RDFList list){
+		System.out.println(list.head() + " " + list.getList());
+		
+		for (Expression exp : list.getList()){
+			System.out.println(exp);
+		}
 
-		String subject  = t.getSubject().getLongName();
-		String property = t.getProperty().getLongName();
-		String object   = t.getObject().getLongName();
-		if (object == null) object = t.getObject().getName();
+		
+		for (fr.inria.acacia.corese.triple.parser.Exp exp : list.getBody()){
+			//System.out.println(exp);
+		}
+	}
+
+	public void triple(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
+		//System.out.println(t);
+		String subject  = t.getSubject().getLabel();
+		String property = t.getProperty().getLabel();
+		String object   = t.getObject().getLabel();
+		
 		IDatatype dt = t.getObject().getDatatypeValue();
 		
-		if (subject.equals(SELF)){
+		if (g != null && isListen(g.getLabel())){
+			listen(g, t, pragma);
+		}
+		
+		else if (subject.equals(SELF)){
 			if (property.equals(ENTAIL)){
 				boolean b = value(object);
 				graph.setEntailment();
@@ -104,13 +128,45 @@ public class PragmaImpl extends Pragma {
 				query.addInfo(help(), null);
 			}
 		}
-		
-				
+		else if (subject.equals(LISTEN)){
+			listen(g, t, pragma);			
+		}		
+	}
+	
+	boolean isListen(String label){
+		return label.equals(LISTEN) || label.equals(INSERT) || label.equals(DELETE);
 	}
 	
 	
-	
-	
+	/**
+	 * g = kg:listen
+	 * pragma = graph pattern
+	 */
+	public void listen(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
+
+		String subject  = t.getSubject().getLabel();
+		String property = t.getProperty().getLabel();
+		String object   = t.getObject().getLabel();
+		IDatatype dt 	= t.getObject().getDatatypeValue();
+		
+		GraphListenerImpl gl = (GraphListenerImpl) query.getPragma(LISTEN);
+		
+		if (gl == null){
+			gl = GraphListenerImpl.create();
+			query.setPragma(LISTEN, gl);
+		}
+		
+		if (subject.equals(LISTEN)){
+			// kg:listen kg:insert true
+			gl.setProperty(property, dt);
+		}
+		else if (g != null && g.getLabel().equals(INSERT)){
+			// graph kg:insert { <John> ?p ?y }
+			gl.setProperty(LISTEN_INSERT , t);
+		}
+		
+		
+	}
 	
 	
 	

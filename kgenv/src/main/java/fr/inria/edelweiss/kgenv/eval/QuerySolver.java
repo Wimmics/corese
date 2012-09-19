@@ -90,7 +90,7 @@ public class QuerySolver  {
 		producer = p;
 		evaluator = e;
 		matcher = m;
-		pragma = BasicGraphPattern.create();
+		setPragma(BasicGraphPattern.create());
 	}
 
 	public static QuerySolver create(){
@@ -292,7 +292,7 @@ public class QuerySolver  {
 		Transformer transformer =  transformer();			
 		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
-		transformer.setPragma(pragma);
+		transformer.setPragma(getPragma());
 		Query query = transformer.transform(squery, true);
 		return query;	
 	}
@@ -301,7 +301,7 @@ public class QuerySolver  {
 		Transformer transformer =  transformer();			
 		transformer.setSPARQLCompliant(isSPARQLCompliant);
 		transformer.setNamespaces(NAMESPACES);
-		transformer.setPragma(pragma);
+		transformer.setPragma(getPragma());
 		Query query = transformer.transform(ast);
 		return query;
 	}
@@ -311,7 +311,7 @@ public class QuerySolver  {
 		transformer.setSPARQLCompliant(isSPARQLCompliant);
 		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
-		transformer.setPragma(pragma);
+		transformer.setPragma(getPragma());
 		transformer.set(ds);
 
 		Query query = transformer.transform(squery);
@@ -389,8 +389,8 @@ public class QuerySolver  {
 	void pragma(Eval kgram, Query query){
 		ASTQuery ast = (ASTQuery) query.getAST();
 		Pragma pg = new Pragma(kgram, query, ast);
-		if (pragma != null) {
-			pg.parse(pragma);
+		if (getPragma() != null) {
+			pg.parse(getPragma());
 		}
 		if (ast!=null && ast.getPragma() != null){
 			pg.parse();
@@ -399,24 +399,24 @@ public class QuerySolver  {
 	
 	public void addPragma(String subject, String property, String value){
 		Triple t = Triple.create(Constant.create(subject), Constant.create(property), Constant.create(value));
-		pragma.add(t);
+		getPragma().add(t);
 	}
 	
 	public void addPragma(String subject, String property, int value){
 		Triple t = Triple.create(Constant.create(subject), Constant.create(property), Constant.create(value));
-		pragma.add(t);
+		getPragma().add(t);
 	}
 	
 	public void addPragma(String subject, String property, boolean value){
 		Triple t = Triple.create(Constant.create(subject), Constant.create(property), Constant.create(value));
-		pragma.add(t);
+		getPragma().add(t);
 	}
 	
 	public void addPragma(Atom subject, Atom property, Atom value){
-		if (pragma == null) {
-			pragma = BasicGraphPattern.create();
+		if (getPragma() == null) {
+			setPragma(BasicGraphPattern.create());
 		}
-		pragma.add(Triple.create(subject, property, value));
+		getPragma().add(Triple.create(subject, property, value));
 	}
 	
 	
@@ -469,6 +469,14 @@ public class QuerySolver  {
 	
 	public void setSlice(int n){
 		slice = n;
+	}
+
+	public BasicGraphPattern getPragma() {
+		return pragma;
+	}
+
+	public void setPragma(BasicGraphPattern pragma) {
+		this.pragma = pragma;
 	}
 	
 }

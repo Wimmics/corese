@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
+import fr.inria.edelweiss.kgram.tool.Message;
 
 
 /**
@@ -163,31 +164,27 @@ public class Transformer implements ExpType {
 		if (fac == null){
 			fac = new CompilerFacKgram();
 			compiler = fac.newInstance();
-		}
-		
-//		Query q =  create(exp);
-//		q.setAST(ast);
+		}		
 
 		if (ast.isConstruct() || ast.isDescribe()){
-			// use case: kgraph only
+			validate(ast.getInsert(), ast);
 			Exp cons = construct(ast);
 			q.setConstruct(cons);
 			q.setConstruct(true);
-
 		}
+
 		if (ast.isDelete()){
+			validate(ast.getDelete(), ast);
 			Exp del = delete(ast);
 			q.setDelete(del);
 			q.setDelete(true);
 		}
+		
 		if (ast.isUpdate()){
 			q.setUpdate(true);
 		}
 
-		path(q, ast);
-		// before complete (because select include binding nodes)
-		//bindings(q, ast);
-		
+		path(q, ast);		
 
 		// retrieve select nodes for query:
 		complete(q, ast);
@@ -224,6 +221,68 @@ public class Transformer implements ExpType {
 
 		return q;
 	}
+	
+	
+	/**
+	 * check unbound variable in construct/insert/delete
+	 */
+	boolean validate(fr.inria.acacia.corese.triple.parser.Exp exp, ASTQuery ast){
+		boolean suc = true;
+		
+		for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
+			boolean b = true;
+			
+			if (ee.isTriple()){
+				b = validate(ee.getTriple(), ast);
+			}
+			else if (ee.isGraph()){
+				b = validate((Source) ee, ast);
+			}
+			else {
+				b = validate(ee, ast);
+			}
+			
+			suc = suc && b;
+		}
+		
+		return suc;
+	}
+	
+	
+	boolean validate(Source exp, ASTQuery ast){
+		boolean suc = validate(exp.getSource(), ast);
+		
+		for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
+			suc =  validate(ee, ast) && suc;
+		}
+		
+		return suc;
+	}
+	
+	
+	boolean validate(Atom at, ASTQuery ast){
+		if (at.isVariable() && ! ast.isSelectAllVar(at.getVariable())){
+			ast.addError(Message.get(Message.UNDEF_VAR) + 
+					ast.getUpdateTitle() + ": " , at.getLabel());
+			return false;
+		}
+
+		return true;
+	}
+	
+	
+	boolean validate(Triple t, ASTQuery ast){
+		boolean suc = validate(t.getSubject(), ast) ;
+		suc =  validate(t.getObject(), ast) && suc;
+		
+		Variable var = t.getVariable();
+		if (var != null){
+			suc = validate(var, ast) && suc;
+		}
+		
+		return suc;
+	}
+
 
 	
 	/**

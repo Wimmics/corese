@@ -149,10 +149,11 @@ public class UpdateProcess {
 		
 		Exp exp = ope.getData();
 		if (! exp.validateData() || ! exp.validateDelete()){
-			if (isDebug){
-				logger.debug("** Update: delete not valid: " + exp);
-			}
+//			if (isDebug){
+//				logger.debug("** Update: delete not valid: " + exp);
+//			}
 			q.setCorrect(false);
+			q.addError("** Update: delete not valid: " , exp);
 			return Mappings.create(q);
 		}
 		
@@ -198,9 +199,10 @@ public class UpdateProcess {
 					// delete {exp}
 					ast.setDelete(true);
 					ast.setDelete(exp);
-					
+
 					if (! exp.validateDelete()){
 						q.setCorrect(false);
+						q.addError("Error: Blank Node in Delete", "");
 						return Mappings.create(q);
 					}
 				}

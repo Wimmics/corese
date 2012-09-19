@@ -365,9 +365,11 @@ public class ASTQuery  implements Keyword {
 				}
 			}
 			// select *
-			for (Variable var : getSelectAllVar()){
-				if (hasExpression(var)){
-					bind(var);
+			if (isSelectAll()){
+				for (Variable var : getSelectAllVar()){
+					if (hasExpression(var)){
+						bind(var);
+					}
 				}
 			}
 						
@@ -419,6 +421,16 @@ public class ASTQuery  implements Keyword {
 	
 	public List<String> getErrors(){
 		return getGlobalAST().errors();
+	}
+	
+	public String getUpdateTitle(){
+		if (isAdd()){
+			return KeywordPP.INSERT;
+		}
+		if (isDelete()){
+			return KeywordPP.DELETE;
+		}
+		return KeywordPP.CONSTRUCT;
 	}
 	
 	void setError(String error){
@@ -689,6 +701,19 @@ public class ASTQuery  implements Keyword {
 	
 	public List<Variable> getSelectAllVar() {
 		return selectAllVar;
+	}
+	
+	public boolean isSelectAllVar(Variable var){
+		return selectAllVar.contains(var);
+	}
+	
+	public boolean isSelectAllVar(String name){
+		for (Variable var : selectAllVar){
+			if (var.getLabel().equals(name)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isSelectAll() {
@@ -2114,9 +2139,9 @@ public class ASTQuery  implements Keyword {
      * Use case: collect select *
      */
     void defSelect(Variable var){
-    	if (isSelectAll()){
+    	//if (isSelectAll()){
     		addSelect(var);
-    	}
+    	//}
     }
     
     void addSelect(Variable var){

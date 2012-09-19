@@ -35,7 +35,8 @@ public class Pragma  {
 	public static final String PATH 	= KG + "path";
 	public static final String QUERY 	= KG + "query";
 	public static final String SERVICE  = KG + "service";
-	public static final String PRAGMA= KG + "pragma";
+	public static final String PRAGMA	= KG + "pragma";
+	public static final String GRAPH	= KG + "graph";
 
 	// kgram
 	public static final String OPTIM 	= KG + "optimize";
@@ -55,7 +56,11 @@ public class Pragma  {
 	public static final String TIMEOUT 	= KG + "timeout";
 	public static final String MAP 		= KG + "map";
 	public static final String COUNT 	= KG + "count";
-
+	public static final String SIZE 	= KG + "size";
+	public static final String INSERT 	= KG + "insert";
+	public static final String DELETE 	= KG + "delete";
+	public static final String LISTEN_INSERT = KG + "listenInsert";
+	public static final String LISTEN_DELETE = KG + "listenDelete";
 	public static final String STATUS	= KG + "status";
 	public static final String DESCRIBE	= KG + "describe";
 
@@ -116,7 +121,19 @@ public class Pragma  {
 				Source gp = (Source) pragma;
 				parse(gp.getSource(), gp.getBody().get(0));
 			}
+			else if (pragma.isRDFList()){
+				RDFList list = (RDFList) pragma;
+				list(g, list);
+			}
+			else if (pragma.isAnd()){
+				parse(g, pragma);
+			}
 		}
+	}
+	
+	// redefined if PragmaImpl
+	public void list(Atom g, RDFList list){
+		parse(g, list);
 	}
 	
 	
@@ -150,10 +167,10 @@ public class Pragma  {
 	
 	public void ctriple(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
 			
-			String subject  = t.getSubject().getLongName();
-			String property = t.getProperty().getLongName();
-			String object   = t.getObject().getLongName();
-			if (object == null) object = t.getObject().getName();
+			String subject  = t.getSubject().getLabel();
+			String property = t.getProperty().getLabel();
+			String object   = t.getObject().getLabel();
+			//if (object == null) object = t.getObject().getName();
 
 			if (subject.equals(PATH)){
 				if (property.equals(EXPAND)){
@@ -209,10 +226,10 @@ public class Pragma  {
 	
 	public void triple(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
 		
-		String subject  = t.getSubject().getLongName();
-		String property = t.getProperty().getLongName();
-		String object   = t.getObject().getLongName();
-		if (object == null) object = t.getObject().getName();
+		String subject  = t.getSubject().getLabel();
+		String property = t.getProperty().getLabel();
+		String object   = t.getObject().getLabel();
+		//if (object == null) object = t.getObject().getName();
 		
 		if (subject.equals(SELF)){
 			if (property.equals(TEST)){

@@ -98,7 +98,9 @@ public class ExpandPath implements QueryVisitor {
 		for (Update u : update.getUpdates()){
 			if (u.isComposite()){
 				Composite c = u.getComposite();
-				rewrite(c.getBody());
+				if (c.getBody() != null){
+					rewrite(c.getBody());
+				}
 			}
 		}
 	}

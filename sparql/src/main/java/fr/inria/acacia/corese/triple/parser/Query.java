@@ -55,9 +55,11 @@ public class Query extends Exp {
 			a.defSelect(var);
 		}
 		// select *
-		for (Variable var : ast.getSelectAllVar()){
-			a.bind(var);
-			a.defSelect(var);
+		if (ast.isSelectAll()){
+			for (Variable var : ast.getSelectAllVar()){
+				a.bind(var);
+				a.defSelect(var);
+			}
 		}
 				
 		return b;

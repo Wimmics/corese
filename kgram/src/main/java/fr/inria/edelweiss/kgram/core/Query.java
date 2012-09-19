@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -23,6 +25,9 @@ import fr.inria.edelweiss.kgram.tool.Message;
  */
 
 public class Query extends Exp {
+	
+	private static Logger logger = Logger.getLogger(Exp.class);	
+
 	public static final String PATHNODE = "pathNode";
 	public static final String BPATH = "_:_path_";
 
@@ -218,7 +223,7 @@ public class Query extends Exp {
 					}
 				}
 			}
-			
+			logger.error(str);
 			errors.add(str);
 		}
 	}

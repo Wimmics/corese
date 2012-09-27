@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
+import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.Construct;
@@ -36,7 +37,10 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
  * 
  * @author Olivier Corby, Edelweiss INRIA 2011
  */
-public class RuleEngine {
+public class RuleEngine implements Engine {
+	private static final String UNKNOWN = "unknown";
+
+
 	private static Logger logger = Logger.getLogger(RuleEngine.class);	
 
 	
@@ -48,6 +52,9 @@ public class RuleEngine {
 	
 	boolean debug = false, isOptim = false;
 	int loop = 0;
+
+
+	private boolean isActivate = true;
 	
 	
 	RuleEngine(){
@@ -92,11 +99,15 @@ public class RuleEngine {
 		return eng;
 	}
 	
-	public int process(){
+	public boolean process(){
 		if (graph==null){
 			set(Graph.create());
 		}
-		return synEntail();
+		//OC:
+		//synEntail();
+		int size = graph.size();
+		entail();
+		return graph.size() > size;
 	}
 	
 	public int process(Graph g){
@@ -104,13 +115,13 @@ public class RuleEngine {
 		if (exec==null){
 			set(QueryProcess.create(g));
 		}
-		return synEntail();
+		return entail();
 	}
 	
 	public int process(Graph g, QueryProcess q){
 		set(g);
 		set(q);
-		return synEntail();
+		return entail();
 	}
 	
 	public int process(QueryProcess q){
@@ -118,7 +129,7 @@ public class RuleEngine {
 			set(Graph.create());
 		}
 		set(q);
-		return synEntail();
+		return entail();
 	}
 	
 	public Graph getGraph(){
@@ -139,7 +150,11 @@ public class RuleEngine {
 	 */
 	
 	public Query defRule(String rule) throws EngineException {
-		return defRule("unknown", rule);
+		return defRule(UNKNOWN, rule);
+	}
+	
+	public void defRule(Query rule)  {
+		rules.add(Rule.create(UNKNOWN, rule));
 	}
 	
 	public void addRule(String rule)  {
@@ -183,7 +198,7 @@ public class RuleEngine {
 	public int entail(){
 		
 		if (isOptim){
-			init();
+			start();
 		}
 
 		int size = graph.size(),
@@ -205,7 +220,7 @@ public class RuleEngine {
 			// List of edges created by rules in this step (or by entailment if any)
 			current = list;
 			list = new ArrayList<Entity>();
-			
+
 			for (Rule rule : rules){
 				// graph.entail() is done once before rule application
 				
@@ -215,8 +230,8 @@ public class RuleEngine {
 				
 				if (! isOptim  || 
 					(loop == 0 || accept(rule, getRecord(rule), t))){
-
-					graph.setUpdate(false);
+					//OC:
+					//graph.setUpdate(false);
 					if (debug){
 						rule.getQuery().setDebug(true);
 					}
@@ -234,7 +249,8 @@ public class RuleEngine {
 			
 			if (graph.size() > size){
 				// There are new edges: entailment again
-				graph.entail(list);
+				//OC:
+				//graph.entail(list);
 				size = graph.size();
 				loop++;
 			}
@@ -328,7 +344,7 @@ public class RuleEngine {
 	/**
 	 * Compute table of rule predicates, for all rules
 	 */
-	void init(){
+	void start(){
 		rtable = new RTable();
 		
 		for (Rule rule : rules){
@@ -391,6 +407,36 @@ public class RuleEngine {
 	void setRecord(Rule r, ITable t){
 		rtable.put(r, t);
 	}
+
+	public void init(){
+	}
+	
+	public void onDelete() {		
+	}
+
+	public void onInsert(Node gNode, Edge edge) {		
+	}
+
+	public void onClear() {		
+	}
+
+	public void setActivate(boolean b) {		
+		isActivate = b;
+	}
+	
+	
+	public boolean isActivate(){
+		return isActivate;
+	}
+
+	public void remove() {
+		graph.clear(Entailment.RULE, true);
+	}
+
+	public int type() {
+		return RULE_ENGINE;
+	}
+	
 	
 
 }

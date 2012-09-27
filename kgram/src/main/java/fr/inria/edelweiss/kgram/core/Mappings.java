@@ -317,7 +317,8 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 
 	int desc(int i){
-		if (i < 0) return +1;
+		if (i == 0) return 0;
+		else if (i < 0) return +1;
 		else return -1;
 	}
 	

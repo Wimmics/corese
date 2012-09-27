@@ -92,7 +92,9 @@ public class Query extends Exp {
 	isCountPath = false,
 	isCorrect = true, isConnect = false,
 	// join service send Mappings from first pattern to service
-	isMap = true;
+	isMap = true,
+	// construct where as a rule
+	isRule = false, isDetail = false;
 	
 	int mode = Matcher.UNDEF;
 
@@ -2091,10 +2093,22 @@ public class Query extends Exp {
 	public void setPragma(String name, Object value){
 		pragma.put(name, value);
 	}
+
+	public void setRule(boolean rule) {
+		isRule = rule;
+	}
 	
+	public boolean isRule(){
+		return isRule;
+	}
 	
+	public void setDetail(boolean b) {
+		isDetail = b;
+	}
 	
-	
+	public boolean isDetail(){
+		return isDetail;
+	}
 	
 	
 	

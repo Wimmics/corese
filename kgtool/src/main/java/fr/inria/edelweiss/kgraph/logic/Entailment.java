@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.EdgeCore;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -26,9 +27,9 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Entailment {
+public class Entailment implements Engine {
 	
-	private static final String STYPE = RDF.TYPE;
+	private static final String S_TYPE 		= RDF.TYPE;
 	private static final String S_BLI 		= RDF.BLI;
 	private static final String S_PROPERTY 	= RDF.PROPERTY;
 
@@ -65,7 +66,8 @@ public class Entailment {
 	static final int TYPE 			= 4;
 	static final int MEMBER 		= 5;
 	static final int INVERSEOF 		= 6;
-	
+	static final int RDF_ENTAIL 	= 7;
+
 	static final int SYMMETRIC 		= 30;
 
 
@@ -90,7 +92,8 @@ public class Entailment {
 		isDomain = true,
 		isRange = true,
 		isRDF  = true,
-		isMember = true;
+		isMember = true,
+		isActivate = true;
 	
 	// deprecated
 	boolean recurse = false,
@@ -126,11 +129,16 @@ public class Entailment {
 		subproperty = new Signature();
 		keyword 	= new Hashtable<String, Integer>();
 		count 		= new Hashtable<Node, Integer>();
-		hasType 	= graph.addProperty(STYPE);
-		init();
+		hasType 	= graph.addProperty(S_TYPE);
+		defProperty();
 	}
 	
-	public void clear(){
+	
+	public void onClear(){
+		clear();
+	}
+	
+	void clear(){
 		symetric.clear();
 		inverse.clear();
 		domain.clear();
@@ -139,7 +147,8 @@ public class Entailment {
 	}
 	
 	// use RDFS metamodel
-	void init(){
+	void defProperty(){
+		defEntity(RDF.RDF, 			RDF_ENTAIL);
 		defEntity(RDF.TYPE, 		TYPE);
 		defEntity(RDFS.SUBCLASSOF, 	SUBCLASSOF);
 		defEntity(RDFS.SUBPROPERTYOF, SUBPROPERTYOF);
@@ -165,7 +174,7 @@ public class Entailment {
 	public void set(String name, boolean b){
 		
 		switch (getType(name)){
-		
+		case RDF_ENTAIL:	rdfEntailment(); break;
 		case SUBCLASSOF:	isSubClassOf = b; break;
 		case SUBPROPERTYOF:	isSubPropertyOf = b; break;
 		case DOMAIN:		isDomain = b; break;
@@ -176,6 +185,14 @@ public class Entailment {
 			if (name.equals(DATATYPE_INFERENCE)) isDatatypeInference = b;
 			else if (name.equals(ENTAIL)) 			  isDefaultGraph = b;
 		}
+	}
+	
+	void rdfEntailment(){
+		set(RDFS.SUBCLASSOF, 	false);
+		set(RDFS.SUBPROPERTYOF, false);
+		set(RDFS.DOMAIN, 		false);
+		set(RDFS.RANGE, 		false);
+		set(RDFS.MEMBER, 		false);
 	}
 	
 	public boolean isDatatypeInference(){
@@ -195,7 +212,11 @@ public class Entailment {
 	 * clear tables of meta statements (domain, range, etc.)
 	 * fill these tables with current graph
 	 */
-	public void reset(){
+	public void onDelete(){
+		reset();
+	}
+	
+	void reset(){
 		clear();
 		define();
 	}
@@ -206,7 +227,11 @@ public class Entailment {
 	 * use case: add Entailment on existing graph
 	 * use case: redefine after delete 
 	 */
-	public void define(){
+	public void init(){
+		define();
+	}
+	
+	void define(){
 		
 		for (Node pred : graph.getSortedProperties()){
 			boolean isType = isType(pred);
@@ -227,7 +252,13 @@ public class Entailment {
 	}
 	
 	
-	public int entail(){
+	public boolean process(){
+		int size = graph.size();
+		entail();
+		return graph.size() > size;
+	}
+	
+	int entail(){
 		int nb = inference();
 		return nb;
 	}
@@ -255,7 +286,11 @@ public class Entailment {
 	/**
 	 * Store property domain, range, subPropertyOf, symmetric, inverse
 	 */
-	public boolean define(Node gNode, Edge edge){
+	public void onInsert(Node gNode, Edge edge){
+		 define(gNode, edge);
+	}
+
+	boolean define(Node gNode, Edge edge){
 		//if (! edge.getLabel().startsWith(W3C)) return;
 		boolean isMeta = true;
 //		if (edge.getNode(1).isBlank()){
@@ -686,16 +721,27 @@ public class Entailment {
 	
 	void inference(List<Entity> list){
 		target = Graph.create();
-
+		Entity prev = null;
+		
 		for (Entity ent : list){
+			
 			Edge edge = ent.getEdge();
 			Node gg = getGraph(ent);
 
 			property(gg, edge);						
 			subsume(gg, edge);						
 			signature(gg, edge);
+			
+			if (prev == null){
+				prev = ent;
+				defProperty(ent.getEdge().getEdgeNode());
+			}
+			else if (prev.getEdge().getEdgeNode() != ent.getEdge().getEdgeNode()){
+				defProperty(ent.getEdge().getEdgeNode());
+			}
 		}
 	}
+	
 	
 	/**
 	 * Copy entailed edges into graph
@@ -708,7 +754,7 @@ public class Entailment {
 			for (Entity ent : target.getEdges(pred)){
 
 				Edge edge = ent.getEdge();
-				Entity ee = graph.add((EdgeImpl)edge);
+				Entity ee = to.add((EdgeImpl)edge);
 				if (ee != null){
 					list.add((EdgeImpl)edge);
 				}
@@ -870,7 +916,21 @@ public class Entailment {
 		return str;
 	}
 
+	public void setActivate(boolean b) {
+		isActivate = b;
+	}
 
+	public boolean isActivate(){
+		return isActivate;
+	}
+
+	public void remove() {
+		graph.clear(ENTAIL, true);		
+	}
+
+	public int type() {
+		return RDFS_ENGINE;		
+	}
 	
 	
 	

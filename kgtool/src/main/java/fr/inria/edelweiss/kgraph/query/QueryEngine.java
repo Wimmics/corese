@@ -7,13 +7,12 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
 /**
@@ -23,14 +22,15 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public class QueryEngine {
+public class QueryEngine implements Engine {
 	private static Logger logger = Logger.getLogger(QueryEngine.class);	
 	
 	Graph graph;
 	QueryProcess exec;
 	ArrayList<Query> list;
 	
-	boolean isDebug = false;
+	boolean isDebug = false,
+			isActivate = true;
 	
 	QueryEngine(Graph g){
 		graph = g;
@@ -69,16 +69,25 @@ public class QueryEngine {
 	}
 	
 	
-	public void process(){
+	public boolean  process(){
+		if (! isActivate){
+			return false;
+		}
+		
+		boolean b = false;
+		
 		for (Query q : list){
+			
 			if (isDebug){
 				q.setDebug(isDebug);
 			}
 			Mappings map = exec.query(q);
+			b = map.nbUpdate() > 0 || b;
 			if (isDebug){
 				logger.debug(map + "\n");
 			}
 		}
+		return b;
 	}
 	
 	
@@ -125,6 +134,40 @@ public class QueryEngine {
 			}
 		}
 		return null;
+	}
+
+	
+	public void setActivate(boolean b) {
+		isActivate = b;
+	}
+
+	
+	public boolean isActivate() {
+		return isActivate;
+	}
+
+	
+	public void init() {		
+	}
+
+	
+	public void remove() {			
+	}
+
+	
+	public void onDelete() {			
+	}
+
+	
+	public void onInsert(Node gNode, Edge edge) {				
+	}
+
+	
+	public void onClear() {				
+	}
+
+	public int type() {
+		return Engine.QUERY_ENGINE;
 	}
 
 	

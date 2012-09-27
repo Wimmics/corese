@@ -544,11 +544,12 @@ void Debug(): {}
 
 
 
-Exp ConstructQuery() : { Exp stack1, stack2; }
+Exp ConstructQuery() : { Exp stack1, stack2; boolean isRule = false;}
 {
-  (<CONSTRUCT> 
-  //| <ADD>  {astq.setAdd(true);} 
-  )
+  (<RULE> {isRule = true;} )? 
+  
+  <CONSTRUCT> 
+  
   Debug()
   
   (
@@ -561,7 +562,10 @@ Exp ConstructQuery() : { Exp stack1, stack2; }
   stack2 = WhereClause()
   SolutionModifier()
   
-  {	astq.setConstruct(stack1); 	return stack2; }
+  {	
+  astq.setConstruct(stack1); 	
+  astq.setRule(isRule);
+  return stack2; }
   )
   
   |
@@ -2408,6 +2412,7 @@ TOKEN [IGNORE_CASE] :
 | < SELECT: "select" >
 | < DESCRIBE: "describe" >
 | < CONSTRUCT: "construct" >
+| < RULE: "rule" >
 | < ASK: "ask" >
 
 | < DISTINCT: "distinct" >

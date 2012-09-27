@@ -211,11 +211,13 @@ public class ProducerImpl implements Producer {
 	 * Enable to have a local ontology in case of several graphs with local ontologies
 	 */
 	Iterable<Entity> complete(Iterable<Entity> it, Node gNode, Edge edge, Environment env){
-		if (isMatch){
+		if (isMatch && ! env.getQuery().isRelax()){
 			MatchIterator mit = new MatchIterator(it, gNode, edge, graph, env, match);
 			return mit;
 		}
 		else {
+			// if query is relax, we want all types to find best match
+			// hence skip MatchIterator
 			return it;
 		}
 	}

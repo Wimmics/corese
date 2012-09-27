@@ -63,6 +63,9 @@ public class Pragma  {
 	public static final String LISTEN_DELETE = KG + "listenDelete";
 	public static final String STATUS	= KG + "status";
 	public static final String DESCRIBE	= KG + "describe";
+	public static final String CHECK	= KG + "check";
+	public static final String DETAIL	= KG + "detail";
+
 
 	public static final String HELP 	= KG + "help";
 
@@ -155,7 +158,7 @@ public class Pragma  {
 			if (ast.isDebug()) Message.log(Message.PRAGMA, pragma);
 
 			if (pragma.isTriple()){
-				ctriple(g, pragma.getTriple(), exp);
+				compile(g, pragma.getTriple(), exp);
 			}
 			else if (pragma.isGraph()){
 				Source gp = (Source) pragma;
@@ -165,7 +168,7 @@ public class Pragma  {
 	}
 	
 	
-	public void ctriple(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
+	public void compile(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){
 			
 			String subject  = t.getSubject().getLabel();
 			String property = t.getProperty().getLabel();
@@ -194,6 +197,11 @@ public class Pragma  {
 					else {
 						ast.addRelax(t.getObject());
 					}
+				}
+			}
+			else if (subject.equals(QUERY)){
+				if (property.equals(CHECK)){
+					ast.setCheck(value(object));
 				}
 			}
 	}
@@ -247,10 +255,12 @@ public class Pragma  {
 			else if (property.equals(LISTEN) && value(object)){
 				kgram.addEventListener(EvalListener.create());
 			}
-			else if (property.equals(LIST) && value(object)){
-				query.setListGroup(true);
+			else if (property.equals(LIST)){
+				query.setListGroup(value(object));
 			}
-			
+			else if (property.equals(DETAIL)){
+				query.setDetail(value(object));
+			}
 		}
 		else if (subject.equals(MATCH)){
 			if (property.equals(MODE)){

@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -162,6 +163,7 @@ public class XMLFormat  {
 		println(getTitle(Title.XMLDEC));
 		println(getTitle(Title.OHEADER));
 		error();
+		detail();
 		println(getTitle(Title.OHEAD));
 		if (isMore()) {
 			//printVar(SIMILARITY);
@@ -192,6 +194,29 @@ public class XMLFormat  {
 		
 		println(getTitle(Title.CHEADER));
 	}
+	
+	
+	void detail(){
+		
+		if (lMap.getInsert() != null){
+			println(OCOM);
+			println("Insert:");
+			for (Entity ent : lMap.getInsert()){
+				println(ent);
+			}
+			println(CCOM);
+		}	
+		
+		if (lMap.getDelete() != null){
+			println(OCOM);
+			println("Delete:");
+			for (Entity ent : lMap.getDelete()){
+				println(ent);
+			}
+			println(CCOM);
+		}	
+	}
+	
 	
 	void error(){
 		boolean b1 = ast!=null     && ast.getErrors()!=null;
@@ -347,6 +372,10 @@ public class XMLFormat  {
 	
 	protected void println(String str){
 		pw.println(str);
+	}
+	
+	protected void println(Object obj){
+		pw.println(obj.toString());
 	}
 	
 	protected void print(String str){

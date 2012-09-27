@@ -12,9 +12,11 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgtool.util.GraphListenerImpl;
 
 /**
@@ -26,7 +28,10 @@ import fr.inria.edelweiss.kgtool.util.GraphListenerImpl;
  */
 public class PragmaImpl extends Pragma {
 	
-	static final String ENTAIL 	 	= KG + "entailment";
+	static final String ENTAIL 	 	= Entailment.ENTAIL;
+	static final String RULE 	 	= Entailment.RULE;
+	static final String RDFSENTAIL 	= RDFS.RDFS + "entailment";
+	
 	static final String SIMILARITY 	= KG + "similarity";
 	static final String PSTEP 		= KG + "pstep";
 	static final String CSTEP 		= KG + "cstep";
@@ -94,17 +99,24 @@ public class PragmaImpl extends Pragma {
 		}
 		
 		else if (subject.equals(SELF)){
-			if (property.equals(ENTAIL)){
-				boolean b = value(object);
-				graph.setEntailment();
-				graph.setEntailment(b);
-				// as graph.isUpdate may have been set to false
-				// we force entailment
-				if (b) graph.setUpdate(true);	
-			}
-			else if (property.equals(STATUS)){
+//			if (property.equals(ENTAIL)){
+//				boolean b = value(object);
+//				graph.setEntailment();
+//				graph.setEntailment(b);
+//				// as graph.isUpdate may have been set to false
+//				// we force entailment
+//				if (b) graph.setUpdate(true);	
+//			}
+//			else 
+			if (property.equals(STATUS)){
 				new Describe(exec, query).describe(value(object));
 			}
+			else if (property.equals(ENTAIL)){
+				rdfsentail(value(object));
+			}	
+			else if (property.equals(RULE)){
+				rule(value(object));
+			}	
 		}
 		else if (subject.equals(ENTAIL)){
 			// kg:entailment rdfs:subClassOf true
@@ -133,6 +145,34 @@ public class PragmaImpl extends Pragma {
 		}		
 	}
 	
+	/**
+	 * 
+	 * (des)activate rule engines
+	 */
+	private void rule(boolean value) {
+		graph.getWorkflow().setActivate(Engine.RULE_ENGINE, value);	
+		if (value){
+			graph.setEntail(true);
+		}
+	}
+	
+
+	private void rdfsentail(boolean value) {
+		if (value){
+			graph.setEntail(true);
+			if (graph.getEntailment() == null){
+				graph.setEntailment();
+			}
+			else {
+				graph.getEntailment().setActivate(true);
+			}
+		}
+		else if (graph.getEntailment() != null){
+			graph.getEntailment().setActivate(false);
+		}
+	}
+	
+
 	boolean isListen(String label){
 		return label.equals(LISTEN) || label.equals(INSERT) || label.equals(DELETE);
 	}

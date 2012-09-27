@@ -154,6 +154,7 @@ public class Transformer implements ExpType {
 		}
 		
 		Query q = compile(ast);
+		q.setRule(ast.isRule());
 		q = transform(q, ast);
 		return q;
 	}
@@ -261,7 +262,9 @@ public class Transformer implements ExpType {
 	
 	
 	boolean validate(Atom at, ASTQuery ast){
-		if (at.isVariable() && ! ast.isSelectAllVar(at.getVariable())){
+		if (at.isVariable() && 
+				! at.isBlankNode() &&
+				! ast.isSelectAllVar(at.getVariable())){
 			ast.addError(Message.get(Message.UNDEF_VAR) + 
 					ast.getUpdateTitle() + ": " , at.getLabel());
 			return false;

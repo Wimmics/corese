@@ -161,7 +161,10 @@ public class QueryResults implements IResults
 	
 	public boolean isConstruct() {
 		
-		if (ast!=null) return ast.isConstruct();
+		if (ast!=null){
+			// gui do not draw graph with insert
+			return ast.isConstruct() && ! ast.isInsert();
+		}
 		return false;
 	}
 

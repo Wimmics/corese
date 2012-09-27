@@ -57,8 +57,8 @@ public class GraphEngine implements IEngine {
 		graph   = Graph.create(true);
 		rengine = RuleEngine.create(graph);
 		qengine = QueryEngine.create(graph);
-		bengine = Engine.create(QueryProcess.create(graph));
-		exec = QueryProcess.create(graph);
+		bengine = Engine.create(QueryProcess.create(graph, true));
+		exec = QueryProcess.create(graph, true);
 	}
 	
 	public static GraphEngine create(){
@@ -82,7 +82,7 @@ public class GraphEngine implements IEngine {
 	}
 	
 	public QueryProcess createQueryProcess(){
-		QueryProcess qp = QueryProcess.create(graph);
+		QueryProcess qp = QueryProcess.create(graph, true);
 		qp.setLoader(loader());
 		qp.setListGroup(isListGroup);
 		qp.setDebug(isDebug);
@@ -122,7 +122,8 @@ public class GraphEngine implements IEngine {
 	
 	public void runRuleEngine() {
 		rengine.setDebug(isDebug);
-		rengine.process();
+		//rengine.process();
+		graph.process(rengine);
 	}
 	
 	public void runQueryEngine() {

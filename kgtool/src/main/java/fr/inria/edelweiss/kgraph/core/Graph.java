@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.api.Tagger;
@@ -88,6 +89,7 @@ public class Graph //implements IGraph
 	NodeIndex gindex;
 	Log log;
 	List<GraphListener> listen;
+	Workflow manager;
 	Tagger tag;
 	Entailment inference, proxy;
 	EdgeFactory fac;
@@ -167,6 +169,7 @@ public class Graph //implements IGraph
 		property 	= new Hashtable<String, Node>();
 		gindex 		= new NodeIndex();	
 		fac 		= new EdgeFactory(this);
+		manager 	= new Workflow(this);
 		key = hashCode() + ".";
 	}
 	
@@ -213,6 +216,40 @@ public class Graph //implements IGraph
 		if (log != null){
 			log.log(type, obj1, obj2);
 		}
+	}
+	
+	public void addEngine(Engine e){
+		manager.addEngine(e);
+	}
+	
+	public void removeEngine(Engine e){
+		manager.removeEngine(e);
+	}
+	
+	public Workflow getWorkflow(){
+		return manager;
+	}
+	
+	public void setClearEntailment(boolean b){
+		manager.setClearEntailment(b);
+	}
+	
+	/**
+	 * Process entailments
+	 */
+	public synchronized void process(){
+		manager.process();
+	}
+	
+	public synchronized void process(Engine e){
+		manager.process(e);
+	}
+	
+	/**
+	 * Remove entailments
+	 */
+	public synchronized void remove(){
+		manager.remove();
 	}
 	
 	public void addListener(GraphListener gl){
@@ -268,18 +305,35 @@ public class Graph //implements IGraph
 		return inference;
 	}
 	
-	public void setEntailment(Entailment i){
-		inference = i;
+	/**
+	 * b=true require entailments to be performed before next query
+	 */
+	public void setEntail(boolean b){
+		isEntail = b;
 	}
 	
+	public void setEntailment(Entailment i){
+		inference = i;
+		manager.addEngine(i);
+	}
+	
+	/**
+	 * Set RDFS entailment
+	 */
 	public void setEntailment(){
 		Entailment entail = Entailment.create(this);
-		setEntailment(entail);
-		
-		if (size()>0){
-			entail.define();
+		setEntailment(entail);		
+	}
+	
+	/**
+	 * (des)activate RDFS entailment
+	 */
+	public void setEntailment(boolean b){
+		if (inference != null){
+			inference.setActivate(b);
 		}
 	}
+	
 	
 	public void set(String property, boolean value){
 		localSet(property, value);
@@ -298,15 +352,15 @@ public class Graph //implements IGraph
 	
 	public void entail(){
 		if (inference!=null){
-			inference.entail();
+			inference.process();
 		}
 	}
 	
-	public void entail(List<Entity> list){
-		if (isEntail && inference!=null){
-			inference.entail(list);
-		}
-	}
+//	public void entail(List<Entity> list){
+//		if (isEntail && inference!=null){
+//			inference.entail(list);
+//		}
+//	}
 	
 	
 	public void setDefault(boolean b){
@@ -433,17 +487,19 @@ public class Graph //implements IGraph
 		if (isIndex){
 			index();
 		}
+		
 		if (isUpdate){
 			// use case: previously load or sparql update
-			// entailment: 
 			// clean meta properties 
 			// redefine meta properties
-			// perform entailments
 			update();
-			if (isEntail){
-				entail();
-			}
 		}
+		
+		if (isEntail){
+			isEntail = false;
+			process();
+		}			
+
 	}
 
 	private void update(){
@@ -453,18 +509,23 @@ public class Graph //implements IGraph
 		clearDistance();
 		
 		if (isDelete){
+			manager.onDelete();
 			isDelete = false;
-			
-			if (inference!=null){
-				// use case: a meta triple was deleted previously
-				// remove it from entailment tables
-				inference.reset();
-			}		
 		}
 	}
 	
+		
+	
 	public void setUpdate(boolean b){
 		isUpdate = b;
+		if (isUpdate){
+			setEntail(true);
+		}
+	}
+	
+	
+	public boolean isUpdate(){
+		return isUpdate;
 	}
 	
 	private void setDelete(boolean b){
@@ -476,21 +537,15 @@ public class Graph //implements IGraph
 	/**
 	 * @deprecated
 	 */
-	public boolean isEntailment(){
-		return isEntail;
-	}
+//	public boolean isEntailment(){
+//		return isEntail;
+//	}
 	
 	public boolean hasEntailment(){
 		return inference!=null;
 	}
 	
-	/**
-	 * If true, entailment is done by init() before query processing
-	 */
-	public void setEntailment(boolean b){
-		isEntail = b;
-	}
-	
+
 	
 	// true when index must be sorted 
 	boolean isIndex(){
@@ -614,9 +669,11 @@ public class Graph //implements IGraph
 		Entity ent = add(edge);
 		if (ent != null){
 			setUpdate(true);
-			if (inference!=null){
-				inference.define(ent.getGraph(), edge);
-			}
+			//OC:
+			manager.onInsert(ent.getGraph(), edge);
+//			if (inference!=null){
+//				inference.onInsert(ent.getGraph(), edge);
+//			}
 		}
 		return ent;
 	}
@@ -1517,9 +1574,11 @@ public class Graph //implements IGraph
 		for (Index t : tables){
 			t.clear();
 		}
-		if (inference!=null){
-			inference.clear();
-		}
+		manager.onClear();
+		//OC:
+//		if (inference!=null){
+//			inference.onClear();
+//		}
 		clearDistance();
 		isIndex = true;
 		isUpdate = false; 
@@ -1776,6 +1835,7 @@ public class Graph //implements IGraph
 
 	public void setDebug(boolean b) {
 		isDebug = b;
+		manager.setDebug(b);
 	}
 
 	/**********************************************************/
@@ -1843,5 +1903,6 @@ public class Graph //implements IGraph
 		}
 		return true;
 	}
+
 	
 }

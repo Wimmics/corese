@@ -132,9 +132,9 @@ public class Describe {
 			ProducerImpl pi = (ProducerImpl) p;
 			Graph g = pi.getGraph();
 			info("Dataset " + n + ":\n" , g);
+			info("", g.getIndex());
 
 			if (detail){
-				info("", g.getIndex());
 				log(g);
 				query(g);
 			}

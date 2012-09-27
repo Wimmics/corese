@@ -10,8 +10,10 @@ import fr.inria.acacia.corese.triple.update.Update;
 import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.Workflow;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -158,21 +160,24 @@ public class ManagerImpl implements Manager {
 		
 		RuleEngine rengine = load.getRuleEngine();
 		
-		
+		Workflow wf = graph.getWorkflow();
 
 		switch (ope.type()){
 		
 		case Update.DROP: 
 			
-			if (isRule(uri) && rengine != null){
+			if (isRule(uri)){
 				// clear also the rule base
-				rengine.clear();
+				wf.removeEngine(Engine.RULE_ENGINE);
 			}
 			
 		case Update.CLEAR: 
 			
 			if (isEntailment(uri)){
 				graph.setEntailment(false);
+			}
+			else if (isRule(uri)){
+				wf.setActivate(Engine.RULE_ENGINE, false);
 			}
 			break;
 			
@@ -181,12 +186,11 @@ public class ManagerImpl implements Manager {
 			
 			if (isEntailment(uri)){
 				graph.setEntailment(true);
-				graph.setUpdate(true);
+				graph.setEntail(true);
 			}
 			else if (isRule(uri)){
-				if (rengine != null){
-					rengine.process();
-				}
+				wf.setActivate(Engine.RULE_ENGINE, true);
+				graph.setEntail(true);
 			}
 			break;
 		}
@@ -339,8 +343,15 @@ public class ManagerImpl implements Manager {
 			return ope.isSilent();
 		}
 		
-		if (load.isRule(uri) && load.getRuleEngine()!=null && src!=null && src.equals(Entailment.RULE)){
-			load.getRuleEngine().entail();
+		if (load.isRule(uri) && load.getRuleEngine()!=null){ // && src!=null && src.equals(Entailment.RULE)){
+			// load rule base into workflow
+			// TODO ? load <rulebase.rul> into kg:workflow
+			// pros: if there are several rule base load, they will be process() together
+			// cons: it is stored in the workflow and run forever on update
+			// (des)activate
+			// pragma {kg:kgram kg:rule true/false}
+			graph.addEngine(load.getRuleEngine());
+			graph.setEntail(true);
 		}
 		
 		return true;

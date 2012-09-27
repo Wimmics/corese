@@ -26,6 +26,7 @@ import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 
 
 /**
@@ -174,22 +175,7 @@ public class QueryProcess extends QuerySolver {
 	public Mappings query(String squery) throws EngineException{
 		return query(squery, null, null);
 	}
-	
-	/**
-	 * Loop on update until nothing new is updated
-	 * Only for delete insert
-	 * Dangerous: it loops
-	 */
-	Mappings loop(String squery) throws EngineException {
-		Mappings map = null;
-		boolean loop = true;
-		while (loop){
-			map = query(squery, null, null);
-			System.out.println(map);
-			loop = map.nbUpdate() > 0;
-		}
-		return map;
-	}
+
 	
 	/**
 	 * Prefer Dataset below
@@ -358,8 +344,7 @@ public class QueryProcess extends QuerySolver {
 	Mappings query(Query q, Mapping map, Dataset ds) throws EngineException{
 		
 		pragma(q);
-
-		if (q.isUpdate()){
+		if (q.isUpdate() || q.isRule()){
 			log(Log.UPDATE, q);
 			return synUpdate(q, ds);
 		}
@@ -409,7 +394,12 @@ public class QueryProcess extends QuerySolver {
 			if (gl != null){
 				getGraph().addListener(gl);
 			}
-			return update(query, ds);
+			if (query.isRule()){
+				return rule(query);
+			}
+			else {
+				return update(query, ds);
+			}
 		}
 		finally {
 			if (gl != null){
@@ -418,6 +408,21 @@ public class QueryProcess extends QuerySolver {
 			writeUnlock();
 		}
 	}
+	
+	
+	
+	/**
+	 * Compute a construct where query considered as a (unique) rule
+	 * Syntax: rule construct {} where {}
+	 */
+	Mappings rule(Query q){
+		RuleEngine re = RuleEngine.create(getGraph());
+		re.setDebug(isDebug());
+		re.defRule(q);
+		getGraph().process(re);
+		return Mappings.create(q);
+	}
+	
 	
 	/**
 	 * from and named (if any) specify the Dataset over which update take place
@@ -550,6 +555,8 @@ public class QueryProcess extends QuerySolver {
 		Construct cons =  Construct.create(query);
 		if (isDebug() || query.isDebug()){
 			cons.setDebug(true);
+		}
+		if (query.isDetail()){
 			cons.setInsertList(new ArrayList<Entity>());
 		}
 		Graph gg;
@@ -569,6 +576,8 @@ public class QueryProcess extends QuerySolver {
 		Construct cons =  Construct.create(query);
 		if (isDebug() || query.isDebug()){
 			cons.setDebug(true);
+		}
+		if (query.isDetail()){
 			cons.setDeleteList(new ArrayList<Entity>());
 		}
 		Graph g = getGraph();

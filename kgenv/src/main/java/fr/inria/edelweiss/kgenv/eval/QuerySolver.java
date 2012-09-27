@@ -67,6 +67,8 @@ public class QuerySolver  {
 	isDebug = false,
 	isOptimize = false,
 	isSPARQLCompliant = false;
+
+	private boolean isDetail = false;
 	
 	boolean isSequence = false;
 	
@@ -242,6 +244,7 @@ public class QuerySolver  {
 		q.setListPath(isListPath);
 		q.setCountPath(isCountPath);
 		q.setCheckLoop(isCheckLoop);
+		q.setDetail(isDetail);
 		q.setSlice(slice);
 		if (isDebug) q.setDebug(isDebug);
 		if (isOptimize) q.setOptimize(isOptimize);
@@ -477,6 +480,14 @@ public class QuerySolver  {
 
 	public void setPragma(BasicGraphPattern pragma) {
 		this.pragma = pragma;
+	}
+
+	public boolean isDetail() {
+		return isDetail;
+	}
+
+	public void setDetail(boolean isDetail) {
+		this.isDetail = isDetail;
 	}
 	
 }

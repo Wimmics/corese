@@ -101,6 +101,8 @@ public class Query extends Exp {
 	private boolean isService = false;
 
 	private boolean isBind = false;
+
+	private boolean isSynchronized = false;
 	
 	Query(){
 		super(QUERY);
@@ -2110,6 +2112,13 @@ public class Query extends Exp {
 		return isDetail;
 	}
 	
+	public void setSynchronized(boolean b) {
+		isSynchronized  = b;
+	}
+	
+	public boolean isSynchronized(){
+		return isSynchronized;
+	}
 	
 	
 	

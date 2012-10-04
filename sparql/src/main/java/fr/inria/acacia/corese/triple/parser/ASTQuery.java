@@ -95,6 +95,7 @@ public class ASTQuery  implements Keyword {
     // validation mode (check errors)
     private boolean validate = false; 
     boolean isInsertData = false;
+    boolean isDeleteData = false;
 	boolean sorted = true; // if the relations must be sorted (default true)
 	boolean debug = false, isCheck = false;
     boolean nosort = false, 
@@ -340,6 +341,14 @@ public class ASTQuery  implements Keyword {
 	
 	public boolean isInsertData(){
 		return isInsertData;
+	}
+	
+	public void setDeleteData(boolean b){
+		isDeleteData = b;
+	}
+	
+	public boolean isDeleteData(){
+		return isDeleteData;
 	}
 	
 	public boolean isValidate(){
@@ -1621,14 +1630,13 @@ public class ASTQuery  implements Keyword {
     }
     
     public StringBuffer toString(StringBuffer sb) {
-    	getSparqlPrefix(sb);
-    	
     	if (isUpdate()){
     		getUpdate().toString(sb);
     	}
     	else {
+        	getSparqlPrefix(sb);
     		getSparqlHeader(sb);
-    		if (! isDescribe() || getBody()!=null){
+    		if ( ! isData() && (! isDescribe() || getBody()!=null)){
     			getBody().toString(sb);
     		}
 
@@ -1644,8 +1652,12 @@ public class ASTQuery  implements Keyword {
     }
 
     StringBuffer getSparqlPrefix(StringBuffer sb) {
+    	return getSparqlPrefix(getPrefixExp(), sb);
+    }
+    
+    public StringBuffer getSparqlPrefix(Exp exp, StringBuffer sb) {
         
-        for (Exp e : getPrefixExp().getBody()) {
+        for (Exp e : exp.getBody()) {
             Triple t = e.getTriple();
             String r = t.getSubject().getName();
             String p = t.getPredicate().getName();
@@ -1712,8 +1724,28 @@ public class ASTQuery  implements Keyword {
     	else if (isAsk()) {
     		sb.append(KeywordPP.ASK + SPACE);
     	} 
+    	else if (isDelete()) {
+    		sb.append(KeywordPP.DELETE + SPACE); 
+    		if (isDeleteData()){
+    			sb.append(KeywordPP.DATA + SPACE); 
+			}
+    		getDelete().toString(sb);
+    		
+    		if (isInsert()){
+    			sb.append(KeywordPP.INSERT + SPACE); 
+        		getInsert().toString(sb); 
+    		}
+    		
+    	}
     	else if (isConstruct()) {
-    		if (getConstruct() != null){
+    		if (isInsert()){
+    			sb.append(KeywordPP.INSERT + SPACE); 
+    			if (isInsertData()){
+        			sb.append(KeywordPP.DATA + SPACE); 
+    			}
+        		getInsert().toString(sb); 
+    		}
+    		else if (getConstruct() != null){
         		sb.append(KeywordPP.CONSTRUCT + SPACE); 
         		getConstruct().toString(sb); 
     		}
@@ -1723,6 +1755,9 @@ public class ASTQuery  implements Keyword {
     		}
     		else if (getDelete() != null){
         		sb.append(KeywordPP.DELETE + SPACE); 
+        		if (isDeleteData()){
+        			sb.append(KeywordPP.DATA + SPACE); 
+    			}
         		getDelete().toString(sb); 
     		}
     	} 
@@ -1760,14 +1795,19 @@ public class ASTQuery  implements Keyword {
     	}
     	
     	// Where
-    	if (! (isDescribe() && ! isWhere()))
+    	if ((! (isDescribe() && ! isWhere())) && ! isData() ){
     		sb.append(KeywordPP.WHERE + NL) ; 
+    	}
 
     	return sb;
     }
 
 
-    /**
+    private boolean isData() {
+		return isInsertData() || isDeleteData();
+	}
+
+	/**
      * return the solution modifiers : order by, limit, offset
      * @param parser
      * @return
@@ -1984,26 +2024,44 @@ public class ASTQuery  implements Keyword {
     }
 
     public void defNamespace(String prefix, String ns){
+    	defNSNamespace(prefix, ns);
+    	defPPNamespace(prefix, ns);
+    }
+    
+    public void defNSNamespace(String prefix, String ns){
     	if (prefix.endsWith(":")){
     		prefix = prefix.substring(0, prefix.length() - 1); // remove :
     	}
     	getNSM().defNamespace(ns, prefix);
+    }
+    
+    public void defPPNamespace(String prefix, String ns){
+    	if (prefix.endsWith(":")){
+    		prefix = prefix.substring(0, prefix.length() - 1); // remove :
+    	}
     	Triple triple = Triple.createNS(
-    			 Constant.create(KeywordPP.PREFIX),  Constant.create(prefix), 
-    			 Constant.create(ns));
+   			 Constant.create(KeywordPP.PREFIX),  Constant.create(prefix), 
+   			 Constant.create(ns));
     	addPrefixExp(triple);
     }
     
     public void defBase(String ns){
-    	getNSM().setBase(ns);
+    	defNSBase(ns);
+    	defPPBase(ns);
+    }
+    
+    public void defPPBase(String ns){
        	Triple triple = Triple.createNS(
     			 Constant.create(KeywordPP.BASE),  Constant.create(""), 
     			 Constant.create(ns));
     	addPrefixExp(triple);
     }
     
+    public void defNSBase(String ns){
+    	getNSM().setBase(ns);
+    }
+    
     public String defURI(String s){
-    	//s = nsm.prepare(s);
     	return s;
     }
 

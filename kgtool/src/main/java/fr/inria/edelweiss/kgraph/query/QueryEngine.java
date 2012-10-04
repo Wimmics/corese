@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
@@ -30,7 +31,8 @@ public class QueryEngine implements Engine {
 	ArrayList<Query> list;
 	
 	boolean isDebug = false,
-			isActivate = true;
+			isActivate = true,
+			isWorkflow = false;
 	
 	QueryEngine(Graph g){
 		graph = g;
@@ -77,9 +79,16 @@ public class QueryEngine implements Engine {
 		boolean b = false;
 		
 		for (Query q : list){
-			
+			// TRICKY:
+			// This engine is part of a workflow which is processed by graph.init()
+			// hence it is synchronized by graph.init() 
+			// We are here because a query is processed, hence a (read) lock has been taken
+			// tell the query that it is already synchronized to prevent QueryProcess synUpdate
+			// to take a write lock that would cause a deadlock
+			q.setSynchronized(isWorkflow);
 			if (isDebug){
 				q.setDebug(isDebug);
+				System.out.println(q.getAST());
 			}
 			Mappings map = exec.query(q);
 			b = map.nbUpdate() > 0 || b;
@@ -146,8 +155,11 @@ public class QueryEngine implements Engine {
 		return isActivate;
 	}
 
-	
-	public void init() {		
+	/**
+	 * This method is called by a workflow where this engine is submitted
+	 */
+	public void init() {	
+		isWorkflow = true;
 	}
 
 	

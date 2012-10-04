@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 
 /**
  * 
@@ -14,10 +15,12 @@ public class ASTUpdate {
 	
 	List<Update> list;
 	ASTQuery ast;
+	Basic prolog;
 	
 	
 	ASTUpdate(){
 		list = new ArrayList<Update>();
+		prolog = Basic.create(Update.PROLOG);
 	}
 	
 	public static ASTUpdate create(){
@@ -34,7 +37,9 @@ public class ASTUpdate {
 	public StringBuffer toString(StringBuffer sb){
 		for (Update ast : list){
 			ast.toString(sb);
-			sb.append(NL);
+			if (ast.type() != Update.PROLOG) {
+				sb.append(NL);
+			}
 		}
 		return sb;
 	}
@@ -56,8 +61,30 @@ public class ASTUpdate {
 		return list;
 	}
 	
+	public void defNamespace(String p, String ns){
+		prolog.defNamespace(p, ns);
+	}
 	
+	public void defBase(String s){
+		prolog.defBase(s);
+	}
 	
+	/**
+	 * A new prolog have been declared within a list of updates
+	 * Insert prolog and copy global NSM
+	 */
+	public void defProlog(){
+		if (prolog.hasContent()){
+			NSManager nsm = getNSM().copy();
+			prolog.setLocalNSM(nsm);
+			add(prolog);
+			prolog = Basic.create(Update.PROLOG);
+		}
+	}
+	
+	public NSManager getNSM(){
+		return getASTQuery().getNSM();
+	}
 	
 
 }

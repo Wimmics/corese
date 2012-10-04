@@ -230,6 +230,10 @@ public class Graph //implements IGraph
 		return manager;
 	}
 	
+	public void setWorkflow(Workflow wf){
+		manager = wf;
+	}
+	
 	public void setClearEntailment(boolean b){
 		manager.setClearEntailment(b);
 	}
@@ -496,8 +500,8 @@ public class Graph //implements IGraph
 		}
 		
 		if (isEntail){
-			isEntail = false;
 			process();
+			isEntail = false;
 		}			
 
 	}
@@ -1725,6 +1729,12 @@ public class Graph //implements IGraph
 		
 		Edge e = addEdge(g, p, list);
 		return e;	
+	}
+	
+	public void copy(Graph g){
+		for (Entity ent : g.getEdges()){
+			copy(ent);
+		}
 	}
 	
 	

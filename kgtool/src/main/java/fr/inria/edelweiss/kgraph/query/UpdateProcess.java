@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.acacia.corese.triple.update.Basic;
@@ -56,6 +57,7 @@ public class UpdateProcess {
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ASTUpdate astu = ast.getUpdate();
 		Mappings map = Mappings.create(q);
+		NSManager nsm = null;
 		
 		for (Update u : astu.getUpdates()){
 			if (isDebug){
@@ -63,11 +65,27 @@ public class UpdateProcess {
 			}
 			boolean suc = true;
 			
+			
+			switch (u.type()){
+			
+				case Update.PROLOG: 
+					// local prolog, get the local NSManager
+					// for next operations
+					nsm = u.getLocalNSM();
+					break;
+					
+				default:
+					// assign local NSManager to current operation
+					if (nsm != null){
+						u.setLocalNSM(nsm);
+					}					
+			}
+			
+			
 			if (u.isBasic()){
 				// load copy ...
 				Basic b = u.getBasic();
 				suc = manager.process(q, b);
-				
 			}
 			else {
 				// delete insert data where
@@ -129,6 +147,7 @@ public class UpdateProcess {
 		if (exp != null){
 			ast.setBody(BasicGraphPattern.create());
 			ast.setInsert(exp);
+			ast.setInsertData(true);
 		}
 		
 		// Processed as a construct (add) on target graph
@@ -160,6 +179,7 @@ public class UpdateProcess {
 		if (exp != null){
 			ast.setBody(BasicGraphPattern.create());
 			ast.setDelete(exp);
+			ast.setDeleteData(true);
 		}
 		
 		return manager.query(q, ast);
@@ -221,7 +241,7 @@ public class UpdateProcess {
 	ASTQuery createAST(Query q, Composite ope){
 		ASTQuery ast = ASTQuery.create();
 		ASTQuery ga  = (ASTQuery) q.getAST();
-		ast.setNSM(ope.getNSM());
+		ast.setNSM(ope.getNSM());	
 		ast.setPragma(ga.getPragma());
 		ast.setPrefixExp(ga.getPrefixExp());
 		ast.setSelectAll(true);

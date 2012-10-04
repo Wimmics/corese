@@ -56,12 +56,9 @@ public class NSManager
 	private Hashtable <String, Object> htDoc;
 	private Hashtable <String, Boolean> htValid;
 	
-	/** contains the prefix defined in the query */
-	//Vector<String> queryPrefix = new Vector<String>();
-	
 	/** 
-	 * Corese.getDataLoader().get(CoreseProp.PGNS)
 	 * Corresponds to the namespaces declared by default 
+	 * 
 	 */
 	private String defaultNamespaces = null;
 	
@@ -90,14 +87,24 @@ public class NSManager
 		return nsm;
 	}
 	
-	
+	/**
+	 * 
+	 * 	@deprecated
+	 */
 	public static NSManager create(String defaultNamespaces){
 		NSManager nsm=new NSManager(defaultNamespaces);
 		nsm.init();
 		return nsm;
 	}
 	
-
+	public NSManager copy(){
+		NSManager nsm = create();
+		nsm.setBase(getBase());
+		for (String p : getPrefixSet()){
+			nsm.definePrefix(p, getNamespace(p));
+		}
+		return nsm;
+	}
 
 
 	public void init(){
@@ -232,7 +239,7 @@ public class NSManager
 	}
 	
 	public String getNamespace(String prefix) {
-		return (String)tprefix.get(prefix);
+		return tprefix.get(prefix);
 	}
 	
 	Enumeration<String> getPrefixEnum(){

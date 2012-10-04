@@ -344,20 +344,23 @@ public class QueryProcess extends QuerySolver {
 	Mappings query(Query q, Mapping map, Dataset ds) throws EngineException{
 		
 		pragma(q);
+		Mappings lMap;
+		
 		if (q.isUpdate() || q.isRule()){
 			log(Log.UPDATE, q);
-			return synUpdate(q, ds);
+			lMap = synUpdate(q, ds);
+			lMap.setQuery(q);
 		}
 		else {
-			Mappings lMap =  synQuery(q, map);
+			lMap =  synQuery(q, map);
 
 			if (q.isConstruct()){
 				// construct where
 				construct(lMap, null);
 			}
 			log(Log.QUERY, q, lMap);
-			return lMap;
 		}
+		return lMap;
 	}
 	
 	Mappings synQuery(Query query, Mapping m) {
@@ -388,9 +391,13 @@ public class QueryProcess extends QuerySolver {
 	
 	Mappings synUpdate(Query query,  Dataset ds) throws EngineException{
 		GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
-		
 		try {
-			writeLock();
+			if (! query.isSynchronized()){
+				// TRICKY:
+				// if query comes from workflow, it is already synchronized by graph.init()
+				// and it already has a lock by exec.query()
+				writeLock();
+			}
 			if (gl != null){
 				getGraph().addListener(gl);
 			}
@@ -405,7 +412,9 @@ public class QueryProcess extends QuerySolver {
 			if (gl != null){
 				getGraph().removeListener(gl);
 			}
-			writeUnlock();
+			if (! query.isSynchronized()){
+				writeUnlock();
+			}
 		}
 	}
 	
@@ -472,6 +481,9 @@ public class QueryProcess extends QuerySolver {
 	 * ast is the current update action
 	 */
 	public Mappings update(Query query, ASTQuery ast, Dataset ds) {
+		
+		//System.out.println("** QP:\n" + ast);
+		
 		Mappings lMap = basicQuery(ast, ds);
 		Query q = lMap.getQuery();
 		

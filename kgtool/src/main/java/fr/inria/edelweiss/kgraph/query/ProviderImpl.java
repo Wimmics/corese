@@ -212,6 +212,9 @@ public class ProviderImpl implements Provider {
 		
 			if (g.isDebug()){
 				logger.info("** Provider result: \n" + map.size());
+				if (g.isDetail()){
+					logger.info("** Provider result: \n" + map);
+				}
 			}
 			return map;
 		} catch (IOException e) {

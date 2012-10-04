@@ -51,6 +51,7 @@ PARSER_BEGIN(SparqlCorese)
     /** An instanciation of the class ASTQuery (a graph representing the query) */
     ASTQuery astq, gast;
     ASTUpdate astu;
+    Basic prolog;
     Creator create;
     
     /** should we say to the user when he uses something deprecated? (option, sort, or, source, as...) */
@@ -166,6 +167,16 @@ PARSER_BEGIN(SparqlCorese)
        return rlist.head();
     }
     
+    void defNamespace(String p, String ns){
+    	astq.defNamespace(p, ns);
+    	astu.defNamespace(p, ns);
+    }
+    
+    void defBase(String s){
+    	astq.defBase(s);
+    	astu.defBase(s);
+    }
+    
     
     
     /**
@@ -257,11 +268,10 @@ Exp Query() : { Exp stack; }
   	| stack = ConstructQuery() 
   	| stack = DescribeQuery() 
   	| stack = AskQuery() 
-  	| UpdateQuery() 	   
-  	{
-  		astq.setResultForm(ASTQuery.QT_UPDATE);
-  		astq.set(astu);
-  	}
+  	| UpdateQuery() 	
+  	   
+//  	{astq.setResultForm(ASTQuery.QT_UPDATE);
+//  	 astq.set(astu);}
   	
   ) ?
   
@@ -287,7 +297,7 @@ void BaseDecl() : { Token t; String s; Triple triple; }
 {
   (<BASE> | <ABASE>)   s = Q_IRI_ref() (<DOT>) ?
   {
-	astq.defBase(s);
+	defBase(s);
   }
 }
 
@@ -295,7 +305,7 @@ void PrefixDecl() : { Token t1, t2; String s; Triple triple; }
 {
     (<PREFIX> | <APREFIX>) t2 = <QNAME_NS> s = Q_IRI_ref() (<DOT>) ?
   {
- 	astq.defNamespace(t2.image, s);
+ 	defNamespace(t2.image, s);
   }   
 }
 
@@ -308,7 +318,15 @@ void PrefixDecl() : { Token t1, t2; String s; Triple triple; }
 
 void  UpdateQuery() : {  }
 {
+
+	{
+  		astq.setResultForm(ASTQuery.QT_UPDATE);
+  		astq.set(astu);
+  		astu.defProlog();
+  	}	
+
 	UpdateQuery1()
+	
 	( Pragma() ) ?
 	
 	
@@ -319,7 +337,12 @@ void  UpdateQuery1() : {  }
 {
 	UpdateQuery2()
 	
-	( <SEMICOLON> ( Prolog() UpdateQuery1() ) ? ) ?
+	( <SEMICOLON> ( 
+		Prolog()
+		{   		
+		astu.defProlog(); }
+		UpdateQuery1() ) ? 
+	) ?
 }
 
 

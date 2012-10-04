@@ -140,6 +140,10 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		return query;
 	}
 	
+	public void setQuery(Query q){
+		query = q;
+	}
+	
 	public void setObject(Object o){
 		object = o;
 	}

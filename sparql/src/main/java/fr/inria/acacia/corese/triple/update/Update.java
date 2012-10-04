@@ -11,7 +11,7 @@ import fr.inria.acacia.corese.triple.parser.Statement;
 public class Update  extends Statement {
 	
 	static final String[] NAME = 
-	{"load", "clear", "drop", "create", "add", "move", "copy",
+	{"load", "clear", "drop", "create", "add", "move", "copy", "prolog",
 	 "insert", "delete", "composite"};
 
 	
@@ -22,14 +22,20 @@ public class Update  extends Statement {
 	public static final int ADD 	= 4;
 	public static final int MOVE 	= 5;
 	public static final int COPY 	= 6;
-	
-	public static final int INSERT 		= 7;
-	public static final int DELETE 		= 8;
-	public static final int COMPOSITE 	= 9;
+	public static final int PROLOG 	= 7;
+
+	public static final int INSERT 		= 8;
+	public static final int DELETE 		= 9;
+	public static final int COMPOSITE 	= 10;
 
 	
 	int type;
 	ASTUpdate astu;
+	// Update operation may have a local prolog
+	// otherwise use the global one
+	private NSManager nsm;
+	
+	
 	
 	String title(){
 		return NAME[type];
@@ -51,13 +57,10 @@ public class Update  extends Statement {
 		return astu.getASTQuery();
 	}
 	
-	public NSManager getNSM(){
-		return getASTQuery().getNSM();
-	}
-	
 	public String expand(String name){
 		if (name == null) return null;
-		return getNSM().toNamespaceB(name);
+		String res = getNSM().toNamespaceB(name);
+		return res;
 	}
 	
 	public boolean isComposite(){
@@ -74,5 +77,30 @@ public class Update  extends Statement {
 
 	public Basic getBasic(){
 		return (Basic) this;
+	}
+	
+	public void setLocalNSM(NSManager nsm){
+		this.nsm = nsm;
+	}
+	
+	public NSManager getLocalNSM(){
+		return nsm;
+	}
+	
+	/**
+	 * Local or global NSM
+	 * 
+	 */
+	public NSManager getNSM(){
+		if (nsm != null){
+			return nsm;
+		}
+		else {
+			return getGlobalNSM();
+		}
+	}
+	
+	public NSManager getGlobalNSM(){
+		return astu.getNSM();
 	}
 }

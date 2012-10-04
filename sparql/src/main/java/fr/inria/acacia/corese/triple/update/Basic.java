@@ -1,6 +1,11 @@
 package fr.inria.acacia.corese.triple.update;
 
+import fr.inria.acacia.corese.triple.cst.KeywordPP;
+import fr.inria.acacia.corese.triple.parser.And;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Exp;
+import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.acacia.corese.triple.parser.Triple;
 
 /**
  * load clear drop create add move copy
@@ -25,6 +30,8 @@ public class Basic extends Update {
 	
 	String uri, graph, target;
 	Constant auri, agraph, atarget;
+	// for additional prefix namespace, only for pretty print
+    Exp prolog = new And();
 	
 	Basic (int t){
 		type = t;
@@ -39,11 +46,22 @@ public class Basic extends Update {
 	
 	
 	public StringBuffer toString(StringBuffer sb){
+		
+		switch (type()){
+		
+		case PROLOG:
+			prolog(sb);
+			return sb;
+		}
+		
+		
 		sb.append(title());
 		
 		if (silent) 	sb.append(" " + SILENT) ;
 		
 		switch (type()){
+		
+		
 		
 		case LOAD:
 			if (uri!=null)    sb.append(" " + uri);
@@ -81,6 +99,31 @@ public class Basic extends Update {
 		}
 
 		return sb;
+	}
+	
+	public boolean hasContent(){
+		return prolog.size() > 0;
+	}	
+	
+	void prolog(StringBuffer sb){
+		getASTUpdate().getASTQuery().getSparqlPrefix(prolog, sb);
+	}
+	
+	public void defNamespace(String prefix, String ns){
+		if (prefix.endsWith(":")){
+			prefix = prefix.substring(0, prefix.length() - 1); // remove :
+		}
+		Triple triple = Triple.createNS(
+				Constant.create(KeywordPP.PREFIX),  Constant.create(prefix), 
+				Constant.create(ns));
+		prolog.add(triple);
+	}
+	
+	public void defBase(String ns){
+		Triple triple = Triple.createNS(
+				Constant.create(KeywordPP.BASE),  Constant.create(""), 
+				Constant.create(ns));
+		prolog.add(triple);
 	}
 
 	

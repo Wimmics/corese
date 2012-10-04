@@ -135,6 +135,8 @@ public class ManagerImpl implements Manager {
 		case Update.MOVE: 	return move(ope);
 
 		case Update.COPY: 	return copy(ope);
+		
+		case Update.PROLOG: return true;
 			
 		}
 		

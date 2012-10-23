@@ -16,6 +16,10 @@ public class NodeImpl implements Node {
 		atom = at;
 	}
 	
+	public static NodeImpl createNode(Atom at){
+		return new NodeImpl(at);
+	}
+	
 	public static NodeImpl createVariable(String name){
 		return new NodeImpl(Variable.create(name));
 	}

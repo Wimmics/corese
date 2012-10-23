@@ -136,13 +136,13 @@ public class Transformer implements ExpType {
 			p.compile(pragma);
 		}
 		
-		// type check:
-		// check scope for bind()
-		ast.validate();
-		
 		// compile describe
 		ast.compile();
 		
+		// type check:
+		// check scope for bind()
+		ast.validate();
+				
 		if (visit!=null){
 			for (QueryVisitor v : visit){
 				v.visit(ast);

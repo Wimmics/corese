@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgenv.eval.Dataset;
+import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
@@ -32,6 +33,10 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 /**
  * Evaluator of SPARQL query by KGRAM
  * Implement KGRAM  as a lightweight version with KGRAPH
+ * 
+ * Query and Update are synchronized by a read/write lock on the graph
+ * There may be several query in parallel OR only one update
+ * In addition, graph.init() is synchronized because it may modify the graph 
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
@@ -159,6 +164,13 @@ public class QueryProcess extends QuerySolver {
 			eval.getProxy().setPlugin(PluginImpl.create(g, m));
 		}
 		return eval;
+	}
+	
+	public void setPPrinter(String str){
+		Interpreter eval = (Interpreter) evaluator;
+		ProxyImpl p = (ProxyImpl) eval.getProxy();
+		PluginImpl pi = (PluginImpl) p.getPlugin();
+		pi.setPPrinter(str);
 	}
 	
 	
@@ -394,8 +406,8 @@ public class QueryProcess extends QuerySolver {
 		try {
 			if (! query.isSynchronized()){
 				// TRICKY:
-				// if query comes from workflow, it is already synchronized by graph.init()
-				// and it already has a lock by exec.query()
+				// if query comes from workflow, it is synchronized by graph.init()
+				// and it already has a lock by synQuery/synUpdate
 				writeLock();
 			}
 			if (gl != null){

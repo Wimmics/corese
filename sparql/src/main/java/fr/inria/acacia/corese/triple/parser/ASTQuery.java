@@ -57,7 +57,8 @@ public class ASTQuery  implements Keyword {
 	public final static int QT_DESCRIBE = 3;
 	public final static int QT_DELETE 	= 4;
 	public final static int QT_UPDATE 	= 5;
-	
+	public final static int QT_TEMPLATE = 6;
+
 
 	/** if graph rule */
 	boolean rule = false;
@@ -131,7 +132,8 @@ public class ASTQuery  implements Keyword {
 	int nbBNode = 0;
     int nbd = 0; // to generate an unique id for a variable if needed
 	int resultForm = QT_SELECT;
-	
+	private int priority = Integer.MAX_VALUE;
+	int countVar = 0;
 	
 	/** if more, reject 2 times worse projection than best one */
 	float Threshold = 1;
@@ -173,7 +175,8 @@ public class ASTQuery  implements Keyword {
 	List<Atom> from  		= new ArrayList<Atom>();
 	List<Atom> named 		= new ArrayList<Atom>();
 	List<Atom> defFrom, defNamed; 
-	
+	List<Expression> template; 
+
     List<Atom> adescribe = new ArrayList<Atom>();
 	List<Variable> stack = new ArrayList<Variable>(); // bound variables
 	List<String> vinfo;
@@ -196,7 +199,19 @@ public class ASTQuery  implements Keyword {
 
 	NSManager nsm;
 	ASTUpdate astu;
+
+
+
+	public static final String OUT 			= "?out";
+	public static final String IN 			= "?in";
+	private static final String FUNCONCAT 	= Processor.CONCAT;
+	private static final String GROUPCONCAT = Processor.GROUPCONCAT;
+	private static final String COALESCE 	= Processor.COALESCE;
+	private static final String IF 			= Processor.IF;
+	private static final String FUNPPRINT 	= Processor.PPRINT;
 	
+	private String[] META = {GROUPCONCAT, COALESCE, IF};
+
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
 	/**
@@ -1477,7 +1492,10 @@ public class ASTQuery  implements Keyword {
         else if (isDescribe()) {
         	compileDescribe();
 			setBasicSelectAll(true);
-       }      
+       } 
+        else if (isTemplate()){
+        	compileTemplate();
+        }
 		Exp exp = getBody();
 		if (exp != null){
 			setQuery(exp);
@@ -2262,6 +2280,10 @@ public class ASTQuery  implements Keyword {
     	if (b) setResultForm(QT_ASK);
     }
     
+    public boolean isTemplate() {
+    	return (getResultForm() == QT_TEMPLATE);
+    }
+    
     public boolean isDescribe() {
     	return (getResultForm() == QT_DESCRIBE);
     }
@@ -2495,5 +2517,160 @@ public class ASTQuery  implements Keyword {
     	}
     }
 
+    public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+    
+	
+	/***************************************************
+	 * 
+	 *                     Template
+	 * template { ?x ... } where {}
+	 * ->
+	 * select (kg:pprint(?x) as ?px) ... (concat(?px ...) as ?out) where {}
+	 * 
+	 **************************************************/
+
+	
+	public void addTemplate(Expression at){
+		if (template == null){
+			template = new ArrayList<Expression> ();
+		}
+		template.add(at); 
+	}
+	
+	
+	/**
+	 * template { "construct {" ?x "} where {" ?y "}" }
+	 * ->
+	 * select 
+	 * (kg:pprint(?x) as ?px)
+	 * (kg:pprint(?y) as ?py)
+	 * (concat(.. ?px .. ?py ..) as ?out)
+	 */
+	void compileTemplate(){
+		Term t = compileTemplateFun();
+		Variable out = Variable.create(OUT);
+		defSelect(out, t);
+		setResultForm(QT_SELECT);
+	}
+	
+	
+	/**
+	 * Compile the template as a concat() 
+	 * where variables are compiled as kg:pprint()
+	 */
+	Term compileTemplateFun(){
+		Term t = Term.function(FUNCONCAT);
+		
+		for (Expression exp : template){
+			exp = compileTemplate(exp);
+			t.add(exp);
+		}
+		
+		return t;
+	}
+	
+	
+	/**
+	 * if exp is a variable: (kg:pprint(?x) as ?px)
+	 * if exp is meta, e.g. group_concat(?exp): group_concat(kg:pprint(?exp))
+	 * if exp is a simple function: xsd:string(?x)  (no pprint)
+	 */
+	Expression compileTemplate(Expression exp){
+		if (exp.isVariable()){
+			exp = compile(exp.getVariable());
+		}
+		else if (isMeta(exp)){
+			// variables of meta functions are compiled as kg:pprint()
+			// variable of xsd:string() is not
+			exp = compileTemplateMeta((Term) exp);
+		}
+		return exp;
+	}
+	
+	
+	/**
+	 * Some function play a special role in template:
+	 * group_concat, coalesce, if
+	 * Their variable argument are compiled as kg:pprint(var)
+	 */
+	boolean isMeta(Expression exp){
+		if (! exp.isFunction()){
+			return false;
+		}
+		for (String name : META){
+			if (exp.getName().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	boolean isIF(Expression exp){
+		return exp.getName().equals(IF);
+	}
+	
+	
+	/**
+	 * group_concat(?x)
+	 * if()
+	 * coalesce()
+	 */
+	Term compileTemplateMeta(Term exp){		
+		Term t = Term.function(exp.getName());
+		boolean isIF = isIF(exp);
+		int count = 0;
+		
+		for (Expression ee : exp.getArgs()){
+			if (count == 0 && isIF){
+				// no not compile the test of if(test, then, else)
+			}
+			else {
+				ee = compileTemplate(ee);
+			}
+			count++;
+			t.add(ee);
+		}
+		
+		t.setModality(exp.getModality());
+		t.setDistinct(exp.isDistinct());
+		return t;
+		
+	}
+
+	
+	Variable compile(Variable var){
+		Term t = Term.function(FUNPPRINT, var);
+		Variable res = templateVariable(var);
+		defSelect(res, t);
+		return res;
+	}
+	
+	
+	Variable templateVariable(Variable var){
+		return Variable.create(KGRAMVAR + countVar++);
+	}
+	
+	
+	
+	
+	
+	
+	/**********************************************************
+	 * 
+	 * End of Template
+	 * 
+	 *********************************************************/
+	
+	
+	
+	
+	
+	
 
 }

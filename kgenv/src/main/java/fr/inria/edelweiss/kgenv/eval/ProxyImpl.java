@@ -717,7 +717,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	}
 
 	
-	IDatatype datatype(Object o){
+	protected IDatatype datatype(Object o){
 		return (IDatatype) o;
 	}
 

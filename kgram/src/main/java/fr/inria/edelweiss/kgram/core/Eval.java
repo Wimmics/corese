@@ -525,11 +525,12 @@ public class Eval implements  ExpType, Plugin {
 	}
 	
 	/**
-	 * Bind select nodes of Mapping to select nodes of query
+	 * Bind select nodes of Mapping to [select] nodes of query
 	 */
 	void bind(Mapping map){
 		for (Node qNode : map.getSelectQueryNodes()){
-			Node qqNode = query.getSelectNode(qNode.getLabel());
+			//Node qqNode = query.getSelectNode(qNode.getLabel());
+			Node qqNode = query.getOuterNode(qNode);
 			if (qqNode != null){
 				Node node = map.getNode(qNode);
 				if (node != null){

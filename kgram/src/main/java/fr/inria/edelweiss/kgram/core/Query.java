@@ -62,6 +62,8 @@ public class Query extends Exp {
 	// outer main query that contains this (when subquery)
 	Query query, outerQuery;
 	Object object, ast;
+
+	private Object pprinter;
 	Compile compiler;
 	Sorter sort;
 	
@@ -2118,6 +2120,19 @@ public class Query extends Exp {
 	
 	public boolean isSynchronized(){
 		return isSynchronized;
+	}
+
+	
+	public Object getPP() {
+		return getOuterQuery().getPPrinter();
+	}
+	
+	public Object getPPrinter() {
+		return pprinter;
+	}
+
+	public void setPPrinter(Object pprinter) {
+		this.pprinter = pprinter;
 	}
 	
 	

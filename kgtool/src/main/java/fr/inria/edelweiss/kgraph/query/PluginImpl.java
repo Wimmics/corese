@@ -9,11 +9,14 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
+import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -21,7 +24,9 @@ import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.print.PPrinter;
 
 
 /**
@@ -33,7 +38,11 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
  */
 public class PluginImpl extends ProxyImpl {
 	
+
 	static Logger logger = Logger.getLogger(PluginImpl.class);
+	
+	static String DEF_PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/query";
+	String PPRINTER = DEF_PPRINTER;
 	
 	// for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
 	// idem for setObject()
@@ -64,6 +73,9 @@ public class PluginImpl extends ProxyImpl {
 		
 		switch (exp.oper()){
 		
+		case PPRINT:
+			return pprint(env);
+		
 		case GRAPH:
 			return graph();	
 			
@@ -80,6 +92,9 @@ public class PluginImpl extends ProxyImpl {
 	public Object function(Expr exp, Environment env, Object o) {
 		
 		switch (exp.oper()){
+		
+		case PPRINT:
+			return pprint(o, env);
 		
 		case KGRAM:
 			return kgram(o);
@@ -388,6 +403,9 @@ public class PluginImpl extends ProxyImpl {
 	
 	IDatatype qname(Object o, Environment env){
 		IDatatype dt = (IDatatype) o;
+		if (! dt.isURI()){
+			return dt;
+		}
 		Query q = env.getQuery();
 		if (q == null){
 			return dt;
@@ -396,6 +414,49 @@ public class PluginImpl extends ProxyImpl {
 		NSManager nsm = ast.getNSM();
 		String qname = nsm.toPrefix(dt.getLabel());
 		return getValue(qname);
+	}
+	
+	
+	/**
+	 * Draft:
+	 * Recursive pprinter by means of SPARQL queries
+	 */
+	public IDatatype pprint(Environment env){
+		PPrinter p = getPPrinter(env); 
+		return p.pprint();
+	}
+
+	/**
+	 * Object o is the node where to apply the query (with a Mapping)
+	 */
+	public IDatatype pprint(Object o, Environment env){
+		PPrinter p = getPPrinter(env); 
+		IDatatype dt = p.pprint(datatype(o));
+		return dt;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	PPrinter getPPrinter(Environment env){		
+			Object o = env.getQuery().getPP();
+			
+			if (o != null){
+				return (PPrinter) o;
+			}
+			else 
+			{
+				PPrinter pp = PPrinter.create(graph, PPRINTER);
+				ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+				pp.setNSM(ast.getNSM());
+				return pp;
+			}
+	}
+
+	
+	public void setPPrinter(String str){
+		PPRINTER = str;
 	}
 	
 

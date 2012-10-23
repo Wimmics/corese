@@ -47,8 +47,8 @@ public class Processor {
 	private static final String LANGMATCH = "langMatches";
 	private static final String STRDT = "strdt";
 	private static final String STRLANG = "strlang";
-	private static final String IF = "if";
-	private static final String COALESCE = "coalesce";
+	public static final String IF = "if";
+	public static final String COALESCE = "coalesce";
 	public static final String BNODE = "bnode";
 	static final String GROUPCONCAT = "group_concat";
 	static final String SEPARATOR = "; separator=";
@@ -74,6 +74,7 @@ public class Processor {
 	static final String KGXPATH = ExpType.KGRAM + "xpath";
 	static final String KGSQL 	= ExpType.KGRAM + "sql";
 	static final String QNAME 	= ExpType.KGRAM + "qname"; 
+	static final String PPRINT 	= ExpType.KGRAM + "pprint"; 
 
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
@@ -346,6 +347,7 @@ public class Processor {
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(GROUPBY, ExprType.GROUPBY);
 		defoper(QNAME, ExprType.QNAME);
+		defoper(PPRINT, ExprType.PPRINT);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgenv.parser;
 import java.lang.reflect.InvocationTargetException;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
@@ -65,6 +66,7 @@ public class Pragma  {
 	public static final String DESCRIBE	= KG + "describe";
 	public static final String CHECK	= KG + "check";
 	public static final String DETAIL	= KG + "detail";
+	public static final String PRIORITY	= KG + "priority";
 
 
 	public static final String HELP 	= KG + "help";
@@ -198,12 +200,18 @@ public class Pragma  {
 						ast.addRelax(t.getObject());
 					}
 				}
+				
 			}
 			else if (subject.equals(QUERY)){
 				if (property.equals(CHECK)){
 					ast.setCheck(value(object));
 				}
+				else if (property.equals(PRIORITY)){					
+					IDatatype dt = t.getObject().getDatatypeValue();
+					ast.setPriority(dt.intValue());
+				}
 			}
+			
 	}
 	
 	
@@ -315,6 +323,7 @@ public class Pragma  {
 				query.setPragma(TIMEOUT, value);
 			}
 		}
+		
 	}
 	
 	/**

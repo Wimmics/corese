@@ -268,10 +268,10 @@ Exp Query() : { Exp stack; }
   	| stack = ConstructQuery() 
   	| stack = DescribeQuery() 
   	| stack = AskQuery() 
-  	| UpdateQuery() 	
+  	| UpdateQuery() 
+  	
+  	| stack = TemplateQuery()	
   	   
-//  	{astq.setResultForm(ASTQuery.QT_UPDATE);
-//  	 astq.set(astu);}
   	
   ) ?
   
@@ -536,6 +536,50 @@ Exp BodyQuadPattern() : {Exp stack;}
 
 
 
+Exp TemplateQuery() : { Exp stack; }
+{
+  {stack = BasicGraphPattern.create();}
+  Template(stack)
+  stack = WhereClause()
+  SolutionModifier()  
+  {
+    astq.setResultForm(ASTQuery.QT_TEMPLATE);
+    return stack; 
+  }
+}
+
+
+
+void Template(Exp stack) : { String s; Variable var; Constant cst; Expression exp; }
+{
+    <TEMPLATE>
+      
+	<LBRACE>
+	
+		( 
+		  (
+			  s = String() { exp = astq.createConstant(s, null, null); } 
+			  |  
+			  exp = Var()  
+			  |
+			  exp = FunctionCall(stack) 
+			  |
+			  exp = BuiltInCall(stack)  
+			  |
+			  exp = FunctionCorese(stack) 
+		  )
+		  { astq.addTemplate(exp); }
+		) *
+	
+	<RBRACE>
+}
+
+
+
+
+
+
+// ********************** END PP Template ******************************
 
 
 // ---- Query type clauses
@@ -2437,6 +2481,7 @@ TOKEN [IGNORE_CASE] :
 | < CONSTRUCT: "construct" >
 | < RULE: "rule" >
 | < ASK: "ask" >
+| < TEMPLATE: "template" >
 
 | < DISTINCT: "distinct" >
 | < SEPARATOR: "separator" >

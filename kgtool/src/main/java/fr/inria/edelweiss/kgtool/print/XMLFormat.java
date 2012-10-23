@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -58,7 +59,7 @@ public class XMLFormat  {
 
 	
 	boolean displaySort = false;
-	NumberFormat nf = NumberFormat.getInstance();
+	NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
 
 	
 	XMLFormat (Mappings lm){
@@ -319,8 +320,10 @@ public class XMLFormat  {
 						literal);
 			}
 			else if (dt.getDatatype() != null && dt.getCode() != IDatatype.LITERAL) {
-				if (DatatypeMap.isDouble(dt))
-					str =  nf.format(dt.doubleValue());
+				if (DatatypeMap.isDouble(dt)){
+					//str =  nf.format(dt.doubleValue());
+					str = String.format("%g", dt.doubleValue());
+				}
 				print("<literal datatype='" +  dt.getDatatype().getLabel()  +
 						"'>" + str + literal);
 			}

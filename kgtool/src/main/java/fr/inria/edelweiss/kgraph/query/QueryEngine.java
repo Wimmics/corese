@@ -1,11 +1,14 @@
 package fr.inria.edelweiss.kgraph.query;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -58,8 +61,10 @@ public class QueryEngine implements Engine {
 	}
 	
 	public Query defQuery(String q) throws EngineException {
+		//System.out.println("** QE: \n" + q);
 		Query qq = exec.compile(q);
 		if (qq != null) {
+			ASTQuery ast = (ASTQuery) qq.getAST();
 			list.add(qq);
 			return qq;
 		}
@@ -183,7 +188,20 @@ public class QueryEngine implements Engine {
 	}
 
 	
+	public void sort(){
+		Collections.sort(list, new Comparator<Query>(){
+			public int compare(Query q1, Query q2){
+				int p1 = getLevel(q1);
+				int p2 = getLevel(q2);
+				return Integer.compare(p1, p2);
+			}
+		});
+	}
 	
+	int getLevel(Query q){
+		ASTQuery ast = (ASTQuery) q.getAST();
+		return ast.getPriority();
+	}
 	
 
 }

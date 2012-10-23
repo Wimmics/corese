@@ -156,6 +156,7 @@ public interface ExprType {
 	public static int PWEIGHT 	= 218;
 	public static int ANCESTOR 	= 219;
 	public static int QNAME 	= 220;
+	public static int PPRINT 	= 221;
 
 
 

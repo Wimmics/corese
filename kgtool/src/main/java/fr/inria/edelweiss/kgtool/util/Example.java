@@ -7,6 +7,7 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
@@ -108,6 +109,23 @@ public class Example {
 					"pragma {kg:path kg:expand 5}";
 			
 			map = exec.query(q4);
+			System.out.println(map);
+			
+			
+			String q5 = 
+					"insert {?y rdfs:superClassOf ?x}" +
+					"where  {?x rdfs:subClassOf ?y}";
+
+			QueryEngine qe = QueryEngine.create(g);
+			qe.addQuery(q5);
+			
+			g.addEngine(qe);
+			g.setEntail(true);
+			
+			String q6 = 
+					"select * where {?y rdfs:superClassOf ?x}";
+			
+			map = exec.query(q6);
 			System.out.println(map);
 
 			

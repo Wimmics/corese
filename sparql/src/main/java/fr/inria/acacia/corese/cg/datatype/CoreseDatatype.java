@@ -69,8 +69,7 @@ public class CoreseDatatype
 			String datatype = getDatatype().getLabel();
 			
 			if (prefix && datatype.startsWith(RDF.XSD)){
-				datatype = datatype.substring(RDF.XSD.length());
-				datatype = "xsd:" + datatype;
+				datatype = nsm.toPrefix(datatype);						
 			}
 			else {
 				datatype = "<" + datatype + ">";

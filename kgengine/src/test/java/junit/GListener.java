@@ -3,11 +3,13 @@ package junit;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rdf.EdgeExtend;
 
 /**
@@ -18,6 +20,9 @@ import fr.inria.edelweiss.kgraph.rdf.EdgeExtend;
  * @author Olivier Corby, Wimmics INRIA 2012
  */
 public class GListener implements GraphListener, Tagger {
+	private static final String INSERT_DATA = "insert data";
+	private static final String DELETE_DATA = "delete data";
+
 	private static final Object NL = System.getProperty("line.separator");
 
 	static int count = 1;
@@ -77,23 +82,42 @@ public class GListener implements GraphListener, Tagger {
 	 */
 	public void insert(Graph g, Entity ent) {
 		System.out.println(id + " insert: " + ent);
-		update(g, ent);
 		for (Graph gg : list){
 			gg.copy(ent);
 		}
 	}
 	
 	
-	void update(Graph g, Entity ent){
+	/**
+	 * Generate and process an Update query
+	 */
+	void update(Graph g, Entity ent, boolean insert){
+		String query = toQuery(ent, insert);
+		
+		if (query != null){
+			System.out.println(query);
+			QueryProcess exec = QueryProcess.create(g);
+			try {
+				exec.update(query);
+			} catch (EngineException e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+	
+	
+	String toQuery(Entity ent, boolean insert){
 		if (ent instanceof EdgeExtend){
 			String str = ((EdgeExtend)ent).toParse();
 			StringBuffer sb = new StringBuffer();
-			sb.append("insert data { ");
+			sb.append((insert) ? INSERT_DATA : DELETE_DATA);
+			sb.append(" { ");
 			sb.append(str);
 			sb.append(" }");
-			
-			System.out.println(sb.toString());
+			return sb.toString();
 		}
+		return  null;
 	}
 
 	/*
@@ -103,7 +127,8 @@ public class GListener implements GraphListener, Tagger {
 	 */
 	public void delete(Graph g, Entity ent) {
 		System.out.println(id + " delete: " + ent);
-		for (Graph gg : list){						
+		for (Graph gg : list){	
+			//update(gg, ent, false);
 			gg.delete(ent);
 		}
 	}
@@ -114,6 +139,10 @@ public class GListener implements GraphListener, Tagger {
 	 */
 	public String tag() {
 		return key + tag++;
+	}
+
+	public boolean onInsert(Graph g, Entity ent) {
+		return true;
 	}
 
 }

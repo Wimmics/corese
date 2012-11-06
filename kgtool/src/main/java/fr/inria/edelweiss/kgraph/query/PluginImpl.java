@@ -41,7 +41,7 @@ public class PluginImpl extends ProxyImpl {
 
 	static Logger logger = Logger.getLogger(PluginImpl.class);
 	
-	static String DEF_PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/query";
+	static String DEF_PPRINTER = PPrinter.PPRINTER;
 	String PPRINTER = DEF_PPRINTER;
 	
 	// for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)

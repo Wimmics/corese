@@ -99,6 +99,23 @@ implements Index {
 		return getComparator(false);
 	}
 	
+	
+	static int nodeCompare(Node n1, Node n2){
+		return n1.compare(n2);
+	}
+	
+	static boolean same(Node n1, Node n2){
+		return n1.same(n2);
+	}
+	
+//	static int nodeCompare(Node n1, Node n2){
+//		return Integer.compare(n1.getIndex(), n2.getIndex());
+//	}
+//	
+//	static boolean same(Node n1, Node n2){
+//		return n1.getIndex() == n2.getIndex();
+//	}
+	
 	/**
 	 * skip = true means:
 	 * if arity is different but common arity nodes and graph are equals 
@@ -110,11 +127,11 @@ implements Index {
 	Comparator<Entity> getComparator(final boolean skip){
 		
 		return new Comparator<Entity>(){
-			
+									
 			public int compare(Entity o1, Entity o2) {
 				
 				// first check the index node
-				int res = o1.getNode(index).compare(o2.getNode(index));
+				int res = nodeCompare(o1.getNode(index), o2.getNode(index));
 				
 				if (res != 0){
 					return res;
@@ -125,7 +142,7 @@ implements Index {
 				for (int i=0; i<min; i++){
 					// check other common arity nodes
 					if (i != index){
-						res = o1.getNode(i).compare(o2.getNode(i));
+						res = nodeCompare(o1.getNode(i), o2.getNode(i));
 						if (res != 0){
 							return res;
 						}
@@ -135,13 +152,13 @@ implements Index {
 				if (o1.nbNode() == o2.nbNode()){
 					// same arity, common arity nodes are equal
 					// check graph
-					return o1.getGraph().compare(o2.getGraph());
+					return nodeCompare(o1.getGraph(), o2.getGraph());
 				}
 				
 				if (skip){
 					// use case: delete
 					// skip tag node
-					return o1.getGraph().compare(o2.getGraph());
+					return nodeCompare(o1.getGraph(), o2.getGraph());
 				}
 				else if (o1.nbNode() < o2.nbNode()){
 					// smaller arity edge is before
@@ -509,10 +526,10 @@ implements Index {
 
 		if (n>=0 && n<list.size()){
 			Node tNode = list.get(n).getNode(index);
-			if (tNode.same(node)){
+			if (same(tNode, node)){
 				if (node2 != null){
 					Node tNode2 = list.get(n).getNode(other);
-					if (! tNode2.same(node2)){
+					if (! same(tNode2, node2)){
 						return null; 
 					}
 				}			
@@ -560,7 +577,7 @@ implements Index {
 		@Override
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
-			boolean b = ind<list.size() && list.get(ind).getNode(index).same(node);
+			boolean b = ind<list.size() && same(list.get(ind).getNode(index), node);
 			return b;
 		}
 
@@ -583,7 +600,7 @@ implements Index {
 	int find(List<Entity> list, Node node){
 		int res = find(list, node, null, 0, list.size());
 		if (res>= 0 && res<list.size() && 
-			list.get(res).getEdge().getNode(index).same(node)){
+			same(list.get(res).getEdge().getNode(index), node)){
 			return res;
 		}
 		return -1;
@@ -626,16 +643,16 @@ implements Index {
 	
 	int compare(Entity ent, Node n1, Node n2){
 		Node tNode = ent.getNode(index);
-		int res = tNode.compare(n1);
+		int res = nodeCompare(tNode, n1);
 		if (res == 0 && n2 != null){
-			res = ent.getNode(other).compare(n2);
+			res = nodeCompare(ent.getNode(other), n2);
 		}
 		return res;
 
 	}
 	
 	int compare(Entity ent, Node n1){
-		return ent.getNode(index).compare(n1);		
+		return nodeCompare(ent.getNode(index), n1);		
 	}
 	
 	int find(List<Entity> list, Entity edge, int first, int last){
@@ -763,7 +780,6 @@ implements Index {
 	Entity delete (Comparator<Entity> cmp, Entity edge, List<Entity> list, int i){
 		Entity ent = null;
 		int res = cmp.compare(list.get(i), edge);
-		//int res = cmp.compare(edge, list.get(i));
 
 		if (res == 0){
 			ent = list.get(i);

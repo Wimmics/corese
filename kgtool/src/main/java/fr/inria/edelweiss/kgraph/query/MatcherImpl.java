@@ -143,6 +143,8 @@ public class MatcherImpl implements Matcher {
 		
 		
 		if (qnode.isConstant() && entail!=null){
+			
+			Node gqnode = graph.getNode(qnode);
 
 			switch (localMode){
 
@@ -153,7 +155,11 @@ public class MatcherImpl implements Matcher {
 					// ?x rdf:type rdfs:Resource
 					return true;
 				}
-
+				
+				if (gqnode == null){
+					return false;
+				}
+				
 				// if rdf:type is completed by subClassOf, skip this and perform std match
 				// if rdf:type is not completed by subClassOf, check whether r <: q
 				boolean b = false;
@@ -162,17 +168,17 @@ public class MatcherImpl implements Matcher {
 					b = match(qnode, r.getNode(1), env);
 				}
 				else {
-					b = isSubClassOf(r.getNode(1), qnode, env);
+					b = isSubClassOf(r.getNode(1), gqnode, env);
 				}
 				
 				if (! b && localMode == MIX){
-					b = isSubClassOf(qnode, r.getNode(1), env);
+					b = isSubClassOf(gqnode, r.getNode(1), env);
 				}
 				return b;
 
 
 			case GENERAL:
-				return   isSubClassOf(qnode, r.getNode(1), env);
+				return   isSubClassOf(gqnode, r.getNode(1), env);
 			}
 		}
 		
@@ -188,7 +194,7 @@ public class MatcherImpl implements Matcher {
 		Cache table = getTable(env);
 		Boolean b = table.get(q, t);
 		if (b == null){
-			// PRAGMA: use graph because entail may be null (cf PluginImpl)
+			// PRAGMA: use graph because entail may be null (cf PluginImpl)			
 			b = graph.isSubClassOf(t, q);
 			table.put(q, t, b);
 		}

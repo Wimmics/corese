@@ -11,6 +11,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
 
+import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 
 public class QueryLoad {
@@ -44,7 +47,14 @@ public class QueryLoad {
 	public void load(String name){
 		String q = read(name);
 		if (q != null){
-			engine.addQuery(q);
+			try {
+				Query qq = engine.defQuery(q);
+				if (qq != null){
+					qq.setPragma(Pragma.FILE, name);
+				}
+			} catch (EngineException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

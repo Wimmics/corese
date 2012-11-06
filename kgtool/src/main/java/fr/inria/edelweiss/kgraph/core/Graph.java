@@ -107,6 +107,8 @@ public class Graph //implements IGraph
 	hasDefault = !true;
 	// number of edges
 	int size = 0;
+	
+	int nodeIndex = 0;
 
 	private int tagCount = 0;
 
@@ -793,6 +795,16 @@ public class Graph //implements IGraph
 		return getNode(dt, create, add);
 	}
 	
+	/**
+	 * Given a constant query node, return the target node in current graph 
+	 * if it exists
+	 * 
+	 */
+	public Node getNode(Node node){
+		IDatatype dt = (IDatatype) node.getValue();
+		return getNode(dt, false, false);
+	}
+	
 	// used by construct
 	public Node getNode(IDatatype dt, boolean create, boolean add){
 		if (dt.isLiteral()){
@@ -920,6 +932,13 @@ public class Graph //implements IGraph
 		return node;
 	}
 	
+	// draft
+	void index(Node node){
+//		if (node.getIndex() == -1){
+//			node.setIndex(nodeIndex++);
+//		}
+	}
+	
 	public void add(Node node){
 		IDatatype  dt = datatype(node);
 		if (dt.isLiteral()){
@@ -927,14 +946,17 @@ public class Graph //implements IGraph
 		}
 		else if (dt.isBlank()){
 			blank.put(node.getLabel(), (Entity)node);
+			index(node);
 		}
 		else {
 			individual.put(node.getLabel(), (Entity) node);
+			index(node);
 		}
 	}
 
 	public void addLiteralNode(IDatatype dt, Node node){
 		literal.put(dt, (Entity) node);
+		index(node);
 	}
 	
 	public Node getLiteralNode(IDatatype dt){
@@ -948,6 +970,7 @@ public class Graph //implements IGraph
 	public void addGraphNode(Node gNode){
 		if (! isGraphNode(gNode)){
 			graph.put(gNode.getLabel(), gNode);
+			index(gNode);
 		}
 	}
 	
@@ -962,6 +985,7 @@ public class Graph //implements IGraph
 	public void addPropertyNode(Node pNode){
 		if (! property.containsKey(pNode.getLabel())){
 			property.put(pNode.getLabel(), pNode);
+			index(pNode);
 		}
 	}
 	

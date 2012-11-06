@@ -749,9 +749,9 @@ public class Entailment implements Engine {
 	List<Entity> copy(Graph from, Graph to){
 		ArrayList<Entity> list = new ArrayList<Entity>();
 		
-		for (Node pred : target.getProperties()){
+		for (Node pred : from.getProperties()){
 
-			for (Entity ent : target.getEdges(pred)){
+			for (Entity ent : from.getEdges(pred)){
 
 				Edge edge = ent.getEdge();
 				Entity ee = to.add((EdgeImpl)edge);

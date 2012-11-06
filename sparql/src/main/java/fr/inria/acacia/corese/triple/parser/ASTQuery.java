@@ -44,7 +44,7 @@ public class ASTQuery  implements Keyword {
 	static String RootPropertyQN =  RDFS.RootPropertyQN; // cos:Property
 	static String RootPropertyURI = RDFS.RootPropertyURI; //"http://www.inria.fr/acacia/corese#Property";
 	static final String LIST = "list";
-	public static final String KGRAMVAR = "?_kgram_";
+	public static final String KGRAMVAR = "?_ast_";
 	public static final String SYSVAR = "?_cos_";
 	public static final String BNVAR = "?_bn_";
 	static final String NL 	= System.getProperty("line.separator");

@@ -75,6 +75,14 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		// TODO Auto-generated method stub
 		return it.hasNext();
 	}
+	
+//	boolean same(Node n1, Node n2){
+//		return n1.same(n2);
+//	}
+	
+	boolean same(Node n1, Node n2){
+		return EdgeIndex.same(n1, n2);
+	}
 
 	@Override
 	public Entity next() {
@@ -90,14 +98,14 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 				}
 				else {
 					// check same graph node
-					if (! ent.getGraph().same(graph)){
+					if (! same(ent.getGraph(), graph)){
 						ok = false;
 					}
 				}
 			}
 			else if (last != null){
 				// eliminate successive duplicates
-				if (! last.getEdgeNode().same(ent.getEdge().getEdgeNode())){
+				if (! same(last.getEdgeNode(), ent.getEdge().getEdgeNode())){
 					// different properties: ok
 					ok = true;
 				}
@@ -112,7 +120,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 						}
 						
 						for (int i=0; i<size; i++){
-							if (! last.getNode(i).same(ent.getNode(i))){
+							if (! same(last.getNode(i), ent.getNode(i))){
 								ok = true;
 								break;
 							}

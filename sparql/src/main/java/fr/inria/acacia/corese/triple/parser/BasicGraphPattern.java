@@ -210,32 +210,17 @@ public class BasicGraphPattern extends And {
     
     /**
      * SPARQL Constraint:
-     * Two occurrences of same blank not separated by a pattern
+     * Two occurrences of same blank must not be separated by a pattern
      */
     public boolean validateBlank (ASTQuery ast){
-    	boolean isBefore = true;
+    	boolean isBefore = true, isTriple = false;
     	Table table = new Table();
-    	
-//    	if (size() == 1){
-//    		Exp exp = getBody().get(0);
-//    		if (exp.isFilter()){
-//    			Expression f = exp.getTriple().getExp();
-//    			if (f.oper()!=ExprType.EXIST){
-//    				List<String> list = f.getVariables();
-//    				if (list.size()>0) {
-//    					ast.addError("Illegal filter in BGP: " + exp);
-//    					ast.setCorrect(false);
-//    					return false;
-//    				}
-//    			}
-//    		}
-//    	}
-    	
+    	    	
     	for (Exp exp : getBody()){
-    		
     		if (exp.isTriple()){
     			if (! exp.isFilter()){
     				Triple t = exp.getTriple();
+    				isTriple = true;
     				if (isBefore){
     					table.addBlank(t);
     				}
@@ -249,7 +234,10 @@ public class BasicGraphPattern extends And {
     				}
     			}
     		}
-    		else {
+    		else if (exp.isRDFList()){
+    			// OK
+    		}
+    		else if (isTriple){
     			isBefore = false;
     		}
     	}

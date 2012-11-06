@@ -952,7 +952,7 @@ public class Query extends Exp {
 		return null;
 	}
 	
-	int nbNodes(){
+	public int nbNodes(){
 		return iNode;
 	}
 	
@@ -990,19 +990,15 @@ public class Query extends Exp {
 		
 		complete2();
 		
-//		if (getGraphNode()!=null){
-//			index(getGraphNode());
-//		}
-//		if (getPathNode()!=null){
-//			index(getPathNode());
-//		}
-		
 		for (Query q : getQueries()){
 			q.complete();
 		}
 	}
 	
-	
+	/**
+	 * 
+	 * index(node) use global query index
+	 */
 	void complete2(){
 		for (Filter f : getPathFilter()){
 			index(this, f);
@@ -1025,6 +1021,7 @@ public class Query extends Exp {
 			index(getPathNode());
 		}
 	}
+	
 	
 	void index(List<Exp> list){
 		for (Exp ee : list){
@@ -1245,6 +1242,8 @@ public class Query extends Exp {
 	 * in case of UNION, start is the start index for both branches
 	 * if exp is free (no already bound variable, it is tagged as free)
 	 * return the min of index of exp Nodes
+	 * query is (sub)query
+	 * this is global query
 	 */
 	int index(Query query, Exp exp,  boolean hasFree, boolean isExist, int start){
 		int min = Integer.MAX_VALUE, n;
@@ -1352,7 +1351,7 @@ public class Query extends Exp {
 			
 		default: 
 			// AND UNION OPTION GRAPH BIND
-			int startIndex = iNode, ind = -1;
+			int startIndex = globalNodeIndex(), ind = -1;
 			if (start >= 0) startIndex = start;
 			if (exp.isUnion()) ind = startIndex;
 			for (Exp e : exp){
@@ -1415,13 +1414,38 @@ public class Query extends Exp {
 	
 	
 	/**
-	 * Return true if new node, false if already indexed
 	 */
 	public int index(Node node){
 		if (node.getIndex() == -1){
-			node.setIndex(iNode++);
+			node.setIndex(newGlobalNodeIndex());
 		}
+		//System.out.println("** Q: " + node + " " + node.getIndex());
 		return node.getIndex();
+	}
+	
+	
+	/**
+	 * Use outer query node index for all (sub) queries
+	 */
+	int newGlobalNodeIndex(){
+		return getOuterQuery().newNodeIndex();
+	}
+	
+	int newNodeIndex(){
+		return iNode++;
+	}
+	
+	
+	int globalNodeIndex(){
+		return getOuterQuery().getNodeIndex();
+	}
+	
+	int getNodeIndex(){
+		return iNode;
+	}
+	
+	void setNodeIndex(int n){
+		iNode = n;
 	}
 	
 	
@@ -2083,6 +2107,10 @@ public class Query extends Exp {
 
 	public Object getPragma(String name){
 		return pragma.get(name);
+	}
+	
+	public String getStringPragma(String name){
+		return (String) pragma.get(name);
 	}
 	
 	public boolean isPragma(String name){

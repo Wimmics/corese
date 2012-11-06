@@ -67,6 +67,7 @@ public class Pragma  {
 	public static final String CHECK	= KG + "check";
 	public static final String DETAIL	= KG + "detail";
 	public static final String PRIORITY	= KG + "priority";
+	public static final String FILE		= KG + "file";
 
 
 	public static final String HELP 	= KG + "help";

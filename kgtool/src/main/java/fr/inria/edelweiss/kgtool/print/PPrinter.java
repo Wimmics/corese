@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -25,7 +26,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
  */
 public class PPrinter {
 	
-	private static final String PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/template";
+	public static final String PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/template";
 	private static final String OUT = ASTQuery.OUT;
 	private static final String IN  = ASTQuery.IN;
 	
@@ -37,6 +38,8 @@ public class PPrinter {
 	ArrayList<IDatatype> list;
 	
 	String pp = PPRINTER;
+	
+	boolean isDebug = ! true;
 
 	
 	
@@ -59,6 +62,10 @@ public class PPrinter {
 	
 	public void setNSM(NSManager n){
 		nsm = n;
+	}
+	
+	public void setDebug(boolean b){
+		isDebug = b;
 	}
 		
 	/**
@@ -107,6 +114,9 @@ public class PPrinter {
 		if (dt != null){
 			Node qn = NodeImpl.createVariable(IN);
 			m = Mapping.create(qn, g.getNode(dt, false, false));
+//			if (isDebug){
+//				System.out.println("input: " + dt);
+//			}
 		}
 
 		for (Query qq : qe.getQueries()){
@@ -115,7 +125,15 @@ public class PPrinter {
 			// All queries of this PPrinter share the same query base
 			// use case: kg:pprint() call the same PPrinter for all queries of this base
 			qq.setPPrinter(this);
+			if (isDebug){
+				qq.setDebug(true);
+				System.out.println(qq.getAST());
+			}
 			Mappings map = exec.query(qq, m);
+			
+//			System.out.println(map);
+//			System.out.println(map.size());
+
 			Node res = map.getNode(OUT);
 			if (res != null){
 				list.remove(dt);
@@ -126,6 +144,7 @@ public class PPrinter {
 		// no query match dt; it may be a constant		
 		
 		list.remove(dt);
+		//System.out.println("return: " + dt);
 		return print(dt);
 	}
 	

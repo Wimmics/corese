@@ -112,7 +112,8 @@ public class ProducerImpl implements Producer {
 	Node getValue(Node qNode, Environment env){
 		Node node = env.getNode(qNode);
 		if (node == null && qNode.isConstant()){
-			node = qNode;
+			//node = qNode;
+			node = graph.getNode(qNode);
 		}
 		return node;
 	}
@@ -344,7 +345,11 @@ public class ProducerImpl implements Producer {
 		if (start == null){
 			Node qNode = edge.getNode(index);
 			if (qNode.isConstant()){
-				start = qNode;
+			//	start = qNode;
+				start = graph.getNode(qNode);
+				if (start == null){
+					return empty;
+				}
 			}
 		}
 
@@ -587,8 +592,7 @@ public class ProducerImpl implements Producer {
 			return null;
 		}
 		IDatatype dt = (IDatatype) value;
-		Node node = graph.getNode(dt, false, false);
-				
+		Node node = graph.getNode(dt, false, false);				
 		if (node == null){
 			if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)){
 				// blank generated for path node: do not store it

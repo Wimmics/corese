@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.*;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
@@ -61,11 +60,15 @@ public class Transformer implements ExpType {
 	
 	Transformer(){
 		table = new Hashtable<Edge, Query>();
+		// new
+		fac = new CompilerFacKgram();
+		compiler = fac.newInstance();
 	}
 
 	Transformer(CompilerFactory f){
 		this();
 		fac = f;
+		compiler = fac.newInstance();
 	}
 
 	public static Transformer create(CompilerFactory f){
@@ -124,9 +127,14 @@ public class Transformer implements ExpType {
 		
 	}
 	
+	/**
+	 * Transform for a (outer) query (not a subquery)
+	 */
 	public Query transform (ASTQuery ast){
 		this.ast = ast;
 		ast.setSPARQLCompliant(isSPARQLCompliant);
+		//new
+		compiler.setAST(ast);
 		
 		Pragma p = new Pragma(this, ast);
 		if (ast.getPragma() != null){
@@ -149,9 +157,11 @@ public class Transformer implements ExpType {
 			}
 		}
 
-		if (fac == null){
-			fac = new CompilerFacKgram();
-		}
+//		 new		
+//		if (fac == null){
+//			fac = new CompilerFacKgram();
+//			compiler = fac.newInstance();
+//		}
 		
 		Query q = compile(ast);
 		q.setRule(ast.isRule());
@@ -160,13 +170,17 @@ public class Transformer implements ExpType {
 	}
 	
 		
-		
+	/**
+	 * Also used by QueryGraph to compile RDF Graph as a Query
+	 */
 	public Query transform(Query q, ASTQuery ast){
-		if (fac == null){
-			fac = new CompilerFacKgram();
-			compiler = fac.newInstance();
-		}		
-
+//		if (fac == null){
+//			fac = new CompilerFacKgram();
+//			compiler = fac.newInstance();
+//		}
+		
+		//new
+		compiler.setAST(ast);
 		if (ast.isConstruct() || ast.isDescribe()){
 			validate(ast.getInsert(), ast);
 			Exp cons = construct(ast);
@@ -185,7 +199,7 @@ public class Transformer implements ExpType {
 			q.setUpdate(true);
 		}
 
-		path(q, ast);		
+		// path(q, ast);		
 
 		// retrieve select nodes for query:
 		complete(q, ast);
@@ -225,67 +239,27 @@ public class Transformer implements ExpType {
 	
 	
 	/**
-	 * check unbound variable in construct/insert/delete
+	 * Generate a new compiler for each (sub) query in order to get fresh new nodes
 	 */
-	boolean validate(fr.inria.acacia.corese.triple.parser.Exp exp, ASTQuery ast){
-		boolean suc = true;
+	Query compile(ASTQuery ast){
+//		Compiler save = compiler;
+//		compiler = fac.newInstance();
+//		compiler.setAST(ast);
 		
-		for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
-			boolean b = true;
-			
-			if (ee.isTriple()){
-				b = validate(ee.getTriple(), ast);
-			}
-			else if (ee.isGraph()){
-				b = validate((Source) ee, ast);
-			}
-			else {
-				b = validate(ee, ast);
-			}
-			
-			suc = suc && b;
-		}
+		Exp ee = compile(ast.getExtBody(), false);
+		Query q = Query.create(ee);
+		q.setAST(ast);
+		// use same compiler
+		bindings(q, ast);
+		path(q, ast);
 		
-		return suc;
+//		if (save != null){
+//			compiler = save;
+//		}
+		return q; 
+		
 	}
 	
-	
-	boolean validate(Source exp, ASTQuery ast){
-		boolean suc = validate(exp.getSource(), ast);
-		
-		for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
-			suc =  validate(ee, ast) && suc;
-		}
-		
-		return suc;
-	}
-	
-	
-	boolean validate(Atom at, ASTQuery ast){
-		if (at.isVariable() && 
-				! at.isBlankNode() &&
-				! ast.isSelectAllVar(at.getVariable())){
-			ast.addError(Message.get(Message.UNDEF_VAR) + 
-					ast.getUpdateTitle() + ": " , at.getLabel());
-			return false;
-		}
-
-		return true;
-	}
-	
-	
-	boolean validate(Triple t, ASTQuery ast){
-		boolean suc = validate(t.getSubject(), ast) ;
-		suc =  validate(t.getObject(), ast) && suc;
-		
-		Variable var = t.getVariable();
-		if (var != null){
-			suc = validate(var, ast) && suc;
-		}
-		
-		return suc;
-	}
-
 
 	
 	/**
@@ -293,25 +267,48 @@ public class Transformer implements ExpType {
 	 * to prevent type inference on nodes between outer and sub queries
 	 */
 	Query compileQuery(ASTQuery ast){
-		Query q = compile(ast);
-		//Query q =  create(exp);
-		//q.setAST(ast);
-
-		path(q, ast);
-		// before complete (because select include binding nodes)
-		//bindings(q, ast);
+		// new
+		Compiler save = compiler;
+		compiler = fac.newInstance();
+		compiler.setAST(ast);
 		
+		Query q = compile(ast);
 		// complete select, order by, group by
 		complete(q, ast);
-
 		having(q, ast);
 
 		// bind is compiled as subquery
 		q.setBind(ast.isBind());
 		q.setRelax(ast.isMore());
+		
+		if (save != null){
+			compiler = save;
+		}
 
 		return q;
 	}
+	
+	
+	
+	/**
+	 * Delete/Insert/Construct
+	 */
+	Exp  compile(ASTQuery ast, fr.inria.acacia.corese.triple.parser.Exp exp){
+		Compiler save = compiler;
+		compiler = fac.newInstance();
+		compiler.setAST(ast);
+		Exp ee = compile(exp, false);
+		
+		if (save != null){
+			compiler = save;
+		}
+		return ee;
+	}
+	
+
+	
+
+	
 	
 	/**
 	 * Compile service  as a subquery if it is a pattern
@@ -473,39 +470,7 @@ public class Transformer implements ExpType {
 		return Mapping.create(lNode, nodes);
 	}
 	
-	Exp  compile(ASTQuery ast, fr.inria.acacia.corese.triple.parser.Exp exp){
-		Compiler save = compiler;
-		compiler = fac.newInstance();
-		compiler.setAST(ast);
-		Exp ee = compile(exp, false);
-		
-		if (save != null){
-			compiler = save;
-		}
-		return ee;
-	}
-	
-	/**
-	 * Generate a new compiler for each (sub) query in order to get fresh new nodes
-	 */
-	Query compile(ASTQuery ast){
-		Compiler save = compiler;
-		compiler = fac.newInstance();
-		compiler.setAST(ast);
-		
-		Exp ee = compile(ast.getExtBody(), false);
-		Query q = Query.create(ee);
-		q.setAST(ast);
-		// use same compiler
-		bindings(q, ast);
-	
-		if (save != null){
-			compiler = save;
-		}
-		return q; 
-		
-		//return compile(ast, ast.getExtBody());
-	}
+
 	
 	Exp  construct(ASTQuery ast){
 		return compile(ast, ast.getInsert());
@@ -1426,6 +1391,75 @@ public class Transformer implements ExpType {
 			visit((Exp) exp.getPattern(), list);
 		}
 	}
+	
+	
+	
+	/*************************************************************/
+	
+	
+	
+	/**
+	 * check unbound variable in construct/insert/delete
+	 */
+	boolean validate(fr.inria.acacia.corese.triple.parser.Exp exp, ASTQuery ast){
+		boolean suc = true;
+		
+		for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
+			boolean b = true;
+			
+			if (ee.isTriple()){
+				b = validate(ee.getTriple(), ast);
+			}
+			else if (ee.isGraph()){
+				b = validate((Source) ee, ast);
+			}
+			else {
+				b = validate(ee, ast);
+			}
+			
+			suc = suc && b;
+		}
+		
+		return suc;
+	}
+	
+	
+	boolean validate(Source exp, ASTQuery ast){
+		boolean suc = validate(exp.getSource(), ast);
+		
+		for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
+			suc =  validate(ee, ast) && suc;
+		}
+		
+		return suc;
+	}
+	
+	
+	boolean validate(Atom at, ASTQuery ast){
+		if (at.isVariable() && 
+				! at.isBlankNode() &&
+				! ast.isSelectAllVar(at.getVariable())){
+			ast.addError(Message.get(Message.UNDEF_VAR) + 
+					ast.getUpdateTitle() + ": " , at.getLabel());
+			return false;
+		}
+
+		return true;
+	}
+	
+	
+	boolean validate(Triple t, ASTQuery ast){
+		boolean suc = validate(t.getSubject(), ast) ;
+		suc =  validate(t.getObject(), ast) && suc;
+		
+		Variable var = t.getVariable();
+		if (var != null){
+			suc = validate(var, ast) && suc;
+		}
+		
+		return suc;
+	}
+
 	
 
 }

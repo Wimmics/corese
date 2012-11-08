@@ -1893,14 +1893,24 @@ public class Query extends Exp {
 	 */
 	public List<Node> getAggNodes(Filter f){
 		ArrayList<Node> lNode = new ArrayList<Node>();
-		for (Expr exp : f.getExp().getExpList()){
-			if (exp.type() == ExprType.VARIABLE){
-				Node node = getProperAndSubSelectNode(exp.getLabel());
-				if (node != null && ! lNode.contains(node)) lNode.add(node);
-			}
-		}
+		getAggNodes(f.getExp(), lNode);
 		return lNode;
 	}
+	
+	void getAggNodes(Expr exp, ArrayList<Node> lNode){
+		if (exp.type() == ExprType.VARIABLE){
+			Node node = getProperAndSubSelectNode(exp.getLabel());
+			if (node != null && ! lNode.contains(node)){
+				lNode.add(node);
+			}
+		}
+		else for (Expr ee : exp.getExpList()){
+			getAggNodes(ee, lNode);
+		}
+	}
+	
+	
+	
 
 	
 	

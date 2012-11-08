@@ -36,6 +36,7 @@ class Walker extends Interpreter {
 	boolean isError = false;
 	String str = "", sep = " ";
 	Group group;
+	Distinct distinct;
 	TreeData tree;
 	Evaluator eval;
 	
@@ -59,9 +60,9 @@ class Walker extends Interpreter {
 				nodes = env.getQuery().getNodes();
 			}
 			else {
-				// TODO: group_concat(distinct foo(?x))
-				// TODO: store nodes
 				nodes = env.getQuery().getAggNodes(exp.getFilter());
+				// group_concat:
+				distinct = new Distinct();
 			}
 			group = Group.create(nodes);
 			group.setDistinct(true);
@@ -138,6 +139,15 @@ class Walker extends Interpreter {
 		return true;
 	}
 	
+	boolean accept(Filter f, Tuple t){
+		if (f.getExp().isDistinct()){
+			boolean b = distinct.add(t);
+			return b;
+		}
+		return true;
+	}
+	
+	
 	
 	/**
 	 * map is a Mapping
@@ -148,20 +158,26 @@ class Walker extends Interpreter {
 		switch (exp.oper()){
 		
 		case GROUPCONCAT:
-			
 			// concat may have several arguments for one mapping
 			// hence loop on args
-			if (accept(f, map)){
-				int i = 0;
-				
-				for (Expr arg : exp.getExpList()){
-					IDatatype dt = null;			
-					dt = (IDatatype) eval.eval(arg, map);				
-					if (dt != null){
-						str += dt.getLabel() + sep;
-					}		
-				}
+			
+			IDatatype[] value = new IDatatype[exp.getExpList().size()];
+			Tuple t = new Tuple(value);
+			int i = 0;
+			String res = "";
+			
+			for (Expr arg : exp.getExpList()){				
+				IDatatype dt = (IDatatype) eval.eval(arg, map);
+				value[i++] = dt;
+				if (dt != null){
+					res += dt.getLabel() + sep;
+				}		
 			}
+			
+			if (accept(f, t)){
+				str += res;
+			}
+												
 			return null;
 			
 			
@@ -306,6 +322,48 @@ class Walker extends Interpreter {
 			return o1.compareTo(o2);
 		}
 	}
+	
+	
+	
+	
+	
+	
+	class Distinct extends TreeMap<Tuple, Boolean>  {	
+
+
+		Distinct(){
+		}
+
+		public boolean add(Tuple map){
+
+			if (containsKey(map)){
+				return false;
+			}
+			put(map, true);		
+			return true;
+		}
+
+
+
+
+
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 

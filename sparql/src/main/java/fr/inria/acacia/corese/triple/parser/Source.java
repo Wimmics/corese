@@ -101,7 +101,7 @@ public class Source extends And {
     }
 
  
-  public boolean validateData(){
+  public boolean validateData(ASTQuery ast){
 	  if (asource.isVariable()) return false;
 
 	  Exp ee = this;
@@ -111,7 +111,7 @@ public class Source extends And {
 	  }
 
 	  for (Exp exp : ee.getBody()){
-		  if (! (exp.isTriple() && exp.validateData())){
+		  if (! (exp.isTriple() && exp.validateData(ast))){
 			  return false;
 		  }
 	  }

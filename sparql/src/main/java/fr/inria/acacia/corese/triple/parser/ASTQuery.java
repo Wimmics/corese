@@ -2,6 +2,7 @@ package fr.inria.acacia.corese.triple.parser;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -132,7 +133,7 @@ public class ASTQuery  implements Keyword {
 	int nbBNode = 0;
     int nbd = 0; // to generate an unique id for a variable if needed
 	int resultForm = QT_SELECT;
-	private int priority = Integer.MAX_VALUE;
+	private int priority = 100;
 	int countVar = 0;
 	
 	/** if more, reject 2 times worse projection than best one */
@@ -196,6 +197,8 @@ public class ASTQuery  implements Keyword {
     Hashtable<String, Exp> pragma;
     Hashtable<String, Exp> blank;
     Hashtable<String, Variable> blankNode;
+    
+    HashMap<String, Atom> dataBlank; 
 
 	NSManager nsm;
 	ASTUpdate astu;
@@ -211,6 +214,8 @@ public class ASTQuery  implements Keyword {
 	private static final String FUNPPRINT 	= Processor.PPRINT;
 	
 	private String[] META = {GROUPCONCAT, COALESCE, IF};
+
+	private Constant empty;
 
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
@@ -420,6 +425,24 @@ public class ASTQuery  implements Keyword {
 			}
 		}
 	}
+	
+	
+	void record(Atom blank){
+		if (dataBlank == null){
+			createDataBlank();
+		}
+		dataBlank.put(blank.getLabel(), blank);
+	}
+	
+	public void createDataBlank(){
+		dataBlank = new HashMap<String, Atom>();
+	}
+	
+	public HashMap<String, Atom> getDataBlank(){
+		return dataBlank;
+	}
+	
+
  
 	/**
 	 *
@@ -2644,11 +2667,24 @@ public class ASTQuery  implements Keyword {
 	}
 
 	
+	/**
+	 * In template { } a variable ?x is compiled as:
+	 * coalesce(kg:pprint(?x), "")
+	 * if ?x is unbound, empty string "" is returned
+	 */
 	Variable compile(Variable var){
 		Term t = Term.function(FUNPPRINT, var);
+		Term c = Term.function(COALESCE, t, getEmpty());
 		Variable res = templateVariable(var);
-		defSelect(res, t);
+		defSelect(res, c);
 		return res;
+	}
+	
+	Constant getEmpty(){
+		if (empty == null){
+			empty = Constant.create("", null, null);
+		}
+		return empty;
 	}
 	
 	

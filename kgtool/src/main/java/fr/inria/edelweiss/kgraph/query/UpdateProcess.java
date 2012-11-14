@@ -138,7 +138,7 @@ public class UpdateProcess {
 		ast.setInsert(true);
 		
 		Exp exp = ope.getData();
-		if (! exp.validateData()){
+		if (! exp.validateData(ast)){
 			if (isDebug) logger.debug("** Update: insert not valid: " + exp);
 			q.setCorrect(false);
 			return Mappings.create(q);
@@ -167,10 +167,7 @@ public class UpdateProcess {
 		ast.setDelete(true);
 		
 		Exp exp = ope.getData();
-		if (! exp.validateData() || ! exp.validateDelete()){
-//			if (isDebug){
-//				logger.debug("** Update: delete not valid: " + exp);
-//			}
+		if (! exp.validateData(ast) || ! exp.validateDelete()){
 			q.setCorrect(false);
 			q.addError("** Update: delete not valid: " , exp);
 			return Mappings.create(q);

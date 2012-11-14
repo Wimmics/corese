@@ -40,6 +40,7 @@ public class PPrinter {
 	String pp = PPRINTER;
 	
 	boolean isDebug = ! true;
+	private IDatatype EMPTY;
 
 	
 	
@@ -49,6 +50,8 @@ public class PPrinter {
 		init(graph, p);
 		nsm = NSManager.create();
 		list = new ArrayList<IDatatype>();
+		exec = QueryProcess.create(g, true);
+		EMPTY = DatatypeMap.createLiteral("");
 	}
 	
 	
@@ -75,7 +78,23 @@ public class PPrinter {
 	 * the subpart that matches the first query
 	 */
 	public IDatatype pprint(){
-		return pprint(null);
+		for (Query qq : qe.getQueries()){
+
+			// Tricky:
+			// All queries of this PPrinter share the same query base
+			// use case: kg:pprint() call the same PPrinter for all queries of this base
+			qq.setPPrinter(this);
+			if (isDebug){
+				qq.setDebug(true);
+				System.out.println(qq.getAST());
+			}
+			Mappings map = exec.query(qq);
+			Node res = map.getNode(OUT);
+			if (res != null){
+				return  (IDatatype) res.getValue();
+			}
+		}
+		return EMPTY;
 	}
 	
 
@@ -91,8 +110,13 @@ public class PPrinter {
 	 * They are sorted using a pragma { kg:query kg:priority n }
 	 */
 	public IDatatype pprint(IDatatype dt){		
+		if (dt == null){
+			return EMPTY;
+		}
+		
 		// to prevent infinite loop in the case where the graph is cyclic
 		// should not happen with RDF AST
+
 		if (list.contains(dt)){
 			return print(dt);
 		}
@@ -101,23 +125,10 @@ public class PPrinter {
 		}
 		
 		Graph g = graph;									
-		QueryProcess exec;
-		
-		if (this.exec != null){
-			exec = this.exec;
-		}
-		else {
-			exec = QueryProcess.create(g, true);
-		}
-		
-		Mapping m = null;	
-		if (dt != null){
-			Node qn = NodeImpl.createVariable(IN);
-			m = Mapping.create(qn, g.getNode(dt, false, false));
-//			if (isDebug){
-//				System.out.println("input: " + dt);
-//			}
-		}
+		QueryProcess exec = this.exec;
+
+		Node qn = NodeImpl.createVariable(IN);
+		Mapping m = Mapping.create(qn, g.getNode(dt, false, false));
 
 		for (Query qq : qe.getQueries()){
 			
@@ -129,12 +140,10 @@ public class PPrinter {
 				qq.setDebug(true);
 				System.out.println(qq.getAST());
 			}
-			Mappings map = exec.query(qq, m);
 			
-//			System.out.println(map);
-//			System.out.println(map.size());
-
+			Mappings map = exec.query(qq, m);
 			Node res = map.getNode(OUT);
+			
 			if (res != null){
 				list.remove(dt);
 				return  (IDatatype) res.getValue();
@@ -142,7 +151,6 @@ public class PPrinter {
 		}
 			
 		// no query match dt; it may be a constant		
-		
 		list.remove(dt);
 		//System.out.println("return: " + dt);
 		return print(dt);
@@ -154,10 +162,7 @@ public class PPrinter {
 	 * in its Turtle syntax
 	 */
 	IDatatype print(IDatatype dt){
-		if (dt == null) {
-			return null;
-		}
-		
+
 		if (dt.isURI()){
 			String qname = nsm.toPrefix(dt.getLabel(), true);
 			if (dt.getLabel().equals(qname)){
@@ -188,6 +193,9 @@ public class PPrinter {
 		ld.load(str);
 		qe = ld.getQueryEngine();
 		qe.sort();
+//		for (Query q : qe.getQueries()){
+//			System.out.println(q.getAST());
+//		}
 	}
 
 }

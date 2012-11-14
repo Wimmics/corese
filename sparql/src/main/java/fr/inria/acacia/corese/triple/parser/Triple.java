@@ -861,11 +861,15 @@ public class Triple extends Exp {
     	return true;
 	}
 	
-	
-	public boolean validateData(){
+	/**
+	 * No variable in insert data {}
+	 */
+	public boolean validateData(ASTQuery ast){
 		if (subject.isSimpleVariable() || object.isSimpleVariable() || variable!=null){
 			return false;
 		}
+		subject.validateData(ast);
+		object.validateData(ast);
 		return true;
 	}
 	

@@ -159,5 +159,12 @@ public class Atom extends Expression implements ElementClause{
 	public Atom getElement() {
 		return this;
 	}
-
+	
+	boolean validateData(ASTQuery ast){
+		if (isBlankNode() || isBlank()){
+			ast.record(this);
+		}
+		return true;
+	}
+	
 }

@@ -303,8 +303,11 @@ public class RDFFormat {
 	}
 	
 	boolean accept(Entity ent){
-		Node gname = ent.getGraph();
+		return accept(ent.getGraph());
+	}
 		
+		
+	boolean accept(Node gname){
 		if (without.contains(gname.getLabel())){
 			return false;
 		}
@@ -317,6 +320,8 @@ public class RDFFormat {
 		
 		return true;
 	}
+	
+	
 		
 	
 	void edge(Entity ent){

@@ -81,15 +81,17 @@ public class TripleFormat extends RDFFormat {
 	
 	void graphNodes(){
 		for (Node gNode : graph.getGraphNodes()){
-			sdisplay(GRAPH);
-			sdisplay(SPACE);
-			subject(gNode);
-			sdisplay(OGRAPH);
-			for (Entity ent : graph.getNodes(gNode)){
-				Node node = ent.getNode();
-				print(gNode, node);
+			if (accept(gNode)){
+				sdisplay(GRAPH);
+				sdisplay(SPACE);
+				subject(gNode);
+				sdisplay(OGRAPH);
+				for (Entity ent : graph.getNodes(gNode)){
+					Node node = ent.getNode();
+					print(gNode, node);
+				}
+				display(CGRAPH);
 			}
-			display(CGRAPH);
 		}
 	}
 	

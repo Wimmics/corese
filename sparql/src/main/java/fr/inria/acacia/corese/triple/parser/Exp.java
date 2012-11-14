@@ -313,9 +313,9 @@ public abstract class Exp extends Statement {
 		return true;
 	}
 	
-	public boolean validateData(){
+	public boolean validateData(ASTQuery ast){
 		for (Exp exp : getBody()){
-			if (! exp.validateData()){
+			if (! exp.validateData(ast)){
 				return false;
 			}
 		}

@@ -5,6 +5,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgimport.JenaGraphFactory;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -44,7 +45,7 @@ public class RemoteProducer extends ProducerImpl {
     private String endpoint;
 //    private IEngine engine;
 //    private EngineFactory ef = new EngineFactory();
-    private Graph graph = Graph.create();
+    private Graph graph = Graph.create(true);
     private QueryProcess exec = QueryProcess.create(graph);
     private Logger logger = Logger.getLogger(RemoteProducer.class);
     private HashMap<String, String> rdfSqlMappings = new HashMap<String, String>();
@@ -132,7 +133,7 @@ public class RemoteProducer extends ProducerImpl {
     public void loadRDF(String remotePath) {
         logger.info("Loading " + remotePath);
         Graph g = Graph.create();
-        if (remotePath.endsWith(".rdf")) {
+        if (remotePath.endsWith(".rdf") || remotePath.endsWith(".owl")) {
             Load ld = Load.create(g);
             ld.load(remotePath);
         } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {
@@ -157,6 +158,20 @@ public class RemoteProducer extends ProducerImpl {
         exec.add(g);
         logger.info("Successfully loaded " + remotePath);
     }
+    
+    @WebMethod
+    public String query(String sparqlQuery) {
+//        logger.debug(sparqlQuery);
+        try {
+            Mappings results = exec.query(sparqlQuery);
+            XMLFormat res = XMLFormat.create(results);
+            return res.toString();
+          } catch (EngineException ex) {
+            logger.error("Error while querying the remote KGRAM engine");
+            ex.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * Processes a SPARQL query and return the SPARQL results.
@@ -168,6 +183,7 @@ public class RemoteProducer extends ProducerImpl {
 //    public @XmlMimeType(value = "application/octet-stream")
 //    DataHandler getEdges(String sparqlQuery) {
     public String getEdges(String sparqlQuery) {
+//        logger.debug(sparqlQuery);
 //        StopWatch sw = new StopWatch();
 //        sw.start();
 
@@ -201,7 +217,7 @@ public class RemoteProducer extends ProducerImpl {
      */
     @WebMethod
     public void initEngine() {
-        try {
+//        try {
             //need to use the EngineFactory ?
 //            engine = GraphEngine.create(this.getGraph());
 //            graph = Graph.create(true); //with entailments
@@ -212,16 +228,16 @@ public class RemoteProducer extends ProducerImpl {
             sw.start();
             logger.info("Initializing GraphEngine");
             Load ld = Load.create(graph);
-            ld.load(RemoteProducer.class.getClassLoader().getResourceAsStream("kgram-foaf.rdfs"), null);
-            ld.load(RemoteProducer.class.getClassLoader().getResourceAsStream("dbpedia_3.6.owl"), null);
+//            ld.load(RemoteProducer.class.getClassLoader().getResourceAsStream("kgram-foaf.rdfs"), null);
+//            ld.load(RemoteProducer.class.getClassLoader().getResourceAsStream("dbpedia_3.6.owl"), null);
             sw.stop();
             logger.info("Initialized GraphEngine: " + sw.getTime() + " ms");
 //            engine.runRuleEngine();
-        } catch (LoadException ex) {
-            logger.error("Error while initialiazing the remote KGRAM engine");
-            ex.printStackTrace();
-            java.util.logging.Logger.getLogger(RemoteProducer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        } catch (LoadException ex) {
+//            logger.error("Error while initialiazing the remote KGRAM engine");
+//            ex.printStackTrace();
+//            java.util.logging.Logger.getLogger(RemoteProducer.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     /**

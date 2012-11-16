@@ -24,14 +24,14 @@ public class CompileService {
 	
 	Hashtable<String, Double> table;
 	
-	CompileService(){
+	public CompileService(){
 		table = new Hashtable<String, Double>();
 	}
 
 	/**
 	 * Generate bindings for the service, if any
 	 */
-	void compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
+	public void compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
 		ASTQuery ast = (ASTQuery) q.getAST();
 
 		if (ast.getValues() != null){
@@ -56,7 +56,7 @@ public class CompileService {
 		
 	}
 	
-	void prepare(Query q){
+	public void prepare(Query q){
 		Query g 	 = q.getOuterQuery();
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ASTQuery ag  = (ASTQuery) g.getAST();

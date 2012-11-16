@@ -80,7 +80,7 @@ public class G5kFedBenchLS_Query {
         ///////////////////////
         Graph graphGroupOpt = Graph.create();
         QueryProcessDQP execGroupOpt = QueryProcessDQP.create(graphGroupOpt);
-        execGroupOpt.set(new ServiceQueryVisitorPar(execGroupOpt));
+        execGroupOpt.addVisitor(new ServiceQueryVisitorPar(execGroupOpt));
         execGroupOpt.setOptimize(true);
         ProviderWSImpl pOpt = ProviderWSImpl.create();
         execGroupOpt.set(pOpt);
@@ -88,7 +88,7 @@ public class G5kFedBenchLS_Query {
         ////////////////////////
         Graph graphGroup = Graph.create();
         QueryProcessDQP execGroup = QueryProcessDQP.create(graphGroup);
-        execGroup.set(new ServiceQueryVisitorPar(execGroup));
+        execGroup.addVisitor(new ServiceQueryVisitorPar(execGroup));
         execGroup.setOptimize(false);
         ProviderWSImpl p = ProviderWSImpl.create();
         execGroup.set(p);

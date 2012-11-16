@@ -3,18 +3,14 @@
  * and open the template in the editor.
  */
 
-import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.EngineFactory;
-import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Enumeration;
-import java.util.HashMap;
 import org.apache.commons.lang.time.StopWatch;
 
 /**

@@ -21,7 +21,7 @@ import com.hp.hpl.jena.sdb.store.LayoutType;
 //import fr.inria.acacia.corese.api.IEngine;
 //import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.EdgeCore;
+import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import org.apache.log4j.Logger;
 
@@ -34,11 +34,12 @@ public class JenaGraphFactory {
     public static Logger logger = Logger.getLogger(JenaGraphFactory.class);
 
     /**
-     *  Handling of XSDDateType ?? -> transformed as String into KGRAM
-     *  See http://openjena.org/javadoc/com/hp/hpl/jena/datatypes/xsd/XSDDatatype.html
+     * Handling of XSDDateType ?? -> transformed as String into KGRAM See
+     * http://openjena.org/javadoc/com/hp/hpl/jena/datatypes/xsd/XSDDatatype.html
+     *
      * @param m
      * @param g
-     * @return 
+     * @return
      */
     public static void updateGraph(Model m, Graph g) {
         Node source = g.addGraph("g1");
@@ -67,63 +68,62 @@ public class JenaGraphFactory {
             //object 
             object = getNode(st.getObject());
 
-            //edge
-            EdgeCore e = EdgeCore.create(source, subject, predicate, object);
-            g.addEdge(e);
+            if (! ((subject == null) || (predicate == null) || (object == null) || (source == null))) {
+                EdgeImpl e = g.create(source, subject, predicate, object);
+                g.add(e);
+            }
         }
     }
-    
-    
-    
+
     public static Node getNode(RDFNode jenaNode) {
         Graph g = Graph.create();
         Node kgNode = null;
-        
+
         if (jenaNode.isAnon()) {
-                kgNode = g.addBlank(jenaNode.asNode().getBlankNodeId().toString());
-            } else if (jenaNode.isLiteral()) {
+            kgNode = g.addBlank(jenaNode.asNode().getBlankNodeId().toString());
+        } else if (jenaNode.isLiteral()) {
 //                logger.debug("Object as literal " + jenaNode.toString());
-                Literal l = jenaNode.asLiteral();
+            Literal l = jenaNode.asLiteral();
 //                logger.debug("lexical form " + l.getLexicalForm());
-                Object value = null;
-                try {
-                    value = l.getValue();
-                } catch (com.hp.hpl.jena.datatypes.DatatypeFormatException ex) {
-                    logger.warn(ex.getMessage());
-                    value = l.getLexicalForm();
-                }
-
-                if (value instanceof Integer) {
-                    kgNode = g.addLiteral(((Integer) value).intValue());
-                } else if (value instanceof Long) {
-                    kgNode = g.addLiteral(((Long) value).longValue());
-                } else if (value instanceof Float) {
-                    kgNode = g.addLiteral(((Float) value).floatValue());
-                } else if (value instanceof Double) {
-                    kgNode = g.addLiteral(((Double) value).doubleValue());
-                } else if (value instanceof Boolean) {
-                    kgNode = g.addLiteral(((Boolean) value).booleanValue());
-                } else if (value instanceof String) {
-                    kgNode = g.addLiteral(((String) value));
-                } else if (value instanceof XSDDateTime) {
-                    kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
-                } else if (l.getDatatypeURI() != null) {
-                    kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
-//                    logger.debug("Literal value " + value + " : " + value.getClass().getCanonicalName() + " handled by KGRAM graphs through "+l.getDatatypeURI());
-                } else {  
-                    logger.error("Literal value " + value + " : " + value.getClass().getCanonicalName() + " not handled by KGRAM graphs");
-                }
-
-            } else if (jenaNode.isResource()) {
-//                logger.debug("Object as resource " + jenaNode.toString());
-                kgNode = g.addResource(jenaNode.asResource().toString());
-            } else if (jenaNode.isURIResource()) {
-//                logger.debug("Object as resource " + jenaNode.asResource().getURI());
-                kgNode = g.addResource(jenaNode.asResource().getURI());
-            } else {
-                logger.warn("Object " + jenaNode.toString() + " not recognized by JENA as a blank node, a literal or a resource.");
+            Object value = null;
+            try {
+                value = l.getValue();
+            } catch (com.hp.hpl.jena.datatypes.DatatypeFormatException ex) {
+                logger.warn(ex.getMessage());
+                value = l.getLexicalForm();
             }
-        
+
+            if (value instanceof Integer) {
+                kgNode = g.addLiteral(((Integer) value).intValue());
+            } else if (value instanceof Long) {
+                kgNode = g.addLiteral(((Long) value).longValue());
+            } else if (value instanceof Float) {
+                kgNode = g.addLiteral(((Float) value).floatValue());
+            } else if (value instanceof Double) {
+                kgNode = g.addLiteral(((Double) value).doubleValue());
+            } else if (value instanceof Boolean) {
+                kgNode = g.addLiteral(((Boolean) value).booleanValue());
+            } else if (value instanceof String) {
+                kgNode = g.addLiteral(((String) value));
+            } else if (value instanceof XSDDateTime) {
+                kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
+            } else if (l.getDatatypeURI() != null) {
+                kgNode = g.addLiteral(l.getLexicalForm(), l.getDatatypeURI(), null);
+//                    logger.debug("Literal value " + value + " : " + value.getClass().getCanonicalName() + " handled by KGRAM graphs through "+l.getDatatypeURI());
+            } else {
+                logger.error("Literal value " + value + " : " + value.getClass().getCanonicalName() + " not handled by KGRAM graphs");
+            }
+
+        } else if (jenaNode.isResource()) {
+//                logger.debug("Object as resource " + jenaNode.toString());
+            kgNode = g.addResource(jenaNode.asResource().toString());
+        } else if (jenaNode.isURIResource()) {
+//                logger.debug("Object as resource " + jenaNode.asResource().getURI());
+            kgNode = g.addResource(jenaNode.asResource().getURI());
+        } else {
+            logger.warn("Object " + jenaNode.toString() + " not recognized by JENA as a blank node, a literal or a resource.");
+        }
+
         return kgNode;
     }
 

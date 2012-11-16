@@ -18,6 +18,12 @@
   <message name="resetResponse">
     <part name="parameters" element="tns:resetResponse"/>
   </message>
+  <message name="query">
+    <part name="parameters" element="tns:query"/>
+  </message>
+  <message name="queryResponse">
+    <part name="parameters" element="tns:queryResponse"/>
+  </message>
   <message name="getEndpoint">
     <part name="parameters" element="tns:getEndpoint"/>
   </message>
@@ -75,6 +81,10 @@
       <input message="tns:reset"/>
       <output message="tns:resetResponse"/>
     </operation>
+    <operation name="query">
+      <input message="tns:query"/>
+      <output message="tns:queryResponse"/>
+    </operation>
     <operation name="getEndpoint">
       <input message="tns:getEndpoint"/>
       <output message="tns:getEndpointResponse"/>
@@ -120,6 +130,15 @@
       </output>
     </operation>
     <operation name="reset">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="query">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>

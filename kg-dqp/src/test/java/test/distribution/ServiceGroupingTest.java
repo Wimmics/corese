@@ -121,7 +121,7 @@ public class ServiceGroupingTest {
 
         graph = Graph.create();
         execDQP = QueryProcessDQP.create(graph);
-        execDQP.set(new ServiceQueryVisitorPar(execDQP));
+        execDQP.addVisitor(new ServiceQueryVisitorPar(execDQP));
         ProviderWSImpl p = ProviderWSImpl.create();
         execDQP.set(p);
         execDQP.setOptimize(false);

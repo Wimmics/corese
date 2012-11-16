@@ -28,7 +28,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>kgendpoint</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -7,7 +7,7 @@
         <version>1.0.7</version>
     </parent>
 
-    <groupId>fr.inria.wimmics</groupId>
+    <groupId>fr.inria.edelweiss</groupId>
     <artifactId>kgendpoint</artifactId>
     <packaging>war</packaging>
     <version>1.0.7</version>

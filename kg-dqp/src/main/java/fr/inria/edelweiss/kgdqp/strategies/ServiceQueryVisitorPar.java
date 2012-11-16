@@ -37,7 +37,7 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
     public void visit(Query query) {
     }
 
-    // essayer de ne faire qu'une fois select distinct ?p where { ?p rdf:type rdf:Property } !! nécessite les entailments
+    // essayer de ne faire qu'une fois select distinct ?p where { ?p rdf:type rdf:Property } !! necessite les entailments
     // sinon plus couteux : select distinct ?p where { ?x ?p ?y}
     @Override
     public void visit(ASTQuery ast) {

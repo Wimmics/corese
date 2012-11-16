@@ -42,6 +42,20 @@ public interface RemoteProducer {
 
     /**
      * 
+     * @param arg0
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "query", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.Query")
+    @ResponseWrapper(localName = "queryResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.QueryResponse")
+    public String query(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0);
+
+    /**
+     * 
      * @return
      *     returns java.lang.String
      */

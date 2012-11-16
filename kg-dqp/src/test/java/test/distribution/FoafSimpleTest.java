@@ -13,7 +13,12 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -107,7 +112,7 @@ public class FoafSimpleTest {
     //
 
     @Test
-//    @Ignore
+    @Ignore
     public void remoteFoafQuery() throws EngineException, MalformedURLException, IOException {
 
         String sparqlSeqQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
@@ -127,21 +132,20 @@ public class FoafSimpleTest {
                 //                + " <http://i3s/Alban> (foaf:knows{,2}) ?y ."
                 //                                + " <http://i3s/Alban> (foaf:knows | foaf:knows/foaf:name){2,3} ?y ."
                 //                                + " <http://i3s/Tram> (^foaf:knows)+ ?y ."
-//                                + " <http://i3s/Alban> ! (foaf:knows) ?y ." //OK
-//                + " ?x foaf:givenname 'Alban'^^xsd:string ." //OK
-                + " <http://i3s/Alban> ! (foaf:knows | foaf:name | foaf:mbox) ?y ." 
-//                                + " <http://i3s/Alban> ! (foaf:knows | foaf:name / foaf:mbox ) ?y ." 
+                //                                + " <http://i3s/Alban> ! (foaf:knows) ?y ." //OK
+                //                + " ?x foaf:givenname 'Alban'^^xsd:string ." //OK
+                + " <http://i3s/Alban> ! (foaf:knows | foaf:name | foaf:mbox) ?y ."
+                //                                + " <http://i3s/Alban> ! (foaf:knows | foaf:name / foaf:mbox ) ?y ." 
                 //                                + "FILTER( ?y ~ 'a')"
                 + "}";
 
-//        String sparqlSampleQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
-//                + "SELECT distinct ?x ?y WHERE"
-//                + "{"
-//                + "?x foaf:knows ?u ."
-//                + "?x foaf:knows ?z ."
-//                + "?u foaf:name ?y ."
+        String sparqlSampleQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "SELECT distinct ?x ?z WHERE"
+                + "{"
+                + "?x foaf:knows ?y ."
+                + "?y foaf:knows ?z ."
 //                + "FILTER(( ?u ~ 'a') && (?x ~ 'a'))"
-//                + "}";
+                + "}";
 
         EngineFactory ef = new EngineFactory();
         IEngine engine = ef.newInstance();
@@ -153,7 +157,7 @@ public class FoafSimpleTest {
 
         StopWatch sw = new StopWatch();
         sw.start();
-        IResults res = exec.SPARQLQuery(sparqlSeqQuery);
+        IResults res = exec.SPARQLQuery(sparqlSampleQuery);
 
         System.out.println("--------");
         System.out.println("Results in " + sw.getTime() + "ms");
@@ -176,5 +180,41 @@ public class FoafSimpleTest {
                 }
             }
         }
+    }
+
+    @Test
+    @Ignore
+    public void testAsk() throws IOException, EngineException {
+        Graph graph = Graph.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        File rep1 = File.createTempFile("rep1", ".rdf");
+        FileWriter fw = new FileWriter(rep1);
+        InputStream is = FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram#1-persons.rdf");
+        int c;
+        while ((c = is.read()) != -1) {
+            fw.write(c);
+        }
+        is.close();
+        fw.close();
+        Load loader = Load.create(graph);
+        loader.load(rep1.getAbsolutePath());
+        
+        String query = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"
+                + "PREFIX xml: <http://www.w3.org/XML/1998/namespace>"
+                + "PREFIX owl: <http://www.w3.org/2002/07/owl#>"
+                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+                + "PREFIX cos: <http://www.inria.fr/acacia/corese#>"
+                + "ask  { ?x foaf:givenname ?u } " ;
+        
+        Mappings map = exec.query(query);
+        XMLFormat res = XMLFormat.create(map);
+        RDFFormat resZ = RDFFormat.create(map);
+        System.out.println("");
+        System.out.println(res);
+        System.out.println("");
+        System.out.println(resZ);
     }
 }

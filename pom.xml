@@ -44,7 +44,7 @@
         <module>kgimport</module>
         <module>sparql</module>
         <module>rif</module>
-<!--        <module>kgendpoint</module>-->
+        <module>kgendpoint</module>
     </modules>
     
     <dependencyManagement>
@@ -73,8 +73,13 @@
             <dependency>
                 <groupId>com.sun.xml.ws</groupId>
                 <artifactId>jaxws-rt</artifactId>
-                <version>2.2.3</version>
+                <version>2.2.6</version>
             </dependency>
+<!--            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-tools</artifactId>
+                <version>2.2.6</version>
+            </dependency>-->
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>

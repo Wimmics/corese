@@ -33,7 +33,8 @@ public class QueryProcessDQP extends QueryProcess {
     }
 
     public void addRemote(URL url) {
-        add(new RemoteProducerImpl(url));
+//        add(new RemoteProducerHTTPImpl(url));
+        add(new RemoteProducerWSImpl(url));
     }
     
     public void addRemoteSQL(String url, String driver, String login, String password) {
@@ -72,8 +73,8 @@ public class QueryProcessDQP extends QueryProcess {
     @Override
     public void add(Producer prod) {
 //        int implem = parallelWaitMP;
-//        int implem = parallelLessWaitMP;
-        int implem = pipelinedMP;
+        int implem = parallelLessWaitMP;
+//        int implem = pipelinedMP;
         
         if (implem == parallelWaitMP) {
             ParallelMetaProducer meta;

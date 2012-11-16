@@ -5,10 +5,9 @@
 package fr.inria.edelweiss.kgdqp.core;
 
 import com.sun.xml.internal.ws.developer.JAXWSProperties;
-import com.sun.xml.ws.developer.StreamingDataHandler;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgdqp.strategies.SourceSelector;
+import fr.inria.edelweiss.kgdqp.strategies.SourceSelectorWS;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizer;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizerFactory;
 import fr.inria.edelweiss.kgram.api.core.*;
@@ -34,13 +33,13 @@ import wsimport.KgramWS.RemoteProducerServiceClient;
  *
  * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
  */
-public class RemoteProducerImpl implements Producer {
+public class RemoteProducerWSImpl implements Producer {
 
-    private static Logger logger = Logger.getLogger(RemoteProducerImpl.class);
+    private static Logger logger = Logger.getLogger(RemoteProducerWSImpl.class);
     private RemoteProducer rp;
     private HashMap<String, Boolean> cacheIndex = new HashMap<String, Boolean>();
 
-    public RemoteProducerImpl(URL url) {
+    public RemoteProducerWSImpl(URL url) {
         rp = RemoteProducerServiceClient.getPort(url);
     }
 
@@ -110,7 +109,7 @@ public class RemoteProducerImpl implements Producer {
 //            StopWatch sw = new StopWatch();
 //            sw.start();
 
-            if (SourceSelector.ask(qEdge, this, env)) {
+            if (SourceSelectorWS.ask(qEdge, this, env)) {
 //            if (true) {
 //                logger.info("sending query \n" + query + "\n" + "to " + rp.getEndpoint());
 
@@ -418,7 +417,7 @@ public class RemoteProducerImpl implements Producer {
         return res;
     }
 
-    public HashMap<String, Boolean> getCacheIndex() {
+    public synchronized HashMap<String, Boolean> getCacheIndex() {
         return cacheIndex;
     }
 

@@ -4,6 +4,9 @@
  */
 package fr.inria.edelweiss.kgdqp.core;
 
+import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
+import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -20,7 +23,7 @@ public class Util {
     public static List<Filter> getApplicableFilter(Environment env, Edge edge) {
         // KGRAM exp for current edge
         Exp exp = env.getExp();;
-        List<Filter> lFilters = new ArrayList<Filter>();
+        List<Filter> matchingFilters = new ArrayList<Filter>();
         for (Filter f : exp.getFilters()) {
             // filters attached to current edge
             if (f.getExp().isExist()) {
@@ -29,25 +32,40 @@ public class Util {
             }
 
             if (exp.bind(f)) {
-                lFilters.add(f);
+                matchingFilters.add(f);
             }
         }
 
 //         workaround for non gathered filters
-        if (lFilters.isEmpty()) {
+        if (matchingFilters.isEmpty()) {
             for (Exp e : env.getQuery().getBody()) {
                 if (e.isFilter()) {
                     Filter kgFilter = e.getFilter();
 //                    System.out.println("\t\tFilter " + kgFilter.toString() + " -> " + edge);
                     if (bound(edge, kgFilter)) {
 //                        System.out.println("\t\t\t BOUND");
-                        lFilters.add(kgFilter);
+                        matchingFilters.add(kgFilter);
                     }
                 }
             }
         }
 
-        return lFilters;
+        return matchingFilters;
+    }
+    
+    public static List<fr.inria.acacia.corese.triple.parser.Exp> getApplicableFilter(List<fr.inria.acacia.corese.triple.parser.Exp> filters, BasicGraphPattern bgp) {
+        //TODO handle conjunctive/disjunctive filters
+        List<fr.inria.acacia.corese.triple.parser.Exp> matchingFilters = new ArrayList<fr.inria.acacia.corese.triple.parser.Exp>();
+        
+        for (fr.inria.acacia.corese.triple.parser.Exp filter : filters) {
+            for (fr.inria.acacia.corese.triple.parser.Exp exp : bgp.getBody()) {
+                if (bound(exp, filter)) {
+                    matchingFilters.add(filter);
+                }
+            }
+        }
+        
+        return matchingFilters;
     }
 
     /*
@@ -59,17 +77,49 @@ public class Util {
      * !!!!!!
      */
     public static boolean bound(Edge edge, Filter filter) {
-        List<String> vars = new ArrayList<String>();
+        List<String> varsEdge = new ArrayList<String>();
         if (edge.getNode(0).isVariable()) {
-            vars.add(edge.getNode(0).toString());
+            varsEdge.add(edge.getNode(0).toString());
         }
         if (edge.getNode(1).isVariable()) {
-            vars.add(edge.getNode(1).toString());
+            varsEdge.add(edge.getNode(1).toString());
         }
         
         List<String> varsFilter = filter.getVariables();
         for (String var : varsFilter) {
-            if (!vars.contains(var)) {
+            if (!varsEdge.contains(var)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+     public static boolean bound(fr.inria.acacia.corese.triple.parser.Exp triple, fr.inria.acacia.corese.triple.parser.Exp filter) {
+        List<String> varsTriple = new ArrayList<String>();
+        Triple t = triple.getTriple();
+        if (t.getSubject().isVariable()) {
+            varsTriple.add(t.getSubject().toSparql());
+        }
+        if (t.getPredicate().isVariable()) {
+            varsTriple.add(t.getPredicate().toSparql());
+        }
+        if (t.getObject().isVariable()) {
+            varsTriple.add(t.getObject().toSparql());
+        }
+        
+        //TODO not working
+//        List<String> varsFilter = filter.getVariables();
+        List<String> varsFilter = new ArrayList<String>();
+        
+        for (Expression arg : filter.getTriple().getFilter().getArgs()) {
+            if (arg.isVariable()) {
+                varsFilter.add(arg.toSparql());
+            }
+        }
+        
+        
+        for (String var : varsFilter) {
+            if (!varsTriple.contains(var)) {
                 return false;
             }
         }

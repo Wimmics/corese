@@ -158,7 +158,7 @@ public class FoafEndpointTest {
 
         graph = Graph.create();
         execDQP = QueryProcessDQP.create(graph);
-        execDQP.set(new ServiceQueryVisitor(execDQP));
+        execDQP.addVisitor(new ServiceQueryVisitor(execDQP));
         ProviderImpl p = ProviderImpl.create();
         execDQP.set(p);
         execDQP.addRemote(new URL("http://localhost:8091/kgendpoint-1.0.7/KGSparqlEndpoint"));

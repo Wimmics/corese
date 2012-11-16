@@ -25,6 +25,10 @@
 
   <xs:element name="loadResponse" type="tns:loadResponse"/>
 
+  <xs:element name="query" type="tns:query"/>
+
+  <xs:element name="queryResponse" type="tns:queryResponse"/>
+
   <xs:element name="reset" type="tns:reset"/>
 
   <xs:element name="resetResponse" type="tns:resetResponse"/>
@@ -57,6 +61,18 @@
 
   <xs:complexType name="initEngineResponse">
     <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="query">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="queryResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="runRule">

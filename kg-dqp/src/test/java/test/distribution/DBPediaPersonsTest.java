@@ -52,7 +52,8 @@ public class DBPediaPersonsTest {
             //                + "     ?y foaf:name ?name2 ."
             //                + "     ?z foaf:name ?name3 ."
             //                + "     OPTIONAL {?x foaf:mbox ?m}"
-            + " FILTER ((?name ~ 'Bobby A') )"
+//            + " FILTER ((?name ~ 'Bob') )"
+            + " FILTER ((?name ~ 'Bob') )"
             + "}";
 //                + "GROUP BY ?x ORDER BY ?x "
 //                + "LIMIT 6";
@@ -70,8 +71,8 @@ public class DBPediaPersonsTest {
 
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
         kg1.initEngine();
         kg2.initEngine();
@@ -143,8 +144,8 @@ public class DBPediaPersonsTest {
         IEngine engine = ef.newInstance();
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://cavaco.unice.fr:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://cavaco.unice.fr:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
         StopWatch sw = new StopWatch();
         sw.start();

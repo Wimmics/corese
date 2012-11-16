@@ -38,6 +38,11 @@ public class Stop implements Entity {
     public String toString() {
         return "STOP";
     }
+
+    @Override
+    public int nbNode() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
     
 }

@@ -44,43 +44,43 @@ public class RemoteSqlProducerImpl implements Producer {
     private HashMap<String, String> rdfSqlMappings = new HashMap<String, String>();
     private final String sql_has_for_name = "{ "
             + "     select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', \n "
-            //            + "         \" SELECT DATASET.DATASET_ID, DATASET.NAME FROM DATASET %VALUE-CONSTRAINTS% \")\n"
-            + "         \" SELECT Dataset.dataset_id, Dataset.name FROM Dataset %VALUE-CONSTRAINTS% \")\n"
+            + "         \" SELECT DATASET.DATASET_ID, DATASET.NAME FROM DATASET %VALUE-CONSTRAINTS% \")\n"
+            //            + "         \" SELECT Dataset.dataset_id, Dataset.name FROM Dataset %VALUE-CONSTRAINTS% \")\n"
             + "         as (?x, %OBJECT%)) where {} "
             + "} .\n"
             + "{ "
-            //            + "     select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-IRISA-SS-\",?x)) as %SUBJECT%) where {}"
-            + "     select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-\",?x)) as %SUBJECT%) where {}"
+            + "     select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-IRISA-SS-\",?x)) as %SUBJECT%) where {}"
+            //            + "     select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-\",?x)) as %SUBJECT%) where {}"
             + "}";
     private final String sql_is_referred_to_by = "{ "
             + "     select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', \n"
-            //            + "        \" SELECT DATASET.SUBJECT_ID, DATASET.DATASET_ID FROM DATASET %VALUE-CONSTRAINTS% \")\n"
-            + "        \" SELECT Dataset.Subject_subject_id, Dataset.dataset_id FROM Dataset %VALUE-CONSTRAINTS% \")\n"
+            + "        \" SELECT DATASET.SUBJECT_ID, DATASET.DATASET_ID FROM DATASET %VALUE-CONSTRAINTS% \")\n"
+            //            + "        \" SELECT Dataset.Subject_subject_id, Dataset.dataset_id FROM Dataset %VALUE-CONSTRAINTS% \")\n"
             + "         as (?x, ?y)) where {} "
             + "} .\n"
-            //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-IRISA-SS-\",?x)) as %SUBJECT%) where {} }\n"
-            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?x)) as %SUBJECT%) where {} }\n"
-            //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-IRISA-SS-\",?y)) as %OBJECT%) where {} }";
-            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-\",?y)) as %OBJECT%) where {} }";
+            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-IRISA-SS-\",?x)) as %SUBJECT%) where {} }\n"
+            //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?x)) as %SUBJECT%) where {} }\n"
+            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-IRISA-SS-\",?y)) as %OBJECT%) where {} }";
+//            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-\",?y)) as %OBJECT%) where {} }";
     private final String sql_has_for_subject_identifier = "{ "
             + "     select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', \n"
-            //            + "        \" SELECT SUBJECT.SUBJECT_ID, SUBJECT.NAME FROM SUBJECT %VALUE-CONSTRAINTS% \")\n"
-            + "        \" SELECT Subject.subject_id, Subject.subject_common_identifier FROM Subject %VALUE-CONSTRAINTS% \")\n"
+            + "        \" SELECT SUBJECT.SUBJECT_ID, SUBJECT.NAME FROM SUBJECT %VALUE-CONSTRAINTS% \")\n"
+            //            + "        \" SELECT Subject.subject_id, Subject.subject_common_identifier FROM Subject %VALUE-CONSTRAINTS% \")\n"
             + "         as (?x, ?y)) where {} "
             + "} .\n"
-            //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-IRISA-SS-\",?x)) as %SUBJECT%) where {} }\n"
-            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?x)) as %SUBJECT%) where {} }\n"
+            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-IRISA-SS-\",?x)) as %SUBJECT%) where {} }\n"
+            //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?x)) as %SUBJECT%) where {} }\n"
             + "{ select(?y as %OBJECT%) where {} }";
     private final String sql_involves_has_patient = "{ "
             + "     select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', \n"
-            //            + "        \" SELECT REL_SUBJECT_STUDY.STUDY_ID, REL_SUBJECT_STUDY.SUBJECT_ID FROM REL_SUBJECT_STUDY %VALUE-CONSTRAINTS% \")\n"
-            + "        \" SELECT Subject.subject_id, Subject.subject_common_identifier FROM Subject %VALUE-CONSTRAINTS% \")\n"
+            + "        \" SELECT REL_SUBJECT_STUDY.STUDY_ID, REL_SUBJECT_STUDY.SUBJECT_ID FROM REL_SUBJECT_STUDY %VALUE-CONSTRAINTS% \")\n"
+            //            + "        \" SELECT Subject.subject_id, Subject.subject_common_identifier FROM Subject %VALUE-CONSTRAINTS% \")\n"
             + "         as (?x, ?y)) where {} "
             + "} .\n"
-            //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#study-IRISA-SS-\",?x)) as %SUBJECT%) where {} }\n"
-            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#study-\",?x)) as %SUBJECT%) where {} }\n"
-            //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-IRISA-SS-\",?y)) as %OBJECT%) where {} }";
-            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?y)) as %OBJECT%) where {} }";
+            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#study-IRISA-SS-\",?x)) as %SUBJECT%) where {} }\n"
+            //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#study-\",?x)) as %SUBJECT%) where {} }\n"
+            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-IRISA-SS-\",?y)) as %OBJECT%) where {} }";
+//            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?y)) as %OBJECT%) where {} }";
 
     public RemoteSqlProducerImpl(String url, String driver, String login, String password) {
         this.url = url;
@@ -166,17 +166,20 @@ public class RemoteSqlProducerImpl implements Producer {
         try {
             QueryProcess exec = QueryProcess.create(resGraph);
 
-            Mappings map = exec.query(query);
-            logger.info("Received results in " + sw.getTime());
+            if (query != null) {
+                Mappings map = exec.query(query);
 
-            String sparqlRes = RDFFormat.create(map).toString();
+//            logger.info("Received results in " + sw.getTime());
+
+                String sparqlRes = RDFFormat.create(map).toString();
 //            System.out.println(XMLFormat.create(map));
 
-            if (sparqlRes != null) {
-                Load l = Load.create(g);
-                is = new ByteArrayInputStream(sparqlRes.getBytes());
-                l.load(is);
-                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+                if (sparqlRes != null) {
+                    Load l = Load.create(g);
+                    is = new ByteArrayInputStream(sparqlRes.getBytes());
+                    l.load(is);
+//                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+                }
             }
 
         } catch (LoadException ex) {
@@ -230,7 +233,8 @@ public class RemoteSqlProducerImpl implements Producer {
     @Override
     public Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge qEdge, Environment env, List<Regex> exp,
             int index) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Graph resGraph = Graph.create();
+        return resGraph.getEdges();
     }
 
     /**
@@ -248,7 +252,8 @@ public class RemoteSqlProducerImpl implements Producer {
      */
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env, Regex exp, Node src, Node start, int index) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Graph resGraph = Graph.create();
+        return resGraph.getEdges();
     }
 
     /**
@@ -259,7 +264,7 @@ public class RemoteSqlProducerImpl implements Producer {
      */
     @Override
     public Node getNode(Object value) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null;
     }
 
     /**
@@ -367,7 +372,7 @@ public class RemoteSqlProducerImpl implements Producer {
         bEdge.setNode(0, subject);
         bEdge.setNode(1, object);
 
-        logger.info("Bind join ? " + edge.toString() + " -> (" + subject + ", " + predicate + ", " + object + ")");
+//        logger.info("Bind join ? " + edge.toString() + " -> (" + subject + ", " + predicate + ", " + object + ")");
 
         String property = edge.getLabel();
         String sql = rdfSqlMappings.get(property);
@@ -375,6 +380,8 @@ public class RemoteSqlProducerImpl implements Producer {
         if (sql != null) {
             sql = sql.replaceAll("%SUBJECT%", edge.getNode(0).toString());
             sql = sql.replaceAll("%OBJECT%", edge.getNode(1).toString());
+        } else {
+            return null;
         }
 
         String valueConstraints = processValueConstraints(edge, bEdge);
@@ -413,41 +420,41 @@ public class RemoteSqlProducerImpl implements Producer {
             //+ "         \" SELECT Dataset.dataset_id, Dataset.name FROM Dataset %VALUE-CONSTRAINTS% \")\n"
             if (prop.equals("http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#is-referred-to-by")) {
                 if (!bEdge.getNode(0).isVariable()) {
-//                    where += "DATASET.SUBJECT_ID LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
-                    where += "Dataset.Subject_subject_id LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
+                    where += "DATASET.SUBJECT_ID LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
+//                    where += "Dataset.Subject_subject_id LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
                 }
                 if (!bEdge.getNode(1).isVariable()) {
-//                    where += "DATASET.DATASET_ID LIKE '" + extractDatasetId(bEdge.getNode(1)) + "' AND\n";
-                    where += "Dataset.dataset_id LIKE '" + extractDatasetId(bEdge.getNode(1)) + "' AND\n";
+                    where += "DATASET.DATASET_ID LIKE '" + extractDatasetId(bEdge.getNode(1)) + "' AND\n";
+//                    where += "Dataset.dataset_id LIKE '" + extractDatasetId(bEdge.getNode(1)) + "' AND\n";
                 }
                 //+ "         \" SELECT Dataset.dataset_id, Dataset.name FROM Dataset %VALUE-CONSTRAINTS% \")\n"
             } else if (prop.equals("http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#has-for-name")) {
                 if (!bEdge.getNode(0).isVariable()) {
-//                    where += "DATASET.DATASET_ID LIKE '" + extractDatasetId(bEdge.getNode(0)) + "' AND\n";
-                    where += "Dataset.dataset_id LIKE '" + extractDatasetId(bEdge.getNode(0)) + "' AND\n";
+                    where += "DATASET.DATASET_ID LIKE '" + extractDatasetId(bEdge.getNode(0)) + "' AND\n";
+//                    where += "Dataset.dataset_id LIKE '" + extractDatasetId(bEdge.getNode(0)) + "' AND\n";
                 }
                 if (!bEdge.getNode(1).isVariable()) {
-//                    where += "DATASET.NAME LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
-                    where += "Dataset.name LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
+                    where += "DATASET.NAME LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
+//                    where += "Dataset.name LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
                 }
                 // + "        \" SELECT Subject.subject_id, Subject.subject_common_identifier FROM Subject %VALUE-CONSTRAINTS% \")\n"
             } else if (prop.equals("http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#has-for-subject-identifier")) {
                 if (!bEdge.getNode(0).isVariable()) {
-//                    where += "SUBJECT.SUBJECT_ID LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
-                    where += "Subject.subject_id LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
+                    where += "SUBJECT.SUBJECT_ID LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
+//                    where += "Subject.subject_id LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
                 }
                 if (!bEdge.getNode(1).isVariable()) {
-//                    where += "SUBJECT.NAME LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
-                    where += "Subject.subject_common_identifier LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
+                    where += "SUBJECT.NAME LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
+//                    where += "Subject.subject_common_identifier LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
                 }
             } else if (prop.equals("http://www.irisa.fr/visages/team/farooq/ontologies/study-owl-lite.owl#involves-as-patient")) {
                 if (!bEdge.getNode(0).isVariable()) {
-//                    where += "REL_SUBJECT_STUDY.STUDY_ID LIKE '" + extractStudyId(bEdge.getNode(0)) + "' AND\n";
-                    where += "Subject.subject_id LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
+                    where += "REL_SUBJECT_STUDY.STUDY_ID LIKE '" + extractStudyId(bEdge.getNode(0)) + "' AND\n";
+//                    where += "Subject.subject_id LIKE '" + extractSubjectId(bEdge.getNode(0)) + "' AND\n";
                 }
                 if (!bEdge.getNode(1).isVariable()) {
-//                    where += "REL_SUBJECT_STUDY.SUBJECT_ID LIKE '" + extractSubjectId(bEdge.getNode(1)) + "' AND\n";
-                    where += "Subject.subject_common_identifier LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
+                    where += "REL_SUBJECT_STUDY.SUBJECT_ID LIKE '" + extractSubjectId(bEdge.getNode(1)) + "' AND\n";
+//                    where += "Subject.subject_common_identifier LIKE '" + bEdge.getNode(1).getValue().toString() + "' AND\n";
                 }
 
             } else {
@@ -462,7 +469,7 @@ public class RemoteSqlProducerImpl implements Producer {
             return "";
         } else if (where.endsWith("AND\n")) {
             where = where.substring(0, where.lastIndexOf("AND\n"));
-            logger.info("generated where clause \n" + where);
+//            logger.info("generated where clause \n" + where);
             return where;
         }
         logger.info("generated where clause \n" + where);
@@ -471,42 +478,45 @@ public class RemoteSqlProducerImpl implements Producer {
 
     public String extractDatasetId(Node n) {
 //        String url = "<http://neurolog.techlog.anr.fr/data.rdf#dataset-GIN-SS-122>";
-        try {
-            URL testUrl = new URL(n.getValue().toString());
-        } catch (MalformedURLException e) {
-            return n.getValue().toString();
-        }
+//        try {
+//            URL testUrl = new URL(n.getValue().toString());
+//        } catch (MalformedURLException e) {
+//            return n.getValue().toString();
+//        }
         String nodeUrl = n.getValue().toString();
-        System.out.println(nodeUrl);
+//        System.out.println(nodeUrl);
         nodeUrl = nodeUrl.substring(nodeUrl.lastIndexOf("-") + 1);
+        nodeUrl = nodeUrl.substring(0, nodeUrl.length() - 1);
 //        nodeUrl = nodeUrl.substring(nodeUrl.lastIndexOf("#dataset-") + 9);
         return nodeUrl;
     }
 
     public String extractSubjectId(Node n) {
 //        String url = "<http://neurolog.techlog.anr.fr/data.rdf#dataset-GIN-SS-122>";
-        try {
-            URL testUrl = new URL(n.getValue().toString());
-        } catch (MalformedURLException e) {
-            return n.getValue().toString();
-        }
+//        try {
+//            URL testUrl = new URL(n.getValue().toString());
+//        } catch (MalformedURLException e) {
+//            return n.getValue().toString();
+//        }
         String nodeUrl = n.getValue().toString();
-        System.out.println(nodeUrl);
+//        System.out.println(nodeUrl);
         nodeUrl = nodeUrl.substring(nodeUrl.lastIndexOf("-") + 1);
+        nodeUrl = nodeUrl.substring(0, nodeUrl.length() - 1);
 //        nodeUrl = nodeUrl.substring(nodeUrl.lastIndexOf("#subject-") + 9);
         return nodeUrl;
     }
 
     public String extractStudyId(Node n) {
 //        String url = "<http://neurolog.techlog.anr.fr/data.rdf#dataset-GIN-SS-122>";
-        try {
-            URL testUrl = new URL(n.getValue().toString());
-        } catch (MalformedURLException e) {
-            return n.getValue().toString();
-        }
+//        try {
+//            URL testUrl = new URL(n.getValue().toString());
+//        } catch (MalformedURLException e) {
+//            return n.getValue().toString();
+//        }
         String nodeUrl = n.getValue().toString();
-        System.out.println(nodeUrl);
+//        System.out.println(nodeUrl);
         nodeUrl = nodeUrl.substring(nodeUrl.lastIndexOf("-") + 1);
+        nodeUrl = nodeUrl.substring(0, nodeUrl.length() - 1);
 //        nodeUrl = nodeUrl.substring(nodeUrl.lastIndexOf("#subject-") + 9);
         return nodeUrl;
     }

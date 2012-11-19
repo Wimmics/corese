@@ -42,9 +42,9 @@ public class G5KdbpediaSingle {
 
         System.out.println(rep1.getAbsolutePath());
 
-        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
-        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
+//        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 
         final DataHandler data1 = new DataHandler(new FileDataSource(rep1));
 

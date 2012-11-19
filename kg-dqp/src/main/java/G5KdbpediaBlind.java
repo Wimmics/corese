@@ -3,7 +3,6 @@
  * and open the template in the editor.
  */
 
-import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.EngineFactory;
@@ -17,12 +16,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang.time.StopWatch;
 import wsimport.KgramWS.RemoteProducer;
 import wsimport.KgramWS.RemoteProducerServiceClient;

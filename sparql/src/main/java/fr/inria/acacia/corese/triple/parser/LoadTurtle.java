@@ -91,6 +91,7 @@ public class LoadTurtle {
     	try {
     		ASTQuery ast = ASTQuery.create();
     		ast.getNSM().setBase(base);
+    		ast.setRenameBlankNode(c.isRenameBlankNode());
 	        parser.setASTQuery(ast);
 	        parser.set(c);
 		}

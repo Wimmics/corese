@@ -207,15 +207,17 @@ public class ASTQuery  implements Keyword {
 
 	public static final String OUT 			= "?out";
 	public static final String IN 			= "?in";
-	private static final String FUNCONCAT 	= Processor.CONCAT;
 	private static final String GROUPCONCAT = Processor.GROUPCONCAT;
+	private static final String CONCAT 		= Processor.CONCAT;
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 			= Processor.IF;
 	private static final String FUNPPRINT 	= Processor.PPRINT;
 	
-	private String[] META = {GROUPCONCAT, COALESCE, IF};
+	private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, COALESCE, IF};
 
 	private Constant empty;
+
+	private boolean renameBlankNode = true;
 
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
@@ -1364,9 +1366,23 @@ public class ASTQuery  implements Keyword {
 		nbBNode++;
 		return nbBNode;
 	}
+    
+    public Variable getBlankNode(String label) {
+    	if (isRenameBlankNode() ){
+    		return newBlankNode();
+    	}
+    	else {
+    		return newBlankNode(label);
+    	}
+    }
+
 
     public Variable newBlankNode() {
-		Variable var = createVariable( BNVAR + getNbBNode());
+		return newBlankNode( BNVAR + getNbBNode());
+	}
+    
+    public Variable newBlankNode(String label) {
+		Variable var = createVariable( label);
 		var.setBlankNode(true);
 		return var;
 	}
@@ -1409,7 +1425,8 @@ public class ASTQuery  implements Keyword {
     	Variable var = blankNode.get(label);
     	if (var == null){
     		// create a new blank node and put it in the table
-			var = newBlankNode();
+			//var = newBlankNode();
+			var = getBlankNode(label);
 			blankNode.put(label, var);
     	}
     	return var;
@@ -2588,7 +2605,7 @@ public class ASTQuery  implements Keyword {
 	 * where variables are compiled as kg:pprint()
 	 */
 	Term compileTemplateFun(){
-		Term t = Term.function(FUNCONCAT);
+		Term t = Term.function(CONCAT);
 		
 		for (Expression exp : template){
 			exp = compileTemplate(exp);
@@ -2619,14 +2636,14 @@ public class ASTQuery  implements Keyword {
 	
 	/**
 	 * Some function play a special role in template:
-	 * group_concat, coalesce, if
+	 * concat, group_concat, coalesce, if
 	 * Their variable argument are compiled as kg:pprint(var)
 	 */
 	boolean isMeta(Expression exp){
 		if (! exp.isFunction()){
 			return false;
 		}
-		for (String name : META){
+		for (String name : PPRINT_META){
 			if (exp.getName().equals(name)){
 				return true;
 			}
@@ -2640,7 +2657,8 @@ public class ASTQuery  implements Keyword {
 	
 	
 	/**
-	 * group_concat(?x)
+	 * concat()
+	 * group_concat()
 	 * if()
 	 * coalesce()
 	 */
@@ -2651,7 +2669,7 @@ public class ASTQuery  implements Keyword {
 		
 		for (Expression ee : exp.getArgs()){
 			if (count == 0 && isIF){
-				// no not compile the test of if(test, then, else)
+				// not compile the test of if(test, then, else)
 			}
 			else {
 				ee = compileTemplate(ee);
@@ -2690,6 +2708,14 @@ public class ASTQuery  implements Keyword {
 	
 	Variable templateVariable(Variable var){
 		return Variable.create(KGRAMVAR + countVar++);
+	}
+
+	public boolean isRenameBlankNode() {
+		return renameBlankNode;
+	}
+
+	public void setRenameBlankNode(boolean renameBlankNode) {
+		this.renameBlankNode = renameBlankNode;
 	}
 	
 	

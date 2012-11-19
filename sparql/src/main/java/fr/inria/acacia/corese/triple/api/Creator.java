@@ -22,5 +22,8 @@ public interface Creator {
 	public void endGraph(Atom graph);
 
 	public void list(RDFList l);
+	
+	public void setRenameBlankNode(boolean b);
 
+	public boolean isRenameBlankNode();
 }

@@ -3,9 +3,8 @@
  * and open the template in the editor.
  */
 
-import com.sun.xml.internal.ws.developer.JAXWSProperties;
-import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.EngineFactory;
+import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
@@ -119,15 +118,15 @@ public class ExpeWI {
         File neurolex = new File("/Users/gaignard/Desktop/Open-LS-LinkedData/nlx_stage_all.owl");
 
 
-        Map<String, Object> reqCtxt1 = ((BindingProvider) kg_Nice).getRequestContext();
-        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-        Map<String, Object> reqCtxt2 = ((BindingProvider) kg_Sophia).getRequestContext();
-        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-        Map<String, Object> reqCtxt3 = ((BindingProvider) kg_Paris).getRequestContext();
-        reqCtxt3.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt3.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt1 = ((BindingProvider) kg_Nice).getRequestContext();
+//        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt2 = ((BindingProvider) kg_Sophia).getRequestContext();
+//        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt3 = ((BindingProvider) kg_Paris).getRequestContext();
+//        reqCtxt3.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt3.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 //        Map<String, Object> reqCtxt4 = ((BindingProvider) kg_Rennes).getRequestContext();
 //        reqCtxt4.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
 //        reqCtxt4.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);

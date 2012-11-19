@@ -3,28 +3,13 @@
  * and open the template in the editor.
  */
 
-import com.sun.xml.internal.ws.developer.JAXWSProperties;
-import fr.inria.acacia.corese.api.IResult;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.EngineFactory;
-import fr.inria.acacia.corese.api.IResultValue;
-import fr.inria.acacia.corese.api.IResults;
+//import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.xml.ws.BindingProvider;
-import org.apache.commons.lang.time.StopWatch;
 import wsimport.KgramWS.RemoteProducer;
 import wsimport.KgramWS.RemoteProducerServiceClient;
 

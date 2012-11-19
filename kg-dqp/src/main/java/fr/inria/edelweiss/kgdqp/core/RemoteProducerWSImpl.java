@@ -4,7 +4,6 @@
  */
 package fr.inria.edelweiss.kgdqp.core;
 
-import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgdqp.strategies.SourceSelectorWS;

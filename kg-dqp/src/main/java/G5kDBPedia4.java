@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-import com.sun.xml.internal.ws.developer.JAXWSProperties;
+//import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.EngineFactory;
@@ -50,21 +50,21 @@ public class G5kDBPedia4 {
         File rep4 = new File("/home/agaignard/data/DBPedia-fragmentation/4-stores/persondata.4.rdf");
 
 
-        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
-        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-
-        Map<String, Object> reqCtxt2 = ((BindingProvider) kg2).getRequestContext();
-        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-        
-        Map<String, Object> reqCtxt3 = ((BindingProvider) kg3).getRequestContext();
-        reqCtxt3.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt3.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-        
-        Map<String, Object> reqCtxt4 = ((BindingProvider) kg4).getRequestContext();
-        reqCtxt4.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt4.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
+//        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//
+//        Map<String, Object> reqCtxt2 = ((BindingProvider) kg2).getRequestContext();
+//        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        
+//        Map<String, Object> reqCtxt3 = ((BindingProvider) kg3).getRequestContext();
+//        reqCtxt3.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt3.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        
+//        Map<String, Object> reqCtxt4 = ((BindingProvider) kg4).getRequestContext();
+//        reqCtxt4.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt4.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 
         final DataHandler data1 = new DataHandler(new FileDataSource(rep1));
         final DataHandler data2 = new DataHandler(new FileDataSource(rep2));

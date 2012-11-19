@@ -4,7 +4,7 @@
  */
 
 
-import com.sun.xml.internal.ws.developer.JAXWSProperties;
+//import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.EngineFactory;
 import fr.inria.acacia.corese.api.IResultValue;
@@ -59,18 +59,18 @@ public class ExpeNlogPAISrdf {
         File rep_Rennes = new File("/home/neurolog-test/sem-fed-client/data/linkedData-source-irisa.rdf");
 //        File rep_Grenoble = new File("/home/neurolog-test/sem-fed-client/data/linkedData-source-gin.rdf");
 
-        Map<String, Object> reqCtxt1 = ((BindingProvider) kg_Nice).getRequestContext();
-        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-        Map<String, Object> reqCtxt2 = ((BindingProvider) kg_Sophia).getRequestContext();
-        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-        Map<String, Object> reqCtxt3 = ((BindingProvider) kg_Paris).getRequestContext();
-        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-        Map<String, Object> reqCtxt4 = ((BindingProvider) kg_Rennes).getRequestContext();
-        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt1 = ((BindingProvider) kg_Nice).getRequestContext();
+//        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt2 = ((BindingProvider) kg_Sophia).getRequestContext();
+//        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt3 = ((BindingProvider) kg_Paris).getRequestContext();
+//        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt4 = ((BindingProvider) kg_Rennes).getRequestContext();
+//        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 //        Map<String, Object> reqCtxt5 = ((BindingProvider) kg_Grenoble).getRequestContext();
 //        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
 //        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);

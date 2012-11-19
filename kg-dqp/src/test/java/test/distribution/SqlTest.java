@@ -44,20 +44,6 @@ public class SqlTest {
 
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
-//        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-////        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-//
-//        kg1.initEngine();
-////        kg2.initEngine();
-//
-//        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-single-source.rdf");
-//
-//        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
-//        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-//        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-//
-//        DataHandler data1 = new DataHandler(new FileDataSource(rep1));
-//        kg1.uploadRDF(data1);
     }
 
     @After

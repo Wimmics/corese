@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-import com.sun.xml.internal.ws.developer.JAXWSProperties;
+//import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.EngineFactory;
@@ -41,9 +41,9 @@ public class ExpeNlog1DFirst {
 
         File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-single-source.rdf");
 
-        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
-        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
+//        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 
         final DataHandler data1 = new DataHandler(new FileDataSource(rep1));
 

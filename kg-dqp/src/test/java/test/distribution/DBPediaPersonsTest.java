@@ -4,7 +4,7 @@ package test.distribution;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-import com.sun.xml.internal.ws.developer.JAXWSProperties;
+//import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.EngineFactory;
@@ -96,13 +96,13 @@ public class DBPediaPersonsTest {
 //        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep_ascii.1.rdf");
 //        File rep2 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep_ascii.2.rdf");
 
-        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
-        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-
-        Map<String, Object> reqCtxt2 = ((BindingProvider) kg2).getRequestContext();
-        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
+//        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+//
+//        Map<String, Object> reqCtxt2 = ((BindingProvider) kg2).getRequestContext();
+//        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
+//        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 
         final DataHandler data1 = new DataHandler(new FileDataSource(rep1));
         final DataHandler data2 = new DataHandler(new FileDataSource(rep2));

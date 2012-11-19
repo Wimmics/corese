@@ -30,6 +30,7 @@ public class CreateImpl implements Creator {
 	Node source;
 	Stack stack;
 	String base;
+	private boolean renameBlankNode = true;
 	
 	class Stack extends ArrayList<Node> {
 		
@@ -159,13 +160,23 @@ public class CreateImpl implements Creator {
 	
 	
 	String getID(String b){
-		String id = blank.get(b);
-		if (id == null){
-			id = graph.newBlankID();
-			blank.put(b, id);
+		String id = b;
+		if (isRenameBlankNode() ){
+			id = blank.get(b);
+			if (id == null){
+				id = graph.newBlankID();
+				blank.put(b, id);
+			}
 		}
 		return id;
 	}
-	
+
+	public boolean isRenameBlankNode() {
+		return renameBlankNode;
+	}
+
+	public  void setRenameBlankNode(boolean renameBlankNode) {
+		this.renameBlankNode = renameBlankNode;
+	}
 
 }

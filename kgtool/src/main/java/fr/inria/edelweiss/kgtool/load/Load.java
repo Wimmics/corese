@@ -76,6 +76,8 @@ public class Load
 	
 	boolean debug = !true,
 	hasPlugin = false;
+
+	private boolean renameBlankNode = true;
 	
 	int nb = 0;
 	
@@ -386,6 +388,7 @@ public class Load
 		
 		CreateImpl cr = CreateImpl.create(graph);
 		cr.graph(src);
+		cr.setRenameBlankNode(renameBlankNode);
 		
 		LoadTurtle ld = LoadTurtle.create(stream, cr, base);
 		try {
@@ -511,6 +514,14 @@ public class Load
 
 	public String getSource() {
 		return source;
+	}
+
+	public boolean isRenameBlankNode() {
+		return renameBlankNode;
+	}
+
+	public void setRenameBlankNode(boolean renameBlankNode) {
+		this.renameBlankNode = renameBlankNode;
 	}
 	
 

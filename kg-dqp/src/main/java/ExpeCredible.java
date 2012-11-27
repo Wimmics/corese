@@ -83,14 +83,6 @@ public class ExpeCredible {
                 + "}";
 
 
-        File rep_Nice = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-i3s.rdf");
-        //File rep_Sophia = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-asclepios.rdf");
-        File rep_Irisa = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-irisa.rdf");
-        File rep_Paris = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-ifr49.rdf");
-        File neurolex_neurolog_bridge = new File("/Users/gaignard/Desktop/Open-LS-LinkedData/bridgeNeuroLEX.rdf");
-        File neurolex = new File("/Users/gaignard/Desktop/Open-LS-LinkedData/nlx_stage_all.owl");
-
-
         final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
         final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
         final RemoteProducer kg3 = RemoteProducerServiceClient.getPort("http://localhost:8093/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");

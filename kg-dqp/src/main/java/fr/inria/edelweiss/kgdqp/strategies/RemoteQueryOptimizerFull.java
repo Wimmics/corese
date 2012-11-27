@@ -8,12 +8,13 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgdqp.core.Util;
-import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.edelweiss.kgraph.core.EdgeCore;
+import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -67,15 +68,14 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
             predicate = edge.getEdgeNode();
         }
 
-        Edge reqEdge = EdgeImpl.create(predicate, subject, object);
-
+        Edge reqEdge = EdgeCore.create(null, subject, predicate, object);
 
         //filter handling
         filters = Util.getApplicableFilter(env, reqEdge);
 
         String sparql = sparqlPrefixes;
-        sparql += "construct  { " + reqEdge + " } \n where { \n";
-        sparql += "\t " + reqEdge + " .\n ";
+        sparql += "construct  { " + subject + " "+ predicate + " " + object  + " } \n where { \n";
+        sparql += "\t " + subject + " "+ predicate + " " + object + " .\n ";
 
         if (filters.size() > 0) {
             sparql += "\t  FILTER (\n";
@@ -95,7 +95,7 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
 //        System.out.println("");
 //        System.out.println(sparql);
 //        System.out.println("");
-        
+//        
         return sparql;
     }
 

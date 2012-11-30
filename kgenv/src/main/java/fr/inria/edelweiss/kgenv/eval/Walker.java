@@ -170,9 +170,11 @@ class Walker extends Interpreter {
 				IDatatype dt = (IDatatype) eval.eval(arg, map);
 				value[i++] = dt;
 				if (dt != null){
-					res += dt.getLabel() + sep;
+					res += dt.getLabel() ;
 				}		
 			}
+			
+			res += sep;
 			
 			if (accept(f, t)){
 				str += res;

@@ -272,6 +272,10 @@ public class Term extends Expression {
 			sb.append(Processor.SEPARATOR);
 			Constant.toString(getModality(), sb);
 		}
+		else if (n == 0 && getName().equals(Processor.COUNT)) {
+			// count(*)
+			sb.append(KeywordPP.STAR);
+		}
 		
 		sb.append(KeywordPP.CLOSE_PAREN);
 

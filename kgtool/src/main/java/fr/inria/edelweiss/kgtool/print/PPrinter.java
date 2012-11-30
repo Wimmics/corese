@@ -114,6 +114,10 @@ public class PPrinter {
 			return EMPTY;
 		}
 		
+		if (isDebug){
+			System.out.println("pprint: " + dt);
+		}
+		
 		// to prevent infinite loop in the case where the graph is cyclic
 		// should not happen with RDF AST
 

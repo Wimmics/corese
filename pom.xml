@@ -30,6 +30,18 @@
             <organizationUrl>http://www.cnrs.fr/</organizationUrl>
             <timezone>1</timezone>
         </developer>
+        <developer>
+            <id>EricTioguem</id>
+            <name>Eric TOGUEM</name>
+            <email>eric.toguem@uy1.uninet.cm</email>
+            <url>http://www.lirima.uninet.cm/index.php/annuaire/idasco/85-eric-toguem</url>
+            <roles>
+                <role>Contributor for the implementation of the support of Graph Store HTTP Protocol, namely in maven modules "kg-dqp", "kgserver"</role>
+            </roles>
+            <organization>LIRIMA</organization>
+            <organizationUrl>http://www.lirima.uninet.cm</organizationUrl>
+            <timezone>1</timezone>
+        </developer>
     </developers>
     <modules>
         <module>kgram</module>
@@ -38,9 +50,9 @@
         <module>kgenv</module>
         <module>kggui</module>
         <module>kgtool</module>
-        <module>kg-dqp</module>
         <module>kgserver</module>
         <module>kgserver-stubs</module>
+        <module>kg-dqp</module>
         <module>kgimport</module>
         <module>sparql</module>
         <module>rif</module>
@@ -73,7 +85,7 @@
             <dependency>
                 <groupId>com.sun.xml.ws</groupId>
                 <artifactId>jaxws-rt</artifactId>
-                <version>2.2.6</version>
+                <version>2.1.7</version>
             </dependency>
 <!--            <dependency>
                 <groupId>com.sun.xml.ws</groupId>
@@ -85,15 +97,56 @@
                 <artifactId>commons-lang</artifactId>
                 <version>2.4</version>
             </dependency>
+<!--            <dependency>
+                <groupId>net.sf.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>2.6.0</version>
+            </dependency>-->
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-server</artifactId>
+                <version>1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-core</artifactId>
+                <version>1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey.contribs</groupId>
+                <artifactId>jersey-multipart</artifactId>
+                <version>1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-json</artifactId>
+                <version>1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-servlet</artifactId>
+                <version>1.15</version>
+            </dependency>
+            
             <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>1.1</version>
             </dependency>
             <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.xml.ws</groupId>
                 <artifactId>jaxws-api</artifactId>
-                <version>2.2.3</version>
+                <version>2.2.8</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml.bind</groupId>
@@ -104,6 +157,11 @@
                 <groupId>javax.jws</groupId>
                 <artifactId>jsr181-api</artifactId>
                 <version>1.0-MR1</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>jsr181</artifactId>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.hp.hpl.jena</groupId>
@@ -148,18 +206,35 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <repositories>
         <repository>
-            <id>maven-repository.java.net</id>
-            <name>Java.net Repository for Maven 1</name>
-            <url>http://download.java.net/maven/1/</url>
-            <layout>legacy</layout>
+            <id>snapshot-repository.java.net</id>
+            <name>Java.net Snapshot Repository for Maven</name>
+            <url>https://maven.java.net/content/repositories/snapshots/</url>
+            <layout>default</layout>
         </repository>
         <repository>
             <id>maven2-repository.java.net</id>
             <name>Java.net Repository for Maven 2</name>
             <url>http://download.java.net/maven/2/</url>  
+        </repository>
+        <repository>
+            <id>maven-repository.java.net</id>
+            <name>Java.net Repository for Maven 1</name>
+            <url>http://download.java.net/maven/1/</url>
+            <layout>legacy</layout>
         </repository>
     </repositories>
 </project>

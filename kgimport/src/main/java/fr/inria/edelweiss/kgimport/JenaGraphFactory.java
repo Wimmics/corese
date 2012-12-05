@@ -156,7 +156,7 @@ public class JenaGraphFactory {
             Store store = SDBFactory.connectStore(conn, storeDesc);
             Model m = SDBFactory.connectDefaultModel(store);
             return (m != null);
-        } catch (SDBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

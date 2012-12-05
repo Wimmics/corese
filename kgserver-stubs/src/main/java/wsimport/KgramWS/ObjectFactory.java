@@ -55,11 +55,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InitEngine }
+     * Create an instance of {@link GetEdgesResponse }
      * 
      */
-    public InitEngine createInitEngine() {
-        return new InitEngine();
+    public GetEdgesResponse createGetEdgesResponse() {
+        return new GetEdgesResponse();
+    }
+
+    /**
+     * Create an instance of {@link Query }
+     * 
+     */
+    public Query createQuery() {
+        return new Query();
+    }
+
+    /**
+     * Create an instance of {@link QueryResponse }
+     * 
+     */
+    public QueryResponse createQueryResponse() {
+        return new QueryResponse();
     }
 
     /**
@@ -71,6 +87,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetEdges }
+     * 
+     */
+    public GetEdges createGetEdges() {
+        return new GetEdges();
+    }
+
+    /**
+     * Create an instance of {@link LoadResponse }
+     * 
+     */
+    public LoadResponse createLoadResponse() {
+        return new LoadResponse();
+    }
+
+    /**
+     * Create an instance of {@link ResetResponse }
+     * 
+     */
+    public ResetResponse createResetResponse() {
+        return new ResetResponse();
+    }
+
+    /**
      * Create an instance of {@link SetEndpointResponse }
      * 
      */
@@ -79,11 +119,59 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetEdges }
+     * Create an instance of {@link InitEngineFromSQLResponse }
      * 
      */
-    public GetEdges createGetEdges() {
-        return new GetEdges();
+    public InitEngineFromSQLResponse createInitEngineFromSQLResponse() {
+        return new InitEngineFromSQLResponse();
+    }
+
+    /**
+     * Create an instance of {@link UploadRDFResponse }
+     * 
+     */
+    public UploadRDFResponse createUploadRDFResponse() {
+        return new UploadRDFResponse();
+    }
+
+    /**
+     * Create an instance of {@link Load }
+     * 
+     */
+    public Load createLoad() {
+        return new Load();
+    }
+
+    /**
+     * Create an instance of {@link RunRule }
+     * 
+     */
+    public RunRule createRunRule() {
+        return new RunRule();
+    }
+
+    /**
+     * Create an instance of {@link Reset }
+     * 
+     */
+    public Reset createReset() {
+        return new Reset();
+    }
+
+    /**
+     * Create an instance of {@link InitEngine }
+     * 
+     */
+    public InitEngine createInitEngine() {
+        return new InitEngine();
+    }
+
+    /**
+     * Create an instance of {@link InitEngineFromSQL }
+     * 
+     */
+    public InitEngineFromSQL createInitEngineFromSQL() {
+        return new InitEngineFromSQL();
     }
 
     /**
@@ -103,51 +191,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Reset }
+     * Create an instance of {@link SetEndpoint }
      * 
      */
-    public Reset createReset() {
-        return new Reset();
-    }
-
-    /**
-     * Create an instance of {@link GetEndpoint }
-     * 
-     */
-    public GetEndpoint createGetEndpoint() {
-        return new GetEndpoint();
-    }
-
-    /**
-     * Create an instance of {@link InitEngineFromSQLResponse }
-     * 
-     */
-    public InitEngineFromSQLResponse createInitEngineFromSQLResponse() {
-        return new InitEngineFromSQLResponse();
-    }
-
-    /**
-     * Create an instance of {@link RunRule }
-     * 
-     */
-    public RunRule createRunRule() {
-        return new RunRule();
-    }
-
-    /**
-     * Create an instance of {@link LoadRDF }
-     * 
-     */
-    public LoadRDF createLoadRDF() {
-        return new LoadRDF();
-    }
-
-    /**
-     * Create an instance of {@link RunRuleResponse }
-     * 
-     */
-    public RunRuleResponse createRunRuleResponse() {
-        return new RunRuleResponse();
+    public SetEndpoint createSetEndpoint() {
+        return new SetEndpoint();
     }
 
     /**
@@ -159,75 +207,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetEdgesResponse }
+     * Create an instance of {@link RunRuleResponse }
      * 
      */
-    public GetEdgesResponse createGetEdgesResponse() {
-        return new GetEdgesResponse();
+    public RunRuleResponse createRunRuleResponse() {
+        return new RunRuleResponse();
     }
 
     /**
-     * Create an instance of {@link Load }
+     * Create an instance of {@link GetEndpoint }
      * 
      */
-    public Load createLoad() {
-        return new Load();
+    public GetEndpoint createGetEndpoint() {
+        return new GetEndpoint();
     }
 
     /**
-     * Create an instance of {@link UploadRDFResponse }
+     * Create an instance of {@link LoadRDF }
      * 
      */
-    public UploadRDFResponse createUploadRDFResponse() {
-        return new UploadRDFResponse();
-    }
-
-    /**
-     * Create an instance of {@link QueryResponse }
-     * 
-     */
-    public QueryResponse createQueryResponse() {
-        return new QueryResponse();
-    }
-
-    /**
-     * Create an instance of {@link Query }
-     * 
-     */
-    public Query createQuery() {
-        return new Query();
-    }
-
-    /**
-     * Create an instance of {@link SetEndpoint }
-     * 
-     */
-    public SetEndpoint createSetEndpoint() {
-        return new SetEndpoint();
-    }
-
-    /**
-     * Create an instance of {@link ResetResponse }
-     * 
-     */
-    public ResetResponse createResetResponse() {
-        return new ResetResponse();
-    }
-
-    /**
-     * Create an instance of {@link InitEngineFromSQL }
-     * 
-     */
-    public InitEngineFromSQL createInitEngineFromSQL() {
-        return new InitEngineFromSQL();
-    }
-
-    /**
-     * Create an instance of {@link LoadResponse }
-     * 
-     */
-    public LoadResponse createLoadResponse() {
-        return new LoadResponse();
+    public LoadRDF createLoadRDF() {
+        return new LoadRDF();
     }
 
     /**

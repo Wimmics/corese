@@ -190,10 +190,11 @@ public class QueryEngine implements Engine {
 	
 	public void sort(){
 		Collections.sort(list, new Comparator<Query>(){
+			@Override
 			public int compare(Query q1, Query q2){
 				int p1 = getLevel(q1);
 				int p2 = getLevel(q2);
-				return Integer.compare(p1, p2);
+				return p1 - p2;
 			}
 		});
 	}

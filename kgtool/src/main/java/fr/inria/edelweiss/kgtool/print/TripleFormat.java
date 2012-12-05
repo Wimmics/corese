@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
 public class TripleFormat extends RDFFormat {
@@ -29,6 +30,14 @@ public class TripleFormat extends RDFFormat {
 	
 	public static TripleFormat create(Graph g, NSManager n){
 		return new TripleFormat(g, n);
+	}
+	
+	public static TripleFormat create(Mappings map){
+		Graph g = (Graph) map.getGraph();
+		if (g!=null){
+			return create(g);
+		}
+		return null;
 	}
 	
 	public static TripleFormat create(Graph g){

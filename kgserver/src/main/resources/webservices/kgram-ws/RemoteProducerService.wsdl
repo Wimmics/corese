@@ -24,17 +24,17 @@
   <message name="queryResponse">
     <part name="parameters" element="tns:queryResponse"/>
   </message>
-  <message name="getEndpoint">
-    <part name="parameters" element="tns:getEndpoint"/>
+  <message name="initEngineFromSQL">
+    <part name="parameters" element="tns:initEngineFromSQL"/>
   </message>
-  <message name="getEndpointResponse">
-    <part name="parameters" element="tns:getEndpointResponse"/>
+  <message name="initEngineFromSQLResponse">
+    <part name="parameters" element="tns:initEngineFromSQLResponse"/>
   </message>
-  <message name="setEndpoint">
-    <part name="parameters" element="tns:setEndpoint"/>
+  <message name="runRule">
+    <part name="parameters" element="tns:runRule"/>
   </message>
-  <message name="setEndpointResponse">
-    <part name="parameters" element="tns:setEndpointResponse"/>
+  <message name="runRuleResponse">
+    <part name="parameters" element="tns:runRuleResponse"/>
   </message>
   <message name="uploadRDF">
     <part name="parameters" element="tns:uploadRDF"/>
@@ -42,11 +42,11 @@
   <message name="uploadRDFResponse">
     <part name="parameters" element="tns:uploadRDFResponse"/>
   </message>
-  <message name="loadRDF">
-    <part name="parameters" element="tns:loadRDF"/>
+  <message name="getEndpoint">
+    <part name="parameters" element="tns:getEndpoint"/>
   </message>
-  <message name="loadRDFResponse">
-    <part name="parameters" element="tns:loadRDFResponse"/>
+  <message name="getEndpointResponse">
+    <part name="parameters" element="tns:getEndpointResponse"/>
   </message>
   <message name="getEdges">
     <part name="parameters" element="tns:getEdges"/>
@@ -60,17 +60,17 @@
   <message name="initEngineResponse">
     <part name="parameters" element="tns:initEngineResponse"/>
   </message>
-  <message name="initEngineFromSQL">
-    <part name="parameters" element="tns:initEngineFromSQL"/>
+  <message name="setEndpoint">
+    <part name="parameters" element="tns:setEndpoint"/>
   </message>
-  <message name="initEngineFromSQLResponse">
-    <part name="parameters" element="tns:initEngineFromSQLResponse"/>
+  <message name="setEndpointResponse">
+    <part name="parameters" element="tns:setEndpointResponse"/>
   </message>
-  <message name="runRule">
-    <part name="parameters" element="tns:runRule"/>
+  <message name="loadRDF">
+    <part name="parameters" element="tns:loadRDF"/>
   </message>
-  <message name="runRuleResponse">
-    <part name="parameters" element="tns:runRuleResponse"/>
+  <message name="loadRDFResponse">
+    <part name="parameters" element="tns:loadRDFResponse"/>
   </message>
   <portType name="RemoteProducer">
     <operation name="load">
@@ -85,21 +85,21 @@
       <input message="tns:query"/>
       <output message="tns:queryResponse"/>
     </operation>
-    <operation name="getEndpoint">
-      <input message="tns:getEndpoint"/>
-      <output message="tns:getEndpointResponse"/>
+    <operation name="initEngineFromSQL">
+      <input message="tns:initEngineFromSQL"/>
+      <output message="tns:initEngineFromSQLResponse"/>
     </operation>
-    <operation name="setEndpoint">
-      <input message="tns:setEndpoint"/>
-      <output message="tns:setEndpointResponse"/>
+    <operation name="runRule">
+      <input message="tns:runRule"/>
+      <output message="tns:runRuleResponse"/>
     </operation>
     <operation name="uploadRDF">
       <input message="tns:uploadRDF"/>
       <output message="tns:uploadRDFResponse"/>
     </operation>
-    <operation name="loadRDF">
-      <input message="tns:loadRDF"/>
-      <output message="tns:loadRDFResponse"/>
+    <operation name="getEndpoint">
+      <input message="tns:getEndpoint"/>
+      <output message="tns:getEndpointResponse"/>
     </operation>
     <operation name="getEdges">
       <input message="tns:getEdges"/>
@@ -109,13 +109,13 @@
       <input message="tns:initEngine"/>
       <output message="tns:initEngineResponse"/>
     </operation>
-    <operation name="initEngineFromSQL">
-      <input message="tns:initEngineFromSQL"/>
-      <output message="tns:initEngineFromSQLResponse"/>
+    <operation name="setEndpoint">
+      <input message="tns:setEndpoint"/>
+      <output message="tns:setEndpointResponse"/>
     </operation>
-    <operation name="runRule">
-      <input message="tns:runRule"/>
-      <output message="tns:runRuleResponse"/>
+    <operation name="loadRDF">
+      <input message="tns:loadRDF"/>
+      <output message="tns:loadRDFResponse"/>
     </operation>
   </portType>
   <binding name="RemoteProducerPortBinding" type="tns:RemoteProducer">
@@ -147,7 +147,7 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="getEndpoint">
+    <operation name="initEngineFromSQL">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -156,7 +156,7 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="setEndpoint">
+    <operation name="runRule">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -174,7 +174,7 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="loadRDF">
+    <operation name="getEndpoint">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -201,7 +201,7 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="initEngineFromSQL">
+    <operation name="setEndpoint">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -210,7 +210,7 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="runRule">
+    <operation name="loadRDF">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>

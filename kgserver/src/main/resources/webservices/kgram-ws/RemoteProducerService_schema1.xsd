@@ -75,14 +75,6 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="runRule">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="runRuleResponse">
-    <xs:sequence/>
-  </xs:complexType>
-
   <xs:complexType name="loadRDF">
     <xs:sequence>
       <xs:element name="arg0" type="xs:string" minOccurs="0"/>
@@ -90,6 +82,14 @@
   </xs:complexType>
 
   <xs:complexType name="loadRDFResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="runRule">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="runRuleResponse">
     <xs:sequence/>
   </xs:complexType>
 
@@ -111,6 +111,16 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="getEndpoint">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getEndpointResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="initEngineFromSQL">
     <xs:sequence>
       <xs:element name="arg0" type="xs:string" minOccurs="0"/>
@@ -122,16 +132,6 @@
 
   <xs:complexType name="initEngineFromSQLResponse">
     <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="getEndpoint">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="getEndpointResponse">
-    <xs:sequence>
-      <xs:element name="return" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="getEdges">

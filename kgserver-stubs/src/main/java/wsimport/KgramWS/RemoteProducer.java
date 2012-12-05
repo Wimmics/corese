@@ -56,72 +56,6 @@ public interface RemoteProducer {
 
     /**
      * 
-     * @return
-     *     returns java.lang.String
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getEndpoint", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.GetEndpoint")
-    @ResponseWrapper(localName = "getEndpointResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.GetEndpointResponse")
-    public String getEndpoint();
-
-    /**
-     * 
-     * @param arg0
-     */
-    @WebMethod
-    @RequestWrapper(localName = "setEndpoint", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.SetEndpoint")
-    @ResponseWrapper(localName = "setEndpointResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.SetEndpointResponse")
-    public void setEndpoint(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0);
-
-    /**
-     * 
-     * @param arg0
-     */
-    @WebMethod
-    @RequestWrapper(localName = "uploadRDF", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.UploadRDF")
-    @ResponseWrapper(localName = "uploadRDFResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.UploadRDFResponse")
-    public void uploadRDF(
-        @WebParam(name = "arg0", targetNamespace = "")
-        DataHandler arg0);
-
-    /**
-     * 
-     * @param arg0
-     */
-    @WebMethod
-    @RequestWrapper(localName = "loadRDF", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.LoadRDF")
-    @ResponseWrapper(localName = "loadRDFResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.LoadRDFResponse")
-    public void loadRDF(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0);
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns java.lang.String
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getEdges", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.GetEdges")
-    @ResponseWrapper(localName = "getEdgesResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.GetEdgesResponse")
-    public String getEdges(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0);
-
-    /**
-     * 
-     */
-    @WebMethod
-    @RequestWrapper(localName = "initEngine", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.InitEngine")
-    @ResponseWrapper(localName = "initEngineResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.InitEngineResponse")
-    public void initEngine();
-
-    /**
-     * 
      * @param arg3
      * @param arg2
      * @param arg1
@@ -147,5 +81,71 @@ public interface RemoteProducer {
     @RequestWrapper(localName = "runRule", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.RunRule")
     @ResponseWrapper(localName = "runRuleResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.RunRuleResponse")
     public void runRule();
+
+    /**
+     * 
+     * @param arg0
+     */
+    @WebMethod
+    @RequestWrapper(localName = "uploadRDF", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.UploadRDF")
+    @ResponseWrapper(localName = "uploadRDFResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.UploadRDFResponse")
+    public void uploadRDF(
+        @WebParam(name = "arg0", targetNamespace = "")
+        DataHandler arg0);
+
+    /**
+     * 
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getEndpoint", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.GetEndpoint")
+    @ResponseWrapper(localName = "getEndpointResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.GetEndpointResponse")
+    public String getEndpoint();
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getEdges", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.GetEdges")
+    @ResponseWrapper(localName = "getEdgesResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.GetEdgesResponse")
+    public String getEdges(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0);
+
+    /**
+     * 
+     */
+    @WebMethod
+    @RequestWrapper(localName = "initEngine", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.InitEngine")
+    @ResponseWrapper(localName = "initEngineResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.InitEngineResponse")
+    public void initEngine();
+
+    /**
+     * 
+     * @param arg0
+     */
+    @WebMethod
+    @RequestWrapper(localName = "setEndpoint", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.SetEndpoint")
+    @ResponseWrapper(localName = "setEndpointResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.SetEndpointResponse")
+    public void setEndpoint(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0);
+
+    /**
+     * 
+     * @param arg0
+     */
+    @WebMethod
+    @RequestWrapper(localName = "loadRDF", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.LoadRDF")
+    @ResponseWrapper(localName = "loadRDFResponse", targetNamespace = "http://webservice.kgramserver.edelweiss.inria.fr/", className = "wsimport.KgramWS.LoadRDFResponse")
+    public void loadRDF(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0);
 
 }

@@ -103,12 +103,12 @@ public class SDK {
 	}
 	
 	Node value(int n){
-		try {
-			return new NodeImpl(CoreseDatatype.createLiteral(Integer.toString(n), RDFS.xsdinteger, null));
-		} catch (CoreseDatatypeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			return new NodeImpl(CoreseDatatype.createLiteral(Integer.toString(n), RDFS.xsdinteger, null));
+//		} catch (CoreseDatatypeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return null;
 	}
 

@@ -40,6 +40,27 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-multipart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-servlet</artifactId>
+        </dependency>
+             
+        <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
         </dependency>
@@ -56,10 +77,14 @@
             <artifactId>jsr181-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+    <!--        <dependency>
             <groupId>com.businessobjects</groupId>
             <artifactId>datafederator-jdbc-connector</artifactId>
             <version>1.0</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

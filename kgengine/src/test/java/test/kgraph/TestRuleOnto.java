@@ -41,14 +41,14 @@ public class TestRuleOnto {
 		DatatypeMap.setLiteralAsString(false);
 
 		Graph graph = Graph.create(!true);
-		graph.set(Entailment.RDFSRANGE, true);
-		graph.set(Entailment.RDFSSUBCLASSOF, !true);
-		graph.set(Entailment.RDFSSUBPROPERTYOF, !true);
+//		graph.set(Entailment.RDFSRANGE, true);
+//		graph.set(Entailment.RDFSSUBCLASSOF, !true);
+//		graph.set(Entailment.RDFSSUBPROPERTYOF, !true);
 		Load loader =  Load.create(graph);
 
 		long t1 = new Date().getTime();
-		loader.load(data + "kgraph/rdf.rdf", Entailment.RDF);
-		loader.load(data + "kgraph/rdfs.rdf", Entailment.RDFS);
+//		loader.load(data + "kgraph/rdf.rdf", Entailment.RDF);
+//		loader.load(data + "kgraph/rdfs.rdf", Entailment.RDFS);
 		//		loader.load(data + "meta.rdfs");
 		//loader.load(data + "comma/commatest.rdfs");
 		loader.load(data + "comma/testrdf.rdf");

@@ -63,7 +63,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	 */
 	private static final long serialVersionUID = 1L; 
 	
-	private static final String TITLE = "Corese/KGRAM 3.0 - INRIA - Wimmics - 2012-09-01";
+	private static final String TITLE = "Corese/KGRAM 3.0 - INRIA - Wimmics - 2012-12-12";
 
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
@@ -183,18 +183,18 @@ public class MainFrame extends JFrame implements ActionListener{
 
 				"node {\n"+
 				  	"\t  text-size:9;\n"+
-					"\t  text-color:white;\n"+
+					"\t  text-color:black;\n"+
 					"\t  text-style:bold;\n"+
 					"\t  text-align:center;\n"+
 					"\t  width:17;\n"+
-					"\t  color:green;\n"+
+					"\t  color:lightblue;\n"+
 					"\t  node-shape:text-ellipse;\n"+
 
 				"}\n"+
 				
 				"node.Literal {\n"+
 			  	"\t  text-size:9;\n"+
-				"\t  text-color:white;\n"+
+				"\t  text-color:black;\n"+
 				"\t  text-style:bold;\n"+
 				"\t  text-align:center;\n"+
 				"\t  width:17;\n"+
@@ -205,17 +205,17 @@ public class MainFrame extends JFrame implements ActionListener{
 				
 				"node.Blank {\n"+
 			  	"\t  text-size:9;\n"+
-				"\t  text-color:white;\n"+
+				"\t  text-color:black;\n"+
 				"\t  text-style:bold;\n"+
 				"\t  text-align:center;\n"+
 				"\t  width:17;\n"+
-				"\t  color:brown;\n"+
+				"\t  color:yellow;\n"+
 				"\t  node-shape:text-ellipse;\n"+
 				"}\n"+
 				
 				"node.Class {\n"+
 			  	"\t  text-size:9;\n"+
-				"\t  text-color:white;\n"+
+				"\t  text-color:black;\n"+
 				"\t  text-style:bold;\n"+
 				"\t  text-align:center;\n"+
 				"\t  width:17;\n"+

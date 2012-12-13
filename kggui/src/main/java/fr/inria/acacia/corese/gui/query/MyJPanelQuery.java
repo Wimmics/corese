@@ -38,6 +38,7 @@ import org.miv.graphstream.algorithm.layout2.elasticbox.ElasticBox;
 import org.miv.graphstream.graph.Edge;
 import org.miv.graphstream.graph.Node;
 import org.miv.graphstream.graph.implementations.MultiGraph;
+import org.miv.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
 import org.miv.graphstream.ui.swing.SwingGraphRenderer;
 import org.miv.graphstream.ui.swing.SwingGraphViewer;
 
@@ -55,6 +56,7 @@ import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -95,6 +97,7 @@ public final class MyJPanelQuery extends JPanel {
     private CharSequence resultXML = "";
     private SparqlQueryEditor sparqlQueryEditor;
     private MainFrame mainFrame;
+	private static final String KGSTYLE = ExpType.KGRAM + "style";
 
     public MyJPanelQuery() {
         super();
@@ -161,7 +164,7 @@ public final class MyJPanelQuery extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String style = textPaneStyleGraph.getText();
                 JTextArea areaException = new JTextArea();
-                org.miv.graphstream.ui.graphicGraph.stylesheet.StyleSheet sh = new org.miv.graphstream.ui.graphicGraph.stylesheet.StyleSheet();
+                StyleSheet sh = new StyleSheet();
                 try {
                     sh.parseFromString(style);
                     areaException.setText("");
@@ -531,37 +534,45 @@ public final class MyJPanelQuery extends JPanel {
                     gsub.setAttribute("ui.class", sujet);
                     if (edge.getNode(0).isBlank()) {
                         //graph.getNode(sujetUri)
-                        gsub.setAttribute("ui.class", "BlankNode");
+                        gsub.setAttribute("ui.class", "Blank");
                     }
                     Edge ee = graph.addEdge("temp" + num, sujetUri, temp);
                     ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
 
                 }
                 num++;
-
-                Node gobj = graph.getNode(objetUri);
-                //if (find(objetUri, graph.getNodeIterator()) == null) {
-                if (gobj == null){
-                    gobj = graph.addNode(objetUri);
-                    gobj.addAttribute("label", objet);
-                    gobj.setAttribute("ui.class", objet);
-                    if (edge.getNode(1).isBlank()) {
-                        gobj.setAttribute("ui.class", "BlankNode");
-                    }
-                    IDatatype dt = (IDatatype) edge.getNode(1).getValue();
-                    if (dt.isLiteral()) {
-                        gobj.setAttribute("ui.class", "Literal");
-                    }
-
-                    Edge ee = graph.addEdge("temp" + num, objetUri, temp);
-                    ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
+                
+                
+                if (isStyle(edge, map)){  
+                	// draft style
+                	// xxx kg:style ex:Wimmics
+                	// it is a fake edge, do not create it
+                	gsub.setAttribute("ui.class", objet);
                 }
-                num++;
+                else {
+                	Node gobj = graph.getNode(objetUri);
+                	//if (find(objetUri, graph.getNodeIterator()) == null) {
+                	if (gobj == null){
+                		gobj = graph.addNode(objetUri);
+                		gobj.addAttribute("label", objet);
+                		gobj.setAttribute("ui.class", objet);
+                		if (edge.getNode(1).isBlank()) {
+                			gobj.setAttribute("ui.class", "Blank");
+                		}
+                		IDatatype dt = (IDatatype) edge.getNode(1).getValue();
+                		if (dt.isLiteral()) {
+                			gobj.setAttribute("ui.class", "Literal");
+                		}
 
-                Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
-                ee.addAttribute("label", predicat);
-                ee.addAttribute("ui.class", predicat);
+                		Edge ee = graph.addEdge("temp" + num, objetUri, temp);
+                		ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
+                	}
+                	num++;
 
+                	Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
+                	ee.addAttribute("label", predicat);
+                	ee.addAttribute("ui.class", predicat);
+                }                             
             }
 
             textPaneStyleGraph.setText(stylesheet);
@@ -597,7 +608,12 @@ public final class MyJPanelQuery extends JPanel {
     }
     
     
-    /**
+    private boolean isStyle(fr.inria.edelweiss.kgram.api.core.Edge edge, Mappings map) {
+    	return edge.getLabel().equals(KGSTYLE );
+	}
+    
+
+	/**
      * Display result using Mappings
      */
     void display(DefaultMutableTreeNode root, Mappings map){

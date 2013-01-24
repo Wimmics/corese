@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
@@ -79,6 +80,12 @@ public class PluginImpl extends ProxyImpl {
 		case GRAPH:
 			return graph();	
 			
+		case LEVEL:
+			return getLevel(env);	
+			
+		case INDENT:
+			return indent(env);	
+			
 		case SIM:						
 			// solution similarity
 			return similarity(env);						
@@ -95,6 +102,12 @@ public class PluginImpl extends ProxyImpl {
 		
 		case PPRINT:
 			return pprint(o, env);
+			
+		case TURTLE:
+			return turtle(o, env);	
+			
+		case INDENT:
+			return indent(o);		
 		
 		case KGRAM:
 			return kgram(o);
@@ -412,7 +425,10 @@ public class PluginImpl extends ProxyImpl {
 		}
 		ASTQuery ast = (ASTQuery) q.getAST();
 		NSManager nsm = ast.getNSM();
-		String qname = nsm.toPrefix(dt.getLabel());
+		String qname = nsm.toPrefix(dt.getLabel(), true);
+		if (qname.equals(dt.getLabel())){
+			return dt;
+		}
 		return getValue(qname);
 	}
 	
@@ -435,6 +451,37 @@ public class PluginImpl extends ProxyImpl {
 		return dt;
 	}
 	
+	public IDatatype turtle(Object o, Environment env){
+		PPrinter p = getPPrinter(env); 
+		IDatatype dt = p.turtle(datatype(o));
+		return dt;
+	}
+	
+	public IDatatype getLevel(Environment env){
+		return getValue(level(env));
+	}
+
+	int level(Environment env){
+		PPrinter p = getPPrinter(env); 
+		return p.level();
+	}
+	
+	IDatatype indent(Object o){
+		return indent(datatype(o).intValue());
+	}
+	
+	IDatatype indent(int n){
+		StringBuffer sb = new StringBuffer();
+		for (int i=0; i<n; i++){
+			sb.append(" ");
+		}
+		return getValue(sb.toString());
+	}
+	
+	IDatatype indent(Environment env){
+		return indent(level(env));
+	}
+
 	
 	/**
 	 * 

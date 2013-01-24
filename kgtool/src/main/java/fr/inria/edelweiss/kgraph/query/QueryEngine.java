@@ -71,6 +71,10 @@ public class QueryEngine implements Engine {
 		return null;
 	}
 	
+	public void defQuery(Query q){
+		list.add(q);
+	}
+	
 	public List<Query> getQueries(){
 		return list;
 	}

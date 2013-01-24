@@ -130,7 +130,9 @@ public class Constant extends Atom {
 				}
 				else {
 					toString(name, sb);
-					sb.append(KeywordPP.SDT + datatype);
+					if (! datatype.equals(RDF.qxsdString)){
+						sb.append(KeywordPP.SDT + datatype);
+					}
 				}
 			} 
 			else {

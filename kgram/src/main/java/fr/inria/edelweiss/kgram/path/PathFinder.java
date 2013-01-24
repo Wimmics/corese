@@ -122,7 +122,7 @@ public class PathFinder
 	hasListener = false,
 	// true if breadth first (else depth first)
 	isBreadth,
-	isDistinct = false,
+	isDistinct = !true,
 	defaultBreadth = !true,
 	// true if accept subproperty in regexp
 	isSubProperty,
@@ -208,6 +208,9 @@ public class PathFinder
 	
 	public void setCountPath(boolean b){
 		isCountPath = b;
+		if (b){
+			isDistinct = false;
+		}
 	}
 	
 	public void setList(boolean b){
@@ -391,11 +394,11 @@ public class PathFinder
 				isOne = true;
 			}
 		}
-		else if (exp.isDistinct()){
-			isDistinct = true;
-			// to speed up, eliminate longer path to same target
-			isShort = true;
-		}
+//		else if (exp.isDistinct()){
+//			isDistinct = true;
+//			// to speed up, eliminate longer path to same target
+//			isShort = true;
+//		}
 
 			
 		userMin = pmin;

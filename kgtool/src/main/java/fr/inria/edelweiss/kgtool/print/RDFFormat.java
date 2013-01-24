@@ -262,7 +262,13 @@ public class RDFFormat {
 			String open  = "<" + type;
 			String close = "</" + type + ">";
 
-			display(open + id + toXML(node.getLabel()) + "'>");
+			if (dt.isBlank()){
+				display(open + id + toXML(node.getLabel()) + "'>");
+				//display(open + ">");
+			}
+			else {
+				display(open + id + toXML(node.getLabel()) + "'>");
+			}
 
 			for (; it.hasNext();){
 				Entity ent = it.next();

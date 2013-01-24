@@ -1,14 +1,15 @@
 package fr.inria.edelweiss.kgtool.print;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -16,42 +17,113 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgraph.rule.Rule;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 
 /**
  * SPARQL-based RDF AST Pretty Printer
  * Use case: pprint SPIN RDF graph in SPARQL concrete syntax
  * 
+ * 
  * Olivier Corby, Wimmics INRIA 2012
  */
 public class PPrinter {
 	
-	public static final String PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/template";
+	private static final String NULL = "";
+	public  static final String PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/template";
 	private static final String OUT = ASTQuery.OUT;
 	private static final String IN  = ASTQuery.IN;
 	
-	Graph graph;
+	Graph graph, fake;
 	QueryEngine qe;
 	NSManager nsm;
 	QueryProcess exec;
 	
-	ArrayList<IDatatype> list;
+	Stack stack;
 	
 	String pp = PPRINTER;
 	
 	boolean isDebug = ! true;
 	private IDatatype EMPTY;
 
+	/**
+	 * 
+	 * Keep track of nodes already printed to prevent loop
+	 * Variant: may check the pair (dt, query) 
+	 *   do not to loop on the same query but may use several queries on same node dt
+	 * 
+	 */
+	class Stack {
+		ArrayList<IDatatype> list;
+		HashMap<IDatatype, ArrayList<Query>> map;
+		boolean multi = true;
+		
+		Stack(boolean b){
+			list = new ArrayList<IDatatype>();
+			map  = new HashMap<IDatatype, ArrayList<Query>>();
+			multi = b;
+		}
+		
+		int size(){
+			return list.size();
+		}
+		
+		void push(IDatatype dt){
+			list.add(dt);
+		}
+		
+		void push(IDatatype dt, Query q){
+			list.add(dt);
+			if (multi){
+				ArrayList<Query> qlist = map.get(dt);
+				if (qlist == null){
+					qlist = new ArrayList<Query>();
+					map.put(dt, qlist);
+				}
+				qlist.add(q);
+			}
+		}
+		
+		IDatatype pop(){
+			if (list.size() > 0){
+				int last = list.size() - 1;
+				IDatatype dt = list.get(last);
+				list.remove(last);
+				if (multi){
+					ArrayList<Query> qlist = map.get(dt);
+					qlist.remove(qlist.size()-1);
+				}
+				return dt;
+			}
+			return null;			
+		}
+		
+		boolean contains(IDatatype dt){
+			return list.contains(dt);
+		}
+		
+		boolean contains(IDatatype dt, Query q){
+			boolean b = list.contains(dt);
+			if (b && multi){
+				ArrayList<Query> qlist = map.get(dt);
+				return qlist.contains(q);
+			}
+			return b;
+		}
+	}
+	
 	
 	
 	PPrinter(Graph g, String p){
 		graph = g;
+		fake = Graph.create();
 		pp = p;
 		init(graph, p);
 		nsm = NSManager.create();
-		list = new ArrayList<IDatatype>();
+		stack = new Stack(true);
 		exec = QueryProcess.create(g, true);
-		EMPTY = DatatypeMap.createLiteral("");
+		EMPTY = DatatypeMap.createLiteral(NULL);
 	}
 	
 	
@@ -60,6 +132,9 @@ public class PPrinter {
 	}
 	
 	public static PPrinter create(Graph g, String p){
+		if (p == null){
+			p = PPRINTER;
+		}
 		return new PPrinter(g, p);
 	}
 	
@@ -70,6 +145,19 @@ public class PPrinter {
 	public void setDebug(boolean b){
 		isDebug = b;
 	}
+	
+	public String toString(){
+		IDatatype dt = pprint();
+		return dt.getLabel();
+	}
+	
+	public void write(String name) throws IOException {				
+		FileWriter fw = new FileWriter(name);
+		String str = toString();
+		fw.write(str);
+		fw.flush();
+		fw.close();
+	}
 		
 	/**
 	 * Pretty print the graph.
@@ -79,15 +167,8 @@ public class PPrinter {
 	 */
 	public IDatatype pprint(){
 		for (Query qq : qe.getQueries()){
-
-			// Tricky:
-			// All queries of this PPrinter share the same query base
-			// use case: kg:pprint() call the same PPrinter for all queries of this base
+			
 			qq.setPPrinter(this);
-			if (isDebug){
-				qq.setDebug(true);
-				System.out.println(qq.getAST());
-			}
 			Mappings map = exec.query(qq);
 			Node res = map.getNode(OUT);
 			if (res != null){
@@ -95,6 +176,10 @@ public class PPrinter {
 			}
 		}
 		return EMPTY;
+	}
+	
+	public int level(){
+		return stack.size();
 	}
 	
 
@@ -120,44 +205,38 @@ public class PPrinter {
 		
 		// to prevent infinite loop in the case where the graph is cyclic
 		// should not happen with RDF AST
-
-		if (list.contains(dt)){
-			return print(dt);
-		}
-		else {
-			list.add(dt);
-		}
 		
 		Graph g = graph;									
 		QueryProcess exec = this.exec;
 
 		Node qn = NodeImpl.createVariable(IN);
-		Mapping m = Mapping.create(qn, g.getNode(dt, false, false));
+		Node n  = g.getNode(dt, false, false);
+		if (n == null){
+			// use case: kg:pprint("header")
+			n = fake.getNode(dt, true, true);
+		}
+		Mapping m = Mapping.create(qn, n);
 
 		for (Query qq : qe.getQueries()){
 			
-			// Tricky:
-			// All queries of this PPrinter share the same query base
-			// use case: kg:pprint() call the same PPrinter for all queries of this base
+			// Tricky: All queries of this PPrinter share the same query base (see PluginImpl)
 			qq.setPPrinter(this);
-			if (isDebug){
-				qq.setDebug(true);
-				System.out.println(qq.getAST());
-			}
 			
-			Mappings map = exec.query(qq, m);
-			Node res = map.getNode(OUT);
-			
-			if (res != null){
-				list.remove(dt);
-				return  (IDatatype) res.getValue();
+			if (! stack.contains(dt, qq)){
+				
+				stack.push(dt, qq);
+				Mappings map = exec.query(qq, m);
+				stack.pop();
+				Node res = map.getNode(OUT);
+
+				if (res != null){
+					return  (IDatatype) res.getValue();
+				}
 			}
 		}
 			
 		// no query match dt; it may be a constant		
-		list.remove(dt);
-		//System.out.println("return: " + dt);
-		return print(dt);
+		return dt; 
 	}
 	
 	
@@ -165,7 +244,7 @@ public class PPrinter {
 	 * pprint a URI, Literal, blank node
 	 * in its Turtle syntax
 	 */
-	IDatatype print(IDatatype dt){
+	public IDatatype turtle(IDatatype dt){
 
 		if (dt.isURI()){
 			String qname = nsm.toPrefix(dt.getLabel(), true);
@@ -196,6 +275,15 @@ public class PPrinter {
 		Load ld = Load.create(g);
 		ld.load(str);
 		qe = ld.getQueryEngine();
+		
+		if (qe == null){
+			RuleEngine re = ld.getRuleEngine();
+			qe = QueryEngine.create(g);
+			for (Rule r : re.getRules()){
+				Query q = r.getQuery();
+				qe.defQuery(q);
+			}
+		}
 		qe.sort();
 //		for (Query q : qe.getQueries()){
 //			System.out.println(q.getAST());

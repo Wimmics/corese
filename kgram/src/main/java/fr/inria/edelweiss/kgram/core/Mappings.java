@@ -639,8 +639,14 @@ implements Comparator<Mapping> , Iterable<Mapping>
 				// clause 'having' may have tagged first mapping as not valid
 				start = 1;
 				Mapping map = lMap.get(0);
-				if (isListGroup && map != null){
-					map.setMappings(lMap);
+				if (map != null){
+					if (isListGroup){
+						map.setMappings(lMap);
+					}
+					else {
+						// it may have been set by aggregate (see process)
+						map.setMappings(null);
+					}
 				}
 				// add one element for current group
 				// check distinct if any

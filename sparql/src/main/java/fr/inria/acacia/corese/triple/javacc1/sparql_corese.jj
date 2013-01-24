@@ -2185,12 +2185,13 @@ Term FunctionCorese(Exp stack): { Token t; Term term; ExpressionList v; Constant
   { return term; }
 }
 
-Term FunctionCall(Exp stack) : { Term term1;  String s; ExpressionList v; }
+
+Term FunctionCall(Exp stack) : { Term term1;   ExpressionList v; Constant cst;}
 {
-  s = IRIref() 
+  cst = IRIrefConst()
   v = ArgList(stack)
   { 
-  	term1 = astq.createFunction(s, v); 
+  	term1 = astq.createFunction(cst, v); 
   }
   { return term1; }
 }

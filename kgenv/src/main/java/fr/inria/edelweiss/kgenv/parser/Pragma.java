@@ -68,6 +68,7 @@ public class Pragma  {
 	public static final String DETAIL	= KG + "detail";
 	public static final String PRIORITY	= KG + "priority";
 	public static final String FILE		= KG + "file";
+	public static final String TEMPLATE	= KG + "template";
 
 
 	public static final String HELP 	= KG + "help";
@@ -322,6 +323,11 @@ public class Pragma  {
 			else if (property.equals(TIMEOUT)){
 				Integer value = t.getObject().getDatatypeValue().intValue();
 				query.setPragma(TIMEOUT, value);
+			}
+		}
+		else if (subject.equals(DISPLAY)){
+			if (property.equals(TEMPLATE)){
+				query.setPragma(TEMPLATE, object);
 			}
 		}
 		

@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -172,7 +173,15 @@ public class RuleEngine implements Engine {
 	
 	public Query defRule(String name, String rule) throws EngineException {
 		Query qq = exec.compileRule(rule);
-		if (qq != null && qq.isConstruct()) {
+		
+		if (! qq.isConstruct()){
+			// template
+			qq.setRule(false);
+			ASTQuery ast = (ASTQuery) qq.getAST();
+			ast.setRule(false);
+		}
+		
+		if (qq != null){ // && qq.isConstruct()) {
 			rules.add(Rule.create(name, qq));
 			return qq;
 		}

@@ -407,7 +407,7 @@ public class Graph //implements IGraph
 		}
 		
 		for (Entity e : getLiteralNodes()){
-			IDatatype dt = (IDatatype) e.getNode().getValue();
+			IDatatype dt = getValue(e.getNode());
 			if (dt.isNumber()) num++;
 			else if (dt.getCode() == IDatatype.STRING) 	string++;
 			else if (dt.getCode() == IDatatype.LITERAL) lit++;
@@ -727,14 +727,12 @@ public class Graph //implements IGraph
 		size = n;
 	}
 	
-	IDatatype datatype(Node node){
+	public IDatatype getValue(Node node){
 		return (IDatatype) node.getValue();
 	}
 	
-
-	
 	public Node copy(Node node){
-		return getNode(datatype(node), true, false);
+		return getNode(getValue(node), true, false);
 	}
 	
 	
@@ -801,7 +799,7 @@ public class Graph //implements IGraph
 	 * 
 	 */
 	public Node getNode(Node node){
-		IDatatype dt = (IDatatype) node.getValue();
+		IDatatype dt = getValue(node);
 		return getNode(dt, false, false);
 	}
 	
@@ -940,7 +938,7 @@ public class Graph //implements IGraph
 	}
 	
 	public void add(Node node){
-		IDatatype  dt = datatype(node);
+		IDatatype  dt = getValue(node);
 		if (dt.isLiteral()){
 			addLiteralNode(dt, node);
 		}
@@ -1327,13 +1325,31 @@ public class Graph //implements IGraph
 //		}
 		if (g1.isIndex()) index();
 		if (g2.isIndex()) g2.index();
-		if (g1.size()!=g2.size()){
+		if (g1.size() != g2.size()){
 			if (isDebug) logger.debug("** Graph Size: " + size() + " " + g2.size());
 //			System.out.println(g1.display());
 //			System.out.println("___");
 //			System.out.println(g2.display());
+						
 			return false;
 		}
+		
+		
+		boolean ok = true;
+		for (Node pred1  : g1.getProperties()){
+			Node pred2 = g2.getPropertyNode(pred1.getLabel());
+			int s1 = g1.size(pred1);
+			int s2 = g2.size(pred2);
+			if (s1 != s2){
+				ok = false;
+				System.out.println(pred1 + ": " + s1 + " vs " + s2);
+			}
+		}
+		
+		if (! ok){
+			return false;
+		}
+
 		
 		TBN t = new TBN();
 
@@ -1747,7 +1763,7 @@ public class Graph //implements IGraph
 		ArrayList<Node> list = new ArrayList<Node>();
 		
 		for (int i = 0; i < ent.nbNode(); i++){
-			Node n = addNode(datatype(ent.getNode(i)));
+			Node n = addNode(getValue(ent.getNode(i)));
 			list.add(n);
 		}
 		

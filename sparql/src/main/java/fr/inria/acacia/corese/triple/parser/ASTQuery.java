@@ -880,7 +880,9 @@ public class ASTQuery  implements Keyword {
     
     // TBD: clean this
     public  Term createFunction(Constant name, ExpressionList el) {
-    	return createFunction(name.getName(), el);
+    	Term term =  createFunction(name.getName(), el);
+    	term.setCName(name);
+    	return term;
     }
     
     
@@ -2717,11 +2719,9 @@ public class ASTQuery  implements Keyword {
 	public void setRenameBlankNode(boolean renameBlankNode) {
 		this.renameBlankNode = renameBlankNode;
 	}
-	
-	
-	
-	
-	
+
+
+
 	
 	/**********************************************************
 	 * 
@@ -2730,9 +2730,4 @@ public class ASTQuery  implements Keyword {
 	 *********************************************************/
 	
 	
-	
-	
-	
-	
-
 }

@@ -483,7 +483,9 @@ public class Entailment implements Engine {
 	 */
 	void infer(Node gNode, Edge edge, List<Node> list, int i){
 		Node node = edge.getNode(i);
-		IDatatype dt = (IDatatype) node.getValue();
+		IDatatype dt = graph.getValue(node);
+		//IDatatype dt = (IDatatype) node.getValue();
+
 		if (i == 1 && dt.isLiteral()) return;
 		
 		if (list!=null){

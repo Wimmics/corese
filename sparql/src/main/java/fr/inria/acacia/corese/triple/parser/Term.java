@@ -58,6 +58,7 @@ public class Term extends Expression {
 
 	Processor proc;
 	Exp exist;
+	Constant cname;
 	
 	ArrayList<Expression> args=new ArrayList<Expression>();
 	// additional system arg:
@@ -133,6 +134,13 @@ public class Term extends Expression {
 		return name;
 	}
 	
+	public void setCName(Constant c){
+		cname = c;
+	}	
+	
+	public Constant getCName(){
+		return cname;
+	}
 
 	public void setDistinct(boolean b){
 		isDistinct = b;
@@ -246,7 +254,12 @@ public class Term extends Expression {
 		} 
 		else if (isFunction()){
 			if (! getName().equals(LIST)){
-				sb.append(getName());
+				if (getCName() != null){
+					getCName().toString(sb);
+				}
+				else {
+					sb.append(getName());
+				}
 			}
 			isope = false;
 		}

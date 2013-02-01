@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgtool.print;
 
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 
 /**
  * RDF/XML or SPARQL XML Result format according to query
@@ -19,9 +21,12 @@ public class ResultFormat {
 	}
 	
 	public String toString(){
-		if (map.getQuery()==null) return "";
-		
-		if (map.getQuery().isConstruct()){
+		Query q = map.getQuery();
+		if (q == null) return "";
+		if (q.hasPragma(Pragma.TEMPLATE)){
+			return TemplateFormat.create(map).toString();
+		}
+		else if (q.isConstruct()){
 			return RDFFormat.create(map).toString();
 		}
 		else {

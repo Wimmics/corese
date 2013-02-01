@@ -10,6 +10,8 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -37,6 +39,7 @@ public class PPrinter {
 	
 	Graph graph, fake;
 	QueryEngine qe;
+	Query query;
 	NSManager nsm;
 	QueryProcess exec;
 	
@@ -46,6 +49,7 @@ public class PPrinter {
 	
 	boolean isDebug = ! true;
 	private IDatatype EMPTY;
+	boolean isTurtle = false;
 
 	/**
 	 * 
@@ -146,6 +150,10 @@ public class PPrinter {
 		isDebug = b;
 	}
 	
+	public void setTurtle(boolean b){
+		isTurtle = b;
+	}
+	
 	public String toString(){
 		IDatatype dt = pprint();
 		return dt.getLabel();
@@ -166,15 +174,20 @@ public class PPrinter {
 	 * the subpart that matches the first query
 	 */
 	public IDatatype pprint(){
+		query = null;
 		for (Query qq : qe.getQueries()){
 			
 			qq.setPPrinter(this);
+			// remember start with qq for function pprint below
+			query = qq;
 			Mappings map = exec.query(qq);
+			query = null;
 			Node res = map.getNode(OUT);
 			if (res != null){
 				return  (IDatatype) res.getValue();
 			}
 		}
+		query = null;
 		return EMPTY;
 	}
 	
@@ -193,10 +206,27 @@ public class PPrinter {
 	 * Compute the first query that matches ?w
 	 * Queries are sorted  more "specific" first: construct/select/ask/describe
 	 * They are sorted using a pragma { kg:query kg:priority n }
+	 * One rule is applied only once on one node, 
+	 * hence we store in a stack : node -> rule
 	 */
-	public IDatatype pprint(IDatatype dt){		
+	public IDatatype pprint(Expr exp, IDatatype dt){		
 		if (dt == null){
 			return EMPTY;
+		}
+		
+		boolean start = false;
+		if (query != null && stack.size() == 0){
+			// just started with query in pprint() above
+			if (exp != null  && exp.getLabel().equals(IN)){
+				// current variable is ?in, 
+				// push dt -> query in the stack
+				// query is the first query that started pprint (see function above)
+				// and at that time ?in was not bound
+				// use case:
+				// template {"subClassOf(" ?in " " ?y ")"} where {?in rdfs:subClassOf ?y}
+				start = true;
+				stack.push(dt, query);
+			}
 		}
 		
 		if (isDebug){
@@ -223,22 +253,37 @@ public class PPrinter {
 			qq.setPPrinter(this);
 			
 			if (! stack.contains(dt, qq)){
-				
+
 				stack.push(dt, qq);
 				Mappings map = exec.query(qq, m);
 				stack.pop();
 				Node res = map.getNode(OUT);
 
 				if (res != null){
+					if (start){
+						stack.pop();
+					}
 					return  (IDatatype) res.getValue();
 				}
 			}
 		}
-			
+		
+		if (start){
+			stack.pop();
+		}	
 		// no query match dt; it may be a constant		
-		return dt; 
+		return display(dt); 
 	}
 	
+	
+	IDatatype display(IDatatype dt){
+		if (isTurtle){
+			return turtle(dt);
+		}
+		else {
+			return dt;
+		}
+	}
 	
 	/**
 	 * pprint a URI, Literal, blank node
@@ -284,9 +329,13 @@ public class PPrinter {
 				qe.defQuery(q);
 			}
 		}
+		
 		qe.sort();
+		
 //		for (Query q : qe.getQueries()){
-//			System.out.println(q.getAST());
+//			System.out.println(q.getPragma(Pragma.FILE));
+//			ASTQuery ast = (ASTQuery) q.getAST();
+//			System.out.println(ast);
 //		}
 	}
 

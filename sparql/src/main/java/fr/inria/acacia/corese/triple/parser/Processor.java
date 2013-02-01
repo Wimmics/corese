@@ -75,9 +75,12 @@ public class Processor {
 	static final String KGSQL 	= ExpType.KGRAM + "sql";
 	static final String QNAME 	= ExpType.KGRAM + "qname"; 
 	static final String PPRINT 	= ExpType.KGRAM + "pprint"; 
+	static final String KGPPRINT 	= "kg:pprint"; 
+
 	static final String TURTLE 	= ExpType.KGRAM + "turtle"; 
 	static final String LEVEL 	= ExpType.KGRAM + "level"; 
 	static final String INDENT 	= ExpType.KGRAM + "indent"; 
+	static final String PPURI 	= ExpType.KGRAM + "uri"; 
 
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
@@ -355,6 +358,7 @@ public class Processor {
 		defoper(TURTLE, ExprType.TURTLE);
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);
+		defoper(PPURI, ExprType.PPURI);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

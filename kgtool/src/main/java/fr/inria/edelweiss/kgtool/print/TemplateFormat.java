@@ -16,12 +16,13 @@ public class TemplateFormat {
 	Mappings map;
 	Graph graph;
 	private NSManager nsm;
-
+	boolean isTurtle = false;
+	
 	TemplateFormat(Mappings m){
 		map = m;
 		graph = (Graph) map.getGraph();
 		Query q = map.getQuery();
-		if (q != null && q.getPragma(Pragma.TEMPLATE) != null){
+		if (q != null && q.hasPragma(Pragma.TEMPLATE)){
 			printer = (String) q.getPragma(Pragma.TEMPLATE);
 			ASTQuery ast = (ASTQuery) q.getAST();
 			setNSM(ast.getNSM());
@@ -67,6 +68,10 @@ public class TemplateFormat {
 		printer = pp;
 	}
 	
+	public void setTurtle(boolean b){
+		isTurtle = b;
+	}
+	
 	void init(){
 		
 	}
@@ -76,6 +81,7 @@ public class TemplateFormat {
 			return "";
 		}
 		PPrinter pp = PPrinter.create(graph, printer);
+		pp.setTurtle(isTurtle);
 		if (nsm != null){
 			pp.setNSM(nsm);
 		}

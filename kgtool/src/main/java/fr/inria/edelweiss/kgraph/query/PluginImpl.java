@@ -101,10 +101,13 @@ public class PluginImpl extends ProxyImpl {
 		switch (exp.oper()){
 		
 		case PPRINT:
-			return pprint(o, env);
+			return pprint(exp, o, env);
 			
 		case TURTLE:
 			return turtle(o, env);	
+			
+		case PPURI:
+			return uri(exp, o, env);	
 			
 		case INDENT:
 			return indent(o);		
@@ -437,27 +440,43 @@ public class PluginImpl extends ProxyImpl {
 	 * Draft:
 	 * Recursive pprinter by means of SPARQL queries
 	 */
-	public IDatatype pprint(Environment env){
+	IDatatype pprint(Environment env){
 		PPrinter p = getPPrinter(env); 
 		return p.pprint();
 	}
 
 	/**
 	 * Object o is the node where to apply the query (with a Mapping)
+	 * exp = kg:pprint(arg);
 	 */
-	public IDatatype pprint(Object o, Environment env){
+	IDatatype pprint(Expr exp, Object o, Environment env){
 		PPrinter p = getPPrinter(env); 
-		IDatatype dt = p.pprint(datatype(o));
+		Expr arg = exp.getExp(0);
+		if (! arg.isVariable()){
+			arg = null;
+		}
+		IDatatype dt = p.pprint(arg, datatype(o));
 		return dt;
 	}
-	
-	public IDatatype turtle(Object o, Environment env){
+
+	IDatatype turtle(Object o, Environment env){
 		PPrinter p = getPPrinter(env); 
 		IDatatype dt = p.turtle(datatype(o));
 		return dt;
 	}
 	
-	public IDatatype getLevel(Environment env){
+	IDatatype uri(Expr exp, Object o, Environment env){
+		IDatatype dt = datatype(o);
+		if (dt.isURI()){
+			return turtle(dt, env);
+		}
+		else {
+			return pprint(exp, o, env);
+		}
+	}
+	
+
+	IDatatype getLevel(Environment env){
 		return getValue(level(env));
 	}
 

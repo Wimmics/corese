@@ -75,7 +75,7 @@ public class Processor {
 	static final String KGSQL 	= ExpType.KGRAM + "sql";
 	static final String QNAME 	= ExpType.KGRAM + "qname"; 
 	static final String PPRINT 	= ExpType.KGRAM + "pprint"; 
-	static final String KGPPRINT 	= "kg:pprint"; 
+	static final String KGPPRINT= ExpType.KPREF + ":" + "pprint"; 
 
 	static final String TURTLE 	= ExpType.KGRAM + "turtle"; 
 	static final String LEVEL 	= ExpType.KGRAM + "level"; 

@@ -265,15 +265,20 @@ public class Term extends Expression {
 		}
 
 		sb.append(KeywordPP.OPEN_PAREN);
+		
+		if (isDistinct()){
+			// count(distinct ?x)
+			sb.append(KeywordPP.DISTINCT);
+			sb.append(SPACE);
+		}
 
 		for (int i=0; i < n; i++){
 
-			//sb.append(getArg(i).toString());
 			getArg(i).toString(sb);
 
 			if (i < n - 1) {
 				if (isope) {						
-					sb.append(KeywordPP.SPACE + getName() + KeywordPP.SPACE);						
+					sb.append(SPACE + getName() + SPACE);						
 				}
 				else {
 					sb.append(KeywordPP.COMMA);

@@ -211,7 +211,7 @@ public class ASTQuery  implements Keyword {
 	private static final String CONCAT 		= Processor.CONCAT;
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 			= Processor.IF;
-	private static final String FUNPPRINT 	= Processor.PPRINT;
+	private static final String FUNPPRINT 	= Processor.KGPPRINT;
 	
 	private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, COALESCE, IF};
 
@@ -885,6 +885,12 @@ public class ASTQuery  implements Keyword {
     	return term;
     }
     
+    
+    public  Term createFunction(Constant name, Expression exp) {
+    	Term term =  createFunction(name.getName(), exp);
+    	term.setCName(name);
+    	return term;
+    }
     
     public  Term createFunction(String name, ExpressionList el) {
     	Term term = createFunction(name);
@@ -2693,7 +2699,7 @@ public class ASTQuery  implements Keyword {
 	 * if ?x is unbound, empty string "" is returned
 	 */
 	Variable compile(Variable var){
-		Term t = Term.function(FUNPPRINT, var);
+		Term t = createFunction(createQName(FUNPPRINT), var);
 		Term c = Term.function(COALESCE, t, getEmpty());
 		Variable res = templateVariable(var);
 		defSelect(res, c);

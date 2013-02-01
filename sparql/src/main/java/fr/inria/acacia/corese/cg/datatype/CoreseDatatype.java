@@ -63,8 +63,14 @@ public class CoreseDatatype
 
 	public String toSparql(boolean prefix){
 		String value = getLabel();
-		
-		if (getDatatype() != null && ! getDatatype().getLabel().equals(RDFS.rdflangString)){
+		if (getCode() == INTEGER){
+			
+		}
+		else if (getCode() == STRING){
+			value =  protect(value);
+		}
+		else 
+			if (getDatatype() != null && ! getDatatype().getLabel().equals(RDFS.rdflangString)){
 
 			String datatype = getDatatype().getLabel();
 			

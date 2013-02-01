@@ -161,6 +161,7 @@ public interface ExprType {
 	public static int TURTLE 	= 222;
 	public static int LEVEL 	= 223;
 	public static int INDENT 	= 224;
+	public static int PPURI 	= 225;
 
 
 

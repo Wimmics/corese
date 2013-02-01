@@ -2123,6 +2123,10 @@ public class Query extends Exp {
 		return (String) pragma.get(name);
 	}
 	
+	public boolean hasPragma(String name){
+		return pragma.get(name) != null;
+
+	}	
 	public boolean isPragma(String name){
 		Object obj = pragma.get(name);
 		if (obj == null || ! (obj instanceof Boolean)){

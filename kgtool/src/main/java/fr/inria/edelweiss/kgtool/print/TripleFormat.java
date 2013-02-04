@@ -3,10 +3,12 @@ package fr.inria.edelweiss.kgtool.print;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
 public class TripleFormat extends RDFFormat {
@@ -34,10 +36,12 @@ public class TripleFormat extends RDFFormat {
 	
 	public static TripleFormat create(Mappings map){
 		Graph g = (Graph) map.getGraph();
-		if (g!=null){
-			return create(g);
+		if (g != null){
+			Query q = map.getQuery();
+			NSManager nsm = ((ASTQuery) q.getAST()).getNSM();
+			return create(g, nsm);
 		}
-		return null;
+		return create(Graph.create());
 	}
 	
 	public static TripleFormat create(Graph g){

@@ -33,6 +33,9 @@ public class NSManager
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(NSManager.class);
 	
+	public static final String PPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
+	static final String PPP = "pp";
+
 	/** prefix seed (ns1, ns2,...) */
 	private static final String seed 	= "ns";
 	private static final String DOT 	= ".";
@@ -151,6 +154,7 @@ public class NSManager
 		def.put(RDFS.OWL,  RDFS.OWLPrefix);
 		def.put(ExpType.KGRAM, ExpType.KPREF);
 		def.put(RDFS.COS,  RDFS.COSPrefix);
+		def.put(PPN,  	   PPP);
 	}
 	
 	// add default namespaces

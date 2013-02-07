@@ -53,7 +53,7 @@ public class CoreseDatatype
 	
 	public String toString(){
 		//return getNormalizedLabel();
-		return toSparql();
+		return toSparql(true);
 	}
 	
 	public String toSparql(){

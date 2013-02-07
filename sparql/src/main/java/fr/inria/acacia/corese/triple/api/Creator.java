@@ -13,6 +13,8 @@ import fr.inria.acacia.corese.triple.parser.RDFList;
 */
 public interface Creator {
 	
+	public boolean accept(Atom subject, Atom predicate, Atom object);
+	
 	public void triple(Atom subject, Atom predicate, Atom object);
 	
 	public void triple(Atom predicate, List<Atom> l);

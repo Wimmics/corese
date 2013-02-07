@@ -121,15 +121,18 @@ PARSER_BEGIN(SparqlCorese)
     }  
     
     
-    Triple createTriple(Expression s, Atom p, Expression o){
-	    if (create != null){
-	    	create.triple(s.getAtom(), p, o.getAtom());
-	    	return null;
-	    }
-	    else {
-	    	return astq.createTriple(s, p, o);
-	    }
-    }
+     Triple createTriple(Expression s, Atom p, Expression o) throws ParseException {
+ 	    if (create != null){
+ 	    	if (! create.accept(s.getAtom(), p, o.getAtom())){
+ 	   	 		throw generateParseException();
+ 	   	 	}
+ 	    	create.triple(s.getAtom(), p, o.getAtom());
+ 	    	return null;
+ 	    }
+ 	    else {
+ 	    	return astq.createTriple(s, p, o);
+ 	    }
+     }
     
    Triple createTriple(Atom p, List<Atom> list){
    		if (create != null){

@@ -154,7 +154,13 @@ public class ProducerImpl implements Producer {
 					}
 					else {
 						node = getValue(qNode, env);
-						if (node != null){
+						if (node == null){
+							if (qNode.isConstant()){
+								// search a constant that is not in the graph: fail
+								return empty;
+							}
+						}
+						else {
 							n = i;
 							if (i == 0 && ! isType(edge, env)){
 								node2 = getValue(edge.getNode(1), env);
@@ -166,7 +172,6 @@ public class ProducerImpl implements Producer {
 			}
 		}
 						
-		
 		if (node == null  && from.size()>0){
 			// from named <uri>
 			// graph ?g { }
@@ -181,24 +186,7 @@ public class ProducerImpl implements Producer {
 		}		
 						
 		Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
-		
-//		if (isType){
-//			// deprecated
-//			it = getTypeEdges(predicate, node, env);
-//		}
-//		else { //if (gNode != null || from.size()>0){ // || ! graph.hasDefault()){
-//			it = graph.getEdges(predicate, node, node2, n);
-//		}
-//		else {
-//			// deprecated
-//			it = graph.getDefaultEdges(predicate, node, node2, n);
-//			if (it == null){
-//				return empty;
-//			}
-//			it = complete(it, edge, env);
-//			return it;
-//		}
-		
+				
 		// check gNode/from/named
 		it = complete(it, gNode, getNode(gNode, env), from);
 		// in case of local Matcher

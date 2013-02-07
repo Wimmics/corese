@@ -101,15 +101,18 @@
     }
 
 
-    Triple createTriple(Expression s, Atom p, Expression o){
+     Triple createTriple(Expression s, Atom p, Expression o) throws ParseException {
             if (create != null){
+                if (! create.accept(s.getAtom(), p, o.getAtom())){
+                                throw generateParseException();
+                        }
                 create.triple(s.getAtom(), p, o.getAtom());
                 return null;
             }
             else {
                 return astq.createTriple(s, p, o);
             }
-    }
+     }
 
    Triple createTriple(Atom p, List<Atom> list){
                 if (create != null){
@@ -5329,12 +5332,6 @@
     finally { jj_save(14, xla); }
   }
 
-  final private boolean jj_3R_122() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_75()) return true;
-    return false;
-  }
-
   final private boolean jj_3_10() {
     if (jj_3R_49()) return true;
     return false;
@@ -6938,6 +6935,12 @@
     }
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_122() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_75()) return true;
     return false;
   }
 

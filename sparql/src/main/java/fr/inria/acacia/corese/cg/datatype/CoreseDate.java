@@ -45,7 +45,7 @@ public class CoreseDate extends CoreseDatatype {
 			cal = new CoreseCalendar();
 		else
 			cal = parse(label);
-		normalizedLabel = toString();
+		normalizedLabel = toString(cal);
 	}
 	
 	
@@ -347,9 +347,9 @@ public class CoreseDate extends CoreseDatatype {
 		return res;
 	}
 	
-	public String toString() {
-		return toString(cal);
-	}
+//	public String toString() {
+//		return toString(cal);
+//	}
 	
 	public static String getNormalizedLabel(String label){
 		//if (true) return label;

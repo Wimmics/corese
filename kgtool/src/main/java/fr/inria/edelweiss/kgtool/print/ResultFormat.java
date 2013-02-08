@@ -23,7 +23,7 @@ public class ResultFormat {
 	public String toString(){
 		Query q = map.getQuery();
 		if (q == null) return "";
-		if (q.hasPragma(Pragma.TEMPLATE)){
+		if (q.hasPragma(Pragma.TEMPLATE) && map.getGraph() != null){
 			return TemplateFormat.create(map).toString();
 		}
 		else if (q.isConstruct()){

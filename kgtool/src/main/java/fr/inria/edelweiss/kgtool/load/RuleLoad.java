@@ -30,7 +30,7 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 public class RuleLoad {
 	private static Logger logger = Logger.getLogger(Load.class);	
 
-	static final String NS 		= "http://ns.inria.fr/edelweiss/2011/rule#";
+	public static final String NS = "http://ns.inria.fr/edelweiss/2011/rule#";
 	static final String BRUL 	= "http://ns.inria.fr/corese/2008/rule#";
 	static final String COS 	= "http://www.inria.fr/acacia/corese#";
 	
@@ -216,7 +216,6 @@ public class RuleLoad {
 	
 	
 	private  Document parse(String xmlFileName) throws LoadException{
-	     
 		DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
 		fac.setNamespaceAware(true); 
 		DocumentBuilder builder;

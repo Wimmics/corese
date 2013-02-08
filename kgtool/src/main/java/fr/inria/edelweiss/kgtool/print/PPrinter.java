@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
@@ -33,7 +34,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
 public class PPrinter {
 	
 	private static final String NULL = "";
-	public  static final String PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/template";
+	public  static final String PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/asttemplate";
 	private static final String OUT = ASTQuery.OUT;
 	private static final String IN  = ASTQuery.IN;
 	
@@ -132,13 +133,10 @@ public class PPrinter {
 	
 	
 	public static PPrinter create(Graph g){
-		return new PPrinter(g, PPRINTER);
+		return new PPrinter(g, null);
 	}
 	
 	public static PPrinter create(Graph g, String p){
-		if (p == null){
-			p = PPRINTER;
-		}
 		return new PPrinter(g, p);
 	}
 	
@@ -166,6 +164,15 @@ public class PPrinter {
 		fw.flush();
 		fw.close();
 	}
+	
+	public void defTemplate(String t){
+		try {
+			qe.defQuery(t);
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}
+	}
+	
 		
 	/**
 	 * Pretty print the graph.
@@ -317,26 +324,40 @@ public class PPrinter {
 	
 	
 	void init(Graph g, String str){
-		Load ld = Load.create(g);
-		ld.load(str);
-		qe = ld.getQueryEngine();
-		
-		if (qe == null){
-			RuleEngine re = ld.getRuleEngine();
+		if (str == null){
 			qe = QueryEngine.create(g);
-			for (Rule r : re.getRules()){
-				Query q = r.getQuery();
-				qe.defQuery(q);
-			}
 		}
-		
-		qe.sort();
-		
-//		for (Query q : qe.getQueries()){
-//			System.out.println(q.getPragma(Pragma.FILE));
-//			ASTQuery ast = (ASTQuery) q.getAST();
-//			System.out.println(ast);
-//		}
-	}
+		else {
+			Load ld = Load.create(g);
+			ld.load(str);
+			qe = ld.getQueryEngine();
 
+			if (qe == null && ld.getRuleEngine() != null){
+				RuleEngine re = ld.getRuleEngine();
+				qe = QueryEngine.create(g);
+				for (Rule r : re.getRules()){
+					Query q = r.getQuery();
+					qe.defQuery(q);
+				}
+			}
+
+			if (qe == null){
+				qe = QueryEngine.create(g);
+			}
+			
+			qe.sort();	
+		}
+	}
+	
+	
+	public void trace(){
+		for (Query q : qe.getQueries()){
+			if (q.hasPragma(Pragma.FILE)) {
+				System.out.println(q.getPragma(Pragma.FILE));
+			}
+			ASTQuery ast = (ASTQuery) q.getAST();
+			System.out.println(ast);
+		}
+	}
+	
 }

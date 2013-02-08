@@ -10,6 +10,10 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
+/*
+ * 
+ * Olivier Corby, Wimmics INRIA 2013
+ */
 public class TemplateFormat {
 		
 	String printer;
@@ -22,8 +26,10 @@ public class TemplateFormat {
 		map = m;
 		graph = (Graph) map.getGraph();
 		Query q = map.getQuery();
-		if (q != null && q.hasPragma(Pragma.TEMPLATE)){
-			printer = (String) q.getPragma(Pragma.TEMPLATE);
+		if (q != null){
+			if (q.hasPragma(Pragma.TEMPLATE)){
+				printer = (String) q.getPragma(Pragma.TEMPLATE);
+			}
 			ASTQuery ast = (ASTQuery) q.getAST();
 			setNSM(ast.getNSM());
 		}		

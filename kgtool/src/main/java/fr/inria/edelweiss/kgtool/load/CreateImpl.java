@@ -31,6 +31,7 @@ public class CreateImpl implements Creator {
 	Stack stack;
 	String base;
 	private boolean renameBlankNode = true;
+	int limit = Integer.MAX_VALUE;
 	
 	class Stack extends ArrayList<Node> {
 		
@@ -54,6 +55,10 @@ public class CreateImpl implements Creator {
 		return new CreateImpl(g);
 	}
 	
+	public void setLimit(int max){
+		limit = max;
+	}
+	
 	// init
 	// TODO: check 
 	public void graph(String src){
@@ -70,9 +75,17 @@ public class CreateImpl implements Creator {
 		source = stack.pop();
 	}
 	
-	
+	public boolean accept(Atom subject, Atom property, Atom object){
+//		if (graph.size() / 10000 == graph.size()/ 10000.0){
+//			System.out.println(graph.size());
+//		}
+		if (graph.size() < limit){
+			return true;
+		}
+		return false;
+	}
 
-	public void triple(Atom subject, Atom property, Atom object) {
+	public void triple(Atom subject, Atom property, Atom object) {		
 		if (source == null){
 			source = graph.addGraph(Entailment.DEFAULT);
 		}

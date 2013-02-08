@@ -80,6 +80,8 @@ public class Load
 	private boolean renameBlankNode = true;
 	
 	int nb = 0;
+
+	private int limit = Integer.MAX_VALUE;
 	
 	Load(Graph g){
 		set(g);
@@ -98,6 +100,10 @@ public class Load
 	
 	public void init(Object o){
 		set((Graph) o);
+	}
+	
+	public void setLimit(int max){
+		limit = max;
 	}
 	
 	void set(Graph g){
@@ -300,6 +306,14 @@ public class Load
 		}
 		
 		synLoad(read, path, base, source);
+		
+		if (stream != null){
+			try {
+				stream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	Reader reader(InputStream stream) throws UnsupportedEncodingException{
@@ -389,6 +403,7 @@ public class Load
 		CreateImpl cr = CreateImpl.create(graph);
 		cr.graph(src);
 		cr.setRenameBlankNode(renameBlankNode);
+		cr.setLimit(limit);
 		
 		LoadTurtle ld = LoadTurtle.create(stream, cr, base);
 		try {

@@ -12,6 +12,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -101,13 +102,13 @@ public class PluginImpl extends ProxyImpl {
 		switch (exp.oper()){
 		
 		case PPRINT:
-			return pprint(exp, o, env);
+			return pprint(exp, datatype(o), env);
 			
 		case TURTLE:
-			return turtle(o, env);	
+			return turtle(datatype(o), env);	
 			
 		case PPURI:
-			return uri(exp, o, env);	
+			return uri(exp, datatype(o), env);	
 			
 		case INDENT:
 			return indent(o);		
@@ -162,6 +163,9 @@ public class PluginImpl extends ProxyImpl {
 		case ANCESTOR:
 			// common ancestor
 			return ancestor((IDatatype) o1, (IDatatype) o2);
+			
+		case PPRINT:
+			return pprint(exp, (IDatatype) o1, (IDatatype) o2, env);	
 						
 		}
 		
@@ -449,29 +453,40 @@ public class PluginImpl extends ProxyImpl {
 	 * Object o is the node where to apply the query (with a Mapping)
 	 * exp = kg:pprint(arg);
 	 */
-	IDatatype pprint(Expr exp, Object o, Environment env){
-		PPrinter p = getPPrinter(env); 
+	IDatatype pprint(Expr exp, IDatatype o, Environment env){
+		return pprint(exp, o, null, env);
+	}
+	
+	/**
+	 * t is the template to be used, it may be null
+	 * exp = kg:pprint()
+	 */
+	IDatatype pprint(Expr exp, IDatatype o, IDatatype t, Environment env){
+		String tt = null;
+		if (t != null){
+			tt = t.getLabel();
+		}
+		PPrinter p = getPPrinter(env, tt); 
 		Expr arg = exp.getExp(0);
 		if (! arg.isVariable()){
 			arg = null;
 		}
-		IDatatype dt = p.pprint(arg, datatype(o));
+		IDatatype dt = p.pprint(arg, o);
 		return dt;
 	}
 
-	IDatatype turtle(Object o, Environment env){
+	IDatatype turtle(IDatatype o, Environment env){
 		PPrinter p = getPPrinter(env); 
-		IDatatype dt = p.turtle(datatype(o));
+		IDatatype dt = p.turtle(o);
 		return dt;
 	}
 	
-	IDatatype uri(Expr exp, Object o, Environment env){
-		IDatatype dt = datatype(o);
+	IDatatype uri(Expr exp, IDatatype dt, Environment env){
 		if (dt.isURI()){
 			return turtle(dt, env);
 		}
 		else {
-			return pprint(exp, o, env);
+			return pprint(exp, dt, env);
 		}
 	}
 	
@@ -505,19 +520,31 @@ public class PluginImpl extends ProxyImpl {
 	/**
 	 * 
 	 */
-	PPrinter getPPrinter(Environment env){		
-			Object o = env.getQuery().getPP();
-			
-			if (o != null){
-				return (PPrinter) o;
+	PPrinter getPPrinter(Environment env){	
+		return getPPrinter(env, null);
+	}
+	
+	PPrinter getPPrinter(Environment env, String t){		
+		Query q  = env.getQuery();
+		Object o = q.getPP();
+
+		if (o != null){
+			return (PPrinter) o;
+		}
+		else {
+			String p = PPRINTER;
+			if (t != null){
+				p = t;
 			}
-			else 
-			{
-				PPrinter pp = PPrinter.create(graph, PPRINTER);
-				ASTQuery ast = (ASTQuery) env.getQuery().getAST();
-				pp.setNSM(ast.getNSM());
-				return pp;
+			else if (q.hasPragma(Pragma.TEMPLATE)){
+				p = (String) q.getPragma(Pragma.TEMPLATE);
 			}
+			PPrinter pp = PPrinter.create(graph, p);
+			ASTQuery ast = (ASTQuery) q.getAST();
+			pp.setNSM(ast.getNSM());
+			q.setPPrinter(pp);
+			return pp;
+		}
 	}
 
 	

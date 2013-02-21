@@ -4,17 +4,11 @@ package test.distribution;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgimport.JenaGraphFactory;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -41,6 +35,7 @@ public class DrugBankDebug {
             + "     ?caff ?predicate ?object . } "
             + "}";
     String edgeSelect = "SELECT ?predicate ?object WHERE { <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00201> ?predicate ?object . }";
+//    String edgeSelect = "SELECT ?predicate ?object WHERE { <http://dbpedia.org/resource/Channel_Tunnel> ?predicate ?object . }";  
     String edgeConstruct = "construct  { <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00201> <http://www.inria.fr/acacia/corese#Property> ?object } "
             + "where { <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00201> <http://www.inria.fr/acacia/corese#Property> ?object .}";
     String edgeConstruct2 = "construct  { <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00201> ?predicate ?object } "
@@ -81,69 +76,47 @@ public class DrugBankDebug {
 
         sw.reset();
         sw.start();
+//        
+//        File rep = new File("/Users/gaignard/Desktop/Expe-FedEx-FedBench-G5K/updated-datasets/KEGG-2010-11");
+////        ld.load(rep.getAbsolutePath());
+//
+//        for (File f : rep.listFiles()) {
+//            if (f.getAbsolutePath().endsWith(".rdf")) {
+//                final String path = f.getAbsolutePath();
+//                ld.load(path);
+//                logger.info(path + " loaded -> Graph size " + graph.size());
+//            }
+//        }
 
-        ArrayList<File> toLoad = new ArrayList<File>();
-        toLoad.add(new File("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-1/article_categories_en.nt"));
-        toLoad.add(new File("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-drugbank/drugbank_dump.nt"));
-//        toLoad.add(new File("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-chebi/chebi.nt"));
-        for (File f : toLoad) {
-            logger.info("Loading "+f.getAbsolutePath());
-            String path = f.getAbsolutePath();
-            if (path.endsWith(".nt")) {
-                FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(f);
-                    Model model = ModelFactory.createDefaultModel();
-                    model.read(fis, null, "N-TRIPLE");
-                    JenaGraphFactory.updateGraph(model, graph);
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                } finally {
-                    try {
-                        fis.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
+
+//         ld.load("/Users/gaignard/Desktop/producer-4/drugbank_dump.rdf"); // 300ms
+         ld.load("/Users/gaignard/Desktop/Expe-FedEx-FedBench-G5K/updated-datasets/drugbank_dump.ttl"); // 300ms
+
+//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/category_labels_en.ttl"); // 300ms
+//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/DBpedia-LGD.ttl"); //  20 ms 
+//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/geo_coordinates_en.ttl"); //  800ms (1.5M) 
+//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/persondata_en.ttl"); //  140 ms (350K) 
+//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/images_en.ttl"); //  2300ms (4M) 
+//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/instance_types_en.ttl"); // 1393 ms (5.5M) 
+//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-1/article_categories_en.ttl"); // 4487 ms (10M)
+
+        System.out.println("Graph size: " + graph.size());
+
+        ArrayList<String> queries = new ArrayList<String>();
+//        queries.add(sparqlQuery);
+        queries.add(edgeSelect);
+//        queries.add(edgeConstruct);
+//        queries.add(edgeConstruct2);
+
+        for (String query : queries) {
+            logger.info("Querying with : \n" + query);
+            for (int i = 0; i < 10; i++) {
+                sw.reset();
+                sw.start();
+                Mappings results = exec.query(query);
+                logger.info(results.size() + " results: " + sw.getTime() + " ms");
             }
+            System.out.println("");
         }
-        logger.info("Graph (" + graph.size() + ") loaded: " + sw.getTime() + " ms");
-        System.out.println("");
-
-        logger.info("Querying with : \n" + sparqlQuery);
-        for (int i = 0; i < 5; i++) {
-            sw.reset();
-            sw.start();
-            Mappings results = exec.query(sparqlQuery);
-            logger.info(results.size() + " results: " + sw.getTime() + " ms");
-        }
-        System.out.println("");
-
-        logger.info("Querying with : \n" + edgeSelect);
-        for (int i = 0; i < 5; i++) {
-            sw.reset();
-            sw.start();
-            Mappings results = exec.query(edgeSelect);
-            logger.info(results.size() + " results: " + sw.getTime() + " ms");
-        }
-        System.out.println("");
-
-        logger.info("Querying with : \n" + edgeConstruct);
-        for (int i = 0; i < 5; i++) {
-            sw.reset();
-            sw.start();
-            Mappings results = exec.query(edgeConstruct);
-            logger.info(results.size() + " results: " + sw.getTime() + " ms");
-        }
-        System.out.println("");
-
-        logger.info("Querying with : \n" + edgeConstruct2);
-        for (int i = 0; i < 5; i++) {
-            sw.reset();
-            sw.start();
-            Mappings results = exec.query(edgeConstruct2);
-            logger.info(results.size() + " results: " + sw.getTime() + " ms");
-        }
-        System.out.println("");
     }
 }

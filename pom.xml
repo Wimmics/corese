@@ -43,6 +43,12 @@
             <timezone>1</timezone>
         </developer>
     </developers>
+    
+    <properties>
+        <sonar.dynamicAnalysis>true</sonar.dynamicAnalysis>    
+        <sonar.java.coveragePlugin>cobertura</sonar.java.coveragePlugin>
+    </properties>
+    
     <modules>
         <module>kgram</module>
         <module>engine</module>

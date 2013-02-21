@@ -11,8 +11,6 @@ import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgramenv.util.QueryExec;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import org.junit.After;
@@ -21,6 +19,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -45,15 +44,6 @@ public class ResultsManagementTest {
 
     @After
     public void tearDown() {
-    }
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-
-    
-    @Test 
-    public void charEncoding() throws UnsupportedEncodingException{
-        System.out.println(Arrays.toString("šŠ".getBytes("ISO-8859-1")));
     }
             
     @Test
@@ -86,6 +76,7 @@ public class ResultsManagementTest {
 
             IResults res = qExec.SPARQLQuery(sparqlQuery);
             String[] variables = res.getVariables();
+            
 
             for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
                 IResult r = en.nextElement();
@@ -94,16 +85,16 @@ public class ResultsManagementTest {
                     if (r.isBound(var)) {
                         IResultValue[] values = r.getResultValues(var);
                         for (int j = 0; j < values.length; j++) {
-                            System.out.println(var + " = " + values[j].getStringValue());
+//                            System.out.println(var + " = " + values[j].getStringValue());
 //                            result.put(var, values[j].getStringValue());
                         }
                     } else {
-                        System.out.println(var + " = Not bound");
+//                        System.out.println(var + " = Not bound");
                     }
                 }
 
             }
-
+            assertEquals(9,res.size());
 
         } catch (EngineException ex) {
             ex.printStackTrace();

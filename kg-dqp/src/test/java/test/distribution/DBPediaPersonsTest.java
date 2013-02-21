@@ -5,33 +5,23 @@ package test.distribution;
  * and open the template in the editor.
  */
 //import com.sun.xml.internal.ws.developer.JAXWSProperties;
-import fr.inria.acacia.corese.api.IResult;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.EngineFactory;
-import fr.inria.acacia.corese.api.IResultValue;
-import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
-import java.io.File;
+import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgtool.print.RDFFormat;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang.time.StopWatch;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import wsimport.KgramWS.RemoteProducer;
 import wsimport.KgramWS.RemoteProducerServiceClient;
 
@@ -46,17 +36,9 @@ public class DBPediaPersonsTest {
             + "SELECT distinct ?x ?name ?date WHERE \n"
             + "{"
             + "     ?x foaf:name ?name ."
-            //                + "     ?x ?y ?name2 ."
-//            + "     ?x dbpedia:birthPlace ?place ."
-                            + "     ?x dbpedia:birthDate ?date ."
-            //                + "     ?y foaf:name ?name2 ."
-            //                + "     ?z foaf:name ?name3 ."
-            //                + "     OPTIONAL {?x foaf:mbox ?m}"
-//            + " FILTER ((?name ~ 'Bob') )"
-            + " FILTER ((?name ~ 'Bob') )"
+            + " OPTIONAL     {?x dbpedia:birthDate ?date }."
+            + " FILTER ((?x ~ 'Bob') )"
             + "}";
-//                + "GROUP BY ?x ORDER BY ?x "
-//                + "LIMIT 6";
 
     public DBPediaPersonsTest() {
     }
@@ -71,63 +53,33 @@ public class DBPediaPersonsTest {
 
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://neurolog.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://neurolog.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
         kg1.initEngine();
         kg2.initEngine();
 
-//        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep1.rdf");
-//        File rep2 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep2.rdf");
-//        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/dbpediaNames.rdf");
-//        File rep2 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/dbpediaBirthDate.rdf");
-        
-                
-//        File rep1 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/72K/2-stores/persondata.1.rdf");
-//        File rep2 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/72K/2-stores/persondata.2.rdf");
-
-        File rep1 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/338K/2-stores/persondata.1.rdf");
-        File rep2 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/338K/2-stores/persondata.2.rdf");
-//        File rep1 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/147K/2-stores/persondata.1.rdf");
-//        File rep2 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/147K/2-stores/persondata.2.rdf");
-//        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep_small.1.1.rdf");
-//        File rep2 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep_small.1.2.rdf");
-
-//        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep_ascii.1.rdf");
-//        File rep2 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep_ascii.2.rdf");
-
-//        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
-//        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-//        reqCtxt1.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-//
-//        Map<String, Object> reqCtxt2 = ((BindingProvider) kg2).getRequestContext();
-//        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-//        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-
-        final DataHandler data1 = new DataHandler(new FileDataSource(rep1));
-        final DataHandler data2 = new DataHandler(new FileDataSource(rep2));
+        final String rep1 = "http://neurolog.unice.fr/~neurolog-dev/data/persondata.1.rdf";
+        final String rep2 = "http://neurolog.unice.fr/~neurolog-dev/data/persondata.2.rdf";
 
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(new Runnable() {
-
             @Override
             public void run() {
-                kg1.uploadRDF(data1);
+                kg1.loadRDF(rep1);
 
             }
         });
         executor.submit(new Runnable() {
-
             @Override
             public void run() {
-                kg2.uploadRDF(data2);
+                kg2.loadRDF(rep2);
 
             }
         });
         executor.shutdown();
         while (!executor.isTerminated()) {
         }
-
     }
 
     @After
@@ -137,41 +89,41 @@ public class DBPediaPersonsTest {
     // The methods must be annotated with annotation @Test. For example:
 
     @Test
-    @Ignore
-    public void remoteDBPediaQuery() throws EngineException, MalformedURLException, IOException {
+    public void remoteDBPediaQueryRes() throws EngineException, MalformedURLException, IOException {
 
-        EngineFactory ef = new EngineFactory();
-        IEngine engine = ef.newInstance();
-
-        QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        Graph graph = Graph.create();
+        QueryProcessDQP exec = QueryProcessDQP.create(graph);
+        exec.addRemote(new URL("http://neurolog.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://neurolog.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
         StopWatch sw = new StopWatch();
         sw.start();
-        IResults res = exec.SPARQLQuery(sparqlQuery);
+        Mappings map = exec.query(sparqlQuery);
         System.out.println("--------");
-        System.out.println("Results in " + sw.getTime() + "ms");
-        GraphEngine gEng = (GraphEngine) engine;
-        System.out.println("Graph size " + gEng.getGraph().size());
-        System.out.println("Results size " + res.size());
-        String[] variables = res.getVariables();
+        long time = sw.getTime();
+        System.out.println("Results in " + time + "ms");
+        System.out.println("Results size " + map.size());
+//        System.out.println(RDFFormat.create(map));
+        
+        assertEquals(318, map.size());
+    }
+    
+    @Test
+    public void remoteDBPediaQueryPerf() throws EngineException, MalformedURLException, IOException {
 
-        for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
-            IResult r = en.nextElement();
-            HashMap<String, String> result = new HashMap<String, String>();
-            for (String var : variables) {
-                if (r.isBound(var)) {
-                    IResultValue[] values = r.getResultValues(var);
-                    for (int j = 0; j < values.length; j++) {
-                        System.out.println(var + " = " + values[j].getStringValue());
-//                            result.put(var, values[j].getStringValue());
-                    }
-                } else {
-                    //System.out.println(var + " = Not bound");
-                }
-            }
-        }
-        System.out.println(sw.getTime() + " ms");
+        Graph graph = Graph.create();
+        QueryProcessDQP exec = QueryProcessDQP.create(graph);
+        exec.addRemote(new URL("http://neurolog.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://neurolog.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+
+        StopWatch sw = new StopWatch();
+        sw.start();
+        Mappings map = exec.query(sparqlQuery);
+        System.out.println("--------");
+        long time = sw.getTime();
+        System.out.println("Results in " + time + "ms");
+        System.out.println("Results size " + map.size());
+        
+        assertTrue(time < 80000);
     }
 }

@@ -20,7 +20,12 @@ public class TemplateFormat {
 	Mappings map;
 	Graph graph;
 	private NSManager nsm;
+	PPrinter pp;
 	boolean isTurtle = false;
+	private boolean isDebug = false;
+	private boolean isCheck = false;
+	private boolean isHide  = false;
+
 	
 	TemplateFormat(Mappings m){
 		map = m;
@@ -78,6 +83,10 @@ public class TemplateFormat {
 		isTurtle = b;
 	}
 	
+	public void setDebug(boolean b){
+		isDebug  = b;
+	}
+	
 	void init(){
 		
 	}
@@ -86,15 +95,36 @@ public class TemplateFormat {
 		if (graph == null){
 			return "";
 		}
-		PPrinter pp = PPrinter.create(graph, printer);
+		PPrinter p = createPP();
+		return p.toString();
+	}
+	
+	PPrinter createPP(){
+		pp = PPrinter.create(graph, printer);
+		if (isCheck){
+			pp.check();
+		}
+		pp.setDebug(isDebug);
 		pp.setTurtle(isTurtle);
+		pp.setHide(isHide);
 		if (nsm != null){
 			pp.setNSM(nsm);
 		}
-		return pp.toString();
+		return pp;
+	}
+
+	
+	public StringBuilder toStringBuilder(){
+		if (graph == null){
+			return new StringBuilder();
+		}
+		PPrinter p = createPP();
+		return p.toStringBuilder();
 	}
 	
-	
+	public PPrinter getPPrinter(){
+		return pp;
+	}
 	
 	public void write(String name) throws IOException {				
 		FileWriter fw = new FileWriter(name);
@@ -102,6 +132,26 @@ public class TemplateFormat {
 		fw.write(str);
 		fw.flush();
 		fw.close();
+	}
+
+
+	public boolean isCheck() {
+		return isCheck;
+	}
+
+
+	public void setCheck(boolean isCheck) {
+		this.isCheck = isCheck;
+	}
+
+
+	public boolean isHide() {
+		return isHide;
+	}
+
+
+	public void setHide(boolean isHide) {
+		this.isHide = isHide;
 	}
 
 	

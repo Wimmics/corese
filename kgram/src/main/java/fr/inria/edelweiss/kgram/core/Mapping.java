@@ -598,7 +598,7 @@ public class Mapping
 		// TODO Auto-generated method stub
 		int n = 0;	
 		for (Node qNode : qNodes){
-			if (qNode.getLabel().equals(label)){
+			if (qNode.isVariable() && qNode.getLabel().equals(label)){
 				return n;
 			}
 			n++;

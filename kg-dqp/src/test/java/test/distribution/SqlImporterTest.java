@@ -44,7 +44,7 @@ public class SqlImporterTest {
     //
 
     @Test
-//    @Ignore
+    @Ignore
     public void testSQLImport() throws EngineException, LoadException {
 
         String testStudyPatients = "PREFIX owl: <http://www.w3.org/2002/07/owl#>"

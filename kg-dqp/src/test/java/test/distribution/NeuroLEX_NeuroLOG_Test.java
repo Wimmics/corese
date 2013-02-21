@@ -19,15 +19,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Map;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang.time.StopWatch;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import wsimport.KgramWS.RemoteProducer;
 import wsimport.KgramWS.RemoteProducerServiceClient;
@@ -83,6 +82,7 @@ public class NeuroLEX_NeuroLOG_Test {
     //
 
     @Test
+    @Ignore
     public void remoteNeuroQuery() throws EngineException, MalformedURLException, IOException {
 
         String sparqlQuery = "PREFIX property: <http://neurolex.org/wiki/Special:URIResolver/Property-3A>"

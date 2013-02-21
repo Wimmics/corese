@@ -36,6 +36,7 @@ public class IndexTest {
     //
 
     @Test
+    @Ignore
     public void hello() {
         IndexPropriete source3 = new IndexPropriete("/Users/gaignard/Desktop/LUBM-10-1.3M");
         source3.hashPropriete();

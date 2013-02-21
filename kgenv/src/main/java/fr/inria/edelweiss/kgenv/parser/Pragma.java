@@ -69,6 +69,7 @@ public class Pragma  {
 	public static final String PRIORITY	= KG + "priority";
 	public static final String FILE		= KG + "file";
 	public static final String TEMPLATE	= KG + "template";
+	public static final String NAME		= KG + "name";
 
 
 	public static final String HELP 	= KG + "help";
@@ -177,14 +178,13 @@ public class Pragma  {
 			String subject  = t.getSubject().getLabel();
 			String property = t.getProperty().getLabel();
 			String object   = t.getObject().getLabel();
-			//if (object == null) object = t.getObject().getName();
+			IDatatype odt   = t.getObject().getDatatypeValue();
 
 			if (subject.equals(PATH)){
 				if (property.equals(EXPAND)){
 					Constant cst = t.getObject().getConstant();
-					IDatatype dt = cst.getDatatypeValue();
-					if (dt.isNumber()){
-						transform.add(ExpandPath.create(dt.intValue()));
+					if (odt.isNumber()){
+						transform.add(ExpandPath.create(odt.intValue()));
 					}
 					else {
 						transform.add(ExpandPath.create());
@@ -204,16 +204,17 @@ public class Pragma  {
 				}
 				
 			}
-			else if (subject.equals(QUERY)){
+			else if (subject.equals(QUERY) || subject.equals(TEMPLATE)){
 				if (property.equals(CHECK)){
 					ast.setCheck(value(object));
 				}
 				else if (property.equals(PRIORITY)){					
-					IDatatype dt = t.getObject().getDatatypeValue();
-					ast.setPriority(dt.intValue());
+					ast.setPriority(odt.intValue());
 				}
-			}
-			
+				else if (property.equals(NAME)){					
+					ast.setName(odt.getLabel());
+				}
+			}			
 	}
 	
 	

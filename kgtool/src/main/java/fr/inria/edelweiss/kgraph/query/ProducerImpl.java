@@ -50,6 +50,7 @@ public class ProducerImpl implements Producer {
 	
 	// if true, perform local match
 	boolean isMatch = false;
+	private boolean selfValue;
 	
 	
 	
@@ -580,6 +581,9 @@ public class ProducerImpl implements Producer {
 			return null;
 		}
 		IDatatype dt = (IDatatype) value;
+		if (selfValue){
+			return dt;
+		}
 		Node node = graph.getNode(dt, false, false);				
 		if (node == null){
 			if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)){
@@ -728,6 +732,14 @@ public class ProducerImpl implements Producer {
 		}
 		System.out.println(")}");
 
+	}
+
+	private boolean isSelfValue() {
+		return selfValue;
+	}
+
+	public void setSelfValue(boolean selfValue) {
+		this.selfValue = selfValue;
 	}
 
 }

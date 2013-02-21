@@ -14,12 +14,14 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import org.apache.commons.lang.time.StopWatch;
 
+@Deprecated
 public class IndexPropriete {
 
-    private ArrayList<String> propExistencyIndex;  //sert d'index
-    private HashMap<String,Long> propCardIndex;  //alban index
+    private List<String> propExistencyIndex;  
+    private HashMap<String,Long> propCardIndex;  
     
     protected EngineFactory ef = new EngineFactory();
     protected IEngine myCorese;
@@ -52,7 +54,7 @@ public class IndexPropriete {
         return null;
     }
 
-    public ArrayList<String> getSourceI() {
+    public List<String> getSourceI() {
         return propExistencyIndex;
     }
 

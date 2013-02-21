@@ -51,17 +51,17 @@ public class ProxyImpl implements Proxy, ExprType {
 	SQLFun sql;
 	Evaluator eval;
 	EvalListener el;
-	DatatypeMap dm;
 	int number = 0;
 	
 	// KGRAM is relax wrt to string vs literal vs uri input arg of functions
 	// eg regex() concat() strdt()
 	// setMode(SPARQL_MODE) 
 	boolean SPARQLCompliant = false;
+
+	private IDatatype EMPTY = getValue("");
 	
 	
 	public ProxyImpl(){
-		dm = DatatypeMap.create();
 		sql = new SQLFun();
 	}
 	
@@ -228,9 +228,9 @@ public class ProxyImpl implements Proxy, ExprType {
 		case CEILING:
 			return getValue(Math.ceil(dt.doubleValue()), dt.getDatatypeURI());
 			
-		case TIMEZONE: return dm.getTimezone(dt);
+		case TIMEZONE: return DatatypeMap.getTimezone(dt);
 		
-		case TZ: return dm.getTZ(dt);
+		case TZ: return DatatypeMap.getTZ(dt);
 		
 		case YEAR:
 		case MONTH:
@@ -439,7 +439,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	IDatatype encode(IDatatype dt){
 		try {
 			String str = URLEncoder.encode(dt.getLabel(), UTF8);
-			return dm.createLiteral(str);
+			return DatatypeMap.createLiteral(str);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -561,9 +561,14 @@ public class ProxyImpl implements Proxy, ExprType {
 	 * error if not literal or string
 	 */
 	IDatatype concat(Object[] args){
-		String str = "",  lang = null;
-		if (args.length==0) return getValue(str);
+		String str = "";
+		String lang = null;
+		if (args.length == 0){
+			return EMPTY; 
+		}
 		
+		StringBuilder sb = new StringBuilder();
+
 		IDatatype dt = datatype(args[0]);
 		boolean ok = true, hasLang = false, isString = true;
 		if (dt.hasLang()){
@@ -579,7 +584,13 @@ public class ProxyImpl implements Proxy, ExprType {
 				return null;
 			}
 			
-			str += dt.getLabel();
+			if (dt.getStringBuilder() != null){
+				sb.append(dt.getStringBuilder());
+			}
+			else {
+				sb.append(dt.getLabel());
+			}
+			//str += dt.getLabel();
 			
 			if (ok){
 				if (hasLang){
@@ -597,14 +608,16 @@ public class ProxyImpl implements Proxy, ExprType {
 			}
 		}	
 		
+		//str = sb.toString();
+		
 		if (ok && lang != null){
-			return DatatypeMap.createLiteral(str, null, lang);
+			return DatatypeMap.createLiteral(sb.toString(), null, lang);
 		}
 		else if (isString){
-			return getValue(str);
+			return DatatypeMap.newStringBuilder(sb);
 		}
 		else {
-			return DatatypeMap.createLiteral(str);
+			return DatatypeMap.createLiteral(sb.toString());
 		}
 	}
 	
@@ -651,7 +664,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		String str = dt.getLabel();
 		String res = new Hash(name).hash(str);
 		if (res == null) return null;
-		return dm.createLiteral(res);
+		return DatatypeMap.createLiteral(res);
 	}
 	
 	
@@ -730,28 +743,28 @@ public class ProxyImpl implements Proxy, ExprType {
 	
 	@Override
 	public IDatatype getValue(int value) {
-		return dm.newInstance(value);
+		return DatatypeMap.newInstance(value);
 	}
 	
 	public IDatatype getValue(long value) {
-		return dm.newInstance(value);
+		return DatatypeMap.newInstance(value);
 	}
 	
 	public IDatatype getValue(float value) {
-		return dm.newInstance(value);
+		return DatatypeMap.newInstance(value);
 	}
 	
 	public IDatatype getValue(double value) {
-		return dm.newInstance(value);
+		return DatatypeMap.newInstance(value);
 	}
 	
 	public IDatatype getValue(double value, String datatype) {
-		return dm.newInstance(value, datatype);
+		return DatatypeMap.newInstance(value, datatype);
 	}
 	
 	// return xsd:string
 	public IDatatype getValue(String value) {
-		return dm.newInstance(value);
+		return DatatypeMap.newInstance(value);
 	}
 	
 	// return rdfs:Literal or xsd:string wrt dt
@@ -760,9 +773,9 @@ public class ProxyImpl implements Proxy, ExprType {
 			return DatatypeMap.createLiteral(value, null, dt.getLang());
 		}
 		else if (dt.isLiteral() && dt.getDatatype() == null){
-			return dm.createLiteral(value);
+			return DatatypeMap.createLiteral(value);
 		}
-		return dm.newInstance(value);
+		return DatatypeMap.newInstance(value);
 	}
 	
 	Object langMatches(IDatatype ln1, IDatatype ln2) {

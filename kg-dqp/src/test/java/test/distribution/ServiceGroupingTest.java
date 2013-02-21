@@ -92,7 +92,7 @@ public class ServiceGroupingTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void hello() throws EngineException, MalformedURLException, IOException {
 
         endpoint1.initEngine();

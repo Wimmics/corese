@@ -50,7 +50,7 @@ public class Processor {
 	public static final String IF = "if";
 	public static final String COALESCE = "coalesce";
 	public static final String BNODE = "bnode";
-	static final String GROUPCONCAT = "group_concat";
+	public static final String GROUPCONCAT = "group_concat";
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
 
@@ -75,6 +75,8 @@ public class Processor {
 	static final String KGSQL 	= ExpType.KGRAM + "sql";
 	static final String QNAME 	= ExpType.KGRAM + "qname"; 
 	static final String PPRINT 	= ExpType.KGRAM + "pprint"; 
+	static final String PPRINTALL= ExpType.KGRAM + "pprintAll"; 
+	static final String TEMPLATE= ExpType.KGRAM +  "template"; 
 	static final String KGPPRINT= ExpType.KPREF + ":" + "pprint"; 
 
 	static final String TURTLE 	= ExpType.KGRAM + "turtle"; 
@@ -355,6 +357,8 @@ public class Processor {
 		
 		defoper(QNAME, 	ExprType.QNAME);
 		defoper(PPRINT, ExprType.PPRINT);
+		defoper(PPRINTALL, ExprType.PPRINTALL);
+		defoper(TEMPLATE, ExprType.TEMPLATE);
 		defoper(TURTLE, ExprType.TURTLE);
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);

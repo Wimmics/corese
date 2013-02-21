@@ -72,32 +72,32 @@ public class G5kFedBenchLS_Query {
         QueryProcessDQP execStd = QueryProcessDQP.create(graphStdOpt);
         
          ///////////////////////
-        Graph graphManualOpt = Graph.create();
-        QueryProcessDQP execManualOpt = QueryProcessDQP.create(graphManualOpt);
-        ProviderWSImpl pManualOpt = ProviderWSImpl.create();
-        execManualOpt.set(pManualOpt);
+//        Graph graphManualOpt = Graph.create();
+//        QueryProcessDQP execManualOpt = QueryProcessDQP.create(graphManualOpt);
+//        ProviderWSImpl pManualOpt = ProviderWSImpl.create();
+//        execManualOpt.set(pManualOpt);
 
         ///////////////////////
-        Graph graphGroupOpt = Graph.create();
-        QueryProcessDQP execGroupOpt = QueryProcessDQP.create(graphGroupOpt);
-        execGroupOpt.addVisitor(new ServiceQueryVisitorPar(execGroupOpt));
-        execGroupOpt.setOptimize(true);
-        ProviderWSImpl pOpt = ProviderWSImpl.create();
-        execGroupOpt.set(pOpt);
+//        Graph graphGroupOpt = Graph.create();
+//        QueryProcessDQP execGroupOpt = QueryProcessDQP.create(graphGroupOpt);
+//        execGroupOpt.addVisitor(new ServiceQueryVisitorPar(execGroupOpt));
+//        execGroupOpt.setOptimize(true);
+//        ProviderWSImpl pOpt = ProviderWSImpl.create();
+//        execGroupOpt.set(pOpt);
 
         ////////////////////////
-        Graph graphGroup = Graph.create();
-        QueryProcessDQP execGroup = QueryProcessDQP.create(graphGroup);
-        execGroup.addVisitor(new ServiceQueryVisitorPar(execGroup));
-        execGroup.setOptimize(false);
-        ProviderWSImpl p = ProviderWSImpl.create();
-        execGroup.set(p);
+//        Graph graphGroup = Graph.create();
+//        QueryProcessDQP execGroup = QueryProcessDQP.create(graphGroup);
+//        execGroup.addVisitor(new ServiceQueryVisitorPar(execGroup));
+//        execGroup.setOptimize(false);
+//        ProviderWSImpl p = ProviderWSImpl.create();
+//        execGroup.set(p);
 
         for (int i = 0; i < 5; i++) {
             execStd.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-            execGroup.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-            execGroupOpt.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-            execManualOpt.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+//            execGroup.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+//            execGroupOpt.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+//            execManualOpt.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
         }
 
         int ls = Integer.parseInt(args[5]);
@@ -107,8 +107,8 @@ public class G5kFedBenchLS_Query {
 //            if ((i == 5)) {
         StringBuffer fileData = new StringBuffer(1000);
         BufferedReader reader = new BufferedReader(
-//                new FileReader("fedBenchQueries/LS" + ls + ".sparql"));
-                  new FileReader("fedBenchQueries/tunedLS.sparql"));
+                new FileReader("fedBenchQueries/LS" + ls + ".sparql"));
+//                  new FileReader("fedBenchQueries/tunedLS.sparql"));
         char[] buf = new char[1024];
         int numRead = 0;
         while ((numRead = reader.read(buf)) != -1) {
@@ -120,20 +120,20 @@ public class G5kFedBenchLS_Query {
         String sparqlQuery = fileData.toString();
 
         
-        StopWatch sw1 = new StopWatch();
-        sw1.start();
-        Mappings res1 = execManualOpt.query(sparqlQuery);
-        System.out.println("----Manual fed query----");
-        System.out.println("Results LS " + ls + " in " + sw1.getTime() + " ms");
-        System.out.println("Results LS " + ls + " size " + res1.size());
-        System.out.println(XMLFormat.create(res1).toString());
-        
 //        StopWatch sw1 = new StopWatch();
 //        sw1.start();
-//        Mappings res1 = execStd.query(sparqlQuery);
-//        System.out.println("----Std----");
+//        Mappings res1 = execManualOpt.query(sparqlQuery);
+//        System.out.println("----Manual fed query----");
 //        System.out.println("Results LS " + ls + " in " + sw1.getTime() + " ms");
 //        System.out.println("Results LS " + ls + " size " + res1.size());
+//        System.out.println(XMLFormat.create(res1).toString());
+        
+        StopWatch sw1 = new StopWatch();
+        sw1.start();
+        Mappings res1 = execStd.query(sparqlQuery);
+        System.out.println("----Std----");
+        System.out.println("Results LS " + ls + " in " + sw1.getTime() + " ms");
+        System.out.println("Results LS " + ls + " size " + res1.size());
 
 
 //                StopWatch sw2 = new StopWatch();

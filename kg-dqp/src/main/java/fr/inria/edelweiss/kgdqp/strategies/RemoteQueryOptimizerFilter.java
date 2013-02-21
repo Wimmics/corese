@@ -61,8 +61,8 @@ public class RemoteQueryOptimizerFilter implements RemoteQueryOptimizer {
         }
 
         String sparql = sparqlPrefixes;
-        sparql += "construct  { "+sEdge+" } \n where { \n";
-        sparql += "\t "+sEdge+" .\n ";
+        sparql += "construct  { "+edge.getNode(0) + " "+edge.getEdgeNode()+" "+edge.getNode(1) +" } \n where { \n";
+        sparql += "\t "+edge.getNode(0) + " "+edge.getEdgeNode()+" "+edge.getNode(1)+" .\n ";
         if (sparqlfilter != null) {
             sparql += "\t" + sparqlfilter + "\n";
         }

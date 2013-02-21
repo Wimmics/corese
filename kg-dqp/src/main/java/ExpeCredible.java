@@ -35,9 +35,9 @@ public class ExpeCredible {
                 + "PREFIX iec: <http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#>"
                 + "PREFIX examination-subject: <http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#>"
                 + "SELECT distinct ?patient ?study ?dataset ?dsName WHERE { "
-                //                + "     ?patient iec:is-referred-to-by/linguistic-expression:has-for-name ?dsName ."
-                + "     ?patient iec:is-referred-to-by ?dataset  ."
-                + "     ?dataset linguistic-expression:has-for-name ?dsName ."
+                + "     ?patient iec:is-referred-to-by/linguistic-expression:has-for-name ?dsName ."
+//                                + "     ?patient iec:is-referred-to-by ?dataset  ."
+//                                + "     ?dataset linguistic-expression:has-for-name ?dsName ."
                 + "     ?patient examination-subject:has-for-subject-identifier ?clinID .                "
                 //                + "     ?patient iec:is-referred-to-by ?dataset ."
                 + "     ?study study:involves-as-patient ?patient ."
@@ -58,7 +58,7 @@ public class ExpeCredible {
                 + "     FILTER (?name ~ 'T1')"
                 + "}";
 
-        
+
         // Find all subclasses of DTI in NeuroLEX
         // Find all NeuroLOG dataset of this modality ("property:label" used as a bridge between NeuroLOG and NeuroLEX)
         // Find associated dataset name and patient ID
@@ -83,21 +83,21 @@ public class ExpeCredible {
                 + "}";
 
 
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg3 = RemoteProducerServiceClient.getPort("http://localhost:8093/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg4 = RemoteProducerServiceClient.getPort("http://localhost:8094/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-
-        kg1.initEngine();
-        kg2.initEngine();
-        kg3.initEngine();
-        kg4.initEngine();
-
-        kg1.loadRDF("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-i3s.rdf");
-        kg2.loadRDF("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-irisa.rdf");
-        kg3.loadRDF("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-ifr49.rdf");
-        kg4.loadRDF("/Users/gaignard/Desktop/Open-LS-LinkedData/nlx_stage_all.owl");
-        kg4.loadRDF("/Users/gaignard/Desktop/Open-LS-LinkedData/bridgeNeuroLEX.rdf");
+//        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg3 = RemoteProducerServiceClient.getPort("http://localhost:8093/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg4 = RemoteProducerServiceClient.getPort("http://localhost:8094/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//
+//        kg1.initEngine();
+//        kg2.initEngine();
+//        kg3.initEngine();
+//        kg4.initEngine();
+//
+//        kg1.loadRDF("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-i3s.rdf");
+//        kg2.loadRDF("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-irisa.rdf");
+//        kg3.loadRDF("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-ifr49.rdf");
+//        kg4.loadRDF("/Users/gaignard/Desktop/Open-LS-LinkedData/nlx_stage_all.owl");
+//        kg4.loadRDF("/Users/gaignard/Desktop/Open-LS-LinkedData/bridgeNeuroLEX.rdf");
 
         Graph graph = Graph.create();
 

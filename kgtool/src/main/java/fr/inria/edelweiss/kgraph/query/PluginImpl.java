@@ -104,6 +104,9 @@ public class PluginImpl extends ProxyImpl {
 		case PPRINT:
 			return pprint(exp, datatype(o), env);
 			
+		case PPRINTALL:
+			return pprintAll(exp, datatype(o), env);
+			
 		case TURTLE:
 			return turtle(datatype(o), env);	
 			
@@ -139,33 +142,37 @@ public class PluginImpl extends ProxyImpl {
 	}
 	
 	public Object function(Expr exp, Environment env, Object o1, Object o2) {
-		
+		IDatatype dt1 = (IDatatype) o1,
+				  dt2 = (IDatatype) o2;	
 		switch (exp.oper()){
 		
 		case GETP:
-			return getProperty(o1, ((IDatatype) o2).intValue());
+			return getProperty(dt1, dt2.intValue());
 			
 		case SETP:
-			return setProperty(o1, ((IDatatype) o2).intValue(), null);		
+			return setProperty(dt1, dt2.intValue(), null);		
 		
 		case SET:
-			return setObject(o1, o2);	
+			return setObject(dt1, dt2);	
 			
 		case SIM:
 				// class similarity
-			return similarity((IDatatype) o1, (IDatatype) o2);
+			return similarity(dt1, dt2);
 			
 		case PSIM:
 			// prop similarity
-			return pSimilarity((IDatatype) o1, (IDatatype) o2);
+			return pSimilarity(dt1, dt2);
 			
 			
 		case ANCESTOR:
 			// common ancestor
-			return ancestor((IDatatype) o1, (IDatatype) o2);
+			return ancestor(dt1, dt2);
 			
 		case PPRINT:
-			return pprint(exp, (IDatatype) o1, (IDatatype) o2, env);	
+			return pprint(exp, dt1, dt2, null, env, false);
+			
+		case TEMPLATE:
+			return template(exp, dt1, dt2, env);		
 						
 		}
 		
@@ -454,24 +461,30 @@ public class PluginImpl extends ProxyImpl {
 	 * exp = kg:pprint(arg);
 	 */
 	IDatatype pprint(Expr exp, IDatatype o, Environment env){
-		return pprint(exp, o, null, env);
+		return pprint(exp, o, null, null, env, false);
+	}
+	
+	IDatatype pprintAll(Expr exp, IDatatype o, Environment env){
+		return pprint(exp, o, null, null, env, true);
+	}
+	
+	
+	IDatatype template(Expr exp, IDatatype t, IDatatype o, Environment env){
+		return pprint(exp, o, null, t, env, true);
 	}
 	
 	/**
-	 * t is the template to be used, it may be null
+	 * tbase is the template base to be used, may be null
+	 * temp is a named template, may be null
 	 * exp = kg:pprint()
 	 */
-	IDatatype pprint(Expr exp, IDatatype o, IDatatype t, Environment env){
-		String tt = null;
-		if (t != null){
-			tt = t.getLabel();
-		}
-		PPrinter p = getPPrinter(env, tt); 
+	IDatatype pprint(Expr exp, IDatatype focus, IDatatype tbase, IDatatype temp, Environment env, boolean all){
+		PPrinter p = getPPrinter(env, getLabel(tbase)); 
 		Expr arg = exp.getExp(0);
 		if (! arg.isVariable()){
 			arg = null;
 		}
-		IDatatype dt = p.pprint(arg, o);
+		IDatatype dt = p.pprint(arg, focus, getLabel(temp), all);
 		return dt;
 	}
 
@@ -521,8 +534,14 @@ public class PluginImpl extends ProxyImpl {
 	 * 
 	 */
 	PPrinter getPPrinter(Environment env){	
-		return getPPrinter(env, null);
+		return getPPrinter(env, (String) null);
 	}
+	
+	String getLabel(IDatatype dt){
+		if (dt == null) return null;
+		return dt.getLabel();
+	}
+	
 	
 	PPrinter getPPrinter(Environment env, String t){		
 		Query q  = env.getQuery();

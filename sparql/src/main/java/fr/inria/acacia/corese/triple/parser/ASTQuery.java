@@ -176,7 +176,7 @@ public class ASTQuery  implements Keyword {
 	List<Atom> from  		= new ArrayList<Atom>();
 	List<Atom> named 		= new ArrayList<Atom>();
 	List<Atom> defFrom, defNamed; 
-	List<Expression> template; 
+	List<Expression> template ; 
 
     List<Atom> adescribe = new ArrayList<Atom>();
 	List<Variable> stack = new ArrayList<Variable>(); // bound variables
@@ -218,6 +218,12 @@ public class ASTQuery  implements Keyword {
 	private Constant empty;
 
 	private boolean renameBlankNode = true;
+
+	private String groupSeparator = System.getProperty("line.separator");
+
+	private boolean isTemplate = false;
+
+	private String name;
 
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
@@ -885,6 +891,7 @@ public class ASTQuery  implements Keyword {
     	return term;
     }
     
+
     
     public  Term createFunction(Constant name, Expression exp) {
     	Term term =  createFunction(name.getName(), exp);
@@ -2325,11 +2332,23 @@ public class ASTQuery  implements Keyword {
     }
     
     public void setAsk(boolean b) {
-    	if (b) setResultForm(QT_ASK);
+    	if (b){
+    		setResultForm(QT_ASK);
+    	}
     }
     
+    public void setSelect(boolean b) {
+    	if (b){
+    		setResultForm(QT_SELECT);
+    	}
+    }
+    
+    public void setTemplate(boolean b){
+    	isTemplate  = b;
+   }
+    
     public boolean isTemplate() {
-    	return (getResultForm() == QT_TEMPLATE);
+    	return isTemplate;
     }
     
     public boolean isDescribe() {
@@ -2583,6 +2602,20 @@ public class ASTQuery  implements Keyword {
 	 * 
 	 **************************************************/
 
+	/**
+     * template { group { } }
+     */
+    public Term createGroup(ExpressionList el) {
+    	if (el.getSeparator() == null){
+    		el.setSeparator(groupSeparator);
+    	}
+    	return createFunction(Processor.GROUPCONCAT, el);
+    }
+    
+    public void setGroupSeparator(String s){
+    	groupSeparator = s;
+    }
+
 	
 	public void addTemplate(Expression at){
 		if (template == null){
@@ -2601,10 +2634,9 @@ public class ASTQuery  implements Keyword {
 	 * (concat(.. ?px .. ?py ..) as ?out)
 	 */
 	void compileTemplate(){
-		Term t = compileTemplateFun();
+		Expression t = compileTemplateFun();
 		Variable out = Variable.create(OUT);
 		defSelect(out, t);
-		setResultForm(QT_SELECT);
 	}
 	
 	
@@ -2612,17 +2644,24 @@ public class ASTQuery  implements Keyword {
 	 * Compile the template as a concat() 
 	 * where variables are compiled as kg:pprint()
 	 */
-	Term compileTemplateFun(){
+	Expression compileTemplateFun(){
 		Term t = Term.function(CONCAT);
-		
-		for (Expression exp : template){
-			exp = compileTemplate(exp);
-			t.add(exp);
+
+		if (template != null){
+			if (template.size() == 1){
+				return compileTemplate(template.get(0));
+			}
+			else {
+				for (Expression exp : template){
+					exp = compileTemplate(exp);
+					t.add(exp);
+				}
+			}
 		}
-		
+
 		return t;
 	}
-	
+
 	
 	/**
 	 * if exp is a variable: (kg:pprint(?x) as ?px)
@@ -2724,6 +2763,18 @@ public class ASTQuery  implements Keyword {
 
 	public void setRenameBlankNode(boolean renameBlankNode) {
 		this.renameBlankNode = renameBlankNode;
+	}
+
+	public void setName(String label) {
+		name = label;
+	}
+	
+	public void setName(Constant cst) {
+		name = cst.getLabel();
+	}
+
+	public String getName() {
+		return name;
 	}
 
 

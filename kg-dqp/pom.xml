@@ -104,7 +104,7 @@
                 </executions>
                 <configuration>
                     <arguments>
-                        <argument>-Xmx4096m</argument>
+                        <argument>-Xmx1024m</argument>
                     </arguments>
                 </configuration>
             </plugin>
@@ -157,7 +157,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-Xmx4096m</argLine>
+                    <argLine>-Xmx1024m</argLine>
                     <testFailureIgnore>false</testFailureIgnore>
                     <skip>false</skip>
                 </configuration>

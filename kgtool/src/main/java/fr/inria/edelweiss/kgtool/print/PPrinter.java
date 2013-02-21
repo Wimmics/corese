@@ -606,9 +606,6 @@ public class PPrinter {
 			if (! b){
 				q.setFail(true);
 			}
-			if (name(q).equals("list.rq")){
-				q.setFail(true);
-			}
 		}
 		qe.clean();
 		if (stat) {

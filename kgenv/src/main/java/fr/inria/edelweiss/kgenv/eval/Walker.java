@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.CoreseStringBuilder;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -30,11 +31,11 @@ class Walker extends Interpreter {
 	
 	Expr exp;
 	Node qNode, tNode;
-	//double sum = 0;
 	IDatatype dtres;
-	int num = 0;
-	boolean isError = false;
-	String str = "", sep = " ";
+	int num = 0, count = 0;
+	boolean isError = false, first = true;
+	StringBuilder sb;
+	String sep = " ";
 	Group group;
 	Distinct distinct;
 	TreeData tree;
@@ -50,7 +51,7 @@ class Walker extends Interpreter {
 		if (exp.getModality() != null){
 			sep = exp.getModality();
 		}
-		
+		sb = new StringBuilder();
 		if (exp.isDistinct()){
 			// use case: count(distinct ?name)
 			List<Node> nodes;
@@ -109,11 +110,9 @@ class Walker extends Interpreter {
 			return proxy.getValue(num);
 
 		case GROUPCONCAT:
-			// remove last sep:
-			if (str.length()>0){
-				str = str.substring(0, str.length()-sep.length());
-			}
-			return proxy.getValue(str);
+			//String res = sb.toString();
+			//return proxy.getValue(res);
+			return DatatypeMap.newStringBuilder(sb);
 		}
 		
 		return null;
@@ -158,26 +157,43 @@ class Walker extends Interpreter {
 		switch (exp.oper()){
 		
 		case GROUPCONCAT:
-			// concat may have several arguments for one mapping
-			// hence loop on args
 			
-			IDatatype[] value = new IDatatype[exp.getExpList().size()];
-			Tuple t = new Tuple(value);
+			boolean isDistinct = f.getExp().isDistinct();
+			IDatatype[] value = null;
+			Tuple t = null;
+			if (isDistinct){
+				value = new IDatatype[exp.getExpList().size()];
+				t = new Tuple(value);
+			}
+			
+			StringBuffer res = new StringBuffer();
+			
+			if (count++ > 0){
+				res.append(sep);
+			}
+			
 			int i = 0;
-			String res = "";
-			
-			for (Expr arg : exp.getExpList()){				
+			for (Expr arg : exp.getExpList()){	
+
 				IDatatype dt = (IDatatype) eval.eval(arg, map);
-				value[i++] = dt;
+				if (isDistinct) {
+					value[i++] = dt;
+				}
+				
 				if (dt != null){
-					res += dt.getLabel() ;
+					if (dt.getStringBuilder() != null){
+						res.append(dt.getStringBuilder());
+					}
+					else {
+						res.append(dt.getLabel());
+					}
 				}		
 			}
 			
-			res += sep;
 			
 			if (accept(f, t)){
-				str += res;
+				//res.append(sep);
+				sb.append(res);
 			}
 												
 			return null;

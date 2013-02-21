@@ -19,8 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
-import javax.activation.DataHandler;
-import javax.xml.ws.BindingProvider;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import wsimport.KgramWS.RemoteProducer;
@@ -114,12 +112,14 @@ public class RemoteProducerWSImpl implements Producer {
 
 //  Version no-streaming                
                 String sparqlRes = rp.getEdges(query);
+//                System.out.println(sparqlRes);
                 if (sparqlRes != null) {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
                     l.load(is);
-//                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+//                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
                 }
+//                System.out.println("");
 //                logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
 //                logger.info("Received results  from " + rp.getEndpoint());
 //                System.out.println("Received results  from " + rp.getEndpoint());

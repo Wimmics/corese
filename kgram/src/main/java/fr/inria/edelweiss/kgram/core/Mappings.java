@@ -53,6 +53,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	Node fake;
 	Object object;
 	private Object graph;
+	private int nbsolutions = 0;
 
 	EventManager manager;
 	
@@ -418,6 +419,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		
 	
 	void finish(Query qq){
+		setNbsolutions(size());
 		if (qq.hasGroupBy() && ! qq.isConstruct()){ 
 			// after group by (and aggregate), leave one Mapping for each group
 			// with result of the group
@@ -945,6 +947,14 @@ implements Comparator<Mapping> , Iterable<Mapping>
 
 	public void setDelete(List<Entity> lDelete) {
 		this.delete = lDelete;
+	}
+
+	public int nbSolutions() {
+		return nbsolutions;
+	}
+
+	void setNbsolutions(int nbsolutions) {
+		this.nbsolutions = nbsolutions;
 	}
 
 

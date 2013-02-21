@@ -364,6 +364,14 @@ public class DatatypeMap implements Cst, RDF {
 		return new CoreseString(result);
 	}
 	
+	public static IDatatype newStringBuilder(StringBuilder result) {
+		return new CoreseStringBuilder(result);
+	}
+	
+	public static IDatatype newStringBuilder(String result) {
+		return new CoreseStringBuilder(new StringBuilder(result));
+	}
+	
 	public static IDatatype newInstance(boolean result) {
 		return new CoreseBoolean(result);
 	}

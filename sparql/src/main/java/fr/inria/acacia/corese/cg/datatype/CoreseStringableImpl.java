@@ -65,17 +65,12 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 		return code;
 	}
 
-
-//	public String getValue(){
-//		return value;
-//	}
-	
 	public String getLabel(){
 		return value;
 	}
 
 	public String getLowerCaseLabel(){
-		return value.toLowerCase();
+		return getLabel().toLowerCase();
 	}
 
 	public boolean isNumber() {

@@ -426,6 +426,10 @@ public class CoreseDatatype
 		return getNormalizedLabel();
 	}
 	
+	public StringBuilder getStringBuilder(){
+		return null;
+	}
+	
 	public boolean isNumber() {
 		return false;
 	}

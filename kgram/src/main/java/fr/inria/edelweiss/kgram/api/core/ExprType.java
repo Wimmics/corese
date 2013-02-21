@@ -158,10 +158,12 @@ public interface ExprType {
 	
 	public static int QNAME 	= 220;
 	public static int PPRINT 	= 221;
-	public static int TURTLE 	= 222;
-	public static int LEVEL 	= 223;
-	public static int INDENT 	= 224;
-	public static int PPURI 	= 225;
+	public static int PPRINTALL = 222;
+	public static int TURTLE 	= 223;
+	public static int LEVEL 	= 224;
+	public static int INDENT 	= 225;
+	public static int PPURI 	= 226;
+	public static int TEMPLATE 	= 227;
 
 
 

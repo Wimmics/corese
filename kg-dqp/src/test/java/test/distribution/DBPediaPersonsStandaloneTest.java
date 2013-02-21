@@ -12,7 +12,6 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Enumeration;
@@ -22,8 +21,9 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -69,19 +69,16 @@ public class DBPediaPersonsStandaloneTest {
     // The methods must be annotated with annotation @Test. For example:
 
     @Test
-    @Ignore
     public void remoteDBPediaQuery() throws EngineException, MalformedURLException, IOException {
 
         EngineFactory ef = new EngineFactory();
         IEngine engine = ef.newInstance();
 
-//        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep1.rdf");
-//        File rep2 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/DBPedia-persons/persondata_en_rep2.rdf");
+        String rep1 = "http://neurolog.unice.fr/~neurolog-dev/data/persondata.1.rdf";
+        String rep2 = "http://neurolog.unice.fr/~neurolog-dev/data/persondata.2.rdf";
 
-        File rep1 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/338K/2-stores/persondata.1.rdf");
-        File rep2 = new File("/Users/gaignard/Desktop/DBPedia-fragmentation/338K/2-stores/persondata.2.rdf");
-        engine.load(rep1.getAbsolutePath());
-        engine.load(rep2.getAbsolutePath());
+        engine.load(rep1);
+        engine.load(rep2);
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
 
@@ -94,6 +91,8 @@ public class DBPediaPersonsStandaloneTest {
         System.out.println("Graph size " + gEng.getGraph().size());
         System.out.println("Results size " + res.size());
         String[] variables = res.getVariables();
+        
+        assertEquals(3,res.size());
 
         for (Enumeration<IResult> en = res.getResults(); en.hasMoreElements();) {
             IResult r = en.nextElement();

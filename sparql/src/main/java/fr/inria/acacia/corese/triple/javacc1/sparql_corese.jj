@@ -546,38 +546,67 @@ Exp TemplateQuery() : { Exp stack; }
   stack = WhereClause()
   SolutionModifier()  
   {
-    astq.setResultForm(ASTQuery.QT_TEMPLATE);
+    astq.setTemplate(true);
     return stack; 
   }
 }
 
 
 
-void Template(Exp stack) : { String s; Variable var; Constant cst; Expression exp; }
+void Template(Exp stack) : { String str; Variable var; Constant cst; Expression exp; ExpressionList list; }
 {
-    <TEMPLATE>
+    <TEMPLATE> { cst = null; }
+    
+    ( <DEBUG> { astq.setDebug(true); } ) ?
+    
+    ( cst = IRIrefConst() { astq.setName(cst); }) ?
       
+  (
 	<LBRACE>
 	
 		( 
 		  (
-			  s = String() { exp = astq.createConstant(s, null, null); } 
-			  |  
-			  exp = Var()  
-			  |
-			  exp = FunctionCall(stack) 
-			  |
-			  exp = BuiltInCall(stack)  
-			  |
-			  exp = FunctionCorese(stack) 
+			exp = PrimaryExpression(stack)
+			
+		  | 
+		  
+		    <GROUP>           { list = new ExpressionList(); str = null; }
+		  
+		     ( <DISTINCT>     { list.setDistinct(true); } ) ?
+		  
+		     ( str = String() { list.setSeparator(str); } ) ?
+		    
+		  	<LBRACE>  ( exp = PrimaryExpression(stack) 
+		  				      { list.add(exp); }
+		  			  ) * 
+		    <RBRACE>
+		    
+		    { exp = astq.createGroup(list); }
+		  
 		  )
 		  { astq.addTemplate(exp); }
+		  
 		) *
 	
 	<RBRACE>
+	
+	|
+	
+	<GROUP>     { list = new ExpressionList(); }
+	
+		<LBRACE>
+				( exp = PrimaryExpression(stack)
+				 
+		  	      { list.add(exp); }
+		  	    ) * 
+		<RBRACE>
+	
+	   { exp = astq.createGroup(list); astq.addTemplate(exp); }
+	
+  )
+
+	
 }
-
-
 
 
 
@@ -1430,11 +1459,7 @@ void Constraint(Exp stack) : { }
 
 void Filter(Exp stack) : { Expression expression1; Triple triple; }
 {
-  (   expression1 = BrackettedExpression(stack) 
-    | expression1 = BuiltInCall(stack) 
-    | expression1 = FunctionCorese(stack)
-    | expression1 = FunctionCall(stack) 
-  )
+  expression1 = FilterExp(stack)
   { 
   		if (expression1 != null ) {
 	    	triple = astq.createTriple(expression1);
@@ -1442,6 +1467,17 @@ void Filter(Exp stack) : { Expression expression1; Triple triple; }
 	    }
   }
 }
+
+Expression FilterExp(Exp stack) : {Expression exp;}
+{
+  (   exp = BrackettedExpression(stack) 
+    | exp = BuiltInCall(stack) 
+    | exp = FunctionCorese(stack)
+    | exp = FunctionCall(stack) 
+  )
+  {return exp;}
+}
+
 
 
 // -------- Construct patterns
@@ -2204,7 +2240,7 @@ Term FunctionCall(Exp stack) : { Term term1;   ExpressionList v; Constant cst;}
 Expression IRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term term; Expression expression;  Constant cst;}
 {
   cst = IRIrefConst() {expression = cst;}
-  ( 
+  ( LOOKAHEAD(2)
     v = ArgList(stack)
     { 
     	term = astq.createFunction(cst, v); 
@@ -2214,6 +2250,7 @@ Expression IRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term ter
   { return expression; } 
 }
 
+
 ExpressionList ArgList(Exp stack) : { ExpressionList v; Token t; Expression expression1; String str;}
 {
   { 
@@ -2222,12 +2259,7 @@ ExpressionList ArgList(Exp stack) : { ExpressionList v; Token t; Expression expr
   }
   
   ( 
-  
- //   <NIL> |
-  //  <LPAREN>  <RPAREN> 
-   
-   
- 	 
+       	 
   	<LPAREN> 
   	
 	  	(<DISTINCT> {v.setDistinct(true);}) ? 

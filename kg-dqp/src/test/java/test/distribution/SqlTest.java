@@ -101,7 +101,7 @@ public class SqlTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void remoteSQLQuery() throws EngineException, MalformedURLException, IOException {
 
         String sparqlT2 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"

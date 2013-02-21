@@ -36,6 +36,8 @@ public class Query extends Exp {
 	int limit = Integer.MAX_VALUE, offset = 0, 
 	// if slice > 0 : service gets mappings from previous pattern by slices
 	slice = 0;
+
+	private int number = 0;
 	boolean distinct = false;
 	int iNode = 0, iEdge = 0, iPath = 0;
 	List<Node> from, named, selectNode;
@@ -105,6 +107,8 @@ public class Query extends Exp {
 	private boolean isBind = false;
 
 	private boolean isSynchronized = false;
+
+	private boolean isTemplate = false;
 	
 	Query(){
 		super(QUERY);
@@ -2175,6 +2179,22 @@ public class Query extends Exp {
 
 	public void setPPrinter(Object pprinter) {
 		this.pprinter = pprinter;
+	}
+
+	public void setTemplate(boolean template) {
+		isTemplate  = template;
+	}
+
+	public boolean isTemplate() {
+		return isTemplate;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
 	}
 	
 	

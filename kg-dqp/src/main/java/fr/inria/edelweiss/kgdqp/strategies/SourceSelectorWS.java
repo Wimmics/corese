@@ -41,7 +41,7 @@ public class SourceSelectorWS {
             try {
 
                 String res = rp.getRp().getEdges(query);
-                logger.info("Remote ASK for "+edge.getEdgeNode().getLabel());
+//                logger.info("Remote ASK for "+edge.getEdgeNode().getLabel());
                 if ((res == null) || (res.length() == 0)) {
                     //update cache
                     rp.getCacheIndex().put(edge.getLabel(), false);

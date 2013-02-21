@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.query;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -32,6 +33,7 @@ public class QueryEngine implements Engine {
 	Graph graph;
 	QueryProcess exec;
 	ArrayList<Query> list;
+	HashMap<String, Query> table;
 	
 	boolean isDebug = false,
 			isActivate = true,
@@ -41,6 +43,7 @@ public class QueryEngine implements Engine {
 		graph = g;
 		exec = QueryProcess.create(g);
 		list = new ArrayList<Query>();
+		table = new HashMap<String, Query>();
 	}
 	
 	public static QueryEngine create(Graph g){
@@ -65,18 +68,43 @@ public class QueryEngine implements Engine {
 		Query qq = exec.compile(q);
 		if (qq != null) {
 			ASTQuery ast = (ASTQuery) qq.getAST();
-			list.add(qq);
+			defQuery(qq);
 			return qq;
 		}
 		return null;
 	}
 	
 	public void defQuery(Query q){
-		list.add(q);
+		if (q.isTemplate()){
+			defTemplate(q);
+		}
+		else {
+			list.add(q);
+		}
+	}
+	
+	/**
+	 * Named templates are stored in a table, not in the list
+	 */
+	public void defTemplate(Query q){
+		if (q.hasPragma(Pragma.NAME)){
+			table.put((String) q.getPragma(Pragma.NAME), q);
+		}
+		else {
+			list.add(q);
+		}
 	}
 	
 	public List<Query> getQueries(){
 		return list;
+	}
+	
+	public List<Query> getTemplates(){
+		return list;
+	}
+	
+	public Query getTemplate(String name){
+		return table.get(name);
 	}
 	
 	
@@ -205,6 +233,16 @@ public class QueryEngine implements Engine {
 	int getLevel(Query q){
 		ASTQuery ast = (ASTQuery) q.getAST();
 		return ast.getPriority();
+	}
+	
+	public void clean(){
+		ArrayList<Query> l = new ArrayList<Query>();
+		for (Query q : list){
+			if (! q.isFail()){
+				l.add(q);
+			}
+		}
+		list = l;
 	}
 	
 

@@ -230,6 +230,9 @@ public interface IDatatype
 	 */
 	public String getLabel();
 	
+	public StringBuilder getStringBuilder();
+
+	
 
 	/**
 	 * @return true if this instance class is a number

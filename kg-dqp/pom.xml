@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
-        </dependency>
+        </dependency>    
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgendpoint</artifactId>
@@ -159,9 +159,15 @@
                     <forkMode>pertest</forkMode>
                     <argLine>-Xmx4096m</argLine>
                     <testFailureIgnore>false</testFailureIgnore>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
                 <version>2.10</version>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.4</version>
             </plugin>
             
         </plugins>

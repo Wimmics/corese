@@ -17,9 +17,14 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -978,6 +983,10 @@ public class Graph //implements IGraph
 	
 	public Node getPropertyNode(String label){
 		return property.get(label);
+	}
+	
+	public Node getPropertyNode(Node p){
+		return property.get(p.getLabel());
 	}
 	
 	public void addPropertyNode(Node pNode){
@@ -1953,6 +1962,119 @@ public class Graph //implements IGraph
 		}
 		return true;
 	}
+	
+	
+	
+	/**
+	 * Check if query may succeed on graph
+	 * PRAGMA: no RDFS entailments, simple RDF match
+	 */
+			
+	public boolean check(Query q){
+		return check(q, q.getBody());
+	}
+	
+	boolean check(Query q, Exp exp){
+		
+		switch (exp.type()){
+
+		case ExpType.EDGE: 
+			Edge edge = exp.getEdge();
+			Node pred = edge.getEdgeNode();
+			Node var  = edge.getEdgeVariable();
+
+			if (var == null){
+				
+				if (getPropertyNode(pred) == null){
+					// graph does not contain this property: fail now
+					return false;
+				}
+				else if (isType(pred)){ 
+					Node value = edge.getNode(1);
+					// ?c a owl:TransitiveProperty
+					if (value.isConstant()){
+						if (getNode(value) == null){
+							return false;
+						}
+					}
+					else if (q.getBindingNodes().contains(value) && q.getMappings() != null){
+						// ?c a ?t with bindings
+						for (Mapping map : q.getMappings()){
+
+							Node node = map.getNode(value);
+							if (node != null && getNode(node) != null){
+								// graph  contain node
+								return true;
+							}
+						}
+						return false;
+					}
+				}
+			}
+			else if (q.getBindingNodes().contains(var) && q.getMappings() != null){
+				// property variable with bindings: check the bindings
+				for (Mapping map : q.getMappings()){
+
+					Node node = map.getNode(var);
+					if (node != null && getPropertyNode(node) != null){
+						// graph  contain a property
+						return true;
+					}
+				}
+				
+				return false;
+			}
+			
+			break;
+			
+			
+		case ExpType.UNION: 
+			
+			for (Exp ee : exp.getExpList()){	
+				if (check(q, ee)){
+					return true;
+				}
+			}
+			return false;
+
+			
+		case ExpType.AND: 	
+		case ExpType.GRAPH: 	
+
+			for (Exp ee : exp.getExpList()){
+				boolean b = check(q, ee);
+				if (! b){
+					return false;
+				}
+			}	
+		}
+		
+		return true;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	
 }

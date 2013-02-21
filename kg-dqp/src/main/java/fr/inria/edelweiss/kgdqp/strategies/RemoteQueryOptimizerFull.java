@@ -12,10 +12,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgraph.core.EdgeCore;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -49,15 +46,13 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         Node subject = env.getNode(edge.getNode(0));
         Node object = env.getNode(edge.getNode(1));
         Node predicate = null;
-
-        List<Filter> filters = new ArrayList<Filter>();
-
+        // 
         if (edge.getEdgeVariable() != null) {
             predicate = env.getNode(edge.getEdgeVariable());
         }
 
 
-        //   
+        //  No bindings found ?
         if (subject == null) {
             subject = edge.getNode(0);
         }
@@ -65,13 +60,17 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
             object = edge.getNode(1);
         }
         if (predicate == null) {
-            predicate = edge.getEdgeNode();
+            if (edge.getEdgeVariable() != null) {
+                predicate = edge.getEdgeVariable();
+            } else {
+                predicate = edge.getEdgeNode();
+            }
         }
 
         Edge reqEdge = EdgeCore.create(null, subject, predicate, object);
 
         //filter handling
-        filters = Util.getApplicableFilter(env, reqEdge);
+        List<Filter> filters = Util.getApplicableFilter(env, reqEdge);
 
         String sparql = sparqlPrefixes;
         sparql += "construct  { " + subject + " "+ predicate + " " + object  + " } \n where { \n";
@@ -98,6 +97,4 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
 //        
         return sparql;
     }
-
-    
 }

@@ -175,7 +175,7 @@ public class W3CTest11KGraph {
 	
 	List<String> errors = new ArrayList<String>();
 	List<String> names = new ArrayList<String>();
-	Earl earl;
+//	Earl earl;
 
 	class Testing extends Hashtable<String,Integer> {}
 		
@@ -183,7 +183,7 @@ public class W3CTest11KGraph {
 		DatatypeMap.setSPARQLCompliant(true);
 		tko = new Testing();
 		tok = new Testing();
-		earl = new Earl();
+//		earl = new Earl();
 	}
 	
 	public static void main(String[] args){
@@ -447,7 +447,7 @@ public class W3CTest11KGraph {
 					
 				if (! process){
 					String test	 = getValue(map, "?x");
-					earl.skip(test);
+//					earl.skip(test);
 				}
 				else if (query(path, map, update)){
 					ok++;
@@ -694,20 +694,20 @@ public class W3CTest11KGraph {
 					errors.add(query);
 				}
 				
-				earl.define(test, qq.isCorrect());
+//				earl.define(test, qq.isCorrect());
 				return qq.isCorrect();
 			}
 			// NEGATIVE is tested below, at runtime
 		} 
 		catch (EngineException e1) {
 			if (type!=null && type.contains(NEGATIVE)){
-				earl.define(test, true);
+//				earl.define(test, true);
 				return true;
 			}
 			System.out.println("** Parser Error: " + e1.getMessage());
 			names.add(fquery);
 			errors.add(query);
-			earl.define(test, false);
+//			earl.define(test, false);
 			return false;
 		}
 		
@@ -921,13 +921,13 @@ public class W3CTest11KGraph {
 				errors.add(query);
 			}
 			
-			earl.define(test, result);
+//			earl.define(test, result);
 			return result;
 			
 		}
 		catch (EngineException e){
 			if (type!=null && type.contains(NEGATIVE)){
-				earl.define(test, true);
+//				earl.define(test, true);
 				return true;
 			}
 			
@@ -938,7 +938,7 @@ public class W3CTest11KGraph {
 			System.out.println(query);
 			errors.add(query);
 			names.add(fquery);
-			earl.define(test, false);
+//			earl.define(test, false);
 			return false;			
 		}
 	}

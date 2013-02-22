@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.query;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -105,6 +106,10 @@ public class QueryEngine implements Engine {
 	
 	public Query getTemplate(String name){
 		return table.get(name);
+	}
+	
+	public Collection<Query> getNamedTemplates(){
+		return table.values();
 	}
 	
 	
@@ -225,10 +230,16 @@ public class QueryEngine implements Engine {
 			public int compare(Query q1, Query q2){
 				int p1 = getLevel(q1);
 				int p2 = getLevel(q2);
-				return Integer.compare(p1, p2);
+				return compare(p1, p2);
 			}
+			
+			int compare(int x, int y) {
+		        return (x < y) ? -1 : ((x == y) ? 0 : 1);
+		    }
 		});
 	}
+	
+	 
 	
 	int getLevel(Query q){
 		ASTQuery ast = (ASTQuery) q.getAST();

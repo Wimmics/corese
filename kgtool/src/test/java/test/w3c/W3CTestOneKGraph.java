@@ -38,8 +38,8 @@ public class W3CTestOneKGraph {
 
 	    Graph graph = Graph.create();
 		Load load = Load.create(graph);
-		BuildOptim bb = BuildOptim.create(graph);
-		load.setBuild(bb);
+		//BuildOptim bb = BuildOptim.create(graph);
+		//load.setBuild(bb);
 		
 //String gg = "file:///home/corby/workspace/coreseV2/src/test/resources/data/w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/entailment/rdf03.rdf";		
 //ArrayList<String> from = new ArrayList<String>();

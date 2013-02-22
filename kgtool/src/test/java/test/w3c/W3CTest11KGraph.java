@@ -97,9 +97,9 @@ public class W3CTest11KGraph {
 	 ************/
 	
 	// ** directory where data are:
-	static final String root = froot2;
+	static final String root = wroot; //froot2
 	// ** directory where to save earl report:
-	static final String more  = data + "w3c-sparql11/data/";
+	static final String more = data + "w3c-sparql11/data/";
 	 
 	
 	// query
@@ -383,7 +383,7 @@ public class W3CTest11KGraph {
 			System.out.println("*** Missing result: " + total + " " + nbtest);
 		}
 		
-		earl.toFile(more + "earl.ttl");
+		//earl.toFile(more + "earl.ttl");
 		
 		// There are 5 known erros
 		assertEquals("Results", 5, errors.size());

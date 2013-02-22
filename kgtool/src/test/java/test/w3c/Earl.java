@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgtool.load.QueryLoad;
 public class Earl {
 	
 	static final String NL 	 = System.getProperty("line.separator");
-	static final String data = W3CTest11KGraph.more;
+	static final String data = TestW3C11KGraph.more;
 
 	StringBuilder sb;
 	Formatter fmt;

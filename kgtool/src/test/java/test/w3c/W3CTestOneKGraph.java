@@ -60,7 +60,7 @@ public class W3CTestOneKGraph {
 			e.printStackTrace();
 		}
 		//System.out.println(graph.getIndex());
-		String query = new W3CTest11KGraph().read(data + "i18n/normalization-02.rq");
+		String query = new TestW3C11KGraph().read(data + "i18n/normalization-02.rq");
 		System.out.println(query);
 	
 		

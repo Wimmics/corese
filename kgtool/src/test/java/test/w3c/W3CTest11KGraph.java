@@ -11,16 +11,21 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
+
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 
 import fr.inria.acacia.corese.api.IDatatype;
@@ -55,12 +60,13 @@ import fr.inria.edelweiss.kgtool.load.RuleLoad;
 import fr.inria.edelweiss.kgtool.print.CSVFormat;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TSVFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 
 /**
- * KGRAM benchmark on W3C SPARQL 1.1 Query Language Test cases
+ * KGRAM benchmark on W3C SPARQL 1.1 Query & Update Test cases
  * 
  * entailment:
  * 
@@ -68,8 +74,6 @@ import fr.inria.edelweiss.kgtool.print.XMLFormat;
  * rdfs08.rq inherit rdfs:range ?
  * rdfs11.rq subclassof is reflexive
  * 
- * error in kgram:
- * rdfs09.rq one answer with rdf:type & subsumption
  *
  * @author Olivier Corby, Edelweiss, INRIA 2011
  * 
@@ -77,18 +81,25 @@ import fr.inria.edelweiss.kgtool.print.XMLFormat;
 public class W3CTest11KGraph {
 	// root of test case RDF data
 	static final String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-	// local copy:
+	// old local copy:
 	static final String froot  = data + "w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/";
+	// new local copy:
+	static final String froot2  = data + "w3c-sparql11/sparql11-test-suite/";
 	// W3C test case:
 	static final String wroot = "http://www.w3.org/2009/sparql/docs/tests/data-sparql11/";
-	
-	static final String root = froot;
-	
-	static final String more  = data + "w3c-sparql11/data/";
-
-	static final String root0 = data + "test-suite-archive/data-r2/";
-	
+	//static final String RULE = "/net/servers/ftp-sop/wimmics/soft/rule/rdfs.rul";
+	static final String RULE = data + "w3c-sparql11/data/rdfs.rul" ;	
+	static final String root0 = data + "test-suite-archive/data-r2/";	
 	static final String DC = "http://purl.org/dc/elements/1.1/";
+	
+	/************
+	 *  TO SET: 
+	 ************/
+	
+	// ** directory where data are:
+	static final String root = froot2;
+	// ** directory where to save earl report:
+	static final String more  = data + "w3c-sparql11/data/";
 	 
 	
 	// query
@@ -154,7 +165,7 @@ public class W3CTest11KGraph {
 	static String NEGATIVE = "Negative";
 	static String POSITIVE = "Positive";
 
-	Test tok, tko;  
+	Testing tok, tko;  
 	int gok = 0, gko = 0, 
 	total =0, nbtest = 0;
 	boolean verbose = true;
@@ -166,12 +177,12 @@ public class W3CTest11KGraph {
 	List<String> names = new ArrayList<String>();
 	Earl earl;
 
-	class Test extends Hashtable<String,Integer> {}
+	class Testing extends Hashtable<String,Integer> {}
 		
 	public W3CTest11KGraph (){
 		DatatypeMap.setSPARQLCompliant(true);
-		tko = new Test();
-		tok = new Test();
+		tko = new Testing();
+		tok = new Testing();
 		earl = new Earl();
 	}
 	
@@ -214,8 +225,6 @@ public class W3CTest11KGraph {
 		test(root0 + "reduced");
 		test(root0 + "expr-builtin");	
 		test(root0 + "construct");
-
-
 	}
 
 	
@@ -243,7 +252,7 @@ public class W3CTest11KGraph {
 		test(root + "bindings");
 		test(root + "exists");
 		
-		test(root + "entailment");
+		//test(root + "entailment");
 
 	}
 	
@@ -266,12 +275,12 @@ public class W3CTest11KGraph {
 		 test(root + "copy", true);
 	}
 	
+	
 	void test(){
 		sparql1=true;
 		 //test(root + "functions", false);
-		 //test(froot + "basic-update", true);		 
-		 test(root + "entailment", false);		 
-
+		// test(froot + "basic-update", true);		 
+		test(root + "csv-tsv-res");			 
 	}
 	
 	void testelem(){
@@ -279,19 +288,21 @@ public class W3CTest11KGraph {
 		test(root0 + "dataset");
 	}
 	
-	void process(){
+	@Test
+	public void process(){
 		gok=0;
 		gko=0;
 		
 		// 28 errors  416 success
 		// 29 errors 04/05/12
 		// 31 errors 11/05/12 because of optional DOT 
-		//test0();
-		//testelem();
+		// test0();
+		// testelem();
 		
 		if (true){
 			test1();
 			testUpdate();
+			//test0(); 31 errors
 		}
 		else {
 			test();
@@ -316,8 +327,8 @@ public class W3CTest11KGraph {
 		System.out.println("<link rel='stylesheet' href='kgram.css' type='text/css'  />");
 		System.out.println("</head><body>");
 		System.out.println("<h2>Corese 3.0 KGRAM  SPARQL 1.1 Query &amp; Update W3C Test cases</h2>");
-		System.out.println("<p> Olivier Corby - Wimmics (ex Edelweiss) - INRIA Sophia Antipolis Méditerranée</p>");
-		System.out.println("<p>" + new Date() + " - Corese 3.0 <a href='http://www-sop.inria.fr/edelweiss/software/corese'>homepage</a></p>");
+		System.out.println("<p> Olivier Corby - Wimmics - INRIA I3S</p>");
+		System.out.println("<p>" + new Date() + " - Corese 3.0 <a href='http://wimmics.inria.fr/corese'>homepage</a></p>");
 		//System.out.println("<p><a href='http://www.w3.org/2001/sw/DataAccess/tests/r2'>SPARQL test cases</a></p>");
 		System.out.println("<table border='1'>");
 		System.out.println("<tr>");
@@ -373,6 +384,10 @@ public class W3CTest11KGraph {
 		}
 		
 		earl.toFile(more + "earl.ttl");
+		
+		// There are 5 known erros
+		assertEquals("Results", 5, errors.size());
+
 
 		//Processor.finish();
 				
@@ -517,8 +532,9 @@ public class W3CTest11KGraph {
 		boolean isEmpty   = getValue(map, "?ee") != null;
 		boolean isBlankResult = false;
 		boolean isJSON = false, isCSV = false, isTSV = false;
-		boolean rdfs = ent != null &&  ent.equals(ENTAILMENT+"RDFS");
-		boolean rdf  = ent != null &&  ent.equals(ENTAILMENT+"RDF");
+		//boolean rdfs = ent != null &&  ent.equals(ENTAILMENT+"RDFS");
+		boolean rdfs = ent != null && ! ent.equals(ENTAILMENT+"RDF");
+		boolean rdf  = ent != null &&   ent.equals(ENTAILMENT+"RDF");
 		int entail = QueryProcess.STD_ENTAILMENT;
 		
 		
@@ -530,7 +546,7 @@ public class W3CTest11KGraph {
 	
 		if (fquery == null) fquery = getValue(map, "?a");
 		
-		//if (!fquery.contains("rdfs04"))return true;
+		//if (! fquery.contains("csv-tsv") ) return true;
 		
 		if (trace) System.out.println(pp(fquery));	
 		
@@ -538,25 +554,29 @@ public class W3CTest11KGraph {
 		fquery =  clean(fquery);
 		QueryLoad ql = QueryLoad.create();
 		String query = ql.read(fquery);
+		
 		if (query == null || query == ""){
 			System.out.println("** ERROR 1: " + fquery + " " + query);
+			return false;
 		}
 						
 		Graph graph = Graph.create();
 		
 		if (rdf || rdfs){
+
 			graph.setEntailment();
-			if (rdfs){
-				// infer types using rdf:type/rdfs:subClassOf*
-				// TODO: clean this
-				graph.set(RDFS.SUBCLASSOF, true);
+			if (rdf){
+				graph.set(RDF.RDF, true);
+			}
+			else {
+				graph.set(RDFS.RDFS, true);
 			}
 		}
 		
 		Load load     = Load.create(graph);
 		graph.setOptimize(true);
 		load.reset();
-		QueryProcess exec = QueryProcess.create(graph);
+		QueryProcess exec = QueryProcess.create(graph, true);
 		exec.setSPARQLCompliant(true);
 		// for update:
 		exec.setLoader(load);
@@ -712,6 +732,7 @@ public class W3CTest11KGraph {
 		fr.inria.edelweiss.kgenv.eval.Dataset ds = fr.inria.edelweiss.kgenv.eval.Dataset.create();
 		ds.setUpdate(isUpdate);
 
+		// default graph
 		if (fdefault.size() == 0){
 			for (Node node : qq.getFrom()){
 				String name = node.getLabel();
@@ -719,6 +740,7 @@ public class W3CTest11KGraph {
 			}
 		}
 		
+		// named graphs
 		if (input.getURIs().size() == 0){
 			for (Node node : qq.getNamed()){
 				String name = node.getLabel();
@@ -728,9 +750,9 @@ public class W3CTest11KGraph {
 		}
 
 
+		// default graph
 		if (fdefault.size()>0){
 			// Load RDF files for default graph
-			//defaultGraph = fdefault;
 			ds.defFrom();
 			for (String file : fdefault){
 				ds.addFrom(file);
@@ -739,6 +761,7 @@ public class W3CTest11KGraph {
 		}
 		
 		
+		// named graphs
 		if (input.getURIs().size()>0){				
 			// Load RDF files for named graphs
 			//namedGraph = new ArrayList<String>();
@@ -758,9 +781,13 @@ public class W3CTest11KGraph {
 			
 			if (rdfs) {
 				entail = QueryProcess.RDFS_ENTAILMENT;
-				load.load(RDFS.RDFS);
-				load.load(more + "rdfs.rul");
 				ds.addFrom(RDFS.RDFS);
+				load.load(RDFS.RDFS);
+				try {
+					load.loadWE(RULE);
+				} catch (LoadException e) {
+					e.printStackTrace();
+				}
 			}
 			else {
 				entail = QueryProcess.RDF_ENTAILMENT;
@@ -774,9 +801,11 @@ public class W3CTest11KGraph {
 			ds.addFrom(RDF.RDF);
 			
 			//re.setDebug(true);
+			//graph.getWorkflow().setDebug(true);
 			RuleEngine re = load.getRuleEngine();
 			if (re != null){
-				re.process();
+				//re.process();
+				graph.addEngine(re);
 			}
 		}
 			
@@ -791,7 +820,26 @@ public class W3CTest11KGraph {
 			//exec.setOptimize(true);
 			//exec.setDebug(true);
 			Mappings res = exec.sparql(query, ds, entail);
-						
+			
+			
+			String q = 
+					"prefix ex: <http://example.org/ns#> " + 
+						"select * where {" +
+					"?x ?p ?y" +
+					"}";
+			
+			
+//			Mappings mm = exec.query(q);
+//			System.out.println(ResultFormat.create(mm));
+//			System.out.println(mm.size());
+//			
+//			
+//			System.out.println(String.format("%.5g", new Double(12345678.9876543).doubleValue()));
+//			System.out.println(String.format("%.5f", new Double(12345678.9876543).doubleValue()));
+//			System.out.println(String.format("%.5e", new Double(12345678.9876543).doubleValue()));
+//			System.out.println(String.format("%g", new Double(1.75).doubleValue()));
+//			System.out.println(new Double(1.75).doubleValue());
+			//1 .0e6
 			// CHECK RESULT
 			boolean result = true;
 			
@@ -827,6 +875,8 @@ public class W3CTest11KGraph {
 				Graph kg = exec.getGraph(res);
 				gres.setDebug(true);
 				if (kg != null && ! gres.compare(kg)){
+					System.out.println("kgram:" );
+					System.out.println(kg.display());
 					if (!sparql1 && path.contains("construct")){
 						// ok verified by hand 2011-03-15 because of blanks in graph
 					}

@@ -83,6 +83,7 @@ public class Processor {
 	static final String LEVEL 	= ExpType.KGRAM + "level"; 
 	static final String INDENT 	= ExpType.KGRAM + "indent"; 
 	static final String PPURI 	= ExpType.KGRAM + "uri"; 
+	static final String VISITED = ExpType.KGRAM + "isVisited"; 
 
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
@@ -363,6 +364,7 @@ public class Processor {
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);
 		defoper(PPURI, ExprType.PPURI);
+		defoper(VISITED, ExprType.VISITED);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

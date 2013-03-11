@@ -58,7 +58,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	// setMode(SPARQL_MODE) 
 	boolean SPARQLCompliant = false;
 
-	private IDatatype EMPTY = getValue("");
+	private IDatatype EMPTY = DatatypeMap.newStringBuilder("");
 	
 	
 	public ProxyImpl(){
@@ -563,6 +563,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	IDatatype concat(Object[] args){
 		String str = "";
 		String lang = null;
+
 		if (args.length == 0){
 			return EMPTY; 
 		}

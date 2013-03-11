@@ -432,6 +432,7 @@ public class Graph //implements IGraph
 	}
 	
 	public String display(){
+		String sep = System.getProperty("line.separator");
 		StringBuffer sb = new StringBuffer();
 		
 		if (getIndex() instanceof EdgeIndex){
@@ -443,7 +444,11 @@ public class Graph //implements IGraph
 				}
 				List<Entity> list  = ie.get(p);
 				sb.append(p + " (" + list.size() + ") : ");
-				sb.append(list);
+				sb.append(sep);
+				for (Entity ent : list){
+					sb.append(ent);
+					sb.append(sep);
+				}
 			}
 		}
 		

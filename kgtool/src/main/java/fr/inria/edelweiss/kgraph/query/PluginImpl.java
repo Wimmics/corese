@@ -10,23 +10,18 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
-import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.PPrinter;
 
@@ -114,7 +109,10 @@ public class PluginImpl extends ProxyImpl {
 			return uri(exp, datatype(o), env);	
 			
 		case INDENT:
-			return indent(o);		
+			return indent(datatype(o));	
+			
+		case VISITED:
+			return visited(datatype(o), env);
 		
 		case KGRAM:
 			return kgram(o);
@@ -141,6 +139,13 @@ public class PluginImpl extends ProxyImpl {
 		return null;
 	}
 	
+	private IDatatype visited(IDatatype dt, Environment env) {
+		PPrinter pp = getPPrinter(env);
+		boolean b = pp.isVisited(dt);
+		return getValue(b);
+	}
+
+
 	public Object function(Expr exp, Environment env, Object o1, Object o2) {
 		IDatatype dt1 = (IDatatype) o1,
 				  dt2 = (IDatatype) o2;	
@@ -474,9 +479,11 @@ public class PluginImpl extends ProxyImpl {
 	}
 	
 	/**
-	 * tbase is the template base to be used, may be null
-	 * temp is a named template, may be null
-	 * exp = kg:pprint()
+	 * exp is the calling expression: kg:pprint kg:pprintAll kg:template
+	 * focus is the node to be printed
+	 * tbase is the path of the template base to be used, may be null
+	 * temp is the name of a named template, may be null
+	 * modality: kg:pprintAll(?x ; separator = "\n")
 	 */
 	IDatatype pprint(Expr exp, IDatatype focus, IDatatype tbase, IDatatype temp, Environment env, boolean all){
 		PPrinter p = getPPrinter(env, getLabel(tbase)); 
@@ -484,7 +491,7 @@ public class PluginImpl extends ProxyImpl {
 		if (! arg.isVariable()){
 			arg = null;
 		}
-		IDatatype dt = p.pprint(arg, focus, getLabel(temp), all);
+		IDatatype dt = p.pprint(arg, focus, getLabel(temp), all, exp.getModality());
 		return dt;
 	}
 
@@ -513,16 +520,16 @@ public class PluginImpl extends ProxyImpl {
 		return p.level();
 	}
 	
-	IDatatype indent(Object o){
-		return indent(datatype(o).intValue());
+	IDatatype indent(IDatatype dt){
+		return indent(dt.intValue());
 	}
 	
 	IDatatype indent(int n){
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i=0; i<n; i++){
 			sb.append(" ");
 		}
-		return getValue(sb.toString());
+		return DatatypeMap.newStringBuilder(sb);
 	}
 	
 	IDatatype indent(Environment env){

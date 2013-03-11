@@ -60,12 +60,16 @@ public class PPrinter {
 	Stack stack;
 	
 	String pp = PPRINTER;
-	String separator = NL;
+	// separator of results of several templates kg:templateAll()
+	String sepTemplate = NL;
+	// separator of several results of one template
+	String sepResult = " ";
 	boolean isDebug = false;
 	private IDatatype EMPTY;
 	boolean isTurtle = false;
 	int nbt = 0, max = 0;
-	private String START = Exp.KGRAM + "start";
+	private static final String START = Exp.KGRAM + "start";
+	String start = START;
 	HashMap<Query,Integer> tcount;
 	private boolean isHide = false;
 	public boolean stat = !true;
@@ -80,11 +84,13 @@ public class PPrinter {
 	class Stack {
 		ArrayList<IDatatype> list;
 		HashMap<IDatatype, ArrayList<Query>> map;
+		HashMap<IDatatype, IDatatype> visit;
 		boolean multi = true;
 		
 		Stack(boolean b){
 			list = new ArrayList<IDatatype>();
 			map  = new HashMap<IDatatype, ArrayList<Query>>();
+			visit = new HashMap<IDatatype, IDatatype>();
 			multi = b;
 		}
 		
@@ -108,6 +114,7 @@ public class PPrinter {
 			}
 		}
 		
+		
 		IDatatype pop(){
 			if (list.size() > 0){
 				int last = list.size() - 1;
@@ -124,6 +131,21 @@ public class PPrinter {
 		
 		boolean contains(IDatatype dt){
 			return list.contains(dt);
+		}
+		
+		boolean isVisited(IDatatype dt){
+			if (visit.containsKey(dt)){
+				return true;
+			}
+			ArrayList<Query> qlist = map.get(dt);
+			if (qlist == null){
+				return false;
+			}
+			return qlist.size() > 1;
+		}
+		
+		void visit(IDatatype dt){
+			 visit.put(dt, dt);
 		}
 		
 		boolean contains(IDatatype dt, Query q){
@@ -212,8 +234,18 @@ public class PPrinter {
 		isTurtle = b;
 	}
 	
-	public void setSeparator(String s){
-		separator = s;
+	// when several templates kg:templateAll()
+	public void setTemplateSeparator(String s){
+		sepTemplate = s;
+	}
+	
+	// when several results for one template
+	public void setResultSeparator(String s){
+		sepResult = s;
+	}
+	
+	public void setStart(String s){
+		start = s;
 	}
 	
 	public int nbTemplates(){
@@ -246,6 +278,10 @@ public class PPrinter {
 		}
 	}
 	
+	public boolean isVisited(IDatatype dt){
+		return stack.isVisited(dt);
+	}
+	
 		
 	/**
 	 * Pretty print the graph.
@@ -254,19 +290,19 @@ public class PPrinter {
 	 * the subpart that matches the first query
 	 */
 	public IDatatype pprint(){
-		return pprint(false);
+		return pprint(false, null);
 	}
 	
 	
-	public IDatatype pprint(boolean all){
+	public IDatatype pprint(boolean all, String sep){
 		query = null;
 		ArrayList<IDatatype> result = new ArrayList<IDatatype>();
 		
-		List<Query> list = getTemplate(START);
+		List<Query> list = getTemplate(start);
 		if (list.size() == 0){
 			list = qe.getTemplates();
 		}		
-		
+
 		for (Query qq : list){
 			
 			qq.setPPrinter(this);
@@ -275,13 +311,14 @@ public class PPrinter {
 			Mappings map = exec.query(qq);
 			
 			query = null;
-			Node res = map.getNode(OUT);
+			IDatatype res = getResult(map);	
+			
 			if (res != null){
 				if (all){
-					result.add((IDatatype) res.getValue());
+					result.add(res);
 				}
 				else {
-					return  (IDatatype) res.getValue();
+					return res;
 				}
 			}
 		}
@@ -289,8 +326,8 @@ public class PPrinter {
 		query = null;
 		
 		if (all){
-			IDatatype res = result(result);
-			return res;
+			IDatatype dt = result(result, separator(sep));
+			return dt;
 		}
 		
 		return EMPTY;
@@ -304,8 +341,8 @@ public class PPrinter {
 		return max;
 	}
 
-	public IDatatype pprint(Expr exp, IDatatype dt){	
-		return pprint(exp, dt, null, false);
+	public IDatatype pprint(IDatatype dt){	
+		return pprint(null, dt, null, false, null);
 	}
 	
 	
@@ -316,20 +353,20 @@ public class PPrinter {
 	 * Search a template that matches ?w
 	 * By convention, ?w is bound to ?in, all templates use variable ?in as focus node
 	 * and ?out as output node
-	 * Execute the first template that matches ?w (all templates if all = true)
+	 * Execute the first template that matches ?w (all templates if allTemplates = true)
 	 * Templates are sorted  more "specific" first
 	 * They are sorted using a pragma { kg:query kg:priority n }
 	 * A template is applied only once on one node, 
 	 * hence we store in a stack : node -> template
 	 */
-	public IDatatype pprint(Expr exp, IDatatype dt, String temp, boolean all){	
+	public IDatatype pprint(Expr exp, IDatatype dt, String temp, boolean allTemplates, String sep){	
 		
 		if (dt == null){
 			return EMPTY;
 		}
 		
 		ArrayList<IDatatype> result = null;
-		if (all) {
+		if (allTemplates) {
 			result = new ArrayList<IDatatype>();
 		}
 		boolean start = false;
@@ -337,8 +374,7 @@ public class PPrinter {
 		if (query != null && stack.size() == 0){
 			// just started with query in pprint() above
 			// without focus node at that time
-			if (exp != null){ //  && exp.getLabel().equals(IN)){
-				// current variable is ?in, 
+			//if (exp != null){ 
 				// push dt -> query in the stack
 				// query is the first template that started pprint (see function above)
 				// and at that time ?in was not bound
@@ -346,7 +382,7 @@ public class PPrinter {
 				// template {"subClassOf(" ?in " " ?y ")"} where {?in rdfs:subClassOf ?y}
 				start = true;
 				stack.push(dt, query);
-			}
+			//}
 		}
 		
 		if (isDebug){
@@ -374,7 +410,7 @@ public class PPrinter {
 				
 				nbt++;
 
-				if (all) {
+				if (allTemplates) {
 					count ++;
 				}
 				stack.push(dt, qq);
@@ -388,17 +424,15 @@ public class PPrinter {
 				
 				Mappings map = exec.query(qq, m);				
 				
-//				if (! qq.isAggregate()){
-//					System.out.println(map.size());
-//				}
+				stack.visit(dt);
 				
-				if (! all){
+				if (! allTemplates){
 					// if execute all templates, keep them in the stack 
 					// to prevent loop same template on same focus node
 					stack.pop();
 				}
 				
-				Node res = map.getNode(OUT);
+				IDatatype res = getResult(map);					
 								
 				if (res != null){
 
@@ -410,20 +444,21 @@ public class PPrinter {
 						trace(qq, res);
 					}
 					
-					if (all){
-						result.add((IDatatype) res.getValue());
+					
+					if (allTemplates){
+						result.add(res);
 					}
 					else {
 						if (start){
 							stack.pop();
 						}
-						return  (IDatatype) res.getValue();
+						return  res;
 					}
 				}
 			}
 		}
 		
-		if (all){
+		if (allTemplates){
 			// gather results of several templates
 			
 			for (int i=0; i<count; i++){
@@ -437,7 +472,7 @@ public class PPrinter {
 					stack.pop();
 				}
 				
-				IDatatype res = result(result);
+				IDatatype res = result(result, separator(sep));
 				return res;
 			}
 		}
@@ -458,6 +493,52 @@ public class PPrinter {
 	}
 	
 	
+	IDatatype getResult(Mappings map){
+		Query q = map.getQuery();
+		if (q.isAllResult()){
+			// concat all values of OUT node:
+			ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+			
+			for (Mapping m : map){
+				Node node = m.getNode(OUT);
+				if (node != null){
+					list.add(datatype(node));
+				}
+			}
+			
+			if (list.size() == 0){
+				return null;
+			}
+			IDatatype dt = result(list, separator(q));
+			return dt;
+		}
+		else {
+			// result of first OUT node:
+			Node node = map.getNode(OUT);
+			if (node == null){
+				return null;
+			}
+			return datatype(node);
+		}
+	}
+	
+	String separator(String sep){
+		if (sep == null){
+			return sepTemplate;
+		}
+		return sep;
+	}
+	
+	String separator(Query q){
+		if (q.hasPragma(Pragma.SEPARATOR)){
+			return q.getStringPragma(Pragma.SEPARATOR);
+		}
+		return sepResult;
+	}
+	
+	IDatatype datatype(Node n){
+		return (IDatatype) n.getValue();
+	}
 
 	private List<Query> getTemplates(String temp) {
 		if (temp == null){
@@ -481,21 +562,25 @@ public class PPrinter {
 	 * Concat results of several templates executed on same focus node
 	 * kg:pprintAll(?x)
 	 */
-	IDatatype result(List<IDatatype> result){
+	IDatatype result(List<IDatatype> result, String sep){
 		StringBuilder sb = new StringBuilder();
 
 		for (IDatatype d : result){
 			StringBuilder b = d.getStringBuilder();
 			
-			if (b!=null){
+			if (b != null){
 				if (b.length()>0){
+					if (sb.length()>0){
+						sb.append(sep) ;
+					}
 					sb.append(b);
-					sb.append(separator) ;
 				}
 			}
 			else if (d.getLabel().length() > 0){
+				if (sb.length()>0){
+					sb.append(sep) ;
+				}
 				sb.append(d.getLabel());
-				sb.append(separator) ;
 			}
 		}
 		
@@ -606,6 +691,9 @@ public class PPrinter {
 			if (! b){
 				q.setFail(true);
 			}
+//			if (name(q).equals("specialproperty.rq") ){
+//				q.setFail(true);
+//			}
 		}
 		qe.clean();
 		if (stat) {

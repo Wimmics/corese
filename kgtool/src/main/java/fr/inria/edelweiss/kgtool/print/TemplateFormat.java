@@ -25,6 +25,7 @@ public class TemplateFormat {
 	private boolean isDebug = false;
 	private boolean isCheck = false;
 	private boolean isHide  = false;
+	private String start;
 
 	
 	TemplateFormat(Mappings m){
@@ -107,8 +108,12 @@ public class TemplateFormat {
 		pp.setDebug(isDebug);
 		pp.setTurtle(isTurtle);
 		pp.setHide(isHide);
+		
 		if (nsm != null){
 			pp.setNSM(nsm);
+		}
+		if (start != null){
+			pp.setStart(start);
 		}
 		return pp;
 	}
@@ -152,6 +157,11 @@ public class TemplateFormat {
 
 	public void setHide(boolean isHide) {
 		this.isHide = isHide;
+	}
+
+
+	public void setStart(String str) {
+		start = str;
 	}
 
 	

@@ -70,6 +70,7 @@ public class Pragma  {
 	public static final String FILE		= KG + "file";
 	public static final String TEMPLATE	= KG + "template";
 	public static final String NAME		= KG + "name";
+	public static final String SEPARATOR= KG + "separator";
 
 
 	public static final String HELP 	= KG + "help";

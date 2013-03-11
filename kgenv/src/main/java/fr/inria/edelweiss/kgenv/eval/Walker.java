@@ -157,7 +157,6 @@ class Walker extends Interpreter {
 		switch (exp.oper()){
 		
 		case GROUPCONCAT:
-			
 			boolean isDistinct = f.getExp().isDistinct();
 			IDatatype[] value = null;
 			Tuple t = null;

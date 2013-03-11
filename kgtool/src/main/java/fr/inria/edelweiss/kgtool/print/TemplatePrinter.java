@@ -39,6 +39,9 @@ public class TemplatePrinter {
 		QueryEngine qe = ld.getQueryEngine();
 		header();
 		
+		for (Query q : qe.getNamedTemplates()){
+			process((ASTQuery) q.getAST());
+		}
 		for (Query q : qe.getQueries()){
 			process((ASTQuery) q.getAST());
 		}

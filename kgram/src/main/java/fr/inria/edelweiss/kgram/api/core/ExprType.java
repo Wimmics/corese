@@ -164,6 +164,7 @@ public interface ExprType {
 	public static int INDENT 	= 225;
 	public static int PPURI 	= 226;
 	public static int TEMPLATE 	= 227;
+	public static int VISITED 	= 228;
 
 
 

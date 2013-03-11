@@ -1,9 +1,13 @@
 package fr.inria.edelweiss.kgenv.result;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,6 +119,11 @@ public class XMLResult {
 	
 	public Mappings parseString(String str) throws ParserConfigurationException, SAXException, IOException{
 		return parse(new ByteArrayInputStream(str.getBytes("UTF-8")));
+	}
+	
+	public Mappings parse(String path) throws ParserConfigurationException, SAXException, IOException{
+		InputStream stream = getStream(path);
+		return parse(stream);
 	}
 
 	
@@ -293,5 +302,37 @@ public class XMLResult {
 	        
 	    }
 	}
+	
+	
+	
+	
+	InputStream getStream(String path) throws FileNotFoundException{
+		try {
+			URL uri = new URL(path);
+			return uri.openStream();
+		}  
+		catch (MalformedURLException e) {
+		} 
+		catch (IOException e) {
+		}
+
+		FileInputStream stream;
+		stream = new FileInputStream(path);
+		return stream;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

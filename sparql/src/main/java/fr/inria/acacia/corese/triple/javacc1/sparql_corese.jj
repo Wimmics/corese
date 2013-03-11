@@ -559,9 +559,9 @@ void Template(Exp stack) : { String str; Variable var; Constant cst; Expression 
     
     ( <DEBUG> { astq.setDebug(true); } ) ?
     
-    ( cst = IRIrefConst() { astq.setName(cst); }) ?
+    ( cst = IRIrefConst() { astq.setName(cst); } ) ?
       
-  (
+  
 	<LBRACE>
 	
 		( 
@@ -587,24 +587,12 @@ void Template(Exp stack) : { String str; Variable var; Constant cst; Expression 
 		  { astq.addTemplate(exp); }
 		  
 		) *
+		
+		( <SEMICOLON>  <SEPARATOR>  <EQ>  str = String() { astq.setSeparator(str); } ) ?
+		
 	
 	<RBRACE>
 	
-	|
-	
-	<GROUP>     { list = new ExpressionList(); }
-	
-		<LBRACE>
-				( exp = PrimaryExpression(stack)
-				 
-		  	      { list.add(exp); }
-		  	    ) * 
-		<RBRACE>
-	
-	   { exp = astq.createGroup(list); astq.addTemplate(exp); }
-	
-  )
-
 	
 }
 

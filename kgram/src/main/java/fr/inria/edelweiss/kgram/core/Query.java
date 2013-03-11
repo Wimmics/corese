@@ -110,6 +110,9 @@ public class Query extends Exp {
 
 	private boolean isTemplate = false;
 	
+	private boolean isAllResult = false;
+
+	
 	Query(){
 		super(QUERY);
 		from 		= new ArrayList<Node>();
@@ -2195,6 +2198,14 @@ public class Query extends Exp {
 
 	public void setNumber(int number) {
 		this.number = number;
+	}
+
+	public boolean isAllResult() {
+		return true; //isAllResult;
+	}
+
+	public void setAllResult(boolean isAllResult) {
+		this.isAllResult = isAllResult;
 	}
 	
 	

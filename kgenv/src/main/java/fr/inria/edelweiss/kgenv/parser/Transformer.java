@@ -165,10 +165,16 @@ public class Transformer implements ExpType {
 		
 		Query q = compile(ast);
 		q.setRule(ast.isRule());
+		
 		q.setTemplate(ast.isTemplate());
+		q.setAllResult(ast.isAllResult());
+		if (ast.getSeparator()!=null){
+			q.setPragma(Pragma.SEPARATOR, ast.getSeparator());
+		}
 		if (ast.getName() != null) {
 			q.setPragma(Pragma.NAME, ast.getName());
 		}
+		
 		q = transform(q, ast);
 		return q;
 	}

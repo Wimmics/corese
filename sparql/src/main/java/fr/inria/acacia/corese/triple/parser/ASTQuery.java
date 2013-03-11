@@ -149,6 +149,7 @@ public class ASTQuery  implements Keyword {
 	String text = null;
 	/** Represents the ASTQuery before compilation */
     String queryPrettyPrint = "";
+    private String separator;
  
 	
     /** Source body of the query returned by javacc parser */
@@ -222,6 +223,8 @@ public class ASTQuery  implements Keyword {
 	private String groupSeparator = System.getProperty("line.separator");
 
 	private boolean isTemplate = false;
+	
+	private boolean isAllResult = false;
 
 	private String name;
 
@@ -2612,6 +2615,17 @@ public class ASTQuery  implements Keyword {
     	return createFunction(Processor.GROUPCONCAT, el);
     }
     
+    /**
+     * 
+     * template group { }
+     */
+    public void createAllResult(ExpressionList el) {
+    	setAllResult(true);
+    	for (Expression exp : el){
+    		addTemplate(exp);
+    	}
+    }
+    
     public void setGroupSeparator(String s){
     	groupSeparator = s;
     }
@@ -2775,6 +2789,22 @@ public class ASTQuery  implements Keyword {
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isAllResult() {
+		return isAllResult;
+	}
+
+	private void setAllResult(boolean isAllResult) {
+		this.isAllResult = isAllResult;
+	}
+
+	public String getSeparator() {
+		return separator;
+	}
+
+	public void setSeparator(String separator) {
+		this.separator = clean(separator);
 	}
 
 

@@ -53,14 +53,14 @@ public class DBPediaPersonsTest {
 
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://neurolog.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://neurolog.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
         kg1.initEngine();
         kg2.initEngine();
 
-        final String rep1 = "http://neurolog.unice.fr/~neurolog-dev/data/persondata.1.rdf";
-        final String rep2 = "http://neurolog.unice.fr/~neurolog-dev/data/persondata.2.rdf";
+        final String rep1 = "http://nyx.unice.fr/~gaignard/data/persondata.1.rdf";
+        final String rep2 = "http://nyx.unice.fr/~gaignard/data/persondata.2.rdf";
 
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(new Runnable() {
@@ -93,8 +93,8 @@ public class DBPediaPersonsTest {
 
         Graph graph = Graph.create();
         QueryProcessDQP exec = QueryProcessDQP.create(graph);
-        exec.addRemote(new URL("http://neurolog.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://neurolog.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
         StopWatch sw = new StopWatch();
         sw.start();
@@ -113,8 +113,8 @@ public class DBPediaPersonsTest {
 
         Graph graph = Graph.create();
         QueryProcessDQP exec = QueryProcessDQP.create(graph);
-        exec.addRemote(new URL("http://neurolog.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://neurolog.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
         StopWatch sw = new StopWatch();
         sw.start();

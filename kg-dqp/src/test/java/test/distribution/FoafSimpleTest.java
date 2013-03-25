@@ -52,8 +52,8 @@ public class FoafSimpleTest {
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
 
-        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://neurolog.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://neurolog.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
         kg1.initEngine();
         kg2.initEngine();
@@ -133,8 +133,8 @@ public class FoafSimpleTest {
 
 //        QueryExec exec2 = QueryExec.create(engine);
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://neurolog.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://neurolog.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 
         StopWatch sw = new StopWatch();
         sw.start();

@@ -74,8 +74,8 @@ public class DBPediaPersonsStandaloneTest {
         EngineFactory ef = new EngineFactory();
         IEngine engine = ef.newInstance();
 
-        String rep1 = "http://neurolog.unice.fr/~neurolog-dev/data/persondata.1.rdf";
-        String rep2 = "http://neurolog.unice.fr/~neurolog-dev/data/persondata.2.rdf";
+        String rep1 = "http://nyx.unice.fr/~gaignard/data/persondata.1.rdf";
+        String rep2 = "http://nyx.unice.fr/~gaignard/data/persondata.2.rdf";
 
         engine.load(rep1);
         engine.load(rep2);

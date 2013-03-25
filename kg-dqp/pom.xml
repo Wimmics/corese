@@ -157,7 +157,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-Xmx1024m</argLine>
+                    <argLine>-Xmx512m</argLine>
                     <testFailureIgnore>false</testFailureIgnore>
                     <skip>false</skip>
                 </configuration>

@@ -71,6 +71,7 @@ public class Pragma  {
 	public static final String TEMPLATE	= KG + "template";
 	public static final String NAME		= KG + "name";
 	public static final String SEPARATOR= KG + "separator";
+	public static final String TURTLE	= KG + "turtle";
 
 
 	public static final String HELP 	= KG + "help";
@@ -212,9 +213,6 @@ public class Pragma  {
 				else if (property.equals(PRIORITY)){					
 					ast.setPriority(odt.intValue());
 				}
-				else if (property.equals(NAME)){					
-					ast.setName(odt.getLabel());
-				}
 			}			
 	}
 	
@@ -327,9 +325,14 @@ public class Pragma  {
 				query.setPragma(TIMEOUT, value);
 			}
 		}
-		else if (subject.equals(DISPLAY)){
+		else if (subject.equals(DISPLAY) || subject.equals(TEMPLATE)){
 			if (property.equals(TEMPLATE)){
 				query.setPragma(TEMPLATE, object);
+			}
+			else if (property.equals(MODE)){
+				if (object.equals(TURTLE)){
+					query.setPragma(TURTLE, TURTLE);
+				}
 			}
 		}
 		

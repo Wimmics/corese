@@ -112,6 +112,8 @@ public class Query extends Exp {
 	
 	private boolean isAllResult = false;
 
+	private Exp templateGroup;
+
 	
 	Query(){
 		super(QUERY);
@@ -2206,6 +2208,14 @@ public class Query extends Exp {
 
 	public void setAllResult(boolean isAllResult) {
 		this.isAllResult = isAllResult;
+	}
+
+	public Exp getTemplateGroup() {
+		return templateGroup;
+	}
+
+	public void setTemplateGroup(Exp templateGroup) {
+		this.templateGroup = templateGroup;
 	}
 	
 	

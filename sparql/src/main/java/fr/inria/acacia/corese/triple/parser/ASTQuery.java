@@ -213,7 +213,8 @@ public class ASTQuery  implements Keyword {
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 			= Processor.IF;
 	private static final String FUNPPRINT 	= Processor.KGPPRINT;
-	
+	private static final String TURTLE 		= Processor.TURTLE;
+
 	private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, COALESCE, IF};
 
 	private Constant empty;
@@ -227,6 +228,11 @@ public class ASTQuery  implements Keyword {
 	private boolean isAllResult = false;
 
 	private String name;
+
+	private boolean isTurtle;
+
+	private Term templateGroup;
+
 
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
@@ -2459,26 +2465,32 @@ public class ASTQuery  implements Keyword {
 		RootPropertyURI = rootPropertyURI;
 	}
 
-		// TODO: check
+	
+	/**
+	 * Remove leading and trailing " or ' of a string
+	 */
 	public static String clean(String str) {
+		String res = str;
 		if (str.length() <= 1) return str;
-		if ((str.startsWith(SQ3)   && str.endsWith(SQ3)) ||
-			(str.startsWith(SSQ3)  && str.endsWith(SSQ3))){
-			str = str.substring(3,(str.length()-3));
-			return recClean(str);
+		
+		if ((str.startsWith(SQ3)  && str.endsWith(SQ3)) ||
+			(str.startsWith(SSQ3) && str.endsWith(SSQ3))){
+			res = str.substring(3,(str.length()-3));
 		}
 		else
-		if ((str.startsWith(SQ1)   && str.endsWith(SQ1)) ||
-			(str.startsWith(SSQ)  && str.endsWith(SSQ))){
-			str = str.substring(1,(str.length()-1));
-			return recClean(str);
+		if ((str.startsWith(SQ1) && str.endsWith(SQ1)) ||
+			(str.startsWith(SSQ) && str.endsWith(SSQ))){
+			res = str.substring(1,(str.length()-1));
 		}
-		return str;
+		return res;
 	}
 	
-	//	 replace \\ by \ inside the string
-	// \" -> "
-	// \' -> '
+	
+	/**
+	 * 
+	 * @deprecated
+	 */
+	
 	static String recClean(String str){
 		int index = str.indexOf(BS);
 		if (index != -1){
@@ -2651,6 +2663,7 @@ public class ASTQuery  implements Keyword {
 		Expression t = compileTemplateFun();
 		Variable out = Variable.create(OUT);
 		defSelect(out, t);
+		setTemplateGroup(createTemplateGroup());
 	}
 	
 	
@@ -2690,6 +2703,9 @@ public class ASTQuery  implements Keyword {
 			// variables of meta functions are compiled as kg:pprint()
 			// variable of xsd:string() is not
 			exp = compileTemplateMeta((Term) exp);
+		}
+		else if (exp.getLabel().equals(TURTLE)){
+			setTurtle(true);
 		}
 		return exp;
 	}
@@ -2759,6 +2775,18 @@ public class ASTQuery  implements Keyword {
 		return res;
 	}
 	
+	/**
+	 * 
+	 * additional group_concat(?out)
+	 */
+	Term createTemplateGroup(){
+		Variable var = Variable.create(OUT);
+		Term t = createFunction(GROUPCONCAT);
+		t.add(var);
+		t.setModality(getSeparator());
+		return t;
+	}
+	
 	Constant getEmpty(){
 		if (empty == null){
 			empty = Constant.create("", null, null);
@@ -2805,6 +2833,22 @@ public class ASTQuery  implements Keyword {
 
 	public void setSeparator(String separator) {
 		this.separator = clean(separator);
+	}
+
+	public boolean isTurtle() {
+		return isTurtle;
+	}
+
+	private void setTurtle(boolean isTurtle) {
+		this.isTurtle = isTurtle;
+	}
+
+	public Term getTemplateGroup() {
+		return templateGroup;
+	}
+
+	private void setTemplateGroup(Term templateGroup) {
+		this.templateGroup = templateGroup;
 	}
 
 

@@ -1,5 +1,8 @@
 package fr.inria.edelweiss.kgtool.print;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -23,7 +26,9 @@ public class ResultFormat {
 	public String toString(){
 		Query q = map.getQuery();
 		if (q == null) return "";
-		if (q.hasPragma(Pragma.TEMPLATE) && map.getGraph() != null){
+		
+		if (q.isTemplate() || 
+			(q.hasPragma(Pragma.TEMPLATE) && map.getGraph() != null)){
 			return TemplateFormat.create(map).toString();
 		}
 		else if (q.isConstruct()){
@@ -32,6 +37,14 @@ public class ResultFormat {
 		else {
 			return XMLFormat.create(map).toString();
 		}
+	}
+	
+	public void write(String name) throws IOException {				
+		FileWriter fw = new FileWriter(name);
+		String str = toString();
+		fw.write(str);
+		fw.flush();
+		fw.close();
 	}
 
 }

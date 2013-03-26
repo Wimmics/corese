@@ -196,13 +196,15 @@ public class Eval implements  ExpType, Plugin {
 		if (map != null){
 			bind(map);
 		}
+		
 		if (! q.isFail()){
-			
 			if (q.getMappings()!=null){
+				
 				for (Mapping m : q.getMappings()){
-					binding(m);
-					eval(gNode, q);
-					free(m);
+					if (binding(m)){
+						eval(gNode, q);
+						free(m);
+					}
 				}
 			}
 			else {
@@ -245,14 +247,39 @@ public class Eval implements  ExpType, Plugin {
 		}
 	}
 	
-	void binding(Mapping map){
+	/**
+	 * values var { val }
+	 */
+	boolean binding(Mapping map){
+		int i = 0;
 		for (Node qNode : map.getQueryNodes()){
+			
 			Node node = map.getNode(qNode);
 			if (node != null){
 				Node value = producer.getNode(node.getValue());
-				memory.push(qNode, value, -1);
+				boolean suc = memory.push(qNode, value, -1);
+				
+				if (! suc){
+					int j = 0;
+					for (Node qq : map.getQueryNodes()){
+						
+						Node nn = map.getNode(qq);
+						if (nn != null){
+							if (j >= i){
+								return false;
+							}
+							else {
+								j++;
+							}
+							memory.pop(qq);
+						}
+						
+					}
+				}
 			}
+			i++;
 		}
+		return true;
 	}
 	
 	void free(Mapping map){
@@ -535,6 +562,9 @@ public class Eval implements  ExpType, Plugin {
 				Node node = map.getNode(qNode);
 				if (node != null){
 					bind(qqNode, node);
+					if (debug){
+						logger.warn("Bind: " + qqNode + " = " + node);
+					}
 				}
 			}
 		}

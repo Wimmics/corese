@@ -46,7 +46,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 public class PPrinter {
 	
 	private static final String NULL = "";
-	public  static final String PPRINTER = "/home/corby/workspace/kgengine/src/test/resources/data/pprint/asttemplate";
+	public  static final String PPRINTER = "/home/corby/AData/pprint/asttemplate";
 	private static final String OUT = ASTQuery.OUT;
 	private static final String IN  = ASTQuery.IN;
 	private static String NL = System.getProperty("line.separator");
@@ -342,14 +342,19 @@ public class PPrinter {
 	}
 
 	public IDatatype pprint(IDatatype dt){	
-		return pprint(null, dt, null, false, null);
+		return pprint(null, dt, null, false, null, null);
 	}
 	
 	
 	/**
-	 * IDatatype dt is the focus node to be printed
+	 *  exp : the fun call, e.g. kg:pprint(?x)
+	 *  dt :  focus node to be printed
+	 *  temp : name of a template (may be null)
+	 *  allTemplates : execute all templates on focus and concat results
+	 *  sep : separator in case of allTemplates
+	 *  
 	 * use case: 
-	 * template { ... ?w ... } where {?in ast:where ?w}
+	 * template { ... ?w ... } where { ... ?w ... }
 	 * Search a template that matches ?w
 	 * By convention, ?w is bound to ?in, all templates use variable ?in as focus node
 	 * and ?out as output node
@@ -358,8 +363,10 @@ public class PPrinter {
 	 * They are sorted using a pragma { kg:query kg:priority n }
 	 * A template is applied only once on one node, 
 	 * hence we store in a stack : node -> template
+	 * context of evaluation: 
+	 *   select (kg:pprint(?x) as ?px) (concat (?px ...) as ?out) where {}
 	 */
-	public IDatatype pprint(Expr exp, IDatatype dt, String temp, boolean allTemplates, String sep){	
+	public IDatatype pprint(Expr exp, IDatatype dt, String temp, boolean allTemplates, String sep, Query q){	
 		
 		if (dt == null){
 			return EMPTY;
@@ -386,7 +393,7 @@ public class PPrinter {
 		}
 		
 		if (isDebug){
-			System.out.println("pprint: " + dt);
+			System.out.println("pprint: " + level() + " " + exp + " " + dt);
 		}
 				
 		Graph g = graph;									
@@ -405,7 +412,7 @@ public class PPrinter {
 						
 			// Tricky: All templates of this PPrinter share the same PPrinter (see PluginImpl)
 			qq.setPPrinter(this);
-			
+						
 			if (! qq.isFail() && ! stack.contains(dt, qq)){
 				
 				nbt++;
@@ -489,38 +496,44 @@ public class PPrinter {
 		}
 		
 		// default: display dt as is
-		return display(dt); 
+		return display(dt, q); 
 	}
 	
 	
-	IDatatype getResult(Mappings map){
+	public IDatatype getResult(Mappings map){
 		Query q = map.getQuery();
-		if (q.isAllResult()){
-			// concat all values of OUT node:
-			ArrayList<IDatatype> list = new ArrayList<IDatatype>();
-			
-			for (Mapping m : map){
-				Node node = m.getNode(OUT);
-				if (node != null){
-					list.add(datatype(node));
-				}
-			}
-			
-			if (list.size() == 0){
-				return null;
-			}
-			IDatatype dt = result(list, separator(q));
-			return dt;
+		Node node = map.getTemplateResult();
+		if (node == null){
+			return null;
 		}
-		else {
-			// result of first OUT node:
-			Node node = map.getNode(OUT);
-			if (node == null){
-				return null;
-			}
-			return datatype(node);
-		}
+		return datatype(node);
 	}
+//		 if (q.isAllResult()){
+//			// concat all values of OUT node:
+//			ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+//			
+//			for (Mapping m : map){
+//				Node node = m.getNode(OUT);
+//				if (node != null){
+//					list.add(datatype(node));
+//				}
+//			}
+//			
+//			if (list.size() == 0){
+//				return null;
+//			}
+//			IDatatype dt = result(list, separator(q));
+//			return dt;
+//		}
+//		else {
+//			// result of first OUT node:
+//			Node node = map.getNode(OUT);
+//			if (node == null){
+//				return null;
+//			}
+//			return datatype(node);
+//		}
+//	}
 	
 	String separator(String sep){
 		if (sep == null){
@@ -591,8 +604,8 @@ public class PPrinter {
 	
 	
 	
-	IDatatype display(IDatatype dt){
-		if (isTurtle){
+	IDatatype display(IDatatype dt, Query q){
+		if (isTurtle || (q != null && q.hasPragma(Pragma.TURTLE))){
 			return turtle(dt);
 		}
 		else if (isHide){

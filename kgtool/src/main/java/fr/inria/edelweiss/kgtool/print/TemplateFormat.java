@@ -3,9 +3,11 @@ package fr.inria.edelweiss.kgtool.print;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -18,6 +20,7 @@ public class TemplateFormat {
 		
 	String printer;
 	Mappings map;
+	Query query;
 	Graph graph;
 	private NSManager nsm;
 	PPrinter pp;
@@ -31,12 +34,12 @@ public class TemplateFormat {
 	TemplateFormat(Mappings m){
 		map = m;
 		graph = (Graph) map.getGraph();
-		Query q = map.getQuery();
-		if (q != null){
-			if (q.hasPragma(Pragma.TEMPLATE)){
-				printer = (String) q.getPragma(Pragma.TEMPLATE);
+		query = map.getQuery();
+		if (query != null){
+			if (query.hasPragma(Pragma.TEMPLATE)){
+				printer = (String) query.getPragma(Pragma.TEMPLATE);
 			}
-			ASTQuery ast = (ASTQuery) q.getAST();
+			ASTQuery ast = (ASTQuery) query.getAST();
 			setNSM(ast.getNSM());
 		}		
 	}
@@ -93,11 +96,24 @@ public class TemplateFormat {
 	}
 	
 	public String toString(){
+		if (query != null && query.isTemplate()){
+			Node node = map.getTemplateResult();
+			if (node != null){
+				return node.getLabel();
+			}
+			return "";
+		}
 		if (graph == null){
 			return "";
 		}
 		PPrinter p = createPP();
 		return p.toString();
+	}
+	
+	String template(){
+		PPrinter p = (PPrinter) query.getPP();
+		IDatatype dt = p.getResult(map);
+		return dt.getLabel();
 	}
 	
 	PPrinter createPP(){

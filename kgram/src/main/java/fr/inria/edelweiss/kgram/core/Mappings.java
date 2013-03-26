@@ -62,6 +62,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	int unbound = -1;
 	private int nbDelete = 0;
 	private int nbInsert = 0;
+	private Node templateResult;
 	
 
 
@@ -377,11 +378,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * we could enumerate Mappings once and compute all aggregates for each map
 	 */
 	void aggregate(Evaluator evaluator, Memory memory){
-//		System.out.println("** M: aggregate " + size());
-//		long t1 = new Date().getTime();
 		aggregate(query, evaluator, memory, true);
-//		long t2 = new Date().getTime();
-//		System.out.println((t2-t1)/1000.0);
 	}
 	
 	public void aggregate(Query qq, Evaluator evaluator, Memory memory){
@@ -415,8 +412,12 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		}
 
 		finish(qq);
+		
+		template(evaluator, qq, memory);
+		
 	}
 		
+
 	
 	void finish(Query qq){
 		setNbsolutions(size());
@@ -534,7 +535,34 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 	
 	
+	
+	/**
+	 * Template perform additionnal group_concat(?out)
+	 */
+	void template(Evaluator eval, Query q, Memory mem){
+		if (q.isTemplate()){
+			setTemplateResult(apply(eval, q.getTemplateGroup(), mem));
+		}
+	}
+	
+	/**
+	 * Template perform additionnal group_concat(?out)
+	 */
+	private	Node apply(Evaluator eval, Exp exp, Memory memory){
+		Mapping firstMap = get(0);
+		// bind the Mapping in memory to retrieve group by variables
+		memory.aggregate(firstMap);
+		if (size() == 1){
+			// memory.getNode(?out)
+			Node node = memory.getNode(exp.getFilter().getExp().getExp(0));
+			return node;
+		}
+		Node node = eval.eval(exp.getFilter(), memory);
+		memory.pop(firstMap);
+		return node;
+	}
 
+	
 	/**
 	 * Compute aggregate (e.g. count() max()) and having
 	 * on one group or on whole result (in both case: this Mappings)
@@ -955,6 +983,14 @@ implements Comparator<Mapping> , Iterable<Mapping>
 
 	void setNbsolutions(int nbsolutions) {
 		this.nbsolutions = nbsolutions;
+	}
+
+	public Node getTemplateResult() {
+		return templateResult;
+	}
+
+	private void setTemplateResult(Node templateResult) {
+		this.templateResult = templateResult;
 	}
 
 

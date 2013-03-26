@@ -166,20 +166,32 @@ public class Transformer implements ExpType {
 		Query q = compile(ast);
 		q.setRule(ast.isRule());
 		
-		q.setTemplate(ast.isTemplate());
-		q.setAllResult(ast.isAllResult());
-		if (ast.getSeparator()!=null){
-			q.setPragma(Pragma.SEPARATOR, ast.getSeparator());
-		}
-		if (ast.getName() != null) {
-			q.setPragma(Pragma.NAME, ast.getName());
-		}
-		
+		template(q, ast);
+				
 		q = transform(q, ast);
 		return q;
 	}
 	
 		
+	private void template(Query q, ASTQuery ast) {
+		if (ast.isTemplate()){
+			q.setTemplate(true);
+			q.setAllResult(ast.isAllResult());
+			if (ast.isTurtle()){
+				q.setPragma(Pragma.TURTLE, Pragma.TURTLE);
+			}
+			if (ast.getSeparator()!=null){
+				q.setPragma(Pragma.SEPARATOR, ast.getSeparator());
+			}
+			if (ast.getName() != null) {
+				q.setPragma(Pragma.NAME, ast.getName());
+			}
+			ast.getTemplateGroup().compile(ast);
+			q.setTemplateGroup(Exp.create(FILTER, ast.getTemplateGroup()));
+		}
+	}
+	
+
 	/**
 	 * Also used by QueryGraph to compile RDF Graph as a Query
 	 */

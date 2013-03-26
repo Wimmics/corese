@@ -573,12 +573,13 @@ void Template(Exp stack) : { String str; Variable var; Constant cst; Expression 
 		    <GROUP>           { list = new ExpressionList(); str = null; }
 		  
 		     ( <DISTINCT>     { list.setDistinct(true); } ) ?
-		  
-		     ( str = String() { list.setSeparator(str); } ) ?
-		    
+		  		    
 		  	<LBRACE>  ( exp = PrimaryExpression(stack) 
 		  				      { list.add(exp); }
 		  			  ) * 
+		  			  
+		  			  ( <SEMICOLON>  <SEPARATOR>  <EQ>  str = String() { list.setSeparator(str); } ) ?  
+		  			  
 		    <RBRACE>
 		    
 		    { exp = astq.createGroup(list); }

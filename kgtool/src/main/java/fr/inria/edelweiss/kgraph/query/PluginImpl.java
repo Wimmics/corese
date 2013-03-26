@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
@@ -70,6 +71,9 @@ public class PluginImpl extends ProxyImpl {
 		
 		switch (exp.oper()){
 		
+		case TURTLE:
+			return turtle(env);	
+		
 		case PPRINT:
 			return pprint(env);
 		
@@ -96,11 +100,9 @@ public class PluginImpl extends ProxyImpl {
 		
 		switch (exp.oper()){
 		
-		case PPRINT:
-			return pprint(exp, datatype(o), env);
-			
+		case PPRINT:			
 		case PPRINTALL:
-			return pprintAll(exp, datatype(o), env);
+			return pprint(exp, datatype(o), env);
 			
 		case TURTLE:
 			return turtle(datatype(o), env);	
@@ -174,10 +176,11 @@ public class PluginImpl extends ProxyImpl {
 			return ancestor(dt1, dt2);
 			
 		case PPRINT:
-			return pprint(exp, dt1, dt2, null, env, false);
+		case PPRINTALL:
+			return pprint(exp, dt1, dt2, null, env);
 			
 		case TEMPLATE:
-			return template(exp, dt1, dt2, env);		
+			return template(dt1, exp,  dt2, env);		
 						
 		}
 		
@@ -466,16 +469,11 @@ public class PluginImpl extends ProxyImpl {
 	 * exp = kg:pprint(arg);
 	 */
 	IDatatype pprint(Expr exp, IDatatype o, Environment env){
-		return pprint(exp, o, null, null, env, false);
-	}
+		return pprint(exp, o, null, null, env);
+	}		
 	
-	IDatatype pprintAll(Expr exp, IDatatype o, Environment env){
-		return pprint(exp, o, null, null, env, true);
-	}
-	
-	
-	IDatatype template(Expr exp, IDatatype t, IDatatype o, Environment env){
-		return pprint(exp, o, null, t, env, true);
+	IDatatype template(IDatatype t, Expr exp,  IDatatype o, Environment env){
+		return pprint(exp, o, null, t, env);
 	}
 	
 	/**
@@ -485,13 +483,10 @@ public class PluginImpl extends ProxyImpl {
 	 * temp is the name of a named template, may be null
 	 * modality: kg:pprintAll(?x ; separator = "\n")
 	 */
-	IDatatype pprint(Expr exp, IDatatype focus, IDatatype tbase, IDatatype temp, Environment env, boolean all){
+	IDatatype pprint(Expr exp, IDatatype focus, IDatatype tbase, IDatatype temp, Environment env){
 		PPrinter p = getPPrinter(env, getLabel(tbase)); 
-		Expr arg = exp.getExp(0);
-		if (! arg.isVariable()){
-			arg = null;
-		}
-		IDatatype dt = p.pprint(arg, focus, getLabel(temp), all, exp.getModality());
+		IDatatype dt = p.pprint(exp, focus, getLabel(temp), 
+				exp.oper() == ExprType.PPRINTALL, exp.getModality(), env.getQuery());
 		return dt;
 	}
 
@@ -500,6 +495,13 @@ public class PluginImpl extends ProxyImpl {
 		IDatatype dt = p.turtle(o);
 		return dt;
 	}
+	
+	IDatatype turtle(Environment env){
+		PPrinter p = getPPrinter(env); 
+		p.setTurtle(true);
+		return EMPTY;
+	}
+	
 	
 	IDatatype uri(Expr exp, IDatatype dt, Environment env){
 		if (dt.isURI()){
@@ -558,7 +560,7 @@ public class PluginImpl extends ProxyImpl {
 			return (PPrinter) o;
 		}
 		else {
-			String p = PPRINTER;
+			String p = null; //PPRINTER;
 			if (t != null){
 				p = t;
 			}

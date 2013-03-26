@@ -58,7 +58,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	// setMode(SPARQL_MODE) 
 	boolean SPARQLCompliant = false;
 
-	private IDatatype EMPTY = DatatypeMap.newStringBuilder("");
+	protected IDatatype EMPTY = DatatypeMap.newStringBuilder("");
 	
 	
 	public ProxyImpl(){

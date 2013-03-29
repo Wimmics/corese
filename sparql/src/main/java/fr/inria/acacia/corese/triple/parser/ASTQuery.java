@@ -191,6 +191,8 @@ public class ASTQuery  implements Keyword {
 	List<Boolean> reverseTable = new ArrayList<Boolean>();
 	
 	Hashtable<String, Expression> selectFunctions = new Hashtable<String, Expression>();
+	HashMap<String, Variable> varTemplate = new HashMap<String, Variable>();
+
 	ExprTable selectExp   = new ExprTable();
 	ExprTable regexExpr   = new ExprTable();
 
@@ -208,6 +210,7 @@ public class ASTQuery  implements Keyword {
 
 	public static final String OUT 			= "?out";
 	public static final String IN 			= "?in";
+	public static final String IN2 			= "?in_1";
 	private static final String GROUPCONCAT = Processor.GROUPCONCAT;
 	private static final String CONCAT 		= Processor.CONCAT;
 	private static final String COALESCE 	= Processor.COALESCE;
@@ -2630,6 +2633,7 @@ public class ASTQuery  implements Keyword {
     /**
      * 
      * template group { }
+     * @deprecated
      */
     public void createAllResult(ExpressionList el) {
     	setAllResult(true);
@@ -2717,6 +2721,12 @@ public class ASTQuery  implements Keyword {
 	 * Their variable argument are compiled as kg:pprint(var)
 	 */
 	boolean isMeta(Expression exp){
+//		if (exp.isTerm()){
+//			// TO BE REMOVED
+//			// in case of interpreter: eval/kg:pprint all variables in all exp
+//			// e.g. ?x + ?y
+//			return true;
+//		}
 		if (! exp.isFunction()){
 			return false;
 		}
@@ -2740,7 +2750,13 @@ public class ASTQuery  implements Keyword {
 	 * coalesce()
 	 */
 	Term compileTemplateMeta(Term exp){		
-		Term t = Term.function(exp.getName());
+		Term t;
+		if (exp.isFunction()){
+			t = Term.function(exp.getName());
+		}
+		else {
+			t = Term.create(exp.getName());
+		}
 		boolean isIF = isIF(exp);
 		int count = 0;
 		
@@ -2768,10 +2784,15 @@ public class ASTQuery  implements Keyword {
 	 * if ?x is unbound, empty string "" is returned
 	 */
 	Variable compile(Variable var){
+		Variable tvar = varTemplate.get(var.getLabel());
+		if (tvar != null){
+			return tvar;
+		}
+		Variable res = templateVariable(var);
 		Term t = createFunction(createQName(FUNPPRINT), var);
 		Term c = Term.function(COALESCE, t, getEmpty());
-		Variable res = templateVariable(var);
 		defSelect(res, c);
+		varTemplate.put(var.getLabel(), res);
 		return res;
 	}
 	

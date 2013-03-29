@@ -66,6 +66,7 @@ public class Query extends Exp {
 	Object object, ast;
 
 	private Object pprinter;
+	HashMap<String, Object> tprinter;  
 	Compile compiler;
 	Sorter sort;
 	
@@ -130,6 +131,7 @@ public class Query extends Exp {
 		table 		= new Hashtable<Edge, Query>();
 		ftable 		= new Hashtable<String, Filter>();
 		pragma 		= new HashMap<String, Object>(); 
+		tprinter 	= new HashMap<String, Object> ();  
 		queries 	= new ArrayList<Query>();
 
 		patternNodes 		= new ArrayList<Node>();
@@ -2174,16 +2176,29 @@ public class Query extends Exp {
 	}
 
 	
-	public Object getPP() {
-		return getOuterQuery().getPPrinter();
+	public Object getPP(String p) {
+		return getOuterQuery().getPPrinter(p);
 	}
 	
-	public Object getPPrinter() {
-		return pprinter;
+	public Object getPPrinter(String p) {
+		if (p == null){
+			return pprinter;
+		}
+		return tprinter.get(p);
 	}
 
-	public void setPPrinter(Object pprinter) {
-		this.pprinter = pprinter;
+	public void setPPrinter(String p, Object pprinter) {
+		if (p == null){
+			// next kg:pprint() will use this one
+			this.pprinter = pprinter;
+		}
+		else {
+			if (this.pprinter == null){
+				// next kg:pprint() will use this one
+				this.pprinter = pprinter;
+			}
+			tprinter.put(p, pprinter);
+		}
 	}
 
 	public void setTemplate(boolean template) {

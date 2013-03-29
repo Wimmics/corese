@@ -73,12 +73,17 @@ public class Processor {
 	static final String SQL 	= "sql";
 	static final String KGXPATH = ExpType.KGRAM + "xpath";
 	static final String KGSQL 	= ExpType.KGRAM + "sql";
-	static final String QNAME 	= ExpType.KGRAM + "qname"; 
-	static final String PPRINT 	= ExpType.KGRAM + "pprint"; 
-	static final String PPRINTALL= ExpType.KGRAM + "pprintAll"; 
-	static final String TEMPLATE= ExpType.KGRAM +  "template"; 
-	static final String KGPPRINT= ExpType.KPREF + ":" + "pprint"; 
+	
+	static final String PPRINT 			= ExpType.KGRAM + "pprint"; 
+	static final String PPRINTWITH 		= ExpType.KGRAM + "pprintWith"; 
+	static final String PPRINTALL		= ExpType.KGRAM + "pprintAll"; 
+	static final String PPRINTALLWITH	= ExpType.KGRAM + "pprintAllWith"; 
+	static final String TEMPLATE		= ExpType.KGRAM + "template"; 
+	static final String TEMPLATEWITH	= ExpType.KGRAM + "templateWith"; 
+	static final String EVAL 			= ExpType.KGRAM + "eval"; 
+	static final String KGPPRINT		= ExpType.KPREF + ":" + "pprint"; 
 
+	static final String QNAME 	= ExpType.KGRAM + "qname"; 
 	static final String TURTLE 	= ExpType.KGRAM + "turtle"; 
 	static final String LEVEL 	= ExpType.KGRAM + "level"; 
 	static final String INDENT 	= ExpType.KGRAM + "indent"; 
@@ -357,13 +362,17 @@ public class Processor {
 		defoper(GROUPBY, ExprType.GROUPBY);
 		
 		defoper(QNAME, 	ExprType.QNAME);
-		defoper(PPRINT, ExprType.PPRINT);
-		defoper(PPRINTALL, ExprType.PPRINTALL);
-		defoper(TEMPLATE, ExprType.TEMPLATE);
+		defoper(PPRINT, 		ExprType.PPRINT);
+		defoper(EVAL, 			ExprType.PPRINT);
+		defoper(PPRINTWITH, 	ExprType.PPRINTWITH);
+		defoper(PPRINTALL, 		ExprType.PPRINTALL);
+		defoper(PPRINTALLWITH, 	ExprType.PPRINTALLWITH);
+		defoper(TEMPLATE, 		ExprType.TEMPLATE);
+		defoper(TEMPLATEWITH, 	ExprType.TEMPLATEWITH);
 		defoper(TURTLE, ExprType.TURTLE);
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);
-		defoper(PPURI, ExprType.PPURI);
+		defoper(PPURI, 	ExprType.PPURI);
 		defoper(VISITED, ExprType.VISITED);
 
 		defoper(SIMILAR, ExprType.SIM);

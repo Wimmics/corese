@@ -49,6 +49,7 @@ public class PPrinter {
 	public  static final String PPRINTER = "/home/corby/AData/pprint/asttemplate";
 	private static final String OUT = ASTQuery.OUT;
 	private static final String IN  = ASTQuery.IN;
+	private static final String IN2 = ASTQuery.IN2;
 	private static String NL = System.getProperty("line.separator");
 
 	Graph graph, fake;
@@ -73,6 +74,7 @@ public class PPrinter {
 	HashMap<Query,Integer> tcount;
 	private boolean isHide = false;
 	public boolean stat = !true;
+	private boolean isAllResult = true;
 
 	/**
 	 * 
@@ -290,22 +292,24 @@ public class PPrinter {
 	 * the subpart that matches the first query
 	 */
 	public IDatatype pprint(){
-		return pprint(false, null);
+		return pprint(null, false, null);
 	}
 	
 	
-	public IDatatype pprint(boolean all, String sep){
+	public IDatatype pprint(String temp, boolean all, String sep){
 		query = null;
 		ArrayList<IDatatype> result = new ArrayList<IDatatype>();
-		
-		List<Query> list = getTemplate(start);
+		if (temp == null){
+			temp = start;
+		}
+		List<Query> list = getTemplate(temp);
 		if (list.size() == 0){
 			list = qe.getTemplates();
 		}		
 
 		for (Query qq : list){
 			
-			qq.setPPrinter(this);
+			qq.setPPrinter(pp, this);
 			// remember start with qq for function pprint below
 			query = qq;
 			Mappings map = exec.query(qq);
@@ -342,7 +346,11 @@ public class PPrinter {
 	}
 
 	public IDatatype pprint(IDatatype dt){	
-		return pprint(null, dt, null, false, null, null);
+		return pprint(dt, null, null, false, null, null, null);
+	}
+	
+	public IDatatype template(String temp, IDatatype dt){	
+		return pprint(dt, null, temp, false, null, null, null);
 	}
 	
 	
@@ -366,9 +374,10 @@ public class PPrinter {
 	 * context of evaluation: 
 	 *   select (kg:pprint(?x) as ?px) (concat (?px ...) as ?out) where {}
 	 */
-	public IDatatype pprint(Expr exp, IDatatype dt, String temp, boolean allTemplates, String sep, Query q){	
+	public IDatatype pprint(IDatatype dt1, IDatatype dt2, String temp, 
+			boolean allTemplates, String sep, Expr exp, Query q){	
 		
-		if (dt == null){
+		if (dt1 == null){
 			return EMPTY;
 		}
 		
@@ -388,39 +397,32 @@ public class PPrinter {
 				// use case:
 				// template {"subClassOf(" ?in " " ?y ")"} where {?in rdfs:subClassOf ?y}
 				start = true;
-				stack.push(dt, query);
+				stack.push(dt1, query);
 			//}
 		}
 		
 		if (isDebug){
-			System.out.println("pprint: " + level() + " " + exp + " " + dt);
+			System.out.println("pprint: " + level() + " " + exp + " " + dt1);
 		}
 				
 		Graph g = graph;									
-		QueryProcess exec = this.exec;
-
-		Node qn = NodeImpl.createVariable(IN);
-		Node n  = g.getNode(dt, false, false);
-		if (n == null){
-			// use case: kg:pprint("header")
-			n = fake.getNode(dt, true, true);
-		}
-		Mapping m = Mapping.create(qn, n);
+		QueryProcess exec = this.exec;		
+		Mapping m = getMapping(dt1, dt2);
 
 		int count = 0;
 		for (Query qq : getTemplates(temp)){
 						
 			// Tricky: All templates of this PPrinter share the same PPrinter (see PluginImpl)
-			qq.setPPrinter(this);
+			qq.setPPrinter(pp, this);
 						
-			if (! qq.isFail() && ! stack.contains(dt, qq)){
+			if (! qq.isFail() && ! stack.contains(dt1, qq)){
 				
 				nbt++;
 
 				if (allTemplates) {
 					count ++;
 				}
-				stack.push(dt, qq);
+				stack.push(dt1, qq);
 				if (stack.size() > max){
 					max = stack.size();
 				}
@@ -431,7 +433,7 @@ public class PPrinter {
 				
 				Mappings map = exec.query(qq, m);				
 				
-				stack.visit(dt);
+				stack.visit(dt1);
 				
 				if (! allTemplates){
 					// if execute all templates, keep them in the stack 
@@ -496,44 +498,62 @@ public class PPrinter {
 		}
 		
 		// default: display dt as is
-		return display(dt, q); 
+		return display(dt1, q); 
 	}
 	
+	Mapping getMapping(IDatatype dt1, IDatatype dt2){
+		Node qn1 = NodeImpl.createVariable(IN);
+		Node n1 = getNode(dt1);
+		if (dt2 == null){
+			return Mapping.create(qn1, n1);
+		}
+		else {
+			Node qn2 = NodeImpl.createVariable(IN2);
+			Node n2 = getNode(dt2);
+			return Mapping.create(qn1, n1, qn2, n2);
+		}
+	}
+	
+	Node getNode(IDatatype dt){
+		Node n  = graph.getNode(dt, false, false);
+		if (n == null){
+			// use case: kg:pprint("header")
+			n = fake.getNode(dt, true, true);
+		}
+		return n;
+	}
 	
 	public IDatatype getResult(Mappings map){
-		Query q = map.getQuery();
+		IDatatype dt;
+		if (isAllResult){
+			// group_concat(?out)
+			dt = getAllResult(map);
+		}
+		else {
+			// ?out
+			dt = getSimpleResult(map);
+		}
+		return dt;
+	}
+	
+	public IDatatype getAllResult(Mappings map){
 		Node node = map.getTemplateResult();
 		if (node == null){
 			return null;
 		}
 		return datatype(node);
 	}
-//		 if (q.isAllResult()){
-//			// concat all values of OUT node:
-//			ArrayList<IDatatype> list = new ArrayList<IDatatype>();
-//			
-//			for (Mapping m : map){
-//				Node node = m.getNode(OUT);
-//				if (node != null){
-//					list.add(datatype(node));
-//				}
-//			}
-//			
-//			if (list.size() == 0){
-//				return null;
-//			}
-//			IDatatype dt = result(list, separator(q));
-//			return dt;
-//		}
-//		else {
-//			// result of first OUT node:
-//			Node node = map.getNode(OUT);
-//			if (node == null){
-//				return null;
-//			}
-//			return datatype(node);
-//		}
-//	}
+	
+	
+	public IDatatype getSimpleResult(Mappings map){
+		Node node = map.getNode(OUT);
+		if (node == null){
+			return null;
+		}
+		return datatype(node);
+	}
+
+
 	
 	String separator(String sep){
 		if (sep == null){
@@ -679,6 +699,7 @@ public class PPrinter {
 			
 			qe.sort();	
 		}
+		
 		//trace();
 		
 //		if (isCheck()){
@@ -773,6 +794,16 @@ public class PPrinter {
 
 	public void setHide(boolean isHide) {
 		this.isHide = isHide;
+	}
+
+
+	private boolean isAllResult() {
+		return isAllResult;
+	}
+
+
+	public void setAllResult(boolean isAllResult) {
+		this.isAllResult = isAllResult;
 	}
 
 }

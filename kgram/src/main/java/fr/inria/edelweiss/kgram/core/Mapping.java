@@ -103,6 +103,16 @@ public class Mapping
 		return new Mapping(qnodes, nodes);
 	}
 	
+	public static Mapping create(Node q1, Node n1, Node q2, Node n2){
+		Node[] qnodes = new Node[2], 
+		nodes = new Node[2];
+		qnodes[0] = q1;
+		nodes[0] = n1;
+		qnodes[1] = q2;
+		nodes[1] = n2;
+		return new Mapping(qnodes, nodes);
+	}
+	
 	public static Mapping create(Edge query, Edge result){
 		ArrayList<Node> 
 		qNodes = new ArrayList<Node>(), 

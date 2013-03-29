@@ -74,9 +74,6 @@ public class PluginImpl extends ProxyImpl {
 		case TURTLE:
 			return turtle(env);	
 		
-		case PPRINT:
-			return pprint(env);
-		
 		case GRAPH:
 			return graph();	
 			
@@ -97,24 +94,31 @@ public class PluginImpl extends ProxyImpl {
 	
 	
 	public Object function(Expr exp, Environment env, Object o) {
+		IDatatype dt = datatype(o);
 		
 		switch (exp.oper()){
 		
 		case PPRINT:			
 		case PPRINTALL:
-			return pprint(exp, datatype(o), env);
+			return pprint(dt, null, null, null, exp, env);
+			
+		case TEMPLATE:
+			return pprint(null, dt, exp, env);
+			
+		case PPRINTWITH:
+			return pprint(dt, null, exp, env);
 			
 		case TURTLE:
-			return turtle(datatype(o), env);	
+			return turtle(dt, env);	
 			
 		case PPURI:
-			return uri(exp, datatype(o), env);	
+			return uri(exp, dt, env);	
 			
 		case INDENT:
-			return indent(datatype(o));	
+			return indent(dt);	
 			
 		case VISITED:
-			return visited(datatype(o), env);
+			return visited(dt, env);
 		
 		case KGRAM:
 			return kgram(o);
@@ -177,10 +181,25 @@ public class PluginImpl extends ProxyImpl {
 			
 		case PPRINT:
 		case PPRINTALL:
-			return pprint(exp, dt1, dt2, null, env);
+			// dt1: focus
+			// dt2: arg
+			return pprint(dt1, dt2, null, null, exp, env);
+			
+		case PPRINTWITH:
+		case PPRINTALLWITH:
+			// dt1: uri of pprinter
+			// dt2: focus
+			return pprint(dt2, null, dt1, null, exp, env);
 			
 		case TEMPLATE:
-			return template(dt1, exp,  dt2, env);		
+			// dt1: template name
+			// dt2: focus
+			return pprint(dt2, null, null, dt1, exp, env);
+			
+		case TEMPLATEWITH:
+			// dt1: uri pprinter
+			// dt2: template name
+			return pprint(dt1, dt2, exp, env);
 						
 		}
 		
@@ -190,15 +209,35 @@ public class PluginImpl extends ProxyImpl {
 	
 	public Object eval(Expr exp, Environment env, Object[] args) {
 		
-		Object o1 = args[0];
-		Object o2 = args[1];
-		Object o3 = args[2];
+		IDatatype dt1 = (IDatatype) args[0];
+		IDatatype dt2 = (IDatatype) args[1];
+		IDatatype dt3 = (IDatatype) args[2];
+
 
 		switch (exp.oper()){
 		
 		case SETP:
-			return setProperty(o1, ((IDatatype) o2).intValue(), o3);	
-		
+			return setProperty(dt1, dt2.intValue(), dt3);
+			
+			
+		case TEMPLATE:
+			// dt1: template name
+			// dt2: focus
+			// dt3: arg
+			return pprint(dt2, dt3, null, dt1, exp, env);
+			
+		case TEMPLATEWITH:
+			// dt1: uri pprinter
+			// dt2: template name
+			// dt3: focus
+			return pprint(dt3, null, dt1, dt2, exp, env);
+			
+		case PPRINTWITH:
+			// dt1: uri pprinter
+			// dt2: focus
+			// dt3: arg
+			return pprint(dt2, dt3, dt1, null, exp, env);
+
 		}
 		
 		return null;
@@ -310,38 +349,6 @@ public class PluginImpl extends ProxyImpl {
 	}
 	
 	
-//	Object getObject(Object o){
-//		Node n = node(o);
-//		if (n == null) return null;
-//		return n.getObject();
-//	}
-//	
-//	IDatatype setObject(Object o, Object v){
-//		Node n = node(o);
-//		if (n == null) return null;
-//		n.setObject(v);
-//		return TRUE;
-//	}
-//	
-//	IDatatype setProperty(Object o, IDatatype dt, Object v){
-//		Node n = node(o);
-//		if (n == null) return null;
-//		
-//		int i = dt.intValue();
-//		n.setProperty(i+Node.PSIZE, v);
-//		return TRUE;
-//	}
-//	
-//
-//	Object getProperty(Object o, IDatatype dt){
-//		Node n = node(o);
-//		if (n == null) return null;
-//		
-//		int i = dt.intValue();
-//		return n.getProperty(i+Node.PSIZE);
-//	}
-	
-	
 	class Table extends Hashtable<Integer, PTable>{}
 	
 	class PTable extends Hashtable<Object, Object>{}
@@ -394,12 +401,6 @@ public class PluginImpl extends ProxyImpl {
 		return getValue(d);
 	}
 	
-//	IDatatype depth(Object o){
-//		Node n = node(o);
-//		if (n == null || n.getProperty(Node.DEPTH)== null) return null;
-//		IDatatype d = getValue((Integer) n.getProperty(Node.DEPTH));
-//		return d;
-//	}
 	
 	Graph graph(){
 		return graph;
@@ -455,26 +456,16 @@ public class PluginImpl extends ProxyImpl {
 	}
 	
 	
-	/**
-	 * Draft:
-	 * Recursive pprinter by means of SPARQL queries
-	 */
-	IDatatype pprint(Environment env){
-		PPrinter p = getPPrinter(env); 
-		return p.pprint();
-	}
 
-	/**
-	 * Object o is the node where to apply the query (with a Mapping)
-	 * exp = kg:pprint(arg);
-	 */
-	IDatatype pprint(Expr exp, IDatatype o, Environment env){
-		return pprint(exp, o, null, null, env);
+
+
+	IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env){
+		PPrinter p = getPPrinter(env, getLabel(tbase)); 
+		return p.pprint(getLabel(temp), 
+				exp.oper() == ExprType.PPRINTALL, 
+				exp.getModality());
 	}		
 	
-	IDatatype template(IDatatype t, Expr exp,  IDatatype o, Environment env){
-		return pprint(exp, o, null, t, env);
-	}
 	
 	/**
 	 * exp is the calling expression: kg:pprint kg:pprintAll kg:template
@@ -483,10 +474,12 @@ public class PluginImpl extends ProxyImpl {
 	 * temp is the name of a named template, may be null
 	 * modality: kg:pprintAll(?x ; separator = "\n")
 	 */
-	IDatatype pprint(Expr exp, IDatatype focus, IDatatype tbase, IDatatype temp, Environment env){
+	IDatatype pprint(IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env){
 		PPrinter p = getPPrinter(env, getLabel(tbase)); 
-		IDatatype dt = p.pprint(exp, focus, getLabel(temp), 
-				exp.oper() == ExprType.PPRINTALL, exp.getModality(), env.getQuery());
+		IDatatype dt = p.pprint(focus, arg, 
+				getLabel(temp), 
+				exp.oper() == ExprType.PPRINTALL, 
+				exp.getModality(), exp, env.getQuery());
 		return dt;
 	}
 
@@ -508,7 +501,7 @@ public class PluginImpl extends ProxyImpl {
 			return turtle(dt, env);
 		}
 		else {
-			return pprint(exp, dt, env);
+			return pprint(dt, null, null, null, exp, env);
 		}
 	}
 	
@@ -554,23 +547,24 @@ public class PluginImpl extends ProxyImpl {
 	
 	PPrinter getPPrinter(Environment env, String t){		
 		Query q  = env.getQuery();
-		Object o = q.getPP();
+		String p = null; 
+		if (t != null){
+			p = t;
+		}
+		else if (q.hasPragma(Pragma.TEMPLATE)){
+			p = (String) q.getPragma(Pragma.TEMPLATE);
+		}
+		
+		Object o = q.getPP(p);
 
 		if (o != null){
 			return (PPrinter) o;
 		}
 		else {
-			String p = null; //PPRINTER;
-			if (t != null){
-				p = t;
-			}
-			else if (q.hasPragma(Pragma.TEMPLATE)){
-				p = (String) q.getPragma(Pragma.TEMPLATE);
-			}
 			PPrinter pp = PPrinter.create(graph, p);
 			ASTQuery ast = (ASTQuery) q.getAST();
 			pp.setNSM(ast.getNSM());
-			q.setPPrinter(pp);
+			q.setPPrinter(p, pp);
 			return pp;
 		}
 	}

@@ -155,16 +155,20 @@ public interface ExprType {
 	public static int SETP 		= 217;
 	public static int PWEIGHT 	= 218;
 	public static int ANCESTOR 	= 219;
-	
-	public static int QNAME 	= 220;
-	public static int PPRINT 	= 221;
-	public static int PPRINTALL = 222;
-	public static int TURTLE 	= 223;
-	public static int LEVEL 	= 224;
-	public static int INDENT 	= 225;
-	public static int PPURI 	= 226;
-	public static int TEMPLATE 	= 227;
-	public static int VISITED 	= 228;
+		
+	public static int PPRINT 		= 220;
+	public static int PPRINTWITH 	= 221;
+	public static int PPRINTALL 	= 222;
+	public static int PPRINTALLWITH = 223;
+	public static int TEMPLATE 		= 224;
+	public static int TEMPLATEWITH 	= 225;
+
+	public static int QNAME 	= 226;
+	public static int TURTLE 	= 227;
+	public static int LEVEL 	= 228;
+	public static int INDENT 	= 229;
+	public static int PPURI 	= 230;
+	public static int VISITED 	= 231;
 
 
 

@@ -30,7 +30,6 @@ public class CRDT {
 	/**
 	 * 1) INSERT DATA (ground triples)
 	 */
-	@Test
 	public void testCRDT1(){			
 
 		Graph g1 = Graph.create();	
@@ -474,6 +473,7 @@ public class CRDT {
 	/**
 	 * Two deletes
 	 */
+	@Test
 	public void testCRDT11(){			
 
 		Graph g1 = Graph.create();	

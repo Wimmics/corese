@@ -73,7 +73,8 @@ public class QGVisitor implements QueryGraphVisitor {
 
 
 
-	public Query visit(Query q) {		
+	public Query visit(Query q) {
+		q.setLimit(1);
 		return q;
 	}
 

@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgpipe.Pipe;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
@@ -135,7 +136,31 @@ public class TestRuleEngine {
 		}
 	}
 	
-	
+	@Test
+	public void test44(){
+
+		String query = 
+			"prefix c: <http://www.inria.fr/acacia/comma#>" +
+			"select     * where {" +
+			"?x c:hasGrandParent c:Pierre " +
+			"}";
+		
+		String ent = "select * where {graph kg:entailment {?x ?p ?y}}";
+
+		graph.process(fengine);
+		QueryProcess exec = QueryProcess.create(graph);
+		Mappings map;
+		try {
+			map = exec.query(query);
+			assertEquals("Result", 4, map.size());
+			
+			map = exec.query(ent);
+			System.out.println(map);
+			
+		} catch (EngineException e) {
+			assertEquals("Result", 4, e);
+		}
+	}
 	
 	@Test
 	public void test5(){
@@ -178,7 +203,7 @@ public class TestRuleEngine {
 		QueryProcess exec = QueryProcess.create(g1);
 		exec.add(g2);
 		RuleEngine re = RuleEngine.create(g2, exec);
-		re.setOptimize(true);
+		//re.setOptimize(true);
 		
 		load2.setEngine(re);
 		
@@ -252,6 +277,62 @@ public class TestRuleEngine {
 		
 	}
 
+	@Test
+	public void test8(){
+		Graph g = Graph.create();
+		QueryProcess exec = QueryProcess.create(g);
+		
+		QueryEngine qe = QueryEngine.create(g);
+		String query = "insert data { <John> rdfs:label 'John' }";
+		qe.addQuery(query);
+		
+		qe.process();
+		
+		assertEquals("Result", 1, g.size());
+
+
+	}
+
+	
+	
+	
+	
+	@Test
+	public void testWF(){
+
+		String query = 
+			"prefix c: <http://www.inria.fr/acacia/comma#>" +
+			"select     * where {" +
+			"?x c:hasGrandParent c:Pierre " +
+			"}";
+		
+		String ent = "select * where {graph kg:entailment {?x ?p ?y}}";
+
+		graph.addEngine(fengine);
+		
+		QueryProcess exec = QueryProcess.create(graph);
+		Mappings map;
+		try {
+			map = exec.query(query);
+			assertEquals("Result", 4, map.size());
+			
+			map = exec.query(ent);
+			System.out.println(map);
+			
+		} catch (EngineException e) {
+			assertEquals("Result", 4, e);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

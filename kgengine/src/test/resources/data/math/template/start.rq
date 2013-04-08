@@ -1,0 +1,10 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template kg:start {
+  ?in ; separator = "\n\n"
+}
+where {
+  ?in a ?t ;
+  filter not exists {?x ?p ?in}
+  filter (strstarts(?t, m:))
+}

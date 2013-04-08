@@ -1,0 +1,5 @@
+prefix ex: <http://ns.inria.fr/2013/math#>
+describe ?c
+pragma {
+kg:display kg:template </home/corby/AData/math/template>
+}

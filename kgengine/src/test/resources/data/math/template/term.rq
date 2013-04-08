@@ -1,0 +1,16 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?f ?l ?r
+}
+where {
+  ?in a ?t ;
+  m:args(?f ?r)
+}
+values (?t ?l){
+  (m:Plus  " + ")
+  (m:Minus " - ")
+  (m:Mult  "")
+  (m:Div   "/")
+  (m:Power "^")
+}

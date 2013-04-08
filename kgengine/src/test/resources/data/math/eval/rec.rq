@@ -1,0 +1,7 @@
+template kg:rec {
+  if (?in = 0, 1, 
+      ?in_1 * kg:template(kg:rec, ?in - 1, ?in_1))
+}
+where {
+  optional { ?x rdf:value ?in, ?in_1 }
+}

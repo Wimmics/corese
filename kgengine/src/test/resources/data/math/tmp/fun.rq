@@ -1,0 +1,17 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+"function " ?in
+#  kg:turtle(?t) 
+#  coalesce(concat( "[", ?fr, ", ", kg:uri(?to), "]"), "")
+#  "(" group_concat(distinct ?e)  ")" 
+#  " " group_concat("d", ?v ; separator = " " )
+}
+where {
+#  ?in a ?t 
+  ?in a  m:Function 
+#  m:args/rdf:rest*/rdf:first ?e
+#  optional { ?in m:vars/rdf:rest*/rdf:first ?v }
+#  optional {?in m:from ?fr ; m:to ?to}
+}
+

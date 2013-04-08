@@ -1,0 +1,11 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?v
+  if (bound(?i), concat("_", ?i), "")
+}
+where {
+  ?in m:name ?v
+  optional { ?in m:index ?i }
+}
+pragma { kg:template kg:priority 101 }

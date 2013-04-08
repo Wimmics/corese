@@ -1,0 +1,17 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+"\\left(\n" 
+"\\begin{array}{" kg:template(kg:nbcol, ?in) "}\n"
+ 
+    group { kg:template(kg:row, ?row) ; separator = " \\\\\n" }
+    
+"\n"  
+"\\end{array}\n"
+"\\right)"
+}
+where {
+  ?in a m:Matrix ;
+  m:args/rdf:rest*/rdf:first ?row
+}
+

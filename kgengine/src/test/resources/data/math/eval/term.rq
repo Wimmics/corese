@@ -1,0 +1,14 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  if (?t = m:Plus,  kg:eval(?f) + kg:eval(?r), 
+  if (?t = m:Mult,  kg:eval(?f) * kg:eval(?r), 
+  if (?t = m:Minus, kg:eval(?f) - kg:eval(?r), 
+  if (?t = m:Div,   kg:eval(?f) / kg:eval(?r), 
+  ""))))
+}
+where {
+  ?in a ?t 
+  filter(?t in (m:Plus, m:Mult, m:Minus, m:Div))
+  ?in m:args(?f ?r)
+}

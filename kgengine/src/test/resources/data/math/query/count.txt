@@ -1,0 +1,13 @@
+prefix m: <http://ns.inria.fr/2013/math#>
+select * (count(?var) as ?c)
+where
+{
+?x a m:Integral ;
+m:vars/m:term* [m:name ?var]
+
+
+?x m:author ?y ; m:label ?l
+
+
+}
+group by ?x

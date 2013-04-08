@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template kg:start {
+  ?in ; separator = "\n\n"
+}
+where {
+  ?in a ?t ;
+  filter not exists {?x ?p ?in}
+  filter (strstarts(?t, m:))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?f ?l ?r
+}
+where {
+  ?in a ?t ;
+  m:args(?f ?r)
+}
+values (?t ?l){
+  (m:Plus  " + ")
+  (m:Minus " - ")
+  (m:Mult  "")
+  (m:Div   "/")
+  (m:Power "^")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?v
+}
+where {
+  ?in m:name ?v
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?e ; separator = " "
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  kg:turtle(?t) 
+  coalesce(concat( "[", ?fr, ", ", kg:uri(?to), "]"), "")
+  "(" 
+    group distinct { ?e }
+  ")" 
+  " " 
+  if (bound(?v), group_concat("d", ?v), "")
+}
+where {
+  ?in a ?t ;
+  m:args/rdf:rest*/rdf:first ?e
+  optional { ?in m:vars/rdf:rest*/rdf:first ?v }
+  optional { ?in m:from ?fr ; m:to ?to }
+}
+values ?t {
+m:Integral m:Sigma
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  "(" ?e ")!"
+}
+where {
+  ?in a ?t ;
+  m:args(?e)
+}
+values ?t {
+m:Factorial
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+"matrix:(" "\n"
+  "(" 
+    group { ?row ; separator = ")\n(" }
+  ")"
+  "\n" ")"
+}
+where {
+  ?in a m:Matrix ;
+  m:args/rdf:rest*/rdf:first ?row
+}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

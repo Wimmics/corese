@@ -1,0 +1,20 @@
+prefix m: <http://ns.inria.fr/2013/math#>
+template  {
+  kg:pprint(?x, </home/corby/AData/math/template>)
+  ; separator = "\n\n"
+}
+where
+{
+select distinct ?x where {
+?x a m:Integral 
+?x m:vars @([m:name ?var]) 
+; (m:args|rdf:rest|rdf:first)* 
+[a m:Mult; 
+m:args/rdf:rest*/rdf:first [m:name ?var] ;
+m:args/rdf:rest*/rdf:first [m:name ?v]
+]
+filter(?var != ?v)
+
+#?x m:author ?y ; m:label ?l
+}
+}

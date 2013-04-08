@@ -1,0 +1,44 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+m:ex5
+  m:label "My favourite equation";
+  m:author "JL";
+  m:problems (m:InverseProblem) ;
+  m:applications (m:Engineering) ;
+  m:kind (m:Algebraic);
+  
+
+a m:Le ;
+m:args(
+  [a m:Sqrt; m:args(
+  
+    [a m:Div; m:args(
+      [a m:Function ; 
+      m:name "sin" ;
+      m:args(
+	[m:name 'y']
+      )]
+      [a m:Function ; 
+      m:name "cos" ;
+      m:args(
+	[m:name 'y']
+      )]
+    )]
+    
+    
+    3
+  )]
+  [a m:Power; m:args(
+    [a m:Function ; 
+    m:name "f" ;
+    m:args(
+      [m:name 'x']
+    )]
+    2
+  )]
+)
+
+
+
+
+

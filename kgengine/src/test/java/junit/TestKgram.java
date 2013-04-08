@@ -64,15 +64,12 @@ public class TestKgram extends TestSuite
     	  QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");
     	  
     	  if (!true) {
-    		  //corese.RuleApply();
     		  displayResult =  true;
     		  for (int i = 0; i < 1; i++) {
-    			  //mod = new Param(); // for parameters for get:gui
 
+    			  query = "select debug *  where { ?x ?p ?val    filter ( ?val = 2  ) }";
 
-    			  query = "select debug (max(?age+?age) as ?max) where {?x c:age ?age}";
-
-    			  suite.addTest(new CoreseTest2("testValue", corese, query, "?max", 90));
+    			  suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 2));
 
     		  }
     	  }

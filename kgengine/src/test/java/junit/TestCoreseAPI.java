@@ -138,7 +138,7 @@ public class TestCoreseAPI {
 //			RDFFormat f = RDFFormat.create(g);
 //			System.out.println(f);
 												
-			assertEquals("Result", 2, g.size());
+			assertEquals("Result", 3, g.size());
 			
 			
 			String query = "select * where {graph <test> {?x ?p ?y}}";
@@ -151,7 +151,7 @@ public class TestCoreseAPI {
 			res = queryAgent.SPARQLQuery(query);
 //			System.out.println("** Res: " );
 //			System.out.println(res);
-			assertEquals("Result", 1, res.size());
+			assertEquals("Result", 2, res.size());
 			
 			
 			String update = "delete {?x ?p ?y} where {?x ?p ?y}";

@@ -1,0 +1,623 @@
+package junit;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.junit.Test;
+
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
+import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.acacia.corese.triple.parser.Values;
+import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.QueryEngine;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.print.PPrinter;
+import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.edelweiss.kgtool.print.TemplateFormat;
+import fr.inria.edelweiss.kgtool.print.TemplatePrinter;
+import fr.inria.edelweiss.kgtool.print.TripleFormat;
+import fr.inria.edelweiss.kgtool.print.XMLFormat;
+
+public class PPrint {
+	
+	static String root  = "/home/corby/workspace/kgengine/src/test/resources/data/";
+	static String data  = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+	static String cos   = "/home/corby/workspace/corese/data/";
+
+	static Graph graph;
+	
+
+	//ld.load(root + "pprint/owldata/data.ttl");
+	//ld.load(data + "ign/ontology/carto2.owl");
+	//ld.load(cos + "eWOK_Ref/eWOK-Ontology/dateTimeData/ontologies");
+	//ld.load(cos + "eWOK_Ref/eWOK-Ontology/geologicalData/ontologies");
+	//ld.load(cos + "eWOK_Ref/eWOK-Ontology/interpretationData/ontologies");
+	//ld.load("http://www.heppnetz.de/ontologies/goodrelations/v1.owl");
+
+	//nsm.definePrefix("ex",  "http://www.example.org#");
+	//nsm.definePrefix("ign", "http://www.semanticweb.org/ontologies/2008/11/Ontology1228129138638.owl#");	
+	//nsm.definePrefix("ifp", "http://www.ifp.fr/GeologicalTimeOntology#");
+	//nsm.definePrefix("go", "http://purl.org/goodrelations/v1#");
+
+	//@Test
+	public void translate(){
+		TemplatePrinter p =  
+				TemplatePrinter.create(
+						root + "math/template", 
+						root + "math/mat.rul");
+		try {
+			p.process();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (LoadException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	public void testTemp(){
+		Graph g = Graph.create();
+		Load ld = Load.create(g);
+		
+		ld.load("/home/corby/Cours/2013/Corese/");
+		
+		PPrinter p = PPrinter.create(g, root + "pprint/test2");
+		NSManager nsm = NSManager.create();
+		nsm.definePrefix("h", "http://www.inria.fr/2007/09/11/humans.rdfs#");
+		nsm.definePrefix("i", "http://www.inria.fr/2007/09/11/humans.rdfs-instances#");
+		p.setNSM(nsm);
+		p.setTurtle(true);
+		//p.setDebug(true);
+				
+		Node n = g.getResource(nsm.toNamespace("h:Man"));
+		IDatatype dt = (IDatatype) n.getValue();
+		
+		
+		//System.out.println(p.pprint().getLabel());
+		
+		
+		String temp = 
+				"prefix h: <http://www.inria.fr/2007/09/11/humans.rdfs#>"+
+				"prefix i: <http://www.inria.fr/2007/09/11/humans.rdfs-instances#>"+
+				"template { kg:pprint(?x, </home/corby/AData/pprint/asttemplate>) " +
+				"; separator = '\\n\\n'" +
+				"}" +
+				"where {?x a h:Person}" ;
+
+		QueryProcess exec = QueryProcess.create(g);
+		try {
+			Mappings map = exec.query(temp);
+			//System.out.println(exec.getTemplateResult(map));
+			System.out.println(map.getTemplateResult().getLabel());
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	
+	
+	public void testPPOWL2(){
+		Graph g = Graph.create();
+		Load ld = Load.create(g);
+		//ld.setLimit(1000);
+		//ld.load(root + "pprint/owldata/galen.owl");
+
+		try {
+			ld.loadWE(root + "pprint/owldata/primer.owl");
+		} catch (LoadException e) {
+			e.printStackTrace();
+		}
+		
+		QueryProcess exec = QueryProcess.create(g);
+		
+		String temp = 
+				"template {kg:pprint(?x, </home/corby/AData/pprint/owltemplate>)" +
+				"; separator = '\\n\\n'" +
+				"}" +
+				"where {?x a owl:Class" +
+				"" +
+				"}";
+		
+		try {
+			Mappings map = exec.query(temp);
+			System.out.println(map.getTemplateResult().getLabel());
+		} catch (EngineException e) {
+			//  Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	public void testPPOWL3(){
+		Graph g = Graph.create();
+		Load ld = Load.create(g);
+		//ld.setLimit(1000);
+		//ld.load(root + "pprint/owldata/galen.owl");
+
+		try {
+			ld.loadWE(root + "pprint/owldata/primer.owl");
+		} catch (LoadException e) {
+			e.printStackTrace();
+		}
+		
+		String q = 
+				"prefix f: <http://example.com/owl/families/>" +
+				"template {" +
+				"kg:pprintWith('/home/corby/AData/pprint/owltemplate')" +
+				"}" +
+				"where {}";
+		
+		QueryProcess exec = QueryProcess.create(g);
+		
+		try {
+			Mappings map = exec.query(q);
+			System.out.println(map);
+			System.out.println(map.getTemplateResult().getLabel());
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	public void testPPOWL(){
+		Graph g = Graph.create();
+		Load ld = Load.create(g);
+		//ld.setLimit(1000);
+		//ld.load(root + "pprint/owldata/galen.owl");
+
+		try {
+			ld.loadWE(root + "pprint/owldata/primer.owl");
+		} catch (LoadException e) {
+			e.printStackTrace();
+		}
+
+
+//		TripleFormat f = TripleFormat.create(g);
+//		try {
+//			f.write(root + "pprint/owldata/galen.ttl");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+
+		System.out.println("graph: " + g.size());
+
+		NSManager nsm = NSManager.create();
+		
+		nsm.definePrefix("fam", "http://example.com/owl/families/");
+		nsm.definePrefix("of", "http://example.org/otherOntologies/families/");
+//		
+		nsm.definePrefix("g", "http://example.org/factkb#");
+		
+//		nsm.definePrefix("s", "http://www.cs.manchester.ac.uk/substance.owl#");
+//		nsm.definePrefix("h", "http://www.geneontology.org/formats/oboInOwl#");
+//		nsm.definePrefix("o", "http://purl.obolibrary.org/obo/"); 
+		
+		String str = "";
+		StringBuilder sb = null;
+		TemplateFormat tf = null;		
+		Date d1 = new Date();
+		int max = 1;
+		for (int i=0; i<max; i++){
+			Date dd1 = new Date();
+
+			tf = TemplateFormat.create(g, root + "pprint/owltemplate");
+//			//tf = TemplateFormat.create(g, "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/owl.rul");
+//			
+//			
+			tf.setNSM(nsm);
+			tf.setTurtle(true);
+			tf.setCheck(true);
+//			//tf.setStart(Exp.KGRAM + "test");
+//			//tf.setDebug(true);
+			//sb = tf.toStringBuilder();
+			str = tf.toString();
+			
+			Date dd2 = new Date();
+			System.out.println(i + " : " + (dd2.getTime() - dd1.getTime()) / 1000.0);
+			
+//			try {
+//				tf.write(root + "pprint/galen.fowl");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+		}
+
+		Date d2 = new Date();
+		
+		int length = str.length();
+		
+		//str = nsm.toString() + "\n" + str;
+		
+		if (max == 1) {
+			System.out.println(str);
+		}
+		double time = ((d2.getTime() - d1.getTime()) / 1000.0) / max;
+		System.out.println("Time : " + time);
+		System.out.println("Length: " + length);
+		System.out.println("graph: " + g.size());
+
+		System.out.println("nb call templates: " + tf.getPPrinter().nbTemplates());
+		System.out.println("query per sec: "     + (int) (tf.getPPrinter().nbTemplates() / time));
+
+		System.out.println("max level: "  + tf.getPPrinter().maxLevel());
+		System.out.println("stack size: " + tf.getPPrinter().level());
+		
+		if (tf.getPPrinter().stat){
+			tf.getPPrinter().nbcall();
+		}
+
+		
+//		String q = 
+//				"prefix fp: </home/corby/AData/pprint/> " +
+//				"prefix f:  <http://example.com/owl/families/>" +
+//				"select (kg:pprint(?x, fp:owltemplate) as ?pp) " +
+//				"where {" +
+//				"?x a ?t " +
+//				//"filter not exists { ?y ?p ?x} " +
+//				"filter(?t ~ 'Property') " +
+//				"filter(isURI(?x))" +
+//				"}";
+//		
+//		QueryProcess exec = QueryProcess.create(g);
+//		
+//		try {
+//			Mappings map = exec.query(q);
+//			System.out.println(map);
+//		} catch (EngineException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+	
+	
+	public void testRec(){
+		Graph g = Graph.create();
+//		Load ld = Load.create(g);
+//		ld.load(root + "math/eval.ttl");
+		
+		PPrinter pp = PPrinter.create(g, root + "pprint/test");
+		
+		
+		IDatatype dt = pp.template(ExpType.KGRAM + "rec", DatatypeMap.newInstance(100));
+		System.out.println(dt.getLabel());
+		
+	}
+	
+	
+	
+
+	public void testEval(){
+		Graph g = Graph.create();
+		Load ld = Load.create(g);
+		ld.load(root + "math/eval.ttl");
+		
+		NSManager nsm = NSManager.create();https://www.google.fr/
+		nsm.definePrefix("m", "http://ns.inria.fr/2013/math#");
+		
+		PPrinter pp = PPrinter.create(g, root + "math/eval");
+		pp.setNSM(nsm);
+		
+		System.out.println(pp);
+
+		
+	}
+	
+	
+	public void testFormat(){
+		String f = "ceci est %1$s test %2$s.";
+		String str = String.format(f, "un", 12.5);
+		System.out.println(str);
+	}
+
+
+	@Test
+
+	public void testMath(){
+		String latex = "/home/corby/AData/math/latex/";
+		Graph g = Graph.create();
+		Load ld = Load.create(g);
+				
+		try {
+			ld.loadWE(root + "math/data");
+		} catch (LoadException e1) {
+			e1.printStackTrace();
+		}
+		
+		QueryLoad ql = QueryLoad.create();
+		String qq = ql.read(root + "math/query/query-display.txt");
+		String  q = ql.read(root + "math/query/math.txt");
+		String test =
+				"select * where {" +
+				"?x ?p ?y " +
+				"filter(regex(?x, '^_:b1$') )" +
+				"filter(exists { ?x <p> <a> })" +
+				"}";
+
+		TemplateFormat tf = TemplateFormat.create(g, root + "math/latextemplate");
+		NSManager nsm = NSManager.create();https://www.google.fr/
+		nsm.definePrefix("m", "http://ns.inria.fr/2013/math#");
+		tf.setNSM(nsm);
+
+		//System.out.println(tf);
+		
+		QueryProcess exec = QueryProcess.create(g);
+		
+		try {
+			Mappings map = exec.query(test);
+			ResultFormat rf = ResultFormat.create(map);
+			//rf.write(latex + "tmp.tex");
+			System.out.println(rf);
+//			Process p = Runtime.getRuntime().exec("/usr/bin/pdftex " + latex  + "tmp.tex");
+//			p.waitFor();
+//			Runtime.getRuntime().exec("acroread " + latex  + "tmp.pdf");
+
+		} catch (EngineException e) {
+			e.printStackTrace();
+		} 
+		
+		
+		
+	}
+	
+	
+	public void testSPIN(){
+		Graph g = Graph.create(true);
+		Load ld = Load.create(g);
+		QueryProcess.definePrefix("ex", "http://www.example.org/");
+		
+		for (int i = 0; i<1; i++){
+			ld.load(root + "pprint/spindata");
+		}
+				
+		QueryLoad ql = QueryLoad.create();
+		String q = ql.read(root + "pprint/testspin.rq");
+						
+		QueryProcess exec = QueryProcess.create(g);
+		exec.setPPrinter(root + "pprint/spintemplate");
+		
+		PPrinter pp = PPrinter.create(g, root + "pprint/spintemplate");
+		NSManager nsm = NSManager.create();
+		nsm.definePrefix("sp", "http://spinrdf.org/sp/");
+		pp.setNSM(nsm);
+		//pp.setDebug(true);
+
+		System.out.println(pp.pprint()); 
+				
+//		try {
+//			Mappings map = exec.query(q);
+//			System.out.println(map);
+//		} catch (EngineException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	}
+	
+
+	public void testTemplate(){
+		
+		Graph g = Graph.create(true);
+		Load ld = Load.create(g);
+		
+		ld.load(data + "comma/comma.rdfs");
+		ld.load(data + "comma/model.rdf");
+		ld.load(data + "comma/data");
+
+		
+		String q = 
+				"prefix c: <http://www.inria.fr/acacia/comma#> " +
+				"select * " +
+				"(kg:pprint(?x) as ?out) " +
+				"where {?x a c:OrganizationalEntity}";
+		
+		
+		String qq = 
+				
+				"prefix c: <http://www.inria.fr/acacia/comma#> " +
+				"select  (group_concat(distinct xsd:string(?t)) as ?tt) ?in{" +
+				"?in a c:Person " +
+				"?doc c:CreatedBy ?in " +
+				"?doc c:Title ?t" +
+				"}" +
+				"group by ?in ";
+
+		
+		QueryProcess exec = QueryProcess.create(g, true);
+		exec.setPPrinter(root + "pprint/test");
+		
+		try {
+			
+			Date d1 = new Date();
+
+			Mappings map  = exec .query(qq);
+			
+			Date d2 = new Date();
+
+			System.out.println(map);
+			
+			System.out.println(map.size());
+			
+			System.out.println((d2.getTime() - d1.getTime()) / 1000.0);
+
+			
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}		
+	}
+	
+
+	public void testPPrint(){
+		Graph g = Graph.create(true);
+		Load ld = Load.create(g);
+		QueryProcess.definePrefix("ex", "http://www.example.org/");
+		
+		for (int i = 0; i<1; i++){
+			ld.load(root + "pprint/data");
+		}
+
+		String q = 
+				"prefix ast: <http://www.inria.fr/2012/ast#> " +
+				"select  " +
+				//"(kg:pprint(?q) as ?out) " +
+				"?q " +
+				"where {?q a ast:Query}";
+		
+		
+		QueryProcess exec = QueryProcess.create(g);
+
+
+		
+		System.out.println("** start");
+		
+		exec.setPPrinter(root + "pprint/template");
+		//exec.setPPrinter(root + "pprint/query");
+		
+		//exec.setPPrinter(root + "pprint/asttemplate");
+		
+		NSManager nsm = NSManager.create();
+		nsm.definePrefix("ex", "http://www.example.org/");
+		nsm.definePrefix("ast", "http://www.inria.fr/2012/ast#");
+		
+		PPrinter pp = PPrinter.create(g, root + "pprint/template");
+		pp.setNSM(nsm);
+		
+		String cons = 
+				"prefix ast: <http://www.inria.fr/2012/ast#> " +
+				"construct {?x ?p ?y} where {?x ?p ?y}" +
+				"pragma {kg:display kg:template <" + root + "pprint/html>" + "}";
+		
+		try {
+			Mappings map = exec.query(cons);
+						
+			Date d1 = new Date();
+			
+			String str = null;
+			for (int i = 0; i<1; i++){
+				TemplateFormat tf = TemplateFormat.create(g);
+				tf.setPPrinter(root + "pprint/template");
+				tf.setNSM(nsm);
+
+				str = tf.toString();
+			}
+			
+			Date d2 = new Date();
+
+			
+			System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / 1000.0);
+			
+			str = nsm.toString() + "\n" + str;
+			System.out.println(str);
+//			map = exec.query(str);
+//			
+//			System.out.println(map);
+			
+//			try {
+//				tf.write(root + "pprint/tmp.html");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+			
+			} 
+		catch (EngineException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+				
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public void testAST(){
+		Graph g = Graph.create();
+		
+		
+		Load ld = Load.create(g);
+		
+		ld.load(root + "pprint/pprint.ttl");
+		
+		QueryLoad ql = QueryLoad.create();
+		String q = ql.read(root  + "pprint/query/pprint.rq");
+
+		
+		QueryProcess exec = QueryProcess.create(g);
+		
+		try {
+			
+			Mappings map1 = exec.query(q + "values ?pp {ast:construct}");
+			Mappings map2 = exec.query(q + "values ?pp {ast:where}");
+			
+			IDatatype cst = (IDatatype) map1.getValue("?res");
+			IDatatype whr = (IDatatype) map2.getValue("?res");
+						
+			System.out.println("construct {" + cst.getLabel() + "}");			
+			System.out.println("where {"     + whr.getLabel() + "}");
+			
+			
+			
+
+			
+			
+		} catch (EngineException e) {
+			e.printStackTrace();
+		}
+
+		
+	}
+	
+	
+	
+
+}

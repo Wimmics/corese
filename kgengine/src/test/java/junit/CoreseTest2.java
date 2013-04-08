@@ -320,6 +320,10 @@ public class CoreseTest2 extends TestCase {
 		try {
 			Mappings lMap = exec.query(query);
 			
+			if (TestKgram.displayResult){
+				System.out.println(lMap);
+			}
+			
 //			Query q = exec.compile(query);
 //			Mappings lMap = exec.query(exec.getAST(q).toString());
 												

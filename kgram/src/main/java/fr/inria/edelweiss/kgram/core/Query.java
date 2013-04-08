@@ -2180,6 +2180,11 @@ public class Query extends Exp {
 		return getOuterQuery().getPPrinter(p);
 	}
 	
+	public Object getPP() {
+		return getOuterQuery().getPPrinter(null);
+	}
+	
+	
 	public Object getPPrinter(String p) {
 		if (p == null){
 			return pprinter;

@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+template {
+    kg:turtle(?in) " " 
+    
+    if (bound(?t), 
+      concat("a ", kg:turtle(?t), if (bound(?p), " ; ", "")), "")
+              
+    group_concat(kg:turtle(?p), " ", kg:uri(?y) ; 
+      separator = " ; " )
+}
+where {
+  {?in ?p ?y
+  filter(isURI(?in))
+  filter(?p != rdf:type)
+  optional { ?in a ?t }}
+  
+  union
+  
+  {?in a ?t .   
+  filter(isURI(?in))
+  filter not exists {?in ?p ?y . filter(?p != rdf:type)}}
+}
+group by ?in
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+template {
+ "(" "\n" group_concat(?e ; separator = "\n") ")"
+}
+where {
+  ?in rdf:rest*/rdf:first ?e 
+  filter not exists { ?x rdf:rest ?in }
+}
+pragma { kg:query kg:priority 2 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+template {
+   "[" 
+    if (bound(?t), concat("a ", kg:turtle(?t), " ; "), "")
+    group_concat(kg:turtle(?p), " ",  kg:uri(?y) ; 
+    separator = " ; " )
+   "]"
+}
+where {
+  ?in ?p ?y
+  filter(isBlank(?in))
+  filter(?p != rdf:type)
+  optional { ?in a ?t }
+}
+group by ?in
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+template {
+   kg:turtle(?in) 
+}
+where {
+  {?x ?p ?in} union {?x ?in ?y}
+}
+pragma { kg:query kg:priority 1000}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+template {
+  group_concat(?in ; separator = "\n\n")
+}
+where {
+  select distinct ?in where {
+    ?in ?p ?y 
+    filter (isURI(?in) || not exists {?z ?q ?in})
+  }
+}
+pragma { kg:query kg:priority 1 }
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

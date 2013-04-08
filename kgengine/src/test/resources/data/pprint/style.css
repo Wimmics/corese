@@ -1,0 +1,21 @@
+span.variable {
+  font-weight:bold ;
+  color:green
+}
+
+span.keyword {
+  font-weight:bold
+}
+
+span.uri {
+  color:blue
+}
+
+span.literal {
+  font-weight:bold ;
+  color:orange
+}
+
+span.blank {
+  color:black
+}

@@ -1,0 +1,34 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# kg:pprintAll(?in) run all templates on each value of ?in
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+
+"Ontology(" kg:uri(?o) "\n"
+
+   "Import(" group_concat(distinct kg:uri( ?i)) ")\n\n"
+   
+   group distinct "\n" { kg:pprintAll(?in) }
+  
+  "\n)"
+}
+where {
+
+  {select distinct ?in where {
+    { ?in ?p ?y 
+    filter (isURI(?in)) 
+    filter (?y != owl:Ontology && ?p != owl:imports) } union 
+    
+    { ?in a owl:AllDisjointClasses } union 
+    
+    { ?in a owl:NegativePropertyAssertion }
+  }
+  order by ?in}
+  
+  ?o a owl:Ontology
+  optional { ?o owl:imports ?i }
+  
+}
+
+pragma { kg:query kg:priority 1 }

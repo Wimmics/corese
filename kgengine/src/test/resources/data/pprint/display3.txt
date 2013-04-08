@@ -1,0 +1,12 @@
+prefix h: <http://www.inria.fr/2007/09/11/humans.rdfs#>
+prefix i: <http://www.inria.fr/2007/09/11/humans.rdfs-instances#>
+template { kg:turtle()
+  ?x  "\n"
+  group { "   " ?p " " ?y ; separator = " ;\n"}
+  " ."
+  ; separator = "\n\n"
+}
+where {
+  ?x ?p ?y
+}
+group by ?x

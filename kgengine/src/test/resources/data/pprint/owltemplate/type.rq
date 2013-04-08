@@ -1,0 +1,12 @@
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+if (! strstarts(?t, owl:) && ! strstarts(?t, rdf:) && ! strstarts(?t, rdfs:), 
+    concat("ClassAssertion(", kg:uri(?t), " ", kg:uri(?in), ")"),
+    "")
+}
+where {
+  ?in a ?t
+}
+pragma { kg:query kg:priority 1000 }

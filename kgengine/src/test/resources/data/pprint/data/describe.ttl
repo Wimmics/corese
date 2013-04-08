@@ -1,0 +1,57 @@
+@prefix ast: <http://www.inria.fr/2012/ast#>
+@prefix ex:  <http://www.example.org/>
+
+[
+a ast:DescribeQuery ;
+
+ast:describe (
+[a ast:Var ; ast:name "?x"]
+[a ast:Var ; ast:name "?n"]
+) ;
+
+ast:where (
+
+[a ast:Union ; ast:body (
+
+([a ast:Optional ; 
+ast:body (
+
+[ast:subject  [a ast:Var ;  ast:name "?x"] ;
+ast:property ex:name ;
+ast:object   [a ast:Var ;  ast:name "?n"]]
+
+[a ast:Filter ; ast:exp
+[ast:ope ">=" ;  
+ast:body(
+[ast:fun "foo" ; 
+ast:body([ast:name "?n"] [ast:fun "self" ; ast:body("abc")])]
+[ast:ope "+"   ; ast:body([ast:name "?x"]  12)]
+)]
+]
+)
+])
+
+([
+ast:graph [a ast:Var ; ast:name "?g"] ;
+
+ast:body (
+[a ast:Minus ; ast:body(
+
+[ast:subject  ex:John ;
+ast:property [a ast:Var ;  ast:name "?p"] ;
+ast:object   18]
+
+[ast:subject  ex:John ;
+ast:property [a ast:Var ;  ast:name "?p"] ;
+ast:object   18]
+)
+]
+)
+]
+)
+)]
+)]
+
+
+
+

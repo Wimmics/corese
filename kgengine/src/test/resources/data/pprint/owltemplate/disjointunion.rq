@@ -1,0 +1,22 @@
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+template {
+   "DisjointUnion("  
+     if (bound(?z),
+# special case: use a named template
+	kg:template(kg:interunion, ?in),
+	kg:uri(?in)) 
+      " "  kg:uri(?y)  
+    ")" 
+}
+where {
+  ?in owl:disjointUnion ?y 
+  optional { 
+    { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
+  }
+}
+pragma { kg:template kg:priority 1 }

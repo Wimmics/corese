@@ -1,0 +1,8 @@
+template {
+  "construct {" $c "}"
+  "where {"     $w "}"
+}
+where {
+?in ast:construct $c ;
+    ast:where $w
+}

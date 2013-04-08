@@ -1,0 +1,6 @@
+  select * where {
+    ?in a  ?fun ;
+	?p ?arg 
+    filter(regex(?p, 'arg'))
+  }
+  order by ?p

@@ -1,0 +1,13 @@
+@prefix ast: <http://www.inria.fr/2012/ast#>
+@prefix ex:  <http://www.example.org/>
+
+[
+a ast:DescribeQuery ;
+
+ast:describe (ex:John) 
+
+]
+
+
+
+

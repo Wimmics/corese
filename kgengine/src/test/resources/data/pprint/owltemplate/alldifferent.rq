@@ -1,0 +1,11 @@
+template {
+   "DifferentIndividuals("  
+      kg:uri(?in) " " ?l 
+   ")"   
+}
+where {
+  ?in a owl:allDifferent 
+  
+  { ?in owl:members ?l } union 
+  { ?in owl:distinctMembers ?l }
+}

@@ -1,0 +1,9 @@
+template {
+  if(bound(?t), "Data", "Object") 
+  "HasValue(" kg:uri(?y) " " kg:uri(?v) ")"  
+}
+where {
+  ?in owl:hasValue ?v ;
+    owl:onProperty ?y .
+    optional { ?y a owl:DatatypeProperty, ?t }
+}

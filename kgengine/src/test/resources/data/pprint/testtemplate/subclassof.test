@@ -1,0 +1,17 @@
+template {
+  group {
+    case ?x {"subClassOf(" ?in ?x ")"}
+    case ?y {"intersectionOf(" ?y ")"}
+  }
+}
+where {
+  {?in rdfs:subClassOf ?x} union
+  {?in owl:intersectionOf ?y}
+}
+
+
+group_concat(
+  if(bound(?x), concat("subClassOf(" ?in ?x ")"), "")
+  if(bound(?y), concat("intersectionOf(" ?y ")"), "")
+  )
+

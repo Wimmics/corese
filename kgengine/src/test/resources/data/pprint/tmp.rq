@@ -1,0 +1,126 @@
+class.rq
+select (concat('Declaration(Class(',kg:uri(?in),'))') as ?out)
+where
+{?in rdf:type owl:Class . 
+filter isURI(?in) }
+
+pragma {kg:template kg:priority 1 . }
+list.rq
+select (group_concat(kg:uri(?e); separator=' ') as ?out)
+where
+{?in (rdf:rest)*/rdf:first ?e . }
+
+pragma {kg:query kg:priority 1 . }
+valuesfrom.rq
+select (concat(if((bound(?t1) || bound(?t2)),xsd:string(?ld),xsd:string(?lo)),'(',kg:uri(?p),' ',kg:uri(?z),')') as ?out)
+where
+{?in owl:onProperty ?p . 
+?in ?q ?z . 
+optional {?z rdf:type ?t1 . 
+filter (?t1 = rdfs:Datatype) }
+optional {?p rdf:type ?t2 . 
+filter (?t2 = owl:DatatypeProperty) }}
+
+values (?q ?lo ?ld ){
+(owl:allValuesFrom 'ObjectAllValuesFrom' 'DataAllValuesFrom' )
+(owl:someValuesFrom 'ObjectSomeValuesFrom' 'DataSomeValuesFrom' )
+}
+pragma {kg:template kg:priority 1 . }
+subclassof.rq
+select (group_concat(xsd:string(?q),'(',if(bound(?z),kg:template(kg:interunion,?in),kg:uri(?in)),' ',kg:uri(?y),')'; separator='\n') as ?out)
+where
+{?in ?p ?y . 
+optional {{?in owl:intersectionOf ?z . } union {?in owl:unionOf ?z . }}}
+
+values (?p ?q ){
+(rdfs:subClassOf 'SubClassOf' )
+(owl:disjointWith 'DisjointClasses' )
+(owl:disjointUnion 'DisjointUnion' )
+}
+pragma {kg:template kg:priority 1 . }
+intersection.rq
+select (coalesce(kg:pprint(?y),'') as ?_ast_0)(group_concat(if(bound(?t),'Data','Object'),'IntersectionOf(',?_ast_0,')'; separator='\n') as ?out)
+where
+{?in owl:intersectionOf ?y . 
+optional {{?in rdfs:subClassOf ?z . } union {?in owl:equivalentClass ?z . }}
+filter (!(bound(?z))) 
+optional {?in rdf:type ?t . 
+filter (?t = rdfs:Datatype) }}
+
+pragma {kg:template kg:priority 1 . }
+subproperty.rq
+select (group_concat(xsd:string(?l),'(',kg:uri(?in),' ',kg:uri(?p),')'; separator='\n') as ?out)
+where
+{?in rdfs:subPropertyOf ?p . 
+?in rdf:type ?t . }
+
+values (?t ?l ){
+(owl:ObjectProperty 'SubObjectPropertyOf' )
+(owl:DatatypeProperty 'SubDataPropertyOf' )
+}
+
+specialproperty.rq
+select (group_concat(xsd:string(?l),'ObjectProperty(',kg:uri(?in),')'; separator='\n') as ?out)
+where
+{?in rdf:type ?t . }
+
+values (?t ?l ){
+(owl:SymmetricProperty 'Symmetric' )
+(owl:AsymmetricProperty 'Asymmetric' )
+(owl:ReflexiveProperty 'Reflexive' )
+(owl:IrreflexiveProperty 'Irreflexive' )
+(owl:InverseFunctionalProperty 'InverseFunctional' )
+(owl:TransitiveProperty 'Transitive' )
+}
+
+triple.rq
+select (group_concat(if(isLiteral(?v),'Data','Object'),'PropertyAssertion(',kg:uri(?p),' ',kg:uri(?in),' ',kg:uri(?v),')'; separator='\n') as ?out)
+where
+{?in ?p ?v . 
+filter (((!(strstarts(?p,owl:))) && (!(strstarts(?p,rdf:)))) && (!(strstarts(?p,rdfs:)))) }
+
+
+equivalentclass.rq
+select (group_concat(if(bound(?t),'DatatypeDefinition','EquivalentClasses'),'(',if(bound(?z),kg:template(kg:interunion,?in),kg:uri(?in)),' ',kg:uri(?y),')'; separator='\n') as ?out)
+where
+{?in owl:equivalentClass ?y . 
+optional {{?in owl:intersectionOf ?z . } union {?in owl:unionOf ?z . }}
+optional {?y rdf:type ?t . 
+filter (?t = rdfs:Datatype) }}
+
+
+type.rq
+select (group_concat('ClassAssertion(',kg:uri(?t),' ',kg:uri(?in),')'; separator='\n') as ?out)
+where
+{?in rdf:type ?t . 
+filter (!(strstarts(?t,owl:))) 
+filter (!(strstarts(?t,rdf:))) 
+filter (!(strstarts(?t,rdfs:))) }
+
+
+functional.rq
+select (concat(if(bound(?t),'FunctionalDataProperty','FunctionalObjectProperty'),'(',kg:uri(?in),')') as ?out)
+where
+{?in rdf:type owl:FunctionalProperty . 
+optional {?in rdf:type ?t . 
+filter (?t = owl:DatatypeProperty) }}
+
+
+property.rq
+select (concat('Declaration(',xsd:string(?l),'(',kg:uri(?in),'))') as ?out)
+where
+{?in rdf:type ?t . }
+
+values (?t ?l ){
+(owl:ObjectProperty 'ObjectProperty' )
+(owl:DatatypeProperty 'DataProperty' )
+(owl:AnnotationProperty 'AnnotationProperty' )
+}
+
+silent.rq
+select (concat() as ?out)
+where
+{?in rdf:type ?t . 
+filter ((strstarts(?t,owl:) || strstarts(?t,rdf:)) || strstarts(?t,rdfs:)) }
+
+pragma {kg:query kg:priority 1000 . }

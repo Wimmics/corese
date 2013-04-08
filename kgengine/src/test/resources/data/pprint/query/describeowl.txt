@@ -1,0 +1,3 @@
+prefix f: <http://example.com/owl/families/>
+describe ?x
+pragma { kg:display kg:template </home/corby/AData/pprint/owltemplate>}

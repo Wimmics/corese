@@ -1,0 +1,19 @@
+template {
+    if (bound(?t), "DatatypeDefinition", "EquivalentClasses")
+    "("  
+      if (bound(?z), 
+	kg:template(kg:interunion, ?in),
+	kg:uri(?in)) 
+      " "  kg:uri(?y)  
+    ")" 
+}
+where {
+  ?in owl:equivalentClass  ?y 
+  
+  optional { 
+    { ?in owl:intersectionOf ?z } union 
+    { ?in owl:unionOf ?z } 
+  }
+  
+  optional { ?y a ?t filter(?t = rdfs:Datatype) }
+}

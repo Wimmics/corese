@@ -1,0 +1,14 @@
+template {
+   "construct {"
+      "?x " ?in " ?y"
+   "}" "\n"
+   "where {"
+      "?x " group_concat(?e ; separator = "/") " ?y"
+   "}"
+   ; separator = "\n\n"
+}
+where {
+  ?in owl:propertyChainAxiom ?l 
+  ?l rdf:rest*/rdf:first ?e
+}
+group by ?in

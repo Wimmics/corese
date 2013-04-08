@@ -1,0 +1,10 @@
+template {
+   xsd:string(?l) "(" kg:uri(?in) " " kg:uri(?p) ")"
+}
+where {
+  ?in rdfs:subPropertyOf ?p ; a ?t 
+}
+values (?t ?l){ 
+  (owl:ObjectProperty   "SubObjectPropertyOf")
+  (owl:DatatypeProperty "SubDataPropertyOf" )
+}

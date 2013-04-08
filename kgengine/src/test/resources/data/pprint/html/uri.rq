@@ -1,0 +1,18 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+template {
+   "<span class='uri'>" 
+#   "<![CDATA[" 
+   replace(kg:turtle(?in), '<', '&lt;')
+#   "]]>"
+   "</span>"
+}
+where {
+  {?x ?p ?in} union {?x ?in ?y}
+  filter(isURI(?in))
+}
+#after list
+pragma { kg:query kg:priority 2000}

@@ -1,0 +1,6 @@
+template kg:start {
+  3 " ! = " kg:template(kg:rec, 3)
+}
+where {
+  optional { ?x rdf:value ?in }
+}

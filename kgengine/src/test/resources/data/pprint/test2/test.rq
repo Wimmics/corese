@@ -1,0 +1,10 @@
+prefix h: <http://www.inria.fr/2007/09/11/humans.rdfs#>
+prefix i: <http://www.inria.fr/2007/09/11/humans.rdfs-instances#>
+template {
+  kg:uri(?p) "(" kg:uri(?in) ", " kg:uri(?y) ")"
+  ; separator = "\n"
+}
+where {
+  ?in ?p ?y
+  filter(isuri(?y))
+}

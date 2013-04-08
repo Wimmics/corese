@@ -1,0 +1,91 @@
+@prefix ast: <http://www.inria.fr/2012/ast#>
+@prefix ex:  <http://www.example.org/>
+
+[
+a ast:SelectQuery ;
+
+
+
+ast:select (
+"reduced"
+[a ast:Var ; ast:name "?x"]
+
+[a ast:As ; 
+  ast:exp [ast:fun "group_concat" ; ast:body([ast:name "?x"]) ; ast:separator ";" ] ;
+  ast:var [a ast:Var ; ast:name "?y"] ; 
+]
+) ;
+
+ast:from  (ex:test ex:ggg) ;
+ast:named (ex:ggg ex:test ) ;
+
+ast:where (
+
+[a ast:Union ; ast:body (
+
+([a ast:Optional ; 
+ast:body (
+
+[
+ast:subject  [a ast:Var ;  ast:name "?x"] ;
+ast:property ex:name ;
+ast:object   [a ast:Var ;  ast:name "?n"]
+]
+
+
+[a ast:Filter ;
+ast:exp [a ast:Exists ; ast:body(
+[ast:subject  [a ast:Var ;  ast:name "?x"] ;
+ast:property ex:name ;
+ast:object   [a ast:Var ;  ast:name "?n"]]
+)]
+]
+
+
+[a ast:Filter ; ast:exp
+[ast:ope ">=" ;  
+ast:body(
+[ast:fun "foo" ; 
+ast:body([ast:name "?n"] [ast:fun <http://test.fr/fun> ; ast:body("abc")])]
+[ast:ope "+"   ; ast:body([ast:name "?x"]  12)]
+)]
+]
+)
+])
+
+([
+ast:graph [a ast:Var ; ast:name "?g"] ;
+
+ast:body (
+[a ast:Minus ; ast:body(
+
+[ast:subject  ex:John ;
+ast:property [a ast:Var ;  ast:name "?p"] ;
+ast:object   []]
+
+[ast:subject  <http://test.fr/Jack> ;
+ast:property [a ast:Var ;  ast:name "?p"] ;
+ast:object   18]
+)
+]
+)
+]
+)
+)]
+
+) ;
+
+ast:order (
+[a ast:Var ; ast:name '?x']
+[a ast:Desc ; ast:arg [a ast:Var ; ast:name '?y']]
+) ;
+
+ast:limit 1 ;
+
+ast:offset 2
+
+]
+
+
+
+

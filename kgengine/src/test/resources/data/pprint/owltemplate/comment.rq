@@ -1,0 +1,10 @@
+template {
+   "AnnotationAssertion(" 
+      kg:uri(rdfs:comment) " " 
+      kg:uri(?in) " " ?l
+   ")"
+}
+where {
+  ?in rdfs:comment ?l 
+  filter(not exists { ?in a owl:Axiom })
+}

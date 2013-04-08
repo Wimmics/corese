@@ -1,0 +1,237 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template {
+  "ObjectMinCardinality(" ?n " " kg:uri(?p) " " kg:uri(?c) ")"  
+}
+where {
+  ?in a owl:Restriction ;
+    owl:onProperty ?p ;
+    owl:minQualifiedCardinality  ?n ;
+    owl:onClass ?c 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  group_concat( 
+    xsd:string(?q), "(", kg:uri(?y),  ")" 
+    ; separator = "\n"
+  )
+}
+where {
+  ?in ?p ?y 
+}
+values (?p ?q) {
+  (owl:intersectionOf  "ObjectIntersectionOf")
+  (owl:unionOf	       "ObjectUnionOf")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  group_concat(kg:uri(?e))  
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "ObjectPropertyDomain(" kg:uri(?in) " " kg:uri(?d) ")"
+}
+where {
+  ?in rdfs:domain ?d
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  group_concat(?in ; separator = "\n")  
+}
+where {
+  select distinct ?in where {
+    ?in ?p ?y
+    filter (isURI(?in))
+  }
+}
+
+pragma { kg:query kg:priority 1 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  group_concat( 
+  
+    if (bound(?q), concat(xsd:string(?q), "(",  kg:uri(?in), " ",  kg:uri(?y),  ")"), "") , 
+    if (bound(?r), concat(xsd:string(?r), "(",  kg:uri(?in), " ",  kg:uri(?y),  ")"), "") 
+
+    ; separator = "\n"
+  )    
+}
+where {
+  ?in ?p  ?y 
+}
+values (?p ?q ?r) {
+  (rdfs:subClassOf     "SubClassOf" UNDEF) 
+  (owl:equivalentClass "EquivalentClasses" UNDEF)
+  
+  (owl:disjointWith    UNDEF "DisjointClasses")
+  (owl:disjointUnion   UNDEF "DisjointUnion")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "ObjectAllValuesFrom(" kg:uri(?y) " " kg:uri(?z) ")"  
+}
+where {
+  ?in a owl:Restriction ;
+    owl:onProperty ?y ;
+    owl:allValuesFrom ?z .
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "ObjectSomeValuesFrom(" kg:uri(?y) " " kg:uri(?z) ")"  
+}
+where {
+  ?in a owl:Restriction ;
+    owl:onProperty ?y ;
+    owl:someValuesFrom ?z .
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "ObjectMaxCardinality(" 
+    ?n " " ?p " " 
+    kg:uri(?c) 
+  ")"  
+}
+where {
+  ?in a owl:Restriction ;
+    owl:onProperty ?p ;
+    owl:maxQualifiedCardinality  ?n ;
+    owl:onClass ?c 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "ClassAssertion(" kg:uri(?in) " " kg:uri(?t) ")"
+}
+where {
+  ?in a ?t
+}
+pragma { kg:query kg:priority 1000 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "MinCardinality(" ?n " " kg:uri(?p) ")"  
+}
+where {
+  ?in a owl:Restriction ;
+    owl:onProperty ?p ;
+    owl:minCardinality  ?n 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "ObjectPropertyRange(" kg:uri(?in) " " kg:uri(?d) ")"
+}
+where {
+  ?in rdfs:range ?d
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "MaxCardinality(" ?n " " kg:uri(?p) ")"  
+}
+where {
+  ?in a owl:Restriction ;
+    owl:onProperty ?p ;
+    owl:maxCardinality  ?n 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "ObjectExactCardinality(" ?n " " kg:uri(?p) " " kg:uri(?c) ")"  
+}
+where {
+   {?in owl:ExactQualifiedCardinality  ?n} union 
+   {?in owl:qualifiedCardinality ?n}  
+   
+   ?in a owl:Restriction ;
+    owl:onProperty ?p ;
+    owl:onClass ?c 
+    
+
+
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

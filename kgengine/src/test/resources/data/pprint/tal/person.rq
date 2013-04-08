@@ -1,0 +1,23 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+prefix c:   <http://www.inria.fr/acacia/comma#>
+
+template {
+  "M. " xsd:string(?fn) " " xsd:string(?ln)
+  " (" group_concat(distinct xsd:string(?t) ; separator = " ; ")
+  ")"
+}
+where {
+?in a c:Person ;
+  c:FirstName ?fn ;
+  c:FamilyName ?ln
+optional {  ?doc c:CreatedBy ?in ; c:Title ?t }
+
+}
+group by ?in
+pragma {kg:query kg:priority 1}
+
+

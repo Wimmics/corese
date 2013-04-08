@@ -1,0 +1,133 @@
+hao 
+
+Time : 6.8977
+Length: 1698115
+graph: 38842
+nb call templates: 295229
+max level: 13
+
+with empty group_concat:
+Time : 5.6668
+Length: 5437
+graph: 38842
+nb call templates: 252582
+max level: 13
+
+without all:
+Time : 4.8481000000000005
+Length: 796632
+graph: 38842
+nb call templates: 168240
+max level: 3
+
+
+
+
+
+__________________________________
+
+galen.owl
+
+Time : 2.0991
+Length: 560849
+graph: 33080
+nb call templates: 64095
+query per sec: 30534
+
+
+Time : 2.17526
+Length: 561213
+graph: 33080
+nb call templates: 67524
+max level: 25
+stack size: 0
+
+
+
+Time : 2.20646
+Length: 561213
+graph: 33080
+nb call templates: 67524
+max level: 25
+
+
+Time : 2.23602
+Length: 561213
+graph: 33080
+nb call templates: 67524
+max level: 25
+stack size: 0
+
+
+Time : 2.30816
+Length: 561213
+graph: 33080
+nb call templates: 74382
+
+
+
+
+
+
+
+
+
+
+
+** start: 3429
+Time : 12.535
+Length: 561221
+graph: 33080
+nb call templates: 299243
+
+
+
+Time : 65.381
+Length: 561221
+graph: 33080
+nb call templates: 218151
+
+
+Time : 66.008
+Length: 561221
+graph: 33080
+nb call templates: 153247
+
+
+
+Time : 64.816
+Length: 0
+graph: 33080
+nb call templates: 91525
+
+
+
+Time : 57.202
+Length: 0
+graph: 33080
+nb call templates: 91525
+max level: 17
+
+Time : 59.804
+Length: 0
+graph: 33080
+nb call templates: 74380
+max level: 17
+
+Time : 28.599
+Length: 0
+graph: 33080
+nb call templates: 74313
+max level: 17
+
+Time : 30.163
+Length: 0
+graph: 33080
+nb call templates: 74380
+max level: 17
+
+Skip the first pp:
+Time : 23.965
+Length: 561213
+graph: 33080
+nb call templates: 74382

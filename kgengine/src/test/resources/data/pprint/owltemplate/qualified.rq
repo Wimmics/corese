@@ -1,0 +1,17 @@
+template {
+  if (bound(?t), xsd:string(?ld), xsd:string(?lo))
+  "(" 
+    ?n " " kg:uri(?p) " "  kg:uri(?c) 
+  ")"  
+}
+where {
+  ?in owl:onClass ?c ;
+    owl:onProperty ?p ;
+    ?q  ?n 
+    optional { ?p a owl:DatatypeProperty, ?t}
+}
+values (?q ?lo ?ld) {
+  (owl:maxQualifiedCardinality "ObjectMaxCardinality"   "DataMaxCardinality")
+  (owl:minQualifiedCardinality "ObjectMinCardinality"   "DataMinCardinality")
+  (owl:qualifiedCardinality    "ObjectExactCardinality" "DataExactCardinality")
+}

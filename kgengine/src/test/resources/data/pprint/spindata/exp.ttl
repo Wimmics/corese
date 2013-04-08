@@ -1,0 +1,6 @@
+@prefix sp: <http://spinrdf.org/sp/>
+
+[ a       sp:getMaximum ;
+      sp:arg1 42 ;
+      sp:arg2 43
+    ]

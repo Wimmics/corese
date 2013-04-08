@@ -1,0 +1,25 @@
+@prefix ast: <http://www.inria.fr/2012/ast#>
+@prefix ex:  <http://www.example.org/>
+
+[
+a ast:SelectQuery ;
+
+
+
+ast:select (
+  [a ast:Var ; ast:name "?x"]
+) ;
+
+
+ast:where (
+[
+ast:subject  [a ast:Var ;  ast:name "?x"] ;
+ast:property ex:name ;
+ast:object   [a ast:Var ;  ast:name "?n"]
+]
+
+)
+
+
+
+]

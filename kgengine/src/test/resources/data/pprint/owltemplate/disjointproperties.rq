@@ -1,0 +1,13 @@
+template {
+    if (bound(?p), "DisjointDataProperties", "DisjointObjectProperties") 
+    "("  ?l ")"   
+}
+where {
+  ?in a owl:AllDisjointProperties ;
+    owl:members ?l 
+    
+    optional {
+      ?l rdf:rest*/rdf:first ?p 
+      ?p a owl:DatatypeProperty
+    }
+}

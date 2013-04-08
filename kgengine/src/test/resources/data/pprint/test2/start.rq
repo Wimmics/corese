@@ -1,0 +1,11 @@
+prefix h: <http://www.inria.fr/2007/09/11/humans.rdfs#>
+prefix i: <http://www.inria.fr/2007/09/11/humans.rdfs-instances#>
+template kg:start {
+  ?in 
+  ; separator = "\n"
+}
+where {
+  select distinct ?in where {
+    ?in a h:Person
+  }
+}

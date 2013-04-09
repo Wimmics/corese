@@ -1,0 +1,9 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT debug * WHERE
+{
+
+service <http://localhost:8080/corese/sparql> {
+?x c:FirstName "Olivier"
+}
+
+}

@@ -1,0 +1,8 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select   more  * (kg:similarity() as ?s)  where {
+?x c:IsInterestedBy ?t
+?t a c:CorporateMemoryTopic
+?x c:hasCreated ?doc
+scope{filter(?s>.6)}
+}
+order by desc(?s)

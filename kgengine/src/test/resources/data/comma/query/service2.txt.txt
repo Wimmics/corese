@@ -1,0 +1,8 @@
+prefix p: <http://fr.dbpedia.org/property/>
+SELECT * WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+ <http://fr.dbpedia.org/resource/Auguste> p:succ ?y .
+}
+
+}

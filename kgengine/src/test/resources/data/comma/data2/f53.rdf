@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2664.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/frédéric.boussinot">
+         <c:FamilyName>Boussinot</c:FamilyName>
+         <c:FirstName>Frédéric</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/guillaume.doumenc">
+         <c:FamilyName>Doumenc</c:FamilyName>
+         <c:FirstName>Guillaume</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-bernard.stefani">
+         <c:FamilyName>Stefani</c:FamilyName>
+         <c:FirstName>Jean-Bernard</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/meije.en.html">
+         <c:Designation>Meije</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-1995</c:CreationDate>
+   <c:Title>Reactive Objects</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

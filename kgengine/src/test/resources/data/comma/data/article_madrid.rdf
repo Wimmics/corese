@@ -1,0 +1,24 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+
+  <CoMMA:Article rdf:about="http://www-sop.inria.fr/acacia/personnel/Fabien.Gandon/research/ework2000/">
+  	<CoMMA:Title>Corporate Memory Management through Agents</CoMMA:Title>
+  	<CoMMA:CreatedBy>
+	<CoMMA:Person rdf:about="http://www-sop.inria.fr/acacia/personnel/Fabien.Gandon/"/>
+  	</CoMMA:CreatedBy>
+
+
+    <CoMMA:HasForPerceptionMode><CoMMA:VisualPerceptionMode/></CoMMA:HasForPerceptionMode>
+    <CoMMA:HasForRepresentationSystem><CoMMA:English/></CoMMA:HasForRepresentationSystem>
+  	<CoMMA:Target>
+  		<CoMMA:OrganizationalEntity>
+  			<CoMMA:IsInterestedBy><CoMMA:KnowledgeManagementTopic/></CoMMA:IsInterestedBy>
+  			<CoMMA:IsInterestedBy><CoMMA:MultiAgentSystemTopic/></CoMMA:IsInterestedBy>
+  			<CoMMA:IsInterestedBy><CoMMA:XMLTopic/></CoMMA:IsInterestedBy>
+        <CoMMA:IsInterestedBy><CoMMA:SymbolicLearningTopic/></CoMMA:IsInterestedBy>
+  		</CoMMA:OrganizationalEntity>
+    </CoMMA:Target>
+  </CoMMA:Article>
+</rdf:RDF>

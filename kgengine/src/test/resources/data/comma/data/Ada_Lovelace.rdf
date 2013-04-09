@@ -1,0 +1,54 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+ 
+ <CoMMA:IndividualProfile  rdf:about="#">
+  <CoMMA:Title>~Employee profile of Ada Lovelace</CoMMA:Title>
+ </CoMMA:IndividualProfile>
+
+ <CoMMA:Employee rdf:ID = "Ada.Lovelace">
+  <CoMMA:FamilyName>Lovelace</CoMMA:FamilyName>
+  <CoMMA:FirstName>Ada</CoMMA:FirstName>
+  <CoMMA:HireDate>2000-10-10</CoMMA:HireDate>
+  <CoMMA:HasForWorkInterest><CoMMA:ComputerScienceTopic/></CoMMA:HasForWorkInterest>
+  <CoMMA:HasForPersonnalInterest><CoMMA:MusicTopic/></CoMMA:HasForPersonnalInterest>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:Document/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:Person/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:OrganizationalEntity/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:AdditionalTopic/></CoMMA:HasForOntologicalEntrancePoint>
+ </CoMMA:Employee>
+
+ <CoMMA:ConsultationTrace>
+  <CoMMA:Visitor><CoMMA:Employee rdf:about="#Ada.Lovelace"/></CoMMA:Visitor>
+  <CoMMA:VisitedDocument><CoMMA:WebPage rdf:about="http://www.mycompany.com/repport/annual_trend.html"/></CoMMA:VisitedDocument>
+  <CoMMA:FirstVisit>2000-10-11</CoMMA:FirstVisit>
+  <CoMMA:LastVisit>2000-11-10</CoMMA:LastVisit>
+  <CoMMA:VisitCount>7</CoMMA:VisitCount>
+ </CoMMA:ConsultationTrace>
+
+ <CoMMA:ConsultationTrace>
+  <CoMMA:Visitor><CoMMA:Employee rdf:about="#Ada.Lovelace"/></CoMMA:Visitor>
+  <CoMMA:VisitedDocument><CoMMA:Memo rdf:about="http://www.myintranet.com/Ada.Lovelace/projects/TIGRA/note28-10.doc"/></CoMMA:VisitedDocument>
+  <CoMMA:FirstVisit>2000-11-21</CoMMA:FirstVisit>
+  <CoMMA:LastVisit>2000-12-07</CoMMA:LastVisit>
+  <CoMMA:VisitCount>17</CoMMA:VisitCount>
+  <CoMMA:RatingGiven><CoMMA:GoodRating/></CoMMA:RatingGiven>
+ </CoMMA:ConsultationTrace>
+
+ <CoMMA:ConsultationTrace>
+  <CoMMA:Visitor><CoMMA:Employee rdf:about="#Ada.Lovelace"/></CoMMA:Visitor>
+  <CoMMA:VisitedDocument><CoMMA:WebPage rdf:about="http://www.somewhere.com/jokes.html"/></CoMMA:VisitedDocument>
+  <CoMMA:FirstVisit>2000-11-23</CoMMA:FirstVisit>
+  <CoMMA:LastVisit>2000-11-23</CoMMA:LastVisit>
+  <CoMMA:VisitCount>1</CoMMA:VisitCount>
+  <CoMMA:RatingGiven><CoMMA:BadRating/></CoMMA:RatingGiven>
+ </CoMMA:ConsultationTrace>
+
+ <!-- and so on...-->
+
+<CoMMA:Organization rdf:about='http://www-sop.inria.fr/'>
+<CoMMA:Include rdf:resource='http://www.test.fr'/>
+</CoMMA:Organization>
+
+</rdf:RDF>

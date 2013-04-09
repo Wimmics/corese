@@ -1,0 +1,17 @@
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+construct {
+?e p:succ ?s
+?y p:succ ?z
+?y rdfs:label ?l}
+ WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+?e p:succ ?s
+filter(?e = <http://fr.dbpedia.org/resource/Commode_%28empereur%29>)
+?e p:succ+ ?y .
+?y p:succ ?z
+?y rdfs:label ?l
+}
+
+}

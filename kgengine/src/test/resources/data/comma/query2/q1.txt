@@ -1,0 +1,9 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select ?x count (?doc) as ?count where
+{
+ ?x c:hasCreated ?doc
+
+}
+group by ?x
+order by  desc(?count)
+limit 10

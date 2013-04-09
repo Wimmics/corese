@@ -1,0 +1,25 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+ 
+ <CoMMA:IndividualProfile rdf:about="#">
+  <CoMMA:Title>Employee profile of Fabien GANDON</CoMMA:Title>
+ </CoMMA:IndividualProfile>
+
+ <CoMMA:Employee rdf:about = "http://www-sop.inria.fr/acacia/personnel/fabien.gandon/">
+  <CoMMA:FamilyName>Gandon</CoMMA:FamilyName>
+  <CoMMA:FirstName>Fabien</CoMMA:FirstName>
+  <CoMMA:HireDate>1999-11-02</CoMMA:HireDate>
+  <CoMMA:HasForWorkInterest><CoMMA:ComputerScienceTopic/></CoMMA:HasForWorkInterest>
+  <CoMMA:HasForPersonnalInterest><CoMMA:MusicTopic/></CoMMA:HasForPersonnalInterest>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:ComputerScienceTopic/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:Service/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:Document/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:Person/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:OrganizationGroup/></CoMMA:HasForOntologicalEntrancePoint>
+ </CoMMA:Employee>
+
+
+
+</rdf:RDF>

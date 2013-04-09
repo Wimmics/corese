@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4094.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/afonso.ferreira">
+         <c:FamilyName>Ferreira</c:FamilyName>
+         <c:FirstName>Afonso</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/stéphane.pérennes">
+         <c:FamilyName>Pérennes</c:FamilyName>
+         <c:FirstName>Stéphane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/hervé.rivano">
+         <c:FamilyName>Rivano</c:FamilyName>
+         <c:FirstName>Hervé</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mascotte.en.html">
+         <c:Designation>Mascotte</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>1-2001</c:CreationDate>
+   <c:Title>Fractional Coloring of Bounded Degree Trees  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

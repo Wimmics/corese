@@ -1,0 +1,236 @@
+<!DOCTYPE rdf:RDF [
+
+<!ENTITY cos   "http://www.inria.fr/acacia/corese#">
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+]>
+
+<rdf:RDF xmlns:rdfs="&rdfs;" xmlns:rdf="&rdf;"  xmlns:cos="&cos;"  xmlns:c='&c;' xmlns:owl='&owl;'
+>
+
+
+
+
+<cos:rule>
+    <cos:if>
+    	{  graph ?s1 { ?x cos:partOf ?y } filter (?x != ?y)
+	}
+    </cos:if>
+
+    <cos:then>
+    	{ graph ?s1 { ?x cos:partOf ?x 
+	  ?y cos:partOf ?y    } }
+    </cos:then>
+</cos:rule>
+
+
+
+
+
+
+
+<cos:rule  >
+    <cos:if>
+	prefix s: &lt;http://www.inria.fr/acacia/comma#&gt;
+	{ ?x rdf:type s:Person
+	?x s:FirstName::?p "Olivier"
+	?x s:FamilyName "Corby" }
+    </cos:if>
+
+    <cos:then>
+    	{ ?x ?p "Laurent"  
+	  ?x s:FirstName "Laurent"
+	}
+    </cos:then>
+</cos:rule>
+
+
+
+
+<cos:rule>
+    <cos:if>
+	{ ?x rdf:type c:Person
+	?x c:FirstName "Olivier"
+    	?x c:FirstName "Laurent"^^xsd:string
+	?x c:FamilyName "Corby"
+	?x c:age ?age
+	filter
+	(?age &lt; 2 * ?age || ?age >= '41'^^xsd:integer)
+	?x c:age '42'^^xsd:integer }
+    </cos:if>
+
+    <cos:then>
+    	{ ?x c:FirstName "OK" }
+    </cos:then>
+</cos:rule>
+
+
+
+<cos:rule>
+ <!-- Topic and document composition -->
+    <cos:if>
+	{ ?x rdf:type c:Document
+	?y rdf:type c:Document
+	?x c:Contain ?y
+	?y c:Concern ?topic
+	?topic rdf:type c:AdditionalTopic }
+    </cos:if>
+
+    <cos:then>
+    	{ ?x c:Concern ?topic }
+    </cos:then>
+</cos:rule>
+
+
+
+<cos:rule>
+ <!-- Manage and Organisational Members -->
+    <cos:if>
+    	{ ?m rdf:type c:ManagementAbleEntity
+	?o rdf:type c:OrganizationalEntity
+	?m c:Manage ?o
+	?o c:Include ?p
+	?p rdf:type c:Person }
+    </cos:if>
+
+    <cos:then>
+    	{ ?m c:Manage ?p }
+    </cos:then>
+</cos:rule>
+
+
+
+
+
+<cos:rule>
+ <!-- Organizational Activities -->
+    <cos:if>
+    	{ ?o rdf:type c:OrganizationalEntity
+	?o c:Include ?x
+	?x rdf:type c:Person
+	?x c:HasForActivity ?act }
+    </cos:if>
+
+    <cos:then>
+    	{ ?o c:HasForActivity ?act }
+    </cos:then>
+</cos:rule>
+
+
+
+
+
+<cos:rule>
+    <cos:if>
+    	{ ?o rdf:type c:OrganizationalEntity
+	?o c:Include ?x
+	?x rdf:type c:Person
+    	?x c:HasForWorkInterest ?interest }
+  </cos:if>
+
+    <cos:then>
+    	{ ?o c:HasForWorkInterest ?interest }
+    </cos:then>
+</cos:rule>
+
+
+
+
+
+
+<cos:rule >
+<cos:if>
+	{ ?x rdf:type c:Person
+	?x c:hasCreated ?doc
+	?doc rdf:type c:TechnicalReport
+	optional { ?x c:hasCreated ?doc2
+		filter ( ! (?doc2 &lt;=: c:TechnicalReport))
+	}
+	filter ( ! bound(?doc2)) }
+</cos:if>
+
+<cos:then>
+	{ ?x rdf:type c:Engineer   }
+</cos:then>
+</cos:rule>
+
+
+
+
+
+
+<cos:rule>
+<cos:if>
+	{ ?doc rdf:type c:Document
+	?doc c:Target ?o
+	?o c:IsInterestedBy ?t }
+</cos:if>
+
+<cos:then>
+	{ ?doc c:Concern ?t }
+</cos:then>
+</cos:rule>
+
+
+
+
+
+
+<cos:rule  >
+<cos:if>
+	{ ?org rdf:type c:OrganizationalEntity
+	?org c:Include ?person
+	?person rdf:type c:Person
+	?person c:HasForActivity ?act }
+</cos:if>
+
+<cos:then>
+	{ ?org  rdfs:seeAlso ?pers
+	?pers c:HasForActivity  ?act
+	?pers rdf:type c:Person }
+
+</cos:then>
+</cos:rule>
+
+
+
+
+
+<cos:rule>
+    <cos:if>
+	{ ?x rdf:type c:Person
+	?x c:FirstName "Olivier"
+    	?x c:FirstName "Laurent"^^xsd:string
+	?x c:FamilyName "Corby" }
+    </cos:if>
+
+    <cos:then>
+    	{ ?x c:FirstName "Bernard"
+	?x c:age '42'^^xsd:integer 
+	}
+    </cos:then>
+</cos:rule>
+
+
+<cos:rule>
+    <cos:if>
+    	{ { { ?org rdf:type c:Organization } UNION 
+	    { ?org rdf:type c:OrganizationalEntity } } <!-- for testing -->
+	?x rdf:type c:Person
+	?y rdf:type c:Person
+	graph  ?s { ?org c:Include ?x
+	 	    ?org c:Include ?y }
+	}
+    </cos:if>
+
+    <cos:then>
+    	{ graph ?s { ?x c:Colleague ?y } }
+    </cos:then>
+</cos:rule>
+
+
+
+</rdf:RDF>

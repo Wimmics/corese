@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3673.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/o..faugeras">
+         <c:FamilyName>Faugeras</c:FamilyName>
+         <c:FirstName>O.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/f..clément">
+         <c:FamilyName>Clément</c:FamilyName>
+         <c:FirstName>F.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/r..deriche">
+         <c:FamilyName>Deriche</c:FamilyName>
+         <c:FirstName>R.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/r..keriven">
+         <c:FamilyName>Keriven</c:FamilyName>
+         <c:FirstName>R.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/t..papadopoulo">
+         <c:FamilyName>Papadopoulo</c:FamilyName>
+         <c:FirstName>T.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/j..roberts">
+         <c:FamilyName>Roberts</c:FamilyName>
+         <c:FirstName>J.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/t..viéville">
+         <c:FamilyName>Viéville</c:FamilyName>
+         <c:FirstName>T.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.frhttp://cermics.enpc.fr/">
+         <c:Designation>Cermics</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/robotvis.en.html">
+         <c:Designation>Robotvis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/estime.en.html">
+         <c:Designation>Estime</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/ondes.en.html">
+         <c:Designation>Ondes</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>5-1999</c:CreationDate>
+   <c:Title>The inverse EEG and MEG problems: The adjoint state approach I: The continuous case  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

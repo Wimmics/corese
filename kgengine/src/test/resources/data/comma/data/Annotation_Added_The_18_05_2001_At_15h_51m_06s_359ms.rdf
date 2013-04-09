@@ -1,0 +1,17 @@
+<?xml version ="1.0"?>
+<rdf:RDF xml:lang="en"
+         xmlns:rdf= "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:comma="http://www.inria.fr/acacia/comma#">
+
+<comma:WebSite rdf:about="http://wf.pagesjaunes.fr/pb.cgi?">
+  <comma:Concern rdf:resource="#Auto_TelecommunicationsTopic_253"/>
+  <comma:Title>Pages Jaunes</comma:Title>
+  <comma:CreatedBy rdf:resource="#Auto_LegalCorporation_254"/>
+</comma:WebSite>
+<comma:LegalCorporation rdf:ID="Auto_LegalCorporation_254">
+  <comma:Designation>France Telecom</comma:Designation>
+</comma:LegalCorporation>
+<comma:TelecommunicationsTopic rdf:ID="Auto_TelecommunicationsTopic_253">
+</comma:TelecommunicationsTopic>
+</rdf:RDF>
+

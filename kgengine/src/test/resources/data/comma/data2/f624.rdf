@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3351.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/malika.remaki">
+         <c:FamilyName>Remaki</c:FamilyName>
+         <c:FirstName>Malika</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/loula.fézoui">
+         <c:FamilyName>Fézoui</c:FamilyName>
+         <c:FirstName>Loula</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/frédéric.poupaud">
+         <c:FamilyName>Poupaud</c:FamilyName>
+         <c:FirstName>Frédéric</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/caiman.en.html">
+         <c:Designation>Caiman</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>1-1998</c:CreationDate>
+   <c:Title>Un nouveau schéma de type volumes finis appliqué aux équations de Maxwell en  milieu hétérogène  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

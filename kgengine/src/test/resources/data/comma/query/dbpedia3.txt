@@ -1,0 +1,12 @@
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT  debug  * WHERE
+{
+{select (strlang(?n, 'fr') as ?name) where {
+?y c:FirstName ?n  ; c:FirstName 'Olivier'
+}}
+service  <http://fr.dbpedia.org/sparql> {
+?x  foaf:name  ?name
+}
+
+}

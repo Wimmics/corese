@@ -1,0 +1,12 @@
+prefix p: <http://fr.dbpedia.org/property/>
+construct {
+<http://fr.dbpedia.org/resource/Auguste> p:succ ?s
+
+?s ?p ?v}
+ WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+<http://fr.dbpedia.org/resource/Auguste> p:succ ?s .
+?s ?p ?v . filter(isLiteral(?v))
+}
+}

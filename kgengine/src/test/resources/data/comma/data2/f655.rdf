@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3288.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/frédéric.bonnet">
+         <c:FamilyName>Bonnet</c:FamilyName>
+         <c:FirstName>Frédéric</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/mihai.bostan">
+         <c:FamilyName>Bostan</c:FamilyName>
+         <c:FirstName>Mihai</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/et.loula">
+         <c:FamilyName>Loula</c:FamilyName>
+         <c:FirstName>et</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/caiman.en.html">
+         <c:Designation>Caiman</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-1997</c:CreationDate>
+   <c:Title>étude d'une classe de $\beta$-$\gamma$ schémas  en formulation volumes finis  pour des problèmes hyperboliques. </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

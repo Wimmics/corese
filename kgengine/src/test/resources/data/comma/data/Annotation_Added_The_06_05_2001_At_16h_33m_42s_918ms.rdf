@@ -1,0 +1,10 @@
+<?xml version ="1.0"?>
+<rdf:RDF xml:lang="en"
+         xmlns:rdf= "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:comma="http://www.inria.fr/acacia/comma#">
+
+<comma:Document rdf:about="http://www.fab.com/toto.html">
+  <comma:Title>mon titre</comma:Title>
+</comma:Document>
+</rdf:RDF>
+

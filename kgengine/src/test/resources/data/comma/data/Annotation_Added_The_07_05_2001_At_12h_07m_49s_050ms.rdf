@@ -1,0 +1,13 @@
+<?xml version ="1.0"?>
+<rdf:RDF xml:lang="en"
+         xmlns:rdf= "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:comma="http://www.inria.fr/acacia/comma#">
+
+<comma:Catalog rdf:about="http://www.cstb.fr/app/formation/pdf/formation2001.pdf">
+  <comma:Concern rdf:resource="#Auto_ScienceAppliedToBuildingTopic_253"/>
+  <comma:Title>Catalogue des formations 2001 </comma:Title>
+</comma:Catalog>
+<comma:ScienceAppliedToBuildingTopic rdf:ID="Auto_ScienceAppliedToBuildingTopic_253">
+</comma:ScienceAppliedToBuildingTopic>
+</rdf:RDF>
+

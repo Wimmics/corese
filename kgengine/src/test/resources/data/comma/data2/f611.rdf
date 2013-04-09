@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3407.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/andreas.fabri">
+         <c:FamilyName>Fabri</c:FamilyName>
+         <c:FirstName>Andreas</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/geert-jan.giezeman">
+         <c:FamilyName>Giezeman</c:FamilyName>
+         <c:FirstName>Geert-Jan</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/lutz.kettner">
+         <c:FamilyName>Kettner</c:FamilyName>
+         <c:FirstName>Lutz</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/stefan.schirra">
+         <c:FamilyName>Schirra</c:FamilyName>
+         <c:FirstName>Stefan</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/sven.schonherr">
+         <c:FamilyName>Schonherr</c:FamilyName>
+         <c:FirstName>Sven</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/prisme.en.html">
+         <c:Designation>Prisme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>4-1998</c:CreationDate>
+   <c:Title>On the Design of CGAL, the Computational Geometry Algorithms Library  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3631.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/nikos.paragios">
+         <c:FamilyName>Paragios</c:FamilyName>
+         <c:FirstName>Nikos</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/rachid.deriche">
+         <c:FamilyName>Deriche</c:FamilyName>
+         <c:FirstName>Rachid</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/robotvis.en.html">
+         <c:Designation>Robotvis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>3-1999</c:CreationDate>
+   <c:Title>Geodesic Active Regions for Motion Estimation and Tracking  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

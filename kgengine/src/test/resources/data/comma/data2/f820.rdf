@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2797.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/eric.bardinet">
+         <c:FamilyName>Bardinet</c:FamilyName>
+         <c:FirstName>Eric</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/laurent.d.">
+         <c:FamilyName>D.</c:FamilyName>
+         <c:FirstName>Laurent</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/epidaure.en.html">
+         <c:Designation>Epidaure</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>2-1996</c:CreationDate>
+   <c:Title>Analyzing the deformation of the left ventricle of  the heart with a parametric deformable model</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

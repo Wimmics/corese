@@ -1,0 +1,6 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT * WHERE
+{
+ ?x c:FirstName ?fn ;
+c:FamilyName ?ln
+}

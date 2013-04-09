@@ -1,0 +1,16 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:c="http://www.inria.fr/acacia/comma#" 
+    xml:base='gogo://example.org/test/test2'> 
+  
+  <rdf:Description rdf:about="#John">
+    <c:name rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="/Jack">
+    <c:name rdf:nodeID="A5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="Jim">
+    <c:name rdf:nodeID="A5"/>
+  </rdf:Description>
+  
+  </rdf:RDF>

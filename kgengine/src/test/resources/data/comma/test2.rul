@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs  "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY xsd   "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY rul   "http://ns.inria.fr/edelweiss/2011/rule#">
+]>
+
+<!--
+Additional rules 
+
+olivier.corby@inria.fr Edelweiss INRIA 2011
+ -->
+ 
+<rdf:RDF xmlns:rdfs="&rdfs;" xmlns:rdf="&rdf;" xmlns:xsd='&xsd;' xmlns:rul='&rul;' 
+xmlns = '&rul;' >
+  
+  
+
+
+
+<rule>
+ <!-- Manage and Organisational Members -->
+    <body>
+ <![CDATA[
+prefix c: <http://www.inria.fr/acacia/comma#>    
+  construct
+          	{ ?m c:Manage ?p }
+where
+    	{ ?m rdf:type c:ManagementAbleEntity
+	?o rdf:type c:OrganizationalEntity
+	?m c:Manage ?o
+	?o c:Include ?p
+	?p rdf:type c:Person }
+]]>
+    </body>
+
+  
+</rule>
+
+
+
+
+
+<rule>
+ <!-- Organizational Activities -->
+ <body>
+<![CDATA[
+prefix c: <http://www.inria.fr/acacia/comma#>     	
+  construct { ?o c:HasForActivity ?act }
+   	where { ?o rdf:type c:OrganizationalEntity
+	?o c:Include ?x
+	?x rdf:type c:Person
+	?x c:HasForActivity ?act }
+]]>
+ </body>
+ 
+</rule>
+
+
+
+
+
+<rule>
+<body>
+<![CDATA[
+prefix c: <http://www.inria.fr/acacia/comma#>         	construct { ?o c:HasForWorkInterest ?interest }
+    	where { ?o rdf:type c:OrganizationalEntity
+	?o c:Include ?x
+	?x rdf:type c:Person
+    	?x c:HasForWorkInterest ?interest }
+]]>
+  </body>
+ 
+</rule>
+
+
+
+
+
+
+</rdf:RDF>

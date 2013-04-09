@@ -1,0 +1,10 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT more * (kg:similarity() as ?sim) WHERE
+{
+ ?doc c:CreatedBy ?x
+?x rdf:type c:Person
+?doc rdf:type c:TechnicalReport
+scope { filter(?sim<1)}
+}
+order by desc(?sim)
+limit 10

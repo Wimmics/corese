@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2869.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/laurent.baratchart">
+         <c:FamilyName>Baratchart</c:FamilyName>
+         <c:FirstName>Laurent</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/edward.b.">
+         <c:FamilyName>B.</c:FamilyName>
+         <c:FirstName>Edward</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/equipes/miaou.html">
+         <c:Designation>Miaou</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>4-1996</c:CreationDate>
+   <c:Title>A criterion for uniqueness of a critical point in  H 2   rational  approximation  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

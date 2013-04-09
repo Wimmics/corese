@@ -1,0 +1,10 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+  <CoMMA:OrganizationChart rdf:about="http://www-sop.inria.fr/acacia/Team/acacia-team.html">
+  	<CoMMA:Title>Organigramme projet ACACIA</CoMMA:Title>
+    <CoMMA:HasForPerceptionMode><CoMMA:VisualPerceptionMode/></CoMMA:HasForPerceptionMode>
+    <CoMMA:HasForRepresentationSystem><CoMMA:French/></CoMMA:HasForRepresentationSystem>
+  </CoMMA:OrganizationChart>
+</rdf:RDF>

@@ -1,0 +1,6 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+construct {?x ?p ?y}
+where {
+?doc c:CreatedBy ?x
+?x ?p ?y
+}

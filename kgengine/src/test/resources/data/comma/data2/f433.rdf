@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3882.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/stéphane.dellière">
+         <c:FamilyName>Dellière</c:FamilyName>
+         <c:FirstName>Stéphane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/cafe.en.html">
+         <c:Designation>Café</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>2-2000</c:CreationDate>
+   <c:Title>Pgcd de deux polynômes à paramètres :   approche par la clôture constructible dynamique et généralisation   de la méthode de S.A. Abramov, K.Yu. Kvashenko </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

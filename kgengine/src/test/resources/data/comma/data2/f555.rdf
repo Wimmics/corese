@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3535.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jérôme.declerck">
+         <c:FamilyName>Declerck</c:FamilyName>
+         <c:FirstName>Jérôme</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/nicholas.ayache">
+         <c:FamilyName>Ayache</c:FamilyName>
+         <c:FirstName>Nicholas</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/elliot.r.">
+         <c:FamilyName>R.</c:FamilyName>
+         <c:FirstName>Elliot</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/epidaure.en.html">
+         <c:Designation>Epidaure</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-1998</c:CreationDate>
+   <c:Title>Use of a 4D planispheric transformation   for the tracking and the analysis of LV motion with tagged MR images </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

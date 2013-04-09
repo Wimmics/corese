@@ -1,0 +1,29 @@
+graph {
+	  fill-color:white;
+}
+node {
+	  shape: box;
+	  text-size:11;
+	  text-color:black;
+	  text-style:bold;
+	  text-alignment:center;
+	  fill-color:green;
+	  fill-mode:gradient-vertical;
+	  size:20;
+}
+node.Literal {
+	  fill-color:orange;
+}
+node.Blank {
+	  fill-color:brown;
+}
+node.Class {
+	  fill-color:blue;
+}
+edge {
+	  text-color:black;
+	  text-style:bold;
+	  text-size:11;
+	  text-alignment:along;
+	  size:2;
+}

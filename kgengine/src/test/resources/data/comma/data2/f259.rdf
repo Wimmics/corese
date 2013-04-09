@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:Report rdf:about="http://www.inria.fr/rapports/sophia/CERMICS-92-11.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/a..bonnet">
+         <c:FamilyName>Bonnet</c:FamilyName>
+         <c:FirstName>A.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/b..larrouturou">
+         <c:FamilyName>Larrouturou</c:FamilyName>
+         <c:FirstName>B.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/et.l.">
+         <c:FamilyName>L.</c:FamilyName>
+         <c:FirstName>et</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:Title>On the Stability of Multiple Steady Planar Flames When the Lewis Number is Less Than 1</c:Title>
+</c:Report> 
+</rdf:RDF>

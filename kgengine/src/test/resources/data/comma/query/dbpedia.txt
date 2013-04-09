@@ -1,0 +1,7 @@
+SELECT *  WHERE
+{
+
+service <http://fr.dbpedia.org/sparql> {
+ <http://fr.dbpedia.org/resource/Paris> ?r ?p
+}
+}

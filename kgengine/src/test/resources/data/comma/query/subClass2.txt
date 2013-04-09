@@ -1,0 +1,5 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+construct {?a ?p ?b}
+where {?x rdfs:subClassOf+ :: $path  c:Person
+graph $path {?a ?p ?b}
+}

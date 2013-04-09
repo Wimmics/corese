@@ -1,0 +1,16 @@
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+insert {
+<http://fr.dbpedia.org/resource/Auguste> p:succ ?s
+?y p:succ ?z
+?y ?p ?v}
+ WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+<http://fr.dbpedia.org/resource/Auguste> p:succ ?s
+<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y .
+?y p:succ ?z
+?y ?p ?v   filter(?p != o:wikiPageWikiLink)
+}
+
+}

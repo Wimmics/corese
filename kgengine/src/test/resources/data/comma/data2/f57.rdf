@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2629.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-daniel.boissonnat">
+         <c:FamilyName>Boissonnat</c:FamilyName>
+         <c:FirstName>Jean-Daniel</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/micha.sharir">
+         <c:FamilyName>Sharir</c:FamilyName>
+         <c:FirstName>Micha</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/boaz.tagansky">
+         <c:FamilyName>Tagansky</c:FamilyName>
+         <c:FirstName>Boaz</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/mariette.yvinec">
+         <c:FamilyName>Yvinec</c:FamilyName>
+         <c:FirstName>Mariette</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/prisme.en.html">
+         <c:Designation>Prisme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>8-1995</c:CreationDate>
+   <c:Title>Voronoi Diagrams in Higher Dimensions under Certain  Polyhedral Distance Functions</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

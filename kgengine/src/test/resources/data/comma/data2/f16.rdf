@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2724.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/frédéric.devernay">
+         <c:FamilyName>Devernay</c:FamilyName>
+         <c:FirstName>Frédéric</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/robotvis.en.html">
+         <c:Designation>Robotvis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1995</c:CreationDate>
+   <c:Title>A Non-Maxima Suppression Method for Edge Detection with   Sub-Pixel Accuracy</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

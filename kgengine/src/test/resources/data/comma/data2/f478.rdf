@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3737.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/chadi.barakat">
+         <c:FamilyName>Barakat</c:FamilyName>
+         <c:FirstName>Chadi</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/eitan.altman">
+         <c:FamilyName>Altman</c:FamilyName>
+         <c:FirstName>Eitan</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/walid.dabbous">
+         <c:FamilyName>Dabbous</c:FamilyName>
+         <c:FirstName>Walid</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/rodeo.en.html">
+         <c:Designation>Rodeo</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mistral.en.html">
+         <c:Designation>Mistral</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1999</c:CreationDate>
+   <c:Title>On TCP Performance in an Heterogeneous Network: A Survey </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

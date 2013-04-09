@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2097.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alain.micaelli">
+         <c:FamilyName>Micaelli</c:FamilyName>
+         <c:FirstName>Alain</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/claude.samson">
+         <c:FamilyName>Samson</c:FamilyName>
+         <c:FirstName>Claude</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/icare.en.html">
+         <c:Designation>Icare</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1993</c:CreationDate>
+   <c:Title>Trajectory tracking for unicycle-type and two-steering-wheels mobil e robots</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -13,15 +13,13 @@ import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
 
 public class TestCoreseAPI {
 	
-	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+//	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+        static String data = TestCoreseAPI.class.getClassLoader().getResource("data").getPath()+"/";
 
 	static IEngine engine;
 	

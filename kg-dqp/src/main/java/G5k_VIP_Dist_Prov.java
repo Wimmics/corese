@@ -5,6 +5,7 @@
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -77,9 +78,9 @@ public class G5k_VIP_Dist_Prov {
         ///////////////////////
         Graph graphDist = Graph.create();
         QueryProcessDQP execDqp = QueryProcessDQP.create(graphDist);
-        execDqp.addRemote(new URL("http://" + args[0] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        execDqp.addRemote(new URL("http://" + args[1] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        execDqp.addRemote(new URL("http://" + args[2] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        execDqp.addRemote(new URL("http://" + args[0] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        execDqp.addRemote(new URL("http://" + args[1] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        execDqp.addRemote(new URL("http://" + args[2] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
 
         StopWatch sw1 = new StopWatch();
         sw1.start();

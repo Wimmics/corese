@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -244,9 +245,9 @@ public class ExpeWI {
         GraphEngine engine = (GraphEngine) ef.newInstance();
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://neurolog.unice.fr:8443/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://neurolog.inria.fr:8443/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://neurolog.imed.jussieu.fr:8443/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://neurolog.unice.fr:8443/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        exec.addRemote(new URL("http://neurolog.inria.fr:8443/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        exec.addRemote(new URL("http://neurolog.imed.jussieu.fr:8443/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
         exec.addRemoteSQL("jdbc:mysql://localhost:3055/shanoirstablev3", "com.mysql.jdbc.Driver", "inrianeurotk", "inrianeurotk");
 //        exec.addRemote(new URL("http://neurolog.irisa.fr:8443/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 //        exec.addRemote(new URL("http://terpsi.ujf-grenoble.fr:8443/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));

@@ -7,6 +7,7 @@ import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.EngineFactory;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgraph.query.SparqlResultParser;
 
 import java.io.File;
@@ -64,7 +65,7 @@ public class G5KdbpediaSingle {
         IEngine engine = ef.newInstance();
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://" + args[0] + ":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://" + args[0] + ":8090/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
 
         StopWatch sw = new StopWatch();
         for (int i = 0; i < 20; i++) {

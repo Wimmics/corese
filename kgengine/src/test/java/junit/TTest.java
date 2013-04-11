@@ -16,10 +16,11 @@ import static org.junit.Assert.assertEquals;
 
 public class TTest {
 	
-	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-	static String test = "/home/corby/workspace/coreseV2/text/";
-	static String root = "/home/corby/workspace/kgengine/src/test/resources/data/";
-	static String text = "/home/corby/workspace/kgengine/src/test/resources/text/";
+//	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+        static String data = TTest.class.getClassLoader().getResource("data").getPath()+"/";
+//	static String test = "/home/corby/workspace/coreseV2/text/";
+//	static String root = "/home/corby/workspace/kgengine/src/test/resources/data/";
+//	static String text = "/home/corby/workspace/kgengine/src/test/resources/text/";
 
 	
 	static Graph graph;

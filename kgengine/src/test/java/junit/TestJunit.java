@@ -35,7 +35,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestJunit {
 	
-	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+//	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+        static String data = TestJunit.class.getClassLoader().getResource("data").getPath()+"/";
+        
 	static Graph graph;
 	
 	@BeforeClass

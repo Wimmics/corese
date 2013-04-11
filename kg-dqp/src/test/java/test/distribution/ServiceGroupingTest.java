@@ -333,7 +333,7 @@ public class ServiceGroupingTest {
         System.out.println("[REST no service grouping] Results size " + maps2.size() + " in " + sw.getTime() + " ms");
         sw.stop();
         sw.reset();
-        assertEquals(expectedResults, maps2.size());
+        assertEquals(61, maps2.size());
         System.out.println("");
     }
     

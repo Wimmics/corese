@@ -7,11 +7,19 @@ package fr.inria.edelweiss.kgdqp.strategies;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgdqp.core.RemoteProducerWSImpl;
+import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgtool.load.SPARQLResult;
+import java.io.IOException;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.ws.WebServiceException;
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 /**
  * Helper singleton class aiming at enhancing source selection while performing
@@ -40,7 +48,7 @@ public class SourceSelectorWS {
             String query = SourceSelectorWS.getSparqlAsk(edge, env);
             try {
 
-                String res = rp.getRp().getEdges(query);
+                String res = rp.getEndpoint().getEdges(query);
 //                logger.info("Remote ASK for "+edge.getEdgeNode().getLabel());
                 if ((res == null) || (res.length() == 0)) {
                     //update cache
@@ -57,7 +65,7 @@ public class SourceSelectorWS {
         }
         return false;
     }
-    
+
     public static boolean ask(String predicate, RemoteProducerWSImpl rp, ASTQuery ast) {
         if (rp.getCacheIndex().containsKey(predicate)) {
             return rp.getCacheIndex().get(predicate);
@@ -65,18 +73,28 @@ public class SourceSelectorWS {
             // ASK
             String query = SourceSelectorWS.getSparqlAsk(predicate, ast);
             try {
-
-                String res = rp.getRp().getEdges(query);
-                logger.info("Remote ASK for "+predicate);
+//                String res = rp.getEndpoint().getEdges(query);
+                String res = rp.getEndpoint().query(query);
                 if ((res == null) || (res.length() == 0)) {
-                    //update cache
                     rp.getCacheIndex().put(predicate, false);
                     return false;
                 } else {
-                    //update cache
-                    rp.getCacheIndex().put(predicate, true);
-                    return true;
+                    Graph g = Graph.create();
+                    Mappings maps = SPARQLResult.create(g).parseString(res);
+                    if (maps.size() == 0) {
+                        rp.getCacheIndex().put(predicate, false);
+                        return false;
+                    } else {
+                        rp.getCacheIndex().put(predicate, true);
+                        return true;
+                    }
                 }
+            } catch (ParserConfigurationException ex) {
+                java.util.logging.Logger.getLogger(SourceSelectorWS.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SAXException ex) {
+                java.util.logging.Logger.getLogger(SourceSelectorWS.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(SourceSelectorWS.class.getName()).log(Level.SEVERE, null, ex);
             } catch (WebServiceException e) {
                 e.printStackTrace();
             }

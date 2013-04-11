@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
  *
  * @author Eric TOGUEM
  */
+@Deprecated
 public class SourceSelectorRestWS {
 
     private static Logger logger = Logger.getLogger(SourceSelectorRestWS.class);

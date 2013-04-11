@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
  *
  * @author Eric TOGUEM, eric.toguem@uy1.uninet.cm
  */
+@Deprecated
 public class RemoteProducerRestWSImpl implements Producer {
 
     private static Logger logger = Logger.getLogger(RemoteProducerRestWSImpl.class);

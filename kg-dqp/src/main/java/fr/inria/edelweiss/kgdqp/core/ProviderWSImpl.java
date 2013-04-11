@@ -17,6 +17,9 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
+import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLSoapEndpointClient;
+import fr.inria.edelweiss.kgdqp.sparqlendpoint.SparqlEndpointInterface;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -29,8 +32,6 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.CompileService;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import wsimport.KgramWS.RemoteProducer;
-import wsimport.KgramWS.RemoteProducerServiceClient;
 
 //import fr.inria.wimmics.sparql.soap.client.SparqlResult;
 //import fr.inria.wimmics.sparql.soap.client.SparqlSoapClient;
@@ -50,14 +51,16 @@ public class ProviderWSImpl implements Provider {
     HashMap<String, QueryProcess> table;
     QueryProcess defaut;
     CompileService compiler;
+    private WSImplem wsImplem;
 
-    ProviderWSImpl() {
+    ProviderWSImpl(WSImplem wsImplem) {
         table = new HashMap<String, QueryProcess>();
         compiler = new CompileService();
+        this.wsImplem = wsImplem;
     }
 
-    public static ProviderWSImpl create() {
-        return new ProviderWSImpl();
+    public static ProviderWSImpl create(WSImplem wsImplem) {
+        return new ProviderWSImpl(wsImplem);
     }
 
     /**
@@ -113,12 +116,12 @@ public class ProviderWSImpl implements Provider {
     }
 
     /**
-     * Send query to sparql endpoint using a POST HTTP query
+     * Send query to sparql endpoint using REST or SOAP messages
      */
-    Mappings send(Node serv, Query q, Mappings lmap, Environment env){
+    Mappings send(Node serv, Query q, Mappings lmap, Environment env) {
         try {
             Query g = q.getOuterQuery();
-            compile(serv, q, lmap, env);	
+            compile(serv, q, lmap, env);
 
             ASTQuery ag = (ASTQuery) g.getAST();
             ASTQuery ast = (ASTQuery) q.getAST();
@@ -132,11 +135,15 @@ public class ProviderWSImpl implements Provider {
                 logger.info("** Provider: \n" + query);
             }
 
-            // HTTP endpoint implem : 
-            //StringBuffer sb = doPost(serv.getLabel(), query);
-            // Web service implem : 
-            RemoteProducer rp = RemoteProducerServiceClient.getPort(serv.getLabel());
-            String sparqlRes = rp.query(query);
+
+            String sparqlRes = null;
+            if (wsImplem == WSImplem.SOAP) {
+                SparqlEndpointInterface rp = new SPARQLSoapEndpointClient(new URL(serv.getLabel()));
+                sparqlRes = rp.query(query);
+            } else if (wsImplem == WSImplem.REST) {
+                SparqlEndpointInterface rp = new SPARQLRestEndpointClient(new URL(serv.getLabel()));
+                sparqlRes = rp.query(query);
+            }
             if (sparqlRes == null) {
                 return null;
             } else {

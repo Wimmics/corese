@@ -6,6 +6,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.*;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.UriBuilder;
@@ -14,7 +15,7 @@ import javax.ws.rs.core.UriBuilder;
  *
  * @author Eric TOGUEM, eric.toguem@uy1.uninet.cm
  */
-public class SPARQLRestEndpointClient {
+public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
     /**That is the base url of the service, it is given during construction of the class*/
     private String url;
     /**It is used to query the client*/
@@ -22,6 +23,12 @@ public class SPARQLRestEndpointClient {
 
     public SPARQLRestEndpointClient(String url) {
 	this.url = url;
+	ClientConfig config = new DefaultClientConfig();
+	client = Client.create(config);
+    }
+    
+    public SPARQLRestEndpointClient(URL url) {
+	this.url = url.toString();
 	ClientConfig config = new DefaultClientConfig();
 	client = Client.create(config);
     }
@@ -53,6 +60,18 @@ public class SPARQLRestEndpointClient {
      * that is the very method of this class. It is used to send a query to the remote server
      */
     public String getEdges(String query){
+	try {
+	    return doGet(query);
+	} catch (IOException ex) {
+	    Logger.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return null;
+    }
+    
+    /**
+     * that is the very method of this class. It is used to send a query to the remote server
+     */
+    public String query(String query){
 	try {
 	    return doGet(query);
 	} catch (IOException ex) {

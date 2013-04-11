@@ -6,6 +6,10 @@ package fr.inria.edelweiss.kgdqp.core;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
+import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
+import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLSoapEndpointClient;
+import fr.inria.edelweiss.kgdqp.sparqlendpoint.SparqlEndpointInterface;
 import fr.inria.edelweiss.kgdqp.strategies.SourceSelectorWS;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizer;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizerFactory;
@@ -33,11 +37,15 @@ import wsimport.KgramWS.RemoteProducerServiceClient;
 public class RemoteProducerWSImpl implements Producer {
 
     private static Logger logger = Logger.getLogger(RemoteProducerWSImpl.class);
-    private RemoteProducer rp;
+    private SparqlEndpointInterface rp;
     private HashMap<String, Boolean> cacheIndex = new HashMap<String, Boolean>();
 
-    public RemoteProducerWSImpl(URL url) {
-        rp = RemoteProducerServiceClient.getPort(url);
+    public RemoteProducerWSImpl(URL url, WSImplem implem) {
+        if (implem == WSImplem.REST) {
+            rp = new SPARQLRestEndpointClient(url);
+        } else {
+            rp = new SPARQLSoapEndpointClient(url);
+        }
     }
 
     @Override
@@ -420,7 +428,7 @@ public class RemoteProducerWSImpl implements Producer {
         return cacheIndex;
     }
 
-    public RemoteProducer getRp() {
+    public SparqlEndpointInterface getEndpoint() {
         return rp;
     }
 }

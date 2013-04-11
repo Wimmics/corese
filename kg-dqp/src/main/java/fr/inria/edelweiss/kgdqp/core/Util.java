@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * 
+ * TODO To be cleaned / tested exist or !exist
  * @author gaignard
  */
 public class Util {

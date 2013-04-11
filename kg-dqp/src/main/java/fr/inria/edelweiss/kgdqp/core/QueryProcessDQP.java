@@ -32,11 +32,12 @@ public class QueryProcessDQP extends QueryProcess {
         super(p, e, m);
     }
 
-    public void addRemote(URL url) {
+    public void addRemote(URL url, WSImplem implem) {
 //        add(new RemoteProducerHTTPImpl(url));
-        add(new RemoteProducerWSImpl(url));
+        add(new RemoteProducerWSImpl(url, implem));
+//        add(new RemoteProducerRestWSImpl(url));
     }
-    
+   
     public void addRemoteSQL(String url, String driver, String login, String password) {
         add(new RemoteSqlProducerImpl(url, driver, login, password));
     }

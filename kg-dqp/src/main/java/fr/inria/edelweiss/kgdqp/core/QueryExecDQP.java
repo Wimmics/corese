@@ -58,7 +58,7 @@ public class QueryExecDQP extends QueryExec {
      *
      * TODO: add is done in first engine (see constructor in set() )
      */
-    public void addRemote(URL producerURL) {
+    public void addRemote(URL producerURL, WSImplem implem) {
         if (exec == null) {
             exec = new QueryProcessDQP();
             exec.setListGroup(isListGroup);
@@ -67,7 +67,7 @@ public class QueryExecDQP extends QueryExec {
                 exec.addEventListener(el);
             }
         }
-        ((QueryProcessDQP) exec).addRemote(producerURL);
+        ((QueryProcessDQP) exec).addRemote(producerURL, implem);
     }
 
     public void addRemoteSQL(String producerURL, String driver, String login, String password) {

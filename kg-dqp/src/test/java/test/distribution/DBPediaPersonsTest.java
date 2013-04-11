@@ -7,6 +7,7 @@ package test.distribution;
 //import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
@@ -55,12 +56,17 @@ public class DBPediaPersonsTest {
     public void setUp() throws EngineException, MalformedURLException, IOException {
         final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
         final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
         kg1.initEngine();
         kg2.initEngine();
 
         final String rep1 = "http://nyx.unice.fr/~gaignard/data/persondata.1.rdf";
         final String rep2 = "http://nyx.unice.fr/~gaignard/data/persondata.2.rdf";
+//       final String rep1 = "/Users/gaignard/Downloads/persondata.1.rdf";
+//        final String rep2 = "/Users/gaignard/Downloads/persondata.2.rdf";
+        
 
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(new Runnable() {
@@ -93,9 +99,11 @@ public class DBPediaPersonsTest {
 
         Graph graph = Graph.create();
         QueryProcessDQP exec = QueryProcessDQP.create(graph);
-        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-
+        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+//        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+//        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        
         StopWatch sw = new StopWatch();
         sw.start();
         Mappings map = exec.query(sparqlQuery);
@@ -113,8 +121,10 @@ public class DBPediaPersonsTest {
 
         Graph graph = Graph.create();
         QueryProcessDQP exec = QueryProcessDQP.create(graph);
-        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+//        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+//        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
 
         StopWatch sw = new StopWatch();
         sw.start();

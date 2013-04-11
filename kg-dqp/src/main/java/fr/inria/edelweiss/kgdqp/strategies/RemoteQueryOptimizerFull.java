@@ -76,11 +76,13 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         sparql += "construct  { " + subject + " "+ predicate + " " + object  + " } \n where { \n";
         sparql += "\t " + subject + " "+ predicate + " " + object + " .\n ";
 
+        
+        // TODO CHECK filter.getExp().toString();
         if (filters.size() > 0) {
             sparql += "\t  FILTER (\n";
             int i = 0;
             for (Filter filter : filters) {
-                if (i == (filters.size() - 1)) {
+                if (i == (filters.size() - 1)) {    
                     sparql += "\t\t " + ((Term)filter).toSparql() + "\n";
                 } else {
                     sparql += "\t\t " + ((Term)filter).toSparql() + "&&\n";

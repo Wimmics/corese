@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
  *
  * @author Alban Gaignard
  */
+@Deprecated
 public class SourceSelectorHTTP {
 
     private static Logger logger = Logger.getLogger(SourceSelectorHTTP.class);

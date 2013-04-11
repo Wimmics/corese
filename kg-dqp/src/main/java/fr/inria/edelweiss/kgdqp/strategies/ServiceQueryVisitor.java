@@ -116,11 +116,11 @@ public class ServiceQueryVisitor implements QueryVisitor {
                         // !!! HTTPimpl
 //                        if (p instanceof RemoteProducerHTTPImpl) {
 //                            RemoteProducerHTTPImpl rp = (RemoteProducerHTTPImpl) p;
-//                            String url = rp.getRp().getEndpoint();
+//                            String url = rp.getEndpoint().getEndpoint();
                         // !!! WSimpl
                         if (p instanceof RemoteProducerWSImpl) {
                             RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
-                            String url = rp.getRp().getEndpoint();
+                            String url = rp.getEndpoint().getEndpoint();
 //                            System.out.println("ASK (" + url + ") -> " + exp.toString());
 
                             Triple triple = subExp.getTriple();

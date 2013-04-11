@@ -61,13 +61,13 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
                 }
             }
         }
-        System.out.println("");
-        dumpEdgeIndex(indexEdgeSource);
-        System.out.println("");
-
-        System.out.println("");
-        dumpSourceIndex(indexSourceEdge);
-        System.out.println("");
+//        System.out.println("");
+//        dumpEdgeIndex(indexEdgeSource);
+//        System.out.println("");
+//
+//        System.out.println("");
+//        dumpSourceIndex(indexSourceEdge);
+//        System.out.println("");
 
         //Query rewriting
         ArrayList<Exp> excludeFromServices = new ArrayList<Exp>();
@@ -90,7 +90,7 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
         }
 
         System.out.println("");
-        System.out.println("Transformed AST");
+        System.out.println("-------->   Optimized Query");
         System.out.println(ast.toSparql());
     }
 
@@ -118,14 +118,14 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
                 Producer mp = execDQP.getProducer();
                 if (mp instanceof MetaProducer) {
                     for (Producer p : ((MetaProducer) mp).getProducers()) {
-                        // !!! HTTPimpl
+                        // !!! TODO  HTTPimpl
 //                        if (p instanceof RemoteProducerHTTPImpl) {
 //                            RemoteProducerHTTPImpl rp = (RemoteProducerHTTPImpl) p;
-//                            String url = rp.getRp().getEndpoint();
-                        // !!! WSimpl
+//                            String url = rp.getEndpoint().getEndpoint();
+                        // !!! TODO WSimpl
                         if (p instanceof RemoteProducerWSImpl) {
                             RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
-                            String url = rp.getRp().getEndpoint();
+                            String url = rp.getEndpoint().getEndpoint();
 //                            System.out.println("ASK (" + url + ") -> " + exp.toString());
 
                             Triple triple = subExp.getTriple();

@@ -2,20 +2,12 @@ package junit;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
@@ -24,7 +16,6 @@ import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -39,43 +30,22 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.acacia.corese.triple.parser.Join;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.ParserSparql1;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.engine.core.Engine;
-import fr.inria.edelweiss.engine.model.api.LBind;
 import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgenv.eval.Dataset;
-import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.ExpandPath;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
-import fr.inria.edelweiss.kgenv.result.XMLResult;
-import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Matcher;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.event.EvalListener;
-import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.QueryGraphVisitor;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.logic.OWLRule;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
-import fr.inria.edelweiss.kgraph.query.Construct;
-import fr.inria.edelweiss.kgraph.query.MatcherImpl;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import fr.inria.edelweiss.kgraph.query.ProviderImpl;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.query.QueryGraph;
@@ -92,16 +62,20 @@ import fr.inria.edelweiss.kgtool.print.TemplateFormat;
 import fr.inria.edelweiss.kgtool.print.TemplatePrinter;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
-import fr.inria.edelweiss.kgtool.util.GraphListenerImpl;
 
 public class TestUnit {
 	
-	static String root  = "/home/corby/workspace/kgengine/src/test/resources/data/";
-	static String text  = "/home/corby/workspace/kgengine/src/test/resources/text/";
-	static String data  = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-	static String ndata = "/home/corby/workspace/kgtool/src/test/resources/data/";
-	static String cos2  = "/home/corby/workspace/coreseV2/src/test/resources/data/ign/";
-	static String cos   = "/home/corby/workspace/corese/data/";
+//	static String root  = "/home/corby/workspace/kgengine/src/test/resources/data/";
+        static String root = TestUnit.class.getClassLoader().getResource("data").getPath()+"/";
+        
+//	static String text  = "/home/corby/workspace/kgengine/src/test/resources/text/";
+//	static String data  = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+        static String data  = TestUnit.class.getClassLoader().getResource("data").getPath()+"/";
+//	static String ndata = "/home/corby/workspace/kgtool/src/test/resources/data/";
+        static String ndata = TestUnit.class.getClassLoader().getResource("data").getPath()+"/";
+//	static String cos2  = "/home/corby/workspace/coreseV2/src/test/resources/data/ign/";
+//	static String cos   = "/home/corby/workspace/corese/data/";
+
 
 	static Graph graph;
 

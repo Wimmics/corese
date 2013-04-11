@@ -6,6 +6,7 @@ package test.sparqlendpoint;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLEndpointClient;
 import fr.inria.edelweiss.kgdqp.strategies.ServiceQueryVisitor;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -144,8 +145,8 @@ public class FoafEndpointTest {
 //        execDQP.set(new ServiceQueryVisitor(execDQP));
 //        ProviderImpl p = ProviderImpl.create();
 //        execDQP.set(p);
-        execDQP.addRemote(new URL("http://localhost:8091/kgendpoint-1.0.7/KGSparqlEndpoint"));
-        execDQP.addRemote(new URL("http://localhost:8092/kgendpoint-1.0.7/KGSparqlEndpoint"));
+        execDQP.addRemote(new URL("http://localhost:8091/kgendpoint-1.0.7/KGSparqlEndpoint"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://localhost:8092/kgendpoint-1.0.7/KGSparqlEndpoint"), WSImplem.REST);
 
         StopWatch sw = new StopWatch();
         sw.start();
@@ -161,8 +162,8 @@ public class FoafEndpointTest {
         execDQP.addVisitor(new ServiceQueryVisitor(execDQP));
         ProviderImpl p = ProviderImpl.create();
         execDQP.set(p);
-        execDQP.addRemote(new URL("http://localhost:8091/kgendpoint-1.0.7/KGSparqlEndpoint"));
-        execDQP.addRemote(new URL("http://localhost:8092/kgendpoint-1.0.7/KGSparqlEndpoint"));
+        execDQP.addRemote(new URL("http://localhost:8091/kgendpoint-1.0.7/KGSparqlEndpoint"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://localhost:8092/kgendpoint-1.0.7/KGSparqlEndpoint"), WSImplem.REST);
 
         sw = new StopWatch();
         sw.start();
@@ -189,8 +190,8 @@ public class FoafEndpointTest {
 //        execDQP.set(new ServiceQueryVisitor(execDQP));
         ProviderImpl p = ProviderImpl.create();
         execDQP.set(p);
-        execDQP.addRemote(new URL("http://localhost:8091/kgendpoint-1.0.7/KGSparqlEndpoint"));
-        execDQP.addRemote(new URL("http://localhost:8092/kgendpoint-1.0.7/KGSparqlEndpoint"));
+        execDQP.addRemote(new URL("http://localhost:8091/kgendpoint-1.0.7/KGSparqlEndpoint"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://localhost:8092/kgendpoint-1.0.7/KGSparqlEndpoint"), WSImplem.REST);
 
         StopWatch sw = new StopWatch();
         sw.start();
@@ -217,7 +218,7 @@ public class FoafEndpointTest {
         QueryProcessDQP execDQP = QueryProcessDQP.create(graph);
 //        execDQP.set(new ServiceQueryVisitor(execDQP));
 //        execDQP.addRemote(new URL("http://localhost:8091/kgendpoint-1.0.7/KGSparqlEndpoint"));
-        execDQP.addRemote(new URL("http://localhost:8092/kgendpoint-1.0.7/KGSparqlEndpoint"));
+        execDQP.addRemote(new URL("http://localhost:8092/kgendpoint-1.0.7/KGSparqlEndpoint"), WSImplem.REST);
 
         StopWatch sw = new StopWatch();
         sw.start();

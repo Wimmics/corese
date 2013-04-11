@@ -1,12 +1,6 @@
 package junit;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.junit.Test;
@@ -14,23 +8,11 @@ import org.junit.Test;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Values;
-import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -39,14 +21,14 @@ import fr.inria.edelweiss.kgtool.print.PPrinter;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TemplateFormat;
 import fr.inria.edelweiss.kgtool.print.TemplatePrinter;
-import fr.inria.edelweiss.kgtool.print.TripleFormat;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
 
 public class PPrint {
 	
-	static String root  = "/home/corby/workspace/kgengine/src/test/resources/data/";
-	static String data  = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-	static String cos   = "/home/corby/workspace/corese/data/";
+//	static String root  = "/home/corby/workspace/kgengine/src/test/resources/data/";
+        static String root  = PPrint.class.getClassLoader().getResource("data").getPath()+"/";
+//	static String data  = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+        static String data  = PPrint.class.getClassLoader().getResource("data").getPath()+"/";
+//	static String cos   = "/home/corby/workspace/corese/data/";
 
 	static Graph graph;
 	

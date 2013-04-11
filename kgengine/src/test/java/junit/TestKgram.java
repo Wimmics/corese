@@ -52,7 +52,8 @@ public class TestKgram extends TestSuite
       Param mod;
       String corese = null;
       String query;
-      String DATA = "file:///home/corby/workspace/coreseV2/src/test/resources/data";
+//      String DATA = "file:///home/corby/workspace/coreseV2/src/test/resources/data";
+      String DATA = TestKgram.class.getClassLoader().getResource("data").getPath()+"/";
       
       if (true){   	     	 
             

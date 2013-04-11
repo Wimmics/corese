@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,7 +59,7 @@ public class G5k_single_FedBenchLS_Query {
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
         for (int i = 1; i < 7; i++) {
-            exec.addRemote(new URL("http://localhost:809" + i + "/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+            exec.addRemote(new URL("http://localhost:809" + i + "/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
         }
 
 

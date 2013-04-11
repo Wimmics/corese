@@ -12,6 +12,7 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgdqp.core.QueryExecDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -98,8 +99,8 @@ public class ExpeDBPedia2 {
         IEngine engine = ef.newInstance();
 
         QueryExecDQP exec = QueryExecDQP.create(engine);
-        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
 //        exec.addRemote(new URL("http://localhost:8093/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 //        exec.addRemote(new URL("http://localhost:8094/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 

@@ -6,6 +6,7 @@
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.ProviderWSImpl;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgdqp.strategies.ServiceQueryVisitorPar;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -94,7 +95,7 @@ public class G5kFedBenchLS_Query {
 //        execGroup.set(p);
 
         for (int i = 0; i < 5; i++) {
-            execStd.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+            execStd.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
 //            execGroup.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 //            execGroupOpt.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
 //            execManualOpt.addRemote(new URL("http://" + args[i] + ":8090/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));

@@ -7,6 +7,7 @@ package test.distribution;
 //import com.sun.xml.internal.ws.developer.JAXWSProperties;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
+import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -171,8 +172,8 @@ public class VipRuleOPM {
         
         Graph graph = Graph.create();
         QueryProcessDQP execDQP = QueryProcessDQP.create(graph);
-        execDQP.addRemote(new URL("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
-        execDQP.addRemote(new URL("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"));
+        execDQP.addRemote(new URL("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
+        execDQP.addRemote(new URL("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
 
         sw.start();
         maps = execDQP.query(queryRuleFantom);

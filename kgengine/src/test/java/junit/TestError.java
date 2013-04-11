@@ -16,8 +16,8 @@ import fr.inria.edelweiss.kgtool.load.Load;
 
 public class TestError  {
 				
-		static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-		static String test = "/home/corby/workspace/coreseV2/text/";
+//		static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+                static String data = TestError.class.getClassLoader().getResource("data").getPath()+"/";
 
 		static Graph graph;
 		

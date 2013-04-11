@@ -13,52 +13,28 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 
-import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
-import fr.com.hp.hpl.jena.rdf.arp.AResource;
-import fr.inria.acacia.corese.api.EngineFactory;
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.acacia.corese.triple.parser.Join;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Matcher;
-import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.StatListener;
-import fr.inria.edelweiss.kgramenv.util.QueryExec;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.logic.RDF;
-import fr.inria.edelweiss.kgraph.logic.RDFS;
-import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryGraph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import fr.inria.edelweiss.kgtool.load.BuildImpl;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.print.PPrinter;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TemplateFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
-import fr.inria.edelweiss.kgraph.rdf.*;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 
 
@@ -70,11 +46,15 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestQuery1 {
 	
-	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-	static String test = "/home/corby/workspace/coreseV2/text/";
-	static String root = "/home/corby/workspace/kgengine/src/test/resources/data/";
-	static String text = "/home/corby/workspace/kgengine/src/test/resources/text/";
+//	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+//	static String test = "/home/corby/workspace/coreseV2/text/";
+//	static String root = "/home/corby/workspace/kgengine/src/test/resources/data/";
+//	static String text = "/home/corby/workspace/kgengine/src/test/resources/text/";
 
+        static String data = TestQuery1.class.getClassLoader().getResource("data").getPath()+"/";
+        static String root = TestQuery1.class.getClassLoader().getResource("data").getPath()+"/";
+        static String text = TestQuery1.class.getClassLoader().getResource("text").getPath()+"/";
+        
 	static Graph graph;
 	
 	@BeforeClass

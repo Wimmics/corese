@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgtool.load.BuildImpl;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgraph.rdf.*;
+import junit.TestJunit;
 
 
 import static org.junit.Assert.assertEquals;
@@ -34,8 +35,10 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestQuery {
 	
-	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-	static String test = "/home/corby/workspace/coreseV2/text/";
+//	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+        static String data = TestQuery.class.getClassLoader().getResource("data").getPath()+"/";
+//	static String test = "/home/corby/workspace/coreseV2/text/";
+        static String test = TestQuery.class.getClassLoader().getResource("text").getPath()+"/";
 
 	static Graph graph;
 	
@@ -555,7 +558,7 @@ public class TestQuery {
 	@Test
 	public void test20(){
 		String query = 
-			"prefix ext: <function://junit.TestQuery> " +
+			"prefix ext: <function://junit.TestQuery1> " +
 			"select (ext:fun(?fn, ?ln) as ?res) where {" +
 			"?x c:FirstName ?fn ; c:FamilyName ?ln" +
 			"}";

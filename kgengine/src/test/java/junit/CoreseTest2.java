@@ -1,17 +1,14 @@
 package junit;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
 
 
 
@@ -23,27 +20,15 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 
 import fr.inria.acacia.corese.triple.javacc1.ParseException;
 import fr.inria.acacia.corese.triple.parser.Model;
-import fr.inria.acacia.corese.triple.parser.Processor;
-
-import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.StatListener;
-import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
-import fr.inria.edelweiss.kgraph.query.MatcherImpl;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.query.SorterImpl;
-import fr.inria.edelweiss.kgraph.rdf.EdgeProperty;
-import fr.inria.edelweiss.kgraph.rdf.EdgePropertyEntail;
-import fr.inria.edelweiss.kgtool.load.BuildOptim;
 import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
 
 public class CoreseTest2 extends TestCase {
 
@@ -51,7 +36,8 @@ public class CoreseTest2 extends TestCase {
 	static IEngine engine;
 	
 	//private static final String path = "/u/bego/0/acacia/osavoie/Work/corese/comma/query/";
-	private static final String path =  "/0/user/corby/jbproject/corese/data/comma/query/";
+//	private static final String path =  "/0/user/corby/jbproject/corese/data/comma/query/";
+        private static String path = CoreseTest2.class.getClassLoader().getResource("data/comma/query").getPath()+"/";
 	//private static final String path = "D:/vbottoll/test/troncagainagain/corese/data/comma/query/";
 	private File file;
 	private BufferedReader buf = null;
@@ -345,7 +331,8 @@ public class CoreseTest2 extends TestCase {
 	
 	
 	void init(){
-		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+//		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+                String data = CoreseTest2.class.getClassLoader().getResource("data").getPath()+"/";
 		graph = Graph.create(true);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
 
@@ -368,7 +355,8 @@ public class CoreseTest2 extends TestCase {
 	
 	
 	void init2(){
-		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+//		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+                String data = CoreseTest2.class.getClassLoader().getResource("data").getPath()+"/";
 		graph = Graph.create(true);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
 

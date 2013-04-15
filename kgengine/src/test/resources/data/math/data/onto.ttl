@@ -1,7 +1,7 @@
 @prefix m:  <http://ns.inria.fr/2013/math#>
 
 
-</home/corby/AData/math/latex.rul> a m:PrettyPrinter
+<latex.rul> a m:PrettyPrinter
 
 m:pi rdfs:label "\\pi"
 

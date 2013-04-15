@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template kg:start {
+"\\documentclass{article}" "\n"
+"\\title{Mathematics meet the Semantic Web}" "\n"
+"\\author{WiFi}" "\n"
+"\\begin{document}" "\n"
+"\\maketitle" "\n"
+
+
+  group { 
+#  "\\section{" ?l "}" "\n"
+  "\\begin{equation}" 
+  
+  ?in 
+  
+  "\\end{equation}" 
+  ; separator = "\n\n" }
+  
+"\n"  
+"\\end{document}"
+"\n"
+}
+where {
+  ?in a ?t ; m:label ?l
+  filter not exists {?x ?p ?in}
+  filter (strstarts(?t, m:))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template kg:row {
+  ?e ; separator = " & "
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template kg:nbcol {
+  "c"
+}
+where {
+  ?in a m:Matrix ;
+  m:args/rdf:first ?row
+  ?row rdf:rest*/rdf:first ?e
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?f " " ?t " " ?r
+}
+where {
+  ?in a ?t 
+  filter(?t in (
+  m:Plus, m:Minus, m:Mult,  
+  m:Eq, m:Lt, m:Le, m:Ne, m:Gt, m:Ge))
+  ?in m:args(?f ?r)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?t 
+  if (bound(?fr), 
+     (concat( "_{", ?v, "=", ?fr, "}^{", ?to, "}\\,")), "")
+    
+    if (bound(?p), "(", "")
+    ?e 
+    if (bound(?p), ")", "")
+
+    "\\," 
+  if (?t = m:Integral, concat("d", ?v), "")
+}
+where {
+  ?in a ?t ;
+      m:args (?e)
+      
+  filter(?t in (m:Integral, m:Sigma, m:Prod))
+  
+  optional { ?in m:var  ?v }
+  optional { ?in m:from ?fr ; m:to ?to }
+  optional { ?e a ?p filter(?p = m:Plus) }
+  
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?v
+  if (bound(?i), concat("_", ?i), "")
+}
+where {
+  ?in m:name ?v
+  optional { ?in m:index ?i }
+}
+pragma { kg:template kg:priority 101 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+template  {
+  ?l
+}
+where {
+  ?in rdfs:label ?l
+}
+pragma {kg:template kg:priority 1000}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?e ; separator = " "
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?f "(" group { ?e ; separator = ", " } ")"
+}
+where {
+  ?in a m:Function ;
+      m:name ?f ;
+      m:args/rdf:rest*/rdf:first ?e
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?t 
+  if (bound(?r), concat("[", ?r, "]"), "")
+  "{" ?e "}"
+}
+where {
+  ?in a ?t, m:Sqrt ;
+     m:args ?a 
+  ?a rdf:first ?e
+  optional { ?a rdf:rest[rdf:first ?r] }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+   ?f "^{" ?r "}"
+}
+where {
+  ?in a m:Power ;
+      m:args(?f ?r)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  "(" ?e ")\\,!"
+}
+where {
+  ?in a m:Factorial ;
+  m:args(?e)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?t "{" ?f "}" "{" ?r "}"
+}
+where {
+  ?in a m:Div, ?t 
+  ?in m:args(?f ?r)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+"\\left(\n" 
+"\\begin{array}{" kg:template(kg:nbcol, ?in) "}\n"
+ 
+    group { kg:template(kg:row, ?row) ; separator = " \\\\\n" }
+    
+"\n"  
+"\\end{array}\n"
+"\\right)"
+}
+where {
+  ?in a m:Matrix ;
+  m:args/rdf:rest*/rdf:first ?row
+}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

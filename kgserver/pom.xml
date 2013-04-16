@@ -1,6 +1,6 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>fr.inria.edelweiss</groupId>
@@ -27,7 +27,7 @@
             <artifactId>kgimport</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
         </dependency>-->
@@ -44,6 +44,12 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+        </dependency>
+        
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
@@ -74,7 +80,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
         </dependency>
-    <!--        <dependency>
+        <!--        <dependency>
             <groupId>com.businessobjects</groupId>
             <artifactId>datafederator-jdbc-connector</artifactId>
             <version>1.0</version>
@@ -148,7 +154,7 @@
                                 <descriptor>src/main/assembly/kgram-webservice.xml</descriptor>
                             </descriptors>
                             <descriptorId>jar-with-dependencies</descriptorId>
-<!--                            <archive>
+                            <!--                            <archive>
                                 <manifest>
                                     <mainClass></mainClass>
                                     <addClasspath>false</addClasspath>
@@ -162,6 +168,39 @@
                     </execution>
                 </executions>
             </plugin>
+            
+<!--            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>theMainClass</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>-->
 			
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

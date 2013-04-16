@@ -264,5 +264,16 @@
             <name>Aduna Software</name>
             <url>http://repo.aduna-software.org/maven2/releases/</url>
         </repository>
+        <repository>
+            <id>nexus</id>
+            <name>Nexus</name>
+            <url>http://vigilante.inria.fr/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+           </snapshots>
+        </repository>
     </repositories>
 </project>

@@ -39,7 +39,7 @@ public class RemoteProducer extends ProducerImpl {
     private String endpoint;
 //    private IEngine engine;
 //    private EngineFactory ef = new EngineFactory();
-    private Graph graph = Graph.create(true);
+    private Graph graph = Graph.create(false);
     private QueryProcess exec = QueryProcess.create(graph);
     private Logger logger = Logger.getLogger(RemoteProducer.class);
     private HashMap<String, String> rdfSqlMappings = new HashMap<String, String>();
@@ -126,31 +126,31 @@ public class RemoteProducer extends ProducerImpl {
     @WebMethod
     public void loadRDF(String remotePath) {
         logger.info("Loading " + remotePath);
-        Graph g = Graph.create();
-        if (remotePath.endsWith(".rdf") || remotePath.endsWith(".owl")) {
-            Load ld = Load.create(g);
+//        Graph g = Graph.create();
+        if (remotePath.endsWith(".rdf") || remotePath.endsWith(".owl") || remotePath.endsWith(".ttl")) {
+            Load ld = Load.create(graph);
             ld.load(remotePath);
-        } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {
-            FileInputStream fis = null;
-            try {
-                File f = new File(remotePath);
-                fis = new FileInputStream(f);
-                Model model = ModelFactory.createDefaultModel();
-                model.read(fis, null, "N-TRIPLE");
-                System.out.println("Loaded " + f.getAbsolutePath());
-                g = JenaGraphFactory.createGraph(model);
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            } finally {
-                try {
-                    fis.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
+        } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt") ) {
+//            FileInputStream fis = null;
+//            try {
+//                File f = new File(remotePath);
+//                fis = new FileInputStream(f);
+//                Model model = ModelFactory.createDefaultModel();
+//                model.read(fis, null, "N-TRIPLE");
+//                System.out.println("Loaded " + f.getAbsolutePath());
+//                JenaGraphFactory.updateGraph(model,graph);
+//            } catch (FileNotFoundException ex) {
+//                ex.printStackTrace();
+//            } finally {
+//                try {
+//                    fis.close();
+//                } catch (IOException ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
         }
-        exec.add(g);
-        logger.info("Successfully loaded " + remotePath);
+//        exec.add(g);
+        logger.info("Successfully loaded " + remotePath + " (Server graph size: "+graph.size()+")");
     }
     
     @WebMethod
@@ -177,14 +177,13 @@ public class RemoteProducer extends ProducerImpl {
 //    public @XmlMimeType(value = "application/octet-stream")
 //    DataHandler getEdges(String sparqlQuery) {
     public String getEdges(String sparqlQuery) {
-//        logger.debug(sparqlQuery);
 //        StopWatch sw = new StopWatch();
 //        sw.start();
 
 //        logger.debug("Received query: \n" + sparqlQuery);
         try {
             Mappings results = exec.query(sparqlQuery);
-
+//            logger.debug("Processed query in " + sw.getTime()+" ms.");
 //            RDF serialization
             RDFFormat rdfFormat = RDFFormat.create(results);
             if (rdfFormat == null) {
@@ -193,8 +192,8 @@ public class RemoteProducer extends ProducerImpl {
                 String sResults = rdfFormat.toString();
 //                byte[] bytes = sResults.getBytes();
 //                final DataHandler data = new DataHandler(bytes, "application/octet-stream");
+//                logger.debug("Query processing and RDF serialization in " + sw.getTime() + " ms.");
                 return sResults;
-//                logger.info("kg-slave processed query in " + sw.getTime() + " ms.");
 //                return sResults;
             }
 
@@ -220,7 +219,7 @@ public class RemoteProducer extends ProducerImpl {
 
             StopWatch sw = new StopWatch();
             sw.start();
-            logger.info("Initializing GraphEngine");
+//            logger.info("Initializing GraphEngine, entailments: "+graph.getEntailment());
             Load ld = Load.create(graph);
 //            ld.load(RemoteProducer.class.getClassLoader().getResourceAsStream("kgram-foaf.rdfs"), null);
 //            ld.load(RemoteProducer.class.getClassLoader().getResourceAsStream("dbpedia_3.6.owl"), null);

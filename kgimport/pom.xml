@@ -21,6 +21,17 @@
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>jena</artifactId>
+            <exclusions>
+                    <!-- esclude lucene 2 which as compatibility issues with lucene 3 needed in NeuSemStore-simulation-objects module -->
+                    <exclusion>
+                        <groupId>org.apache.lucene</groupId>
+                        <artifactId>lucene-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.lucene</groupId>
+                        <artifactId>lucene-queries</artifactId>
+                    </exclusion>
+                </exclusions>
         </dependency>
          <dependency>
             <groupId>com.hp.hpl.jena</groupId>

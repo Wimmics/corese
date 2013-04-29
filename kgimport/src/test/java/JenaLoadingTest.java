@@ -52,7 +52,7 @@ public class JenaLoadingTest {
     @Test
     public void laodFileTest() throws EngineException {
         Model model = ModelFactory.createDefaultModel();
-        InputStream in = JenaLoadingTest.class.getClassLoader().getResourceAsStream("kgram#2-persons.rdf");
+        InputStream in = JenaLoadingTest.class.getClassLoader().getResourceAsStream("kgram2-persons.rdf");
         if (in == null) {
             throw new IllegalArgumentException("File: not found");
         }

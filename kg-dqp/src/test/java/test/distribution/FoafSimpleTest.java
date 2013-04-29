@@ -61,7 +61,7 @@ public class FoafSimpleTest {
 
         File rep1 = File.createTempFile("rep1", ".rdf");
         FileWriter fw = new FileWriter(rep1);
-        InputStream is = FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram#1-persons.rdf");
+        InputStream is = FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram1-persons.rdf");
         int c;
         while ((c = is.read()) != -1) {
             fw.write(c);
@@ -71,7 +71,7 @@ public class FoafSimpleTest {
 
         File rep2 = File.createTempFile("rep2", ".rdf");
         fw = new FileWriter(rep2);
-        is = FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram#2-persons.rdf");
+        is = FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram2-persons.rdf");
         while ((c = is.read()) != -1) {
             fw.write(c);
         }

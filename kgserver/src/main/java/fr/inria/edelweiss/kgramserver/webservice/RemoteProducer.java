@@ -1,10 +1,7 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgimport.JenaGraphFactory;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
@@ -13,8 +10,6 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

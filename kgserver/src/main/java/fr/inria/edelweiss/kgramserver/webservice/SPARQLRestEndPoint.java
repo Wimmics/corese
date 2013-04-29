@@ -4,9 +4,6 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import fr.inria.edelweiss.kgimport.JenaGraphFactory;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -18,7 +15,6 @@ import fr.inria.edelweiss.kgtool.print.TSVFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -126,22 +122,22 @@ public class SPARQLRestEndPoint {
                 ld.load(remotePath);
             } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {
                 FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(f);
-                    Model model = ModelFactory.createDefaultModel();
-                    model.read(fis, null, "N-TRIPLE");
-                    System.out.println("Loaded " + f.getAbsolutePath());
-                    g = JenaGraphFactory.createGraph(model);
-                } catch (FileNotFoundException ex) {
-                    logger.error(output = "File " + remotePath + " not found on the server!");
-                    return Response.status(404).entity(output).build();
-                } finally {
-                    try {
-                        fis.close();
-                    } catch (IOException ex) {
-                        logger.error("Error while closing the FileInputStream.");
-                    }
-                }
+//                try {
+//                    fis = new FileInputStream(f);
+//                    Model model = ModelFactory.createDefaultModel();
+//                    model.read(fis, null, "N-TRIPLE");
+                    System.out.println("NOT Loaded " + f.getAbsolutePath());
+//                    g = JenaGraphFactory.createGraph(model);
+//                } catch (FileNotFoundException ex) {
+//                    logger.error(output = "File " + remotePath + " not found on the server!");
+//                    return Response.status(404).entity(output).build();
+//                } finally {
+//                    try {
+//                        fis.close();
+//                    } catch (IOException ex) {
+//                        logger.error("Error while closing the FileInputStream.");
+//                    }
+//                }
             }
         }
         exec.add(g);

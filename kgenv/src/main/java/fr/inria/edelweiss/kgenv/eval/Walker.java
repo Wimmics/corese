@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.TreeMap;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.CoreseStringBuilder;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -73,7 +72,6 @@ class Walker extends Interpreter {
 	
 		
 	Object getResult(){
-		
 		if (isError) return null;
 		
 		switch (exp.oper()){
@@ -234,6 +232,10 @@ class Walker extends Interpreter {
 			switch (exp.oper()){
 			
 			case MIN:
+                            if (dt.isBlank()){
+                                isError = true;
+                                break;
+                            }
 				if (dtres == null){
 					dtres = dt;
 				}
@@ -249,6 +251,10 @@ class Walker extends Interpreter {
 				break;
 				
 			case MAX:
+                             if (dt.isBlank()){
+                                isError = true;
+                                break;
+                            }
 				if (dtres == null){
 					dtres = dt;
 				}

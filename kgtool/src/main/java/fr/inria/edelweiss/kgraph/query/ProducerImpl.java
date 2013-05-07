@@ -112,10 +112,16 @@ public class ProducerImpl implements Producer {
 	
 	Node getValue(Node qNode, Environment env){
 		Node node = env.getNode(qNode);
-		if (node == null && qNode.isConstant()){
-			//node = qNode;
+		if (node == null){
+                    if (qNode.isConstant()){                  
 			node = graph.getNode(qNode);
+                    }
 		}
+                else if (node.getKey() == Node.INITKEY){
+                    // a Mapping node has no index
+                    // get target node if any
+                    node = graph.getNode(node);
+                }
 		return node;
 	}
 	
@@ -172,7 +178,7 @@ public class ProducerImpl implements Producer {
 				}
 			}
 		}
-						
+                                
 		if (node == null  && from.size()>0){
 			// from named <uri>
 			// graph ?g { }
@@ -227,9 +233,10 @@ public class ProducerImpl implements Producer {
 		MetaIterator<Entity> meta = new MetaIterator<Entity>();
 
 		for (Node src : from){
-			if (graph.isGraphNode(src)){
-				src = graph.getGraphNode(src.getLabel());
-				Iterable<Entity> it = graph.getEdges(predicate, src, IGRAPH);
+                        Node tfrom = graph.getNode(src);
+			if (tfrom != null && graph.isGraphNode(tfrom)){
+				//src = graph.getGraphNode(src.getLabel());
+				Iterable<Entity> it = graph.getEdges(predicate, tfrom, IGRAPH);
 				if (it!=null){
 					meta.next(it);
 				}
@@ -308,9 +315,10 @@ public class ProducerImpl implements Producer {
 	
 	boolean isFromOK(List<Node> from){
 		for (Node node : from){
-			if (graph.isGraphNode(node)){
-				return true;
-			}
+                    Node tfrom = graph.getNode(node);
+                    if (tfrom != null && graph.isGraphNode(tfrom)){
+			return true;			
+                    }
 		}
 		return false;
 	}
@@ -588,7 +596,7 @@ public class ProducerImpl implements Producer {
 		if (node == null){
 			if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)){
 				// blank generated for path node: do not store it
-				return  NodeImpl.create(dt);
+				return  local.getNode(dt, true, false);
 			}
 			else {
 				node = local.getNode(dt, true, true);
@@ -596,6 +604,10 @@ public class ProducerImpl implements Producer {
 		}
 		return node;
 	}
+        
+        public Object getValue(Node node){
+            return node.getValue();
+        }
 
 	@Override
 	public Iterable<Entity> getNodes(Node gNode, List<Node> from, Node qNode,
@@ -618,8 +630,10 @@ public class ProducerImpl implements Producer {
 
 	@Override
 	public boolean isBindable(Node node) {
-		// TODO Auto-generated method stub
-		return true;
+            if (! Graph.valueOut) return true;           
+            IDatatype dt = (IDatatype) node.getValue();
+            // 1 && 1.0 are not same Node: cannot bind (see kgram Eval)
+            return ! dt.isNumber();
 	}
 
 	@Override
@@ -708,9 +722,7 @@ public class ProducerImpl implements Producer {
 				continue;
 			}
 			
-			// function exp.bind(f) tests whether current edge binds all variable of filter f
-			System.out.println("** P: " + exp + " " + f + " " + exp.bind(f));
-			
+			// function exp.bind(f) tests whether current edge binds all variable of filter f			
 			for (String var : f.getVariables()){
 				if (! lVar.contains(var)){
 					Node node = env.getNode(var);

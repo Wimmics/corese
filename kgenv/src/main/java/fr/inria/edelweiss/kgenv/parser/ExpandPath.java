@@ -114,14 +114,18 @@ public class ExpandPath implements QueryVisitor {
 		if (ast == null){
 			ast = ASTQuery.create();
 		}
+
 		if (exp.isTriple()){
 			Triple t = exp.getTriple();
 			if (t.isPath()){
-				return rewrite(t, t.getRegex());
+                            return rewrite(t, t.getRegex());
 			}
 		}
+                else if (exp.isQuery()){
+                    rewrite(exp.getQuery().getBody());
+                }
 		else for (int i=0; i<exp.size(); i++){
-			exp.set(i, rewrite(exp.get(i)));
+                    exp.set(i, rewrite(exp.get(i)));
 		}
 		return exp;
 	}

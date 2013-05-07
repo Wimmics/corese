@@ -18,7 +18,6 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.core.EdgeCore;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.NodeImpl;
@@ -47,6 +46,7 @@ public class Construct
 	Query query;
 	Graph graph;
 	Node defaultGraph;
+        IDatatype dtDefaultGraph;
 	List<Entity> lInsert, lDelete;
 	//List<String> from;
 	Dataset ds;
@@ -73,9 +73,8 @@ public class Construct
 		query = q;
 		table = new Hashtable<Node, Node>();
 		count = 0;
-		IDatatype dt;
-		dt = DatatypeMap.createResource(src);
-		defaultGraph =  NodeImpl.create(dt);
+		dtDefaultGraph = DatatypeMap.createResource(src);
+		//defaultGraph =  NodeImpl.create(dt);
 	}
 	
 	
@@ -156,7 +155,9 @@ public class Construct
 	public Graph construct(Mappings lMap, Graph g){
 		graph = g;
 		init();
-		Node gNode = defaultGraph;
+		//Node gNode = defaultGraph;
+                Node gNode = g.getResourceNode(dtDefaultGraph, true, false);
+
 		if (isDelete) gNode = null;
 		Exp exp = query.getConstruct();
 		if (isDelete){
@@ -352,10 +353,10 @@ public class Construct
 		if (node == null){
 			// target node not yet created
 			// search map node
-			node = map.getNode(qNode);
+			Object value = map.getValue(qNode);
 			IDatatype dt = null;
 
-			if (node == null){
+			if (value == null){
 				if (qNode.isBlank()){
 					dt = blank(qNode, map);
 				}
@@ -369,7 +370,7 @@ public class Construct
 				}
 			}
 			else {
-				dt = getValue(node);
+				dt = (IDatatype) value;
 			}
 			
 			node = graph.getNode(gNode, dt, true, false);
@@ -454,10 +455,11 @@ public class Construct
 		Collections.sort(list, this);
 		int n = 0;
 		for (Node qNode : list){
-			Node node = map.getNode(qNode);
+			Object value = map.getValue(qNode);
 			n++;
-			if (node != null && ! qNode.isConstant()){
-				str += qNode.getLabel() + "." + getValue(node).toSparql() + ".";
+			if (value != null && ! qNode.isConstant()){
+                            IDatatype dt = (IDatatype) value;
+                            str += qNode.getLabel() + "." + dt.toSparql() + ".";
 			}
 		}
 		return str;

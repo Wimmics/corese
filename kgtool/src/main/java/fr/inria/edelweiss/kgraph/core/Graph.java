@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.api.Tagger;
+import fr.inria.edelweiss.kgraph.api.ValueResolver;
 import fr.inria.edelweiss.kgraph.logic.*;
 import java.util.Map;
 
@@ -193,7 +194,7 @@ public class Graph //implements IGraph
 		graph 		= new Hashtable<String, Node>();
 		property 	= new Hashtable<String, Node>();
 		gindex 		= new NodeIndex();
-                values          = new ValueResolver();
+                values          = new ValueResolverImpl();
 		fac 		= new EdgeFactory(this);
 		manager 	= new Workflow(this);
 		key = hashCode() + ".";

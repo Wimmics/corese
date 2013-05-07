@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -31,6 +30,7 @@ import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.logic.*;
+import java.util.Map;
 
 /**
  * Graph Manager
@@ -48,6 +48,8 @@ public class Graph //implements IGraph
 	
 	public static final String TOPREL = 
 		fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
+        
+        public static boolean valueOut = !true;
 	
 	public static final int IGRAPH = -1;
 	// NB of Index (subject, object, graph)
@@ -86,12 +88,19 @@ public class Graph //implements IGraph
 	Index table, 
 	// for rdf:type, no named graph to speed up type test
 	dtable;
-	// resource and blank nodes
-	Hashtable<String, Entity> individual, blank;
+        // key -> Node
+	Hashtable<String, Entity> individual;
+        // label -> Node
+	Hashtable<String, Entity> blank;
 	SortedMap<IDatatype, Entity> literal;
-	// graph property nodes
-	Hashtable<String, Node> graph, property;
+        // key -> Node
+        Map<String, Entity> vliteral;
+	// graph nodes: key -> Node
+	Hashtable<String, Node> graph;
+	// property nodes: label -> Node (for performance)
+	Hashtable<String, Node> property;
 	NodeIndex gindex;
+        ValueResolver values;
 	Log log;
 	List<GraphListener> listen;
 	Workflow manager;
@@ -133,6 +142,13 @@ public class Graph //implements IGraph
 						
 	}
 	
+        /**
+         * This Comparator enables to retrieve an occurrence of a given Literal
+         * already existing in graph in such a way that two occurrences of same Literal 
+         * be represented by same Node in graph
+         * It (may) represent (1 integer) and (1.0 float) as two different Nodes
+         * Current implementation of EdgeIndex sorted by values ensure join (by dichotomy ...)
+         */
 	class Compare implements Comparator<IDatatype> {
 		
 		public int compare(IDatatype dt1, IDatatype dt2){
@@ -170,11 +186,14 @@ public class Graph //implements IGraph
 		table 		= getIndex(0);
 		//dtable 		= dtables[0];
 		literal 	= Collections.synchronizedSortedMap(new TreeNode());
+                vliteral 	= Collections.synchronizedMap(new HashMap<String, Entity>());
+
 		individual 	= new Hashtable<String, Entity>();
 		blank 		= new Hashtable<String, Entity>();
 		graph 		= new Hashtable<String, Node>();
 		property 	= new Hashtable<String, Node>();
-		gindex 		= new NodeIndex();	
+		gindex 		= new NodeIndex();
+                values          = new ValueResolver();
 		fac 		= new EdgeFactory(this);
 		manager 	= new Workflow(this);
 		key = hashCode() + ".";
@@ -200,6 +219,20 @@ public class Graph //implements IGraph
 	public void setOptimize(boolean b){
 		fac.setOptimize(b);
 	}
+        
+        public static void setValueTable(boolean b){
+            valueOut = b;
+            if (! b){
+                setCompareKey(false);
+            }
+        }
+        
+        public static void setCompareKey(boolean b){
+            EdgeIndex.byKey = b;
+            if (b){
+                setValueTable(true);
+            }
+        }
 	
 	public boolean isLog(){
 		return log != null;
@@ -412,7 +445,7 @@ public class Graph //implements IGraph
 		}
 		
 		for (Entity e : getLiteralNodes()){
-			IDatatype dt = getValue(e.getNode());
+			IDatatype dt = (IDatatype) e.getNode().getValue();
 			if (dt.isNumber()) num++;
 			else if (dt.getCode() == IDatatype.STRING) 	string++;
 			else if (dt.getCode() == IDatatype.LITERAL) lit++;
@@ -574,18 +607,7 @@ public class Graph //implements IGraph
 	 * @deprecated
 	 */
 	public void initPath(){
-		for (Entity ent : individual.values()){
-			ent.getNode().setProperty(Node.LENGTH, null);
-			ent.getNode().setProperty(Node.REGEX, null);
-		}
-		for (Entity ent : blank.values()){
-			ent.getNode().setProperty(Node.LENGTH, null);
-			ent.getNode().setProperty(Node.REGEX, null);
-		}
-		for (Entity ent : literal.values()){
-			ent.getNode().setProperty(Node.LENGTH, null);
-			ent.getNode().setProperty(Node.REGEX, null);
-		}
+		
 	}
 	
 	
@@ -593,7 +615,9 @@ public class Graph //implements IGraph
 	/*************************************************************************/
 	
 	
-	
+	public ValueResolver getValueResolver(){
+            return values;
+        }
 	
 	public Index getIndex(){
 		return table;
@@ -737,12 +761,9 @@ public class Graph //implements IGraph
 		size = n;
 	}
 	
-	public IDatatype getValue(Node node){
-		return (IDatatype) node.getValue();
-	}
 	
 	public Node copy(Node node){
-		return getNode(getValue(node), true, false);
+		return getNode((IDatatype) node.getValue(), true, false);
 	}
 	
 	
@@ -809,7 +830,7 @@ public class Graph //implements IGraph
 	 * 
 	 */
 	public Node getNode(Node node){
-		IDatatype dt = getValue(node);
+		IDatatype dt = (IDatatype) node.getValue();
 		return getNode(dt, false, false);
 	}
 	
@@ -828,13 +849,16 @@ public class Graph //implements IGraph
 	
 	
 	public Node getResourceNode(IDatatype dt, boolean create, boolean add){
-		Node node = getNode(dt.getLabel());
+            String key = getKey(dt);
+		Node node = getNode(key, dt.getLabel());
 		if (node != null) return node;
-		node = getResource(dt.getLabel());
+		node = getResource(key, dt.getLabel());
 		if (node == null && create){
-			node = createNode(dt);
+			node = createNode(key, dt);
 		}
-		if (add) add(node);
+		if (add){
+                    add(dt, node);
+                }
 		return node;
 	}
 	
@@ -845,16 +869,21 @@ public class Graph //implements IGraph
 		if (node == null && create){
 			node = createNode(dt);
 		}
-		if (add) add(node);
+		if (add) {
+                    add(dt, node);
+                }
 		return node;
 	}
 	
 	public Node getLiteralNode(IDatatype dt, boolean create, boolean add){
-		Node node = getLiteralNode(dt);
+            String key = getKey(dt);
+		Node node = getLiteralNode(key, dt);
 		if (node != null) return node;
 		if (create){ 
-			node = createNode(dt);
-			if (add) addLiteralNode(dt, node);
+			node = createNode(key, dt);
+			if (add){
+                            addLiteralNode(dt, node);
+                        }
 		}
 		return node;
 	}
@@ -864,20 +893,24 @@ public class Graph //implements IGraph
 	/**
 	 * Retrieve Node or create it (but not add it into graph)
 	 */
-	public Node getCreateResource(String name){
-		Node node = getResource(name);
-		if (node == null){ 
-			node = createNode(name);
-		}
-		return node;
-	}
+//	public Node getCreateResource(String name){
+//		Node node = getResource(name);
+//		if (node == null){ 
+//			node = createNode(name);
+//		}
+//		return node;
+//	}
 	
 	/**
 	 * Retrieve a node/graph node/property node 
 	 */
 	public Node getResource(String name){
-		Node node = getNode(name);
-		if (node == null) node = getGraphNode(name);
+            return getResource(getID(name), name);
+        }
+            
+        Node getResource(String key, String name){
+		Node node = getNode(key, name);
+		if (node == null) node = getGraphNode(key, name);
 		if (node == null){
 			node = getPropertyNode(name);
 		}
@@ -887,45 +920,100 @@ public class Graph //implements IGraph
 
 	// resource or blank
 	public boolean isIndividual(Node node) {
-		return individual.containsKey(node.getLabel())
-        	|| blank.containsKey(node.getLabel());
+		return individual.containsKey(getID(node)) || 
+                            blank.containsKey(node.getLabel());
         }
-
+        
 	// resource node
 	public Node getNode(String name){
-		return (Node) individual.get(name);
+            return getNode(getID(name), name);
 	}
+        
+        Node getNode(String key, String name){
+		return (Node) individual.get(key);
+	}
+        
+        void addNode(IDatatype dt, Node node){
+		individual.put(getID(node), (Entity) node);
+        }      
 	
 	public Node getBlankNode(String name){
-		return (Node) blank.get(name);
+            return (Node) blank.get(name);
 	}
-	
-	
-	Node basicAddGraph(String name){
-		Node node = getGraphNode(name);
+        
+        void addBlankNode(IDatatype dt, Node node){
+            blank.put(node.getLabel(), (Entity) node);
+        }
+        
+        
+        String getID(Node node){
+            if (valueOut){
+                return node.getKey();
+            }
+            else {
+                return node.getLabel();
+            }
+        }
+        
+        String getID(String str){
+            if (valueOut){
+                return values.getKey(str);
+            }
+            else {
+                return str;
+            }
+        }
+        
+        String getKey(IDatatype dt){
+            if (valueOut){
+                return values.getKey(dt);
+            }
+            else {
+                return dt.getLabel();
+            }
+        }
+        
+		
+	Node basicAddGraph(String label){
+                String key = getID(label);
+		Node node = getGraphNode(key, label);
 		if (node != null) return node;
-		node = getCreateResource(name);
-		addGraphNode(node);
+		node = getResource(key, label);
+                if (node == null){
+                    IDatatype dt = DatatypeMap.createResource(label);
+                    node = createNode(key, dt); 
+                    indexNode(dt, node);
+                }
+		//graph.put(label, node);	               
+		graph.put(key, node);	               
 		return node;
 	}
 
-	Node basicAddResource(String label){
-		Node node = getNode(label);
-		if (node != null) return node;
-		node = getCreateResource(label);
-		add(node);
-		return node;
-	}
+    Node basicAddResource(String label) {
+        String key = getID(label);
+        Node node = getResource(key, label);
+        if (node != null) {
+            return node;
+        }
+        IDatatype dt = DatatypeMap.createResource(label);
+        node = createNode(key, dt);
+        add(dt, node);
+        return node;
+    }
 
 
 	Node basicAddProperty(String label){
-		Node node = getNode(label);
+		Node node = getPropertyNode(label);
 		if (node != null){
-			addPropertyNode(node);
-			return node;
+                    return node;
 		}
-		node = getCreateResource(label);
-		addPropertyNode(node);
+		node = getResource(label);
+                if (node == null){
+                    IDatatype dt = DatatypeMap.createResource(label);
+                    node = createNode(dt); 
+                    indexNode(dt, node);
+                }
+                property.put(label, node);
 		return node;
 	}
 
@@ -933,57 +1021,80 @@ public class Graph //implements IGraph
 		Node node = getBlankNode(label);
 		if (node == null){
 			IDatatype dt = DatatypeMap.createBlank(label);
-			if (dt!=null){
-				node = addNode(dt);
-			}
+			if (dt != null){
+                            node = createNode(dt);
+                            indexNode(dt, node);
+                            addBlankNode(dt, node);
+                        }
 		}
 		return node;
 	}
 	
-	// draft
-	void index(Node node){
-//		if (node.getIndex() == -1){
-//			node.setIndex(nodeIndex++);
-//		}
-	}
+	
 	
 	public void add(Node node){
-		IDatatype  dt = getValue(node);
+            IDatatype  dt = (IDatatype) node.getValue();
+            add(dt, node);
+        }
+                
+                
+	 void add(IDatatype dt, Node node){
 		if (dt.isLiteral()){
 			addLiteralNode(dt, node);
 		}
 		else if (dt.isBlank()){
-			blank.put(node.getLabel(), (Entity)node);
-			index(node);
+			addBlankNode(dt, node);
+			indexNode(dt, node);
 		}
 		else {
-			individual.put(node.getLabel(), (Entity) node);
-			index(node);
+			addNode(dt, node);
+			indexNode(dt, node);
 		}
 	}
 
 	public void addLiteralNode(IDatatype dt, Node node){
-		literal.put(dt, (Entity) node);
-		index(node);
+                if (valueOut){
+                    vliteral.put(node.getKey(), (Entity) node);
+                }
+                else {
+                    literal.put(dt, (Entity) node);
+                }
+		indexNode(dt, node);
 	}
-	
+        
+  
 	public Node getLiteralNode(IDatatype dt){
-		return (Node) literal.get(dt);
+            return getLiteralNode(getKey(dt), dt);
+        }
+
+	public Node getLiteralNode(String key, IDatatype dt){
+            if (valueOut){
+               	return (Node) vliteral.get(key);
+            }
+            else {
+              	return (Node) literal.get(dt);  
+            }
 	}	
 	
 	public Node getGraphNode(String label){
-		return graph.get(label);
+		return getGraphNode(getID(label), label);
+	}
+        
+        Node getGraphNode(String key, String label){
+		return graph.get(key);
 	}
 	
 	public void addGraphNode(Node gNode){
 		if (! isGraphNode(gNode)){
-			graph.put(gNode.getLabel(), gNode);
-			index(gNode);
+			//graph.put(gNode.getLabel(), gNode);
+			graph.put(getID(gNode), gNode);
+			indexNode((IDatatype) gNode.getValue(), gNode);
 		}
 	}
 	
 	public boolean isGraphNode(Node node){
-		return graph.containsKey(node.getLabel());
+		//return graph.containsKey(node.getLabel());
+		return graph.containsKey(getID(node));
 	}
 	
 	public Node getPropertyNode(String label){
@@ -997,7 +1108,7 @@ public class Graph //implements IGraph
 	public void addPropertyNode(Node pNode){
 		if (! property.containsKey(pNode.getLabel())){
 			property.put(pNode.getLabel(), pNode);
-			index(pNode);
+			indexNode((IDatatype) pNode.getValue(), pNode);
 		}
 	}
 	
@@ -1301,17 +1412,49 @@ public class Graph //implements IGraph
 
 	
 	public void deleteGraph(String name){
-		Node node = getGraphNode(name);
-		if (node != null){
-			graph.remove(node);
-		}
+            graph.remove(getID(name));
+            //graph.remove(name);
+//		Node node = getGraphNode(name);
+//		if (node != null){
+//			graph.remove(node);
+//		}
 	}
 	
-	
+	void indexNode(IDatatype dt, Node node){
+		index(dt, node);
+	}
+        
+        void index(IDatatype dt, Node node){
+//		if (node.getIndex() == -1){
+//			node.setIndex(nodeIndex++);
+//		}
+	}
 
 	
+        /** 
+         * Only for new node that does not exist
+         */
 	Node createNode(IDatatype dt){
-		return  NodeImpl.create(dt);
+            return createNode(getKey(dt), dt);
+        }
+        
+        Node createNode(String key, IDatatype dt){
+		Node node;
+                if (valueOut){
+                    node = NodeImpl.create(this, dt);
+                    node.setKey(key);
+                    values.setValue(key, dt);
+                }
+                else {
+                    node = NodeImpl.create(dt);
+                }
+
+                return node;
+	}
+        
+        
+        public IDatatype getValue(Node node){
+           return values.getValue(node.getKey());
 	}
 	
 	// resource nodes
@@ -1385,8 +1528,22 @@ public class Graph //implements IGraph
 				Iterator<Entity> it = l2.iterator();
 
 				for (Entity ent1 : l1){
-
-					if (! it.hasNext()) return false;
+                                    
+                                    if (true){
+                                        // node index
+                                        boolean b = compare(g2, pred2, t, ent1, isGraph);
+                                        if (! b){
+                                            if (isDebug){
+						logger.debug(ent1);
+                                            }
+                                            return false;
+                                        }
+                                    }
+                                    else {
+                                        // node value 
+					if (! it.hasNext()){
+                                            return false;
+                                        }
 
 					Entity ent2 = it.next();
 					if (! compare(ent1, ent2, t, isGraph)){
@@ -1396,12 +1553,26 @@ public class Graph //implements IGraph
 						}
 						return false;
 					}
+                                    }
 				}
 			}
 
 		}
 		return true;
 	}
+        
+        
+        boolean compare(Graph g2, Node pred2, TBN t, Entity ent1, boolean isGraph){
+            Iterable<Entity> l2 = g2.getEdges(pred2);
+            Iterator<Entity> it = l2.iterator();
+            
+            for (Entity ent2 : l2){
+                if (compare(ent1, ent2, t, isGraph)){
+                    return true;
+                }
+            }
+            return false;
+        }
 
 	
 	boolean compare(Entity ent1, Entity ent2, TBN t, boolean isGraph){
@@ -1777,7 +1948,7 @@ public class Graph //implements IGraph
 		ArrayList<Node> list = new ArrayList<Node>();
 		
 		for (int i = 0; i < ent.nbNode(); i++){
-			Node n = addNode(getValue(ent.getNode(i)));
+			Node n = addNode((IDatatype) ent.getNode(i).getValue());
 			list.add(n);
 		}
 		

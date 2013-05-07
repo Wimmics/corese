@@ -999,5 +999,20 @@ public class CoreseDatatype
 		return 0;
 	}
 
+    @Override
+    public String getKey() {
+        return Node.INITKEY;
+    }
 
+    @Override
+    public void setKey(String str) {
+    }
+
+    public String getID() {
+        if (isLiteral()) {
+            return toSparql();
+        } else {
+            return getLabel();
+        }
+    }
 }

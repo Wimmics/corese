@@ -10,7 +10,6 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.api.Engine;
-import fr.inria.edelweiss.kgraph.core.EdgeCore;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
@@ -483,8 +482,7 @@ public class Entailment implements Engine {
 	 */
 	void infer(Node gNode, Edge edge, List<Node> list, int i){
 		Node node = edge.getNode(i);
-		IDatatype dt = graph.getValue(node);
-		//IDatatype dt = (IDatatype) node.getValue();
+		IDatatype dt = (IDatatype) node.getValue();
 
 		if (i == 1 && dt.isLiteral()) return;
 		

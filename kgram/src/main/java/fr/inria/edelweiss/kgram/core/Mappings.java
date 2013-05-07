@@ -200,7 +200,9 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 	
 	public Object getValue(Node qNode){
-		return getValue(qNode.getLabel());
+            if (size() == 0) return null;
+            Mapping map = get(0);
+            return map.getValue(qNode);
 	}
 	
 	public Node getNode(String var){

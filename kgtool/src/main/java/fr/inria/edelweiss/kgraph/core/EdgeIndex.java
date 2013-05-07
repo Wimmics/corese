@@ -27,6 +27,7 @@ public class EdgeIndex extends Hashtable<Node, List<Entity>>
 implements Index {
 	static final int IGRAPH = Graph.IGRAPH;
 	private static Logger logger = Logger.getLogger(EdgeIndex.class);	
+        static boolean byKey = Graph.valueOut;
 
 
 	int index = 0, other = 1;
@@ -47,14 +48,6 @@ implements Index {
 		types = new Hashtable<Node, Node>();
 	}
 	
-	/**
-	 * 
-	 */
-//	EdgeIndex(Graph g, int n, boolean skip){
-//		init(g, n);
-//		comp = getComparator2();
-//		isIndexer = true;
-//	}
 	
 	void init(Graph g, int n){
 		graph = g;
@@ -70,28 +63,6 @@ implements Index {
 	/**
 	 * Compare edges for dichotomy
 	 * edges are ordered according to index node
-	 * @deprecated
-	 */
-//	Comparator<Entity> getComparator2(){
-//		
-//		return new Comparator<Entity>(){
-//			
-//			public int compare(Entity o1, Entity o2) {
-//				int res = o1.getNode(index).compare(o2.getNode(index));
-//				if (res == 0){
-//					res = o1.getNode(other).compare(o2.getNode(other));
-//					
-//					if (res == 0 && index == 0){
-//						res = o1.getGraph().compare(o2.getGraph());
-//					}
-//				}
-//				return res;
-//			}
-//		};
-//	}
-	
-	
-	/**
 	 * check all arguments for arity n
 	 */
 	
@@ -101,21 +72,20 @@ implements Index {
 	
 	
 	static int nodeCompare(Node n1, Node n2){
-		return n1.compare(n2);
+            if (byKey){
+		return n1.getKey().compareTo(n2.getKey());
+            }
+            return n1.compare(n2);
 	}
 	
 	static boolean same(Node n1, Node n2){
-		return n1.same(n2);
+            if (byKey){
+		return n1.getKey().equals(n2.getKey());
+            }
+            return n1.same(n2);
 	}
-	
-//	static int nodeCompare(Node n1, Node n2){
-//		return Integer.compare(n1.getIndex(), n2.getIndex());
-//	}
-//	
-//	static boolean same(Node n1, Node n2){
-//		return n1.getIndex() == n2.getIndex();
-//	}
-	
+        
+    
 	/**
 	 * skip = true means:
 	 * if arity is different but common arity nodes and graph are equals 

@@ -13,7 +13,6 @@ import fr.inria.acacia.corese.triple.parser.Values;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -38,7 +37,7 @@ public class CompileService {
 			// subquery has its own bindings, skip compile
 			return;
 		}
-		
+                
 		if (lmap == null){
 			if (isSparql0(serv)){
 				filter(q, env);
@@ -57,7 +56,7 @@ public class CompileService {
 	}
 	
 	public void prepare(Query q){
-		Query g 	 = q.getOuterQuery();
+		Query g 	 = q.getGlobalQuery();
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ASTQuery ag  = (ASTQuery) g.getAST();
 		ast.setPrefixExp(ag.getPrefixExp());
@@ -245,6 +244,7 @@ public class CompileService {
 	 * Generate bindings from Mappings as filter
 	 */
 	void filter(Query q, Mappings lmap, int start, int limit){
+
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ArrayList<Term> lt;
 		Term filter = null;

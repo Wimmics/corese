@@ -32,6 +32,8 @@ public class CreateImpl implements Creator {
 	String base;
 	private boolean renameBlankNode = true;
 	int limit = Integer.MAX_VALUE;
+    private String resource;
+    private Node node;
 	
 	class Stack extends ArrayList<Node> {
 		
@@ -89,7 +91,7 @@ public class CreateImpl implements Creator {
 		if (source == null){
 			source = graph.addGraph(Entailment.DEFAULT);
 		}
-		Node s = getNode(subject);
+		Node s = getSubject(subject);
 		Node p = getProperty(property);
 		Node o;
 		if (object.isLiteral()){
@@ -169,6 +171,18 @@ public class CreateImpl implements Creator {
 			return graph.addResource(c.getLabel());
 		}
 	}
+        
+        Node getSubject(Atom c){
+            if (c.isBlankNode()) {
+                return graph.addBlank(getID(c.getLabel()));
+            } else {
+                if (resource == null || !resource.equals(c.getLabel())) {
+                    resource = c.getLabel();
+                    node = graph.addResource(resource);
+                }
+                return node;
+            }
+        }
 
 	
 	

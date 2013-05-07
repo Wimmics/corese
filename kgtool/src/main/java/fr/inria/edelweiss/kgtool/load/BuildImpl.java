@@ -7,7 +7,6 @@ import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.EdgeCore;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -23,10 +22,12 @@ public class BuildImpl implements Build {
 	static final String STAR = "*";
 	
 	Graph graph;
-	Node source;
+	Node gnode;
 	ArrayList<String> exclude;
 	Hashtable<String, String> blank;
 	boolean skip = false;
+    private String resource, source;
+    private Node node;
 
 	public BuildImpl(){
 	}
@@ -43,28 +44,31 @@ public class BuildImpl implements Build {
 	
 	public void statement(AResource subj, AResource pred, ALiteral lit) {
 		if (accept(pred.getURI())){
-			Node subject 	= getNode(subj);
+			Node subject 	= getSubject(subj);
 			Node predicate 	= getProperty(pred);
-			Node value 		= getLiteral(pred, lit);
+			Node value 	= getLiteral(pred, lit);
 			if (value == null) return;
-			EdgeImpl edge 	= getEdge(source, subject, predicate, value);
-			process(source, edge);
+			EdgeImpl edge 	= getEdge(gnode, subject, predicate, value);
+			process(gnode, edge);
 		}
 	}
 	
 	public void statement(AResource subj, AResource pred, AResource obj) {
 		if (accept(pred.getURI())){			
 			
-			Node subject 	= getNode(subj);
+			Node subject 	= getSubject(subj);
 			Node predicate 	= getProperty(pred);
-			Node value 		= getNode(obj);
-			EdgeImpl edge 	= getEdge(source, subject, predicate, value);
-			process(source, edge);
+			Node value 	= getNode(obj);
+			EdgeImpl edge 	= getEdge(gnode, subject, predicate, value);
+			process(gnode, edge);
 		}
 	}
 	
 	public void setSource(String src){
-		source = graph.addGraph(src);
+            if (source == null || ! src.equals(source)){
+                source = src;
+		gnode = graph.addGraph(src);
+            }
 	}
 	
 	public void setSkip(boolean b){
@@ -124,6 +128,14 @@ public class BuildImpl implements Build {
 		return graph.addProperty(res.getURI());		
 	}
 	
+       Node getSubject(AResource res) {
+           if (res.isAnonymous()) {
+               return graph.addBlank(getID(res.getAnonymousID()));
+           } else {
+               return getResource(res.getURI());
+           }
+        }
+        
 	public Node getNode(AResource res){
 		if (res.isAnonymous()){
 			return graph.addBlank(getID(res.getAnonymousID()));
@@ -132,6 +144,14 @@ public class BuildImpl implements Build {
 			return graph.addResource(res.getURI());
 		}		
 	}
+        
+        Node getResource(String uri){
+            if (resource == null || ! resource.equals(uri)){
+                resource = uri;
+                node = graph.addResource(uri);
+            }
+            return node;
+        }
 	
 	public String getID(String b){
 		String id = blank.get(b);

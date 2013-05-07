@@ -9,156 +9,156 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 
 /**
  * Node
- * 
+ *
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
 public class NodeImpl implements Node, Entity {
-	static int cindex = 0;
-	int index = -1;
-	IDatatype dt;
-	Object[] properties;
-	
-	
-	NodeImpl(IDatatype val){
-		dt = val;
-	}	
-	
-	public static Node create(IDatatype val){
-		//return new NodeImpl(val);
-		return val;
-	}
-	
-	public String toString(){
-		return dt.toSparql();
-	}
-	
-	
-	public int compare(Node node) {
-		// TODO Auto-generated method stub
-		if (node.getValue() instanceof IDatatype){
-			return dt.compareTo((IDatatype) node.getValue());
-		}
-		else 
-			return getLabel().compareTo(node.getLabel());
-		
-	}
-	
-	
-	@Override
-	public int getIndex() {
-		if (index == -1){
-			index = cindex++;
-		}
-		return index;
-	}
 
-	@Override
-	public String getLabel() {
-		// TODO Auto-generated method stub
-		return dt.getLabel();
-	}
+    String key = INITKEY;
+    Graph graph;
+    // these fields can be removed:
+    // index is used when an RDF graph is used as a query graph
+    int index = -1;
+    // dt is used when the graph does not manage values
+    IDatatype dt;
 
-	@Override
-	public IDatatype getValue() {
-		// TODO Auto-generated method stub
-		return dt;
-	}
-	
+    NodeImpl(IDatatype val) {
+        dt = val;
+    }
 
-	@Override
-	public boolean isBlank() {
-		// TODO Auto-generated method stub
-		return dt.isBlank();
-	}
+    public static Node create(IDatatype val) {
+        return new NodeImpl(val);
+    }
 
-	@Override
-	public boolean isConstant() {
-		// TODO Auto-generated method stub
-		return ! dt.isBlank();
-	}
+    NodeImpl(Graph g, IDatatype val) {
+        graph = g;
+        dt = val;
+    }
 
-	@Override
-	public boolean isVariable() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public static Node create(Graph g, IDatatype val) {
+        return new NodeImpl(g, val);
+    }
 
-	@Override
-	public boolean same(Node node) {
-		// TODO Auto-generated method stub
-		if (node.getValue() instanceof IDatatype){
-			return dt.sameTerm((IDatatype)node.getValue());
-		}	
-		return getLabel().equals(node.getLabel());	
-	}
-	
-	public boolean equals(Object obj) {
-		if (obj instanceof Node){
-			return same((Node) obj);
-		}
-		return false;
-	}
+    public String toString() {
+        return getValue().toSparql();
+    }
 
-	@Override
-	public void setIndex(int n) {
-		index = n;
-	}
+    public int compare(Node node) {
+        // TODO Auto-generated method stub
+        return getValue().compareTo((IDatatype) node.getValue());
+    }
 
-	@Override
-	public Edge getEdge() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public int getIndex() {
+        return index;
+    }
 
-	@Override
-	public Node getGraph() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getLabel() {
+        // TODO Auto-generated method stub
+        return getValue().getLabel();
+    }
 
-	@Override
-	public Node getNode() {
-		// TODO Auto-generated method stub
-		return this;
-	}
-	
-	public Object getObject() {
-		return getProperty(OBJECT);
-	}
+    @Override
+    public IDatatype getValue() {
+        if (graph == null) {
+            return dt;
+        } else {
+            return graph.getValue(this);
+        }
+    }
 
-	public void setObject(Object o) {
-		setProperty(OBJECT, o);
-	}
+    @Override
+    public boolean isBlank() {
+        // TODO Auto-generated method stub
+        return getValue().isBlank();
+    }
 
-	@Override
-	public Node getNode(int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public boolean isConstant() {
+        // TODO Auto-generated method stub
+        return !getValue().isBlank();
+    }
 
-	@Override
-	public Object getProperty(int p) {
-		if (properties == null || p >= properties.length ){
-			return null;
-		}
-		return properties[p];
-	}
+    @Override
+    public boolean isVariable() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public void setProperty(int p, Object o) {
-		if (properties == null){
-			properties = new Object[PSIZE];
-		}
-		if (p >= properties.length){
-			properties = Arrays.copyOf(properties, p+1);
-		}
-		properties[p] = o;
-	}
+    @Override
+    public boolean same(Node node) {
+        // TODO Auto-generated method stub
+        return getValue().sameTerm((IDatatype) node.getValue());
+    }
 
-	@Override
-	public int nbNode() {
-		return 0;
-	}
+    public boolean equals(Object obj) {
+        if (obj instanceof Node) {
+            return same((Node) obj);
+        }
+        return false;
+    }
 
+    @Override
+    public void setIndex(int n) {
+        index = n;
+    }
+
+    @Override
+    public Edge getEdge() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Node getGraph() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Node getNode() {
+        // TODO Auto-generated method stub
+        return this;
+    }
+
+    public Object getObject() {
+        return null;
+        //return getProperty(OBJECT);
+    }
+
+    public void setObject(Object o) {
+        //setProperty(OBJECT, o);
+    }
+
+    @Override
+    public Node getNode(int i) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Object getProperty(int p) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(int p, Object o) {
+    }
+
+    @Override
+    public int nbNode() {
+        return 0;
+    }
+
+    @Override
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public void setKey(String str) {
+        key = str;
+    }
 }

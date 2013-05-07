@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.core;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.edelweiss.kgraph.api.ValueResolver;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -14,19 +15,19 @@ import java.util.logging.Logger;
  * @author Olivier Corby, Wimmics Inria I3S, 2013
  *
  */
-public class ValueResolver {
+public class ValueResolverImpl implements ValueResolver {
 
     HashMap<String, IDatatype> tvalues;
     MessageDigest hasher;
     private String NAME = "MD5";
     int count = 0;
 
-    public ValueResolver() {
+    public ValueResolverImpl() {
         tvalues = new HashMap<String, IDatatype>();
         try {
             hasher = MessageDigest.getInstance(NAME);
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(ValueResolver.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ValueResolverImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -40,8 +41,8 @@ public class ValueResolver {
         return tvalues.get(key);
     }
 
-    public IDatatype setValue(String key, IDatatype dt) {
-        return tvalues.put(key, dt);
+    public void setValue(String key, IDatatype dt) {
+        tvalues.put(key, dt);
     }
  
     public String getKey(IDatatype dt) {

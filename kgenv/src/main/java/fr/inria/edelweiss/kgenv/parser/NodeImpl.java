@@ -149,4 +149,13 @@ public class NodeImpl implements Node {
 		
 	}
 
+    @Override
+    public String getKey() {
+        return INITKEY;
+    }
+
+    @Override
+    public void setKey(String str) {
+    }
+
 }

@@ -8,7 +8,8 @@ package fr.inria.edelweiss.kgram.api.core;
  *
  */
 public interface Node {
-	
+        public static final String INITKEY = "";
+
 	public static final int DEPTH 	= 0;
 	public static final int LENGTH 	= 1;
 	public static final int REGEX 	= 2;
@@ -30,6 +31,11 @@ public interface Node {
 	 * @return
 	 */
 	void setIndex(int n);
+        
+        String getKey();
+        
+        void setKey(String str);
+
 	
 	/**
 	 * Test if two nodes are the same.

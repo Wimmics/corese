@@ -34,7 +34,8 @@ public class RemoteProducer extends ProducerImpl {
     private String endpoint;
 //    private IEngine engine;
 //    private EngineFactory ef = new EngineFactory();
-    private Graph graph = Graph.create(false);
+    private Graph graph = Graph.create(false);        
+//    private Graph graph = Graph.create(true);        
     private QueryProcess exec = QueryProcess.create(graph);
     private Logger logger = Logger.getLogger(RemoteProducer.class);
     private HashMap<String, String> rdfSqlMappings = new HashMap<String, String>();
@@ -122,9 +123,10 @@ public class RemoteProducer extends ProducerImpl {
     public void loadRDF(String remotePath) {
         logger.info("Loading " + remotePath);
 //        Graph g = Graph.create();
-        if (remotePath.endsWith(".rdf") || remotePath.endsWith(".owl") || remotePath.endsWith(".ttl")) {
+        if (remotePath.endsWith(".rdf") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".owl") || remotePath.endsWith(".ttl")) {
             Load ld = Load.create(graph);
             ld.load(remotePath);
+            logger.info("Successfully loaded " + remotePath + " (Server graph size: "+graph.size()+")");
         } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt") ) {
 //            FileInputStream fis = null;
 //            try {
@@ -145,7 +147,6 @@ public class RemoteProducer extends ProducerImpl {
 //            }
         }
 //        exec.add(g);
-        logger.info("Successfully loaded " + remotePath + " (Server graph size: "+graph.size()+")");
     }
     
     @WebMethod

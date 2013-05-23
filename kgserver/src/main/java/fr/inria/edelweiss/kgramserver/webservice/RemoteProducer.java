@@ -111,7 +111,38 @@ public class RemoteProducer extends ProducerImpl {
 
             localFile.delete();
             sw.stop();
-            logger.info("Uploaded content to KGRAM: " + sw.getTime() + " ms");
+            logger.info("Uploaded RDF content to KGRAM: " + sw.getTime() + " ms");
+            logger.info("Graph size " + graph.size());
+        } catch (IOException ex) {
+            logger.error("Error while uploading RDF content.");
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Transfers an RDFS file and load it into KGRAM.
+     *
+     * @param data streamed RDF file to be loaded by KGRAM.
+     */
+    @WebMethod
+    public void uploadRDFS(@XmlMimeType(value = "application/octet-stream") DataHandler data) {
+        try {
+            StopWatch sw = new StopWatch();
+            sw.start();
+
+            File localFile = null;
+            localFile = File.createTempFile("KgramRdfContent", ".rdfs");
+            StreamingDataHandler streamingDh = (StreamingDataHandler) data;
+            streamingDh.moveTo(localFile);
+            streamingDh.close();
+
+            logger.debug("Loading " + localFile.getAbsolutePath() + " into KGRAM");
+            Load ld = Load.create(graph);
+            ld.load(localFile.getAbsolutePath());
+
+            localFile.delete();
+            sw.stop();
+            logger.info("Uploaded RDFS content to KGRAM: " + sw.getTime() + " ms");
             logger.info("Graph size " + graph.size());
         } catch (IOException ex) {
             logger.error("Error while uploading RDF content.");

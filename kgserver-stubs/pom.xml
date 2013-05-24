@@ -65,9 +65,9 @@
             </plugin>-->
 			
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
-                <version>1.12</version>
+                <version>2.2</version>
                 <executions>
                     <execution>
                         <id>KgramWSClient</id>

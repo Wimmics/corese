@@ -116,9 +116,9 @@
             </plugin>
             
             <plugin>
-                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
-                <version>2.2</version>
+                <version>1.12</version>
                 <executions>
                     <!-- ==================== -->
                     <!-- Generation of WSDLs -->

@@ -225,9 +225,9 @@ public class DatatypeMap implements Cst, RDF {
 		put(xsdinteger,	jTypeInteger,intSpace);
 		put(xsdlong,	jTypeLong,intSpace);
 		
-		put(xsdshort,				intJType,intSpace);
-		put(xsdint,					intJType,intSpace);
-		put(xsdbyte,				intJType,intSpace);
+		put(xsdshort,			intJType,intSpace);
+		put(xsdint,			intJType,intSpace);
+		put(xsdbyte,			intJType,intSpace);
 		put(xsdnonNegativeInteger, 	intJType,intSpace);
 		put(xsdnonPositiveInteger, 	intJType,intSpace);
 		put(xsdpositiveInteger, 	intJType,intSpace);
@@ -237,9 +237,9 @@ public class DatatypeMap implements Cst, RDF {
 		put(xsdunsignedShort,   	intJType,intSpace);
 		put(xsdunsignedByte,    	intJType,intSpace);
 
-		put(xsddate,	jTypeDate,		xsddate);
+		put(xsddate,	jTypeDate,	xsddate);
 		put(xsddateTime,jTypeDateTime,	xsddateTime);
-		put(xsdday,		jTypeDay,	xsdday);
+		put(xsdday,	jTypeDay,	xsdday);
 		put(xsdmonth,	jTypeMonth,	xsdmonth);
 		put(xsdyear,	jTypeYear,	xsdyear);
 		put(xsddaytimeduration,	jTypeGeneric, xsddaytimeduration);
@@ -373,7 +373,10 @@ public class DatatypeMap implements Cst, RDF {
 	}
 	
 	public static IDatatype newInstance(boolean result) {
-		return new CoreseBoolean(result);
+            if (result){
+                return CoreseBoolean.TRUE;
+            }
+            return CoreseBoolean.FALSE;
 	}
 	
 	public static IDatatype newResource(String result) {

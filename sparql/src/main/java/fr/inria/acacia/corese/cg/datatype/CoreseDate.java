@@ -51,25 +51,18 @@ public class CoreseDate extends CoreseDatatype {
 	
 	public  int getCode(){
 		return code;
-	}
-	
-	public CoreseInteger getYear() {
-		String year = normalizedLabel.substring(0,4);
-		return new CoreseInteger(year);
-	}
-	
+        }
+        
+	public CoreseInteger getYear() {           
+            return new CoreseInteger(cal.theYear());
+         }
+                     	
 	public CoreseInteger getMonth() {
-		String month = normalizedLabel.substring(5,7);
-		return new CoreseInteger(month);
+            return new CoreseInteger(cal.get(GregorianCalendar.MONTH) + 1);
 	}
 	
 	public CoreseInteger getDay() {
-		String day = "";
-		if (normalizedLabel.matches(".*T.*")) 
-			day = normalizedLabel.substring(8, normalizedLabel.indexOf("T"));
-		else
-			day = normalizedLabel.substring(8, normalizedLabel.length());
-		return new CoreseInteger(day);
+            return new CoreseInteger(cal.get(GregorianCalendar.DAY_OF_MONTH));
 	}
 	
 	
@@ -107,7 +100,12 @@ public class CoreseDate extends CoreseDatatype {
 	}
 	
 	
-	
+	/**
+         * Negative years:
+         * "-1-10-12"^^xsd:date represents year -1
+         * year 0 is not a correct lexical date (http://www.w3.org/TR/xmlschema-2/#dateTime)
+         * in this implementation it is considered as year +1
+         */
 	static CoreseCalendar parse(String date) throws CoreseDatatypeException {
 		boolean Z = false;
 		String num = null;
@@ -121,11 +119,25 @@ public class CoreseDate extends CoreseDatatype {
 			throw new CoreseDatatypeException("xsd:dateTime", date);
 		}
 		String thedate = items[0];
+                
+                boolean bp = false;
+                if (thedate.startsWith("-")){
+                    // Negative year Before Present
+                    bp = true;
+                    thedate = thedate.substring(1);
+                }
+                
 		String[] elem = thedate.split("-");
 		if (elem.length != 3) {
 			throw new CoreseDatatypeException("xsd:dateTime", date);
 		}
+                
 		int year =  Integer.parseInt(elem[0]);
+                        
+                if (year == 0){
+                    bp = true;
+                }
+                                           
 		int month = Integer.parseInt(elem[1]);
 		
 		int ind = elem[2].indexOf("+");
@@ -137,6 +149,9 @@ public class CoreseDate extends CoreseDatatype {
 		
 		int day =   Integer.parseInt(elem[2]);
 		cal = new CoreseCalendar(year, month-1, day);
+                if (bp){
+                    cal.set(GregorianCalendar.ERA, GregorianCalendar.BC);
+                }
 		cal.setZ(Z);
 		cal.setNum(num);
 		
@@ -145,11 +160,7 @@ public class CoreseDate extends CoreseDatatype {
 			// [-]CCYY-MM-DD T hh:mm:ss[Z|(+|-)hh:mm]
 			// time :  hh:mm:ss 
 			// time2 : [Z|(+|-)hh:mm]
-			
-//			String time = items[1].substring(0,8);
-//			
-//			String zone = items[1].substring(8,items[1].length());	// not used yet
-			
+						
 			String strtime = items[1];
 						
 			int size = 8;
@@ -315,8 +326,8 @@ public class CoreseDate extends CoreseDatatype {
 	public static String toString(CoreseCalendar cal) {
 		int day =   cal.get(Calendar.DAY_OF_MONTH);
 		int month = cal.get(Calendar.MONTH)+1 ;
-		int year=   cal.get(Calendar.YEAR);
-		String res = Integer.toString(year) + "-";
+		int year=   cal.theYear();
+		String res = Integer.toString(year) + "-";          
 		if (month < 10)
 			res += "0";
 		res += Integer.toString(month) + "-";

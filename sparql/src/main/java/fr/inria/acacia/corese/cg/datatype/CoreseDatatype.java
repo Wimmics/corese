@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import static fr.inria.acacia.corese.cg.datatype.Cst.jTypeInteger;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.Constant;
@@ -187,7 +188,7 @@ public class CoreseDatatype
 			return create(valueJType, datatype, label, lang, false);
 		}
 		catch (CoreseDatatypeException e){
-			if (CoreseDatatype.isNumber(datatype) && 
+			if (CoreseDatatype.isNumber(datatype, valueJType) && 
 					! valueJType.equals(Cst.jTypeUndef)){
 				// toto^^xsd:integer
 				// try UndefLiteral with integer datatype
@@ -802,9 +803,10 @@ public class CoreseDatatype
 	}
 	
 	
-	static boolean isNumber(String name){
+	static boolean isNumber(String name, String cname){
 		return name.equals(RDF.xsdlong) ||name.equals(RDF.xsdinteger) || name.equals(RDF.xsddouble) || 
-		name.equals(RDF.xsdfloat)   || name.equals(RDF.xsddecimal);
+		name.equals(RDF.xsdfloat)   || name.equals(RDF.xsddecimal) || name.equals(RDF.xsddate) ||
+                cname.equals(jTypeInteger);
 	}
 	
 	

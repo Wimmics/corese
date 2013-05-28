@@ -60,6 +60,18 @@ public class CoreseCalendar extends GregorianCalendar {
       float getSeconds(){
         return rest;
       }
+      
+      /**
+         * 1 BC -> -1
+         * 2 BC -> -2
+         */
+        int theYear(){
+            int year = get(GregorianCalendar.YEAR);
+            if (get(GregorianCalendar.ERA) == GregorianCalendar.BC){
+                year = -year;
+            }
+            return year;
+        }
 
   }
 

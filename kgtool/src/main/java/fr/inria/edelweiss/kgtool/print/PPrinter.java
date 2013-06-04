@@ -309,6 +309,9 @@ public class PPrinter {
 
 		for (Query qq : list){
 			
+                    if (isDebug){
+                        qq.setDebug(true);
+                    }
 			qq.setPPrinter(pp, this);
 			// remember start with qq for function pprint below
 			query = qq;
@@ -376,7 +379,6 @@ public class PPrinter {
 	 */
 	public IDatatype pprint(IDatatype dt1, IDatatype dt2, String temp, 
 			boolean allTemplates, String sep, Expr exp, Query q){	
-		
 		if (dt1 == null){
 			return EMPTY;
 		}
@@ -699,12 +701,14 @@ public class PPrinter {
 			
 			qe.sort();	
 		}
-		
-		//trace();
-		
-//		if (isCheck()){
-//			check();
-//		}
+
+		if (isDebug){
+                    trace();
+                }
+
+		check();
+                //trace();
+
 	}
 	
 	/***************************************************************

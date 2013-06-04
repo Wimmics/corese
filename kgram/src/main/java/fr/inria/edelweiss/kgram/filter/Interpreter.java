@@ -234,6 +234,7 @@ public class Interpreter implements Evaluator, ExprType {
 		case AVG:
 		case SAMPLE:
 		case GROUPCONCAT:
+                case AGGAND:
 			return aggregate(exp, env);
 			
 		case SYSTEM:

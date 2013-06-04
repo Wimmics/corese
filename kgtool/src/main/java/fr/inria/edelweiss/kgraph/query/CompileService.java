@@ -13,18 +13,18 @@ import fr.inria.acacia.corese.triple.parser.Values;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 
 public class CompileService {
 	
-
+	ProviderImpl provider;
+        Group group;
 	
-	Hashtable<String, Double> table;
-	
-	public CompileService(){
-		table = new Hashtable<String, Double>();
+	public CompileService(ProviderImpl p){
+            provider = p;
 	}
 
 	/**
@@ -39,14 +39,14 @@ public class CompileService {
 		}
                 
 		if (lmap == null){
-			if (isSparql0(serv)){
+			if (provider.isSparql0(serv)){
 				filter(q, env);
 			}
 			else {
 				bindings(q, env);
 			}
 		}
-		else if (isSparql0(serv)){
+		else if (provider.isSparql0(serv)){
 			filter(q, lmap, start, limit);
 		}
 		else {
@@ -73,16 +73,7 @@ public class CompileService {
 	}
 	
 	
-	void set(String uri, double version){
-		table.put(uri, version);
-	}
 	
-	
-	// everybody is 1.0 except localhost
-	boolean isSparql0(Node serv){
-		Double f = table.get(serv.getLabel());
-		return (f == null || f == 1.0);
-	}
 	
 	/**
 	 * Search select variable of query that is bound in env
@@ -167,6 +158,10 @@ public class CompileService {
 	 *  values () {()} syntax 
 	 */
 	StringBuffer strBindings(Query q, Mappings map){
+                if (group == null){
+                    group =  Group.instance(q.getSelectFun());
+                }
+                
 		String SPACE = " ";
 		StringBuffer sb = new StringBuffer();
 		
@@ -179,6 +174,11 @@ public class CompileService {
 		sb.append("){");
 		
 		for (Mapping m : map){
+                    
+                        if (! group.isDistinct(m)){
+                                continue;
+                        }
+                    
 			sb.append("(");
 			
 			for (Node var : q.getSelect()){
@@ -243,20 +243,23 @@ public class CompileService {
 	/**
 	 * Generate bindings from Mappings as filter
 	 */
-	void filter(Query q, Mappings lmap, int start, int limit){
+	
+        void filter(Query q, Mappings lmap, int start, int limit){
 
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ArrayList<Term> lt;
 		Term filter = null;
-		//Group group =  Group.instance(q.getSelectFun());
+		if (group == null){
+                    group =  Group.instance(q.getSelectFun());
+                }
 		
 		for (int j = start; j < lmap.size() && j < limit; j++){
 			
 			Mapping map = lmap.get(j);
-			
-//			if (! group.isDistinct(map)){
-//				continue;
-//			}
+                        
+			if (! group.isDistinct(map)){
+                            continue;
+			}
 			
 			lt = new ArrayList<Term>();
 			

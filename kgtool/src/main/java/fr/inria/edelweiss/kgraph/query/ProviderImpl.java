@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.SPARQLResult;
+import java.util.Hashtable;
 
 //import fr.inria.wimmics.sparql.soap.client.SparqlResult;
 //import fr.inria.wimmics.sparql.soap.client.SparqlSoapClient;
@@ -54,14 +55,14 @@ public class ProviderImpl implements Provider {
 	static final String LOCALHOST = "http://localhost:8080/corese/sparql";
 
 	HashMap<String, QueryProcess> table;
+	Hashtable<String, Double> version;
 	QueryProcess defaut;
-	CompileService compiler;
 
 	private int limit = 30;
 	
 	ProviderImpl(){
 		table = new HashMap<String, QueryProcess>();
-		compiler = new CompileService();
+		version = new Hashtable<String, Double>();
 	}
 	
 	public static ProviderImpl create(){
@@ -71,7 +72,14 @@ public class ProviderImpl implements Provider {
 	}
 	
 	public void set(String uri, double version){
-		compiler.set(uri, version);
+		this.version.put(uri, version);
+	}
+	
+	
+	// everybody is 1.0 except localhost
+	boolean isSparql0(Node serv){
+		Double f = version.get(serv.getLabel());
+		return (f == null || f == 1.0);
 	}
 	
 	/**
@@ -136,21 +144,22 @@ public class ProviderImpl implements Provider {
 	 * Cut into pieces when to many Mappings
 	 */
 	Mappings globalSend(Node serv, Query q, Mappings lmap, Environment env){
-		
+		CompileService compiler = new CompileService(this);
+
 		// share prefix
 		compiler.prepare(q);
 		
 		int slice = compiler.slice(q);
-                
-		if (lmap == null || slice == 0){
-			return send(serv, q, lmap, env, 0, 0);
+
+                if (lmap == null || slice == 0){
+			return send(compiler, serv, q, lmap, env, 0, 0);
 		}
 		else if (lmap.size() > slice ){
 			int size = 0;
 			Mappings res = null;
 			
 			while (size < lmap.size()){
-				Mappings map =  send(serv, q, lmap, env, size, size + slice); //lmap.size());
+				Mappings map =  send(compiler, serv, q, lmap, env, size, size + slice); 
 				size += slice;
 				if (res == null){
 					res = map;
@@ -162,7 +171,7 @@ public class ProviderImpl implements Provider {
 			return res;
 		}
 		else {
-			return send(serv, q, lmap, env, 0, lmap.size());
+			return send(compiler, serv, q, lmap, env, 0, lmap.size());
 		}
 	}
 	
@@ -172,7 +181,7 @@ public class ProviderImpl implements Provider {
 	/**
 	 * Send query to sparql endpoint using a POST HTTP query
 	 */		 	
-	Mappings send(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
+	Mappings send(CompileService compiler, Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
 		Query g = q.getOuterQuery();
 		int timeout = 0;
 		Integer time = (Integer) g.getPragma(Pragma.TIMEOUT);

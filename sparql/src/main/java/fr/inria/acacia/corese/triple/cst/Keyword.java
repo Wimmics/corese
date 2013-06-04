@@ -47,9 +47,10 @@ public interface Keyword {
 	public final static String MAX 	= "max";
 	static final String CONCAT = "group_concat";
 	static final String SAMPLE = "sample";
-	
+	static final String AGGAND = "agg_and";
+
 	public static final String[] aggregate = 
-	{GENURI, SCOUNT, AVG, SUM, COUNTITEM, TIME, GTIME, ARRAY, NBRESULTS, MIN, MAX, CONCAT, SAMPLE};
+	{GENURI, SCOUNT, AVG, SUM, COUNTITEM, TIME, GTIME, ARRAY, NBRESULTS, MIN, MAX, CONCAT, SAMPLE, AGGAND};
 	
 	final static public String SFAIL = "fail";
 

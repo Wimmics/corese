@@ -18,6 +18,8 @@ public interface ValueResolver {
 
      void setValue(String key, IDatatype dt);
 
-     IDatatype getValue(String key);   
+     IDatatype getValue(String key);  
+     
+     int size();
     
 }

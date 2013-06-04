@@ -169,6 +169,7 @@ public interface ExprType {
 	public static int INDENT 	= 229;
 	public static int PPURI 	= 230;
 	public static int VISITED 	= 231;
+	public static int AGGAND 	= 232;
 
 
 

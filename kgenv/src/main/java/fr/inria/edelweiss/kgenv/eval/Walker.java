@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.filter.Proxy;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Interpreter that perfom aggregate over current group list of Mapping
@@ -32,7 +34,7 @@ class Walker extends Interpreter {
 	Node qNode, tNode;
 	IDatatype dtres;
 	int num = 0, count = 0;
-	boolean isError = false, first = true;
+	boolean isError = false, first = true, and = true;
 	StringBuilder sb;
 	String sep = " ";
 	Group group;
@@ -110,8 +112,14 @@ class Walker extends Interpreter {
 		case GROUPCONCAT:
 			//String res = sb.toString();
 			//return proxy.getValue(res);
-			return DatatypeMap.newStringBuilder(sb);
-		}
+			return DatatypeMap.newStringBuilder(sb);		
+                
+                case AGGAND:
+                
+                    if (isError) return DatatypeMap.newInstance(false);
+                    return DatatypeMap.newInstance(and);
+                    
+                }
 		
 		return null;
 	}
@@ -296,6 +304,21 @@ class Walker extends Interpreter {
 					dtres = dt;
 				}
 				break;
+                            
+                        case AGGAND:
+                            
+                            if (dt == null){
+                                isError = true;
+                            }
+                            else try {
+                                boolean b = dt.isTrue();
+                                and &= b;
+
+                            } catch (CoreseDatatypeException ex) {
+                                and = false;
+                            }
+                           
+                            break;
 
 			
 			}

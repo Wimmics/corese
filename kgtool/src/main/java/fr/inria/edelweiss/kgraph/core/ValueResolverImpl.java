@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+//import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 /**
  * Manage Node values in a table: key -> IDatatype key is MD5 hash of IDatatype
@@ -53,6 +54,9 @@ public class ValueResolverImpl implements ValueResolver {
        
     synchronized public String getKey(String str) {
         byte[] hash = hasher.digest(str.getBytes());
+        
+       // String tmp = (new HexBinaryAdapter()).marshal(hash);
+        
         StringBuilder hashString = new StringBuilder();
         for (int i = 0; i < hash.length; i++) {
             String hex = Integer.toHexString(hash[i]);
@@ -66,7 +70,7 @@ public class ValueResolverImpl implements ValueResolver {
 
         String res = hashString.toString();
         count++;  
-        //System.out.println("VR: " + str + " " + res);
+       // System.out.println("VR: " + res.equals(tmp) + " " + res + " " + tmp);
         return res;
     }
     

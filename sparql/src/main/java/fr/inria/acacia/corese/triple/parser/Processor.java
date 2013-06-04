@@ -51,6 +51,7 @@ public class Processor {
 	public static final String COALESCE = "coalesce";
 	public static final String BNODE = "bnode";
 	public static final String GROUPCONCAT = "group_concat";
+	public static final String AGGAND = "agg_and";
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
 
@@ -332,7 +333,8 @@ public class Processor {
 		defoper(PATHNODE, 	ExprType.PATHNODE);
 		defoper(COALESCE, 	ExprType.COALESCE);
 		defoper(IF, 		ExprType.IF);
-		defoper(GROUPCONCAT,ExprType.GROUPCONCAT);
+		defoper(GROUPCONCAT,    ExprType.GROUPCONCAT);
+		defoper(AGGAND,         ExprType.AGGAND);
 		defoper(SAMPLE, 	ExprType.SAMPLE);
 		defoper(LIST, 		ExprType.LIST);
 

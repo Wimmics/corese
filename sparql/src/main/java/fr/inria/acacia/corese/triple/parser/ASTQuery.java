@@ -208,15 +208,17 @@ public class ASTQuery  implements Keyword {
 
 
 
-	public static final String OUT 			= "?out";
-	public static final String IN 			= "?in";
-	public static final String IN2 			= "?in_1";
+	public static final String OUT 		= "?out";
+	public static final String IN 		= "?in";
+	public static final String IN2 		= "?in_1";
 	private static final String GROUPCONCAT = Processor.GROUPCONCAT;
-	private static final String CONCAT 		= Processor.CONCAT;
+        private static String TEMPLATEAGG       = GROUPCONCAT ;
+
+	private static final String CONCAT 	= Processor.CONCAT;
 	private static final String COALESCE 	= Processor.COALESCE;
-	private static final String IF 			= Processor.IF;
+	private static final String IF 		= Processor.IF;
 	private static final String FUNPPRINT 	= Processor.KGPPRINT;
-	private static final String TURTLE 		= Processor.TURTLE;
+	private static final String TURTLE 	= Processor.TURTLE;
 
 	private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, COALESCE, IF};
 
@@ -2802,11 +2804,20 @@ public class ASTQuery  implements Keyword {
 	 */
 	Term createTemplateGroup(){
 		Variable var = Variable.create(OUT);
-		Term t = createFunction(GROUPCONCAT);
+		Term t = createFunction(TEMPLATEAGG);
 		t.add(var);
 		t.setModality(getSeparator());
 		return t;
 	}
+        
+        /**
+         * Aggregate that build the result of a template when there are several results
+         * default is group_concat
+         * draft: agg_and
+         */
+        public static void setTemplateAggregate(String s){
+            TEMPLATEAGG = s;
+        }
 	
 	Constant getEmpty(){
 		if (empty == null){

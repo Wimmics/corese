@@ -50,31 +50,31 @@ public class DBPediaPersonsRestTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        ClientConfig config = new DefaultClientConfig();
-        Client client = Client.create(config);
-        final WebResource kg1 = client.resource(new URI("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice"));
-        final WebResource kg2 = client.resource(new URI("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice"));
-
-        final String rep1 = "http://nyx.unice.fr/~gaignard/data/persondata.1.rdf";
-        final String rep2 = "http://nyx.unice.fr/~gaignard/data/persondata.2.rdf";
-
-        ExecutorService executor = Executors.newCachedThreadPool();
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-               System.out.println(kg1.path("sparql").path("load").queryParam("remote_path", rep1).post(String.class));
-            }
-        });
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println(kg2.path("sparql").path("load").queryParam("remote_path", rep2).post(String.class));
-
-            }
-        });
-        executor.shutdown();
-        while (!executor.isTerminated()) {
-        }
+//        ClientConfig config = new DefaultClientConfig();
+//        Client client = Client.create(config);
+//        final WebResource kg1 = client.resource(new URI("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice"));
+//        final WebResource kg2 = client.resource(new URI("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice"));
+//
+//        final String rep1 = "http://nyx.unice.fr/~gaignard/data/persondata.1.rdf";
+//        final String rep2 = "http://nyx.unice.fr/~gaignard/data/persondata.2.rdf";
+//
+//        ExecutorService executor = Executors.newCachedThreadPool();
+//        executor.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//               System.out.println(kg1.path("sparql").path("load").queryParam("remote_path", rep1).post(String.class));
+//            }
+//        });
+//        executor.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                System.out.println(kg2.path("sparql").path("load").queryParam("remote_path", rep2).post(String.class));
+//
+//            }
+//        });
+//        executor.shutdown();
+//        while (!executor.isTerminated()) {
+//        }
     }
 
     @AfterClass

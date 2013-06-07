@@ -9,13 +9,11 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import test.distribution.*;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -30,8 +28,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import wsimport.KgramWS.RemoteProducer;
-import wsimport.KgramWS.RemoteProducerServiceClient;
+import org.junit.Ignore;
 
 /**
  *
@@ -95,6 +92,7 @@ public class DBPediaPersonsRestTest {
     // The methods must be annotated with annotation @Test. For example:
 
     @Test
+    @Ignore
     public void remoteDBPediaQueryRes() throws EngineException, MalformedURLException, IOException {
 
         Graph graph = Graph.create();
@@ -118,6 +116,7 @@ public class DBPediaPersonsRestTest {
     }
     
     @Test
+    @Ignore
     public void remoteDBPediaQueryPerf() throws EngineException, MalformedURLException, IOException {
 
         Graph graph = Graph.create();

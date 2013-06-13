@@ -4,7 +4,6 @@ import com.sun.xml.ws.developer.StreamingDataHandler;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
@@ -29,13 +28,10 @@ import org.apache.log4j.Logger;
  */
 @WebService
 @MTOM(threshold = 1024)
-public class RemoteProducer extends ProducerImpl {
+public class RemoteProducer {
 
     private String endpoint;
-//    private IEngine engine;
-//    private EngineFactory ef = new EngineFactory();
     private Graph graph = Graph.create(false);        
-//    private Graph graph = Graph.create(true);        
     private QueryProcess exec = QueryProcess.create(graph);
     private Logger logger = Logger.getLogger(RemoteProducer.class);
     private HashMap<String, String> rdfSqlMappings = new HashMap<String, String>();
@@ -69,7 +65,6 @@ public class RemoteProducer extends ProducerImpl {
             + "}";
 
     public RemoteProducer(Graph g) {
-        super(g);
         initMappings();
         initEngine();
     }
@@ -236,7 +231,7 @@ public class RemoteProducer extends ProducerImpl {
      * Initializes the KGRAM engine with a new instance.
      */
     @WebMethod
-    public void initEngine() {
+    private void initEngine() {
 //        try {
             //need to use the EngineFactory ?
 //            engine = GraphEngine.create(this.getGraph());

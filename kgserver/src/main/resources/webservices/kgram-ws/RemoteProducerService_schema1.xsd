@@ -9,13 +9,9 @@
 
   <xs:element name="getEndpointResponse" type="tns:getEndpointResponse"/>
 
-  <xs:element name="initEngine" type="tns:initEngine"/>
-
   <xs:element name="initEngineFromSQL" type="tns:initEngineFromSQL"/>
 
   <xs:element name="initEngineFromSQLResponse" type="tns:initEngineFromSQLResponse"/>
-
-  <xs:element name="initEngineResponse" type="tns:initEngineResponse"/>
 
   <xs:element name="load" type="tns:load"/>
 
@@ -45,6 +41,10 @@
 
   <xs:element name="uploadRDFResponse" type="tns:uploadRDFResponse"/>
 
+  <xs:element name="uploadRDFS" type="tns:uploadRDFS"/>
+
+  <xs:element name="uploadRDFSResponse" type="tns:uploadRDFSResponse"/>
+
   <xs:complexType name="setEndpoint">
     <xs:sequence>
       <xs:element name="arg0" type="xs:string" minOccurs="0"/>
@@ -52,14 +52,6 @@
   </xs:complexType>
 
   <xs:complexType name="setEndpointResponse">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="initEngine">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="initEngineResponse">
     <xs:sequence/>
   </xs:complexType>
 
@@ -75,6 +67,14 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="runRule">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="runRuleResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="loadRDF">
     <xs:sequence>
       <xs:element name="arg0" type="xs:string" minOccurs="0"/>
@@ -82,14 +82,6 @@
   </xs:complexType>
 
   <xs:complexType name="loadRDFResponse">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="runRule">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="runRuleResponse">
     <xs:sequence/>
   </xs:complexType>
 
@@ -103,22 +95,22 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="uploadRDFS">
+    <xs:sequence>
+      <xs:element name="arg0" ns2:expectedContentTypes="application/octet-stream" type="xs:base64Binary" minOccurs="0" xmlns:ns2="http://www.w3.org/2005/05/xmlmime"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="uploadRDFSResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="reset">
     <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="resetResponse">
     <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="getEndpoint">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="getEndpointResponse">
-    <xs:sequence>
-      <xs:element name="return" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="initEngineFromSQL">
@@ -132,6 +124,16 @@
 
   <xs:complexType name="initEngineFromSQLResponse">
     <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getEndpoint">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getEndpointResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="getEdges">

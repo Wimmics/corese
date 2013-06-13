@@ -36,9 +36,10 @@ import org.apache.log4j.Logger;
  * initialized, populated with an RDF file, and queried through SPARQL requests.
  *
  * @author Eric TOGUEM, eric.toguem@uy1.uninet.cm
+ * @author Alban Gaignard, alban.gaignard@cnrs.fr
  */
 @Path("sparql")
-public class SPARQLRestEndPoint {
+public class SPARQLRestAPI {
 
     private Logger logger = Logger.getLogger(RemoteProducer.class);
     private static Graph graph = Graph.create(true);
@@ -101,7 +102,7 @@ public class SPARQLRestEndPoint {
         String output = "File Uploaded";
         
         if (remotePath.startsWith("http")) {
-             if (remotePath.endsWith(".rdf") || remotePath.endsWith(".owl")) {
+             if (remotePath.endsWith(".rdf") || remotePath.endsWith(".ttl") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".owl")) {
                 Load ld = Load.create(g);
                 ld.load(remotePath);
             } else {
@@ -117,7 +118,7 @@ public class SPARQLRestEndPoint {
                 logger.error(output = "File " + remotePath + " not found on the server!");
                 return Response.status(404).entity(output).build();
             }
-            if (remotePath.endsWith(".rdf") || remotePath.endsWith(".owl")) {
+            if (remotePath.endsWith(".rdf") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".ttl") || remotePath.endsWith(".owl")) {
                 Load ld = Load.create(g);
                 ld.load(remotePath);
             } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {

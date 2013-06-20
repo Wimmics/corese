@@ -1,3 +1,9 @@
+/** 
+* Controler code for the Corese/KGRAM web application
+*
+* author : alban.gaignard@cnrs.fr
+*/
+
 // The root URL for the RESTful services
 var rootURL = "http://localhost:8080/kgram";
 
@@ -61,10 +67,12 @@ function reset() {
 	$.ajax({
 		type: 'POST',
 		url: rootURL + '/sparql/reset',
+		data: {'entailments': $('#checkEntailments').prop('checked')},
 		dataType: "text",
 		success: function(data, textStatus, jqXHR){
-			infoSuccess('Corese/KGRAM graph reset done.');
+			infoSuccess('Corese/KGRAM graph reset done (entailments: '+$('#checkEntailments').prop('checked')+').');
 			console.log(data);
+			$('#checkEntailments').prop('checked', false);
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			infoError('Corese/KGRAM error: ' + textStatus);
@@ -121,7 +129,7 @@ function addDataSource(endpointURL) {
 	console.log(endpointURL);
 	console.log();
 	$('#tbDataSources tbody').append("<tr> <td>"+endpointURL+"</td><td><button id=\"testBtn\" class=\"btn btn-mini btn-success\" type=button>Test</button></td> <td><button id=\"delBtn\" class=\"btn btn-mini btn-danger\" type=button>Delete</button></td> </tr>");
-	
+	testEndpoint(endpointURL,$('#tbDataSources tbody tr:last').index());
 }
 
 function testEndpoint(endpointURL, rowIndex){
@@ -138,12 +146,12 @@ function testEndpoint(endpointURL, rowIndex){
 		success: function(data, textStatus, jqXHR){
 			infoSuccess(endpointURL+" responds to SPARQL queries");
 			//update the icon of the data source
-			console.log("ok for row "+rowIndex);
-			//$('#tbDataSources tbody tr:eq('+rowIndex+') td:first').
+			$('#tbDataSources tbody tr:eq('+rowIndex+')').append('<td><i class=\"icon-ok\"></i></td>');
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			infoError(endpointURL+" does not responds to SPARQL queries");
 			//update the icon of the data source
+			$('#tbDataSources tbody tr:eq('+rowIndex+')').append('<td><i class=\"icon-warning-sign\"></i></td>');
 		}
 	});
 }
@@ -157,10 +165,6 @@ function renderList(data) {
 	var listVal = data.results.bindings == null ? [] : (data.results.bindings instanceof Array ? data.results.bindings : [data.results.bindings]);
 	var listVar = data.head.vars == null ? [] : (data.head.vars instanceof Array ? data.head.vars : [data.head.vars]);
 
-	//$('#tbRes tbody:first').siblings().remove(); 
-	//$('#tbRes tbody:first').remove(); 
-	//console.log(data);
-	//console.log(list);
 
 	$('#tbRes thead tr').remove();
 	$('#tbRes tbody tr').remove();

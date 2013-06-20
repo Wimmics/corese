@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+	<title>Corese/KGRAM webapp</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap -->
+	<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="navbar">
+		<div class="navbar-inner">
+			<a class="brand" href="#">Corese/KGRAM</a>
+			<ul id="tab" class="nav">
+				<li class="active"><a href="#Tab1" data-toggle="tab">Data querying</a></li>
+				<li><a href="#Tab2" data-toggle="tab">Data loading</a></li>
+				<li><a href="#Tab3" data-toggle="tab">Distributed query processing</a></li>
+			</ul>
+		</div>
+	</div>
+	<!--<h1>Hello, world!</h1>-->
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2">
+				<!--My column-->
+
+			</div>
+			<div class="span10">
+				<div class="tab-content">
+					<div class="tab-pane active" id="Tab1">
+						
+						<form>
+							<fieldset>
+								<p class="span8">Predefined SPARQL queries for basic RDF statistics. More informations are available at <a href="http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics">http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics</a>.</p>
+								<select class="span8" id = "VOIDSparql_Select">
+									<option value ="0" selected="selected">Total number of triples</option>
+									<option value ="1">Total number of entities</option>
+									<option value ="2">Total number of distinct resource URIs</option>
+									<option value ="3">Total number of distinct classes</option>
+									<option value ="4">Total number of distinct predicates</option>
+									<option value ="5">Total number of distinct subject nodes</option>
+									<option value ="6">Total number of distinct object nodes</option>
+									<option value ="7">Exhaustive list of classes used in the dataset</option>
+									<option value ="8">Exhaustive list of properties used in the dataset</option>
+									<option value ="9">Class vs. total number of instances of the class</option>
+									<option value ="10">Property vs. total number of triples using the property</option>
+									<option value ="11">Property vs. total number of distinct subjects in triples using the property</option>
+									<option value ="12">Property vs. total number of distinct objects in triples using the property</option>
+								</select>
+								<legend>SPARQL 1.1 querying interface</legend>
+								<p><textarea id="sparqlTextArea" class="span8" rows="3">
+
+							</textarea></p>
+							<button id="btnQuery" type="button" class="btn">Query</button>
+							<!--<button id="btnQuery" class="btn">Query</button>-->
+						</fieldset>
+
+						<p>
+							<table id="tbRes" class="table table-striped span10">  
+								<thead>  
+								</thead>  
+								<tbody>  
+								</tbody>  
+							</table>  
+						</p>
+						</form>
+					</div>
+
+					<div class="tab-pane" id="Tab2">
+						<!--<p>My Tab 2</p>-->
+						
+						<p>Remote file path: 
+							<div class="input-append">
+							<!--<input class="span8" id="txtLoad" size="80" type="text" placeholder="http://nyx.unice.fr/~gaignard/data/neurolog.rdf" value="http://nyx.unice.fr/~gaignard/data/neurolog.rdf">-->
+							<input class="span8" id="txtLoad" size="80" type="text" value="/Users/gaignard/Desktop/bsbmtools-0.2/dataset.ttl">
+							<button id="btnLoad" class="btn" type="button">Load</button>
+							</div>
+						</p>
+						<!-- /Users/gaignard/Desktop/bsbmtools-0.2/dataset/ttl>
+
+						<!--<button id="myButton" class="btn btn-large" type="button">Reset Corese/KGRAM graph</button>-->
+						<p><button id="btnReset" class="btn" type="button">Reset Corese/KGRAM graph</button></p>
+					</div>
+
+					<div class="tab-pane" id="Tab3">
+						<!--<p>My Tab 3</p>-->
+						<!--<p class="text-right">
+							<small>This line of text is meant to be treated as fine print.</small>
+						</p>-->
+
+						<h3>Data source federation</h3>
+						<!--<blockquote>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+							<small>Someone famous <cite title="Source Title">Source Title</cite></small>
+						</blockquote>-->
+
+						<table id="tbDataSources" class="table table-striped span10">  
+								<!--<thead>  <tr> <th>Endpoint URL</th> <th>Endpoint status</th> </tr>
+								</thead>  -->
+								<tbody>  
+								</tbody>  
+							</table>  
+
+							<div class="input-prepend">
+								<button class="btn" id="btnDataSource" type="button">Add data source</button>
+  							<input class="span10" id="txtDataSource" type="text" placeholder="http://some.sparql.endpoint" value="http://localhost:8080/kgram/sparql" >
+						</div>
+
+						<h3>Federated SPARQL querying</h3>
+
+					</div>
+				</div>	
+			<div id="footer" class="text-center">
+    			<!--<p>Copyright stuff</p>
+    			<ul class="nav nav-pills center-pills">
+        		<li><a href="#">Footer nav link</a></li>
+        		<li><a href="#">Footer nav link</a></li>
+    			</ul>-->
+			</div>		
+			</div>
+		</div>
+			
+	</div>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/bootstrap-dropdown.js"></script>
+</body>
+</html>

@@ -22,6 +22,11 @@
             <artifactId>kgengine</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>kg-dqp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgimport</artifactId>
@@ -99,7 +104,12 @@
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>commons-vfs</groupId>
+            <artifactId>commons-vfs</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -136,9 +146,8 @@
                 <version>1.12</version>
                 <executions>
                     <!-- ==================== -->
-                    <!-- Generation of WSDLs -->
+                    <!-- Generation of WSDLs  -->
                     <!-- ==================== -->
-
                     <execution>
                         <id>KgramWS</id>
                         <phase>process-classes</phase>

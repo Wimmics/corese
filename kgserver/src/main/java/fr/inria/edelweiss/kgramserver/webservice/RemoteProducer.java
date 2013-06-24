@@ -231,7 +231,7 @@ public class RemoteProducer {
      * Initializes the KGRAM engine with a new instance.
      */
     @WebMethod
-    private void initEngine() {
+    public void initEngine() {
 //        try {
             //need to use the EngineFactory ?
 //            engine = GraphEngine.create(this.getGraph());

@@ -59,15 +59,11 @@ public class DqpRestAPI {
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("Empty list of data sources !").build();
         }
 
-        System.out.println(endpointURLs);
-//        endpointURLs = endpointURLs.replace("/sparql","");
-//        System.out.println(endpointURLs);
-
         String output = "";
         try {
             execDQP.addRemote(new URL(endpointURLs), WSImplem.REST);
             output += endpointURLs;
-            output += " added to the federation engine";
+            output += " added to the federation engine";    
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(output).build();
         } catch (MalformedURLException ex) {
             ex.printStackTrace();

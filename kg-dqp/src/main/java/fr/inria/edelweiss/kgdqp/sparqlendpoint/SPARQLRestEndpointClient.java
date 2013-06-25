@@ -41,7 +41,8 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
     public String doPost(String query) throws IOException {
 	WebResource service;
 	service = client.resource(UriBuilder.fromUri(url).build());
-	ClientResponse clientResponse = service.path("sparql").accept("application/sparql-results+xml").post(ClientResponse.class, query);
+//	ClientResponse clientResponse = service.path("sparql").accept("application/sparql-results+xml").post(ClientResponse.class, query);
+        ClientResponse clientResponse = service.path("/").accept("application/sparql-results+xml").post(ClientResponse.class, query);
 	return clientResponse.getEntity(String.class);
     }
 
@@ -52,7 +53,8 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
     public String doGet(String query) throws IOException {
 	WebResource service;
 	service = client.resource(UriBuilder.fromUri(url).build());
-	ClientResponse clientResponse = service.path("sparql").queryParam("query", query).accept("application/sparql-results+xml").get(ClientResponse.class);
+//	ClientResponse clientResponse = service.path("sparql").queryParam("query", query).accept("application/sparql-results+xml").get(ClientResponse.class);
+        ClientResponse clientResponse = service.path("/").queryParam("query", query).accept("application/sparql-results+xml").get(ClientResponse.class);
 	return clientResponse.getEntity(String.class);
     }
     

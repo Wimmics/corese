@@ -46,11 +46,9 @@ public class RestEndpointTest {
     @After
     public void tearDown() {
     }
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
 
     @Test
+    @Ignore
     public void hello() throws URISyntaxException, MalformedURLException, IOException {
 
         String query = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
@@ -86,7 +84,8 @@ public class RestEndpointTest {
         StopWatch sw = new StopWatch();
         sw.start();
 //        WebResource service = client.resource(new URI("http://dbpedia-test.inria.fr"));
-        WebResource service = client.resource(new URI("http://fr.dbpedia.org"));
+//        WebResource service = client.resource(new URI("http://fr.dbpedia.org"));
+        WebResource service = client.resource(new URI("http://localhost:3030/KEGG/"));
 //        // Fluent interfaces
 //        System.out.println(service.path("sparql").path("reset").post(String.class).toString());
 //        System.out.println(service.path("sparql").path("load").queryParam("remote_path", "/Users/gaignard/Desktop/VIP-simubloch-se.rdf").post(String.class));

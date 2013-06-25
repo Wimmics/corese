@@ -35,15 +35,15 @@ import wsimport.KgramWS.RemoteProducerServiceClient;
 public class ServiceGroupingTest {
 
     final int nloop = 5;
-    final int expectedResults = 74;
-//    static final String host = "localhost";
-    static final String host = "nyx.unice.fr";
-//    static String path1 = "/Users/gaignard/Documents/These/ExperimentsG5K/large-scale-dbpedia-frag/1.7M/16-stores/persondata.1.rdf";
-//    static String path2 = "/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-single-source.rdf";
+    final int expectedResults = 53;
+    static final String host = "localhost";
+//    static final String host = "nyx.unice.fr";
+    static String path1 = "/Users/gaignard/Documents/These/ExperimentsG5K/large-scale-dbpedia-frag/1.7M/16-stores/persondata.1.rdf";
+    static String path2 = "/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-single-source.rdf";
 //    static String init1 = "load <file:" + path1 + ">";
 //    static String init2 = "load <file:" + path2 + ">";
-    static String path1 = "http://nyx.unice.fr/~gaignard/data/persondata.1.rdf";
-    static String path2 = "http://nyx.unice.fr/~gaignard/data/neurolog.rdf";
+//    static String path1 = "http://nyx.unice.fr/~gaignard/data/persondata.1.rdf";
+//    static String path2 = "http://nyx.unice.fr/~gaignard/data/neurolog.rdf";
     static String init1 = "load <" + path1 + ">";
     static String init2 = "load <" + path2 + ">";
     static String sparqlHeterogeneousQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
@@ -58,23 +58,23 @@ public class ServiceGroupingTest {
             + "}"
             + " ORDER BY ?x" ;
             //            + " FILTER ((?z ~ 'T2'))"
-    static String sparqlUnionQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
-            + "PREFIX dbpedia: <http://dbpedia.org/ontology/> \n"
-            + "PREFIX linguistic-expression: <http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#>\n"
-            //            + "SELECT debug distinct ?x ?name ?date ?place WHERE \n"
-            + "SELECT distinct ?x ?name ?date ?place WHERE \n"
-            + "{"
-            + "     {"
-            + "         ?x rdf:type ?t"
-            + "         ?x foaf:name ?name ."
-            + "         ?x dbpedia:birthDate ?date ."
-            + "     } UNION {"
-            + "         ?y linguistic-expression:has-for-name ?z"
-            + "     }"
-            //            + " OPTIONAL {?x dbpedia:birthPlace ?place}"
-            + " FILTER ((?name ~ 'Bob'))"
-            //            + " FILTER ((?z ~ 'T2'))"
-            + "}";
+//    static String sparqlUnionQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
+//            + "PREFIX dbpedia: <http://dbpedia.org/ontology/> \n"
+//            + "PREFIX linguistic-expression: <http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#>\n"
+//            //            + "SELECT debug distinct ?x ?name ?date ?place WHERE \n"
+//            + "SELECT distinct ?x ?name ?date ?place WHERE \n"
+//            + "{"
+//            + "     {"
+//            + "         ?x rdf:type ?t"
+//            + "         ?x foaf:name ?name ."
+//            + "         ?x dbpedia:birthDate ?date ."
+//            + "     } UNION {"
+//            + "         ?y linguistic-expression:has-for-name ?z"
+//            + "     }"
+//            //            + " OPTIONAL {?x dbpedia:birthPlace ?place}"
+//            + " FILTER ((?name ~ 'Bob'))"
+//            //            + " FILTER ((?z ~ 'T2'))"
+//            + "}";
     static String sparqlHeterogeneousFedQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
             + "PREFIX dbpedia: <http://dbpedia.org/ontology/> \n"
             + "PREFIX linguistic-expression: <http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#>\n"
@@ -133,9 +133,11 @@ public class ServiceGroupingTest {
         sparqlEndpoint1 = new SPARQLEndpointClient("http://" + host + ":8091/kgendpoint-1.0.7/KGSparqlEndpoint");
         sparqlEndpoint2 = new SPARQLEndpointClient("http://" + host + ":8092/kgendpoint-1.0.7/KGSparqlEndpoint");
 
+        // SOAP Sparql endpoint
         endpoint1 = RemoteProducerServiceClient.getPort("http://" + host + ":8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
         endpoint2 = RemoteProducerServiceClient.getPort("http://" + host + ":8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
+        // REST Sparql endpoint
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
         WebResource restEndpoint1 = client.resource(new URI("http://" + host + ":8091/kgserver-1.0.7-kgram-webservice"));
@@ -308,8 +310,8 @@ public class ServiceGroupingTest {
         ProviderWSImpl p = ProviderWSImpl.create(WSImplem.REST);
         execDQP1.set(p);
 //        execDQP.setOptimize(false);
-        execDQP1.addRemote(new URL("http://" + host + ":8091/kgserver-1.0.7-kgram-webservice"), WSImplem.REST);
-        execDQP1.addRemote(new URL("http://" + host + ":8092/kgserver-1.0.7-kgram-webservice"), WSImplem.REST);
+        execDQP1.addRemote(new URL("http://" + host + ":8091/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);
+        execDQP1.addRemote(new URL("http://" + host + ":8092/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);
 
         StopWatch sw = new StopWatch();
         sw.start();
@@ -323,8 +325,8 @@ public class ServiceGroupingTest {
         //---------------No service grouping-----------------------
         Graph g2 = Graph.create();
         QueryProcessDQP execDQP2 = QueryProcessDQP.create(g2);
-        execDQP2.addRemote(new URL("http://" + host + ":8091/kgserver-1.0.7-kgram-webservice"), WSImplem.REST);
-        execDQP2.addRemote(new URL("http://" + host + ":8092/kgserver-1.0.7-kgram-webservice"), WSImplem.REST);
+        execDQP2.addRemote(new URL("http://" + host + ":8091/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);
+        execDQP2.addRemote(new URL("http://" + host + ":8092/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);
 
         sw = new StopWatch();
         sw.start();

@@ -73,14 +73,19 @@
 									</table>  
 								</p>
 							</form>
-						<section>
+						</section>
 					</div>
 
 					<div class="tab-pane" id="Tab2">
+						<section>
+							<div class="page-header">
+								<h2>Semantic web data loading</h2>
+								<p class="lead">supporting RDF, RDFS, OWL, TTL formats.</p>
+							</div>
 
-						<p class="span12">
-							Predefined file path: 
-						<select id = "Data_Select" class="span10">
+							<div class="container-fluid">
+								<div class="row-fluid">
+									<select id = "Data_Select" class="span8">
 										<option value ="0" selected="selected">http://nyx.unice.fr/~gaignard/data/cog-2012.ttl</option>
 										<option value ="1">http://nyx.unice.fr/~gaignard/data/popleg-2010.ttl</option>
 										<!--<option value ="0" selected="selected">/Users/gaignard/Documents/Experiences/jows-2013/drugbank_dump.rdf</option>
@@ -89,47 +94,31 @@
 										<option value ="3">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.dr.rdf</option>
 										<option value ="4">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.ec.rdf</option>
 										<option value ="5">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.rn.rdf</option>-->
-						</select>
-						</p>
-
-						<p class="span12">
-						Remote file path: 
-							
-							<div class="input-append">
-
-							<!--<input class="span8" id="txtLoad" size="80" type="text" placeholder="http://nyx.unice.fr/~gaignard/data/neurolog.rdf" value="http://nyx.unice.fr/~gaignard/data/neurolog.rdf">-->
-							<input id="txtLoad" type="text" value="http://nyx.unice.fr/~gaignard/data/cog-2012.ttl">
-							<button id="btnLoad" class="btn btn-primary" type="button">Load</button>
+									</select>
+								</div>
+								<div class="row-fluid">
+									<div class="input-append span8">
+										<!--<input class="span8" id="txtLoad" size="80" type="text" placeholder="http://nyx.unice.fr/~gaignard/data/neurolog.rdf" value="http://nyx.unice.fr/~gaignard/data/neurolog.rdf">-->
+										<input  class="span12" id="txtLoad" type="text" value="http://nyx.unice.fr/~gaignard/data/cog-2012.ttl">
+										<button id="btnLoad" class="btn btn-primary" type="button">Load</button>
+									</div>
+								</div>
+								<div class="row-fluid">
+									<button id="btnReset" class="btn btn-warning span4" type="button">Reset Corese/KGRAM graph</button>
+										<label  class="checkbox span8"><input id="checkEntailments" type="checkbox">Enable RDFS entailments</label>
+								</div>
 							</div>
-						</p>
-						<!-- /Users/gaignard/Desktop/bsbmtools-0.2/dataset/ttl>-->
-
-						
-						
-							<button id="btnReset" class="btn btn-inverse span4" type="button">Reset Corese/KGRAM graph</button>
-							<label  class="checkbox span6">
-      							<input id="checkEntailments" type="checkbox">Enable RDFS entailments
-    						</label>
-								
+						</section>
 					</div>
 
 					<div class="tab-pane" id="Tab3">
-						<!--<p>My Tab 3</p>-->
-						<!--<p class="text-right">
-							<small>This line of text is meant to be treated as fine print.</small>
-						</p>-->
+						
 						<section>
 							<div class="page-header">
 								<h2>Data sources configuration</h2>
 							</div>
-						<!--<blockquote>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone famous <cite title="Source Title">Source Title</cite></small>
-						</blockquote>-->
 
 						<table id="tbDataSources" class="table table-striped span10">  
-								<!--<thead>  <tr> <th>Endpoint URL</th> <th>Endpoint status</th> </tr>
-							</thead>  -->
 							<tbody>  
 							</tbody>  
 						</table>  
@@ -148,10 +137,10 @@
 						</div>
 						
 						
-						<p>
+						<!--<p>
 							<button id="btnConfigure" class="btn btn-warning" type="button">Configure KGRAM-DQP</button>
 							<button id="btnResetDQP" class="btn btn-inverse" type="button">Reset KGRAM-DQP</button>
-						</p>
+						</p>-->
 					</section>
 
 					<section>
@@ -174,7 +163,7 @@ SELECT ?departement ?nom ?popTotale WHERE {
 	?departement igeo:nom ?nom .
 	?departement idemo:population ?popLeg .
 	?popLeg idemo:populationTotale ?popTotale .
-}
+} ORDER BY ?popTotale
 </textarea></p>
 									<button id="btnQueryFed" type="button" class="btn btn-success">Query</button>
 								</fieldset>

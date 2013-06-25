@@ -13,10 +13,12 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 
+ *
  * TODO To be cleaned / tested exist or !exist
+ *
  * @author gaignard
  */
 public class Util {
@@ -53,11 +55,11 @@ public class Util {
 
         return matchingFilters;
     }
-    
+
     public static List<fr.inria.acacia.corese.triple.parser.Exp> getApplicableFilter(List<fr.inria.acacia.corese.triple.parser.Exp> filters, BasicGraphPattern bgp) {
         //TODO handle conjunctive/disjunctive filters
         List<fr.inria.acacia.corese.triple.parser.Exp> matchingFilters = new ArrayList<fr.inria.acacia.corese.triple.parser.Exp>();
-        
+
         for (fr.inria.acacia.corese.triple.parser.Exp filter : filters) {
             for (fr.inria.acacia.corese.triple.parser.Exp exp : bgp.getBody()) {
                 if (bound(exp, filter)) {
@@ -65,7 +67,7 @@ public class Util {
                 }
             }
         }
-        
+
         return matchingFilters;
     }
 
@@ -85,7 +87,7 @@ public class Util {
         if (edge.getNode(1).isVariable()) {
             varsEdge.add(edge.getNode(1).toString());
         }
-        
+
         List<String> varsFilter = filter.getVariables();
         for (String var : varsFilter) {
             if (!varsEdge.contains(var)) {
@@ -94,8 +96,8 @@ public class Util {
         }
         return true;
     }
-    
-     public static boolean bound(fr.inria.acacia.corese.triple.parser.Exp triple, fr.inria.acacia.corese.triple.parser.Exp filter) {
+
+    public static boolean bound(fr.inria.acacia.corese.triple.parser.Exp triple, fr.inria.acacia.corese.triple.parser.Exp filter) {
         List<String> varsTriple = new ArrayList<String>();
         Triple t = triple.getTriple();
         if (t.getSubject().isVariable()) {
@@ -107,23 +109,37 @@ public class Util {
         if (t.getObject().isVariable()) {
             varsTriple.add(t.getObject().toSparql());
         }
-        
+
         //TODO not working
 //        List<String> varsFilter = filter.getVariables();
         List<String> varsFilter = new ArrayList<String>();
-        
+
         for (Expression arg : filter.getTriple().getFilter().getArgs()) {
             if (arg.isVariable()) {
                 varsFilter.add(arg.toSparql());
             }
         }
-        
-        
+
+
         for (String var : varsFilter) {
             if (!varsTriple.contains(var)) {
                 return false;
             }
         }
         return true;
+    }
+
+    public static String prettyPrintCounter(ConcurrentHashMap<String, Long> map) {
+        String res = "";
+        Long sum = 0L;
+        res+=("=========\n\t");
+        for (String key : map.keySet()) {
+            sum+=map.get(key);
+            res+=(key)+"\n\t";
+            res+=(map.get(key))+"\n";
+            res+=("--\n\t");
+        }
+        res+=(">====  Sum = "+sum+"  =====\n");
+        return res;
     }
 }

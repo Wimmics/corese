@@ -41,9 +41,10 @@ import org.mortbay.jetty.servlet.ServletHolder;
 public class EmbeddedJettyServer {
 
     private static Logger logger = Logger.getLogger(EmbeddedJettyServer.class);
+    private static int port = 8080;
 
     public static void main(String args[]) throws Exception {
-        int port = 8080;
+
 //        PropertyConfigurator.configure(EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties"));
 //        logger.debug("Started.");
 
@@ -55,50 +56,58 @@ public class EmbeddedJettyServer {
         options.addOption(helpOpt);
         options.addOption(versionOpt);
 
+        String header = "Once launched, the server can be managed through a web user interface, available at http://localhost:<PortNumber>\n\n";
+        String footer = "\nPlease report any issue to alban.gaignard@cnrs.fr";
+
         try {
             CommandLineParser parser = new BasicParser();
             CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("h")) {
                 HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("java -jar kgserver-1.0.7-jar-with-dependencies.jar", options);
+                formatter.printHelp("kgserver", header, options, footer, true);
                 System.exit(0);
             } else if (cmd.hasOption("p")) {
                 port = Integer.parseInt(cmd.getOptionValue("p"));
             } else if (cmd.hasOption("v")) {
                 logger.info("version 1.0.7");
                 System.exit(0);
+            } else {
+                //extract HTML source for the web UI
             }
+            
+            URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
+            Server server = new Server(port);
+
+            ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
+            jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
+            jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.edelweiss.kgramserver.webservice");
+            Context servletCtx = new Context(server, "/kgram", Context.SESSIONS);
+            servletCtx.addServlet(jerseyServletHolder, "/*");
+            logger.info("----------------------------------------------");
+            logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/kgram");
+            logger.info("----------------------------------------------");
+
+            ResourceHandler resource_handler = new ResourceHandler();
+            resource_handler.setWelcomeFiles(new String[]{"index.html"});
+//                resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
+            resource_handler.setResourceBase(webappUri.getRawPath());
+            ContextHandler staticContextHandler = new ContextHandler();
+            staticContextHandler.setContextPath("/");
+            staticContextHandler.setHandler(resource_handler);
+            logger.info("----------------------------------------------");
+            logger.info("Corese/KGRAM webapp UI started on http://localhost:" + port);
+            logger.info("----------------------------------------------");
+
+            HandlerList handlers = new HandlerList();
+            handlers.setHandlers(new Handler[]{staticContextHandler, servletCtx});
+            server.setHandler(handlers);
+
+            server.start();
+            server.join();
         } catch (ParseException exp) {
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         }
 
-        //extract HTML source for the web UI
-        URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
-
-        Server server = new Server(port);
-
-        ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
-        jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-        jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.edelweiss.kgramserver.webservice");
-        Context servletCtx = new Context(server, "/kgram", Context.SESSIONS);
-        servletCtx.addServlet(jerseyServletHolder, "/*");
-        logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/kgram");
-
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setWelcomeFiles(new String[]{"index.html"});
-//        resource_handler.setResourceBase("/Users/gaignard/devKgram/kgserver/src/main/resources/webapp");
-        resource_handler.setResourceBase(webappUri.getRawPath());
-        ContextHandler staticContextHandler = new ContextHandler();
-        staticContextHandler.setContextPath("/");
-        staticContextHandler.setHandler(resource_handler);
-        logger.info("Corese/KGRAM webapp UI started on http://localhost:" + port);
-
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{staticContextHandler, servletCtx});
-        server.setHandler(handlers);
-
-        server.start();
-        server.join();
     }
 
     private static URI extractResourceDir(String dirname, boolean overwrite) throws FileSystemException, URISyntaxException {
@@ -113,7 +122,7 @@ public class EmbeddedJettyServer {
             localDir.copyFrom(dir_jar, new AllFileSelector());
         } else {
             if (overwrite) {
-                logger.info("Overwritting directory " + dirname + " with " + dirname);
+                logger.info("Overwritting directory " + dirname + " in " + tmpF.getName());
                 localDir.delete(new FileDepthSelector(0, 5));
                 localDir.createFolder();
                 localDir.copyFrom(dir_jar, new AllFileSelector());

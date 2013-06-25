@@ -9,6 +9,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Properties;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
@@ -23,6 +24,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandler;
@@ -42,6 +44,8 @@ public class EmbeddedJettyServer {
 
     public static void main(String args[]) throws Exception {
         int port = 8080;
+//        PropertyConfigurator.configure(EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties"));
+//        logger.debug("Started.");
 
         Options options = new Options();
         Option portOpt = new Option("p", "port", true, "specify the server port");
@@ -70,9 +74,6 @@ public class EmbeddedJettyServer {
 
         //extract HTML source for the web UI
         URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
-        System.out.println("");
-        System.out.println(webappUri.getRawPath());
-        System.out.println("");
 
         Server server = new Server(port);
 
@@ -85,8 +86,8 @@ public class EmbeddedJettyServer {
 
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setWelcomeFiles(new String[]{"index.html"});
-        resource_handler.setResourceBase("/Users/gaignard/devKgram/kgserver/src/main/resources/webapp");
-//        resource_handler.setResourceBase(webappUri.getRawPath());
+//        resource_handler.setResourceBase("/Users/gaignard/devKgram/kgserver/src/main/resources/webapp");
+        resource_handler.setResourceBase(webappUri.getRawPath());
         ContextHandler staticContextHandler = new ContextHandler();
         staticContextHandler.setContextPath("/");
         staticContextHandler.setHandler(resource_handler);

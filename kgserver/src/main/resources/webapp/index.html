@@ -33,62 +33,84 @@
 				<div class="tab-content">
 					<div class="tab-pane active" id="Tab1">
 						
-						<form>
-							<fieldset>
-								<p class="span8">Predefined SPARQL queries for basic RDF statistics. More informations are available at <a href="http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics">http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics</a>.</p>
-								<select class="span8" id = "VOIDSparql_Select">
-									<option value ="0" selected="selected">Total number of triples</option>
-									<option value ="1">Total number of entities</option>
-									<option value ="2">Total number of distinct resource URIs</option>
-									<option value ="3">Total number of distinct classes</option>
-									<option value ="4">Total number of distinct predicates</option>
-									<option value ="5">Total number of distinct subject nodes</option>
-									<option value ="6">Total number of distinct object nodes</option>
-									<option value ="7">Exhaustive list of classes used in the dataset</option>
-									<option value ="8">Exhaustive list of properties used in the dataset</option>
-									<option value ="9">Class vs. total number of instances of the class</option>
-									<option value ="10">Property vs. total number of triples using the property</option>
-									<option value ="11">Property vs. total number of distinct subjects in triples using the property</option>
-									<option value ="12">Property vs. total number of distinct objects in triples using the property</option>
-								</select>
-								<legend>SPARQL 1.1 querying interface</legend>
-								<p><textarea id="sparqlTextArea" class="span8" rows="3">
+						<section>
+							<div class="page-header">
+								<h2>SPARQL 1.1 querying interface</h2>
+							</div>
 
-							</textarea></p>
-							<button id="btnQuery" type="button" class="btn">Query</button>
-							<!--<button id="btnQuery" class="btn">Query</button>-->
-						</fieldset>
+							<form>
+								<fieldset>
+									<p class="span8">Predefined SPARQL queries for basic RDF statistics. More informations are available at <a href="http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics">http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics</a>.</p>
+									<select class="span8" id = "VOIDSparql_Select">
+										<option value ="0" selected="selected">Total number of triples</option>
+										<option value ="1">Total number of entities</option>
+										<option value ="2">Total number of distinct resource URIs</option>
+										<option value ="3">Total number of distinct classes</option>
+										<option value ="4">Total number of distinct predicates</option>
+										<option value ="5">Total number of distinct subject nodes</option>
+										<option value ="6">Total number of distinct object nodes</option>
+										<option value ="7">Exhaustive list of classes used in the dataset</option>
+										<option value ="8">Exhaustive list of properties used in the dataset</option>
+										<option value ="9">Class vs. total number of instances of the class</option>
+										<option value ="10">Property vs. total number of triples using the property</option>
+										<option value ="11">Property vs. total number of distinct subjects in triples using the property</option>
+										<option value ="12">Property vs. total number of distinct objects in triples using the property</option>
+									</select>
+									<!--<legend>SPARQL 1.1 querying interface</legend>-->
+									<p><textarea id="sparqlTextArea" class="span8" rows="3">
 
-						<p>
-							<table id="tbRes" class="table table-striped span10">  
-								<thead>  
-								</thead>  
-								<tbody>  
-								</tbody>  
-							</table>  
-						</p>
-						</form>
+									</textarea></p>
+									<button id="btnQuery" type="button" class="btn btn-success">Query</button>
+									<!--<button id="btnQuery" class="btn">Query</button>-->
+								</fieldset>
+
+								<p>
+									<table id="tbRes" class="table table-striped span10">  
+										<thead>  
+										</thead>  
+										<tbody>  
+										</tbody>  
+									</table>  
+								</p>
+							</form>
+						<section>
 					</div>
 
 					<div class="tab-pane" id="Tab2">
-						<!--<p>My Tab 2</p>-->
-						
-						<p>Remote file path: 
+
+						<p class="span12">
+							Predefined file path: 
+						<select id = "Data_Select" class="span10">
+										<option value ="0" selected="selected">http://nyx.unice.fr/~gaignard/data/cog-2012.ttl</option>
+										<option value ="1">http://nyx.unice.fr/~gaignard/data/popleg-2010.ttl</option>
+										<!--<option value ="0" selected="selected">/Users/gaignard/Documents/Experiences/jows-2013/drugbank_dump.rdf</option>
+										<option value ="1">/Users/gaignard/Documents/Experiences/jows-2013/chebi.rdf</option>
+										<option value ="2">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.cpd.rdf</option>
+										<option value ="3">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.dr.rdf</option>
+										<option value ="4">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.ec.rdf</option>
+										<option value ="5">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.rn.rdf</option>-->
+						</select>
+						</p>
+
+						<p class="span12">
+						Remote file path: 
+							
 							<div class="input-append">
+
 							<!--<input class="span8" id="txtLoad" size="80" type="text" placeholder="http://nyx.unice.fr/~gaignard/data/neurolog.rdf" value="http://nyx.unice.fr/~gaignard/data/neurolog.rdf">-->
-							<input class="span8" id="txtLoad" size="80" type="text" value="/Users/gaignard/Desktop/bsbmtools-0.2/dataset.ttl">
-							<button id="btnLoad" class="btn" type="button">Load</button>
+							<input id="txtLoad" type="text" value="http://nyx.unice.fr/~gaignard/data/cog-2012.ttl">
+							<button id="btnLoad" class="btn btn-primary" type="button">Load</button>
 							</div>
 						</p>
-						<!-- /Users/gaignard/Desktop/bsbmtools-0.2/dataset/ttl>
+						<!-- /Users/gaignard/Desktop/bsbmtools-0.2/dataset/ttl>-->
 
-						<!--<button id="myButton" class="btn btn-large" type="button">Reset Corese/KGRAM graph</button>-->
-						<p>
-							<button id="btnReset" class="btn span4" type="button">Reset Corese/KGRAM graph</button>
+						
+						
+							<button id="btnReset" class="btn btn-inverse span4" type="button">Reset Corese/KGRAM graph</button>
 							<label  class="checkbox span6">
       							<input id="checkEntailments" type="checkbox">Enable RDFS entailments
     						</label>
-						</p>
+								
 					</div>
 
 					<div class="tab-pane" id="Tab3">
@@ -96,8 +118,10 @@
 						<!--<p class="text-right">
 							<small>This line of text is meant to be treated as fine print.</small>
 						</p>-->
-
-						<h3>Data source federation</h3>
+						<section>
+							<div class="page-header">
+								<h2>Data sources configuration</h2>
+							</div>
 						<!--<blockquote>
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
 							<small>Someone famous <cite title="Source Title">Source Title</cite></small>
@@ -105,19 +129,68 @@
 
 						<table id="tbDataSources" class="table table-striped span10">  
 								<!--<thead>  <tr> <th>Endpoint URL</th> <th>Endpoint status</th> </tr>
-								</thead>  -->
-								<tbody>  
-								</tbody>  
-							</table>  
-
-							<div class="input-prepend">
-								<button class="btn" id="btnDataSource" type="button">Add data source</button>
-  							<input class="span10" id="txtDataSource" type="text" placeholder="http://some.sparql.endpoint" value="http://localhost:8080/kgram/sparql" >
+							</thead>  -->
+							<tbody>  
+							</tbody>  
+						</table>  
+						
+							<select id = "DataSource_Select">
+										<option value ="0" selected="selected">http://localhost:8080/kgram/sparql</option>
+										<option value ="1">http://fr.dbpedia.org/sparql</option>
+										<option value ="2">http://dbpedia.org/sparql</option>
+										<option value ="3">http://rdf.myexperiment.org/sparql</option>
+										<option value ="4">http://pubmed.bio2rdf.org/sparql</option>
+							</select>
+						
+						<div class="input-append">
+							<input class="span10" id="txtDataSource" type="text" placeholder="http://some.sparql.endpoint" value="http://localhost:8080/kgram/sparql" >
+							<button class="btn btn-primary" id="btnDataSource" type="button">Add data source</button>
 						</div>
+						
+						
+						<p>
+							<button id="btnConfigure" class="btn btn-warning" type="button">Configure KGRAM-DQP</button>
+							<button id="btnResetDQP" class="btn btn-inverse" type="button">Reset KGRAM-DQP</button>
+						</p>
+					</section>
 
-						<h3>Federated SPARQL querying</h3>
+					<section>
+						<div class="page-header">
+								<h2>Federated SPARQL querying</h2>
+						</div>
+						<form>
+								<fieldset>
+									<p class="span8">Predefined SPARQL queries for data sources federation. <!--More informations are available at <a href="http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics">http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics</a>.--></p>
+									<select class="span8" id = "FedSparql_Select">
+										<option value ="0" selected="selected">Demo federated query</option>
+									</select>
+									<!--<legend>SPARQL 1.1 querying interface</legend>-->
+									<p><textarea id="sparqlFedTextArea" class="span8" rows="9">
+PREFIX idemo:<http://rdf.insee.fr/def/demo#>
+PREFIX igeo:<http://rdf.insee.fr/def/geo#>
+SELECT ?departement ?nom ?popTotale WHERE {
+	?region igeo:codeRegion "24" .
+	?region igeo:subdivisionDirecte ?departement .
+	?departement igeo:nom ?nom .
+	?departement idemo:population ?popLeg .
+	?popLeg idemo:populationTotale ?popTotale .
+}
+</textarea></p>
+									<button id="btnQueryFed" type="button" class="btn btn-success">Query</button>
+								</fieldset>
 
-					</div>
+								<p>
+									<table id="tbResFed" class="table table-striped span10">  
+										<thead>  
+										</thead>  
+										<tbody>  
+										</tbody>  
+									</table>  
+								</p>
+							</form>
+
+					</section>
+				</div>
 				</div>	
 			<div id="footer" class="text-center">
     			<!--<p>Copyright stuff</p>

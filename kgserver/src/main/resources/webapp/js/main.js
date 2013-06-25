@@ -33,6 +33,8 @@ var statVOID = ["SELECT (COUNT(*) AS ?no) { ?s ?p ?o  }",
 "SELECT  ?p (COUNT(DISTINCT ?s ) AS ?count ) { ?s ?p ?o } GROUP BY ?p ORDER BY ?count",
 "SELECT  ?p (COUNT(DISTINCT ?o ) AS ?count ) { ?s ?p ?o } GROUP BY ?p ORDER BY ?count" ];
 
+var remoteFilePaths = ["http://nyx.unice.fr/~gaignard/data/cog-2012.ttl", "http://nyx.unice.fr/~gaignard/data/popleg-2010.ttl"];
+
 var validDataSources = [];
 
 
@@ -73,7 +75,8 @@ $('#DataSource_Select').on('change', function (e) {
 });
 
 $('#Data_Select').on('change', function (e) {
-    var path = $('#Data_Select option:selected').html();
+    // var path = $('#Data_Select option:selected').html();
+    var path = remoteFilePaths[$(this).val()];
     $('#txtLoad').val(path);
 });
 

@@ -97,8 +97,8 @@ public class DBPediaPersonsRestTest {
 
         Graph graph = Graph.create();
         QueryProcessDQP exec = QueryProcessDQP.create(graph);
-        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice"), WSImplem.REST);
-        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice"), WSImplem.REST);
+        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);
+        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);
         
 //        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
 //        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
@@ -121,8 +121,8 @@ public class DBPediaPersonsRestTest {
 
         Graph graph = Graph.create();
         QueryProcessDQP exec = QueryProcessDQP.create(graph);
-        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice"), WSImplem.REST);
-        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice"), WSImplem.REST);
+        exec.addRemote(new URL("http://nyx.unice.fr:8091/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);
+        exec.addRemote(new URL("http://nyx.unice.fr:8092/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);
         
 //        exec.addRemote(new URL("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
 //        exec.addRemote(new URL("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);

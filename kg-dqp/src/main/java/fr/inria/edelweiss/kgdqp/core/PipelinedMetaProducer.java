@@ -46,7 +46,7 @@ public class PipelinedMetaProducer extends MetaProducer {
         
         int pending = 0;
         for (Producer p : this.getProducers()) {
-            if ((p instanceof RemoteProducerWSImpl) || (p instanceof RemoteProducerHTTPImpl) || ((p instanceof RemoteSqlProducerImpl))) {
+            if ((p instanceof RemoteProducerWSImpl) || ((p instanceof RemoteSqlProducerImpl))) {
                 pending++;
             }
         }
@@ -58,7 +58,7 @@ public class PipelinedMetaProducer extends MetaProducer {
         // iteration over 
         for (Producer p : this.getProducers()) {
             //TODO Check index
-            if ((p instanceof RemoteProducerWSImpl) || (p instanceof RemoteProducerHTTPImpl) || ((p instanceof RemoteSqlProducerImpl))) {
+            if ((p instanceof RemoteProducerWSImpl) || ((p instanceof RemoteSqlProducerImpl))) {
                 CallableBufferedGetEdges getEdges = new CallableBufferedGetEdges(p, gNode, from, edge, env, buffer);
                 futures.add(completionS.submit(getEdges));
             }

@@ -43,8 +43,10 @@ public class RemoteProducerWSImpl implements Producer {
     public RemoteProducerWSImpl(URL url, WSImplem implem) {
         if (implem == WSImplem.REST) {
             rp = new SPARQLRestEndpointClient(url);
+            logger.info("REST endpoint instanciated "+url);
         } else {
             rp = new SPARQLSoapEndpointClient(url);
+            logger.info("SOAP endpoint instanciated "+url);
         }
     }
 
@@ -107,7 +109,7 @@ public class RemoteProducerWSImpl implements Producer {
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createBindingOptimizer();
         RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFullOptimizer();
         String query = qo.getSparqlQuery(qEdge, env);
-        Graph g = Graph.create();
+        Graph g = Graph.create(false);
 
         InputStream is = null;
         try {
@@ -118,35 +120,40 @@ public class RemoteProducerWSImpl implements Producer {
 //            if (true) {
 //                logger.info("sending query \n" + query + "\n" + "to " + rp.getEndpoint());
 
-//  Version no-streaming                
+
                 String sparqlRes = rp.getEdges(query);
-//                System.out.println(sparqlRes);
+
+                // count number of queries
+                if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+                    Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+                    QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+                } else {
+                    QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+                }
+
+                // count number of source access
+                String endpoint = rp.getEndpoint();
+                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+                    Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+                    QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+                } else {
+                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+                }
+                
                 if (sparqlRes != null) {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
+//                    l.load(is, endpoint);
                     l.load(is);
 //                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
+                    if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+                        Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+                    } else {
+                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+                    }
                 }
-//                System.out.println("");
-//                logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
-//                logger.info("Received results  from " + rp.getEndpoint());
-//                System.out.println("Received results  from " + rp.getEndpoint());
-//                sw.reset();
-//                sw.start();                
 
-                // Version streaming 
-//                Map<String, Object> reqCtxt = ((BindingProvider) rp).getRequestContext();
-//                reqCtxt.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
-//                reqCtxt.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
-//                StreamingDataHandler streamingDh = (StreamingDataHandler) rp.getEdges(query);
-//                if (streamingDh != null) {
-//                    is = streamingDh.readOnce();
-//                    Load l = Load.create(g);
-////                    is = new ByteArrayInputStream(sparqlRes.getBytes());
-//                    l.load(is);
-////                    logger.info("Results (cardinality " + g.size() + ")");
-////                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
-//                }
             } else {
 //                logger.info("negative ASK (" + qEdge + ") -> pruning data source " + rp.getEndpoint());
             }

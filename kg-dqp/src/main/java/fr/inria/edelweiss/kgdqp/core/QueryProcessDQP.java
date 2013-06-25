@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgdqp.core;
 
+import fr.inria.edelweiss.kgdqp.strategies.SourceSelectorWS;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -10,20 +11,32 @@ import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import java.net.URL;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.log4j.Logger;
 
 /**
- * Extension of the KGRAM SPARQL query processor, that handles several 
+ * Extension of the KGRAM SPARQL query processor, that handles several
  * concurrent producers through a parallel meta producer.
- * 
+ *
  * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
  *
  */
 public class QueryProcessDQP extends QueryProcess {
 
+    private static Logger logger = Logger.getLogger(QueryProcessDQP.class);
+    
     private final int parallelWaitMP = 0;
     private final int parallelLessWaitMP = 1;
     private final int pipelinedMP = 2;
     
+    // several cost criterions
+    // for each sent query, record the number of invocations
+    public static ConcurrentHashMap<String, Long> queryCounter = new ConcurrentHashMap<String, Long>();
+    // for each sent query, record the number of transmetted results
+    public static ConcurrentHashMap<String, Long> queryVolumeCounter = new ConcurrentHashMap<String, Long>();
+    // for each source, record the number of sent queries
+    public static ConcurrentHashMap<String, Long> sourceCounter = new ConcurrentHashMap<String, Long>();
+
     public QueryProcessDQP() {
         super();
     }
@@ -37,7 +50,7 @@ public class QueryProcessDQP extends QueryProcess {
         add(new RemoteProducerWSImpl(url, implem));
 //        add(new RemoteProducerRestWSImpl(url));
     }
-   
+
     public void addRemoteSQL(String url, String driver, String login, String password) {
         add(new RemoteSqlProducerImpl(url, driver, login, password));
     }
@@ -76,7 +89,7 @@ public class QueryProcessDQP extends QueryProcess {
 //        int implem = parallelWaitMP;
         int implem = parallelLessWaitMP;
 //        int implem = pipelinedMP;
-        
+
         if (implem == parallelWaitMP) {
             ParallelMetaProducer meta;
             if (producer instanceof MetaProducer) {

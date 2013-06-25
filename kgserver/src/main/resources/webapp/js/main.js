@@ -9,6 +9,12 @@
 Array.prototype.contains = function(a) { return this.indexOf(a) != -1 };
 Array.prototype.remove = function(a) {if (this.contains(a)){ return this.splice(this.indexOf(a),1)}};
 
+function alertTimeout(wait){
+    setTimeout(function(){
+        $('#footer').children('.alert:last-child').remove();
+    }, wait);
+}
+
 // The root URL for the RESTful services
 var rootURL = "http://"+window.location.host+"/kgram";
 console.log("Connected to the Corese/KGRAM endpoint "+rootURL);
@@ -29,63 +35,28 @@ var statVOID = ["SELECT (COUNT(*) AS ?no) { ?s ?p ?o  }",
 
 var validDataSources = [];
 
+
+// -------------------------
+// GUI Controls -> functions
+
 $('#btnReset').click(function() {
 	reset();
-	//return false;
-});
-
-$('#btnResetDQP').click(function() {
-	resetDQP();
 });
 
 $('#btnLoad').click(function() {
-	//reset();
 	load($('#txtLoad').val());
-	//return false;
 });
 
 $('#btnQuery').click(function() {
-	//reset();
 	sparql($('#sparqlTextArea').val());
 });
 
 $('#btnQueryFed').click(function() {
-	//reset();
 	sparqlFed($('#sparqlFedTextArea').val());
 });
 
 $('#btnDataSource').click(function() {
 	addDataSource($('#txtDataSource').val());
-});
-
-$('#btnConfigure').click(function() {
-	//console.log("Sending data sources "+validDataSources);
-	//console.log(JSON.stringify({endpointUrl:validDataSources}));
-	//var jsonDataSources = "[";
-	$.each(validDataSources, function(index, item){
-		//jsonDataSources+='{\"endpointUrl\" : \"'+item+'\"},';
-		$.ajax({
-			type: 'POST',
-			url: rootURL + '/dqp/configureDatasources',
-			//headers: { 
-        		//'Accept': 'application/json',
-        	//	'Content-Type': 'application/json' 
-        	//},
-        	data: {'endpointUrl':item},
-			//data: jsonDataSources,
-			dataType: "text",
-			success: function(data, textStatus, jqXHR){
-				//infoSuccess('Configured KGRAM-DQP with '+validDataSources+' endpoints.');
-				console.log(data);
-			},
-			error: function(jqXHR, textStatus, errorThrown){
-				infoError('Corese/KGRAM error: ' + textStatus);
-				console.log(errorThrown);
-			}
-		});
-	});
-	//jsonDataSources+="]";
-	//console.log(jsonDataSources);
 });
 
 $('#sparqlTextArea').val(statVOID[0]);
@@ -117,11 +88,14 @@ $('#tbDataSources').on("click", "#delBtn", function(e) {
 	validDataSources.remove(endpointUrl);
 	console.log(validDataSources);
 	$(this).parent().parent().remove();
+	resetDQP();
 });
 
-//
+// -------------------------
+// functions
+
 function reset() {
-	console.log('reset');
+	console.log('Reset KGRAM graph');
 	$.ajax({
 		type: 'POST',
 		url: rootURL + '/sparql/reset',
@@ -140,24 +114,52 @@ function reset() {
 }
 
 function resetDQP() {
-	console.log('reset KGRAM-DQP');
+	console.log('Reset KGRAM-DQP');
 	$.ajax({
 		type: 'POST',
 		url: rootURL + '/dqp/reset',
 		dataType: "text",
 		success: function(data, textStatus, jqXHR){
-			infoSuccess('KGRAM-DQP data sources reset.');
-			console.log(data);
+			//infoSuccess('KGRAM-DQP data sources reset.');
+			console.log('KGRAM-DQP data sources reset. '+data);
+
+			configureDQP();
 		},
 		error: function(jqXHR, textStatus, errorThrown){
-			infoError('Can\'t reset KGRAM-DQP: ' + textStatus);
+			//infoError('Can\'t reset KGRAM-DQP: ' + textStatus);
 			console.log(errorThrown);
 		}
 	});
 }
 
+function configureDQP() {
+	console.log("Configuring DQP with "+validDataSources);
+	$.each(validDataSources, function(index, item){
+		//jsonDataSources+='{\"endpointUrl\" : \"'+item+'\"},';
+		$.ajax({
+			type: 'POST',
+			url: rootURL + '/dqp/configureDatasources',
+			//headers: { 
+        		//'Accept': 'application/json',
+        	//	'Content-Type': 'application/json' 
+        	//},
+        	data: {'endpointUrl':item},
+			//data: jsonDataSources,
+			dataType: "text",
+			success: function(data, textStatus, jqXHR){
+				console.log(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				infoError('Corese/KGRAM error: ' + textStatus);
+				console.log(errorThrown);
+			}
+		});
+	});
+	infoSuccess('Configured KGRAM-DQP with '+validDataSources+' endpoints.');
+}
+
 function load() {
-	console.log('loading '+$('#txtLoad').val()+' to '+rootURL);
+	console.log('Loading '+$('#txtLoad').val()+' to '+rootURL);
 	$.ajax({
 		type: 'POST',
 		url: rootURL + '/sparql/load',
@@ -241,14 +243,14 @@ function testEndpoint(endpointURL, rowIndex){
 		data: {'query':testQuery},
 		dataType: "json",
 		success: function(data, textStatus, jqXHR){
-			infoSuccess(endpointURL+" responds to SPARQL queries");
+			console.log(endpointURL+" responds to SPARQL queries");
 			//update the icon of the data source
 			$('#tbDataSources tbody tr:eq('+rowIndex+') td:eq(3)').html('<i class=\"icon-ok\"></i>');
 			//update the internal list of data sources
 			if(!validDataSources.contains(endpointURL)) {
 				validDataSources.push(endpointURL);
 			}
-			console.log(validDataSources);
+			resetDQP();
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			infoError(endpointURL+" does not responds to SPARQL queries");
@@ -322,12 +324,15 @@ function renderListFed(data) {
 function infoWarning(message){
 	var html = "<div class=\"alert alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button><strong>Warning!</strong> "+message+"</div>";
 	$('#footer').prepend(html);
+	alertTimeout(5000);
 }
 function infoSuccess(message){
 	var html = "<div class=\"alert alert-success\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button><strong>Success!</strong> "+message+"</div>";
 	$('#footer').prepend(html);
+	alertTimeout(5000);
 }
 function infoError(message){
-	var html = "<div class=\"alert alert-error\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button><strong>Error!</strong> "+message+"</div>";
+	var html = "<div class=\"alert alert-error \"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button><strong>Error!</strong> "+message+"</div>";
 	$('#footer').prepend(html);
+	alertTimeout(5000);
 }

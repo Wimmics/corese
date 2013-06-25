@@ -57,10 +57,12 @@ public class SPARQLRestAPI {
         String output;
         exec.getGraph().remove();
         if (entailments.equals("false")) {
-            exec = QueryProcess.create(Graph.create(false));
+            graph = Graph.create(false);
+            exec = QueryProcess.create(graph);
             logger.info(output = "Endpoint successfully reset *without* entailments.");
         } else {
-            exec = QueryProcess.create(Graph.create(true));
+            graph = Graph.create(true);
+            exec = QueryProcess.create(graph);
             logger.info(output = "Endpoint successfully reset *with* entailments.");
         }
         return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(output).build();

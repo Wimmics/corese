@@ -210,6 +210,12 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		Mapping map = get(0);
 		return map.getNode(var);
 	}
+        
+        public Node getQueryNode(String var){
+		if (size() == 0) return null;
+		Mapping map = get(0);
+		return map.getQueryNode(var);
+	}
 	
 	public Object getValue(String var){
 		Node node = getNode(var);

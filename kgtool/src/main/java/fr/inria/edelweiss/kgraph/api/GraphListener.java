@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.api;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
 public interface GraphListener {
@@ -12,6 +13,9 @@ public interface GraphListener {
 	void insert(Graph g, Entity ent);
 
 	void delete(Graph g, Entity ent);
+        
+        void start(Graph g, Query q);
 	
-	
+	void finish(Graph g, Query q);
+
 }

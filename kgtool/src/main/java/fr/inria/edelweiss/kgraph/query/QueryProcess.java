@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -353,34 +354,38 @@ public class QueryProcess extends QuerySolver {
 	 * 
 	 ****************************************************************************/
 	
-	Mappings query(Query q, Mapping map, Dataset ds) throws EngineException{
+	Mappings query(Query q, Mapping m, Dataset ds) throws EngineException{
 		
 		pragma(q);
-		Mappings lMap;
+		Mappings map;
 		
 		if (q.isUpdate() || q.isRule()){
 			log(Log.UPDATE, q);
-			lMap = synUpdate(q, ds);
-			lMap.setQuery(q);
+			map = synUpdate(q, ds);
+			if (map.getQuery() == null){
+                            map.setQuery(q);
+                        }
 		}
 		else {
-			lMap =  synQuery(q, map);
+			map =  synQuery(q, m);
 
 			if (q.isConstruct()){
 				// construct where
-				construct(lMap, null);
+				construct(map, null);
 			}
-			log(Log.QUERY, q, lMap);
+			log(Log.QUERY, q, map);
 		}
-		return lMap;
+		return map;
 	}
 	
 	Mappings synQuery(Query query, Mapping m) {
 		try {
 			readLock();
+                        //getGraph().logStart(query);
 			return query(query, m);
 		}
 		finally {
+                        //getGraph().logFinish(query);
 			readUnlock();
 		}
 	}
@@ -402,6 +407,7 @@ public class QueryProcess extends QuerySolver {
 	
 	
 	Mappings synUpdate(Query query,  Dataset ds) throws EngineException{
+            Graph g = getGraph();
 		GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
 		try {
 			if (! query.isSynchronized()){
@@ -411,8 +417,9 @@ public class QueryProcess extends QuerySolver {
 				writeLock();
 			}
 			if (gl != null){
-				getGraph().addListener(gl);
+				g.addListener(gl);
 			}
+                        //g.logStart(query);
 			if (query.isRule()){
 				return rule(query);
 			}
@@ -421,8 +428,9 @@ public class QueryProcess extends QuerySolver {
 			}
 		}
 		finally {
+                    //g.logFinish(query);
 			if (gl != null){
-				getGraph().removeListener(gl);
+				g.removeListener(gl);
 			}
 			if (! query.isSynchronized()){
 				writeUnlock();
@@ -495,7 +503,8 @@ public class QueryProcess extends QuerySolver {
 	public Mappings update(Query query, ASTQuery ast, Dataset ds) {
 		
 		//System.out.println("** QP:\n" + ast);
-		
+		getGraph().logStart(query);
+                
 		Mappings lMap = basicQuery(ast, ds);
 		Query q = lMap.getQuery();
 		
@@ -508,6 +517,8 @@ public class QueryProcess extends QuerySolver {
 			// insert
 			construct(lMap, ds);
 		}
+                
+		getGraph().logFinish(query);
 
 		return lMap;
 	}
@@ -580,6 +591,7 @@ public class QueryProcess extends QuerySolver {
 		if (isDebug() || query.isDebug()){
 			cons.setDebug(true);
 		}
+
 		if (query.isDetail()){
 			cons.setInsertList(new ArrayList<Entity>());
 		}
@@ -589,7 +601,11 @@ public class QueryProcess extends QuerySolver {
 			gg = cons.insert(lMap, g, ds);
 		}
 		else {
-			gg = cons.construct(lMap);
+                    Graph cg = Graph.create();
+                    // the construct result graph may be skolemized
+                    // if kgram was told to do so
+                    cg.setSkolem(isSkolem());
+                    gg = cons.construct(lMap, cg);
 		}
 		lMap.setGraph(gg);
 	}
@@ -601,6 +617,7 @@ public class QueryProcess extends QuerySolver {
 		if (isDebug() || query.isDebug()){
 			cons.setDebug(true);
 		}
+
 		if (query.isDetail()){
 			cons.setDeleteList(new ArrayList<Entity>());
 		}
@@ -655,6 +672,28 @@ public class QueryProcess extends QuerySolver {
 		getWriteLock().unlock();
 	}
 
-
+/******************************************************/
+        
+        /**
+         * skolemize the blank nodes of the result Mappings
+         */
+        public Mappings skolem(Mappings map){
+            Graph g = getGraph();
+            if (map.getGraph() != null){
+                // result of construct where
+                g = (Graph) map.getGraph();
+            }
+            for (Mapping m : map){
+                Node[] nodes = m.getNodes();
+                int i = 0;
+                for (Node n : nodes){
+                    if (n.isBlank()){
+                        nodes[i] = g.skolem(n);
+                    }
+                    i++;
+                }
+            }
+            return map;
+        }
 	
 }

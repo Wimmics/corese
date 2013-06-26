@@ -495,6 +495,10 @@ public class DatatypeMap implements Cst, RDF {
 	public static IDatatype createResource(String label){
 		return new CoreseURI(label);
 	}
+        
+        public static IDatatype createSkolem(String label){
+		return new CoreseURI(label);
+	}
 	
 	public static IDatatype createBlank(String label){
 		return new CoreseBlankNode(label);

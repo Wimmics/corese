@@ -697,7 +697,16 @@ implements Index {
 		if (i >= list.size()){
 			return null;
 		}
-		
+                
+                if (graph.hasTag()) {
+                    // if edge have no tag:
+                    // dichotomy may have jump in the middle of the tag list
+                    // find first edge of the list
+                    while (i > 0 && cmp.compare(list.get(i - 1), edge) == 0) {
+                        i--;
+                    }
+                }
+
 		Entity ent = delete(cmp, edge, list, i);
 				
 		logDelete(ent);
@@ -706,14 +715,11 @@ implements Index {
 			// delete all occurrences of triple that match edge
 			// with different tags
 			Entity res = ent;
-			// TODO: BUG:
-			// may need to go backward also
 			while (i < list.size() && res != null){
 				res = delete(cmp, edge, list, i);
 				logDelete(res);
 			}
 		}
-		
 		return ent;
 		
 	}
@@ -866,6 +872,12 @@ implements Index {
 		EdgeImpl e = (EdgeImpl) ent;
 		EdgeImpl ee = e.copy();
 		ee.setGraph(gNode);
+                
+                if (graph.hasTag() && e.nbNode() == 3){
+                    // edge has a tag
+                    // copy must have a new tag
+                    tag(ee);
+                }
 		Entity res = graph.add(ee);
 		return res;
 	}

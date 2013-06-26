@@ -76,8 +76,7 @@ public class XMLFormat  {
 	}
 	
 	public static XMLFormat create(Query q, ASTQuery ast, Mappings lm){
-		XMLFormat res;
-		res = new XMLFormat(lm);
+		XMLFormat res = new XMLFormat(lm);
 		res.setQuery(q);
 		res.setAST(ast);
 		return res;

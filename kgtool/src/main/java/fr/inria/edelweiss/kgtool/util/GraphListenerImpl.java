@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
@@ -146,6 +147,14 @@ public class GraphListenerImpl implements GraphListener {
 	public boolean onInsert(Graph g, Entity ent) {
 		return g.size() < max;
 	}
+
+    @Override
+    public void start(Graph g, Query q) {
+    }
+
+    @Override
+    public void finish(Graph g, Query q) {
+    }
 	
 	
 

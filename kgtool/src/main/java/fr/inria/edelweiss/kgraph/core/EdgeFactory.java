@@ -139,13 +139,7 @@ public class EdgeFactory {
 	}
 
 	public EdgeImpl create(Node source, Node predicate, List<Node> list){
-		EdgeImpl ee = new EdgeExtend();
-		ee.setGraph(source);
-		ee.setEdgeNode(predicate);
-		int i = 0;
-		for (Node n : list){
-			ee.setNode(i++, n);
-		}
+		EdgeExtend ee = EdgeExtend.create(source, predicate, list);
 		return ee;
 	}
 	
@@ -157,20 +151,14 @@ public class EdgeFactory {
 	}
 	
 	/**
-	 * Draft add a unique tag to each edge
+	 * Draft: prepare add a unique tag to each edge
+         * The tag is added by EdgeIndex.add(edge)              
+         * 
 	 */
 	public EdgeImpl tagCreate(Node source, Node subject, Node predicate, Node value){
-		ArrayList<Node> list = new ArrayList<Node>();
-		
+		ArrayList<Node> list = new ArrayList<Node>(3);
 		list.add(subject);
 		list.add(value);
-		
-//		if (! graph.getProxy().isEntailed(source)){
-//			// no tag for entailment because it would loop
-//			Node tag = tag();
-//			list.add(tag);
-//		}
-
 		return create(source, predicate, list);
 	}
 	

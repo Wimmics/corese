@@ -20,7 +20,6 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.NodeImpl;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 /**
@@ -74,7 +73,6 @@ public class Construct
 		table = new Hashtable<Node, Node>();
 		count = 0;
 		dtDefaultGraph = DatatypeMap.createResource(src);
-		//defaultGraph =  NodeImpl.create(dt);
 	}
 	
 	
@@ -191,6 +189,7 @@ public class Construct
 			gNode = exp.getGraphName();
 			exp = exp.rest();
 		}
+                
 		for (Exp ee : exp.getExpList()){
 			if (ee.isEdge()){
 				EdgeImpl edge = construct(gNode, ee.getEdge(), map);
@@ -211,6 +210,7 @@ public class Construct
 
 						if (list != null){
 							lMap.setNbDelete(lMap.nbDelete() + list.size());
+
 							if (lDelete != null){
 								lDelete.addAll(list);
 							}
@@ -386,9 +386,9 @@ public class Construct
 			str = blankRule(qNode, map);
 		}
 		else {
-			str = blankID();
+			str = graph.newBlankID();
 		}
-		IDatatype dt = DatatypeMap.createBlank(str);
+		IDatatype dt = graph.createBlank(str);
 		return dt;
 	}
 
@@ -428,17 +428,6 @@ public class Construct
 		return n;
 	}
 	
-	
-
-	
-	String blankID(){
-		if (isInsert){
-			return graph.newBlankID();
-		}
-		else {
-			return BLANK + count++ ;
-		}
-	}
 	
 	
 	IDatatype getValue(Node node){

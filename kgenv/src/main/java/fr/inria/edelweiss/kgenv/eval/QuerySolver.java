@@ -67,6 +67,8 @@ public class QuerySolver  {
 	isDebug = false,
 	isOptimize = false,
 	isSPARQLCompliant = false;
+        // skolemize construct/describe result graphs (and only them)
+        private boolean isSkolem = false;
 
 	private boolean isDetail = false;
 	
@@ -489,5 +491,19 @@ public class QuerySolver  {
 	public void setDetail(boolean isDetail) {
 		this.isDetail = isDetail;
 	}
+
+    /**
+     * @return the isSkolem
+     */
+    public boolean isSkolem() {
+        return isSkolem;
+    }
+
+    /**
+     * @param isSkolem the isSkolem to set
+     */
+    public void setSkolem(boolean isSkolem) {
+        this.isSkolem = isSkolem;
+    }
 	
 }

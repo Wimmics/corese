@@ -81,7 +81,10 @@ public class PluginImpl extends ProxyImpl {
 			return getLevel(env);	
 			
 		case INDENT:
-			return indent(env);	
+			return indent(env);
+                    
+                case PROLOG:
+                    return prolog(env);
 			
 		case SIM:						
 			// solution similarity
@@ -140,6 +143,12 @@ public class PluginImpl extends ProxyImpl {
 			
 		case QNAME:
 			return qname(o, env);
+                    
+                case SKOLEM:
+                    if (graph == null){
+                        return null;
+                    }
+                    return graph.skolem(dt);
 			 						
 		}
 		return null;
@@ -347,6 +356,10 @@ public class PluginImpl extends ProxyImpl {
 		}
 		return graph.isSubClassOf(n1, n2);
 	}
+
+   
+
+   
 	
 	
 	class Table extends Hashtable<Integer, PTable>{}
@@ -456,7 +469,11 @@ public class PluginImpl extends ProxyImpl {
 	}
 	
 	
-
+        IDatatype  prolog(Environment env) {
+            PPrinter p = getPPrinter(env); 
+            String pref = p.getNSM().toString();
+            return getValue(pref);
+        }
 
 
 	IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env){

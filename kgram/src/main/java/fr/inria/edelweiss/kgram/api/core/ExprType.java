@@ -156,11 +156,11 @@ public interface ExprType {
 	public static int PWEIGHT 	= 218;
 	public static int ANCESTOR 	= 219;
 		
-	public static int PPRINT 		= 220;
+	public static int PPRINT 	= 220;
 	public static int PPRINTWITH 	= 221;
 	public static int PPRINTALL 	= 222;
 	public static int PPRINTALLWITH = 223;
-	public static int TEMPLATE 		= 224;
+	public static int TEMPLATE 	= 224;
 	public static int TEMPLATEWITH 	= 225;
 
 	public static int QNAME 	= 226;
@@ -170,8 +170,11 @@ public interface ExprType {
 	public static int PPURI 	= 230;
 	public static int VISITED 	= 231;
 	public static int AGGAND 	= 232;
+	public static int PROLOG 	= 233;
 
 
+	public static int ISSKOLEM 	= 240;
+	public static int SKOLEM 	= 241;
 
 
 }

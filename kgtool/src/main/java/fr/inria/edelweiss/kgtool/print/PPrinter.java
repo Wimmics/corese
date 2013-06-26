@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import org.apache.log4j.Logger;
 
 /**
  * SPARQL-based RDF AST Pretty Printer
@@ -75,6 +76,7 @@ public class PPrinter {
 	private boolean isHide = false;
 	public boolean stat = !true;
 	private boolean isAllResult = true;
+	private static Logger logger = Logger.getLogger(PPrinter.class);	
 
 	/**
 	 * 
@@ -227,6 +229,10 @@ public class PPrinter {
 	public void setNSM(NSManager n){
 		nsm = n;
 	}
+        
+        public NSManager getNSM(){
+            return nsm;
+        }
 	
 	public void setDebug(boolean b){
 		isDebug = b;
@@ -305,7 +311,10 @@ public class PPrinter {
 		List<Query> list = getTemplate(temp);
 		if (list.size() == 0){
 			list = qe.getTemplates();
-		}		
+		}
+                if (list.size() == 0){
+                    logger.error("No templates");
+                }
 
 		for (Query qq : list){
 			
@@ -706,7 +715,7 @@ public class PPrinter {
                     trace();
                 }
 
-		check();
+		//check();
                 //trace();
 
 	}
@@ -743,6 +752,7 @@ public class PPrinter {
 
 	
 	public void trace(){
+            System.out.println("PP nb templates: " + qe.getQueries().size());
 		for (Query q : qe.getQueries()){
 			if (q.hasPragma(Pragma.FILE)) {
 				System.out.println(name(q));

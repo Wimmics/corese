@@ -160,7 +160,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			
 		case NOW:	 return DatatypeMap.newDate();	
 		
-		case BNODE:  return DatatypeMap.createBlank();
+		case BNODE:  return createBlank();
 		
 		case PATHNODE: return pathNode(env);	
 		
@@ -202,7 +202,9 @@ public class ProxyImpl implements Proxy, ExprType {
 		case ISLITERAL: return (dt.isLiteral()) ? TRUE : FALSE; 
 		
 		case ISBLANK: 	return (dt.isBlank()) ? TRUE : FALSE;  
-		
+                    
+                case ISSKOLEM: 	return (dt.isSkolem()) ? TRUE : FALSE  ; 
+                                          		
 		case ISNUMERIC: return (dt.isNumber()) ? TRUE : FALSE; 
 		
 		case URI:  return uri(exp, dt);
@@ -630,7 +632,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		Map map = env.getMap();
 		Object bn = map.get(dt.getLabel());
 		if (bn == null){
-			bn = DatatypeMap.createBlank();
+			bn = createBlank();
 			map.put(dt.getLabel(), bn);
 		}
 		else {
@@ -638,6 +640,10 @@ public class ProxyImpl implements Proxy, ExprType {
 
 		return bn;
 	}
+        
+        IDatatype createBlank(){
+            return DatatypeMap.createBlank();
+        }
 	
 	
 	IDatatype time(Expr exp, IDatatype dt){
@@ -887,8 +893,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		
 		return FALSE;
 	}
-	
-	
 
-
+	
+  
 }

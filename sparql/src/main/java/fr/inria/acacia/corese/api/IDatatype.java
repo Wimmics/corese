@@ -45,6 +45,8 @@ public interface IDatatype
      */
     boolean isBlank();
 
+    boolean isSkolem();
+
     boolean isXMLLiteral();
 
     boolean isArray();

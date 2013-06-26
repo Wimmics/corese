@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeCore;
+import java.util.List;
 
 /**
  * Edge class where the  property node is in the class
@@ -20,6 +21,24 @@ public class EdgeExtend extends EdgeCore {
 	public EdgeExtend(){
 		nodes = new ArrayList<Node>();
 	}
+        
+        
+        public static EdgeExtend create(Node source, Node predicate, List<Node> list){
+		EdgeExtend ee = new EdgeExtend();
+		ee.setGraph(source);
+		ee.setEdgeNode(predicate);
+		int i = 0;
+		for (Node n : list){
+			ee.setNode(i++, n);
+		}
+		return ee;
+	}
+        
+        public EdgeExtend copy(){
+            List<Node> list = new ArrayList<Node>();
+            list.addAll(nodes);
+            return create(getGraph(), getEdgeNode(), list);
+        }
 	
 	public String toString(){
 		String str = "";
@@ -46,7 +65,12 @@ public class EdgeExtend extends EdgeCore {
 	
 	public void setNode(int i , Node node){
 		super.setNode(i, node);
-		nodes.add(i, node);	
+                if (i < nbNode()){
+                    nodes.set(i, node);
+                }
+                else {
+                    nodes.add(i, node);
+                }
 	}
 	
 	public Node getNode(int n) {
@@ -59,5 +83,5 @@ public class EdgeExtend extends EdgeCore {
 	public int nbNode() {
 		return nodes.size();
 	}
-	
+      
 }

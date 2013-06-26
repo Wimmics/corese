@@ -2,6 +2,7 @@ package fr.inria.acacia.corese.cg.datatype;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
 
 
 /**
@@ -25,6 +26,10 @@ public class CoreseURI extends CoreseResource {
 
   public boolean isURI() {
 	return true;
+  }
+  
+  public boolean isSkolem() {
+	return getLabel().startsWith(ExpType.SKOLEM);
   }
 
   public int getCode() {

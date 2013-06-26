@@ -42,7 +42,7 @@ public class CoreseDatatype
 	static boolean SPARQLCompliant = false; 
 	
 	static int cindex = 0;
-	private int index = -1;
+	//private int index = -1;
 	
 		
 	/**
@@ -333,6 +333,10 @@ public class CoreseDatatype
 	
 	
 	public boolean isBlank() {
+		return false;
+	}
+        
+        public boolean isSkolem() {
 		return false;
 	}
 	
@@ -913,12 +917,13 @@ public class CoreseDatatype
 //		if (index == -1){
 //			index = cindex++;
 //		}
-		return index;
+		//return index;
+            return -1;
 	}
 
 
 	public void setIndex(int n) {
-		index = n;
+		//index = n;
 	}
 
 

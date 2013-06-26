@@ -21,12 +21,12 @@ import fr.inria.edelweiss.kgram.api.core.ExpPattern;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Regex;
 
 public class Processor {
 	private static Logger logger = Logger.getLogger(Processor.class);
 
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
+        static final String KGRAM = ExpType.KGRAM;
 	public static final String BOUND = "bound";
 	public static final String COUNT = "count";
 	public static final String LIST  = "list";
@@ -57,9 +57,9 @@ public class Processor {
 
 
 	private static final String PLENGTH = "pathLength";
-	private static final String KGPLENGTH = ExpType.KGRAM + "pathLength";
+	private static final String KGPLENGTH = KGRAM + "pathLength";
 	private static final String PWEIGHT = "pathWeight";
-	private static final String KGPWEIGHT = ExpType.KGRAM +"pathWeight";
+	private static final String KGPWEIGHT = KGRAM +"pathWeight";
 
 	private static final String DATATYPE = "datatype";
 	private static final String STR = "str";
@@ -72,49 +72,52 @@ public class Processor {
 	static final String EXTERN 	= "extern";
 	public static final String XPATH 	= "xpath";
 	static final String SQL 	= "sql";
-	static final String KGXPATH = ExpType.KGRAM + "xpath";
-	static final String KGSQL 	= ExpType.KGRAM + "sql";
+	static final String KGXPATH = KGRAM + "xpath";
+	static final String KGSQL 	= KGRAM + "sql";
 	
-	static final String PPRINT 			= ExpType.KGRAM + "pprint"; 
-	static final String PPRINTWITH 		= ExpType.KGRAM + "pprintWith"; 
-	static final String PPRINTALL		= ExpType.KGRAM + "pprintAll"; 
-	static final String PPRINTALLWITH	= ExpType.KGRAM + "pprintAllWith"; 
-	static final String TEMPLATE		= ExpType.KGRAM + "template"; 
-	static final String TEMPLATEWITH	= ExpType.KGRAM + "templateWith"; 
-	static final String EVAL 			= ExpType.KGRAM + "eval"; 
+	static final String PPRINT 		= KGRAM + "pprint"; 
+	static final String PPRINTWITH 		= KGRAM + "pprintWith"; 
+	static final String PPRINTALL		= KGRAM + "pprintAll"; 
+	static final String PPRINTALLWITH	= KGRAM + "pprintAllWith"; 
+	static final String TEMPLATE		= KGRAM + "template"; 
+	static final String TEMPLATEWITH	= KGRAM + "templateWith"; 
+	static final String EVAL 		= KGRAM + "eval";
+        static final String PROLOG 		= KGRAM + "prolog";
 	static final String KGPPRINT		= ExpType.KPREF + ":" + "pprint"; 
 
-	static final String QNAME 	= ExpType.KGRAM + "qname"; 
-	static final String TURTLE 	= ExpType.KGRAM + "turtle"; 
-	static final String LEVEL 	= ExpType.KGRAM + "level"; 
-	static final String INDENT 	= ExpType.KGRAM + "indent"; 
-	static final String PPURI 	= ExpType.KGRAM + "uri"; 
-	static final String VISITED = ExpType.KGRAM + "isVisited"; 
+	static final String QNAME 	= KGRAM + "qname"; 
+	static final String TURTLE 	= KGRAM + "turtle"; 
+	static final String LEVEL 	= KGRAM + "level"; 
+	static final String INDENT 	= KGRAM + "indent"; 
+	static final String PPURI 	= KGRAM + "uri"; 
+	static final String VISITED     = KGRAM + "isVisited"; 
+	static final String ISSKOLEM    = KGRAM + "isSkolem"; 
+	static final String SKOLEM      = KGRAM + "skolem"; 
 
 	static final String UNNEST = "unnest";
 	static final String SYSTEM = "system";
 	static final String GROUPBY = "groupBy";
 
-	static final String KGRAM 	 = ExpType.KGRAM + "sparql";
-	static final String SIMILAR  = ExpType.KGRAM + "similarity";
-	static final String CSIMILAR = ExpType.KGRAM + "cSimilarity";
-	static final String PSIMILAR = ExpType.KGRAM + "pSimilarity";
-	static final String ANCESTOR = ExpType.KGRAM + "ancestor";
-	static final String DEPTH    = ExpType.KGRAM + "depth";
-	static final String GRAPH    = ExpType.KGRAM + "graph";
-	static final String NODE     = ExpType.KGRAM + "node";
-	static final String GET      = ExpType.KGRAM + "getObject";
-	static final String SET      = ExpType.KGRAM + "setObject";
-	static final String GETP     = ExpType.KGRAM + "getProperty";
-	static final String SETP     = ExpType.KGRAM + "setProperty";
-	static final String LOAD     = ExpType.KGRAM + "load";
-	static final String NUMBER   = ExpType.KGRAM + "number";
-	static final String DISPLAY  = ExpType.KGRAM + "display";
-	static final String EXTEQUAL = ExpType.KGRAM + "equals";
-	static final String EXTCONT  = ExpType.KGRAM + "contains";
-	static final String PROCESS  = ExpType.KGRAM + "process";
-	static final String ENV  	 = ExpType.KGRAM + "env";
-	public static final String PATHNODE = ExpType.KGRAM + "pathNode";
+	static final String SPARQL 	 = KGRAM + "sparql";
+	static final String SIMILAR  = KGRAM + "similarity";
+	static final String CSIMILAR = KGRAM + "cSimilarity";
+	static final String PSIMILAR = KGRAM + "pSimilarity";
+	static final String ANCESTOR = KGRAM + "ancestor";
+	static final String DEPTH    = KGRAM + "depth";
+	static final String GRAPH    = KGRAM + "graph";
+	static final String NODE     = KGRAM + "node";
+	static final String GET      = KGRAM + "getObject";
+	static final String SET      = KGRAM + "setObject";
+	static final String GETP     = KGRAM + "getProperty";
+	static final String SETP     = KGRAM + "setProperty";
+	static final String LOAD     = KGRAM + "load";
+	static final String NUMBER   = KGRAM + "number";
+	static final String DISPLAY  = KGRAM + "display";
+	static final String EXTEQUAL = KGRAM + "equals";
+	static final String EXTCONT  = KGRAM + "contains";
+	static final String PROCESS  = KGRAM + "process";
+	static final String ENV  	 = KGRAM + "env";
+	public static final String PATHNODE = KGRAM + "pathNode";
 
 	static final String EXIST 	= Term.EXIST;
 	static final String STRLEN 	= "strlen";
@@ -337,6 +340,8 @@ public class Processor {
 		defoper(AGGAND,         ExprType.AGGAND);
 		defoper(SAMPLE, 	ExprType.SAMPLE);
 		defoper(LIST, 		ExprType.LIST);
+		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
+		defoper(SKOLEM,         ExprType.SKOLEM);
 
 		
 		defoper(REGEX, 		ExprType.REGEX);
@@ -356,7 +361,7 @@ public class Processor {
 		defoper(KGXPATH, 	ExprType.XPATH);
 		defoper(SQL, 	ExprType.SQL);
 		defoper(KGSQL, 	ExprType.SQL);
-		defoper(KGRAM, 	ExprType.KGRAM);
+		defoper(SPARQL, ExprType.KGRAM);
 		defoper(EXTERN, ExprType.EXTERN);
 		defoper(UNNEST, ExprType.UNNEST);
 		defoper(EXIST,  ExprType.EXIST);
@@ -364,18 +369,19 @@ public class Processor {
 		defoper(GROUPBY, ExprType.GROUPBY);
 		
 		defoper(QNAME, 	ExprType.QNAME);
-		defoper(PPRINT, 		ExprType.PPRINT);
-		defoper(EVAL, 			ExprType.PPRINT);
+		defoper(PPRINT, 	ExprType.PPRINT);
+		defoper(EVAL, 		ExprType.PPRINT);
 		defoper(PPRINTWITH, 	ExprType.PPRINTWITH);
-		defoper(PPRINTALL, 		ExprType.PPRINTALL);
+		defoper(PPRINTALL, 	ExprType.PPRINTALL);
 		defoper(PPRINTALLWITH, 	ExprType.PPRINTALLWITH);
-		defoper(TEMPLATE, 		ExprType.TEMPLATE);
+		defoper(TEMPLATE, 	ExprType.TEMPLATE);
 		defoper(TEMPLATEWITH, 	ExprType.TEMPLATEWITH);
 		defoper(TURTLE, ExprType.TURTLE);
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);
 		defoper(PPURI, 	ExprType.PPURI);
 		defoper(VISITED, ExprType.VISITED);
+		defoper(PROLOG,  ExprType.PROLOG);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

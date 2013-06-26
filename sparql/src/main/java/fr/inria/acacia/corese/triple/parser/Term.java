@@ -712,7 +712,7 @@ public class Term extends Expression {
 		(name.equals(Processor.UNNEST) || 
 		name.equals(Processor.SQL) || 
 		name.equals(Processor.XPATH) ||
-		name.equals(Processor.KGRAM) ||
+		name.equals(Processor.SPARQL) ||
 		name.equals(Processor.EXTERN)) ;
 	}
 	

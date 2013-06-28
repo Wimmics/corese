@@ -15,6 +15,27 @@ function alertTimeout(wait){
     }, wait);
 }
 
+// var optsSpinner = {
+//   lines: 9, // The number of lines to draw
+//   length: 10, // The length of each line
+//   width: 14, // The line thickness
+//   radius: 6, // The radius of the inner circle
+//   corners: 1, // Corner roundness (0..1)
+//   rotate: 29, // The rotation offset
+//   direction: 1, // 1: clockwise, -1: counterclockwise
+//   color: '#000', // #rgb or #rrggbb
+//   speed: 1, // Rounds per second
+//   trail: 40, // Afterglow percentage
+//   shadow: false, // Whether to render a shadow
+//   hwaccel: false, // Whether to use hardware acceleration
+//   className: 'spinner', // The CSS class to assign to the spinner
+//   zIndex: 2e9, // The z-index (defaults to 2000000000)
+//   top: 'auto', // Top position relative to parent in px
+//   left: 'auto' // Left position relative to parent in px
+// };
+// var target = document.getElementById('btnLoad');
+// var spinner = new Spinner(optsSpinner).spin(target);
+
 // The root URL for the RESTful services
 var rootURL = "http://"+window.location.host+"/kgram";
 console.log("Connected to the Corese/KGRAM endpoint "+rootURL);
@@ -40,6 +61,10 @@ var validDataSources = [];
 
 // -------------------------
 // GUI Controls -> functions
+
+$('#btnStartUploads').click(function() {
+	$('#btnStartUploads').button('loading');
+});
 
 $('#btnReset').click(function() {
 	reset();
@@ -162,6 +187,8 @@ function configureDQP() {
 }
 
 function load() {
+	$('#btnLoad').attr("disabled", true);
+	$("#btnLoad").html("Loading ...");
 	console.log('Loading '+$('#txtLoad').val()+' to '+rootURL);
 	$.ajax({
 		type: 'POST',
@@ -172,11 +199,15 @@ function load() {
 		success: function(data, textStatus, jqXHR){
 			console.log(data);
 			infoSuccess("Loading done.");
+			$('#btnLoad').attr("disabled", false);
+			$("#btnLoad").html("Load");
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			infoError('Corese/KGRAM error: ' + textStatus);
 			console.log(errorThrown);
 			console.log(jqXHR);
+			$('#btnLoad').attr("disabled", false);
+			$("#btnLoad").html("Load");
 		}
 	});
 }

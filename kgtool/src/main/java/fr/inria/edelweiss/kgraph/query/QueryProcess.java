@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgenv.eval.Dataset;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
@@ -190,14 +190,11 @@ public class QueryProcess extends QuerySolver {
 	}
 
 	
-	/**
-	 * Prefer Dataset below
-	 * @deprecated
-	 */
-	public Mappings query(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
-		Dataset ds = Dataset.create(defaut, named);
-		return query(squery, map, ds);
-	}	
+	
+//	public Mappings query(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
+//		Dataset ds = Dataset.create(defaut, named);
+//		return query(squery, map, ds);
+//	}	
 	
 	/**
 	 * defaut and named specify a Dataset
@@ -277,11 +274,11 @@ public class QueryProcess extends QuerySolver {
 	 * - specify the dataset
 	 */
 	public Mappings sparql(String squery, Dataset ds) throws EngineException{
-		return sparqlQueryUpdate(squery, ds, STD_ENTAILMENT);
+		return sparqlQueryUpdate(squery, ds, RDFS_ENTAILMENT);
 	}
 	
 	public Mappings sparql(String squery, Dataset ds, int entail) throws EngineException{
-		return sparqlQueryUpdate(squery, ds, entail);
+            return sparqlQueryUpdate(squery, ds, entail);
 	}
 	
 	
@@ -293,15 +290,14 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	
-	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
-		Dataset ds = Dataset.create(from, named);
-		return query(ast, ds);
-	}
+//	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
+//		Dataset ds = Dataset.create(from, named);
+//		return query(ast, ds);
+//	}
 	
 	public Mappings query(ASTQuery ast, Dataset ds) {
 		if (ds!=null){
-			ast.setDefaultFrom(ds.getFrom());
-			ast.setDefaultNamed(ds.getNamed());
+			ast.setDefaultDataset(ds);
 		}
 		Transformer transformer =  transformer();
 		Query query = transformer.transform(ast);
@@ -479,7 +475,7 @@ public class QueryProcess extends QuerySolver {
 	
 	
 	void complete(Dataset ds){
-		if (ds != null && ds.getFrom() != null){
+		if (ds != null && ds.hasFrom()){
 			ds.clean();
 			// add the default graphs where insert or entailment may have been done previously
 			for (String src : Entailment.GRAPHS){
@@ -530,6 +526,7 @@ public class QueryProcess extends QuerySolver {
 	 */
 	Mappings sparqlQueryUpdate(String squery, Dataset ds, int entail) throws EngineException{
 		getEvaluator().setMode(Evaluator.SPARQL_MODE);
+                setSPARQLCompliant(true);
 
 		if (entail != STD_ENTAILMENT){
 			// include RDF/S entailments in the default graph

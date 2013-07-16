@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgenv.eval.Dataset;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -198,7 +198,6 @@ public class Construct
 					if (isDelete){
 						if (isDebug) logger.debug("** Delete: " + edge);
 						List<Entity> list = null;
-						
 						if (gNode == null && ds!=null && ds.hasFrom()){
 							// delete in default graph
 							list = graph.delete(edge, ds.getFrom());

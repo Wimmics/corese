@@ -245,6 +245,10 @@ public interface IDatatype
     long longValue();
 
     int intValue();
+    
+    String stringValue();
+    
+    boolean booleanValue();
 
     /**
      * ************************************************

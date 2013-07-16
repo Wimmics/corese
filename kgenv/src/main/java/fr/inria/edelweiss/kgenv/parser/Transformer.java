@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.*;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgenv.eval.Dataset;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.*;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -55,7 +55,7 @@ public class Transformer implements ExpType {
 	isSPARQLCompliant = true,
 	isSPARQL1 = true;
 	String namespaces, base;
-	List<String> from, named;
+        private Dataset dataset;
 	BasicGraphPattern pragma;
 	
 	Transformer(){
@@ -81,8 +81,7 @@ public class Transformer implements ExpType {
 	
 	public void set(Dataset ds){
 		if (ds!=null){
-			named = ds.getNamed();
-			from = ds.getFrom();
+                    dataset = ds;
 		}
 	}
 	
@@ -116,8 +115,12 @@ public class Transformer implements ExpType {
 		ast.setDefaultBase(base);
 		ast.setSPARQLCompliant(isSPARQLCompliant);
 
-		if (from!=null) ast.setDefaultFrom(from);
-		if (named!=null) ast.setDefaultNamed(named);
+//		if (from!=null) ast.setDefaultFrom(from);
+//		if (named!=null) ast.setDefaultNamed(named);
+                
+                if (dataset != null){
+                    ast.setDefaultDataset(dataset);
+                }
 
 		ParserSparql1.create(ast).parse();
 						
@@ -133,6 +136,9 @@ public class Transformer implements ExpType {
 	public Query transform (ASTQuery ast){
 		this.ast = ast;
 		ast.setSPARQLCompliant(isSPARQLCompliant);
+                if (isSPARQLCompliant){
+                    ast.getDataset().complete();                    
+                }
 		//new
 		compiler.setAST(ast);
 		
@@ -855,9 +861,9 @@ public class Transformer implements ExpType {
 		return node;
 	}
 
-	List<Node> nodes(List<Atom> from){
+	List<Node> nodes(List<Constant> from){
 		List<Node> nodes = new ArrayList<Node>();
-		for (Atom cst : from){
+		for (Constant cst : from){
 			nodes.add(new NodeImpl(cst));
 		}
 		return nodes;
@@ -1481,6 +1487,20 @@ public class Transformer implements ExpType {
 		
 		return suc;
 	}
+
+    /**
+     * @return the dataset
+     */
+    public Dataset getDataset() {
+        return dataset;
+    }
+
+    /**
+     * @param dataset the dataset to set
+     */
+    public void setDataset(Dataset dataset) {
+        this.dataset = dataset;
+    }
 
 	
 

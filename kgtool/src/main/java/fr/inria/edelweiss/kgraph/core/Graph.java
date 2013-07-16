@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -1774,11 +1775,11 @@ public class Graph //implements IGraph
 	}
 
 	
-	public List<Entity> delete(EdgeImpl edge, List<String> from){
+	public List<Entity> delete(EdgeImpl edge, List<Constant> from){
 		List<Entity> res = null;	
 
-		for (String str : from){
-			Node node = getGraphNode(str);
+		for (Constant str : from){
+			Node node = getGraphNode(str.getLabel());
 
 			if (node != null){
 				edge.setGraph(node);

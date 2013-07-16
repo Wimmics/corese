@@ -325,14 +325,14 @@ public class NSManager
 	public String toNamespaceB(String str){
 		
 		String pname = toNamespace(str);
-		
 		if (isBase()){
 			try {
-				URI uri = new URI(str);
+				URI uri = new URI(pname);
 				if (! uri.isAbsolute()){
 					pname = resolve(pname);
 				}
 			} catch (Exception e) {
+                            logger.error(e);
 			}
 		} 
 		

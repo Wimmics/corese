@@ -174,12 +174,14 @@ public class ASTQuery  implements Keyword {
 	List<Expression> lGroup  = new ArrayList<Expression>();
 	List<Expression> relax   = new ArrayList<Expression>();
 
-	List<Atom> from  		= new ArrayList<Atom>();
-	List<Atom> named 		= new ArrayList<Atom>();
-	List<Atom> defFrom, defNamed; 
+        private Dataset 
+                // Triple store default dataset
+                defaultDataset, 
+                // from, from named, with
+                dataset;
 	List<Expression> template ; 
 
-    List<Atom> adescribe = new ArrayList<Atom>();
+        List<Atom> adescribe = new ArrayList<Atom>();
 	List<Variable> stack = new ArrayList<Variable>(); // bound variables
 	List<String> vinfo;
 	List<String> errors;
@@ -238,6 +240,20 @@ public class ASTQuery  implements Keyword {
 
 	private Term templateGroup;
 
+    /**
+     * @return the defaultDataset
+     */
+    public Dataset getDefaultDataset() {
+        return defaultDataset;
+    }
+
+    /**
+     * @param defaultDataset the defaultDataset to set
+     */
+    public void setDefaultDataset(Dataset defaultDataset) {
+        this.defaultDataset = defaultDataset;
+    }
+
 
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
@@ -245,6 +261,7 @@ public class ASTQuery  implements Keyword {
 	 * The constructor of the class It looks like the one for QueryGraph
 	 */
 	private ASTQuery() {
+            dataset = Dataset.create();
     }
 	
 	ASTQuery(String query) {
@@ -293,87 +310,47 @@ public class ASTQuery  implements Keyword {
 		return globalAST;
 	}
 	
-	public List<Atom> getFrom() {
-		return from;
+	public List<Constant> getFrom() {
+		return dataset.getFrom();
 	}
 
-	public List<Atom> getNamed() {
-		return named;
+	public List<Constant> getNamed() {
+		return dataset.getNamed();
 	}
-	
-	public void setNamed(String uri) {
-		setNamed(createConstant(uri));
-	}
-
-	public void setNamed(Atom uri) {
-		named.add(uri);
-	}
-
-	public void setFrom(String uri) {
-		setFrom(createConstant(uri));
-	}
-
-	public void setFrom(Atom uri) {
-		from.add(uri);
-	}
-
+        
+        public Dataset getDataset(){
+            return dataset;
+        }
+        
+        public void setDataset(Dataset ds){
+            dataset = ds;
+        }
 	
 
-	public void setDefaultFrom(List<String> from){
-		if (from != null && from.size()>0){
-			defFrom = new ArrayList<Atom>(from.size());
-			for (String name : from){
-				defFrom.add(createConstant(name));
-			}
-		}
+	public void setNamed(Constant uri) {
+		dataset.addNamed(uri);
 	}
-	
-	public void setDefaultNamed(List<String> from){
-		if (from != null && from.size()>0){
-			defNamed = new ArrayList<Atom>(from.size());
-			for (String name : from){
-				defNamed.add(createConstant(name));
-			}
-		}
-	}
-	
-	public void setDefaultFrom(String[] from){
-		if (from != null && from.length>0){
-			defFrom = new ArrayList<Atom>(from.length);
-			for (String name : from){
-				defFrom.add(createConstant(name));
-			}
-		}
-	}
-	public void setDefaultNamed(String[] from){
-		if (from != null && from.length>0){
-			defNamed = new ArrayList<Atom>(from.length);
-			for (String name : from){
-				defNamed.add(createConstant(name));
-			}
-		}
-	}
-	
 
-	
-	List<Atom> getDefaultFrom(){
-		return defFrom;
+
+	public void setFrom(Constant uri) {
+		dataset.addFrom(uri);
+	}
+
+		
+	public List<Constant> getActualFrom(){
+		if (dataset.hasFrom()) return dataset.getFrom();
+                if (dataset.hasWith()){
+                    // with <uri> insert {} where {}
+                    return dataset.getWith();
+                }
+		if (defaultDataset != null && defaultDataset.hasFrom()) return defaultDataset.getFrom();
+		return dataset.getFrom();
 	}
 	
-	public List<Atom> getDefaultNamed(){
-		return defNamed;
-	}
-	
-	public List<Atom> getActualFrom(){
-		if (from.size() > 0) return from;
-		if (defFrom != null) return defFrom;
-		return from;
-	}
-	
-	public List<Atom> getActualNamed(){
-		if (named.size() > 0) return named;
-		if (defNamed != null) return defNamed;
-		return named;
+	public List<Constant> getActualNamed(){
+		if (dataset.hasNamed()) return dataset.getNamed();
+		if (defaultDataset != null && defaultDataset.hasNamed()) return defaultDataset.getNamed();
+		return dataset.getNamed();
 	}
 	
 	
@@ -601,12 +578,9 @@ public class ASTQuery  implements Keyword {
 		return relax;
 	}
 
-	public void setNamed(List<Atom> named) {
-		this.named = named;
-	}
 	
 	public void setOne(boolean one) {
-      this.one = one;
+            this.one = one;
 	}
 
 	public void setPQuery(boolean query) {
@@ -1773,8 +1747,8 @@ public class ASTQuery  implements Keyword {
      */
     StringBuffer getSparqlHeader(StringBuffer sb) {
     	String SPACE = KeywordPP.SPACE;
-    	List<Atom> from = getFrom();
-    	List<Atom> named = getNamed();
+    	List<Constant> from = getFrom();
+    	List<Constant> named = getNamed();
     	List<Variable> select = getSelectVar();
 
     	// Select

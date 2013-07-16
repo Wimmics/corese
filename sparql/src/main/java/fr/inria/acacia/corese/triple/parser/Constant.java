@@ -52,7 +52,7 @@ public class Constant extends Atom {
 	
 	 Constant(String name, String dt, String lg) {
 		this(name, dt, lg, true);		
-	}
+	}           
 	
 	public static Constant create(String str){
 		return new Constant(str);

@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgenv.eval;
 
 
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -186,8 +187,7 @@ public class QuerySolver  {
 	}
 	public Mappings basicQuery(ASTQuery ast, Dataset ds) {
 		if (ds!=null){
-			ast.setDefaultFrom(ds.getFrom());
-			ast.setDefaultNamed(ds.getNamed());
+			ast.setDefaultDataset(ds);
 		}
 		Transformer transformer =  transformer();
 		Query query = transformer.transform(ast);
@@ -196,17 +196,17 @@ public class QuerySolver  {
 	
 	
 	public Mappings query(String squery) throws EngineException{
-		return query(squery, null, null, null);
+		return query(squery, null, null);
 	}
 	
 	public Mappings query(String squery, Mapping map) throws EngineException{
-		return query(squery, map, null, null);
+		return query(squery, map, null);
 	}
 
-	public Mappings query(String squery, Mapping map, List<String> from, List<String> named) throws EngineException{
-		Dataset ds = Dataset.create(from, named);
-		return query(squery, map, ds);
-	}
+//	public Mappings query(String squery, Mapping map, List<String> from, List<String> named) throws EngineException{
+//		Dataset ds = Dataset.create(from, named);
+//		return query(squery, map, ds);
+//	}
 	
 	public Mappings query(String squery, Mapping map, Dataset ds) throws EngineException{
 		Query query = compile(squery, ds);

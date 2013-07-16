@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
+ 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
@@ -34,7 +34,6 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
-//import fr.inria.edelweiss.kgraph.core.NodeImpl;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
@@ -68,16 +67,19 @@ import org.junit.BeforeClass;
 public class TestW3C11KGraph {
     // root of test case RDF data
 
-    static final String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+    static final String data0 = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+    
+    static final String data = "/home/corby/NetBeansProjects/kgram/trunk/kgtool/src/test/resources/data/";
+
     // old local copy:
-    static final String froot = data + "w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/";
+    //static final String froot = data + "w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/";
     // new local copy:
-    static final String froot2 = data + "w3c-sparql11/sparql11-test-suite/";
+    static final String froot = data + "w3c-sparql11/sparql11-test-suite/";
     // W3C test case:
     static final String wroot = "http://www.w3.org/2009/sparql/docs/tests/data-sparql11/";
-    //static final String RULE = "/net/servers/ftp-sop/wimmics/soft/rule/rdfs.rul";
-    static final String RULE = data + "w3c-sparql11/data/rdfs.rul";
-    static final String root0 = data + "test-suite-archive/data-r2/";
+  //static final String RULE  = "/net/servers/ftp-sop/wimmics/soft/rule/rdfs.rul";
+    static final String RULE  = data + "w3c-sparql11/data/rdfs.rul";
+    static final String root0 = data0 + "test-suite-archive/data-r2/";
     static final String DC = "http://purl.org/dc/elements/1.1/";
     /**
      * **********
@@ -85,7 +87,7 @@ public class TestW3C11KGraph {
 	 ***********
      */
     // ** directory where data are:
-    static final String root = wroot; //froot2
+    static final String root = froot;
     // ** directory where to save earl report:
     static final String more = data + "w3c-sparql11/data/";
     // query
@@ -265,8 +267,9 @@ public class TestW3C11KGraph {
     void test() {
         sparql1 = true;
         //test(root + "functions", false);
-        // test(froot + "basic-update", true);		 
-        test(root + "csv-tsv-res");
+        test(root + "functions");		 
+        
+
     }
 
     void testelem() {
@@ -282,13 +285,13 @@ public class TestW3C11KGraph {
         // 28 errors  416 success
         // 29 errors 04/05/12
         // 31 errors 11/05/12 because of optional DOT 
-        // test0();
-        // testelem();
+        
 
         if (true) {
+            //Graph.setValueTable(true);
             test1();
             testUpdate();
-            //test0(); 31 errors
+            //test0(); //29 errors
         } else {
             test();
         }
@@ -302,25 +305,25 @@ public class TestW3C11KGraph {
         total = gok + gko;
 
 
-        System.out.println("<html><head>");
-        System.out.println("<title>Corese 3.0/KGRAM  SPARQL 1.1 Query &amp; Update W3C Test cases</title>");
+        println("<html><head>");
+        println("<title>Corese 3.0/KGRAM  SPARQL 1.1 Query &amp; Update W3C Test cases</title>");
 
-        System.out.println("<style type = 'text/css'>");
-        System.out.println(".success   {background:lightgreen}");
-        System.out.println("body {font-family: Verdana, Arial, Helvetica, Geneva, sans-serif}");
-        System.out.println("</style>");
-        System.out.println("<link rel='stylesheet' href='kgram.css' type='text/css'  />");
-        System.out.println("</head><body>");
-        System.out.println("<h2>Corese 3.0 KGRAM  SPARQL 1.1 Query &amp; Update W3C Test cases</h2>");
-        System.out.println("<p> Olivier Corby - Wimmics - INRIA I3S</p>");
-        System.out.println("<p>" + new Date() + " - Corese 3.0 <a href='http://wimmics.inria.fr/corese'>homepage</a></p>");
-        //System.out.println("<p><a href='http://www.w3.org/2001/sw/DataAccess/tests/r2'>SPARQL test cases</a></p>");
-        System.out.println("<table border='1'>");
-        System.out.println("<tr>");
-        System.out.println("<th/> <th>test</th><th>success</th><th>failure</th><th>ratio</th>");
-        System.out.println("</tr>");
+        println("<style type = 'text/css'>");
+        println(".success   {background:lightgreen}");
+        println("body {font-family: Verdana, Arial, Helvetica, Geneva, sans-serif}");
+        println("</style>");
+        println("<link rel='stylesheet' href='kgram.css' type='text/css'  />");
+        println("</head><body>");
+        println("<h2>Corese 3.0 KGRAM  SPARQL 1.1 Query &amp; Update W3C Test cases</h2>");
+        println("<p> Olivier Corby - Wimmics - INRIA I3S</p>");
+        println("<p>" + new Date() + " - Corese 3.0 <a href='http://wimmics.inria.fr/corese'>homepage</a></p>");
+        //println("<p><a href='http://www.w3.org/2001/sw/DataAccess/tests/r2'>SPARQL test cases</a></p>");
+        println("<table border='1'>");
+        println("<tr>");
+        println("<th/> <th>test</th><th>success</th><th>failure</th><th>ratio</th>");
+        println("</tr>");
 
-        System.out.println("<th/> <th>total</th><th>" + gok + "</th><th>" + gko + "</th><th>"
+        println("<th/> <th>total</th><th>" + gok + "</th><th>" + gko + "</th><th>"
                 + (100 * gok) / (total) + "%</th>");
         int i = 1;
 
@@ -347,29 +350,29 @@ public class TestW3C11KGraph {
                 ratio = 100 * suc / (suc + fail);
             } catch (Exception e) {
             }
-            System.out.print("<td>" + ratio + "%</td>");
-            System.out.println("</tr>");
+            print("<td>" + ratio + "%</td>");
+            println("</tr>");
         }
 
-        System.out.println("</table>");
+        println("</table>");
         int j = 0, k = 1;
         if (errors.size() > 0) {
-            System.out.println("<h2>Failure</h2>");
+            println("<h2>Failure</h2>");
         }
         for (String name : names) {
             if (name.indexOf("data-sparql11") != -1) {
-                System.out.println(k++ + ": " + name.substring(name.indexOf("data-sparql11")));
+                println(k++ + ": " + name.substring(name.indexOf("data-sparql11")));
             } else {
-                System.out.println(k++ + ": " + name);
+                println(k++ + ": " + name);
             }
 
-            System.out.println("<pre>\n" + errors.get(j++) + "\n</pre>");
-            System.out.println();
+            println("<pre>\n" + errors.get(j++) + "\n</pre>");
+            println("");
         }
-        System.out.println("</body><html>");
+        println("</body><html>");
 
         if (total != nbtest) {
-            System.out.println("*** Missing result: " + total + " " + nbtest);
+            println("*** Missing result: " + total + " " + nbtest);
         }
 
         //earl.toFile(more + "earl.ttl");
@@ -380,6 +383,14 @@ public class TestW3C11KGraph {
 
         //Processor.finish();
 
+    }
+    
+    void println(String str){
+        System.out.println(str);
+    }
+    
+     void print(String str){
+        System.out.print(str);
     }
 
     /**
@@ -533,7 +544,7 @@ public class TestW3C11KGraph {
             fquery = getValue(map, "?a");
         }
 
-        //if (! fquery.contains("csv-tsv") ) return true;
+       //if (! fquery.contains("uuid") ) return true;
 
         if (trace) {
             System.out.println(pp(fquery));
@@ -548,7 +559,8 @@ public class TestW3C11KGraph {
 
         if (query == null || query == "") {
             System.out.println("** ERROR 1: " + fquery + " " + query);
-            return false;
+            System.out.println(map);
+           return false;
         }
 
         Graph graph = Graph.create();
@@ -567,7 +579,7 @@ public class TestW3C11KGraph {
         graph.setOptimize(true);
         load.reset();
         QueryProcess exec = QueryProcess.create(graph, true);
-        exec.setSPARQLCompliant(true);
+        //exec.setSPARQLCompliant(true);
         // for update:
         exec.setLoader(load);
 
@@ -714,7 +726,7 @@ public class TestW3C11KGraph {
          *
          **********************************************************
          */
-        fr.inria.edelweiss.kgenv.eval.Dataset ds = fr.inria.edelweiss.kgenv.eval.Dataset.create();
+        fr.inria.acacia.corese.triple.parser.Dataset ds = fr.inria.acacia.corese.triple.parser.Dataset.create();
         ds.setUpdate(isUpdate);
 
         // default graph

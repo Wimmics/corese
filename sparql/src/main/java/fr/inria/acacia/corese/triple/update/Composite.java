@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Exp;
 /**
  * 
@@ -28,13 +29,12 @@ public class Composite extends Update {
 	List<Composite> list;
 	
 	Constant with;
-	List<Constant> using, named;
+        Dataset ds;
 	
 	Composite(int t){
 		type = t;
-		list  = new ArrayList<Composite>();
-		using = new ArrayList<Constant>();
-		named = new ArrayList<Constant>();
+		list  = new ArrayList<Composite>();		
+                ds = Dataset.create();
 
 	}
 	
@@ -54,7 +54,7 @@ public class Composite extends Update {
 	
 
 	public StringBuffer toString(StringBuffer sb){
-		
+
 		if (type() != COMPOSITE){
 			sb.append(title() + " ");
 		}
@@ -68,7 +68,11 @@ public class Composite extends Update {
 			}
 			for (Composite cc : getUpdates()){
 				sb.append(cc.title() + " ") ;
-				sb.append(cc.getPattern()  + NL);
+                                if (cc.getPattern() != getBody()){
+                                    // use case: delete where {}
+                                    // no pattern in this case
+                                    sb.append(cc.getPattern()  + NL);
+                                }
 			}
 
 			for (Constant uri : getUsing()){
@@ -123,20 +127,24 @@ public class Composite extends Update {
 	}
 	
 	public void addUsing(Constant uri){
-		using.add(uri);
+		ds.addFrom(uri);
 	}
 	
 	public List<Constant> getUsing(){
-		return using;
+		return ds.getFrom();
 	}
 	
 	public void addNamed(Constant uri){
-		named.add(uri);
+		ds.addNamed(uri);
 	}
 	
 	public List<Constant> getNamed(){
-		return named;
+		return ds.getNamed();
 	}
+        
+        public Dataset getDataset(){
+            return ds;
+        }
 	
 	
 }

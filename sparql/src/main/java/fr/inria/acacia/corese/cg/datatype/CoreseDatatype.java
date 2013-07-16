@@ -430,7 +430,7 @@ public class CoreseDatatype
 	public String getLabel(){
 		return getNormalizedLabel();
 	}
-	
+        
 	public StringBuilder getStringBuilder(){
 		return null;
 	}
@@ -439,7 +439,14 @@ public class CoreseDatatype
 		return false;
 	}
 	
-
+        public boolean booleanValue(){
+            return false;
+        }
+        
+       public String stringValue(){
+            return getLabel();
+        }
+	
 	public long longValue(){
 		return -1;
 	}

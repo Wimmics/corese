@@ -54,6 +54,10 @@ public class CoreseBoolean extends CoreseStringLiteral {
   public boolean isTrue() {
      return bvalue;
    }
+  
+  public boolean booleanValue(){
+      return bvalue;
+  }
 
    public boolean isTrueAble() {
      return true;

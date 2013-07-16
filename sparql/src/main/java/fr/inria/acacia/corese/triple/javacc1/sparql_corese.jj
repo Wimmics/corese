@@ -928,7 +928,7 @@ void Threshold(): { Token t; }
 
 // ----
 
-void DatasetClause() : { Atom s; }
+void DatasetClause() : { Constant s; }
 {
   <FROM>
   ( 

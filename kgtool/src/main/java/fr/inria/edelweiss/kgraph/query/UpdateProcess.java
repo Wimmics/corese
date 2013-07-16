@@ -14,7 +14,6 @@ import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Composite;
 import fr.inria.acacia.corese.triple.update.Update;
-import fr.inria.edelweiss.kgenv.eval.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 
@@ -205,6 +204,7 @@ public class UpdateProcess {
 				if (src != null){
 					// insert in src
 					exp = Source.create(src, exp);
+                                        exp = BasicGraphPattern.create(exp);
 				}
 				
 				if (cc.type() == Update.INSERT){
@@ -245,26 +245,33 @@ public class UpdateProcess {
 		// where {pat}
 		ast.setBody(ope.getBody());		
 		
-		for (Constant uri : ope.getUsing()){
-			// using -> from
-			ast.setFrom(uri);
-		}
-		for (Constant uri : ope.getNamed()){
-			// using named -> from named
-			ast.setNamed(uri);
-		}
+//		for (Constant uri : ope.getUsing()){
+//			// using -> from
+//			ast.setFrom(uri);
+//		}
+//		for (Constant uri : ope.getNamed()){
+//			// using named -> from named
+//			ast.setNamed(uri);
+//		}
+//		Constant src = ope.getWith();
+//		if (src!=null && ope.getUsing().size()==0){
+//			ast.setFrom(src);
+//		}
+                
+                
+               if (ope.getDataset().isEmpty()){
+                   if (ope.getWith() != null){
+                        // SPARQL requires that if there is WITH and if the endpoint Dataset has named graph
+                        // the named graph are still in the Dataset
+                        // so in this case, do not complete() the Dataset
+                        ast.getDataset().setWith(ope.getWith());
+                   }
+               }
+               else {
+                    ast.setDataset(ope.getDataset());                   
+               }
 		
-		if (ga.isSPARQLCompliant()){
-			// SPARQL requires that if there is a "using" and no "using named" (or the inverse)
-			// the named list is empty, and hence if there is a graph pattern it must fail
-			Dataset.create().complete(ast);
-		}
-		
-		Constant src = ope.getWith();
-		if (src!=null && ope.getUsing().size()==0){
-			ast.setFrom(src);
-		}
-		
+ 		
 		return ast;
 	}
 	

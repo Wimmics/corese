@@ -5,9 +5,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Update;
-import fr.inria.edelweiss.kgenv.eval.Dataset;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Engine;
@@ -100,6 +101,10 @@ public class ManagerImpl implements Manager {
 	public void set(Dataset ds){
 		this.ds = ds;
 	}
+        
+        public Dataset getDataset(){
+            return ds;
+        }
 	
 	
 	public boolean isDebug (){
@@ -222,13 +227,13 @@ public class ManagerImpl implements Manager {
 		
 		if (ds!=null && ! ds.isEmpty()){
 			if (ds.hasNamed() && (ope.isNamed() || ope.isAll())){
-				for (String gg : ds.getNamed()){
+				for (Constant gg : ds.getNamed()){
 					clear(gg, ope, drop);
 				}
 			}
 
 			if (ds.hasFrom() && (ope.isDefault() || ope.isAll())){
-				for (String gg : ds.getFrom()){
+				for (Constant gg : ds.getFrom()){
 					clear(gg, ope, drop);
 				}
 			}
@@ -259,7 +264,11 @@ public class ManagerImpl implements Manager {
 		graph.clear(ope.expand(g), ope.isSilent());
 		if (drop) graph.deleteGraph(ope.expand(g));
 	}
-
+        
+        void clear(Constant g, Basic ope, boolean drop){
+		graph.clear(g.getLabel(), ope.isSilent());
+		if (drop) graph.deleteGraph(g.getLabel());
+	}
 	/**
 	 * 
 	copy graph  | default 
@@ -278,15 +287,15 @@ public class ManagerImpl implements Manager {
 			else if (ds!=null && ds.hasFrom()){
 				// copy g to default
 				// use from as default specification
-				String name = ope.expand(ds.getFrom().get(0));
+				String name = ope.expand(ds.getFrom().get(0).getLabel());
 				update(ope, mode, source, name);
 			}
 		}
 		else if (target != null && ds!=null && ds.hasFrom()) {
 			// copy default to g
 			// use from as default specification
-			for (String gg : ds.getFrom()){
-				String name = ope.expand(gg);
+			for (Constant gg : ds.getFrom()){
+				String name = gg.getLabel();
 				update(ope, mode, name, target);
 			}
 		}

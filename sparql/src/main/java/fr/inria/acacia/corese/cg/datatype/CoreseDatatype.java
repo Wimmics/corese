@@ -62,12 +62,12 @@ public class CoreseDatatype
 	}
 	
 
-	public String toSparql(boolean prefix){
+	public String toSparql(boolean prefix){          
 		String value = getLabel();
 		if (getCode() == INTEGER){
 			
 		}
-		else if (getCode() == STRING){
+		else if (getCode() == STRING || (getCode() == LITERAL && ! hasLang()) ){
 			value =  protect(value);
 		}
 		else 

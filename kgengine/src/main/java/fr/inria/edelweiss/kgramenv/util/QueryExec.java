@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -108,7 +109,8 @@ public class QueryExec  {
 	}
 	
 	public IResults SPARQLQuery(String squery, List<String> from, List<String> named) throws EngineException {
-		Mappings map =  exec.query(squery, null, from, named);
+                Dataset ds = Dataset.newInstance(from, named);
+		Mappings map =  exec.query(squery, null, ds);
 		QueryResults res = QueryResults.create(map);
 		return res;
 	}

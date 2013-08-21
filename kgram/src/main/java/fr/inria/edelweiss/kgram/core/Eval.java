@@ -212,7 +212,9 @@ public class Eval implements  ExpType, Plugin {
 			}
 			
 			aggregate();
+                        // order by
 			complete();
+                        template();
 		}
 		
 		if (debug && ! isSubEval && ! q.isSubQuery()){
@@ -541,6 +543,10 @@ public class Eval implements  ExpType, Plugin {
 	
 	private void aggregate(){
 		results.aggregate(evaluator, memory);
+	}
+        
+        private void template(){
+		results.template(evaluator, memory);
 	}
 	
 	

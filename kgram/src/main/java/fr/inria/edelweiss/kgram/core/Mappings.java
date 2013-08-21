@@ -370,7 +370,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		}
 		while (size() > query.getLimit()){
 			remove(size()-1);
-		}
+		}             
 	}
 
 
@@ -421,7 +421,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 
 		finish(qq);
 		
-		template(evaluator, qq, memory);
+		//template(evaluator, qq, memory);
 		
 	}
 		
@@ -547,8 +547,12 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	/**
 	 * Template perform additionnal group_concat(?out)
 	 */
-	void template(Evaluator eval, Query q, Memory mem){
-		if (q.isTemplate()){
+	void template(Evaluator eval, Memory mem){
+            template(eval, query, mem);
+        }
+        
+        void template(Evaluator eval, Query q, Memory mem){
+		if (size() > 0 && q.isTemplate()){
 			setTemplateResult(apply(eval, q.getTemplateGroup(), mem));
 		}
 	}

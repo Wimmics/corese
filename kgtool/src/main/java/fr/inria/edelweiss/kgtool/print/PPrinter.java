@@ -67,6 +67,7 @@ public class PPrinter {
 	// separator of several results of one template
 	String sepResult = " ";
 	boolean isDebug = false;
+        private boolean isDetail = false;
 	private IDatatype EMPTY;
 	boolean isTurtle = false;
 	int nbt = 0, max = 0;
@@ -77,6 +78,35 @@ public class PPrinter {
 	public boolean stat = !true;
 	private boolean isAllResult = true;
 	private static Logger logger = Logger.getLogger(PPrinter.class);	
+        private boolean isCheck = false;
+
+    /**
+     * @return the isCheck
+     */
+    public boolean isCheck() {
+        return isCheck;
+    }
+
+    /**
+     * @param isCheck the isCheck to set
+     */
+    public void setCheck(boolean isCheck) {
+        this.isCheck = isCheck;
+    }
+
+    /**
+     * @return the isDetail
+     */
+    public boolean isDetail() {
+        return isDetail;
+    }
+
+    /**
+     * @param isDetail the isDetail to set
+     */
+    public void setDetail(boolean isDetail) {
+        this.isDetail = isDetail;
+    }
 
 	/**
 	 * 
@@ -201,7 +231,11 @@ public class PPrinter {
 		EMPTY = DatatypeMap.createLiteral(NULL);
 		tcount = new HashMap<Query,Integer> ();
 	}
-	
+        
+        public void setTemplates(String p){
+            pp = p; 
+            init();
+        }	
 	
 	private void tune(QueryProcess exec) {
 		// do not use Thread in Property Path
@@ -299,6 +333,10 @@ public class PPrinter {
 	 */
 	public IDatatype pprint(){
 		return pprint(null, false, null);
+	}
+        
+        public IDatatype pprint(String temp){
+		return pprint(temp, false, null);
 	}
 	
 	
@@ -425,6 +463,10 @@ public class PPrinter {
 						
 			// Tricky: All templates of this PPrinter share the same PPrinter (see PluginImpl)
 			qq.setPPrinter(pp, this);
+                        
+                        if (isDetail){
+                            qq.setDebug(true);
+                        }
 						
 			if (! qq.isFail() && ! stack.contains(dt1, qq)){
 				
@@ -671,7 +713,7 @@ public class PPrinter {
 			}
 			else {
 				// add quotes around string, add lang tag if any
-				dt = DatatypeMap.newStringBuilder(dt.toString());
+				dt = DatatypeMap.newStringBuilder(dt.toString());                               
 			}
 		}
 		
@@ -715,7 +757,10 @@ public class PPrinter {
                     trace();
                 }
 
-		//check();
+		if (isCheck()){
+                    check();
+                    trace();
+                }
                 //trace();
 
 	}

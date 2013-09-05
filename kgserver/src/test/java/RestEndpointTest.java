@@ -21,7 +21,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -61,8 +60,8 @@ public class RestEndpointTest {
 
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setWelcomeFiles(new String[]{"index.html"});
-        resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
-//            resource_handler.setResourceBase(webappUri.getRawPath());
+//        resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
+        resource_handler.setResourceBase(webappUri.getRawPath());
         ContextHandler staticContextHandler = new ContextHandler();
         staticContextHandler.setContextPath("/");
         staticContextHandler.setHandler(resource_handler);
@@ -110,7 +109,7 @@ public class RestEndpointTest {
 
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:"+RestEndpointTest.port+"/kgram"));
+        WebResource service = client.resource(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
         System.out.println(service.path("sparql").path("reset").post(String.class).toString());
 
@@ -139,7 +138,7 @@ public class RestEndpointTest {
 
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:"+RestEndpointTest.port+"/kgram"));
+        WebResource service = client.resource(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
         System.out.println(service.path("sparql").path("reset").post(String.class).toString());
 
@@ -173,7 +172,7 @@ public class RestEndpointTest {
 
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:"+RestEndpointTest.port+"/kgram"));
+        WebResource service = client.resource(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
         System.out.println(service.path("sparql").path("reset").post(String.class).toString());
         MultivaluedMap resetParams = new MultivaluedMapImpl();

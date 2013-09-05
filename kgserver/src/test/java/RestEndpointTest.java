@@ -99,7 +99,6 @@ public class RestEndpointTest {
     }
 
     @Test
-    @Ignore
     public void query() throws URISyntaxException, MalformedURLException, IOException {
 
         String query = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
@@ -111,7 +110,7 @@ public class RestEndpointTest {
 
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:8080/kgram"));
+        WebResource service = client.resource(new URI("http://localhost:"+RestEndpointTest.port+"/kgram"));
 
         System.out.println(service.path("sparql").path("reset").post(String.class).toString());
 
@@ -120,11 +119,10 @@ public class RestEndpointTest {
 //        formData.add("remote_path", "/Users/gaignard/Desktop/bsbmtools-0.2/dataset.ttl");
         service.path("sparql").path("load").post(formData);
         System.out.println(service.path("sparql").queryParam("query", query).accept("application/sparql-results+xml").get(String.class));
-        System.out.println(service.path("sparql").queryParam("query", query).accept("application/json").get(String.class));
+//        System.out.println(service.path("sparql").queryParam("query", query).accept("application/json").get(String.class));
     }
 
     @Test
-    @Ignore
     public void update() throws URISyntaxException, MalformedURLException, IOException {
 
         String insertData1 = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
@@ -141,7 +139,7 @@ public class RestEndpointTest {
 
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:8080/kgram"));
+        WebResource service = client.resource(new URI("http://localhost:"+RestEndpointTest.port+"/kgram"));
 
         System.out.println(service.path("sparql").path("reset").post(String.class).toString());
 
@@ -157,7 +155,6 @@ public class RestEndpointTest {
     }
 
     @Test
-    @Ignore
     public void updateNG() throws URISyntaxException, MalformedURLException, IOException {
 
         String insertDataNG = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
@@ -176,7 +173,7 @@ public class RestEndpointTest {
 
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:8080/kgram"));
+        WebResource service = client.resource(new URI("http://localhost:"+RestEndpointTest.port+"/kgram"));
 
         System.out.println(service.path("sparql").path("reset").post(String.class).toString());
         MultivaluedMap resetParams = new MultivaluedMapImpl();

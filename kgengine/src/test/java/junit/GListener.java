@@ -5,6 +5,7 @@ import java.util.List;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
@@ -144,5 +145,15 @@ public class GListener implements GraphListener, Tagger {
 	public boolean onInsert(Graph g, Entity ent) {
 		return true;
 	}
+
+    @Override
+    public void start(Graph g, Query q) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void finish(Graph g, Query q) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

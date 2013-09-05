@@ -24,8 +24,8 @@ import fr.inria.edelweiss.kgtool.load.QueryLoad;
 public class CRDT {
 
 	// change the path to the location of the data:
-	static String data = "/home/corby/workspace/kgengine/src/test/resources/data/crdt/";
-	
+//	static String data = "/home/corby/workspace/kgengine/src/test/resources/data/crdt/";
+	static String data = CRDT.class.getClassLoader().getResource("data/crdt").getPath()+"/";
 	
 	/**
 	 * 1) INSERT DATA (ground triples)

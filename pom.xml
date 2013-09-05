@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!--
+     Corese/KGRAM 3.0, Wimmics Inria I3S, 2013
+     Semantic Web Factory: RDF/S, SPARQL 1.1, Inference Rules
+     Open Source Free Software 
+     CeCILL-C License: http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
+     Web site: http://wimmics.inria.fr/corese
+     Contact: olivier.corby@inria.fr
+     -->
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>fr.inria.edelweiss</groupId>
@@ -7,13 +16,16 @@
     <packaging>pom</packaging>
     <version>1.0.7</version>
     <name>kg-parent</name>
-
+ 
     <developers>
         <developer>
             <id>OlivierCorby</id>
             <name>Olivier Corby</name>
             <email>olivier.corby@inria.fr</email>
-            <url>http://www-sop.inria.fr/members/Olivier.Corby/index.php</url>
+            <url>http://www-sop.inria.fr/members/Olivier.Corby</url>
+            <roles>
+                <role>Architect, Designer</role>
+            </roles>
             <organization>INRIA</organization>
             <organizationUrl>http://www.inria.fr/</organizationUrl>
             <timezone>1</timezone>

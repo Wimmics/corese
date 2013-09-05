@@ -118,7 +118,13 @@ public class SourceSelectorWS {
         }
 
         String sparql = sparqlPrefixes;
-        sparql += "ask  { ?_s " + edge.getEdgeNode().toString() + " ?_o } \n";
+        String ask = "ask  { ?_s " + edge.getEdgeNode().toString() + " ?_o } \n";
+        
+//        if (edge.getEdgeNode().toString().contains("#type") && edge.getNode(1).isConstant()) {
+//            ask = "ask  { ?_s " + edge.getEdgeNode().toString() + " "+ edge.getNode(1).toString()+"} \n";
+//        }
+        
+        sparql += ask;
 
         return sparql;
 

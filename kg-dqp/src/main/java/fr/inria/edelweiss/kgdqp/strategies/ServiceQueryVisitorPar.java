@@ -43,10 +43,11 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
     public void visit(ASTQuery ast) {
         HashMap<Triple, ArrayList<String>> indexEdgeSource = new HashMap<Triple, ArrayList<String>>();
         HashMap<String, ArrayList<Triple>> indexSourceEdge = new HashMap<String, ArrayList<Triple>>();
+        ArrayList<Triple> orderedTPs = new ArrayList<Triple>();
 
         //index initialization
         Exp body = ast.getBody();
-        buildIndex(body, indexEdgeSource, indexSourceEdge, ast);
+        buildIndex(body, indexEdgeSource, indexSourceEdge, ast, orderedTPs);
         // Source -> property index initialization
         for (Triple t : indexEdgeSource.keySet()) {
             if (indexEdgeSource.get(t).size() == 1) {
@@ -61,13 +62,14 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
                 }
             }
         }
-//        System.out.println("");
-//        dumpEdgeIndex(indexEdgeSource);
-//        System.out.println("");
-//
-//        System.out.println("");
-//        dumpSourceIndex(indexSourceEdge);
-//        System.out.println("");
+
+        System.out.println("");
+        dumpEdgeIndex(indexEdgeSource);
+        System.out.println("");
+
+        System.out.println("");
+        dumpSourceIndex(indexSourceEdge);
+        System.out.println("");
 
         //Query rewriting
         ArrayList<Exp> excludeFromServices = new ArrayList<Exp>();
@@ -79,7 +81,7 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
                 globalFilters.add(exp);
             }
         }
-        Exp rewriten = rewriteQueryWithServices(body, globalFilters, indexSourceEdge);
+        Exp rewriten = rewriteQueryWithServices(body, globalFilters, indexSourceEdge, orderedTPs);
 
         //TODO body.clear()
         for (int i = 0; i < body.size();) {
@@ -95,25 +97,25 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
     }
 
     // How to build an index from a "flat" query ? 
-    public void buildIndex(Exp exp, HashMap<Triple, ArrayList<String>> indexEdgeSource, HashMap<String, ArrayList<Triple>> indexSourceEdge, ASTQuery ast) {
+    public void buildIndex(Exp exp, HashMap<Triple, ArrayList<String>> indexEdgeSource, HashMap<String, ArrayList<Triple>> indexSourceEdge, ASTQuery ast, ArrayList<Triple> orderedTPs) {
         ExecutorService exec = Executors.newCachedThreadPool();
         List<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
 
         for (int i = 0; i < exp.size(); i++) {
             Exp subExp = exp.get(i);
             if (subExp.isOptional()) {
-               Option opt = (Option)  subExp;
-               for (int j = 0 ; j < opt.size() ; j++) {
-                   buildIndex(opt.get(j), indexEdgeSource, indexSourceEdge, ast);
-               }
+                Option opt = (Option) subExp;
+                for (int j = 0; j < opt.size(); j++) {
+                    buildIndex(opt.get(j), indexEdgeSource, indexSourceEdge, ast, orderedTPs);
+                }
             } else if (subExp.isUnion()) {
                 Or union = (Or) subExp;
                 Exp arg0 = union.get(0);
                 Exp arg1 = union.get(1);
                 //recursion 1
-                buildIndex(arg0, indexEdgeSource, indexSourceEdge, ast);
+                buildIndex(arg0, indexEdgeSource, indexSourceEdge, ast, orderedTPs);
                 //recursion 2
-                buildIndex(arg1, indexEdgeSource, indexSourceEdge, ast);
+                buildIndex(arg1, indexEdgeSource, indexSourceEdge, ast, orderedTPs);
             } else if (subExp.isTriple() && (!subExp.isFilter())) {
                 Producer mp = execDQP.getProducer();
                 if (mp instanceof MetaProducer) {
@@ -129,6 +131,9 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
 //                            System.out.println("ASK (" + url + ") -> " + exp.toString());
 
                             Triple triple = subExp.getTriple();
+                            if (!orderedTPs.contains(triple)) {
+                                orderedTPs.add(triple);
+                            }
                             //use cache
 //                            boolean ask = SourceSelectorHTTP.ask(triple.getPredicate().toSparql(), rp, ast);
 
@@ -145,7 +150,7 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
         }
     }
 
-    public Exp rewriteQueryWithServices(Exp exp, ArrayList<Exp> globalFilters, HashMap<String, ArrayList<Triple>> indexSourceEdge) {
+    public Exp rewriteQueryWithServices(Exp exp, ArrayList<Exp> globalFilters, HashMap<String, ArrayList<Triple>> indexSourceEdge, ArrayList<Triple> orderedTPs) {
 
         ArrayList<Exp> toKeepInsideService = new ArrayList<Exp>();
         ArrayList<Exp> toKeepOutsideService = new ArrayList<Exp>();
@@ -153,17 +158,17 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
         for (int i = 0; i < exp.size(); i++) {
             Exp subExp = exp.get(i);
             if (subExp.isOptional()) {
-               Option opt = (Option)  subExp;
-               //TODO include optional elements into services ? 
-               toKeepOutsideService.add(subExp);
+                Option opt = (Option) subExp;
+                //TODO include optional elements into services ? 
+                toKeepOutsideService.add(subExp);
             } else if (subExp.isUnion()) {
                 Or union = (Or) subExp;
                 Exp arg0 = union.get(0);
                 Exp arg1 = union.get(1);
                 //recursion 1
-                union.set(0, rewriteQueryWithServices(arg0, globalFilters, indexSourceEdge));
+                union.set(0, rewriteQueryWithServices(arg0, globalFilters, indexSourceEdge, orderedTPs));
                 //recursion 2
-                union.set(1, rewriteQueryWithServices(arg1, globalFilters, indexSourceEdge));
+                union.set(1, rewriteQueryWithServices(arg1, globalFilters, indexSourceEdge, orderedTPs));
                 toKeepOutsideService.add(subExp);
 
             } else if (subExp.isTriple() && (!subExp.isFilter())) {
@@ -175,19 +180,45 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
             }
         }
         BasicGraphPattern bgp = new BasicGraphPattern();
-        //service treatment
-        if (!toKeepInsideService.isEmpty()) {
-            ArrayList<Exp> services = getSparqlServices(globalFilters, toKeepInsideService, indexSourceEdge);
-            for (Exp s : services) {
-                bgp.add(s);
+        
+        
+        //Re-ordering query plan with preservation of the initial TP orders
+         ArrayList<Service> services = getSparqlServices(globalFilters, toKeepInsideService, indexSourceEdge, orderedTPs);
+//        ArrayList<Service> sortedServices = new ArrayList<Service>();
+        
+        for (Triple t : orderedTPs) {
+            for (Service s : services) {
+                if (s.getBody().get(0).getBody().contains(t)) { // what about UNION/OPTIONAL in a service clause ?
+                    //add service to the sorted list
+                    if (!bgp.getBody().contains(s)) {
+                        bgp.add(s);
+                        break;
+                    }
+                }
             }
-        }
-        //non-service treatment
-        if (!toKeepOutsideService.isEmpty()) {
             for (Exp e : toKeepOutsideService) {
-                bgp.add(e);
+                if (e.equals(t)) { //what about UNION/OPTIONAL ?
+                    bgp.add(e);
+                    break;
+                } 
             }
         }
+        
+        
+        
+//        //service treatment
+//        if (!toKeepInsideService.isEmpty()) {
+//            ArrayList<Service> services = getSparqlServices(globalFilters, toKeepInsideService, indexSourceEdge, orderedTPs);
+//            for (Service s : services) {
+//                bgp.add(s);
+//            }
+//        }
+//        //non-service treatment
+//        if (!toKeepOutsideService.isEmpty()) {
+//            for (Exp e : toKeepOutsideService) {
+//                bgp.add(e);
+//            }
+//        }
         return bgp;
     }
 
@@ -211,16 +242,24 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
         }
     }
 
-    public ArrayList<Exp> getSparqlServices(ArrayList<Exp> globalFilters, ArrayList<Exp> toKeep, HashMap<String, ArrayList<Triple>> indexSourceEdge) {
-        ArrayList<Exp> services = new ArrayList<Exp>();
+    public ArrayList<Service> getSparqlServices(ArrayList<Exp> globalFilters, ArrayList<Exp> toKeep, HashMap<String, ArrayList<Triple>> indexSourceEdge, ArrayList<Triple> orderedTPs) {
+        ArrayList<Service> services = new ArrayList<Service>();
         for (String url : indexSourceEdge.keySet()) {
 //            fr.inria.acacia.corese.triple.parser.Exp serv = 
 
-            BasicGraphPattern bgp = BasicGraphPattern.create();
+            BasicGraphPattern unsortedBgp = BasicGraphPattern.create();
             ArrayList<Triple> triples = indexSourceEdge.get(url);
             for (Triple t : triples) {
                 //todo check if toKeep is really needed ? 
                 if (toKeep.contains(t)) {
+                    unsortedBgp.add(t);
+                }
+            }
+
+            //sorting triples with respect to the initial query (orderedTPs)
+            BasicGraphPattern bgp = BasicGraphPattern.create();
+            for (Triple t : orderedTPs) {
+                if (unsortedBgp.getBody().contains(t)) {
                     bgp.add(t);
                 }
             }

@@ -20,6 +20,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLSoapEndpointClient;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SparqlEndpointInterface;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -55,12 +56,17 @@ public class ProviderWSImpl implements Provider {
 
     ProviderWSImpl(WSImplem wsImplem) {
         table = new HashMap<String, QueryProcess>();
-        compiler = new CompileService();
+//        compiler = new CompileService(this);
         this.wsImplem = wsImplem;
     }
 
     public static ProviderWSImpl create(WSImplem wsImplem) {
         return new ProviderWSImpl(wsImplem);
+    }
+
+    @Override
+    public void set(String uri, double version) {
+//        compiler.set(uri, version);
     }
 
     /**
@@ -86,6 +92,11 @@ public class ProviderWSImpl implements Provider {
      * spaql endpoint If endpoint fails, use default QueryProcess if it exists
      */
     @Override
+    public Mappings service(Node serv, Exp exp, Environment env) {
+        return service(serv, exp, null, env);
+    }
+
+    @Override
     public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
         Query q = exp.getQuery();
 
@@ -93,7 +104,7 @@ public class ProviderWSImpl implements Provider {
 
         if (exec == null) {
 
-            Mappings map = send(serv, q, lmap, env);
+            Mappings map = globalSend(serv, q, lmap, env);
             if (map != null) {
                 return map;
             }
@@ -116,20 +127,64 @@ public class ProviderWSImpl implements Provider {
     }
 
     /**
+     * Cut into pieces when to many Mappings
+     */
+    Mappings globalSend(Node serv, Query q, Mappings lmap, Environment env) {
+
+        // share prefix
+        compiler.prepare(q);
+
+        int slice = compiler.slice(q);
+
+        if (lmap == null || slice == 0) {
+            return send(serv, q, lmap, env, 0, 0);
+        } else if (lmap.size() > slice) {
+            int size = 0;
+            Mappings res = null;
+
+            while (size < lmap.size()) {
+                Mappings map = send(serv, q, lmap, env, size, size + slice); //lmap.size());
+                size += slice;
+                if (res == null) {
+                    res = map;
+                } else if (map != null) {
+                    res.add(map);
+                }
+            }
+            return res;
+        } else {
+            return send(serv, q, lmap, env, 0, lmap.size());
+        }
+    }
+
+    /**
      * Send query to sparql endpoint using REST or SOAP messages
      */
-    Mappings send(Node serv, Query q, Mappings lmap, Environment env) {
+    Mappings send(Node serv, Query q, Mappings lmap, Environment env, int start, int limit) {
+        Query g = q.getOuterQuery();
+        int timeout = 0;
+        Integer time = (Integer) g.getPragma(Pragma.TIMEOUT);
+        if (time != null) {
+            timeout = time;
+        }
         try {
-            Query g = q.getOuterQuery();
-            compile(serv, q, lmap, env);
+// generate bindings from env if any
+            compiler.compile(serv, q, lmap, env, start, limit);
 
-            ASTQuery ag = (ASTQuery) g.getAST();
             ASTQuery ast = (ASTQuery) q.getAST();
 
-            ast.setDebug(g.isDebug());
-            ast.setPrefixExp(ag.getPrefixExp());
-
             String query = ast.toString();
+            if (g.isDebug()) {
+                logger.info("** Provider query: \n" + query);
+            }
+//            System.out.println("---QUERY---");
+//            System.out.println(q);
+//            System.out.println("");
+
+
+//            System.out.println("---SERVICE---");
+//            System.out.println(query);
+//            System.out.println("");
 
             if (g.isDebug()) {
                 logger.info("** Provider: \n" + query);
@@ -144,10 +199,45 @@ public class ProviderWSImpl implements Provider {
                 SparqlEndpointInterface rp = new SPARQLRestEndpointClient(new URL(serv.getLabel()));
                 sparqlRes = rp.query(query);
             }
+
+            // count number of queries
+
+            String queryWithoutBindings = query;
+            if (queryWithoutBindings.contains("filter")) {
+                queryWithoutBindings = queryWithoutBindings.substring(timeout, queryWithoutBindings.indexOf("filter"));
+            }
+            if (queryWithoutBindings.contains("values")) {
+                queryWithoutBindings = queryWithoutBindings.substring(timeout, queryWithoutBindings.indexOf("values"));
+            }
+
+            if (QueryProcessDQP.queryCounter.containsKey(queryWithoutBindings)) {
+                Long n = QueryProcessDQP.queryCounter.get(queryWithoutBindings);
+                QueryProcessDQP.queryCounter.put(queryWithoutBindings, n + 1L);
+            } else {
+                QueryProcessDQP.queryCounter.put(queryWithoutBindings, 1L);
+            }
+
+            // count number of source access
+            String endpoint = serv.getLabel();
+            if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+                Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+                QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+            } else {
+                QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+            }
+
             if (sparqlRes == null) {
                 return null;
             } else {
                 Mappings maps = parseXML(new StringBuffer(sparqlRes));
+//                System.out.println("------> Mappings from SERVICE: " + maps.size());
+                if (QueryProcessDQP.queryVolumeCounter.containsKey(queryWithoutBindings)) {
+                    Long n = QueryProcessDQP.queryVolumeCounter.get(queryWithoutBindings);
+                    QueryProcessDQP.queryVolumeCounter.put(queryWithoutBindings, n + (long) maps.size());
+                } else {
+                    QueryProcessDQP.queryVolumeCounter.put(queryWithoutBindings, (long) maps.size());
+                }
+
                 return maps;
             }
         } catch (ParserConfigurationException ex) {
@@ -187,7 +277,6 @@ public class ProviderWSImpl implements Provider {
 //            ast.setValueBindings(lval);
 //        }
 //    }
-
     /**
      * ********************************************************************
      *
@@ -253,16 +342,6 @@ public class ProviderWSImpl implements Provider {
 //		ProviderImpl impl = new ProviderImpl();
 //		System.out.println(impl.callSoapEndPoint());
 //	}
-
-    @Override
-    public Mappings service(Node serv, Exp exp, Environment env) {
-        return service(serv, exp, null, env);
-    }
-
-    @Override
-    public void set(String uri, double version) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     void compile(Node serv, Query q, Mappings lmap, Environment env) {
         // share prefix

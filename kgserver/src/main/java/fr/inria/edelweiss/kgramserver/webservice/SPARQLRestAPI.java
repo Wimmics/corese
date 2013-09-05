@@ -4,7 +4,7 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import fr.inria.edelweiss.kgenv.eval.Dataset;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -381,7 +381,7 @@ public class SPARQLRestAPI {
      */
     private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris) {
         if (((defaultGraphUris != null) && (!defaultGraphUris.isEmpty())) || ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
-            Dataset ds = Dataset.create(defaultGraphUris, namedGraphUris);
+            Dataset ds = Dataset.newInstance(defaultGraphUris, namedGraphUris);
             return ds ;
         } else {
             return null;

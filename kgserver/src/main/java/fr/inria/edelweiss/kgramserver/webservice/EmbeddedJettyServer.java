@@ -110,7 +110,7 @@ public class EmbeddedJettyServer {
 
     }
 
-    private static URI extractResourceDir(String dirname, boolean overwrite) throws FileSystemException, URISyntaxException {
+    public static URI extractResourceDir(String dirname, boolean overwrite) throws FileSystemException, URISyntaxException {
         URL dir_url = EmbeddedJettyServer.class.getClassLoader().getResource(dirname);
         FileObject dir_jar = VFS.getManager().resolveFile(dir_url.toString());
         String tempDir = FileUtils.getTempDirectory() + File.separator + System.getProperty("user.name");

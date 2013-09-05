@@ -17,4 +17,16 @@
         <servlet-name>KGSparqlEndpoint</servlet-name>
         <url-pattern>/KGSparqlEndpoint/*</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>jersey</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>avdw</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jersey</servlet-name>
+        <url-pattern>/jersey/*</url-pattern>
+    </servlet-mapping>
 </web-app>

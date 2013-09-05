@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgenv.eval.Dataset;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgimport.JenaGraphFactory;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -28,6 +28,7 @@ import java.io.*;
  * SPARQL Endpoint Servlet for Corese implements SPARQL 1.1 Protocol using POST
  * and GET query and update http://www.w3.org/TR/sparql11-protocol/
  */
+@Deprecated
 public class SPARQLEndpointServlet extends HttpServlet {
 
     private static final String FROM = "default-graph-uri";
@@ -100,7 +101,7 @@ public class SPARQLEndpointServlet extends HttpServlet {
         PrintWriter out = null;
         try {
 
-        Dataset ds = Dataset.create(from, named);
+        Dataset ds = Dataset.newInstance(from, named);
         // comment this to have default graph when there is named and no from
         // if not comment, it is std SPARQL semantics
         //ds.complete();

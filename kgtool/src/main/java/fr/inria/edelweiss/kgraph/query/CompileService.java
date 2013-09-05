@@ -62,7 +62,7 @@ public class CompileService {
 		ast.setPrefixExp(ag.getPrefixExp());
 	}
 	
-	int slice(Query q){
+	public int slice(Query q){
 		Query g  = q.getOuterQuery();
 		return g.getSlice();
 	}
@@ -71,9 +71,7 @@ public class CompileService {
 		Query g  = q.getOuterQuery();
 		return g.isMap();
 	}
-	
-	
-	
+
 	
 	/**
 	 * Search select variable of query that is bound in env

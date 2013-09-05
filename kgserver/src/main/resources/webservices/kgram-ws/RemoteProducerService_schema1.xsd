@@ -9,9 +9,13 @@
 
   <xs:element name="getEndpointResponse" type="tns:getEndpointResponse"/>
 
+  <xs:element name="initEngine" type="tns:initEngine"/>
+
   <xs:element name="initEngineFromSQL" type="tns:initEngineFromSQL"/>
 
   <xs:element name="initEngineFromSQLResponse" type="tns:initEngineFromSQLResponse"/>
+
+  <xs:element name="initEngineResponse" type="tns:initEngineResponse"/>
 
   <xs:element name="load" type="tns:load"/>
 
@@ -52,6 +56,14 @@
   </xs:complexType>
 
   <xs:complexType name="setEndpointResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="initEngine">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="initEngineResponse">
     <xs:sequence/>
   </xs:complexType>
 

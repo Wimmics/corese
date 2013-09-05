@@ -33,8 +33,10 @@ import fr.inria.edelweiss.kgtool.load.RuleLoad;
  */
 public class TestRuleEngine {
 	
-	static String data = "/user/corby/home/workspace/coreseV2/src/test/resources/data/";
-	static String root = "/user/corby/home/workspace/kgengine/src/test/resources/data/";
+//	static String data = "/user/corby/home/workspace/coreseV2/src/test/resources/data/";
+        static String data = TestRuleEngine.class.getClassLoader().getResource("data").getPath()+"/";
+//	static String root = "/user/corby/home/workspace/kgengine/src/test/resources/data/";
+        static String root = TestRuleEngine.class.getClassLoader().getResource("data").getPath()+"/";
 
 	static Graph graph;
 	static Engine rengine;

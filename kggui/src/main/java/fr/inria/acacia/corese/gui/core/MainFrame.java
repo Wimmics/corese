@@ -63,7 +63,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	 */
 	private static final long serialVersionUID = 1L; 
 	
-	private static final String TITLE = "Corese/KGRAM 3.0 - INRIA - Wimmics - 2012-12-12";
+	private static final String TITLE = "Corese/KGRAM 3.0 - Wimmics Inria I3S - 2013-08-21";
 
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
@@ -1141,7 +1141,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	 *  Charge un fichier RDF/RDFS/OWL dans CORESE
 	 */
 	public void loadRDFs(){	
-		Filter FilterRDFS = new Filter(new String[]{"rdfs","owl"}, "les fichiers RDFS/OWL (*.rdfs,*.owl)");
+		Filter FilterRDFS = new Filter(new String[]{"rdfs","owl", "ttl"}, "les fichiers RDFS/OWL (*.rdfs,*.owl,*.ttl)");
 		l_path = null;
 		JFileChooser fileChooser = new JFileChooser(l_path_courant);
 		fileChooser.setMultiSelectionEnabled(true);
@@ -1213,7 +1213,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	
 	public void loadPipe(){
 		//Load and run a pipeline
-		Filter FilterRUL = new Filter(new String[]{"rdf"}, "rdf files (*.rdf)");
+		Filter FilterRUL = new Filter(new String[]{"rdf", "ttl"}, "rdf files (*.rdf,*.ttl)");
 	    JFileChooser fileChooser = new JFileChooser(l_path_courant);
 		fileChooser.addChoosableFileFilter(FilterRUL);
 	    File selectedFile;
@@ -1266,7 +1266,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	
 	public void loadRDF() {
 		l_path = null;
-		Filter FilterRDF = new Filter(new String[]{"rdf"}, "RDF files (*.rdf)");
+		Filter FilterRDF = new Filter(new String[]{"rdf","ttl"}, "RDF files (*.rdf,*.ttl)");
 		JFileChooser fileChooser = new JFileChooser(l_path_courant);
 		fileChooser.setMultiSelectionEnabled(true);
 		fileChooser.addChoosableFileFilter(FilterRDF);

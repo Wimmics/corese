@@ -28,6 +28,9 @@ import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -47,7 +50,10 @@ import org.apache.log4j.Logger;
 public class PPrinter {
 	
 	private static final String NULL = "";
-	public  static final String PPRINTER = "/home/corby/AData/pprint/asttemplate";
+	public  static final String PPRINTER = "/home/corby/AData/pprint/turtle/template";
+        public  static final String PPLIB = "/fr/inria/edelweiss/kgtool/resource/";
+        public static final String SPIN = NSManager.PPN + "spin";
+
 	private static final String OUT = ASTQuery.OUT;
 	private static final String IN  = ASTQuery.IN;
 	private static final String IN2 = ASTQuery.IN2;
@@ -225,8 +231,8 @@ public class PPrinter {
 		pp = p;
 		exec = QueryProcess.create(g, true);		
 		tune(exec);				
-		init();
 		nsm = NSManager.create();
+		init();
 		stack = new Stack(true);
 		EMPTY = DatatypeMap.createLiteral(NULL);
 		tcount = new HashMap<Query,Integer> ();
@@ -730,10 +736,11 @@ public class PPrinter {
 		else {
 			Load ld = Load.create(graph);
 			try {
-				ld.loadWE(pp);
+				//ld.loadWE(pp);
+                                load(ld, pp);
 			} catch (LoadException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+                            logger.error("PPrint Load Error: " + pp);
 			}
 			qe = ld.getQueryEngine();
 
@@ -764,7 +771,32 @@ public class PPrinter {
                 //trace();
 
 	}
-	
+        
+        
+       void load(Load ld, String pp) throws LoadException {
+           if (nsm.inNamespace(pp, NSManager.PPN)) {
+               // predefined pprinter: pp:owl pp:spin
+               // loaded from Corese resource
+               String name = nsm.strip(pp, NSManager.PPN);
+               String src = PPLIB + name;
+               if (! ld.isRule(src)){
+                   src = src + Load.RULE;
+               }
+               InputStream stream = getClass().getResourceAsStream(src);
+               if (stream == null){
+                   throw LoadException.create(new IOException(pp));
+               }
+               // use non synchronized load method because we may be inside a query 
+               // with a read lock
+               ld.loadRule(new InputStreamReader(stream), src);
+           }
+           else {
+               ld.loadWE(pp);
+           }
+        }
+       
+       
+
 	/***************************************************************
 	 * 
 	 * Check templates that would never succeed

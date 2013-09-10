@@ -116,7 +116,8 @@ public class MatcherImpl implements Matcher {
 	}
 		
 	boolean matchType(Edge q, Edge r, Environment env){
-		if (! match(q.getNode(0), r.getNode(0), env)){
+
+                if (! match(q.getNode(0), r.getNode(0), env)){
 			return false;
 		}
 		
@@ -133,23 +134,27 @@ public class MatcherImpl implements Matcher {
 		Node qnode = q.getNode(1);
 		
 		switch (localMode){
-			case STRICT: return match(qnode, r.getNode(1), env);
-			case RELAX: return true;
+			case STRICT: 
+                            return match(qnode, r.getNode(1), env);
+			case RELAX: 
+                            return true;
 		}
 		
 		
 		if (qnode.isConstant() && entail!=null){
-                    
+
                     	if (match(qnode, r.getNode(1), env)){
                             return true;
                         }
                         if (entail.isTopClass(qnode)){
-					// ?x rdf:type rdfs:Resource
-					return true;
+				// ?x rdf:type rdfs:Resource
+				return true;
 			}
 			
 			Node gqnode = graph.getNode(qnode);
-
+                        if (gqnode == null){
+                            return false;
+			}
 			switch (localMode){
 
 			case SUBSUME:
@@ -159,10 +164,7 @@ public class MatcherImpl implements Matcher {
 //					// ?x rdf:type rdfs:Resource
 //					return true;
 //				}
-				
-				if (gqnode == null){
-					return false;
-				}
+								
 				
 				// if rdf:type is completed by subClassOf, skip this and perform std match
 				// if rdf:type is not completed by subClassOf, check whether r <: q
@@ -185,7 +187,7 @@ public class MatcherImpl implements Matcher {
 				return   isSubClassOf(gqnode, r.getNode(1), env);
 			}
 		}
-		
+                
 		return match(qnode, r.getNode(1), env);
 	}
 	

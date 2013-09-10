@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -11,9 +10,6 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.logic.OWL;
-import fr.inria.edelweiss.kgraph.logic.RDF;
-import fr.inria.edelweiss.kgraph.logic.RDFS;
 
 /**
  * Match
@@ -143,6 +139,14 @@ public class MatcherImpl implements Matcher {
 		
 		
 		if (qnode.isConstant() && entail!=null){
+                    
+                    	if (match(qnode, r.getNode(1), env)){
+                            return true;
+                        }
+                        if (entail.isTopClass(qnode)){
+					// ?x rdf:type rdfs:Resource
+					return true;
+			}
 			
 			Node gqnode = graph.getNode(qnode);
 
@@ -151,10 +155,10 @@ public class MatcherImpl implements Matcher {
 			case SUBSUME:
 			case MIX:
 
-				if (entail.isTopClass(qnode)){
-					// ?x rdf:type rdfs:Resource
-					return true;
-				}
+//				if (entail.isTopClass(qnode)){
+//					// ?x rdf:type rdfs:Resource
+//					return true;
+//				}
 				
 				if (gqnode == null){
 					return false;

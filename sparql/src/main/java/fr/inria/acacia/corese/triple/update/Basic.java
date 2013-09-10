@@ -4,7 +4,6 @@ import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.parser.And;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Triple;
 
 /**
@@ -64,15 +63,15 @@ public class Basic extends Update {
 		
 		
 		case LOAD:
-			if (uri!=null)    sb.append(" " + uri);
-			if (target!=null) sb.append(" " + INTO + " " + GRAPH + " " + target);
+			if (auri!=null)    sb.append(" " + auri);
+			if (atarget!=null) sb.append(" " + INTO + " " + GRAPH + " " + atarget);
 			break;
 		
 		case ADD:
 		case MOVE:
 		case COPY:
-			if (graph!=null){
-				sb.append(" " + GRAPH + " " + graph);
+			if (agraph!=null){
+				sb.append(" " + GRAPH + " " + agraph);
 			}
 			else {
 				sb.append(" " + DEFAUT);
@@ -80,8 +79,8 @@ public class Basic extends Update {
 			
 			sb.append(" " + TO + " ");
 			
-			if (target!=null){
-				sb.append(target);
+			if (atarget!=null){
+				sb.append(atarget);
 			}
 			else {
 				sb.append(DEFAUT);
@@ -92,7 +91,7 @@ public class Basic extends Update {
 		case CLEAR:
 		case DROP:
 		case CREATE:
-			if (graph!=null)  sb.append(" " + GRAPH + " " + graph);
+			if (agraph!=null)  sb.append(" " + GRAPH + " " + agraph);
 			if (named) 		sb.append(" " + NAMED) ;
 			if (all) 		sb.append(" " + ALL) ;
 			if (defaut) 	sb.append(" " + DEFAUT) ;
@@ -177,6 +176,10 @@ public class Basic extends Update {
 	public void setTarget(Constant t){
 		atarget = t;
 	}
+        
+        public Constant getCTarget(){
+            return atarget;
+        }
 	
 	public void setURI(String t){
 		uri = t;
@@ -185,6 +188,14 @@ public class Basic extends Update {
 	public void setURI(Constant t){
 		auri = t;
 	}
+        
+         public Constant getCURI(){
+            return auri;
+        }
+        
+         public Constant getCGraph(){
+            return agraph;
+        }
 	
 	public String getGraph(){
 		if (agraph == null) return null;

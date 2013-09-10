@@ -2,13 +2,13 @@ package fr.inria.edelweiss.kgraph.query;
 
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
@@ -29,6 +29,13 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.print.PPrinter;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -693,4 +700,23 @@ public class QueryProcess extends QuerySolver {
             return map;
         }
 	
+
+
+/*******************************************/
+
+    /**
+     * Graph g is a SPIN graph that represents a SPARQL query
+     */
+    public Mappings spin(Graph g) throws EngineException {
+        PPrinter p = PPrinter.create(g, PPrinter.SPIN);
+        String s = p.toString();
+        if (s.length() == 0){
+            throw new EngineException("Uncorrect SPIN Query");
+        }
+        Mappings map = query(s);
+        return map;
+    }
+
+    
+
 }

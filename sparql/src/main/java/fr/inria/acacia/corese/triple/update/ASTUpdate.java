@@ -12,7 +12,8 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
  */
 public class ASTUpdate {
 	static final String NL = System.getProperty("line.separator");
-	
+	private static final String PV = ";";
+
 	List<Update> list;
 	ASTQuery ast;
 	Basic prolog;
@@ -38,6 +39,7 @@ public class ASTUpdate {
 		for (Update ast : list){
 			ast.toString(sb);
 			if (ast.type() != Update.PROLOG) {
+				sb.append(PV);
 				sb.append(NL);
 			}
 		}

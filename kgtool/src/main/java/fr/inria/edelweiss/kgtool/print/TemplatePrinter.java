@@ -54,6 +54,10 @@ public class TemplatePrinter {
 	
 	void header() throws IOException{
 		write("<?xml version='1.0' encoding='UTF-8'?>");
+                write("<!--");
+                write("SPARQL Template Pretty Printer");
+                write("Corese/KGRAM - Wimmics Inria I3S - 2013");
+                write("-->");
 		write("<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' ") ;
 		write("  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>");	
 	}

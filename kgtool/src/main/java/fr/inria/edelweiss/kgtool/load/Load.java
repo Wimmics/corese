@@ -46,7 +46,7 @@ public class Load
 	Loader {
 	private static Logger logger = Logger.getLogger(Load.class);	
 
-	static final String RULE 	= ".rul";
+	public static final String RULE = ".rul";
 	static final String BRULE 	= ".brul";
 	static final String IRULE 	= ".rl";
 	static final String[] RULES 	= {RULE, BRULE, IRULE};
@@ -437,7 +437,7 @@ public class Load
 	}
 	
 	
-	void loadRule(Reader stream, String src) throws LoadException{
+        public void loadRule(Reader stream, String src) throws LoadException{
 		if (engine == null){
 			engine = RuleEngine.create(graph);
 		}

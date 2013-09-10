@@ -286,11 +286,11 @@ public class Term extends Expression {
 			}
 		}
 
-		if (getModality() != null && getName().equals(Processor.GROUPCONCAT)){
+		if (getModality() != null && getName().equalsIgnoreCase(Processor.GROUPCONCAT)){
 			sb.append(Processor.SEPARATOR);
 			Constant.toString(getModality(), sb);
 		}
-		else if (n == 0 && getName().equals(Processor.COUNT)) {
+		else if (n == 0 && getName().equalsIgnoreCase(Processor.COUNT)) {
 			// count(*)
 			sb.append(KeywordPP.STAR);
 		}

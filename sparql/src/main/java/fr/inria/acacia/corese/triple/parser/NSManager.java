@@ -33,8 +33,11 @@ public class NSManager
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(NSManager.class);
 	
-	public static final String PPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
+	public static final String FPPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
+	static final String FPPP = "fp";
+        public static final String PPN = ExpType.KGRAM + "pprinter/";
 	static final String PPP = "pp";
+
 
 	/** prefix seed (ns1, ns2,...) */
 	private static final String seed 	= "ns";
@@ -152,8 +155,10 @@ public class NSManager
 		def.put(RDFS.RDFS, RDFS.RDFSPrefix);
 		def.put(RDFS.XSD,  RDFS.XSDPrefix);
 		def.put(RDFS.OWL,  RDFS.OWLPrefix);
+                
 		def.put(ExpType.KGRAM, ExpType.KPREF);
 		def.put(RDFS.COS,  RDFS.COSPrefix);
+		def.put(FPPN,  	   FPPP);
 		def.put(PPN,  	   PPP);
 	}
 	

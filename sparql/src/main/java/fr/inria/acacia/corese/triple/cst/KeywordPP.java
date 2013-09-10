@@ -46,6 +46,7 @@ public interface KeywordPP {
     public final static String XML = "xml";
     public final static String BLANK = "blank";
     public final static String DISTINCT = "distinct";
+    public final static String REDUCED = "reduced";
     public final static String SORTED = "sorted";
     public final static String STAR = "*";
     public final static String PROJECTION = "projection";

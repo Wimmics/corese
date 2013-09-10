@@ -1,12 +1,15 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.triple.api.ASTVisitable;
+import fr.inria.acacia.corese.triple.api.ASTVisitor;
+
 /**
  * Root of SPARQL Expression (filter) and Exp (triple, option, ...) 
  * @author corby
  *
  */
 
-public class Statement {
+public class Statement implements ASTVisitable  {
 	
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
@@ -20,6 +23,10 @@ public class Statement {
 	
 	public String toSparql(){
 		return toString();
+	}
+        
+        public void accept(ASTVisitor visitor) {
+		
 	}
 
 }

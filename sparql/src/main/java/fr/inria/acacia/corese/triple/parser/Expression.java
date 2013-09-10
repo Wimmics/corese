@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -556,5 +557,12 @@ implements Regex, Filter, Expr {
 		
 		return null;
 	}
+        
+        
+        @Override
+	public void accept(ASTVisitor visitor) {
+		visitor.visit(this);
+	}
+        
 	
 }

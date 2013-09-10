@@ -6,6 +6,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
+import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 
@@ -330,5 +331,12 @@ public abstract class Exp extends Statement {
 		}
 		return true;
 	}
+        
+        
+        @Override
+	public void accept(ASTVisitor visitor) {
+		visitor.visit(this);
+	}
+        
 	
 }

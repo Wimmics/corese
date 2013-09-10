@@ -9,6 +9,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.api.ASTVisitable;
+import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -27,7 +29,7 @@ import fr.inria.acacia.corese.triple.update.ASTUpdate;
  * @author Olivier Corby & Virginie Bottollier
  */
 
-public class ASTQuery  implements Keyword {
+public class ASTQuery  implements Keyword, ASTVisitable {
 
 	/** Use to keep the class version, to be consistent with the interface Serializable.java */
 	private static final long serialVersionUID = 1L;
@@ -645,7 +647,11 @@ public class ASTQuery  implements Keyword {
 	public boolean isDistinct() {
 		return distinct;
 	}
-
+        
+        
+        public boolean isReduced() {
+		return false;
+	}
 	public boolean isFake() {
 		return fake;
 	}
@@ -2865,6 +2871,10 @@ public class ASTQuery  implements Keyword {
 	 * End of Template
 	 * 
 	 *********************************************************/
-	
+	@Override
+	public void accept(ASTVisitor visitor) {
+		visitor.visit(this);
+	}
+        
 	
 }

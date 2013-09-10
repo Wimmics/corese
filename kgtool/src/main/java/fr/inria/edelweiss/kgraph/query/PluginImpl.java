@@ -479,7 +479,8 @@ public class PluginImpl extends ProxyImpl {
 	IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env){
 		PPrinter p = getPPrinter(env, getLabel(tbase)); 
 		return p.pprint(getLabel(temp), 
-				exp.oper() == ExprType.PPRINTALL, 
+				exp.oper() == ExprType.PPRINTALL ||
+                                exp.oper() == ExprType.PPRINTALLWITH, 
 				exp.getModality());
 	}		
 	
@@ -495,7 +496,8 @@ public class PluginImpl extends ProxyImpl {
 		PPrinter p = getPPrinter(env, getLabel(tbase)); 
 		IDatatype dt = p.pprint(focus, arg, 
 				getLabel(temp), 
-				exp.oper() == ExprType.PPRINTALL, 
+				exp.oper() == ExprType.PPRINTALL ||
+                                exp.oper() == ExprType.PPRINTALLWITH, 
 				exp.getModality(), exp, env.getQuery());
 		return dt;
 	}

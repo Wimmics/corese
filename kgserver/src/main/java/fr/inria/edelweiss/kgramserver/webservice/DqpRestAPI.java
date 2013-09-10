@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 public class DqpRestAPI {
 
     private Logger logger = Logger.getLogger(DqpRestAPI.class);
-    private static Graph graph = Graph.create(true);
+    private static Graph graph = Graph.create(false);
     private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph);
 
     @POST

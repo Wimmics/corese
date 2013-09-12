@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY rule   "http://ns.inria.fr/corese/2008/rule"> 
+<!ENTITY cos    "http://www.inria.fr/acacia/corese">
+<!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+]>
+
+<rdf:RDF 
+    xmlns:rdf  ="&rdf;#"
+    xmlns:rdfs ="&rdfs;#"
+    xmlns:xsd  ="&xsd;" 
+    xmlns:cos  ="&cos;#"  
+    xmlns:rule ="&rule;#"
+    xmlns:owl ="&owl;"
+    xmlns      ="&rule;#" 
+>
+   
+
+
+
+<!--rdfs:subPropertyOf only for domain properties
+not for meta model, to speed up-->
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+prefix w3c: &lt;http://www.w3.org&gt;
+
+construct {
+?x ?p1 ?y
+}
+where  {
+filter(! (?p1 ^ w3c:) )
+?p2 rdfs:subPropertyOf ?p1
+?x ?p2 ?y 
+}
+</rule:value>
+</rule>
+
+
+
+<!-- not for ?p rdf:type owl:SymmetricProperty
+  -->
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct {
+?x rdf:type ?c2
+}
+where  { 
+filter(! (?c2 ^ owl:))
+?c1 rdfs:subClassOf ?c2
+?x rdf:type ?c1
+}
+</rule:value>
+</rule>
+
+
+
+
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct {
+?y ?p ?x
+}
+where  { 
+filter(! (?p ^ rdf:))
+?p rdf:type owl:SymmetricProperty
+?x ?p ?y 
+}
+</rule:value>
+</rule>
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct {
+?x ?p ?z
+}
+where  {         
+filter(! (?p ^ rdf:))
+?p rdf:type owl:TransitiveProperty
+?x ?p ?y 
+?y ?p ?z
+}
+</rule:value>
+</rule>
+
+
+</rdf:RDF>
+

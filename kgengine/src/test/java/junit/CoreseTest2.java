@@ -29,7 +29,9 @@ import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import org.junit.Ignore;
 
+@Ignore
 public class CoreseTest2 extends TestCase {
 
 	private String corese;

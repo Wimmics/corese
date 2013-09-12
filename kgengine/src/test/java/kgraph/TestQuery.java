@@ -5,34 +5,27 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 
-import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
-import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.StatListener;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.RDF;
-import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.BuildImpl;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgraph.rdf.*;
-import junit.TestJunit;
 
 
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 
 /**
  * 
  * 
  */
+@Ignore
 public class TestQuery {
 	
 //	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";

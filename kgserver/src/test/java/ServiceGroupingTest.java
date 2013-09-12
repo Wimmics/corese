@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package test.distribution;
+
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -177,7 +177,7 @@ public class ServiceGroupingTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void serviceFedQueryingHTTP() throws MalformedURLException, EngineException, IOException {
         System.out.println("===========================");
         System.out.println(sparqlHeterogeneousFedQuery);
@@ -204,7 +204,7 @@ public class ServiceGroupingTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void serviceFedQueryingSOAP() throws MalformedURLException, EngineException, IOException {
         System.out.println("===========================");
         System.out.println(sparqlHeterogeneousFedWSQuery);
@@ -232,7 +232,7 @@ public class ServiceGroupingTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void serviceFedQueryingREST() throws MalformedURLException, EngineException, IOException {
         System.out.println("===========================");
         System.out.println(sparqlHeterogeneousFedRESTQuery);
@@ -259,7 +259,7 @@ public class ServiceGroupingTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void serviceGroupingOptimSOAP() throws EngineException, MalformedURLException, IOException {
         System.out.println("============== SOAP service grouping =============");
         System.out.println(sparqlHeterogeneousQuery);
@@ -299,6 +299,7 @@ public class ServiceGroupingTest {
     }
 
     @Test
+    @Ignore
     public void serviceGroupingOptimREST() throws EngineException, MalformedURLException, IOException {
         System.out.println("============= REST service grouping ==============");
         System.out.println(sparqlHeterogeneousQuery);

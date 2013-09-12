@@ -855,7 +855,7 @@ public void testGC(){
 	@Test
 	public void test20(){
 		String query = 
-			"prefix ext: <function://junit.TestQuery> " +
+			"prefix ext: <function://junit.TestQuery1> " +
 			"select (ext:fun(?fn, ?ln) as ?res) where {" +
 			"?x c:FirstName ?fn ; c:FamilyName ?ln" +
 			"}";
@@ -892,9 +892,9 @@ public void testGC(){
 			
 			"select  * where {" +
 			"?x c:FirstName 'Olivier' " +
-			"filter(kg:contains('Ã©', 'e')) " +
-			"filter(kg:contains('e', 'Ã©')) " +
-			"filter(kg:equals('e', 'Ã©')) " +
+			"filter(kg:contains('Ž', 'e')) " +
+			"filter(kg:contains('e', 'Ž')) " +
+			"filter(kg:equals('e', 'Ž')) " +
 			"}";
 		
 		QueryProcess exec = QueryProcess.create(graph);

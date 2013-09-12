@@ -892,9 +892,9 @@ public void testGC(){
 			
 			"select  * where {" +
 			"?x c:FirstName 'Olivier' " +
-			"filter(kg:contains('Ž', 'e')) " +
-			"filter(kg:contains('e', 'Ž')) " +
-			"filter(kg:equals('e', 'Ž')) " +
+			"filter(kg:contains('Ã©', 'e')) " +
+			"filter(kg:contains('e', 'Ã©')) " +
+			"filter(kg:equals('e', 'Ã©')) " +
 			"}";
 		
 		QueryProcess exec = QueryProcess.create(graph);

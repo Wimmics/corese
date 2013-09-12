@@ -38,7 +38,7 @@ import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * 
@@ -870,7 +870,11 @@ public void testGC(){
 				IDatatype dt1 = getValue(mm, "?fn");
 				IDatatype dt2  = getValue(mm, "?ln");
 				IDatatype dt3  = getValue(mm, "?res");
-
+                                
+                                assertNotNull(dt1);
+                                assertNotNull(dt2);
+                                assertNotNull(dt3);
+                                        
 				assertEquals("Result", dt3.getLabel(), concat(dt1, dt2)); 
 			}
 			

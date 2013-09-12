@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY rule   "http://ns.inria.fr/corese/2008/rule"> 
+<!ENTITY cos    "http://www.inria.fr/acacia/corese">
+<!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+]>
+
+<rdf:RDF 
+    xmlns:rdf  ="&rdf;#"
+    xmlns:rdfs ="&rdfs;#"
+    xmlns:xsd  ="&xsd;" 
+    xmlns:cos  ="&cos;#"  
+    xmlns:rule ="&rule;#"
+    xmlns:owl ="&owl;"
+    xmlns      ="&rule;#" 
+>
+   
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?x c:hasBrother ?z
+}
+where 
+{    
+filter(?x != ?z)
+?x c:hasParent ?y
+?z c:hasParent ?y
+?z rdf:type c:Man
+
+}
+</rule:value>
+</rule>
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?x c:hasSister ?z
+}
+where 
+{    
+filter(?x != ?z)
+?x c:hasParent ?y
+?z c:hasParent ?y
+?z rdf:type c:Woman
+
+}
+</rule:value>
+</rule>
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?x c:hasUncle ?z
+}
+where 
+{         
+?x c:hasParent ?y
+?y c:hasBrother ?z
+
+}
+</rule:value>
+</rule>
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?x c:hasAunt ?z
+}
+where 
+{         
+?x c:hasParent ?y
+?y c:hasSister ?z
+
+}
+</rule:value>
+</rule>
+
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?x c:hasGrandParent ?z
+}
+where 
+{         
+?x c:hasParent ?y
+?y c:hasParent ?z
+
+}
+</rule:value>
+</rule>
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?x c:hasCousin ?t
+}
+where 
+{         
+?x c:hasParent ?y 
+?y c:hasParent ?a 
+
+?t c:hasParent ?z
+?z c:hasParent ?a 
+
+filter(?z != ?y)
+filter(?x != ?t)
+}
+</rule:value>
+</rule>
+
+
+
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?x c:hasBrotherSister ?y
+}
+where 
+{         
+?x c:hasParent ?z
+?y c:hasParent ?z
+filter(?x != ?y)
+}
+</rule:value>
+</rule>
+
+
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?z c:hasRelation ?y
+}
+where 
+{         
+?z c:hasParent ?y
+}
+</rule:value>
+</rule>
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?z c:hasRelation ?y
+}
+where 
+{         
+?z c:hasCousin ?y
+}
+</rule:value>
+</rule>
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?z c:hasRelation ?y
+}
+where 
+{         
+?z c:hasParent ?t ?t c:hasParent ?y
+
+}
+</rule:value>
+</rule>
+
+
+<rule rdf:ID="rule8">
+<rule:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct
+{
+?z c:hasRelation ?y
+}
+where 
+{         
+?z c:hasBrotherSister ?y
+}
+</rule:value>
+</rule>
+
+
+
+
+
+</rdf:RDF>
+

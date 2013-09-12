@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY rule   "http://ns.inria.fr/corese/2008/rule"> 
+<!ENTITY cos    "http://www.inria.fr/acacia/corese">
+<!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+]>
+
+<rdf:RDF 
+    xmlns:rdf  ="&rdf;#"
+    xmlns:rdfs ="&rdfs;#"
+    xmlns:xsd  ="&xsd;" 
+    xmlns:cos  ="&cos;#"  
+    xmlns:rule ="&rule;#"
+        xmlns:c ="&c;"
+xml:base='&c;'
+    xmlns      ="&rule;#" 
+>
+    
+
+
+<c:Woman rdf:about='#Manon' >
+  <c:hasFather rdf:resource='#Laurent' />
+  <c:hasBrother rdf:resource='#Seb' />
+</c:Woman>
+
+
+
+<c:Man rdf:about='#Fred' >
+  <c:hasFather rdf:resource='#Henri' />
+  <c:hasMother rdf:resource='#Helene' />
+</c:Man>
+
+
+
+<c:Man rdf:about='#Laurent' >
+  <c:hasFather rdf:resource='#Henri' />
+  <c:hasMother rdf:resource='#Helene' />
+</c:Man>
+
+
+
+<c:Man rdf:about='#Henri' >
+  <c:hasBrother rdf:resource='#Francois' />
+</c:Man>
+
+
+<c:Man rdf:about='#JeanLuc' >
+  <c:hasFather rdf:resource='#Francois' />
+  <c:hasMother rdf:resource='#Michele' />
+</c:Man>
+
+
+<c:Man rdf:about='#Jill' >
+  <c:hasFather rdf:resource='#Francois' />
+  <c:hasMother rdf:resource='#Michele' />
+</c:Man>
+
+<c:Man rdf:about='#Sergio' >
+  <c:hasFather rdf:resource='#Francois' />
+  <c:hasMother rdf:resource='#Michele' />
+</c:Man>
+
+
+<c:Woman rdf:about='#Catherine' >
+  <c:hasFather rdf:resource='#Francois' />
+  <c:hasMother rdf:resource='#Michele' />
+</c:Woman>
+
+
+
+<c:Man rdf:about='#Colin' >
+  <c:hasMother rdf:resource='#Marthe' />
+</c:Man>
+
+<c:Man rdf:about='#Iannis' >
+  <c:hasMother rdf:resource='#Marthe' />
+</c:Man>
+
+
+
+<c:Woman rdf:about='#Marthe' >
+  <c:hasMother rdf:resource='#Jeanne' />
+  <c:hasFather rdf:resource='#Peter' />
+</c:Woman>
+
+<c:Woman rdf:about='#Jeanne' >
+  <c:hasSister rdf:resource='#Madeleine' />
+</c:Woman>
+
+
+
+
+<c:Woman rdf:about='#Annie' >
+   <c:hasFather rdf:resource='#Peter' />
+  <c:hasMother rdf:resource='#Jeanne' />
+</c:Woman>
+
+
+
+<c:Man rdf:about='#Michel' >
+  <c:hasFather rdf:resource='#Peter' />
+  <c:hasMother rdf:resource='#Jeanne' />
+</c:Man>
+
+
+
+<c:Man rdf:about='#Mathieu' >
+  <c:hasFather rdf:resource='#Michel' />
+  <c:hasMother rdf:resource='#Muriel' />
+</c:Man>
+
+<c:Woman rdf:about='#Muriel' >
+</c:Woman>
+
+
+<c:Woman rdf:about='#Ambre' >
+  <c:hasMother rdf:resource='#Annie' />
+</c:Woman>
+</rdf:RDF>
+

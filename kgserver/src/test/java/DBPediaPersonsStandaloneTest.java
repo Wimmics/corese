@@ -1,4 +1,4 @@
-package test.distribution;
+
 
 /*
  * To change this template, choose Tools | Templates
@@ -33,7 +33,7 @@ public class DBPediaPersonsStandaloneTest {
 
     String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
             + "PREFIX dbpedia: <http://dbpedia.org/ontology/> \n"
-            + "SELECT distinct ?x ?name ?date WHERE \n"
+            + "SELECT distinct ?x ?t ?name ?date WHERE \n"
             + "{"
             + "     ?x foaf:name ?name ."
             //                + "     ?x ?y ?name2 ."
@@ -42,10 +42,20 @@ public class DBPediaPersonsStandaloneTest {
             //                + "     ?y foaf:name ?name2 ."
             //                + "     ?z foaf:name ?name3 ."
             //                + "     OPTIONAL {?x foaf:mbox ?m}"
+            + "     ?x rdf:type <http://xmlns.com/foaf/0.1/Person> ."
             + " FILTER ((?name ~ 'Bobby A') )"
             + "}";
 //                + "GROUP BY ?x ORDER BY ?x "
 //                + "LIMIT 6";
+    
+//    String sparqlQuery318 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
+//            + "PREFIX dbpedia: <http://dbpedia.org/ontology/> \n"
+//            + "SELECT distinct ?x ?name ?date WHERE \n"
+//            + "{"
+//            + "     ?x foaf:name ?name ."
+//            + " OPTIONAL     {?x dbpedia:birthDate ?date }."
+//            + " FILTER ((?x ~ 'Bob') )"
+//            + "}";
 
     public DBPediaPersonsStandaloneTest() {
     }

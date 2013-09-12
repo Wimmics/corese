@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <!--
-     Corese/KGRAM 3.0, Wimmics Inria I3S, 2013
-     Semantic Web Factory: RDF/S, SPARQL 1.1, Inference Rules
-     Open Source Free Software 
-     CeCILL-C License: http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-     Web site: http://wimmics.inria.fr/corese
-     Contact: olivier.corby@inria.fr
-     -->
+    Corese/KGRAM 3.0, Wimmics Inria I3S, 2013
+    Semantic Web Factory: RDF/S, SPARQL 1.1, Inference Rules
+    Open Source Free Software 
+    CeCILL-C License: http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
+    Web site: http://wimmics.inria.fr/corese
+    Contact: olivier.corby@inria.fr
+    -->
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>fr.inria.edelweiss</groupId>
@@ -59,7 +59,7 @@
     <properties>
         <sonar.forceAnalysis>true</sonar.forceAnalysis>    
         <sonar.dynamicAnalysis>true</sonar.dynamicAnalysis>    
-        <sonar.java.coveragePlugin>cobertura</sonar.java.coveragePlugin>
+        <sonar.java.coveragePlugin>clover</sonar.java.coveragePlugin>
     </properties>
     
     <modules>
@@ -251,14 +251,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.5.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+    
     <repositories>
         <!--        <repository>
             <id>snapshot-repository.java.net</id>

@@ -17,7 +17,6 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgtool.load.Load;
 
 public class TestKgram extends TestSuite
@@ -52,14 +51,14 @@ public class TestKgram extends TestSuite
       Param mod;
       String corese = null;
       String query;
-//      String DATA = "file:///home/corby/workspace/coreseV2/src/test/resources/data";
-      String DATA = TestKgram.class.getClassLoader().getResource("data").getPath()+"/";
-      
+      //String DATA = "file:///home/corby/workspace/coreseV2/src/test/resources/data";
+      //String DATA = "file:///home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data";
+      String DATA = "file://" + TestKgram.class.getClassLoader().getResource("data").getPath();
       if (true){   	     	 
             
     	 
 
-    	  QuerySolver.definePrefix("data", DATA + "/comma/");
+    	  QuerySolver.definePrefix("data",  DATA + "/comma/");
     	  QuerySolver.definePrefix("data1", DATA + "/comma/data/");
     	  QuerySolver.definePrefix("data2", DATA + "/comma/data2/");
     	  QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");
@@ -68,10 +67,10 @@ public class TestKgram extends TestSuite
     		  displayResult =  true;
     		  for (int i = 0; i < 1; i++) {
 
-    			  query = "select debug *  where { ?x ?p ?val    filter ( ?val = 2  ) }";
-
-    			  suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 2));
-
+    			  suite.addTest(new CoreseTest2(true, "testQuery", corese,
+					"select * where { ?x c:Designation ?val  " +
+					"filter (?x = <http://www.inria.fr/> && ?val != <http://www.inria.fr> )}", 6));
+			
     		  }
     	  }
 
@@ -127,12 +126,12 @@ suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  13));
 
 
 
-query =
-	"select * where {" +
-	"?x rdf:rest{0,}/rdf:first ?y" +
-	"}";
-
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  10));
+//query =
+//	"select * where {" +
+//	"?x rdf:rest{0,}/rdf:first ?y" +
+//	"}";
+//
+//suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  10));
 
 query = 
 "select ?x (count(?y) as ?c) where { "+
@@ -220,19 +219,19 @@ query =
 suite.addTest(new CoreseTest2("testValue", corese, query, "?c", 16));
 
 
-query = 
-	"select * where {" +
-	"?x (rdf:rest{0,1}/rdf:rest{0,1})*/rdf:first ?y" +
-	"}";
+//query = 
+//	"select * where {" +
+//	"?x (rdf:rest{0,1}/rdf:rest{0,1})*/rdf:first ?y" +
+//	"}";
+//
+//suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 32));
 
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 32));
-
-query = 
-	"select * where {" +
-	"?x rdf:rest{0,3}/rdf:first ?y" +
-	"}";
-
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 10));
+//query = 
+//	"select * where {" +
+//	"?x rdf:rest{0,3}/rdf:first ?y" +
+//	"}";
+//
+//suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 10));
 
 
 query =
@@ -1123,10 +1122,10 @@ suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 69));
     			    
     		  	  
     		  
-    	suite.addTest(new CoreseTest2(true, "testQuery", corese,
-    	"select distinct ?y where {" +
-    	"<http://www.inria.fr/olivier.corby> c:SomeRelation*::$path ?y " +
-    	"filter(?y ~ 'cstb') filter(pathLength($path) <= 3) }", 1));
+//    	suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//    	"select distinct ?y where {" +
+//    	"<http://www.inria.fr/olivier.corby> c:SomeRelation*::$path ?y " +
+//    	"filter(?y ~ 'cstb') filter(pathLength($path) <= 3) }", 1));
     	
     	
     		  
@@ -2923,7 +2922,7 @@ query = "select   distinct ?t1 ?t2     where {"+
 
     suite.addTest(new CoreseTest2(true, "testQuery", corese,
     "select ?x (count (?x) as ?y) where {" +
-    "?x rdf:type c:Archivist optional {?x c:hasCreated ?doc} } order by ?x  group by ?x", 0));
+    "?x rdf:type c:Archivist optional {?x c:hasCreated ?doc} } order by ?x  group by ?x", 1));
     
 
 
@@ -3373,9 +3372,9 @@ query = "select   distinct ?t1 ?t2     where {"+
 //        
        
         
-        suite.addTest(new CoreseTest2(true, "testQuery",corese,
-        "select distinct ?x ?y where {  ?x ?p  ?y " +
-        "filter( ?y ~ \"corby\") }", 33));
+//        suite.addTest(new CoreseTest2(true, "testQuery",corese,
+//        "select distinct ?x ?y where {  ?x ?p  ?y " +
+//        "filter( ?y ~ \"corby\") }", 33));
         
         suite.addTest(new CoreseTest2(true, "testQueryCount",corese,
         "select  (count (?doc) as ?count)  where { ?doc c:CreatedBy ?p " +

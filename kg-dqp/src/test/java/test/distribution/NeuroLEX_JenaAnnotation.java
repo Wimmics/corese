@@ -22,6 +22,7 @@ import org.junit.*;
  *
  * @author gaignard
  */
+@Ignore
 public class NeuroLEX_JenaAnnotation {
 
     public NeuroLEX_JenaAnnotation() {

@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import wsimport.KgramWS.RemoteProducer;
 import wsimport.KgramWS.RemoteProducerServiceClient;
 
@@ -37,6 +38,7 @@ import wsimport.KgramWS.RemoteProducerServiceClient;
  *
  * @author gaignard
  */
+@Ignore
 public class FoafSimpleTest {
 
     public FoafSimpleTest() throws MalformedURLException {

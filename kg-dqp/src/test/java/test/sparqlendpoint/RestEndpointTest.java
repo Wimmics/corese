@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -84,19 +85,12 @@ public class RestEndpointTest {
         StopWatch sw = new StopWatch();
         sw.start();
 //        WebResource service = client.resource(new URI("http://dbpedia-test.inria.fr"));
-//        WebResource service = client.resource(new URI("http://fr.dbpedia.org"));
-        WebResource service = client.resource(new URI("http://localhost:3030/KEGG/"));
-//        // Fluent interfaces
-//        System.out.println(service.path("sparql").path("reset").post(String.class).toString());
-//        System.out.println(service.path("sparql").path("load").queryParam("remote_path", "/Users/gaignard/Desktop/VIP-simubloch-se.rdf").post(String.class));
-        System.out.println(service.path("sparql").queryParam("query", query).accept("application/sparql-results+xml").get(String.class));
+        WebResource service = client.resource(new URI("http://fr.dbpedia.org"));
+
+        String res = service.path("sparql").queryParam("query", query).accept("application/sparql-results+xml").get(String.class);
+        assertTrue(res != null);
+        System.out.println(res);
         System.out.println(sw.getTime()+ " ms ");
-        
-        // Get plain text
-//        System.out.println(service.path("rest").path("hello").accept(MediaType.TEXT_PLAIN).get(String.class));
-//        // Get XML
-//        System.out.println(service.path("rest").path("hello").accept(MediaType.TEXT_XML).get(String.class));
-//        // The HTML
-//        System.out.println(service.path("rest").path("hello").accept(MediaType.TEXT_HTML).get(String.class));
+
     }
 }

@@ -12,7 +12,9 @@ import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import org.junit.Ignore;
 
+@Ignore
 public class TestPath {
 	
 @Test

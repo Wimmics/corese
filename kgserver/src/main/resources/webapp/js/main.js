@@ -213,6 +213,8 @@ function load() {
 }
 
 function sparql(sparqlQuery) {
+	$('#btnQuery').attr("disabled", true);
+	$("#btnQuery").html("Querying ...");
 	console.log('sparql '+sparqlQuery+' to '+rootURL);
 	$.ajax({
 		type: 'GET',
@@ -226,16 +228,22 @@ function sparql(sparqlQuery) {
 		success: function(data, textStatus, jqXHR){
 			//console.log(data);
 			renderList(data);
+			$('#btnQuery').attr("disabled", false);
+			$("#btnQuery").html("Query");
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			infoError("SPARQL querying failure: "+textStatus);
 			console.log(errorThrown);
 			console.log(jqXHR);
+			$('#btnQuery').attr("disabled", false);
+			$("#btnQuery").html("Query");
 		}
 	});
 }
 
 function sparqlFed(sparqlQuery) {
+	$('#btnQueryFed').attr("disabled", true);
+	$("#btnQueryFed").html("Querying ...");
 	console.log('Federated sparql querying '+sparqlQuery);
 	$.ajax({
 		type: 'GET',
@@ -249,11 +257,15 @@ function sparqlFed(sparqlQuery) {
 		success: function(data, textStatus, jqXHR){
 			//console.log(data);
 			renderListFed(data);
+			$('#btnQueryFed').attr("disabled", false);
+			$("#btnQueryFed").html("Query");
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			infoError("SPARQL querying failure: "+textStatus);
 			console.log(errorThrown);
 			console.log(jqXHR);
+			$('#btnQueryFed').attr("disabled", false);
+			$("#btnQueryFed").html("Query");
 		}
 	});
 }

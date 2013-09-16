@@ -46,7 +46,7 @@ public class SPARQLRestAPI {
     private Logger logger = Logger.getLogger(RemoteProducer.class);
     private static Graph graph = Graph.create(false);
     private static QueryProcess exec = QueryProcess.create(graph);
-    
+
     /**
      * This webservice is used to reset the endpoint. This could be useful if we
      * would like our endpoint to point on another dataset
@@ -75,15 +75,20 @@ public class SPARQLRestAPI {
      */
     @POST
     @Path("/load")
-    public Response loadRDF(@FormParam("remote_path") String remotePath) {
+    public Response loadRDF(@FormParam("remote_path") String remotePath, @FormParam("source") String source) {
 
         String output = "File Uploaded";
+
+        if (source.isEmpty()) {
+            source = null;
+        } else if (!source.startsWith("http://")) {
+            source = "http://" + source;
+        }
 
         if (remotePath == null) {
             String error = "Null remote path";
             logger.error(error);
             return Response.status(404).header("Access-Control-Allow-Origin", "*").entity(error).build();
-//            return Response.status(404).entity(output).build();
         }
 
         logger.debug(remotePath);
@@ -91,7 +96,7 @@ public class SPARQLRestAPI {
         if (remotePath.startsWith("http")) {
             if (remotePath.endsWith(".rdf") || remotePath.endsWith(".ttl") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".owl")) {
                 Load ld = Load.create(graph);
-                ld.load(remotePath);
+                ld.load(remotePath, source);
             } else {
                 //TODO loading of .n3 or .nt
                 logger.error("TODO loading of .n3 or .nt");
@@ -107,28 +112,13 @@ public class SPARQLRestAPI {
             }
             if (f.isDirectory()) {
                 Load ld = Load.create(graph);
-                ld.load(remotePath);
+                ld.load(remotePath, source);
             } else if (remotePath.endsWith(".rdf") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".ttl") || remotePath.endsWith(".owl")) {
                 Load ld = Load.create(graph);
-                ld.load(remotePath);
+                ld.load(remotePath, source);
             } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {
                 FileInputStream fis = null;
-//                try {
-//                    fis = new FileInputStream(f);
-//                    Model model = ModelFactory.createDefaultModel();
-//                    model.read(fis, null, "N-TRIPLE");
-                System.out.println("NOT Loaded " + f.getAbsolutePath());
-//                    g = JenaGraphFactory.createGraph(model);
-//                } catch (FileNotFoundException ex) {
-//                    logger.error(output = "File " + remotePath + " not found on the server!");
-//                    return Response.status(404).entity(output).build();
-//                } finally {
-//                    try {
-//                        fis.close();
-//                    } catch (IOException ex) {
-//                        logger.error("Error while closing the FileInputStream.");
-//                    }
-//                }
+                logger.warn("NOT Loaded " + f.getAbsolutePath());
             }
         }
         logger.info(output = "Successfully loaded " + remotePath);
@@ -325,7 +315,7 @@ public class SPARQLRestAPI {
         try {
             logger.info(query);
             if (query != null) {
-                exec.query(query,createDataset(defaultGraphUris, namedGraphUris));
+                exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
             } else {
                 logger.warn("Null update query !");
             }
@@ -349,7 +339,7 @@ public class SPARQLRestAPI {
         try {
             logger.info(message);
             if (message != null) {
-                exec.query(message,createDataset(defaultGraphUris, namedGraphUris));
+                exec.query(message, createDataset(defaultGraphUris, namedGraphUris));
             } else {
                 logger.warn("Null update query !");
             }
@@ -376,16 +366,18 @@ public class SPARQLRestAPI {
     }
 
     /**
-     * Creates a Corese/KGRAM Dataset based on a set of default or named graph URIs. 
-     * For *strong* SPARQL compliance, use dataset.complete() before returning the dataset. 
-     * @param defaultGraphUris 
+     * Creates a Corese/KGRAM Dataset based on a set of default or named graph
+     * URIs. For *strong* SPARQL compliance, use dataset.complete() before
+     * returning the dataset.
+     *
+     * @param defaultGraphUris
      * @param namedGraphUris
-     * @return a dataset if the parameters are not null or empty. 
+     * @return a dataset if the parameters are not null or empty.
      */
     private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris) {
         if (((defaultGraphUris != null) && (!defaultGraphUris.isEmpty())) || ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
             Dataset ds = Dataset.newInstance(defaultGraphUris, namedGraphUris);
-            return ds ;
+            return ds;
         } else {
             return null;
         }
@@ -405,7 +397,6 @@ public class SPARQLRestAPI {
         out.flush();
         out.close();
     }
-    
     //    @POST
 //    @Path("/upload")
 //    @Consumes(MediaType.MULTIPART_FORM_DATA)

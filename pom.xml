@@ -77,7 +77,7 @@
         <module>kgimport</module>
         <module>sparql</module>
         <module>rif</module>
-        <module>kgendpoint</module>
+        <!--<module>kgendpoint</module>-->
     </modules>
     
     <dependencyManagement>

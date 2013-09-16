@@ -32,6 +32,7 @@ import wsimport.KgramWS.RemoteProducerServiceClient;
  *
  * @author gaignard
  */
+@Ignore
 public class ServiceGroupingTest {
 
     final int nloop = 5;

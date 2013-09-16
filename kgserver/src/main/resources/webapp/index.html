@@ -25,11 +25,11 @@
 	<!--<h1>Hello, world!</h1>-->
 	<div class="container-fluid">
 		<div class="row-fluid">
-			<div class="span2">
+			<div class="span1">
 				<!--My column-->
 
 			</div>
-			<div class="span10">
+			<div class="span11">
 				<div class="tab-content">
 					<div class="tab-pane active" id="Tab1">
 						
@@ -84,6 +84,26 @@
 							</div>
 
 							<div class="container-fluid">
+								<!--<div class="row-fluid">
+									<div class="input-prepend" class="span12">
+  										<div class="btn-group span4">
+    										<button class="btn dropdown-toggle" data-toggle="dropdown">
+      											Predefined sources
+      											<span class="caret"></span>
+    										</button>
+    										<ul class="dropdown-menu">
+      											...
+    										</ul>
+  										</div>
+  										<input class="span8"  id="prependedDropdownButton" type="text">
+									</div>
+								</div>-->
+								<div class="row-fluid">
+									<div class="input-prepend" class="span8">
+  										<span class="add-on">Into named graph</span>
+  										<input  id="graphLoad" type="text" placeholder="default">
+									</div>
+								</div>
 								<div class="row-fluid">
 									<select id = "Data_Select" class="span8">
 										<option value ="0" selected="selected">Geographic INSEE dataset (2012)</option>
@@ -105,7 +125,7 @@
 								</div>
 								<div class="row-fluid">
 									<button id="btnReset" class="btn btn-warning span4" type="button">Reset Corese/KGRAM graph</button>
-										<label  class="checkbox span8"><input id="checkEntailments" type="checkbox">Enable RDFS entailments</label>
+									<label  class="checkbox span8"><input id="checkEntailments" type="checkbox">Enable RDFS entailments</label>
 								</div>
 							</div>
 						</section>
@@ -180,7 +200,7 @@ SELECT ?departement ?nom ?popTotale WHERE {
 
 					</section>
 				</div>
-				</div>	
+			</div>	
 			<div id="footer" class="text-center">
     			<!--<p>Copyright stuff</p>
     			<ul class="nav nav-pills center-pills">

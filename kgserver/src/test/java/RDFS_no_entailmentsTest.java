@@ -52,7 +52,7 @@ import org.junit.Ignore;
 public class RDFS_no_entailmentsTest {
 
     private static Logger logger = Logger.getLogger(RDFS_entailmentsTest.class);
-    private static int port = 9081;
+    private static int port = 9091;
     private static Server server;
     private static File humanData, humanOnt;
     String sparqlEntailQueryMan = "PREFIX humans: <http://www.inria.fr/2007/09/11/humans.rdfs#>  \n"
@@ -147,6 +147,12 @@ public class RDFS_no_entailmentsTest {
     public static void tearDownClass() throws Exception {
         humanData.delete();
         humanOnt.delete();
+        
+         if (server != null) {
+            server.stop();
+            server.destroy();
+            server = null;
+        }
     }
 
     @Before

@@ -46,7 +46,7 @@ public class SPARQLRestAPI {
     private Logger logger = Logger.getLogger(RemoteProducer.class);
     private static Graph graph = Graph.create(false);
     private static QueryProcess exec = QueryProcess.create(graph);
-
+    
     /**
      * This webservice is used to reset the endpoint. This could be useful if we
      * would like our endpoint to point on another dataset
@@ -105,7 +105,10 @@ public class SPARQLRestAPI {
                 logger.error(output = "File " + remotePath + " not found on the server!");
                 return Response.status(404).header("Access-Control-Allow-Origin", "*").entity(output).build();
             }
-            if (remotePath.endsWith(".rdf") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".ttl") || remotePath.endsWith(".owl")) {
+            if (f.isDirectory()) {
+                Load ld = Load.create(graph);
+                ld.load(remotePath);
+            } else if (remotePath.endsWith(".rdf") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".ttl") || remotePath.endsWith(".owl")) {
                 Load ld = Load.create(graph);
                 ld.load(remotePath);
             } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {

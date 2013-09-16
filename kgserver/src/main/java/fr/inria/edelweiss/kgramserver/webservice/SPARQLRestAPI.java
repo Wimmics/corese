@@ -78,11 +78,12 @@ public class SPARQLRestAPI {
     public Response loadRDF(@FormParam("remote_path") String remotePath, @FormParam("source") String source) {
 
         String output = "File Uploaded";
-
-        if (source.isEmpty()) {
-            source = null;
-        } else if (!source.startsWith("http://")) {
-            source = "http://" + source;
+        if (source != null) {
+            if (source.isEmpty()) {
+                source = null;
+            } else if (!source.startsWith("http://")) {
+                source = "http://" + source;
+            }
         }
 
         if (remotePath == null) {

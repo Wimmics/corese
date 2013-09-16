@@ -189,12 +189,11 @@ function configureDQP() {
 function load() {
 	$('#btnLoad').attr("disabled", true);
 	$("#btnLoad").html("Loading ...");
-	console.log('Loading '+$('#txtLoad').val()+' to '+rootURL);
+	console.log('Loading '+$('#txtLoad').val()+' to '+rootURL+ ' / '+$('#graphLoad').val());
 	$.ajax({
 		type: 'POST',
 		url: rootURL + '/sparql/load',
-		//data: JSON.stringify({'remote_path': $('#txtLoad').val()}),
-		data: {'remote_path': $('#txtLoad').val()},
+		data: {'remote_path': $('#txtLoad').val(), 'source':$('#graphLoad').val()},
 		dataType: "text",
 		success: function(data, textStatus, jqXHR){
 			console.log(data);

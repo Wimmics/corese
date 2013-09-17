@@ -175,16 +175,14 @@ public class CoreseDate extends CoreseDatatype {
 						break;
 					}
 					else {
-						size = i;
+						size = i+1;
 					}
 				}
 			}
 								
 			String time = strtime.substring(0, size);
-
-			String zone = strtime.substring(size, strtime.length());	// not used yet
-
-			
+                        
+			String zone = strtime.substring(size, strtime.length());	// not used yet			
 
 			if (zone.length()>0){
 				cal.setDZone(zone);
@@ -207,16 +205,16 @@ public class CoreseDate extends CoreseDatatype {
 				catch (Exception e) {
 					if (i == 2){
 						// there may be a float number of seconds : 12:34:05.5
-						float f = Float.parseFloat(thetime[i]);
-						cal.set(fields[i], (int) f);
-						f = f - (int) f; // f = 0.5
-						float fmilli = f * 1000; // to get milliseconds
+						Float f = Float.parseFloat(thetime[i]);
+                                                // set integer number of sec
+						cal.set(fields[i], f.intValue());
+						Float dec = f -  (float) f.intValue(); // dec = 0.5
+						float fmilli = dec * (float)1000; //  milliseconds
 						if (fmilli >= 1){
 							int milli = (int) fmilli;
-							//logger.debug("** Date : " + milli);
 							cal.setSeconds(f);
 							cal.setTimeInMillis(cal.getTimeInMillis() + milli); // add the millisec
-						}
+						}                                                                                                                                                                                                                                        
 					}
 					else throw new CoreseDatatypeException("xsd:dateTime", date);
 				}
@@ -338,18 +336,26 @@ public class CoreseDate extends CoreseDatatype {
 		int min= cal.get(Calendar.MINUTE);
 		int sec= cal.get(Calendar.SECOND);
 		String time="";
-		if (hour > 0 || min > 0 || sec > 0) {
+		if (hour > 0 || min > 0 || sec > 0 || cal.getSeconds() > 0) {
+                    
 			if (hour < 10) time += "0";
 			time += hour + ":";
+                        
 			if (min < 10) time += "0";
 			time += min + ":";
-			if (sec < 10) time += "0";
-			time += sec;
-			if (cal.getSeconds() > 0){
-				String rest = Float.toString(cal.getSeconds()); // 0.5
-				rest = rest.substring(1); // .5
-				time += rest;
-			}
+                        
+                        if (cal.getSeconds() > 0){
+                            // float number of sec
+                            if (cal.getSeconds() < 10){
+                                time += "0";
+                            }
+                            time += cal.getSeconds();
+                        }
+                        else {
+                            if (sec < 10) time += "0";
+                            time += sec;                            
+                        }
+                        
 			res+= "T" + time;
 		}
 		if (cal.getZ()) res += "Z";

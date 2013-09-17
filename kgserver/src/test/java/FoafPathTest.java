@@ -10,7 +10,6 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
-import com.sun.source.tree.AssertTree;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;

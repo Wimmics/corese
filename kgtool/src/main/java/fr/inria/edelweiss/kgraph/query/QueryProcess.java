@@ -704,18 +704,7 @@ public class QueryProcess extends QuerySolver {
 
 /*******************************************/
 
-    /**
-     * Graph g is a SPIN graph that represents a SPARQL query
-     */
-    public Mappings spin(Graph g) throws EngineException {
-        PPrinter p = PPrinter.create(g, PPrinter.SPIN);
-        String s = p.toString();
-        if (s.length() == 0){
-            throw new EngineException("Uncorrect SPIN Query");
-        }
-        Mappings map = query(s);
-        return map;
-    }
+   
 
     
 

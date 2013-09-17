@@ -302,6 +302,7 @@ public class Processor {
 		defoper(">", 	ExprType.GT);
 		defoper(">=", 	ExprType.GE);
 		defoper("~", 	ExprType.CONT);
+		defoper(KGRAM+"tilda", 	ExprType.CONT);
 		defoper("^", 	ExprType.START);
 		defoper(IN, 	ExprType.IN);
 		defoper("+", 	ExprType.PLUS);

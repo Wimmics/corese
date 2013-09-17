@@ -34,6 +34,9 @@ public class NSManager
 	private static Logger logger = Logger.getLogger(NSManager.class);
 	
 	public static final String FPPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
+        public static final String XSD = RDFS.XSD;
+        public static final String RDF = RDFS.RDF;
+
 	static final String FPPP = "fp";
         public static final String PPN = ExpType.KGRAM + "pprinter/";
 	static final String PPP = "pp";

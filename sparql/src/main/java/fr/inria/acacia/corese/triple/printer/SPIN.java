@@ -352,17 +352,29 @@ public class SPIN implements ASTVisitor {
 
         if (exp.isAnd()) {
             visit((And) exp);
-        } else if (exp.isTriple()) {
+        } 
+        else if (exp.isTriple()) {
             visit((Triple) exp);
-        } else if (exp.isQuery()) {
-            visit((Query) exp);
-        } else if (exp.isOptional()) {
+        } 
+        else if (exp.isQuery()) {
+            ASTQuery ast = exp.getQuery();
+            if (ast.isBind()){
+                visitBind((Query) exp);
+            }
+            else {
+                visit((Query) exp);
+            }
+        }
+        else if (exp.isOptional()) {
             visit((Option) exp);
-        } else if (exp.isValues()) {
+        } 
+        else if (exp.isValues()) {
             visit((Values) exp);
-        } else if (exp.isUnion()) {
+        } 
+        else if (exp.isUnion()) {
             visit((Or) exp);
-        } else {
+        } 
+        else {
             for (Exp ee : exp.getBody()) {
                 visit(ee);
             }
@@ -420,6 +432,12 @@ public class SPIN implements ASTVisitor {
         sb.append(tab() + SPSUBJECT + SPACE);
         visit(triple.getSubject());
         sb.append(PT_COMMA);
+        
+        if (triple.getVariable() != null && ! triple.getVariable().isBlankNode()){
+            sb.append(tab() + "sp:pathVariable" + SPACE);
+            visit(triple.getVariable());
+            sb.append(PT_COMMA);
+        }
 
         sb.append(tab() + SPPATH + SPACE);
         path(triple.getRegex());
@@ -462,7 +480,7 @@ public class SPIN implements ASTVisitor {
             path(exp.getArg(1));
             counter--;
             sb.append(CSBRACKET);
-        } else {
+        } else if (exp.getArg(0) != null){
             sb.append(SPACE);
             type(oper(exp));
             counter++;
@@ -559,8 +577,30 @@ public class SPIN implements ASTVisitor {
 
         counter--;
         sb.append(NL + tab() + CSBRACKET + NL);
+    }
+    
+    
+    /**
+     * 
+     * subquery is a bind(exp as var)
+     */
+    public void visitBind(Query query) {
+        ASTQuery ast = query.getQuery();
+        Variable var   = ast.getSelectVar().get(0);
+        Expression exp = ast.getExpression(var);
+        
+        ttype("sp:Bind");
+        counter++;
+                
+        sb.append(tab() + "sp:expression" + SPACE);
+        visit(exp);
+        sb.append(PT_COMMA);
+        sb.append(tab() + "sp:variable" + SPACE);
+        visit(var);
+        sb.append(PT_COMMA);
 
-
+        counter--;
+        sb.append(CSBRACKET + NL);
     }
 
     @Override
@@ -573,7 +613,9 @@ public class SPIN implements ASTVisitor {
         counter++;
 
         for (int i = 0; i < or.size(); i++) {
+            sb.append(OPAREN);
             visit(or.eget(i));
+            sb.append(CPAREN);
         }
 
         counter--;
@@ -678,6 +720,9 @@ public class SPIN implements ASTVisitor {
         sb.append(tab() + OSBRACKET + SPACE + ATAB);
         counter++;
         sb.append("sp:Service" + PT_COMMA);
+        if (service.isSilent()){
+            sb.append(tab() + "sp:silent" + SPACE + TRUE + PT_COMMA);
+        }
         sb.append(tab() + "sp:serviceURI" + SPACE);
         visit(service.getService());
         sb.append(PT_COMMA);
@@ -791,7 +836,7 @@ public class SPIN implements ASTVisitor {
         if (term.isFunction()) {
             return funName(term);
         } else {
-            return SP + symToName(term.getName());
+            return symToName(term.getName());
         }
     }
 
@@ -863,8 +908,20 @@ public class SPIN implements ASTVisitor {
      */
     
     void visitUpdate(ASTQuery ast) {
-        for (Update u : ast.getUpdate().getUpdates()) {
-            visit(u);
+        boolean list = ast.getUpdate().getUpdates().size() > 1;
+        if (list){
+           type("sp:SPARQLUpdate");
+           sb.append("sp:updates" + SPACE + OPAREN + NL);
+        }
+        
+        for (Update u : ast.getUpdate().getUpdates()) {           
+            visit(u);   
+            sb.append(NL);
+        }
+        
+        if (list){
+            sb.append(CPAREN);
+            sb.append(CSBRACKET);
         }
     }
     
@@ -952,12 +1009,13 @@ public class SPIN implements ASTVisitor {
         }
 
         //Using
-        if (composite.getUsing().size() > 1) {
+        if (composite.getUsing().size() > 0) {
             counter++;
             sb.append(tab() + "sp:using" + SPACE + OPAREN + NL);
             counter++;
             for (Constant c : composite.getUsing()) {
                 visit(c);
+                sb.append(SPACE);
             }
             counter--;
             sb.append(tab() + CPAREN + PT_COMMA);
@@ -965,13 +1023,14 @@ public class SPIN implements ASTVisitor {
         }
 
         //Using named
-        if (composite.getNamed().size() > 1) {
+        if (composite.getNamed().size() > 0) {
             counter++;
             sb.append(tab() + "sp:usingNamed" + SPACE + OPAREN + NL);
             counter++;
             for (Constant c : composite.getNamed()) {
                 visit(c);
-            }
+                 sb.append(SPACE);
+           }
             counter--;
             sb.append(tab() + CPAREN + PT_COMMA);
             counter--;
@@ -1025,6 +1084,10 @@ public class SPIN implements ASTVisitor {
 
                 counter++;
                 sb.append("sp:Load" + PT_COMMA);
+                
+                 if (basic.isSilent()) {
+                    sb.append(tab() + "sp:silent" + SPACE + TRUE + PT_COMMA);
+                }
 
                 if (basic.getCURI() != null) {
                     sb.append(tab() + "sp:document" + SPACE);
@@ -1191,33 +1254,40 @@ public class SPIN implements ASTVisitor {
      */
     private String symToName(String s) {
         if (s.equals("||")) {
-            return "or";
+            return "sp:or";
         } else if (s.equals("=")) {
-            return "eq";
+            return "sp:eq";
         } else if (s.equals("!")) {
-            return "not";
+            return "sp:not";
         } else if (s.equals("!=")) {
-            return "ne";
+            return "sp:ne";
         } else if (s.equals("<")) {
-            return "lt";
+            return "sp:lt";
         } else if (s.equals(">")) {
-            return "gt";
+            return "sp:gt";
         } else if (s.equals("&&")) {
-            return "and";
+            return "sp:and";
         } else if (s.equals("-")) {
-            return "sub";
+            return "sp:sub";
         } else if (s.equals("+")) {
-            return "add";
+            return "sp:add";
         } else if (s.equals(">=")) {
-            return "ge";
+            return "sp:ge";
         } else if (s.equals("<=")) {
-            return "le";
+            return "sp:le";
         } else if (s.equals("*")) {
-            return "mul";
+            return "sp:mul";
         } else if (s.equals("/")) {
-            return "divide";
-        } else {
-            return s;
+            return "sp:divide";
+        } 
+        else if (s.equals("~")) {
+            return "kg:tilda";
+        } 
+         else if (s.equals("^")) {
+            return "sp:strstarts";
+        } 
+        else {
+            return SP + s;
         }
     }
 }

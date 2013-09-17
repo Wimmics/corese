@@ -18,6 +18,7 @@ import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
+import static fr.inria.edelweiss.kgram.api.core.ExprType.CONT;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
@@ -112,7 +113,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			case LE: 	b = dt1.lessOrEqual(dt2); break;
 			case GE: 	b = dt1.greaterOrEqual(dt2); break;
 			case GT: 	b = dt1.greater(dt2); break;
-			case CONT: 	b = dt1.contains(dt2); break;
+			case CONT:      b = dt1.contains(dt2); break;
 			case START: b = dt1.startsWith(dt2); break;
 			
 			case PLUS: 
@@ -166,7 +167,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		
 		case FUUID:	return uuid();
 			
-		case STRUUID: return struuid();
+		case STRUUID: return struuid();                      
 			
 		default: if (plugin!=null){
 				return plugin.function(exp, env);
@@ -270,7 +271,9 @@ public class ProxyImpl implements Proxy, ExprType {
 		boolean b;
 		
 		switch(exp.oper()){
-				
+			
+                case CONT:      return getValue(dt.contains(dt1));
+                      
 		case CONTAINS: 
 			if (! compatible(dt, dt1)) return null;
 			b = dt.getLabel().contains(dt1.getLabel());

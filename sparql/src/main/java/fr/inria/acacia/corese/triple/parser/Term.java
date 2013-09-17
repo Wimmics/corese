@@ -220,7 +220,7 @@ public class Term extends Expression {
 			}
 		}
 		else if (isAlt()){
-			return getArg(0).toRegex() + RE_ALT + getArg(1).toRegex();
+			return "(" + getArg(0).toRegex() + RE_ALT + getArg(1).toRegex() +")";
 		}
 		else if (isPara()){
 			return getArg(0).toRegex() + RE_PARA + getArg(1).toRegex();

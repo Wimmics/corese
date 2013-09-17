@@ -96,8 +96,8 @@ public class DqpRestTest {
 
         ResourceHandler resource_handler_s1 = new ResourceHandler();
         resource_handler_s1.setWelcomeFiles(new String[]{"index.html"});
-        resource_handler_s1.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
-//        resource_handler_s1.setResourceBase(webappUri1.getRawPath());
+//        resource_handler_s1.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
+        resource_handler_s1.setResourceBase(webappUri1.getRawPath());
         ContextHandler staticContextHandler_s1 = new ContextHandler();
         staticContextHandler_s1.setContextPath("/");
         staticContextHandler_s1.setHandler(resource_handler_s1);

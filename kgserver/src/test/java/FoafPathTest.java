@@ -48,14 +48,14 @@ import static org.junit.Assert.*;
  *
  * @author gaignard
  */
-public class FoafSimpleTest {
+public class FoafPathTest {
 
-    private static Logger logger = Logger.getLogger(FoafSimpleTest.class);
+    private static Logger logger = Logger.getLogger(FoafPathTest.class);
     private static int port = 9090;
     private static Server server;
     private static File p1, p2;
 
-    public FoafSimpleTest() throws MalformedURLException {
+    public FoafPathTest() throws MalformedURLException {
     }
 
     @BeforeClass
@@ -95,7 +95,7 @@ public class FoafSimpleTest {
         ///// Data extraction
         p1 = File.createTempFile("persons1", ".rdf");
         FileWriter fw = new FileWriter(p1);
-        InputStream is = FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram1-persons.rdf");
+        InputStream is = FoafPathTest.class.getClassLoader().getResourceAsStream("kgram1-persons.rdf");
         int c;
         while ((c = is.read()) != -1) {
             fw.write(c);
@@ -105,7 +105,7 @@ public class FoafSimpleTest {
 
         p2 = File.createTempFile("persons2", ".rdf");
         fw = new FileWriter(p2);
-        is = FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram2-persons.rdf");
+        is = FoafPathTest.class.getClassLoader().getResourceAsStream("kgram2-persons.rdf");
         while ((c = is.read()) != -1) {
             fw.write(c);
         }
@@ -204,8 +204,8 @@ public class FoafSimpleTest {
         
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        ld.load(FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram1-persons.rdf"));
-        ld.load(FoafSimpleTest.class.getClassLoader().getResourceAsStream("kgram2-persons.rdf"));
+        ld.load(FoafPathTest.class.getClassLoader().getResourceAsStream("kgram1-persons.rdf"));
+        ld.load(FoafPathTest.class.getClassLoader().getResourceAsStream("kgram2-persons.rdf"));
         QueryProcess exec = QueryProcess.create(g);
         
         

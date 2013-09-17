@@ -85,8 +85,7 @@ public class RDFS_no_entailmentsTest {
 
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setWelcomeFiles(new String[]{"index.html"});
-        resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
-//        resource_handler_s1.setResourceBase(webappUri1.getRawPath());
+        resource_handler.setResourceBase(webappUri.getRawPath());
         ContextHandler staticContextHandler = new ContextHandler();
         staticContextHandler.setContextPath("/");
         staticContextHandler.setHandler(resource_handler);

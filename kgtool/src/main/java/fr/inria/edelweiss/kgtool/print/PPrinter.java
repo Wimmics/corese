@@ -714,7 +714,7 @@ public class PPrinter {
 			}
 		}
 		else if (dt.isLiteral()){
-			if (dt.isNumber() || dt.getCode() == IDatatype.BOOLEAN){
+			if (dt.getCode() == IDatatype.INTEGER || dt.getCode() == IDatatype.BOOLEAN){
 				// print as is
 			}
 			else {
@@ -722,7 +722,6 @@ public class PPrinter {
 				dt = DatatypeMap.newStringBuilder(dt.toString());                               
 			}
 		}
-		
 		return dt;	
 	}
 	

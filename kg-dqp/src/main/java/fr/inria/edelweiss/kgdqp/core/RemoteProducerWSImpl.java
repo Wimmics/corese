@@ -43,10 +43,10 @@ public class RemoteProducerWSImpl implements Producer {
     public RemoteProducerWSImpl(URL url, WSImplem implem) {
         if (implem == WSImplem.REST) {
             rp = new SPARQLRestEndpointClient(url);
-            logger.info("REST endpoint instanciated "+url);
+            logger.info("REST endpoint instanciated " + url);
         } else {
             rp = new SPARQLSoapEndpointClient(url);
-            logger.info("SOAP endpoint instanciated "+url);
+            logger.info("SOAP endpoint instanciated " + url);
         }
     }
 
@@ -81,6 +81,7 @@ public class RemoteProducerWSImpl implements Producer {
      */
     @Override
     public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
+        System.out.println("Is Graph Node ? " + gNode.toString());
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -113,12 +114,12 @@ public class RemoteProducerWSImpl implements Producer {
 
         InputStream is = null;
         try {
-//            StopWatch sw = new StopWatch();
-//            sw.start();
+            StopWatch sw = new StopWatch();
+            sw.start();
 
             if (SourceSelectorWS.ask(qEdge, this, env)) {
 //            if (true) {
-//                logger.info("sending query \n" + query + "\n" + "to " + rp.getEndpoint());
+                logger.info("sending query \n" + query + "\n" + "to " + rp.getEndpoint());
 
 
                 String sparqlRes = rp.getEdges(query);
@@ -139,13 +140,13 @@ public class RemoteProducerWSImpl implements Producer {
                 } else {
                     QueryProcessDQP.sourceCounter.put(endpoint, 1L);
                 }
-                
+
                 if (sparqlRes != null) {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
 //                    l.load(is, endpoint);
                     l.load(is);
-//                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
+                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
                     if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
                         Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
                         QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
@@ -226,6 +227,23 @@ public class RemoteProducerWSImpl implements Producer {
         Graph g = Graph.create();
         logger.info("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
 
+        // count number of queries
+        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+        } else {
+            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+        }
+
+        // count number of source access
+        String endpoint = rp.getEndpoint();
+        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+        } else {
+            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+        }
+
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
@@ -239,6 +257,12 @@ public class RemoteProducerWSImpl implements Producer {
                 is = new ByteArrayInputStream(sparqlRes.getBytes());
                 l.load(is);
                 logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+                } else {
+                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -323,6 +347,24 @@ public class RemoteProducerWSImpl implements Producer {
         // Remote query processing
         Graph g = Graph.create();
 //        logger.info("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
+        
+        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+        } else {
+            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+        }
+
+        // count number of source access
+        String endpoint = rp.getEndpoint();
+        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+        } else {
+            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+        }
+
+        
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
@@ -336,6 +378,12 @@ public class RemoteProducerWSImpl implements Producer {
                 is = new ByteArrayInputStream(sparqlRes.getBytes());
                 l.load(is);
 //                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+                } else {
+                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

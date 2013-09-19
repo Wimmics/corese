@@ -127,8 +127,9 @@ public class QuerySolver  {
 		}
 		else {
 			meta = MetaProducer.create();
-            meta.add(producer);
+                        meta.add(producer);
 			producer = meta;
+                        evaluator.setProducer(producer);
 		}
 		meta.add(prod);
 	}

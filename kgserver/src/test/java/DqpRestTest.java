@@ -12,6 +12,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
+import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -25,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.ws.rs.core.MultivaluedMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -174,27 +176,22 @@ public class DqpRestTest {
         assertEquals(60, map.size());
     }
     
-//    @Test
-//    @Ignore
-//    public void RestApiTest() throws MalformedURLException, EngineException, URISyntaxException, LoadException {
-//
-//        ClientConfig config = new DefaultClientConfig();
-//        Client client1 = Client.create(config);
-//        WebResource serviceDQP = client1.resource(new URI("http://localhost:" + port1 + "/kgram/dqp"));
-//
-//        MultivaluedMap formData1 = new MultivaluedMapImpl();
-//        formData1.add("endpointUrl", "http://localhost:" + port1 + "/kgram/sparql");
-//        MultivaluedMap formData2 = new MultivaluedMapImpl();
-//        formData2.add("endpointUrl", "http://localhost:" + port2 + "/kgram/sparql");
-//        serviceDQP.path("configureDatasources").post(formData1);
-//        serviceDQP.path("configureDatasources").post(formData2);
-//
-//        String sparqlRes = serviceDQP.path("sparql").queryParam("query", sparqlQuery).accept("application/sparql-results+xml").get(String.class);
-//        InputStream is = new ByteArrayInputStream(sparqlRes.getBytes());
-//        Graph g = Graph.create();
-//        Load ld = Load.create(g);
-//        ld.load(is);
-//        System.out.println(g.size());
-//        
-//    }
+    @Test
+    public void RestApiTest() throws MalformedURLException, EngineException, URISyntaxException, LoadException {
+
+        ClientConfig config = new DefaultClientConfig();
+        Client client1 = Client.create(config);
+        WebResource serviceDQP = client1.resource(new URI("http://localhost:" + port2 + "/kgram/dqp"));
+
+        MultivaluedMap formData1 = new MultivaluedMapImpl();
+        formData1.add("endpointUrl", "http://localhost:" + port1 + "/kgram/sparql");
+        MultivaluedMap formData2 = new MultivaluedMapImpl();
+        formData2.add("endpointUrl", "http://localhost:" + port2 + "/kgram/sparql");
+        serviceDQP.path("configureDatasources").post(formData1);
+        serviceDQP.path("configureDatasources").post(formData2);
+
+        String sparqlRes = serviceDQP.path("sparql").queryParam("query", sparqlQuery).accept("application/sparql-results+xml").get(String.class);
+        int nbResults = StringUtils.countMatches(sparqlRes,"<result>");
+        assertEquals(60, nbResults);
+    }
 }

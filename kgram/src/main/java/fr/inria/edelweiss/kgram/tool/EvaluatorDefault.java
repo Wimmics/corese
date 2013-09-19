@@ -7,6 +7,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
 
 public class EvaluatorDefault implements Evaluator {
@@ -52,5 +53,9 @@ public class EvaluatorDefault implements Evaluator {
 		// TODO Auto-generated method stub
 		return KGRAM_MODE;
 	}
+
+    @Override
+    public void setProducer(Producer p) {
+    }
 
 }

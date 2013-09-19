@@ -17,9 +17,6 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
-import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLSoapEndpointClient;
-import fr.inria.edelweiss.kgdqp.sparqlendpoint.SparqlEndpointInterface;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -30,44 +27,48 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.CompileService;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.SPARQLResult;
+import java.util.Hashtable;
 
-//import fr.inria.wimmics.sparql.soap.client.SparqlResult;
-//import fr.inria.wimmics.sparql.soap.client.SparqlSoapClient;
+
 /**
- * Implements service expression There may be local QueryProcess for some URI
- * (use case: W3C test case) Send query to sparql endpoint using HTTP POST query
- * There may be a default QueryProcess
+ * 
+ * BE CAREFUL code copy from KgTool module, with performance instrumentation
  *
- * TODO: check use same ProducerImpl to generate Nodes ?
- *
- * @author Olivier Corby, Edelweiss INRIA 2011
+ * @author Alban Gaignard <alban.gaignard@cnrs.fr>
  *
  */
-@Deprecated
-public class ProviderWSImpl implements Provider {
+public class ProviderImplV2 implements Provider {
 
-    private static Logger logger = Logger.getLogger(ProviderWSImpl.class);
+    private static final String SERVICE_ERROR = "Service error: ";
+    private static Logger logger = Logger.getLogger(ProviderImplV2.class);
+    static final String LOCALHOST = "http://localhost:8080/corese/sparql";
     HashMap<String, QueryProcess> table;
+    Hashtable<String, Double> version;
     QueryProcess defaut;
-    CompileService compiler;
-    private WSImplem wsImplem;
+    private int limit = 30;
 
-    ProviderWSImpl(WSImplem wsImplem) {
+    public ProviderImplV2() {
         table = new HashMap<String, QueryProcess>();
-//        compiler = new CompileService(this);
-        this.wsImplem = wsImplem;
+        version = new Hashtable<String, Double>();
     }
 
-    public static ProviderWSImpl create(WSImplem wsImplem) {
-        return new ProviderWSImpl(wsImplem);
+    public static ProviderImplV2 create() {
+        ProviderImplV2 p = new ProviderImplV2();
+        p.set(LOCALHOST, 1.1);
+        return p;
     }
 
-    @Override
     public void set(String uri, double version) {
-//        compiler.set(uri, version);
+        this.version.put(uri, version);
+    }
+
+    // everybody is 1.0 except localhost
+    boolean isSparql0(Node serv) {
+        Double f = version.get(serv.getLabel());
+        return (f == null || f == 1.0);
     }
 
     /**
@@ -92,12 +93,10 @@ public class ProviderWSImpl implements Provider {
      * If there is a QueryProcess for this URI, use it Otherwise send query to
      * spaql endpoint If endpoint fails, use default QueryProcess if it exists
      */
-    @Override
     public Mappings service(Node serv, Exp exp, Environment env) {
         return service(serv, exp, null, env);
     }
 
-    @Override
     public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
         Query q = exp.getQuery();
 
@@ -131,6 +130,7 @@ public class ProviderWSImpl implements Provider {
      * Cut into pieces when to many Mappings
      */
     Mappings globalSend(Node serv, Query q, Mappings lmap, Environment env) {
+        CompileServiceV2 compiler = new CompileServiceV2(this);
 
         // share prefix
         compiler.prepare(q);
@@ -138,13 +138,13 @@ public class ProviderWSImpl implements Provider {
         int slice = compiler.slice(q);
 
         if (lmap == null || slice == 0) {
-            return send(serv, q, lmap, env, 0, 0);
+            return send(compiler, serv, q, lmap, env, 0, 0);
         } else if (lmap.size() > slice) {
             int size = 0;
             Mappings res = null;
 
             while (size < lmap.size()) {
-                Mappings map = send(serv, q, lmap, env, size, size + slice); //lmap.size());
+                Mappings map = send(compiler, serv, q, lmap, env, size, size + slice);
                 size += slice;
                 if (res == null) {
                     res = map;
@@ -154,14 +154,14 @@ public class ProviderWSImpl implements Provider {
             }
             return res;
         } else {
-            return send(serv, q, lmap, env, 0, lmap.size());
+            return send(compiler, serv, q, lmap, env, 0, lmap.size());
         }
     }
 
     /**
-     * Send query to sparql endpoint using REST or SOAP messages
+     * Send query to sparql endpoint using a POST HTTP query
      */
-    Mappings send(Node serv, Query q, Mappings lmap, Environment env, int start, int limit) {
+    Mappings send(CompileServiceV2 compiler, Node serv, Query q, Mappings lmap, Environment env, int start, int limit) {
         Query g = q.getOuterQuery();
         int timeout = 0;
         Integer time = (Integer) g.getPragma(Pragma.TIMEOUT);
@@ -169,40 +169,21 @@ public class ProviderWSImpl implements Provider {
             timeout = time;
         }
         try {
-// generate bindings from env if any
+
+            // generate bindings from env if any
             compiler.compile(serv, q, lmap, env, start, limit);
 
             ASTQuery ast = (ASTQuery) q.getAST();
 
             String query = ast.toString();
+
             if (g.isDebug()) {
                 logger.info("** Provider query: \n" + query);
             }
-//            System.out.println("---QUERY---");
-//            System.out.println(q);
-//            System.out.println("");
 
+            //logger.info("** Provider: \n" + query);
 
-//            System.out.println("---SERVICE---");
-//            System.out.println(query);
-//            System.out.println("");
-
-            if (g.isDebug()) {
-                logger.info("** Provider: \n" + query);
-            }
-
-
-            String sparqlRes = null;
-            if (wsImplem == WSImplem.SOAP) {
-                SparqlEndpointInterface rp = new SPARQLSoapEndpointClient(new URL(serv.getLabel()));
-                sparqlRes = rp.query(query);
-            } else if (wsImplem == WSImplem.REST) {
-                SparqlEndpointInterface rp = new SPARQLRestEndpointClient(new URL(serv.getLabel()));
-                sparqlRes = rp.query(query);
-            }
-
-            // count number of queries
-
+            ///////////////// BEGIN Perf Instrumentation
             String queryWithoutBindings = query;
             if (queryWithoutBindings.contains("filter")) {
                 queryWithoutBindings = queryWithoutBindings.substring(timeout, queryWithoutBindings.indexOf("filter"));
@@ -226,58 +207,49 @@ public class ProviderWSImpl implements Provider {
             } else {
                 QueryProcessDQP.sourceCounter.put(endpoint, 1L);
             }
+            ///////////////// END Perf Instrumentation
 
-            if (sparqlRes == null) {
-                return null;
-            } else {
-                Mappings maps = parseXML(new StringBuffer(sparqlRes));
-//                System.out.println("------> Mappings from SERVICE: " + maps.size());
-                if (QueryProcessDQP.queryVolumeCounter.containsKey(queryWithoutBindings)) {
-                    Long n = QueryProcessDQP.queryVolumeCounter.get(queryWithoutBindings);
-                    QueryProcessDQP.queryVolumeCounter.put(queryWithoutBindings, n + (long) maps.size());
-                } else {
-                    QueryProcessDQP.queryVolumeCounter.put(queryWithoutBindings, (long) maps.size());
-                }
+            InputStream stream = doPost(serv.getLabel(), query, timeout);
 
-                return maps;
+            if (g.isDebug()) {
+                //logger.info("** Provider result: \n" + sb);
             }
-        } catch (ParserConfigurationException ex) {
-            ex.printStackTrace();
-        } catch (SAXException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+
+            Mappings map = parse(stream);
+            ///////////////// BEGIN Perf Instrumentation
+            if (QueryProcessDQP.queryVolumeCounter.containsKey(queryWithoutBindings)) {
+                Long n = QueryProcessDQP.queryVolumeCounter.get(queryWithoutBindings);
+                QueryProcessDQP.queryVolumeCounter.put(queryWithoutBindings, n + (long) map.size());
+            } else {
+                QueryProcessDQP.queryVolumeCounter.put(queryWithoutBindings, (long) map.size());
+            }
+            ///////////////// END Perf Instrumentation
+
+            if (g.isDebug()) {
+                logger.info("** Provider result: \n" + map.size());
+                if (g.isDetail()) {
+                    logger.info("** Provider result: \n" + map);
+                }
+            }
+            return map;
+        } catch (IOException e) {
+            logger.error(e);
+            logger.error(q.getAST());
+            g.addError(SERVICE_ERROR, e);
+        } catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (SAXException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (g.isDebug()) {
+            logger.info("** Provider error");
         }
         return null;
     }
 
-    /**
-     * Search select variable of query that is bound in env Generate binding for
-     * such variable Set bindings in ASTQuery
-     */
-//    void bindings(Query q, Environment env) {
-//        ASTQuery ast = (ASTQuery) q.getAST();
-//        ast.clearBindings();
-//        ArrayList<Variable> lvar = new ArrayList<Variable>();
-//        ArrayList<Constant> lval = new ArrayList<Constant>();
-//
-//        for (Node qv : q.getSelect()) {
-//            String var = qv.getLabel();
-//            Node val = env.getNode(var);
-//
-//            if (val != null) {
-//                lvar.add(Variable.create(var));
-//                IDatatype dt = (IDatatype) val.getValue();
-//                Constant cst = Constant.create(dt);
-//                lval.add(cst);
-//            }
-//        }
-//
-//        if (lvar.size() > 0) {
-//            ast.setVariableBindings(lvar);
-//            ast.setValueBindings(lval);
-//        }
-//    }
     /**
      * ********************************************************************
      *
@@ -288,19 +260,31 @@ public class ProviderWSImpl implements Provider {
      * @throws ParserConfigurationException
      *
      */
-    Mappings parseXML(StringBuffer sb) throws ParserConfigurationException, SAXException, IOException {
+    Mappings parse(StringBuffer sb) throws ParserConfigurationException, SAXException, IOException {
         ProducerImpl p = ProducerImpl.create(Graph.create());
         XMLResult r = XMLResult.create(p);
         Mappings map = r.parseString(sb.toString());
         return map;
     }
 
-    public StringBuffer doPost(String server, String query) throws IOException {
-        URLConnection cc = post(server, query);
+    Mappings parse(InputStream stream) throws ParserConfigurationException, SAXException, IOException {
+        ProducerImpl p = ProducerImpl.create(Graph.create());
+        XMLResult r = SPARQLResult.create(p);
+        Mappings map = r.parse(stream);
+        return map;
+    }
+
+    public StringBuffer doPost2(String server, String query) throws IOException {
+        URLConnection cc = post(server, query, 0);
         return getBuffer(cc.getInputStream());
     }
 
-    URLConnection post(String server, String query) throws IOException {
+    public InputStream doPost(String server, String query, int timeout) throws IOException {
+        URLConnection cc = post(server, query, timeout);
+        return cc.getInputStream();
+    }
+
+    URLConnection post(String server, String query, int timeout) throws IOException {
         String qstr = "query=" + URLEncoder.encode(query, "UTF-8");
 
         URL queryURL = new URL(server);
@@ -308,8 +292,10 @@ public class ProviderWSImpl implements Provider {
         urlConn.setRequestMethod("POST");
         urlConn.setDoOutput(true);
         urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        urlConn.setRequestProperty("Accept", "application/rdf+xml, text/xml");
+        urlConn.setRequestProperty("Accept", "application/rdf+xml,  application/sparql-results+xml");
         urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
+        urlConn.setRequestProperty("Accept-Charset", "UTF-8");
+        urlConn.setReadTimeout(timeout);
 
         OutputStreamWriter out = new OutputStreamWriter(urlConn.getOutputStream());
         out.write(qstr);
@@ -320,11 +306,11 @@ public class ProviderWSImpl implements Provider {
     }
 
     StringBuffer getBuffer(InputStream stream) throws IOException {
-        InputStreamReader r = new InputStreamReader(stream);
+        InputStreamReader r = new InputStreamReader(stream, "UTF-8");
         BufferedReader br = new BufferedReader(r);
         StringBuffer sb = new StringBuffer();
-
         String str = null;
+
         while ((str = br.readLine()) != null) {
             sb.append(str);
             sb.append("\n");
@@ -343,16 +329,4 @@ public class ProviderWSImpl implements Provider {
 //		ProviderImpl impl = new ProviderImpl();
 //		System.out.println(impl.callSoapEndPoint());
 //	}
-
-    void compile(Node serv, Query q, Mappings lmap, Environment env) {
-        // share prefix
-        compiler.prepare(q);
-        // bindings
-        //TODO modif alban nullpointer exception
-        if (lmap == null) {
-            lmap = Mappings.create(q);
-        }
-        //end modif alban
-        compiler.compile(serv, q, lmap, env, 0, lmap.size());
-    }
 }

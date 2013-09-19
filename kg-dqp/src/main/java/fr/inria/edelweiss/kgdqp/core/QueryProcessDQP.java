@@ -1,9 +1,9 @@
 package fr.inria.edelweiss.kgdqp.core;
 
-import fr.inria.edelweiss.kgdqp.strategies.SourceSelectorWS;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -58,6 +58,13 @@ public class QueryProcessDQP extends QueryProcess {
     public static QueryProcessDQP create(Graph g) {
         ProducerImpl p = ProducerImpl.create(g);
         QueryProcessDQP exec = QueryProcessDQP.create(p);
+        return exec;
+    }
+    
+    public static QueryProcessDQP create(Graph g, Provider serviceProvider) {
+        ProducerImpl p = ProducerImpl.create(g);
+        QueryProcessDQP exec = QueryProcessDQP.create(p);
+        exec.set(serviceProvider);
         return exec;
     }
 

@@ -67,6 +67,8 @@ public interface Evaluator {
 	 * @return
 	 */
 	Mappings eval(Filter f, Environment e, List<Node> nodes);
+        
+        void setProducer(Producer p);
 
 
 }

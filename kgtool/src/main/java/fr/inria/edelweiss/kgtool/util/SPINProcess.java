@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 public class SPINProcess {
 
     Graph graph;
+    private NSManager nsm;
     QueryProcess exec;
     private boolean isDebug = false,
             isSPARQLCompliant = false;
@@ -60,6 +61,8 @@ public class SPINProcess {
         }
         return toSpinSparql(exec.getAST(qq));
     }
+    
+      
 
     public String toSpin(String sparql) throws EngineException {
         if (isDebug) {
@@ -67,6 +70,7 @@ public class SPINProcess {
         }
         Query qq = exec.compile(sparql);
         ASTQuery ast = exec.getAST(qq);
+        setNSM(ast.getNSM());
         if (isDebug) {
             System.out.println("AST: \n" + ast);
         }
@@ -75,6 +79,11 @@ public class SPINProcess {
         String spin = sp.toString();
         return spin;
     }
+    
+      public Graph toSpinGraph(String sparql) throws EngineException {
+            return toGraph(toSpin(sparql));
+        }
+
 
     String toSpinSparql(ASTQuery ast) throws EngineException {
         if (isDebug) {
@@ -90,7 +99,7 @@ public class SPINProcess {
     }
 
     public String toSparql(String spin) throws EngineException {
-        return toSparql(spin, null);
+        return toSparql(spin, nsm);
     }
 
      public Graph toGraph(String spin) throws EngineException {
@@ -119,9 +128,12 @@ public class SPINProcess {
         return toSparql(g, nsm);
     }
     
-    
+        public String toSparql(Graph g) throws EngineException {
+            return toSparql(g, nsm);
+        }
 
-    String toSparql(Graph g, NSManager nsm) throws EngineException {
+
+    public String toSparql(Graph g, NSManager nsm) throws EngineException {
         PPrinter p = PPrinter.create(g, PPrinter.SPIN);
         if (nsm != null) {
             p.setNSM(nsm);
@@ -153,5 +165,19 @@ public class SPINProcess {
      */
     public void setSPARQLCompliant(boolean isSPARQLCompliant) {
         this.isSPARQLCompliant = isSPARQLCompliant;
+    }
+
+    /**
+     * @return the nsm
+     */
+    public NSManager getNSM() {
+        return nsm;
+    }
+
+    /**
+     * @param nsm the nsm to set
+     */
+    public void setNSM(NSManager nsm) {
+        this.nsm = nsm;
     }
 }

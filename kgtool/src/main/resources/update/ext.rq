@@ -1,0 +1,44 @@
+#
+# process magic property
+# rewrite: ?x sp:test ?o
+# as:      ?x sp:test [ sp:test1 ?v1 ; sp:test2 ?v2 ] . bind(concat(?v1, ?v2) as ?o) 
+# 
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp: <http://spinrdf.org/sp#>
+delete { 
+    ?t  sp:object ?o 
+    ?e rdf:rest ?r
+}
+insert { 
+   ?t  sp:object _:b1
+  
+  _:b2  sp:subject _:b1 ;
+    sp:predicate sp:test1 ;
+    sp:object [ sp:varName "v1" ]
+  
+  _:b3  sp:subject _:b1 ;
+    sp:predicate sp:test2 ;
+    sp:object [ sp:varName "v2" ]
+ 
+  _:b4 a sp:Bind ;
+    sp:expression    [ a sp:concat  ;
+     sp:arg1 [ sp:varName "v1" ] ;
+     sp:arg2 [ sp:varName "v2" ] ;
+    ] ;
+    sp:variable ?o 
+
+   ?e rdf:rest [
+        rdf:first _:b2 ; rdf:rest [
+        rdf:first _:b3 ; rdf:rest [
+        rdf:first _:b4 ; rdf:rest ?r]]]
+}
+where {
+  
+  ?e rdf:first ?t ;
+     rdf:rest ?r 
+
+  ?t sp:subject ?s ;
+    sp:predicate sp:test ;
+    sp:object ?o
+}

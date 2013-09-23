@@ -1,0 +1,13 @@
+#
+# Embed statements of select where inside optional
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp: <http://spinrdf.org/sp#>
+delete { ?e rdf:first ?s }
+insert { ?e rdf:first [ a sp:Optional ; sp:elements( ?s ) ]}
+where {
+  ?q a sp:Select ; 
+  sp:where/rdf:rest* ?e
+  ?e rdf:first ?s 
+  filter not exists { ?s a ?t  values ?t {sp:Minus sp:Optional }}
+}

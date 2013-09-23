@@ -1,0 +1,18 @@
+#
+# Embed statements of select where inside optional
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp: <http://spinrdf.org/sp#>
+delete { ?t sp:predicate sp:elements }
+insert { 
+?t sp:path
+    [ a sp:SeqPath ;
+      sp:path1  [ a sp:ModPath ;
+         sp:subPath rdf:rest ;
+        ] ;
+      sp:path2 rdf:first
+   ] ;
+}
+where {
+  ?t sp:predicate sp:elements
+}

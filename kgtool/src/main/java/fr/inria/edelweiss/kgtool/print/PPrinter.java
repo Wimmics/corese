@@ -51,8 +51,15 @@ public class PPrinter {
 	
 	private static final String NULL = "";
 	public  static final String PPRINTER = "/home/corby/AData/pprint/turtle/template";
-        public  static final String PPLIB = "/fr/inria/edelweiss/kgtool/resource/";
-        public static final String SPIN = NSManager.PPN + "spin";
+        //public  static final String PPLIB = "/fr/inria/edelweiss/resource/template/";
+        public  static final String PPLIB = "/template/";
+
+        public  static final String PPNS    = NSManager.PPN;
+        public  static final String SQL     = PPNS + "sql";
+        public  static final String SPIN    = PPNS + "spin";
+        public  static final String OWL     = PPNS + "owl";
+        public  static final String TURTLE  = PPNS + "turtle";
+        public  static final String TYPECHECK  = PPNS + "typecheck";
 
 	private static final String OUT = ASTQuery.OUT;
 	private static final String IN  = ASTQuery.IN;
@@ -224,12 +231,15 @@ public class PPrinter {
 	}
 	
 	
-	
 	PPrinter(Graph g, String p){
-		graph = g;
+              this(QueryProcess.create(g, true), p);
+        }
+                
+	PPrinter(QueryProcess qp, String p){
+		graph = qp.getGraph();
 		fake = Graph.create();
 		pp = p;
-		exec = QueryProcess.create(g, true);		
+		exec = qp;		
 		tune(exec);				
 		nsm = NSManager.create();
 		init();
@@ -241,7 +251,7 @@ public class PPrinter {
         public void setTemplates(String p){
             pp = p; 
             init();
-        }	
+        }       
 	
 	private void tune(QueryProcess exec) {
 		// do not use Thread in Property Path
@@ -265,6 +275,11 @@ public class PPrinter {
 	public static PPrinter create(Graph g, String p){
 		return new PPrinter(g, p);
 	}
+        
+        public static PPrinter create(QueryProcess qp, String p){
+		return new PPrinter(qp, p);
+	}
+        
 	
 	public void setNSM(NSManager n){
 		nsm = n;
@@ -778,6 +793,7 @@ public class PPrinter {
                // loaded from Corese resource
                String name = nsm.strip(pp, NSManager.PPN);
                String src = PPLIB + name;
+                              
                if (! ld.isRule(src)){
                    src = src + Load.RULE;
                }

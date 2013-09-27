@@ -62,11 +62,13 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import fr.inria.edelweiss.kgtool.util.SPINProcess;
 
 import javax.swing.JFrame;
 
 /**
  * Onglet Query avec tout ce qu'il contient.
+ *
  * @author saguilel
  * @author Maraninchi jerôme
  */
@@ -74,7 +76,7 @@ public final class MyJPanelQuery extends JPanel {
 
     private static final long serialVersionUID = 1L;
     //Boutton du panneau Query
-    private JButton buttonRun, buttonTKgram, buttonProve;
+    private JButton buttonRun, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
     private JButton buttonSearch;
     private JButton buttonRefreshStyle, buttonDefaultStyle;
     //panneau de la newQuery
@@ -97,7 +99,7 @@ public final class MyJPanelQuery extends JPanel {
     private CharSequence resultXML = "";
     private SparqlQueryEditor sparqlQueryEditor;
     private MainFrame mainFrame;
-	private static final String KGSTYLE = ExpType.KGRAM + "style";
+    private static final String KGSTYLE = ExpType.KGRAM + "style";
 
     public MyJPanelQuery() {
         super();
@@ -123,6 +125,8 @@ public final class MyJPanelQuery extends JPanel {
 
 
         buttonRun = new JButton();
+        buttonToSPIN = new JButton();
+        buttonToSPARQL = new JButton();
         buttonProve = new JButton();
         buttonTKgram = new JButton();
         buttonSearch = new JButton();
@@ -155,12 +159,11 @@ public final class MyJPanelQuery extends JPanel {
 
 
         /**
-         * ActionListener sur le Bouton refresh Stylesheet
-         * Refresh stylesheet du Graphe
-         * Permet de mettre a jour le style du Graphe ou d'afficher une exception sous forme de PopUp lors d'un problème syntaxique
+         * ActionListener sur le Bouton refresh Stylesheet Refresh stylesheet du
+         * Graphe Permet de mettre a jour le style du Graphe ou d'afficher une
+         * exception sous forme de PopUp lors d'un problème syntaxique
          */
         ActionListener refreshListener = new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 String style = textPaneStyleGraph.getText();
                 JTextArea areaException = new JTextArea();
@@ -195,11 +198,10 @@ public final class MyJPanelQuery extends JPanel {
 
         checkLines(textPaneStyleGraph, textAreaLinesGraph);
         /**
-         * DocumentListener sur le textPaneStyleGraph
-         * Listener sur le textPaneStyleGraph afin d'actualiser le nombre de lignes
+         * DocumentListener sur le textPaneStyleGraph Listener sur le
+         * textPaneStyleGraph afin d'actualiser le nombre de lignes
          */
         DocumentListener l_paneGraphListener = new DocumentListener() {
-
             @Override
             public void removeUpdate(DocumentEvent e) {
                 checkLines(textPaneStyleGraph, textAreaLinesGraph);
@@ -219,11 +221,10 @@ public final class MyJPanelQuery extends JPanel {
         doc3.addDocumentListener(l_paneGraphListener);
 
         /**
-         * FocusListener sur le textPaneStyleGraph
-         * Permet d'actualiser le compteur de ligne lors d'un FocusGained et FocusLost
+         * FocusListener sur le textPaneStyleGraph Permet d'actualiser le
+         * compteur de ligne lors d'un FocusGained et FocusLost
          */
         FocusListener paneGraphFocusListener = new FocusListener() {
-
             @Override
             public void focusLost(final FocusEvent e) {
                 checkLines(textPaneStyleGraph, textAreaLinesGraph);
@@ -241,9 +242,13 @@ public final class MyJPanelQuery extends JPanel {
         sparqlQueryEditor = new SparqlQueryEditor(mainFrame);
 //        sparqlQueryEditor.setPreferredSize(new Dimension(200,200));
         sparqlQueryEditor.refreshColoring();
-        /** Bouttons et leurs actions **/
+        /**
+         * Bouttons et leurs actions *
+         */
         //Lancer une requête
-        buttonRun.setText("Query ");
+        buttonRun.setText("Query");
+        buttonToSPIN.setText("to SPIN");
+        buttonToSPARQL.setText("to SPARQL");
         buttonProve.setText("Prove");
         buttonTKgram.setText("Trace");
         //OC: buttonTKgram.addActionListener(sparqlQueryEditor);
@@ -253,7 +258,6 @@ public final class MyJPanelQuery extends JPanel {
 
 
         ActionListener searchListener = new ActionListener() {
-
             @Override
             public void actionPerformed(final ActionEvent e) {
                 textAreaXMLResult.setText(resultXML.toString());
@@ -303,6 +307,8 @@ public final class MyJPanelQuery extends JPanel {
 
         hSeq2.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 257, Short.MAX_VALUE);
         hSeq2.addComponent(buttonRun);
+        hSeq2.addComponent(buttonToSPIN);
+        hSeq2.addComponent(buttonToSPARQL);
         hSeq2.addComponent(buttonProve);
         hSeq2.addComponent(buttonTKgram);
         hSeq2.addComponent(buttonSearch);
@@ -323,6 +329,9 @@ public final class MyJPanelQuery extends JPanel {
         GroupLayout.SequentialGroup vSeq1 = pane_listenerLayout.createSequentialGroup();
 
         vParallel2.addComponent(buttonRun);
+        vParallel2.addComponent(buttonToSPIN);
+        vParallel2.addComponent(buttonToSPARQL);
+
         vParallel2.addComponent(buttonProve);
         vParallel2.addComponent(buttonTKgram);
 
@@ -355,11 +364,10 @@ public final class MyJPanelQuery extends JPanel {
 
     private void installListenersOnMainFrame(final MainFrame coreseFrame) {
         /**
-         * ActionListener sur le bouton DefaultStylesheet
-         * Permet d'attribuer un style par défaut défini au niveau de la MainFrame au graphe
+         * ActionListener sur le bouton DefaultStylesheet Permet d'attribuer un
+         * style par défaut défini au niveau de la MainFrame au graphe
          */
         ActionListener defaultListener = new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 stylesheet = coreseFrame.getDefaultStylesheet();
                 textPaneStyleGraph.setText(stylesheet);
@@ -369,7 +377,6 @@ public final class MyJPanelQuery extends JPanel {
         buttonDefaultStyle.addActionListener(defaultListener);
 
         coreseFrame.getUndo().addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 try {
                     sparqlQueryEditor.getUndoManager().undo();
@@ -382,7 +389,6 @@ public final class MyJPanelQuery extends JPanel {
 
 
         coreseFrame.getRedo().addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 try {
                     sparqlQueryEditor.getUndoManager().redo();
@@ -395,6 +401,8 @@ public final class MyJPanelQuery extends JPanel {
 
         ActionListener l_RunListener = createListener(coreseFrame, false);
         buttonRun.addActionListener(l_RunListener);
+        buttonToSPIN.addActionListener(l_RunListener);
+        buttonToSPARQL.addActionListener(l_RunListener);
 
         buttonProve.addActionListener(l_RunListener);
 
@@ -436,49 +444,45 @@ public final class MyJPanelQuery extends JPanel {
         }
         return name.substring(ind + 1);
     }
-    
-    
-    String toString(Mappings map){
-    	Query q = map.getQuery();
-    	ASTQuery ast = (ASTQuery) map.getQuery().getAST();
-    	if (ast.isSPARQLQuery()){
-    		// RDF or XML
-        	return ResultFormat.create(map).toString();
-    	}
-    	else {
-    		// XML bindings only (do not display the whole graph)
-    		return XMLFormat.create(map).toString();
-    	}
+
+    String toString(Mappings map) {
+        Query q = map.getQuery();
+        ASTQuery ast = (ASTQuery) map.getQuery().getAST();
+        if (ast.isSPARQLQuery()) {
+            // RDF or XML
+            return ResultFormat.create(map).toString();
+        } else {
+            // XML bindings only (do not display the whole graph)
+            return XMLFormat.create(map).toString();
+        }
     }
 
-    
     public void display(IResults l_Results, MainFrame coreseFrame) {
-    	if (l_Results == null){
-    		// go to XML for error message
+        if (l_Results == null) {
+            // go to XML for error message
             tabbedPaneResults.setSelectedIndex(1);
-    		return;
-    	}
-    	
-    	boolean oneValue = true;
+            return;
+        }
+
+        boolean oneValue = true;
         Mappings map = null;
-        
-        if (l_Results instanceof QueryResults){
+
+        if (l_Results instanceof QueryResults) {
             // in old Corese, there may be several values for one variable
             // use case: group by ?x and pragma {kg:kgram kg:list true}
-        	// this is deprecated
-        	QueryResults qr = (QueryResults) l_Results;
-        	map = qr.getMappings();
-        	oneValue = ! map.getQuery().isListGroup();
-        	resultXML = toString(map);
+            // this is deprecated
+            QueryResults qr = (QueryResults) l_Results;
+            map = qr.getMappings();
+            oneValue = !map.getQuery().isListGroup();
+            resultXML = toString(map);
+        } else {
+            // On affiche la version XML du résultat dans l'onglet XML
+            resultXML = l_Results.toString();
         }
-        else {
-        	// On affiche la version XML du résultat dans l'onglet XML
-        	resultXML = l_Results.toString();
-        }
-        
+
         textAreaXMLResult.setText(resultXML.toString());
 
-       
+
 
         // On affiche la version en arbre du résultat dans l'onglet Tree
         // crée un arbre de racine "root"
@@ -488,15 +492,14 @@ public final class MyJPanelQuery extends JPanel {
         treeResult.setShowsRootHandles(true);
         // Pour chaque resultat de l_Results on crée un noeud "result"
         //if (l_Results.size()<1000)      
-        
+
         int i = 1;
-        if (oneValue){
-        	display(root, map);
+        if (oneValue) {
+            display(root, map);
+        } else {
+            display(root, l_Results);
         }
-        else {
-        	display(root, l_Results);
-        }
-                       
+
         TreePath myPath = treeResult.getPathForRow(0);
         treeResult.expandPath(myPath);
         scrollPaneTreeResult.setViewportView(treeResult);
@@ -507,118 +510,15 @@ public final class MyJPanelQuery extends JPanel {
         if (l_Results.isConstruct() || l_Results.isDescribe()) {
             displayGraph(l_Results);
         }
-                
-//        int num = 0;
-//        graph = new MultiGraph(false, true);
-//        String sujetUri, predicat, objetUri, temp = "http://www.inria.fr/acacia/corese#Results";
-//        if (l_Results.isConstruct() || l_Results.isDescribe()) {
-//
-//            graph.addNode(temp).addAttribute("ui.style", "color:white;");
-//
-//            String sujet = null;
-//            String objet = null;
-//
-//            Iterable<Entity> edges = getEdges(l_Results);
-//
-//            for (Entity ent : edges) {
-//                fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
-//                sujetUri = edge.getNode(0).getLabel();
-//                objetUri = edge.getNode(1).getLabel();
-//
-//                predicat = getLabel(edge.getEdgeNode().getLabel());
-//
-//                sujet = getLabel(sujetUri);
-//                objet = getLabel(objetUri);
-//
-//                Node gsub = graph.getNode(sujetUri);
-//               // if (find(sujetUri, graph.getNodeIterator()) == null) {
-//                if (gsub == null) {
-//                    gsub = graph.addNode(sujetUri);
-//                    gsub.addAttribute("label", sujet);
-//                    //graph.getNode(sujetUri)
-//                    gsub.setAttribute("ui.class", sujet);
-//                    if (edge.getNode(0).isBlank()) {
-//                        //graph.getNode(sujetUri)
-//                        gsub.setAttribute("ui.class", "Blank");
-//                    }
-//                    Edge ee = graph.addEdge("temp" + num, sujetUri, temp);
-//                    ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
-//
-//                }
-//                num++;
-//                
-//                
-//                if (isStyle(edge)){  
-//                	// draft style
-//                	// xxx kg:style ex:Wimmics
-//                	// it is a fake edge, do not create it
-//                	gsub.setAttribute("ui.class", objet);
-//                }
-//                else {
-//                	Node gobj = graph.getNode(objetUri);
-//                	//if (find(objetUri, graph.getNodeIterator()) == null) {
-//                	if (gobj == null){
-//                		gobj = graph.addNode(objetUri);
-//                		gobj.addAttribute("label", objet);
-//                		gobj.setAttribute("ui.class", objet);
-//                		if (edge.getNode(1).isBlank()) {
-//                			gobj.setAttribute("ui.class", "Blank");
-//                		}
-//                		IDatatype dt = (IDatatype) edge.getNode(1).getValue();
-//                		if (dt.isLiteral()) {
-//                			gobj.setAttribute("ui.class", "Literal");
-//                		}
-//
-//                		Edge ee = graph.addEdge("temp" + num, objetUri, temp);
-//                		ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
-//                	}
-//                	num++;
-//
-//                	Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
-//                	ee.addAttribute("label", predicat);
-//                	ee.addAttribute("ui.class", predicat);
-//                }                             
-//            }
-//
-//            textPaneStyleGraph.setText(stylesheet);
-//            graph.addAttribute("ui.stylesheet", stylesheet);
-//
-//            //permet de visualiser correctement le graphe dans l'onglet de Corese
-//            ElasticBox eb = new ElasticBox();
-//            eb.setForce((float) 0.1);
-//            SwingGraphViewer sgv = new SwingGraphViewer(graph, eb, true, true);
-//            SwingGraphRenderer sgr = sgv.getRenderer();
-//
-//            //Dégrise le bouton et ajoute le texte dans le textPane
-//            buttonRefreshStyle.setEnabled(true);
-//            buttonDefaultStyle.setEnabled(true);
-//
-//            JPanel panelStyleGraph = new JPanel();
-//            panelStyleGraph.setLayout(new BorderLayout());
-//
-//
-//            panelStyleGraph.add(textPaneStyleGraph, BorderLayout.CENTER);
-//            panelStyleGraph.add(textAreaLinesGraph, BorderLayout.WEST);
-//
-//            JScrollPane jsStyleGraph = new JScrollPane();
-//            jsStyleGraph.setViewportView(panelStyleGraph);
-//
-//            final JSplitPane jpGraph = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, jsStyleGraph, sgr);
-//            jpGraph.setContinuousLayout(true);
-//            scrollPaneTreeResult.setViewportView(jpGraph);
-//
-//            //pointe sur l'onglet Graph
-//            tabbedPaneResults.setSelectedIndex(0);
-//        }
+
     }
-    
-    
+
     void displayGraph(IResults l_Results) {
-        
+
         if (l_Results.isConstruct() || l_Results.isDescribe()) {
             int num = 0;
             String sujetUri, predicat, objetUri, temp = "http://www.inria.fr/acacia/corese#Results";
-            
+
             graph = new MultiGraph(false, true);
             graph.addNode(temp).addAttribute("ui.style", "color:white;");
 
@@ -660,8 +560,7 @@ public final class MyJPanelQuery extends JPanel {
                     // xxx kg:style ex:Wimmics
                     // it is a fake edge, do not create it
                     gsub.setAttribute("ui.class", objet);
-                } 
-                else {
+                } else {
                     Node gobj = graph.getNode(objetUri);
                     //if (find(objetUri, graph.getNodeIterator()) == null) {
                     if (gobj == null) {
@@ -718,119 +617,110 @@ public final class MyJPanelQuery extends JPanel {
             tabbedPaneResults.setSelectedIndex(0);
         }
     }
-    
-    
-    
-    
-    private boolean isStyle(fr.inria.edelweiss.kgram.api.core.Edge edge) {
-    	return edge.getLabel().equals(KGSTYLE );
-	}
-    
 
-	/**
+    private boolean isStyle(fr.inria.edelweiss.kgram.api.core.Edge edge) {
+        return edge.getLabel().equals(KGSTYLE);
+    }
+
+    /**
      * Display result using Mappings
      */
-    void display(DefaultMutableTreeNode root, Mappings map){
-    	int i = 1;
-    	for (Mapping res : map) {
-    		DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
-    		// Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
+    void display(DefaultMutableTreeNode root, Mappings map) {
+        int i = 1;
+        for (Mapping res : map) {
+            DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
+            // Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
 
-    		for (fr.inria.edelweiss.kgram.api.core.Node var : map.getSelect()) {            	
-    			fr.inria.edelweiss.kgram.api.core.Node node = res.getNode(var);
-    			if (node != null) {
-    				x.add(new DefaultMutableTreeNode(var.getLabel()));
-    				x.add(new DefaultMutableTreeNode(node.getValue().toString()));
-    				root.add(x);
-    			}
-    		}
-    		i++;
-    	}
+            for (fr.inria.edelweiss.kgram.api.core.Node var : map.getSelect()) {
+                fr.inria.edelweiss.kgram.api.core.Node node = res.getNode(var);
+                if (node != null) {
+                    x.add(new DefaultMutableTreeNode(var.getLabel()));
+                    x.add(new DefaultMutableTreeNode(node.getValue().toString()));
+                    root.add(x);
+                }
+            }
+            i++;
+        }
     }
-    
-    
+
     /**
      * Display result using IResults
+     *
      * @deprecated
      */
-    void display(DefaultMutableTreeNode root, IResults l_Results){
-    	int i = 1;
-    	for (IResult res : l_Results) {
-    		DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
-    		// Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
+    void display(DefaultMutableTreeNode root, IResults l_Results) {
+        int i = 1;
+        for (IResult res : l_Results) {
+            DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
+            // Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
 
-    		for (String var : l_Results.getVariables()) {            	
-    			IResultValue[] lres = res.getResultValues(var);
-    			if (lres != null) {
+            for (String var : l_Results.getVariables()) {
+                IResultValue[] lres = res.getResultValues(var);
+                if (lres != null) {
 
-    				for (IResultValue val : lres) {
-    					x.add(new DefaultMutableTreeNode(var));
-    					x.add(new DefaultMutableTreeNode(val.getDatatypeValue().toString()));
-    					root.add(x);
-    				}
-    			}
-    		}
-    		i++;
-    	}
+                    for (IResultValue val : lres) {
+                        x.add(new DefaultMutableTreeNode(var));
+                        x.add(new DefaultMutableTreeNode(val.getDatatypeValue().toString()));
+                        root.add(x);
+                    }
+                }
+            }
+            i++;
+        }
     }
-
 
     private ActionListener createListener(final MainFrame coreseFrame, final boolean isTrace) {
 
-    	return new ActionListener() {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                textAreaXMLResult.setText("");
+                IResults l_Results = null;
+                scrollPaneTreeResult.setViewportView(new JPanel());
+                scrollPaneTreeResult.setRowHeaderView(new JPanel());
 
-    		public void actionPerformed(ActionEvent ev) {
-    			textAreaXMLResult.setText("");
-    			IResults l_Results = null;
-    			scrollPaneTreeResult.setViewportView(new JPanel());
-    			scrollPaneTreeResult.setRowHeaderView(new JPanel());
+                String l_message = new String("Parsing:\n");
+                IEngine engine = coreseFrame.getMyCorese();
 
-    			String l_message = new String("Parsing:\n");
-    			IEngine engine = coreseFrame.getMyCorese();
-    			// Lance d'abbord la validation
-    			//                    if (!coreseFrame.isKgram()) {
-    			//                        engine.SPARQLValidate(sparqlQueryEditor.getTextPaneQuery().getText());
-    			//                    }
-    			try {
-    				if (ev.getSource() == buttonProve) {
-    					l_Results = engine.SPARQLProve(sparqlQueryEditor.getTextPaneQuery().getText());
-    					if (l_Results != null) {
-    						display(l_Results, coreseFrame);
-    					} 
-    				} // Lance la requête
-    				//                        else if (!coreseFrame.isKgram()) {
-    				//                            l_Results = engine.SPARQLQuery(sparqlQueryEditor.getTextPaneQuery().getText());
-    				//                        } 
-    				else {
-    					Exec exec = new Exec(coreseFrame, sparqlQueryEditor.getTextPaneQuery().getText(), isTrace);
-    					exec.process();
+                try {
+                    String query = sparqlQueryEditor.getTextPaneQuery().getText();
 
-    					//Permet de passer a true toutes les options du trace KGram
-    					for (int i = 0; i < coreseFrame.getListCheckbox().size(); i++) {
-    						coreseFrame.getListCheckbox().get(i).setEnabled(true);
-    					}
-    					for (int i = 0; i < coreseFrame.getListJMenuItems().size(); i++) {
-    						coreseFrame.getListJMenuItems().get(i).setEnabled(true);
-    					}
+                    if (ev.getSource() == buttonToSPARQL) {
+                        SPINProcess spin = SPINProcess.create();
+                        String str = spin.toSparql(query);
+                        coreseFrame.getPanel().getTextArea().setText(str);
+                        tabbedPaneResults.setSelectedIndex(1);
+                    } else if (ev.getSource() == buttonToSPIN) {
+                        SPINProcess spin = SPINProcess.create();
+                        String str = spin.toSpin(query);
+                        coreseFrame.getPanel().getTextArea().setText(str);
+                        tabbedPaneResults.setSelectedIndex(1);
+                    } else if (ev.getSource() == buttonProve) {
+                        l_Results = engine.SPARQLProve(query);
+                        if (l_Results != null) {
+                            display(l_Results, coreseFrame);
+                        }
+                    } else {
+                        Exec exec = new Exec(coreseFrame, query, isTrace);
+                        exec.process();
+
+                        //Permet de passer a true toutes les options du trace KGram
+                        for (int i = 0; i < coreseFrame.getListCheckbox().size(); i++) {
+                            coreseFrame.getListCheckbox().get(i).setEnabled(true);
+                        }
+                        for (int i = 0; i < coreseFrame.getListJMenuItems().size(); i++) {
+                            coreseFrame.getListJMenuItems().get(i).setEnabled(true);
+                        }
 
 
-    				}
+                    }
 
-    				// Si le résultat existe
-    				//				    if (l_Results != null) {
-    				//				        display(l_Results, coreseFrame);
-    				//				    } 
-    				//				    else if (!coreseFrame.isKgram()) {
-    				//				        textAreaXMLResult.setText(coreseFrame.getMyCapturer().getContent()); // display errors
-    				//				        //coreseFrame.getCapturer()
-    				//				    }
-    			} catch (EngineException e) {
-    				e.printStackTrace();
-    				textAreaXMLResult.setText(coreseFrame.getMyCapturer().getContent() + e.getMessage()); // display errors
-    			}
-    			textPaneValidation.setText(l_message + "Done.");
-    		}
-    	};
+                } catch (EngineException e) {
+                    e.printStackTrace();
+                    textAreaXMLResult.setText(coreseFrame.getMyCapturer().getContent() + e.getMessage()); // display errors
+                }
+                textPaneValidation.setText(l_message + "Done.");
+            }
+        };
 
     }
 
@@ -846,7 +736,7 @@ public final class MyJPanelQuery extends JPanel {
     public JTextArea getTextAreaXMLResult() {
         return textAreaXMLResult;
     }
-    
+
     public JTextArea getTextArea() {
         return textAreaXMLResult;
     }

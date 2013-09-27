@@ -124,9 +124,9 @@ public class JavaCharStream
            bufpos -= tokenBegin;
         }
      }
-     catch (Throwable t)
+     catch (Exception e)
      {
-        throw new Error(t.getMessage());
+        throw new Error(e.getMessage());
      }
 
      available = (bufsize += 2048);

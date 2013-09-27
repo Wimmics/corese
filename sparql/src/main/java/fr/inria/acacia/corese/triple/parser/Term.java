@@ -23,8 +23,8 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 public class Term extends Expression {
 	static final String RE_CHECK = "check";
 	static final String RE_PARA = "||";
-	static final String RE_ALT = "|";
-	static final String RE_SEQ = "/";
+	public static final String RE_ALT = "|";
+	public static final String RE_SEQ = "/";
 	static final String OCST = "@{";
 	static final String CCST = "}";
 	static final String SPACE = " ";

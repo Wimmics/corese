@@ -416,6 +416,11 @@ public class PPrinter {
 		return max;
 	}
 
+        public IDatatype pprint(Node node){
+            return pprint((IDatatype) node.getValue());
+        }	
+
+        
 	public IDatatype pprint(IDatatype dt){	
 		return pprint(dt, null, null, false, null, null, null);
 	}

@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgtool.util;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -25,8 +27,11 @@ public class QueryManager {
     static final String QUERY =  "/fr/inria/edelweiss/resource/query/";
     static final String UPDATE = "/update/";
     static final String[] QUERIES = {"typecheck.rq"}; //{"triple.rq", "subject.rq", "object.rq", "filter.rq", "count.rq"};
+    private boolean isDebug = false;
    
-
+    boolean isCheck = true;
+    private boolean isUpdate = true;
+    
     QueryProcess exec;
     Graph graph;
 
@@ -41,6 +46,7 @@ public class QueryManager {
 
     public Mappings query(String q) throws EngineException {       
         String str = process(q);
+        exec.setDebug(isDebug);
         return exec.query(str);
     }
 
@@ -51,8 +57,12 @@ public class QueryManager {
     String process(String q) throws EngineException {
         SPINProcess sp = SPINProcess.create();
         Graph g = sp.toSpinGraph(q);
-        typecheck(g);
-        update(g);
+        if (isCheck){
+            typecheck(g);
+        }
+        if (isUpdate){
+            update(g);
+        }
         String qq = sp.toSparql(g);
         return qq;
     }
@@ -65,7 +75,10 @@ public class QueryManager {
         QueryProcess qp = QueryProcess.create(g, true);
         qp.add(graph);
         PPrinter pp = PPrinter.create(qp, PPrinter.TYPECHECK);
-        System.out.println(pp.toString());
+        Node res = pp.pprint();
+        if (! res.isBlank()){
+            System.out.println("Type Check:\n" + res.getLabel());
+        }
     }
     
     /**
@@ -111,10 +124,28 @@ public class QueryManager {
      * Graph is a SPIN Query Graph
      * Rewrite the query, eg add optional {}
      */
-     Graph update(Graph g) {
-        update(g, UPDATE + "optional.rq");
-        update(g, UPDATE + "list.rq");
-        update(g, UPDATE + "ext.rq");
+    
+      Graph update(Graph g) {
+           update(g, UPDATE + "optional.rq");
+           return g;
+      }
+      
+    Graph update2(Graph g) {
+//        update(g, UPDATE + "optional.rq");
+//        update(g, UPDATE + "list.rq");
+//        update(g, UPDATE + "ext.rq");
+        update(g, UPDATE + "path.rq");
+        int size = 0;
+        while (size != g.size()){
+           size = g.size();
+           update(g, UPDATE + "loop.rq");
+        }
+        update(g, UPDATE + "loopend.rq");
+
+//        PPrinter pp = PPrinter.create(g, PPrinter.TURTLE);
+//        pp.getNSM().definePrefix("sp", NSManager.SPIN);
+//        System.out.println(pp);
+//        System.out.println(g.display());
         return g;
     }
      
@@ -147,5 +178,47 @@ public class QueryManager {
         } catch (IOException ex) {
             throw LoadException.create(ex);
         }
+    }
+
+    /**
+     * @return the isDebug
+     */
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    /**
+     * @param isDebug the isDebug to set
+     */
+    public void setDebug(boolean isDebug) {
+        this.isDebug = isDebug;
+    }
+
+    /**
+     * @return the isCheck
+     */
+    public boolean isCheck() {
+        return isCheck;
+    }
+
+    /**
+     * @param isCheck the isCheck to set
+     */
+    public void setCheck(boolean isCheck) {
+        this.isCheck = isCheck;
+    }
+
+    /**
+     * @return the isUpdate
+     */
+    public boolean isUpdate() {
+        return isUpdate;
+    }
+
+    /**
+     * @param isUpdate the isUpdate to set
+     */
+    public void setUpdate(boolean isUpdate) {
+        this.isUpdate = isUpdate;
     }
 }

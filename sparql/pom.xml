@@ -40,18 +40,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-	
-		<!--<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.4.2</version>
-		</dependency> 	-->
-		
-		  <!--<dependency>
-	      <groupId>jdom</groupId>
-    <artifactId>jdom</artifactId>
-    <version>1.1</version>
-  </dependency>-->
 
 	
     </dependencies>

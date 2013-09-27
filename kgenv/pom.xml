@@ -23,12 +23,12 @@
             <version>${project.version}</version>
         </dependency>	
         <dependency>
-            <groupId>cryptohash</groupId>
+            <groupId>fr.inria.wimmics</groupId>
             <artifactId>cryptohash</artifactId>
             <version>1.0</version>
         </dependency> 
         <dependency>
-            <groupId>StringHelper</groupId>
+            <groupId>fr.inria.wimmics</groupId>
             <artifactId>StringHelper</artifactId>
             <version>1.0</version>
         </dependency>

@@ -28,7 +28,6 @@ import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.filter.Proxy;
-import fr.inria.lang.StringHelper;
 
 /**
  * Implements evaluator of operators & functions of filter language

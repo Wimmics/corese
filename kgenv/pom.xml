@@ -12,11 +12,6 @@
     <artifactId>kgenv</artifactId>
 
     <dependencies>
-		<!--<dependency>
-			<groupId>fr.inria.edelweiss</groupId>
-			<artifactId>kgram</artifactId>
-			<version>1.0</version>
-		</dependency>	-->
         <dependency>
             <groupId>fr.inria.edelweiss</groupId>
             <artifactId>sparql</artifactId>

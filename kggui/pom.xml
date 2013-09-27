@@ -35,8 +35,8 @@
 			<version>2.2.b</version>
 		</dependency>-->
 		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
+			<groupId>fr.inria.wimmics</groupId>
+			<artifactId>graphstream</artifactId>
 			<version>0.4.2</version>
 		</dependency> 
 		<!--<dependency>

@@ -1235,6 +1235,40 @@ public class Graph //implements IGraph
 		}
 		return getIndex(n, hasDefault).getEdges(predicate, node, node2);
 	}
+        
+        /**
+         * Return start blank node for all lists
+         */
+        public List<Node> getLists(){
+            List<Node> list = new ArrayList<Node>();
+            for (Entity ent : getEdges(RDF.FIRST)){
+                Node start = ent.getNode(0);
+                Edge edge = getEdge(RDF.REST, start, 1);
+                if (edge == null){
+                    list.add(start);
+                }
+            }
+            return list;
+        }
+
+        /**
+         * 
+         * Return the root of the graph, when it is a tree (e.g. SPIN Graph)
+         */
+        public Node getRoot(){
+            for (Entity ent : getBlankNodes()){
+                Node node = ent.getNode();
+                if (! hasEdge(node, 1)){
+                    return node;
+                }
+            }
+            return null;
+        }
+        
+        public boolean hasEdge(Node node, int i){
+             Iterable<Entity> it = getEdges(node, 1);
+             return it.iterator().hasNext();
+        }
 	
 	public List<Node> getList(Node node){
 		List<Node> list = new ArrayList<Node>();
@@ -1251,9 +1285,13 @@ public class Graph //implements IGraph
 		}
 		else {
 			Edge first = getEdge(RDF.FIRST, node, 0);
-			list.add(first.getNode(1));
+                        if (first != null){
+                            list.add(first.getNode(1));
+                        }
 			Edge rest  = getEdge(RDF.REST, node, 0);
-			list(rest.getNode(1), list);
+                        if (rest != null){
+                            list(rest.getNode(1), list);
+                        }
 		}
 	}
 	
@@ -1330,6 +1368,14 @@ public class Graph //implements IGraph
 		return meta;
 	}
 	
+        public Iterable<Entity> getEdges(String p){
+            Node predicate = getPropertyNode(p);
+            if (predicate == null){
+                return new ArrayList<Entity>();
+            }
+            return getEdges(predicate);
+        }
+        
 	public Iterable<Entity> getEdges(Node predicate){
 		Iterable<Entity> it = getEdges(predicate, null, 0);
 		if (it == null) it = new ArrayList<Entity>();

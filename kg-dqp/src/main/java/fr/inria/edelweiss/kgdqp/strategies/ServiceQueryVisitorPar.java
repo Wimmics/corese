@@ -37,8 +37,6 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
     public void visit(Query query) {
     }
 
-    // essayer de ne faire qu'une fois select distinct ?p where { ?p rdf:type rdf:Property } !! necessite les entailments
-    // sinon plus couteux : select distinct ?p where { ?x ?p ?y}
     @Override
     public void visit(ASTQuery ast) {
         HashMap<Triple, ArrayList<String>> indexEdgeSource = new HashMap<Triple, ArrayList<String>>();
@@ -63,16 +61,13 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
             }
         }
 
-        System.out.println("");
-        dumpEdgeIndex(indexEdgeSource);
-        System.out.println("");
-
-        System.out.println("");
-        dumpSourceIndex(indexSourceEdge);
-        System.out.println("");
+        
+        //dumpEdgeIndex(indexEdgeSource);
+        
+        //dumpSourceIndex(indexSourceEdge);
+        
 
         //Query rewriting
-        ArrayList<Exp> excludeFromServices = new ArrayList<Exp>();
         ArrayList<Exp> globalFilters = new ArrayList<Exp>();
         // !! not generalized to graph filters tht would be included inside union ..
         for (int i = 0; i < body.size(); i++) {
@@ -91,9 +86,8 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
             body.add(rewriten.get(i));
         }
 
-        System.out.println("");
-        System.out.println("-------->   Optimized Query");
-        System.out.println(ast.toSparql());
+       
+//        System.out.println(ast.toSparql());
     }
 
     // How to build an index from a "flat" query ? 
@@ -120,11 +114,6 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
                 Producer mp = execDQP.getProducer();
                 if (mp instanceof MetaProducer) {
                     for (Producer p : ((MetaProducer) mp).getProducers()) {
-                        // !!! TODO  HTTPimpl
-//                        if (p instanceof RemoteProducerHTTPImpl) {
-//                            RemoteProducerHTTPImpl rp = (RemoteProducerHTTPImpl) p;
-//                            String url = rp.getEndpoint().getEndpoint();
-                        // !!! TODO WSimpl
                         if (p instanceof RemoteProducerWSImpl) {
                             RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
                             String url = rp.getEndpoint().getEndpoint();
@@ -136,7 +125,6 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
                             }
                             //use cache
 //                            boolean ask = SourceSelectorHTTP.ask(triple.getPredicate().toSparql(), rp, ast);
-
                             CallableAsk callableAsk = new CallableAsk(triple, rp, ast, indexEdgeSource, url);
                             results.add(exec.submit(callableAsk));
                         }
@@ -145,8 +133,8 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
             }
         }
         exec.shutdown();
-        //synchronization barrier
         while (!exec.isTerminated()) {
+        //synchronization barrier
         }
     }
 

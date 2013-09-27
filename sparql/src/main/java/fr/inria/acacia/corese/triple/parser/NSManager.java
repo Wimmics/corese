@@ -36,6 +36,8 @@ public class NSManager
 	public static final String FPPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
         public static final String XSD = RDFS.XSD;
         public static final String RDF = RDFS.RDF;
+        public static final String SPIN = "http://spinrdf.org/sp#";
+
 
 	static final String FPPP = "fp";
         public static final String PPN = ExpType.KGRAM + "pprinter/";

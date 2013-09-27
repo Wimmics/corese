@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.inria.edelweiss.kgtool.util;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
@@ -64,7 +60,11 @@ public class SPINProcess {
     
       
 
-    public String toSpin(String sparql) throws EngineException {
+        public String toSpin(String sparql) throws EngineException {
+            return toSpin(sparql, true);
+        }
+    
+    public String toSpin(String sparql, boolean nsm) throws EngineException {
         if (isDebug) {
             System.out.println("Input: \n" + sparql);
         }
@@ -80,9 +80,13 @@ public class SPINProcess {
         return spin;
     }
     
-      public Graph toSpinGraph(String sparql) throws EngineException {
-            return toGraph(toSpin(sparql));
-        }
+    public Graph toSpinGraph(String sparql) throws EngineException {
+        return toGraph(toSpin(sparql));
+    }
+
+    public Graph toSpinGraph(String sparql, Graph g) throws EngineException {
+        return toGraph(toSpin(sparql), g);
+    }
 
 
     String toSpinSparql(ASTQuery ast) throws EngineException {

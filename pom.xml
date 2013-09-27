@@ -96,7 +96,7 @@
             <dependency>
                 <groupId>com.ibm.icu</groupId>
                 <artifactId>icu4j</artifactId>
-                <version>3.4.5</version>
+                <version>3.6.1</version>
             </dependency>
             <dependency>
                 <groupId>xml-apis</groupId>
@@ -309,7 +309,7 @@
             <name>Aduna Software</name>
             <url>http://repo.aduna-software.org/maven2/releases/</url>
         </repository>-->
-        <repository>
+        <!--        <repository>
             <id>nexus</id>
             <name>Nexus</name>
             <url>http://vigilante.inria.fr/nexus/content/groups/public</url>
@@ -319,6 +319,11 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+        </repository>-->
+        <repository>
+            <id>nexus-i3s-releases</id>
+            <name>Nexus I3S Releases</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/releases</url>
         </repository>
     </repositories>
 </project>

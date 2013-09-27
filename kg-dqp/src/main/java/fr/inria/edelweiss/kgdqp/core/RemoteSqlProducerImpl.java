@@ -21,12 +21,11 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -41,8 +40,8 @@ public class RemoteSqlProducerImpl implements Producer {
 
     private static Logger logger = Logger.getLogger(RemoteSqlProducerImpl.class);
     private String url, driver, login, password;
-    private HashMap<String, String> rdfSqlMappings = new HashMap<String, String>();
-    private final String sql_has_for_name = "{ "
+    private Map<String, String> rdfSqlMappings = new HashMap<String, String>();
+    private final String sqlHasForName = "{ "
             + "     select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', \n "
             + "         \" SELECT DATASET.DATASET_ID, DATASET.NAME FROM DATASET %VALUE-CONSTRAINTS% \")\n"
             //            + "         \" SELECT Dataset.dataset_id, Dataset.name FROM Dataset %VALUE-CONSTRAINTS% \")\n"
@@ -52,7 +51,7 @@ public class RemoteSqlProducerImpl implements Producer {
             + "     select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-IRISA-SS-\",?x)) as %SUBJECT%) where {}"
             //            + "     select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-\",?x)) as %SUBJECT%) where {}"
             + "}";
-    private final String sql_is_referred_to_by = "{ "
+    private final String sqlIsReferredToBy = "{ "
             + "     select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', \n"
             + "        \" SELECT DATASET.SUBJECT_ID, DATASET.DATASET_ID FROM DATASET %VALUE-CONSTRAINTS% \")\n"
             //            + "        \" SELECT Dataset.Subject_subject_id, Dataset.dataset_id FROM Dataset %VALUE-CONSTRAINTS% \")\n"
@@ -62,7 +61,7 @@ public class RemoteSqlProducerImpl implements Producer {
             //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?x)) as %SUBJECT%) where {} }\n"
             + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-IRISA-SS-\",?y)) as %OBJECT%) where {} }";
 //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#dataset-\",?y)) as %OBJECT%) where {} }";
-    private final String sql_has_for_subject_identifier = "{ "
+    private final String sqlHasForSubjectIdentifier = "{ "
             + "     select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', \n"
             + "        \" SELECT SUBJECT.SUBJECT_ID, SUBJECT.NAME FROM SUBJECT %VALUE-CONSTRAINTS% \")\n"
             //            + "        \" SELECT Subject.subject_id, Subject.subject_common_identifier FROM Subject %VALUE-CONSTRAINTS% \")\n"
@@ -71,7 +70,7 @@ public class RemoteSqlProducerImpl implements Producer {
             + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-IRISA-SS-\",?x)) as %SUBJECT%) where {} }\n"
             //            + "{ select(uri(concat(\"http://neurolog.techlog.anr.fr/data.rdf#subject-\",?x)) as %SUBJECT%) where {} }\n"
             + "{ select(?y as %OBJECT%) where {} }";
-    private final String sql_involves_has_patient = "{ "
+    private final String sqlInvolvesHasPatient = "{ "
             + "     select(sql(db:%DATABASE%, %DRIVER%, '%LOGIN%', '%PASSWORD%', \n"
             + "        \" SELECT REL_SUBJECT_STUDY.STUDY_ID, REL_SUBJECT_STUDY.SUBJECT_ID FROM REL_SUBJECT_STUDY %VALUE-CONSTRAINTS% \")\n"
             //            + "        \" SELECT Subject.subject_id, Subject.subject_common_identifier FROM Subject %VALUE-CONSTRAINTS% \")\n"
@@ -88,10 +87,10 @@ public class RemoteSqlProducerImpl implements Producer {
         this.login = login;
         this.password = password;
 
-        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#has-for-name", sql_has_for_name);
-        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#is-referred-to-by", sql_is_referred_to_by);
-        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#has-for-subject-identifier", sql_has_for_subject_identifier);
-        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/study-owl-lite.owl#involves-as-patient", sql_involves_has_patient);
+        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/linguistic-expression-owl-lite.owl#has-for-name", sqlHasForName);
+        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/iec-owl-lite.owl#is-referred-to-by", sqlIsReferredToBy);
+        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/examination-subject-owl-lite.owl#has-for-subject-identifier", sqlHasForSubjectIdentifier);
+        rdfSqlMappings.put("http://www.irisa.fr/visages/team/farooq/ontologies/study-owl-lite.owl#involves-as-patient", sqlInvolvesHasPatient);
 
         for (Entry<String, String> entry : rdfSqlMappings.entrySet()) {
             String sql = entry.getValue();

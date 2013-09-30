@@ -17,7 +17,7 @@
             <artifactId>sparql</artifactId>
             <version>${project.version}</version>
         </dependency>	
-        <dependency>
+<!--        <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>cryptohash</artifactId>
             <version>1.0</version>
@@ -26,7 +26,7 @@
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>StringHelper</artifactId>
             <version>1.0</version>
-        </dependency>
+        </dependency>-->
     
         <dependency>
             <groupId>log4j</groupId>

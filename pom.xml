@@ -323,7 +323,7 @@
         <repository>
             <id>nexus-i3s-releases</id>
             <name>Nexus I3S Releases</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/releases</url>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/i3s-public</url>
         </repository>
     </repositories>
 </project>

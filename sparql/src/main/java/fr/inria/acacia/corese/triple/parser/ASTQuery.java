@@ -971,6 +971,33 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     }
     
     
+    
+     /**
+     * Create list of Property Paths rdf:rest* / rdf:first that match list
+     * elements
+     *
+     * @return
+     */
+   public Exp path(RDFList exp) {
+        RDFList ll = new RDFList(exp.head(), exp.getList());
+        Expression re = list();
+
+        for (Expression ee : exp.getList()){
+           Triple t = createPath(exp.head(), re, ee);
+           ll.add(t);
+        }
+        
+        return ll;
+    }
+
+   
+    Term list() {
+        return Term.create(Term.RE_SEQ, 
+                Term.function(Term.STAR, createQName(RDFS.qrdfRest)),
+                createQName(RDFS.qrdfFirst));
+    }
+    
+       
 
 	public  Term createFunction(String name, Expression expression1) {
         Term term = createFunction(name);

@@ -4,6 +4,7 @@ import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.parser.*;
 import fr.inria.acacia.corese.triple.update.*;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -56,13 +57,21 @@ public class SPIN implements ASTVisitor {
     private static final String CPAREN   = KeywordPP.CLOSE_PAREN;
     private static final String SPACE    = KeywordPP.SPACE;
     
+    private final static String BN = "_:sb";
+    
     StringBuffer sb;
     private int counter = 0;
-    private Boolean subQuery = false;    
+    int vcount = 0;
+
+    private Boolean subQuery = false; 
+    
+    // var -> blank node
+    HashMap <String, String> tvar;
 
     
     SPIN() {
         setBuffer(new StringBuffer());
+        tvar = new HashMap <String, String> ();
     }
 
     public static SPIN create() {
@@ -86,11 +95,12 @@ public class SPIN implements ASTVisitor {
      */
     @Override
     public void visit(ASTQuery ast) {
-
-        //Prefix for Queries
-        if (!subQuery) {
-           visitProlog(ast);
-        }
+        visitProlog(ast);              
+        process(ast);
+        displayVar();        
+    }
+    
+    void process(ASTQuery ast){
 
         if (ast.isAsk()) {
             ttype(SP_ASK);
@@ -131,6 +141,7 @@ public class SPIN implements ASTVisitor {
             sb.append(tab() + CSBRACKET + NL);
         }
         
+ 
     }
     
     
@@ -143,6 +154,7 @@ public class SPIN implements ASTVisitor {
             sb.append(SPACE);
             for (int i = 0; i < ast.getGroupBy().size(); i++) {
                 visit(ast.getGroupBy().get(i));
+                sb.append(SPACE);
             }
             counter--;
             sb.append(tab() + CPAREN + PT_COMMA);
@@ -166,8 +178,9 @@ public class SPIN implements ASTVisitor {
                     sb.append(CPAREN);
                     sb.append(CSBRACKET);
                 } else {
-                    visit(ast.getOrderBy().get(i));
+                    visit(ast.getOrderBy().get(i));                    
                 }
+                sb.append(SPACE);
             }
 
             counter--;
@@ -573,7 +586,7 @@ public class SPIN implements ASTVisitor {
         sb.append("sp:SubQuery" + PT_COMMA);
         sb.append(tab() + "sp:query" + NL);
 
-        visit(query.getQuery());
+        process(query.getQuery());
 
         counter--;
         sb.append(NL + tab() + CSBRACKET + NL);
@@ -867,12 +880,40 @@ public class SPIN implements ASTVisitor {
             var.toString(sb);
         }
         else {
-            sb.append(OSBRACKET + SPACE);
-            sb.append("sp:varName" + SPACE + "\"");
-            sb.append(var.getName().substring(1) + "\"");
-            sb.append(SPACE + CSBRACKET);
+           process(var); 
         }
     }
+      
+    void process(Variable var) {                    
+        String name = var.getLabel();
+        String bn = tvar.get(name);
+        if (bn == null){
+            bn = blank(var);
+            tvar.put(name, bn);
+       }
+        
+       sb.append(bn);
+    }
+    
+    void displayVar(){
+        for (String var : tvar.keySet()){
+            displayVar(var);
+        }
+    }
+    
+     void displayVar(String name){
+        String bn = tvar.get(name);       
+        
+        sb.append(bn + SPACE);
+        sb.append("sp:varName" + SPACE + "\"");
+        sb.append(name.substring(1) + "\" ." + NL);
+    }
+    
+    
+    String blank(Variable var){
+        return BN + vcount++;
+    }
+
 
     @Override
     public void visit(Constant cst) {

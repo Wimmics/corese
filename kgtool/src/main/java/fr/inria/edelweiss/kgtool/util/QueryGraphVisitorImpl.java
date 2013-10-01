@@ -27,7 +27,7 @@ import java.util.List;
  * @author Olivier Corby, Wimmics Inria I3S, 2013
  *
  */
-public class QueryVisitor implements QueryGraphVisitor {
+public class QueryGraphVisitorImpl implements QueryGraphVisitor {
     
     private static final String REST  = NSManager.RDF + "rest";
     private static final String FIRST = NSManager.RDF + "first";
@@ -46,11 +46,11 @@ public class QueryVisitor implements QueryGraphVisitor {
     
     class Table extends HashMap<Node, Node> { }
 
-    public static QueryVisitor create(){
-        return new QueryVisitor();
+    public static QueryGraphVisitorImpl create(){
+        return new QueryGraphVisitorImpl();
     }
     
-    QueryVisitor(){
+    QueryGraphVisitorImpl(){
         table = new Table();
         predicates = new ArrayList<String>();
     }

@@ -3,7 +3,6 @@ package fr.inria.edelweiss.kgenv.parser;
 import java.lang.reflect.InvocationTargetException;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
@@ -14,13 +13,11 @@ import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
-import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.tool.Message;
-import fr.inria.edelweiss.kgram.tool.MetaProducer;
 
 /**
  * Pragma processor
@@ -193,6 +190,11 @@ public class Pragma  {
 					}
 				}
 			} 
+                        else if (subject.equals(LIST)){
+				if (property.equals(EXPAND)){
+                                    transform.add(ExpandList.create()); 
+                                }
+                        }
 			else if (subject.equals(SELF)){
 				if (property.equals(PRELAX)){
 					if (t.getObject().isBlankNode()){

@@ -115,6 +115,7 @@ public class QueryLoad {
             Writer fr = new FileWriter(name);
             BufferedWriter fq = new BufferedWriter(fr);
             fq.write(str);
+            fq.flush();
             fr.close();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block

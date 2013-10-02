@@ -1,0 +1,30 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+GRAPH <http://graph/g1> { 
+    <http://i3s/Alban> foaf:name "Alban" . 
+    <http://i3s/Alban> foaf:mbox <mailto:alban.gaignard@i3s.unice.fr> .
+    <http://i3s/Alban> foaf:mbox <mailto:alban.gaignard@gmail.com> .
+    <http://i3s/Alban> foaf:knows <http://i3s/Javier> .
+    
+    <http://i3s/Mireille> foaf:name "Mireille" . 
+    <http://i3s/Mireille> foaf:knows <http://i3s/Anne-Marie> .
+
+    <http://i3s/Javier> foaf:knows <http://i3s/Tristan>
+}
+
+GRAPH <http://graph/g2> { 
+    <http://i3s/Javier> foaf:name "Javier" .
+    <http://i3s/Javier> foaf:mbox <mailto:javier@polytech.unice.fr> .
+    <http://i3s/Javier> foaf:knows <http://i3s/Tram> .
+
+    <http://i3s/Simon> foaf:name "Simon" .
+    <http://i3s/Simon> foaf:knows <http://i3s/Mireille> .
+
+    <http://i3s/Filip> foaf:name "Filip" .
+    <http://i3s/Filip> foaf:knows <http://i3s/Mathieu> .
+
+    <http://i3s/Tram> foaf:name "Tram" .
+    <http://i3s/Tram> foaf:knows <http://i3s/Mireille> .
+}

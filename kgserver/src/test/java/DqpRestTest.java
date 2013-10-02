@@ -83,7 +83,7 @@ public class DqpRestTest {
         server1 = pb.start();
         Thread.sleep(2000);
 
-        /////////////// Secondserver in that JVM
+        /////////////// Second server in this JVM
         URI webappUri1 = EmbeddedJettyServer.extractResourceDir("webapp", true);
         server2 = new Server(port2);
 

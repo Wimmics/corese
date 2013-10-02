@@ -48,8 +48,10 @@ public class SourceSelectorWS {
             String query = SourceSelectorWS.getSparqlAsk(edge, env);
             try {
 
-                String res = rp.getEndpoint().getEdges(query);
-//                logger.info("Remote ASK for "+edge.getEdgeNode().getLabel());
+//                String res = rp.getEndpoint().getEdges(query);
+                String res = rp.getEndpoint().query(query);
+                logger.debug("Remote ASK for "+edge.getEdgeNode().getLabel());
+                logger.debug(res);
                 if ((res == null) || (res.length() == 0)) {
                     //update cache
                     rp.getCacheIndex().put(edge.getLabel(), false);

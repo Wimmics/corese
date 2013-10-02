@@ -7,7 +7,9 @@ package fr.inria.edelweiss.kgdqp.strategies;
 
 //import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import java.util.List;
 
 /**
  *
@@ -15,6 +17,6 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
  */
 public interface RemoteQueryOptimizer {
     
-    public abstract String getSparqlQuery(Edge edge, Environment env) ;
+    public abstract String getSparqlQuery(Node gNode, List<Node> from, Edge edge, Environment env) ;
    
 }

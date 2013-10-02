@@ -60,7 +60,7 @@ public class ProviderImpl implements Provider {
 
 	private int limit = 30;
 	
-	public ProviderImpl(){
+	private ProviderImpl(){
 		table = new HashMap<String, QueryProcess>();
 		version = new Hashtable<String, Double>();
 	}

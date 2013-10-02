@@ -6,7 +6,6 @@ package fr.inria.edelweiss.kgdqp.core;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLSoapEndpointClient;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SparqlEndpointInterface;
@@ -16,17 +15,21 @@ import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizerFactory;
 import fr.inria.edelweiss.kgram.api.core.*;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
-import wsimport.KgramWS.RemoteProducer;
-import wsimport.KgramWS.RemoteProducerServiceClient;
+import org.xml.sax.SAXException;
 
 /**
  * Implementation of the remote producer, acting as web service client for a
@@ -43,10 +46,10 @@ public class RemoteProducerWSImpl implements Producer {
     public RemoteProducerWSImpl(URL url, WSImplem implem) {
         if (implem == WSImplem.REST) {
             rp = new SPARQLRestEndpointClient(url);
-            logger.info("REST endpoint instanciated " + url);
+            logger.debug("REST endpoint instanciated " + url);
         } else {
             rp = new SPARQLSoapEndpointClient(url);
-            logger.info("SOAP endpoint instanciated " + url);
+            logger.debug("SOAP endpoint instanciated " + url);
         }
     }
 
@@ -66,11 +69,36 @@ public class RemoteProducerWSImpl implements Producer {
      * @param gNode
      * @param from
      * @param env
-     * @return
+     * @return graph nodes from the remote SPARQL endpoint through a SELECT
+     * query. Results are serialized with
      */
     @Override
     public Iterable<Node> getGraphNodes(Node gNode, List<Node> from, Environment env) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            Node node = env.getNode(gNode);
+            String rwSparql = getSparqlForGetGN(gNode, from, env);
+
+            logger.debug("Sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
+            String sparqlRes = rp.query(rwSparql);
+            Mappings maps = SPARQLResult.create(ProducerImpl.create(Graph.create())).parseString(sparqlRes);
+            ArrayList<Node> resNodes = new ArrayList<Node>();
+
+            for (Mapping m : maps) {
+                logger.debug(m);
+                for (Node n : m.getNodes()) {
+                    resNodes.add(n);
+                }
+            }
+
+            return resNodes;
+        } catch (ParserConfigurationException ex) {
+            ex.printStackTrace();
+        } catch (SAXException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -81,8 +109,64 @@ public class RemoteProducerWSImpl implements Producer {
      */
     @Override
     public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
-        System.out.println("Is Graph Node ? " + gNode.toString());
-        throw new UnsupportedOperationException("Not supported yet.");
+        logger.debug("Is Graph Node ? " + gNode.toString());
+        Node node = env.getNode(gNode);
+
+//        if (gNode.isVariable()) {
+//
+//        } else if (gNode.isConstant()) {
+//
+//        }
+
+        String rwSparql = getSparqlForIsGN(gNode, from, env);
+
+        logger.debug("Sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
+        String sparqlRes = rp.query(rwSparql);
+        boolean res = sparqlRes.contains("<boolean>true</boolean>");
+        return res;
+    }
+
+    private String getSparqlForGetGN(Node gNode, List<Node> from, Environment env) {
+        String selectFrom = "SELECT DISTINCT * ";
+        String sparql = getSparqlPrefixes(env);
+        if (!from.isEmpty()) {
+            for (Node f : from) {
+                selectFrom += "FROM NAMED " + f + " ";
+            }
+        }
+        sparql += selectFrom + " WHERE \n\t { GRAPH " + gNode.toString() + "{} }";
+
+        return sparql;
+    }
+
+    private String getSparqlForIsGN(Node gNode, List<Node> from, Environment env) {
+        String askFrom = "ASK ";
+        String sparql = getSparqlPrefixes(env);
+
+        if (!from.isEmpty()) {
+            for (Node f : from) {
+                askFrom += "FROM NAMED " + f + " ";
+            }
+//            askFrom = askFrom.substring(0, askFrom.lastIndexOf(","));
+        }
+        sparql += askFrom + "\n\t { GRAPH " + gNode.toString() + "{} }";
+
+        return sparql;
+    }
+
+    private String getSparqlPrefixes(Environment env) {
+        String sparqlPrefixes = "";
+        //prefix handling
+        if (env.getQuery().getAST() instanceof ASTQuery) {
+            ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+            NSManager namespaceMgr = ast.getNSM();
+            Enumeration<String> prefixes = namespaceMgr.getPrefixes();
+            while (prefixes.hasMoreElements()) {
+                String p = prefixes.nextElement();
+                sparqlPrefixes += "PREFIX " + p + ": " + "<" + namespaceMgr.getNamespace(p) + ">\n";
+            }
+        }
+        return sparqlPrefixes;
     }
 
     /**
@@ -99,64 +183,58 @@ public class RemoteProducerWSImpl implements Producer {
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env) {
 
-        // si gNode != null et from non vide, alors "from named"
-        // si gNode == null et from non vide alors "from"
-
-        ArrayList<Entity> results = new ArrayList<Entity>();
-        Iterator it = null;
+        logger.debug("gNode = " + gNode);
+        logger.debug("from = " + from);
 
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createSimpleOptimizer();
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFilterOptimizer();
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createBindingOptimizer();
         RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFullOptimizer();
-        String query = qo.getSparqlQuery(qEdge, env);
-        Graph g = Graph.create(false);
+        String rwSparql = qo.getSparqlQuery(gNode, from, qEdge, env);
 
+        Graph g = Graph.create(false);
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
             sw.start();
 
             if (SourceSelectorWS.ask(qEdge, this, env)) {
-//            if (true) {
-                logger.info("sending query \n" + query + "\n" + "to " + rp.getEndpoint());
-
-
-                String sparqlRes = rp.getEdges(query);
+                logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
+                String sparqlRes = rp.getEdges(rwSparql);
+                logger.debug(sparqlRes);
 
                 // count number of queries
-                if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
-                    Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
-                    QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
-                } else {
-                    QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
-                }
+//                if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+//                    Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+//                    QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+//                } else {
+//                    QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+//                }
 
                 // count number of source access
-                String endpoint = rp.getEndpoint();
-                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
-                    Long n = QueryProcessDQP.sourceCounter.get(endpoint);
-                    QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
-                } else {
-                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
-                }
+//                String endpoint = rp.getEndpoint();
+//                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+//                    Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+//                    QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+//                } else {
+//                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+//                }
 
                 if (sparqlRes != null) {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
-//                    l.load(is, endpoint);
-                    l.load(is);
-                    logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
-                    if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
-                        Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
-                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
-                    } else {
-                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
-                    }
+                    l.load(is, ".ttl");
+                    logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
+//                    if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+//                        Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+//                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+//                    } else {
+//                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+//                    }
                 }
 
             } else {
-//                logger.info("negative ASK (" + qEdge + ") -> pruning data source " + rp.getEndpoint());
+                logger.debug("negative ASK (" + qEdge + ") -> pruning data source " + rp.getEndpoint());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -187,8 +265,7 @@ public class RemoteProducerWSImpl implements Producer {
      * @param index
      */
     @Override
-    public void initPath(Edge qEdge,
-            int index) {
+    public void initPath(Edge qEdge, int index) {
     }
 
     /**
@@ -218,51 +295,69 @@ public class RemoteProducerWSImpl implements Producer {
         }
         ArrayList<String> filters = new ArrayList<String>();
 
-        String sparql = sparqlPrefixes;
-        sparql += "construct  { " + qEdge.getNode(0) + qEdge.getEdgeNode() + qEdge.getNode(1) + " } \n where { \n";
-        sparql += "\t " + qEdge.getNode(0) + " " + qEdge.getEdgeNode() + "{0}" + " " + qEdge.getNode(1) + " .\n ";
+        //from handling
+        String fromClauses = "";
+        if ((from != null) && (!from.isEmpty())) {
+            for (Node f : from) {
+                if (gNode == null) {
+                    fromClauses += "FROM ";
+                } else {
+                    fromClauses += "FROM NAMED ";
+                }
+                fromClauses += f + " ";
+            }
+        }
 
-        sparql += "}";
+        String sparql = sparqlPrefixes;
+        if (gNode == null) {
+            sparql += "CONSTRUCT  { " + qEdge.getNode(0) + qEdge.getEdgeNode() + qEdge.getNode(1) + " } " + fromClauses + "\n WHERE { \n";
+            sparql += "\t " + qEdge.getNode(0) + " " + qEdge.getEdgeNode() + "{0}" + " " + qEdge.getNode(1) + " .\n ";
+            sparql += "}";
+        } else {
+            sparql += "CONSTRUCT { GRAPH " + gNode.toString() + " { " + qEdge.getNode(0) + qEdge.getEdgeNode() + qEdge.getNode(1) + " }} " + fromClauses + "\n WHERE { \n";
+            sparql += "\t GRAPH " + gNode.toString() + "{ " + qEdge.getNode(0) + " " + qEdge.getEdgeNode() + "{0}" + " " + qEdge.getNode(1) + "} .\n ";
+            sparql += "}";
+        }
 
         Graph g = Graph.create();
-        logger.info("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
+        logger.debug("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
 
         // count number of queries
-        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
-            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
-            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
-        } else {
-            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
-        }
+//        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+//            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+//            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+//        } else {
+//            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+//        }
 
         // count number of source access
-        String endpoint = rp.getEndpoint();
-        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
-            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
-            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
-        } else {
-            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
-        }
+//        String endpoint = rp.getEndpoint();
+//        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+//            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+//            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+//        } else {
+//            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+//        }
 
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
             sw.start();
             String sparqlRes = rp.getEdges(sparql);
-            logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
+            logger.debug("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
             sw.reset();
             sw.start();
             if (sparqlRes != null) {
                 Load l = Load.create(g);
                 is = new ByteArrayInputStream(sparqlRes.getBytes());
-                l.load(is);
-                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
-                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
-                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
-                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
-                } else {
-                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
-                }
+                l.load(is, ".ttl");
+                logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+//                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+//                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+//                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+//                } else {
+//                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -318,9 +413,28 @@ public class RemoteProducerWSImpl implements Producer {
         // Query rewriting
         String transformedExp = exp.toRegex();
         String sparql = sparqlPrefixes;
+
+        //from handling
+        String fromClauses = "";
+        if ((from != null) && (!from.isEmpty())) {
+            for (Node f : from) {
+                if (gNode == null) {
+                    fromClauses += "FROM ";
+                } else {
+                    fromClauses += "FROM NAMED ";
+                }
+                fromClauses += f + " ";
+            }
+        }
+
         if (exp.isReverse()) {
-            sparql += "construct  { " + object + " <" + exp.getName() + "> " + subject + " } \n where { \n";
-            sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
+            if (gNode == null) {
+                sparql += "CONSTRUCT  { " + object + " <" + exp.getName() + "> " + subject + " } " + fromClauses + "\n WHERE { \n";
+                sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
+            } else {
+                sparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{" + object + " <" + exp.getName() + "> " + subject + " }} " + fromClauses + "\n WHERE { \n";
+                sparql += "\t GRAPH " + gNode.toString() + "{" + subject + " " + transformedExp + " " + object + "} .\n ";
+            }
         } else if (exp.isNot()) {
             boolean valid = checkNeg(exp);
             if (!valid) {
@@ -328,8 +442,13 @@ public class RemoteProducerWSImpl implements Producer {
                 return new ArrayList<Entity>();
             } else {
                 List<String> negProps = getFlatRegEx(exp);
-                sparql += "construct  { " + subject + " ?_p " + object + " } \n where { \n";
-                sparql += "\t " + subject + " ?_p " + object + " .\n ";
+                if (gNode == null) {
+                    sparql += "CONSTRUCT  { " + subject + " ?_p " + object + " } " + fromClauses + "\n WHERE { \n";
+                    sparql += "\t " + subject + " ?_p " + object + " .\n ";
+                } else {
+                    sparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{ " + subject + " ?_p " + object + " }} " + fromClauses + "\n WHERE { \n";
+                    sparql += "\t GRAPH " + gNode.toString() + "{" + subject + " ?_p " + object + "} .\n ";
+                }
                 sparql += "\tFILTER ( \n";
                 for (String negP : negProps) {
                     sparql += "\t\t (?_p != " + negP + " ) && \n ";
@@ -339,51 +458,56 @@ public class RemoteProducerWSImpl implements Producer {
 
             }
         } else {
-            sparql += "construct  { " + subject + " <" + exp.getName() + "> " + object + " } \n where { \n";
-            sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
+            if (gNode == null) {
+                sparql += "CONSTRUCT  { " + subject + " <" + exp.getName() + "> " + object + " } " + fromClauses + "\n WHERE { \n";
+                sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
+            } else {
+                sparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{ " + subject + " <" + exp.getName() + "> " + object + " }} " + fromClauses + "\n WHERE { \n";
+                sparql += "\t GRAPH " + gNode.toString() + "{" + subject + " " + transformedExp + " " + object + "} .\n ";
+            }
         }
         sparql += "\n}";
 
         // Remote query processing
         Graph g = Graph.create();
-//        logger.info("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
-        
-        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
-            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
-            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
-        } else {
-            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
-        }
+//        logger.debug("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
+
+//        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+//            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+//            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+//        } else {
+//            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+//        }
 
         // count number of source access
-        String endpoint = rp.getEndpoint();
-        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
-            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
-            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
-        } else {
-            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
-        }
+//        String endpoint = rp.getEndpoint();
+//        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+//            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+//            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+//        } else {
+//            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+//        }
 
-        
+
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
             sw.start();
             String sparqlRes = rp.getEdges(sparql);
-//            logger.info("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
+            logger.debug("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
             sw.reset();
             sw.start();
             if (sparqlRes != null) {
                 Load l = Load.create(g);
                 is = new ByteArrayInputStream(sparqlRes.getBytes());
-                l.load(is);
-//                logger.info("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
-                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
-                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
-                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
-                } else {
-                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
-                }
+                l.load(is, ".ttl");
+                logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
+//                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+//                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+//                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+//                } else {
+//                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();

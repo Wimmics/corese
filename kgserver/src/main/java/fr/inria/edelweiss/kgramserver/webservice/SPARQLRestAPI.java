@@ -200,8 +200,13 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(TripleFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            Mappings maps = exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
+            String ttl = TripleFormat.create(maps, true).toString();
+            logger.debug(query);
+            logger.debug(ttl);
+            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(ttl).build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
         }

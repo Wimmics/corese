@@ -4,13 +4,13 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import fr.inria.edelweiss.kgdqp.core.ProviderImplV2;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.ProviderImpl;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import java.net.MalformedURLException;
@@ -35,7 +35,7 @@ public class DqpRestAPI {
 
     private Logger logger = Logger.getLogger(DqpRestAPI.class);
     private static Graph graph = Graph.create(false);
-    private static Provider sProv = ProviderImplV2.create();
+    private static Provider sProv = ProviderImpl.create();
     private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv);
 
     @POST
@@ -44,7 +44,7 @@ public class DqpRestAPI {
         //reset the query process DQP
         try {
             DqpRestAPI.graph = Graph.create(false);
-            DqpRestAPI.sProv = ProviderImplV2.create();
+            DqpRestAPI.sProv = ProviderImpl.create();
             DqpRestAPI.execDQP = QueryProcessDQP.create(graph, sProv);
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("Reinitialized KGRAM-DQP federation engine").build();
         } catch (Exception ex) {

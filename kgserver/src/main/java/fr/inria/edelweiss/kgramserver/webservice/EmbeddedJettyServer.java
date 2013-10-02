@@ -74,7 +74,7 @@ public class EmbeddedJettyServer {
             } else {
                 //extract HTML source for the web UI
             }
-            
+
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
             Server server = new Server(port);
 
@@ -89,7 +89,7 @@ public class EmbeddedJettyServer {
 
             ResourceHandler resource_handler = new ResourceHandler();
             resource_handler.setWelcomeFiles(new String[]{"index.html"});
-//                resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
+//            resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");   
             resource_handler.setResourceBase(webappUri.getRawPath());
             ContextHandler staticContextHandler = new ContextHandler();
             staticContextHandler.setContextPath("/");
@@ -107,7 +107,6 @@ public class EmbeddedJettyServer {
         } catch (ParseException exp) {
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         }
-
     }
 
     public static URI extractResourceDir(String dirname, boolean overwrite) throws FileSystemException, URISyntaxException {

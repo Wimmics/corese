@@ -27,7 +27,13 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
     private static Logger logger = Logger.getLogger(RemoteQueryOptimizerFull.class);
 
     @Override
-    public String getSparqlQuery(Edge edge, Environment env) {
+    public String getSparqlQuery(Node gNode, List<Node> from, Edge edge, Environment env) {
+
+        // IF (gNode == null) && (from.size <= 0) THEN nothing to do
+        // IF (gNode == null) && (from.size > 0) THEN include from clauses ==> FROM
+        // IF (gNode != null) && (from.size <= 0) THEN include graph pattern
+        // IF (gNode != null) && (from.size > 0) THEN include from clauses  ==> FROM NAMED
+
         String sparqlPrefixes = "";
 
         //prefix handling
@@ -72,20 +78,38 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         //filter handling
         List<Filter> filters = Util.getApplicableFilter(env, reqEdge);
 
-        String sparql = sparqlPrefixes;
-        sparql += "construct  { " + subject + " "+ predicate + " " + object  + " } \n where { \n";
-        sparql += "\t " + subject + " "+ predicate + " " + object + " .\n ";
+        //from handling
+        String fromClauses = "";
+        if ((from != null) && (!from.isEmpty())) {
+            for (Node f : from) {
+                if (gNode == null) {
+                    fromClauses += "FROM ";
+                } else {
+                    fromClauses += "FROM NAMED ";
+                }
+                fromClauses += f + " ";
+            }
+        }
 
-        
+        String sparql = sparqlPrefixes;
+
+        if (gNode == null) {
+            sparql += "CONSTRUCT  { " + subject + " " + predicate + " " + object + " } " + fromClauses + "\n WHERE { \n";
+            sparql += "\t " + subject + " " + predicate + " " + object + " .\n ";
+        } else {
+            sparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{" + subject + " " + predicate + " " + object + " }} " + fromClauses + "\n WHERE { \n";
+            sparql += "\t GRAPH " + gNode.toString() + "{" + subject + " " + predicate + " " + object + "} .\n ";
+        }
+
         // TODO CHECK filter.getExp().toString();
         if (filters.size() > 0) {
             sparql += "\t  FILTER (\n";
             int i = 0;
             for (Filter filter : filters) {
-                if (i == (filters.size() - 1)) {    
-                    sparql += "\t\t " + ((Term)filter).toSparql() + "\n";
+                if (i == (filters.size() - 1)) {
+                    sparql += "\t\t " + ((Term) filter).toSparql() + "\n";
                 } else {
-                    sparql += "\t\t " + ((Term)filter).toSparql() + "&&\n";
+                    sparql += "\t\t " + ((Term) filter).toSparql() + "&&\n";
                 }
                 i++;
             }
@@ -93,10 +117,6 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         }
         sparql += "}";
 
-//        System.out.println("");
-//        System.out.println(sparql);
-//        System.out.println("");
-//        
         return sparql;
     }
 }

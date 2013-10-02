@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Filter;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import java.util.Enumeration;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
 public class RemoteQueryOptimizerFilter implements RemoteQueryOptimizer {
 
     @Override
-    public String getSparqlQuery(Edge edge, Environment env) {
+    public String getSparqlQuery(Node gNode, List<Node> from, Edge edge, Environment env) {
         String sEdge = edge.toString();
         String sparqlPrefixes = "";
 

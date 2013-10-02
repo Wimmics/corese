@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import java.util.Enumeration;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
@@ -27,7 +28,7 @@ public class RemoteQueryOptimizerBinding implements RemoteQueryOptimizer {
     }
 
     @Override
-    public String getSparqlQuery(Edge edge, Environment env) {
+    public String getSparqlQuery(Node gNode, List<Node> from, Edge edge, Environment env) {
         String sparqlPrefixes = "";
 
         //prefix handling

@@ -60,7 +60,7 @@ public class ProviderImpl implements Provider {
 
 	private int limit = 30;
 	
-	ProviderImpl(){
+	public ProviderImpl(){
 		table = new HashMap<String, QueryProcess>();
 		version = new Hashtable<String, Double>();
 	}
@@ -196,7 +196,7 @@ public class ProviderImpl implements Provider {
 			ASTQuery ast = (ASTQuery) q.getAST();
 						
 			String query = ast.toString();
-						
+                        			
 			if (g.isDebug()){
 				logger.info("** Provider query: \n" + query);
 			}

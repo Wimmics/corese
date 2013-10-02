@@ -34,4 +34,9 @@ public class SPARQLSoapEndpointClient implements SparqlEndpointInterface {
     public String getEndpoint() {
         return rp.getEndpoint();
     }
+
+    @Override
+    public String getNodes(String query) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

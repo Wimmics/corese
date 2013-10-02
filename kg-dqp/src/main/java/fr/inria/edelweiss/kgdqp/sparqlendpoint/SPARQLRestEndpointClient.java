@@ -37,11 +37,12 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
      * This method is an helper method used to send a sparql query to the remote server by using the POST operation of the SPARQL 1.1 WebStore protocol,
      * here the query is embedded in body of the message
      * @param query is the sparql query qe want to send to the remote server
+     * @return
+     * @throws IOException  
      */
     public String doPost(String query) throws IOException {
 	WebResource service;
 	service = client.resource(UriBuilder.fromUri(url).build());
-//        ClientResponse clientResponse = service.path("/").accept("application/sparql-results+xml").post(ClientResponse.class, query);
         ClientResponse clientResponse = service.path("/").accept("application/rdf+xml").post(ClientResponse.class, query);
 	return clientResponse.getEntity(String.class);
     }
@@ -49,21 +50,39 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
     /**
      * This method is an helper method used to send a sparql query to the remote server by using the GET operation of the SPARQL 1.1 WebStore protocol
      * @param query is the sparql query qe want to send to the remote server
+     * @return
+     * @throws IOException  
      */
     public String doGet(String query) throws IOException {
 	WebResource service;
 	service = client.resource(UriBuilder.fromUri(url).build());
-//        ClientResponse clientResponse = service.path("/").queryParam("query", query).accept("application/sparql-results+xml").get(ClientResponse.class);
-        ClientResponse clientResponse = service.path("/").queryParam("query", query).accept("application/rdf+xml").get(ClientResponse.class);
+        ClientResponse clientResponse = service.path("/").queryParam("query", query).accept("text/turtle").get(ClientResponse.class);
 	return clientResponse.getEntity(String.class);
     }
     
     /**
-     * that is the very method of this class. It is used to send a query to the remote server
+     * This method is an helper method used to send a sparql query to the remote server by using the GET operation of the SPARQL 1.1 WebStore protocol
+     * @param query is the sparql query qe want to send to the remote server
+     * @param format is the http accept format, namely "application/sparql-results+xml", "application/rdf+xml", or "text/turtle"
+     * @return
+     * @throws IOException  
      */
+    public String doGet(String query, String format) throws IOException {
+	WebResource service;
+	service = client.resource(UriBuilder.fromUri(url).build());
+        ClientResponse clientResponse = service.path("/").queryParam("query", query).accept(format).get(ClientResponse.class);
+	return clientResponse.getEntity(String.class);
+    }
+    
+    /**
+     * 
+     * @param query
+     * @return  
+     */
+    @Override
     public String getEdges(String query){
 	try {
-	    return doGet(query);
+	    return doGet(query, "text/turtle");
 	} catch (IOException ex) {
 	    Logger.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.SEVERE, null, ex);
 	}
@@ -71,11 +90,29 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
     }
     
     /**
-     * that is the very method of this class. It is used to send a query to the remote server
+     * 
+     * @param query
+     * @return  
      */
+    @Override
+    public String getNodes(String query){
+	try {
+	    return doGet(query, "application/sparql-results+xml");
+	} catch (IOException ex) {
+	    Logger.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return null;
+    }
+    
+    /**
+     * 
+     * @param query
+     * @return  
+     */
+    @Override
     public String query(String query){
 	try {
-	    return doGet(query);
+	    return doGet(query, "application/sparql-results+xml");
 	} catch (IOException ex) {
 	    Logger.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.SEVERE, null, ex);
 	}
@@ -85,6 +122,7 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
     /**
      * This method return the endpoint where our client is bounded to
      */
+    @Override
     public String getEndpoint() {
 	return url;
     }

@@ -22,6 +22,13 @@ public interface SparqlEndpointInterface {
      * @param query
      * @return
      */
+    public String getNodes(String query);
+    
+    /**
+     *
+     * @param query
+     * @return
+     */
     public String query(String query);
 
     /**

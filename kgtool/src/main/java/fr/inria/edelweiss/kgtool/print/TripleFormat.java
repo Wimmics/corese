@@ -48,6 +48,18 @@ public class TripleFormat extends RDFFormat {
 		return new TripleFormat(g, NSManager.create());
 	}
 	
+        public static TripleFormat create(Mappings map, boolean isGraph){
+		Graph g = (Graph) map.getGraph();
+		if (g != null){
+			Query q = map.getQuery();
+			NSManager nsm = ((ASTQuery) q.getAST()).getNSM();
+                        TripleFormat t = new TripleFormat(g, nsm);
+                        t.setGraph(isGraph);
+			return t;
+		}
+		return create(Graph.create());
+	}
+        
 	public static TripleFormat create(Graph g, boolean isGraph){
 		TripleFormat t = new TripleFormat(g, NSManager.create());
 		t.setGraph(isGraph);

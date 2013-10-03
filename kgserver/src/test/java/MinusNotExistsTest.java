@@ -84,7 +84,7 @@ public class MinusNotExistsTest {
         ProcessBuilder pb = new ProcessBuilder("java", "-Xmx512m", "-cp",
 //                "/Users/gaignard/devKgram/kgserver/target/kgserver-1.0.7-jar-with-dependencies.jar",
                 "./target/kgserver-1.0.7-jar-with-dependencies.jar",
-                "fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer", "-p", "9081", "&");
+                "fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer", "-p", String.valueOf(port1), "&");
         
         pb.redirectErrorStream(true);
         server1 = pb.start();

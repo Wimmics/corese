@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -30,7 +31,6 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -50,29 +50,32 @@ import org.apache.log4j.Logger;
 public class PPrinter {
 	
 	private static final String NULL = "";
-	public  static final String PPRINTER = "/home/corby/AData/pprint/turtle/template";
-        //public  static final String PPLIB = "/fr/inria/edelweiss/resource/template/";
         public  static final String PPLIB = "/template/";
 
         public  static final String PPNS    = NSManager.PPN;
+        
         public  static final String SQL     = PPNS + "sql";
         public  static final String SPIN    = PPNS + "spin";
         public  static final String OWL     = PPNS + "owl";
         public  static final String TURTLE  = PPNS + "turtle";
         public  static final String TYPECHECK  = PPNS + "typecheck";
+        // default
+	public  static final String PPRINTER = TURTLE;
 
 	private static final String OUT = ASTQuery.OUT;
 	private static final String IN  = ASTQuery.IN;
 	private static final String IN2 = ASTQuery.IN2;
+        
 	private static String NL = System.getProperty("line.separator");
 
 	Graph graph, fake;
 	QueryEngine qe;
 	Query query;
 	NSManager nsm;
-	QueryProcess exec;
+	QueryProcess exec;                
 	
 	Stack stack;
+        static PPrinterTable table;
 	
 	String pp = PPRINTER;
 	// separator of results of several templates kg:templateAll()
@@ -92,7 +95,12 @@ public class PPrinter {
 	private boolean isAllResult = true;
 	private static Logger logger = Logger.getLogger(PPrinter.class);	
         private boolean isCheck = false;
-
+        
+        static {
+            table = new PPrinterTable();
+        }
+            
+               
     /**
      * @return the isCheck
      */
@@ -236,6 +244,7 @@ public class PPrinter {
         }
                 
 	PPrinter(QueryProcess qp, String p){
+                //table = new PPrinterTable();
 		graph = qp.getGraph();
 		fake = Graph.create();
 		pp = p;
@@ -279,6 +288,10 @@ public class PPrinter {
         public static PPrinter create(QueryProcess qp, String p){
 		return new PPrinter(qp, p);
 	}
+        
+        public static void define(String ns, String pp){
+            table.put(ns, pp);
+        }
         
 	
 	public void setNSM(NSManager n){
@@ -456,6 +469,14 @@ public class PPrinter {
 			return EMPTY;
 		}
 		
+                if (pp == null){
+                    String name = getPP(dt1);
+                        if (name != null){
+                        pp = name;
+                        init();
+                    }                                      
+                }
+                
 		ArrayList<IDatatype> result = null;
 		if (allTemplates) {
 			result = new ArrayList<IDatatype>();
@@ -745,6 +766,20 @@ public class PPrinter {
 		return dt;	
 	}
 	
+        String getPP(IDatatype dt) {
+            IDatatype type = graph.getValue(RDF.TYPE, dt);
+            if (type != null) {
+                String ns = nsm.namespace(type.getLabel());                
+                String p = table.get(ns);  
+                if (p != null){
+                    return p;
+                }
+            }
+            return TURTLE;
+        }
+        
+
+        
 	/**
 	 * Load templates from directory (.rq) or from a file (.rul)
 	 */

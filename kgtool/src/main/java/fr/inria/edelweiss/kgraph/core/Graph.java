@@ -1174,6 +1174,19 @@ public class Graph //implements IGraph
 		Edge edge = getEdge(pred, node, index);
 		return edge;
 	}
+        
+      public IDatatype getValue(String name, IDatatype dt) {
+            Node node = getNode(dt);
+            if (node == null) {
+                return null;
+            }
+            Edge edge = getEdge(name, node, 0);
+            if (edge == null) {
+                return null;
+            }
+            return (IDatatype) edge.getNode(1).getValue();
+        }
+
 	
 	public Iterable<Node> getNodes(Node pred, Node node, int n){
 		Iterable<Entity> it = getEdges(pred, node, n);

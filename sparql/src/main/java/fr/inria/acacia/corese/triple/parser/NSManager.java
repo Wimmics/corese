@@ -36,12 +36,15 @@ public class NSManager
 	public static final String FPPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
         public static final String XSD = RDFS.XSD;
         public static final String RDF = RDFS.RDF;
+        public static final String OWL = RDFS.OWL;
         public static final String SPIN = "http://spinrdf.org/sp#";
+        public static final String SQL  = "http://ns.inria.fr/ast/sql#";
 
 
 	static final String FPPP = "fp";
         public static final String PPN = ExpType.KGRAM + "pprinter/";
 	static final String PPP = "pp";
+        private static final String SPIN_PREF = "sp";
 
 
 	/** prefix seed (ns1, ns2,...) */
@@ -165,6 +168,8 @@ public class NSManager
 		def.put(RDFS.COS,  RDFS.COSPrefix);
 		def.put(FPPN,  	   FPPP);
 		def.put(PPN,  	   PPP);
+                def.put(SPIN, SPIN_PREF);
+
 	}
 	
 	// add default namespaces

@@ -55,14 +55,20 @@ import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgengine.QueryResults;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
 
 import javax.swing.JFrame;
 
@@ -100,6 +106,7 @@ public final class MyJPanelQuery extends JPanel {
     private SparqlQueryEditor sparqlQueryEditor;
     private MainFrame mainFrame;
     private static final String KGSTYLE = ExpType.KGRAM + "style";
+    private static final String KGGRAPH = Pragma.GRAPH;
 
     public MyJPanelQuery() {
         super();
@@ -433,6 +440,14 @@ public final class MyJPanelQuery extends JPanel {
         }
         return new ArrayList<Entity>();
     }
+    
+    fr.inria.edelweiss.kgraph.core.Graph getGraph(IResults l){
+        if (l instanceof QueryResults) {
+            QueryResults qr = (QueryResults) l;
+            return qr.getGraph();
+        }
+        return fr.inria.edelweiss.kgraph.core.Graph.create();
+    }
 
     private String getLabel(String name) {
         int ind = name.lastIndexOf("#");
@@ -508,14 +523,38 @@ public final class MyJPanelQuery extends JPanel {
         tabbedPaneResults.setSelectedIndex(1);
 
         if (l_Results.isConstruct() || l_Results.isDescribe()) {
-            displayGraph(l_Results);
+            displayGraph(getGraph(l_Results));
+        }
+        // draft
+        else if (map.getQuery().isTemplate() && map.getQuery().isPragma(KGGRAPH)){
+            display(map);
         }
 
     }
+    
+    /**
+     * template return turtle graph description
+     * display as graph
+     */
+    void display(Mappings map){
+        fr.inria.edelweiss.kgram.api.core.Node res = map.getTemplateResult();
+        if (res != null){
+            fr.inria.edelweiss.kgraph.core.Graph g = fr.inria.edelweiss.kgraph.core.Graph.create();
+            Load ld = Load.create(g);
+            String str = res.getLabel();
+            try {
+                ld.load(new ByteArrayInputStream(str.getBytes("UTF-8")), "turtle.ttl");
+                displayGraph(g);
+            } catch (LoadException ex) {
+                java.util.logging.Logger.getLogger(MyJPanelQuery.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnsupportedEncodingException ex) {
+                java.util.logging.Logger.getLogger(MyJPanelQuery.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
-    void displayGraph(IResults l_Results) {
+    void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g) {
 
-        if (l_Results.isConstruct() || l_Results.isDescribe()) {
             int num = 0;
             String sujetUri, predicat, objetUri, temp = "http://www.inria.fr/acacia/corese#Results";
 
@@ -525,7 +564,7 @@ public final class MyJPanelQuery extends JPanel {
             String sujet = null;
             String objet = null;
 
-            Iterable<Entity> edges = getEdges(l_Results);
+            Iterable<Entity> edges = g.getEdges();
 
             for (Entity ent : edges) {
                 fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
@@ -615,7 +654,7 @@ public final class MyJPanelQuery extends JPanel {
 
             //pointe sur l'onglet Graph
             tabbedPaneResults.setSelectedIndex(0);
-        }
+        
     }
 
     private boolean isStyle(fr.inria.edelweiss.kgram.api.core.Edge edge) {

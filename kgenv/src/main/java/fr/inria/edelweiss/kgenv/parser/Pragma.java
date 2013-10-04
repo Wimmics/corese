@@ -336,6 +336,9 @@ public class Pragma  {
 					query.setPragma(TURTLE, TURTLE);
 				}
 			}
+                        else if (property.equals(GRAPH)){
+				query.setPragma(GRAPH, true);				
+			}
 		}
 		
 	}

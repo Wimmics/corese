@@ -157,8 +157,8 @@ PARSER_BEGIN(SparqlCorese)
        }
     }
     
-    Expression list(Exp stack, List<Expression> l, boolean close){
-       RDFList rlist = astq.createRDFList(l, close);
+    Expression list(Exp stack, List<Expression> l, int arobase){
+       RDFList rlist = astq.createRDFList(l, arobase);
     
        if (create != null){
            create.list(rlist);
@@ -1941,18 +1941,25 @@ Expression Collection(Exp stack) :
   ArrayList<Expression> list;
   Expression node, head;
   RDFList rlist;
-  boolean close;
+  int arobase = ASTQuery.L_DEFAULT, save = ASTQuery.L_LIST;
 }
 {
 	{
-		close = true;
 		list = new ArrayList<Expression>();
+                save = astq.getListType();
 	}
 	
-	//  @( ) means a sublist (query list without rdf:nil at the end)
+	//  @( ) means rewrite as rdf:rest*/rdf:first
 	
 	( 
-		<AT> { close = false; }  
+                ( 
+		 <ATLIST>    { arobase = ASTQuery.L_LIST; astq.setListType(arobase); }  
+                )
+                |
+                (
+		  (<AT> | <ATPATH>) { arobase = ASTQuery.L_PATH; astq.setListType(arobase); } 
+                ) 
+                
 	) ?
 	
   	<LPAREN>
@@ -1964,8 +1971,9 @@ Expression Collection(Exp stack) :
   	) +
   	<RPAREN>
   	{ 
-  	    head = list(stack, list, close);
-  		return head; 
+  	    head = list(stack, list, arobase);
+            astq.setListType(save);
+  	    return head; 
   	}
 }
 
@@ -2473,6 +2481,8 @@ TOKEN:
 | <VAR2: "$" <VARNAME> >
 | <ABASE:   "@base">
 | <APREFIX: "@prefix">
+| <ATLIST: "@list" >
+| <ATPATH: "@path" >
 | <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	
 | <#A2Z: ["a"-"z","A"-"Z"]>
 | <#A2ZN: ["a"-"z","A"-"Z","0"-"9"]>
@@ -2490,8 +2500,8 @@ TOKEN : {
 |	<SHORT:    "s"   >
 |	<SHORTALL: ("sa" | "short")>
 |	<DEPTH: "d" >
-|   <BREADTH: "b">
-
+| <BREADTH: "b">
+| <LIST: "list" >
 
 } // Before HEX rule!
 
@@ -2594,7 +2604,6 @@ TOKEN [IGNORE_CASE] :
 {
   <ONE: "one" >
 | <S_MORE: "more" >
-| <LIST: "list" >
 | <MERGE: "merge" >
 | <DISPLAY: "display" >
 | <PRAGMA: "pragma" >

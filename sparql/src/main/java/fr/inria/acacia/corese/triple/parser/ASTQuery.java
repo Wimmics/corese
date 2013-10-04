@@ -62,13 +62,16 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	public final static int QT_UPDATE 	= 5;
 	public final static int QT_TEMPLATE = 6;
 
+        public final static int L_PATH = 2;
+        public final static int L_LIST = 1;
+        public final static int L_DEFAULT = 0;
 
 	/** if graph rule */
 	boolean rule = false;
 	boolean isConclusion = false;
 	/** approximate projection */
 	boolean more = false;
-    boolean isDelete = false;
+        boolean isDelete = false;
 	/** default process join */
 	boolean join = false;
 	/** join result into one graph */
@@ -241,6 +244,9 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	private boolean isTurtle;
 
 	private Term templateGroup;
+        
+        // @(a b) rewritten as rdf:rest*/rdf:first a, b
+        private int listType = L_LIST;
 
     /**
      * @return the defaultDataset
@@ -924,7 +930,15 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     
 
     public RDFList createRDFList(List<Expression> list){
-    	return createRDFList(list, true);
+    	return createRDFList(list, 0);
+    }
+    
+    public void setListType(int n){
+        listType = n;
+    }
+    
+    public int getListType(){
+        return listType;
     }
     
     /**
@@ -934,41 +948,58 @@ public class ASTQuery  implements Keyword, ASTVisitable {
      * Can get starting first blank node with function head()
      * i.e. the subject of first triple
      */
-    public RDFList createRDFList(List<Expression> list, boolean close){
-    	Expression 
-    	first = null, 
-    	rest = null, 
-    	blank; 
-    	Exp triple;
-    	RDFList rlist = RDFList.create(); 
-    	rlist.setList(list);
-  
-    	for (Expression exp : list){
-    		blank = newBlankNode();
-  			
-  			if (first == null) {
-  				first = blank;
-  				rlist.setHead(first);
-  			}
-  			
-  			if (rest != null) {  				
-  				triple = generateRest(rest, blank);
-  				rlist.add(triple);
-  			}
-  			
-  			triple = generateFirst(blank, exp);
-  			rlist.add(triple);
-  			
-  			rest = blank;
-    	}
-    	
-    	if (close){
-      		triple = generateRest(rest, createQName(RDFS.qrdfNil));
-       		rlist.add(triple);
-    	}
-    	
-    	return rlist;
+    public RDFList createRDFList(List<Expression> list, int arobase) {
+        RDFList rlist = new RDFList(newBlankNode(), list);  
+        if (arobase == L_DEFAULT){
+            arobase = listType;
+        }
+        switch (arobase){
+            
+            case L_LIST:       
+                rlist = complete(rlist);
+                break;
+        
+            case L_PATH:
+                rlist = path(rlist);
+                break;
+        }
+        return rlist;
     }
+
+    RDFList complete(RDFList rlist){
+        Expression 
+                rest = null,
+                blank = null;
+        boolean isFirst = true;
+        Exp triple;
+
+        for (Expression exp : rlist.getList()) {
+            
+            if (isFirst) {
+                blank = rlist.head();
+                isFirst = false;
+            }
+            else {
+                blank = newBlankNode();
+            }
+
+            if (rest != null) {
+                triple = generateRest(rest, blank);
+                rlist.add(triple);
+            }
+
+            triple = generateFirst(blank, exp);
+            rlist.add(triple);
+
+            rest = blank;
+        }
+
+       triple = generateRest(rest, createQName(RDFS.qrdfNil));
+       rlist.add(triple);
+       return rlist;
+    }
+    
+    
     
     
     
@@ -978,7 +1009,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
      *
      * @return
      */
-   public Exp path(RDFList exp) {
+   public RDFList path(RDFList exp) {
         RDFList ll = new RDFList(exp.head(), exp.getList());
         Expression re = list();
 

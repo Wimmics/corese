@@ -67,8 +67,8 @@ public class MinusNotExistsTest {
             + "} ";
     
     private static Logger logger = Logger.getLogger(DqpRestTest.class);
-    private static int port1 = 9091;
-    private static int port2 = 9092;
+    private static int port1 = 9081;
+    private static int port2 = 9082;
     private static Process server1 = null;
     private static Server server2;
 

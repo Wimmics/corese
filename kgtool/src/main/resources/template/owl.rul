@@ -39,9 +39,8 @@ where {
 #
 template  kg:body  {
     
-   kg:pprintAll(?t ; separator = "\n") 
-   ; separator = "\n\n"
-    
+#   kg:pprintAll(?t ; separator = "\n") ; separator = "\n\n"
+ ?t  ; separator = "\n\n" 
 }
 where {
 
@@ -72,14 +71,7 @@ where {
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template kg:start {
-
-  "Ontology(" kg:uri(?in) "\n\n"
-
-    kg:template(kg:import, ?in)
-    
-    kg:template(kg:body, ?in)
-    
-  "\n)"
+  ?in
 }
 where {
 
@@ -179,13 +171,13 @@ where {
 <body>
 <![CDATA[
 template {
-    "Declaration(Class(" kg:uri(?in)  "))"   
+    "Declaration(Class(" kg:uri(?in)  "))"  "\n"
 }
 where {
   ?in a owl:Class 
   filter(isURI(?in))
 }
-pragma { kg:template kg:priority 1 }
+pragma { kg:template kg:priority 2 }
 
 ]]>
 </body>
@@ -266,7 +258,7 @@ where {
     optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
 }
 
-pragma { kg:template kg:priority 1 }
+#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -295,7 +287,7 @@ where {
     { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
   }
 }
-pragma { kg:template kg:priority 1 }
+#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -370,7 +362,7 @@ where {
 template {
    "AnnotationAssertion(" 
       kg:uri(rdfs:comment) " " 
-      kg:uri(?in) " " ?l
+      kg:uri(?in) " " kg:turtle(?l)
    ")"
 }
 where {
@@ -405,7 +397,7 @@ where {
     { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
   }
 }
-pragma { kg:template kg:priority 1 }
+#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -472,6 +464,33 @@ values (?p ?l) {
   (owl:differentFrom "DifferentIndividuals")
   (owl:sameAs "SameIndividual")
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+
+  "Ontology(" kg:uri(?in) "\n\n"
+
+    kg:template(kg:import, ?in)
+    
+    kg:template(kg:body, ?in)
+    
+  "\n)"
+}
+where {
+
+  ?in a owl:Ontology   
+      
+}
+
 ]]>
 </body>
 </rule>
@@ -606,7 +625,7 @@ where {
     optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
 }
 
-pragma { kg:template kg:priority 1 }
+#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -670,7 +689,7 @@ where {
     { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
   }
 }
-pragma { kg:template kg:priority 1 }
+#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -695,7 +714,7 @@ where {
 
   optional { ?in a ?t filter(?t = rdfs:Datatype) }
 }
-pragma { kg:template kg:priority 1 }
+#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -800,6 +819,32 @@ where {
   { ?in owl:members ?l } union 
   { ?in owl:distinctMembers ?l }
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# kg:pprintAll() run all templates  
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template   {
+    
+   kg:pprintAll(?in ; separator = "\n") ; separator = "\n\n"
+    
+}
+where {
+
+select distinct ?in where {
+  ?in ?p ?y
+  filter(isURI(?in))
+  }     
+}
+pragma { kg:template kg:priority 1 }
+
 ]]>
 </body>
 </rule>

@@ -669,7 +669,7 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 template {
-  ?x " " ?p " " 
+  ?x " " kg:uri(?p) " " 
   if (isLiteral(?y), kg:turtle(?y), ?y) 
 #" "  if (isLiteral(?y), datatype(?y), "") 
   " ."

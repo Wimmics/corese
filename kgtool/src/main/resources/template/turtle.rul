@@ -13,10 +13,10 @@ Corese/KGRAM - Wimmics Inria I3S - 2013
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template kg:type {
+  "a "
   group {
-         "a " kg:uri(?c) " " 
-         
-          ; separator = "," 
+          kg:uri(?c)           
+          ; separator = ", " 
    }
    ";\n"
 }
@@ -36,8 +36,9 @@ where {
 #
 template kg:list {
   "(" 
-    group { ?e } 
+    group { kg:uri(?e) } 
   ")"
+  
 }
 where {
   ?x ?p ?in

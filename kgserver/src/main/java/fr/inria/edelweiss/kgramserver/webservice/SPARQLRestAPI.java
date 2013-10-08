@@ -46,6 +46,7 @@ public class SPARQLRestAPI {
     private Logger logger = Logger.getLogger(RemoteProducer.class);
     private static Graph graph = Graph.create(false);
     private static QueryProcess exec = QueryProcess.create(graph);
+    private String headerAccept = "Access-Control-Allow-Origin";
 
     /**
      * This webservice is used to reset the endpoint. This could be useful if we
@@ -65,7 +66,7 @@ public class SPARQLRestAPI {
             exec = QueryProcess.create(graph);
             logger.info(output = "Endpoint successfully reset *with* entailments.");
         }
-        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(output).build();
+        return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
 
     /**
@@ -89,7 +90,7 @@ public class SPARQLRestAPI {
         if (remotePath == null) {
             String error = "Null remote path";
             logger.error(error);
-            return Response.status(404).header("Access-Control-Allow-Origin", "*").entity(error).build();
+            return Response.status(404).header(headerAccept, "*").entity(error).build();
         }
 
         logger.debug(remotePath);
@@ -101,7 +102,7 @@ public class SPARQLRestAPI {
             } else {
                 //TODO loading of .n3 or .nt
                 logger.error("TODO loading of .n3 or .nt");
-                return Response.status(404).header("Access-Control-Allow-Origin", "*").entity(output).build();
+                return Response.status(404).header(headerAccept, "*").entity(output).build();
             }
 
         } else {
@@ -109,7 +110,7 @@ public class SPARQLRestAPI {
             File f = new File(remotePath);
             if (!f.exists()) {
                 logger.error(output = "File " + remotePath + " not found on the server!");
-                return Response.status(404).header("Access-Control-Allow-Origin", "*").entity(output).build();
+                return Response.status(404).header(headerAccept, "*").entity(output).build();
             }
             if (f.isDirectory()) {
                 Load ld = Load.create(graph);
@@ -123,7 +124,7 @@ public class SPARQLRestAPI {
             }
         }
         logger.info(output = "Successfully loaded " + remotePath);
-        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(output).build();
+        return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
 
     @GET
@@ -132,12 +133,12 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(
+            return Response.status(200).header(headerAccept, "*").entity(
                     ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -147,11 +148,11 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(JSONFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -161,10 +162,10 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(CSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -174,10 +175,10 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(TSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -187,10 +188,10 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -204,11 +205,11 @@ public class SPARQLRestAPI {
             String ttl = TripleFormat.create(maps, true).toString();
             logger.debug(query);
             logger.debug(ttl);
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(ttl).build();
+            return Response.status(200).header(headerAccept, "*").entity(ttl).build();
         } catch (Exception ex) {
             ex.printStackTrace();
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -221,10 +222,10 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -238,10 +239,10 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(JSONFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -255,10 +256,10 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(CSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -272,10 +273,10 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(TSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -289,10 +290,10 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -303,10 +304,10 @@ public class SPARQLRestAPI {
             @FormParam("named-graph-uri") List<String> namedGraphUris,
             String message) {
         try {
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(TripleFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TripleFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -326,11 +327,11 @@ public class SPARQLRestAPI {
                 logger.warn("Null update query !");
             }
 
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").build();
+            return Response.status(200).header(headerAccept, "*").build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while updating the Corese/KGRAM endpoint").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while updating the Corese/KGRAM endpoint").build();
         }
     }
 
@@ -350,11 +351,11 @@ public class SPARQLRestAPI {
                 logger.warn("Null update query !");
             }
 
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").build();
+            return Response.status(200).header(headerAccept, "*").build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while updating the Corese/KGRAM endpoint").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while updating the Corese/KGRAM endpoint").build();
         }
     }
 
@@ -364,10 +365,10 @@ public class SPARQLRestAPI {
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
             Mappings mp = exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
-            return Response.status(mp.size() > 0 ? 200 : 400).header("Access-Control-Allow-Origin", "*").entity("Query has no response").build();
+            return Response.status(mp.size() > 0 ? 200 : 400).header(headerAccept, "*").entity("Query has no response").build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
-            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
 
@@ -403,32 +404,4 @@ public class SPARQLRestAPI {
         out.flush();
         out.close();
     }
-    //    @POST
-//    @Path("/upload")
-//    @Consumes(MediaType.MULTIPART_FORM_DATA)
-//    public Response uploadRDF(
-//	    @FormDataParam("file") InputStream uploadedInputStream,
-//	    @FormDataParam("file") FormDataContentDisposition fileDetail) {
-//	String output = "File Uploaded";
-//	try {
-//	    StopWatch sw = new StopWatch();
-//	    sw.start();
-//
-//	    File localFile = null;
-//	    localFile = File.createTempFile("KgramRdfContent", ".rdf");
-//	    writeToFile(uploadedInputStream, localFile);
-//	    logger.debug("Loading " + localFile.getAbsolutePath() + " into KGRAM");
-//	    Load ld = Load.create(graph);
-//	    ld.load(localFile.getAbsolutePath());
-//	    localFile.delete();
-//	    sw.stop();
-//	    logger.info("Uploaded content to KGRAM: " + sw.getTime() + " ms");
-//	    logger.info("Graph size " + graph.size());
-//	} catch (IOException ex) {
-//	    logger.error("Error while uploading RDF content.");
-//	    return Response.status(500).entity("Error while uploading RDF content.").build();
-//	}
-//	return Response.status(200).entity(output).build();
-//
-//    }
 }

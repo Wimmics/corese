@@ -4,6 +4,7 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.edelweiss.kgdqp.core.Messages;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
@@ -38,10 +39,13 @@ public class DqpRestAPI {
     private static Provider sProv = ProviderImpl.create();
     private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv);
 
+    /**
+     * This web service reinitalize the local KGRAM graph. Be careful, 
+     * the graph is a static variable.  
+     */
     @POST
     @Path("/reset")
     public Response resetDQP(@FormParam("endpointUrl") String endpointURLs) {
-        //reset the query process DQP
         try {
             DqpRestAPI.graph = Graph.create(false);
             DqpRestAPI.sProv = ProviderImpl.create();
@@ -58,8 +62,6 @@ public class DqpRestAPI {
      */
     @POST
     @Path("/configureDatasources")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response addDataSource(@FormParam("endpointUrl") List<String> endpointURLs) {
     public Response addDataSource(@FormParam("endpointUrl") String endpointURLs) {
 
         if ((endpointURLs == null) || (endpointURLs.isEmpty())) {
@@ -82,11 +84,11 @@ public class DqpRestAPI {
     @Produces("application/sparql-results+json")
     @Path("/sparql")
     public Response getTriplesJSONForGet(@QueryParam("query") String query) {
-        
+
         QueryProcessDQP.queryCounter.clear();
         QueryProcessDQP.queryVolumeCounter.clear();
         QueryProcessDQP.sourceCounter.clear();
-                
+
         logger.info("Federated querying: " + query);
 
 
@@ -95,16 +97,7 @@ public class DqpRestAPI {
             sw.start();
             Mappings map = execDQP.query(query);
             logger.info(map.size() + " results in " + sw.getTime() + "ms");
-            System.out.println("");
-            System.out.println("***********************************************************");
-            System.out.println("***********************************************************");
-            System.out.println("Remote queries");
-            System.out.println(Util.prettyPrintCounter(QueryProcessDQP.queryCounter));
-            System.out.println("Transferred results per query");
-            System.out.println(Util.prettyPrintCounter(QueryProcessDQP.queryVolumeCounter));
-            System.out.println("Remote queries per data source");
-            System.out.println(Util.prettyPrintCounter(QueryProcessDQP.sourceCounter));
-
+            logCost();
 
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(JSONFormat.create(map).toString()).build();
         } catch (Exception ex) {
@@ -126,21 +119,21 @@ public class DqpRestAPI {
             sw.start();
             Mappings map = execDQP.query(query);
             logger.info(map.size() + " results in " + sw.getTime() + "ms");
-            System.out.println("");
-            System.out.println("***********************************************************");
-            System.out.println("***********************************************************");
-            System.out.println("Remote queries");
-            System.out.println(Util.prettyPrintCounter(QueryProcessDQP.queryCounter));
-            System.out.println("Transferred results per query");
-            System.out.println(Util.prettyPrintCounter(QueryProcessDQP.queryVolumeCounter));
-            System.out.println("Remote queries per data source");
-            System.out.println(Util.prettyPrintCounter(QueryProcessDQP.sourceCounter));
-
+            logCost();
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(ResultFormat.create(map).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM-DQP engine");
             ex.printStackTrace();
             return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
         }
+    }
+
+    private void logCost() {
+        logger.debug(Messages.countQueries);
+        logger.debug(Util.prettyPrintCounter(QueryProcessDQP.queryCounter));
+        logger.debug(Messages.countTransferredResults);
+        logger.debug(Util.prettyPrintCounter(QueryProcessDQP.queryVolumeCounter));
+        logger.debug(Messages.countDS);
+        logger.debug(Util.prettyPrintCounter(QueryProcessDQP.sourceCounter));
     }
 }

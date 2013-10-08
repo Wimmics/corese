@@ -110,7 +110,10 @@ public class Query extends Exp {
 	private boolean isSynchronized = false;
 
 	private boolean isTemplate = false;
-	
+        
+	// member of a set of templates of a pprinter (not a single query that is a template)
+	private boolean isPrinterTemplate = false;
+        
 	private boolean isAllResult = false;
 
 	private Exp templateGroup;
@@ -1765,6 +1768,20 @@ public class Query extends Exp {
 			exp.remove(node);
 		}
 	}
+
+    /**
+     * @return the isPrinterTemplate
+     */
+    public boolean isPrinterTemplate() {
+        return isPrinterTemplate;
+    }
+
+    /**
+     * @param isPrinterTemplate the isPrinterTemplate to set
+     */
+    public void setPrinterTemplate(boolean isPrinterTemplate) {
+        this.isPrinterTemplate = isPrinterTemplate;
+    }
 	
 	
 	class VString extends ArrayList<String> {

@@ -23,8 +23,11 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
+import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.PPrinter;
+import static fr.inria.edelweiss.kgtool.print.PPrinter.TURTLE;
+import static fr.inria.edelweiss.kgtool.print.PPrinter.getPP;
 
 
 /**
@@ -477,7 +480,7 @@ public class PluginImpl extends ProxyImpl {
 
 
 	IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env){
-		PPrinter p = getPPrinter(env, getLabel(tbase)); 
+		PPrinter p = getPPrinter(env, getLabel(tbase), null); 
 		return p.pprint(getLabel(temp), 
 				exp.oper() == ExprType.PPRINTALL ||
                                 exp.oper() == ExprType.PPRINTALLWITH, 
@@ -493,7 +496,7 @@ public class PluginImpl extends ProxyImpl {
 	 * modality: kg:pprintAll(?x ; separator = "\n")
 	 */
 	IDatatype pprint(IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env){
-		PPrinter p = getPPrinter(env, getLabel(tbase)); 
+		PPrinter p = getPPrinter(env, getLabel(tbase), focus); 
 		IDatatype dt = p.pprint(focus, arg, 
 				getLabel(temp), 
 				exp.oper() == ExprType.PPRINTALL ||
@@ -555,7 +558,7 @@ public class PluginImpl extends ProxyImpl {
 	 * 
 	 */
 	PPrinter getPPrinter(Environment env){	
-		return getPPrinter(env, (String) null);
+		return getPPrinter(env, (String) null, null);
 	}
 	
 	String getLabel(IDatatype dt){
@@ -563,16 +566,33 @@ public class PluginImpl extends ProxyImpl {
 		return dt.getLabel();
 	}
 	
-	
-	PPrinter getPPrinter(Environment env, String t){		
+	 String getPP(IDatatype dt) {
+            IDatatype type = graph.getValue(RDF.TYPE, dt);
+            if (type != null) {
+                String p = PPrinter.getPP(type.getLabel());  
+                if (p != null){
+                    return p;
+                }
+            }
+            return PPrinter.TURTLE;
+        }
+
+        PPrinter getPPrinter(Environment env, String t, IDatatype dt){		
 		Query q  = env.getQuery();
-		String p = null; 
+		String p = null;
+                
 		if (t != null){
 			p = t;
 		}
 		else if (q.hasPragma(Pragma.TEMPLATE)){
 			p = (String) q.getPragma(Pragma.TEMPLATE);
 		}
+                else if (! q.isPrinterTemplate() && dt != null){
+                    // q is a single template query (not member of a pprinter template set)
+                    // and it has no pprinter name 
+                    // search pprinter according to type of resource dt
+                    p = getPP(dt);
+                }
 		
 		Object o = q.getPP(p);
 

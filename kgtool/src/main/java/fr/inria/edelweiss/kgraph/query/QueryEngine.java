@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.RDF;
 
 /**
  * Equivalent of RuleEngine for Query
@@ -35,16 +37,53 @@ public class QueryEngine implements Engine {
 	QueryProcess exec;
 	ArrayList<Query> list;
 	HashMap<String, Query> table;
-	
+        Index index;       
+
 	boolean isDebug = false,
 			isActivate = true,
 			isWorkflow = false;
+        
+        // focus type -> templates
+        class Index extends HashMap<String, List<Query>> {
+        
+            void add(Query q){
+                for (Exp exp : q.getBody()){
+                    if (exp.isEdge()){
+                        Edge edge = exp.getEdge();
+                        Node type = edge.getNode(1);
+                        if (type.isConstant()){
+                            IDatatype dt = (IDatatype) type.getValue();
+                            List<Query> list = get(dt.getLabel());
+                            if (list == null){
+                                list = new ArrayList<Query>();
+                                put(dt.getLabel(), list);
+                            }
+                            list.add(q);
+                        }
+                    }
+                }
+            }
+            
+            public String toString(){
+                StringBuilder sb = new StringBuilder();
+                for (String dt : keySet()){
+                    List<Query> l = get(dt);
+                    sb.append(dt);
+                    sb.append(System.getProperty("line.separator"));
+                    sb.append(l);
+                    sb.append(System.getProperty("line.separator"));
+               }
+                return sb.toString();
+            }
+            
+        }
 	
 	QueryEngine(Graph g){
 		graph = g;
 		exec = QueryProcess.create(g);
 		list = new ArrayList<Query>();
 		table = new HashMap<String, Query>();
+                index = new Index();
 	}
 	
 	public static QueryEngine create(Graph g){
@@ -88,14 +127,20 @@ public class QueryEngine implements Engine {
 	 * Named templates are stored in a table, not in the list
 	 */
 	public void defTemplate(Query q){
+                q.setPrinterTemplate(true);
 		if (q.hasPragma(Pragma.NAME)){
 			table.put((String) q.getPragma(Pragma.NAME), q);
 		}
 		else {
 			list.add(q);
+                       // index.add(q);
 		}
 	}
-	
+        
+        public void trace(){
+            System.out.println(index.toString());
+        }
+        
 	public List<Query> getQueries(){
 		return list;
 	}
@@ -103,6 +148,24 @@ public class QueryEngine implements Engine {
 	public List<Query> getTemplates(){
 		return list;
 	}
+        
+        public List<Query> getTemplates(IDatatype dt){
+            if (dt == null){
+		return list;
+            }
+            else {
+                return get(dt);
+            }
+	}
+        
+        List<Query> get(IDatatype dt){
+            List<Query> l = index.get(dt.getLabel());
+            if (l != null){
+                return l;
+            }
+            return list;
+        }
+
 	
 	public Query getTemplate(String name){
 		return table.get(name);

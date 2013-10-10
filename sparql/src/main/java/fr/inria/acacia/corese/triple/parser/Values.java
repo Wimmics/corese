@@ -14,6 +14,7 @@ public class Values extends Exp {
 	
 	private List<Variable> lvar;
 	private List<List<Constant>> lval;
+        private boolean moved = false;
 	
 	Values(List<Variable> var, List<List<Constant>> lval){
 		
@@ -107,6 +108,20 @@ public class Values extends Exp {
 		}
 		return true;
 	}
+
+    /**
+     * @return the moved
+     */
+    public boolean isMoved() {
+        return moved;
+    }
+
+    /**
+     * @param mooved the moved to set
+     */
+    public void setMoved(boolean moved) {
+        this.moved = moved;
+    }
 
 
 }

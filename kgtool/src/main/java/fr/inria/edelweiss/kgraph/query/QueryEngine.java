@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 
 /**
@@ -37,53 +38,21 @@ public class QueryEngine implements Engine {
 	QueryProcess exec;
 	ArrayList<Query> list;
 	HashMap<String, Query> table;
-        Index index;       
+        TemplateIndex index;       
 
 	boolean isDebug = false,
 			isActivate = true,
 			isWorkflow = false;
         
         // focus type -> templates
-        class Index extends HashMap<String, List<Query>> {
-        
-            void add(Query q){
-                for (Exp exp : q.getBody()){
-                    if (exp.isEdge()){
-                        Edge edge = exp.getEdge();
-                        Node type = edge.getNode(1);
-                        if (type.isConstant()){
-                            IDatatype dt = (IDatatype) type.getValue();
-                            List<Query> list = get(dt.getLabel());
-                            if (list == null){
-                                list = new ArrayList<Query>();
-                                put(dt.getLabel(), list);
-                            }
-                            list.add(q);
-                        }
-                    }
-                }
-            }
-            
-            public String toString(){
-                StringBuilder sb = new StringBuilder();
-                for (String dt : keySet()){
-                    List<Query> l = get(dt);
-                    sb.append(dt);
-                    sb.append(System.getProperty("line.separator"));
-                    sb.append(l);
-                    sb.append(System.getProperty("line.separator"));
-               }
-                return sb.toString();
-            }
-            
-        }
+       
 	
 	QueryEngine(Graph g){
 		graph = g;
 		exec = QueryProcess.create(g);
 		list = new ArrayList<Query>();
 		table = new HashMap<String, Query>();
-                index = new Index();
+                index = new TemplateIndex();
 	}
 	
 	public static QueryEngine create(Graph g){
@@ -133,7 +102,7 @@ public class QueryEngine implements Engine {
 		}
 		else {
 			list.add(q);
-                       // index.add(q);
+                        index.add(q);
 		}
 	}
         
@@ -148,20 +117,16 @@ public class QueryEngine implements Engine {
 	public List<Query> getTemplates(){
 		return list;
 	}
+               
         
         public List<Query> getTemplates(IDatatype dt){
-            if (dt == null){
-		return list;
+            String type = null;
+            if (dt != null){
+                type = dt.getLabel();
             }
-            else {
-                return get(dt);
-            }
-	}
-        
-        List<Query> get(IDatatype dt){
-            List<Query> l = index.get(dt.getLabel());
-            if (l != null){
-                return l;
+            List<Query> l = index.getTemplates(type);
+            if (l != null){ 
+                return l;               
             }
             return list;
         }
@@ -289,25 +254,10 @@ public class QueryEngine implements Engine {
 
 	
 	public void sort(){
-		Collections.sort(list, new Comparator<Query>(){
-			public int compare(Query q1, Query q2){
-				int p1 = getLevel(q1);
-				int p2 = getLevel(q2);
-				return compare(p1, p2);
-			}
-			
-			int compare(int x, int y) {
-		        return (x < y) ? -1 : ((x == y) ? 0 : 1);
-		    }
-		});
+		index.sort(list);
+                index.sort();
 	}
-	
-	 
-	
-	int getLevel(Query q){
-		ASTQuery ast = (ASTQuery) q.getAST();
-		return ast.getPriority();
-	}
+		 		
 	
 	public void clean(){
 		ArrayList<Query> l = new ArrayList<Query>();

@@ -114,9 +114,6 @@ public class Transformer implements ExpType {
 		ast.setDefaultNamespaces(namespaces);
 		ast.setDefaultBase(base);
 		ast.setSPARQLCompliant(isSPARQLCompliant);
-
-//		if (from!=null) ast.setDefaultFrom(from);
-//		if (named!=null) ast.setDefaultNamed(named);
                 
                 if (dataset != null){
                     ast.setDefaultDataset(dataset);
@@ -162,13 +159,9 @@ public class Transformer implements ExpType {
 				v.visit(ast);
 			}
 		}
-
-//		 new		
-//		if (fac == null){
-//			fac = new CompilerFacKgram();
-//			compiler = fac.newInstance();
-//		}
 		
+                template(ast);
+                
 		Query q = compile(ast);
 		q.setRule(ast.isRule());
 		
@@ -178,7 +171,47 @@ public class Transformer implements ExpType {
 		return q;
 	}
 	
-		
+        /**
+         * Optimize values in template
+         * Insert values in template body in case the ?in variable is bound
+         * hence it is more efficient to verify values according to ?in binding
+         * instead of testing values blindly 
+         * use case:
+         * template where { ?in a ?t EXP } values ?t { list of values }
+         * rewritten as:
+         * template where { ?in a ?t values ?t { list of values } EXP } 
+         */
+	void template(ASTQuery ast){
+            if (! ast.isTemplate()){
+               return; 
+            }
+            fr.inria.acacia.corese.triple.parser.Exp body = ast.getBody();
+            if (ast.getValues() != null && 
+                    body.size() > 0 && 
+                    body instanceof BasicGraphPattern &&
+                    body.get(0).isTriple()){
+                
+                Triple t = body.get(0).getTriple();
+                
+                if (bound(ast.getValues(), t)){
+                    body.add(1, ast.getValues());
+                    ast.getValues().setMoved(true);
+                }
+            }
+        }
+        
+        boolean bound(Values values, Triple t){
+            if (! t.getArg(1).isVariable()){
+                return false;
+            }
+            for (Variable var : values.getVariables()){
+                if (var.equals(t.getArg(1))){
+                    return true;
+                }
+            }
+            return false;
+        }
+        
 	private void template(Query q, ASTQuery ast) {
 		if (ast.isTemplate()){
 			q.setTemplate(true);
@@ -202,11 +235,6 @@ public class Transformer implements ExpType {
 	 * Also used by QueryGraph to compile RDF Graph as a Query
 	 */
 	public Query transform(Query q, ASTQuery ast){
-//		if (fac == null){
-//			fac = new CompilerFacKgram();
-//			compiler = fac.newInstance();
-//		}
-		
 		//new
 		compiler.setAST(ast);
 		if (ast.isConstruct() || ast.isDescribe()){
@@ -226,8 +254,6 @@ public class Transformer implements ExpType {
 		if (ast.isUpdate()){
 			q.setUpdate(true);
 		}
-
-		// path(q, ast);		
 
 		// retrieve select nodes for query:
 		complete(q, ast);
@@ -269,11 +295,7 @@ public class Transformer implements ExpType {
 	/**
 	 * Generate a new compiler for each (sub) query in order to get fresh new nodes
 	 */
-	Query compile(ASTQuery ast){
-//		Compiler save = compiler;
-//		compiler = fac.newInstance();
-//		compiler.setAST(ast);
-		
+	Query compile(ASTQuery ast){		
 		Exp ee = compile(ast.getExtBody(), false);
 		Query q = Query.create(ee);
 		q.setAST(ast);
@@ -281,9 +303,6 @@ public class Transformer implements ExpType {
 		bindings(q, ast);
 		path(q, ast);
 		
-//		if (save != null){
-//			compiler = save;
-//		}
 		return q; 
 		
 	}
@@ -420,9 +439,15 @@ public class Transformer implements ExpType {
 		}
 
 		Exp bind = bindings(ast.getValues());
+                
 		if (bind != null){
+                    if (ast.getValues().isMoved()){
+                        q.setTemplateMappings(bind.getMappings());
+                    }
+                    else {
 			q.setMappings(bind.getMappings());
 			q.setBindingNodes(bind.getNodeList());
+                    }
 		}
 		else {
 			q.setCorrect(false);

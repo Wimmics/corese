@@ -13,7 +13,6 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Query.VString;
 
 /**
  * KGRAM expressions
@@ -50,7 +49,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	Object object;
 	Regex regex;
 	Exp next;
-	Mappings map;
+	Mappings map, templateMap;
 
 	
 	int min=-1, max=-1;
@@ -382,6 +381,14 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	public void setMappings(Mappings m){
 		map = m;
+	}
+        
+        public Mappings getTemplateMappings(){
+		return templateMap;
+	}
+	
+	public void setTemplateMappings(Mappings m){
+		templateMap = m;
 	}
 	
 	public Filter getFilter(){

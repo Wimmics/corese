@@ -90,6 +90,7 @@ public class Processor {
 	static final String LEVEL 	= KGRAM + "level"; 
 	static final String INDENT 	= KGRAM + "indent"; 
 	static final String PPURI 	= KGRAM + "uri"; 
+	static final String URILITERAL 	= KGRAM + "uriLiteral"; 
 	static final String VISITED     = KGRAM + "isVisited"; 
 	static final String ISSKOLEM    = KGRAM + "isSkolem"; 
 	static final String SKOLEM      = KGRAM + "skolem"; 
@@ -381,6 +382,7 @@ public class Processor {
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);
 		defoper(PPURI, 	ExprType.PPURI);
+		defoper(URILITERAL, 	ExprType.URILITERAL);
 		defoper(VISITED, ExprType.VISITED);
 		defoper(PROLOG,  ExprType.PROLOG);
 
@@ -411,6 +413,7 @@ public class Processor {
 		defoper(ENDS, 	ExprType.ENDS);
 		defoper(STARTS, ExprType.STARTS);
 		defoper(CONTAINS, ExprType.CONTAINS);
+		defoper("strcontains", ExprType.CONTAINS);
 		defoper(ENCODE, ExprType.ENCODE);
 		defoper(CONCAT, ExprType.CONCAT);
 		defoper(STRBEFORE, ExprType.STRBEFORE);

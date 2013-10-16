@@ -61,7 +61,8 @@ public class Memory implements Environment {
 	// true when processing aggregate at the end 
 	boolean isAggregate = false;
 
-	private boolean isFake = false;
+	private boolean isFake = false, 
+                isEdge = true;
 	
 	EventManager manager;
 	boolean hasEvent = false;
@@ -167,9 +168,11 @@ public class Memory implements Environment {
 		int emax = q.nbEdges();
 		nbNodes = new int[nmax];
 		stackIndex = new int[nmax];
-		nbEdges = new int[emax];
-		result  = new Edge[emax];
-		qEdges  = new Edge[emax];
+                if (isEdge){
+                    nbEdges = new int[emax];
+                    result  = new Edge[emax];
+                    qEdges  = new Edge[emax];
+                }
 		nodes   = new Node[nmax];
 		qNodes  = new Node[nmax];
 		lPath 	= new Path[nmax];
@@ -187,11 +190,13 @@ public class Memory implements Environment {
 			stackIndex[i] = -1;
 			lPath[i] = null;
 		}
-		for (int i = 0; i<nbEdges.length; i++){
-			nbEdges[i] = 0;
-			result[i] = null;
-			qEdges[i] = null;
-		}
+                if (isEdge){
+                    for (int i = 0; i<nbEdges.length; i++){
+                            nbEdges[i] = 0;
+                            result[i] = null;
+                            qEdges[i] = null;
+                    }  
+                }
 	}
 
 	
@@ -313,14 +318,16 @@ public class Memory implements Environment {
 		Path[] lp = null;
 		
 		int n = 0, i = 0;
-		for (Edge edge : qEdges){
-			if (edge!=null){
-				qedge[n] = edge;
-				tedge[n] = result[i];
-				n++;
-			}
-			i++;
-		}
+                if (isEdge){
+                    for (Edge edge : qEdges){
+                            if (edge!=null){
+                                    qedge[n] = edge;
+                                    tedge[n] = result[i];
+                                    n++;
+                            }
+                            i++;
+                    }
+                }
 		
 		n = 0; i = 0;
 		for (Node node : qNodes){
@@ -493,7 +500,7 @@ public class Memory implements Environment {
 			}
 		}
 
-		if (success) {
+		if (isEdge && success) {
 			int index = q.getIndex();
 			if (nbEdges[index] == 0) nbEdge++;
 			nbEdges[index]++;
@@ -631,7 +638,9 @@ public class Memory implements Environment {
 	
 	void pop(Edge q, Edge r){
 		popNode(q, r);
-		popEdge(q, r);
+		if (isEdge){
+                    popEdge(q, r);
+                }
 	}
 	
 	void popNode(Edge q, Edge r){

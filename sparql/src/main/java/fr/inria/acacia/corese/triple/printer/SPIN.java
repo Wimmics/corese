@@ -343,8 +343,22 @@ public class SPIN implements ASTVisitor {
                     counter--;
                     sb.append(PT_COMMA);
                     tab(sb);
-                    sb.append(SPVARNAME + SPACE);
-                    sb.append(toTirer(var.getName()));
+                    
+                    if (var.getVariableList() != null){
+                        sb.append("sp:varList" + SPACE + OPAREN);
+                        int i = 0;
+                        for (Variable v : var.getVariableList()){
+                            if (i++ > 0){
+                                sb.append(" ");
+                            }
+                            visit(v);
+                        }
+                        sb.append(CPAREN);                      
+                    }
+                    else {
+                        sb.append(SPVARNAME + SPACE);
+                        sb.append(toTirer(var.getName()));
+                    }
                     sb.append(CSBRACKET + NL);
                 }              
             }
@@ -836,7 +850,9 @@ public class SPIN implements ASTVisitor {
             
             if (term.getModality() != null && term.isAggregate()){
                 // group concat separator
-                sb.append(tab() + "sp:separator" + SPACE +  "'" + term.getModality() +  "'" + PT_COMMA);
+                sb.append(tab() + "sp:separator" + SPACE);
+                Constant.toString(term.getModality(), sb);
+                sb.append(PT_COMMA);
             }
             
             counter--;

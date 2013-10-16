@@ -26,8 +26,6 @@ import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.PPrinter;
-import static fr.inria.edelweiss.kgtool.print.PPrinter.TURTLE;
-import static fr.inria.edelweiss.kgtool.print.PPrinter.getPP;
 
 
 /**
@@ -118,6 +116,7 @@ public class PluginImpl extends ProxyImpl {
 			return turtle(dt, env);	
 			
 		case PPURI:
+                case URILITERAL:
 			return uri(exp, dt, env);	
 			
 		case INDENT:
@@ -522,6 +521,9 @@ public class PluginImpl extends ProxyImpl {
 		if (dt.isURI()){
 			return turtle(dt, env);
 		}
+                else if (dt.isLiteral() && exp.oper() == ExprType.URILITERAL){
+                        return turtle(dt, env);
+                }
 		else {
 			return pprint(dt, null, null, null, exp, env);
 		}

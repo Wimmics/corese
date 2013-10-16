@@ -1834,14 +1834,14 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     		
     		if (select != null && select.size()>0){
     			for (Variable s : getSelectVar()){
+                            
     				if (getExpression(s) != null) {
-    					sb.append("(");
-    					getExpression(s).toString(sb);
-    					sb.append(" as "  + s + ")");
+    					expr(getExpression(s), s, sb);
     				}
     				else {
-    					sb.append(s + SPACE);
+    					sb.append(s);
     				}
+                                sb.append(SPACE);
     			}
     		} 
   		
@@ -1925,6 +1925,29 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     	}
 
     	return sb;
+    }
+
+    
+    void expr(Expression exp, Variable var, StringBuffer sb) {
+        sb.append("(");
+        exp.toString(sb);
+        sb.append(" as ");
+        
+        if (var.getVariableList() != null) {
+            sb.append("(");
+            int i = 0;
+            for (Variable v : var.getVariableList()){
+                if (i++ > 0){
+                    sb.append(", ");                    
+                }
+                sb.append(v);
+            }
+            sb.append(")");
+        } 
+        else {
+            sb.append(var);
+        }
+        sb.append(")");
     }
 
 

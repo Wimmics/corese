@@ -6,6 +6,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import java.util.ArrayList;
@@ -15,12 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Index templates by type of focus
- * Used by QueryEngine, PPrinter
- * 
- * sql:Query -> ( template {} where { ?in a sql:Query }  )
- * sql:Plus  -> ( template {} where { ?in a ?class } values ?class { sql:Plus }
- * 
+ * Index templates by type of focus Used by QueryEngine, PPrinter
+ *
+ * sql:Query -> ( template {} where { ?in a sql:Query } ) sql:Plus -> ( template
+ * {} where { ?in a ?class } values ?class { sql:Plus }
+ *
  * Templates with no rdf:type stored in a list
  *
  * @author Olivier Corby, Wimmics Inria I3S, 2013
@@ -43,21 +43,33 @@ class TemplateIndex extends HashMap<String, List<Query>> {
     }
 
     /**
-     * Index Query at load time
-     * search occurrence of: 
-     * ?in rdf:type sql:Select  
-     * ?in rdf:type ?class  values ?class { ... }
+     * Index Query at load time search occurrence of: ?in rdf:type sql:Select
+     * ?in rdf:type ?class values ?class { ... }
      */
     void add(Query q) {
 
+        boolean suc = add(q, q.getBody());
+
+        if (!suc) {
+            list.add(q);
+        }
+    }
+
+    boolean add(Query q, Exp body) {
         boolean suc = false;
+        for (Exp exp : body) {
 
-        for (Exp exp : q.getBody()) {
-
-            if (exp.isEdge()) {
+            if (exp.isUnion()) {
+                for (Exp ee : exp) {
+                    suc = add(q, ee) || suc;
+                }
+            } else if (exp.isQuery()) {
+                suc = add(q, exp.getQuery().getBody());
+            } else if (exp.isEdge()) {
                 Edge edge = exp.getEdge();
 
                 if (isType(edge)) {
+                    // ?in rdf:type xxx
                     Node type = edge.getNode(1);
 
                     if (type.isConstant()) {
@@ -65,24 +77,43 @@ class TemplateIndex extends HashMap<String, List<Query>> {
                         IDatatype dt = (IDatatype) type.getValue();
                         add(dt.getLabel(), q);
                         suc = true;
-                    } else if (q.getTemplateMappings() != null) {
-                        // ?in rdf:type ?class . values ?class { ... }
-                        for (Mapping m : q.getTemplateMappings()) {
-                            Node node = m.getNode(type);
-                            if (node != null) {
-                                IDatatype dt = (IDatatype) node.getValue();
-                                add(dt.getLabel(), q);
-                                suc = true;
+                    } 
+                    else {
+                        // ?in rdf:type ?class
+                        Mappings map = anyMappings(q, body);
+                       if (map != null) {
+                            // ?in rdf:type ?class . values ?class { ... }
+                            for (Mapping m : map) {
+                                Node node = m.getNode(type);
+                                if (node != null) {
+                                    IDatatype dt = (IDatatype) node.getValue();
+                                    add(dt.getLabel(), q);
+                                    suc = true;
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        return suc;
+    }
 
-        if (!suc) {
-            list.add(q);
+    Mappings anyMappings(Query q, Exp exp) {
+        Mappings map = q.getAnyMappings();
+        if (map != null) {
+            return map;
         }
+        return anyMappings(exp);
+    }
+
+    Mappings anyMappings(Exp exp) {
+        for (Exp ee : exp) {
+            if (ee.type() == Exp.VALUES) {
+                return ee.getMappings();
+            }
+        }
+        return null;
     }
 
     void add(String type, Query q) {
@@ -117,13 +148,13 @@ class TemplateIndex extends HashMap<String, List<Query>> {
     /**
      * Sort templates according to priority
      */
-    void sort(){
+    void sort() {
         sort(list);
-        for (List<Query> l : values()){
+        for (List<Query> l : values()) {
             sort(l);
         }
     }
-    
+
     void sort(List<Query> list) {
         Collections.sort(list, new Comparator<Query>() {
             public int compare(Query q1, Query q2) {

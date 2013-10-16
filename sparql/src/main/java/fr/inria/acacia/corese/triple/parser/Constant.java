@@ -162,7 +162,7 @@ public class Constant extends Atom {
 	 * Escape special chars
 	 * Add surrounding quotes to a string literal
 	 */
-	static void toString(String str, StringBuffer sb){
+	public static void toString(String str, StringBuffer sb){
 		String s = addEscapes(str);
 		String sep = KeywordPP.QUOTE;
 		

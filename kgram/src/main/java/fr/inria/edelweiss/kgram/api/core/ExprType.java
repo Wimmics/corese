@@ -168,9 +168,10 @@ public interface ExprType {
 	public static int LEVEL 	= 228;
 	public static int INDENT 	= 229;
 	public static int PPURI 	= 230;
-	public static int VISITED 	= 231;
-	public static int AGGAND 	= 232;
-	public static int PROLOG 	= 233;
+	public static int URILITERAL 	= 231;
+	public static int VISITED 	= 232;
+	public static int AGGAND 	= 233;
+	public static int PROLOG 	= 234;
 
 
 	public static int ISSKOLEM 	= 240;

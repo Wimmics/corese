@@ -59,12 +59,16 @@ public class PPrinter {
     private static final String IN = ASTQuery.IN;
     private static final String IN2 = ASTQuery.IN2;
     private static String NL = System.getProperty("line.separator");
+    private static boolean isOptimizeDefault = false;
+    private static boolean isExplainDefault = false;
+
+    
     Graph graph, fake;
     QueryEngine qe;
     Query query;
     NSManager nsm;
     QueryProcess exec;
-    Stack stack;
+    PPrinterStack stack;
     static PPrinterTable table;
     String pp = PPRINTER;
     // separator of results of several templates kg:templateAll()
@@ -84,11 +88,14 @@ public class PPrinter {
     private boolean isAllResult = true;
     private static Logger logger = Logger.getLogger(PPrinter.class);
     private boolean isCheck = false;
-    private boolean isOptimize = !true;
+    // index and run templates according to focus node type
+    // no subsumption (exact match on type)
+    private boolean isOptimize = isOptimizeDefault;
 
     static {
         table = new PPrinterTable();
     }
+    private boolean isExplain = isExplainDefault();
 
     /**
      * @return the isCheck
@@ -119,109 +126,45 @@ public class PPrinter {
     }
 
     /**
-     *
-     * Keep track of nodes already printed to prevent loop Variant: check the
-     * pair (dt, template) do not to loop on the same template ; may use several
-     * templates on same node dt
-     *
+     * @return the isOptimizeDefault
      */
-    class Stack {
+    public static boolean isOptimizeDefault() {
+        return isOptimizeDefault;
+    }
 
-        ArrayList<IDatatype> list;
-        HashMap<IDatatype, ArrayList<Query>> map;
-        HashMap<IDatatype, IDatatype> visit;
-        boolean multi = true;
+    /**
+     * @param aIsOptimizeDefault the isOptimizeDefault to set
+     */
+    public static void setOptimizeDefault(boolean aIsOptimizeDefault) {
+        isOptimizeDefault = aIsOptimizeDefault;
+    }
+    
+    /**
+     * @return the isExplainDefault
+     */
+    public static boolean isExplainDefault() {
+        return isExplainDefault;
+    }
 
-        Stack(boolean b) {
-            list = new ArrayList<IDatatype>();
-            map = new HashMap<IDatatype, ArrayList<Query>>();
-            visit = new HashMap<IDatatype, IDatatype>();
-            multi = b;
-        }
+    /**
+     * @param aIsExplainDefault the isExplainDefault to set
+     */
+    public static void setExplainDefault(boolean aIsExplainDefault) {
+        isExplainDefault = aIsExplainDefault;
+    }
 
-        int size() {
-            return list.size();
-        }
+    /**
+     * @return the isOptimize
+     */
+    public boolean isOptimize() {
+        return isOptimize;
+    }
 
-        void push(IDatatype dt) {
-            list.add(dt);
-        }
-
-        void push(IDatatype dt, Query q) {
-            list.add(dt);
-            if (multi) {
-                ArrayList<Query> qlist = map.get(dt);
-                if (qlist == null) {
-                    qlist = new ArrayList<Query>();
-                    map.put(dt, qlist);
-                }
-                qlist.add(q);
-            }
-        }
-
-        IDatatype pop() {
-            if (list.size() > 0) {
-                int last = list.size() - 1;
-                IDatatype dt = list.get(last);
-                list.remove(last);
-                if (multi) {
-                    ArrayList<Query> qlist = map.get(dt);
-                    qlist.remove(qlist.size() - 1);
-                }
-                return dt;
-            }
-            return null;
-        }
-
-        boolean contains(IDatatype dt) {
-            return list.contains(dt);
-        }
-
-        boolean isVisited(IDatatype dt) {
-            if (visit.containsKey(dt)) {
-                return true;
-            }
-            ArrayList<Query> qlist = map.get(dt);
-            if (qlist == null) {
-                return false;
-            }
-            return qlist.size() > 1;
-        }
-
-        void visit(IDatatype dt) {
-            visit.put(dt, dt);
-        }
-
-        boolean contains(IDatatype dt, Query q) {
-            ArrayList<Query> qlist = map.get(dt);
-            return qlist != null && qlist.contains(q);
-        }
-
-        boolean contains2(IDatatype dt, Query q) {
-            boolean b = list.contains(dt);
-            if (b && multi) {
-                ArrayList<Query> qlist = map.get(dt);
-                return qlist.contains(q);
-            }
-            return b;
-        }
-
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            int i = 0;
-            for (IDatatype dt : list) {
-                sb.append(i++);
-                sb.append(" ");
-                sb.append(dt);
-                sb.append(": ");
-                for (Query q : map.get(dt)) {
-                    sb.append(name(q));
-                    sb.append(" ");
-                }
-                sb.append("\n");
-            }
-            return sb.toString();
-        }
+    /**
+     * @param isOptimize the isOptimize to set
+     */
+    public void setOptimize(boolean isOptimize) {
+        this.isOptimize = isOptimize;
     }
 
     PPrinter(Graph g, String p) {
@@ -237,7 +180,7 @@ public class PPrinter {
         tune(exec);
         nsm = NSManager.create();
         init();
-        stack = new Stack(true);
+        stack = new PPrinterStack(true);
         EMPTY = DatatypeMap.createLiteral(NULL);
         tcount = new HashMap<Query, Integer>();
     }
@@ -275,6 +218,10 @@ public class PPrinter {
 
     public static void define(String ns, String pp) {
         table.put(ns, pp);
+    }
+    
+     public static void define(String ns, boolean isOptimize) {
+        table.setOptimize(ns, isOptimize);
     }
 
     public void setNSM(NSManager n) {
@@ -477,11 +424,19 @@ public class PPrinter {
         Mapping m = getMapping(dt1, dt2);
 
         int count = 0, n = 0;
-        
+
         IDatatype type = null;
-        if (isOptimize){
+        if (isOptimize) {
             type = graph.getValue(RDF.TYPE, dt1);
         }
+
+        if (isExplain && ! pp.equals(TURTLE)){
+            PPrinter p = PPrinter.create(g, TURTLE);
+            System.out.println();
+            System.out.println("PP focus node: (" + level() + ") type: " + type + " nbt: " + getTemplates(temp, type).size());
+            System.out.println(p.pprint(dt1).getLabel());
+            System.out.println();
+       }
         
         for (Query qq : getTemplates(temp, type)) {
 
@@ -506,6 +461,13 @@ public class PPrinter {
                 }
 
                 n++;
+                
+                if (isExplain && ! pp.equals(TURTLE)){
+                    System.out.println("PP try: " + level() + "\n" + qq.getAST());
+                    System.out.println();
+                    qq.setDebug(true);
+                }
+                
                 Mappings map = exec.query(qq, m);
 
                 stack.visit(dt1);
@@ -531,8 +493,7 @@ public class PPrinter {
 
                     if (allTemplates) {
                         result.add(res);
-                    } 
-                    else {
+                    } else {
                         if (start) {
                             stack.pop();
                         }
@@ -649,7 +610,11 @@ public class PPrinter {
 
     private List<Query> getTemplates(String temp, IDatatype dt) {
         if (temp == null) {
-            return qe.getTemplates(dt);
+            if (isOptimize) {
+                return qe.getTemplates(dt);
+            } else {
+                return qe.getTemplates();
+            }
         }
         return getTemplate(temp);
     }
@@ -751,6 +716,7 @@ public class PPrinter {
         if (pp == null) {
             qe = QueryEngine.create(graph);
         } else {
+            setOptimize(table.isOptimize(pp));
             Load ld = Load.create(graph);
             try {
                 //ld.loadWE(pp);
@@ -759,7 +725,7 @@ public class PPrinter {
                 // TODO Auto-generated catch block
                 logger.error("PPrint Load Error: " + pp);
             }
-            
+
             qe = ld.getQueryEngine();
 
             if (qe == null) {
@@ -774,18 +740,18 @@ public class PPrinter {
                         qe.defQuery(q);
                     }
                 }
-            } 
-            
-            for (Query q : qe.getTemplates()){
+            }
+
+            for (Query q : qe.getTemplates()) {
                 q.setPPrinter(pp, this);
             }
-            for (Query q : qe.getNamedTemplates()){
+            for (Query q : qe.getNamedTemplates()) {
                 q.setPPrinter(pp, this);
             }
 
             qe.sort();
         }
-        
+
         //qe.trace();
 
         if (isDebug) {
@@ -794,7 +760,7 @@ public class PPrinter {
 
         if (isCheck()) {
             check();
-           // trace();
+            // trace();
         }
         //trace();
 

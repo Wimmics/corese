@@ -88,6 +88,12 @@ public class SPINProcess {
         return toGraph(toSpin(sparql), g);
     }
 
+    public String toSpin(ASTQuery ast) throws EngineException {
+        SPIN sp = SPIN.create();
+        sp.visit(ast);
+        String spin = sp.toString();
+        return spin;
+    }
 
     String toSpinSparql(ASTQuery ast) throws EngineException {
         if (isDebug) {

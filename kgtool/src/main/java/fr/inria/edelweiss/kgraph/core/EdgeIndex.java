@@ -101,7 +101,7 @@ implements Index {
 			public int compare(Entity o1, Entity o2) {
 				
 				// first check the index node
-				int res = nodeCompare(o1.getNode(index), o2.getNode(index));
+				int res = nodeCompare(getNode(o1, index), getNode(o2, index));
 				
 				if (res != 0){
 					return res;
@@ -141,6 +141,13 @@ implements Index {
 			}
 		};
 	}
+        
+        Node getNode(Entity ent, int n){
+            if (n == IGRAPH){
+                return ent.getGraph();
+            }
+            return ent.getNode(n);
+        }
 	
 	/**
 	 * Ordered list of properties
@@ -299,10 +306,11 @@ implements Index {
 	
 	Entity tag(Entity ent){
 		EdgeImpl ee = (EdgeImpl) ent;
-		ee.setNode(Graph.TAGINDEX, graph.tag());
+		ee.setTag(graph.tag());
 		return ent;
 	}
 	
+        // TBD
 	boolean same(Entity e1, Entity e2){
 		return e1.getNode(0).same(e2.getNode(0)) &&
 			   e1.getNode(1).same(e2.getNode(1));
@@ -310,7 +318,7 @@ implements Index {
 	
 	void complete(Entity ent){
 		if (index == 0 && graph.isType(ent.getEdge())){
-			types.put(ent.getEdge().getNode(1), ent.getEdge().getNode(1));
+			types.put(ent.getNode(1), ent.getNode(1));
 		}
 	}
 	
@@ -495,7 +503,7 @@ implements Index {
 		}
 
 		if (n>=0 && n<list.size()){
-			Node tNode = list.get(n).getNode(index);
+			Node tNode = getNode(list.get(n), index);
 			if (same(tNode, node)){
 				if (node2 != null){
 					Node tNode2 = list.get(n).getNode(other);
@@ -512,10 +520,10 @@ implements Index {
 	}
 	
 	void trace(List<Entity> list){
-		Node nn = list.get(0).getEdge().getNode(1);
+		Node nn = list.get(0).getNode(1);
 		for (int i=0; i<list.size(); i++){
-			if (! list.get(i).getEdge().getNode(1).same(nn)){
-				nn = list.get(i).getEdge().getNode(1);
+			if (! list.get(i).getNode(1).same(nn)){
+				nn = list.get(i).getNode(1);
 				logger.debug(nn);
 			}
 		}
@@ -533,7 +541,7 @@ implements Index {
 		
 		Iterate(List<Entity> l, int n){
 			list = l;
-			node = list.get(n).getNode(index);
+			node = getNode(list.get(n), index);
 			start = n;
 		}
 
@@ -547,7 +555,7 @@ implements Index {
 		@Override
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
-			boolean b = ind<list.size() && same(list.get(ind).getNode(index), node);
+			boolean b = ind<list.size() && same(getNode(list.get(ind), index), node);
 			return b;
 		}
 
@@ -570,7 +578,7 @@ implements Index {
 	int find(List<Entity> list, Node node){
 		int res = find(list, node, null, 0, list.size());
 		if (res>= 0 && res<list.size() && 
-			same(list.get(res).getEdge().getNode(index), node)){
+			same(getNode(list.get(res), index), node)){
 			return res;
 		}
 		return -1;
@@ -612,7 +620,7 @@ implements Index {
 	}
 	
 	int compare(Entity ent, Node n1, Node n2){
-		Node tNode = ent.getNode(index);
+		Node tNode = getNode(ent, index);
 		int res = nodeCompare(tNode, n1);
 		if (res == 0 && n2 != null){
 			res = nodeCompare(ent.getNode(other), n2);
@@ -622,7 +630,7 @@ implements Index {
 	}
 	
 	int compare(Entity ent, Node n1){
-		return nodeCompare(ent.getNode(index), n1);		
+		return nodeCompare(getNode(ent, index), n1);		
 	}
 	
 	int find(List<Entity> list, Entity edge, int first, int last){
@@ -832,7 +840,7 @@ implements Index {
 
 			Entity ent = list.get(i), ee;
 
-			if (ent.getEdge().getNode(index).same(g1)){
+			if (getNode(ent, index).same(g1)){
 				if (isDebug) 
 					logger.debug("** EI update: " + index + " " + ent);
 

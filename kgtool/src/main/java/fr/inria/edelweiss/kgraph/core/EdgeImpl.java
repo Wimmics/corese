@@ -1,130 +1,187 @@
 package fr.inria.edelweiss.kgraph.core;
 
-
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Abstract Edge
- * predicate in static Node in subclasses (see package rdf)
- * This is an abstract class refined by EdgeCore
- * 
+ * Graph Edge with n nodes (not only triple)
+ *
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public  class EdgeImpl implements Edge, Entity {
-	public static boolean displayGraph = true;
-	private static int MAX = 2;
-	private static int TAGINDEX = 2;
+public class EdgeImpl implements Edge, Entity {
 
-	protected Node subject, object;
-	
-	public EdgeImpl(){
-	}
-	
-	void add(Node node){
-		
-	}
-	
-	public  EdgeImpl copy(){
-		return  EdgeCore.create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
-	}
-	
-	public void setNode(int i , Node node){
-		switch(i){
-		case 0: subject = node;
-		case 1: object = node;
+    public static boolean displayGraph = true;
+    protected Node graph, predicate;
+    Node[] nodes;
+
+    public EdgeImpl() {
+    }
+
+
+    EdgeImpl(Node g, Node p){
+        graph = g;
+        predicate = p;
+    }
+    
+    EdgeImpl(Node g, Node pred, Node subject, Node object) {
+        this(g, pred);
+        nodes = new Node[2];
+        nodes[0] = subject;
+        nodes[1] = object;
+    }
+    
+     EdgeImpl(Node g, Node p, Node[] args) {
+        this(g, p);
+        nodes = args;
+    }
+
+    public static EdgeImpl create(Node g, Node subject, Node pred, Node object) {
+        return new EdgeImpl(g, pred, subject, object);
+    }
+
+    public static EdgeImpl create(Node g, Node pred, List<Node> list) {
+        Node[] nodes = new Node[list.size()];
+        list.toArray(nodes);
+        EdgeImpl e = new EdgeImpl(g, pred, nodes);
+        return e;
+    }
+    
+    public static EdgeImpl create(Node g, Node pred, Node[] nodes) {
+        return new EdgeImpl(g, pred, nodes);
+    }
+
+
+    public EdgeImpl copy() {
+        return new EdgeImpl(getGraph(), getEdgeNode(), Arrays.copyOf(getNodes(), nbNode()));
+    }
+    
+    public void setNodes(Node[] args){
+        nodes = args;
+    }
+    
+    public Node[] getNodes(){
+        return nodes;
+    }
+
+    public void setNode(int i, Node node) {
+        nodes[i] = node;       
+    }
+    
+     public void setTag(Node node) {
+         if (nodes.length <= Graph.TAGINDEX){
+             Node[] args = Arrays.copyOf(nodes, Graph.TAGINDEX+1);
+             nodes = args;
+         }
+        nodes[Graph.TAGINDEX] = node;       
+    }
+
+    public String toString() {
+        if (nbNode()>2){
+            return tuple();
+        }
+        String str = "";
+        if (displayGraph) {
+            str += getGraph() + " ";
+        }
+        str += getNode(0) + " " + getEdgeNode() + " " + getNode(1);
+        return str;
+    }
+    
+    public String tuple() {
+        String str = "";
+        if (displayGraph) {
+            str += getGraph() + " ";
+        }
+       str += toParse();
+       
+        return str;
+    }
+    
+    public String toParse(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("tuple");
+		sb.append("(");
+		sb.append(getEdgeNode());
+		for (Node n : nodes){
+			sb.append(n);
+			sb.append(" ");
 		}
+		sb.append(")");
+		return sb.toString();
 	}
-	
-	public String toString(){
-		String str = "";
-		if (displayGraph) str += getGraph() + " " ;
-		str +=  getNode(0) + " " + getEdgeNode() + " " +  getNode(1);
-		return str;
-	}
+    
 
-	@Override
-	public boolean contains(Node node) {
-		// TODO Auto-generated method stub
-		for (int i=0; i<nbNode(); i++){
-			if (getNode(i).same(node)){
-				return true;
-			}
-		}
-		return false;
-	}
+    @Override
+    public boolean contains(Node node) {
+        // TODO Auto-generated method stub
+        for (Node n : nodes) {
+            if (n.same(node)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public Node getEdgeNode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public void setEdgeNode(Node node){
-	}
+    @Override
+    public Node getEdgeNode() {
+        return predicate;
+    }
 
-	@Override
-	public int getIndex() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public void setEdgeNode(Node node) {
+        predicate = node;
+    }
 
-	@Override
-	public String getLabel() {
-		// TODO Auto-generated method stub
-		return getEdgeNode().getLabel();
-	}
+    @Override
+    public int getIndex() {
+        return 0;
+    }
 
-	@Override
-	public Node getNode(int n) {
-		// TODO Auto-generated method stub
-		switch (n) {
-		case 0: return subject;
-		case 1: return object;
-		default:
-			return getGraph();
-		}
-	}
+    @Override
+    public String getLabel() {
+        return getEdgeNode().getLabel();
+    }
 
-	@Override
-	public int nbNode() {
-		// TODO Auto-generated method stub
-		return MAX;
-	}
+    @Override
+    public Node getNode(int n) {
+        return nodes[n];
+    }
 
-	@Override
-	public void setIndex(int n) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public int nbNode() {
+        return nodes.length;
+    }
 
-	@Override
-	public Edge getEdge() {
-		// TODO Auto-generated method stub
-		return this;
-	}
+    @Override
+    public void setIndex(int n) {
+    }
 
-	@Override
-	public Node getGraph() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public void setGraph(Node gNode){
-	}
+    @Override
+    public Edge getEdge() {
+        return this;
+    }
 
-	@Override
-	public Node getNode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Node getGraph() {
+        return graph;
+    }
 
-	@Override
-	public Node getEdgeVariable() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public void setGraph(Node gNode) {
+        graph = gNode;
+    }
 
+    @Override
+    public Node getNode() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Node getEdgeVariable() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

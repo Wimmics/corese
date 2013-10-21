@@ -250,7 +250,6 @@ public class Graph //implements IGraph
 	}
 	
 	public void setOptimize(boolean b){
-		fac.setOptimize(b);
 	}
         
         public static void setValueTable(boolean b){

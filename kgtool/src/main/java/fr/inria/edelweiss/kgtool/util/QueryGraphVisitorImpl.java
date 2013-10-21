@@ -4,14 +4,13 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Term;
-import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.QueryGraphVisitor;
-import fr.inria.edelweiss.kgraph.core.EdgeCore;
+import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,11 +115,11 @@ public class QueryGraphVisitorImpl implements QueryGraphVisitor {
      */
     Entity process(Entity ent) {
 
-        if (!(ent.getEdge() instanceof EdgeCore)) {
+        if (!(ent.getEdge() instanceof EdgeImpl)) {
             return ent;
         }
 
-        EdgeCore edge = (EdgeCore) ent.getEdge();
+        EdgeImpl edge = (EdgeImpl) ent.getEdge();
 
         if (! predicates.contains(edge.getLabel())) {
             return ent;
@@ -183,7 +182,8 @@ public class QueryGraphVisitorImpl implements QueryGraphVisitor {
      */
     private Exp create(Node node, Node elem) {
        Node var = NodeImpl.createVariable(variable());
-       EdgeImpl edge = EdgeImpl.create(var, node, elem);
+       fr.inria.edelweiss.kgenv.parser.EdgeImpl edge = 
+               fr.inria.edelweiss.kgenv.parser.EdgeImpl.create(var, node, elem);
        Term re = list();
        re.compile(ast);
        Exp exp = Exp.create(Exp.PATH, edge);

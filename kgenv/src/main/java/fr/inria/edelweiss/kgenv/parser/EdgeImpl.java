@@ -185,4 +185,13 @@ public class EdgeImpl implements Edge, Entity {
 		return null;
 	}
 
+    @Override
+    public Object getProvenance() {
+        return null;        
+    }
+    
+    public void setProvenance(Object obj){
+        
+    }
+
 }

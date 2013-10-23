@@ -711,9 +711,24 @@ public class Eval implements ExpType, Plugin {
                 case GRAPH:
 
                     if (env.isPath(exp.getGraphName())) {
-                        backtrack = inPath(p, gNode, exp, stack, n, option);
-                    } else {
-                        backtrack = graph(gNode, exp, stack, n, option);
+                        // graph $path { }
+                        // switch Producer to path
+                        backtrack = 
+                                inGraph(p, memory.getPath(exp.getGraphName()),
+                                     gNode, exp, stack, n, option);
+                    } 
+                    else { 
+                        Node gg = memory.getNode(exp.getGraphName());
+                        if (gg != null && p.isProducer(gg)) {
+                            // graph $path { }
+                            // switch Producer to path
+                            backtrack = 
+                                    inGraph(p, p.getProducer(gg),
+                                         gNode, exp, stack, n, option);
+                        } 
+                        else {
+                            backtrack = graph(gNode, exp, stack, n, option);
+                        }
                     }
                     break;
 
@@ -1470,23 +1485,24 @@ public class Eval implements ExpType, Plugin {
     }
 
     /**
-     * graph $path { } switch producer to path add RESTORE(p) after this graph
+     * graph $path { } switch producer p to np = producer($path) add RESTORE(p) after this graph
      * exp
      */
-    private int inPath(Producer p, Node gNode, Exp exp, Stack stack, int n, boolean option) {
+ 
+    private int inGraph(Producer p, Producer np, Node gNode, Exp exp, Stack stack, int n, boolean option) {
+
         int backtrack = n - 1;
 
-        Path path = memory.getPath(exp.getGraphName());
         stack.set(n, exp.rest());
 
         if (n == stack.size() - 1) {
             // last statement: switch Producer to Path			
-            backtrack = eval(path, gNode, stack, n, option);
+            backtrack = eval(np, gNode, stack, n, option);
             stack.reset(n, exp);
         } else {
             Exp next = getRestore(p, exp);
             stack.add(n + 1, next);
-            backtrack = eval(path, gNode, stack, n, option);
+            backtrack = eval(np, gNode, stack, n, option);
             for (int i = n + 1; stack.get(i) != next;) {
                 stack.remove(i);
             }
@@ -1496,6 +1512,8 @@ public class Eval implements ExpType, Plugin {
 
         return backtrack;
     }
+    
+  
 
     Exp getRestore(Producer p, Exp exp) {
         Exp next = exp.getRestore();
@@ -1679,13 +1697,13 @@ public class Eval implements ExpType, Plugin {
 
         while (it.hasNext()) {
 //		for (Entity map : p.getEdges(gNode, qq.getFrom(gNode), qEdge,  env)){			
-            Entity map = it.next();
+            Entity ent = it.next();
 
-            if (map != null) {
+            if (ent != null) {
                 nbEdge++;
                 boolean trace = false;
-                Edge edge = map.getEdge();
-                graph = map.getGraph();
+                Edge edge = ent.getEdge();
+                graph = ent.getGraph();
 
 //				if (draft && edgeToDiffer != null && previous != null){
 //					// draft backjump with position
@@ -1709,7 +1727,7 @@ public class Eval implements ExpType, Plugin {
                 boolean bmatch = match(qEdge, edge, gNode, graph, env);
 
                 if (bmatch) {
-                    bmatch = push(qEdge, edge, gNode, graph, n);
+                    bmatch = push(qEdge, ent, gNode, graph, n);
                 }
 
                 if (isEvent) {
@@ -1720,7 +1738,7 @@ public class Eval implements ExpType, Plugin {
                     isSuccess = true;
                     backtrack = eval(p, gNode, stack, n + 1, option);
 
-                    env.pop(qEdge, edge);
+                    env.pop(qEdge, ent);
                     if (hasGraphNode) {
                         env.pop(gNode);
                     }
@@ -2134,13 +2152,13 @@ public class Eval implements ExpType, Plugin {
         return match.match(gNode, graphNode, memory);
     }
 
-    private boolean push(Edge qEdge, Edge edge, Node gNode, Node node, int n) {
+    private boolean push(Edge qEdge, Entity ent, Node gNode, Node node, int n) {
         Memory env = memory;
-        if (!env.push(qEdge, edge, n)) {
+        if (!env.push(qEdge, ent, n)) {
             return false;
         }
         if (gNode != null && !env.push(gNode, node, n)) {
-            env.pop(qEdge, edge);
+            env.pop(qEdge, ent);
             return false;
         }
         return true;

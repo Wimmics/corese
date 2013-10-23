@@ -112,5 +112,13 @@ public class ProducerDefault implements Producer {
 		return null;
 	}
 
+ @Override
+    public boolean isProducer(Node node) {
+        return false;
+    }
 
+    @Override
+    public Producer getProducer(Node node) {
+        return null;
+    }
 }

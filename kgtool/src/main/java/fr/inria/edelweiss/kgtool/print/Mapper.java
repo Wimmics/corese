@@ -60,7 +60,7 @@ public class Mapper {
 	}
 	
 	Iterable<Entity> getNodes(Mapping m, List<Entity> list){
-		for (Edge edge : m.getEdges()){
+		for (Entity edge : m.getEdges()){
 			Node node = edge.getNode(0);
 			if (node instanceof Entity){
 				Entity ent = (Entity) node;
@@ -96,7 +96,7 @@ public class Mapper {
 	}
 	
 	void getMapEdges(Node node, Mapping map, List<Entity> list){
-		for (Edge edge : map.getEdges()){
+		for (Entity edge : map.getEdges()){
 			if (edge instanceof Entity){
 				Entity ent = (Entity) edge;
 				if (edge.getNode(0).equals(node) && ! list.contains(ent)){

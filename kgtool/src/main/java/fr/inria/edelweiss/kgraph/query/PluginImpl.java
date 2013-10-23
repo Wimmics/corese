@@ -12,6 +12,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -307,7 +308,7 @@ public class PluginImpl extends ProxyImpl {
 		for (Edge qEdge : memory.getQueryEdges()){
 
 			if (qEdge != null){
-				Edge edge = memory.getEdge(qEdge);
+				Entity edge = memory.getEdge(qEdge);
 				
 				if (edge != null){
 					count += 1 ;

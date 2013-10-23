@@ -16,6 +16,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import static fr.inria.edelweiss.kgram.api.core.ExprType.CONT;
@@ -813,7 +814,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		for (Edge qEdge : memory.getQueryEdges()){
 			
 			if (qEdge != null && qEdge.getLabel().equals(RDFTYPE)){
-				Edge edge = memory.getEdge(qEdge);
+				Entity edge = memory.getEdge(qEdge);
 				if (edge != null){
 					Node type = qEdge.getNode(1);
 					if (type.isConstant()){ 

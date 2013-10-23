@@ -25,6 +25,8 @@ import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
 import fr.inria.acacia.corese.exceptions.QueryLexicalException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
+import fr.inria.acacia.corese.triple.api.Creator;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.LoadTurtle;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -400,8 +402,8 @@ public class Load
 	
 	void loadTurtle(Reader stream,  String path, String base, String src) throws LoadException {
 		
-		CreateImpl cr = CreateImpl.create(graph);
-		cr.graph(src);
+		Creator cr = CreateImpl.create(graph);
+		cr.graph(Constant.create(src));
 		cr.setRenameBlankNode(renameBlankNode);
 		cr.setLimit(limit);
 		

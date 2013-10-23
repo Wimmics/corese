@@ -95,6 +95,7 @@ public class QueryProcess extends QuerySolver {
 	 * isMatch = true: 
 	 * Each Producer perform local Matcher.match() on its own graph for subsumption
 	 * Hence each graph can have its own ontology 
+         * and return one occurrence of each resource for ?x rdf:type aClass
 	 * isMatch = false: (default)
 	 * Global producer perform Matcher.match()
 	 */
@@ -152,6 +153,9 @@ public class QueryProcess extends QuerySolver {
 		return exec;
 	}
 	
+        /**
+         * To Be Used by implementation other than Graph
+         */
 	public static QueryProcess create(Producer prod, Matcher match){
 		Interpreter eval  = createInterpreter(prod, match);
 		QueryProcess exec = new QueryProcess(prod, eval, match);

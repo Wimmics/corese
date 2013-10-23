@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 /**
  * Iterator of Entity that perform match.match()
  * It checks subsumption in the Producer
+ * Return one occurrence of each resource for ?x rdf:type aClass
  * 
  * @author Olivier Corby, Wimmics INRIA 2012
  *

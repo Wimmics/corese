@@ -183,6 +183,14 @@ public interface Producer {
 	 * @return Mappings
 	 */
 	Mappings map(List<Node> qNodes, Object object);
+
+        /**
+         * graph node { }
+         * Node node represents (contains) a graph 
+         */
+         boolean isProducer(Node node);
+
+         Producer getProducer(Node node);
 	
 
 }

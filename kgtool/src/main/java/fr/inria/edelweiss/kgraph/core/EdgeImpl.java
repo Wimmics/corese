@@ -1,5 +1,7 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -54,7 +56,11 @@ public class EdgeImpl implements Edge, Entity {
         return new EdgeImpl(g, pred, nodes);
     }
 
-
+    public void add(Node node){
+        nodes = Arrays.copyOf(nodes, nodes.length+1);
+        nodes[nodes.length-1] = node;
+    }
+    
     public EdgeImpl copy() {
         return new EdgeImpl(getGraph(), getEdgeNode(), Arrays.copyOf(getNodes(), nbNode()));
     }
@@ -73,8 +79,7 @@ public class EdgeImpl implements Edge, Entity {
     
      public void setTag(Node node) {
          if (nodes.length <= Graph.TAGINDEX){
-             Node[] args = Arrays.copyOf(nodes, Graph.TAGINDEX+1);
-             nodes = args;
+             nodes = Arrays.copyOf(nodes, Graph.TAGINDEX+1);
          }
         nodes[Graph.TAGINDEX] = node;       
     }
@@ -107,8 +112,8 @@ public class EdgeImpl implements Edge, Entity {
 		sb.append("(");
 		sb.append(getEdgeNode());
 		for (Node n : nodes){
-			sb.append(n);
 			sb.append(" ");
+			sb.append(n);
 		}
 		sb.append(")");
 		return sb.toString();
@@ -183,5 +188,28 @@ public class EdgeImpl implements Edge, Entity {
     public Node getEdgeVariable() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Object getProvenance() {       
+        if (nodes.length > 2){
+            return nodes[2];
+        }
+        return null;    
+    }
+    
+    /**
+     * Draft 
+     */
+    public void setProvenance(Object obj) {
+        if (nodes.length > 2) {
+            return;
+        }
+        if (!(obj instanceof Node)) {
+            Node prov = DatatypeMap.createLiteral("provenance", RDF.XMLLITERAL, null);
+            prov.setObject(obj);
+            obj = prov;
+        }
+        add((Node) obj);
     }
 }

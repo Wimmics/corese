@@ -1,11 +1,14 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.cg.datatype.RDF;
 import java.util.Iterator;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
 
 /**
  * 
@@ -18,6 +21,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	Iterator<Entity> it;
 	Edge last;
 	Node graph;
+        Graph gg;
 	List<Node> from;
 	boolean hasGraph, hasFrom;
 	private boolean hasTag = false;
@@ -51,6 +55,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		this.hasGraph = hasGraph;
 		hasFrom = from.size()>0;
 		setTag(g.hasTag());
+                gg = g;
 	}
 	
 	void setTag(boolean b){
@@ -136,7 +141,8 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 			
 			if (ok){
 				last = ent.getEdge();
-				return ent;
+                                //provenance(ent);                                
+                                return ent;
 			}
 		}
 		return null;
@@ -201,6 +207,15 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		}
 		return false;
 	}
-	
 
+        // draft unused
+    private void provenance(Entity ent) {
+        ent.setProvenance(graph(ent));
+    }
+	
+    Graph graph(Entity ent) {
+        Graph g = Graph.create();
+        g.copy(ent);
+        return g;
+    }
 }

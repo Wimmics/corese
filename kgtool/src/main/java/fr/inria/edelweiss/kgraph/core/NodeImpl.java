@@ -124,17 +124,20 @@ public class NodeImpl implements Node, Entity {
     }
 
     public Object getObject() {
+        if (dt != null){
+            return dt.getObject();
+        }
         return null;
-        //return getProperty(OBJECT);
     }
 
     public void setObject(Object o) {
-        //setProperty(OBJECT, o);
+        if (dt != null){
+             dt.setObject(o);
+        }    
     }
 
     @Override
     public Node getNode(int i) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -160,5 +163,14 @@ public class NodeImpl implements Node, Entity {
     @Override
     public void setKey(String str) {
         key = str;
+    }
+
+    @Override
+    public Object getProvenance() {
+        return null;    
+    }
+    
+    public void setProvenance(Object obj){
+        
     }
 }

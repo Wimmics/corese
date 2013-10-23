@@ -43,4 +43,13 @@ public class EntityImpl implements Entity {
 		return 0;
 	}
 
+    @Override
+    public Object getProvenance() {
+        return null;    
+    }
+    
+    public void setProvenance(Object obj){
+        
+    }
+
 }

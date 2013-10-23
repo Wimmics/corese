@@ -17,5 +17,9 @@ public interface Entity {
 	int nbNode();
 	
 	Node getGraph();
+        
+        Object getProvenance();
+        
+        void setProvenance(Object obj);
 
 }

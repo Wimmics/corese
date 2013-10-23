@@ -22,11 +22,13 @@ class PPrinterTable extends HashMap<String, String> {
     }
 
     void init() {
+        // namespace to pprinter
+        put(NSManager.OWL,  PPrinter.OWL);
         put(NSManager.SPIN, PPrinter.SPIN);
         put(NSManager.SQL,  PPrinter.SQL);
-        put(NSManager.OWL,  PPrinter.OWL);
 
         table = new HashMap<String, Boolean>();
+        // pprinter is optimized ?
         table.put(PPrinter.OWL, false);
         table.put(PPrinter.SPIN, true);
         table.put(PPrinter.SQL, true);

@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
@@ -32,7 +34,8 @@ public class Memory implements Environment {
 	// enable to compute where to backjump
 	stackIndex; 
 
-	Edge[] qEdges, result;
+	Edge[] qEdges;
+        Entity[] result;
 		
 	Node[] qNodes, nodes;
 	
@@ -170,7 +173,7 @@ public class Memory implements Environment {
 		stackIndex = new int[nmax];
                 if (isEdge){
                     nbEdges = new int[emax];
-                    result  = new Edge[emax];
+                    result  = new Entity[emax];
                     qEdges  = new Edge[emax];
                 }
 		nodes   = new Node[nmax];
@@ -310,7 +313,8 @@ public class Memory implements Environment {
 				}
 			}
 		}
-		Edge[] qedge = new Edge[nbEdge], tedge = new Edge[nbEdge];
+		Edge[] qedge = new Edge[nbEdge];
+                Entity[] tedge = new Entity[nbEdge];
 		Node[] qnode = new Node[nb], tnode = new Node[nb], 
 		// order by
 		snode = new Node[q.getOrderBy().size()],
@@ -469,13 +473,13 @@ public class Memory implements Environment {
 	/**
 	 * 
 	 */
-	boolean push(Edge q , Edge r, int n){
+	boolean push(Edge q , Entity ent, int n){
 		boolean success = true;
 		int max = q.nbNode();
 		for (int i=0; i<max; i++){ 
 			Node node = q.getNode(i);
 			if (node != null){
-				success = push(node, r.getNode(i), n);
+				success = push(node, ent.getNode(i), n);
 
 				if (! success){
 					// it fail: pop right now
@@ -491,7 +495,7 @@ public class Memory implements Environment {
 			// e.g. the node that represents the property/relation
 			Node pNode = q.getEdgeVariable();
 			if (pNode!=null){
-				success = push(pNode, r.getEdgeNode(), n);
+				success = push(pNode, ent.getEdge().getEdgeNode(), n);
 				
 				if (! success){
 					// it fail: pop nodes
@@ -505,7 +509,7 @@ public class Memory implements Environment {
 			if (nbEdges[index] == 0) nbEdge++;
 			nbEdges[index]++;
 			qEdges [index] = q;
-			result[index] = r;
+			result[index] = ent;
 			
 //			if (hasEvent){
 //				event(q);
@@ -636,14 +640,14 @@ public class Memory implements Environment {
 		return stackIndex[node.getIndex()];
 	}
 	
-	void pop(Edge q, Edge r){
+	void pop(Edge q, Entity r){
 		popNode(q, r);
 		if (isEdge){
                     popEdge(q, r);
                 }
 	}
 	
-	void popNode(Edge q, Edge r){
+	void popNode(Edge q, Entity r){
 		if (q != null){
 			int max = q.nbNode();
 			for (int i=0; i<max; i++){ 
@@ -663,7 +667,7 @@ public class Memory implements Environment {
 		}
 	}
 	
-	void popEdge(Edge q, Edge r){
+	void popEdge(Edge q, Entity r){
 		int index = q.getIndex();
 		if (nbEdges[index] > 0){
 			nbEdges[index] --;
@@ -732,7 +736,7 @@ public class Memory implements Environment {
 		if (isEdge){
 			k = 0;
 			for (Edge qEdge : res.getQueryEdges()){
-				Edge edge = res.getEdge(k);
+				Entity edge = res.getEdge(k);
 				if (! push(qEdge, edge, n)){
 					for (int i=0; i<k; i++){
 						pop(res.getQueryEdge(i), res.getEdge(i));
@@ -798,11 +802,11 @@ public class Memory implements Environment {
 		return getNode(qNode) != null;
 	}
 	
-	public Edge getEdge(Edge qEdge){
+	public Entity getEdge(Edge qEdge){
 		return result[qEdge.getIndex()];
 	}
 	
-	public Edge getEdge(int n){
+	public Entity getEdge(int n){
 		return result[n];
 	}
 	
@@ -810,7 +814,7 @@ public class Memory implements Environment {
 		return qEdges;
 	}
 	
-	public Edge[] getEdges(){
+	public Entity[] getEdges(){
 		return result;
 	}
 	
@@ -962,5 +966,5 @@ public class Memory implements Environment {
 	boolean isFake() {
 		return isFake;
 	}
-		
+
 }

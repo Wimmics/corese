@@ -75,7 +75,8 @@ public class CoreseDatatype
 
 			String datatype = getDatatype().getLabel();
 			
-			if (prefix && datatype.startsWith(RDF.XSD)){
+			if (prefix && (datatype.startsWith(RDF.XSD))
+                                || datatype.startsWith(RDF.RDF)){
 				datatype = nsm.toPrefix(datatype);						
 			}
 			else {
@@ -1028,5 +1029,14 @@ public class CoreseDatatype
         } else {
             return getLabel();
         }
+    }
+
+    @Override
+    public Object getProvenance() {
+        return null;    
+    }
+    
+    public void setProvenance(Object obj){
+        
     }
 }

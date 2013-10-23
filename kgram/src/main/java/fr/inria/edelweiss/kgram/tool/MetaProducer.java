@@ -166,4 +166,14 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		return producer.isBindable(node);
 	}
 
+    @Override
+    public boolean isProducer(Node node) {
+        return producer.isProducer(node);
+    }
+
+    @Override
+    public Producer getProducer(Node node) {
+        return producer.getProducer(node);
+    }
+
 }

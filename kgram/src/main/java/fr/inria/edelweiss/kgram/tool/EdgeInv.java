@@ -103,4 +103,13 @@ public class EdgeInv implements Edge, Entity {
 		return null;
 	}
 
+    @Override
+    public Object getProvenance() {
+        return ent.getProvenance();    
+    }
+    
+    public void setProvenance(Object obj){
+        ent.setProvenance(obj);
+    }
+
 }

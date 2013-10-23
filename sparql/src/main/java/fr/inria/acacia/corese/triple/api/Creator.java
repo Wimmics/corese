@@ -28,4 +28,6 @@ public interface Creator {
 	public void setRenameBlankNode(boolean b);
 
 	public boolean isRenameBlankNode();
+
+        public void setLimit(int limit);
 }

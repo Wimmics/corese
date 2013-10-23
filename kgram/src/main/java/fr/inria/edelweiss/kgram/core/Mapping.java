@@ -2,13 +2,11 @@ package fr.inria.edelweiss.kgram.core;
 
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -35,8 +33,12 @@ public class Mapping
 	extends EnvironmentImpl 
 	implements Result, Environment
 {
-		
-	Edge[] qEdges, edges;
+        static final Edge[] emptyEdge   = new Edge[0];
+        static final Entity[] emptyEntity = new Entity[0];
+        static final Node[] emptyNode   = new Node[0];
+        
+	Edge[] qEdges;
+        Entity[] edges;
 
 	// path edges when Mapping has a path result
 	Path[] lPath;
@@ -58,13 +60,13 @@ public class Mapping
 	boolean read = false;
 	
 	Mapping(){
-		this.qEdges = new Edge[0];
-		this.edges = qEdges;
-		this.qNodes = new Node[0];
+		this.qEdges = emptyEdge;;
+		this.edges = emptyEntity;
+		this.qNodes = emptyNode;
 		this.nodes = qNodes;
 	}
 	
-	Mapping(Edge[] query, Edge[] result, Node[] qnodes, Node[] nodes){
+	Mapping(Edge[] query, Entity[] result, Node[] qnodes, Node[] nodes){
 		this.qEdges = query;
 		this.edges = result;
 		this.qNodes = qnodes;
@@ -72,8 +74,8 @@ public class Mapping
 	}
 	
 	Mapping(Node[] qnodes, Node[] nodes){
-		this.qEdges = new Edge[0];
-		this.edges = qEdges;
+		this.qEdges = emptyEdge;
+		this.edges = emptyEntity;
 		init(qnodes, nodes);
 	}
 	
@@ -132,7 +134,7 @@ public class Mapping
 	}
 
 	
-	public static Mapping create(Edge[] query, Edge[] result, 
+	public static Mapping create(Edge[] query, Entity[] result, 
 			Node[] qnodes, Node[] nodes){
 		return new Mapping(query, result, qnodes, nodes);
 	}
@@ -546,11 +548,11 @@ public class Mapping
 		return qEdges;
 	}
 	
-	public Edge[] getEdges(){
+	public Entity[] getEdges(){
 		return edges;
 	}
 	
-	Edge getEdge(int n){
+	Entity getEdge(int n){
 		return edges[n];
 	}
 	

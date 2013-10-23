@@ -193,7 +193,7 @@ public class EdgeImpl implements Edge, Entity {
     @Override
     public Object getProvenance() {       
         if (nodes.length > 2){
-            return nodes[2];
+            return nodes[nodes.length-1].getObject();
         }
         return null;    
     }
@@ -202,9 +202,6 @@ public class EdgeImpl implements Edge, Entity {
      * Draft 
      */
     public void setProvenance(Object obj) {
-        if (nodes.length > 2) {
-            return;
-        }
         if (!(obj instanceof Node)) {
             Node prov = DatatypeMap.createLiteral("provenance", RDF.XMLLITERAL, null);
             prov.setObject(obj);

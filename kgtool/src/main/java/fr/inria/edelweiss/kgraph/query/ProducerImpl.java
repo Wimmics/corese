@@ -747,8 +747,11 @@ public class ProducerImpl implements Producer {
     @Override
     public Producer getProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
-        Graph g = (Graph) dt.getObject();
-        return new ProducerImpl(g);
+        Object obj = dt.getObject();
+        if (obj == null || ! (obj instanceof Graph)){
+            return null;
+        }
+        return new ProducerImpl((Graph) obj);
     }
     
 }

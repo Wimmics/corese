@@ -62,12 +62,18 @@ template kg:start {
 where {
   select distinct ?x where { 
     ?x ?p ?y 
+    
     filter( ! strstarts(?y, rdf:))
     filter( ! strstarts(?y, rdfs:))
     
+    filter( ! strstarts(?y, owl:))
+    filter( ! strstarts(?p, rdfs:))
+    filter( ! strstarts(?p, owl:))
+
     filter ( isURI(?x) || not exists { ?z ?q ?x } )
   }
 }
+order by ?x
 ]]>
 </body>
 </rule>
@@ -84,7 +90,7 @@ template kg:value {
 	kg:uri(?p) " " 
 	
         if (bound(?e),   kg:template(kg:list, ?y),
-          kg:uri(?y))	
+          kg:uriLiteral(?y))	
           
         ; separator = ";\n" 
      
@@ -96,6 +102,28 @@ where {
     
   optional { ?y  rdf:first ?e }
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template kg:all {
+  ?x
+  ; separator = "\n\n"
+}
+where {
+  select distinct ?x where { 
+    ?x ?p ?y     
+    filter ( isURI(?x) || not exists { ?z ?q ?x } )
+  }
+}
+order by ?x
 ]]>
 </body>
 </rule>
@@ -134,18 +162,11 @@ limit 1
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
-  kg:uri(?in) " "
-  
-      kg:template(kg:type, ?in)
-  
-      kg:template(kg:value, ?in)
-      
+  kg:turtle(?in)
 }
 where {
-  ?in ?p ?y 
-  
-  filter(isUri(?in))
-  
+  ?x ?p ?in
+  filter(isLiteral(?in))
 }
 limit 1
 ]]>
@@ -160,11 +181,18 @@ limit 1
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
-  kg:turtle(?in)
+  kg:uri(?in) " "
+  
+      kg:template(kg:type, ?in)
+  
+      kg:template(kg:value, ?in)
+      
 }
 where {
-  ?x ?p ?in
-  filter(isLiteral(?in))
+  ?in ?p ?y 
+  
+  filter(isUri(?in))
+  
 }
 limit 1
 ]]>

@@ -186,20 +186,14 @@ values (?create ?label) {
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-  if (bound(?columns),
-    concat("(",   kg:template(sql:comma, ?columns), ")"),
-    concat("(\n", kg:template(sql:semicolon, ?columnstable), "\n)"))
+    "("   
+      kg:template(sql:comma, ?columns) 
+    ")"
 }
-where {
-     {
+where {     
      	?in a sql:Columns ;
 	     sql:args ?columns
-     }
-     union
-     {
-     	?in a sql:ColumnsTable ;
-	     sql:args ?columnstable
-     }
+    
 }
 
 
@@ -311,17 +305,12 @@ where {
 prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-   if (bound(?label),
-#    concat("'", xsd:string(?label), "'"),
-    kg:turtle(?label),
-    xsd:string(?value))
+   kg:turtle(?value)
 }
 where {
-  {?in a sql:Constant ;
-     sql:label ?label }
-     union
-  {?in a sql:Constant ;
-     sql:value ?value } 
+  ?in a sql:Constant 
+  { ?in sql:label ?value } union
+  { ?in sql:value ?value } 
 }
 ]]>
 </body>
@@ -340,13 +329,13 @@ where {
 	sql:args ?args
 }
 values (?clause ?label) {
-	(sql:Where "WHERE ")
-	(sql:Update "UPDATE ")
-	(sql:Set "SET ")
-	(sql:On "ON ")
-	(sql:Into "INTO ")
-	(sql:Insert "INSERT INTO ")
-	(sql:Having "HAVING ")
+	(sql:Where 	"WHERE ")
+	(sql:Update 	"UPDATE ")
+	(sql:Set 	"SET ")
+	(sql:On 	"ON ")
+	(sql:Into 	"INTO ")
+	(sql:Insert 	"INSERT INTO ")
+	(sql:Having 	"HAVING ")
 }
 
 
@@ -395,14 +384,12 @@ where {
 
 template {
    ?label "(" 
-#   ?args 
-   kg:template(sql:comma, ?args)
+      kg:template(sql:comma, ?args)
    ")"
 }
 where {
 	?in a ?function ;
 	    sql:args ?args
-#	sql:args (?args)
 }
 values (?function ?label) {
 	(sql:Min   "MIN")
@@ -449,6 +436,27 @@ values (?clause ?label) {
 <rule>
 <body>
 <![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+    "(\n" 
+      kg:template(sql:semicolon, ?columnstable) 
+    "\n)"
+}
+where {    
+     	?in a sql:ColumnsTable ;
+	     sql:args ?columnstable     
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
@@ -473,7 +481,7 @@ template  {
 }
 where {
 	?in a ?ope ;
-	sql:args (?arg1 ?arg2)
+	  sql:args (?arg1 ?arg2)
 }
 values (?ope ?label) {
 	(math:Mult  " * ")
@@ -562,21 +570,13 @@ where {
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-  if (bound(?query),
-    concat(kg:template(sql:line, ?query), ";"),
-    kg:template(sql:line, ?subquery))
+    kg:template(sql:line, ?body)
+    if (! bound(?x), ";", "")
 }
 where { 
-  ?in a sql:Query
-  {
-    ?in sql:args ?query
-    filter not exists { ?x ?q ?in }
-  }
-  union 
-  {
-    ?in sql:args ?subquery
-    filter exists { ?x ?q ?in }
-  }
+  ?in a sql:Query ;
+      sql:args ?body
+  optional { ?x ?q ?in }
 }
 
 

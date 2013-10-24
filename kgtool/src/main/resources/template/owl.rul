@@ -206,9 +206,9 @@ where {
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template {
-    if (isLiteral(?v), "Data", "Object") 
-    "PropertyAssertion("
-	kg:uri(?p) " " kg:uri(?in) " " kg:uri(?v)
+    if (isLiteral(?v), "DataPropertyAssertion", "ObjectPropertyAssertion") 
+    "("
+	kg:uri(?p) " " kg:uri(?in) " " kg:uriLiteral(?v)
     ")"
 }
 where {
@@ -523,6 +523,7 @@ template {
 }
 where {
   ?in a ?t
+  filter(isURI(?in))
 }
 values (?t ?l) {
   (owl:ObjectProperty "ObjectProperty")
@@ -559,8 +560,11 @@ template {
   if (?p = owl:equivalentClass, "ObjectEquivalentClasses",
     kg:uri(?p)))
  
-   "(Annotation(" kg:uri(?q)  " " kg:uri(?c) ")\n"
-      kg:uri(?s) " " kg:uri(?t)
+   "(Annotation(" 
+      kg:uri(?q)  " "  kg:uriLiteral(?c)
+      ")\n"
+      
+      kg:uri(?s) " " kg:uriLiteral(?t)
    ")"
 }
 where {

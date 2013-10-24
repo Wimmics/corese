@@ -220,6 +220,29 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
+template sp:listnl {
+  ?exp  ; separator = "\n"
+}
+where {
+  ?in rdf:rest*/rdf:first ?exp
+}
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
 template sp:list {
   ?exp  
 }
@@ -669,9 +692,7 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 template {
-  ?x " " kg:uri(?p) " " 
-  if (isLiteral(?y), kg:turtle(?y), ?y) 
-#" "  if (isLiteral(?y), datatype(?y), "") 
+  kg:uri(?x) " " kg:uri(?p) " "  kg:uriLiteral(?y) 
   " ."
 }
 where {
@@ -690,13 +711,38 @@ where {
 <body>
 <![CDATA[
 #
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template{
+  "(" ?e " as (" 
+      group { ?var ; separator = ", " }
+  "))"
+}
+where {
+  ?in sp:varList/rdf:rest*/rdf:first ?var ;
+      sp:expression ?e
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # Given a RDF graph which contains a SPIN Query
 # This query search the triples and return a string in turtle syntax
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 template {
-  ?p1 "/" ?p2
+  kg:uri(?p1) "/" kg:uri(?p2)
 }
 where {
   ?in a sp:SeqPath ;
@@ -847,6 +893,10 @@ template {
 }
 where {
   ?in a ?ope 
+  # ?ope matches any type, hence restrict this template to
+  # SPIN blank nodes
+  # otherwise c:John a foaf:Person would match this template
+  filter(isBlank(?in))
   
   { ?in sp:arg1 ?f } union 
   { ?in sp:expression ?f } union 
@@ -884,7 +934,7 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 template {
-  xsd:string(?l) "(" ?p ")" 
+  xsd:string(?l) "(" kg:uri(?p) ")" 
   
 }
 where {
@@ -1136,8 +1186,11 @@ prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
   "construct " 
-  if (bound(?temp), concat("{", ?temp, "}", "\n"), "")
-  "where {" ?where "}"
+  if (bound(?temp), 
+    concat("{", kg:template(sp:listnl, ?temp), "}", "\n"), "")
+  "where {" 
+     kg:template(sp:listnl, ?where) 
+  "}"
   
   ?group
   ?order
@@ -1264,12 +1317,13 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 template {
-  ?x " " ?p " "
+  ?x " " kg:uri(?p) " "
   if (bound(?v), concat(":: ", ?v, " "), "")
    ?y " ."
 }
 where {
-?in sp:subject  ?x ; 
+?in a sp:TriplePath ;
+    sp:subject  ?x ; 
     sp:path ?p ; 
     sp:object   ?y 
     optional { ?in sp:pathVariable ?v }
@@ -1408,9 +1462,9 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 template {
-  "(" ?p ")" 
+  "(" kg:uri(?p) ")" 
   if (bound(?min) && ?min = 1, "+", 
-    if (bound(?max) && ?max = -1, "?", "*"))
+  if (bound(?max) && ?max = -1, "?", "*"))
 }
 where {
   ?in a sp:ModPath ;
@@ -1437,7 +1491,7 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 template {
-  "(" ?p1 "|" ?p2 ")"
+  "(" kg:uri(?p1) "|" kg:uri(?p2) ")"
 }
 where {
   ?in a sp:AltPath ;
@@ -1470,7 +1524,7 @@ template {
   kg:template(sp:from, ?in)
   kg:template(sp:named, ?in)
   "where {" "\n" 
-  ?where 
+  kg:template(sp:listnl, ?where) 
   "\n" "}" "\n"
   
   ?group

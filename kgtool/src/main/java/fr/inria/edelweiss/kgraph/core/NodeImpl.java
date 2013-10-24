@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgraph.core;
 
-import java.util.Arrays;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;

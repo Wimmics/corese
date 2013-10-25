@@ -44,5 +44,15 @@ public class Stop implements Entity {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    @Override
+    public Object getProvenance() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setProvenance(Object obj) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
     
 }

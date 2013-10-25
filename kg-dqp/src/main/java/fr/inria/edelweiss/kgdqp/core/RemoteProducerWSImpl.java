@@ -610,4 +610,14 @@ public class RemoteProducerWSImpl implements Producer {
     public SparqlEndpointInterface getEndpoint() {
         return rp;
     }
+
+    @Override
+    public boolean isProducer(Node node) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Producer getProducer(Node node) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

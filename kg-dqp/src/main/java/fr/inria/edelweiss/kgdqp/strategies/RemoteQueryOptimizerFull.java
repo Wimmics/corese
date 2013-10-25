@@ -12,7 +12,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgraph.core.EdgeCore;
+import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import java.util.Enumeration;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -73,7 +73,7 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
             }
         }
 
-        Edge reqEdge = EdgeCore.create(null, subject, predicate, object);
+        Edge reqEdge = EdgeImpl.create(null, subject, predicate, object);
 
         //filter handling
         List<Filter> filters = Util.getApplicableFilter(env, reqEdge);

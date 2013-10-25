@@ -519,4 +519,14 @@ public class RemoteSqlProducerImpl implements Producer {
 //        nodeUrl = nodeUrl.substring(nodeUrl.lastIndexOf("#subject-") + 9);
         return nodeUrl;
     }
+
+    @Override
+    public boolean isProducer(Node node) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Producer getProducer(Node node) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

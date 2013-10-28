@@ -718,10 +718,11 @@ public class Eval implements ExpType, Plugin {
                                      gNode, exp, stack, n, option);
                     } 
                     else { 
-                        Node gg = memory.getNode(exp.getGraphName());
+                        Node gg = getNode(exp.getGraphName());
                         if (gg != null && p.isProducer(gg)) {
                             // graph $path { }
-                            // switch Producer to path
+                            // named graph in GraphStore 
+                            // switch Producer 
                             backtrack = 
                                     inGraph(p, p.getProducer(gg),
                                          gNode, exp, stack, n, option);
@@ -1338,7 +1339,6 @@ public class Eval implements ExpType, Plugin {
         if (provider != null) {
             // service delegated to provider
             Mappings lMap = provider.service(node, exp.rest(), exp.getMappings(), env);
-
             for (Mapping map : lMap) {
                 // push each Mapping in memory and continue
                 complete(query, map);
@@ -1484,6 +1484,18 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
+    Node getNode(Node gNode){
+       Node gg = memory.getNode(gNode);
+       if (gg != null){
+           return gg;
+       }
+       if (gNode.isConstant()){
+            return gNode;
+       }
+       return null;
+    }
+    
+    
     /**
      * graph $path { } switch producer p to np = producer($path) add RESTORE(p) after this graph
      * exp

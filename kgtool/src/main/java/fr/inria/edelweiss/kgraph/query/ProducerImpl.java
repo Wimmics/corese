@@ -741,17 +741,24 @@ public class ProducerImpl implements Producer {
         IDatatype dt = (IDatatype) node.getValue();
         boolean b = dt.getObject() != null 
                 && dt.getObject() instanceof Graph;
-        return b;
+        if (b){
+            return true;
+        }
+        return graph.getNamedGraph(node.getLabel()) != null;
     }
 
     @Override
     public Producer getProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
         Object obj = dt.getObject();
-        if (obj == null || ! (obj instanceof Graph)){
-            return null;
+        if (obj != null && (obj instanceof Graph)){
+            return new ProducerImpl((Graph) obj);
         }
-        return new ProducerImpl((Graph) obj);
+        Graph g = graph.getNamedGraph(node.getLabel());
+        if (g != null){
+            return new ProducerImpl(g);
+        }
+        return null;
     }
     
 }

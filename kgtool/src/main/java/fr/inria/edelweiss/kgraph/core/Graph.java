@@ -134,6 +134,8 @@ public class Graph //implements IGraph
         private String name;
 
 	private boolean hasTag = false;
+
+        public static final String SYSTEM = ExpType.KGRAM + "system";
 	
 	// SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
 
@@ -2386,28 +2388,8 @@ public class Graph //implements IGraph
 	}
 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
+    public Graph getNamedGraph(String name){
+        return null;
+    }
 	
 }

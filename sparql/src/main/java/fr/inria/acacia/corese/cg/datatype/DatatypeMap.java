@@ -455,6 +455,10 @@ public class DatatypeMap implements Cst, RDF {
 		IDatatype dt = CoreseDatatype.create(JavaType, datatype, label, "");
 		return dt;
 	}
+        
+        public static IDatatype createObject(String name){
+            return createLiteral(name, XMLLITERAL, null);
+        }
 	
 
 	/**

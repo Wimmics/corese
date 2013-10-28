@@ -151,16 +151,28 @@ public class Construct
 	 * Construct graph according to query and mapping 
 	 */
 	public Graph construct(Mappings lMap, Graph g){
-		graph = g;
-		init();
-		//Node gNode = defaultGraph;
-                Node gNode = g.getResourceNode(dtDefaultGraph, true, false);
-
-		if (isDelete) gNode = null;
-		Exp exp = query.getConstruct();
+            	Exp exp = query.getConstruct();
 		if (isDelete){
 			exp = query.getDelete();
 		}
+                
+                graph = g;
+                
+                if (exp.first().isGraph()){
+                    // draft: graph kg:system { }
+                    // in GraphStore
+			Node gNode = exp.first().getGraphName();
+                        if (gNode.isConstant() 
+                                && graph.getNamedGraph(gNode.getLabel()) != null){
+                            graph = graph.getNamedGraph(gNode.getLabel());
+                        }
+                }
+                               
+		init();
+		//Node gNode = defaultGraph;
+                Node gNode = graph.getResourceNode(dtDefaultGraph, true, false);
+
+		if (isDelete) gNode = null;
 		
 		for (Mapping map : lMap){
 			// each map has its own blank nodes:

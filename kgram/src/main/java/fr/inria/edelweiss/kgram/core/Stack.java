@@ -81,7 +81,12 @@ public class Stack extends ArrayList<Exp> implements ExpType {
 		while (size()-1 > n){
 			remove(size()-1);
 		}
-		set(n, exp);
+                if (size()-1 == n){
+                    set(n, exp);
+                }
+                else {
+                    add(exp);
+                }
 	}
 	
 	/**

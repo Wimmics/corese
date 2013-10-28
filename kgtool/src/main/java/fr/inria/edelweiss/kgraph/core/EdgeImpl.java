@@ -203,7 +203,7 @@ public class EdgeImpl implements Edge, Entity {
      */
     public void setProvenance(Object obj) {
         if (!(obj instanceof Node)) {
-            Node prov = DatatypeMap.createLiteral("provenance", RDF.XMLLITERAL, null);
+            Node prov = DatatypeMap.createObject("provenance");
             prov.setObject(obj);
             obj = prov;
         }

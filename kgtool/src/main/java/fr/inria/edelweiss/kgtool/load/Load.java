@@ -332,12 +332,18 @@ public class Load
 		load(stream, Entailment.DEFAULT);
 	}
 
-	public void load(InputStream stream, String source) throws LoadException{
+        public void load(InputStream stream, String source) throws LoadException{
+            load(stream, source, source);
+        }
+        
+        
+	public void load(InputStream stream, String source, String path) throws LoadException{
 		log("stream");
 		if (source == null) source = Entailment.DEFAULT;
+                if (path == null) path = Entailment.DEFAULT;
 		try {
 			Reader read = reader(stream);
-			synLoad(read, source, source, source);
+			synLoad(read, path, source, source);
 		} catch (UnsupportedEncodingException e) {
 			throw new LoadException(e);
 		}

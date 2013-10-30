@@ -1,0 +1,2 @@
+kg:kgram kg:version "3.0.22" ;
+  kg:date "2013-10-30"^^xsd:date

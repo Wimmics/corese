@@ -32,7 +32,9 @@ public interface Evaluator {
 	 * @return
 	 */
 	boolean test(Filter f, Environment e);
-	
+        
+	boolean test(Filter f, Environment e, Producer p);
+
 	/**
 	 * Evaluate a filter and return a Node
 	 * use case: select fun(?x) as ?y

@@ -708,6 +708,10 @@ public class PPrinter {
         String ns = NSManager.namespace(type);
         return table.get(ns);
     }
+    
+    public static PPrinterTable getTable(){
+        return table;
+    }
 
     /**
      * Load templates from directory (.rq) or from a file (.rul)

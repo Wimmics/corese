@@ -29,6 +29,12 @@ public class EvaluatorDefault implements Evaluator {
 		// TODO Auto-generated method stub
 		return true;
 	}
+        
+        public boolean test(Filter f, Environment e, Producer p) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+       
 
 	@Override
 	public Mappings eval(Filter f, Environment e, List<Node> nodes) {

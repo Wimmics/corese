@@ -22,7 +22,10 @@ public class TTest {
 //	static String root = "/home/corby/workspace/kgengine/src/test/resources/data/";
 //	static String text = "/home/corby/workspace/kgengine/src/test/resources/text/";
 
-	
+	//static String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
+        static String root = data;
+        static String text = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/text/";
+
 	static Graph graph;
 	
 	@BeforeClass

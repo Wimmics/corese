@@ -8,7 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.QueryGraphVisitor;
-import fr.inria.edelweiss.kgraph.core.EdgeCore;
+import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
 /**
@@ -42,11 +42,11 @@ public class QGVisitor implements QueryGraphVisitor {
 	
 	public Entity visit(Entity ent) {
 		
-		if (! (ent.getEdge() instanceof EdgeCore)){
+		if (! (ent.getEdge() instanceof EdgeImpl)){
 			return ent;
 		}
 		
-		EdgeCore edge = (EdgeCore) ent.getEdge();
+		EdgeImpl edge = (EdgeImpl) ent.getEdge();
 	
 		for (int i = 0; i<ent.nbNode(); i++){
 			Node n = ent.getNode(i);

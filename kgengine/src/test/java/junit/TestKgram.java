@@ -67,13 +67,17 @@ public class TestKgram extends TestSuite
     		  displayResult =  true;
     		  for (int i = 0; i < 1; i++) {
 
-    			  suite.addTest(new CoreseTest2(true, "testQuery", corese,
-					"select * where { ?x c:Designation ?val  " +
-					"filter (?x = <http://www.inria.fr/> && ?val != <http://www.inria.fr> )}", 6));
-			
-    		  }
-    	  }
+    			query =
+"select * (count(*) as ?c)  where {" +
+"{select * where {?x rdf:rest*/rdf:first ?y }}"+
+"minus {?x rdf:first ?y} "+
+"filter(! exists{?x rdf:first ?y}) "+
+"filter(?y  in (?x , ?y))}";
 
+suite.addTest(new CoreseTest2("testValue", corese, query, "?c", 6));
+
+                  }
+          }
         
         
       else for (int i=0; i<1; i++) {

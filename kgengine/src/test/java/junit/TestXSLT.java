@@ -9,8 +9,10 @@ import fr.inria.edelweiss.kgtool.print.XSLTQuery;
 
 class TestXSLT {
 
-	static final String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+	//static final String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+        static String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
 
+        
 	public static void main(String args[]){
 
 		new TestXSLT().process();

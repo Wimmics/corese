@@ -11,7 +11,6 @@ import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.rdf.EdgeExtend;
 
 /**
  * Implement GraphListener to listen to edge insert and delete
@@ -40,10 +39,58 @@ public class GListener implements GraphListener, Tagger {
 	// The list of target peers to broadcast
 	List<Graph> list;
 	
-	
+	private List<Operation> store;
+
+        
+    private Operation getOperation() {
+        return  store.get(store.size()-1);
+    }
+        
+        
+        class Operation {
+            List<Entity> delete, insert;
+            
+            Operation(){
+                delete = new ArrayList<Entity>();
+                insert = new ArrayList<Entity>();
+            }
+            
+            public String toString() {
+                StringBuffer sb = new StringBuffer();
+                if (delete.size()>0){
+                    sb.append("delete:\n");
+                    sb.append(getDelete());
+                    sb.append("\n");
+                }
+                if (insert.size()>0){
+                    sb.append("insert:\n");
+                    sb.append(getInsert());
+                    sb.append("\n");
+                }
+                return sb.toString();
+            }
+            
+            void delete(Entity ent){
+                delete.add(ent);
+            }
+            
+            void insert(Entity ent){
+                insert.add(ent);
+            }
+            
+            List<Entity> getDelete(){
+                return delete;
+            }
+            
+            List<Entity> getInsert(){
+                return insert;
+            }
+            
+        }
 	
 	GListener(){
-		list = new ArrayList<Graph>();
+		list   = new ArrayList<Graph>();
+                store = new ArrayList<Operation>();
 		id = count++;
 		key = id + ".";
 		tag = 0;
@@ -86,7 +133,26 @@ public class GListener implements GraphListener, Tagger {
 		for (Graph gg : list){
 			gg.copy(ent);
 		}
+                
+                getOperation().insert(ent);
 	}
+        
+        
+        /*
+	 * Graph declare that a delete has been successfully performed
+	 * Broadcast to peers
+	 * The triple has a unique tag
+	 */
+	public void delete(Graph g, Entity ent) {
+		System.out.println(id + " delete: " + ent);
+		for (Graph gg : list){	
+			//update(gg, ent, false);
+			gg.delete(ent);
+		}
+                getOperation().delete(ent);
+
+	}
+	
 	
 	
 	/**
@@ -109,8 +175,8 @@ public class GListener implements GraphListener, Tagger {
 	
 	
 	String toQuery(Entity ent, boolean insert){
-		if (ent instanceof EdgeExtend){
-			String str = ((EdgeExtend)ent).toParse();
+		if (ent instanceof EdgeImpl){
+			String str = ((EdgeImpl)ent).toParse();
 			StringBuffer sb = new StringBuffer();
 			sb.append((insert) ? INSERT_DATA : DELETE_DATA);
 			sb.append(" { ");
@@ -121,18 +187,6 @@ public class GListener implements GraphListener, Tagger {
 		return  null;
 	}
 
-	/*
-	 * Graph declare that a delete has been successfully performed
-	 * Broadcast to peers
-	 * The triple has a unique tag
-	 */
-	public void delete(Graph g, Entity ent) {
-		System.out.println(id + " delete: " + ent);
-		for (Graph gg : list){	
-			//update(gg, ent, false);
-			gg.delete(ent);
-		}
-	}
 	
 
 	/**
@@ -148,12 +202,22 @@ public class GListener implements GraphListener, Tagger {
 
     @Override
     public void start(Graph g, Query q) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(q);       
+        store.add(new Operation());
     }
 
     @Override
     public void finish(Graph g, Query q) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         
+   }
+
+   
+    
+    List<Operation> getOperations() {
+        return store;
     }
+
+
+    
 
 }

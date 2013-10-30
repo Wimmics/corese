@@ -198,9 +198,9 @@ public class TestQueryDBPedia {
 			Mappings map = exec.query(query);
 			//ResultFormat f = ResultFormat.create(map);
 			//System.out.println(f);
-			assertEquals("Result", 7, map.size());
+			assertEquals("Result", 6, map.size());
 			Graph gg = (Graph) map.getGraph();
-			assertEquals("Result", 7, gg.size());
+			assertEquals("Result", 6, gg.size());
 
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
@@ -230,7 +230,7 @@ public class TestQueryDBPedia {
 			Mappings map = exec.query(query);
 			ResultFormat f = ResultFormat.create(map);
 			//System.out.println(f);
-			assertEquals("Result", 7, map.size());
+			assertEquals("Result", 6, map.size());
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -269,6 +269,8 @@ public class TestQueryDBPedia {
 			"prefix foaf: <http://xmlns.com/foaf/0.1/> " +
 			"select debug * where {" +
 			
+                        	"?x foaf:knows ?y " +
+                       
 				"service <http://fr.dbpedia.org/sparql> {" +
 					"select * where {" +
 					"?x rdfs:label ?n " +
@@ -276,7 +278,6 @@ public class TestQueryDBPedia {
 					"} limit 20" +
 				"}" +
 				
-				"?x foaf:knows ?y " +
 
 				"service <http://fr.dbpedia.org/sparql> {" +
 					"select * where {" +
@@ -297,7 +298,7 @@ public class TestQueryDBPedia {
 			Mappings map = exec.query(query);
 			System.out.println(map);
 			
-			assertEquals("Result", 1, map.size());
+			assertEquals("Result", 12, map.size());
 			
 		} 
 		catch (EngineException e) {

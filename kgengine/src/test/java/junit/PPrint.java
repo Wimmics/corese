@@ -11,7 +11,9 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
@@ -21,36 +23,33 @@ import fr.inria.edelweiss.kgtool.print.PPrinter;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TemplateFormat;
 import fr.inria.edelweiss.kgtool.print.TemplatePrinter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PPrint {
 	
 //	static String root  = "/home/corby/workspace/kgengine/src/test/resources/data/";
-        static String root  = PPrint.class.getClassLoader().getResource("data").getPath()+"/";
 //	static String data  = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-        static String data  = PPrint.class.getClassLoader().getResource("data").getPath()+"/";
 //	static String cos   = "/home/corby/workspace/corese/data/";
+        
+    
+    //relative path for data
+     //static String root  = PPrint.class.getClassLoader().getResource("data").getPath()+"/";
+//	static String data  = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+       // static String data  = PPrint.class.getClassLoader().getResource("data").getPath()+"/";
+    
+        static String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
+        static String root  = data;
+        static String srclib = "/user/corby/home/NetBeansProjects/kgram/trunk/kgtool/src/main/resources/template/";
+        static String tgtlib = "/user/corby/home/NetBeansProjects/kgram/trunk/kgtool/target/classes/fr/inria/edelweiss/resource/template/";
 
 	static Graph graph;
-	
+		
 
-	//ld.load(root + "pprint/owldata/data.ttl");
-	//ld.load(data + "ign/ontology/carto2.owl");
-	//ld.load(cos + "eWOK_Ref/eWOK-Ontology/dateTimeData/ontologies");
-	//ld.load(cos + "eWOK_Ref/eWOK-Ontology/geologicalData/ontologies");
-	//ld.load(cos + "eWOK_Ref/eWOK-Ontology/interpretationData/ontologies");
-	//ld.load("http://www.heppnetz.de/ontologies/goodrelations/v1.owl");
-
-	//nsm.definePrefix("ex",  "http://www.example.org#");
-	//nsm.definePrefix("ign", "http://www.semanticweb.org/ontologies/2008/11/Ontology1228129138638.owl#");	
-	//nsm.definePrefix("ifp", "http://www.ifp.fr/GeologicalTimeOntology#");
-	//nsm.definePrefix("go", "http://purl.org/goodrelations/v1#");
-
-	//@Test
 	public void translate(){
 		TemplatePrinter p =  
-				TemplatePrinter.create(
-						root + "math/template", 
-						root + "math/mat.rul");
+		TemplatePrinter.create(root + "spin/template", root + "pprint/lib/spin.rul");
+		//TemplatePrinter.create(root + "spin/template", lib + "spin.rul");
 		try {
 			p.process();
 		} catch (IOException e) {
@@ -59,8 +58,123 @@ public class PPrint {
 			e.printStackTrace();
 		}
 	}
+        
 	
-	
+		@Test
+
+        public void pplib(){
+                String lib = srclib;
+                
+                translate(root + "template/spin/template",  lib + "spin.rul");
+		translate(root + "template/sql/template",   lib + "sql.rul");
+		translate(root + "template/owl/template",   lib + "owl.rul");
+		translate(root + "template/turtle/template",lib + "turtle.rul");
+
+                translate(root + "typecheck/template",     lib + "typecheck.rul");       
+	}
+       
+        
+        void translate(String src, String tgt){
+            	TemplatePrinter p = TemplatePrinter.create(src,  tgt);
+                try {
+			p.process();                       
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (LoadException e) {
+			e.printStackTrace();
+		}
+        }
+        
+        
+        
+        
+        public void testSPIN() {
+
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+
+        try {
+            ld.loadWE(root + "spin/data");
+        } catch (LoadException e1) {
+            e1.printStackTrace();
+        }
+
+       
+        QueryProcess exec = QueryProcess.create(g);
+
+            PPrinter tf = PPrinter.create(g);
+//          tf.setCheck(true);
+//          tf.setDetail(true);
+            tf.setTemplates(root + "spin/spin.rul");
+            tf.setTemplates("ftp://ftp-sop.inria.fr/wimmics/soft/pprint/spin/spin.rul");
+
+            NSManager nsm = NSManager.create();
+            nsm.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
+            tf.setNSM(nsm);
+
+            //tf.setDebug(true);
+            System.out.println("res: ");
+            //String str = tf.toString();
+
+            IDatatype dd = tf.pprint(ExpType.KGRAM + "start");
+            System.out.println(dd.getLabel());
+           
+//            try {
+//                str = nsm.toString() + "\n" + str;
+//                Query qq = exec.compile(str);
+//                System.out.println(qq.getAST());
+//            } catch (EngineException ex) {
+//                Logger.getLogger(PPrint.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            
+            
+            if (! true) {
+                String q =
+                        "prefix sp: <http://spinrdf.org/sp#> "
+                        + "prefix foaf: <http://xmlns.com/foaf/0.1/>"
+                        + "select ?t (kg:templateWith(<" + root + "spin/template>" + ", kg:start, ?q) as ?pp) "
+                        + "where { ?q a ?t "
+                        + "filter(?t in (sp:Select, sp:Construct, sp:Ask, sp:Describe)) "
+                        + "filter(not exists {?a ?p ?q})}";
+                try {
+                    Mappings map = exec.query(q);
+                    System.out.println(map);
+                    exec.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
+
+                    for (Mapping m : map) {
+                        IDatatype dt = (IDatatype) m.getValue("?pp");
+                        Query qq = exec.compile(dt.getLabel());
+                        System.out.println(qq.getAST());
+                    }
+                } catch (EngineException ex) {
+                    Logger.getLogger(PPrint.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+    }
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 	
 	public void testTemp(){
 		Graph g = Graph.create();
@@ -102,7 +216,6 @@ public class PPrint {
 		
 		
 	}
-	
 	
 	
 	public void testPPOWL2(){
@@ -169,7 +282,7 @@ public class PPrint {
 		
 	}
 	
-	
+
 	public void testPPOWL(){
 		Graph g = Graph.create();
 		Load ld = Load.create(g);
@@ -297,7 +410,6 @@ public class PPrint {
 		
 	}
 	
-	
 	public void testRec(){
 		Graph g = Graph.create();
 //		Load ld = Load.create(g);
@@ -306,7 +418,7 @@ public class PPrint {
 		PPrinter pp = PPrinter.create(g, root + "pprint/test");
 		
 		
-		IDatatype dt = pp.template(ExpType.KGRAM + "rec", DatatypeMap.newInstance(100));
+		IDatatype dt = pp.template(ExpType.KGRAM + "rec", DatatypeMap.newInstance(12));
 		System.out.println(dt.getLabel());
 		
 	}
@@ -338,7 +450,6 @@ public class PPrint {
 	}
 
 
-	@Test
 
 	public void testMath(){
 		String latex = "/home/corby/AData/math/latex/";
@@ -388,7 +499,7 @@ public class PPrint {
 	}
 	
 	
-	public void testSPIN(){
+	public void testSPIN2(){
 		Graph g = Graph.create(true);
 		Load ld = Load.create(g);
 		QueryProcess.definePrefix("ex", "http://www.example.org/");

@@ -22,7 +22,6 @@ import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.event.ResultListener;
-import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
@@ -539,14 +538,14 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
-    private PathFinder getPathFinder(Exp exp) {
+    private PathFinder getPathFinder(Exp exp, Producer p) {
         List<PathFinder> lp = lPathFinder;
         for (PathFinder pf : lp) {
             if (pf.getEdge() == exp.getEdge()) {
                 return pf;
             }
         }
-        PathFinder pathFinder = PathFinder.create(producer, match, evaluator, query);
+        PathFinder pathFinder = PathFinder.create(p, match, evaluator, query);
         //pathFinder.setDefaultBreadth(false);
         if (hasEvent) {
             pathFinder.set(manager);
@@ -850,7 +849,7 @@ public class Eval implements ExpType, Plugin {
                     break;
 
                 case PATH:
-                    backtrack = path(gNode, exp, stack, n, option);
+                    backtrack = path(p, gNode, exp, stack, n, option);
                     break;
 
 
@@ -1549,7 +1548,7 @@ public class Eval implements ExpType, Plugin {
         env.setGraphNode(gNode);
         //memory.setStack(stack);
         //exp.getFilter().getExp().isExist();
-        boolean success = evaluator.test(exp.getFilter(), env);
+        boolean success = evaluator.test(exp.getFilter(), env, p);
         env.setGraphNode(null);
         //memory.setStack(null);
 
@@ -1586,9 +1585,9 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    private int path(Node gNode, Exp exp, Stack stack, int n, boolean option) {
+    private int path(Producer p, Node gNode, Exp exp, Stack stack, int n, boolean option) {
         int backtrack = n - 1, evENUM = Event.ENUM;
-        PathFinder path = getPathFinder(exp);
+        PathFinder path = getPathFinder(exp, p);
         Filter f = null;
         Memory env = memory;
         Query qq = query;
@@ -1612,7 +1611,7 @@ public class Eval implements ExpType, Plugin {
 
             if (success) {
                 isSuccess = true;
-                backtrack = eval(gNode, stack, n + 1, option);
+                backtrack = eval(p, gNode, stack, n + 1, option);
                 env.pop(map);
                 map.setRead(true);
 

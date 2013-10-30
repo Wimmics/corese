@@ -30,7 +30,7 @@ public class CRDT {
 	/**
 	 * 1) INSERT DATA (ground triples)
 	 */
-	public void testCRDT1(){			
+    public void testCRDT1(){			
 
 		Graph g1 = Graph.create();	
 		g1.init();
@@ -48,16 +48,67 @@ public class CRDT {
 		g1.addListener(gl1);
 		
 		QueryProcess exec1 = QueryProcess.create(g1);
-		
+		exec1.setDetail(true);
 		String q1 = QueryLoad.create().read(data + "ex1.ru");
 		
 		try {
-			exec1.query(q1);
+			Mappings map = exec1.query(q1);
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+    
+    
+    
+    
+    /**
+	 * 1) INSERT DATA (ground triples) && copy
+	 */
+    @Test
+    public void testCRDTcopy(){			
+
+		Graph g1 = Graph.create();	
+		g1.init();
+
+		// Listener 
+		GListener gl1 = GListener.create();
+						
+		// Listener is also a tagger (in this implementation, to simplify the code)
+		g1.setTagger(gl1);
+				
+		Load ld = Load.create(g1);
+		ld.load(data + "ex1.ttl");
+		
+		// listen and broadcast
+		g1.addListener(gl1);
+		
+		QueryProcess exec1 = QueryProcess.create(g1);
+		exec1.setDetail(true);
+		String q1 = QueryLoad.create().read(data + "ex1.ru");
+		String q2 = QueryLoad.create().read(data + "copy.ru");
+
+		try {
+			Mappings map = exec1.query(q1);
+                        map = exec1.query(q2);
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 	
 	/**
@@ -123,11 +174,15 @@ public class CRDT {
 		g1.addListener(gl1);
 		
 		QueryProcess exec1 = QueryProcess.create(g1);
-		
+		//exec1.setDebug(true);
+                exec1.setDetail(true);
 		String q1 = QueryLoad.create().read(data + "ex3.ru");
 		
 		try {
-			exec1.query(q1);
+			Mappings m = exec1.query(q1);
+                        System.out.println("delete: " );
+                         System.out.println(m.nbDelete());
+                       System.out.println(m.getDelete());
 			
 			String query = "select * where {?x ?p ?y}";
 			Mappings map= exec1.query(query);
@@ -147,6 +202,7 @@ public class CRDT {
 	/**
 	 * 2.1) DELETE DATA (non-existent triples)
 	 */
+
 	public void testCRDT4(){			
 
 		Graph g1 = Graph.create();	
@@ -165,11 +221,11 @@ public class CRDT {
 		g1.addListener(gl1);
 		
 		QueryProcess exec1 = QueryProcess.create(g1);
-		
+		exec1.setDetail(true);
 		String q1 = QueryLoad.create().read(data + "ex3.ru");
 		
 		try {
-			exec1.query(q1);
+			Mappings m = exec1.query(q1);
 			
 			String query = "select * where {?x ?p ?y}";
 			Mappings map= exec1.query(query);
@@ -187,6 +243,7 @@ public class CRDT {
 
 	 * Dans votre exemple il y a des triplets différents avec le même ID ???
 	 */
+
 	public void testCRDT5(){			
 
 		Graph g1 = Graph.create();	
@@ -225,6 +282,7 @@ public class CRDT {
 	/**
 	 * 3.1 Delete
 	 */
+
 	public void testCRDT6(){			
 
 		Graph g1 = Graph.create();	
@@ -473,7 +531,7 @@ public class CRDT {
 	/**
 	 * Two deletes
 	 */
-	@Test
+
 	public void testCRDT11(){			
 
 		Graph g1 = Graph.create();	
@@ -569,6 +627,7 @@ public class CRDT {
 	/**
 	 * 4) Insert and Delete/Insert
 	 */
+
 	public void testCRDT13(){			
 
 		Graph g1 = Graph.create();	

@@ -48,6 +48,10 @@ public class TestJunit {
 		ld.load(data + "comma/model.rdf");
 		init2();		
 	}
+        
+        int fun(int x){
+            return x;
+        }
 	
 	static void init2(){
 		String init = "insert data {" +

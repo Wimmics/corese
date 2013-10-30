@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import org.junit.Ignore;
 
 @Ignore
@@ -306,6 +307,9 @@ public class CoreseTest2 extends TestCase {
 		QueryProcess exec = QueryProcess.create(graph);
 		//exec.set(SorterImpl.create(graph));
 		try {
+                    
+//                        SPINProcess sp = SPINProcess.create();
+//                        String str = sp.toSpinSparql(query);
 			Mappings lMap = exec.query(query);
 			
 			if (TestKgram.displayResult){
@@ -333,8 +337,10 @@ public class CoreseTest2 extends TestCase {
 	
 	
 	void init(){
-//		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-                String data = CoreseTest2.class.getClassLoader().getResource("data").getPath()+"/";
+		//String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+                //String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
+                String data = CoreseTest2.class.getClassLoader().getResource("data").getPath() + "/";
+
 		graph = Graph.create(true);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
 
@@ -359,6 +365,7 @@ public class CoreseTest2 extends TestCase {
 	void init2(){
 //		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
                 String data = CoreseTest2.class.getClassLoader().getResource("data").getPath()+"/";
+
 		graph = Graph.create(true);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
 

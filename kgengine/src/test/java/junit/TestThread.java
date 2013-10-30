@@ -13,7 +13,9 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
  */
 public class TestThread extends Thread {
 	
-	static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+	//static String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+        static String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
+
 	Graph graph;
 	int index;
 	

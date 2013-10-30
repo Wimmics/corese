@@ -95,8 +95,12 @@ public class Interpreter implements Evaluator, ExprType {
 	
 
 	public boolean test(Filter f, Environment env) {
+            return test(f, env, producer);
+        }
+        
+	public boolean test(Filter f, Environment env, Producer p) {
 		Expr exp = f.getExp();
-		Object value = eval(exp, env);
+		Object value = eval(exp, env, p);
 		if (value == null) return false;
 		return proxy.isTrue(value);
 	}
@@ -118,6 +122,10 @@ public class Interpreter implements Evaluator, ExprType {
 	}
 	
 	public Object eval(Expr exp, Environment env){
+            return eval(exp, env, producer);
+        }
+
+        public Object eval(Expr exp, Environment env, Producer p){
 		//System.out.println("Interpret: " + exp + " " + env.getClass().getName());
 		switch (exp.type()){
 		
@@ -128,26 +136,26 @@ public class Interpreter implements Evaluator, ExprType {
 			if (node == null) return null;
 			return node.getValue();
 			
-		case BOOLEAN: 	return connector(exp, env);
-		case TERM: 		return term(exp, env);
-		case FUNCTION: 	return function(exp, env);
+		case BOOLEAN: 	return connector(exp, env, p);
+		case TERM: 	return term(exp, env, p);
+		case FUNCTION: 	return function(exp, env, p);
 		}
 		return null;
 	}
 
 
 
-	private Object connector(Expr exp, Environment env) {
+	private Object connector(Expr exp, Environment env, Producer p) {
 		switch (exp.oper()){
-		case AND: 	return and(exp, env);
-		case OR: 	return or(exp, env);
-		case NOT: 	return not(exp, env);
+		case AND: 	return and(exp, env, p);
+		case OR: 	return or(exp, env,  p);
+		case NOT: 	return not(exp, env, p);
 		}	
 		return null;
 	}
 
-	private Object not(Expr exp, Environment env) {
-		Object o = eval(exp.getExp(0), env);
+	private Object not(Expr exp, Environment env, Producer p) {
+		Object o = eval(exp.getExp(0), env, p);
 		if (o == null) return null;
 		if (! proxy.isTrueAble(o)) return null;
 		if (proxy.isTrue(o)){
@@ -158,10 +166,10 @@ public class Interpreter implements Evaluator, ExprType {
 		}
 	}
 
-	private Object or(Expr exp, Environment env) {
+	private Object or(Expr exp, Environment env, Producer p) {
 		boolean error = false;
 		for (Expr arg : exp.getExpList()){
-			Object o = eval(arg, env);
+			Object o = eval(arg, env, p);
 			if (o!=null){
 				if (! proxy.isTrueAble(o)) error = true;
 				else if (proxy.isTrue(o)) return TRUE;
@@ -174,9 +182,9 @@ public class Interpreter implements Evaluator, ExprType {
 		return FALSE;	
 	}
 
-	private Object and(Expr exp, Environment env) {
+	private Object and(Expr exp, Environment env, Producer p) {
 		for (Expr arg : exp.getExpList()){
-			Object o = eval(arg, env);
+			Object o = eval(arg, env, p);
 			if (o == null) return null; 
 			if (! proxy.isTrueAble(o)) return null;
 			if (! proxy.isTrue(o)) return FALSE;
@@ -185,7 +193,7 @@ public class Interpreter implements Evaluator, ExprType {
 	}
 
 	
-	Object function(Expr exp, Environment env) {
+	Object function(Expr exp, Environment env, Producer p) {
 		
 		switch (exp.oper()){
 		
@@ -202,16 +210,16 @@ public class Interpreter implements Evaluator, ExprType {
 		
 		case COALESCE:
 			for (Expr arg : exp.getExpList()){
-				Object o = eval(arg, env);
+				Object o = eval(arg, env, p);
 				if (o != null) return o;
 			}
 			return null;
 			
 		case EXIST:
-			return exist(exp, env);
+			return exist(exp, env, p);
 			
 		case IF:
-			return ifthenelse(exp, env);
+			return ifthenelse(exp, env, p);
 			
 		case LENGTH: {
 			Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
@@ -242,7 +250,7 @@ public class Interpreter implements Evaluator, ExprType {
 		
 		
 		case SELF:
-			return eval(exp.getExp(0), env);
+			return eval(exp.getExp(0), env, p);
 		
 		case CONCAT:
 		case EXTERNAL:
@@ -257,21 +265,21 @@ public class Interpreter implements Evaluator, ExprType {
 				return proxy.function(exp, env);
 
 			case 1: 
-				Object val = eval(exp.getExp(0), env);
+				Object val = eval(exp.getExp(0), env, p);
 				if (val == null) return null;
 				return proxy.function(exp, env, val);
 
 			case 2: 
-				Object value1 = eval(exp.getExp(0), env);
+				Object value1 = eval(exp.getExp(0), env, p);
 				if (value1 == null) return null;
-				Object value2 = eval(exp.getExp(1), env);
+				Object value2 = eval(exp.getExp(1), env, p);
 				if (value2 == null) return null;
 				return proxy.function(exp, env, value1, value2);
 			}
 
 		}
 		
-		Object[] args = evalArguments(exp, env);
+		Object[] args = evalArguments(exp, env, p);
 		if (args == null) return null;		
 		Object res = proxy.eval(exp, env, args);
 		return res;
@@ -311,11 +319,11 @@ public class Interpreter implements Evaluator, ExprType {
 
 	}
 
-	Object[] evalArguments(Expr exp, Environment env){
+	Object[] evalArguments(Expr exp, Environment env, Producer p){
 		Object[] args = new Object[exp.arity()];
 		int i = 0;
 		for (Expr arg : exp.getExpList()){
-			Object o = eval(arg, env);
+			Object o = eval(arg, env, p);
 			if (o == null) return null;
 			args[i++] = o;
 		}
@@ -323,18 +331,18 @@ public class Interpreter implements Evaluator, ExprType {
 	}
 
 	
-	Object term(Expr exp, Environment env){
+	Object term(Expr exp, Environment env, Producer p){
 		
 		switch (exp.oper()){
 		
 		case IN:
-			return in(exp, env);
+			return in(exp, env, p);
 		}
 		
-		Object o1 = eval(exp.getExp(0), env);
+		Object o1 = eval(exp.getExp(0), env, p);
 		if (o1 == null) return null;	
 		
-		Object o2 = eval(exp.getExp(1), env);
+		Object o2 = eval(exp.getExp(1), env, p);
 		if (o2 == null) return null;
 		
 		Object res = proxy.eval(exp, env, o1, o2);
@@ -342,15 +350,15 @@ public class Interpreter implements Evaluator, ExprType {
 	}
 	
 	
-	Object in(Expr exp, Environment env){
-		Object o1 = eval(exp.getExp(0), env);
+	Object in(Expr exp, Environment env, Producer p){
+		Object o1 = eval(exp.getExp(0), env, p);
 		if (o1 == null) return null;
 		
 		boolean error = false;
 		Expr list = exp.getExp(1);
 		
 		for (Expr arg : list.getExpList()){
-			Object o2 = eval(arg, env);
+			Object o2 = eval(arg, env, p);
 			if (o2 == null){
 				error = true;
 			}
@@ -373,17 +381,18 @@ public class Interpreter implements Evaluator, ExprType {
 	 * 
 	 * filter(! exists {PAT})
 	 */
-	Object exist(Expr exp, Environment env){
+	Object exist(Expr exp, Environment env, Producer p){
 		if (env instanceof Memory){
 			Exp pat = env.getQuery().getPattern(exp);
 			Memory memory = (Memory) env;
 			Node gNode = memory.getGraphNode();
 			Eval kgram = memory.getEval();
-			Eval eval = kgram.copy(kgram.getMemory(memory, pat), producer, this);
+			Eval eval = kgram.copy(kgram.getMemory(memory, pat), p, this);
 			eval.setSubEval(true);
 			eval.setLimit(1);
 			Mappings lMap = eval.subEval(memory.getQuery(), gNode, Stack.create(pat), 0);
 			boolean b = lMap.size() > 0;
+
 			if (b) return TRUE;
 			else return FALSE;
 		}
@@ -393,17 +402,17 @@ public class Interpreter implements Evaluator, ExprType {
 	}
 	
 
-	Object ifthenelse(Expr exp, Environment env){
-		Object test = eval(exp.getExp(0), env);
+	Object ifthenelse(Expr exp, Environment env, Producer p){
+		Object test = eval(exp.getExp(0), env, p);
 		Object value = null;
 		if (test == null){
 			return null;
 		}
 		if (proxy.isTrue(test)){
-			value = eval(exp.getExp(1), env);
+			value = eval(exp.getExp(1), env, p);
 		}
 		else if (exp.arity() == 3){
-			value = eval(exp.getExp(2), env);
+			value = eval(exp.getExp(2), env, p);
 		}
 		return value;
 	}

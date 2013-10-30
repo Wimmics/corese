@@ -13,7 +13,7 @@ import java.util.HashMap;
  * @author Olivier Corby, Wimmics Inria I3S, 2013
  *
  */
-class PPrinterTable extends HashMap<String, String> {
+public class PPrinterTable extends HashMap<String, String> {
 
     HashMap<String, Boolean> table;
 

@@ -658,7 +658,7 @@ public class PathFinder
 	boolean test(Node node){
 		Node qNode = edge.getNode(index);
 		mem.push(qNode, node);
-		boolean test = evaluator.test(filter, mem);
+		boolean test = evaluator.test(filter, mem, producer);
 		mem.pop(qNode);
 		return test;
 	}

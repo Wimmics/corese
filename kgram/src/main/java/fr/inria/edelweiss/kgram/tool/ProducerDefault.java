@@ -44,14 +44,14 @@ public class ProducerDefault implements Producer {
 			Node src, Node start,
 			int index){
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Entity> ();
 	}
 
 	@Override
 	public Iterable<Node> getGraphNodes(Node node, List<Node> from,
 			Environment env) {
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Node> ();
 	}
 
 	
@@ -84,7 +84,7 @@ public class ProducerDefault implements Producer {
 	@Override
 	public List<Node> toNodeList(Object obj) {
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Node> ();
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class ProducerDefault implements Producer {
 	public Iterable<Entity> getNodes(Node node, List<Node> from, Edge edge,
 			Environment env, List<Regex> exp, int index) {
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Entity> ();
 	}
 
  @Override

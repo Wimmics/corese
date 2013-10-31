@@ -224,6 +224,7 @@ function sparql(sparqlQuery) {
 		data: {'query':sparqlQuery},
 		//dataType: "application/sparql-results+json",
 		dataType: "json",
+		crossDomain: true,
 		success: function(data, textStatus, jqXHR){
 			//console.log(data);
 			renderList(data);
@@ -249,18 +250,25 @@ function sparqlFed(sparqlQuery) {
 		headers: { 
         	Accept : "application/sparql-results+json"
     	},
-		url: rootURL + '/dqp/sparql',
+		// url: rootURL + '/dqp/sparql',
+		url: rootURL + '/dqp/sparqlprov',
 		data: {'query':sparqlQuery},
 		//dataType: "application/sparql-results+json",
 		dataType: "json",
+		crossDomain: true,
 		success: function(data, textStatus, jqXHR){
-			//console.log(data);
-			renderListFed(data);
+			// console.log(data);
+			renderListFed(data.mappings);
+			renderProv(data);
 			$('#btnQueryFed').attr("disabled", false);
 			$("#btnQueryFed").html("Query");
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			infoError("SPARQL querying failure: "+textStatus);
+			$('#tbResFed thead tr').remove();
+			$('#tbResFed tbody tr').remove();
+			$('#parProvGraph svg').remove();
+
 			console.log(errorThrown);
 			console.log(jqXHR);
 			$('#btnQueryFed').attr("disabled", false);
@@ -281,12 +289,13 @@ function testEndpoint(endpointURL, rowIndex){
 	var testQuery = "SELECT * where {?x ?p ?y} LIMIT 10"
 	$.ajax({
 		type: 'GET',
-		headers: { 
-        	Accept : "application/sparql-results+json"
-    	},
+		// headers: { 
+  //       	Accept : "application/sparql-results+json"
+  //   	},
 		url: endpointURL,
 		data: {'query':testQuery},
 		dataType: "json",
+		// crossDomain: true,
 		success: function(data, textStatus, jqXHR){
 			console.log(endpointURL+" responds to SPARQL queries");
 			//update the icon of the data source
@@ -333,6 +342,117 @@ function renderList(data) {
   		});
 		row = row + "</tr>";
 		$('#tbRes tbody').prepend(row); 
+	});
+}
+
+function renderProv(data) {
+
+	var provenance = data.provenance;
+	var mappings = data.mappings;
+
+	var sMaps = JSON.stringify(mappings);
+
+	$('#parProvGraph svg').remove();
+
+	var width = 960, height = 500;
+	var color = d3.scale.category20();
+
+	var force = d3.layout.force()
+    	.charge(-150)
+    	.linkDistance(40)
+    	.size([width, height]);
+
+	var svg = d3.select('#parProvGraph').append("svg")
+    	.attr("width", width)
+    	.attr("height", height);
+
+	force.nodes(provenance.nodes).links(provenance.edges).start();
+
+  	var link = svg.selectAll(".link")
+    	.data(provenance.edges)
+      	.enter().append("path")
+     	.attr("d", "M0,-5L10,0L0,5")
+     	// .enter().append("line")
+     	.attr("class", "link")
+     	.style("stroke-width",function(d) {
+    		if (d.label.indexOf("prov#") !== -1) {
+        		return 4;
+    		}
+      		return 4;
+      	})
+       	.on("mouseout", function(d, i) {
+        	d3.select(this).style("stroke", " #a0a0a0");
+       	})
+       	.on("mouseover", function(d, i) {
+          	d3.select(this).style("stroke", " #000000");
+       	});
+
+  	link.append("title")
+      	.text(function(d) { return d.label; });
+
+  	var node = svg.selectAll("g.node")
+      	.data(provenance.nodes)
+      	.enter().append("g")
+      	.attr("class", "node")
+      	.call(force.drag);
+
+  	node.append("title")
+    	.text(function(d) { return d.name; });
+	
+	node.append("circle")
+      	.attr("class", "node")
+      	.attr("r", function(d) {
+    		if (d.group === 0) {
+        		return 6;
+    		}
+      		return 12;
+      	})
+      	.style("stroke", function(d) { return color(d.group); })
+      	.style("stroke-width", 5)
+      	.style("stroke-width",function(d) {
+    		if (sMaps.indexOf(d.name) !== -1) {
+        		return 8;
+    		}
+      		return 3;
+      	})
+      // 	.style("stroke-dasharray",function(d) {
+    		// if (sMaps.indexOf(d.name) !== -1) {
+      //   		return "5,5";
+    		// }
+      // 		return "none";
+      // 	})
+      	// .style("fill", "white")
+      	.style("fill", function(d) { return color(d.group); })
+      	// .on("mouseout", function(d, i) {
+       //  	d3.select(this).style("fill", "white");
+      	// })
+      	// .on("mouseover", function(d, i) {
+       //  	d3.select(this).style("fill", function(d) { return color(d.group); });
+      	// }) ;
+	
+	node.append("svg:text")
+				.attr("text-anchor", "middle") 
+				// .attr("fill","white")
+				.style("pointer-events", "none")
+				.attr("font-size", "18px")
+				.attr("font-weight", "200" )
+				.text( function(d) { if ((sMaps.indexOf(d.name) !== -1) && (d.group !== 0)) { return d.name ;}  } ) ;
+
+  	force.on("tick", function() {
+    	link.attr("x1", function(d) { return d.source.x  ; })
+        	.attr("y1", function(d) { return d.source.y  ; })
+        	.attr("x2", function(d) { return d.target.x  ; })
+        	.attr("y2", function(d) { return d.target.y  ; });
+
+    	node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+    	link.attr("d", function(d) {
+    		var dx = d.target.x - d.source.x,
+        		dy = d.target.y - d.source.y,
+        		dr = Math.sqrt(dx * dx + dy * dy);
+    	
+    	return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+  		});
 	});
 }
 

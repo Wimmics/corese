@@ -12,15 +12,11 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
-import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,7 +46,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
  */
 public class DqpRestTest {
 
-    private String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
+    private final String sparqlQuery = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
             + "PREFIX dbpedia: <http://dbpedia.org/ontology/> \n"
             + "SELECT distinct ?x ?name ?date WHERE \n"
             + "{"
@@ -59,9 +55,9 @@ public class DqpRestTest {
             + "     FILTER (?name ~ 'Bobby')"
             //            + "} LIMIT 100";
             + "} ";
-    private static Logger logger = Logger.getLogger(DqpRestTest.class);
-    private static int port1 = 9081;
-    private static int port2 = 9082;
+    private final static Logger logger = Logger.getLogger(DqpRestTest.class);
+    private final static int port1 = 9098;
+    private final static int port2 = 9099;
     private static Process server1 = null;
     private static Server server2;
 
@@ -77,11 +73,11 @@ public class DqpRestTest {
         ProcessBuilder pb = new ProcessBuilder("java", "-Xmx512m", "-cp",
 //                "/Users/gaignard/devKgram/kgserver/target/kgserver-1.0.7-jar-with-dependencies.jar",
                 "./target/kgserver-1.0.7-jar-with-dependencies.jar",
-                "fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer", "-p", "9081", "&");
+                "fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer", "-p", String.valueOf(port1), "&");
         
         pb.redirectErrorStream(true);
         server1 = pb.start();
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         /////////////// Second server in this JVM
         URI webappUri1 = EmbeddedJettyServer.extractResourceDir("webapp", true);
@@ -172,7 +168,7 @@ public class DqpRestTest {
         System.out.println("Results in " + time + "ms");
         System.out.println("Results size " + dqpSize);
         System.out.println("");
-
+        
         assertEquals(60, map.size());
     }
     
@@ -193,5 +189,23 @@ public class DqpRestTest {
         String sparqlRes = serviceDQP.path("sparql").queryParam("query", sparqlQuery).accept("application/sparql-results+xml").get(String.class);
         int nbResults = StringUtils.countMatches(sparqlRes,"<result>");
         assertEquals(60, nbResults);
+    }
+    
+    @Test
+    public void RestApiProvTest() throws MalformedURLException, EngineException, URISyntaxException, LoadException {
+
+        ClientConfig config = new DefaultClientConfig();
+        Client client1 = Client.create(config);
+        WebResource serviceDQP = client1.resource(new URI("http://localhost:" + port2 + "/kgram/dqp"));
+
+        MultivaluedMap formData1 = new MultivaluedMapImpl();
+        formData1.add("endpointUrl", "http://localhost:" + port1 + "/kgram/sparql");
+        MultivaluedMap formData2 = new MultivaluedMapImpl();
+        formData2.add("endpointUrl", "http://localhost:" + port2 + "/kgram/sparql");
+        serviceDQP.path("configureDatasources").post(formData1);
+        serviceDQP.path("configureDatasources").post(formData2);
+
+        String sparqlRes = serviceDQP.path("sparqlprov").queryParam("query", sparqlQuery).accept("application/sparql-results+json").get(String.class);
+        assertTrue(sparqlRes.length() > 9500);
     }
 }

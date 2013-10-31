@@ -31,8 +31,8 @@ public class QueryProcessDQP extends QueryProcess {
 
     private boolean provEnabled = false;
 
-    private static Graph provGraph = Graph.create();
-    public static QueryProcess provQP = QueryProcess.create(provGraph);
+//    private static Graph provGraph = Graph.create();
+//    public static QueryProcess provQP = QueryProcess.create(provGraph);
 
     // several cost criterions
     // for each sent query, record the number of invocations
@@ -60,28 +60,28 @@ public class QueryProcessDQP extends QueryProcess {
         add(new RemoteProducerWSImpl(url, implem, this.isProvEnabled()));
 
         //provenance annotation
-        if (this.isProvEnabled()) {
-            String insertRemote = "PREFIX prov: <" + Util.provPrefix + "> insert data { <" + url.toString() + "> rdf:type prov:SoftwareAgent}";
-            try {
-                provQP.query(insertRemote);
-            } catch (EngineException ex) {
-                logger.error("Eror while inserting provenance: \n" + insertRemote);
-            }
-        }
+//        if (this.isProvEnabled()) {
+//            String insertRemote = "PREFIX prov: <" + Util.provPrefix + "> insert data { <" + url.toString() + "> rdf:type prov:SoftwareAgent}";
+//            try {
+//                provQP.query(insertRemote);
+//            } catch (EngineException ex) {
+//                logger.error("Eror while inserting provenance: \n" + insertRemote);
+//            }
+//        }
     }
 
     public void addRemoteSQL(String url, String driver, String login, String password) {
         add(new RemoteSqlProducerImpl(url, driver, login, password));
 
         //provenance annotation
-        if (this.isProvEnabled()) {
-            String insertRemote = "PREFIX prov: <" + Util.provPrefix + "> insert data { <" + url.toString() + "> rdf:type prov:SoftwareAgent}";
-            try {
-                provQP.query(insertRemote);
-            } catch (EngineException ex) {
-                logger.error("Eror while inserting provenance: \n" + insertRemote);
-            }
-        }
+//        if (this.isProvEnabled()) {
+//            String insertRemote = "PREFIX prov: <" + Util.provPrefix + "> insert data { <" + url.toString() + "> rdf:type prov:SoftwareAgent}";
+//            try {
+//                provQP.query(insertRemote);
+//            } catch (EngineException ex) {
+//                logger.error("Eror while inserting provenance: \n" + insertRemote);
+//            }
+//        }
     }
 
     public static QueryProcessDQP create(Graph g) {

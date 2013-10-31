@@ -53,7 +53,7 @@ public class DqpRestAPI {
         try {
             DqpRestAPI.graph = Graph.create(false);
             DqpRestAPI.sProv = ProviderImpl.create();
-            DqpRestAPI.execDQP = QueryProcessDQP.create(graph, sProv);
+            DqpRestAPI.execDQP = QueryProcessDQP.create(graph, sProv, true);
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("Reinitialized KGRAM-DQP federation engine").build();
         } catch (Exception ex) {
             ex.printStackTrace();

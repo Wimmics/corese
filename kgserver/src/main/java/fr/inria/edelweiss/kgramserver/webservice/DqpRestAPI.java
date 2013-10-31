@@ -8,10 +8,14 @@ import fr.inria.edelweiss.kgdqp.core.Messages;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.query.Provider;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProviderImpl;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.print.JSOND3Format;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import java.net.MalformedURLException;
@@ -40,8 +44,8 @@ public class DqpRestAPI {
     private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv);
 
     /**
-     * This web service reinitalize the local KGRAM graph. Be careful, 
-     * the graph is a static variable.  
+     * This web service reinitalize the local KGRAM graph. Be careful, the graph
+     * is a static variable.
      */
     @POST
     @Path("/reset")
@@ -91,7 +95,6 @@ public class DqpRestAPI {
 
         logger.info("Federated querying: " + query);
 
-
         try {
             StopWatch sw = new StopWatch();
             sw.start();
@@ -107,12 +110,87 @@ public class DqpRestAPI {
         }
     }
 
+    /**
+     * Federated query processing with provenance documented results.
+     * @param query the SPARQL query to be sent over the federation. 
+     * @return JSON data describing SPARQL results and the associated PROV graph.
+     */
+    @GET
+    @Produces("application/sparql-results+json")
+    @Path("/sparqlprov")
+    public Response getProvTriplesJSONForGet(@QueryParam("query") String query) {
+
+        logger.info("Federated querying: " + query);
+
+        try {
+            StopWatch sw = new StopWatch();
+            sw.start();
+            Mappings maps = execDQP.query(query);
+            logger.info(maps.size() + " results in " + sw.getTime() + "ms");
+            
+            Graph resProv = Graph.create();
+
+            for (Mapping map : maps) {
+                for (Entity ent : map.getEdges()) {
+                    Graph prov = (Graph) ent.getProvenance();
+                    resProv.copy(prov);
+                }
+            }
+            
+            //Filtering PROV annotations
+            String provQuery = "PREFIX prov:<" + Util.provPrefix + ">"
+                + "CONSTRUCT {"
+                + " ?x ?p ?y ."
+                + "} WHERE {"
+                + " ?x ?p ?y ."
+                + " FILTER (?p NOT IN (rdf:type, prov:wasGeneratedBy, prov:qualifiedAssociation, prov:hadPlan, prov:agent, rdfs:comment)) "
+                + "} ";
+            
+//            String provQuery = "PREFIX prov:<" + Util.provPrefix + ">"
+//                + "CONSTRUCT {"
+//                + " ?x ?p ?y ."
+//                + "} WHERE {"
+//                + " ?x ?p ?y ."
+//                + " FILTER (?p NOT IN (rdf:type)) "
+//                + "} ";
+            
+//            String provQuery2 = "PREFIX prov:<" + Util.provPrefix + ">"
+//                + "CONSTRUCT {"
+//                + " ?s prov:wasAttributedTo ?ds ."
+//                + " ?o prov:wasAttributedTo ?ds ."
+//                + " ?s ?p ?o ."
+//                + "} WHERE {"
+//                + " ?x prov:wasAttributedTo ?ds ."
+//                + " ?x rdf:subject ?s ."
+//                + " ?x rdf:predicate ?p ."
+//                + " ?x rdf:object ?o ."
+//                + "}";
+            
+            QueryProcess qpProv = QueryProcess.create(resProv);
+            Mappings mProv = qpProv.query(provQuery);
+            
+            String mapsProvJson = "{ \"mappings\" : "
+                + JSONFormat.create(maps).toString()
+                + " , "
+                + "\"provenance\" : "
+                + JSOND3Format.create((Graph) mProv.getGraph()).toString()
+                + " }";
+            
+//            System.out.println(mapsProvJson);
+
+            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(mapsProvJson).build();
+        } catch (Exception ex) {
+            logger.error("Error while querying the remote KGRAM-DQP engine");
+            ex.printStackTrace();
+            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+        }
+    }
+
     @GET
     @Produces("application/sparql-results+xml")
     @Path("/sparql")
     public Response getTriplesXMLForGet(@QueryParam("query") String query) {
         logger.info("Federated querying: " + query);
-
 
         try {
             StopWatch sw = new StopWatch();

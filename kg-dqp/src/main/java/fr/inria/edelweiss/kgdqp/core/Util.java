@@ -22,6 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author gaignard
  */
 public class Util {
+    
+//    public static boolean provEnabled = true;
+    public static String provPrefix = "http://www.w3.org/ns/prov#";
 
     public static List<Filter> getApplicableFilter(Environment env, Edge edge) {
         // KGRAM exp for current edge

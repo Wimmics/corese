@@ -4,6 +4,7 @@
  */
 package fr.inria.edelweiss.kgdqp.core;
 
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
@@ -19,6 +20,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import java.io.ByteArrayInputStream;
@@ -39,11 +41,13 @@ import org.xml.sax.SAXException;
  */
 public class RemoteProducerWSImpl implements Producer {
 
-    private static Logger logger = Logger.getLogger(RemoteProducerWSImpl.class);
-    private SparqlEndpointInterface rp;
-    private HashMap<String, Boolean> cacheIndex = new HashMap<String, Boolean>();
+    private final static Logger logger = Logger.getLogger(RemoteProducerWSImpl.class);
+    private final SparqlEndpointInterface rp;
+    private final HashMap<String, Boolean> cacheIndex = new HashMap<String, Boolean>();
+    private boolean provEnabled = false;
 
-    public RemoteProducerWSImpl(URL url, WSImplem implem) {
+    public RemoteProducerWSImpl(URL url, WSImplem implem, boolean provEnabled) {
+        this.provEnabled = provEnabled;
         if (implem == WSImplem.REST) {
             rp = new SPARQLRestEndpointClient(url);
             logger.debug("REST endpoint instanciated " + url);
@@ -51,6 +55,10 @@ public class RemoteProducerWSImpl implements Producer {
             rp = new SPARQLSoapEndpointClient(url);
             logger.debug("SOAP endpoint instanciated " + url);
         }
+    }
+
+    public boolean isProvEnabled() {
+        return provEnabled;
     }
 
     @Override
@@ -87,6 +95,10 @@ public class RemoteProducerWSImpl implements Producer {
                 logger.debug(m);
                 for (Node n : m.getNodes()) {
                     resNodes.add(n);
+                    if (this.isProvEnabled()) {
+                        //TODO does it make sense ?
+//                        annotateResultsWithProv((Graph) maps.getGraph(), gNode);
+                    }
                 }
             }
 
@@ -110,13 +122,6 @@ public class RemoteProducerWSImpl implements Producer {
     @Override
     public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
         logger.debug("Is Graph Node ? " + gNode.toString());
-        Node node = env.getNode(gNode);
-
-//        if (gNode.isVariable()) {
-//
-//        } else if (gNode.isConstant()) {
-//
-//        }
 
         String rwSparql = getSparqlForIsGN(gNode, from, env);
 
@@ -210,7 +215,6 @@ public class RemoteProducerWSImpl implements Producer {
 //                } else {
 //                    QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
 //                }
-
                 // count number of source access
 //                String endpoint = rp.getEndpoint();
 //                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
@@ -219,7 +223,6 @@ public class RemoteProducerWSImpl implements Producer {
 //                } else {
 //                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
 //                }
-
                 if (sparqlRes != null) {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
@@ -231,6 +234,10 @@ public class RemoteProducerWSImpl implements Producer {
 //                    } else {
 //                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
 //                    }
+
+                    if (this.isProvEnabled()) {
+                        this.annotateResultsWithProv(g, qEdge);
+                    }
                 }
 
             } else {
@@ -308,19 +315,19 @@ public class RemoteProducerWSImpl implements Producer {
             }
         }
 
-        String sparql = sparqlPrefixes;
+        String rwSparql = sparqlPrefixes;
         if (gNode == null) {
-            sparql += "CONSTRUCT  { " + qEdge.getNode(0) + qEdge.getEdgeNode() + qEdge.getNode(1) + " } " + fromClauses + "\n WHERE { \n";
-            sparql += "\t " + qEdge.getNode(0) + " " + qEdge.getEdgeNode() + "{0}" + " " + qEdge.getNode(1) + " .\n ";
-            sparql += "}";
+            rwSparql += "CONSTRUCT  { " + qEdge.getNode(0) + qEdge.getEdgeNode() + qEdge.getNode(1) + " } " + fromClauses + "\n WHERE { \n";
+            rwSparql += "\t " + qEdge.getNode(0) + " " + qEdge.getEdgeNode() + "{0}" + " " + qEdge.getNode(1) + " .\n ";
+            rwSparql += "}";
         } else {
-            sparql += "CONSTRUCT { GRAPH " + gNode.toString() + " { " + qEdge.getNode(0) + qEdge.getEdgeNode() + qEdge.getNode(1) + " }} " + fromClauses + "\n WHERE { \n";
-            sparql += "\t GRAPH " + gNode.toString() + "{ " + qEdge.getNode(0) + " " + qEdge.getEdgeNode() + "{0}" + " " + qEdge.getNode(1) + "} .\n ";
-            sparql += "}";
+            rwSparql += "CONSTRUCT { GRAPH " + gNode.toString() + " { " + qEdge.getNode(0) + qEdge.getEdgeNode() + qEdge.getNode(1) + " }} " + fromClauses + "\n WHERE { \n";
+            rwSparql += "\t GRAPH " + gNode.toString() + "{ " + qEdge.getNode(0) + " " + qEdge.getEdgeNode() + "{0}" + " " + qEdge.getNode(1) + "} .\n ";
+            rwSparql += "}";
         }
 
         Graph g = Graph.create();
-        logger.debug("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
+        logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
 
         // count number of queries
 //        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
@@ -329,7 +336,6 @@ public class RemoteProducerWSImpl implements Producer {
 //        } else {
 //            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
 //        }
-
         // count number of source access
 //        String endpoint = rp.getEndpoint();
 //        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
@@ -338,12 +344,11 @@ public class RemoteProducerWSImpl implements Producer {
 //        } else {
 //            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
 //        }
-
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
             sw.start();
-            String sparqlRes = rp.getEdges(sparql);
+            String sparqlRes = rp.getEdges(rwSparql);
             logger.debug("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
             sw.reset();
             sw.start();
@@ -358,6 +363,9 @@ public class RemoteProducerWSImpl implements Producer {
 //                } else {
 //                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
 //                }
+                if (this.isProvEnabled()) {
+                    annotateResultsWithProv(g, qEdge);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -412,7 +420,7 @@ public class RemoteProducerWSImpl implements Producer {
 
         // Query rewriting
         String transformedExp = exp.toRegex();
-        String sparql = sparqlPrefixes;
+        String rwSparql = sparqlPrefixes;
 
         //from handling
         String fromClauses = "";
@@ -429,11 +437,11 @@ public class RemoteProducerWSImpl implements Producer {
 
         if (exp.isReverse()) {
             if (gNode == null) {
-                sparql += "CONSTRUCT  { " + object + " <" + exp.getName() + "> " + subject + " } " + fromClauses + "\n WHERE { \n";
-                sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
+                rwSparql += "CONSTRUCT  { " + object + " <" + exp.getName() + "> " + subject + " } " + fromClauses + "\n WHERE { \n";
+                rwSparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
             } else {
-                sparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{" + object + " <" + exp.getName() + "> " + subject + " }} " + fromClauses + "\n WHERE { \n";
-                sparql += "\t GRAPH " + gNode.toString() + "{" + subject + " " + transformedExp + " " + object + "} .\n ";
+                rwSparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{" + object + " <" + exp.getName() + "> " + subject + " }} " + fromClauses + "\n WHERE { \n";
+                rwSparql += "\t GRAPH " + gNode.toString() + "{" + subject + " " + transformedExp + " " + object + "} .\n ";
             }
         } else if (exp.isNot()) {
             boolean valid = checkNeg(exp);
@@ -443,30 +451,30 @@ public class RemoteProducerWSImpl implements Producer {
             } else {
                 List<String> negProps = getFlatRegEx(exp);
                 if (gNode == null) {
-                    sparql += "CONSTRUCT  { " + subject + " ?_p " + object + " } " + fromClauses + "\n WHERE { \n";
-                    sparql += "\t " + subject + " ?_p " + object + " .\n ";
+                    rwSparql += "CONSTRUCT  { " + subject + " ?_p " + object + " } " + fromClauses + "\n WHERE { \n";
+                    rwSparql += "\t " + subject + " ?_p " + object + " .\n ";
                 } else {
-                    sparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{ " + subject + " ?_p " + object + " }} " + fromClauses + "\n WHERE { \n";
-                    sparql += "\t GRAPH " + gNode.toString() + "{" + subject + " ?_p " + object + "} .\n ";
+                    rwSparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{ " + subject + " ?_p " + object + " }} " + fromClauses + "\n WHERE { \n";
+                    rwSparql += "\t GRAPH " + gNode.toString() + "{" + subject + " ?_p " + object + "} .\n ";
                 }
-                sparql += "\tFILTER ( \n";
+                rwSparql += "\tFILTER ( \n";
                 for (String negP : negProps) {
-                    sparql += "\t\t (?_p != " + negP + " ) && \n ";
+                    rwSparql += "\t\t (?_p != " + negP + " ) && \n ";
                 }
-                sparql = sparql.substring(0, sparql.lastIndexOf("&&"));
-                sparql += " )";
+                rwSparql = rwSparql.substring(0, rwSparql.lastIndexOf("&&"));
+                rwSparql += " )";
 
             }
         } else {
             if (gNode == null) {
-                sparql += "CONSTRUCT  { " + subject + " <" + exp.getName() + "> " + object + " } " + fromClauses + "\n WHERE { \n";
-                sparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
+                rwSparql += "CONSTRUCT  { " + subject + " <" + exp.getName() + "> " + object + " } " + fromClauses + "\n WHERE { \n";
+                rwSparql += "\t " + subject + " " + transformedExp + " " + object + " .\n ";
             } else {
-                sparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{ " + subject + " <" + exp.getName() + "> " + object + " }} " + fromClauses + "\n WHERE { \n";
-                sparql += "\t GRAPH " + gNode.toString() + "{" + subject + " " + transformedExp + " " + object + "} .\n ";
+                rwSparql += "CONSTRUCT  { GRAPH " + gNode.toString() + "{ " + subject + " <" + exp.getName() + "> " + object + " }} " + fromClauses + "\n WHERE { \n";
+                rwSparql += "\t GRAPH " + gNode.toString() + "{" + subject + " " + transformedExp + " " + object + "} .\n ";
             }
         }
-        sparql += "\n}";
+        rwSparql += "\n}";
 
         // Remote query processing
         Graph g = Graph.create();
@@ -478,7 +486,6 @@ public class RemoteProducerWSImpl implements Producer {
 //        } else {
 //            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
 //        }
-
         // count number of source access
 //        String endpoint = rp.getEndpoint();
 //        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
@@ -487,13 +494,11 @@ public class RemoteProducerWSImpl implements Producer {
 //        } else {
 //            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
 //        }
-
-
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
             sw.start();
-            String sparqlRes = rp.getEdges(sparql);
+            String sparqlRes = rp.getEdges(rwSparql);
             logger.debug("Received results in " + sw.getTime() + " ms from " + rp.getEndpoint());
             sw.reset();
             sw.start();
@@ -508,6 +513,9 @@ public class RemoteProducerWSImpl implements Producer {
 //                } else {
 //                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
 //                }
+                if (this.isProvEnabled()) {
+                    annotateResultsWithProv(g, qEdge);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -619,5 +627,56 @@ public class RemoteProducerWSImpl implements Producer {
     @Override
     public Producer getProducer(Node node) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void annotateResultsWithProv(Graph g, Edge qEdge) {
+        if (this.isProvEnabled()) {
+            Iterator<Entity> it = g.getEdges().iterator();
+
+            // Annotate the invocation only once, Then iterate over edge results.
+            String preInsertProv = "PREFIX prov:<" + Util.provPrefix + "> insert data {\n"
+                    // Sparql processing activity 
+                    + " _:b1 rdf:type prov:Activity . \n"
+                    + " _:b1 prov:qualifiedAssociation _:b2 . \n"
+                    // Association to a software agent through a plan (i.e. a sparql query) 
+                    + " _:b2 rdf:type prov:Association . \n"
+                    + " _:b2 prov:hadPlan _:b3 . \n"
+                    + " _:b2 prov:agent <" + rp.getEndpoint() + "> . \n"
+                    // The plan corresponding to the "recipe" 
+                    + " _:b3 rdf:type prov:Plan . \n"
+                    + " _:b3 rdfs:comment \"" + qEdge.getLabel().replaceAll("\"", "'") + "\". \n";
+//                                + " _:b3 rdfs:comment \"" + rwSparql.replaceAll("\"", "'").replaceAll("\n", " ").replaceAll("\t", " ") + "\". \n";
+
+            while (it.hasNext()) {
+                Entity entity = it.next();
+                Edge e = entity.getEdge();
+                if (e != null) {
+                                //TODO provenance for node result ; associated rwSparql ; associated endpoint
+                    //TODO TimeStamping
+                    //TODO duration ?
+
+                    // Resulting entity 
+                    String insertProv = preInsertProv + "[ rdf:type prov:Entity ; \n"
+                            + " prov:wasGeneratedBy _:b1 ; \n"
+                            + " rdf:type prov:Entity ; \n"
+                            + " prov:wasAttributedTo <" + rp.getEndpoint() + "> ; \n"
+                            + " rdf:predicate \"" + e.getEdgeNode().getLabel().replaceAll("\"", "'") + "\" ; \n"
+                            + " rdf:subject \"" + e.getNode(0).getLabel().replaceAll("\"", "'") + "\" ; \n"
+                            + " rdf:object \"" + e.getNode(1).getLabel().replaceAll("\"", "'") + "\" ; \n"
+                            + " rdfs:comment \"" + qEdge.getLabel().replaceAll("\"", "'") + "\" ] \n"
+                            + "}";
+                    try {
+                        logger.debug(insertProv);
+                        Graph provG = Graph.create();
+                        QueryProcess qp = QueryProcess.create(provG);
+                        qp.query(insertProv);
+                        entity.setProvenance(provG);
+                    } catch (EngineException ex) {
+                        logger.error("Error while inserting provenance:\n" + insertProv);
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 }

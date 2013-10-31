@@ -41,7 +41,7 @@ public class DqpRestAPI {
     private Logger logger = Logger.getLogger(DqpRestAPI.class);
     private static Graph graph = Graph.create(false);
     private static Provider sProv = ProviderImpl.create();
-    private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv);
+    private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
 
     /**
      * This web service reinitalize the local KGRAM graph. Be careful, the graph
@@ -112,8 +112,10 @@ public class DqpRestAPI {
 
     /**
      * Federated query processing with provenance documented results.
-     * @param query the SPARQL query to be sent over the federation. 
-     * @return JSON data describing SPARQL results and the associated PROV graph.
+     *
+     * @param query the SPARQL query to be sent over the federation.
+     * @return JSON data describing SPARQL results and the associated PROV
+     * graph.
      */
     @GET
     @Produces("application/sparql-results+json")
@@ -127,25 +129,27 @@ public class DqpRestAPI {
             sw.start();
             Mappings maps = execDQP.query(query);
             logger.info(maps.size() + " results in " + sw.getTime() + "ms");
-            
+
             Graph resProv = Graph.create();
 
             for (Mapping map : maps) {
                 for (Entity ent : map.getEdges()) {
                     Graph prov = (Graph) ent.getProvenance();
-                    resProv.copy(prov);
+                    if ((prov != null) && (prov instanceof Graph)) {
+                        resProv.copy(prov);
+                    }
                 }
             }
-            
+
             //Filtering PROV annotations
             String provQuery = "PREFIX prov:<" + Util.provPrefix + ">"
-                + "CONSTRUCT {"
-                + " ?x ?p ?y ."
-                + "} WHERE {"
-                + " ?x ?p ?y ."
-                + " FILTER (?p NOT IN (rdf:type, prov:wasGeneratedBy, prov:qualifiedAssociation, prov:hadPlan, prov:agent, rdfs:comment)) "
-                + "} ";
-            
+                    + "CONSTRUCT {"
+                    + " ?x ?p ?y ."
+                    + "} WHERE {"
+                    + " ?x ?p ?y ."
+                    + " FILTER (?p NOT IN (rdf:type, prov:wasGeneratedBy, prov:qualifiedAssociation, prov:hadPlan, prov:agent, rdfs:comment)) "
+                    + "} ";
+
 //            String provQuery = "PREFIX prov:<" + Util.provPrefix + ">"
 //                + "CONSTRUCT {"
 //                + " ?x ?p ?y ."
@@ -153,7 +157,6 @@ public class DqpRestAPI {
 //                + " ?x ?p ?y ."
 //                + " FILTER (?p NOT IN (rdf:type)) "
 //                + "} ";
-            
 //            String provQuery2 = "PREFIX prov:<" + Util.provPrefix + ">"
 //                + "CONSTRUCT {"
 //                + " ?s prov:wasAttributedTo ?ds ."
@@ -165,19 +168,17 @@ public class DqpRestAPI {
 //                + " ?x rdf:predicate ?p ."
 //                + " ?x rdf:object ?o ."
 //                + "}";
-            
             QueryProcess qpProv = QueryProcess.create(resProv);
             Mappings mProv = qpProv.query(provQuery);
-            
-            String mapsProvJson = "{ \"mappings\" : "
-                + JSONFormat.create(maps).toString()
-                + " , "
-                + "\"provenance\" : "
-                + JSOND3Format.create((Graph) mProv.getGraph()).toString()
-                + " }";
-            
-//            System.out.println(mapsProvJson);
 
+            String mapsProvJson = "{ \"mappings\" : "
+                    + JSONFormat.create(maps).toString()
+                    + " , "
+                    + "\"provenance\" : "
+                    + JSOND3Format.create((Graph) mProv.getGraph()).toString()
+                    + " }";
+
+//            System.out.println(mapsProvJson);
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(mapsProvJson).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM-DQP engine");

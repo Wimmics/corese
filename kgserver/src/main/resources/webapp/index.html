@@ -2,10 +2,31 @@
 <!--  author: alban.gaignard@cnrs.fr -->
 
 <!DOCTYPE html>
+
 <html>
-
-
 <head>
+
+<meta charset="utf-8">
+<style>
+
+/*.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}*/
+
+.node text {
+  /*pointer-events: none;*/
+  font: 10px sans-serif;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+  fill: none;
+}
+</style>
+
+
 	<title>Corese/KGRAM webapp</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- Bootstrap -->
@@ -188,6 +209,9 @@ SELECT ?departement ?nom ?popTotale WHERE {
 									<button id="btnQueryFed" type="button" class="btn btn-success">Query</button>
 								</fieldset>
 
+								<p id="parProvGraph">
+									
+								</p>
 								<p>
 									<table id="tbResFed" class="table table-striped span10">  
 										<thead>  
@@ -216,5 +240,6 @@ SELECT ?departement ?nom ?popTotale WHERE {
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/spin.min.js"></script>
 	<script src="js/main.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
 </body>
 </html>

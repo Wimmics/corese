@@ -13,6 +13,7 @@ import java.net.URL;
  * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
  *
  */
+@Deprecated
 public class QueryExecDQP extends QueryExec {
 
     public QueryExecDQP() {
@@ -60,7 +61,7 @@ public class QueryExecDQP extends QueryExec {
      */
     public void addRemote(URL producerURL, WSImplem implem) {
         if (exec == null) {
-            exec = new QueryProcessDQP();
+            exec = new QueryProcessDQP(false);
             exec.setListGroup(isListGroup);
             exec.setDebug(isDebug);
             for (EventListener el : list) {
@@ -72,7 +73,7 @@ public class QueryExecDQP extends QueryExec {
 
     public void addRemoteSQL(String producerURL, String driver, String login, String password) {
         if (exec == null) {
-            exec = new QueryProcessDQP();
+            exec = new QueryProcessDQP(false);
             exec.setListGroup(isListGroup);
             exec.setDebug(isDebug);
             for (EventListener el : list) {

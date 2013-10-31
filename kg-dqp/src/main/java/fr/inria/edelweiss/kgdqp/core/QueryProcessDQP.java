@@ -102,6 +102,13 @@ public class QueryProcessDQP extends QueryProcess {
         exec.set(serviceProvider);
         return exec;
     }
+    
+    public static QueryProcessDQP create(Graph g, Provider serviceProvider, boolean provEnabled) {
+        ProducerImpl p = ProducerImpl.create(g);
+        QueryProcessDQP exec = QueryProcessDQP.create(p, provEnabled);
+        exec.set(serviceProvider);
+        return exec;
+    }
 
     public static QueryProcessDQP create(Graph g, Graph g2) {
         QueryProcessDQP qp = QueryProcessDQP.create(g);

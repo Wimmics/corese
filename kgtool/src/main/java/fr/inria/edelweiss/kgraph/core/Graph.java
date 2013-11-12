@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
@@ -166,8 +167,28 @@ public class Graph //implements IGraph
     public void setName(String name) {
         this.name = name;
     }
-	
 
+    /**
+     * Contain undefined datatype
+     */
+    public boolean isFlawed() {
+        for (Entity ent : getLiteralNodes()){
+            IDatatype dt = (IDatatype) ent.getNode().getValue();
+            if (DatatypeMap.isUndefined(dt)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean typeCheck(){
+        if (inference == null){
+            return true;
+        }
+        return inference.typeCheck();
+    }
+
+ 
 	
 	class TreeNode extends TreeMap<IDatatype, Entity>  {
 		
@@ -1430,9 +1451,12 @@ public class Graph //implements IGraph
 		meta.next(getBlankNodes());
 		return meta;
 	}
-		
+	
 	public Iterable<Entity> getLiteralNodes(){
-		return literal.values();
+            if (valueOut){
+                return vliteral.values();  
+            }
+            return literal.values();
 	}
 		
 	public Iterable<Entity> getAllNodes(){
@@ -1479,13 +1503,21 @@ public class Graph //implements IGraph
 	 * May infer datatype from property range
 	 */
 	public Node addLiteral(String pred, String label, String datatype, String lang){
-		if (datatype == null && lang == null && 
+            String range = null;
+		if (lang == null && 
 				inference!=null && inference.isDatatypeInference()){
-			String range = inference.getRange(pred);
-			if (range != null && range.startsWith(Entailment.XSD)){
-				datatype = range;
+                        range = inference.getRange(pred);
+			if (range != null 
+                                && ! range.startsWith(Entailment.XSD)){
+				range = null;
 			}
 		}
+                if (datatype == null){ 
+                    if (range != null){
+                        datatype = range;
+                    }
+                }
+                
 		IDatatype dt = DatatypeMap.createLiteral(label, datatype, lang);
 		if (dt == null) return null;
 		return addNode(dt);
@@ -2280,9 +2312,21 @@ public class Graph //implements IGraph
         }
 	
 	public void logFinish(Query q){
+            logFinish(q, null);
+        }
+        
+	public void logFinish(Query q, Mappings m){
              if (listen != null){
 			for (GraphListener gl : listen){
-				gl.finish(this, q);
+				gl.finish(this, q, m);
+			}		
+		}
+        }
+        
+        public void logLoad(String path){
+             if (listen != null){
+			for (GraphListener gl : listen){
+				gl.load(path);
 			}		
 		}
         }

@@ -52,7 +52,7 @@ public class GraphStoreInit {
         
         // listen insert on kg:system graph 
         // may tune the GraphStore
-        g.addListener(new GraphSystemListener(gs));
+        g.addListener(new SystemGraphListener(gs));
     }
     
     

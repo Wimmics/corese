@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -153,7 +154,11 @@ public class GraphListenerImpl implements GraphListener {
     }
 
     @Override
-    public void finish(Graph g, Query q) {
+    public void finish(Graph g, Query q, Mappings m) {
+    }
+
+    @Override
+    public void load(String path) {
     }
 	
 	

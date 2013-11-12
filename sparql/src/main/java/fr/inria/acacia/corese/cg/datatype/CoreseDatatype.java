@@ -816,7 +816,7 @@ public class CoreseDatatype
 	
 	
 	static boolean isNumber(String name, String cname){
-		return name.equals(RDF.xsdlong) ||name.equals(RDF.xsdinteger) || name.equals(RDF.xsddouble) || 
+		return name.equals(RDF.xsdlong) ||name.equals(RDF.xsdinteger) ||name.equals(RDF.xsdint) || name.equals(RDF.xsddouble) || 
 		name.equals(RDF.xsdfloat)   || name.equals(RDF.xsddecimal) || name.equals(RDF.xsddate) ||
                 cname.equals(jTypeInteger);
 	}

@@ -42,6 +42,7 @@ public class DatatypeMap implements Cst, RDF {
 	public static CoreseBoolean TRUE  = CoreseBoolean.TRUE;
 	public static CoreseBoolean FALSE = CoreseBoolean.FALSE;
 
+
 	private class Mapping {
 		private String javatype = "";
 //		private String datatypeMarkerSet = "";
@@ -226,7 +227,7 @@ public class DatatypeMap implements Cst, RDF {
 		put(xsdlong,	jTypeLong,intSpace);
 		
 		put(xsdshort,			intJType,intSpace);
-		put(xsdint,			intJType,intSpace);
+		put(xsdint,			jTypeInt,intSpace);
 		put(xsdbyte,			intJType,intSpace);
 		put(xsdnonNegativeInteger, 	intJType,intSpace);
 		put(xsdnonPositiveInteger, 	intJType,intSpace);
@@ -314,10 +315,24 @@ public class DatatypeMap implements Cst, RDF {
 	
 	
 	static boolean isNumber(String name){
-		return name.equals(xsdlong) ||name.equals(xsdinteger) || name.equals(xsddouble) || 
+		return name.equals(xsdlong) ||name.equals(xsdinteger) || name.equals(xsdint) 
+                        || name.equals(xsddouble) || 
 		name.equals(xsdfloat)   || name.equals(xsddecimal);
 	}
-	
+        
+        /**
+         * URI of a literal datatype xsd: rdf:XMLLiteral rdf:PlainLiteral
+         */
+	public static boolean isDatatype(String range) {
+            return range.startsWith(XSD) 
+                    || range.equals(XMLLITERAL) 
+                    || range.equals(rdflangString);
+        }
+        
+        public static boolean isUndefined(IDatatype dt){
+            return dt.getCode() == IDatatype.UNDEF;
+        }
+
 	
 	IDatatype create(String label, String datatype, String lang){
 		switch(getType(datatype)){
@@ -612,12 +627,19 @@ public class DatatypeMap implements Cst, RDF {
 		CoreseDate date = (CoreseDate) dt;
 		return date.getSecond();
 	}
-	
-	
-	
-	
-	
-	
-	
+		
+	// for literal only
+	 public static boolean check(IDatatype dt, String range) {
+             if (dt.isNumber()){
+                 if (! isNumber(range)){
+                     return false;
+                 }
+             }
+             else if (isNumber(range)){
+                 return false;
+             }
+             return dt.getDatatypeURI().equals(range);            
+         }
+
 
 }

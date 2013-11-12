@@ -14,6 +14,8 @@ public interface Cst {
 	static final String jTypeFloat		= pack + "CoreseFloat";
 	static final String jTypeDecimal	= pack + "CoreseDecimal";
 	static final String jTypeInteger	= pack + "CoreseInteger";
+	static final String jTypeInt            = pack + "CoreseInt";
+        
 	static final String jTypeGenericInteger	= pack + "CoreseGenericInteger";
 	static final String jTypeLong   	= pack + "CoreseLong";
 	static final String jTypeLiteral	= pack + "CoreseLiteral";

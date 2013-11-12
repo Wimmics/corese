@@ -1,14 +1,12 @@
 package fr.inria.edelweiss.kgraph.query;
 
 
-import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
@@ -16,7 +14,6 @@ import fr.inria.edelweiss.kgenv.parser.Transformer;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -29,13 +26,6 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.PPrinter;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -53,8 +43,7 @@ public class QueryProcess extends QuerySolver {
 	
 	//sort query edges taking cardinality into account
 	static boolean isSort = false;
-
-	Construct constructor;
+        Manager manager;
 	Loader load;
 	ReentrantReadWriteLock lock;
 	// Producer may perform match locally
@@ -85,6 +74,14 @@ public class QueryProcess extends QuerySolver {
 			lock = new ReentrantReadWriteLock();
 		}
 	}
+        
+        public void setManager(Manager man){
+            manager = man;
+        }
+        
+        Manager getManager(){
+            return manager;
+        }
 
 
 	public static QueryProcess create(Graph g){
@@ -103,6 +100,7 @@ public class QueryProcess extends QuerySolver {
 		ProducerImpl p =  ProducerImpl.create(g);
 		p.setMatch(isMatch);
 		QueryProcess exec = QueryProcess.create(p);
+                exec.setManager(ManagerImpl.create(g));
 		exec.setMatch(isMatch);
 		return exec;
 	}
@@ -386,13 +384,16 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	Mappings synQuery(Query query, Mapping m) {
-		try {
+            Mappings map = null;
+            try {
 			readLock();
-                        //getGraph().logStart(query);
-			return query(query, m);
+                        logStart(query);
+                         map = query(query, m);
+                        
+                        return map;
 		}
 		finally {
-                        //getGraph().logFinish(query);
+                        logFinish(query, map);
 			readUnlock();
 		}
 	}
@@ -476,8 +477,7 @@ public class QueryProcess extends QuerySolver {
 			// TODO: check complete() -- W3C test case require += default + entailment + rule
 			complete(ds);
 		}
-		ManagerImpl man = ManagerImpl.create(this, ds);
-		UpdateProcess up = UpdateProcess.create(man);
+		UpdateProcess up = UpdateProcess.create(this, ds);
 		up.setDebug(isDebug());
 		Mappings lMap = up.update(query);
 		//lMap.setGraph(getGraph());
@@ -502,33 +502,7 @@ public class QueryProcess extends QuerySolver {
 	
 
 	
-	/**
-	 * Called by Manager (delete/insert operations)
-	 * query is the global Query
-	 * ast is the current update action
-	 */
-	public Mappings update(Query query, ASTQuery ast, Dataset ds) {
-		
-		//System.out.println("** QP:\n" + ast);
-		getGraph().logStart(query);
-                
-		Mappings lMap = basicQuery(ast, ds);
-		Query q = lMap.getQuery();
-		
-		// PRAGMA: update can be both delete & insert
-		if (q.isDelete()){
-			delete(lMap, ds);
-		}
-		
-		if (q.isConstruct()){ 
-			// insert
-			construct(lMap, ds);
-		}
-                
-		getGraph().logFinish(query);
-
-		return lMap;
-	}
+	
 	
 
 		
@@ -593,48 +567,22 @@ public class QueryProcess extends QuerySolver {
 
 	 */
 	
-	public void construct(Mappings lMap, Dataset ds){
-		Query query = lMap.getQuery();
-		Construct cons =  Construct.create(query);
-		if (isDebug() || query.isDebug()){
-			cons.setDebug(true);
-		}
+	 void construct(Mappings lMap, Dataset ds){
+            Query query = lMap.getQuery();
+            Construct cons =  Construct.create(query);
+            cons.setDebug(isDebug() || query.isDebug());
+				
+            Graph gg = Graph.create();
+            // the construct result graph may be skolemized
+            // if kgram was told to do so
+            gg.setSkolem(isSkolem());
+            gg = cons.construct(lMap, gg);
 
-		if (query.isDetail()){
-			cons.setInsertList(new ArrayList<Entity>());
-		}
-		Graph gg;
-		if (getAST(query).isAdd()){
-			Graph g = getGraph();
-			gg = cons.insert(lMap, g, ds);
-		}
-		else {
-                    Graph cg = Graph.create();
-                    // the construct result graph may be skolemized
-                    // if kgram was told to do so
-                    cg.setSkolem(isSkolem());
-                    gg = cons.construct(lMap, cg);
-		}
-		lMap.setGraph(gg);
+            lMap.setGraph(gg);
 	}
-	
-	
-	void delete(Mappings lMap, Dataset ds){
-		Query query = lMap.getQuery();
-		Construct cons =  Construct.create(query);
-		if (isDebug() || query.isDebug()){
-			cons.setDebug(true);
-		}
-
-		if (query.isDetail()){
-			cons.setDeleteList(new ArrayList<Entity>());
-		}
-		Graph g = getGraph();
-		Graph gg = cons.delete(lMap, g, ds);
-		lMap.setGraph(gg);
-	}
-	
-	
+        
+        
+         
 	
 	
 	/**
@@ -703,6 +651,18 @@ public class QueryProcess extends QuerySolver {
             }
             return map;
         }
+
+    void logStart(Query query) {
+        if (getGraph() != null){
+            getGraph().logStart(query);
+        }
+    }
+
+    void logFinish(Query query, Mappings m) {
+         if (getGraph() != null){
+            getGraph().logFinish(query, m);
+         }
+    }
 	
 
 

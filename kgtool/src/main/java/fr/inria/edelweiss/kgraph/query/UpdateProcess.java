@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Source;
@@ -31,16 +32,20 @@ public class UpdateProcess {
 	private static Logger logger = Logger.getLogger(UpdateProcess.class);	
 
 	Manager manager;
+        QueryProcess exec;
 	Query query;
+        Dataset ds;
 	
 	boolean isDebug = false; 
 	
-	UpdateProcess(Manager m){
-		manager = m;
+	UpdateProcess(QueryProcess e, Dataset ds){
+		manager = e.getManager();
+                exec = e;
+                this.ds = ds;
 	}
 	
-	public static UpdateProcess create(Manager m){
-		UpdateProcess u = new UpdateProcess(m);
+	public static UpdateProcess create(QueryProcess e,  Dataset ds){
+		UpdateProcess u = new UpdateProcess(e,  ds);
 		return u;
 	}
 		
@@ -84,7 +89,7 @@ public class UpdateProcess {
 			if (u.isBasic()){
 				// load copy ...
 				Basic b = u.getBasic();
-				suc = manager.process(q, b);
+				suc = manager.process(q, b, ds);
 			}
 			else {
 				// delete insert data where
@@ -124,6 +129,38 @@ public class UpdateProcess {
 		return Mappings.create(q);
 		
 	}
+        
+        
+        /**
+	 * Called by Manager (delete/insert operations)
+	 * query is the global Query
+	 * ast is the current update action
+	 */
+             Mappings update(Query query, ASTQuery ast) {
+		
+		//System.out.println("** QP:\n" + ast);
+		exec.logStart(query);
+                
+		Mappings lMap = exec.basicQuery(ast, ds);
+		Query q = lMap.getQuery();
+		
+		// PRAGMA: update can be both delete & insert
+		if (q.isDelete()){
+			manager.delete(q, lMap, ds);
+		}
+		
+		if (q.isConstruct()){ 
+			// insert
+			manager.insert(q, lMap, ds);
+		}
+                
+		exec.logFinish(query, lMap);
+
+		return lMap;
+	}
+             
+         
+	   
 	
 	
 	/**
@@ -150,9 +187,12 @@ public class UpdateProcess {
 		}
 		
 		// Processed as a construct (add) on target graph
-		return manager.query(q, ast);
+		//return manager.query(q, ast);
+		return update(q, ast);
 
 	}
+        
+        
 	
 	/**
 	 * delete data {<a> ex:p <b>}
@@ -178,7 +218,7 @@ public class UpdateProcess {
 			ast.setDeleteData(true);
 		}
 		
-		return manager.query(q, ast);
+		return update(q, ast);
 
 	}
 	
@@ -225,7 +265,7 @@ public class UpdateProcess {
 				}
 		}
 
-		Mappings map = manager.query(q, ast);
+		Mappings map = update(q, ast);
 		//if (isDebug) logger.debug(map);	
 		return map;
 	}

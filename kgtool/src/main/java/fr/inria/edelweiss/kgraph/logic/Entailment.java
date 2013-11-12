@@ -5,6 +5,8 @@ import java.util.Hashtable;
 import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -12,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import org.apache.log4j.Logger;
 
 /**
  * RDFS Entailment
@@ -27,7 +30,8 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  *
  */
 public class Entailment implements Engine {
-	
+	private static Logger logger = Logger.getLogger(Entailment.class);	
+
 	private static final String S_TYPE 		= RDF.TYPE;
 	private static final String S_BLI 		= RDF.BLI;
 	private static final String S_PROPERTY 	= RDF.PROPERTY;
@@ -875,13 +879,7 @@ public class Entailment implements Engine {
 	boolean isMeta(Node pred){
 		return pred.getLabel().startsWith(S_RDFS);
 	}
-	
-//	public String getRange2(String pred){
-//		Edge range = graph.getEdge(RDFS.RANGE, pred, 0);
-//		if (range == null) return null;
-//		return range.getNode(1).getLabel();
-//	}
-	
+		
 	
 	public String getRange(String pred){
 		Node node = graph.getPropertyNode(pred);
@@ -892,10 +890,51 @@ public class Entailment implements Engine {
 	}
 	
 	
+        public boolean typeCheck() {
+            boolean res = true;
+            NSManager nsm = NSManager.create();
+            for (Node prop : graph.getProperties()) {
+                boolean isDatatype = false;
+                String range = getRange(prop.getLabel());
+                if (range != null) {
+                    isDatatype = DatatypeMap.isDatatype(range);
+                }
+                for (Entity ent : graph.getEdges(prop)) {
+                        IDatatype dt = (IDatatype) ent.getNode(1).getValue();
+                        if (range == null){
+                            if (DatatypeMap.isUndefined(dt)){
+                                logger.warn("Datatype error: " + dt);
+                                res = false;
+                            }
+                        }
+                        else {
+                            boolean b = check(dt, range, isDatatype);
+                            if (! b){
+                                logger.warn("Range error: " + dt + " " + nsm.toPrefix(range) );
+                            }
+                            res = res && b;
+                        }
+                }
+            }
+            return res;
+        }
 	
 	
-	
-	
+	boolean check(IDatatype dt, String range, boolean isDatatype){
+            if (DatatypeMap.isUndefined(dt)){
+                return false;
+            }
+           if (isDatatype){
+               if (dt.isLiteral()){
+                   return DatatypeMap.check(dt, range);
+               }
+           }
+           else if (dt.isLiteral()){
+                 return false;  
+           }
+           
+            return true;
+        }
 	
 	
 	

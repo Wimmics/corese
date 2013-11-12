@@ -704,7 +704,7 @@ public class Eval implements ExpType, Plugin {
 
                 case SERVICE:
                     //stack = stack.and(exp.rest(), n);
-                    backtrack = service(gNode, exp, stack, n, option);
+                    backtrack = service(p, gNode, exp, stack, n, option);
                     break;
 
                 case GRAPH:
@@ -869,7 +869,7 @@ public class Eval implements ExpType, Plugin {
                         // bind graph ?g before subquery
                         backtrack = graphNodes(gNode, gNode, exp, stack, n, n, true);
                     } else {
-                        backtrack = query(gNode, exp, stack, n, option);
+                        backtrack = query(p, gNode, exp, stack, n, option);
                     }
                     break;
 
@@ -1320,7 +1320,7 @@ public class Eval implements ExpType, Plugin {
         return lMap;
     }
 
-    private int service(Node gNode, Exp exp, Stack stack, int n, boolean option) {
+    private int service(Producer p, Node gNode, Exp exp, Stack stack, int n, boolean option) {
 
         int backtrack = n - 1;
         Memory env = memory;
@@ -1356,7 +1356,7 @@ public class Eval implements ExpType, Plugin {
             }
         } else {
             Query q = exp.rest().getQuery();
-            return query(gNode, q, stack, n, option);
+            return query(p, gNode, q, stack, n, option);
         }
 
         return backtrack;
@@ -1843,7 +1843,7 @@ public class Eval implements ExpType, Plugin {
      * new memory, share only sub query select variables
      *
      */
-    private int query(Node gNode, Exp exp, Stack stack, int n, boolean option) {
+    private int query(Producer p, Node gNode, Exp exp, Stack stack, int n, boolean option) {
         int backtrack = n - 1, evENUM = Event.ENUM;
         boolean isEvent = hasEvent;
         Query subQuery = exp.getQuery();
@@ -1856,7 +1856,7 @@ public class Eval implements ExpType, Plugin {
         } else {
             // copy current Eval,  new stack
             // bind sub query select nodes in new memory
-            Eval ev = copy(copyMemory(query, subQuery), producer, evaluator);
+            Eval ev = copy(copyMemory(query, subQuery), p, evaluator);
 
             Node subNode = null;
 

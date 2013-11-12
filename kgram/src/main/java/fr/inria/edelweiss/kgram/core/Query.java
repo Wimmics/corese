@@ -807,6 +807,10 @@ public class Query extends Exp {
 	public Exp getConstruct(){
 		return construct;
 	}
+        
+        public Exp getInsert(){
+		return construct;
+	}
 	
 	public void setDelete(Exp c){
 		delete = c;

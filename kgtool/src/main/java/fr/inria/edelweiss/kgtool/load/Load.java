@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgtool.load;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +55,8 @@ public class Load
 	static final String UPDATE 	= ".ru";
 	static final String[] QUERIES 	= {QUERY, UPDATE};
 	static final String TURTLE 	= ".ttl";
-	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, RULE, BRULE, IRULE, QUERY, UPDATE};
+	static final String NT          = ".nt";
+	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, NT, RULE, BRULE, IRULE, QUERY, UPDATE};
 	static final String HTTP = "http://";
 	static final String FTP  = "ftp://";
 	static final String FILE = "file://";
@@ -262,7 +262,10 @@ public class Load
 	}
 	
 	void log(String name){
-		graph.log(Log.LOAD, name);
+		if (graph != null){
+                    graph.log(Log.LOAD, name);
+                    graph.logLoad(name);
+                }
 	}
 	
 	public void load(String path, String base, String source) throws LoadException {
@@ -359,7 +362,7 @@ public class Load
 	void synLoad(Reader stream,  String path, String base, String src) throws LoadException {
 		try {		
 			writeLock().lock();
-			if (path.endsWith(TURTLE)){
+			if (path.endsWith(TURTLE) || path.endsWith(NT)){
 				loadTurtle(stream, path, base, src);
 			}
 			else if (isRule(path)){

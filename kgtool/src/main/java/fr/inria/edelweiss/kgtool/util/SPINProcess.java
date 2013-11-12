@@ -94,6 +94,10 @@ public class SPINProcess {
         String spin = sp.toString();
         return spin;
     }
+    
+    public Graph toSpinGraph(ASTQuery ast, Graph g) throws EngineException {
+        return toGraph(toSpin(ast), g);       
+    }
 
     String toSpinSparql(ASTQuery ast) throws EngineException {
         if (isDebug) {

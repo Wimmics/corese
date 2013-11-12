@@ -43,6 +43,16 @@ public class GraphStore extends Graph {
         store.put(name, g);
         return g;
     }
+    
+    public Graph getCreateNamedGraph(String name) {
+        Graph g = getNamedGraph(name);
+        if (g != null){
+            return g;
+        }
+        g = Graph.create();
+        store.put(name, g);
+        return g;
+    }
 
     public void setNamedGraph(String name, Graph g) {
         store.put(name, g);

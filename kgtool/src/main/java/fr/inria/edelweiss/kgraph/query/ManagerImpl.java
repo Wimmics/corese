@@ -1,10 +1,8 @@
 package fr.inria.edelweiss.kgraph.query;
 
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Update;
@@ -39,43 +37,25 @@ public class ManagerImpl implements Manager {
 	
 	Graph graph;
 	Loader load;
-	QueryProcess exec;
-	// dataset on which query is executed (cf W3C test case)
-	Dataset ds;
 	
 	static final int COPY = 0;
 	static final int MOVE = 1;
 	static final int ADD  = 2;
 	
-	ManagerImpl(Graph g, Loader ld){
+	ManagerImpl(Graph g){
 		graph = g;
-		graph.init();
-		load = ld;
-		if (load == null){
-			load = getLoader(LOADER);
-			load.init(graph);
-		}
+		graph.init();		
+		load = getLoader(LOADER);
+		load.init(graph);		
 	}
 	
-	ManagerImpl(QueryProcess exec){
-		this(exec.getGraph(), exec.getLoader());
-		this.exec = exec;
-	}
 	
 	ManagerImpl() {
 	}
 
-	static ManagerImpl create(Graph g, Loader ld){
-		return new ManagerImpl(g, ld);
-	}
-	
-	static ManagerImpl create(QueryProcess exec){
-		return new ManagerImpl(exec);
-	}
-	
-	public static ManagerImpl create(QueryProcess exec, Dataset ds){
-		ManagerImpl m = new ManagerImpl(exec);
-		m.set(ds);
+
+        public static ManagerImpl create(Graph g){
+		ManagerImpl m = new ManagerImpl(g);
 		return m;
 	}
 	
@@ -98,26 +78,10 @@ public class ManagerImpl implements Manager {
 		return null;
 	}
 	
-	public void set(Dataset ds){
-		this.ds = ds;
-	}
         
-        public Dataset getDataset(){
-            return ds;
-        }
 	
-	
-	public boolean isDebug (){
-		return exec.isDebug();
-	}
-	
-	
-	public Mappings query(Query q, ASTQuery ast){
-		return exec.update(q, ast, ds);
-	}
-	
-	public boolean process(Query q, Basic ope){
-		String uri 			= ope.getGraph();
+	public boolean process(Query q, Basic ope, Dataset ds){
+		String uri 		= ope.getGraph();
 		boolean isDefault 	= ope.isDefault();
 		boolean isNamed 	= ope.isNamed();
 		boolean isAll 		= ope.isAll();
@@ -129,17 +93,17 @@ public class ManagerImpl implements Manager {
 		
 		case Update.LOAD: 	return load(q, ope); 
 			
-		case Update.CREATE: return create(ope);
+		case Update.CREATE:     return create(ope);
 			
-		case Update.CLEAR: 	return clear(ope);
+		case Update.CLEAR: 	return clear(ope, ds);
 
-		case Update.DROP: 	return drop(ope);
+		case Update.DROP: 	return drop(ope, ds);
 			
-		case Update.ADD:	return add(ope);
+		case Update.ADD:	return add(ope, ds);
 
-		case Update.MOVE: 	return move(ope);
+		case Update.MOVE: 	return move(ope, ds);
 
-		case Update.COPY: 	return copy(ope);
+		case Update.COPY: 	return copy(ope, ds);
 		
 		case Update.PROLOG: return true;
 			
@@ -215,15 +179,15 @@ public class ManagerImpl implements Manager {
 		return uri.equals(Entailment.RULE);
 	}
 	
-	private boolean clear(Basic ope) {
-		return clear(ope, false);
+	private boolean clear(Basic ope, Dataset ds) {
+		return clear(ope, ds, false);
 	}
 	
-	private boolean drop(Basic ope) {
-		return clear(ope, true);
+	private boolean drop(Basic ope, Dataset ds) {
+		return clear(ope, ds, true);
 	}
 	
-	private boolean clear(Basic ope, boolean drop) {
+	private boolean clear(Basic ope, Dataset ds, boolean drop) {
 		
 		if (ds!=null && ! ds.isEmpty()){
 			if (ds.hasNamed() && (ope.isNamed() || ope.isAll())){
@@ -258,13 +222,7 @@ public class ManagerImpl implements Manager {
 		}
 		return true;
 	}
-	
-	
-	void clear(String g, Basic ope, boolean drop){
-		graph.clear(ope.expand(g), ope.isSilent());
-		if (drop) graph.deleteGraph(ope.expand(g));
-	}
-        
+			
         void clear(Constant g, Basic ope, boolean drop){
 		graph.clear(g.getLabel(), ope.isSilent());
 		if (drop) graph.deleteGraph(g.getLabel());
@@ -276,7 +234,7 @@ public class ManagerImpl implements Manager {
 	 */
 
 	
-	private boolean update(Basic ope, int mode) {
+	private boolean update(Basic ope, Dataset ds, int mode) {
 		String source = ope.getGraph();
 		String target = ope.getTarget();
 		
@@ -287,7 +245,7 @@ public class ManagerImpl implements Manager {
 			else if (ds!=null && ds.hasFrom()){
 				// copy g to default
 				// use from as default specification
-				String name = ope.expand(ds.getFrom().get(0).getLabel());
+				String name = ds.getFrom().get(0).getLabel();
 				update(ope, mode, source, name);
 			}
 		}
@@ -310,21 +268,21 @@ public class ManagerImpl implements Manager {
 		switch (mode){
 		case ADD:   return graph.add(source, target, ope.isSilent()); 
 		case MOVE:  return graph.move(source, target, ope.isSilent());
-		case COPY: 	return graph.copy(source, target, ope.isSilent());
+		case COPY:  return graph.copy(source, target, ope.isSilent());
 		}
 		return true;
 	}
 
-	private boolean copy(Basic ope) {
-		return update(ope, COPY);
+	private boolean copy(Basic ope, Dataset ds) {
+		return update(ope, ds, COPY);
 	}
 	
-	private boolean move(Basic ope) {
-		return update(ope, MOVE);
+	private boolean move(Basic ope, Dataset ds) {
+		return update(ope, ds, MOVE);
 	}
 
-	private boolean add(Basic ope) {
-		return update(ope, ADD);
+	private boolean add(Basic ope, Dataset ds) {
+		return update(ope, ds, ADD);
 	}
 
 
@@ -342,15 +300,19 @@ public class ManagerImpl implements Manager {
 		}
 		String uri = ope.getURI();
 		String src = ope.getTarget();
+                graph.logStart(q);
 		if (ope.isSilent()){
 			load.load(uri, src);
+                        graph.logFinish(q);
 		}
 		else 
 			try {	
 			load.loadWE(uri, src);
+                        graph.logFinish(q);
 		} catch (LoadException e) {
 			logger.error("Load error: " + ope.getURI() + "\n" + e);
 			q.addError("Load error: ", ope.getURI() + "\n" + e);
+                        graph.logFinish(q);
 			return ope.isSilent();
 		}
 		
@@ -367,5 +329,36 @@ public class ManagerImpl implements Manager {
 		
 		return true;
 	}
+        
+        
+        
+        
+         public void insert(Query query, Mappings lMap, Dataset ds){
+		Construct cons =  Construct.create(query);
+		cons.setDebug(query.isDebug());
+				
+		Graph gg  = graph;
+		gg = cons.insert(lMap, gg, ds);
+		
+		lMap.setGraph(gg);
+	}
+	
+	
+	public void delete(Query query, Mappings lMap, Dataset ds){
+		Construct cons =  Construct.create(query);
+		cons.setDebug(query.isDebug());
+
+		Graph gg = graph;
+		gg = cons.delete(lMap, gg, ds);
+		lMap.setGraph(gg);
+	}
+	
+        
+        
+        
+        
+        
+        
+        
 
 }

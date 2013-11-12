@@ -78,6 +78,14 @@ public class Construct
 	
 	public static Construct create(Query q){
 		Construct cons = new Construct(q);
+                if (q.isDetail()){
+                    if (q.isConstruct()){
+			cons.setInsertList(new ArrayList<Entity>());
+                    }
+                    else {
+                        cons.setDeleteList(new ArrayList<Entity>());                    
+                    }
+                }
 		return cons;
 	}
 	

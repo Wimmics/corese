@@ -285,19 +285,19 @@ public class Memory implements Environment {
 	 * Store a new result: take a picture of the stack
 	 * as a Mapping
 	 */
-	Mapping store(Query q){
-		return store(query, false, false);
+	Mapping store(Query q, Producer p){
+		return store(query,  p, false, false);
 	}
 	
-	Mapping store(Query q, boolean subEval){
-		return store(query, subEval, false);
+	Mapping store(Query q, Producer p, boolean subEval){
+		return store(query,  p, subEval, false);
 	}
 	
 	/**
 	 * subEval = true : result of minus() or inpath()
 	 * in this case we do not need select exp 
 	 */
-	Mapping store(Query q, boolean subEval, boolean func){
+	Mapping store(Query q, Producer p, boolean subEval, boolean func){
 		clear();
 		int nb = nbNode;
 		if (! subEval){
@@ -354,8 +354,8 @@ public class Memory implements Environment {
 		
 		if (subEval){
 			if (func){
-				orderGroup(q.getOrderBy(), snode);
-				orderGroup(q.getGroupBy(), gnode);
+				orderGroup(q.getOrderBy(), snode, p);
+				orderGroup(q.getGroupBy(), gnode, p);
 			}
 		}
 		else {
@@ -370,7 +370,7 @@ public class Memory implements Environment {
 					boolean isBound = isBound(e.getNode());
 					
 					if (! e.isAggregate()){
-						node = eval.eval(f, this);
+						node = eval.eval(f, this, p);
 						// bind fun(?x) as ?y
 						boolean success = push(e.getNode(), node);
 						if (success){
@@ -406,8 +406,8 @@ public class Memory implements Environment {
 				}
 			}
 						
-			orderGroup(q.getOrderBy(), snode);
-			orderGroup(q.getGroupBy(), gnode);
+			orderGroup(q.getOrderBy(), snode, p);
+			orderGroup(q.getGroupBy(), gnode, p);
 			
 			for (Exp e : q.getSelectFun()){
 				Filter f = e.getFilter();
@@ -443,15 +443,15 @@ public class Memory implements Environment {
 	}
 	
 	
-	Mapping store(Query q, Mapping map){
+	Mapping store(Query q, Mapping map, Producer p){
 		Node[] gnode = new Node[q.getGroupBy().size()];
-		orderGroup(q.getGroupBy(), gnode);
+		orderGroup(q.getGroupBy(), gnode, p);
 		map.setGroupBy(gnode);
 		return map;
 	}
 	
 	
-	void orderGroup(List<Exp> lExp, Node[] nodes){
+	void orderGroup(List<Exp> lExp, Node[] nodes, Producer p){
 		int n = 0;
 		for (Exp e : lExp){
 			Node qNode = e.getNode();
@@ -461,7 +461,7 @@ public class Memory implements Environment {
 			if (nodes[n] == null){
 				Filter f = e.getFilter();
 				if (f != null && ! e.isAggregate()){
-					nodes[n] = eval.eval(f, this);	
+					nodes[n] = eval.eval(f, this, p);	
 				}
 				
 			}
@@ -901,8 +901,8 @@ public class Memory implements Environment {
 	}
 	
 	// sum(?x)
-	public void aggregate(Evaluator eval, Filter f){
-		current().process(eval, f, this);
+	public void aggregate(Evaluator eval, Producer p, Filter f){
+		current().process(eval, f, this, p);
 	}
 	
 	public Node max(Node qNode){

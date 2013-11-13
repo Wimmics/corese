@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
@@ -775,10 +776,10 @@ public class Mapping
 	 * Mapping as Environment may compute aggregates
 	 * see same function in Memory
 	 */
-	public void aggregate(Evaluator eval, Filter f){
+	public void aggregate(Evaluator eval, Producer p, Filter f){
 		for (Mapping map : getMappings()){
 			// in case there is a nested aggregate
-			eval.eval(f, map);
+			eval.eval(f, map, p);
 		}
 	}
 		

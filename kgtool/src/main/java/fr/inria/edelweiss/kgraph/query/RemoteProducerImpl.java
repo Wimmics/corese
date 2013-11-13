@@ -3,32 +3,6 @@
  * and open the template in the editor.
  */
 package fr.inria.edelweiss.kgraph.query;
-
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Regex;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Memory;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import javax.xml.ws.WebServiceException;
-import org.apache.log4j.Logger;
-//import wsimport.KgramWS.RemoteProducer;
 //import wsimport.KgramWS.RemoteProducerServiceClient;
 
 /**

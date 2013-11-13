@@ -121,4 +121,9 @@ public class ProducerDefault implements Producer {
     public Producer getProducer(Node node) {
         return null;
     }
+
+    @Override
+    public Object getGraph() {
+        return null;
+    }
 }

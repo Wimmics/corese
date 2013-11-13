@@ -176,4 +176,9 @@ public class MetaProducer implements Producer, Iterable<Producer> {
         return producer.getProducer(node);
     }
 
+    @Override
+    public Object getGraph() {
+        return producer.getGraph();
+    }
+
 }

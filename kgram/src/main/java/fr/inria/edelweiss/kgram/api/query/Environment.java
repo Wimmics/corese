@@ -116,7 +116,7 @@ public interface Environment {
 	 * @param eval
 	 * @param f
 	 */
-	void aggregate(Evaluator eval, Filter f);
+	void aggregate(Evaluator eval, Producer p, Filter f);
 	
 	EventManager getEventManager();
 	

@@ -43,9 +43,9 @@ public interface Evaluator {
 	 * @param e
 	 * @return
 	 */
-	Node eval(Filter f, Environment e);
+	Node eval(Filter f, Environment e, Producer p);
 	
-	Object eval(Expr f, Environment e);
+	Object eval(Expr f, Environment e, Producer p);
 
 	
 	/**

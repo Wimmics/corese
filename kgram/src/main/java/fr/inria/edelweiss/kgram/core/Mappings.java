@@ -14,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
@@ -391,15 +392,15 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * optimize this because we enumerate all Mappings for each kind of aggregate
 	 * we could enumerate Mappings once and compute all aggregates for each map
 	 */
-	void aggregate(Evaluator evaluator, Memory memory){
-		aggregate(query, evaluator, memory, true);
+	void aggregate(Evaluator evaluator, Memory memory, Producer p){
+		aggregate(query, evaluator, memory, p, true);
 	}
 	
-	public void aggregate(Query qq, Evaluator evaluator, Memory memory){
-		aggregate(qq, evaluator, memory, false);
+	public void aggregate(Query qq, Evaluator evaluator, Memory memory, Producer p){
+		aggregate(qq, evaluator, memory, p, false);
 	}
 	
-	void aggregate(Query qq, Evaluator evaluator, Memory memory, boolean isFinish){
+	void aggregate(Query qq, Evaluator evaluator, Memory memory, Producer p, boolean isFinish){
 		
 		if (size() == 0){
 			if (qq.isAggregate()){
@@ -412,17 +413,17 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		boolean isEvent = hasEvent;
 
 		// select (count(?n) as ?count)
-		aggregate(evaluator, memory, qq.getSelectFun(), true);
+		aggregate(evaluator, memory, p, qq.getSelectFun(), true);
 				
 		// order by count(?n)
-		aggregate(evaluator, memory, qq.getOrderBy(), false);
+		aggregate(evaluator, memory, p, qq.getOrderBy(), false);
 	
 		if (qq.getHaving() != null){
 			if (isEvent){
 				Event event = EventImpl.create(Event.AGG, query.getHaving());
 				manager.send(event);
 			}
-			eval(evaluator, qq.getHaving(), memory, HAVING);
+			eval(evaluator, qq.getHaving(), memory, p, HAVING);
 		}
 
 		finish(qq);
@@ -469,7 +470,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		}
 	}
 	
-	void aggregate(Evaluator evaluator, Memory memory, List<Exp> list, boolean isSelect){
+	void aggregate(Evaluator evaluator, Memory memory, Producer p, List<Exp> list, boolean isSelect){
 		int n = 0;
 		for (Exp exp : list){
 			if (exp.isAggregate()){
@@ -478,7 +479,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 					Event event = EventImpl.create(Event.AGG, exp);
 					manager.send(event);
 				}
-				eval(evaluator, exp, memory, (isSelect)?SELECT:n++);
+				eval(evaluator, exp, memory, p, (isSelect)?SELECT:n++);
 			}
 		}
 	}
@@ -490,11 +491,11 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * order by ?count
 	 */
 
-	private	void eval(Evaluator eval, Exp exp, Memory mem, int n){
+	private	void eval(Evaluator eval, Exp exp, Memory mem, Producer p, int n){
 		if (exp.isExpGroupBy()){
 			// min(?l, groupBy(?x, ?y)) as ?min
 			Group g = createGroup(exp);
-			aggregate(g, eval, exp, mem, n);
+			aggregate(g, eval, exp, mem, p, n);
 			if (exp.isHaving()){
 				// min(?l, groupBy(?x, ?y), (?l = ?min)) as ?min
 				having(eval, exp, mem, g);
@@ -505,10 +506,10 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		}
 		else if (query.hasGroupBy()){
 			// perform group by and then aggregate
-			aggregate(getCreateGroup(), eval, exp, mem, n);
+			aggregate(getCreateGroup(), eval, exp, mem, p, n);
 		}
 		else {
-			apply(eval, exp, mem, n);
+			apply(eval, exp, mem, p, n);
 		}
 	}
 
@@ -553,20 +554,20 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	/**
 	 * Template perform additionnal group_concat(?out)
 	 */
-	void template(Evaluator eval, Memory mem){
-            template(eval, query, mem);
+	void template(Evaluator eval, Memory mem, Producer p){
+            template(eval, query, mem, p);
         }
         
-        void template(Evaluator eval, Query q, Memory mem){
+        void template(Evaluator eval, Query q, Memory mem, Producer p){
 		if (size() > 0 && q.isTemplate()){
-			setTemplateResult(apply(eval, q.getTemplateGroup(), mem));
+			setTemplateResult(apply(eval, q.getTemplateGroup(), mem, p));
 		}
 	}
 	
 	/**
 	 * Template perform additionnal group_concat(?out)
 	 */
-	private	Node apply(Evaluator eval, Exp exp, Memory memory){
+	private	Node apply(Evaluator eval, Exp exp, Memory memory, Producer p){
 		Mapping firstMap = get(0);
 		// bind the Mapping in memory to retrieve group by variables
 		memory.aggregate(firstMap);
@@ -575,7 +576,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 			Node node = memory.getNode(exp.getFilter().getExp().getExp(0));
 			return node;
 		}
-		Node node = eval.eval(exp.getFilter(), memory);
+		Node node = eval.eval(exp.getFilter(), memory, p);
 		memory.pop(firstMap);
 		return node;
 	}
@@ -587,7 +588,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * in order to be able to compute both count(?doc) and ?count
 	 * we bind Mapping into memory
 	 */
-	private	boolean apply(Evaluator eval, Exp exp, Memory memory, int n){
+	private	boolean apply(Evaluator eval, Exp exp, Memory memory, Producer p, int n){
 		int select = SELECT;
 		// get first Mapping in current group
 		Mapping firstMap = get(0);
@@ -612,7 +613,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 				node = memory.getNode(exp.getNode());			
 			}
 			else {
-				node = eval.eval(exp.getFilter(), memory);
+				node = eval.eval(exp.getFilter(), memory, p);
 			}
 			
 			if (hasEvent){
@@ -641,7 +642,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * Process aggregate for each group
 	 * select, order by, having
 	 */
-	private	void aggregate(Group group, Evaluator eval, Exp exp, Memory mem, int n){
+	private	void aggregate(Group group, Evaluator eval, Exp exp, Memory mem, Producer p, int n){
 		//if (group == null) group = createGroup();
 
 		for (Mappings maps : group.getValues()){
@@ -650,7 +651,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 			// filter (e.g. count()) will consider this group
 			if (hasEvent) maps.setEventManager(manager);
 			mem.setGroup(maps);
-			maps.apply(eval, exp, mem, n);
+			maps.apply(eval, exp, mem, p, n);
 			mem.setGroup(null);
 		}
 	}
@@ -830,7 +831,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * it applies the aggregate f (e.g. sum(?x)) on the list of Mapping
 	 * with Mapping as environment to get variable binding
 	 */
-	void process(Evaluator eval, Filter f, Environment env){
+	void process(Evaluator eval, Filter f, Environment env, Producer p){
 		for (Mapping map : this){
 			// in case there is a nested aggregate, map will be an Environment
 			// it must implement aggregate() and hence must know current Mappings group
@@ -838,7 +839,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 			map.setQuery(env.getQuery());
 			// share same bnode table in all Mapping of current group solution
 			map.setMap(env.getMap());
-			eval.eval(f, map);
+			eval.eval(f, map, p);
 		}
 	}
 

@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 public class EvaluatorDefault implements Evaluator {
 
 	@Override
-	public Node eval(Filter f, Environment e) {
+	public Node eval(Filter f, Environment e, Producer p) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -49,7 +49,7 @@ public class EvaluatorDefault implements Evaluator {
 	}
 
 	@Override
-	public Object eval(Expr f, Environment e) {
+	public Object eval(Expr f, Environment e, Producer p) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -5,12 +5,13 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 
 public class ProxyDefault implements Proxy, ExprType {
 
 	@Override
-	public Object eval(Expr exp, Environment env, Object o1, Object o2) {
+	public Object eval(Expr exp, Environment env, Producer p, Object o1, Object o2) {
 		// TODO Auto-generated method stub
 		switch(exp.oper()){
 		case EQ: return o1 == o2;
@@ -22,20 +23,20 @@ public class ProxyDefault implements Proxy, ExprType {
 	}
 
 	@Override
-	public Object eval(Expr exp, Environment env, Object[] args) {
+	public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	public Object function(Expr exp, Environment env) {
+	public Object function(Expr exp, Environment env, Producer p) {
 		return null;
 	}
 	
-	public Object function(Expr exp, Environment env, Object o1) {
+	public Object function(Expr exp, Environment env, Producer p, Object o1) {
 		return o1;
 	}
 	
-	public Object function(Expr exp, Environment env, Object o1, Object o2) {
+	public Object function(Expr exp, Environment env, Producer p, Object o1, Object o2) {
 		return o1;
 	}
 
@@ -78,7 +79,7 @@ public class ProxyDefault implements Proxy, ExprType {
 	}
 
 	@Override
-	public Object aggregate(Expr exp, Environment env, Node node) {
+	public Object aggregate(Expr exp, Environment env, Producer p, Node node) {
 		// TODO Auto-generated method stub
 		return null;
 	}

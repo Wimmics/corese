@@ -88,15 +88,19 @@ public class SPINProcess {
         return toGraph(toSpin(sparql), g);
     }
 
-    public String toSpin(ASTQuery ast) throws EngineException {
+     public String toSpin(ASTQuery ast) throws EngineException {
+         return toSpin(ast, null);
+     }
+     
+   public String toSpin(ASTQuery ast, String src) throws EngineException {
         SPIN sp = SPIN.create();
-        sp.visit(ast);
+        sp.visit(ast, src);
         String spin = sp.toString();
         return spin;
     }
     
-    public Graph toSpinGraph(ASTQuery ast, Graph g) throws EngineException {
-        return toGraph(toSpin(ast), g);       
+    public Graph toSpinGraph(ASTQuery ast, Graph g, String src) throws EngineException {
+        return toGraph(toSpin(ast, src), g);       
     }
 
     String toSpinSparql(ASTQuery ast) throws EngineException {

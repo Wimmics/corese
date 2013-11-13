@@ -250,33 +250,21 @@ function sparqlFed(sparqlQuery) {
 	$('#btnQueryFed').attr("disabled", true);
 	$("#btnQueryFed").html("Querying ...");
 	console.log('Federated sparql querying '+sparqlQuery);
-        fedURL = '';
-        if ($('#checkProv').prop('checked')) {
-            fedURL = rootURL + '/dqp/sparqlprov';
-        } else {
-            fedURL = rootURL + '/dqp/sparql';
-        }
 	$.ajax({
 		type: 'GET',
 		headers: { 
         	Accept : "application/sparql-results+json"
     	},
 		// url: rootURL + '/dqp/sparql',
-                url: fedURL,
+		url: rootURL + '/dqp/sparqlprov',
 		data: {'query':sparqlQuery},
 		//dataType: "application/sparql-results+json",
 		dataType: "json",
 		crossDomain: true,
 		success: function(data, textStatus, jqXHR){
-                        //console.log(data);
-                        $('#parProvGraph svg').remove();
-                        if ($('#checkProv').prop('checked')) {
-                            renderListFed(data.mappings);  
-                            renderProv(data);
-                        } else {
-                            renderListFed(data);
-                        }
-			
+			// console.log(data);
+			renderListFed(data.mappings);
+			renderProv(data);
 			$('#btnQueryFed').attr("disabled", false);
 			$("#btnQueryFed").html("Query");
 		},
@@ -296,12 +284,7 @@ function sparqlFed(sparqlQuery) {
 
 function addDataSource(endpointURL) {
 	if (! validDataSources.contains(endpointURL)) {
-		$('#tbDataSources tbody').append("<tr> \n\
-                    <td>"+endpointURL+"</td>\n\
-                    <td align=right >\n\
-                        <button id=\"testBtn\" class=\"btn btn-xs btn-success\" type=button>Test</button> \n\
-                        <button id=\"delBtn\" class=\"btn btn-xs btn-danger\" type=button>Delete</button></td> \n\
-                    </tr>");
+		$('#tbDataSources tbody').append("<tr> <td>"+endpointURL+"</td><td><button id=\"testBtn\" class=\"btn btn-mini btn-success\" type=button>Test</button></td> <td><button id=\"delBtn\" class=\"btn btn-mini btn-danger\" type=button>Delete</button></td> <td></td> </tr>");
 		testEndpoint(endpointURL,$('#tbDataSources tbody tr:last').index());
 	}
 }
@@ -321,9 +304,7 @@ function testEndpoint(endpointURL, rowIndex){
 		success: function(data, textStatus, jqXHR){
 			console.log(endpointURL+" responds to SPARQL queries");
 			//update the icon of the data source
-			$('#tbDataSources tbody tr:eq('+rowIndex+') td:eq(1)').html('<button id=\"testBtn\" class=\"btn btn-xs btn-success\" type=button>Test</button> \n\
-                            <button id=\"delBtn\" class=\"btn btn-xs btn-danger\" type=button>Delete</button>\n\
-                            <i class=\"glyphicon glyphicon-ok\"></i>');
+			$('#tbDataSources tbody tr:eq('+rowIndex+') td:eq(3)').html('<i class=\"icon-ok\"></i>');
 			//update the internal list of data sources
 			if(!validDataSources.contains(endpointURL)) {
 				validDataSources.push(endpointURL);
@@ -334,9 +315,7 @@ function testEndpoint(endpointURL, rowIndex){
 			infoError(endpointURL+" does not responds to SPARQL queries");
 			//update the icon of the data source
 			//$('#tbDataSources tbody tr:eq('+rowIndex+')').append('<td><i class=\"icon-warning-sign\"></i></td>');
-			$('#tbDataSources tbody tr:eq('+rowIndex+') td:eq(1)').html('<button id=\"testBtn\" class=\"btn btn-xs btn-success\" type=button>Test</button> \n\
-                            <button id=\"delBtn\" class=\"btn btn-xs btn-danger\" type=button>Delete</button>\n\
-                            <i class=\"glyphicon glyphicon-warning-sign\"></i></td>');
+			$('#tbDataSources tbody tr:eq('+rowIndex+') td:eq(3)').html('<i class=\"icon-warning-sign\"></i>');
 		}
 	});
 }
@@ -345,6 +324,7 @@ function renderList(data) {
 	// JAX-RS serializes an empty list as null, and a 'collection of one' as an object (not an 'array of one')
 	var listVal = data.results.bindings == null ? [] : (data.results.bindings instanceof Array ? data.results.bindings : [data.results.bindings]);
 	var listVar = data.head.vars == null ? [] : (data.head.vars instanceof Array ? data.head.vars : [data.head.vars]);
+
 
 	$('#tbRes thead tr').remove();
 	$('#tbRes tbody tr').remove();
@@ -371,29 +351,25 @@ function renderList(data) {
 }
 
 function renderProv(data) {
+
 	var provenance = data.provenance;
 	var mappings = data.mappings;
+
 	var sMaps = JSON.stringify(mappings);
 
-	var width = $('#parProvGraph').parent().width();
-//        var height = $("svg").parent().height();
-        var height = 400;
+	$('#parProvGraph svg').remove();
+
+	var width = 960, height = 500;
 	var color = d3.scale.category20();
 
 	var force = d3.layout.force()
     	.charge(-150)
     	.linkDistance(40)
-//        .friction(.8)
     	.size([width, height]);
 
 	var svg = d3.select('#parProvGraph').append("svg")
-//    	.attr("width", width)
-//    	.attr("height", height)
-        .attr("viewBox", "0 0 800 400")
-        .attr("width", "100%")
-        .attr("height", 400)
-        .attr("preserveAspectRatio","xMidYMid")
-        .style("background-color", "#F4F2F5");
+    	.attr("width", width)
+    	.attr("height", height);
 
 	force.nodes(provenance.nodes).links(provenance.edges).start();
 
@@ -488,12 +464,12 @@ function renderProv(data) {
       	// }) ;
 	
 	node.append("svg:text")
-            .attr("text-anchor", "middle") 
-            // .attr("fill","white")
-            .style("pointer-events", "none")
-            .attr("font-size", "18px")
-            .attr("font-weight", "200" )
-            .text( function(d) { if ((sMaps.indexOf(d.name) !== -1) && (d.group !== 0)) { return d.name ;}  } ) ;
+				.attr("text-anchor", "middle") 
+				// .attr("fill","white")
+				.style("pointer-events", "none")
+				.attr("font-size", "18px")
+				.attr("font-weight", "200" )
+				.text( function(d) { if ((sMaps.indexOf(d.name) !== -1) && (d.group !== 0)) { return d.name ;}  } ) ;
                         
     
 	force.on("tick", tick); 
@@ -520,6 +496,7 @@ function renderListFed(data) {
 	// JAX-RS serializes an empty list as null, and a 'collection of one' as an object (not an 'array of one')
 	var listVal = data.results.bindings == null ? [] : (data.results.bindings instanceof Array ? data.results.bindings : [data.results.bindings]);
 	var listVar = data.head.vars == null ? [] : (data.head.vars instanceof Array ? data.head.vars : [data.head.vars]);
+
 
 	$('#tbResFed thead tr').remove();
 	$('#tbResFed tbody tr').remove();

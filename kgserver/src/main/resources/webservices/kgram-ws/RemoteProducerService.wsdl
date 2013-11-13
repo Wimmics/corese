@@ -6,6 +6,12 @@
       <xsd:import namespace="http://webservice.kgramserver.edelweiss.inria.fr/" schemaLocation="RemoteProducerService_schema1.xsd"/>
     </xsd:schema>
   </types>
+  <message name="query">
+    <part name="parameters" element="tns:query"/>
+  </message>
+  <message name="queryResponse">
+    <part name="parameters" element="tns:queryResponse"/>
+  </message>
   <message name="load">
     <part name="parameters" element="tns:load"/>
   </message>
@@ -17,18 +23,6 @@
   </message>
   <message name="resetResponse">
     <part name="parameters" element="tns:resetResponse"/>
-  </message>
-  <message name="query">
-    <part name="parameters" element="tns:query"/>
-  </message>
-  <message name="queryResponse">
-    <part name="parameters" element="tns:queryResponse"/>
-  </message>
-  <message name="getEndpoint">
-    <part name="parameters" element="tns:getEndpoint"/>
-  </message>
-  <message name="getEndpointResponse">
-    <part name="parameters" element="tns:getEndpointResponse"/>
   </message>
   <message name="setEndpoint">
     <part name="parameters" element="tns:setEndpoint"/>
@@ -42,6 +36,12 @@
   <message name="uploadRDFResponse">
     <part name="parameters" element="tns:uploadRDFResponse"/>
   </message>
+  <message name="getEndpoint">
+    <part name="parameters" element="tns:getEndpoint"/>
+  </message>
+  <message name="getEndpointResponse">
+    <part name="parameters" element="tns:getEndpointResponse"/>
+  </message>
   <message name="uploadRDFS">
     <part name="parameters" element="tns:uploadRDFS"/>
   </message>
@@ -53,12 +53,6 @@
   </message>
   <message name="loadRDFResponse">
     <part name="parameters" element="tns:loadRDFResponse"/>
-  </message>
-  <message name="getEdges">
-    <part name="parameters" element="tns:getEdges"/>
-  </message>
-  <message name="getEdgesResponse">
-    <part name="parameters" element="tns:getEdgesResponse"/>
   </message>
   <message name="initEngine">
     <part name="parameters" element="tns:initEngine"/>
@@ -72,6 +66,12 @@
   <message name="initEngineFromSQLResponse">
     <part name="parameters" element="tns:initEngineFromSQLResponse"/>
   </message>
+  <message name="getEdges">
+    <part name="parameters" element="tns:getEdges"/>
+  </message>
+  <message name="getEdgesResponse">
+    <part name="parameters" element="tns:getEdgesResponse"/>
+  </message>
   <message name="runRule">
     <part name="parameters" element="tns:runRule"/>
   </message>
@@ -79,6 +79,10 @@
     <part name="parameters" element="tns:runRuleResponse"/>
   </message>
   <portType name="RemoteProducer">
+    <operation name="query">
+      <input message="tns:query"/>
+      <output message="tns:queryResponse"/>
+    </operation>
     <operation name="load">
       <input message="tns:load"/>
       <output message="tns:loadResponse"/>
@@ -86,14 +90,6 @@
     <operation name="reset">
       <input message="tns:reset"/>
       <output message="tns:resetResponse"/>
-    </operation>
-    <operation name="query">
-      <input message="tns:query"/>
-      <output message="tns:queryResponse"/>
-    </operation>
-    <operation name="getEndpoint">
-      <input message="tns:getEndpoint"/>
-      <output message="tns:getEndpointResponse"/>
     </operation>
     <operation name="setEndpoint">
       <input message="tns:setEndpoint"/>
@@ -103,6 +99,10 @@
       <input message="tns:uploadRDF"/>
       <output message="tns:uploadRDFResponse"/>
     </operation>
+    <operation name="getEndpoint">
+      <input message="tns:getEndpoint"/>
+      <output message="tns:getEndpointResponse"/>
+    </operation>
     <operation name="uploadRDFS">
       <input message="tns:uploadRDFS"/>
       <output message="tns:uploadRDFSResponse"/>
@@ -110,10 +110,6 @@
     <operation name="loadRDF">
       <input message="tns:loadRDF"/>
       <output message="tns:loadRDFResponse"/>
-    </operation>
-    <operation name="getEdges">
-      <input message="tns:getEdges"/>
-      <output message="tns:getEdgesResponse"/>
     </operation>
     <operation name="initEngine">
       <input message="tns:initEngine"/>
@@ -123,6 +119,10 @@
       <input message="tns:initEngineFromSQL"/>
       <output message="tns:initEngineFromSQLResponse"/>
     </operation>
+    <operation name="getEdges">
+      <input message="tns:getEdges"/>
+      <output message="tns:getEdgesResponse"/>
+    </operation>
     <operation name="runRule">
       <input message="tns:runRule"/>
       <output message="tns:runRuleResponse"/>
@@ -130,6 +130,15 @@
   </portType>
   <binding name="RemoteProducerPortBinding" type="tns:RemoteProducer">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="query">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
     <operation name="load">
       <soap:operation soapAction=""/>
       <input>
@@ -140,24 +149,6 @@
       </output>
     </operation>
     <operation name="reset">
-      <soap:operation soapAction=""/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-    </operation>
-    <operation name="query">
-      <soap:operation soapAction=""/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-    </operation>
-    <operation name="getEndpoint">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -184,6 +175,15 @@
         <soap:body use="literal"/>
       </output>
     </operation>
+    <operation name="getEndpoint">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
     <operation name="uploadRDFS">
       <soap:operation soapAction=""/>
       <input>
@@ -202,15 +202,6 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="getEdges">
-      <soap:operation soapAction=""/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-    </operation>
     <operation name="initEngine">
       <soap:operation soapAction=""/>
       <input>
@@ -221,6 +212,15 @@
       </output>
     </operation>
     <operation name="initEngineFromSQL">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getEdges">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>

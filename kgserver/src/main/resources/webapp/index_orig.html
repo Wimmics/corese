@@ -1,0 +1,245 @@
+<!--  Web user interface for the Corese/KGRAM framework -->
+<!--  author: alban.gaignard@cnrs.fr -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<meta charset="utf-8">
+<style>
+
+/*.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}*/
+
+.node text {
+  /*pointer-events: none;*/
+  font: 10px sans-serif;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+  fill: none;
+}
+</style>
+
+
+	<title>Corese/KGRAM webapp</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap -->
+	<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
+	<div class="navbar">
+		<div class="navbar-inner">
+			<a class="brand" href="#">Corese/KGRAM</a>
+			<ul id="tab" class="nav">
+				<li class="active"><a href="#Tab1" data-toggle="tab">Data querying</a></li>
+				<li><a href="#Tab2" data-toggle="tab">Data loading</a></li>
+				<li><a href="#Tab3" data-toggle="tab">Distributed query processing</a></li>
+			</ul>
+		</div>
+	</div>
+	<!--<h1>Hello, world!</h1>-->
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span1">
+				<!--My column-->
+
+			</div>
+			<div class="span11">
+				<div class="tab-content">
+					<div class="tab-pane active" id="Tab1">
+						
+						<section>
+							<div class="page-header">
+								<h2>SPARQL 1.1 querying interface</h2>
+							</div>
+
+							<form>
+								<fieldset>
+									<p class="span8">Predefined SPARQL queries for basic RDF statistics. More informations are available at <a href="http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics">http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics</a>.</p>
+									<select class="span8" id = "VOIDSparql_Select">
+										<option value ="0" selected="selected">Total number of triples</option>
+										<option value ="1">Total number of entities</option>
+										<option value ="2">Total number of distinct resource URIs</option>
+										<option value ="3">Total number of distinct classes</option>
+										<option value ="4">Total number of distinct predicates</option>
+										<option value ="5">Total number of distinct subject nodes</option>
+										<option value ="6">Total number of distinct object nodes</option>
+										<option value ="7">Exhaustive list of classes used in the dataset</option>
+										<option value ="8">Exhaustive list of properties used in the dataset</option>
+										<option value ="9">Class vs. total number of instances of the class</option>
+										<option value ="10">Property vs. total number of triples using the property</option>
+										<option value ="11">Property vs. total number of distinct subjects in triples using the property</option>
+										<option value ="12">Property vs. total number of distinct objects in triples using the property</option>
+									</select>
+									<!--<legend>SPARQL 1.1 querying interface</legend>-->
+									<p><textarea id="sparqlTextArea" class="span8" rows="3">
+
+									</textarea></p>
+									<button id="btnQuery" type="button" class="btn btn-success">Query</button>
+									<!--<button id="btnQuery" class="btn">Query</button>-->
+								</fieldset>
+
+								<p>
+									<table id="tbRes" class="table table-striped span10">  
+										<thead>  
+										</thead>  
+										<tbody>  
+										</tbody>  
+									</table>  
+								</p>
+							</form>
+						</section>
+					</div>
+
+					<div class="tab-pane" id="Tab2">
+						<section>
+							<div class="page-header">
+								<h2>Semantic web data loading</h2>
+								<p class="lead">RDF, RDFS, OWL, TTL formats supported.</p>
+							</div>
+
+							<div class="container-fluid">
+								<!--<div class="row-fluid">
+									<div class="input-prepend" class="span12">
+  										<div class="btn-group span4">
+    										<button class="btn dropdown-toggle" data-toggle="dropdown">
+      											Predefined sources
+      											<span class="caret"></span>
+    										</button>
+    										<ul class="dropdown-menu">
+      											...
+    										</ul>
+  										</div>
+  										<input class="span8"  id="prependedDropdownButton" type="text">
+									</div>
+								</div>-->
+								<div class="row-fluid">
+									<div class="input-prepend" class="span8">
+  										<span class="add-on">Into named graph</span>
+  										<input  id="graphLoad" type="text" placeholder="default">
+									</div>
+								</div>
+								<div class="row-fluid">
+									<select id = "Data_Select" class="span8">
+										<option value ="0" selected="selected">Geographic INSEE dataset (2012)</option>
+										<option value ="1">Demographic INSEE dataset (2010)</option>
+										<!--<option value ="0" selected="selected">/Users/gaignard/Documents/Experiences/jows-2013/drugbank_dump.rdf</option>
+										<option value ="1">/Users/gaignard/Documents/Experiences/jows-2013/chebi.rdf</option>
+										<option value ="2">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.cpd.rdf</option>
+										<option value ="3">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.dr.rdf</option>
+										<option value ="4">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.ec.rdf</option>
+										<option value ="5">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.rn.rdf</option>-->
+									</select>
+								</div>
+								<div class="row-fluid">
+									<div class="input-append span8">
+										<!--<input class="span8" id="txtLoad" size="80" type="text" placeholder="http://nyx.unice.fr/~gaignard/data/neurolog.rdf" value="http://nyx.unice.fr/~gaignard/data/neurolog.rdf">-->
+										<input  class="span12" id="txtLoad" type="text" value="http://nyx.unice.fr/~gaignard/data/cog-2012.ttl">
+										<button id="btnLoad" class="btn btn-primary" type="button">Load</button>
+									</div>
+								</div>
+								<div class="row-fluid">
+									<button id="btnReset" class="btn btn-warning span4" type="button">Reset Corese/KGRAM graph</button>
+									<label  class="checkbox span8"><input id="checkEntailments" type="checkbox">Enable RDFS entailments</label>
+								</div>
+							</div>
+						</section>
+					</div>
+
+					<div class="tab-pane" id="Tab3">
+						
+						<section>
+							<div class="page-header">
+								<h2>Data sources configuration</h2>
+							</div>
+
+						<table id="tbDataSources" class="table table-striped span10">  
+							<tbody>  
+							</tbody>  
+						</table>  
+						
+							<select id = "DataSource_Select">
+										<option value ="0" selected="selected">http://localhost:8080/kgram/sparql</option>
+										<option value ="1">http://fr.dbpedia.org/sparql</option>
+										<option value ="2">http://dbpedia.org/sparql</option>
+										<option value ="3">http://rdf.myexperiment.org/sparql</option>
+										<option value ="4">http://pubmed.bio2rdf.org/sparql</option>
+							</select>
+						
+						<div class="input-append">
+							<input class="span10" id="txtDataSource" type="text" placeholder="http://some.sparql.endpoint" value="http://localhost:8080/kgram/sparql" >
+							<button class="btn btn-primary" id="btnDataSource" type="button">Add data source</button>
+						</div>
+						
+						
+						<!--<p>
+							<button id="btnConfigure" class="btn btn-warning" type="button">Configure KGRAM-DQP</button>
+							<button id="btnResetDQP" class="btn btn-inverse" type="button">Reset KGRAM-DQP</button>
+						</p>-->
+					</section>
+
+					<section>
+						<div class="page-header">
+								<h2>Federated SPARQL querying</h2>
+						</div>
+						<form>
+								<fieldset>
+									<p class="span8">Predefined SPARQL queries for data sources federation. <!--More informations are available at <a href="http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics">http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics</a>.--></p>
+									<select class="span8" id = "FedSparql_Select">
+										<option value ="0" selected="selected">Demo federated query</option>
+									</select>
+									<!--<legend>SPARQL 1.1 querying interface</legend>-->
+									<p><textarea id="sparqlFedTextArea" class="span8" rows="9">
+PREFIX idemo:<http://rdf.insee.fr/def/demo#>
+PREFIX igeo:<http://rdf.insee.fr/def/geo#>
+SELECT ?departement ?nom ?popTotale WHERE {
+	?region igeo:codeRegion "24" .
+	?region igeo:subdivisionDirecte ?departement .
+	?departement igeo:nom ?nom .
+	?departement idemo:population ?popLeg .
+	?popLeg idemo:populationTotale ?popTotale .
+} ORDER BY ?popTotale
+</textarea></p>
+									<button id="btnQueryFed" type="button" class="btn btn-success">Query</button>
+								</fieldset>
+
+								<p id="parProvGraph">
+									
+								</p>
+								<p>
+									<table id="tbResFed" class="table table-striped span10">  
+										<thead>  
+										</thead>  
+										<tbody>  
+										</tbody>  
+									</table>  
+								</p>
+							</form>
+
+					</section>
+				</div>
+			</div>	
+			<div id="footer" class="text-center">
+    			<!--<p>Copyright stuff</p>
+    			<ul class="nav nav-pills center-pills">
+        		<li><a href="#">Footer nav link</a></li>
+        		<li><a href="#">Footer nav link</a></li>
+    			</ul>-->
+			</div>		
+			</div>
+		</div>
+			
+	</div>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/spin.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+</body>
+</html>

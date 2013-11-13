@@ -119,7 +119,7 @@ public class JSONFormat extends XMLFormat {
 		String str = dt.getLabel();
 		
 		if (dt.isLiteral()) {			
-			str = toXML(str);
+//			str = toXML(str);
 			
 			if (dt.hasLang()) {
 				print("\"literal\", \"xml:lang\": \"" + dt.getLang() + "\"" );
@@ -144,7 +144,8 @@ public class JSONFormat extends XMLFormat {
 			print("\"uri\"" );
 		}
 		
-		print(", \"value\": \"" + str + "\"}");
+//		print(", \"value\": \"" + str + "\"}");
+              print(", \"value\": \"" + str.replace("\"", "\\\"") + "\"}");
 		
 		if (n > 1 && i == n-1){
 			print("]");

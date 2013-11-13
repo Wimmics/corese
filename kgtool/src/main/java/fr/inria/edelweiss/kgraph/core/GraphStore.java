@@ -40,6 +40,7 @@ public class GraphStore extends Graph {
 
     public Graph createNamedGraph(String name) {
         Graph g = Graph.create();
+        g.index();
         store.put(name, g);
         return g;
     }
@@ -49,8 +50,7 @@ public class GraphStore extends Graph {
         if (g != null){
             return g;
         }
-        g = Graph.create();
-        store.put(name, g);
+        g = createNamedGraph(name);
         return g;
     }
 

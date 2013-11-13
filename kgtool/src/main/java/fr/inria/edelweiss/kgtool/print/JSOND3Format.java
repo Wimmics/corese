@@ -131,7 +131,7 @@ public class JSOND3Format extends RDFFormat {
             sdisplay("\"name\" : ");
             sdisplay(DQUOTE);
             
-            sdisplay(node.toString().replaceAll("\"", ""));
+            sdisplay(node.toString().replace("\"", "\\\""));
             sdisplay(DQUOTE);
             sdisplay(V);
             sdisplay("\"group\" : " + group + " ");
@@ -151,7 +151,7 @@ public class JSOND3Format extends RDFFormat {
             sdisplay("\"name\" : ");
             sdisplay(DQUOTE);
             
-            sdisplay(node.toString().replaceAll("\"", ""));
+            sdisplay(node.toString().replace("\"", "\\\""));
             sdisplay(DQUOTE);
             sdisplay(V);
             sdisplay("\"group\" : 2 ");
@@ -184,7 +184,7 @@ public class JSOND3Format extends RDFFormat {
             sdisplay(V);
             sdisplay("\"label\" : ");
             sdisplay(DQUOTE);
-            sdisplay(edge.getEdgeNode().toString().replaceAll("\"", ""));
+            sdisplay(edge.getEdgeNode().toString().replace("\"", "\\\""));
             sdisplay(DQUOTE);
             sdisplay(COBJ);
             sdisplay(V);

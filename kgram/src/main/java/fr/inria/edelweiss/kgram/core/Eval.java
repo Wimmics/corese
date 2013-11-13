@@ -259,7 +259,7 @@ public class Eval implements ExpType, Plugin {
      * as ?val where {}} Mappings may be completed by filter (e.g. for casting)
      * Mappings will be processed later by aggregates and order by/limit etc.
      */
-    private void function() {
+    private void function () {
         Exp exp = query.getFunction();
         if (exp == null) {
             return;
@@ -267,7 +267,7 @@ public class Eval implements ExpType, Plugin {
         Mappings lMap = evaluator.eval(exp.getFilter(), memory, exp.getNodeList());
         if (lMap != null) {
             for (Mapping map : lMap) {
-                map = complete(map);
+                map = complete(map, producer);
                 submit(map);
             }
         }
@@ -277,12 +277,12 @@ public class Eval implements ExpType, Plugin {
      * additional filter of functional select xpath() as ?val xsd:integer(?val)
      * as ?int
      */
-    private Mapping complete(Mapping map) {
+    private Mapping complete(Mapping map, Producer p) {
         for (Exp ee : query.getSelectFun()) {
             Filter f = ee.getFilter();
             if (f != null && !f.isFunctional()) {
                 memory.push(map, -1);
-                Node node = evaluator.eval(f, memory);
+                Node node = evaluator.eval(f, memory, producer);
                 memory.pop(map);
                 map.setNode(ee.getNode(), node);
             }
@@ -290,7 +290,7 @@ public class Eval implements ExpType, Plugin {
 
         if (query.getOrderBy().size() > 0 || query.getGroupBy().size() > 0) {
             memory.push(map, -1);
-            Mapping m = memory.store(query, true, true);
+            Mapping m = memory.store(query, p, true, true);
             memory.pop(map);
             map = m;
         }
@@ -505,11 +505,11 @@ public class Eval implements ExpType, Plugin {
     }
 
     private void aggregate() {
-        results.aggregate(evaluator, memory);
+        results.aggregate(evaluator, memory, producer);
     }
 
     private void template() {
-        results.template(evaluator, memory);
+        results.template(evaluator, memory, producer);
     }
 
     /**
@@ -570,9 +570,9 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
-    private int solution(int n) {
+    private int solution(Producer p, int n) {
         int backtrack = n - 1;
-        store();
+        store(p);
 
         if (results.size() >= limit) {
             clean();
@@ -636,7 +636,7 @@ public class Eval implements ExpType, Plugin {
         nbCall++;
 
         if (n >= stack.size()) {
-            backtrack = solution(n);
+            backtrack = solution(p, n);
             return backtrack;
         }
 
@@ -945,7 +945,7 @@ public class Eval implements ExpType, Plugin {
                 case SCAN:
                     // scan a partial result (for trace/debug)
 
-                    Mapping scan = env.store(query);
+                    Mapping scan = env.store(query, p);
                     if (scan != null) {
                         logger.debug(scan);
                     }
@@ -2126,13 +2126,13 @@ public class Eval implements ExpType, Plugin {
     /**
      * Store a new result
      */
-    private void store() {
+    private void store(Producer p) {
         boolean store = true;
         if (listener != null) {
             store = listener.process(memory);
         }
         if (store) {
-            Mapping ans = memory.store(query, isSubEval);
+            Mapping ans = memory.store(query, p, isSubEval);
             submit(ans);
             if (hasEvent) {
                 //send(Event.RESULT, query, ans);

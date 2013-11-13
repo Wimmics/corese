@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
@@ -157,7 +158,7 @@ class Walker extends Interpreter {
 	/**
 	 * map is a Mapping
 	 */
-	public Node eval(Filter f, Environment env){
+	public Node eval(Filter f, Environment env, Producer p){
 		Mapping map = (Mapping) env;
 		
 		switch (exp.oper()){
@@ -180,7 +181,7 @@ class Walker extends Interpreter {
 			int i = 0;
 			for (Expr arg : exp.getExpList()){	
 
-				IDatatype dt = (IDatatype) eval.eval(arg, map);
+				IDatatype dt = (IDatatype) eval.eval(arg, map, p);
 				if (isDistinct) {
 					value[i++] = dt;
 				}
@@ -232,7 +233,7 @@ class Walker extends Interpreter {
 		else {
 			// sum(?x + ?y)
 			// eval ?x + ?y
-			dt = (IDatatype) eval.eval(arg, map);
+			dt = (IDatatype) eval.eval(arg, map, p);
 		}
 		
 		if (dt != null){

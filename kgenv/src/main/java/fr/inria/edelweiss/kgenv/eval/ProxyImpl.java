@@ -23,6 +23,7 @@ import static fr.inria.edelweiss.kgram.api.core.ExprType.CONT;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
@@ -98,7 +99,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	}
 	
 	@Override
-	public Object eval(Expr exp, Environment env, Object o1, Object o2) {
+	public Object eval(Expr exp, Environment env, Producer p, Object o1, Object o2) {
 		IDatatype dt1 = (IDatatype) o1;
 		IDatatype dt2 = (IDatatype) o2;		
 		boolean b = true;
@@ -136,7 +137,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			
 			default: 
 				if (plugin!=null) 
-					return  plugin.eval(exp, env, dt1, dt2);
+					return  plugin.eval(exp, env, p, dt1, dt2);
 				return null;
 			
 			}
@@ -151,7 +152,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	
 	
 	
-	public Object function(Expr exp, Environment env) {
+	public Object function(Expr exp, Environment env, Producer p) {
 		
 		switch (exp.oper()){
 		
@@ -170,7 +171,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		case STRUUID: return struuid();                      
 			
 		default: if (plugin!=null){
-				return plugin.function(exp, env);
+				return plugin.function(exp, env, p);
 			}
 		}
 		
@@ -192,7 +193,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		return DatatypeMap.createResource(str);
 	}
 
-	public Object function(Expr exp, Environment env, Object o1) {
+	public Object function(Expr exp, Environment env, Producer p, Object o1) {
 		
 		IDatatype dt = (IDatatype) o1;
 		
@@ -256,7 +257,7 @@ public class ProxyImpl implements Proxy, ExprType {
 			
 		default:
 			if (plugin != null){
-				return plugin.function(exp, env, o1); 
+				return plugin.function(exp, env, p, o1); 
 			}	
 		
 		}
@@ -265,7 +266,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	
 	
 	
-	public Object function(Expr exp, Environment env, Object o1, Object o2) {
+	public Object function(Expr exp, Environment env, Producer p, Object o1, Object o2) {
 		IDatatype dt  = (IDatatype) o1;
 		IDatatype dt1 = (IDatatype) o2;
 		boolean b;
@@ -343,7 +344,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		
 		default:
 			if (plugin != null){
-				return plugin.function(exp, env, o1, o2); 
+				return plugin.function(exp, env, p, o1, o2); 
 			}
 			
 			
@@ -353,7 +354,7 @@ public class ProxyImpl implements Proxy, ExprType {
 	}
 
 	@Override
-	public Object eval(Expr exp, Environment env, Object[] args) {
+	public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
 		switch (exp.oper()){
 					
 		case EXTERNAL:
@@ -365,7 +366,7 @@ public class ProxyImpl implements Proxy, ExprType {
 		case KGRAM: 
 		case EXTERN:
 		case PROCESS:
-			return plugin.eval(exp, env, args);
+			return plugin.eval(exp, env, p, args);
 			
 		case DEBUG:
 			if (el == null){
@@ -430,7 +431,7 @@ public class ProxyImpl implements Proxy, ExprType {
 													
 			default:
 				if (plugin != null){
-					return plugin.eval(exp, env, args); 
+					return plugin.eval(exp, env, p, args); 
 				}	
 		}
 			
@@ -693,11 +694,11 @@ public class ProxyImpl implements Proxy, ExprType {
 	/**
 	 * sum(?x)
 	 */
-	public Object aggregate(Expr exp, Environment env, Node qNode){
+	public Object aggregate(Expr exp, Environment env, Producer p, Node qNode){
 		Walker walk = new Walker(exp, qNode, this, env);
 
 		// apply the aggregate on current group Mapping, 
-		env.aggregate(walk, exp.getFilter());
+		env.aggregate(walk, p, exp.getFilter());
 
 		Object res = walk.getResult();
 		return res;

@@ -621,12 +621,12 @@ public class RemoteProducerWSImpl implements Producer {
 
     @Override
     public boolean isProducer(Node node) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
     public Producer getProducer(Node node) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
     private void annotateResultsWithProv(Graph g, Edge qEdge) {
@@ -678,5 +678,10 @@ public class RemoteProducerWSImpl implements Producer {
                 }
             }
         }
+    }
+
+    @Override
+    public Object getGraph() {
+        return null;
     }
 }

@@ -169,10 +169,8 @@ public class QueryProcess extends QuerySolver {
 	
 	public static Interpreter createInterpreter(Producer p, Matcher m){
 		Interpreter eval  = interpreter(p);
-		Graph g = sGetGraph(p);
-		if (g != null){
-			eval.getProxy().setPlugin(PluginImpl.create(g, m));
-		}
+		Graph g = getGraph(p);
+		eval.getProxy().setPlugin(PluginImpl.create(m));		
 		return eval;
 	}
 	
@@ -540,23 +538,13 @@ public class QueryProcess extends QuerySolver {
 	}
 	
 	public Graph getGraph(){
-		return sGetGraph(getProducer());
+		return getGraph(getProducer());
 	}
 				
-	static Graph sGetGraph(Producer p){
-		Graph g = getGraph(p);
-		if (g != null){
-			return g;
-		}
-		else if (p instanceof MetaProducer){
-			return getGraph(((MetaProducer)p).getProducer());
-		}
-		return null;	
-	}
-	
+
 	static Graph getGraph(Producer p){
-		if (p instanceof ProducerImpl){
-			return ((ProducerImpl) p).getGraph();
+		if (p.getGraph() instanceof Graph){
+			return (Graph) p.getGraph();
 		}
 		return null;
 	}

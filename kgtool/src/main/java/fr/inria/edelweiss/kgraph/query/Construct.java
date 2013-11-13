@@ -165,16 +165,16 @@ public class Construct
 		}
                 
                 graph = g;
-                
                 if (exp.first().isGraph()){
                     // draft: graph kg:system { }
                     // in GraphStore
 			Node gNode = exp.first().getGraphName();
-                        if (gNode.isConstant() 
-                                && graph.getNamedGraph(gNode.getLabel()) != null){
+                      if (gNode.isConstant() 
+                                && graph.getNamedGraph(gNode.getLabel()) != null){                         
                             graph = graph.getNamedGraph(gNode.getLabel());
-                        }
+                       }
                 }
+                             
                                
 		init();
 		//Node gNode = defaultGraph;
@@ -214,7 +214,7 @@ public class Construct
 			if (ee.isEdge()){
 				EdgeImpl edge = construct(gNode, ee.getEdge(), map);
 
-				if (edge != null){
+                                if (edge != null){
 					if (isDelete){
 						if (isDebug) logger.debug("** Delete: " + edge);
 						List<Entity> list = null;
@@ -226,7 +226,6 @@ public class Construct
 							// delete in all named graph
 							list = graph.delete(edge);
 						}
-
 						if (list != null){
 							lMap.setNbDelete(lMap.nbDelete() + list.size());
 

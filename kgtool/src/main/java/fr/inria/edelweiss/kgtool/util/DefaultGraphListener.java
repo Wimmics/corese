@@ -174,7 +174,7 @@ public class DefaultGraphListener implements GraphListener {
         else if (isListen(SPIN)){
             SPINProcess sp = SPINProcess.create();
             try {
-                sp.toSpinGraph(ast, gg);
+                sp.toSpinGraph(ast, gg, "kg:query");
             } catch (EngineException ex) {
                 Logger.getLogger(DefaultGraphListener.class.getName()).log(Level.SEVERE, null, ex);
             }

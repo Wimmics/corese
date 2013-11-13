@@ -53,9 +53,9 @@ public class Interpreter implements Evaluator, ExprType {
 		return proxy;
 	}
 	
-	public Node eval(Filter f, Environment env) {
+	public Node eval(Filter f, Environment env, Producer p) {
 		Expr exp = f.getExp();
-		Object value = eval(exp, env);
+		Object value = eval(exp, env, p);
 		if (value == null) return null;
 		return producer.getNode(value);
 	}
@@ -243,7 +243,7 @@ public class Interpreter implements Evaluator, ExprType {
 		case SAMPLE:
 		case GROUPCONCAT:
                 case AGGAND:
-			return aggregate(exp, env);
+			return aggregate(exp, env, p);
 			
 		case SYSTEM:
 			return system(exp, env);	
@@ -262,26 +262,26 @@ public class Interpreter implements Evaluator, ExprType {
 			switch (exp.getExpList().size()){
 			
 			case 0:
-				return proxy.function(exp, env);
+				return proxy.function(exp, env, p);
 
 			case 1: 
 				Object val = eval(exp.getExp(0), env, p);
 				if (val == null) return null;
-				return proxy.function(exp, env, val);
+				return proxy.function(exp, env, p, val);
 
 			case 2: 
 				Object value1 = eval(exp.getExp(0), env, p);
 				if (value1 == null) return null;
 				Object value2 = eval(exp.getExp(1), env, p);
 				if (value2 == null) return null;
-				return proxy.function(exp, env, value1, value2);
+				return proxy.function(exp, env, p, value1, value2);
 			}
 
 		}
 		
 		Object[] args = evalArguments(exp, env, p);
 		if (args == null) return null;		
-		Object res = proxy.eval(exp, env, args);
+		Object res = proxy.eval(exp, env, p, args);
 		return res;
 
 	}
@@ -295,14 +295,14 @@ public class Interpreter implements Evaluator, ExprType {
 	 * exp: max(?count)
 	 * iterate all values of ?count to get the max
 	 */
-	Object aggregate(Expr exp, Environment env){
+	Object aggregate(Expr exp, Environment env, Producer p){
 		
 		switch(exp.oper()){
 		
 		case COUNT:
 
 			if (exp.arity() == 0){
-				return proxy.aggregate(exp, env, null);
+				return proxy.aggregate(exp, env, p, null);
 			}
 
 		default:
@@ -314,7 +314,7 @@ public class Interpreter implements Evaluator, ExprType {
 				qNode = env.getQueryNode(exp.getExp(0).getLabel());
 			}
 			
-			return proxy.aggregate(exp, env, qNode);
+			return proxy.aggregate(exp, env, p, qNode);
 		}
 
 	}
@@ -345,7 +345,7 @@ public class Interpreter implements Evaluator, ExprType {
 		Object o2 = eval(exp.getExp(1), env, p);
 		if (o2 == null) return null;
 		
-		Object res = proxy.eval(exp, env, o1, o2);
+		Object res = proxy.eval(exp, env, p, o1, o2);
 		return res;
 	}
 	
@@ -363,7 +363,7 @@ public class Interpreter implements Evaluator, ExprType {
 				error = true;
 			}
 			else {
-				Object res = proxy.eval(exp, env, o1, o2);
+				Object res = proxy.eval(exp, env, p, o1, o2);
 				if (res == null){
 					error = true;
 				}

@@ -4,6 +4,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 
 public interface Proxy {
 	
@@ -38,20 +39,20 @@ public interface Proxy {
 
 
 	// terms = <=
-	Object eval(Expr exp, Environment env, Object o1, Object o2);
+	Object eval(Expr exp, Environment env, Producer p, Object o1, Object o2);
 
 	// functions isURI regex
-	Object eval(Expr exp, Environment env, Object[] args);
+	Object eval(Expr exp, Environment env, Producer p, Object[] args);
 	
-	Object function(Expr exp, Environment env);
+	Object function(Expr exp, Environment env, Producer p);
 
-	Object function(Expr exp, Environment env, Object o1);
+	Object function(Expr exp, Environment env, Producer p, Object o1);
 
-	Object function(Expr exp, Environment env, Object o1, Object o2);
+	Object function(Expr exp, Environment env, Producer p, Object o1, Object o2);
 
 	
 	// apply sum(?x) over env mappings
-	Object aggregate(Expr exp, Environment env, Node qNode);
+	Object aggregate(Expr exp, Environment env, Producer p, Node qNode);
 
 	// type operators <=:
 	void setPlugin(Proxy p);

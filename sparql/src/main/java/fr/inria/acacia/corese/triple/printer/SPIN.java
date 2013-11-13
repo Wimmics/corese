@@ -95,9 +95,22 @@ public class SPIN implements ASTVisitor {
      */
     @Override
     public void visit(ASTQuery ast) {
-        visitProlog(ast);              
+        visit(ast, null);
+    }
+    
+    public void visit(ASTQuery ast, String src) {
+        visitProlog(ast); 
+        if (src != null){
+            sb.append("graph ");
+            sb.append(src);
+            sb.append(" {");
+            sb.append(NL);
+        }
         process(ast);
         displayVar();        
+        if (src != null){
+           sb.append("}");
+        }
     }
     
     void process(ASTQuery ast){

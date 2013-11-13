@@ -547,7 +547,7 @@ public class PathFinder
 	 */
 	Node getPathNode(){
 		Filter f  = query.getGlobalFilter(Query.PATHNODE);
-		Node node = evaluator.eval(f, memory);
+		Node node = evaluator.eval(f, memory, producer);
 		return node;
 	}
 

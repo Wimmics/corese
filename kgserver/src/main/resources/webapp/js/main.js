@@ -311,9 +311,9 @@ function testEndpoint(endpointURL, rowIndex){
 	var testQuery = "SELECT * where {?x ?p ?y} LIMIT 10"
 	$.ajax({
 		type: 'GET',
-		// headers: { 
-  //       	Accept : "application/sparql-results+json"
-  //   	},
+		headers: { 
+                    Accept : "application/sparql-results+json"
+                },
 		url: endpointURL,
 		data: {'query':testQuery},
 		dataType: "json",
@@ -331,6 +331,8 @@ function testEndpoint(endpointURL, rowIndex){
 			resetDQP();
 		},
 		error: function(jqXHR, textStatus, errorThrown){
+                        console.log(jqXHR);
+                        console.log(errorThrown);
 			infoError(endpointURL+" does not responds to SPARQL queries");
 			//update the icon of the data source
 			//$('#tbDataSources tbody tr:eq('+rowIndex+')').append('<td><i class=\"icon-warning-sign\"></i></td>');

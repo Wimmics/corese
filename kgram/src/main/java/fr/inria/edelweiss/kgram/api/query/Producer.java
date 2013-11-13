@@ -192,5 +192,6 @@ public interface Producer {
 
          Producer getProducer(Node node);
 	
-
+         // May return an object that implement the RDF graph
+         Object getGraph();
 }

@@ -64,6 +64,6 @@ public class JSONTest {
                 + JSOND3Format.create(g).toString()
                 + " }";
         
-        assertEquals(2969, mapsProvJson.length());
+        assertEquals(3003, mapsProvJson.length());
     }
 }

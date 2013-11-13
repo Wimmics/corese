@@ -3,7 +3,7 @@
   xmlns:rss="http://purl.org/rss/1.0/"
   xmlns:dc="http://purl.org/dc/elements/1.1/">
         <foaf:Person rdf:about="http://i3s/Alban">
-                <foaf:name>Alban Gaignard</foaf:name>
+                <foaf:name>Alban "Gaignard"</foaf:name>
                 <foaf:mbox>mailto:alban.gaignard@i3s.unice.fr</foaf:mbox>
                 <foaf:mbox>mailto:alban.gaignard@gmail.com</foaf:mbox>
                 <foaf:knows rdf:resource="http://i3s/Javier"/>

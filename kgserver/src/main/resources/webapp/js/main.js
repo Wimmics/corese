@@ -9,6 +9,8 @@
 Array.prototype.contains = function(a) { return this.indexOf(a) != -1 };
 Array.prototype.remove = function(a) {if (this.contains(a)){ return this.splice(this.indexOf(a),1)}};
 
+$.support.cors = true;
+
 function alertTimeout(wait){
     setTimeout(function(){
         $('#footer').children('.alert:last-child').remove();
@@ -219,20 +221,35 @@ function load() {
 function sparql(sparqlQuery) {
 	$('#btnQuery').attr("disabled", true);
 	$("#btnQuery").html("Querying ...");
-	console.log('sparql '+sparqlQuery+' to '+rootURL);
+        isConstruct = sparqlQuery.toLowerCase().indexOf("construct") >= 0;
+        
+        if (isConstruct) {
+            endpointURL = rootURL + '/sparql/d3';
+        } else {
+            endpointURL = rootURL + '/sparql';
+        }
+        console.log('sparql '+sparqlQuery+' to '+endpointURL);
+        
 	$.ajax({
 		type: 'GET',
 		headers: { 
         	Accept : "application/sparql-results+json"
     	},
-		url: rootURL + '/sparql',
+		url: endpointURL,
 		data: {'query':sparqlQuery},
 		//dataType: "application/sparql-results+json",
 		dataType: "json",
 		crossDomain: true,
 		success: function(data, textStatus, jqXHR){
-			console.log(data);
-			renderList(data);
+//                    console.log(data);  
+                    $('#parRDFGraph svg').remove();
+                    if (!isConstruct) {
+                        renderList(data);
+                    } else {
+                        renderList(data.mappings);
+                        renderD3(data, "#parRDFGraph");
+                    }
+                        
 			$('#btnQuery').attr("disabled", false);
 			$("#btnQuery").html("Query");
 		},
@@ -272,7 +289,7 @@ function sparqlFed(sparqlQuery) {
                         $('#parProvGraph svg').remove();
                         if ($('#checkProv').prop('checked')) {
                             renderListFed(data.mappings);  
-                            renderProv(data);
+                            renderD3(data, "#parProvGraph");
                         } else {
                             renderListFed(data);
                         }
@@ -317,7 +334,8 @@ function testEndpoint(endpointURL, rowIndex){
 		url: endpointURL,
 		data: {'query':testQuery},
 		dataType: "json",
-		// crossDomain: true,
+		crossDomain: true,
+                async:true,
 		success: function(data, textStatus, jqXHR){
 			console.log(endpointURL+" responds to SPARQL queries");
 			//update the icon of the data source
@@ -365,30 +383,30 @@ function renderList(data) {
 		$.each(item, function(name, v) {
     		/// do stuff
     		row = row + "<td>"+htmlEncode(v.value)+"</td>";
-    		console.log(name + '=' +  htmlEncode(v.value));
+    		//console.log(name + '=' +  htmlEncode(v.value));
   		});
 		row = row + "</tr>";
 		$('#tbRes tbody').prepend(row); 
 	});
 }
 
-function renderProv(data) {
-	var provenance = data.provenance;
+function renderD3(data, htmlCompId) {
+	var d3Data = data.d3;
 	var mappings = data.mappings;
 	var sMaps = JSON.stringify(mappings);
 
-	var width = $('#parProvGraph').parent().width();
+	var width = $(htmlCompId).parent().width();
 //        var height = $("svg").parent().height();
         var height = 400;
 	var color = d3.scale.category20();
 
 	var force = d3.layout.force()
-    	.charge(-150)
-    	.linkDistance(40)
+    	.charge(-200)
+    	.linkDistance(50)
 //        .friction(.8)
     	.size([width, height]);
 
-	var svg = d3.select('#parProvGraph').append("svg")
+	var svg = d3.select(htmlCompId).append("svg")
 //    	.attr("width", width)
 //    	.attr("height", height)
         .attr("viewBox", "0 0 800 400")
@@ -397,10 +415,10 @@ function renderProv(data) {
         .attr("preserveAspectRatio","xMidYMid")
         .style("background-color", "#F4F2F5");
 
-	force.nodes(provenance.nodes).links(provenance.edges).start();
+	force.nodes(d3Data.nodes).links(d3Data.edges).start();
 
   	var link = svg.selectAll(".link")
-    	.data(provenance.edges)
+    	.data(d3Data.edges)
       	.enter().append("path")
      	.attr("d", "M0,-5L10,0L0,5")
      	// .enter().append("line")
@@ -446,7 +464,7 @@ function renderProv(data) {
 	}
 
   	var node = svg.selectAll("g.node")
-      	.data(provenance.nodes)
+      	.data(d3Data.nodes)
       	.enter().append("g")
       	.attr("class", "node")
      	// .call(force.drag);

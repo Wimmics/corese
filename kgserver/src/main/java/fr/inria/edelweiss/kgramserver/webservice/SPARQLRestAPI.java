@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.print.CSVFormat;
+import fr.inria.edelweiss.kgtool.print.JSOND3Format;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TSVFormat;
@@ -149,6 +150,33 @@ public class SPARQLRestAPI {
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
             return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+        } catch (Exception ex) {
+            logger.error("Error while querying the remote KGRAM engine");
+            ex.printStackTrace();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
+        }
+    }
+    
+    @GET
+    @Produces("application/sparql-results+json")
+    @Path("/d3")
+    public Response getTriplesJSONForGetWithGraph(@QueryParam("query") String query,
+            @QueryParam("default-graph-uri") List<String> defaultGraphUris,
+            @QueryParam("named-graph-uri") List<String> namedGraphUris) {
+        try {
+            
+            Mappings m = exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
+            
+            String mapsD3 = "{ \"mappings\" : "
+                    + JSONFormat.create(m).toString()
+                    + " , "
+                    + "\"d3\" : "
+                    + JSOND3Format.create((Graph) m.getGraph()).toString()
+                    + " }";
+
+//            System.out.println(mapsD3);
+            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(mapsD3).build();
+            
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();

@@ -174,7 +174,7 @@ public class DqpRestAPI {
             String mapsProvJson = "{ \"mappings\" : "
                     + JSONFormat.create(maps).toString()
                     + " , "
-                    + "\"provenance\" : "
+                    + "\"d3\" : "
                     + JSOND3Format.create((Graph) mProv.getGraph()).toString()
                     + " }";
 

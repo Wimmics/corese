@@ -7,6 +7,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 
@@ -152,7 +153,7 @@ public class JSONFormat extends XMLFormat {
             print("\"uri\"");
         }
 
-        print(", \"value\": \"" + str.replace("\"", "\\\"") + "\"}");
+        print(", \"value\": \"" + Constant.addEscapes(str) + "\"}");
 
         if (n > 1 && i == n - 1) {
             print("]");

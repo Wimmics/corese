@@ -6,6 +6,7 @@ package fr.inria.edelweiss.kgdqp.core;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLSoapEndpointClient;
@@ -644,7 +645,7 @@ public class RemoteProducerWSImpl implements Producer {
                     + " _:b2 prov:agent <" + rp.getEndpoint() + "> . \n"
                     // The plan corresponding to the "recipe" 
                     + " _:b3 rdf:type prov:Plan . \n"
-                    + " _:b3 rdfs:comment \"" + qEdge.getLabel().replaceAll("\"", "'") + "\". \n";
+                    + " _:b3 rdfs:comment \"" + Constant.addEscapes(qEdge.toString()) + "\". \n";
 //                                + " _:b3 rdfs:comment \"" + rwSparql.replaceAll("\"", "'").replaceAll("\n", " ").replaceAll("\t", " ") + "\". \n";
 
             while (it.hasNext()) {
@@ -660,10 +661,10 @@ public class RemoteProducerWSImpl implements Producer {
                             + " prov:wasGeneratedBy _:b1 ; \n"
                             + " rdf:type prov:Entity ; \n"
                             + " prov:wasAttributedTo <" + rp.getEndpoint() + "> ; \n"
-                            + " rdf:predicate \"" + e.getEdgeNode().getLabel().replaceAll("\"", "'") + "\" ; \n"
-                            + " rdf:subject \"" + e.getNode(0).getLabel().replaceAll("\"", "'") + "\" ; \n"
-                            + " rdf:object \"" + e.getNode(1).getLabel().replaceAll("\"", "'") + "\" ; \n"
-                            + " rdfs:comment \"" + qEdge.getLabel().replaceAll("\"", "'") + "\" ] \n"
+                            + " rdf:predicate " + e.getEdgeNode().toString() + " ; \n"
+                            + " rdf:subject " + e.getNode(0).toString() + " ; \n"
+                            + " rdf:object " + e.getNode(1).toString() + " ; \n"
+                            + " rdfs:comment \"" + qEdge.toString() + "\" ] \n"
                             + "}";
                     try {
                         logger.debug(insertProv);

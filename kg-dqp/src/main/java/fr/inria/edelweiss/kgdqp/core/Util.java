@@ -26,6 +26,9 @@ public class Util {
 //    public static boolean provEnabled = true;
     public static String provPrefix = "http://www.w3.org/ns/prov#";
 
+    
+    // TODO test if EXISTS are included in OR or AND, needs recursive call
+    // recursive removal of EXISTS (because it is not sufficient to know in that an edge exists in a single source) 
     public static List<Filter> getApplicableFilter(Environment env, Edge edge) {
         // KGRAM exp for current edge
         Exp exp = env.getExp();;
@@ -39,20 +42,6 @@ public class Util {
 
             if (exp.bind(f)) {
                 matchingFilters.add(f);
-            }
-        }
-
-//         workaround for non gathered filters
-        if (matchingFilters.isEmpty()) {
-            for (Exp e : env.getQuery().getBody()) {
-                if (e.isFilter()) {
-                    Filter kgFilter = e.getFilter();
-//                    System.out.println("\t\tFilter " + kgFilter.toString() + " -> " + edge);
-                    if (bound(edge, kgFilter)) {
-//                        System.out.println("\t\t\t BOUND");
-                        matchingFilters.add(kgFilter);
-                    }
-                }
             }
         }
 

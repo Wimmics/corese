@@ -285,7 +285,7 @@ function sparqlFed(sparqlQuery) {
 		dataType: "json",
 		crossDomain: true,
 		success: function(data, textStatus, jqXHR){
-                        //console.log(data);
+//                        console.log(data);
                         $('#parProvGraph svg').remove();
                         if ($('#checkProv').prop('checked')) {
                             renderListFed(data.mappings);  

@@ -484,6 +484,7 @@ function renderD3(data, htmlCompId) {
       	.on("dblclick", function(d) {
       		d.fixed = false;
       	})
+        .on("mouseover", fade(.1)).on("mouseout", fade(1))
       	.style("stroke", function(d) { return color(d.group); })
       	.style("stroke-width", 5)
       	.style("stroke-width",function(d) {
@@ -499,7 +500,7 @@ function renderD3(data, htmlCompId) {
       // 		return "none";
       // 	})
       	// .style("fill", "white")
-      	.style("fill", function(d) { return color(d.group); })
+      	.style("fill", function(d) { return color(d.group); });
       	// .on("mouseout", function(d, i) {
        //  	d3.select(this).style("fill", "white");
       	// })
@@ -515,6 +516,15 @@ function renderD3(data, htmlCompId) {
             .attr("font-weight", "200" )
             .text( function(d) { if ((sMaps.indexOf(d.name) !== -1) && (d.group !== 0)) { return d.name ;}  } ) ;
                         
+    
+    var linkedByIndex = {};
+    d3Data.edges.forEach(function(d) {
+        linkedByIndex[d.source.index + "," + d.target.index] = 1;
+    });
+
+    function isConnected(a, b) {
+        return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index === b.index;
+    }
     
 	force.on("tick", tick); 
 
@@ -534,6 +544,20 @@ function renderD3(data, htmlCompId) {
     	return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
   		});
 	};
+        
+        function fade(opacity) {
+        return function(d) {
+            node.style("stroke-opacity", function(o) {
+                thisOpacity = isConnected(d, o) ? 1 : opacity;
+                this.setAttribute('fill-opacity', thisOpacity);
+                return thisOpacity;
+            });
+
+            link.style("stroke-opacity", function(o) {
+                return o.source === d || o.target === d ? 1 : opacity;
+            });
+        };
+    }
 }
 
 function renderListFed(data) {

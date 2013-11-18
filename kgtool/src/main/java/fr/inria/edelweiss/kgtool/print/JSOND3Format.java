@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgtool.print;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -118,14 +119,16 @@ public class JSOND3Format extends RDFFormat {
     }
 
     void d3Nodes() {
-
+        
         for (Entity e : graph.getRBNodes()) {
             Node node = e.getNode();
             int group = 1;
             if (node.isBlank()) {
                 group = 0;
-            }
-
+            } else if (node.toString().contains("/sparql")) {
+                group = 2;
+            } 
+            
             sdisplay(TAB);
             sdisplay(OOBJ);
             sdisplay("\"name\" : ");
@@ -151,10 +154,10 @@ public class JSOND3Format extends RDFFormat {
             sdisplay("\"name\" : ");
             sdisplay(DQUOTE);
             
-            sdisplay(node.toString().replace("\"", "\\\""));
+            sdisplay(Constant.addEscapes(node.toString()));
             sdisplay(DQUOTE);
             sdisplay(V);
-            sdisplay("\"group\" : 2 ");
+            sdisplay("\"group\" : 3 ");
             sdisplay(COBJ);
             sdisplay(V);
             sdisplay(NL);

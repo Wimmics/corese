@@ -1,6 +1,6 @@
 package fr.inria.edelweiss.kgraph.core;
 
-import java.util.ArrayList;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -41,6 +41,10 @@ public class EdgeFactory {
 	 boolean hasTag(){
 		return graph.hasTag();
 	}
+         
+         boolean hasTime(){
+             return false;
+         }
 		
 	
 	// not with rules
@@ -58,6 +62,9 @@ public class EdgeFactory {
 	public EdgeImpl create(Node source, Node subject, Node predicate, Node value){
 		if (hasTag()){
 			return tagCreate(source, subject, predicate, value);
+		}
+                else if (hasTime()){
+			return timeCreate(source, subject, predicate, value);
 		}
 		else {
 			return stdCreate(source, subject, predicate, value);
@@ -78,7 +85,6 @@ public class EdgeFactory {
 	}
 
 	public EdgeImpl create(Node source, Node predicate, List<Node> list){
-		//EdgeExtend ee = EdgeExtend.create(source, predicate, list);
 		EdgeImpl ee = EdgeImpl.create(source, predicate, list);
 		return ee;
 	}
@@ -96,19 +102,21 @@ public class EdgeFactory {
          * 
 	 */
 	public EdgeImpl tagCreate(Node source, Node subject, Node predicate, Node value){
-		ArrayList<Node> list = new ArrayList<Node>(3);
-		list.add(subject);
-		list.add(value);
-		return create(source, predicate, list);
+		return stdCreate(source, subject, predicate, value);
 	}
 	
 		
 	public EdgeImpl stdCreate (Node source, Node subject, Node predicate, Node value){
-		//EdgeCore edge =  EdgeCore.create(source, subject, predicate, value);
 		EdgeImpl edge =  EdgeImpl.create(source, subject, predicate, value);
 		return edge;
 	}
 	
+        // with time stamp
+	public EdgeImpl timeCreate (Node source, Node subject, Node predicate, Node value){ 
+            Node time = graph.getNode(DatatypeMap.newDate(), true, true);
+	    EdgeImpl edge =  new EdgeImpl(source, predicate,  subject,  value, time);
+	    return edge;
+	}
 	
 			
 

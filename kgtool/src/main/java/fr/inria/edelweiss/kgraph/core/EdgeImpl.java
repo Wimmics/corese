@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgraph.core;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -35,6 +34,14 @@ public class EdgeImpl implements Edge, Entity {
         nodes[0] = subject;
         nodes[1] = object;
     }
+    
+    EdgeImpl(Node g, Node pred, Node subject, Node object, Node arg1) {
+        this(g, pred);
+        nodes = new Node[3];
+        nodes[0] = subject;
+        nodes[1] = object;
+        nodes[2] = arg1;
+   }
     
      EdgeImpl(Node g, Node p, Node[] args) {
         this(g, p);

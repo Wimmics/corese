@@ -141,7 +141,6 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 			
 			if (ok){
 				last = ent.getEdge();
-                                //provenance(ent);                                
                                 return ent;
 			}
 		}

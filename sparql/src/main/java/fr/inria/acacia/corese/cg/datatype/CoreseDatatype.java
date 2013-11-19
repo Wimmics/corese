@@ -218,7 +218,7 @@ public class CoreseDatatype
 		}
 		String display = (datatype == null) ? valueJType : datatype;
 		
-		IDatatype o = null;
+		CoreseDatatype o = null;
 		Class valueClass = null;
 		try{
 			valueClass = Class.forName(valueJType);
@@ -230,7 +230,7 @@ public class CoreseDatatype
 		try {
 			Class[] argClass = {label.getClass()};
 			String[] arg = {label};
-			o = (IDatatype)valueClass.getConstructor(argClass).newInstance((Object[])arg);
+			o = (CoreseDatatype) valueClass.getConstructor(argClass).newInstance((Object[])arg);
 		}
 		
 		catch (ClassCastException e){
@@ -254,10 +254,13 @@ public class CoreseDatatype
 		
 		o.setLang(lang);
 		o.setDatatype(datatype);
-		return o;
+                return o.typeCheck();
 	}
 	
-	
+	public IDatatype typeCheck(){
+            return this;
+        }
+        
 	public boolean isBindable(){
 		if (isNumber()) return false;
 		return true;

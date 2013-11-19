@@ -401,7 +401,7 @@ public class ProducerImpl implements Producer {
 
         exp = exp.getArg(0);
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
-        for (Node pred : graph.getProperties()) {
+        for (Node pred : graph.getSortedProperties()) {
             if (match(exp, pred)) {
                 // exclude
             } else {

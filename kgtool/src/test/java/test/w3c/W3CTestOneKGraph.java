@@ -1,28 +1,17 @@
 package test.w3c;
 
-import java.util.ArrayList;
-
-import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.CoreseException;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.MatcherImpl;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.BuildOptim;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import org.junit.Ignore;
 
+@Ignore
 public class W3CTestOneKGraph {
 	
 	public static void main(String[] args) throws EngineException, CoreseException{

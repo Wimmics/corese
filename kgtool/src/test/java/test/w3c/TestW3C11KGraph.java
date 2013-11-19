@@ -51,6 +51,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
 /**
  * KGRAM benchmark on W3C SPARQL 1.1 Query & Update Test cases
@@ -64,12 +65,14 @@ import org.junit.BeforeClass;
  * @author Olivier Corby, Edelweiss, INRIA 2011
  *
  */
+
 public class TestW3C11KGraph {
     // root of test case RDF data
 
     static final String data0 = "/home/corby/workspace/coreseV2/src/test/resources/data/";
     
-    static final String data = "/home/corby/NetBeansProjects/kgram/trunk/kgtool/src/test/resources/data/";
+//    static final String data = "/home/corby/NetBeansProjects/kgram/trunk/kgtool/src/test/resources/data/";
+    static final String data = TestW3C11KGraph.class.getClassLoader().getResource("data").getPath()+"/";
 
     // old local copy:
     //static final String froot = data + "w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/";

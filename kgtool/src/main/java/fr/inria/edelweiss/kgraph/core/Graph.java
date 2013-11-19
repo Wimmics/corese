@@ -223,24 +223,24 @@ public class Graph //implements IGraph
 		}
 	}
 			
-	
 	Graph(){
+           this(LENGTH); 
+        }
+        
+	Graph(int length){
 		lock = new ReentrantReadWriteLock();
 		
-		tables  = new ArrayList<Index>(LENGTH);
-		//dtables = new Index[LENGTH];
-		for (int i=0; i<LENGTH; i++){
+		tables  = new ArrayList<Index>(length);
+		for (int i=0; i<length; i++){
 			// One table per node index
 			// edges are sorted according to ith Node
 			int j = i;
-			if (i == LENGTH - 1){
+			if (i == length - 1){
 				j = IGRAPH;
 			}
 			setIndex(i, new EdgeIndex(this, j));	
-			//dtables[i] = new EdgeIndex(this, j, true);
 		}
 		table 		= getIndex(0);
-		//dtable 		= dtables[0];
 		literal 	= Collections.synchronizedSortedMap(new TreeNode());
                 vliteral 	= Collections.synchronizedMap(new HashMap<String, Entity>());
 
@@ -1261,15 +1261,7 @@ public class Graph //implements IGraph
 			}
 		}
 		return list;
-	}
-	
-	
-	public Iterable<Entity> getDefaultEdges(Node predicate, Node node, Node node2, int n){
-		if (isTopRelation(predicate)){
-			return getEdges(node, n, hasDefault);
-		}
-		return getIndex(n, hasDefault).getEdges(predicate, node, node2);
-	}
+	}	
         
         /**
          * Return start blank node for all lists
@@ -1377,23 +1369,11 @@ public class Graph //implements IGraph
 		return getSortedEdges(node, n);
 	}
 	
-	public Iterable<Entity> getEdges(Node node, int n, boolean def){
-		MetaIterator<Entity> meta = new MetaIterator<Entity>();
-		
-		for (Node pred : table.getProperties()){
-			Iterable<Entity> it = getIndex(n, def).getEdges(pred, node);
-			if (it != null){
-				meta.next(it);
-			}
-		}
-		if (meta.isEmpty()) return new ArrayList<Entity>();
-		return meta;
-	}
 	
 	public Iterable<Entity> getSortedEdges(Node node, int n){
 		MetaIterator<Entity> meta = new MetaIterator<Entity>();
 		
-		for (Node pred : table.getSortedProperties()){
+		for (Node pred : getSortedProperties()){
 			Iterable<Entity> it = getIndex(n).getEdges(pred, node);
 			if (it != null){
 				meta.next(it);

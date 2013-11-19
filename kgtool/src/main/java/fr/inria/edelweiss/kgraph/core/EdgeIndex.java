@@ -23,16 +23,16 @@ import fr.inria.edelweiss.kgram.tool.MetaIterator;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class EdgeIndex extends Hashtable<Node, List<Entity>> 
+public class EdgeIndex extends Hashtable<Node, ArrayList<Entity>> 
 implements Index {
 	static final int IGRAPH = Graph.IGRAPH;
 	private static Logger logger = Logger.getLogger(EdgeIndex.class);	
         static boolean byKey = Graph.valueOut;
 
-
 	int index = 0, other = 1;
 	int count = 0;
 	boolean isDebug = !true,
+                isUpdate = true,
 	isIndexer = false,
 	// do not create entailed edge in kg:entailment if it already exist in another graph
 	isOptim = false;
@@ -40,6 +40,7 @@ implements Index {
 	Comparator<Entity>  comp, skip;
 	Graph graph;
 	Hashtable<Node, Node> types;
+        List<Node> sortedProperties;
 
 	EdgeIndex(Graph g, int n){
 		init(g, n);
@@ -152,22 +153,33 @@ implements Index {
 	/**
 	 * Ordered list of properties
 	 * For pprint
+         * TODO: optimize it
 	 */
 	public List<Node> getSortedProperties(){
-		List<Node> list = new ArrayList<Node>();
+            if (isUpdate){
+                sortProperties();
+                isUpdate = false;
+            }
+            return sortedProperties;
+        }
+        
+        
+       synchronized void sortProperties(){
+		sortedProperties = new ArrayList<Node>();
 		for (Node pred : getProperties()){
-			list.add(pred);
+			sortedProperties.add(pred);
 		}
-		Collections.sort(list, new Comparator<Node>(){
+		Collections.sort(sortedProperties, new Comparator<Node>(){
 			@Override
 			public int compare(Node o1, Node o2) {
 				// TODO Auto-generated method stub
 				return o1.compare(o2);
 			}
 		});
-
-		return list;
 	}
+        
+        
+        
 	
 	public Iterable<Node> getProperties(){
 		return keySet();
@@ -203,6 +215,7 @@ implements Index {
 	}
 	
 	public void clear(){
+            isUpdate = true;
 		if (index == 0){
 			logClear();
 		}
@@ -213,12 +226,17 @@ implements Index {
 	 * Add a property in the table
 	 */
 	public Entity add(Entity edge){
+            if (index != IGRAPH && edge.nbNode() <= index){
+                // use case:  additional node is not present, do not index on this node
+                // never happens for subject object and graph
+                return null;
+            }
 		List<Entity> list = define(edge.getEdge().getEdgeNode());
 		
 		Comparator cc = comp;
 		boolean needTag = index == 0 && graph.needTag(edge);
 		if (needTag){
-			// this edge has no tag yet and it will need one
+			// this edge has no tag yet and it will need onefind
 			// let's see if there is the same triple (with another tag)
 			// in this case, we skip the insertion
 			// otherwise we tag the triple and we insert it 
@@ -338,6 +356,11 @@ implements Index {
 	}
 	
 	public boolean exist(Entity edge){
+            if (index != IGRAPH && edge.nbNode() <= index){
+                // use case:  additional node is not present, do not index on this node
+                // never happens for subject object and graph
+                return false;
+            }
 		List<Entity> list = getByLabel(edge); 
 		if (list==null) return false;
 		int i = find(list, edge, 0, list.size());
@@ -371,7 +394,7 @@ implements Index {
 	 * Create and store an empty list if needed
 	 */
 	private List<Entity> define(Node predicate){
-		List<Entity> list = get(predicate);
+		ArrayList<Entity> list = get(predicate);
 		if (list == null){
 			list = new ArrayList<Entity>(0);
 			put(predicate, list);
@@ -379,7 +402,7 @@ implements Index {
 		return list;
 	}
 	
-	void set(Node predicate, List<Entity> list){
+	void set(Node predicate, ArrayList<Entity> list){
 		put(predicate, list);
 	}
 
@@ -409,8 +432,8 @@ implements Index {
 	 */
 	private void reduce(boolean bsize){
 		for (Node pred : getProperties()){
-			List<Entity> l1 = get(pred);
-			List<Entity> l2 = reduce(l1);
+			ArrayList<Entity> l1 = get(pred);
+			ArrayList<Entity> l2 = reduce(l1);
 			put(pred, l2);
 			if (bsize && l1.size()!=l2.size()){
 				graph.setSize(graph.size() - (l1.size()-l2.size()));
@@ -418,8 +441,8 @@ implements Index {
 		}
 	}
 	
-	private List<Entity> reduce(List<Entity> list){
-		List<Entity> l = new ArrayList<Entity>();
+	private ArrayList<Entity> reduce(List<Entity> list){
+		ArrayList<Entity> l = new ArrayList<Entity>();
 		Entity pred = null;
 		for (Entity ent : list){
 			if (pred == null){
@@ -461,10 +484,20 @@ implements Index {
 	 */
 	private List<Entity> synCheckGet(Node pred){
 		synchronized (pred){
-			List<Entity> list = get(pred);
+			ArrayList<Entity> list = get(pred);
 			if (list != null && list.size()==0){
 				List<Entity> std = (List<Entity>) graph.getIndex().getEdges(pred, null);
-				list.addAll(std);
+                                list.ensureCapacity(std.size());
+                                if (index < 2){
+                                    // we are sure that there are at least 2 nodes
+                                   list.addAll(std);
+                                }
+                                else for (Entity ent : std){
+                                    // if additional node is missing: do not index this edge
+                                    if (ent.nbNode() > index){
+                                        list.add(ent);
+                                    }
+                                }
 				Collections.sort(list, comp);
 			}
 			return list;
@@ -695,6 +728,11 @@ implements Index {
 	}
 	
 	public Entity delete(Entity edge){
+            if (index != IGRAPH && edge.nbNode() <= index){
+                // use case:  additional node is not present, do not index on this node
+                // never happens for subject object and graph
+                return null;
+            }
 		List<Entity> list = getByLabel(edge);
 		if (list == null) return null;
 		
@@ -737,12 +775,16 @@ implements Index {
 	}
 
 	void logDelete(Entity ent){		
-		if (ent != null && getIndex() == 0){
+		if (ent != null){
+                    isUpdate = true;
+                    if (getIndex() == 0){
 			graph.logDelete(ent);
+                    }
 		}
 	}
 	
 	void logInsert(Entity ent){
+            isUpdate = true;
 		if (getIndex() == 0){
 			graph.logInsert(ent);
 		}

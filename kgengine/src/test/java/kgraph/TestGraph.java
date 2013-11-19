@@ -3,7 +3,7 @@ package kgraph;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.EdgeCore;
+import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
@@ -44,37 +44,38 @@ public class TestGraph {
 		g = graph.addGraph("g1");
 		
 		s = graph.addBlank();
-		p = graph.addProperty("name");
-		o = graph.addLiteral("John");
-		graph.addEdge(EdgeCore.create(g, s, p, o, o));
+                // API changes EdgeCore -> EdgeImpl
+//		p = graph.addProperty("name");
+//		o = graph.addLiteral("John");
+//		graph.addEdge(EdgeImpl.create(g, s, p, o, o));
 		
 		p = graph.addProperty("member");
 		o = graph.addResource("cnrs");
-		graph.addEdge(EdgeCore.create(g, s, p, o));
+		graph.addEdge(EdgeImpl.create(g, s, p, o));
 		
 		p = graph.addProperty("age");
 		o = graph.addLiteral(23);
-		graph.addEdge(EdgeCore.create(g, s, p, o));
+		graph.addEdge(EdgeImpl.create(g, s, p, o));
 		
 		p = graph.addProperty(RDF.TYPE);
 		o = graph.addResource("Person");
-		graph.addEdge(EdgeCore.create(g, s, p, o));
+		graph.addEdge(EdgeImpl.create(g, s, p, o));
 		
 		s = graph.addResource("Person");
 		p = graph.addProperty(RDFS.SUBCLASSOF);
 		o = graph.addResource("Animal");
-		graph.addEdge(EdgeCore.create(g, s, p, o));
+		graph.addEdge(EdgeImpl.create(g, s, p, o));
 		
 		s = graph.addResource("name");
 		p = graph.addProperty(RDFS.SUBPROPERTYOF);
 		o = graph.addResource("property");
-		graph.addEdge(EdgeCore.create(g, s, p, o));
+		graph.addEdge(EdgeImpl.create(g, s, p, o));
 		
 		
 		s = graph.addResource("cnrs");
 		p = graph.addProperty("name");
 		o = graph.addLiteral("CNRS");
-		graph.addEdge(EdgeCore.create(g, s, p, o));
+		graph.addEdge(EdgeImpl.create(g, s, p, o));
 
 		
 		return graph;

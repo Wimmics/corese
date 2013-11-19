@@ -46,6 +46,15 @@ public class CoreseXMLLiteral extends CoreseStringLiteral {
     	return datatype;
     }
     
+    // TBD: it should parse the XML content
+    public IDatatype typeCheck(){
+        if (getLabel().startsWith("<") 
+                && ! getLabel().endsWith(">")){
+            return DatatypeMap.createUndef(getLabel(), RDF.XMLLITERAL);
+        }
+        return this;
+    }
+    
     
     public boolean equals(IDatatype iod) throws CoreseDatatypeException {
     	switch (iod.getCode()){

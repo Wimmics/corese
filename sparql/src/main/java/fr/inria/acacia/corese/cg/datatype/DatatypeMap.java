@@ -168,27 +168,6 @@ public class DatatypeMap implements Cst, RDF {
 		return map;
 	}
 
-	
-
-//	private static Method getDatatypeNormalizedLabelMethod(String dt){
-//		if(dt==null){ return null;}
-//		Method m = null;
-//		Mapping mp = ht.get(dt);
-//		if(mp==null){ return null; }
-//		m= mp.getNormalizedLabelMethod();
-//		if(m == null) { return null; }
-//		return m;
-//	}
-
-//	private static Class getDatatypeNormalizedLabelClass(String dt){
-//
-//		if(dt==null){ return null; }
-//		Mapping mp = ht.get(dt);
-//		if(mp==null){ return null; }
-//		Class c = mp.getNormalizedLabelClass();
-//		if(c==null){ return null;}
-//		return c;
-//	}
 
 
 	/**
@@ -473,6 +452,12 @@ public class DatatypeMap implements Cst, RDF {
         
         public static IDatatype createObject(String name){
             return createLiteral(name, XMLLITERAL, null);
+        }
+        
+        public static IDatatype createUndef(String label, String datatype){
+            IDatatype dt = new CoreseUndefLiteral(label);
+            dt.setDatatype(datatype);                  
+            return dt;
         }
 	
 

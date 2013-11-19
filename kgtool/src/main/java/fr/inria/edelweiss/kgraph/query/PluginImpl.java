@@ -15,7 +15,6 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
-import static fr.inria.edelweiss.kgram.api.core.ExprType.SKOLEM;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
@@ -49,7 +48,6 @@ public class PluginImpl extends ProxyImpl {
     Loader ld;
 
     PluginImpl(Matcher m) {
-        //graph = g;
         if (table == null) {
             table = new Table();
         }

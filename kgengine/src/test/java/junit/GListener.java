@@ -5,6 +5,7 @@ import java.util.List;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Tagger;
@@ -44,6 +45,16 @@ public class GListener implements GraphListener, Tagger {
         
     private Operation getOperation() {
         return  store.get(store.size()-1);
+    }
+
+    @Override
+    public void finish(Graph g, Query q, Mappings m) {
+        
+    }
+
+    @Override
+    public void load(String path) {
+        
     }
         
         
@@ -205,11 +216,6 @@ public class GListener implements GraphListener, Tagger {
         System.out.println(q);       
         store.add(new Operation());
     }
-
-    @Override
-    public void finish(Graph g, Query q) {
-         
-   }
 
    
     

@@ -1,50 +1,22 @@
 package kgraph;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Date;
 import java.util.Hashtable;
 
 import fr.inria.acacia.corese.api.EngineFactory;
-import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.IResults;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-//import fr.inria.acacia.corese.cg.datatype.RDF;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.exceptions.QueryLexicalException;
-import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
-import fr.inria.acacia.corese.triple.api.Creator;
-import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.LoadTurtle;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.ParserSparql1;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.rdf.EdgeExtend;
 import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
-import fr.inria.edelweiss.kgtool.print.TripleFormat;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
-import fr.inria.edelweiss.kgraph.rdf.*;
+import org.junit.Ignore;
 
+@Ignore
 public class TestLoad  {
 	Hashtable<String, String> blank;
 	Graph graph;

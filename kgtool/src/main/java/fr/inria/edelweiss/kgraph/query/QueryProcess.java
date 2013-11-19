@@ -7,7 +7,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
@@ -19,7 +18,6 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
-import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.api.Log;
@@ -55,16 +53,19 @@ public class QueryProcess extends QuerySolver {
 	
 	protected QueryProcess (Producer p, Evaluator e, Matcher m){
 		super(p, e, m);
+                Graph g = getGraph(p);
+                if (g != null){
+                    setManager(ManagerImpl.create(g));
+                }
 		init();
 	}
 	
 	void init(){
-		if (isSort && producer instanceof ProducerImpl){
-			ProducerImpl pp = (ProducerImpl) producer;
-			set(SorterImpl.create(pp.getGraph()));
+		Graph g = getGraph();
+		if (isSort && g != null){
+			set(SorterImpl.create(g));
 		}
 		
-		Graph g = getGraph();
 		if (g != null){
 			lock = g.getLock();
 		}
@@ -100,7 +101,7 @@ public class QueryProcess extends QuerySolver {
 		ProducerImpl p =  ProducerImpl.create(g);
 		p.setMatch(isMatch);
 		QueryProcess exec = QueryProcess.create(p);
-                exec.setManager(ManagerImpl.create(g));
+                //exec.setManager(ManagerImpl.create(g));
 		exec.setMatch(isMatch);
 		return exec;
 	}
@@ -169,17 +170,10 @@ public class QueryProcess extends QuerySolver {
 	
 	public static Interpreter createInterpreter(Producer p, Matcher m){
 		Interpreter eval  = interpreter(p);
-		Graph g = getGraph(p);
 		eval.getProxy().setPlugin(PluginImpl.create(m));		
 		return eval;
 	}
-	
-	public void setPPrinter(String str){
-		Interpreter eval = (Interpreter) evaluator;
-		ProxyImpl p = (ProxyImpl) eval.getProxy();
-		PluginImpl pi = (PluginImpl) p.getPlugin();
-		pi.setPPrinter(str);
-	}
+		
 	
 	
 	/****************************************************************
@@ -542,7 +536,7 @@ public class QueryProcess extends QuerySolver {
 	}
 				
 
-	static Graph getGraph(Producer p){
+        Graph getGraph(Producer p){
 		if (p.getGraph() instanceof Graph){
 			return (Graph) p.getGraph();
 		}

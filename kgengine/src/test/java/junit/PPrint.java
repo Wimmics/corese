@@ -499,37 +499,6 @@ public class PPrint {
 	}
 	
 	
-	public void testSPIN2(){
-		Graph g = Graph.create(true);
-		Load ld = Load.create(g);
-		QueryProcess.definePrefix("ex", "http://www.example.org/");
-		
-		for (int i = 0; i<1; i++){
-			ld.load(root + "pprint/spindata");
-		}
-				
-		QueryLoad ql = QueryLoad.create();
-		String q = ql.read(root + "pprint/testspin.rq");
-						
-		QueryProcess exec = QueryProcess.create(g);
-		exec.setPPrinter(root + "pprint/spintemplate");
-		
-		PPrinter pp = PPrinter.create(g, root + "pprint/spintemplate");
-		NSManager nsm = NSManager.create();
-		nsm.definePrefix("sp", "http://spinrdf.org/sp/");
-		pp.setNSM(nsm);
-		//pp.setDebug(true);
-
-		System.out.println(pp.pprint()); 
-				
-//		try {
-//			Mappings map = exec.query(q);
-//			System.out.println(map);
-//		} catch (EngineException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	}
 	
 
 	public void testTemplate(){
@@ -561,7 +530,7 @@ public class PPrint {
 
 		
 		QueryProcess exec = QueryProcess.create(g, true);
-		exec.setPPrinter(root + "pprint/test");
+		//exec.setPPrinter(root + "pprint/test");
 		
 		try {
 			
@@ -607,7 +576,7 @@ public class PPrint {
 		
 		System.out.println("** start");
 		
-		exec.setPPrinter(root + "pprint/template");
+		//exec.setPPrinter(root + "pprint/template");
 		//exec.setPPrinter(root + "pprint/query");
 		
 		//exec.setPPrinter(root + "pprint/asttemplate");

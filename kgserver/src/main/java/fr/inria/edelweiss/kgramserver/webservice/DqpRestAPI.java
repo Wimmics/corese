@@ -4,6 +4,11 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import fr.inria.edelweiss.kgdqp.core.Messages;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
@@ -19,7 +24,10 @@ import fr.inria.edelweiss.kgtool.print.JSOND3Format;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -82,6 +90,44 @@ public class DqpRestAPI {
             ex.printStackTrace();
             return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("URL exception while configuring KGRAM-DQP").build();
         }
+    }
+
+    @POST
+    @Path("/testDatasources")
+    @Produces("application/sparql-results+json")
+    public Response testDataSource(@FormParam("endpointUrl") String endpointURL) {
+
+        if ((endpointURL == null) || (endpointURL.isEmpty())) {
+            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("{\"test\" : false}").build();
+        }
+
+        try {
+            String query = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                    + "SELECT distinct ?x ?p ?y WHERE"
+                    + "{"
+                    + "     ?x ?p ?y ."
+                    + "}"
+                    + "     LIMIT 1";
+
+            ClientConfig config = new DefaultClientConfig();
+            Client client = Client.create(config);
+            WebResource service = client.resource(new URI(endpointURL));
+            String response = service.queryParam("query", query).accept("application/sparql-results+xml").get(String.class);
+
+            if (response.contains("sparql-results")) {
+                return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("{\"test\" : true}").build();
+            } else {
+                return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("{\"test\" : false}").build();
+            }
+
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("{\"test\" : false}").build();
+        } catch (ClientHandlerException ex) {
+            logger.error(ex.getMessage());
+            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("{\"test\" : false}").build();
+        }
+
     }
 
     @GET

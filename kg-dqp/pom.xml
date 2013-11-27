@@ -22,11 +22,11 @@
             <artifactId>kgserver-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgimport</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
@@ -70,7 +70,7 @@
             <version>1.0.3</version>
         </dependency>
         
-         <dependency>
+        <dependency>
             <groupId>org.graphstream</groupId>
             <artifactId>gs-core</artifactId>
         </dependency>

@@ -64,20 +64,22 @@
             <artifactId>datafederator-jdbc-connector</artifactId>
             <version>1.0</version>
         </dependency>-->
-        <dependency>
+
+        
+<!--        <dependency>
             <groupId>org.swinglabs</groupId>
             <artifactId>swing-layout</artifactId>
             <version>1.0.3</version>
-        </dependency>
+        </dependency>-->
         
-        <dependency>
+<!--        <dependency>
             <groupId>org.graphstream</groupId>
             <artifactId>gs-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.graphstream</groupId>
             <artifactId>gs-ui</artifactId>
-        </dependency>
+        </dependency>-->
         
     </dependencies>
 
@@ -128,7 +130,7 @@
                         <phase>package</phase>
                         <configuration>
                             <descriptorId>jar-with-dependencies</descriptorId>
-                            <finalName>kg-dqp-1.0.7-fedbench.jar</finalName>
+                            <finalName>kg-dqp-1.0.7</finalName>
                             <!--                            <archive>
                                 <manifest>
                                     <mainClass></mainClass>

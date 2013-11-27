@@ -17,11 +17,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import org.apache.commons.lang.time.StopWatch;
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.ui.layout.springbox.implementations.LinLog;
-import org.graphstream.ui.layout.springbox.implementations.SpringBox;
-import org.graphstream.ui.swingViewer.Viewer;
+//import org.graphstream.graph.Edge;
+//import org.graphstream.graph.implementations.MultiGraph;
+//import org.graphstream.ui.layout.springbox.implementations.LinLog;
+//import org.graphstream.ui.layout.springbox.implementations.SpringBox;
+//import org.graphstream.ui.swingViewer.Viewer;
 
 /*
  * To change this template, choose Tools | Templates
@@ -102,90 +102,89 @@ public class DisplayProvenance {
             + "}";
 
     
-     public void display(Graph kg) {
-
-        String sujetUri, predicat, objetUri;
-        String temp = "http://www.inria.fr/acacia/corese#Results";
-
-        org.graphstream.graph.Graph graph = new MultiGraph("prov", false, true);
-
-        //temp
-//        graph.addNode(temp).addAttribute("ui.style", "fill-color:yellow;");
-
-        String sujet = null;
-        String objet = null;
-
-        Iterable<Entity> edges = kg.getEdges();
-
-        int num = 0;
-        for (Entity ent : edges) {
-
-            fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
-            sujetUri = edge.getNode(0).getLabel();
-            objetUri = edge.getNode(1).getLabel();
-
-            predicat = getLabel(edge.getEdgeNode().getLabel());
-
-            sujet = sujetUri;
-            objet = objetUri;
-//            sujet = getLabel(sujetUri);
-//            objet = getLabel(objetUri);
-
-            org.graphstream.graph.Node gSubject = graph.getNode(sujetUri);
-            if (gSubject == null) {
-                gSubject = graph.addNode(sujetUri);
-                gSubject.addAttribute("label", sujet);
-
-                if (edge.getNode(0).isBlank()) {
-                    gSubject.setAttribute("ui.class", "Blank");
-                }
-                //temp
-//                Edge ee = graph.addEdge("temp" + num, sujetUri, temp);
-//                ee.addAttribute("ui.style", "size:1;fill-color:yellow;");
-//                num++;
-            }
-
-
-            org.graphstream.graph.Node gObject = graph.getNode(objetUri);
-            //if (find(objetUri, graph.getNodeIterator()) == null) {
-            if (gObject == null) {
-                gObject = graph.addNode(objetUri);
-                gObject.addAttribute("label", objet);
-//                    gobj.setAttribute("ui.class", objet);
-                if (edge.getNode(1).isBlank()) {
-                    gObject.setAttribute("ui.class", "Blank");
-                }
-                IDatatype dt = (IDatatype) edge.getNode(1).getValue();
-                if (dt.isLiteral()) {
-                    gObject.setAttribute("ui.class", "Literal");
-                }
-                //temp
-//                Edge ee = graph.addEdge("temp" + num, objetUri, temp);
-//                ee.addAttribute("ui.style", "size:1;fill-color:yellow;");
-//                num++;
-            }
-            Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
-            ee.addAttribute("label", predicat);
-            num++;
-        }
-        graph.addAttribute("ui.stylesheet", stylesheet);
-        graph.addAttribute("ui.antialias");
-
-        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-
-        //permet de visualiser correctement le graphe dans l'onglet de Corese
-        SpringBox sLayout = new SpringBox();
-//        eb.setForce((float) 0.05);
-        LinLog lLayout = new LinLog();
-        lLayout.setQuality(0.9);
-        lLayout.setGravityFactor(0.9);
-
-//        Viewer sgv = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-        Viewer sgv = graph.display();
-        sgv.enableAutoLayout(lLayout);
-//        View sgr = sgv.addDefaultView(false);
-//        View sgr = sgv.getDefaultView();
-    }
+//     public void display(Graph kg) {
+//
+//        String sujetUri, predicat, objetUri;
+//        String temp = "http://www.inria.fr/acacia/corese#Results";
+//
+//        org.graphstream.graph.Graph graph = new MultiGraph("prov", false, true);
+//
+//        //temp
+////        graph.addNode(temp).addAttribute("ui.style", "fill-color:yellow;");
+//
+//        String sujet = null;
+//        String objet = null;
+//
+//        Iterable<Entity> edges = kg.getEdges();
+//
+//        int num = 0;
+//        for (Entity ent : edges) {
+//
+//            fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
+//            sujetUri = edge.getNode(0).getLabel();
+//            objetUri = edge.getNode(1).getLabel();
+//
+//            predicat = getLabel(edge.getEdgeNode().getLabel());
+//
+//            sujet = sujetUri;
+//            objet = objetUri;
+//
+//
+//            org.graphstream.graph.Node gSubject = graph.getNode(sujetUri);
+//            if (gSubject == null) {
+//                gSubject = graph.addNode(sujetUri);
+//                gSubject.addAttribute("label", sujet);
+//
+//                if (edge.getNode(0).isBlank()) {
+//                    gSubject.setAttribute("ui.class", "Blank");
+//                }
+//                //temp
+////                Edge ee = graph.addEdge("temp" + num, sujetUri, temp);
+////                ee.addAttribute("ui.style", "size:1;fill-color:yellow;");
+////                num++;
+//            }
+//
+//
+//            org.graphstream.graph.Node gObject = graph.getNode(objetUri);
+//            //if (find(objetUri, graph.getNodeIterator()) == null) {
+//            if (gObject == null) {
+//                gObject = graph.addNode(objetUri);
+//                gObject.addAttribute("label", objet);
+////                    gobj.setAttribute("ui.class", objet);
+//                if (edge.getNode(1).isBlank()) {
+//                    gObject.setAttribute("ui.class", "Blank");
+//                }
+//                IDatatype dt = (IDatatype) edge.getNode(1).getValue();
+//                if (dt.isLiteral()) {
+//                    gObject.setAttribute("ui.class", "Literal");
+//                }
+//                //temp
+////                Edge ee = graph.addEdge("temp" + num, objetUri, temp);
+////                ee.addAttribute("ui.style", "size:1;fill-color:yellow;");
+////                num++;
+//            }
+//            Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
+//            ee.addAttribute("label", predicat);
+//            num++;
+//        }
+//        graph.addAttribute("ui.stylesheet", stylesheet);
+//        graph.addAttribute("ui.antialias");
+//
+//        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+//
+//        //permet de visualiser correctement le graphe dans l'onglet de Corese
+//        SpringBox sLayout = new SpringBox();
+////        eb.setForce((float) 0.05);
+//        LinLog lLayout = new LinLog();
+//        lLayout.setQuality(0.9);
+//        lLayout.setGravityFactor(0.9);
+//
+////        Viewer sgv = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+//        Viewer sgv = graph.display();
+//        sgv.enableAutoLayout(lLayout);
+////        View sgr = sgv.addDefaultView(false);
+////        View sgr = sgv.getDefaultView();
+//    }
 
     private String getLabel(String name) {
         int ind = name.lastIndexOf("#");
@@ -249,7 +248,7 @@ public class DisplayProvenance {
         QueryProcess qp = QueryProcess.create(kg);
         Mappings maps = qp.query(provQuery);
         System.out.println("Displayed graph : #"+((Graph)maps.getGraph()).size());
-        display((Graph) maps.getGraph());
+//        display((Graph) maps.getGraph());
     }
     
      public void displayProvenance(Graph kg) throws EngineException {
@@ -268,7 +267,7 @@ public class DisplayProvenance {
         QueryProcess qp = QueryProcess.create(kg);
         Mappings maps = qp.query(provQuery);
         System.out.println("Displayed graph : #"+((Graph)maps.getGraph()).size());
-        display((Graph) maps.getGraph());
+//        display((Graph) maps.getGraph());
     }
     
      public void displayLight(Graph kg) throws EngineException {
@@ -294,7 +293,7 @@ public class DisplayProvenance {
         Mappings maps = qp.query(provQuery);
         System.out.println("Displayed graph : #"+((Graph)maps.getGraph()).size());
 //        System.out.println(JSOND3Format.create(maps));
-        display((Graph) maps.getGraph());
+//        display((Graph) maps.getGraph());
     }
 
     

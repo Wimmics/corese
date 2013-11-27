@@ -4,10 +4,10 @@
  */
 package test.distribution;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+//import com.hp.hpl.jena.rdf.model.Model;
+//import com.hp.hpl.jena.rdf.model.ModelFactory;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgimport.JenaGraphFactory;
+//import fr.inria.edelweiss.kgimport.JenaGraphFactory;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import java.io.*;
@@ -53,13 +53,13 @@ public class FedBenchTest {
         File dir = new File("/Users/gaignard/Desktop/FedBench-dataset");
         for (File f : dir.listFiles()) {
             if (f.getName().endsWith(".n3")) {
-                System.out.println("Loading " + f.getAbsolutePath());
-                FileInputStream fis = new FileInputStream(f);
-                Model model = ModelFactory.createDefaultModel();
-                model.read(fis, null, "N-TRIPLE");
-                System.out.println("Loaded " + f.getAbsolutePath());
-                Graph kgGraph = JenaGraphFactory.createGraph(model);
-                System.out.println("KG import successfull");
+//                System.out.println("Loading " + f.getAbsolutePath());
+//                FileInputStream fis = new FileInputStream(f);
+//                Model model = ModelFactory.createDefaultModel();
+//                model.read(fis, null, "N-TRIPLE");
+//                System.out.println("Loaded " + f.getAbsolutePath());
+//                Graph kgGraph = JenaGraphFactory.createGraph(model);
+//                System.out.println("KG import successfull");
             } else if (f.getName().endsWith(".nt")) {
 //                System.out.println("Loading " + f.getAbsolutePath());
 //                FileInputStream fis = new FileInputStream(f);

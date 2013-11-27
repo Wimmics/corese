@@ -325,28 +325,30 @@ function addDataSource(endpointURL) {
 
 function testEndpoint(endpointURL, rowIndex){
 	console.log("Testing "+endpointURL+" endpoint !");
-	var testQuery = "SELECT * where {?x ?p ?y} LIMIT 10"
 	$.ajax({
-		type: 'GET',
-		headers: { 
-                    Accept : "application/sparql-results+json"
-                },
-		url: endpointURL,
-		data: {'query':testQuery},
-		dataType: "json",
-		crossDomain: true,
-                async:true,
+		
+		type: 'POST',
+                url: rootURL + '/dqp/testDatasources',
+		data: {'endpointUrl':endpointURL},
+		dataType: 'json',
+                
 		success: function(data, textStatus, jqXHR){
-			console.log(endpointURL+" responds to SPARQL queries");
-			//update the icon of the data source
-			$('#tbDataSources tbody tr:eq('+rowIndex+') td:eq(1)').html('<button id=\"testBtn\" class=\"btn btn-xs btn-success\" type=button>Test</button> \n\
+                    console.log(data);
+                    if (data.test === true) {
+                        console.log(endpointURL+" responds to SPARQL queries");
+                         
+                        //update the icon of the data source
+                        $('#tbDataSources tbody tr:eq('+rowIndex+') td:eq(1)').html('<button id=\"testBtn\" class=\"btn btn-xs btn-success\" type=button>Test</button> \n\
                             <button id=\"delBtn\" class=\"btn btn-xs btn-danger\" type=button>Delete</button>\n\
                             <i class=\"glyphicon glyphicon-ok\"></i>');
-			//update the internal list of data sources
-			if(!validDataSources.contains(endpointURL)) {
-				validDataSources.push(endpointURL);
-			}
-			resetDQP();
+                        //update the internal list of data sources
+                        if(!validDataSources.contains(endpointURL)) {
+                            validDataSources.push(endpointURL);
+                        }
+                        resetDQP();
+                     } else {
+                        console.log(endpointURL+" does NOT respond to SPARQL queries");
+                     }
 		},
 		error: function(jqXHR, textStatus, errorThrown){
                         console.log(jqXHR);

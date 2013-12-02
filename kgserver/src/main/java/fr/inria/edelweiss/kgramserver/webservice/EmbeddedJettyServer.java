@@ -4,12 +4,17 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Properties;
+import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
@@ -24,7 +29,6 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandler;
@@ -42,17 +46,22 @@ public class EmbeddedJettyServer {
 
     private static Logger logger = Logger.getLogger(EmbeddedJettyServer.class);
     private static int port = 8080;
+    private static boolean entailments = false;
+    private static String dataPath = null;
 
     public static void main(String args[]) throws Exception {
 
 //        PropertyConfigurator.configure(EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties"));
 //        logger.debug("Started.");
-
         Options options = new Options();
         Option portOpt = new Option("p", "port", true, "specify the server port");
         Option helpOpt = new Option("h", "help", false, "print this message");
+        Option entailOpt = new Option("e", "entailments", false, "enable RDFS entailments");
+        Option dataOpt = new Option("l", "load", true, "data file or directory to be loaded");
         Option versionOpt = new Option("v", "version", false, "print the version information and exit");
         options.addOption(portOpt);
+        options.addOption(entailOpt);
+        options.addOption(dataOpt);
         options.addOption(helpOpt);
         options.addOption(versionOpt);
 
@@ -66,14 +75,20 @@ public class EmbeddedJettyServer {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp("kgserver", header, options, footer, true);
                 System.exit(0);
-            } else if (cmd.hasOption("p")) {
+            } 
+            if (cmd.hasOption("p")) {
                 port = Integer.parseInt(cmd.getOptionValue("p"));
-            } else if (cmd.hasOption("v")) {
+            } 
+            if (cmd.hasOption("v")) {
                 logger.info("version 1.0.7");
                 System.exit(0);
-            } else {
-                //extract HTML source for the web UI
-            }
+            } 
+            if (cmd.hasOption("e")) {
+                entailments = true;
+            } 
+            if (cmd.hasOption("l")) {
+                dataPath = cmd.getOptionValue("l");
+            } 
 
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
             Server server = new Server(port);
@@ -89,7 +104,7 @@ public class EmbeddedJettyServer {
 
             ResourceHandler resource_handler = new ResourceHandler();
             resource_handler.setWelcomeFiles(new String[]{"index.html"});
-            resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");   
+            resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
 //            resource_handler.setResourceBase(webappUri.getRawPath());
             ContextHandler staticContextHandler = new ContextHandler();
             staticContextHandler.setContextPath("/");
@@ -103,7 +118,24 @@ public class EmbeddedJettyServer {
             server.setHandler(handlers);
 
             server.start();
+            
+            //server initialization
+            ClientConfig config = new DefaultClientConfig();
+            Client client = Client.create(config);
+            WebResource service = client.resource(new URI("http://localhost:" + port+"/kgram"));
+
+            MultivaluedMap formData = new MultivaluedMapImpl();
+            formData.add("entailments", Boolean.toString(entailments));
+            service.path("sparql").path("reset").post(formData);
+
+            if (dataPath != null) {
+                formData = new MultivaluedMapImpl();
+                formData.add("remote_path", dataPath);
+                service.path("sparql").path("load").post(formData);
+            }
+            
             server.join();
+
         } catch (ParseException exp) {
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         }

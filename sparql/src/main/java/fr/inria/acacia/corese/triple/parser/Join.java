@@ -1,7 +1,5 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import fr.inria.acacia.corese.triple.cst.KeywordPP;
-
 public class Join extends And {
 	
 	public static Join create(Exp e1, Exp e2){

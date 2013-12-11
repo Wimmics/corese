@@ -41,7 +41,8 @@ public class Entailment implements Engine {
 	private static final String S_SUBCLASSOF = RDFS.SUBCLASSOF;
 	private static final String S_SUBPROPERTYOF = RDFS.SUBPROPERTYOF;
 	private static final String S_MEMBER 	= RDFS.MEMBER;
-	
+	private static final String S_MEMBERSHIP 	= RDFS.MEMBERSHIP;
+
 	private static final String S_THING 	= OWL.THING;
 
 	static final String W3C = "http://www.w3.org";
@@ -371,6 +372,11 @@ public class Entailment implements Engine {
 			Node sub = graph.addProperty(S_SUBPROPERTYOF);
 			ee =  create(gNode, pNode, sub, tNode);
 			recordWithEntailment(gNode, null, ee);
+                        
+                        // rdf:_i rdf:type rdfs:ContainerMembershipProperty
+			Node mem = graph.addResource(S_MEMBERSHIP);
+                        ee =  create(gNode, pNode, hasType, mem);
+                        recordWithoutEntailment(gNode, null, ee);
 		}
 	}
 	

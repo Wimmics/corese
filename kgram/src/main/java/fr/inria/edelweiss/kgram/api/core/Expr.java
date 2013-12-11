@@ -39,7 +39,9 @@ public interface Expr {
 	
 	boolean isExist();
 
-	boolean isVariable();
+	boolean isRecExist();
+
+        boolean isVariable();
 	
 	boolean isBound();
 	

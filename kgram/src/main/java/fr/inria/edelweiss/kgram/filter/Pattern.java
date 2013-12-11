@@ -254,5 +254,9 @@ public class Pattern implements ExprType, Expr {
 		return false;
 	}
 	
-
+        @Override
+	public boolean isRecExist() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

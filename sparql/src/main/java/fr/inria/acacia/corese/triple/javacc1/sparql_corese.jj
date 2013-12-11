@@ -284,10 +284,27 @@ Exp Query() : { Exp stack; }
 
 Exp LoadPattern() : {Exp stack;}
 {
+        {stack = BasicGraphPattern.create();}
+
+	(
+          BaseDecl() 
+        | PrefixDecl()
+        | TriplesSameSubject(stack) ( <DOT> ) ?
+	| GraphGraphPattern(stack) 
+
+        ) *
+
+        <EOF>
+	{ return stack; }
+}
+
+Exp LoadPattern2() : {Exp stack;}
+{
 	Prolog()
 	stack = BodyQuadPattern() <EOF>
 	{ return stack; }
 }
+
 
 
 void Prolog() : {}

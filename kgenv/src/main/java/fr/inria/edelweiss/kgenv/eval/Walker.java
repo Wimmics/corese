@@ -59,8 +59,8 @@ class Walker extends Interpreter {
 			List<Node> nodes;
 			if (exp.arity() == 0){
 				// count(distinct *)
-				// TODO: use same fun as Transformer for select *
-				nodes = env.getQuery().getNodes();
+				//nodes = env.getQuery().getNodes();
+                                nodes = env.getQuery().getSelectNodes();
 			}
 			else {
 				nodes = env.getQuery().getAggNodes(exp.getFilter());

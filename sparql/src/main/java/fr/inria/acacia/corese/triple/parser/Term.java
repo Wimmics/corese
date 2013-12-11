@@ -347,6 +347,18 @@ public class Term extends Expression {
 	public boolean isExist(){
 		return getExist() != null;
 	}
+        
+        public boolean isRecExist(){
+		if (isExist()){
+                    return true;
+                }
+                for (Expression exp : getArgs()){
+                    if (exp.isRecExist()){
+                        return true;
+                    }
+                }
+                return false;
+	}
 	
 	public boolean isSeq(){
 		return getName().equals(RE_SEQ);

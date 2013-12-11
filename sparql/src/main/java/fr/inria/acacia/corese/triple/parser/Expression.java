@@ -152,6 +152,10 @@ implements Regex, Filter, Expr {
 	public boolean isFunction(String str){
 		return false;
 	}
+        
+        public boolean isRecExist(){
+            return false;
+        }
 		
 	Bind validate(Bind env){
 		return env;

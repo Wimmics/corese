@@ -412,6 +412,7 @@ public class DatatypeMap implements Cst, RDF {
 		} catch (CoreseDatatypeException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
+                        dt = createUndef(label, datatype);
 		}
 		return dt;
 	}

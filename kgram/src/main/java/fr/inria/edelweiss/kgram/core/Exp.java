@@ -53,6 +53,8 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 
 	
 	int min=-1, max=-1;
+
+   
 	
 	class VExp extends ArrayList<Exp> {}
 	
@@ -155,12 +157,41 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	}
 	
 	public void insert(Exp e){
+//            if (true){
+//                join(e);
+//                return;
+//            }
 		if (type() == AND && e.type()==AND){
 			for (Exp ee : e){
 				insert(ee);
 			}
 		}
 		else args.add(e);
+	}
+        
+        public void join(Exp e){
+		if (type() == AND && e.type()==AND && size() > 0){
+                    if (size()==1){
+                        Exp first = get(0);
+                        if (first.type() != AND){
+                           first = Exp.create(AND, first);
+                        }
+			Exp exp = Exp.create(JOIN, first, e);
+                        set(0, exp);
+                    }
+                    else {
+                       Exp first =  Exp.create(AND);
+                       for (Exp ee : this){
+                           first.add(ee);
+                       }
+                       Exp exp = Exp.create(JOIN, first, e);
+                       getExpList().clear();
+                       args.add(exp);
+                    }
+                }
+		else {
+                    args.add(e);
+                }
 	}
 	
 	public void add(int n, Exp e){
@@ -732,11 +763,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	void addBind(List<String> lVar){
 		switch (type()){
 			case EDGE:
+                        case PATH:
 				for (int i=0; i<nbNode(); i++){ 
 					Node node = getNode(i);
-					if (node != null){
-						addBind(node, lVar);
-					}
+					addBind(node, lVar);
 				}
 		}
 	}
@@ -985,12 +1015,12 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 	
 	/**
 	 * select *
-	 * does not return nodes of second arg of minus
-	 * TODO:
-	 * check this
+         * return nodes that (may) bind variables, 
+         * do not return exists and minus nodes
 	 */
 	public List<Node> getNodes(){
-		return getNodes(false);
+		List<Node> list = getNodes(false);               
+                return list;
 	}
 	
 	List<Node> getNodes(boolean exist){
@@ -999,16 +1029,17 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		List<Node> lExistNode 	= new ArrayList<Node>();
 
 		// go inside query:
-		if (isQuery()){
-			for (Exp exp : this){
-				exp.getNodes(lNode, lSelNode, lExistNode);
-			}
-		}
-		else {
-			getNodes(lNode, lSelNode, lExistNode);
-		}
+//		if (isQuery()){
+//			for (Exp exp : this){
+//				exp.getNodes(lNode, lSelNode, lExistNode);
+//			}
+//		}
+//		else {
+//			getNodes(lNode, lSelNode, lExistNode);
+//		}
 		
-		
+		getNodes(lNode, lSelNode, lExistNode);
+
 		// add select nodes that are not in lNode
 		for (Node qNode : lSelNode){
 			if (! lNode.contains(qNode)){
@@ -1166,28 +1197,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		}
 	}
 	
-	
-//	void cstBind2(){
-//		for (int i=1; i<size(); i++){
-//			Exp f = get(i);
-//			if (f.isFilter() && f.size()>0){
-//				Exp g = get(i-1);
-//				Exp bind = f.first();
-//				if (bind.type() == BIND && 
-//					(g.isEdge() || g.isPath()) &&
-//					! getExpList().contains(bind)){
-//					
-//					bind.status(true);
-//					// add bind before edge:
-//					add(i-1, bind);
-//					// skip the added bind Exp:
-//					i++;
-//				}
-//			}
-//		}
-//	}
-	
-	
+
 	
 	
 	/**
@@ -1208,9 +1218,11 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		}
 	}
 	
-	
+	// TODO: filter is not an exist {}
 	boolean match(Node node, Filter f){
-		if (! node.isVariable()) return false;
+		if (! node.isVariable() || f.getExp().isRecExist()){
+                    return false;
+                }
 		List<String> lVar = f.getVariables();
 		if (lVar.size()!=1) return false;
 		return lVar.get(0).equals(node.getLabel());
@@ -1323,11 +1335,120 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 		return -1;
 	}
 	
+	/*******************************************************************
+         * 
+         * Draft Join
+         * 
+         */
 	
+	/**
+         * If content is disconnected, generate join(e1, e2)
+         */
+	Exp join(){
+            List<Node> lnode = null;
+            List<Exp> join = new ArrayList<Exp>();
+            Exp and  = Exp.create(AND);
+
+            for (int i=0; i<size(); i++){
+                Exp e = get(i);
+                
+                switch (e.type()){
+                    
+                    case FILTER:
+//                        Filter f = e.getFilter();
+//                        List<String> lvar = f.getVariables();
+//                        if (isBound(lvar, lnode)){
+//                            
+//                        }
+                        break;
+                        
+                    case OPTION:
+                        break;
+                        
+                                          
+                    default:
+                        // TODO: UNION 
+                    List<Node> nodes = null;
+                    if (type() == MINUS){
+                        nodes = e.first().getNodes();
+                    }
+                    else {
+                        nodes = e.getNodes();
+                    }
+                    
+                    if (lnode == null) {
+                        lnode = nodes;
+                    } 
+                    else if (intersect(nodes, lnode)) {
+                        lnode.addAll(nodes);
+                    }
+                    else {
+                        join.add(and);
+                        and = Exp.create(AND);
+                        lnode = nodes;
+                    }
+                }               
+                
+                and.add(e);
+            }
+            
+            if (join.isEmpty()){
+                return this;
+            }
+            else {
+                join.add(and);
+                return join(join);
+            }
+        }
+        
+        Exp join(List<Exp> exp){
+            Exp join = Exp.create(JOIN);
+            Exp start = join;
+            int i = 0;
+            
+            for (Exp ee : exp){
+                if (i == 0 || i == exp.size() - 1){
+                    join.add(ee);
+                }
+                else {
+                    Exp tmp = Exp.create(JOIN);
+                    tmp.add(ee);
+                    join.add(tmp);
+                    join = tmp;
+                }
+                i++;
+            }
+            return start;
+        }
+        
+        
+        boolean isBound(List<String> lvar, List<Node> lnode){
+            for (String var : lvar){
+                if (! isBound(var, lnode)){
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        boolean isBound(String var, List<Node> lnode){
+            for (Node node : lnode){
+               if (node.isVariable() && node.getLabel().equals(var)){
+                   return true;
+               }
+            }
+            return false;
+        }
+        
+        
 	
-	
-	
-	
-	
+	private boolean intersect(List<Node> nodes, List<Node> list) {
+            for (Node node : nodes){
+                if (list.contains(node)){
+                    return true;
+                }
+            }
+            return false;
+        }
 
 }

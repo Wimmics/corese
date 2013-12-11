@@ -298,11 +298,14 @@ public class Eval implements ExpType, Plugin {
     }
 
     /**
-     * this eval is a fresh copy draft for if then else
+     * this eval is a fresh copy 
      */
     public Mappings subEval(Query q, Node gNode, Stack stack, int n) {
         setSubEval(true);
         starter(q);
+        if (q.isDebug()){
+            debug = true;
+        }
         eval(gNode, stack, n, false);
 
         //memory.setResults(save);

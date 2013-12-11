@@ -138,11 +138,11 @@ public class Query extends Exp {
 		queries 	= new ArrayList<Query>();
 
 		patternNodes 		= new ArrayList<Node>();
-		queryNodes 			= new ArrayList<Node>();
+		queryNodes 		= new ArrayList<Node>();
 		patternSelectNodes 	= new ArrayList<Node>();
 		querySelectNodes 	= new ArrayList<Node>();
 		bindingNodes 		= new ArrayList<Node>();
-		relaxEdges 			= new ArrayList<Node>();
+		relaxEdges 		= new ArrayList<Node>();
 
 		sort = new Sorter();
 
@@ -1472,10 +1472,10 @@ public class Query extends Exp {
 	 * @return nodes for select * where BODY
 	 * go into BODY
 	 */
-	public List<Exp> getNodesExp(){
-		List<Node> lNode = getNodes();
-		return toExp(lNode);
-	}
+//	public List<Exp> getNodesExp(){
+//		List<Node> lNode = getNodes();
+//		return toExp(lNode);
+//	}
 	
 	public List<Exp> toExp(List<Node> lNode){
 		List<Exp> lExp = new ArrayList<Exp>();
@@ -1529,7 +1529,9 @@ public class Query extends Exp {
 		compile(exp, bound, false);
 	}
 
-
+        /**
+         * Recursively sort edges and filters wrt connection 
+         */
 	Exp compile(Exp exp, VString lVar, boolean option){
 		int type = exp.type();
 		
@@ -1547,21 +1549,22 @@ public class Query extends Exp {
 			break;
 			
 		case PATH:
-			compiler.test(exp.getRegex());
+			//compiler.test(exp.getRegex());
 			break;
 
 		case QUERY:
-			// lVar = lVar INTER select
+			// lVar = select varList
 			VString list = new VString();
-			for (Exp ee : exp.getQuery().getSelectFun()){
+                        Query q = exp.getQuery();
+			for (Exp ee : q.getSelectFun()){
 				Node node = ee.getNode();
 				if (lVar.contains(node.getLabel())){
 					list.add(node.getLabel());
 				}
 			}
 			lVar = list;
-			if (getHaving() != null){
-				compile(getHaving().getFilter(), new VString(), false);
+			if (q.getHaving() != null){
+				compile(q.getHaving().getFilter(), new VString(), false);
 			}
 			// continue
 
@@ -1573,13 +1576,12 @@ public class Query extends Exp {
 				
 			
 			if (isSort){
-				// identify remarkable filters such as ?x = ?y
+				// identify remarkable filters such as ?x = <uri>
+                                // create BIND(?x = <uri>) store it in FILTER 
 				findFilter(exp);
 				
 				int num = exp.size();
-				/**
-				 * TODO:
-				 * when filter x = y concern same edge, remove BIND
+				/**				
 				 * when BIND concern graph ?g variable, 
 				 * graph ?g is not considered as bound by sort
 				 * 
@@ -1587,36 +1589,30 @@ public class Query extends Exp {
 				 * 
 				 */
 				List<Exp> lBind = exp.varBind();
-				
 				if (exp.type() == AND){
-					// sort edges as connected when possible
+					// sort edges wrt connection
+                                        // take BIND(var = exp) into account
 					sort.sort(this, exp, lVar, lBind);
+
 				}
-				// put filters where they are bound
+				// put filters where they are bound ASAP
 				sortFilter(exp, lVar);
-				// check patterns
-				if (isCheck){
-					processFilter(exp, option);
-					checkPath(exp, false);
-				}
-				if (isOptimize){
-					checkPath(exp, true);
-				}
-				
-				if (exp.size()!=num){
-				}
-				
-				// set BIND expressions
+
+				// set BIND expressions before right edge
+                                // ?x ?p ?y . ?x ?q ?t . filter(?t = 12)
+                                // ->
+                                // BIND(?t = 12) . ?x ?q ?t . filter(?t = 12) .  ?x ?p ?y                        
 				exp.cstBind();
+                                // set graph filter into graph
 				exp.graphFilter();
-				if (isTest()) 
-					exp.edgeFilter();
+				
 			}
 			
 			
 			int size = lVar.size();
 
-			if (exp.isGraph()){
+                        // bind graph variable
+			if (exp.isGraph() && exp.getGraphName().isVariable()){
 				// GRAPH {GRAPHNODE NODE} {EXP}
 				Node gNode = exp.getGraphName();
 				lVar.add(gNode.getLabel());
@@ -1624,27 +1620,37 @@ public class Query extends Exp {
 		
 			for (Exp e : exp){
 				compile(e, lVar, option);
-				if (e.isEdge() && exp.type() == AND){
-					// { t1 t2 optional { t3 t4 }}
-					// t1 & t2 are bound when entering optional
-					// hence bound is used by nested patterns
-					// TODO:
-					// bind graph ?g {}
+				if (exp.type() == AND){
+					//  bound is used in nested patterns
 					e.addBind(lVar);
 				}
 			}
 			
 			lVar.clear(size);
-			cleanNode(exp);		
+			//cleanNode(exp);	
+                    
+                        //testjoin(exp);
 			
 		}
 		
 		return exp;
 	}
 	
+        
+      void testjoin(Exp exp) {
+            if (exp.type() == AND) {
+                Exp ee = exp.join();
+                if (ee != exp) {
+                    System.out.println("Q1: " + exp);
+                    System.out.println("Q2: " + ee);
+                }
+            }
+        }
+
+        
 	/**
 	 * Identify remarkable filter 
-	 * ?x = ?y or ?x = cst or !bound()
+	 * ?x < ?y ?x = ?y or ?x = cst or !bound()
 	 * filter is tagged
 	 */
 	void findFilter(Exp exp){

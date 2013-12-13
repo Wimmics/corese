@@ -124,6 +124,48 @@ $('#tbDataSources').on("click", "#delBtn", function(e) {
 	resetDQP();
 });
 
+//$(document)
+//    .on('change', '.btn-file :file', function() {
+//        var input = $(this),
+//            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+//            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+//        input.trigger('fileselect', [numFiles, label]);
+//});
+//
+//$(document).ready( function() {
+//    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+//        console.log(numFiles);
+//        console.log(label);
+//    });
+//});
+//
+//$('#btnUpload').click(function(){
+//    var formData = new FormData($('form')[0]);
+//    console.log(formData);
+//    $.ajax({
+//        url: rootURL + '/sparql/upload',  //Server script to process data
+//        type: 'POST',
+//        xhr: function() {  // Custom XMLHttpRequest
+//            var myXhr = $.ajaxSettings.xhr();
+//            if(myXhr.upload){ // Check if upload property exists
+//                myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+//            }
+//            return myXhr;
+//        },
+//        //Ajax events
+//        beforeSend: beforeSendHandler,
+//        success: completeHandler,
+//        error: errorHandler,
+//        // Form data
+//        data: formData,
+//        //Options to tell jQuery not to process data or worry about content-type.
+//        cache: false,
+//        contentType: false,
+//        processData: false
+//    });
+//});
+
+
 // -------------------------
 // functions
 

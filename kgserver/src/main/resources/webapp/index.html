@@ -23,6 +23,29 @@
                 stroke-opacity: .6;
                 fill: none;
             }
+            
+            	.btn-file {
+		    position: relative;
+		    overflow: hidden;
+		}
+		.btn-file input[type=file] {
+		    position: absolute;
+		    top: 0;
+		    right: 0;
+		    min-width: 100%;
+		    min-height: 100%;
+		    font-size: 999px;
+		    text-align: right;
+		    filter: alpha(opacity=0);
+		    opacity: 0;
+		    background: red;
+		    cursor: inherit;
+		    display: block;
+		}
+		input[readonly] {
+			background-color: white !important;
+			cursor: text !important;
+		}
         </style>
 
         <title>Corese/KGRAM webapp</title>
@@ -135,7 +158,7 @@
                     <!-- --------------------- -->
                     <div class="tab-pane" id="Tab2">
                         <div class="row">
-                            <form class="form" role="form">
+                            <form class="form" role="form" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <h2>Semantic web data loading</h2>
                                     <p class="lead">RDF, RDFS, OWL, TTL formats supported.</p>
@@ -172,6 +195,30 @@
                                         </div>
                                     </div>
                                 </div>
+                                
+<!--                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-4">
+                                            <div class="input-group">        
+                                                <span class="input-group-btn">
+                                                    <span class="btn btn-primary btn-file">
+							Browse&hellip; <input name="file" type="file">
+                                                    </span>
+                                                </span>
+                                                <input type="text" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-8">
+                                            <div class="input-group">
+                                                <input  class="form-control" id="txtUpload" type="text" value="">
+                                                <div class="input-group-btn">
+                                                    <button id="btnUpload" class="btn btn-primary" type="button">Upload</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <progress></progress>
+                                </div>-->
 
                                 <div class="form-group">
                                     <div class="form-inline">
@@ -308,6 +355,7 @@ SELECT ?nom ?popTotale WHERE {
         </div>
 
         <script src="js/jquery.js"></script>
+        <script src="js/bootstrap.file-input.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <!--        <script src="js/spin.min.js"></script>-->
         <script src="js/main.js"></script>

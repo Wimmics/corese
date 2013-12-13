@@ -4,6 +4,8 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -69,6 +71,19 @@ public class SPARQLRestAPI {
         }
         return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
+
+//    @POST
+//    @Path("/upload")
+//    @Consumes("multipart/form-data")
+//    public Response uploadFile(@FormDataParam("file") InputStream f) {
+//
+//        // your code here to copy file to destFile
+//        System.out.println("Received file " + f);
+//
+//        String output;
+//        logger.info(output = "File uploaded.");
+//        return Response.status(200).header(headerAccept, "*").entity(output).build();
+//    }
 
     /**
      * This webservice is used to load a dataset to the endpoint. Therefore, if
@@ -156,7 +171,7 @@ public class SPARQLRestAPI {
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
-    
+
     @GET
     @Produces("application/sparql-results+json")
     @Path("/d3")
@@ -164,9 +179,9 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            
+
             Mappings m = exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
-            
+
             String mapsD3 = "{ \"mappings\" : "
                     + JSONFormat.create(m).toString()
                     + " , "
@@ -176,7 +191,7 @@ public class SPARQLRestAPI {
 
 //            System.out.println(mapsD3);
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(mapsD3).build();
-            
+
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
@@ -243,7 +258,8 @@ public class SPARQLRestAPI {
 
     @POST
     @Produces("application/sparql-results+xml")
-    public Response getTriplesXMLForPost(@DefaultValue("") @FormParam("query") String query,
+    public Response getTriplesXMLForPost(@DefaultValue("")
+            @FormParam("query") String query,
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
         try {
@@ -259,7 +275,8 @@ public class SPARQLRestAPI {
 
     @POST
     @Produces("application/sparql-results+json")
-    public Response getTriplesJSONForPost(@DefaultValue("") @FormParam("query") String query,
+    public Response getTriplesJSONForPost(@DefaultValue("")
+            @FormParam("query") String query,
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris,
             String message) {
@@ -276,7 +293,8 @@ public class SPARQLRestAPI {
 
     @POST
     @Produces("application/sparql-results+csv")
-    public Response getTriplesCSVForPost(@DefaultValue("") @FormParam("query") String query,
+    public Response getTriplesCSVForPost(@DefaultValue("")
+            @FormParam("query") String query,
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris,
             String message) {
@@ -293,7 +311,8 @@ public class SPARQLRestAPI {
 
     @POST
     @Produces("application/sparql-results+tsv")
-    public Response getTriplesTSVForPost(@DefaultValue("") @FormParam("query") String query,
+    public Response getTriplesTSVForPost(@DefaultValue("")
+            @FormParam("query") String query,
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris,
             String message) {
@@ -310,7 +329,8 @@ public class SPARQLRestAPI {
 
     @POST
     @Produces("application/rdf+xml")
-    public Response getRDFGraphXMLForPost(@DefaultValue("") @FormParam("query") String query,
+    public Response getRDFGraphXMLForPost(@DefaultValue("")
+            @FormParam("query") String query,
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris,
             String message) {
@@ -327,7 +347,8 @@ public class SPARQLRestAPI {
 
     @POST
     @Produces("text/nt")
-    public Response getRDFGraphNTripleForPost(@DefaultValue("") @FormParam("query") String query,
+    public Response getRDFGraphNTripleForPost(@DefaultValue("")
+            @FormParam("query") String query,
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris,
             String message) {

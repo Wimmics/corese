@@ -34,21 +34,7 @@ public class MatcherImpl implements Matcher {
     Entailment entail;
     Cache table;
     int mode = SUBSUME;
-    private boolean isMatch = false;
-
-    /**
-     * @return the isMatch
-     */
-    public boolean isMatch() {
-        return isMatch;
-    }
-
-    /**
-     * @param isMatch the isMatch to set
-     */
-    public void setMatch(boolean isMatch) {
-        this.isMatch = isMatch;
-    }
+  
 
     class BTable extends HashMap<Node, Boolean> {
     }
@@ -246,7 +232,7 @@ public class MatcherImpl implements Matcher {
             return true;
         }
         Query q = env.getQuery();
-        if ((isMatch || (q != null && q.isMatch()))
+        if (q != null && q.isMatchBlank()
                 && n1.isBlank() && n2.isBlank()) {
             b = match(graph, n1, n2, env, new TreeNode());
             return b;

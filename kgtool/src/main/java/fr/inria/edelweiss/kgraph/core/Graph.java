@@ -1802,8 +1802,17 @@ public class Graph //implements IGraph
 			return g;
 		}
 	}
+	                   
+        
+       public List<Entity> getEdgeList(Node n){
+            ArrayList<Entity> list = new ArrayList<Entity>();
+            for (Entity e : getEdges(n, 0)){
+                list.add(e);
+            }
+            return list;
+        }
 
-	
+        
 	
 	/*****************************************************************
 	 * 

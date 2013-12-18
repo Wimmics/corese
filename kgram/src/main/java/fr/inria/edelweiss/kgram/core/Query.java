@@ -100,6 +100,7 @@ public class Query extends Exp {
 	isMap = true,
 	// construct where as a rule
 	isRule = false, isDetail = false;
+    private boolean isMatch = false;
 	
 	int mode = Matcher.UNDEF;
 
@@ -1791,6 +1792,17 @@ public class Query extends Exp {
      */
     public void setPrinterTemplate(boolean isPrinterTemplate) {
         this.isPrinterTemplate = isPrinterTemplate;
+    }
+
+    public boolean isMatchBlank() {
+        return isMatch;    
+    }
+   
+    /**
+     * @param match the match to set
+     */
+    public void setMatchBlank(boolean match) {
+        this.isMatch = match;
     }
 	
 	

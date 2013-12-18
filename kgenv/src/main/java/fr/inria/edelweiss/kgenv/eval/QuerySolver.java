@@ -68,6 +68,7 @@ public class QuerySolver  {
 	isDebug = false,
 	isOptimize = false,
 	isSPARQLCompliant = false;
+        private boolean isMatchBlank = false;
         // skolemize construct/describe result graphs (and only them)
         private boolean isSkolem = false;
 
@@ -243,6 +244,7 @@ public class QuerySolver  {
 	
 	
 	void init(Query q){
+                q.setMatchBlank(isMatchBlank);
 		q.setListGroup(isListGroup);
 		q.setListPath(isListPath);
 		q.setCountPath(isCountPath);
@@ -505,6 +507,20 @@ public class QuerySolver  {
      */
     public void setSkolem(boolean isSkolem) {
         this.isSkolem = isSkolem;
+    }
+
+    /**
+     * @return the isMatchBlank
+     */
+    public boolean isMatchBlank() {
+        return isMatchBlank;
+    }
+
+    /**
+     * @param isMatchBlank the isMatchBlank to set
+     */
+    public void setMatchBlank(boolean isMatchBlank) {
+        this.isMatchBlank = isMatchBlank;
     }
 	
 }

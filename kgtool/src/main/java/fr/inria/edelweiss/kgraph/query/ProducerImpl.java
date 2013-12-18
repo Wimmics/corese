@@ -150,7 +150,7 @@ public class ProducerImpl implements Producer {
         int n = 0;
         Query q = env.getQuery();
         boolean isType = false;
-        if (false)
+        
         for (Index ei : graph.getIndexList()) {
             // enumerate graph index to get the index i of nodes in edge: 0, 1, GRAPHINDEX
             // by convention the index of last is the index of graph node

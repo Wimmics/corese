@@ -973,6 +973,9 @@ public class Transformer implements ExpType {
 						exp.add(tmp);
 
 					}
+                                        else if (ee.isBGP()){
+                                            exp.join(tmp);
+                                        }
 					else {
 						// add elements of AND one by one
 						exp.insert(tmp);
@@ -1257,7 +1260,7 @@ public class Transformer implements ExpType {
 			return JOIN;
 		}
 		else if (query.isOptional()){
-			if (query.isSPARQL()) return OPTIONAL;
+			//if (query.isSPARQL()) return OPTIONAL;
 			return OPTION;
 		} 
 		else if (query.isMinus()){

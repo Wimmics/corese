@@ -148,9 +148,9 @@ public class ProducerImpl implements Producer {
 
         Node node = null, node2 = null;
         int n = 0;
-
+        Query q = env.getQuery();
         boolean isType = false;
-
+        if (false)
         for (Index ei : graph.getIndexList()) {
             // enumerate graph index to get the index i of nodes in edge: 0, 1, GRAPHINDEX
             // by convention the index of last is the index of graph node
@@ -173,7 +173,13 @@ public class ProducerImpl implements Producer {
                                 // search a constant that is not in the graph: fail
                                 return empty;
                             }
-                        } else {
+                        } 
+                        else if (q.isMatchBlank() && node.isBlank()){
+                            // blank node deserve a recursive match, so we do not join
+                            // use case: OWL blank match
+                            node = null;
+                        }                       
+                        else {
                             n = i;
                             if (i == 0 && !isType(edge, env)) {
                                 node2 = getValue(edge.getNode(1), env);

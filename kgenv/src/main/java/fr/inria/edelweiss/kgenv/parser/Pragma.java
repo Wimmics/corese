@@ -311,6 +311,9 @@ public class Pragma  {
 			if (property.equals(DISPLAY)){
 				query.addInfo("AST:\n", ast);
 			}
+                        else if (property.equals(MATCH)){
+				query.setMatchBlank(value(object));
+			}
 		}
 		else if (subject.equals(PRAGMA)){
 			if (property.equals(HELP) && value(object)){

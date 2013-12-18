@@ -69,6 +69,10 @@ public class RuleEngine implements Engine {
 	void set(QueryProcess p){
 		exec = p;
 	}
+        
+        public QueryProcess getQueryProcess(){
+            return exec;
+        }
 	
 	public void set(Sorter s){
 		if (exec!=null){

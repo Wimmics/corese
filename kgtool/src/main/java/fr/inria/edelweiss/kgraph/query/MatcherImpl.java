@@ -34,7 +34,6 @@ public class MatcherImpl implements Matcher {
     Entailment entail;
     Cache table;
     int mode = SUBSUME;
-  
 
     class BTable extends HashMap<Node, Boolean> {
     }
@@ -234,7 +233,7 @@ public class MatcherImpl implements Matcher {
         Query q = env.getQuery();
         if (q != null && q.isMatchBlank()
                 && n1.isBlank() && n2.isBlank()) {
-            b = match(graph, n1, n2, env, new TreeNode());
+            b = match(graph, n1, n2, env, new TreeNode(), 0);
             return b;
         }
         return false;
@@ -298,29 +297,29 @@ public class MatcherImpl implements Matcher {
         }
     }
 
-    
-    IDatatype getValue(Node n){
+    IDatatype getValue(Node n) {
         return (IDatatype) n.getValue();
     }
-    
+
     /**
-     * Two different blank nodes match if they have the same edges and their target nodes
-     * recursively match (same term or blank match) 
-     * Use case: two OWL expressions are the same but use different blank nodes
-     * PRAGMA: does not compare named graph when compare edges
+     * Two different blank nodes match if they have the same edges and their
+     * target nodes recursively match (same term or blank match) Use case: two
+     * OWL expressions are the same but use different blank nodes PRAGMA: does
+     * not compare named graph when compare edges
      */
-    boolean match(Graph g, Node n1, Node n2, Environment env, TreeNode t) {
+    boolean match(Graph g, Node n1, Node n2, Environment env, TreeNode t, int n) {
         if (n1.same(n2)) {
             return true;
         }
-        
+
         IDatatype dt = t.get(getValue(n1));
-        if (dt != null){
-            // TODO: we forbid to match another blank node
+        if (dt != null) {
+            // we forbid to match another blank node
             // in some case it may happen
-            return dt.same(getValue(n2));
-        }
-        else {
+            // TODO:  manage a list of IDatatype
+            boolean b = dt.same(getValue(n2));
+            return b;
+        } else {
             t.put(getValue(n1), getValue(n2));
         }
 
@@ -328,24 +327,77 @@ public class MatcherImpl implements Matcher {
         List<Entity> l2 = g.getEdgeList(n2);
 
         if (l1.size() != l2.size()) {
-            return false;
+
+            if (n == 0) {
+                
+               if (! clean(l1, l2)){
+                   // one of them may have one additional edge: remove it
+                   return false;
+               }
+
+            } else {
+                return false;
+            }
         }
 
         for (int i = 0; i < l1.size(); i++) {
 
             Edge e1 = l1.get(i).getEdge();
             Edge e2 = l2.get(i).getEdge();
-
-            if (!match(e1, e2, env)) {
+            boolean b = match(g, e1, e2, env, t, n + 1);
+            if (!b) {
                 return false;
             }
+        }
 
-            if (e1.getNode(1).isBlank() && e2.getNode(1).isBlank()) {
-                boolean b = match(g, e1.getNode(1), e2.getNode(1), env, t);
-                if (!b) {
-                    return false;
-                }
+        return true;
+    }
+
+    boolean match(Graph g, Edge e1, Edge e2, Environment env, TreeNode t, int n) {
+
+        if (!match(e1, e2, env)) {
+            // TODO: rdf:type ???
+            // URI/Literal vs Blank ???
+            return false;
+        }
+
+        if (e1.getNode(1).isBlank() && e2.getNode(1).isBlank()) {
+            boolean b = match(g, e1.getNode(1), e2.getNode(1), env, t, n);
+            if (!b) {
+                return false;
             }
+        }
+
+        return true;
+    }
+
+    boolean clean(List<Entity> l1, List<Entity> l2) {
+
+        if (l1.size() < l2.size()) {
+            List<Entity> tmp = l1;
+            l1 = l2;
+            l2 = tmp;
+        }
+
+        if (l1.size() - l2.size() > 1) {
+            return false;
+        }
+
+        boolean found = false;
+        for (int i = 0; i < l2.size(); i++) {
+
+            Edge e1 = l1.get(i).getEdge();
+            Edge e2 = l2.get(i).getEdge();
+
+            if (!e1.getEdgeNode().equals(e2.getEdgeNode())) {
+                l1.remove(l1.get(i));
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            l1.remove(l1.get(l1.size() - 1));
         }
 
         return true;

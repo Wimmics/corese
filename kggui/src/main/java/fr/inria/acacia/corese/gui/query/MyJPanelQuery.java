@@ -33,25 +33,12 @@ import javax.swing.tree.TreePath;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.log4j.Logger;
-import org.miv.graphstream.algorithm.layout2.elasticbox.ElasticBox;
-import org.miv.graphstream.graph.Edge;
-import org.miv.graphstream.graph.Node;
-import org.miv.graphstream.graph.implementations.MultiGraph;
-import org.miv.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
-import org.miv.graphstream.ui.swing.SwingGraphRenderer;
-import org.miv.graphstream.ui.swing.SwingGraphViewer;
-
-
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.exceptions.QueryLexicalException;
-import fr.inria.acacia.corese.exceptions.QuerySemanticException;
-import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgengine.QueryResults;
@@ -71,6 +58,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
 import javax.swing.JFrame;
+import org.graphstream.graph.Edge;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
+import org.graphstream.ui.layout.springbox.implementations.LinLog;
+import org.graphstream.ui.swingViewer.View;
+import org.graphstream.ui.swingViewer.Viewer;
+import org.graphstream.util.parser.TokenMgrError;
 
 /**
  * Onglet Query avec tout ce qu'il contient.
@@ -130,7 +125,6 @@ public final class MyJPanelQuery extends JPanel {
         setLayout(new BorderLayout(5, 5));
         add(paneQuery);
 
-
         buttonRun = new JButton();
         buttonToSPIN = new JButton();
         buttonToSPARQL = new JButton();
@@ -156,14 +150,11 @@ public final class MyJPanelQuery extends JPanel {
         textAreaLinesGraph.setForeground(Color.black);
         textAreaLinesGraph.setAutoscrolls(true);
 
-
-
         //Bouton refreshStyleGraph + listener a l'écoute afin de recharger la feuille de style ou de renvoyer une exception
         buttonRefreshStyle.setText("Refresh stylesheet");
         buttonDefaultStyle.setText("Default stylesheet");
         buttonRefreshStyle.setEnabled(false);
         buttonDefaultStyle.setEnabled(false);
-
 
         /**
          * ActionListener sur le Bouton refresh Stylesheet Refresh stylesheet du
@@ -185,7 +176,7 @@ public final class MyJPanelQuery extends JPanel {
                     areaException.setForeground(Color.red);
                     JOptionPane.showMessageDialog(null, areaException, "Error Syntax", JOptionPane.WARNING_MESSAGE);
                     excepCatch = true;
-                } catch (org.miv.graphstream.ui.graphicGraph.stylesheet.parser.TokenMgrError e1) {
+                } catch (TokenMgrError e1) {
                     areaException.setText(e1.getMessage());
                     areaException.setEditable(false);
                     areaException.setForeground(Color.red);
@@ -201,7 +192,6 @@ public final class MyJPanelQuery extends JPanel {
             }
         };
         buttonRefreshStyle.addActionListener(refreshListener);
-
 
         checkLines(textPaneStyleGraph, textAreaLinesGraph);
         /**
@@ -244,8 +234,6 @@ public final class MyJPanelQuery extends JPanel {
         };
         textPaneStyleGraph.addFocusListener(paneGraphFocusListener);
 
-
-
         sparqlQueryEditor = new SparqlQueryEditor(mainFrame);
 //        sparqlQueryEditor.setPreferredSize(new Dimension(200,200));
         sparqlQueryEditor.refreshColoring();
@@ -262,7 +250,6 @@ public final class MyJPanelQuery extends JPanel {
 
         //Pour chercher un string dans la fen�tre de r�sultat XML
         buttonSearch.setText("Search");
-
 
         ActionListener searchListener = new ActionListener() {
             @Override
@@ -282,7 +269,6 @@ public final class MyJPanelQuery extends JPanel {
             }
         };
         buttonSearch.addActionListener(searchListener);
-
 
         // Résultat sous forme d'arbre
         tabbedPaneResults.addTab("Graph", scrollPaneTreeResult);
@@ -329,7 +315,6 @@ public final class MyJPanelQuery extends JPanel {
         hParallel1.addGroup(hSeq1);
 
         pane_listenerLayout.setHorizontalGroup(hParallel1);
-
 
         GroupLayout.ParallelGroup vParallel1 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
         GroupLayout.ParallelGroup vParallel2 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
@@ -394,7 +379,6 @@ public final class MyJPanelQuery extends JPanel {
             }
         });
 
-
         coreseFrame.getRedo().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -440,8 +424,8 @@ public final class MyJPanelQuery extends JPanel {
         }
         return new ArrayList<Entity>();
     }
-    
-    fr.inria.edelweiss.kgraph.core.Graph getGraph(IResults l){
+
+    fr.inria.edelweiss.kgraph.core.Graph getGraph(IResults l) {
         if (l instanceof QueryResults) {
             QueryResults qr = (QueryResults) l;
             return qr.getGraph();
@@ -497,8 +481,6 @@ public final class MyJPanelQuery extends JPanel {
 
         textAreaXMLResult.setText(resultXML.toString());
 
-
-
         // On affiche la version en arbre du résultat dans l'onglet Tree
         // crée un arbre de racine "root"
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
@@ -524,21 +506,19 @@ public final class MyJPanelQuery extends JPanel {
 
         if (l_Results.isConstruct() || l_Results.isDescribe()) {
             displayGraph(getGraph(l_Results));
-        }
-        // draft
-        else if (map.getQuery().isTemplate() && map.getQuery().isPragma(KGGRAPH)){
+        } // draft
+        else if (map.getQuery().isTemplate() && map.getQuery().isPragma(KGGRAPH)) {
             display(map);
         }
 
     }
-    
+
     /**
-     * template return turtle graph description
-     * display as graph
+     * template return turtle graph description display as graph
      */
-    void display(Mappings map){
+    void display(Mappings map) {
         fr.inria.edelweiss.kgram.api.core.Node res = map.getTemplateResult();
-        if (res != null){
+        if (res != null) {
             fr.inria.edelweiss.kgraph.core.Graph g = fr.inria.edelweiss.kgraph.core.Graph.create();
             Load ld = Load.create(g);
             String str = res.getLabel();
@@ -555,106 +535,110 @@ public final class MyJPanelQuery extends JPanel {
 
     void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g) {
 
-            int num = 0;
-            String sujetUri, predicat, objetUri, temp = "http://www.inria.fr/acacia/corese#Results";
+        int num = 0;
+        String sujetUri, predicat, objetUri, temp = "http://www.inria.fr/acacia/corese#Results";
 
-            graph = new MultiGraph(false, true);
-            graph.addNode(temp).addAttribute("ui.style", "color:white;");
+        graph = new MultiGraph(g.getName(), false, true);
+//            graph.addNode(temp).addAttribute("ui.style", "fill-color:white;");
 
-            String sujet = null;
-            String objet = null;
+        String sujet = null;
+        String objet = null;
 
-            Iterable<Entity> edges = g.getEdges();
+        Iterable<Entity> edges = g.getEdges();
 
-            for (Entity ent : edges) {
-                fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
-                sujetUri = edge.getNode(0).getLabel();
-                objetUri = edge.getNode(1).getLabel();
+        for (Entity ent : edges) {
+            fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
+            sujetUri = edge.getNode(0).getLabel();
+            objetUri = edge.getNode(1).getLabel();
 
-                predicat = getLabel(edge.getEdgeNode().getLabel());
+            predicat = getLabel(edge.getEdgeNode().getLabel());
 
-                sujet = getLabel(sujetUri);
-                objet = getLabel(objetUri);
+            sujet = getLabel(sujetUri);
+            objet = getLabel(objetUri);
 
-                Node gsub = graph.getNode(sujetUri);
-                // if (find(sujetUri, graph.getNodeIterator()) == null) {
-                if (gsub == null) {
-                    gsub = graph.addNode(sujetUri);
-                    gsub.addAttribute("label", sujet);
+            Node gsub = graph.getNode(sujetUri);
+            // if (find(sujetUri, graph.getNodeIterator()) == null) {
+            if (gsub == null) {
+                gsub = graph.addNode(sujetUri);
+                gsub.addAttribute("label", sujet);
+//                gsub.addAttribute("ui.style", "fill-color:lightblue;size-mode:dyn-size;shape:rounded-box;");
+                //graph.getNode(sujetUri)
+//                    gsub.setAttribute("ui.class", sujet);
+                if (edge.getNode(0).isBlank()) {
                     //graph.getNode(sujetUri)
-                    gsub.setAttribute("ui.class", sujet);
-                    if (edge.getNode(0).isBlank()) {
-                        //graph.getNode(sujetUri)
-                        gsub.setAttribute("ui.class", "Blank");
-                    }
-                    Edge ee = graph.addEdge("temp" + num, sujetUri, temp);
-                    ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
+                    gsub.setAttribute("ui.class", "Blank");
+                }
+//                    Edge ee = graph.addEdge("temp" + num, sujetUri, temp);
+//                    ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
 
+            }
+            num++;
+
+            if (isStyle(edge)) {
+                // draft style
+                // xxx kg:style ex:Wimmics
+                // it is a fake edge, do not create it
+//                gsub.setAttribute("ui.class", objet);
+            } else {
+                Node gobj = graph.getNode(objetUri);
+                //if (find(objetUri, graph.getNodeIterator()) == null) {
+                if (gobj == null) {
+                    gobj = graph.addNode(objetUri);
+                    gobj.addAttribute("label", objet);
+//                    gobj.setAttribute("ui.class", objet);
+                    if (edge.getNode(1).isBlank()) {
+                        gobj.setAttribute("ui.class", "Blank");
+                    }
+                    IDatatype dt = (IDatatype) edge.getNode(1).getValue();
+                    if (dt.isLiteral()) {
+                        gobj.setAttribute("ui.class", "Literal");
+                    }
+
+//                        Edge ee = graph.addEdge("temp" + num, objetUri, temp);
+//                        ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
                 }
                 num++;
 
-
-                if (isStyle(edge)) {
-                    // draft style
-                    // xxx kg:style ex:Wimmics
-                    // it is a fake edge, do not create it
-                    gsub.setAttribute("ui.class", objet);
-                } else {
-                    Node gobj = graph.getNode(objetUri);
-                    //if (find(objetUri, graph.getNodeIterator()) == null) {
-                    if (gobj == null) {
-                        gobj = graph.addNode(objetUri);
-                        gobj.addAttribute("label", objet);
-                        gobj.setAttribute("ui.class", objet);
-                        if (edge.getNode(1).isBlank()) {
-                            gobj.setAttribute("ui.class", "Blank");
-                        }
-                        IDatatype dt = (IDatatype) edge.getNode(1).getValue();
-                        if (dt.isLiteral()) {
-                            gobj.setAttribute("ui.class", "Literal");
-                        }
-
-                        Edge ee = graph.addEdge("temp" + num, objetUri, temp);
-                        ee.addAttribute("ui.style", "width:0;edge-style:dashes;color:white;");
-                    }
-                    num++;
-
-                    Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
-                    ee.addAttribute("label", predicat);
-                    ee.addAttribute("ui.class", predicat);
-                }
+                Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
+                ee.addAttribute("label", predicat);
+//                ee.addAttribute("ui.class", predicat);
             }
+        }
 
-            textPaneStyleGraph.setText(stylesheet);
-            graph.addAttribute("ui.stylesheet", stylesheet);
+        textPaneStyleGraph.setText(stylesheet);
+        graph.addAttribute("ui.stylesheet", stylesheet);
+        graph.addAttribute("ui.antialias");
 
-            //permet de visualiser correctement le graphe dans l'onglet de Corese
-            ElasticBox eb = new ElasticBox();
-            eb.setForce((float) 0.1);
-            SwingGraphViewer sgv = new SwingGraphViewer(graph, eb, true, true);
-            SwingGraphRenderer sgr = sgv.getRenderer();
+        //permet de visualiser correctement le graphe dans l'onglet de Corese
+        LinLog lLayout = new LinLog();
+        lLayout.setQuality(0.9);
+        lLayout.setGravityFactor(0.9);
 
-            //Dégrise le bouton et ajoute le texte dans le textPane
-            buttonRefreshStyle.setEnabled(true);
-            buttonDefaultStyle.setEnabled(true);
+        Viewer sgv = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_SWING_THREAD);
+        sgv.enableAutoLayout(lLayout);
+        View sgr = sgv.addDefaultView(false);
+        sgr.getCamera().setAutoFitView(true);
 
-            JPanel panelStyleGraph = new JPanel();
-            panelStyleGraph.setLayout(new BorderLayout());
+        //Dégrise le bouton et ajoute le texte dans le textPane
+        buttonRefreshStyle.setEnabled(true);
+        buttonDefaultStyle.setEnabled(true);
 
+        JPanel panelStyleGraph = new JPanel();
+        panelStyleGraph.setLayout(new BorderLayout());
 
-            panelStyleGraph.add(textPaneStyleGraph, BorderLayout.CENTER);
-            panelStyleGraph.add(textAreaLinesGraph, BorderLayout.WEST);
+        panelStyleGraph.add(textPaneStyleGraph, BorderLayout.CENTER);
+        panelStyleGraph.add(textAreaLinesGraph, BorderLayout.WEST);
 
-            JScrollPane jsStyleGraph = new JScrollPane();
-            jsStyleGraph.setViewportView(panelStyleGraph);
+        JScrollPane jsStyleGraph = new JScrollPane();
+        jsStyleGraph.setViewportView(panelStyleGraph);
 
-            final JSplitPane jpGraph = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, jsStyleGraph, sgr);
-            jpGraph.setContinuousLayout(true);
-            scrollPaneTreeResult.setViewportView(jpGraph);
+        final JSplitPane jpGraph = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, jsStyleGraph, sgr);
+        jpGraph.setContinuousLayout(true);
+        scrollPaneTreeResult.setViewportView(jpGraph);
 
-            //pointe sur l'onglet Graph
-            tabbedPaneResults.setSelectedIndex(0);
-        
+        //pointe sur l'onglet Graph
+        tabbedPaneResults.setSelectedIndex(0);
+
     }
 
     private boolean isStyle(fr.inria.edelweiss.kgram.api.core.Edge edge) {

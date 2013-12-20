@@ -139,7 +139,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	// Texte dans l'onglet requête 
 	private String textQuery;
 	// Texte par défaut dans l'onglet requête 
-	private String defaultTextQuery = "SELECT ?x ?t WHERE\n{\n ?x rdf:type ?t\n}";
+	private String defaultTextQuery = "CONSTRUCT {?x ?p ?y} WHERE\n{\n ?x ?p ?y\n} LIMIT 100";
 	
 //	private String defaultTextQuery = 
 //		"prefix c: <http://www.inria.fr/acacia/comma#>\n"+
@@ -178,17 +178,18 @@ public class MainFrame extends JFrame implements ActionListener{
 		saveStylesheet = 
 				
 				"graph {\n"+
-					"\t  color:grey;\n"+	
+					"\t  fill-color:white;\n"+	
 				"}\n"+
 
 				"node {\n"+
-				  	"\t  text-size:9;\n"+
+				  	"\t  text-size:12;\n"+
 					"\t  text-color:black;\n"+
 					"\t  text-style:bold;\n"+
-					"\t  text-align:center;\n"+
-					"\t  width:17;\n"+
-					"\t  color:lightblue;\n"+
-					"\t  node-shape:text-ellipse;\n"+
+					"\t  text-alignment:center;\n"+
+					"\t  size:17;\n"+
+                                        "\t  size-mode:fit;\n"+
+					"\t  fill-color:lightblue;\n"+
+					"\t  shape:circle;\n"+
 
 				"}\n"+
 				
@@ -196,10 +197,11 @@ public class MainFrame extends JFrame implements ActionListener{
 			  	"\t  text-size:9;\n"+
 				"\t  text-color:black;\n"+
 				"\t  text-style:bold;\n"+
-				"\t  text-align:center;\n"+
-				"\t  width:17;\n"+
-				"\t  color:orange;\n"+
-				"\t  node-shape:text-box;\n"+
+				"\t  text-alignment:center;\n"+
+				"\t  size:17;\n"+
+                                "\t  size-mode:fit;\n"+
+				"\t  fill-color:orange;\n"+
+				"\t  shape:box;\n"+
 
 				"}\n"+
 				
@@ -207,28 +209,31 @@ public class MainFrame extends JFrame implements ActionListener{
 			  	"\t  text-size:9;\n"+
 				"\t  text-color:black;\n"+
 				"\t  text-style:bold;\n"+
-				"\t  text-align:center;\n"+
-				"\t  width:17;\n"+
-				"\t  color:yellow;\n"+
-				"\t  node-shape:text-ellipse;\n"+
+				"\t  text-alignment:center;\n"+
+				"\t  size:17;\n"+
+                                "\t  size-mode:fit;\n"+
+				"\t  fill-color:yellow;\n"+
+				"\t  shape:circle;\n"+
 				"}\n"+
 				
 				"node.Class {\n"+
 			  	"\t  text-size:9;\n"+
 				"\t  text-color:black;\n"+
 				"\t  text-style:bold;\n"+
-				"\t  text-align:center;\n"+
-				"\t  width:17;\n"+
-				"\t  color:blue;\n"+
-				"\t  node-shape:text-ellipse;\n"+
+				"\t  text-alignment:center;\n"+
+				"\t  size:17;\n"+
+                                "\t  size-mode:fit;\n"+
+				"\t  fill-color:blue;\n"+
+				"\t  shape:circle;\n"+
 				"}\n"+
 				
 				"edge {\n"+
 					"\t  text-color:black;\n"+
-				  	"\t  text-size:8;\n"+
-					"\t  width:1;\n"+
-					"\t  color:grey;\n"+
-					"\t  text-align:center;\n"+
+				  	"\t  text-size:12;\n"+
+					"\t  size:2;\n"+
+					"\t  fill-color:grey;\n"+
+					"\t  text-alignment:center;\n"+ 
+                                        "\t  shape:cubic-curve;\n"+
 				"}";	
 		
 		
@@ -247,6 +252,8 @@ public class MainFrame extends JFrame implements ActionListener{
 	   // this.setIconImage(new ImageIcon(java.lang.ClassLoader.getSystemResource(resourcePath + "corese_icon.gif")).getImage());
 		//Initialise le menu
 		initMenu();
+                
+                System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 
 		listCheckbox = new ArrayList<JCheckBox>();
 		listJMenuItems = new ArrayList<JMenuItem>();

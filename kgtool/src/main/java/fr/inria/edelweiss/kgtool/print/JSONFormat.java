@@ -153,7 +153,7 @@ public class JSONFormat extends XMLFormat {
             print("\"uri\"");
         }
 
-        print(", \"value\": \"" + Constant.addEscapes(str) + "\"}");
+        print(", \"value\": \"" + JSONFormat.addJSONEscapes(str) + "\"}");
 
         if (n > 1 && i == n - 1) {
             print("]");
@@ -177,5 +177,47 @@ public class JSONFormat extends XMLFormat {
 
     void printLink(String name) {
         print("\"link\": [\"" + name + "\"],");
+    }
+
+    /**
+     * source: javacc replace special char by escape char for pprint
+     * This function is needed because JSON format does not accept escaped single quotes which are possibly returned by Constant.addEscape().
+     * 
+     * @param str The string to be escaped
+     * @return the escaped string
+     */
+    public static String addJSONEscapes(String str) {
+        StringBuilder retval = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            switch (str.charAt(i)) {
+                case 0:
+                    continue;
+                case '\b':
+                    retval.append("\\b");
+                    continue;
+                case '\t':
+                    retval.append("\\t");
+                    continue;
+                case '\n':
+                    retval.append("\\n");
+                    continue;
+                case '\f':
+                    retval.append("\\f");
+                    continue;
+                case '\r':
+                    retval.append("\\r");
+                    continue;
+                case '\"':
+                    retval.append("\\\"");
+                    continue;
+                case '\\':
+                    retval.append("\\\\");
+                    continue;
+                default:
+                    retval.append(str.charAt(i));
+                    continue;
+            }
+        }
+        return retval.toString();
     }
 }

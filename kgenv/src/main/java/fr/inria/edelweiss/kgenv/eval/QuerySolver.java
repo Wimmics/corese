@@ -68,6 +68,9 @@ public class QuerySolver  {
 	isDebug = false,
 	isOptimize = false,
 	isSPARQLCompliant = false;
+        // two blank nodes match if they have the same description
+        // (their edges  and target nodes math)
+        // use case: match two OWL Blank nodes that represent the same exp
         private boolean isMatchBlank = false;
         // skolemize construct/describe result graphs (and only them)
         private boolean isSkolem = false;

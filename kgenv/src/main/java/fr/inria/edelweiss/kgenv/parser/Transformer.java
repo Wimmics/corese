@@ -986,11 +986,11 @@ public class Transformer implements ExpType {
 			// PRAGMA: do it after loop above to have filter compiled
 			query.validateBlank(ast);		
 
-			if (hasBind && level>0){
-				// pop bind(f(?x) as ?y) at the end of group pattern
-				// unless body pattern which keep binding for select
-				pop(exp);
-			}
+//			if (hasBind && level>0){
+//				// pop bind(f(?x) as ?y) at the end of group pattern
+//				// unless body pattern which keep binding for select
+//                                pop(exp);
+//			}
 
 			exp = complete(exp, query, opt);
 		}

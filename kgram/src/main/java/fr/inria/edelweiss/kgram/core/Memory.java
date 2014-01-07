@@ -630,7 +630,11 @@ public class Memory implements Environment {
 	int getIndex(List<Node> lNodes){
 		int max = -1;
 		for (Node node : lNodes){
-			max = Math.max(max, getIndex(node));
+                    int index = getIndex(node);
+                    if (index == -1){
+                        return -1;
+                    }
+                    max = Math.max(max, index);
 		}
 		return max;
 	}

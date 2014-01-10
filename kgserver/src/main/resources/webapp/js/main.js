@@ -263,7 +263,7 @@ function load() {
 function sparql(sparqlQuery) {
 	$('#btnQuery').attr("disabled", true);
 	$("#btnQuery").html("Querying ...");
-        isConstruct = sparqlQuery.toLowerCase().indexOf("construct") >= 0;
+        isConstruct = (sparqlQuery.toLowerCase().indexOf("construct") >= 0) || (sparqlQuery.toLowerCase().indexOf("describe") >= 0);
         
         if (isConstruct) {
             endpointURL = rootURL + '/sparql/d3';
@@ -288,7 +288,9 @@ function sparql(sparqlQuery) {
                     if (!isConstruct) {
                         renderList(data);
                     } else {
-                        renderList(data.mappings);
+//                        renderList(data.mappings);
+                        $('#tbRes thead tr').remove();
+                        $('#tbRes tbody tr').remove();
                         renderD3(data, "#parRDFGraph");
                     }
                         

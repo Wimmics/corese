@@ -633,11 +633,16 @@ function renderListFed(data) {
 	//Rendering the values
 	$.each(listVal, function(index, item) {
 		var row = "<tr>";
-		$.each(item, function(name, v) {
-    		/// do stuff
-    		row = row + "<td>"+v.value+"</td>";
-    		//console.log(name + '=' + v.value);
-  		});
+                
+                for (var i = 0 ; i < listVar.length ; i++) {
+                    var v = listVar[i];
+                    if (item.hasOwnProperty(v)) {
+                        row = row + "<td>" + htmlEncode(item[v].value) + "</td>";
+                    } else {
+                       row = row + "<td></td>";
+                    }
+                }
+		
 		row = row + "</tr>";
 		$('#tbResFed tbody').prepend(row); 
 	});

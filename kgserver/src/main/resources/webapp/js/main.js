@@ -437,7 +437,8 @@ function renderList(data) {
                     //console.log(name + '=' +  htmlEncode(v.value));
                 });
                 row = row + "</tr>";
-                $('#tbRes tbody').prepend(row);
+//                $('#tbRes tbody').prepend(row);
+                $('#tbRes tbody').append(row);
             });
         }
 }

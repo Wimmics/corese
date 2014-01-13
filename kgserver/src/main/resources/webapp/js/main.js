@@ -410,16 +410,12 @@ function testEndpoint(endpointURL, rowIndex){
 function renderList(data) {
 	// JAX-RS serializes an empty list as null, and a 'collection of one' as an object (not an 'array of one')
 	var listVal = data.results.bindings == null ? [] : (data.results.bindings instanceof Array ? data.results.bindings : [data.results.bindings]);
-//	var listVar = data.head.vars == null ? [] : (data.head.vars instanceof Array ? data.head.vars : [data.head.vars]);
+	var listVar = data.head.vars == null ? [] : (data.head.vars instanceof Array ? data.head.vars : [data.head.vars]);
         
         $('#tbRes thead tr').remove();
         $('#tbRes tbody tr').remove();
             
-        var listVar = new Array();
         if (data.results.bindings.length > 0) {
-            res = data.results.bindings[0];
-            listVar = Object.keys(res);
-
             //Rendering the headers
             var tableHeader = '<tr>';
             $.each(listVar, function(index, item) {
@@ -431,11 +427,17 @@ function renderList(data) {
             //Rendering the values
             $.each(listVal, function(index, item) {
                 var row = "<tr>";
-                $.each(item, function(name, v) {
-                    /// do stuff
-                    row = row + "<td>" + htmlEncode(v.value) + "</td>";
-                    //console.log(name + '=' +  htmlEncode(v.value));
-                });
+                console.log(listVar);
+                
+                for (var i = 0 ; i < listVar.length ; i++) {
+                    var v = listVar[i];
+                    if (item.hasOwnProperty(v)) {
+                        row = row + "<td>" + htmlEncode(item[v].value) + "</td>";
+                    } else {
+                       row = row + "<td></td>";
+                    }
+                }
+                
                 row = row + "</tr>";
 //                $('#tbRes tbody').prepend(row);
                 $('#tbRes tbody').append(row);

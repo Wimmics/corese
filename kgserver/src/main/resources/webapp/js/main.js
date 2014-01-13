@@ -427,7 +427,6 @@ function renderList(data) {
             //Rendering the values
             $.each(listVal, function(index, item) {
                 var row = "<tr>";
-                console.log(listVar);
                 
                 for (var i = 0 ; i < listVar.length ; i++) {
                     var v = listVar[i];

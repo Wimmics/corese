@@ -96,10 +96,11 @@ public class Processor {
 	static final String SKOLEM      = KGRAM + "skolem"; 
 
 	static final String UNNEST = "unnest";
+	static final String KGUNNEST = KGRAM +"unnest";
 	static final String SYSTEM = "system";
 	static final String GROUPBY = "groupBy";
 
-	static final String SPARQL 	 = KGRAM + "sparql";
+	static final String SPARQL   = KGRAM + "sparql";
 	static final String SIMILAR  = KGRAM + "similarity";
 	static final String CSIMILAR = KGRAM + "cSimilarity";
 	static final String PSIMILAR = KGRAM + "pSimilarity";
@@ -366,6 +367,7 @@ public class Processor {
 		defoper(SPARQL, ExprType.KGRAM);
 		defoper(EXTERN, ExprType.EXTERN);
 		defoper(UNNEST, ExprType.UNNEST);
+		defoper(KGUNNEST, ExprType.UNNEST);
 		defoper(EXIST,  ExprType.EXIST);
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(GROUPBY, ExprType.GROUPBY);

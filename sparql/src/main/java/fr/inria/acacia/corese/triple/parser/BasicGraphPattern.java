@@ -1,11 +1,9 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
   
 /**
  * <p>Title: Corese</p>

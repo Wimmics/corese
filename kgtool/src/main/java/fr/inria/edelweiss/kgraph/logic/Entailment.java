@@ -625,7 +625,11 @@ public class Entailment implements Engine {
 	public boolean isRule(Node source){
 		return hasLabel(source, RULE);
 	}
-	
+        
+	public boolean isRule(Entity e){
+		return hasLabel(e.getGraph(), RULE);
+	}
+        
 	public boolean isType(Edge edge){
 		return getType(edge.getEdgeNode().getLabel()) == TYPE;
 	}

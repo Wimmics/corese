@@ -446,6 +446,10 @@ public class Mapping
 	Node getDistinctNode(int n){
 		return distinct[n];
 	}
+        
+        public Node[] getDistinct(){
+		return distinct;
+	}
 	
 	public Node getTNode(Node node){
 		return getNode(node);

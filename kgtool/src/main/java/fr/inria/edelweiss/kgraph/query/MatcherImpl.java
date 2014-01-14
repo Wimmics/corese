@@ -233,7 +233,7 @@ public class MatcherImpl implements Matcher {
         Query q = env.getQuery();
         if (q != null && q.isMatchBlank()
                 && n1.isBlank() && n2.isBlank()) {
-            b = match(graph, n1, n2, env, new TreeNode(), 0);
+            b = match(graph, n1, n2, env, new TreeNode(), 0);            
             return b;
         }
         return false;
@@ -323,8 +323,8 @@ public class MatcherImpl implements Matcher {
             t.put(getValue(n1), getValue(n2));
         }
 
-        List<Entity> l1 = g.getEdgeList(n1);
-        List<Entity> l2 = g.getEdgeList(n2);
+        List<Entity> l1 = g.getEdgeListSimple(n1);
+        List<Entity> l2 = g.getEdgeListSimple(n2);
 
         if (l1.size() != l2.size()) {
 
@@ -380,7 +380,7 @@ public class MatcherImpl implements Matcher {
         }
 
         if (l1.size() - l2.size() > 1) {
-            return false;
+           return false;
         }
 
         boolean found = false;

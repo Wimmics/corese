@@ -5,7 +5,7 @@ package fr.inria.acacia.corese.triple.parser;
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2011
  */
-public class Service extends BasicGraphPattern {
+public class Service extends And {
 	
 	Atom uri;
 	boolean silent;

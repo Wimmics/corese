@@ -668,7 +668,9 @@ public class SPIN implements ASTVisitor {
 
     @Override
     public void visit(And and) {
-
+        if (and.isService()) {
+            visit((Service) and);
+        } else 
         if (and.isMinus()) {
             visit((Minus) and);
         } else if (and.isBGP()) {
@@ -743,9 +745,7 @@ public class SPIN implements ASTVisitor {
     @Override
     public void visit(BasicGraphPattern bgp) {
 
-        if (bgp.isService()) {
-            visit((Service) bgp);
-        } else if (bgp.isExist()) {
+        if (bgp.isExist()) {
             visit((Exist) bgp);
         } else {
             for (Exp ee : bgp.getBody()) {

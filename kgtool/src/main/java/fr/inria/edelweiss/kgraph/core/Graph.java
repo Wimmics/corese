@@ -1811,8 +1811,21 @@ public class Graph //implements IGraph
             }
             return list;
         }
+       
+       /**
+        * 
+        * Without rule entailment
+        */
+        public List<Entity> getEdgeListSimple(Node n){
+            ArrayList<Entity> list = new ArrayList<Entity>();
+            for (Entity e : getEdges(n, 0)){
+                if (! getProxy().isRule(e)){
+                    list.add(e);
+                }
+            }
+            return list;
+        }
 
-        
 	
 	/*****************************************************************
 	 * 

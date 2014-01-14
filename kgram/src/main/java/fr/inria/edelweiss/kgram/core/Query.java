@@ -1630,7 +1630,9 @@ public class Query extends Exp {
 			lVar.clear(size);
 			//cleanNode(exp);	
                     
-                        //testjoin(exp);
+                        if (isTest()){
+                            testjoin(exp);
+                        }
 			
 		}
 		

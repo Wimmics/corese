@@ -227,7 +227,8 @@ public class RemoteProducerWSImpl implements Producer {
                 if (sparqlRes != null) {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
-                    l.load(is, ".ttl");
+//                    l.load(is, ".ttl");
+                    l.load(is);
                     logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
 //                    if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
 //                        Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
@@ -356,7 +357,8 @@ public class RemoteProducerWSImpl implements Producer {
             if (sparqlRes != null) {
                 Load l = Load.create(g);
                 is = new ByteArrayInputStream(sparqlRes.getBytes());
-                l.load(is, ".ttl");
+//                l.load(is, ".ttl");
+                l.load(is);
                 logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
 //                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
 //                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
@@ -506,7 +508,8 @@ public class RemoteProducerWSImpl implements Producer {
             if (sparqlRes != null) {
                 Load l = Load.create(g);
                 is = new ByteArrayInputStream(sparqlRes.getBytes());
-                l.load(is, ".ttl");
+//                l.load(is, ".ttl");
+                l.load(is);
                 logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
 //                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
 //                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());

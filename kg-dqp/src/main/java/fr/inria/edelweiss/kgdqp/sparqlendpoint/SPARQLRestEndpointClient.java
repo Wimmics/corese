@@ -82,7 +82,8 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
     @Override
     public String getEdges(String query){
 	try {
-	    return doGet(query, "text/turtle");
+            return doGet(query, "application/rdf+xml");
+//	    return doGet(query, "text/turtle");
 	} catch (IOException ex) {
 	    Logger.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.SEVERE, null, ex);
 	}

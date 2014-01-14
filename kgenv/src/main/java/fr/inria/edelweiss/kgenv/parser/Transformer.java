@@ -973,7 +973,7 @@ public class Transformer implements ExpType {
 						exp.add(tmp);
 
 					}
-                                        else if (ee.isBGP()){
+                                        else if (isJoinable(ee)){
                                             exp.join(tmp);
                                         }
 					else {
@@ -1528,6 +1528,10 @@ public class Transformer implements ExpType {
      */
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
+    }
+
+    private boolean isJoinable(fr.inria.acacia.corese.triple.parser.Exp ee) {
+        return ee.isBGP() || ee.isUnion() ;
     }
 
 	

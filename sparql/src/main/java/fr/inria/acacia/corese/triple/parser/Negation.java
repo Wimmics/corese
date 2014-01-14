@@ -1,6 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
-public class Negation extends BasicGraphPattern {
+public class Negation extends And {
 	
 	Negation(Exp e){
 		super(e);

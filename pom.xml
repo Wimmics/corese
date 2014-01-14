@@ -56,6 +56,11 @@
         </developer>
     </developers>
     
+    <scm>
+        <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
+        <url>https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>
+    </scm>
+    
     <properties>
         <!-- Sonar -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>

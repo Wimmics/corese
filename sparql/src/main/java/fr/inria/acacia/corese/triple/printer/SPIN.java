@@ -405,8 +405,11 @@ public class SPIN implements ASTVisitor {
                 visit((Query) exp);
             }
         }
-        else if (exp.isOptional()) {
+        else if (exp.isOption()) {
             visit((Option) exp);
+        } 
+        else if (exp.isOptional()) {
+            visitOptional((Option) exp);
         } 
         else if (exp.isValues()) {
             visit((Values) exp);
@@ -703,9 +706,27 @@ public class SPIN implements ASTVisitor {
         sb.append(NL + tab() + CPAREN + NL);
         counter--;
         sb.append(tab() + CSBRACKET + NL);
-
-
     }
+    
+     void visitOptional(Option option) {
+
+        visit(option.eget(0));
+        
+        sb.append(tab() + OSBRACKET + SPACE + ATAB);
+        counter++;
+        sb.append("sp:Optional" + PT_COMMA);
+        sb.append(tab() + SPELEMENTS + SPACE + OPAREN + NL);
+        counter++;
+
+        visit(option.eget(1));
+
+
+        counter--;
+        sb.append(NL + tab() + CPAREN + NL);
+        counter--;
+        sb.append(tab() + CSBRACKET + NL);
+    }
+
 
     @Override
     public void visit(Minus minus) {

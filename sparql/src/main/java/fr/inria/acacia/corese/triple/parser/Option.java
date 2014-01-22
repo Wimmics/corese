@@ -28,7 +28,10 @@ public class Option extends Exp {
 	
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(Option.class);
-	
+        // true : OPTION corese (unary)
+        // false: OPTIONAL SPARQL (binary)
+	public static boolean isOption = true;
+
 	static int num =0;
 	
 	public Option() {}
@@ -56,22 +59,29 @@ public class Option extends Exp {
 		return "option";
 	}
 	
-	public boolean isOptional(){
-		return true;
+        // corese option {}
+	public boolean isOption(){
+		return isOption;
+	}
+        
+        // sparql option {}
+        public boolean isOptional(){
+		return ! isOption;
 	}
 	
-	// draft: sparql compliance
-	public boolean isSPARQL(){
-		return false;
-	}
-
-
 	public StringBuffer toString(StringBuffer sb) {
+            if (isOptional()){
+                sb.append(eget(0).toString());
+ 		sb.append(KeywordPP.SPACE + KeywordPP.OPTIONAL + KeywordPP.SPACE);
+                sb.append(eget(1).toString());
+           }
+            else {
 		sb.append(KeywordPP.OPTIONAL + KeywordPP.SPACE);
 		for (int i=0; i<size(); i++){
 			sb.append(eget(i).toString());
 		}
-		return sb;
+            }
+            return sb;
 	}
 	
 	public boolean validate(ASTQuery ast, boolean exist){

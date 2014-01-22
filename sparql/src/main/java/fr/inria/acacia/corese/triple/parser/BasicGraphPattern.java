@@ -117,7 +117,7 @@ public class BasicGraphPattern extends And {
     		
     		Bind bind = exp.validate(glocal, n);
     		
-    		if (exp.isOptional() && prevGlocal!= null){
+    		if (exp.isOption() && prevGlocal!= null){
     			// for all var in exp
     			// if var !in local prev && var in global env : error			 
     			boolean ok = prevGlocal.check(local, bind);

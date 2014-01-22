@@ -1,13 +1,11 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
-import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 
 /**
@@ -50,7 +48,7 @@ public abstract class Exp extends Statement {
 	}
 	
 	boolean isBinary(){
-		return isMinus() || (isOptional() && isSPARQL());
+		return isMinus() || isOptional();
 	}
 	
 	public  void add(int n, Exp exp){
@@ -198,16 +196,14 @@ public abstract class Exp extends Statement {
 		return false;
 	}
 	
-	public boolean isOptional(){
+	public boolean isOption(){
 		return false;
 	}
-	
-	// draft: sparql compliance
-	public boolean isSPARQL(){
+        
+        public boolean isOptional(){
 		return false;
 	}
-	
-	
+				
 	public boolean isAnd(){
 		return false;
 	}

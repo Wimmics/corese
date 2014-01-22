@@ -550,6 +550,7 @@ public class Transformer implements ExpType {
 		qCurrent.setGroupBy(groupBy(qCurrent, ast));
 		
 		qCurrent.setDistinct(ast.isDistinct());
+                // generate a DISTINCT(?x) for distinct ?x
 		qCurrent.distinct();
 		qCurrent.setFrom (nodes(ast.getActualFrom()));
 		qCurrent.setNamed(nodes(ast.getActualNamed()));
@@ -986,12 +987,6 @@ public class Transformer implements ExpType {
 			// PRAGMA: do it after loop above to have filter compiled
 			query.validateBlank(ast);		
 
-//			if (hasBind && level>0){
-//				// pop bind(f(?x) as ?y) at the end of group pattern
-//				// unless body pattern which keep binding for select
-//                                pop(exp);
-//			}
-
 			exp = complete(exp, query, opt);
 		}
 
@@ -1259,9 +1254,11 @@ public class Transformer implements ExpType {
 		else if (query.isJoin()){
 			return JOIN;
 		}
-		else if (query.isOptional()){
-			//if (query.isSPARQL()) return OPTIONAL;
+		else if (query.isOption()){
 			return OPTION;
+		} 
+                else if (query.isOptional()){
+			return OPTIONAL;
 		} 
 		else if (query.isMinus()){
 			return MINUS;

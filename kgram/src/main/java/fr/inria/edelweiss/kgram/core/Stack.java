@@ -72,7 +72,10 @@ public class Stack extends ArrayList<Exp> implements ExpType {
 		remove(n);
 		int i = 0;
 		for (Exp e : exp){
-			add(n + i++, e);
+                    if (e.getBind() != null){
+                       add(n + i++, e.getBind()); 
+                    }
+                    add(n + i++, e);
 		}
 		return this;
 	}

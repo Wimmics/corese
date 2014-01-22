@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.Option;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
@@ -46,10 +47,22 @@ public class QueryProcess extends QuerySolver {
 	ReentrantReadWriteLock lock;
 	// Producer may perform match locally
 	boolean isMatch = false;
+        
+        static { setJoin(true); }
 		
 	public QueryProcess (){
 	}
 	
+        public static void setJoin(boolean b){
+            if (b){
+                Option.isOption = false;
+                Query.testJoin = true;
+            }
+            else {
+                Option.isOption = true;
+                Query.testJoin = false;
+            }
+        }
 	
 	protected QueryProcess (Producer p, Evaluator e, Matcher m){
 		super(p, e, m);

@@ -210,7 +210,8 @@ public class Memory implements Environment {
 			if (qNode != null){
 				if (n++>0) str += "\n";
 				String num = "(" + qNode.getIndex() + ") ";
-				str += num + qNode + " = " + getNode(qNode) ;
+                                String nb  = nbNodes[qNode.getIndex()] + " ";
+				str += num + nb + qNode + " = " + getNode(qNode) ;
 				if (isPath(qNode)){
 					str += " " + lPath[qNode.getIndex()];
 				}

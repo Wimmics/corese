@@ -87,13 +87,17 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 	
 	public static Mappings create(Query q){
+		return create(q, false);
+	}
+        
+        public static Mappings create(Query q, boolean subEval){
 		Mappings lMap = new Mappings(q); 
-		lMap.init(q);
+		lMap.init(q, subEval);
 		return lMap;
 	}
 	
-	void init(Query q){
-		isDistinct  = q.isDistinct();
+	void init(Query q, boolean subEval){
+		isDistinct  = ! subEval && q.isDistinct();
 		isListGroup = q.isListGroup();
 		setSelect(q.getSelect());
 		if (isDistinct){
@@ -267,7 +271,6 @@ implements Comparator<Mapping> , Iterable<Mapping>
 
 	boolean accept(Mapping r){
 		if (select.size()==0) return true;
-
 		if (isDistinct){
 			return distinct.isDistinct(r);
 		}

@@ -32,7 +32,8 @@ public class Query extends Exp {
 	public static final String BPATH = "_:_path_";
 
 	public static boolean test = true;
-	
+	public static boolean testJoin = false;
+
 	int limit = Integer.MAX_VALUE, offset = 0, 
 	// if slice > 0 : service gets mappings from previous pattern by slices
 	slice = 0;
@@ -1493,6 +1494,12 @@ public class Query extends Exp {
 	 * ?x is new
 	 */ 	 
 	public void distinct(){
+            if (testJoin){
+                // in case of JOIN() the ACCEPT(?x) cannot be set
+                // because evaluation occurs in kgram subEval
+                // where there is no Group to compute accept()
+                return;
+            }
 		if (isDistinct() && getSelectFun().size() == 1){
 			Node qNode = getSelectFun().get(0).getNode();
 			for (Exp exp : this){
@@ -1542,6 +1549,7 @@ public class Query extends Exp {
 		case XPATH:
 		case EVAL:
 		case NODE:
+                case GRAPHNODE:
 			break;
 			
 		case FILTER:
@@ -1603,7 +1611,7 @@ public class Query extends Exp {
                                 // ?x ?p ?y . ?x ?q ?t . filter(?t = 12)
                                 // ->
                                 // BIND(?t = 12) . ?x ?q ?t . filter(?t = 12) .  ?x ?p ?y                        
-				exp.cstBind();
+				exp.setBind();
                                 // set graph filter into graph
 				exp.graphFilter();
 				
@@ -1633,9 +1641,24 @@ public class Query extends Exp {
                         if (isTest()){
                             testjoin(exp);
                         }
+                        if (testJoin && exp.type() == AND){
+                            // group statements that are not connected in separate BGP 
+                            // generate a JOIN between them.
+                              Exp res = exp.join();
+                              if (res != exp){
+                                exp.getExpList().clear();
+                                exp.add(res);
+                              }
+                        }
 			
 		}
-		
+                
+		if (exp.isOptional()){
+                    // A optional B
+                    // variables bound by A
+                    exp.first().setNodeList(exp.first().getNodes());
+                }
+                
 		return exp;
 	}
 	
@@ -1853,6 +1876,7 @@ public class Query extends Exp {
 	/**
 	 * Move filter at place where variables are bound in exp
 	 * expVar: list of bound variables
+         * TODO: exists {} could be eval earlier
 	 */
 	void sortFilter(Exp exp, VString expVar){
 		int size = expVar.size();
@@ -1886,11 +1910,15 @@ public class Query extends Exp {
 					Exp e = exp.get(je);
 
 					e.share(filterVar, expVar);
-										
-					if (bound(filterVar, expVar) || (isExist && je+1 == exp.size())){
+                                        boolean bound = bound(filterVar, expVar);
+                                        
+					if (bound || (isExist && je+1 == exp.size())){
 						// insert filter after exp
 						// an exist filter that is not bound is moved at the end because it 
 						// may bound its own variables.
+                                            if (bound && e.type() == OPTIONAL && e.first().size()>0){
+                                                e.first().add(ff);
+                                            }
 						e.addFilter(ff);
 						done.add(f);
 						if (jf < je){

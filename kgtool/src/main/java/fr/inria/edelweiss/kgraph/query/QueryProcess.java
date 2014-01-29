@@ -53,16 +53,33 @@ public class QueryProcess extends QuerySolver {
 	public QueryProcess (){
 	}
 	
+        /**
+         * Generate JOIN(A, B) if A and B do not share a variable (in triples)
+         */
         public static void setJoin(boolean b){
-            if (b){
-                Option.isOption = false;
+            if (b){                
                 Query.testJoin = true;
             }
-            else {
-                Option.isOption = true;
+            else {               
                 Query.testJoin = false;
             }
         }
+        
+        /**
+         * True means SPARQL semantics (default value)
+         * False means Corese semantics (deprecated)
+         */
+         public static void setOptional(boolean b){
+            if (b){
+                Option.isOptional = true;
+                Query.isOptional = true;
+            }
+            else {
+                Option.isOptional = false;
+                Query.isOptional = false;
+            }
+        }
+        
 	
 	protected QueryProcess (Producer p, Evaluator e, Matcher m){
 		super(p, e, m);

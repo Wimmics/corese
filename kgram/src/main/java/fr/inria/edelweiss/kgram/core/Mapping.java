@@ -214,6 +214,11 @@ public class Mapping
 	void setOrderBy(Node[] nodes){
 		oNodes = nodes;
 	}
+        
+        void setOrderBy(Node node){
+		oNodes = new Node[1];
+                oNodes[0] = node;
+	}
 	
 	void setGroupBy(Node[] nodes){
 		gNodes = nodes;

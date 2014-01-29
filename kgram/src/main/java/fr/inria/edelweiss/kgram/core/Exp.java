@@ -1169,6 +1169,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     boolean isBindCst() {
         return type() == BIND && size() == 1;
     }
+    
+     boolean isBindVar() {
+        return type() == BIND && size() == 2;
+    }
 
     /**
      * Add BIND ?x = ?y

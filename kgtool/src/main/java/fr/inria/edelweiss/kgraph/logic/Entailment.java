@@ -148,19 +148,19 @@ public class Entailment implements Engine {
 		domain.clear();
 		range.clear();
 		subproperty.clear();
+                hasType = graph.addProperty(S_TYPE);
 	}
 	
 	// use RDFS metamodel
 	void defProperty(){
-		defEntity(RDF.RDF, 			RDF_ENTAIL);
+		defEntity(RDF.RDF, 		RDF_ENTAIL);
 		defEntity(RDF.TYPE, 		TYPE);
 		defEntity(RDFS.SUBCLASSOF, 	SUBCLASSOF);
-		defEntity(RDFS.SUBPROPERTYOF, SUBPROPERTYOF);
+		defEntity(RDFS.SUBPROPERTYOF,   SUBPROPERTYOF);
 		defEntity(RDFS.DOMAIN, 		DOMAIN);
 		defEntity(RDFS.RANGE, 		RANGE);
 		defEntity(RDFS.MEMBER, 		MEMBER);
-		defEntity(OWL.INVERSEOF, 	INVERSEOF);
-		
+		defEntity(OWL.INVERSEOF, 	INVERSEOF);		
 		defEntity(OWL.SYMMETRIC, 	SYMMETRIC);
 
 	}

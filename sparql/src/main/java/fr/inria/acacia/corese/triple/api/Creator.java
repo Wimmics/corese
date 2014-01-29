@@ -11,23 +11,25 @@ import fr.inria.acacia.corese.triple.parser.RDFList;
 * @author Olivier Corby, INRIA 2012
 * 
 */
-public interface Creator {
+ public interface Creator {
 	
-	public boolean accept(Atom subject, Atom predicate, Atom object);
+	 boolean accept(Atom subject, Atom predicate, Atom object);
+        
+         void start();
 	
-	public void triple(Atom subject, Atom predicate, Atom object);
+	 void triple(Atom subject, Atom predicate, Atom object);
 	
-	public void triple(Atom predicate, List<Atom> l);
+	 void triple(Atom predicate, List<Atom> l);
 
-	public void graph(Atom graph);
+	 void graph(Atom graph);
 	
-	public void endGraph(Atom graph);
+	 void endGraph(Atom graph);
 
-	public void list(RDFList l);
+	 void list(RDFList l);
 	
-	public void setRenameBlankNode(boolean b);
+	 void setRenameBlankNode(boolean b);
 
-	public boolean isRenameBlankNode();
+	 boolean isRenameBlankNode();
 
-        public void setLimit(int limit);
+         void setLimit(int limit);
 }

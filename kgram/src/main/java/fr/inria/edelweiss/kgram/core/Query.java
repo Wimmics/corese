@@ -33,6 +33,7 @@ public class Query extends Exp {
 
 	public static boolean test = true;
 	public static boolean testJoin = false;
+	public static boolean isOptional = true;
 
 	int limit = Integer.MAX_VALUE, offset = 0, 
 	// if slice > 0 : service gets mappings from previous pattern by slices
@@ -1682,7 +1683,7 @@ public class Query extends Exp {
 	void findFilter(Exp exp){
 		for (Exp ee : exp){
 			if (ee.isFilter()){
-				compiler.process(ee);
+				compiler.process(this, ee);
 			}
 		}
 	}
@@ -2307,6 +2308,9 @@ public class Query extends Exp {
 		this.templateGroup = templateGroup;
 	}
 	
+        public boolean isOptional(){
+            return isOptional;
+        }
 	
 	
 }

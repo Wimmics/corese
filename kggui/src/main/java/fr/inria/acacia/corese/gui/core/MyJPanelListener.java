@@ -1,5 +1,5 @@
 package fr.inria.acacia.corese.gui.core;
- 
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -28,20 +28,17 @@ import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
-
 /**
- * Onglet Listener avec tout ce qu'il contient 
+ * Onglet Listener avec tout ce qu'il contient
+ *
  * @author saguilel
  *
  */
-public class MyJPanelListener extends JPanel implements MouseListener,ActionListener{
+public class MyJPanelListener extends JPanel implements MouseListener, ActionListener {
 
-
-	
-	private static final long serialVersionUID = 1L;
-	private JButton buttonRefresh;
-	private JButton buttonDebug;
-	
+    private static final long serialVersionUID = 1L;
+    private JButton buttonRefresh;
+    private JButton buttonDebug;
     private JLabel labelLoadedFiles;
     private JLabel labelLogs;
     private JPanel paneListener;
@@ -49,166 +46,160 @@ public class MyJPanelListener extends JPanel implements MouseListener,ActionList
     private JScrollPane scrollPaneLogs;
     private JTextPane textPaneLogs;
     private DefaultListModel model;
-    private boolean frameShow=true;
-    
+    private boolean frameShow = true;
     protected static JList listLoadedFiles;		//list présent dans le JpanelListener
-
     private JFrameDebug myPop;
     MyPopup popupMenu = new MyPopup();				//On instancie la pop-up
-    
+
     /**
-     * Crée le Panel Listener que l'on ajoutera au conteneur d'onglets dans la fenêtre principale
-     * 
+     * Crée le Panel Listener que l'on ajoutera au conteneur d'onglets dans la
+     * fenêtre principale
+     *
      * @param coreseFrame
      */
-	public MyJPanelListener(final MainFrame coreseFrame)  {
-		super();
+    public MyJPanelListener(final MainFrame coreseFrame) {
+        super();
 
-		paneListener= new JPanel();
-        setLayout(new BorderLayout(5,5));
-    	add(paneListener,BorderLayout.CENTER);
-    	labelLoadedFiles = new JLabel();
+        paneListener = new JPanel();
+        setLayout(new BorderLayout(5, 5));
+        add(paneListener, BorderLayout.CENTER);
+        labelLoadedFiles = new JLabel();
         buttonRefresh = new JButton();
         buttonDebug = new JButton();
         scrollPaneList = new JScrollPane();
-        
+
         model = new DefaultListModel();
         listLoadedFiles = new JList(model);
         listLoadedFiles.addMouseListener(this);
         scrollPaneList = new JScrollPane(listLoadedFiles);
         scrollPaneList.setPreferredSize(new Dimension(100, 120));
-        
+
         labelLogs = new JLabel();
         scrollPaneLogs = new JScrollPane();
         textPaneLogs = new JTextPane();
 
         labelLoadedFiles.setText("Loaded files:");
 
-        
+
         // Appelle la fonction Refresh
         buttonRefresh.setText("Reload");
         ActionListener l_RefreshListener = new ActionListener() {
             public void actionPerformed(ActionEvent l_Event) {
-            	refresh(coreseFrame);
+                refresh(coreseFrame);
             }
-          };
+        };
         buttonRefresh.addActionListener(l_RefreshListener);
-        
-		myPop = new JFrameDebug(coreseFrame);	
-		WindowAdapter l_windowsClose = new WindowAdapter() {
-			
-			@Override
-			public void windowClosing(WindowEvent e) {				
-				frameShow=true;
-			}
-			
-			@Override
-			public void windowClosed(WindowEvent e) {
-				frameShow=true;
-			}
-		
-		};
-		myPop.addWindowListener(l_windowsClose);
-		
-		buttonDebug.setText("Debug");
-        ActionListener l_DebugListener = new ActionListener() {		
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(frameShow){
-					myPop.setVisible(true);
-					frameShow=false;
-				}	
-				else {
-					myPop.setVisible(false);
-					frameShow=true;
-				}	
-			}
-		};
-		buttonDebug.addActionListener(l_DebugListener);
-        
-		//Ecoute le reload du pop-up
-		ActionListener l_ReloadFileListener = new ActionListener() {			
-			public void actionPerformed(ActionEvent e) {							
-					reloadFileSelected(coreseFrame);
-			}
-		};
-		popupMenu.getReload().addActionListener(l_ReloadFileListener);
 
-		//Ecoute le delete du pop-up
-		ActionListener l_DeleteFileListener = new ActionListener() {			
-			public void actionPerformed(ActionEvent e) {							
-				getTextPaneLogs().setText(""); 	//supprime les logs de la fenêtre
-				appendMsg("Delete Files : "+coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex())+ "\n" +coreseFrame.getMyCapturer().getContent() + "\ndone.\n", null);
-				getModel().remove(getListLoadedFiles().getSelectedIndex());		//vide l'élément sur lequel on double clic de la liste 
-				refresh(coreseFrame);
-			}
-		};
-		popupMenu.getDelete().addActionListener(l_DeleteFileListener);
+        myPop = new JFrameDebug(coreseFrame);
+        WindowAdapter l_windowsClose = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frameShow = true;
+            }
 
-		//Ecoute le about du pop-up
-		ActionListener l_AboutFileListener = new ActionListener() {			
-			public void actionPerformed(ActionEvent e) {
-				File file = new File (coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()).toString());
-				String info = null,b="Bytes";
-				double size;
-				String ext = MyCellRenderer.extension(file);
-				if(ext.equals("rul")){
-					info="Fichier contenant les règles d'inférences";
-				}	
-				else if(ext.equals("rdfs")){
-					info="Fichier contenant les éléments de base pour décrire l'ontologie (classe, propriétés) ";
-				}
-				else if(ext.equals("rdf")){
-					info="Fichier qui permet d'exploiter le fichier .rdfs, il permet de définir chaque entité sous la forme d'un triplets (sujet, prédicat, objet)";
+            @Override
+            public void windowClosed(WindowEvent e) {
+                frameShow = true;
+            }
+        };
+        myPop.addWindowListener(l_windowsClose);
 
-				}
-				
-				DecimalFormat df = new DecimalFormat("########.0"); 
-				DateFormat sdf = new SimpleDateFormat("E - dd MMM yyyy - KK:mm:ss a");
-				
-				size = file.length();
-				if(size>1024){
-					size = size/1024;
-					b="KB";
-				}
-				if(size>2048){
-					size = size/2048;
-					b="MB";
-				}
-				if(size>4096){
-					size = size/4096;
-					b="GB";
-				}
-				
-				Date d = new Date(file.lastModified());
-				String message=	 "Name : 		"+file
-								+"\nType : 		"+ext.toUpperCase()+" file"
-								+"\nMore information : "+info
-								+"\nModified :    "+sdf.format(d)
-								+"\nSize :       "+df.format(size)+" "+b
-								+"";
-				JOptionPane.showMessageDialog(null, message);
-				
-				
-				
-			}
-		};
-		popupMenu.getInfos().addActionListener(l_AboutFileListener);
-		
-	    
+        buttonDebug.setText("Debug");
+        ActionListener l_DebugListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (frameShow) {
+                    myPop.setVisible(true);
+                    frameShow = false;
+                } else {
+                    myPop.setVisible(false);
+                    frameShow = true;
+                }
+            }
+        };
+        buttonDebug.addActionListener(l_DebugListener);
+
+        //Ecoute le reload du pop-up
+        ActionListener l_ReloadFileListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                reloadFileSelected(coreseFrame);
+            }
+        };
+        popupMenu.getReload().addActionListener(l_ReloadFileListener);
+
+        //Ecoute le delete du pop-up
+        ActionListener l_DeleteFileListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                getTextPaneLogs().setText(""); 	//supprime les logs de la fenêtre
+                appendMsg("Delete Files : " + coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()) + "\n" + coreseFrame.getMyCapturer().getContent() + "\ndone.\n", null);
+                getModel().remove(getListLoadedFiles().getSelectedIndex());		//vide l'élément sur lequel on double clic de la liste 
+                refresh(coreseFrame);
+            }
+        };
+        popupMenu.getDelete().addActionListener(l_DeleteFileListener);
+
+        //Ecoute le about du pop-up
+        ActionListener l_AboutFileListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                File file = new File(coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()).toString());
+                String info = null, b = "Bytes";
+                double size;
+                String ext = MyCellRenderer.extension(file);
+                if (ext.equals("rul")) {
+                    info = "Fichier contenant les règles d'inférences";
+                } else if (ext.equals("rdfs")) {
+                    info = "Fichier contenant les éléments de base pour décrire l'ontologie (classe, propriétés) ";
+                } else if (ext.equals("rdf")) {
+                    info = "Fichier qui permet d'exploiter le fichier .rdfs, il permet de définir chaque entité sous la forme d'un triplets (sujet, prédicat, objet)";
+
+                }
+
+                DecimalFormat df = new DecimalFormat("########.0");
+                DateFormat sdf = new SimpleDateFormat("E - dd MMM yyyy - KK:mm:ss a");
+
+                size = file.length();
+                if (size > 1024) {
+                    size = size / 1024;
+                    b = "KB";
+                }
+                if (size > 2048) {
+                    size = size / 2048;
+                    b = "MB";
+                }
+                if (size > 4096) {
+                    size = size / 4096;
+                    b = "GB";
+                }
+
+                Date d = new Date(file.lastModified());
+                String message = "Name : 		" + file
+                        + "\nType : 		" + ext.toUpperCase() + " file"
+                        + "\nMore information : " + info
+                        + "\nModified :    " + sdf.format(d)
+                        + "\nSize :       " + df.format(size) + " " + b
+                        + "";
+                JOptionPane.showMessageDialog(null, message);
+
+
+
+            }
+        };
+        popupMenu.getInfos().addActionListener(l_AboutFileListener);
+
+
         labelLogs.setText("Logs:");
 
         // Affiche les traces voulues 
         textPaneLogs.setEditable(false);
         textPaneLogs.setContentType("text/plain");
-        textPaneLogs.setEditorKitForContentType("text/plain",textPaneLogs.getEditorKitForContentType("text/plain"));
-        textPaneLogs.setFont(new Font("Monospaced", Font.PLAIN, 12)); 
+        textPaneLogs.setEditorKitForContentType("text/plain", textPaneLogs.getEditorKitForContentType("text/plain"));
+        textPaneLogs.setFont(new Font("Monospaced", Font.PLAIN, 12));
         scrollPaneLogs.setViewportView(textPaneLogs);
-     
+
         // Mise en forme
         GroupLayout pane_listenerLayout = new GroupLayout(paneListener);
         paneListener.setLayout(pane_listenerLayout);
-         
+
         GroupLayout.ParallelGroup hParallel1 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
         GroupLayout.SequentialGroup hSeq1 = pane_listenerLayout.createSequentialGroup();
         GroupLayout.ParallelGroup hParallel2 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
@@ -224,8 +215,8 @@ public class MyJPanelListener extends JPanel implements MouseListener,ActionList
         hSeq3.addGroup(hParallel3);
         hSeq2.addComponent(labelLoadedFiles);
         hSeq2.addGap(378);
-      
-        
+
+
         hSeq2.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 257, Short.MAX_VALUE);
         hSeq2.addComponent(buttonDebug);
         hSeq2.addGap(18, 18, 18);
@@ -238,10 +229,10 @@ public class MyJPanelListener extends JPanel implements MouseListener,ActionList
         hSeq1.addContainerGap();
         hSeq1.addGroup(hParallel2);
         hParallel1.addGroup(hSeq1);
-        
+
         pane_listenerLayout.setHorizontalGroup(hParallel1);
-       
-        
+
+
         GroupLayout.ParallelGroup vParallel1 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
         GroupLayout.ParallelGroup vParallel2 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
         GroupLayout.ParallelGroup vParallel3 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
@@ -249,11 +240,11 @@ public class MyJPanelListener extends JPanel implements MouseListener,ActionList
         GroupLayout.ParallelGroup vParallel5 = pane_listenerLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
         GroupLayout.SequentialGroup vSeq1 = pane_listenerLayout.createSequentialGroup();
         GroupLayout.SequentialGroup vSeq2 = pane_listenerLayout.createSequentialGroup();
-      
+
         vSeq2.addGroup(vParallel4);
         vSeq2.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
-   
-        
+
+
         vSeq2.addGroup(vParallel5);
         vParallel3.addGroup(vSeq2);
         vParallel2.addComponent(labelLoadedFiles);
@@ -272,132 +263,124 @@ public class MyJPanelListener extends JPanel implements MouseListener,ActionList
         vSeq1.addComponent(scrollPaneLogs, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
         vSeq1.addContainerGap();
         vParallel1.addGroup(vSeq1);
-        
+
         pane_listenerLayout.setVerticalGroup(vParallel1);
 
     }
-	
-	public  JList getListLoadedFiles() {
-		return listLoadedFiles;
-	}
 
-	
+    public JList getListLoadedFiles() {
+        return listLoadedFiles;
+    }
 
-	/**
-	 * Ré-initialise CORESE et
-	 * Recharge tous les fichiers précédemment chargés 
-	 * @param coreseFrame
-	 */
-	public void refresh(MainFrame coreseFrame){
-		coreseFrame.setMyCoreseNewInstance();
-		appendMsg("reload ...\n" + coreseFrame.getMyCapturer().getContent() + "\ndone.\n\n", coreseFrame);
-		coreseFrame.setMyCoreseNewInstance();
-		if(model.getSize() != 0){
-			for(int i = 0; i < model.getSize(); i++){		
-				if(((String) model.getElementAt(i)).endsWith(".rul")){	
-					coreseFrame.loadRule((String)model.getElementAt(i));	        		
-				}
-				else {					
-					coreseFrame.loadRDFs((String)model.getElementAt(i));
-					}
-			}
-		}	
-	}
-	
-	/**
-	 * Affiche les messages dans le textPaneLogs
-	 * @param msg
-	 * @param coreseFrame
-	 */
-	private void appendMsg(String msg, MainFrame coreseFrame){
-	    final Document doc =  textPaneLogs.getDocument();
-	    try {
-	    	doc.insertString(textPaneLogs.getDocument().getLength(), msg + "\n\n", null);
-	      }
-	      catch (Exception l_InnerException) {
-	    	  coreseFrame.getLogger().fatal("Output capture problem:",l_InnerException);
-	      }
-	}
+    /**
+     * Ré-initialise CORESE et Recharge tous les fichiers précédemment chargés
+     *
+     * @param coreseFrame
+     */
+    public void refresh(MainFrame coreseFrame) {
+        coreseFrame.setMyCoreseNewInstance();
+        appendMsg("reload ...\n" + coreseFrame.getMyCapturer().getContent() + "\n", coreseFrame);
+        coreseFrame.setMyCoreseNewInstance();
+        if (model.getSize() != 0) {
+            for (int i = 0; i < model.getSize(); i++) {
+                String file = (String) model.getElementAt(i);
+                appendMsg("Loading: " + file + "\n", coreseFrame );
+                if (file.endsWith(".rul")) {
+                    coreseFrame.loadRule(file);
+                } else {
+                    coreseFrame.load(file);
+                }
+            }
+        }
+    }
 
-	//getteurs et setteurs utiles
-	public void setPaneListener(JPanel pane_listener) {
-		this.paneListener = pane_listener;
-	}
-	
-	
-	public DefaultListModel getModel(){
-		return model;
-	}
-	
-	public JTextPane getTextPaneLogs(){
-		return textPaneLogs;
-	}
-	
-	public JScrollPane getScrollPaneLog(){
-		return scrollPaneLogs;
-	}
+    /**
+     * Affiche les messages dans le textPaneLogs
+     *
+     * @param msg
+     * @param coreseFrame
+     */
+    private void appendMsg(String msg, MainFrame coreseFrame) {
+        final Document doc = textPaneLogs.getDocument();
+        try {
+            doc.insertString(textPaneLogs.getDocument().getLength(), msg , null);
+        } catch (Exception l_InnerException) {
+            coreseFrame.getLogger().fatal("Output capture problem:", l_InnerException);
+        }
+    }
 
-	
-	/**
-	 * Permet de reload le fichier sélectionner dans la liste par l'intermédiaire du pop-up
-	 * @param coreseFrame
-	 */
-	public void reloadFileSelected(MainFrame coreseFrame){
-		//coreseFrame.setMyCoreseNewInstance();
-		Object files = coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex());
-		String ext = MyCellRenderer.extension(files);
-		if(ext.equals("rul")){
-			coreseFrame.loadRule((String)coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()));			}
-		else if(ext.equals("rdfs") || ext.equals("owl")){
-			coreseFrame.loadRDFs((String)coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()));
-		}
-		else if(ext.equals("rdf")){
-			coreseFrame.loadRDF((String)coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()));			}
-		}
-	
-	
-	@Override
-	/**
-	 * Permet d'afficher une fenêtre popups pour le fichier lors d'un double-clic 
-	 */
-	public void mouseClicked(MouseEvent e) {
-			
-		 if(e.getButton()== MouseEvent.BUTTON3 && getModel().getSize()!=0){			
-			popupMenu.getPopupMenu().show(e.getComponent(), e.getX(), e.getY());
-			MyCellRenderer myCell = new MyCellRenderer();
-	        int index = myCell.getMaList().locationToIndex(e.getPoint());
-	        myCell.getMaList().setSelectedIndex(index);
-		}
+    //getteurs et setteurs utiles
+    public void setPaneListener(JPanel pane_listener) {
+        this.paneListener = pane_listener;
+    }
 
-		
-	}
+    public DefaultListModel getModel() {
+        return model;
+    }
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		
-	}
+    public JTextPane getTextPaneLogs() {
+        return textPaneLogs;
+    }
 
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+    public JScrollPane getScrollPaneLog() {
+        return scrollPaneLogs;
+    }
 
-	@Override
-	public void mousePressed(MouseEvent e) {
-	
-	}
+    /**
+     * Permet de reload le fichier sélectionner dans la liste par
+     * l'intermédiaire du pop-up
+     *
+     * @param coreseFrame
+     */
+    public void reloadFileSelected(MainFrame coreseFrame) {
+        //coreseFrame.setMyCoreseNewInstance();
+        Object files = coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex());
+        String ext = MyCellRenderer.extension(files);
+        if (ext.equals("rul")) {
+            coreseFrame.loadRule((String) coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()));
+        } else if (ext.equals("rdfs") || ext.equals("owl")) {
+            coreseFrame.load((String) coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()));
+        } else if (ext.equals("rdf")) {
+            coreseFrame.loadRDF((String) coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()));
+        }
+    }
 
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    /**
+     * Permet d'afficher une fenêtre popups pour le fichier lors d'un
+     * double-clic
+     */
+    public void mouseClicked(MouseEvent e) {
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-				
-	}
+        if (e.getButton() == MouseEvent.BUTTON3 && getModel().getSize() != 0) {
+            popupMenu.getPopupMenu().show(e.getComponent(), e.getX(), e.getY());
+            MyCellRenderer myCell = new MyCellRenderer();
+            int index = myCell.getMaList().locationToIndex(e.getPoint());
+            myCell.getMaList().setSelectedIndex(index);
+        }
 
-	
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+    }
 }

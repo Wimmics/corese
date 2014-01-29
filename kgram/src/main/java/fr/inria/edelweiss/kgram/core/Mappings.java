@@ -301,6 +301,57 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		Collections.sort(list, this);
 	}
 
+        /**
+         * 
+         * Sort according to node
+         */
+        void sort(Node node){
+            for (Mapping m : this){
+                m.setOrderBy(m.getNode(node));
+            }
+            sort();
+        }
+        
+        int find(Node node, Node qnode){
+            return find(node, qnode, 0, size()-1);
+        }
+        
+        int find(Node n2, Node qnode, int first, int last){
+		if (first >= last) {
+			return first;
+		}
+		else {
+			int mid = (first + last) / 2;
+                        Node n1 = list.get(mid).getNode(qnode);
+			int res = compare(n1, n2); 
+			if (res >= 0) {
+				return find(n2, qnode, first, mid);
+			}
+			else {
+				return find(n2, qnode, mid+1, last); 
+			}
+		}		
+	}
+        
+      int compare(Node n1, Node n2) {
+        int res = 0;
+        if (n1 != null && n2 != null) { // sort ?x
+            res = n1.compare(n2);
+        } //      unbound 
+        else if (n1 == null) { // unbound var
+            if (n2 == null) {
+                res = 0;
+            } else {
+                res = unbound;
+            }
+        } else if (n2 == null) {
+            res = -unbound;
+        } else {
+            res = 0;
+        }
+        return res;
+    }
+        
 
 	public int compare(Mapping r1, Mapping r2) {
 		Node[] order1 = r1.getOrderBy();
@@ -332,7 +383,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 				res = 0;
 			}
 			
-			if (orderBy.get(i).status()){ 
+			if (! orderBy.isEmpty() && orderBy.get(i).status()){ 
 				res = desc(res);
 			}
 

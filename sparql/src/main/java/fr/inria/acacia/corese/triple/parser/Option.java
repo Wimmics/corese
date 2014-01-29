@@ -1,6 +1,5 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -28,9 +27,9 @@ public class Option extends Exp {
 	
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(Option.class);
-        // true : OPTION corese (unary)
-        // false: OPTIONAL SPARQL (binary)
-	public static boolean isOption = true;
+        // false: OPTION corese (unary)
+        // true:  OPTIONAL SPARQL (binary)
+	public static boolean isOptional = true;
 
 	static int num =0;
 	
@@ -61,12 +60,12 @@ public class Option extends Exp {
 	
         // corese option {}
 	public boolean isOption(){
-		return isOption;
+		return ! isOptional;
 	}
         
         // sparql option {}
         public boolean isOptional(){
-		return ! isOption;
+		return isOptional;
 	}
 	
 	public StringBuffer toString(StringBuffer sb) {

@@ -415,7 +415,7 @@ public class Load
 		cr.graph(Constant.create(src));
 		cr.setRenameBlankNode(renameBlankNode);
 		cr.setLimit(limit);
-		
+		cr.start();
 		LoadTurtle ld = LoadTurtle.create(stream, cr, base);
 		try {
 			ld.load();

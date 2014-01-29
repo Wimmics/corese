@@ -112,6 +112,11 @@ public class Mapper {
 	}
 		
 	public Node getNode(ResultSet rs, int i) throws SQLException{
+            
+                if (rs.getBytes(i) == null){
+                    return null;
+                }
+                
 		IDatatype dt = null;
 		
 		switch(rs.getMetaData().getColumnType(i)){

@@ -78,14 +78,18 @@ public class Compile implements ExprType {
 	 * x p t . y p z filter(y = x)
 	 * we can bind y = x before enumerate y p z
 	 */
-	public void process(Exp exp){
+	public void process(Query q, Exp exp){
 		Filter ff = exp.getFilter();
 		Expr ee = ff.getExp();
 				
 		switch (ee.oper()){
 
 		case NOT: 
+                    if (! q.isOptional()){
+                        // no use to detect !bound(?x) with SPARQL semantics
+                        // because std backtrack is OK in this case
 			not(exp);
+                    }
 			break;
 						
 		case OR:

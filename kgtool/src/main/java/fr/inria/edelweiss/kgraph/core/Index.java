@@ -52,6 +52,8 @@ public interface Index {
 	
 	
 	void clear();
+        
+        void clearCache();
 
 	void clear(Node gNode);
 	

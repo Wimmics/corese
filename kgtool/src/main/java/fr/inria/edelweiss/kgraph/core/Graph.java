@@ -410,6 +410,10 @@ public class Graph //implements IGraph
 	public void setEntail(boolean b){
 		isEntail = b;
 	}
+        
+        public boolean isEntail(){
+            return isEntail;
+        }
 	
 	public void setEntailment(Entailment i){
 		inference = i;
@@ -587,9 +591,11 @@ public class Graph //implements IGraph
 	 */
 	
 	public synchronized void init(){
-		
 		if (isIndex){
-			index();
+                    if (isDebug){
+                        logger.info("Graph index");
+                    }
+                    index();
 		}
 		
 		if (isUpdate){
@@ -598,10 +604,13 @@ public class Graph //implements IGraph
 			// redefine meta properties
 			update();
 		}
-		
-		if (isEntail){
-			process();
-			isEntail = false;
+
+                if (isEntail){
+                    if (isDebug){
+                        logger.info("Graph entailment");
+                    }
+                    process();
+                    isEntail = false;
 		}			
 
 	}
@@ -652,9 +661,13 @@ public class Graph //implements IGraph
 
 	
 	// true when index must be sorted 
-	boolean isIndex(){
+	public boolean isIndex(){
 		return isIndex;
 	}
+        
+        public void setIndex(boolean b){
+            isIndex = b;
+        }
 
 	/**
 	 * Property Path start a new shortest path
@@ -742,7 +755,7 @@ public class Graph //implements IGraph
 		return ent;
 	}
 	
-	public boolean exist(EdgeImpl edge){
+	public boolean exist(Entity edge){
 		return table.exist(edge);
 	}
 	
@@ -1602,6 +1615,8 @@ public class Graph //implements IGraph
 	 * 
 	 ****************************************************************/
 	
+   
+        
 	public boolean compare(Graph g){
 		return compare(g, false);
 	}
@@ -2116,6 +2131,87 @@ public class Graph //implements IGraph
 		Edge e = addEdge(g, p, list);
 		return e;	
 	}
+        
+    /**
+     * Copy g into this
+     */
+    public List<Entity> copy(List<Entity> list) {
+        for (Index id : tables) {
+            if (id.getIndex() != 0) {
+                id.clearCache();
+            }
+        }
+
+        if (isDebug) {
+            logger.info("Copy: " + list.size());
+        }
+
+        isIndex = true;
+        for (Entity ent : list) {
+            add((EdgeImpl) ent.getEdge());
+        }
+        isIndex = false;
+
+
+        table.index();
+
+        return list;
+    }
+    
+    public List<Entity> copy(Graph g, boolean b) {
+        ArrayList<Entity> list = new ArrayList<Entity>();
+
+        for (Index id : tables){
+            if (id.getIndex() != 0){
+                id.clearCache();
+            }
+        }
+        
+        for (Node pred : g.getProperties()) {
+            if (isDebug) {
+                logger.info("Copy: " + pred + " from " + g.size(pred) + " to " + size(pred));
+            }
+
+            for (Entity ent : g.getEdges(pred)) {
+                
+                 if (! exist(ent)) {
+                    list.add(ent);
+                }                             
+            }
+            
+            isIndex = true;
+            for (Entity ent : list){
+                add((EdgeImpl) ent.getEdge());
+            }
+            isIndex = false;
+        }
+        
+        table.index();
+
+        return list;
+    }
+    
+    
+    
+    public List<Entity> copy2(Graph g, boolean b) {
+        ArrayList<Entity> list = new ArrayList<Entity>();
+
+        for (Node pred : g.getProperties()) {
+            if (isDebug) {
+                logger.info("Copy: " + pred + " from " + g.size(pred) + " to " + size(pred));
+            }
+
+            for (Entity ent : g.getEdges(pred)) {
+                Edge edge = ent.getEdge();
+                Entity ee = add((EdgeImpl) edge);
+                if (ee != null){
+                    list.add(ee);
+                }         
+            }
+        }
+
+        return list;
+    }
 	
 	public void copy(Graph g){
 		for (Entity ent : g.getEdges()){
@@ -2249,6 +2345,9 @@ public class Graph //implements IGraph
 	public void setDebug(boolean b) {
 		isDebug = b;
 		manager.setDebug(b);
+                if (inference != null){
+                    inference.setDebug(b);
+                }
 	}
 
 	/**********************************************************/

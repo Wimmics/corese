@@ -41,6 +41,11 @@ implements Index {
 	Graph graph;
 	Hashtable<Node, Node> types;
 	Hashtable<Node, Table> table;
+
+    @Override
+    public void clearCache() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 	
 	
 	/**

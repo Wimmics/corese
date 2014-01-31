@@ -262,4 +262,9 @@ implements Index, Iterable<Entity> {
 		// TODO Auto-generated method stub
 	}
 
+    @Override
+    public void clearCache() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

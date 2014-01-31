@@ -231,7 +231,7 @@ public class Load
 		}
 		else {
 			if (debug){
-				logger.debug("** Load: " + nb++ + " " + path);
+				logger.info("** Load: " + nb++ + " " + graph.size() + " " + path);
 			}
 			try {
 				load(path, src, null);
@@ -255,7 +255,7 @@ public class Load
 		}
 		else {
 			if (debug){
-				logger.debug("** Load: " + nb++ + " " + path);
+				logger.info("** Load: " + nb++ + " " + graph.size() + " " + path);
 			}
 			load(path, src, null);
 		}
@@ -490,6 +490,9 @@ public class Load
 	void imports(String uri){
 		if (! loaded.contains(uri)){
 			loaded.put(uri, uri);
+                        if (debug){
+                            logger.info("Import: " + uri);
+                        }
 			load(uri);
 		}
 	}

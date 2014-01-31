@@ -303,8 +303,8 @@ public class RuleEngine implements Engine {
 		cons.insert(lMap, graph, null);	
 
 		if (debug || qq.isDebug()){
-			logger.debug("** Mappings: " + lMap.size());
-			logger.debug("** Graph: "  + graph.size());
+			logger.info("** Mappings: " + lMap.size());
+			logger.info("** Graph: "  + graph.size());
 		}
 
 		return graph.size() - start;

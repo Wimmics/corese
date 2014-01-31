@@ -221,6 +221,16 @@ implements Index {
 		}
 		super.clear();
 	}
+        
+        
+        public void clearCache(){
+            for (Node pred : getProperties()){
+                List<Entity> l = get(pred);
+                if (l != null){
+                    l.clear();
+                }
+            }
+        }
 	
 	/** 
 	 * Add a property in the table
@@ -411,13 +421,17 @@ implements Index {
 	 */
 	public void index(){
 		for (Node pred : getProperties()){
-			List<Entity> list = get(pred);
-			Collections.sort(list, comp);
+			index(pred);
 		}
 		if (index == 0){
-			reduce(! isIndexer);
+			reduce();
 		}
 	}
+        
+        public void index(Node pred){
+            List<Entity> list = get(pred);
+            Collections.sort(list, comp);
+        }
 	
 	public void indexNode(){
 		for (Node pred : getProperties()){
@@ -430,16 +444,20 @@ implements Index {
 	/** 
 	 * eliminate duplicate edges
 	 */
-	private void reduce(boolean bsize){
+	private void reduce(){
 		for (Node pred : getProperties()){
-			ArrayList<Entity> l1 = get(pred);
-			ArrayList<Entity> l2 = reduce(l1);
-			put(pred, l2);
-			if (bsize && l1.size()!=l2.size()){
-				graph.setSize(graph.size() - (l1.size()-l2.size()));
-			}
+			reduce(pred);
 		}
 	}
+        
+        private void reduce(Node pred){
+            ArrayList<Entity> l1 = get(pred);
+			ArrayList<Entity> l2 = reduce(l1);
+			put(pred, l2);
+			if (l1.size()!=l2.size()){
+				graph.setSize(graph.size() - (l1.size()-l2.size()));
+			}
+        }
 	
 	private ArrayList<Entity> reduce(List<Entity> list){
 		ArrayList<Entity> l = new ArrayList<Entity>();

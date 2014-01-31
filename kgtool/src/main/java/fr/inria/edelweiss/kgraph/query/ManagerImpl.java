@@ -301,6 +301,11 @@ public class ManagerImpl implements Manager {
 		String uri = ope.getURI();
 		String src = ope.getTarget();
                 graph.logStart(q);
+                if (graph.size() == 0){
+                    // graph is empty, optimize loading as if the graph is to be indexed
+                    // because edges are added directly
+                    graph.setIndex(true);
+                }
 		if (ope.isSilent()){
 			load.load(uri, src);
                         graph.logFinish(q);
@@ -315,6 +320,11 @@ public class ManagerImpl implements Manager {
                         graph.logFinish(q);
 			return ope.isSilent();
 		}
+                finally {
+                      if (graph.isIndex()){   
+                          graph.index();
+                      }
+                }
 		
 		if (load.isRule(uri) && load.getRuleEngine()!=null){ // && src!=null && src.equals(Entailment.RULE)){
 			// load rule base into workflow

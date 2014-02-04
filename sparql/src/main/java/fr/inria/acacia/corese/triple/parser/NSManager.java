@@ -363,6 +363,9 @@ public class NSManager
 	}
 
 	String resolve(String str){
+            if (str.equals("")){
+                return base;
+            }
 		URI uri = baseURI.resolve(str);
 		String res = uri.toString();
 		

@@ -70,7 +70,7 @@ public class Variable extends Atom {
 		return isPath;
 	}
 	
-	void addVariable(Variable var){
+	public void addVariable(Variable var){
 		if (lVar == null) lVar = new ArrayList<Variable>();
 		lVar.add(var);
 	}

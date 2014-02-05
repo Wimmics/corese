@@ -33,6 +33,7 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import org.semarglproject.rdf.ParseException;
 
 
 /**
@@ -56,7 +57,12 @@ public class Load
 	static final String[] QUERIES 	= {QUERY, UPDATE};
 	static final String TURTLE 	= ".ttl";
 	static final String NT          = ".nt";
-	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, NT, RULE, BRULE, IRULE, QUERY, UPDATE};
+        static final String HTML       =".html";
+        static final String XHTML       =".xhtml";
+        static final String SVG       =".svg";
+        static final String XML       =".xml";
+        static final String[] EXT_RDFA       ={HTML, XHTML, SVG, XML};
+	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, NT, RULE, BRULE, IRULE, QUERY, UPDATE, HTML, XHTML,SVG, XML};
 	static final String HTTP = "http://";
 	static final String FTP  = "ftp://";
 	static final String FILE = "file://";
@@ -368,6 +374,9 @@ public class Load
 			else if (isRule(path)){
 				loadRule(stream, src);
 			} 
+                        else if(isRDFa(path)){
+                            loadRDFa(stream, path, base, src);
+                        }
 			else {
 				load(stream, path, base, src);
 			}
@@ -426,7 +435,35 @@ public class Load
 		}
 	}
 
-	
+	 //check the extension of file to see if the file conforms to RDFa format
+        private boolean isRDFa(String path){
+            for (String s : EXT_RDFA) {
+                if(path.toLowerCase().endsWith(s)){
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // load RDFa
+        void loadRDFa(Reader stream, String path, String base, String src) throws LoadException {
+
+            RDFaLoaderDelegate sink = RDFaLoaderDelegate.create(graph);
+            sink.graph(src);
+            sink.setRenameBlankNode(renameBlankNode);
+            sink.setLimit(limit);
+            
+            RDFaLoader loader = RDFaLoader.create(stream,base);
+
+            try {
+                loader.load(sink);
+            } catch (ParseException ex) {
+                throw LoadException.create(ex, path);
+            }
+
+        }
+        
+        
 	void loadRule(String path, String src) throws LoadException{
 		if (engine == null){
 			engine = RuleEngine.create(graph);

@@ -653,11 +653,9 @@ public class ProducerImpl implements Producer {
         return new Mappings();
     }
 
-    Mappings map(List<Node> lNodes, Mappings lMap) {
-        for (Mapping map : lMap) {
-            map.setNodes(lNodes);
-        }
-        return lMap;
+    Mappings map(List<Node> lNodes, Mappings map) {
+        map.setNodes(lNodes);
+        return map;
     }
 
     Mappings map(List<Node> nodes, IDatatype dt) {

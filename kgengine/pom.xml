@@ -59,6 +59,13 @@
                 <version>4.8.2</version>
 		<scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>com.tngtech.java</groupId>
+            <artifactId>junit-dataprovider</artifactId>
+             <version>1.5.0</version>
+            <scope>test</scope>
+        </dependency>
         <!--<dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgserver-stubs</artifactId>

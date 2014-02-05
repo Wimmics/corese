@@ -824,24 +824,20 @@ void FunVar(Exp stack): { Expression e2; Variable e1; Variable var;} {
 		 e2 = Expression(stack)
 	
 		
-	<AS> ( 
+                <AS> ( 
 			         var = Var() { astq.defSelect(var, e2); } 
 			|
 			
 			// select sql("select a b from table") as (?x, ?y) where
 			
-			{ var = astq.newBlankNode(); 
-				//astq.defSelect(var);
-			}
+			{ var = astq.metaVariable();  }
 			       
 			<LPAREN> 
-			              e1 = Var()  
-			              { astq.addVariable(var, e1); 			          
-			              } 
+			      e1 = Var()  
+			      { var.addVariable(e1); } 
 			              
 				( <COMMA> e1 = Var()  
-						  { astq.addVariable(var, e1); 
-						  } 
+				  { var.addVariable(e1);   } 
 			 	) *
 				
 			<RPAREN>
@@ -1296,9 +1292,31 @@ void SubQuery(Exp stack) : {ASTQuery ast; Query q; Exp exp;}
 }
 
 
-void Bind(Exp stack) : { Expression exp; Exp q; Variable var;}
+void Bind(Exp stack) : { Expression exp; Exp q; Variable var, vv;}
 {
-	<BIND> <LPAREN> exp = Expression(stack) <AS> var = Var() <RPAREN> 
+	<BIND> <LPAREN> 
+                exp = Expression(stack) 
+			
+                <AS> ( 
+			var = Var() 
+
+			|
+			
+			// bind( sql("select a b from table") as (?x, ?y))
+			
+			{ var = astq.metaVariable();  }
+			       
+			<LPAREN> 
+			      vv = Var()  
+			      { var.addVariable(vv); } 
+			              
+				( <COMMA> vv = Var()  
+				  { var.addVariable(vv);   } 
+			 	) *
+				
+			<RPAREN>						     
+		 )
+        <RPAREN> 
 	
 	{
 		q = astq.createBind(exp, var); stack.add(q);

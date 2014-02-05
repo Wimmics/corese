@@ -459,7 +459,7 @@ public class PluginImpl extends ProxyImpl {
     Mappings kgram(Graph g, Object o) {
         IDatatype dt = (IDatatype) o;
         String query = dt.getLabel();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess exec = QueryProcess.create(g, true);
         try {
             Mappings map = exec.sparqlQuery(query);
             return map;

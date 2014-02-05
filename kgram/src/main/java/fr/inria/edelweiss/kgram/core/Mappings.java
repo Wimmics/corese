@@ -237,6 +237,25 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	void setSelect(List<Node> nodes){
 		select = nodes;
 	}
+        
+        /**
+         * use case:
+         * bind(sparql('select ?x ?y where { ... }') as (?z, ?t))
+         * rename ?x as ?z and ?y as ?t in all Mapping
+         * as well as in Mappings select
+         * 
+         */
+        public void setNodes(List<Node> nodes){
+            if (getSelect() != null){
+                for (Mapping map : this) {
+                    map.rename(getSelect(), nodes);
+                }
+                setSelect(nodes);
+            }
+            else  for (Mapping map : this) {
+                map.setNodes(nodes);
+            }
+        }
 
 	/**
 	 * select distinct 

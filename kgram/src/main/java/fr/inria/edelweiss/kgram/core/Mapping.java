@@ -495,7 +495,27 @@ public class Mapping
 			}
 		}
 	}
-	
+        
+        /**
+         * use case:
+         * bind(sparql('select ?x ?y where { ... }') as (?z, ?t))
+         * rename ?x as ?z and ?y as ?t in all Mapping
+         * as well as in Mappings select
+         * 
+         */
+        public void rename(List<Node> oselect, List<Node> nselect){
+            int size = Math.min(oselect.size(), nselect.size());
+            for (int i = 0; i<size; i++){
+                   for (int j = 0; j<qNodes.length; j++){
+                       if (oselect.get(i).equals(qNodes[j])){
+                           qNodes[j] = nselect.get(i);
+                           break;
+                       }
+                   } 
+            }
+	}
+        
+               	
 	public void addNode(Node qNode, Node node){
 		Node[] q = new Node[qNodes.length+1];
 		Node[] t = new Node[nodes.length+1];

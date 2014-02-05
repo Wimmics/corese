@@ -1448,6 +1448,10 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 		return newBlankNode( BNVAR + getNbBNode());
 	}
     
+    public Variable metaVariable(){
+        return newBlankNode();
+    }
+    
     public Variable newBlankNode(String label) {
 		Variable var = createVariable( label);
 		var.setBlankNode(true);

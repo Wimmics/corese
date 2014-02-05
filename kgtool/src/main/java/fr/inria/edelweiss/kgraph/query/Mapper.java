@@ -163,12 +163,12 @@ public class Mapper {
 	/**
 	 * Rename query nodes
 	 */
-	Mappings map(List<Node> lNodes, Mappings lMap){
-		for (Mapping map : lMap){
-			map.setNodes(lNodes);
-		}
-		return lMap;
-	}
+//	Mappings map(List<Node> lNodes, Mappings lMap){
+//		for (Mapping map : lMap){
+//			map.setNodes(lNodes);
+//		}
+//		return lMap;
+//	}
 	
 	
 	Mappings map(List<Node> nodes, IDatatype dt){

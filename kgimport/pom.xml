@@ -2,19 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>fr.inria.edelweiss</groupId>
-        <artifactId>kg-parent</artifactId>
+        <groupId>fr.inria.wimmics</groupId>
+        <artifactId>corese-parent</artifactId>
         <version>3.1.3-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     
-    <groupId>fr.inria.edelweiss</groupId>
+    <groupId>fr.inria.wimmics</groupId>
     <artifactId>kgimport</artifactId>
   <version>3.1.3-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
-            <groupId>fr.inria.edelweiss</groupId>
+            <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgengine</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -23,17 +23,17 @@
             <artifactId>jena</artifactId>
             <exclusions>
                     <!-- esclude lucene 2 which as compatibility issues with lucene 3 needed in NeuSemStore-simulation-objects module -->
-                    <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-queries</artifactId>
-                    </exclusion>
-                </exclusions>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-queries</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>sdb</artifactId>
         </dependency>

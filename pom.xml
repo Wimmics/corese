@@ -60,6 +60,14 @@
         <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
         <url>https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>Nexus</id>
+            <name>I3S public Maven releases repository</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/i3s-public</url>
+        </repository>
+    </distributionManagement>
     
     <properties>
         <!-- Sonar -->

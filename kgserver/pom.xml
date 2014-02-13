@@ -141,8 +141,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <skip>false</skip>
+                    <!--<forkMode>never</forkMode>-->
+                    <argLine>-Xmx512m</argLine>
+                    <testFailureIgnore>true</testFailureIgnore>
+                    <!--<skip>false</skip>-->
                 </configuration>
+                <version>2.16</version>
             </plugin>
             
             <plugin>

@@ -1,0 +1,8 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?v
+}
+where {
+  ?in m:name ?v
+}

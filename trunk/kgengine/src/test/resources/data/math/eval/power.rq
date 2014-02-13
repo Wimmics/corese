@@ -1,0 +1,8 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  kg:template(kg:recpower, kg:eval(?n), kg:eval(?x)) 
+}
+where {
+  ?in a m:Power ; m:args (?x ?n)
+}

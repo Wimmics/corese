@@ -1,0 +1,13 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?t 
+  if (bound(?r), concat("[", ?r, "]"), "")
+  "{" ?e "}"
+}
+where {
+  ?in a ?t, m:Sqrt ;
+     m:args ?a 
+  ?a rdf:first ?e
+  optional { ?a rdf:rest[rdf:first ?r] }
+}

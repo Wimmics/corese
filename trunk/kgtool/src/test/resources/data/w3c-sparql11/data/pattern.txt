@@ -1,0 +1,10 @@
+[] a earl:Assertion ;  
+    earl:assertedBy _:oc ;  
+    earl:result [  
+      a earl:TestResult ;  
+      dc:date %3$s ;  
+      earl:outcome %2$s  
+    ] ; 
+   earl:subject <http://wimmics.inria.fr/corese> ;  
+   earl:test <%1$s> .  
+   

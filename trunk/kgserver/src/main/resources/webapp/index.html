@@ -1,0 +1,368 @@
+<!--  Web user interface for the Corese/KGRAM framework -->
+<!--  author: alban.gaignard@cnrs.fr -->
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+
+            /*.node {
+              stroke: #fff;
+              stroke-width: 1.5px;
+            }*/
+
+            .node text {
+                /*pointer-events: none;*/
+                font: 10px sans-serif;
+            }
+
+            .link {
+                stroke: #999;
+                stroke-opacity: .6;
+                fill: none;
+            }
+            
+            	.btn-file {
+		    position: relative;
+		    overflow: hidden;
+		}
+		.btn-file input[type=file] {
+		    position: absolute;
+		    top: 0;
+		    right: 0;
+		    min-width: 100%;
+		    min-height: 100%;
+		    font-size: 999px;
+		    text-align: right;
+		    filter: alpha(opacity=0);
+		    opacity: 0;
+		    background: red;
+		    cursor: inherit;
+		    display: block;
+		}
+		input[readonly] {
+			background-color: white !important;
+			cursor: text !important;
+		}
+        </style>
+
+        <title>Corese/KGRAM webapp</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap -->
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-default" role="navigation">
+            <!--<div class="navbar-inner">-->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Corese/KGRAM</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavBar">
+                <ul id="tab" class="nav navbar-nav">
+                    <li class="active"><a href="#Tab1" data-toggle="tab">Data querying</a></li>
+                    <li ><a href="#Tab2" data-toggle="tab">Data loading</a></li>
+                    <li><a href="#Tab3" data-toggle="tab">Federated querying</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!--            <div class="row">
+                        <ul id="tab" class="nav nav-pills">
+                            <li class="active"><a href="#Tab1" data-toggle="tab">Data querying</a></li>
+                            <li ><a href="#Tab2" data-toggle="tab">Data loading</a></li>
+                            <li><a href="#Tab3" data-toggle="tab">Federated querying</a></li>
+                        </ul>
+                    </div>-->
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-xs-1"> </div>
+                <div class="tab-content col-xs-10">
+
+
+                    <!-- ---------------------- -->
+                    <!-- Data querying tab pane -->
+                    <!-- ---------------------- -->
+                    <div class="tab-pane active" id="Tab1">
+
+                        <!--                        <div class="row">
+                                                    <div class="page-header">
+                                                        
+                                                    </div>
+                                                </div>-->
+                        <div class="row">
+                            <form class="form" role="form">
+                                <div class="form-group">
+                                    <h2>SPARQL 1.1 querying interface</h2>
+                                    Predefined SPARQL queries for basic RDF statistics. More informations are available at <a href="http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics">http://code.google.com/p/void-impl/wiki/SPARQLQueriesForStatistics</a>.
+                                </div>
+                                <div class="form-group">
+                                    <select id = "VOIDSparql_Select" class="form-control">
+                                        <option value ="0" selected="selected">Total number of triples</option>
+                                        <option value ="1">Total number of entities</option>
+                                        <option value ="2">Total number of distinct resource URIs</option>
+                                        <option value ="3">Total number of distinct classes</option>
+                                        <option value ="4">Total number of distinct predicates</option>
+                                        <option value ="5">Total number of distinct subject nodes</option>
+                                        <option value ="6">Total number of distinct object nodes</option>
+                                        <option value ="7">Exhaustive list of classes used in the dataset</option>
+                                        <option value ="8">Exhaustive list of properties used in the dataset</option>
+                                        <option value ="9">Class vs. total number of instances of the class</option>
+                                        <option value ="10">Property vs. total number of triples using the property</option>
+                                        <option value ="11">Property vs. total number of distinct subjects in triples using the property</option>
+                                        <option value ="12">Property vs. total number of distinct objects in triples using the property</option>
+                                    </select>
+                                </div>
+                                <!--<legend>SPARQL 1.1 querying interface</legend>-->
+                                <div class="form-group">
+                                    <textarea id="sparqlTextArea" class="form-control" rows="3">
+
+                                    </textarea>
+                                </div>
+                                <div class="form-group">
+                                    <button id="btnQuery" type="button" class="btn btn-success">Query</button>
+                                    <!--<button id="btnQuery" class="btn">Query</button>-->
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="row">
+                            <p id="parRDFGraph"></p>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="table-responsive">
+                            <table id="tbRes" class="table table-striped" style="table-layout:fixed; word-wrap:break-word">  
+                                <thead>  
+                                </thead>  
+                                <tbody>  
+                                </tbody>  
+                            </table>  
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- --------------------- -->
+                    <!-- Data loading tab pane -->
+                    <!-- --------------------- -->
+                    <div class="tab-pane" id="Tab2">
+                        <div class="row">
+                            <form class="form" role="form" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <h2>Semantic web data loading</h2>
+                                    <p class="lead">RDF, RDFS, OWL, TTL formats supported.</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Into named graph</span>
+                                        <input  id="graphLoad" type="text" class="form-control" placeholder="default">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-4">
+                                            <select id = "Data_Select" class="form-control">
+                                                <option value ="0" selected="selected">Geographic INSEE dataset (2012)</option>
+                                                <option value ="1">Demographic INSEE dataset (2010)</option>
+                                                <!--<option value ="0" selected="selected">/Users/gaignard/Documents/Experiences/jows-2013/drugbank_dump.rdf</option>
+                                                <option value ="1">/Users/gaignard/Documents/Experiences/jows-2013/chebi.rdf</option>
+                                                <option value ="2">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.cpd.rdf</option>
+                                                <option value ="3">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.dr.rdf</option>
+                                                <option value ="4">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.ec.rdf</option>
+                                                <option value ="5">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.rn.rdf</option>-->
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-8">
+                                            <div class="input-group">
+                                                <input  class="form-control" id="txtLoad" type="text" value="http://nyx.unice.fr/~gaignard/data/cog-2012.ttl">
+                                                <div class="input-group-btn">
+                                                    <button id="btnLoad" class="btn btn-primary" type="button">Load</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+<!--                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-4">
+                                            <div class="input-group">        
+                                                <span class="input-group-btn">
+                                                    <span class="btn btn-primary btn-file">
+							Browse&hellip; <input name="file" type="file">
+                                                    </span>
+                                                </span>
+                                                <input type="text" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-8">
+                                            <div class="input-group">
+                                                <input  class="form-control" id="txtUpload" type="text" value="">
+                                                <div class="input-group-btn">
+                                                    <button id="btnUpload" class="btn btn-primary" type="button">Upload</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <progress></progress>
+                                </div>-->
+
+                                <div class="form-group">
+                                    <div class="form-inline">
+                                        <div class="form-group">
+                                            <button id="btnReset" class="btn btn-warning" type="button">Reset engine</button>
+                                        </div>
+                                        <div class="form-group">
+                                            <div  class="checkbox"><label><input id="checkEntailments" type="checkbox"> RDFS entailments</label></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- ------------ -->
+                    <!-- DQP tab pane -->
+                    <!-- ------------ -->
+                    <div class="tab-pane" id="Tab3">
+
+                        <div class="row">
+                            <div class="page-header">
+                                <h2>Data sources configuration</h2>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <table id="tbDataSources" class="table table-striped">  
+                                <tbody>  
+                                </tbody>  
+                            </table>  
+                        </div>
+
+                        <div class="row">
+                            <form class="form" role="form">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-4">
+                                            <select id = "DataSource_Select" class="form-control">
+                                                <option value ="0" selected="selected">http://localhost:8080/kgram/sparql</option>
+                                                <option value ="1">http://fr.dbpedia.org/sparql</option>
+                                                <option value ="2">http://dbpedia.org/sparql</option>
+                                                <option value ="3">http://rdf.myexperiment.org/sparql</option>
+                                                <option value ="4">http://pubmed.bio2rdf.org/sparql</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-8">
+                                            <div class="input-group">
+                                                <input class="form-control" id="txtDataSource" type="text" placeholder="http://some.sparql.endpoint" value="http://localhost:8080/kgram/sparql" >
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-primary" id="btnDataSource" type="button">Add data source</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--<p>
+                                        <button id="btnConfigure" class="btn btn-warning" type="button">Configure KGRAM-DQP</button>
+                                        <button id="btnResetDQP" class="btn btn-inverse" type="button">Reset KGRAM-DQP</button>
+                                </p>-->
+                            </form>
+                        </div>
+
+                        <div class="row">
+                            <div class="page-header">
+                                <h2>Federated SPARQL querying</h2>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <form class="form" role="form">
+                                <div class="form-group">
+                                    <select class="form-control" id = "FedSparql_Select">
+                                        <option value ="0" selected="selected">Demo federated query</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <!--<legend>SPARQL 1.1 querying interface</legend>-->
+                                    <textarea id="sparqlFedTextArea" class="form-control" rows="9">
+PREFIX idemo:<http://rdf.insee.fr/def/demo#>
+PREFIX igeo:<http://rdf.insee.fr/def/geo#> 
+SELECT ?nom ?popTotale WHERE { 
+    ?region igeo:codeRegion "24" .
+    ?region igeo:subdivisionDirecte ?departement .
+    ?departement igeo:nom ?nom .
+    ?departement idemo:population ?popLeg .
+    ?popLeg idemo:populationTotale ?popTotale .
+} ORDER BY ?popTotale
+                                    </textarea>
+                                </div>
+                                <div class="form-group">
+                                    <!--                                                    <div class="row">-->
+                                    <div class="form-inline">
+                                        <div class="form-group">
+                                            <button id="btnQueryFed" type="button" class="btn btn-success">Query</button>
+                                        </div>
+                                        <div class="form-group">
+                                            <!--<div  class="checkbox"><label><input id="checkProv" type="checkbox" checked> Provenance</label></div>-->
+                                            <div  class="checkbox"><label><input id="checkProv" type="checkbox"> Provenance</label></div>
+                                        </div>
+                                    </div>
+                                    <!--                                        <div class="col-xs-2">
+                                                                               
+                                                                            </div>
+                                                                            <div class="col-xs-8">
+                                                                            </div>-->
+                                    <!--                                                    </div>-->
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="row">
+                            <p id="parProvGraph"></p>
+                        </div>
+
+                        <div class="row">
+                            <table id="tbResFed" class="table table-striped" style="table-layout:fixed; word-wrap:break-word">  
+                                <thead>  
+                                </thead>  
+                                <tbody>  
+                                </tbody>  
+                            </table>
+                        </div>
+                    </div>
+                </div><!-- end tab Content -->
+                <div class="col-xs-1"> </div>
+            </div>	
+
+
+            <div class="row">
+                <div class="col-xs-1"> </div>
+                <div id="footer" class="text-center col-xs-10"></div>
+                <div class="col-xs-1"> </div>
+            </div>
+
+        </div>
+
+        <script src="js/jquery.js"></script>
+        <script src="js/bootstrap.file-input.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <!--        <script src="js/spin.min.js"></script>-->
+        <script src="js/main.js"></script>
+        <script src="js/d3.v3.min.js"></script>
+        <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
+    </body>
+</html>

@@ -1,0 +1,13 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select distinct ?y count(?y) as ?cc where {
+
+{select ?doc count (?x) as ?count where {
+?x c:hasCreated ?doc}
+group by ?doc
+order by  desc(?count)
+limit 1
+}
+
+
+}
+limit 1

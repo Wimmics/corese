@@ -1,0 +1,10 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT ?p1 ?p2 (kg:depth(?p1) as ?d1) (kg:depth(?p2) as ?d2) (kg:pSimilarity(?p1, ?p2)  as ?s) WHERE
+{
+?p1  rdfs:subPropertyOf+ c:SomeRelation
+?p2  rdfs:subPropertyOf+ c:SomeRelation
+
+
+#filter(kg:depth(?p1) = 3)
+#filter(kg:depth(?p2) = 3)
+}

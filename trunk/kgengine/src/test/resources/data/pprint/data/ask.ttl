@@ -1,0 +1,34 @@
+@prefix ast: <http://www.inria.fr/2012/ast#>
+@prefix ex:  <http://www.example.org/>
+
+[
+a ast:AskQuery ;
+
+
+
+ast:ask (
+[a ast:Union ; ast:body (
+
+([a ast:Optional ; 
+ast:body (
+[ast:subject  [a ast:Var ;  ast:name "?x"] ;
+ast:property ex:name ;
+ast:object   [a ast:Var ;  ast:name "?n"]])
+])
+
+([
+ast:graph [a ast:Var ; ast:name "?g"] ;
+ast:body (
+[ast:subject  [a ast:Var ;  ast:name "?x"] ;
+ast:property [a ast:Var ;  ast:name "?p"] ;
+ast:object   18])
+])
+
+)
+]
+)
+]
+
+
+
+

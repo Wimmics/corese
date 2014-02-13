@@ -1,0 +1,30 @@
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY obo "http://purl.obolibrary.org/obo/" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY oboInOwl "http://www.geneontology.org/formats/oboInOwl#" >
+]>
+
+
+<rdf:RDF xmlns="&obo;hao.owl#"
+     xml:base="&obo;hao.owl"
+     xmlns:obo="http://purl.obolibrary.org/obo/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#">
+
+ <owl:Ontology rdf:about="http://example.com/owl/families">
+   </owl:Ontology>  
+   
+   <owl:Axiom>
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">http://canacoll.org/Hym/Staff/Gibson/apss/chalglos.htm</oboInOwl:hasDbXref>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">posterior ocellus</owl:annotatedTarget>
+        <owl:annotatedSource rdf:resource="&obo;HAO_0000481"/>
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasRelatedSynonym"/>
+  </owl:Axiom>
+
+</rdf:RDF>

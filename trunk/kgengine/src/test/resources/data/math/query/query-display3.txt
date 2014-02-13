@@ -1,0 +1,8 @@
+prefix m: <http://ns.inria.fr/2013/math#>
+select 
+?a
+ (kg:pprint(?x, </home/corby/AData/math/template>) as ?e)
+where {
+?x m:author ?a ;
+m:problems (m:InverseProblem) 
+}

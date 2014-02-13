@@ -1,0 +1,6 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select   more  * (kg:similarity(c:CorporateMemoryTopic, ?c) as ?s)  where {
+?c a rdfs:Class
+scope {filter(?s > .4)}
+}
+order by desc(?s)

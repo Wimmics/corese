@@ -1,0 +1,17 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+
+template {
+  group_concat(?exp ; separator = '<br/>') 
+}
+where {
+  ?in rdf:rest*/rdf:first ?exp
+}
+#default list is behind all other list templates
+pragma {kg:query kg:priority 1000}
+
+
+

@@ -1,0 +1,18 @@
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+
+select 
+(concat ("{",   kg:pprint(?f), "}") as ?first)
+(concat ("{",   kg:pprint(?r), "}") as ?rest)
+(concat (?first, " minus ", ?rest) as ?out)
+
+where {
+?in a ast:Minus ; ast:body (?f ?r)  
+}
+
+
+

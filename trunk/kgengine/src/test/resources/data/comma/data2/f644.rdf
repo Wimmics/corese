@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3302.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/ilya.molchanov">
+         <c:FamilyName>Molchanov</c:FamilyName>
+         <c:FirstName>Ilya</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/sergei.zuyev">
+         <c:FamilyName>Zuyev</c:FamilyName>
+         <c:FirstName>Sergei</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mistral.en.html">
+         <c:Designation>Mistral</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1997</c:CreationDate>
+   <c:Title>Variational Analysis of Functionals of a Poisson Process  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

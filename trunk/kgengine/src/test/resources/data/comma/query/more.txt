@@ -1,0 +1,7 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select     *  where {
+?x c:IsInterestedBy ?t
+?t a c:CorporateMemoryTopic
+?x c:hasCreated ?doc
+}
+

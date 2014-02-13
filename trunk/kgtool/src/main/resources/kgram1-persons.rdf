@@ -1,0 +1,15 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:rss="http://purl.org/rss/1.0/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <foaf:Person rdf:about="http://i3s/Alban">
+                <foaf:name>Alban "Gaignard"</foaf:name>
+                <foaf:mbox>mailto:alban.gaignard@i3s.unice.fr</foaf:mbox>
+                <foaf:mbox>mailto:alban.gaignard@gmail.com</foaf:mbox>
+                <foaf:knows rdf:resource="http://i3s/Javier"/>
+        </foaf:Person>
+        <foaf:Person rdf:about="http://i3s/Mireille">
+                <foaf:name>Mireille</foaf:name>
+                <foaf:knows rdf:resource="http://i3s/Anne-Marie"/>
+        </foaf:Person>
+</rdf:RDF>

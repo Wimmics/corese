@@ -1,0 +1,15 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+
+template {
+  "{" ?f "} <br/> <span class='keyword'>union</span> {" ?r "}"
+}
+where {
+?in a ast:Union ; ast:body (?f ?r)  
+}
+
+
+

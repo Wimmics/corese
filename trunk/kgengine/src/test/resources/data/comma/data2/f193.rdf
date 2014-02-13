@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2297.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/serge.benayoun">
+         <c:FamilyName>Benayoun</c:FamilyName>
+         <c:FirstName>Serge</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/nicholas.ayache">
+         <c:FamilyName>Ayache</c:FamilyName>
+         <c:FirstName>Nicholas</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/isaac.cohen">
+         <c:FamilyName>Cohen</c:FamilyName>
+         <c:FirstName>Isaac</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:Title>An adaptive model for 2D and 3D dense non rigid motion computation</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,59 @@
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY otherOnt "http://example.org/otherOntologies/families/" >
+]>
+ 
+ <rdf:RDF xml:base="http://example.com/owl/families/"
+   xmlns="http://example.com/owl/families/"
+   xmlns:otherOnt="http://example.org/otherOntologies/families/"
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+
+ <owl:Ontology rdf:about="http://example.com/owl/families">
+   </owl:Ontology>  
+   
+  <owl:Class>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/factkb#hasAbnormalityStatus"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/factkb#normal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/factkb#hasPathologicalStatus"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/factkb#physiological"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://example.org/factkb#absence"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/factkb#isExistenceOf"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <owl:Class>
+                                <owl:intersectionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="http://example.org/factkb#GeneralisedSubstance"/>
+                                    <owl:Restriction>
+                                        <owl:onProperty rdf:resource="http://example.org/factkb#isOutcomeOf"/>
+                                        <owl:someValuesFrom rdf:resource="http://example.org/factkb#BodyProcess"/>
+                                    </owl:Restriction>
+                                </owl:intersectionOf>
+                            </owl:Class>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://example.org/factkb#hasIntrinsicPathologicalStatus"/>
+                                <owl:someValuesFrom rdf:resource="http://example.org/factkb#pathological"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </owl:intersectionOf>
+    </owl:Class>
+
+</rdf:RDF>

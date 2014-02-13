@@ -1,0 +1,20 @@
+#
+# template called by subclass in special case:
+# subclassOf(intersectionOf() ?y)
+#
+template kg:interunion {
+    xsd:string(if (bound(?t), ?ld, ?lo))
+    "(" 
+      if (?p = owl:disjointUnionOf, kg:uri(?x), "") " "
+      ?x  
+    ")" 
+}
+where {
+  ?in ?p ?x 
+  optional { ?in a ?t filter(?t = rdfs:Datatype) }
+ }
+values (?p ?lo ?ld) {
+  (owl:unionOf         "ObjectUnionOf" "DataUnionOf")
+  (owl:disjointUnionOf "DisjointUnion" "DisjointUnion")
+  (owl:intersectionOf  "ObjectIntersectionOf" "DataIntersectionOf")
+}

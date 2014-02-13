@@ -1,0 +1,12 @@
+<doc>
+	<phrase>
+		<subject>Cat</subject>
+		<verb>on</verb>
+		<object>mat</object>
+	</phrase>
+	<phrase>
+		<subject>Cat</subject>
+		<verb>eat</verb>
+		<object>mouse</object>
+	</phrase>
+</doc>

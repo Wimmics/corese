@@ -1,0 +1,202 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Pretty Printer
+Corese/KGRAM - Wimmics Inria I3S - 2013
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template kg:type {
+  "a "
+  group {
+          kg:uri(?c)           
+          ; separator = ", " 
+   }
+   ";\n"
+}
+where {
+  ?in rdf:type ?c 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template kg:list {
+  "(" 
+    group { kg:uri(?e) } 
+  ")"
+  
+}
+where {
+  ?x ?p ?in
+  ?in rdf:rest*/rdf:first ?e
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template kg:start {
+  ?x
+  ; separator = "\n\n"
+}
+where {
+  select distinct ?x where { 
+    ?x ?p ?y 
+    
+    filter( ! strstarts(?y, rdf:))
+    filter( ! strstarts(?y, rdfs:))
+    
+    filter( ! strstarts(?y, owl:))
+    filter( ! strstarts(?p, rdfs:))
+    filter( ! strstarts(?p, owl:))
+
+    filter ( isURI(?x) || not exists { ?z ?q ?x } )
+  }
+}
+order by ?x
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template kg:value {
+     
+	kg:uri(?p) " " 
+	
+        if (bound(?e),   kg:template(kg:list, ?y),
+          kg:uriLiteral(?y))	
+          
+        ; separator = ";\n" 
+     
+}
+where {
+  ?in ?p ?y 
+  
+  filter(?p not in (rdf:type, rdfs:member))
+    
+  optional { ?y  rdf:first ?e }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template kg:all {
+  ?x
+  ; separator = "\n\n"
+}
+where {
+  select distinct ?x where { 
+    ?x ?p ?y     
+    filter ( isURI(?x) || not exists { ?z ?q ?x } )
+  }
+}
+order by ?x
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template {
+  "["
+      kg:template(kg:type, ?in)
+  
+      kg:template(kg:value, ?in)
+      
+  "]"
+}
+where {
+  ?in ?p ?y 
+  
+  filter(isBlank(?in))
+  
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template {
+  kg:turtle(?in)
+}
+where {
+  ?x ?p ?in
+  filter(isLiteral(?in))
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template {
+  kg:uri(?in) " "
+  
+      kg:template(kg:type, ?in)
+  
+      kg:template(kg:value, ?in)
+      
+}
+where {
+  ?in ?p ?y 
+  
+  filter(isUri(?in))
+  
+}
+limit 1
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:Report rdf:about="http://www.inria.fr/rapports/sophia/CERMICS-93-13.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/a..de">
+         <c:FamilyName>de</c:FamilyName>
+         <c:FirstName>A.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/la.bourdonnaye">
+         <c:FamilyName>Bourdonnaye</c:FamilyName>
+         <c:FirstName>la</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreationDate>3-1993</c:CreationDate>
+   <c:Title>Diverses Formulations du couplage entre Méthode Volumique et Méthode Intégrale pour l'Equation de Helmholtz et l'Electromagnétisme</c:Title>
+</c:Report> 
+</rdf:RDF>

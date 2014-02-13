@@ -1,0 +1,31 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+
+template {
+  "select " ?select 
+  ?from  
+  ?named  
+  "\n"
+  "where {" "\n" 
+  ?where 
+  "\n" "}" "\n"
+  ?order
+  if (bound(?l), concat("\nlimit ", ?l), "")  
+  if (bound(?o), concat("\noffset " , ?o), "") 
+}
+where {
+?in ast:select ?select ;
+    ast:where  ?where
+    
+optional {?in ast:from   ?from}
+optional {?in ast:named  ?named}
+optional {?in ast:order  ?order}
+optional {?in ast:limit  ?l}
+optional {?in ast:offset ?o}
+}
+
+
+

@@ -1,0 +1,12 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+construct {  
+?p rdfs:domain ?d
+?p rdfs:range ?r
+}
+where {
+
+?p rdfs:domain ?d filter(?d =c:Document || ?d = c:Person)
+?p rdfs:range ?r
+}
+
+

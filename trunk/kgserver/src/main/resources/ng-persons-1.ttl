@@ -1,0 +1,18 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+
+<http://graph/bob> dc:publisher "Bob" . 
+<http://graph/alice> dc:publisher "Alice" .
+
+
+GRAPH <http://graph/bob> { 
+       <http://bob> foaf:name "Bob" . 
+       <http://bob> foaf:mbox <mailto:bob@oldcorp.example.org> .
+}
+ 
+GRAPH <http://graph/alice> { 
+       <http://alice> foaf:name "Alice" . 
+       <http://alice> foaf:mbox <mailto:alice@work.example.org> .
+}

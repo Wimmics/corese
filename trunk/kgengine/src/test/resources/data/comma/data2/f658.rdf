@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3277.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/armel.de">
+         <c:FamilyName>de</c:FamilyName>
+         <c:FirstName>Armel</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/la.bourdonnaye">
+         <c:FamilyName>Bourdonnaye</c:FamilyName>
+         <c:FirstName>La</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/marc.tolentino">
+         <c:FamilyName>Tolentino</c:FamilyName>
+         <c:FirstName>Marc</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/caiman.en.html">
+         <c:Designation>Caiman</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-1997</c:CreationDate>
+   <c:Title>Réduction du conditionnement pour les problèmes de discrétisation microlocale </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

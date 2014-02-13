@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:Report rdf:about="http://www.inria.fr/rapports/sophia/CERMICS-93-14.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/d..issautier">
+         <c:FamilyName>Issautier</c:FamilyName>
+         <c:FirstName>D.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/f..poupaud">
+         <c:FamilyName>Poupaud</c:FamilyName>
+         <c:FirstName>F.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/l..fezoui">
+         <c:FamilyName>Fezoui</c:FamilyName>
+         <c:FirstName>L.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/et.j.p.">
+         <c:FamilyName>J.P.</c:FamilyName>
+         <c:FirstName>et</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreationDate>4-1993</c:CreationDate>
+   <c:Title>A Parallel Weighted Particle Algorithm for Solving the Boltzmann (B.G.K) Equation on the Connection Machine</c:Title>
+</c:Report> 
+</rdf:RDF>

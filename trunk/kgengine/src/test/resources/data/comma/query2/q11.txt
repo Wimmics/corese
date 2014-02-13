@@ -1,0 +1,5 @@
+select debug * where
+{
+ graph ?g {{?x rdfs:label ?l } union {?x rdfs:domain ?c}}
+?x rdfs:range ?r
+}

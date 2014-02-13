@@ -1,0 +1,26 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+
+[a m:Mult; m:args(
+  2
+  [a m:Plus; m:args(
+    [m:name 'x']
+      [a m:Power; m:args(
+	  [m:name 'y']
+	  [m:name 'x']
+	)]  
+    )]
+)]
+
+
+[a m:Fact; m:args(
+	  [m:name 'z']
+)]  
+
+
+
+[a m:Env; m:args(
+  [m:name 'x'; m:value 2]
+  [m:name 'y'; m:value 3]
+  [m:name 'z'; m:value 5]
+)]

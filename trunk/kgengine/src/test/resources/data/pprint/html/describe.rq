@@ -1,0 +1,19 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+
+template {
+  "<span class='keyword'>describe</describe> " ?s 
+  if (bound(?w), 
+      concat(" <span class='keyword'>where</span> {", ?w, "}"), "")
+}
+where {
+?in ast:describe ?s 
+optional { ?in ast:where ?w }
+}
+pragma {kg:query kg:priority 1}
+
+
+

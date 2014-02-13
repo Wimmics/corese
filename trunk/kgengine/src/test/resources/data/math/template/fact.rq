@@ -1,0 +1,13 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  "(" ?e ")!"
+}
+where {
+  ?in a ?t ;
+  m:args(?e)
+}
+values ?t {
+m:Factorial
+}
+

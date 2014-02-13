@@ -1,0 +1,10 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT debug ?p1 ?p2 (kg:depth(?p1) as ?d1) (kg:depth(?p2) as ?d2) (kg:similarity(?p1, ?p2)  as ?s) WHERE
+{
+?p1 rdf:type rdfs:Class
+?p2 rdf:type rdfs:Class
+filter (kg:similarity(?p1, ?p2) > 0.5)
+}
+bindings ?p1 {
+(c:Person)
+}

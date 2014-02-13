@@ -1,0 +1,37 @@
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+prefix ex:  <http://www.example.org/>
+
+select 
+
+(coalesce(?x2, ?x1) as ?x)
+(coalesce(?y2, ?y1) as ?y)
+(coalesce(?p2, ?p1) as ?p)
+
+(concat(kg:qname(?x), " ", kg:qname(?p), " ", kg:qname(?y)) as ?t)
+
+(group_concat(?t ; separator = ' . ') as ?res)
+
+where {
+
+?query ?pp [ rdf:rest*/rdf:first 
+# a triple
+[
+ ast:subject  ?x1 ; 
+ ast:property ?p1 ; 
+ ast:object   ?y1 
+]]
+ 
+# any variables ?
+optional {?x1 ast:name ?x2}
+optional {?p1 ast:name ?p2}
+optional {?y1 ast:name ?y2}
+
+}
+
+
+

@@ -1,0 +1,9 @@
+template {
+   "SubObjectPropertyOf(" 
+      "ObjectPropertyChain(" ?l ") "
+      kg:uri(?in)
+   ")"
+}
+where {
+  ?in owl:propertyChainAxiom ?l 
+}

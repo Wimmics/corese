@@ -1,0 +1,31 @@
+template {
+
+  template {
+    group_concat( 
+      "SubClassOf", "(", 
+	kg:uri(?in), " ",  kg:uri(?y),    
+      ")" 
+      ; separator = "\n"
+    )
+  }
+  where {
+    ?in rdfs:subClassOf  ?y 
+  }
+
+
+  template {
+    group_concat( 
+      xsd:string(?q), "(", kg:uri(?y),  ")" 
+      ; separator = "\n"
+    )
+  }
+  where {
+    ?in ?p ?y 
+  }
+  values (?p ?q) {
+    (owl:intersectionOf  "ObjectIntersectionOf")
+    (owl:unionOf	       "ObjectUnionOf")
+  }
+
+  
+}

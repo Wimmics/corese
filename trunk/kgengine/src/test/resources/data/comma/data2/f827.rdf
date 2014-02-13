@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2738.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/a..bermudez">
+         <c:FamilyName>Bermudez</c:FamilyName>
+         <c:FirstName>A.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/a..dervieux">
+         <c:FamilyName>Dervieux</c:FamilyName>
+         <c:FirstName>A.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/j.a..désidéri">
+         <c:FamilyName>Désidéri</c:FamilyName>
+         <c:FirstName>J.A.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/m.e..vazquez">
+         <c:FamilyName>Vazquez</c:FamilyName>
+         <c:FirstName>M.E.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>12-1995</c:CreationDate>
+   <c:Title>Upwind schemes for the two-dimensional shallow water equations with variable depth using unstructured meshes</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

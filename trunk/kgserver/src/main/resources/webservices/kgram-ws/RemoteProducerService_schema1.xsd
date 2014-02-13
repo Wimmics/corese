@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://webservice.kgramserver.edelweiss.inria.fr/" xmlns:tns="http://webservice.kgramserver.edelweiss.inria.fr/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="getEdges" type="tns:getEdges"/>
+
+  <xs:element name="getEdgesResponse" type="tns:getEdgesResponse"/>
+
+  <xs:element name="getEndpoint" type="tns:getEndpoint"/>
+
+  <xs:element name="getEndpointResponse" type="tns:getEndpointResponse"/>
+
+  <xs:element name="initEngine" type="tns:initEngine"/>
+
+  <xs:element name="initEngineFromSQL" type="tns:initEngineFromSQL"/>
+
+  <xs:element name="initEngineFromSQLResponse" type="tns:initEngineFromSQLResponse"/>
+
+  <xs:element name="initEngineResponse" type="tns:initEngineResponse"/>
+
+  <xs:element name="load" type="tns:load"/>
+
+  <xs:element name="loadRDF" type="tns:loadRDF"/>
+
+  <xs:element name="loadRDFResponse" type="tns:loadRDFResponse"/>
+
+  <xs:element name="loadResponse" type="tns:loadResponse"/>
+
+  <xs:element name="query" type="tns:query"/>
+
+  <xs:element name="queryResponse" type="tns:queryResponse"/>
+
+  <xs:element name="reset" type="tns:reset"/>
+
+  <xs:element name="resetResponse" type="tns:resetResponse"/>
+
+  <xs:element name="runRule" type="tns:runRule"/>
+
+  <xs:element name="runRuleResponse" type="tns:runRuleResponse"/>
+
+  <xs:element name="setEndpoint" type="tns:setEndpoint"/>
+
+  <xs:element name="setEndpointResponse" type="tns:setEndpointResponse"/>
+
+  <xs:element name="uploadRDF" type="tns:uploadRDF"/>
+
+  <xs:element name="uploadRDFResponse" type="tns:uploadRDFResponse"/>
+
+  <xs:element name="uploadRDFS" type="tns:uploadRDFS"/>
+
+  <xs:element name="uploadRDFSResponse" type="tns:uploadRDFSResponse"/>
+
+  <xs:complexType name="setEndpoint">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="setEndpointResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="initEngine">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="initEngineResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="query">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="queryResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="runRule">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="runRuleResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="loadRDF">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="loadRDFResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="uploadRDF">
+    <xs:sequence>
+      <xs:element name="arg0" ns1:expectedContentTypes="application/octet-stream" type="xs:base64Binary" minOccurs="0" xmlns:ns1="http://www.w3.org/2005/05/xmlmime"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="uploadRDFResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="uploadRDFS">
+    <xs:sequence>
+      <xs:element name="arg0" ns2:expectedContentTypes="application/octet-stream" type="xs:base64Binary" minOccurs="0" xmlns:ns2="http://www.w3.org/2005/05/xmlmime"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="uploadRDFSResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="reset">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="resetResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="initEngineFromSQL">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg2" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg3" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="initEngineFromSQLResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getEndpoint">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getEndpointResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getEdges">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getEdgesResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="load">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="loadResponse">
+    <xs:sequence/>
+  </xs:complexType>
+</xs:schema>
+

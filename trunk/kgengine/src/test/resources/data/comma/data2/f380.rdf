@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-1606.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/zoltan.kato">
+         <c:FamilyName>Kato</c:FamilyName>
+         <c:FirstName>Zoltan</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/josiane.zerubia">
+         <c:FamilyName>Zerubia</c:FamilyName>
+         <c:FirstName>Josiane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/marc.berthod">
+         <c:FamilyName>Berthod</c:FamilyName>
+         <c:FirstName>Marc</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/pastis.en.html">
+         <c:Designation>Pastis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>2-1992</c:CreationDate>
+   <c:Title>Image classification using Markov random fields with two new relaxation methods : deterministic pseudo annealing and modified metropolis dynamics</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

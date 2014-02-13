@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4275.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/hélène.lièvre">
+         <c:FamilyName>Lièvre</c:FamilyName>
+         <c:FirstName>Hélène</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-antoine.désidéri">
+         <c:FamilyName>Désidéri</c:FamilyName>
+         <c:FirstName>Jean-Antoine</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/abderrahmane.habbal">
+         <c:FamilyName>Habbal</c:FamilyName>
+         <c:FirstName>Abderrahmane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>9-2001</c:CreationDate>
+   <c:Title>Optimisation numérique de profils d'aile par Algorithmes Génétiques et Jeux de Nash.  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,6 @@
+kg:kgram kg:version "3.0.22" ;
+  kg:date "2013-11-12"^^xsd:date ;
+  kg:author <http://www-sop.inria.fr/members/Olivier.Corby/> ;
+  kg:team <http://wimmics.inria.fr/> ;
+  kg:licence <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html> ;
+  kg:webpage <http://wimmics.inria.fr/corese>

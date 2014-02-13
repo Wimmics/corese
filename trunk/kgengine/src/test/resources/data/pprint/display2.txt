@@ -1,0 +1,15 @@
+prefix g: <http://example.com/owl/families/>
+construct  {
+g:o a owl:Ontology
+?a ?q ?b
+}WHERE
+{
+ g:John (!g:test)+ :: $path ?y
+graph $path {?a ?q ?b}
+
+
+}
+pragma
+{kg:display kg:template </home/corby/AData/pprint/owltemplate>
+kg:path kg:count true
+}

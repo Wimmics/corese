@@ -1,0 +1,17 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# kg:pprintAll() run all templates on each value 
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template  kg:test  {
+    
+   kg:uri(?x) " : " count(distinct ?y)
+    
+}
+where {
+
+  ?x ?p ?y . filter(isURI(?x)) 
+  
+}
+group by ?x
+

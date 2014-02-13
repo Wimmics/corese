@@ -1,0 +1,5 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select * where {
+<John> a c:Person;
+?p ?x
+}

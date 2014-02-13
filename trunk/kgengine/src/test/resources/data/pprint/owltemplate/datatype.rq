@@ -1,0 +1,12 @@
+template {
+  "DatatypeRestriction(" kg:uri(?dt) " " 
+      group  { kg:uri(?p) " " ?v ; separator = " "}
+  ")"  
+}
+where {
+  ?in a rdfs:Datatype ;
+    owl:onDatatype ?dt ;
+    owl:withRestrictions [
+      rdf:rest*/rdf:first [ ?p ?v ]
+    ]
+}

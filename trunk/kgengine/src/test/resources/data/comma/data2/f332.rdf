@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-1801.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/daniel.simon">
+         <c:FamilyName>Simon</c:FamilyName>
+         <c:FirstName>Daniel</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/bernard.espiau">
+         <c:FamilyName>Espiau</c:FamilyName>
+         <c:FirstName>Bernard</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/eduardo.castillo">
+         <c:FamilyName>Castillo</c:FamilyName>
+         <c:FirstName>Eduardo</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/konstantinos.kapellos">
+         <c:FamilyName>Kapellos</c:FamilyName>
+         <c:FirstName>Konstantinos</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/icare.en.html">
+         <c:Designation>Icare</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>12-1992</c:CreationDate>
+   <c:Title>Computer-aided design of a generic robot controller handling reacti vity and real-time control issues</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

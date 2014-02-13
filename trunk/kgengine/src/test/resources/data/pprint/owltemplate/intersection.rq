@@ -1,0 +1,18 @@
+template {
+    if (bound(?t), "Data", "Object") 
+    "IntersectionOf(" ?y  ")" 
+}
+where {
+  ?in owl:intersectionOf ?y 
+  
+  # in case there is also subClassof, 
+  # a named template is used: interunion.rq
+  optional {
+    { ?in rdfs:subClassOf ?z } union 
+    { ?in owl:equivalentClass ?z }
+  }
+  filter (! bound(?z))
+
+  optional { ?in a ?t filter(?t = rdfs:Datatype) }
+}
+pragma { kg:template kg:priority 1 }

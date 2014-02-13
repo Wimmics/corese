@@ -1,0 +1,6 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT *  WHERE
+{
+ graph ?g {?x rdfs:subClassOf c:Something  }
+filter(xpath(?g, "/rdf:RDF//rdfs:subClassOf/@rdf:resource/text()")    = "#Something")
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:Report rdf:about="http://www.inria.fr/rapports/sophia/CERMICS-95-39.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/s..depeyre">
+         <c:FamilyName>Depeyre</c:FamilyName>
+         <c:FirstName>S.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/d..issautier">
+         <c:FamilyName>Issautier</c:FamilyName>
+         <c:FirstName>D.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreationDate>6-1995</c:CreationDate>
+   <c:Title>Application aux schémas volumes finis d'une méthode de pénalisation des contraintes pour le système de Maxwell</c:Title>
+</c:Report> 
+</rdf:RDF>

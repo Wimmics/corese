@@ -75,6 +75,7 @@ public class Processor {
 	static final String KGXPATH = KGRAM + "xpath";
 	static final String KGSQL 	= KGRAM + "sql";
 	
+	static final String WRITE 		= KGRAM + "write"; 
 	static final String PPRINT 		= KGRAM + "pprint"; 
 	static final String PPRINTWITH 		= KGRAM + "pprintWith"; 
 	static final String PPRINTALL		= KGRAM + "pprintAll"; 
@@ -372,6 +373,7 @@ public class Processor {
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(GROUPBY, ExprType.GROUPBY);
 		
+		defoper(WRITE, 	ExprType.WRITE);
 		defoper(QNAME, 	ExprType.QNAME);
 		defoper(PPRINT, 	ExprType.PPRINT);
 		defoper(EVAL, 		ExprType.PPRINT);

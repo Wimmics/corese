@@ -2,15 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>kg-parent</artifactId>
-        <groupId>fr.inria.edelweiss</groupId>
-        <version>1.0.7</version>
+        <groupId>fr.inria.wimmics</groupId>
+        <artifactId>corese-parent</artifactId>
+        <version>3.1.3-SNAPSHOT</version>
+        <relativePath>..</relativePath>
     </parent>
 
-    <groupId>fr.inria.edelweiss</groupId>
+    <groupId>fr.inria.wimmics</groupId>
     <artifactId>kgendpoint</artifactId>
     <packaging>war</packaging>
-    <version>1.0.7</version>
+    <version>3.1.3-SNAPSHOT</version>
 
     <name>kgendpoint</name>
     <url>http://maven.apache.org</url>
@@ -29,14 +30,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>fr.inria.edelweiss</groupId>
+            <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgengine</artifactId>
-            <version>1.0.7</version>
+            <version>${project.version}</version>
         </dependency>
          <dependency>
-            <groupId>fr.inria.edelweiss</groupId>
+            <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgimport</artifactId>
-            <version>1.0.7</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
@@ -51,9 +52,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fr.inria.edelweiss</groupId>
-            <artifactId>kgserver</artifactId>
-            <version>1.0.7</version>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>corese-server</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

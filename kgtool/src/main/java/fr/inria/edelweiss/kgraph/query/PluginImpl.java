@@ -27,6 +27,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.print.PPrinter;
 
 /**
@@ -122,9 +123,8 @@ public class PluginImpl extends ProxyImpl {
                         
                      case SKOLEM:               
                         return g.skolem(dt);    
-                }
+                }                
                 
-
             case PPRINT:
             case PPRINTALL:
                 return pprint(dt, null, null, null, exp, env, p);
@@ -209,6 +209,9 @@ public class PluginImpl extends ProxyImpl {
                         return ancestor(g, dt1, dt2);
                 }
 
+             case WRITE:                
+                return write(dt1, dt2);   
+                
             case PPRINT:
             case PPRINTALL:
                 // dt1: focus
@@ -382,6 +385,13 @@ public class PluginImpl extends ProxyImpl {
             return match.isSubClassOf(n1, n2, env);
         }
         return g.isSubClassOf(n1, n2);
+    }
+
+    
+    private IDatatype write(IDatatype dtfile, IDatatype dt) {
+        QueryLoad ql = QueryLoad.create();
+        ql.write(dtfile.getLabel(), dt.getLabel());
+        return dt;
     }
 
     class Table extends Hashtable<Integer, PTable> {

@@ -10,7 +10,7 @@
     
     <groupId>fr.inria.edelweiss</groupId>
     <artifactId>kgserver-stubs</artifactId>
-  <version>1.0.7</version>
+  <version>3.1.2</version>
     
     <dependencies>
 <!--            <dependency>
@@ -116,10 +116,4 @@
 
         </plugins>
     </build>
-
-
-  <scm>
-    <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2/trunk/kgserver-stubs</connection>
-    <url>https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2/trunk/kgserver-stubs</url>
-  </scm>
 </project>

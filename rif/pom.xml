@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.inria.edelweiss</groupId>
     <artifactId>rif</artifactId>
-  <version>1.0.7</version>
+  <version>3.1.2</version>
     
     <parent>
         <groupId>fr.inria.edelweiss</groupId>
@@ -91,10 +91,4 @@
 
         </plugins>
     </build>
-
-
-  <scm>
-    <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2/trunk/rif</connection>
-    <url>https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2/trunk/rif</url>
-  </scm>
 </project>

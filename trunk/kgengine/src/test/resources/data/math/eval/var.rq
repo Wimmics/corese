@@ -1,9 +1,0 @@
-@prefix m:  <http://ns.inria.fr/2013/math#>
-
-template {
-  ?v
-}
-where {
-  ?in m:name ?n
-  [m:name ?n; m:value ?v]
-}

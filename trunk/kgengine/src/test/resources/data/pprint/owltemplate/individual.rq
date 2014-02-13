@@ -1,7 +1,0 @@
-template {
-    "Declaration(NamedIndividual(" kg:uri(?in)  "))"   
-}
-where {
-  ?in a owl:NamedIndividual
-}
-

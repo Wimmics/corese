@@ -172,6 +172,7 @@ public interface ExprType {
 	public static int VISITED 	= 232;
 	public static int AGGAND 	= 233;
 	public static int PROLOG 	= 234;
+	public static int WRITE 	= 235;
 
 
 	public static int ISSKOLEM 	= 240;

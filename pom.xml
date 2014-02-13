@@ -57,9 +57,30 @@
     </developers>
     
     <scm>
-        <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2/trunk</connection>
-        <url>https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2/trunk</url>
+        <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2</connection>
+        <url>https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2</url>
     </scm>
+
+<!--    <distributionManagement>
+        <repository>
+            <id>Nexus</id>
+            <name>I3S public Maven releases repository</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/i3s-public</url>
+        </repository>
+    </distributionManagement>-->
+
+<distributionManagement>
+  <repository>
+            <id>Nexus</id>
+     <name>Releases</name>
+     <url>http://nyx.unice.fr:9007/nexus/content/repositories/releases/</url>
+  </repository>
+  <snapshotRepository>
+            <id>Nexus</id>
+     <name>Snapshots</name>
+     <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots/</url>
+  </snapshotRepository>
+</distributionManagement>
     
     <properties>
         <!-- Sonar -->

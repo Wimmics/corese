@@ -9,7 +9,7 @@
     </parent>
     <groupId>fr.inria.edelweiss</groupId>
     <artifactId>kg-dqp</artifactId>
-  <version>1.0.7</version>
+  <version>3.1.2</version>
     
     <properties>
         <build.version>${project.version}-r${buildNumber}</build.version>
@@ -204,10 +204,4 @@
             
         </plugins>
     </build>
-
-
-  <scm>
-    <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2/trunk/kg-dqp</connection>
-    <url>https://scm.gforge.inria.fr/svn/kgram/Dev/tags/kg-parent-3.1.2/trunk/kg-dqp</url>
-  </scm>
 </project>

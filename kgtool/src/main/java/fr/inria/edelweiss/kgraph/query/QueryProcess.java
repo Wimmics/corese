@@ -389,9 +389,13 @@ public class QueryProcess extends QuerySolver {
 		if (q.isUpdate() || q.isRule()){
 			log(Log.UPDATE, q);
 			map = synUpdate(q, ds);
-			if (map.getQuery() == null){
-                            map.setQuery(q);
-                        }
+                        // map is the result of the last Update in q
+                        // hence the query in map is a local query corresponding to the last Update in q
+                        // return the Mappings of the last Update and the global query q
+                        map.setQuery(q);
+//			if (map.getQuery() == null){
+//                            map.setQuery(q);
+//                        }                     
 		}
 		else {
 			map =  synQuery(q, m);

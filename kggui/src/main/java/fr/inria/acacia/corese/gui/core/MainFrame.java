@@ -52,6 +52,7 @@ import fr.inria.acacia.corese.gui.event.MyEvalListener;
 import fr.inria.acacia.corese.gui.query.Buffer;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.event.Event;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.util.logging.Level;
 
 /**
@@ -143,6 +144,8 @@ public class MainFrame extends JFrame implements ActionListener {
     private final Logger logger = Logger.getLogger(MainFrame.class.getName());
     private MyEvalListener el;
     Buffer buffer;
+    private static String STYLE = "style";
+    private static String STYLESHEET = "style.txt";
 
     /**
      * Crée la fenêtre principale, initialise Corese
@@ -157,73 +160,10 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setSize(900, 700);
         this.setMinimumSize(this.getSize());
         this.setLocationRelativeTo(null);
-        this.setResizable(true);
-
-
-		saveStylesheet = 
-
-				"graph {\n"+
-					"\t  fill-color:white;\n"+	
-				"}\n"+
-
-				"node {\n"+
-				  	"\t  text-size:12;\n"+
-					"\t  text-color:black;\n"+
-					"\t  text-style:bold;\n"+
-					"\t  text-alignment:center;\n"+
-					"\t  size:17;\n"+
-                                        "\t  size-mode:fit;\n"+
-					"\t  fill-color:lightblue;\n"+
-					"\t  shape:circle;\n"+
-
-				"}\n"+
-
-				"node.Literal {\n"+
-			  	"\t  text-size:9;\n"+
-				"\t  text-color:black;\n"+
-				"\t  text-style:bold;\n"+
-				"\t  text-alignment:center;\n"+
-				"\t  size:17;\n"+
-                                "\t  size-mode:fit;\n"+
-				"\t  fill-color:orange;\n"+
-				"\t  shape:box;\n"+
-
-				"}\n"+
-				
-				"node.Blank {\n"+
-			  	"\t  text-size:9;\n"+
-				"\t  text-color:black;\n"+
-				"\t  text-style:bold;\n"+
-				"\t  text-alignment:center;\n"+
-				"\t  size:17;\n"+
-                                "\t  size-mode:fit;\n"+
-				"\t  fill-color:yellow;\n"+
-				"\t  shape:circle;\n"+
-				"}\n"+
-				
-				"node.Class {\n"+
-			  	"\t  text-size:9;\n"+
-				"\t  text-color:black;\n"+
-				"\t  text-style:bold;\n"+
-				"\t  text-alignment:center;\n"+
-				"\t  size:17;\n"+
-                                "\t  size-mode:fit;\n"+
-				"\t  fill-color:blue;\n"+
-				"\t  shape:circle;\n"+
-				"}\n"+
-				
-				"edge {\n"+
-					"\t  text-color:black;\n"+
-				  	"\t  text-size:12;\n"+
-					"\t  size:2;\n"+
-					"\t  fill-color:grey;\n"+
-					"\t  text-alignment:center;\n"+ 
-                                        "\t  shape:cubic-curve;\n"+
-				"}";	
+        this.setResizable(true);		
 		
-		
+        saveStylesheet = readStyleSheet(STYLESHEET);
         defaultStylesheet = saveStylesheet;
-
 
         //Initialise Corese
         myCapturer = aCapturer;
@@ -1217,6 +1157,13 @@ public class MainFrame extends JFrame implements ActionListener {
         return logger;
     }
 
+    String readStyleSheet(String name){
+        String path = MainFrame.class.getClassLoader().getResource(STYLE).getPath()+"/";
+        QueryLoad ql = QueryLoad.create();
+        String style = ql.read(path + name);
+        return style;
+    }
+    
     public String getDefaultStylesheet() {
         return defaultStylesheet;
     }

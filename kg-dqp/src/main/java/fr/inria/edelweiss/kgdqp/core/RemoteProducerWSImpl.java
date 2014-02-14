@@ -166,11 +166,7 @@ public class RemoteProducerWSImpl implements Producer {
         if (env.getQuery().getAST() instanceof ASTQuery) {
             ASTQuery ast = (ASTQuery) env.getQuery().getAST();
             NSManager namespaceMgr = ast.getNSM();
-            Enumeration<String> prefixes = namespaceMgr.getPrefixes();
-            while (prefixes.hasMoreElements()) {
-                String p = prefixes.nextElement();
-                sparqlPrefixes += "PREFIX " + p + ": " + "<" + namespaceMgr.getNamespace(p) + ">\n";
-            }
+            return namespaceMgr.toString();
         }
         return sparqlPrefixes;
     }
@@ -208,6 +204,11 @@ public class RemoteProducerWSImpl implements Producer {
                 logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
                 String sparqlRes = rp.getEdges(rwSparql);
                 logger.debug(sparqlRes);
+                
+                if (env.getQuery() != null && env.getQuery().isDebug()){
+                    System.out.println("Query:\n" + rwSparql + "\n" + rp.getEndpoint());
+                    System.out.println("Result:\n" + sparqlRes);                   
+                }
 
                 // count number of queries
 //                if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {

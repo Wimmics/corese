@@ -1,0 +1,56 @@
+graph{
+  fill-color:white;	
+}
+
+node{
+    text-size:12;
+    text-color:black;
+    text-style:bold;
+    text-alignment:center;
+    size:17;
+    size-mode:fit;
+    fill-color:lightblue;
+    shape:circle;
+}
+
+node.Literal{
+    text-size:9;
+    text-color:black;
+    text-style:bold;
+    text-alignment:center;
+    size:17;
+    size-mode:fit;
+    fill-color:orange;
+    shape:box;
+}
+			
+node.Blank{
+    text-size:9;
+    text-color:black;
+    text-style:bold;
+    text-alignment:center;
+    size:17;
+    size-mode:fit;
+    fill-color:yellow;
+    shape:circle;
+}
+			
+node.Class{
+    text-size:9;
+    text-color:black;
+    text-style:bold;
+    text-alignment:center;
+    size:17;
+    size-mode:fit;
+    fill-color:blue;
+    shape:circle;
+}
+				
+edge{
+    text-color:black;
+    text-size:12;
+    size:2;
+    fill-color:grey;
+    text-alignment:center;
+    shape:cubic-curve;
+}

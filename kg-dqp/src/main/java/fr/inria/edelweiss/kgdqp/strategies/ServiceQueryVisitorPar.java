@@ -97,7 +97,7 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
 
         for (int i = 0; i < exp.size(); i++) {
             Exp subExp = exp.get(i);
-            if (subExp.isOptional()) {
+            if (subExp.isOption()) {
                 Option opt = (Option) subExp;
                 for (int j = 0; j < opt.size(); j++) {
                     buildIndex(opt.get(j), indexEdgeSource, indexSourceEdge, ast, orderedTPs);
@@ -145,7 +145,7 @@ public class ServiceQueryVisitorPar implements QueryVisitor {
 
         for (int i = 0; i < exp.size(); i++) {
             Exp subExp = exp.get(i);
-            if (subExp.isOptional()) {
+            if (subExp.isOption()) {
                 Option opt = (Option) subExp;
                 //TODO include optional elements into services ? 
                 toKeepOutsideService.add(subExp);

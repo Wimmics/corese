@@ -160,57 +160,68 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setResizable(true);
 
 
+		saveStylesheet = 
 
+				"graph {\n"+
+					"\t  fill-color:white;\n"+	
+				"}\n"+
 
-        saveStylesheet =
-                "graph {\n"
-                + "\t  color:grey;\n"
-                + "}\n"
-                + "node {\n"
-                + "\t  text-size:9;\n"
-                + "\t  text-color:black;\n"
-                + "\t  text-style:bold;\n"
-                + "\t  text-align:center;\n"
-                + "\t  width:17;\n"
-                + "\t  color:lightblue;\n"
-                + "\t  node-shape:text-ellipse;\n"
-                + "}\n"
-                + "node.Literal {\n"
-                + "\t  text-size:9;\n"
-                + "\t  text-color:black;\n"
-                + "\t  text-style:bold;\n"
-                + "\t  text-align:center;\n"
-                + "\t  width:17;\n"
-                + "\t  color:orange;\n"
-                + "\t  node-shape:text-box;\n"
-                + "}\n"
-                + "node.Blank {\n"
-                + "\t  text-size:9;\n"
-                + "\t  text-color:black;\n"
-                + "\t  text-style:bold;\n"
-                + "\t  text-align:center;\n"
-                + "\t  width:17;\n"
-                + "\t  color:yellow;\n"
-                + "\t  node-shape:text-ellipse;\n"
-                + "}\n"
-                + "node.Class {\n"
-                + "\t  text-size:9;\n"
-                + "\t  text-color:black;\n"
-                + "\t  text-style:bold;\n"
-                + "\t  text-align:center;\n"
-                + "\t  width:17;\n"
-                + "\t  color:blue;\n"
-                + "\t  node-shape:text-ellipse;\n"
-                + "}\n"
-                + "edge {\n"
-                + "\t  text-color:black;\n"
-                + "\t  text-size:8;\n"
-                + "\t  width:1;\n"
-                + "\t  color:grey;\n"
-                + "\t  text-align:center;\n"
-                + "}";
+				"node {\n"+
+				  	"\t  text-size:12;\n"+
+					"\t  text-color:black;\n"+
+					"\t  text-style:bold;\n"+
+					"\t  text-alignment:center;\n"+
+					"\t  size:17;\n"+
+                                        "\t  size-mode:fit;\n"+
+					"\t  fill-color:lightblue;\n"+
+					"\t  shape:circle;\n"+
 
+				"}\n"+
 
+				"node.Literal {\n"+
+			  	"\t  text-size:9;\n"+
+				"\t  text-color:black;\n"+
+				"\t  text-style:bold;\n"+
+				"\t  text-alignment:center;\n"+
+				"\t  size:17;\n"+
+                                "\t  size-mode:fit;\n"+
+				"\t  fill-color:orange;\n"+
+				"\t  shape:box;\n"+
+
+				"}\n"+
+				
+				"node.Blank {\n"+
+			  	"\t  text-size:9;\n"+
+				"\t  text-color:black;\n"+
+				"\t  text-style:bold;\n"+
+				"\t  text-alignment:center;\n"+
+				"\t  size:17;\n"+
+                                "\t  size-mode:fit;\n"+
+				"\t  fill-color:yellow;\n"+
+				"\t  shape:circle;\n"+
+				"}\n"+
+				
+				"node.Class {\n"+
+			  	"\t  text-size:9;\n"+
+				"\t  text-color:black;\n"+
+				"\t  text-style:bold;\n"+
+				"\t  text-alignment:center;\n"+
+				"\t  size:17;\n"+
+                                "\t  size-mode:fit;\n"+
+				"\t  fill-color:blue;\n"+
+				"\t  shape:circle;\n"+
+				"}\n"+
+				
+				"edge {\n"+
+					"\t  text-color:black;\n"+
+				  	"\t  text-size:12;\n"+
+					"\t  size:2;\n"+
+					"\t  fill-color:grey;\n"+
+					"\t  text-alignment:center;\n"+ 
+                                        "\t  shape:cubic-curve;\n"+
+				"}";	
+		
+		
         defaultStylesheet = saveStylesheet;
 
 

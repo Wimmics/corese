@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgtool.load;
+package fr.inria.edelweiss.kgtool.load.rdfa;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -67,7 +67,7 @@ public class RDFaLoader {
      * @param sink
      * @throws ParseException
      */
-    public void load(RDFaLoaderDelegate sink) throws ParseException {
+    public void load(CoreseRDFaTripleSink sink) throws ParseException {
 
         StreamProcessor processor = new StreamProcessor(RdfaParser.connect(sink));
         processor.process(this.reader, this.base);

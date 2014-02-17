@@ -5,19 +5,19 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import static fr.inria.edelweiss.kgtool.load.AbstractCoreseSink.NON_LITERAL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import org.semarglproject.vocab.RDF;
 
 /**
- * Delegate class to extend AbstractCoreseSink and implement interface Creator
- * This class aims to implement the method for adding triples to graph
- * 
+ * Helper class to aid the parsers (ex.jsonld, rdfa) for adding triples to
+ * corese graph
+ *
  * @author Fuqi Song, wimmics inria i3s
  * @date Jan 28 2014 new
+ * @date Feb 12 2014 re-factored
  */
-public class RDFaLoaderDelegate extends AbstractCoreseSink{
+public class AddTripleHelper implements ILoadSerialization {
 
     protected Graph graph;
     Node source;
@@ -32,7 +32,7 @@ public class RDFaLoaderDelegate extends AbstractCoreseSink{
     public void graph(String src) {
         source = graph.addGraph(src);
     }
-    
+
     public void setRenameBlankNode(boolean b) {
         this.renameBlankNode = b;
     }
@@ -55,19 +55,19 @@ public class RDFaLoaderDelegate extends AbstractCoreseSink{
         }
     }
 
-    public RDFaLoaderDelegate(Graph graph) {
+    public AddTripleHelper(Graph graph) {
         this.graph = graph;
         this.blank = new Hashtable<String, String>();
         nsm = NSManager.create();
         this.stack = new Stack();
     }
 
-    public static RDFaLoaderDelegate create(Graph graph) {
-        return new RDFaLoaderDelegate(graph);
+    public static AddTripleHelper create(Graph graph) {
+        return new AddTripleHelper(graph);
     }
 
     @Override
-    protected void addTriple(String subj, String pred, String obj, String lang, String type, int literalType) {
+    public void addTriples(String subj, String pred, String obj, String lang, String type, int literalType, Node source) {
         if (source == null) {
             source = graph.addGraph(Entailment.DEFAULT);
         }
@@ -79,11 +79,8 @@ public class RDFaLoaderDelegate extends AbstractCoreseSink{
             case NON_LITERAL:
                 o = getNode(obj);
                 break;
-            case PLAIN_LITERAL:
-                o = getLiteral(pred, obj, lang, null);
-                break;
-            case TYPED_LITERAL:
-                o = getLiteral(pred, obj, null, type);
+            case LITERAL:
+                o = getLiteral(pred, obj, lang, type);
                 break;
             default:
                 break;
@@ -140,7 +137,7 @@ public class RDFaLoaderDelegate extends AbstractCoreseSink{
     }
 
     //Generate an ID for blank node
-    private String getID(String b) {
+    public String getID(String b) {
         String id = b;
         if (isRenameBlankNode()) {
             id = blank.get(b);
@@ -151,5 +148,4 @@ public class RDFaLoaderDelegate extends AbstractCoreseSink{
         }
         return id;
     }
-
 }

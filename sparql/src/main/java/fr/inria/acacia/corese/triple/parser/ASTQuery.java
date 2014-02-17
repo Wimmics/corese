@@ -391,6 +391,11 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 * check scope for BIND(exp as var) and select exp as var
 	 */
 	public boolean validate(){
+            
+            // in some case, validate() may be called twice
+            // hence clear the stack
+            stack.clear();
+            
 		collect();
 	
 		if (getBody()!=null){
@@ -1593,26 +1598,23 @@ public class ASTQuery  implements Keyword, ASTVisitable {
      ***************************************************************/
     
     
-    public void compile(){
-    	if (isConstruct()  && getBody()!=null) {
+    public void compile() {
+        if (isConstruct() && getBody() != null) {
             compileConstruct();
-        } 
-        else if (isAsk()) {
-        	compileAsk();
-        } 
-        else if (isDescribe()) {
-        	compileDescribe();
-			setBasicSelectAll(true);
-       } 
-        else if (isTemplate()){
-        	compileTemplate();
+        } else if (isAsk()) {
+            compileAsk();
+        } else if (isDescribe()) {
+            compileDescribe();
+            setBasicSelectAll(true);
+        } else if (isTemplate()) {
+            compileTemplate();
         }
-		Exp exp = getBody();
-		if (exp != null){
-			setQuery(exp);
-		}
-	}
-	  
+        Exp exp = getBody();
+        if (exp != null) {
+            setQuery(exp);
+        }
+    }
+
  
  // TODO: clean
     private void compileConstruct() {
@@ -1632,66 +1634,83 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     	}
     }
 
+    /**
+     * compile describe ?x 
+     * as:
+     * 
+     * construct { 
+     *   {?x ?p ?y} union {?y ?p ?x} 
+     * }
+     * where {
+     *   {?x ?p ?y} union {?y ?p ?x}
+     * }
+     */
     private void compileDescribe() {
-    	String root = KGRAMVAR;
-    	String PP = root + "p_";
-    	String VV = root + "v_";
-    	
-		Exp bodyExpLocal = getBody();
-		
-		boolean describeAllTemp = isDescribeAll();
+        String root = KGRAMVAR;
+        String PP = root + "p_";
+        String VV = root + "v_";
+
+        Exp bodyExpLocal = getBody();
+        int size = bodyExpLocal.size();
+
+        boolean describeAllTemp = isDescribeAll();
         setDescribeAll(false);
-		
-        BasicGraphPattern body = BasicGraphPattern.create();
+
+        BasicGraphPattern template = BasicGraphPattern.create();
+
+        for (Atom atom : adescribe) {
+            
+            if (atom.isVariable()){
+             // TODO: compile only if variable is in the where clause
+               Variable var = atom.getVariable();
+                if (! getSelectAllVar().contains(var)){
+                    continue;
+                }
+            }
+
+            //// create variables
+            int nbd = getVariableId();
+            Variable prop1 = createVariable(PP + nbd);
+            Variable val1  = createVariable(VV + nbd);
+
+            nbd = getVariableId();
+            Variable prop2 = createVariable(PP + nbd);
+            Variable val2  = createVariable(VV + nbd);
+
+            //// create triple sd ?p0 ?v0
+            Triple triple = Triple.create(atom, prop1, val1);
+            Exp e1 = triple;
+            BasicGraphPattern bgp1 = BasicGraphPattern.create(e1);
+            template.add(e1);
+
+            //// create triple ?v0 ?p0 sd
+            Triple triple2 = Triple.create(val2, prop2, atom);
+            Exp e2 = triple2;
+            BasicGraphPattern bgp2 = BasicGraphPattern.create(e2);
+            template.add(e2);
+
+            //// create the union of both
+            Or union = new Or();
+            union.add(bgp1);
+            union.add(bgp2);
+
+            // make the union optional
+            Option opt = Option.create(BasicGraphPattern.create(union));
+
+            bodyExpLocal.add(opt);
+
+            if (atom.isVariable()) {
+                setSelect(atom.getVariable());
+            }
+        }
         
-		for (Atom expression : adescribe) {
-			
-			//setMerge(true);
+        setDescribeAll(describeAllTemp);
+        setBody(bodyExpLocal);
 
-			//// create variables
-			int nbd = getVariableId();
-			Variable prop1 = createVariable(PP + nbd);
-			Variable val1  = createVariable(VV + nbd);
-			
-			nbd = getVariableId();
-			Variable prop2 = createVariable(PP + nbd);
-			Variable val2  = createVariable(VV + nbd);
-		
-			//// create triple sd ?p0 ?v0
-			Triple triple = Triple.create(expression, prop1, val1);
-			Exp e1 = triple; 
-			BasicGraphPattern bgp1 = BasicGraphPattern.create();
-			bgp1.add(e1);
-			body.add(e1);
-			
-			//// create triple ?v0 ?p0 sd
-			Triple triple2 = Triple.create(val2, prop2, expression);
-			Exp e2 = triple2; 
-			BasicGraphPattern bgp2 = BasicGraphPattern.create();
-			bgp2.add(e2);
-			body.add(e2);
-
-			//// create the union of both
-			Or union = new Or();
-			union.add(bgp1);
-			union.add(bgp2);
-			
-			// make the union optional
-			Option opt =  Option.create(BasicGraphPattern.create(union));
-			
-			bodyExpLocal.add(opt);
-			
-			if (expression.isVariable()){ 
-				setSelect(expression.getVariable());
-			}
-		}
-		setDescribeAll(describeAllTemp);
-		setBody(bodyExpLocal);
-		
-		if (isKgram()){
-			setInsert(body);
-			setConstruct(body);
-		}
+        if (isKgram()) {
+            setInsert(template);
+            setConstruct(template);
+        }
     }
     
     private void compileAsk() {

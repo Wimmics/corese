@@ -288,6 +288,30 @@ public class NSManager
 		return toPrefix(nsname, false, true);
 	}
 	
+        
+        /**
+         * toPrefix() unless there are forbidden characters such as ( )
+         * in this case return <uri>
+         */
+        public String toPrefixURI(String nsname){
+            if (nsname.contains("(") || nsname.contains(")")){
+                return uri(nsname);
+            }
+            else {
+                String str = toPrefix(nsname, true);
+                if (str.equals(nsname)){
+                    return uri(nsname);
+                }
+                else {
+                    return str;
+                }
+            }
+        }
+        
+        String uri(String str){
+            return "<" + str + ">";
+        }
+        
 	/**
 	 * If skip, if no prefix for this namespace, return nsname,
 	 * else create a prefix

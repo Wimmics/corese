@@ -61,17 +61,18 @@ public class RdfaTestHelper {
      *
      * @param filePath file url
      * @param sparqlPath url of sparql statement file
+     * @throws java.io.IOException
      */
     public void process(String filePath, String sparqlPath) throws IOException {
 
-        System.out.println("####File:..." + filePath);
+        System.out.println("####Test file:..." + filePath);
 
         loadSource(filePath);
 
         try {
             String query = readSparqlStatement(sparqlPath);
             //String query = readSparqlStatementFromFile(sparqlPath);
-            System.out.print("##query##:\n" + query);
+            //System.out.print("##query##:\n" + query);
 
             QueryProcess exec = QueryProcess.create(graph);
             Mappings map = exec.query(query);
@@ -131,7 +132,6 @@ public class RdfaTestHelper {
 
     //Load the parsed triples to corese graph
     private void loadSource(String fileUri) {
-        graph = null;
         graph = Graph.create(true);
         Load ld = Load.create(graph);
 

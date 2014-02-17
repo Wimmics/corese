@@ -674,14 +674,8 @@ public class PPrinter {
     public IDatatype turtle(IDatatype dt) {
 
         if (dt.isURI()) {
-            String qname = nsm.toPrefix(dt.getLabel(), true);
-            if (dt.getLabel().equals(qname)) {
-                // no namespace, return <uri>
-                dt = DatatypeMap.newStringBuilder(dt.toString());
-            } else {
-                // return qname
-                dt = DatatypeMap.newStringBuilder(qname);
-            }
+            String uri = nsm.toPrefixURI(dt.getLabel());
+            dt = DatatypeMap.newStringBuilder(uri);          
         } else if (dt.isLiteral()) {
             if (dt.getCode() == IDatatype.INTEGER || dt.getCode() == IDatatype.BOOLEAN) {
                 // print as is

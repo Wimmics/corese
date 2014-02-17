@@ -1,5 +1,8 @@
 package fr.inria.edelweiss.kgtool.load;
 
+import com.github.jsonldjava.core.JSONLDTripleCallback;
+import com.github.jsonldjava.core.JsonLdError;
+import fr.inria.edelweiss.kgtool.load.rdfa.RDFaLoader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -33,6 +36,9 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.jsonld.CoreseJsonTripleCallback;
+import fr.inria.edelweiss.kgtool.load.jsonld.JsonldLoader;
+import fr.inria.edelweiss.kgtool.load.rdfa.CoreseRDFaTripleSink;
 import org.semarglproject.rdf.ParseException;
 
 
@@ -57,12 +63,13 @@ public class Load
 	static final String[] QUERIES 	= {QUERY, UPDATE};
 	static final String TURTLE 	= ".ttl";
 	static final String NT          = ".nt";
-        static final String HTML       =".html";
+        static final String HTML        =".html";
         static final String XHTML       =".xhtml";
-        static final String SVG       =".svg";
-        static final String XML       =".xml";
+        static final String SVG         =".svg";
+        static final String XML         =".xml";
         static final String[] EXT_RDFA       ={HTML, XHTML, SVG, XML};
-	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, NT, RULE, BRULE, IRULE, QUERY, UPDATE, HTML, XHTML,SVG, XML};
+        static final String JSONLD      = ".jsonld";
+	static final String[] SUFFIX = {".rdf", ".rdfs", ".owl", TURTLE, NT, RULE, BRULE, IRULE, QUERY, UPDATE, HTML, XHTML,SVG, XML,JSONLD};
 	static final String HTTP = "http://";
 	static final String FTP  = "ftp://";
 	static final String FILE = "file://";
@@ -375,7 +382,10 @@ public class Load
 				loadRule(stream, src);
 			} 
                         else if(isRDFa(path)){
-                            loadRDFa(stream, path, base, src);
+                                loadRDFa(stream, path, base, src);
+                        }
+                        else if(path.toLowerCase().endsWith(JSONLD)){
+                                loadJsonld(stream, path, base, src);
                         }
 			else {
 				load(stream, path, base, src);
@@ -446,12 +456,9 @@ public class Load
         }
         
         // load RDFa
-        void loadRDFa(Reader stream, String path, String base, String src) throws LoadException {
-
-            RDFaLoaderDelegate sink = RDFaLoaderDelegate.create(graph);
-            sink.graph(src);
-            sink.setRenameBlankNode(renameBlankNode);
-            sink.setLimit(limit);
+        void loadRDFa(Reader stream, String path, String base, String src) throws LoadException {            
+            CoreseRDFaTripleSink sink = new CoreseRDFaTripleSink(graph, null);
+            sink.setHelper(renameBlankNode, limit);
             
             RDFaLoader loader = RDFaLoader.create(stream,base);
 
@@ -461,6 +468,22 @@ public class Load
                 throw LoadException.create(ex, path);
             }
 
+        }
+        
+        // load JSON-LD
+        void loadJsonld(Reader stream, String path, String base, String src) throws LoadException{
+    
+            JSONLDTripleCallback callback = new CoreseJsonTripleCallback(graph, null);
+            ((CoreseJsonTripleCallback)callback).setHelper(renameBlankNode, limit);
+            
+            JsonldLoader loader = JsonldLoader.create(stream, base);
+            try {
+                loader.load(callback);
+            } catch (IOException ex) {
+                throw LoadException.create(ex, path);
+            } catch (JsonLdError ex) {
+                throw LoadException.create(ex, path);
+            }
         }
         
         

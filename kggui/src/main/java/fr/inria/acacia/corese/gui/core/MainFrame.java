@@ -52,7 +52,12 @@ import fr.inria.acacia.corese.gui.event.MyEvalListener;
 import fr.inria.acacia.corese.gui.query.Buffer;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.event.Event;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.logging.Level;
 
 /**
@@ -64,7 +69,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics Inria I3S - 2014-02-13";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics Inria I3S - 2014-02-17";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -130,22 +135,18 @@ public class MainFrame extends JFrame implements ActionListener {
     private String textQuery;
     // Texte par défaut dans l'onglet requête 
     private String defaultTextQuery = "SELECT ?x ?t WHERE\n{\n ?x rdf:type ?t\n}";
-//	private String defaultTextQuery = 
-//		"prefix c: <http://www.inria.fr/acacia/comma#>\n"+
-//		"construct {?x ?p ?y}\n"+
-//		"where {\n"+
-//		"?doc c:CreatedBy ?x ?x ?p ?y"+
-//		"}";
-//	
-    // Relatif à Corese 
-//	private EngineFactory ef = new EngineFactory();
+
     private IEngine myCorese = null;
     private CaptureOutput myCapturer = null;
     private final Logger logger = Logger.getLogger(MainFrame.class.getName());
     private MyEvalListener el;
     Buffer buffer;
-    private static String STYLE = "style";
+    private static String STYLE = "/style/";
     private static String STYLESHEET = "style.txt";
+    private static String TXT = ".txt";
+    private static String RQ = ".rq";
+    private static String XML = ".xml";
+    private static String RDF = ".rdf";
 
     /**
      * Crée la fenêtre principale, initialise Corese
@@ -162,8 +163,7 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setLocationRelativeTo(null);
         this.setResizable(true);		
 		
-        saveStylesheet = readStyleSheet(STYLESHEET);
-        defaultStylesheet = saveStylesheet;
+        //setStyleSheet();
 
         //Initialise Corese
         myCapturer = aCapturer;
@@ -287,9 +287,17 @@ public class MainFrame extends JFrame implements ActionListener {
         for (int i = 0; i < listJMenuItems.size(); i++) {
             listJMenuItems.get(i).setEnabled(false);
         }
-
-
-
+    }
+    
+    void setStyleSheet(){
+        try {
+            saveStylesheet = readStyleSheet(STYLE + STYLESHEET);
+        } catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        defaultStylesheet = saveStylesheet;
     }
 
     /**
@@ -690,23 +698,25 @@ public class MainFrame extends JFrame implements ActionListener {
             if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
                 // Récupérer le nom du fichier qu’il a spécifié
                 String myFile = (filechoose.getSelectedFile().toString());
-                // Si ce nom de fichier finit par .txt ou .TXT, ne rien faire et passer à la suite
-                if (!myFile.endsWith(".txt") || !myFile.endsWith(".TXT")) {
-                    myFile = myFile + ".txt";
-                    try {
-                        // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
-                        FileWriter lu = new FileWriter(myFile);
-                        // Mettre le flux en tampon (en cache)
-                        BufferedWriter out = new BufferedWriter(lu);
-                        // Mettre dans le flux le contenu de la zone de texte
-                        out.write(current.getTextPaneQuery().getText());
-                        // Fermer le flux 
-                        out.close();
 
-                    } catch (IOException er) {
-                        er.printStackTrace();
-                    }
+                if (! myFile.endsWith(RQ) && ! myFile.endsWith(TXT)) {
+                    myFile = myFile + RQ;
                 }
+                
+                try {
+                    // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
+                    FileWriter lu = new FileWriter(myFile);
+                    // Mettre le flux en tampon (en cache)
+                    BufferedWriter out = new BufferedWriter(lu);
+                    // Mettre dans le flux le contenu de la zone de texte
+                    out.write(current.getTextPaneQuery().getText());
+                    // Fermer le flux 
+                    out.close();
+
+                } catch (IOException er) {
+                    er.printStackTrace();
+                }
+                
             }
         } else if (e.getSource() == loadStyle) {
             String style = loadText();
@@ -721,24 +731,26 @@ public class MainFrame extends JFrame implements ActionListener {
             if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
                 // Récupérer le nom du fichier qu’il a spécifié
                 String myFile = filechoose.getSelectedFile().toString();
-                // Si ce nom de fichier finit par .txt ou .TXT, ne rien faire et passer à la suite
-                if (!myFile.endsWith(".txt") || !myFile.endsWith(".TXT")) {
-                    myFile = myFile + ".txt";
-                    try {
-                        // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
-                        FileWriter lu = new FileWriter(myFile);
-                        // Mettre le flux en tampon (en cache)
-                        BufferedWriter out = new BufferedWriter(lu);
-                        // Mettre dans le flux le contenu de la zone de texte
-                        out.write(current.getTextAreaXMLResult().getText());
-                        // Fermer le flux 
-                        out.close();
 
-                    } catch (IOException er) {
-                        er.printStackTrace();
-                    }
+                if (! myFile.endsWith(TXT) 
+                 && ! myFile.endsWith(RDF) 
+                 && ! myFile.endsWith(XML)) {
+                    myFile = myFile + TXT;
                 }
+                try {
+                    // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
+                    FileWriter lu = new FileWriter(myFile);
+                    // Mettre le flux en tampon (en cache)
+                    BufferedWriter out = new BufferedWriter(lu);
+                    // Mettre dans le flux le contenu de la zone de texte
+                    out.write(current.getTextAreaXMLResult().getText());
+                    // Fermer le flux 
+                    out.close();
 
+                } catch (IOException er) {
+                    er.printStackTrace();
+                }
+                
             }
         } // Charge et exécute une règle directement
         else if (e.getSource() == loadAndRunRule) {
@@ -870,15 +882,6 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-//		else if(e.getSource()==coreseBox ){
-//			isKgram=false;
-//			//DatatypeMap.setLiteralAsString(true);
-//			for(int i=0;i<monTabOnglet.size();i++){
-//				MyJPanelQuery temp = monTabOnglet.get(i);
-//				temp.getButtonTKgram().setEnabled(false);
-//			}	
-//		}
-
     }
 
     public static int getLineStartOffset(final JTextComponent textComponent, final int line) throws BadLocationException {
@@ -996,7 +999,7 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     public void loadRDF() {
-        Filter FilterRDF = new Filter(new String[]{"rdf", "ttl"}, "RDF files (*.rdf,*.ttl)");
+        Filter FilterRDF = new Filter(new String[]{"rdf", "ttl", "html"}, "RDF files (*.rdf,*.ttl)");
         load(FilterRDF);
     }
 
@@ -1157,11 +1160,37 @@ public class MainFrame extends JFrame implements ActionListener {
         return logger;
     }
 
-    String readStyleSheet(String name){
-        String path = MainFrame.class.getClassLoader().getResource(STYLE).getPath()+"/";
+    String readStyleSheet2(String name){
+        String path  = getClass().getResource(STYLE).getPath();
         QueryLoad ql = QueryLoad.create();
         String style = ql.read(path + name);
         return style;
+    }
+    
+    String readStyleSheet(String name) throws LoadException, IOException {
+        InputStream stream = getClass().getResourceAsStream(name);
+        if (stream == null) {
+            throw new IOException(name);
+        }
+        
+        BufferedReader read = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder sb = new StringBuilder();
+        String str = null;
+        String NL = System.getProperty("line.separator");
+        
+        while (true) {
+            str = read.readLine();
+            if (str == null){
+                break;
+            }
+            else {
+                sb.append(str);
+                sb.append(NL);
+            }
+        }
+        
+        stream.close();
+        return sb.toString();
     }
     
     public String getDefaultStylesheet() {
@@ -1252,6 +1281,7 @@ public class MainFrame extends JFrame implements ActionListener {
         } else {
             coreseFrame = new MainFrame(aCapturer, null);
         }
+        coreseFrame.setStyleSheet();
         coreseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MyJPanelListener.listLoadedFiles.setCellRenderer(new MyCellRenderer());
 

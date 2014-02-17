@@ -197,15 +197,8 @@ public class TripleFormat extends RDFFormat {
 	}
 	
 	void uri(String label){
-		String qname = nsm.toPrefix(label, true);
-		if (qname.equals(label)){
-			sdisplay(OPEN);
-			sdisplay(label);
-			sdisplay(CLOSE);
-		}
-		else {
-			sdisplay(qname);
-		}
+            String str = nsm.toPrefixURI(label);
+            sdisplay(str);
 	}
 	
 	

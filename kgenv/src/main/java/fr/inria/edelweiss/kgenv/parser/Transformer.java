@@ -147,6 +147,11 @@ public class Transformer implements ExpType {
 			p.compile(pragma);
 		}
 		
+                if (ast.isDescribe()){
+                    // need to collect select * before compiling 
+                    ast.validate();
+                }
+                
 		// compile describe
 		ast.compile();
 		

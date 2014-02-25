@@ -27,6 +27,7 @@ public class Processor {
 
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
         static final String KGRAM = ExpType.KGRAM;
+        static final String STL   = ExpType.STL;
 	public static final String BOUND = "bound";
 	public static final String COUNT = "count";
 	public static final String LIST  = "list";
@@ -85,6 +86,21 @@ public class Processor {
 	static final String EVAL 		= KGRAM + "eval";
         static final String PROLOG 		= KGRAM + "prolog";
 	static final String KGPPRINT		= ExpType.KPREF + ":" + "pprint"; 
+        static final String STL_PPRINT		= NSManager.STL_PREF + ":" + "apply-templates"; 
+
+        static final String FOCUS_NODE              = STL + "getFocusNode";
+        static final String APPLY_TEMPLATES         = STL + "apply-templates";
+        static final String APPLY_TEMPLATES_WITH    = STL + "apply-templates-with";
+        static final String APPLY_ALL_TEMPLATES     = STL + "apply-all-templates";
+        static final String APPLY_ALL_TEMPLATES_WITH= STL + "apply-all-templates-with";
+        static final String CALL_TEMPLATE           = STL + "call-template";
+        static final String CALL_TEMPLATE_WITH      = STL + "call-template-with";
+	static final String STL_TURTLE              = STL + "turtle"; 
+	static final String STL_URI                 = STL + "uri"; 
+	static final String STL_URILITERAL          = STL + "uriLiteral"; 
+	static final String STL_PROLOG              = STL + "prolog"; 
+	static final String STL_INDENT              = STL + "indent"; 
+	static final String STL_LEVEL               = STL + "level"; 
 
 	static final String QNAME 	= KGRAM + "qname"; 
 	static final String TURTLE 	= KGRAM + "turtle"; 
@@ -375,6 +391,7 @@ public class Processor {
 		
 		defoper(WRITE, 	ExprType.WRITE);
 		defoper(QNAME, 	ExprType.QNAME);
+                
 		defoper(PPRINT, 	ExprType.PPRINT);
 		defoper(EVAL, 		ExprType.PPRINT);
 		defoper(PPRINTWITH, 	ExprType.PPRINTWITH);
@@ -382,7 +399,22 @@ public class Processor {
 		defoper(PPRINTALLWITH, 	ExprType.PPRINTALLWITH);
 		defoper(TEMPLATE, 	ExprType.TEMPLATE);
 		defoper(TEMPLATEWITH, 	ExprType.TEMPLATEWITH);
-		defoper(TURTLE, ExprType.TURTLE);
+		defoper(TURTLE,         ExprType.TURTLE);
+                
+                defoper(FOCUS_NODE, 	ExprType.FOCUS_NODE);
+                defoper(APPLY_TEMPLATES, 	ExprType.PPRINT);
+		defoper(APPLY_TEMPLATES_WITH, 	ExprType.PPRINTWITH);
+		defoper(APPLY_ALL_TEMPLATES, 	ExprType.PPRINTALL);
+		defoper(APPLY_ALL_TEMPLATES_WITH,ExprType.PPRINTALLWITH);
+		defoper(CALL_TEMPLATE,          ExprType.TEMPLATE);
+		defoper(CALL_TEMPLATE_WITH, 	ExprType.TEMPLATEWITH);
+		defoper(STL_TURTLE,             ExprType.TURTLE);
+                defoper(STL_URI,                ExprType.PPURI);
+                defoper(STL_PROLOG,             ExprType.PROLOG);
+		defoper(STL_INDENT,             ExprType.INDENT);
+		defoper(STL_LEVEL,              ExprType.LEVEL);
+		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
+
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);
 		defoper(PPURI, 	ExprType.PPURI);

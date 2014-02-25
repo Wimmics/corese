@@ -535,7 +535,7 @@ public class Eval implements ExpType, Plugin {
                 if (node != null) {
                     bind(qqNode, node);
                     if (debug) {
-                        logger.warn("Bind: " + qqNode + " = " + node);
+                        logger.debug("Bind: " + qqNode + " = " + node);
                     }
                 }
             }
@@ -1318,7 +1318,7 @@ public class Eval implements ExpType, Plugin {
 
                     if (env.push(m1, n)) {
 
-                        // indev of ?y in map2
+                        // index of ?y in map2
                         int nn = map2.find(n1, qn2);
 
                         if (nn >= 0 && nn < map2.size()) {
@@ -1353,7 +1353,109 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
     
-    int join(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n, boolean option){
+    
+     int join(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n, boolean option){
+        int backtrack = n-1;
+        Mapping ma1 = map1.get(0);
+        Mapping ma2 = map2.get(0);
+        Node q = null;
+        
+        // look if map1 and map2 share a variable q
+        for (Node q1 : ma1.getQueryNodes()){
+            for (Node q2 : ma2.getQueryNodes()){
+                if (q1.equals(q2)){
+                    q = q1;
+                    break;
+                }
+            }
+            if (q != null){
+                break;
+            }
+        }
+        
+         if (q == null) {
+             // no variable in common : simple cartesian product
+             backtrack = simpleJoin(p, gNode, stack, env, map1, map2, n, option); 
+         }
+         else {
+             // map1 and map2 share a variable q
+             // sort map2 on q
+             // enumerate map1
+             // retreive the index of value of q in map2 by dichotomy
+             map2.sort(q);
+
+             for (Mapping m1 : map1) {
+
+                 // value of q in map1
+                 Node n1 = m1.getNode(q);
+                 if (env.push(m1, n)) {
+                     
+                     if (n1 == null) {
+                         // enumerate all map2
+                         for (Mapping m2 : map2) {
+
+                             if (env.push(m2, n)) {
+                                 backtrack = eval(p, gNode, stack, n + 1, option);
+                                 env.pop(m2);
+                                 if (backtrack < n) {
+                                     return backtrack;
+                                 }
+                             }
+                         }
+                     }
+                     else {
+                         
+                         // first, try : n2 == null
+                         for (Mapping m2 : map2) {
+
+                             Node n2 = m2.getNode(q);
+                             if (n2 != null) {
+                                 break;
+                             }
+
+                             if (env.push(m2, n)) {
+                                 backtrack = eval(p, gNode, stack, n + 1, option);
+                                 env.pop(m2);
+                                 if (backtrack < n) {
+                                     return backtrack;
+                                 }
+                             }
+                         }
+
+                         // second try : n2 != null
+                         int nn = map2.find(n1, q);                        
+
+                         if (nn >= 0 && nn < map2.size()) {
+
+                             for (int i = nn; i < map2.size(); i++) {
+
+                                 // get value of q in map2
+                                 Mapping m2 = map2.get(i);
+                                 Node n2 = m2.getNode(q);
+
+                                 if (n2 == null || ! n1.equals(n2)) {
+                                     // as map2 is sorted, if ?x != ?y we can exit the loop
+                                     break;
+                                 } else if (env.push(m2, n)) {
+                                     backtrack = eval(p, gNode, stack, n + 1, option);
+                                     env.pop(m2);
+                                     if (backtrack < n) {
+                                         return backtrack;
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                     
+                     env.pop(m1);
+                 }
+             }
+         }
+         return backtrack;
+    }
+    
+    
+    int simpleJoin(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n, boolean option){
         int backtrack = n-1;
          for (Mapping m1 : map1) {
 
@@ -1377,7 +1479,7 @@ public class Eval implements ExpType, Plugin {
     }
     
     
-     private int join2(Producer p, Node gNode, Exp exp, Stack stack, int n, boolean option) {
+     private int oldJoin(Producer p, Node gNode, Exp exp, Stack stack, int n, boolean option) {
         int backtrack = n - 1;
         Memory env = memory;
         Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp);

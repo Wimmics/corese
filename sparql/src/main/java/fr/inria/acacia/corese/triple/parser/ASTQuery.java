@@ -224,8 +224,8 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	private static final String CONCAT 	= Processor.CONCAT;
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 		= Processor.IF;
-	private static final String FUNPPRINT 	= Processor.KGPPRINT;
-	private static final String TURTLE 	= Processor.TURTLE;
+	private static final String FUNPPRINT 	= Processor.STL_PPRINT;
+	private static final String TURTLE 	= Processor.STL_TURTLE;
 
 	private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, COALESCE, IF};
 

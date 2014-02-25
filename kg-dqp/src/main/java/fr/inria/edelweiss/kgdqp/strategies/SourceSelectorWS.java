@@ -50,9 +50,7 @@ public class SourceSelectorWS {
 
 //                String res = rp.getEndpoint().getEdges(query);
                 String res = rp.getEndpoint().query(query);
-                logger.debug("Remote ASK for "+edge.getEdgeNode().getLabel());
-                logger.debug(res);
-                if ((res == null) || (res.length() == 0)) {
+                if ((res == null) || (res.length() == 0) || (res.toLowerCase().contains("false"))) {
                     //update cache
                     rp.getCacheIndex().put(edge.getLabel(), false);
                     return false;
@@ -77,7 +75,7 @@ public class SourceSelectorWS {
             try {
 //                String res = rp.getEndpoint().getEdges(query);
                 String res = rp.getEndpoint().query(query);
-                if ((res == null) || (res.length() == 0)) {
+                if ((res == null) || (res.length() == 0) || (res.toLowerCase().contains("false"))) {
                     rp.getCacheIndex().put(predicate, false);
                     return false;
                 } else {

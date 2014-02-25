@@ -76,7 +76,7 @@ public class FedQueryingCLI {
             queryPath = cmd.getOptionValue("q");
         }
         if (cmd.hasOption("v")) {
-            logger.info("version 1.0.7");
+            logger.info("version 3.0.4-SNAPSHOT");
             System.exit(0);
         }
 

@@ -173,6 +173,7 @@ public interface ExprType {
 	public static int AGGAND 	= 233;
 	public static int PROLOG 	= 234;
 	public static int WRITE 	= 235;
+	public static int FOCUS_NODE 	= 236;
 
 
 	public static int ISSKOLEM 	= 240;

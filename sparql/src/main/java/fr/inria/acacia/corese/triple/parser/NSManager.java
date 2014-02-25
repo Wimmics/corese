@@ -39,12 +39,14 @@ public class NSManager
         public static final String OWL = RDFS.OWL;
         public static final String SPIN = "http://spinrdf.org/sp#";
         public static final String SQL  = "http://ns.inria.fr/ast/sql#";
+        private static final String STL = ExpType.STL;
 
 
 	static final String FPPP = "fp";
         public static final String PPN = ExpType.KGRAM + "pprinter/";
 	static final String PPP = "pp";
         private static final String SPIN_PREF = "sp";
+        public static final String STL_PREF = "stl";
 
 
 	/** prefix seed (ns1, ns2,...) */
@@ -169,6 +171,7 @@ public class NSManager
 		def.put(FPPN,  	   FPPP);
 		def.put(PPN,  	   PPP);
                 def.put(SPIN, SPIN_PREF);
+		def.put(STL, STL_PREF);
 
 	}
 	
@@ -485,6 +488,10 @@ public class NSManager
 	public int size(){
 		return tns.size();
 	}
+        
+        public boolean isUserDefine(){
+            return size() > def.size();
+        }
 	
 	
 	public String stripns(String name, String namespace, boolean refp){

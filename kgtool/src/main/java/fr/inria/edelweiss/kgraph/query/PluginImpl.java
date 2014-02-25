@@ -79,6 +79,9 @@ public class PluginImpl extends ProxyImpl {
 
             case PROLOG:
                 return prolog(env, p);
+                
+            case FOCUS_NODE:
+                return getFocusNode(env);
 
             case SIM:
                 Graph g = getGraph(p);
@@ -392,6 +395,14 @@ public class PluginImpl extends ProxyImpl {
         QueryLoad ql = QueryLoad.create();
         ql.write(dtfile.getLabel(), dt.getLabel());
         return dt;
+    }
+
+    private Object getFocusNode(Environment env) {
+        Node node = env.getNode(PPrinter.IN);
+        if (node == null){
+            return null;
+        }
+        return node.getValue();
     }
 
     class Table extends Hashtable<Integer, PTable> {

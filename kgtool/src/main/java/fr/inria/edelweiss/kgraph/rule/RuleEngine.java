@@ -66,7 +66,7 @@ public class RuleEngine implements Engine {
 		graph = g;
 	}
 	
-	void set(QueryProcess p){
+	public void set(QueryProcess p){
 		exec = p;
 	}
         

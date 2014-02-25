@@ -62,6 +62,10 @@ public class RemoteProducerWSImpl implements Producer {
         return provEnabled;
     }
 
+    public void setProvEnabled(boolean provEnabled) {
+        this.provEnabled = provEnabled;
+    }
+
     @Override
     public void init(int nbNodes, int nbEdges) {
     }
@@ -210,33 +214,39 @@ public class RemoteProducerWSImpl implements Producer {
                     System.out.println("Result:\n" + sparqlRes);                   
                 }
 
-                // count number of queries
-//                if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
-//                    Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
-//                    QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
-//                } else {
-//                    QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
-//                }
-                // count number of source access
-//                String endpoint = rp.getEndpoint();
-//                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
-//                    Long n = QueryProcessDQP.sourceCounter.get(endpoint);
-//                    QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
-//                } else {
-//                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
-//                }
+//                 count number of queries
+                if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+                    Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+                    QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+                } else {
+                    QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+                }
+//                 count number of source access
+                String endpoint = rp.getEndpoint();
+                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+                    Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+                    QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+                } else {
+                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+                }
                 if (sparqlRes != null) {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
 //                    l.load(is, ".ttl");
                     l.load(is);
                     logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
-//                    if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
-//                        Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
-//                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
-//                    } else {
-//                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
-//                    }
+                    if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+                        Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+                    } else {
+                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+                    }
+                    if (QueryProcessDQP.sourceVolumeCounter.containsKey(endpoint)) {
+                        Long n = QueryProcessDQP.sourceVolumeCounter.get(endpoint);
+                        QueryProcessDQP.sourceVolumeCounter.put(endpoint, n + (long) g.size());
+                    } else {
+                        QueryProcessDQP.sourceVolumeCounter.put(endpoint, (long) g.size());
+                    }
 
                     if (this.isProvEnabled()) {
                         this.annotateResultsWithProv(g, qEdge);
@@ -333,20 +343,20 @@ public class RemoteProducerWSImpl implements Producer {
         logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
 
         // count number of queries
-//        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
-//            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
-//            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
-//        } else {
-//            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
-//        }
+        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+        } else {
+            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+        }
         // count number of source access
-//        String endpoint = rp.getEndpoint();
-//        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
-//            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
-//            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
-//        } else {
-//            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
-//        }
+        String endpoint = rp.getEndpoint();
+        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+        } else {
+            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+        }
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
@@ -361,12 +371,18 @@ public class RemoteProducerWSImpl implements Producer {
 //                l.load(is, ".ttl");
                 l.load(is);
                 logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
-//                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
-//                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
-//                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
-//                } else {
-//                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
-//                }
+                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+                } else {
+                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+                }
+                if (QueryProcessDQP.sourceVolumeCounter.containsKey(endpoint)) {
+                    Long n = QueryProcessDQP.sourceVolumeCounter.get(endpoint);
+                    QueryProcessDQP.sourceVolumeCounter.put(endpoint, n + (long) g.size());
+                } else {
+                    QueryProcessDQP.sourceVolumeCounter.put(endpoint, (long) g.size());
+                }
                 if (this.isProvEnabled()) {
                     annotateResultsWithProv(g, qEdge);
                 }
@@ -484,20 +500,20 @@ public class RemoteProducerWSImpl implements Producer {
         Graph g = Graph.create();
 //        logger.debug("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
 
-//        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
-//            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
-//            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
-//        } else {
-//            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
-//        }
+        if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
+            Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
+            QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
+        } else {
+            QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
+        }
         // count number of source access
-//        String endpoint = rp.getEndpoint();
-//        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
-//            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
-//            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
-//        } else {
-//            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
-//        }
+        String endpoint = rp.getEndpoint();
+        if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+            Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+            QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+        } else {
+            QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+        }
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
@@ -512,12 +528,18 @@ public class RemoteProducerWSImpl implements Producer {
 //                l.load(is, ".ttl");
                 l.load(is);
                 logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms.");
-//                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
-//                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
-//                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
-//                } else {
-//                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
-//                }
+                if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
+                    Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
+                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
+                } else {
+                    QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
+                }
+                if (QueryProcessDQP.sourceVolumeCounter.containsKey(endpoint)) {
+                    Long n = QueryProcessDQP.sourceVolumeCounter.get(endpoint);
+                    QueryProcessDQP.sourceVolumeCounter.put(endpoint, n + (long) g.size());
+                } else {
+                    QueryProcessDQP.sourceVolumeCounter.put(endpoint, (long) g.size());
+                }
                 if (this.isProvEnabled()) {
                     annotateResultsWithProv(g, qEdge);
                 }
@@ -635,51 +657,50 @@ public class RemoteProducerWSImpl implements Producer {
     }
 
     private void annotateResultsWithProv(Graph g, Edge qEdge) {
-        if (this.isProvEnabled()) {
-            Iterator<Entity> it = g.getEdges().iterator();
+//        logger.info("Tracking provenance of " + qEdge.toString());
+        Iterator<Entity> it = g.getEdges().iterator();
 
-            // Annotate the invocation only once, Then iterate over edge results.
-            String preInsertProv = "PREFIX prov:<" + Util.provPrefix + "> insert data {\n"
-                    // Sparql processing activity 
-                    + " _:b1 rdf:type prov:Activity . \n"
-                    + " _:b1 prov:qualifiedAssociation _:b2 . \n"
-                    // Association to a software agent through a plan (i.e. a sparql query) 
-                    + " _:b2 rdf:type prov:Association . \n"
-                    + " _:b2 prov:hadPlan _:b3 . \n"
-                    + " _:b2 prov:agent <" + rp.getEndpoint() + "> . \n"
-                    // The plan corresponding to the "recipe" 
-                    + " _:b3 rdf:type prov:Plan . \n"
-                    + " _:b3 rdfs:comment \"" + Constant.addEscapes(qEdge.toString()) + "\". \n";
+        // Annotate the invocation only once, Then iterate over edge results.
+        String preInsertProv = "PREFIX prov:<" + Util.provPrefix + "> insert data {\n"
+                // Sparql processing activity 
+                + " _:b1 rdf:type prov:Activity . \n"
+                + " _:b1 prov:qualifiedAssociation _:b2 . \n"
+                // Association to a software agent through a plan (i.e. a sparql query) 
+                + " _:b2 rdf:type prov:Association . \n"
+                + " _:b2 prov:hadPlan _:b3 . \n"
+                + " _:b2 prov:agent <" + rp.getEndpoint() + "> . \n"
+                // The plan corresponding to the "recipe" 
+                + " _:b3 rdf:type prov:Plan . \n"
+                + " _:b3 rdfs:comment \"" + Constant.addEscapes(qEdge.toString()) + "\". \n";
 //                                + " _:b3 rdfs:comment \"" + rwSparql.replaceAll("\"", "'").replaceAll("\n", " ").replaceAll("\t", " ") + "\". \n";
 
-            while (it.hasNext()) {
-                Entity entity = it.next();
-                Edge e = entity.getEdge();
-                if (e != null) {
+        while (it.hasNext()) {
+            Entity entity = it.next();
+            Edge e = entity.getEdge();
+            if (e != null) {
                                 //TODO provenance for node result ; associated rwSparql ; associated endpoint
-                    //TODO TimeStamping
-                    //TODO duration ?
+                //TODO TimeStamping
+                //TODO duration ?
 
-                    // Resulting entity 
-                    String insertProv = preInsertProv + "[ rdf:type prov:Entity ; \n"
-                            + " prov:wasGeneratedBy _:b1 ; \n"
-                            + " rdf:type prov:Entity ; \n"
-                            + " prov:wasAttributedTo <" + rp.getEndpoint() + "> ; \n"
-                            + " rdf:predicate " + e.getEdgeNode().toString() + " ; \n"
-                            + " rdf:subject " + e.getNode(0).toString() + " ; \n"
-                            + " rdf:object " + e.getNode(1).toString() + " ; \n"
-                            + " rdfs:comment \"" + qEdge.toString() + "\" ] \n"
-                            + "}";
-                    try {
-                        logger.debug(insertProv);
-                        Graph provG = Graph.create();
-                        QueryProcess qp = QueryProcess.create(provG);
-                        qp.query(insertProv);
-                        entity.setProvenance(provG);
-                    } catch (EngineException ex) {
-                        logger.error("Error while inserting provenance:\n" + insertProv);
-                        ex.printStackTrace();
-                    }
+                // Resulting entity 
+                String insertProv = preInsertProv + "[ rdf:type prov:Entity ; \n"
+                        + " prov:wasGeneratedBy _:b1 ; \n"
+                        + " rdf:type prov:Entity ; \n"
+                        + " prov:wasAttributedTo <" + rp.getEndpoint() + "> ; \n"
+                        + " rdf:predicate " + e.getEdgeNode().toString() + " ; \n"
+                        + " rdf:subject " + e.getNode(0).toString() + " ; \n"
+                        + " rdf:object " + e.getNode(1).toString() + " ; \n"
+                        + " rdfs:comment \"" + qEdge.toString() + "\" ] \n"
+                        + "}";
+                try {
+//                    logger.info(insertProv);
+                    Graph provG = Graph.create();
+                    QueryProcess qp = QueryProcess.create(provG);
+                    qp.query(insertProv);
+                    entity.setProvenance(provG);
+                } catch (EngineException ex) {
+                    logger.error("Error while inserting provenance:\n" + insertProv);
+                    ex.printStackTrace();
                 }
             }
         }

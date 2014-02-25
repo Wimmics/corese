@@ -52,11 +52,12 @@ public class PPrinter {
     public static final String SPIN = PPNS + "spin";
     public static final String OWL = PPNS + "owl";
     public static final String TURTLE = PPNS + "turtle";
+    public static final String TABLE = PPNS + "table";
     public static final String TYPECHECK = PPNS + "typecheck";
     // default
     public static final String PPRINTER = TURTLE;
     private static final String OUT = ASTQuery.OUT;
-    private static final String IN = ASTQuery.IN;
+    public static final String IN = ASTQuery.IN;
     private static final String IN2 = ASTQuery.IN2;
     private static String NL = System.getProperty("line.separator");
     private static boolean isOptimizeDefault = false;
@@ -81,7 +82,8 @@ public class PPrinter {
     boolean isTurtle = false;
     int nbt = 0, max = 0;
     private static final String START = Exp.KGRAM + "start";
-    String start = START;
+    private static final String STL_START = Exp.STL + "start";
+    String start = STL_START;
     HashMap<Query, Integer> tcount;
     private boolean isHide = false;
     public boolean stat = !true;
@@ -316,7 +318,12 @@ public class PPrinter {
         }
 
         for (Query qq : list) {
-
+            
+            if (! nsm.isUserDefine()){
+                // PPrinter NSM is empty : borrow template NSM
+                setNSM(((ASTQuery) qq.getAST()).getNSM());
+            }
+            
             if (isDebug) {
                 qq.setDebug(true);
             }

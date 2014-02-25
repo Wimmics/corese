@@ -22,11 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author gaignard
  */
 public class Util {
-    
+
 //    public static boolean provEnabled = true;
     public static String provPrefix = "http://www.w3.org/ns/prov#";
 
-    
     // TODO test if EXISTS are included in OR or AND, needs recursive call
     // recursive removal of EXISTS (because it is not sufficient to know in that an edge exists in a single source) 
     public static List<Filter> getApplicableFilter(Environment env, Edge edge) {
@@ -112,7 +111,6 @@ public class Util {
             }
         }
 
-
         for (String var : varsFilter) {
             if (!varsTriple.contains(var)) {
                 return false;
@@ -124,14 +122,70 @@ public class Util {
     public static String prettyPrintCounter(ConcurrentHashMap<String, Long> map) {
         String res = "";
         Long sum = 0L;
-        res+=("=========\n\t");
+        res += ("=========\n\t");
         for (String key : map.keySet()) {
-            sum+=map.get(key);
-            res+=(key)+"\n\t";
-            res+=(map.get(key))+"\n";
-            res+=("--\n\t");
+            sum += map.get(key);
+            res += (key) + "\n\t";
+            res += (map.get(key)) + "\n";
+            res += ("--\n\t");
         }
-        res+=(">====  Sum = "+sum+"  =====\n");
+        res += (">====  Sum = " + sum + "  =====\n");
         return res;
+    }
+
+    public static String jsonDqpCost(ConcurrentHashMap<String, Long> qReqestsMap,
+            ConcurrentHashMap<String, Long> qResultsMap,
+            ConcurrentHashMap<String, Long> srcReqestsMap,
+            ConcurrentHashMap<String, Long> srcResultsMap) {
+
+        Long totalQRequestsCost = 0L;
+        Long totalQResultsCost = 0L;
+        Long totalSrcRequestsCost = 0L;
+        Long totalSrcResultsCost = 0L;
+
+        StringBuilder json = new StringBuilder();
+
+        json.append("{");
+        json.append(" \"queryCost\" : [ \n");
+
+        for (String key : qReqestsMap.keySet()) {
+//            Long nbRes = null;
+//            if (qResultsMap.get(key) == null) {
+//                nbRes = 0L;
+//            } else {
+//                nbRes = qResultsMap.get(key);
+//            }
+
+            json.append("{ \"query\" : \"" + key + "\", \"nbReq\" : \"" + qReqestsMap.get(key) + "\" , \"nbRes\" : \"" + qResultsMap.get(key) + "\" } ,\n");
+            totalQRequestsCost += qReqestsMap.get(key);
+            if (qResultsMap.get(key) != null) {
+                totalQResultsCost += qResultsMap.get(key);
+            }
+        }
+        if ((qReqestsMap.size() > 0) && (json.toString().contains(","))) {
+            json.deleteCharAt(json.lastIndexOf(","));
+        }
+        json.append("],\n");
+        json.append(" \"totalQueryReq\" : \"" + totalQRequestsCost + "\" , \n");
+        json.append(" \"totalQueryRes\" : \"" + totalQResultsCost + "\" , \n");
+
+        json.append(" \"sourceCost\" : [ \n");
+
+        for (String key : srcReqestsMap.keySet()) {
+            json.append("{ \"source\" : \"" + key + "\", \"nbReq\" : \"" + srcReqestsMap.get(key) + "\" , \"nbRes\" : \"" + srcResultsMap.get(key) + "\" } ,\n");
+            totalSrcRequestsCost += srcReqestsMap.get(key);
+            if (srcResultsMap.get(key) != null) {
+                totalSrcResultsCost += srcResultsMap.get(key);
+            }
+        }
+        if ((srcReqestsMap.size() > 0) && (json.toString().contains(","))) {
+            json.deleteCharAt(json.lastIndexOf(","));
+        }
+        json.append("], \n");
+        json.append(" \"totalSourceReq\" : \"" + totalSrcRequestsCost + "\" , \n");
+        json.append(" \"totalSourceRes\" : \"" + totalSrcResultsCost + "\"  \n");
+        json.append("}\n");
+
+        return json.toString();
     }
 }

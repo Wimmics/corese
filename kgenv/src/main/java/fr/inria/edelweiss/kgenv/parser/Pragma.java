@@ -27,6 +27,7 @@ import fr.inria.edelweiss.kgram.tool.Message;
  */
 public class Pragma  {
 	public static final String KG 		= ExpType.KGRAM;
+	public static final String STL 		= ExpType.STL;
 	// subject
 	public static final String SELF 	= KG + "kgram";
 	public static final String MATCH 	= KG + "match";
@@ -64,8 +65,10 @@ public class Pragma  {
 	public static final String CHECK	= KG + "check";
 	public static final String DETAIL	= KG + "detail";
 	public static final String PRIORITY	= KG + "priority";
+	public static final String STL_PRIORITY	= STL + "priority";
 	public static final String FILE		= KG + "file";
 	public static final String TEMPLATE	= KG + "template";
+	public static final String STL_TEMPLATE	= STL + "template";
 	public static final String NAME		= KG + "name";
 	public static final String SEPARATOR= KG + "separator";
 	public static final String TURTLE	= KG + "turtle";
@@ -208,11 +211,15 @@ public class Pragma  {
 				}
 				
 			}
-			else if (subject.equals(QUERY) || subject.equals(TEMPLATE)){
+			else if (subject.equals(QUERY) 
+                                || subject.equals(TEMPLATE)
+                                || subject.equals(STL_TEMPLATE)){
+                            
 				if (property.equals(CHECK)){
 					ast.setCheck(value(object));
 				}
-				else if (property.equals(PRIORITY)){					
+				else if (property.equals(PRIORITY)
+                                        || property.equals(STL_PRIORITY)){					
 					ast.setPriority(odt.intValue());
 				}
 			}			

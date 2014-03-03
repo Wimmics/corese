@@ -5,6 +5,7 @@ import static fr.inria.edelweiss.kgtool.print.JSONLDFormat.BRACE_RIGHT;
 import static fr.inria.edelweiss.kgtool.print.JSONLDFormat.OC_BRACE;
 import static fr.inria.edelweiss.kgtool.print.JSONLDFormat.OC_NOCOMMA;
 import static fr.inria.edelweiss.kgtool.print.JSONLDFormat.OC_NOKEY;
+import static fr.inria.edelweiss.kgtool.print.JSONLDFormat.OC_LIST;
 import static fr.inria.edelweiss.kgtool.print.JSONLDFormat.OC_NONE;
 import static fr.inria.edelweiss.kgtool.print.JSONLDFormat.OC_SBRACKET;
 import static fr.inria.edelweiss.kgtool.print.JSONLDFormat.SBRACKET_LEFT;
@@ -33,7 +34,7 @@ class JSONLDObject {
     private Object object;
     private int modularType;
 
-    private List<JSONLDObject> listOfObjects;
+    private List listOfObjects;
 
     public JSONLDObject(String key, Object object, int type) {
         this(key, object);
@@ -97,10 +98,10 @@ class JSONLDObject {
             listOfObjects = new ArrayList();
         }
 
-        if (jo instanceof JSONLDObject) {
-            listOfObjects.add((JSONLDObject) jo);
+        if (jo instanceof JSONLDObject || jo instanceof String) {
+            listOfObjects.add(jo);
         } else if (jo instanceof List) {
-            listOfObjects.addAll((List<JSONLDObject>) jo);
+            listOfObjects.addAll((List) jo);
         }
 
         this.setObject(listOfObjects);
@@ -120,9 +121,10 @@ class JSONLDObject {
 
         //1. add directly
         if (this.object instanceof String
+                //|| this.object instanceof Object
                 || this.object instanceof StringBuilder
                 || this.object instanceof JSONLDObject) {
-            sb.append(this.key).append(SP_COLON);
+            if(this.key !=null && !this.key.isEmpty()) sb.append(this.key).append(SP_COLON);
             sb.append(this.object).append(SP_COMMA).append(SP_NL);
 
             //2. add recursively 
@@ -145,6 +147,7 @@ class JSONLDObject {
                     open += BRACE_LEFT + SP_NL;
                     end = BRACE_RIGHT;
                     break;
+                case OC_LIST:
                 case OC_SBRACKET://@key[..]
                     if (!this.key.isEmpty()) {
                         open = this.key + SP_COLON;
@@ -166,7 +169,7 @@ class JSONLDObject {
                 if (modularType == OC_NONE) {
                     sb.append(obj);
                 } else {
-                    sb.append(indent(obj.toStringBuilder(), 1));
+                    sb.append(indent((obj).toStringBuilder(), 1));
                 }
             }
 

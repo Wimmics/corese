@@ -15,7 +15,10 @@ import static fr.inria.edelweiss.kgtool.print.RDFFormat.getAST;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -32,6 +35,7 @@ public class JSONLDFormat {
     public static final int OC_NOCOMMA = 11;//@key:{..}
     public static final int OC_SBRACKET = 20;//@key:[..],
     public static final int OC_NOKEY = 30;//{..},
+    public static final int OC_LIST = 31;//[..],
     public static final int OC_NONE = 40;//..
     public static final int OC_ONELINE = 41;//{..}
 
@@ -118,6 +122,7 @@ public class JSONLDFormat {
 
     /**
      * Get the top level object of JSON-LD
+     *
      * @return JSON object
      */
     public JSONLDObject getJsonLdObject() {
@@ -125,7 +130,7 @@ public class JSONLDFormat {
         if (graph == null && map == null) return new JSONLDObject();
 
         JSONLDObject topLevel = new JSONLDObject(OC_NOKEY);
-        
+
         JSONLDObject defaultGraph = null;
         List<JSONLDObject> otherGraphs = new ArrayList<JSONLDObject>();
 
@@ -191,8 +196,8 @@ public class JSONLDFormat {
     //if gNode == null, get all nodes 
     private JSONLDObject graph(Node gNode) {
         JSONLDObject jGraph = new JSONLDObject(KW_GRAPH, OC_SBRACKET);
-        
-        Iterable<Entity> allNode = gNode == null ? graph.getAllNodes(): graph.getNodes(gNode);
+
+        Iterable<Entity> allNode = gNode == null ? graph.getAllNodes() : graph.getNodes(gNode);
 
         //iterate each node and add to this graph
         for (Entity ent : allNode) {
@@ -208,9 +213,9 @@ public class JSONLDFormat {
     //compose one object of jsonld from graph
     private JSONLDObject jsonldObject(Node gNode, Node node) {
         if (size(graph.getNodeEdges(gNode, node)) < 1) return null;
-        
+
         JSONLDObject jo = new JSONLDObject(OC_BRACE);
-        
+
         //1. add node id
         jo.addObject(subjectId(node));
 
@@ -227,7 +232,7 @@ public class JSONLDFormat {
         IDatatype dt = (IDatatype) node.getValue();
         String subject = dt.isBlank() ? dt.getLabel() : nsm.toPrefixURI(dt.getLabel());
         subject = filter(subject);
-        
+
         //repalce rdf:type with @type
         if (RDF.TYPE.equals(dt.getLabel())) {
             subject = KW_TYPE;
@@ -236,11 +241,11 @@ public class JSONLDFormat {
         jo.setObject(quote(subject));
         return jo;
     }
-    
+
     //get the list of proerperties and objects according to given node subject id
     private List<JSONLDObject> propertyAndObject(Node gNode, Node node) {
-        CopyOnWriteArrayList<JSONLDObject> list = new CopyOnWriteArrayList<JSONLDObject>();
-
+        HashMap<String, List<Object>> map = new HashMap<String, List<Object>>();
+        
         for (Entity ent : graph.getNodeEdges(gNode, node)) {
             if (ent == null) continue;
 
@@ -277,57 +282,55 @@ public class JSONLDFormat {
                     label = nsm.toPrefixURI(dt.getLabel());
                 }
                 label = quote(filter(label));
-                
+
                 //add key word @id to these nodes expect those nodes whose 
                 //properties are @type
                 if (!type) {
                     JSONLDObject temp = new JSONLDObject(OC_NOCOMMA);
                     temp.addObject(new JSONLDObject(KW_ID, label));
                     obj = temp;
-                }else{
-                   obj = label; 
+                } else {
+                    obj = label;
                 }
             }
-            list.add(new JSONLDObject(pred, obj));
-        }
-
-        return merge(list);
-    }
-
-    private List merge(CopyOnWriteArrayList<JSONLDObject> list) {
-        List newList = new ArrayList();
-        for (JSONLDObject jo : list) {
-            //more than one nodes share same predicate
-            newList.add(filterObject(list, jo));
-        }
-        return newList;
-    }
-
-    private JSONLDObject filterObject(List<JSONLDObject> list, JSONLDObject obj) {
-         
-        List<JSONLDObject> selected = new ArrayList();
-        for (JSONLDObject jo : list) {
-            if (jo.getKey().equals(obj.getKey())) {
-                selected.add(jo);
-                list.remove(jo);
+            
+            //add to hash map
+            if(map.containsKey(pred)){
+                map.get(pred).add(obj);
+            }else{
+                List ls = new ArrayList();
+                ls.add(obj);
+                map.put(pred, ls);
             }
         }
-        
-        JSONLDObject merge=null;
-        if(selected.size()>1){
-            merge = new JSONLDObject();
-            merge.setKey(selected.get(0).getKey());
-            merge.setModularType(OC_SBRACKET);
-            for (JSONLDObject jo : selected) {
-                merge.addObject(jo.getObject());
-            }
-        }else if(selected.size()==1){//only one object, nonthing changes
-            merge = selected.get(0);
-        }else{
-            System.out.println("stop here");
-        }
-        return merge;
+
+        return toList(map);
     }
+
+    //process list
+    //merge several triples that share the same predicates into a list
+    //for example a b c; a b d;=>>a b [c,d]
+    private List toList(HashMap<String, List<Object>> map) {
+        List<JSONLDObject> list = new ArrayList<JSONLDObject>();
+
+        for (Map.Entry<String, List<Object>> entry : map.entrySet()) {
+            String key = entry.getKey();
+            List<Object> ls = entry.getValue();
+            JSONLDObject jo = new JSONLDObject(key);
+            if (ls.size() == 1) {
+                jo.setObject(ls.get(0));
+            } else {
+                for (Object obj : ls) {
+                   jo.addObject(new JSONLDObject("", obj));
+                }
+                jo.setModularType(OC_SBRACKET);
+            }
+            list.add(jo);
+        }
+
+        return list;
+    }
+  
 
     //Expand the informaion of literal:@value, @type or @value, @langauge
     private JSONLDObject addLiteralInfo(IDatatype literal) {
@@ -382,8 +385,6 @@ public class JSONLDFormat {
         return label;
     }
 
-    
-
     /**
      * write Json-ld output to file
      *
@@ -425,5 +426,5 @@ public class JSONLDFormat {
             append(error, "");
         }
         return error;
-    }    
+    }
 }

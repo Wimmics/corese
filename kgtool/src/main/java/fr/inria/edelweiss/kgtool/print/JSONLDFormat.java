@@ -16,11 +16,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Pretty printing for JSON-LD format
@@ -127,7 +125,9 @@ public class JSONLDFormat {
      */
     public JSONLDObject getJsonLdObject() {
         //****1 check condition
-        if (graph == null && map == null) return new JSONLDObject();
+        if (graph == null && map == null) {
+            return new JSONLDObject();
+        }
 
         JSONLDObject topLevel = new JSONLDObject(OC_NOKEY);
 
@@ -144,12 +144,15 @@ public class JSONLDFormat {
                     defaultGraph = graph(gNode);
                 } else {
                     //2.2.0 get the info of graph
-                    JSONLDObject graphInfo = jsonldObject(gNode, gNode);
-                    graphInfo.setModularType(OC_NONE);
+                    JSONLDObject graphInfo = jsonldObject(gNode, gNode, true);
 
                     JSONLDObject other = new JSONLDObject(OC_BRACE);
                     //2.2.1 add graph info
-                    other.addObject(graphInfo);
+                    if (graphInfo != null) {
+                        graphInfo.setModularType(OC_NONE);
+                        other.addObject(graphInfo);
+                    }
+
                     //2.2.2 add graph
                     other.addObject(graph(gNode));
 
@@ -158,7 +161,9 @@ public class JSONLDFormat {
                 }
             }
         }
-        if (defaultGraph == null)  defaultGraph = new JSONLDObject(KW_GRAPH);
+        if (defaultGraph == null) {
+            defaultGraph = new JSONLDObject(KW_GRAPH);
+        }
 
         //****3. add the other graphs to default graph
         defaultGraph.addObject(otherGraphs);
@@ -202,7 +207,7 @@ public class JSONLDFormat {
         //iterate each node and add to this graph
         for (Entity ent : allNode) {
             Node node = ent.getNode();
-            JSONLDObject jo = jsonldObject(gNode, node);
+            JSONLDObject jo = jsonldObject(gNode, node, false);
             if (jo != null) {
                 jGraph.addObject(jo);
             }
@@ -211,9 +216,10 @@ public class JSONLDFormat {
     }
 
     //compose one object of jsonld from graph
-    private JSONLDObject jsonldObject(Node gNode, Node node) {
-        if (size(graph.getNodeEdges(gNode, node)) < 1) return null;
-
+    private JSONLDObject jsonldObject(Node gNode, Node node, boolean graphInfo) {
+        if (!graphInfo && size(graph.getNodeEdges(gNode, node)) < 1) {
+            return null;
+        }
         JSONLDObject jo = new JSONLDObject(OC_BRACE);
 
         //1. add node id
@@ -245,9 +251,11 @@ public class JSONLDFormat {
     //get the list of proerperties and objects according to given node subject id
     private List<JSONLDObject> propertyAndObject(Node gNode, Node node) {
         HashMap<String, List<Object>> map = new HashMap<String, List<Object>>();
-        
+
         for (Entity ent : graph.getNodeEdges(gNode, node)) {
-            if (ent == null) continue;
+            if (ent == null) {
+                continue;
+            }
 
             Edge edge = ent.getEdge();
 
@@ -262,7 +270,7 @@ public class JSONLDFormat {
                 pred = quote(filter(pred));
             }
 
-            Object obj=null;
+            Object obj = null;
 
             //2. get object
             IDatatype dt = (IDatatype) edge.getNode(1).getValue();
@@ -293,11 +301,11 @@ public class JSONLDFormat {
                     obj = label;
                 }
             }
-            
+
             //add to hash map
-            if(map.containsKey(pred)){
+            if (map.containsKey(pred)) {
                 map.get(pred).add(obj);
-            }else{
+            } else {
                 List ls = new ArrayList();
                 ls.add(obj);
                 map.put(pred, ls);
@@ -321,7 +329,7 @@ public class JSONLDFormat {
                 jo.setObject(ls.get(0));
             } else {
                 for (Object obj : ls) {
-                   jo.addObject(new JSONLDObject("", obj));
+                    jo.addObject(new JSONLDObject("", obj));
                 }
                 jo.setModularType(OC_SBRACKET);
             }
@@ -330,7 +338,6 @@ public class JSONLDFormat {
 
         return list;
     }
-  
 
     //Expand the informaion of literal:@value, @type or @value, @langauge
     private JSONLDObject addLiteralInfo(IDatatype literal) {
@@ -405,7 +412,11 @@ public class JSONLDFormat {
         StringBuilder error = new StringBuilder();
         boolean bAstError = ast != null && ast.getErrors() != null;
         boolean bQueryError = query != null && query.getErrors() != null;
+        boolean bNoGraph = graph == null || size(graph.getGraphNodes()) == 0;
 
+        if (bNoGraph) {
+            append(error, "No graph contained in the results..");
+        }
         if (bAstError || bQueryError) {
 
             if (ast.getText() != null) {

@@ -12,21 +12,17 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
-import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.ws.rs.core.MultivaluedMap;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -35,7 +31,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandler;
@@ -80,10 +75,27 @@ public class MinusNotExistsTest {
 
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
         
+         File targetDir = new File("./target");
+        String jarName = "";
+        if (targetDir.isDirectory()) {
+            File[] files = targetDir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.endsWith("jar-with-dependencies.jar");
+                }
+            });
+            if (files.length == 1) {
+                jarName = files[0].getName();
+            } else {
+                logger.error("No jar file for corese-server in the target directory!");
+            }
+        }
+        
+        
         /////////////// First server in another JVM (through ProcessBuilder)
         ProcessBuilder pb = new ProcessBuilder("java", "-Xmx512m", "-cp",
 //                "/Users/gaignard/devKgram/kgserver/target/kgserver-1.0.7-jar-with-dependencies.jar",
-                "./target/kgserver-1.0.7-jar-with-dependencies.jar",
+                "./target/"+jarName,
                 "fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer", "-p", String.valueOf(port1), "&");
         
         pb.redirectErrorStream(true);

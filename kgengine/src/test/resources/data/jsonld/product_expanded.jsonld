@@ -1,0 +1,61 @@
+[
+  {
+    "@id": "http://example.org/cars/for-sale#tesla",
+    "@type": [
+      "http://purl.org/goodrelations/v1#Offering"
+    ],
+    "http://purl.org/goodrelations/v1#acceptedPaymentMethods": [
+      {
+        "@id": "http://purl.org/goodrelations/v1#Cash"
+      }
+    ],
+    "http://purl.org/goodrelations/v1#description": [
+      {
+        "@value": "Need to sell fast and furiously"
+      }
+    ],
+    "http://purl.org/goodrelations/v1#hasBusinessFunction": [
+      {
+        "@id": "http://purl.org/goodrelations/v1#Sell"
+      }
+    ],
+    "http://purl.org/goodrelations/v1#hasPriceSpecification": [
+      {
+        "http://purl.org/goodrelations/v1#hasCurrency": [
+          {
+            "@value": "USD"
+          }
+        ],
+        "http://purl.org/goodrelations/v1#hasCurrencyValue": [
+          {
+            "@type": "http://www.w3.org/2001/XMLSchema#float",
+            "@value": "85000"
+          }
+        ]
+      }
+    ],
+    "http://purl.org/goodrelations/v1#includes": [
+      {
+        "@type": [
+          "http://purl.org/goodrelations/v1#Individual",
+          "http://www.productontology.org/id/Vehicle"
+        ],
+        "http://xmlns.com/foaf/0.1/page": [
+          {
+            "@id": "http://www.teslamotors.com/roadster"
+          }
+        ],
+        "http://purl.org/goodrelations/v1#name": [
+          {
+            "@value": "Tesla Roadster"
+          }
+        ]
+      }
+    ],
+    "http://purl.org/goodrelations/v1#name": [
+      {
+        "@value": "Used Tesla Roadster"
+      }
+    ]
+  }
+]

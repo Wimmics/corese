@@ -184,6 +184,36 @@ public class JsonldParserTest {
     private void loadJsonld(String fileUri) throws LoadException {
         graph = Graph.create(true);
         Load ld = Load.create(graph);
-        ld.load(fileUri, null, null);
+        ld.loadWE(fileUri);
+    }
+
+    @Test
+    public void testLoadExpanded() {
+        String file = ROOT + "product_expanded.jsonld";
+        try {
+            loadJsonld(file);
+        } catch (LoadException ex) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testLoadFlatened() {
+        String file = ROOT + "product_flattened.jsonld";
+        try {
+            loadJsonld(file);
+        } catch (LoadException ex) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testLoadFramed() {
+        String file = ROOT + "product_framed.jsonld";
+        try {
+            loadJsonld(file);
+        } catch (LoadException ex) {
+            fail();
+        }
     }
 }

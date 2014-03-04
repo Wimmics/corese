@@ -39,7 +39,7 @@ public class CentralizedInferrencing {
 
     static Logger logger = Logger.getLogger(CentralizedInferrencing.class);
 
-    static final String pertinentRulesQuery = "prefix sp: <http://spinrdf.org/sp#>\n"
+    static final String pertinentRulesQueryOumy = "prefix sp: <http://spinrdf.org/sp#>\n"
             + "Select   DISTINCT  (kg:pprintWith(pp:spin, ?r) as ?res) \n"
             + "     WHERE{ \n"
             + "   ?a a sp:Construct\n"
@@ -70,6 +70,97 @@ public class CentralizedInferrencing {
             + "  Filter ( ?r = ?a || ?r = ?a2)\n"
             + "}";
 
+    static final String pertinentRulesQuery = "prefix sp: <http://spinrdf.org/sp#>\n"
+            + "Select DISTINCT  (kg:pprintWith(pp:spin, ?r) as ?res)\n"
+            + "WHERE {\n"
+            + "{\n"
+            + "# URI in ontology from owl: and rdfs:\n"
+            + "  SELECT Distinct ?resource\n"
+            + "       WHERE {    \n"
+            + "         graph ?g {\n"
+            + "         ?o a owl:Ontology\n"
+            + "	  { ?resource ?p ?y} union {?x ?resource ?y} union {?x ?p ?resource}\n"
+            + "	    filter (\n"
+            + "	    (?resource != owl:members)\n"
+            + "	    && (\n"
+            + "	    ?resource in (rdf:Property)\n"
+            + "	     || strstarts(?resource, owl:) \n"
+            + "	     || strstarts(?resource, rdfs:))\n"
+            + "	    )                    \n"
+            + "	  }\n"
+            + "#\n"
+            + "# filter(strcontains(?g, \"onto\"))\n"
+            + "#\n"
+            + "         }\n"
+            + "}\n"
+            + "\n"
+            + "?a a sp:Construct\n"
+            + "          ?a sp:where ?m\n"
+            + "          ?m (!sp:nil)+ ?x\n"
+            + "          ?x ?p ?resource\n"
+            + "VALUES ?p { sp:subject sp:predicate sp:object }\n"
+            + "          \n"
+            + "OPTIONAL{                    \n"
+            + "          ?a2 a sp:Construct\n"
+            + "          ?a2 sp:where ?w\n"
+            + "          \n"
+            + "          filter not exists {\n"
+            + "	    ?w (!sp:nil)+ ?uri .\n"
+            + "	    \n"
+            + "	    filter(isURI(?uri)) \n"
+            + "	    filter (\n"
+            + "	    (?uri != owl:members) && (?uri != owl:sameAs)\n"
+            + "	    && (\n"
+            + "	    ?uri in (rdf:Property)\n"
+            + "	     || strstarts(?uri, owl:) \n"
+            + "	     || strstarts(?uri, rdfs:))\n"
+            + "	    )     \n"
+            + "	    \n"
+            + "	    filter not exists {\n"
+            + "		    graph ?g {\n"
+            + "		?o a owl:Ontology\n"
+            + "		{ ?uri ?p ?y} union {?x ?uri ?y} union {?x ?p ?uri}	                  \n"
+            + "		}\n"
+            + "# \n"
+            + "# filter(strcontains(?g, \"onto\"))\n"
+            + "#		\n"
+            + "         }\n"
+            + "	      }\n"
+            + "                      \n"
+            + "           \n"
+            + "	  ?a sp:templates ?t\n"
+            + "          ?t (!sp:nil)+ ?t1 .          \n"
+            + "          ?t1 sp:subject ?s1 ;\n"
+            + "	    sp:object ?o1 ;\n"
+            + "	    sp:predicate ?p1 .\n"
+            + "	    \n"
+            + "	    optional { ?s1 sp:varName ?ns1 }\n"
+            + "            optional { ?p1 sp:varName ?np1 }\n"
+            + "            optional { ?o1 sp:varName ?no1 } \n"
+            + "          \n"
+            + "          ?w (!sp:nil)+ ?t2 .\n"
+            + "          \n"
+            + "          ?t2 sp:subject ?s2 ;\n"
+            + "	    sp:object ?o2 ;\n"
+            + "	    sp:predicate ?p2 .\n"
+            + "	    \n"
+            + "	  optional { ?s2 sp:varName ?ns2 }\n"
+            + "          optional { ?p2 sp:varName ?np2 }\n"
+            + "          optional { ?o2 sp:varName ?no2 }\n"
+            + "          \n"
+            + "	  filter(?s1 = ?s2 || bound(?ns1) || bound (?ns2))\n"
+            + "	  filter(?p1 = ?p2 || bound(?np1) || bound (?np2))\n"
+            + "	  filter(?o1 = ?o2 || bound(?no1) || bound (?no2))\n"
+            + "	  	             \n"
+            + "           }\n"
+            + "\n"
+            + "?r a sp:Construct\n"
+            + "Filter ( ?r = ?a || ?r = ?a2)\n"
+            + "}\n"
+            + "pragma {kg:path kg:list true}";
+
+   
+    
     static final String allRulesQuery = "prefix sp: <http://spinrdf.org/sp#>\n"
             + "Select   DISTINCT  (kg:pprintWith(pp:spin, ?r) as ?res) \n"
             + "     WHERE{ \n"
@@ -203,7 +294,10 @@ public class CentralizedInferrencing {
             IDatatype dt = (IDatatype) map.getValue("?res");
             String rule = dt.getLabel();
             //loading rule in the rule engine
-//            logger.info("Adding rule : " + rule);
+//            logger.info("Adding rule : ");
+//            System.out.println("-------");
+//            System.out.println(rule);
+//            System.out.println("");
 //            if (! rule.toLowerCase().contains("sameas")) {
             applicableRules.add(rule);
             ruleEngine.addRule(rule);
@@ -234,44 +328,9 @@ public class CentralizedInferrencing {
         logger.info("Federated graph size : " + graph.size());
 //        logger.info(Util.jsonDqpCost(QueryProcessDQP.queryCounter, QueryProcessDQP.queryVolumeCounter, QueryProcessDQP.sourceCounter, QueryProcessDQP.sourceVolumeCounter));
 
-        TripleFormat f = TripleFormat.create(graph, true);
-        f.write("/tmp/gAll.ttl");
+//        TripleFormat f = TripleFormat.create(graph, true);
+//        f.write("/tmp/gAll.ttl");
 
-        ///////////// Query file processing
-//        StringBuffer fileData = new StringBuffer(1000);
-//        BufferedReader reader = null;
-//        try {
-//            reader = new BufferedReader(new FileReader(queryPath));
-//        } catch (FileNotFoundException ex) {
-//             logger.error("Query file "+queryPath+" not found !");
-//             System.exit(1);
-//        }
-//        char[] buf = new char[1024];
-//        int numRead = 0;
-//        try {
-//            while ((numRead = reader.read(buf)) != -1) {
-//                String readData = String.valueOf(buf, 0, numRead);
-//                fileData.append(readData);
-//                buf = new char[1024];
-//            }
-//            reader.close();
-//        } catch (IOException ex) {
-//           logger.error("Error while reading query file "+queryPath);
-//           System.exit(1);
-//        }
-//
-//        String sparqlQuery = fileData.toString();
-//
-//        Query q = exec.compile(sparqlQuery,null);
-//        System.out.println(q);
-//        
-//        StopWatch sw = new StopWatch();
-//        sw.start();
-//        Mappings map = exec.query(sparqlQuery);
-//        int dqpSize = map.size();
-//        System.out.println("--------");
-//        long time = sw.getTime();
-//        System.out.println(time + " " + dqpSize);
     }
 }
 

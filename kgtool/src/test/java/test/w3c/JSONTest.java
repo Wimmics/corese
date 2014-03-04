@@ -16,10 +16,10 @@ import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import java.io.InputStream;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -56,14 +56,14 @@ public class JSONTest {
         String query = "SELECT * WHERE {?x ?p ?y}";
         QueryProcess qp = QueryProcess.create(g);
         Mappings maps = qp.query(query);
-
+        
         String mapsProvJson = "{ \"mappings\" : "
                 + JSONFormat.create(maps).toString()
                 + " , "
                 + "\"provenance\" : "
                 + JSOND3Format.create(g).toString()
                 + " }";
-        
-        assertEquals(3003, mapsProvJson.length());
+
+        assertEquals(3005, mapsProvJson.length());
     }
 }

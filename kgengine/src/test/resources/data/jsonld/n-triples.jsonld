@@ -1,0 +1,353 @@
+{
+  "@graph": [
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/twitter.com/kidehen",
+      "@type": [
+        "http://rdfs.org/sioc/ns#User",
+        "http://xmlns.com/foaf/0.1/OnlineAccount"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "Twitter",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://twitter.com/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#cert217",
+      "@type": "http://www.w3.org/ns/auth/cert#RSAPublicKey",
+      "http://www.w3.org/ns/auth/cert#exponent": {
+        "@type": "http://www.w3.org/2001/XMLSchema#int",
+        "@value": "65537"
+      },
+      "http://www.w3.org/ns/auth/cert#modulus": {
+        "@type": "http://www.w3.org/2001/XMLSchema#hexBinary",
+        "@value": "bf9e18e818a9b94b34683ef9d685d69422f03cb5a3c154ed90548bb8468ed8334b1bba7b303404950c885f75eb7650ff2167d9bafb0858cbf93b0a41557126fa0d671e9f9a333c7fac88281d5b7c8420a5a5d902d0984462a94df4f73c244a88340511dc38bfb2e58d6634980a156ba65cd2211175b1ea8acbd03c4b2fddf4a5"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#cert216",
+      "@type": "http://www.w3.org/ns/auth/cert#RSAPublicKey",
+      "http://www.w3.org/ns/auth/cert#exponent": {
+        "@type": "http://www.w3.org/2001/XMLSchema#int",
+        "@value": "65537"
+      },
+      "http://www.w3.org/ns/auth/cert#modulus": {
+        "@type": "http://www.w3.org/2001/XMLSchema#hexBinary",
+        "@value": "adc1c35a9004d748e5edca3e4e58ad6dd65220a412bed34d850da4fc7a93036da4e1e6647e04ee0e5a09ce373d0ef1fc393350a280db29d108ebbf7f6103b5927cd70ffe89f586bf60e810dc5f1107ab9baedf71e17a648f24b88839dc1d7926fb6cbafd94027709e956284f70071229669f02d31eabf6ef9eb1744327f2bd77f5cb9026839005c25664c9b8f693ea0e819f21822559fb42b5f381b8e4301c814e23c2b6c9160908a4776c1d5f8519d325eb075a67b8815f52c09189c250158d41a956d0cf799b1f79e3713f77bbd6750e456920db3866998529240dc00a55d94e98a02aadb34aaf6ed8003d055e83d652d5f6736698d07b8a64c77bad13b661"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/services/user",
+      "@type": "http://rdfs.org/sioc/services#Services",
+      "http://rdfs.org/sioc/services#services_of": {
+        "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#this"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/www.linkedin.com/kidehen",
+      "@type": [
+        "http://xmlns.com/foaf/0.1/OnlineAccount",
+        "http://rdfs.org/sioc/ns#User"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "LinkedIn",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://www.linkedin.com/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/picasaweb.google.com/kidehen",
+      "@type": [
+        "http://rdfs.org/sioc/ns#User",
+        "http://xmlns.com/foaf/0.1/OnlineAccount"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "Picasa Web Albums",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://picasaweb.google.com/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/www.last.fm/user/kidehen",
+      "@type": [
+        "http://rdfs.org/sioc/ns#User",
+        "http://xmlns.com/foaf/0.1/OnlineAccount"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "Last.fm",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://www.last.fm/user/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/KingsleyUyiIdehen#this",
+      "@type": [
+        "http://rdfs.org/sioc/ns#User",
+        "http://xmlns.com/foaf/0.1/OnlineAccount"
+      ]
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/bitcoin/162953sKBVgL7KPbThyzZWdfM7P1JsBqHB",
+      "@type": [
+        "http://xmlns.com/foaf/0.1/OnlineAccount",
+        "http://rdfs.org/sioc/ns#User"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "Bitcoin (http://bitcoin.org)",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "bitcoin:162953sKBVgL7KPbThyzZWdfM7P1JsBqHB"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/www.openlinksw.com/blog/~kidehen",
+      "@type": [
+        "http://xmlns.com/foaf/0.1/OnlineAccount",
+        "http://rdfs.org/sioc/ns#User"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "Blog",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://www.openlinksw.com/blog/~kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/twitpic.com/photos/kidehen",
+      "@type": [
+        "http://xmlns.com/foaf/0.1/OnlineAccount",
+        "http://rdfs.org/sioc/ns#User"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "Twitpic",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://twitpic.com/photos/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#org",
+      "@type": "http://xmlns.com/foaf/0.1/Organization",
+      "http://purl.org/dc/elements/1.1/title": "OpenLink Software",
+      "http://xmlns.com/foaf/0.1/homepage": {
+        "@id": "http://www.openlinksw.com"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/www.youtube.com/kidehen",
+      "@type": [
+        "http://rdfs.org/sioc/ns#User",
+        "http://xmlns.com/foaf/0.1/OnlineAccount"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "YouTube",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://www.youtube.com/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#cert226",
+      "@type": "http://www.w3.org/ns/auth/cert#RSAPublicKey",
+      "http://www.w3.org/ns/auth/cert#exponent": {
+        "@type": "http://www.w3.org/2001/XMLSchema#int",
+        "@value": "65537"
+      },
+      "http://www.w3.org/ns/auth/cert#modulus": {
+        "@type": "http://www.w3.org/2001/XMLSchema#hexBinary",
+        "@value": "a8cb1f46026ce187db957de27379bf9cc35e5b63e539ad941bf229e4f673d6f4cd6dda5eefba6d5c580384f17eb83c8b89307aa17316a386dace491486e700fe22025669bc497d9edef2b64e113eeb2c9e863245481200ba3ee1d159775e42e04a39845a0fe00c372e7e3d4f0dad87307692e6f7057bf72b1f3fa7222f45e6438c705164e50fd5aea3a42809c99f6901aa5ddb3310e909e7295f4c08bf00acddb1e4282c6d179d3da93488beffd1df419a30c1ecb02bd0c85fc47dbf67633b54100fafa67d61f447eb3afcc3fb0b2e5ff373bfcc25fcfeab43686ae21b88e31cd71a5135fa2bff39403a4e3d563882f007b128abb555bc698e5167bb99a9dfa3"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/www.slideshare.net/kidehen",
+      "@type": [
+        "http://rdfs.org/sioc/ns#User",
+        "http://xmlns.com/foaf/0.1/OnlineAccount"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "SlideShare",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://www.slideshare.net/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/person/mitache#org",
+      "@type": "http://xmlns.com/foaf/0.1/Organization",
+      "http://purl.org/dc/elements/1.1/title": "OpenLink Software Ltd.",
+      "http://xmlns.com/foaf/0.1/homepage": {
+        "@id": "http://www.openlinksw.com"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#this",
+      "@type": "http://xmlns.com/foaf/0.1/Person",
+      "http://purl.org/net/pingback/service": {
+        "@id": "http://id.myopenlink.net/semping"
+      },
+      "http://purl.org/net/pingback/to": {
+        "@id": "http://id.myopenlink.net/semping/rest"
+      },
+      "http://rdfs.org/sioc/services#has_services": {
+        "@id": "http://id.myopenlink.net/dataspace/services/user"
+      },
+      "http://www.w3.org/2000/01/rdf-schema#seeAlso": {
+        "@id": "https://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen"
+      },
+      "http://www.w3.org/2001/vcard-rdf/3.0#ADR": {
+        "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#addr"
+      },
+      "http://www.w3.org/2002/07/owl#sameAs": [
+        {
+          "@id": "acct:kidehen@kingsley.idehen.net"
+        },
+        {
+          "@id": "acct:kidehen@openlinksw.com"
+        },
+        {
+          "@id": "https://www.googleapis.com/buzz/v1/peo...740508618350/@self?alt=json%26pp=1#this"
+        },
+        {
+          "@id": "http://graph.facebook.com/kidehen#this"
+        },
+        {
+          "@id": "http://kingsley.idehen.name/dataspace/person/kidehen#this"
+        },
+        {
+          "@id": "http://kingsley.idehen.net/dataspace/person/kidehen#this"
+        },
+        {
+          "@id": "acct:kidehen@id.myopenlink.net"
+        },
+        {
+          "@id": "http://uriburner.com/about/id/entity/http/twitter.com/kidehen"
+        },
+        {
+          "@id": "http://uriburner.com/about/id/entity/https/plus.google.com/112399767740508618350"
+        }
+      ],
+      "http://www.w3.org/ns/auth/cert#key": [
+        {
+          "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#cert226"
+        },
+        {
+          "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#cert216"
+        },
+        {
+          "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#cert217"
+        }
+      ],
+      "http://xmlns.com/foaf/0.1/depiction": {
+        "@id": "http://id.myopenlink.net/home/KingsleyUyiIdehen/wa/images/kingsley_idehen-150x150.png"
+      },
+      "http://xmlns.com/foaf/0.1/family_name": "Idehen",
+      "http://xmlns.com/foaf/0.1/firstName": "Kingsley ",
+      "http://xmlns.com/foaf/0.1/gender": "male",
+      "http://xmlns.com/foaf/0.1/holdsAccount": [
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/www.linkedin.com/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/www.last.fm/user/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/del.icio.us/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/dataspace/KingsleyUyiIdehen#this"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/twitter.com/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/www.openlinksw.com/blog/~kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/www.slideshare.net/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/picasaweb.google.com/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/www.youtube.com/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/twitpic.com/photos/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/http/identi.ca/kidehen"
+        },
+        {
+          "@id": "http://id.myopenlink.net/about/id/entity/bitcoin/162953sKBVgL7KPbThyzZWdfM7P1JsBqHB"
+        }
+      ],
+      "http://xmlns.com/foaf/0.1/homepage": {
+        "@id": "http://www.openlinksw.com/blog/~kidehen"
+      },
+      "http://xmlns.com/foaf/0.1/knows": {
+        "@id": "http://melvincarvalho.com/#me"
+      },
+      "http://xmlns.com/foaf/0.1/made": [
+        {
+          "@id": "http://id.myopenlink.net/dataspace/KingsleyUyiIdehen/briefcase/Kingsley%20Uyi%20Idehen%27s%20Briefcase"
+        },
+        {
+          "@id": "http://id.myopenlink.net/dataspace/KingsleyUyiIdehen/calendar/Kingsley%20Uyi%20Idehen%27s%20Calendar"
+        },
+        {
+          "@id": "http://id.myopenlink.net/ods/describe?uri=mailto%3Akidehen@openlinksw.com"
+        }
+      ],
+      "http://xmlns.com/foaf/0.1/mbox": {
+        "@id": "mailto:kidehen@openlinksw.com"
+      },
+      "http://xmlns.com/foaf/0.1/mbox_sha1sum": "r6z2uGjmyzb3HSzsxtUxomzh8u8=",
+      "http://xmlns.com/foaf/0.1/name": "Kingsley Uyi Idehen",
+      "http://xmlns.com/foaf/0.1/nick": "KingsleyUyiIdehen",
+      "http://xmlns.com/foaf/0.1/openid": {
+        "@id": "http://id.myopenlink.net/dataspace/KingsleyUyiIdehen"
+      },
+      "http://xmlns.com/foaf/0.1/phone": "tel:7812730900",
+      "http://xmlns.com/foaf/0.1/workplaceHomepage": {
+        "@id": "http://www.openlinksw.com"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/KingsleyUyiIdehen/calendar/Kingsley%20Uyi%20Idehen%27s%20Calendar",
+      "http://www.w3.org/2000/01/rdf-schema#label": "Kingsley Uyi Idehen's Calendar Description",
+      "http://xmlns.com/foaf/0.1/maker": {
+        "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#this"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/KingsleyUyiIdehen/briefcase/Kingsley%20Uyi%20Idehen%27s%20Briefcase",
+      "http://www.w3.org/2000/01/rdf-schema#label": "Kingsley Uyi Idehen's Briefcase Description",
+      "http://xmlns.com/foaf/0.1/maker": {
+        "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#this"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#addr",
+      "http://www.w3.org/2001/vcard-rdf/3.0#Country": "United States"
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/del.icio.us/kidehen",
+      "@type": [
+        "http://xmlns.com/foaf/0.1/OnlineAccount",
+        "http://rdfs.org/sioc/ns#User"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "Del.icio.us",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://del.icio.us/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/about/id/entity/http/identi.ca/kidehen",
+      "@type": [
+        "http://rdfs.org/sioc/ns#User",
+        "http://xmlns.com/foaf/0.1/OnlineAccount"
+      ],
+      "http://xmlns.com/foaf/0.1/accountName": "identi.ca",
+      "http://xmlns.com/foaf/0.1/accountServiceHomepage": {
+        "@id": "http://identi.ca/kidehen"
+      }
+    },
+    {
+      "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen",
+      "@type": "http://xmlns.com/foaf/0.1/PersonalProfileDocument",
+      "http://purl.org/dc/elements/1.1/title": "Kingsley Uyi Idehen's FOAF file",
+      "http://xmlns.com/foaf/0.1/maker": {
+        "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#this"
+      },
+      "http://xmlns.com/foaf/0.1/primaryTopic": {
+        "@id": "http://id.myopenlink.net/dataspace/person/KingsleyUyiIdehen#this"
+      }
+    }
+  ]
+}

@@ -39,14 +39,14 @@ public class NSManager
         public static final String OWL = RDFS.OWL;
         public static final String SPIN = "http://spinrdf.org/sp#";
         public static final String SQL  = "http://ns.inria.fr/ast/sql#";
-        private static final String STL = ExpType.STL;
+        public static final String STL = ExpType.STL;
 
 
 	static final String FPPP = "fp";
         public static final String PPN = ExpType.KGRAM + "pprinter/";
 	static final String PPP = "pp";
         private static final String SPIN_PREF = "sp";
-        public static final String STL_PREF = "stl";
+        public static final String STL_PREF = "st";
 
 
 	/** prefix seed (ns1, ns2,...) */

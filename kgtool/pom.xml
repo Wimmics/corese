@@ -70,6 +70,12 @@
              <artifactId>jsonld-java</artifactId>
              <version>0.3</version>
          </dependency>   
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+            <version>6.8.8</version>
+        </dependency>
     </dependencies>
 
     <build>

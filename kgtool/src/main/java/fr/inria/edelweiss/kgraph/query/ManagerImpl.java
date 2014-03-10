@@ -41,6 +41,7 @@ public class ManagerImpl implements Manager {
 	static final int COPY = 0;
 	static final int MOVE = 1;
 	static final int ADD  = 2;
+        private static final String DEFAULT = Entailment.DEFAULT;
 	
 	ManagerImpl(Graph g){
 		graph = g;
@@ -248,6 +249,10 @@ public class ManagerImpl implements Manager {
 				String name = ds.getFrom().get(0).getLabel();
 				update(ope, mode, source, name);
 			}
+                        else {
+                            // use case: move g to default
+                           update(ope, mode, source, DEFAULT); 
+                        }
 		}
 		else if (target != null && ds!=null && ds.hasFrom()) {
 			// copy default to g

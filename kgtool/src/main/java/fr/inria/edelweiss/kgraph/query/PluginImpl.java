@@ -628,12 +628,13 @@ public class PluginImpl extends ProxyImpl {
             p = t;
         } else if (q.hasPragma(Pragma.TEMPLATE)) {
             p = (String) q.getPragma(Pragma.TEMPLATE);
-        } else if (!q.isPrinterTemplate() && dt != null) {
-            // q is a single template query (not member of a pprinter template set)
-            // and it has no pprinter name 
-            // search pprinter according to type of resource dt
-            p = getPP(prod, dt);
-        }
+        } 
+//        else if (!q.isPrinterTemplate() && dt != null) {
+//            // q is a single template query (not member of a pprinter template set)
+//            // and it has no pprinter name 
+//            // search pprinter according to type of resource dt
+//            p = getPP(prod, dt);
+//        }
 
         Object o = q.getPP(p);
 

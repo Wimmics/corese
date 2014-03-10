@@ -394,13 +394,13 @@ public class PPrinter {
             return EMPTY;
         }
 
-        if (pp == null) {
-            String name = getPP(dt1);
-            if (name != null) {
-                pp = name;
-                init();
-            }
-        }
+//        if (pp == null) {
+//            String name = getPP(dt1);
+//            if (name != null) {
+//                pp = name;
+//                init();
+//            }
+//        }
 
         ArrayList<IDatatype> result = null;
         if (allTemplates) {
@@ -772,25 +772,32 @@ public class PPrinter {
     }
 
     void load(Load ld, String pp) throws LoadException {
-        if (nsm.inNamespace(pp, NSManager.PPN)) {
+        String name = null;
+        if (nsm.inNamespace(pp, NSManager.STL)) {
             // predefined pprinter: pp:owl pp:spin
             // loaded from Corese resource
-            String name = nsm.strip(pp, NSManager.PPN);
-            String src = PPLIB + name;
-
-            if (!ld.isRule(src)) {
-                src = src + Load.RULE;
-            }
-            InputStream stream = getClass().getResourceAsStream(src);
-            if (stream == null) {
-                throw LoadException.create(new IOException(pp));
-            }
-            // use non synchronized load method because we may be inside a query 
-            // with a read lock
-            ld.loadRule(new InputStreamReader(stream), src);
+            name = nsm.strip(pp, NSManager.STL);
+        } else if (nsm.inNamespace(pp, NSManager.PPN)) {
+            // predefined pprinter: stl:owl stl:spin
+            // loaded from Corese resource
+            name = nsm.strip(pp, NSManager.PPN);
         } else {
             ld.loadWE(pp);
+            return;
         }
+        String src = PPLIB + name;
+
+        if (!ld.isRule(src)) {
+            src = src + Load.RULE;
+        }
+        InputStream stream = getClass().getResourceAsStream(src);
+        if (stream == null) {
+            throw LoadException.create(new IOException(pp));
+        }
+        // use non synchronized load method because we may be inside a query 
+        // with a read lock
+        ld.loadRule(new InputStreamReader(stream), src);
+
     }
 
     /**

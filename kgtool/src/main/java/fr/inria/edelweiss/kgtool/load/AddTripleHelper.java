@@ -67,7 +67,7 @@ public class AddTripleHelper implements ILoadSerialization {
     }
 
     @Override
-    public void addTriples(String subj, String pred, String obj, String lang, String type, int literalType, Node source) {
+    public void addTriple(String subj, String pred, String obj, String lang, String type, int literalType, Node source) {
         if (source == null) {
             source = graph.addGraph(Entailment.DEFAULT);
         }
@@ -136,7 +136,12 @@ public class AddTripleHelper implements ILoadSerialization {
         return node.startsWith(RDF.BNODE_PREFIX);
     }
 
-    //Generate an ID for blank node
+    /**
+     * Generate/Rename an ID for blank node
+     *
+     * @param b Value of BNode
+     * @return Value of generated/renamed bnode
+     */
     public String getID(String b) {
         String id = b;
         if (isRenameBlankNode()) {
@@ -147,5 +152,41 @@ public class AddTripleHelper implements ILoadSerialization {
             }
         }
         return id;
+    }
+
+    /**
+     * Get the default graph source according to the status of graph and source
+     *
+     * @param graph Graph that will be filled in
+     * @param source The particular name to add nodes to
+     *
+     * @return
+     */
+    public Node getGraphSource(Graph graph, String source) {
+        Node defaultGraphSource;
+
+        if (!hasGraphsOrDefault(this.graph)) {
+            defaultGraphSource = this.graph.addGraph(Entailment.DEFAULT);
+        } else {
+            if (source == null) {
+                defaultGraphSource = this.graph.getGraphNode(Entailment.DEFAULT);
+            } else {
+                defaultGraphSource = this.graph.addGraph(source);
+            }
+        }
+        
+        return defaultGraphSource;
+    }
+
+    //check if one graph contains graphs or default graph
+    private boolean hasGraphsOrDefault(Graph g) {
+        boolean hasGraphs = false, hasDefault = false;
+        for (Object n : g.getGraphNodes()) {
+            hasGraphs = true;
+            break;
+        }
+        hasDefault = g.getGraphNode(Entailment.DEFAULT) != null;
+
+        return hasGraphs || hasDefault;
     }
 }

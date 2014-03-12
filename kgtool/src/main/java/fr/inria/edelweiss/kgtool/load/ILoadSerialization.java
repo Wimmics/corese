@@ -21,8 +21,8 @@ public interface ILoadSerialization {
      * @param obj object
      * @param lang language tag
      * @param type data type
-     * @param literalType literal type (LITERAL and NON_LITERAL)
+     * @param literalType literal type (LITERAL | NON_LITERAL)
      * @param source
      */
-    public void addTriples(String subj, String pred, String obj, String lang, String type, int literalType, Node source);
+    public void addTriple(String subj, String pred, String obj, String lang, String type, int literalType, Node source);
 }

@@ -4,7 +4,6 @@ import com.github.jsonldjava.core.JSONLDTripleCallback;
 import com.github.jsonldjava.core.RDFDataset;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.load.AddTripleHelper;
 import fr.inria.edelweiss.kgtool.load.ILoadSerialization;
 import java.util.List;
@@ -20,20 +19,17 @@ public class CoreseJsonTripleCallback implements JSONLDTripleCallback {
 
     private AddTripleHelper helper;
     private Graph graph;
-    private Node graphSource;
+    private Node graphSource, defaultGraphSource;
     private final static String JSONLD_DEFALUT_GRAPH = "@default";
     private final static String JSONLD_BNODE_PREFIX = ":_";
 
     public CoreseJsonTripleCallback(Graph graph, String source) {
         this.graph = graph;
 
-        if (source == null) {
-            graphSource = this.graph.addGraph(Entailment.DEFAULT);
-        } else {
-            graphSource = this.graph.addGraph(source);
-        }
-
         helper = AddTripleHelper.create(this.graph);
+        //get default graph source
+        defaultGraphSource = helper.getGraphSource(graph, source);
+        graphSource = defaultGraphSource;
     }
 
     @Override
@@ -43,7 +39,7 @@ public class CoreseJsonTripleCallback implements JSONLDTripleCallback {
 
             //add graphs
             if (JSONLD_DEFALUT_GRAPH.equals(graphName)) {
-                graphSource = graph.addGraph(Entailment.DEFAULT);
+                graphSource = defaultGraphSource;
             } else if (graphName.startsWith(JSONLD_BNODE_PREFIX)) {
                 graphSource = graph.addBlank(helper.getID(graphName));
                 graph.addGraphNode(graphSource);
@@ -69,7 +65,7 @@ public class CoreseJsonTripleCallback implements JSONLDTripleCallback {
                     tripleType = ILoadSerialization.NON_LITERAL;
                 }
 
-                helper.addTriples(subject, predicate, object, lang, type, tripleType, graphSource);
+                helper.addTriple(subject, predicate, object, lang, type, tripleType, graphSource);
             }
         }
 

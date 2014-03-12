@@ -55,7 +55,7 @@ public class CoreseRDFaTripleSink implements TripleSink {
     }
 
     private void addTriple(String subj, String pred, String obj, String lang, String type, int literalType) {
-        helper.addTriples(subj, pred, obj, lang, type, literalType, graphSource);
+        helper.addTriple(subj, pred, obj, lang, type, literalType, graphSource);
     }
 
     @Override

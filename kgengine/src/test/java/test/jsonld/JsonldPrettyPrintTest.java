@@ -87,7 +87,7 @@ public class JsonldPrettyPrintTest {
             QueryProcess qp = QueryProcess.create(gg);
             Mappings map = qp.query(g);
 
-            return map.size() == 1;
+            return map.size() > 0;
         } else {
             return true;
         }

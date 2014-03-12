@@ -693,7 +693,7 @@ public class Memory implements Environment {
 	 * Push elementary result in the memory
 	 */
 	boolean push(Mapping res, int n){
-		return push(res, n, true);
+		return push(res, n, isEdge);
 	}
 	
 	/**

@@ -116,7 +116,7 @@ public class TurtleTestCase extends TestCase {
         } catch (Error e) {
             return "[Graph load error:]" + e.toString();
         }
-        TripleFormat tf = TripleFormat.create(g);
+        TripleFormat tf = TripleFormat.create(g, true);
         return tf.toString();
     }
 }

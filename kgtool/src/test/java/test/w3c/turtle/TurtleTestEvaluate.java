@@ -5,6 +5,8 @@ import test.w3c.model.IEvaluate;
 import test.w3c.model.TestCase;
 import test.w3c.model.TestHelper;
 import test.w3c.model.TestCaseSet;
+import static test.w3c.model.TestType.NQNegativeSyntax;
+import static test.w3c.model.TestType.NQPositiveSyntax;
 import static test.w3c.model.TestType.NTNegativeSyntax;
 import static test.w3c.model.TestType.NTPositiveSyntax;
 import static test.w3c.model.TestType.NegativeEval;
@@ -21,7 +23,7 @@ import static test.w3c.model.TestType.XMLPositiveEval;
 
 /**
  * Implementation of turtle test case evaluation (This evaluation is also
- * applicable for TriG, N-Triples, XML/RDf)
+ * applicable for TriG, N-Triples, XML/RDf, N-Quads)
  *
  * @author Fuqi Song wimmics inria i3s
  * @date Feb. 2014
@@ -84,6 +86,10 @@ public class TurtleTestEvaluate implements IEvaluate {
         } else if (type.equals(TriGPositiveEval)) {
             result = TestHelper.graphCompare(ttc.getAction(), ttc.getResult());
         } else if (type.equals(TriGNegativeEval) || type.equals(TriGPositiveSyntax) || type.equals(TriGNegativeSyntax)) {
+            result = TestHelper.loadValidate(ttc.getAction());
+
+            //***** 5. N-Quads
+        } else if (type.equals(NQPositiveSyntax) || type.equals(NQNegativeSyntax)) {//for N-Triples
             result = TestHelper.loadValidate(ttc.getAction());
 
             // **** other

@@ -15,9 +15,13 @@ public final class TestType {
     public static final String PositiveSyntax = RDFT + "TestTurtlePositiveSyntax";
     public static final String NegativeSyntax = RDFT + "TestTurtleNegativeSyntax";
 
-    //N-Tripeles test
+    //N-Triples test
     public static final String NTPositiveSyntax = RDFT + "TestNTriplesPositiveSyntax";
     public static final String NTNegativeSyntax = RDFT + "TestNTriplesNegativeSyntax";
+
+    //N-Quads test
+    public static final String NQPositiveSyntax = RDFT + "TestNQuadsPositiveSyntax";
+    public static final String NQNegativeSyntax = RDFT + "TestNQuadsNegativeSyntax";
 
     //RDF/XML test
     public static final String XMLPositiveEval = RDFT + "TestXMLEval";
@@ -33,6 +37,7 @@ public final class TestType {
         {PositiveEval, true}, {NegativeEval, false},
         {PositiveSyntax, true}, {NegativeSyntax, false},
         {NTPositiveSyntax, true}, {NTNegativeSyntax, false},
+        {NQPositiveSyntax, true}, {NQNegativeSyntax, false},
         {XMLPositiveEval, true}, {XMLNegativeSyntax, false},
         {TriGPositiveEval, true}, {TriGNegativeEval, false},
         {TriGPositiveSyntax, true}, {TriGNegativeSyntax, false}};

@@ -7,7 +7,6 @@ import java.util.List;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.ExpPattern;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.AND;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -235,6 +234,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 
     public String toString() {
         String str = title() ;
+        
         if (type() == VALUES){
             str += getNodeList();
         }
@@ -268,8 +268,13 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
             // skip because loop
             //str += TITLE[type];
         } else {
+            int i = 0;
             for (Exp e : this) {
-                str += e + " ";
+                str += e + " "; 
+                if (type() == JOIN && i == 0){
+                    str += "\n";
+                }
+                i++;
             }
         }
         str += "}";
@@ -355,6 +360,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 
     public boolean isOptional() {
         return type == OPTIONAL;
+    }
+    
+    public boolean isJoin() {
+        return type == JOIN;
     }
 
     public boolean isGraph() {
@@ -1495,6 +1504,9 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                     exp = Exp.create(AND, exp, cur);
                 }
             } else {
+                // variables that may be bound from environment (e.g. values)
+                exp.setNodeList(exp.getNodes());
+                cur.setNodeList(cur.getNodes());
                 exp = Exp.create(JOIN, exp, cur);
             }
         }

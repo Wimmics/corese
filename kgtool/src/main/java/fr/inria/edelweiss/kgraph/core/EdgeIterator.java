@@ -20,6 +20,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	Iterable<Entity> iter;
 	Iterator<Entity> it;
 	Edge last;
+        EdgeImpl res;
 	Node graph;
         Graph gg;
 	List<Node> from;
@@ -27,6 +28,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	private boolean hasTag = false;
 	
 	EdgeIterator(){
+                init();
 	}
 	
 	// eliminate duplicate edges due to same source
@@ -34,6 +36,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		iter = i;
 		hasGraph = false;
 		hasFrom = false;
+                init();
 	}
 	
 	public static EdgeIterator create(Graph g){
@@ -48,6 +51,11 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		ei.setTag(g.hasTag());
 		return ei;
 	}
+        
+        void init(){
+            //res = EdgeImpl.create(null, null, null, null);
+        }
+
 	
 	public EdgeIterator(Graph g, Iterable<Entity> i, List<Node> list, boolean hasGraph){
 		iter = i;
@@ -56,6 +64,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		hasFrom = from.size()>0;
 		setTag(g.hasTag());
                 gg = g;
+                init();
 	}
 	
 	void setTag(boolean b){
@@ -140,8 +149,9 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 			}
 			
 			if (ok){
-				last = ent.getEdge();
+				last = ent.getEdge();                                
                                 return ent;
+                               //return getResult(ent);
 			}
 		}
 		return null;
@@ -152,6 +162,15 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		// TODO Auto-generated method stub
 		
 	}
+        
+        // simulate creation of only one edge for this iterator
+        Edge getResult(Entity ent) {
+            res.setGraph(ent.getGraph());
+            res.setEdgeNode(ent.getEdge().getEdgeNode());
+            res.setNode(0, ent.getNode(0));
+            res.setNode(1, ent.getNode(1));
+            return res;
+     }
 	
 	/**
 	 * 

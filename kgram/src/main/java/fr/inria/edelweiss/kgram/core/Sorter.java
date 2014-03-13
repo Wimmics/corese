@@ -121,12 +121,16 @@ public class Sorter {
     protected boolean before(Query q, Exp e1, Exp e2, List<Node> lNode, List<String> lVar, List<Exp> lBind) {
         int n1 = e1.nBind(lNode, lVar, lBind);
         int n2 = e2.nBind(lNode, lVar, lBind);
-
-        if (n1 == 0 && n2 == 0) {
-            if (beforeBind(q, e2, e1)) {
-                return true;
-            }
+        
+        if (beforeBind(q, e2, e1)){
+            n2 += 1;
         }
+
+//        if (n1 == 0 && n2 == 0) {
+//            if (beforeBind(q, e2, e1)) {
+//                return true;
+//            }
+//        }
         return n2 > n1;
     }
 

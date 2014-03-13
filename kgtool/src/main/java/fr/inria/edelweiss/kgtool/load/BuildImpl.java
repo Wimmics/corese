@@ -91,6 +91,10 @@ public class BuildImpl implements Build {
 		graph.setUpdate(true);
 		blank.clear();
 	}
+        
+        public void finish(){
+            
+        }
 	
 	public boolean accept(String pred){
 		if (skip) return false;

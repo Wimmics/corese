@@ -60,6 +60,9 @@ public class CreateImpl implements Creator {
         public void start(){
             graph.setUpdate(true);
         }
+        
+        public void finish(){
+        }
 	
 	public void setLimit(int max){
 		limit = max;

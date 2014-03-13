@@ -483,6 +483,9 @@ public class Load
         } catch (IOException e) {
             throw LoadException.create(e, arp.getLocator(), path);
         }
+        finally {
+            build.finish();
+        }
     }
 
     void loadTurtle(Reader stream, String path, String base, String src) throws LoadException {
@@ -499,6 +502,9 @@ public class Load
             throw LoadException.create(e, path);
         } catch (QuerySyntaxException e) {
             throw LoadException.create(e, path);
+        }
+        finally {
+            cr.finish();
         }
     }
 

@@ -2,7 +2,6 @@ package fr.inria.edelweiss.kgtool.load;
 
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 
 /**
  * Translate an RDF/XML document into a Graph
@@ -22,4 +21,5 @@ public interface Build {
 	
 	 void start();
 	 
+	 void finish();
 }

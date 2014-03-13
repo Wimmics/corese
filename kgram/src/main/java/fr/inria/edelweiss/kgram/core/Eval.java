@@ -46,6 +46,7 @@ public class Eval implements ExpType, Plugin {
 
     private static Logger logger = Logger.getLogger(Eval.class);
     static final int STOP = -2;
+    public static int count = 0;
     ResultListener listener;
     EventManager manager;
     boolean hasEvent = false;
@@ -1133,7 +1134,7 @@ public class Eval implements ExpType, Plugin {
         if (m != null){
             mem.push(m, -1);
         }
-        if (main.isOptional() && exp.getNodeList() != null){
+        if ((main.isOptional() || main.isJoin()) && exp.getNodeList() != null){
             // A optional B
             // bind variables of A from environment
             for (Node qnode : exp.getNodeList()){
@@ -1257,7 +1258,6 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
         Memory env = memory;
         Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp);
-        
         if (map1.size() == 0){
             return backtrack;
         }
@@ -1312,11 +1312,11 @@ public class Eval implements ExpType, Plugin {
         if (qn1 != null && qn2 != null) {
             // exploit dichotomy for ?x = ?y
             for (Mapping m1 : map1) {
-
+ 
                 Node n1 = m1.getNode(qn1);
-                if (n1 != null) {
-
-                    if (env.push(m1, n)) {
+               if (n1 != null) {
+ 
+                   if (env.push(m1, n)) {
 
                         // index of ?y in map2
                         int nn = map2.find(n1, qn2);
@@ -1343,6 +1343,9 @@ public class Eval implements ExpType, Plugin {
                         }
 
                         env.pop(m1);
+                    }
+                    else {
+                        System.out.println("fail push");
                     }
                 }
             }

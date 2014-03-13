@@ -143,6 +143,7 @@ public class PluginImpl extends ProxyImpl {
 
             case PPURI:
             case URILITERAL:
+            case XSDLITERAL:
                 return uri(exp, dt, env, p);
 
             case INDENT:
@@ -542,6 +543,12 @@ public class PluginImpl extends ProxyImpl {
         IDatatype dt = p.turtle(o);
         return dt;
     }
+    
+    IDatatype xsdLiteral(IDatatype o, Environment env, Producer prod) {
+        PPrinter p = getPPrinter(env, prod);
+        IDatatype dt = p.xsdLiteral(o);
+        return dt;
+    }
 
     IDatatype turtle(Environment env, Producer prod) {
         PPrinter p = getPPrinter(env, prod);
@@ -554,6 +561,8 @@ public class PluginImpl extends ProxyImpl {
             return turtle(dt, env, prod);
         } else if (dt.isLiteral() && exp.oper() == ExprType.URILITERAL) {
             return turtle(dt, env, prod);
+        } else if (dt.isLiteral() && exp.oper() == ExprType.XSDLITERAL) {
+            return xsdLiteral(dt, env, prod);
         } else {
             return pprint(dt, null, null, null, exp, env, prod);
         }

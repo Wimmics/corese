@@ -693,6 +693,12 @@ public class PPrinter {
         }
         return dt;
     }
+    
+     public IDatatype xsdLiteral(IDatatype dt) {
+        return DatatypeMap.newStringBuilder(dt.toSparql(true, true));
+    }
+    
+    
 
     String getPP(IDatatype dt) {
         IDatatype type = graph.getValue(RDF.TYPE, dt);

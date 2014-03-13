@@ -169,6 +169,11 @@ public class Query extends Exp {
 		if (selectExp.size()>0){
 			str = "select " + selectExp + "\n" + str;
 		}
+                if (getMappings() != null && getMappings().size() > 0){
+                    str += "\n" + "values " + getBindingNodes() + "{";
+                    str += getMappings() + "}";
+                }
+                
 		return str;
 	}
 	

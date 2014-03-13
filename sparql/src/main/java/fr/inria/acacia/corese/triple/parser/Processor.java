@@ -98,6 +98,7 @@ public class Processor {
 	static final String STL_TURTLE              = STL + "turtle"; 
 	static final String STL_URI                 = STL + "uri"; 
 	static final String STL_URILITERAL          = STL + "uriLiteral"; 
+	static final String STL_XSDLITERAL          = STL + "xsdLiteral"; 
 	static final String STL_PROLOG              = STL + "prolog"; 
 	static final String STL_INDENT              = STL + "indent"; 
 	static final String STL_LEVEL               = STL + "level"; 
@@ -414,11 +415,13 @@ public class Processor {
 		defoper(STL_INDENT,             ExprType.INDENT);
 		defoper(STL_LEVEL,              ExprType.LEVEL);
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
+		defoper(STL_XSDLITERAL,             ExprType.XSDLITERAL);
 
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);
 		defoper(PPURI, 	ExprType.PPURI);
 		defoper(URILITERAL, 	ExprType.URILITERAL);
+		defoper(STL_XSDLITERAL, 	ExprType.XSDLITERAL);
 		defoper(VISITED, ExprType.VISITED);
 		defoper(PROLOG,  ExprType.PROLOG);
 

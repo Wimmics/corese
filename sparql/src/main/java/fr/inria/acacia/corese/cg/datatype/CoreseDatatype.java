@@ -53,25 +53,27 @@ public class CoreseDatatype
 	}
 	
 	public String toString(){
-		//return getNormalizedLabel();
-		return toSparql(true);
-	}
+		return toSparql(true, false);
+	}       
 	
 	public String toSparql(){
-		return toSparql(true);
+		return toSparql(true, false);
 	}
 	
 
 	public String toSparql(boolean prefix){          
+            return toSparql(prefix, false);
+        }
+        
+        public String toSparql(boolean prefix, boolean xsd){          
 		String value = getLabel();
-		if (getCode() == INTEGER){
+		if (getCode() == INTEGER && ! xsd){
 			
 		}
 		else if (getCode() == STRING || (getCode() == LITERAL && ! hasLang()) ){
 			value =  protect(value);
 		}
-		else 
-			if (getDatatype() != null && ! getDatatype().getLabel().equals(RDFS.rdflangString)){
+		else if (getDatatype() != null && ! getDatatype().getLabel().equals(RDFS.rdflangString)){
 
 			String datatype = getDatatype().getLabel();
 			

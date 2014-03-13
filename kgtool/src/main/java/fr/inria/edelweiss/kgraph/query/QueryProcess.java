@@ -48,7 +48,7 @@ public class QueryProcess extends QuerySolver {
 	// Producer may perform match locally
 	boolean isMatch = false;
         
-        static { setJoin(true); }
+        static { setJoin(false); }
 		
 	public QueryProcess (){
 	}

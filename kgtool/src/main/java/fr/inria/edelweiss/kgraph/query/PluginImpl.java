@@ -81,7 +81,7 @@ public class PluginImpl extends ProxyImpl {
                 return prolog(env, p);
                 
             case FOCUS_NODE:
-                return getFocusNode(env);
+                return getFocusNode(null, env);
 
             case SIM:
                 Graph g = getGraph(p);
@@ -145,6 +145,9 @@ public class PluginImpl extends ProxyImpl {
             case URILITERAL:
             case XSDLITERAL:
                 return uri(exp, dt, env, p);
+                
+            case FOCUS_NODE:
+                return getFocusNode(dt, env);    
 
             case INDENT:
                 return indent(dt);
@@ -245,10 +248,9 @@ public class PluginImpl extends ProxyImpl {
 
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
 
-        IDatatype dt1 = (IDatatype) args[0];
-        IDatatype dt2 = (IDatatype) args[1];
-        IDatatype dt3 = (IDatatype) args[2];
-
+        IDatatype dt1 =  (IDatatype) args[0];
+        IDatatype dt2 =  (IDatatype) args[1];
+        IDatatype dt3 =  (IDatatype) args[2];
 
         switch (exp.oper()) {
 
@@ -260,7 +262,7 @@ public class PluginImpl extends ProxyImpl {
                 // dt1: template name
                 // dt2: focus
                 // dt3: arg
-                return pprint(dt2, dt3, null, dt1, exp, env, p);
+                return pprint(args, dt2, dt3, null, dt1, exp, env, p);
 
             case TEMPLATEWITH:
                 // dt1: uri pprinter
@@ -397,14 +399,19 @@ public class PluginImpl extends ProxyImpl {
         ql.write(dtfile.getLabel(), dt.getLabel());
         return dt;
     }
-
-    private Object getFocusNode(Environment env) {
-        Node node = env.getNode(PPrinter.IN);
+   
+    private Object getFocusNode(IDatatype dt, Environment env) {
+        String name = PPrinter.IN;
+        if (dt != null){
+            name = dt.getLabel();
+        }
+        Node node = env.getNode(name);
         if (node == null){
             return null;
         }
-        return node.getValue();
+        return node.getValue();   
     }
+
 
     class Table extends Hashtable<Integer, PTable> {
     }
@@ -528,9 +535,15 @@ public class PluginImpl extends ProxyImpl {
      * used, may be null temp is the name of a named template, may be null
      * modality: kg:pprintAll(?x ; separator = "\n")
      */
-    IDatatype pprint(IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
+    
+    
+     IDatatype pprint(IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
+          return pprint(null, focus, arg, tbase, temp, exp, env, prod); 
+     }
+     
+     IDatatype pprint(Object[] args, IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
         PPrinter p = getPPrinter(env, prod, getLabel(tbase), focus);
-        IDatatype dt = p.pprint(focus, arg,
+        IDatatype dt = p.pprint(args, focus, arg,
                 getLabel(temp),
                 exp.oper() == ExprType.PPRINTALL
                 || exp.oper() == ExprType.PPRINTALLWITH,

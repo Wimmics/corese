@@ -367,11 +367,11 @@ public class PPrinter {
     }
 
     public IDatatype pprint(IDatatype dt) {
-        return pprint(dt, null, null, false, null, null, null);
+        return pprint(null, dt, null, null, false, null, null, null);
     }
 
     public IDatatype template(String temp, IDatatype dt) {
-        return pprint(dt, null, temp, false, null, null, null);
+        return pprint(null, dt, null, temp, false, null, null, null);
     }
 
     /**
@@ -388,7 +388,7 @@ public class PPrinter {
      * hence we store in a stack : node -> template context of evaluation:
      * select (kg:pprint(?x) as ?px) (concat (?px ...) as ?out) where {}
      */
-    public IDatatype pprint(IDatatype dt1, IDatatype dt2, String temp,
+    public IDatatype pprint(Object[] args, IDatatype dt1, IDatatype dt2, String temp,
             boolean allTemplates, String sep, Expr exp, Query q) {
         if (dt1 == null) {
             return EMPTY;
@@ -428,14 +428,21 @@ public class PPrinter {
 
         Graph g = graph;
         QueryProcess exec = this.exec;
-        Mapping m = getMapping(dt1, dt2);
-
+        
         int count = 0, n = 0;
 
         IDatatype type = null;
         if (isOptimize) {
             type = graph.getValue(RDF.TYPE, dt1);
         }
+        
+        List<Query> templateList = getTemplates(temp, type);
+        Query tq = null;
+        if (temp != null && templateList.size() == 1){
+            tq = templateList.get(0);
+        }
+        Mapping m = getMapping(args, dt1, dt2, tq);
+
 
         if (isExplain && ! pp.equals(TURTLE)){
             PPrinter p = PPrinter.create(g, TURTLE);
@@ -445,7 +452,7 @@ public class PPrinter {
             System.out.println();
        }
         
-        for (Query qq : getTemplates(temp, type)) {
+        for (Query qq : templateList) {
 
             if (isDetail) {
                 qq.setDebug(true);
@@ -548,15 +555,60 @@ public class PPrinter {
         return display(dt1, q);
     }
 
-    Mapping getMapping(IDatatype dt1, IDatatype dt2) {
-        Node qn1 = NodeImpl.createVariable(IN);
+    /**
+     * when st:call-template(name, v1, ... vn)
+     * ldt = [name, v1, ... vn]
+     * otherwise ldt = null
+     */
+    Mapping getMapping(Object[] ldt, IDatatype dt1, IDatatype dt2, Query q) {
+        if (ldt != null && q != null && ! q.getArgList().isEmpty()){
+            return getMapping(ldt, q.getArgList());
+        }
+        
+        Node qn1 = NodeImpl.createVariable(getArg(q, 0));
         Node n1 = getNode(dt1);
         if (dt2 == null) {
             return Mapping.create(qn1, n1);
         } else {
-            Node qn2 = NodeImpl.createVariable(IN2);
+            Node qn2 = NodeImpl.createVariable(getArg(q, 1));
             Node n2 = getNode(dt2);
             return Mapping.create(qn1, n1, qn2, n2);
+        }
+    }
+    
+    /**
+     * ldt = [name, v1, ... vn]
+     * first arg is the name of the template, skip it here
+     */
+    Mapping getMapping(Object[] ldt, List<Node> args){
+        int size = Math.min(ldt.length-1, args.size());
+        Node[] qn = new Node[size];
+        Node[] tn = new Node[size];
+        for (int i = 0; i<size; i++){
+            // i+1 because we skip name = ldt[0]
+           qn[i] = NodeImpl.createVariable(args.get(i).getLabel());
+           tn[i] = getNode((IDatatype) ldt[i+1]);
+        }
+        return Mapping.create(qn, tn);
+    }
+    
+    String getArg(Query q, int n){
+        if (q == null || q.getArgList().isEmpty()){
+            return getArg(n);
+        }
+        List<Node> list = q.getArgList();
+        if (n < list.size()){
+            return list.get(n).getLabel();
+        }
+        else {
+            return getArg(n);
+        }
+ }
+    
+    String getArg(int n){
+        switch (n){
+            case 0:  return IN;
+            default: return IN2;
         }
     }
 

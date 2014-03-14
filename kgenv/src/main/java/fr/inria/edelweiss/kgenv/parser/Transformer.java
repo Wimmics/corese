@@ -202,7 +202,7 @@ public class Transformer implements ExpType {
                     body.add(1, ast.getValues());
                     ast.getValues().setMoved(true);
                 }
-            }
+            }                       
         }
         
         boolean bound(Values values, Triple t){
@@ -232,6 +232,11 @@ public class Transformer implements ExpType {
 			}
 			ast.getTemplateGroup().compile(ast);
 			q.setTemplateGroup(Exp.create(FILTER, ast.getTemplateGroup()));
+                        
+                        for (Variable var : ast.getArgList()){
+                            Node node = compiler.createNode(var);
+                            q.defArg(node);
+                        }
 		}
 	}
 	

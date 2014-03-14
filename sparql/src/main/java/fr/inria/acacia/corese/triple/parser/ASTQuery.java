@@ -175,6 +175,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	List<Variable> selectVar = new ArrayList<Variable>();
 	// select *
 	List<Variable> selectAllVar = new ArrayList<Variable>();
+	List<Variable> argList = new ArrayList<Variable>();
 	List<Expression> sort 	 = new ArrayList<Expression>();
 	List<Expression> lGroup  = new ArrayList<Expression>();
 	List<Expression> relax   = new ArrayList<Expression>();
@@ -2967,7 +2968,13 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 		this.templateGroup = templateGroup;
 	}
 
-
+        public void defArg(Variable var){
+            argList.add(var);
+        }
+        
+        public List<Variable> getArgList(){
+            return argList;
+        }
 
 	
 	/**********************************************************

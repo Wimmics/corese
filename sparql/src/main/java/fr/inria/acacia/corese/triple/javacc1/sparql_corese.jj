@@ -570,14 +570,24 @@ Exp TemplateQuery() : { Exp stack; }
 
 
 
-void Template(Exp stack) : { String str; Variable var; Constant cst; Expression exp; ExpressionList list; }
+void Template(Exp stack) : 
+{ String str; Variable var; Constant cst; Expression exp; ExpressionList list; 
+   List<Variable> varList;}
 {
     <TEMPLATE> { cst = null; }
     
     ( <DEBUG> { astq.setDebug(true); } ) ?
     
-    ( cst = IRIrefConst() { astq.setName(cst); } ) ?
-      
+    ( cst = IRIrefConst() { astq.setName(cst); }    ) ?
+
+      (<LPAREN>   
+
+         var = Var() { astq.defArg(var); }
+
+         (<COMMA> var = Var() { astq.defArg(var); }) *
+		   
+       <RPAREN>
+      ) ? 
   
 	<LBRACE>
 	

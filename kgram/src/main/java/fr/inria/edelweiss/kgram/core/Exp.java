@@ -1505,13 +1505,25 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                 }
             } else {
                 // variables that may be bound from environment (e.g. values)
-                exp.setNodeList(exp.getNodes());
-                cur.setNodeList(cur.getNodes());
+//                exp.setNodeList(exp.getNodes());
+//                cur.setNodeList(cur.getNodes());
                 exp = Exp.create(JOIN, exp, cur);
+                exp.bindNodes();
             }
         }
 
         return exp;
+    }
+    
+    /**
+     * Nodes that may be bound by previous clause or by environment
+     * except minus, etc.
+     */
+    void bindNodes(){
+        for (Exp exp : getExpList()){
+            exp.setNodeList(exp.getNodes());
+            exp.setNodeList(exp.getNodes());
+        }
     }
 
     boolean isBound(List<String> lvar, List<Node> lnode) {

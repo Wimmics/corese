@@ -120,6 +120,7 @@ public class Query extends Exp {
 	private boolean isAllResult = false;
 
 	private Exp templateGroup;
+    private List<Node> argList;
 
 	
 	Query(){
@@ -146,6 +147,7 @@ public class Query extends Exp {
 		querySelectNodes 	= new ArrayList<Node>();
 		bindingNodes 		= new ArrayList<Node>();
 		relaxEdges 		= new ArrayList<Node>();
+		argList 		= new ArrayList<Node>();
 
 		sort = new Sorter();
 
@@ -1664,6 +1666,9 @@ public class Query extends Exp {
                     // variables bound by A
                     exp.first().setNodeList(exp.first().getNodes());
                 }
+                else if (exp.isJoin()){
+                    exp.bindNodes();
+                }
                 
 		return exp;
 	}
@@ -1835,8 +1840,15 @@ public class Query extends Exp {
     public void setMatchBlank(boolean match) {
         this.isMatch = match;
     }
-	
-	
+
+    public List<Node> getArgList() {
+        return argList;
+    }
+    
+    public void defArg(Node n) {
+         argList.add(n);
+    }
+    
 	class VString extends ArrayList<String> {
 		
 		void clear(int size){

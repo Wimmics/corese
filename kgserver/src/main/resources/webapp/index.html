@@ -175,8 +175,11 @@
                                     <div class="row">
                                         <div class="col-xs-4">
                                             <select id = "Data_Select" class="form-control">
-                                                <option value ="0" selected="selected">Geographic INSEE dataset (2012)</option>
-                                                <option value ="1">Demographic INSEE dataset (2010)</option>
+                                                <option value ="0" selected="selected">INSEE geographic dataset (2012) - 18Mo</option>
+                                                <option value ="1">INSEE demographic dataset (2010) - 19Mo</option>
+                                                <option value ="2">GINSENG CREATIS dataset - 169Mo</option>
+                                                <option value ="3">GINSENG I3S dataset - 204Mo</option>
+                                                <option value ="4">GINSENG IN2P3 dataset - 466Mo</option>
                                                 <!--<option value ="0" selected="selected">/Users/gaignard/Documents/Experiences/jows-2013/drugbank_dump.rdf</option>
                                                 <option value ="1">/Users/gaignard/Documents/Experiences/jows-2013/chebi.rdf</option>
                                                 <option value ="2">/Users/gaignard/Documents/Experiences/jows-2013/KEGG-2010-11/kegg.cpd.rdf</option>
@@ -293,44 +296,38 @@
                             <form class="form" role="form">
                                 <div class="form-group">
                                     <select class="form-control" id = "FedSparql_Select">
-                                        <option value ="0" selected="selected">Demo federated query</option>
+                                        <option value ="0" selected="selected">INSEE query</option>
+                                        <option value ="1" >GINSENG query</option>
+                                        <option value ="2" >GINSENG paths query</option>
+                                        <option value ="3" >GINSENG-DBpedia query</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <!--<legend>SPARQL 1.1 querying interface</legend>-->
                                     <textarea id="sparqlFedTextArea" class="form-control" rows="9">
-PREFIX idemo:<http://rdf.insee.fr/def/demo#>
-PREFIX igeo:<http://rdf.insee.fr/def/geo#> 
-SELECT ?nom ?popTotale WHERE { 
-    ?region igeo:codeRegion "24" .
-    ?region igeo:subdivisionDirecte ?departement .
-    ?departement igeo:nom ?nom .
-    ?departement idemo:population ?popLeg .
-    ?popLeg idemo:populationTotale ?popTotale .
-} ORDER BY ?popTotale
                                     </textarea>
                                 </div>
                                 <div class="form-group">
                                     <!--                                                    <div class="row">-->
                                     <div class="form-inline">
-                                        <div class="form-group">
-                                            <button id="btnQueryFed" type="button" class="btn btn-success">Query</button>
-                                        </div>
-                                        <div class="form-group">
-                                            <!--<div  class="checkbox"><label><input id="checkProv" type="checkbox" checked> Provenance</label></div>-->
-                                            <div  class="checkbox"><label><input id="checkProv" type="checkbox"> Provenance</label></div>
-                                        </div>
+                                        <div class="form-group"><button id="btnQueryFed" type="button" class="btn btn-success">Query</button></div>
+                                        <div class="form-group"><div  class="checkbox"><label><input id="checkProv" type="checkbox"> Provenance</label></div></div>
+                                        <div class="form-group"><div  class="checkbox"><label><input id="checkAdvanced" type="checkbox"> Advanced</label></div></div>
+                                        <div class="form-group"><div  class="checkbox"><label><input id="checkTPGrouping" type="checkbox"> Triple pattern grouping</label></div></div>
+                                        <div class="form-group"><input class="form-control" id="txtSlice" type="text" size="5" placeholder="Slice size"></div>
                                     </div>
-                                    <!--                                        <div class="col-xs-2">
-                                                                               
-                                                                            </div>
-                                                                            <div class="col-xs-8">
-                                                                            </div>-->
-                                    <!--                                                    </div>-->
                                 </div>
                             </form>
                         </div>
-
+                        
+                        <div class="row">
+                            <p id="parAdvanced"></p>
+                            <table id="tbAdvanced" class="table table-striped">  
+                                <tbody>  
+                                </tbody>  
+                            </table> 
+                        </div>
+                        
                         <div class="row">
                             <p id="parProvGraph"></p>
                         </div>

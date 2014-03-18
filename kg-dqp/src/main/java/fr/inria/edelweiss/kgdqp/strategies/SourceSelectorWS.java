@@ -56,7 +56,28 @@ public class SourceSelectorWS {
                     return false;
                 } else {
                     //update cache
-                    rp.getCacheIndex().put(edge.getLabel(), true);
+                    Graph g = Graph.create();
+//                    logger.info(res);
+                    Mappings maps;
+                    try {
+                        maps = SPARQLResult.create(g).parseString(res);
+                        if (maps.size() == 0) {
+                            rp.getCacheIndex().put(edge.getLabel(), false);
+                            return false;
+                        } else {
+                            rp.getCacheIndex().put(edge.getLabel(), true);
+                            return true;
+                        }
+                    } catch (ParserConfigurationException ex) {
+                        logger.error("Parsing error for ASK results");
+                        logger.error(ex.getMessage());
+                    } catch (SAXException ex) {
+                        logger.error("Parsing error for ASK results");
+                        logger.error(ex.getMessage());
+                    } catch (IOException ex) {
+                        logger.error("I/O error for ASK results");
+                        logger.error(ex.getMessage());
+                    }
                     return true;
                 }
             } catch (WebServiceException e) {
@@ -71,7 +92,11 @@ public class SourceSelectorWS {
             return rp.getCacheIndex().get(predicate);
         } else {
             // ASK
+//            logger.info("source selection for predicate " + predicate + " on " + rp.getEndpoint().getEndpoint());
+
             String query = SourceSelectorWS.getSparqlAsk(predicate, ast);
+//            logger.info("with query " + query);
+
             try {
 //                String res = rp.getEndpoint().getEdges(query);
                 String res = rp.getEndpoint().query(query);
@@ -80,6 +105,7 @@ public class SourceSelectorWS {
                     return false;
                 } else {
                     Graph g = Graph.create();
+//                    logger.info(res);
                     Mappings maps = SPARQLResult.create(g).parseString(res);
                     if (maps.size() == 0) {
                         rp.getCacheIndex().put(predicate, false);
@@ -90,11 +116,14 @@ public class SourceSelectorWS {
                     }
                 }
             } catch (ParserConfigurationException ex) {
-                java.util.logging.Logger.getLogger(SourceSelectorWS.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("Parsing error for ASK results");
+                logger.error(ex.getMessage());
             } catch (SAXException ex) {
-                java.util.logging.Logger.getLogger(SourceSelectorWS.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("Parsing error for ASK results");
+                logger.error(ex.getMessage());
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(SourceSelectorWS.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("I/O error for ASK results");
+                logger.error(ex.getMessage());
             } catch (WebServiceException e) {
                 e.printStackTrace();
             }
@@ -119,11 +148,10 @@ public class SourceSelectorWS {
 
         String sparql = sparqlPrefixes;
         String ask = "ask  { ?_s " + edge.getEdgeNode().toString() + " ?_o } \n";
-        
+
 //        if (edge.getEdgeNode().toString().contains("#type") && edge.getNode(1).isConstant()) {
 //            ask = "ask  { ?_s " + edge.getEdgeNode().toString() + " "+ edge.getNode(1).toString()+"} \n";
 //        }
-        
         sparql += ask;
 
         return sparql;

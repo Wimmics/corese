@@ -16,6 +16,7 @@ import java.util.List;
 public class EdgeImpl implements Edge, Entity {
 
     public static boolean displayGraph = true;
+    int index = 0;
     protected Node graph, predicate;
     Node[] nodes;
 
@@ -149,7 +150,7 @@ public class EdgeImpl implements Edge, Entity {
 
     @Override
     public int getIndex() {
-        return 0;
+        return index;
     }
 
     @Override
@@ -169,6 +170,7 @@ public class EdgeImpl implements Edge, Entity {
 
     @Override
     public void setIndex(int n) {
+        index = n;
     }
 
     @Override

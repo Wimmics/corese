@@ -16,6 +16,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Stack;
+import fr.inria.edelweiss.kgram.event.ResultListener;
 
 /**
  * A generic filter Evaluator
@@ -35,8 +36,10 @@ public class Interpreter implements Evaluator, ExprType {
 	protected Proxy proxy;
 	Producer producer;
 	Object TRUE, FALSE;
+        ResultListener listener;
 	
 	int mode = KGRAM_MODE;
+        boolean hasListener = false;
 	
 	public Interpreter(Proxy p){
 		proxy = p;
@@ -52,6 +55,11 @@ public class Interpreter implements Evaluator, ExprType {
 	public Proxy getProxy(){
 		return proxy;
 	}
+        
+        public void addResultListener(ResultListener rl){
+            listener = rl;
+            hasListener = rl != null;
+        }
 	
 	public Node eval(Filter f, Environment env, Producer p) {
 		Expr exp = f.getExp();
@@ -382,6 +390,9 @@ public class Interpreter implements Evaluator, ExprType {
 	 * filter(! exists {PAT})
 	 */
 	Object exist(Expr exp, Environment env, Producer p){
+            if (hasListener){
+                listener.listen(exp);
+            }
 		if (env instanceof Memory){
 			Exp pat = env.getQuery().getPattern(exp);
 			Memory memory = (Memory) env;

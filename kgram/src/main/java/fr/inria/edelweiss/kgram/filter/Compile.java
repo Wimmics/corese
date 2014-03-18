@@ -146,7 +146,7 @@ public class Compile implements ExprType {
 			// compute Node list corresponding to variables
 			List<Node> lNode = query.getNodes(exp);
 			if (lNode.size()==2){
-				Exp bind = Exp.create(Exp.BIND);
+				Exp bind = Exp.create(Exp.OPT_BIND);
 				for (Node qNode : lNode){
 					Exp var = Exp.create(Exp.NODE, qNode);
 					bind.add(var);
@@ -156,7 +156,7 @@ public class Compile implements ExprType {
 		}
 		// ?x = 'constant'
 		else if (matcher.match(new Pattern(TERM, EQ, VARIABLE, CONSTANT), ee)){ 
-			Exp bind = buildCst(exp, Exp.BIND);
+			Exp bind = buildCst(exp, Exp.OPT_BIND);
 			if (bind != null){
 				exp.add(bind);		
 			}
@@ -230,7 +230,7 @@ public class Compile implements ExprType {
 			Node node = query.getProperAndSubSelectNode(ff.getVariables().get(0));
 			if (node != null){
 				List<Expr> list = getConstants(ee);
-				Exp bind = Exp.create(Exp.BIND, Exp.create(Exp.NODE, node));
+				Exp bind = Exp.create(Exp.OPT_BIND, Exp.create(Exp.NODE, node));
 				bind.setObject(list);
 				exp.add(bind);
 			}

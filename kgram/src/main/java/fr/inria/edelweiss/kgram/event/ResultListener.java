@@ -1,9 +1,11 @@
 package fr.inria.edelweiss.kgram.event;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.path.Path;
 
 /**
@@ -32,5 +34,8 @@ public interface ResultListener {
 	boolean enter(Entity ent, Regex exp, int size);
 	
 	boolean leave(Entity ent, Regex exp, int size);
+        
+        void listen(Exp exp);
 	
+        void listen(Expr exp);
 }

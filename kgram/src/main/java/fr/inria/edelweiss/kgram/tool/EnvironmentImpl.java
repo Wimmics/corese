@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.tool;
 
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import java.util.Map;
 
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -132,6 +133,11 @@ public class EnvironmentImpl implements Environment {
 	public Map getMap() {
 		return null;
 	}
+
+    @Override
+    public Entity[] getEdges() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 	
 

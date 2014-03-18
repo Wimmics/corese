@@ -39,7 +39,7 @@ public interface ExpType {
 	static final int PATH 		= 20; 
 	static final int XPATH 		= 21; 
 	static final int ACCEPT 	= 22; 
-	static final int BIND 		= 23; 
+	static final int BIND           = 23; 
 	static final int EVAL 		= 24; 
 	static final int SCOPE 		= 25; 
 	static final int TEST 		= 26; 
@@ -50,6 +50,7 @@ public interface ExpType {
 	static final int RESTORE 	= 31; 
 	static final int JOIN 		= 32; 
 	static final int VALUES 	= 33; 
+	static final int OPT_BIND 	= 34; 
 
 
 
@@ -58,7 +59,8 @@ public interface ExpType {
 		"EMPTY", "AND", "UNION", "GRAPH", "OPTION", "EDGE", "FILTER", "NODE", 
 		"NOT", "WATCH", "CONTINUE", "BACKJUMP", "EXTERN", "QUERY", "FORALL", "EXIST",
 		"GRAPHNODE", "OPTIONAL", "SCAN", "IF", "PATH", "XPATH", "ACCEPT", "BIND", 
-		"EVAL", "SCOPE", "TEST", "NEXT", "MINUS", "POP", "SERVICE", "RESTORE", "JOIN", "VALUES"
+		"EVAL", "SCOPE", "TEST", "NEXT", "MINUS", "POP", "SERVICE", "RESTORE", "JOIN", "VALUES", 
+                "OPT_BIND"
 	};
 	
 }

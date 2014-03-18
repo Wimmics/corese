@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.api.query;
 
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import java.util.Map;
 
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -131,6 +132,7 @@ public interface Environment {
 	Exp getExp();
 	
 	Map getMap();
-	
+        
+        Entity[] getEdges();	
 	
 }

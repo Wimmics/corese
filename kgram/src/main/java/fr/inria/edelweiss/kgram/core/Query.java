@@ -577,9 +577,6 @@ public class Query extends Exp {
 		 isSort = b;
 	}
 	
-	public boolean isFunctional(){
-		return isFunctional;
-	}
 	
 	public boolean isAggregate(){
 		return isAggregate;
@@ -666,7 +663,7 @@ public class Query extends Exp {
 					setAggregate(true);
 				}
 				else if (exp.getFilter().isFunctional()){
-					isFunctional = true;
+					setFunctional(true);
 				}
 			}
 		}
@@ -1041,6 +1038,10 @@ public class Query extends Exp {
 		for (Node node : getBindingNodes()){
 			index(node);
 		}
+                
+                for (Node node : getArgList()){
+			index(node);
+		}
 		
 		if (getGraphNode()!=null){
 			index(getGraphNode());
@@ -1167,6 +1168,10 @@ public class Query extends Exp {
 		for (Node node : getBindingNodes()){
 			store(node, false, false);
 		}
+                
+                for (Node node : getArgList()){
+			store(node, false, false);
+		}
 
 		for (Filter ff : getPathFilter()){
 			collectExist(ff.getExp());
@@ -1219,7 +1224,11 @@ public class Query extends Exp {
 			}
 	
 			break ;
-
+                    
+                case BIND:
+ 		   collectExist(exp.getFilter().getExp());
+                   store(exp.getNode(), exist, true);
+                    break;
 
 		default:
 			for (Exp ee : exp){
@@ -1304,7 +1313,12 @@ public class Query extends Exp {
 			Node node = exp.getNode();
 			min = qIndex(query, node);
 			break;
-
+                    
+                case BIND: 
+                        Node qn = exp.getNode();
+			min = qIndex(query, qn);
+                        // continue on filter below:
+                    
 		case FILTER:
 			// use case: filter(exists {?x ?p ?y})
 			boolean hasExist = index(query, exp.getFilter());
@@ -1371,7 +1385,7 @@ public class Query extends Exp {
 			break;
 			
 			
-		case BIND:
+		case OPT_BIND:
 			
 		case ACCEPT:
 			break;
@@ -1564,6 +1578,10 @@ public class Query extends Exp {
 			// compile inner exists {} if any
 			compile(exp.getFilter(), lVar, option);
 			break;
+                    
+                case BIND:
+                    compile(exp.getFilter(), lVar, option);
+                    break;
 			
 		case PATH:
 			//compiler.test(exp.getRegex());
@@ -1608,7 +1626,7 @@ public class Query extends Exp {
 				List<Exp> lBind = exp.varBind();
 				if (exp.type() == AND){
 					// sort edges wrt connection
-                                        // take BIND(var = exp) into account
+                                        // take OPT_BIND(var = exp) into account
 					sort.sort(this, exp, lVar, lBind);
 
 				}

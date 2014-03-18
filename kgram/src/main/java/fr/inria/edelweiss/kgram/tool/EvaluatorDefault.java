@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.event.ResultListener;
 
 public class EvaluatorDefault implements Evaluator {
 
@@ -62,6 +63,10 @@ public class EvaluatorDefault implements Evaluator {
 
     @Override
     public void setProducer(Producer p) {
+    }
+
+    @Override
+    public void addResultListener(ResultListener rl) {
     }
 
 }

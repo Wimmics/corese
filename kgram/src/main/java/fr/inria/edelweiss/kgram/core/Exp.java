@@ -36,6 +36,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
             isFree = false,
             isAggregate = false,
             isSilent = false;
+    private boolean isFunctional = false;
     VExp args;
     Edge edge;
     Node node;
@@ -66,6 +67,20 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
      */
     public void setBind(Exp bind) {
         this.bind = bind;
+    }
+
+    /**
+     * @return the isFunctional
+     */
+    public boolean isFunctional() {
+        return isFunctional;
+    }
+
+    /**
+     * @param isFunctional the isFunctional to set
+     */
+    public void setFunctional(boolean isFunctional) {
+        this.isFunctional = isFunctional;
     }
 
     class VExp extends ArrayList<Exp> {
@@ -669,7 +684,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     }
 
     boolean isSortable() {
-        return isEdge() || isPath() || isGraph() || type == BIND;
+        return isEdge() || isPath() || isGraph() || type == OPT_BIND;
     }
 
     boolean isSimple() {
@@ -677,7 +692,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
             case EDGE:
             case PATH:
             case EVAL:
-            case BIND:
+            case OPT_BIND:
                 return true;
             default:
                 return false;
@@ -824,7 +839,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                     return edge.nbNode() + 1;
                 }
 
-            case BIND:
+            case OPT_BIND:
                 return size();
         }
 
@@ -847,7 +862,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                     return edge.getEdgeVariable();
                 }
 
-            case BIND:
+            case OPT_BIND:
                 return get(n).getNode();
         }
         return null;
@@ -878,7 +893,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         switch (type()) {
 
             case FILTER:
-            case BIND:
+            case OPT_BIND:
                 break;
 
             case OPTION:
@@ -913,6 +928,9 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                     }
                 }
                 break;
+                
+            case BIND:
+                share(getNode(), filterVar, expVar);
 
             case EDGE:
             case PATH:
@@ -1009,6 +1027,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                 if (first() != null) {
                     first().getNodes(lNode, lSelNode, lExistNode, blank);
                 }
+                break;
+                
+            case BIND:
+                add(lSelNode, getNode());
                 break;
 
             case QUERY:
@@ -1176,11 +1198,11 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     }
 
     boolean isBindCst() {
-        return type() == BIND && size() == 1;
+        return type() == OPT_BIND && size() == 1;
     }
     
      boolean isBindVar() {
-        return type() == BIND && size() == 2;
+        return type() == OPT_BIND && size() == 2;
     }
 
     /**
@@ -1192,7 +1214,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
             Exp f = get(i);
             if (f.isFilter() && f.size() > 0) {
                 Exp bind = f.first();
-                if (bind.type() == BIND) {
+                if (bind.type() == OPT_BIND) {
                     if (bind.isBindCst()) {
                         // ?x = cst
                         lBind.add(bind);
@@ -1217,7 +1239,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
             Exp f = get(i);
             if (f.isFilter() && f.size() > 0) {
                 Exp bind = f.first();
-                if (bind.type() == BIND
+                if (bind.type() == OPT_BIND
                         // no bind (?x = ?y) in case of JOIN
                         && (!Query.testJoin || bind.isBindCst())
                         // check that BIND() is linked to EDGE()

@@ -57,12 +57,16 @@
     </developers>
     
     <scm>
-        <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
+        <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</developerConnection>
+        <url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>
+        
+        <!--<connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>-->
         <!--<developperConnection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</developperConnection>-->
-        <url>https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>
+        <!--<url>https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>-->
     </scm>
 
-<!--    <distributionManagement>
+    <!--    <distributionManagement>
         <repository>
             <id>Nexus</id>
             <name>I3S public Maven releases repository</name>
@@ -70,18 +74,18 @@
         </repository>
     </distributionManagement>-->
 
-<distributionManagement>
-  <repository>
+    <distributionManagement>
+        <repository>
             <id>Nexus</id>
-     <name>Releases</name>
-     <url>http://nyx.unice.fr:9007/nexus/content/repositories/i3s-public/</url>
-  </repository>
-  <snapshotRepository>
+            <name>Releases</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/i3s-public/</url>
+        </repository>
+        <snapshotRepository>
             <id>Nexus</id>
-     <name>Snapshots</name>
-     <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots/</url>
-  </snapshotRepository>
-</distributionManagement>
+            <name>Snapshots</name>
+            <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
     
     <properties>
         <!-- Sonar -->
@@ -99,7 +103,7 @@
         <module>kggui</module>
         <module>kgtool</module>
         <module>kgserver</module>
-        <module>kgserver-stubs</module>
+        <!--<module>kgserver-stubs</module>-->
         <module>kg-dqp</module>
         <module>kgimport</module>
         <module>sparql</module>
@@ -140,6 +144,12 @@
             <dependency>
                 <groupId>org.graphstream</groupId>
                 <artifactId>gs-ui</artifactId>
+                <version>1.2</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.graphstream</groupId>
+                <artifactId>gs-algo</artifactId>
                 <version>1.2</version>
             </dependency>
           
@@ -318,6 +328,13 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <username>${svn.username}</username>
+                    <password>${svn.password}</password>
+                </configuration>
+            </plugin> 
         </plugins>
     </build>
     

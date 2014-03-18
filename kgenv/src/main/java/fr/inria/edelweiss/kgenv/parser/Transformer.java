@@ -119,10 +119,9 @@ public class Transformer implements ExpType {
                     ast.setDefaultDataset(dataset);
                 }
 
-		ParserSparql1.create(ast).parse();
-						
+		ParserSparql1.create(ast).parse();	
 		Query q = transform(ast);
-		
+
 		return q;
 		
 	}
@@ -345,7 +344,16 @@ public class Transformer implements ExpType {
 		return q;
 	}
 	
-	
+	Exp compileBind(Binding b){
+            Filter f = compileSelect(b.getFilter(), ast);
+            Node node = compiler.createNode(b.getVariable());
+            Exp exp = Exp.create(BIND);
+            exp.setFilter(f);
+            exp.setNode(node);
+            exp.setFunctional(f.isFunctional());
+            function(null, exp, b.getVariable());
+            return exp;
+        }
 	
 	/**
 	 * Delete/Insert/Construct
@@ -746,14 +754,13 @@ public class Transformer implements ExpType {
 
 	
 	Node getNode(Query qCurrent, Variable var){
-		Node node = getProperAndSubSelectNode(qCurrent, var.getName());
+		Node node = null; 
+                if (qCurrent != null){
+                    node = getProperAndSubSelectNode(qCurrent, var.getName());
+                }
 		if (node == null){
 			node = compiler.createNode(var);
-		}
-		else {
-			ASTQuery ast = getAST(qCurrent);
-			//ast.addError("Variable already defined: ", var);
-		}
+		}		
 		return node;
 	}
 	
@@ -943,6 +950,10 @@ public class Transformer implements ExpType {
 		case QUERY:
 			exp = compileQuery(query.getQuery());
 			break;
+                    
+                case BIND:
+                    exp = compileBind((Binding)query);
+                    break;
 
 		case SERVICE: 
 			exp = compileService((Service) query);		
@@ -1282,7 +1293,10 @@ public class Transformer implements ExpType {
 		else if (query.isQuery()){
 			return QUERY;
 		} 
-		else if (query.isExist()){
+                else if (query.isBind()){
+			return BIND;
+		} 		
+                else if (query.isExist()){
 			return EXIST;
 		} 
 		else if (query.isForall()){
@@ -1391,6 +1405,9 @@ public class Transformer implements ExpType {
 			visit(exp.getFilter().getExp(), list);
 			break;
 				
+                case BIND:
+                    visit(exp.getFilter().getExp(), list);
+                    break;
 			
 		case QUERY:
 			Query q = exp.getQuery();

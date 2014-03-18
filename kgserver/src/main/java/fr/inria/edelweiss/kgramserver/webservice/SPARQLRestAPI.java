@@ -4,8 +4,6 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -46,7 +44,7 @@ import org.apache.log4j.Logger;
 @Path("sparql")
 public class SPARQLRestAPI {
 
-    private Logger logger = Logger.getLogger(RemoteProducer.class);
+    private Logger logger = Logger.getLogger(SPARQLRestAPI.class);
     private static Graph graph = Graph.create(false);
     private static QueryProcess exec = QueryProcess.create(graph);
     private String headerAccept = "Access-Control-Allow-Origin";
@@ -120,7 +118,7 @@ public class SPARQLRestAPI {
                 logger.error("TODO loading of .n3 or .nt");
                 return Response.status(404).header(headerAccept, "*").entity(output).build();
             }
-
+            
         } else {
             logger.info("Loading " + remotePath);
             File f = new File(remotePath);
@@ -231,6 +229,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
+            logger.debug(query);
             return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");

@@ -248,7 +248,11 @@ public abstract class Exp extends Statement {
 		return false;
 	}
 	
-	public boolean isScope(){
+	public boolean isBind(){
+		return false;
+	}
+        
+        public boolean isScope(){
 		return false;
 	}
 	

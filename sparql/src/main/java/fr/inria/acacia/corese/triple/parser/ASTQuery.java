@@ -821,7 +821,18 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 * BIND( f(?x) as ?y )
 	 */
 	public Exp createBind(Expression exp, Variable var){
-		ASTQuery ast = subCreate();
+            if (var.getVariableList() != null){
+                // bind (sql() as ())
+                return createASTBind(exp, var);
+            }
+            else {
+                return Binding.create(exp, var);
+            }
+        }
+            
+            
+        public Exp createASTBind(Expression exp, Variable var){		
+                ASTQuery ast = subCreate();        
 		ast.setBody(BasicGraphPattern.create());
 		ast.setSelect(var, exp); 
 		ast.setBind(true);

@@ -1,6 +1,6 @@
 package fr.inria.edelweiss.kgdqp.core;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgdqp.strategies.ServiceGrouper;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -23,13 +23,14 @@ import org.apache.log4j.Logger;
  *
  */
 public class QueryProcessDQP extends QueryProcess {
-    
+
     private static Logger logger = Logger.getLogger(QueryProcessDQP.class);
     private final int parallelWaitMP = 0;
     private final int parallelLessWaitMP = 1;
     private final int pipelinedMP = 2;
-    
+
     private boolean provEnabled = false;
+    private boolean groupingEnabled = false;
 
 //    private static Graph provGraph = Graph.create();
 //    public static QueryProcess provQP = QueryProcess.create(provGraph);
@@ -42,17 +43,17 @@ public class QueryProcessDQP extends QueryProcess {
     public static ConcurrentHashMap<String, Long> sourceCounter = new ConcurrentHashMap<String, Long>();
     // for each source, record the number of sent queries
     public static ConcurrentHashMap<String, Long> sourceVolumeCounter = new ConcurrentHashMap<String, Long>();
-    
+
     public QueryProcessDQP(boolean provEnabled) {
         super();
         this.provEnabled = provEnabled;
     }
-    
+
     public QueryProcessDQP(Producer p, Evaluator e, Matcher m, boolean provEnabled) {
         super(p, e, m);
         this.provEnabled = provEnabled;
     }
-    
+
     public void setProvEnabled(boolean provEnabled) {
         this.provEnabled = provEnabled;
         if (producer instanceof MetaProducer) {
@@ -65,80 +66,100 @@ public class QueryProcessDQP extends QueryProcess {
             }
         }
     }
-    
+
     public boolean isProvEnabled() {
         return provEnabled;
     }
-    
+
+    public boolean isGroupingEnabled() {
+        return groupingEnabled;
+    }
+
+    /**
+     * 
+     * @param groupingEnabled
+     * @return 
+     */
+    public ServiceGrouper setGroupingEnabled(boolean groupingEnabled) {
+        this.groupingEnabled = groupingEnabled;
+        if (groupingEnabled) {
+            ServiceGrouper sg = new ServiceGrouper(this);
+            this.setVisitor(new ServiceGrouper(this));
+            return sg;
+        } else {
+            return null;
+        }
+    }
+
     public void addRemote(URL url, WSImplem implem) {
         add(new RemoteProducerWSImpl(url, implem, this.isProvEnabled()));
     }
-    
+
     public void addRemoteSQL(String url, String driver, String login, String password) {
         add(new RemoteSqlProducerImpl(url, driver, login, password));
     }
-    
+
     public static QueryProcessDQP create(Graph g) {
         ProducerImpl p = ProducerImpl.create(g);
         QueryProcessDQP exec = QueryProcessDQP.create(p);
         return exec;
     }
-    
+
     public static QueryProcessDQP create(Graph g, boolean provEnabled) {
         ProducerImpl p = ProducerImpl.create(g);
         QueryProcessDQP exec = QueryProcessDQP.create(p, provEnabled);
         return exec;
     }
-    
+
     public static QueryProcessDQP create(Graph g, Provider serviceProvider) {
         ProducerImpl p = ProducerImpl.create(g);
         QueryProcessDQP exec = QueryProcessDQP.create(p);
         exec.set(serviceProvider);
         return exec;
     }
-    
+
     public static QueryProcessDQP create(Graph g, Provider serviceProvider, boolean provEnabled) {
         ProducerImpl p = ProducerImpl.create(g);
         QueryProcessDQP exec = QueryProcessDQP.create(p, provEnabled);
         exec.set(serviceProvider);
         return exec;
     }
-    
+
     public static QueryProcessDQP create(Graph g, Graph g2) {
         QueryProcessDQP qp = QueryProcessDQP.create(g);
         qp.add(g2);
         return qp;
     }
-    
+
     public static QueryProcessDQP create(ProducerImpl prod) {
         Matcher match = MatcherImpl.create(prod.getGraph());
         QueryProcessDQP exec = QueryProcessDQP.create(prod, match);
         return exec;
     }
-    
+
     public static QueryProcessDQP create(ProducerImpl prod, boolean provEnabled) {
         Matcher match = MatcherImpl.create(prod.getGraph());
         QueryProcessDQP exec = QueryProcessDQP.create(prod, match, provEnabled);
         return exec;
     }
-    
+
     public static QueryProcessDQP create(Producer prod, Matcher match) {
         Interpreter eval = createInterpreter(prod, match);
         QueryProcessDQP exec = new QueryProcessDQP(prod, eval, match, false);
         return exec;
     }
-    
+
     public static QueryProcessDQP create(Producer prod, Matcher match, boolean provEnabled) {
         Interpreter eval = createInterpreter(prod, match);
         QueryProcessDQP exec = new QueryProcessDQP(prod, eval, match, provEnabled);
         return exec;
     }
-    
+
     public static QueryProcessDQP create(Producer prod, Evaluator ev, Matcher match, boolean provEnabled) {
         QueryProcessDQP exec = new QueryProcessDQP(prod, ev, match, provEnabled);
         return exec;
     }
-    
+
     @Override
     public void add(Producer prod) {
 //        int implem = parallelWaitMP;
@@ -183,5 +204,5 @@ public class QueryProcessDQP extends QueryProcess {
             meta.add(prod);
         }
     }
-    
+
 }

@@ -11,7 +11,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.Messages;
-import fr.inria.edelweiss.kgdqp.core.ProviderImpl;
+import fr.inria.edelweiss.kgdqp.core.ProviderImplCostMonitoring;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
@@ -50,7 +50,7 @@ public class DqpRestAPI {
 
     private Logger logger = Logger.getLogger(DqpRestAPI.class);
     private static Graph graph = Graph.create(false);
-    private static Provider sProv = ProviderImpl.create();
+    private static Provider sProv = ProviderImplCostMonitoring.create();
     private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, false);
 
     /**
@@ -64,7 +64,7 @@ public class DqpRestAPI {
     public Response resetDQP() {
         try {
             DqpRestAPI.graph = Graph.create(false);
-            DqpRestAPI.sProv = ProviderImpl.create();
+            DqpRestAPI.sProv = ProviderImplCostMonitoring.create();
             DqpRestAPI.execDQP = QueryProcessDQP.create(graph, sProv, false);
 
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("Reinitialized KGRAM-DQP federation engine").build();

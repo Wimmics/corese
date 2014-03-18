@@ -5,7 +5,7 @@
 package fr.inria.edelweiss.kgdqp.core;
 
 /**
- *
+ * Basic messages to be displayed i the UI.
  * @author Alban Gaignard <alban.gaignard@cnrs.fr>
  */
 public class Messages {
@@ -13,5 +13,6 @@ public class Messages {
     public static String countQueries = "Remote queries";
     public static String countTransferredResults = "Transferred results per query";
     public static String countDS = "Remote queries per data source";
+    public static String countTransferredResultsPerSource = "Transferred results per source";
     
 }

@@ -57,13 +57,12 @@
     </developers>
     
     <scm>
-        <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
+<!--        <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</developerConnection>
-        <url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>
-        
-        <!--<connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>-->
-        <!--<developperConnection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</developperConnection>-->
-        <!--<url>https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>-->
+        <url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>-->
+        <connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
+        <developerConnection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</developerConnection>
+        <url>https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>
     </scm>
 
     <!--    <distributionManagement>
@@ -328,13 +327,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <username>${svn.username}</username>
-                    <password>${svn.password}</password>
-                </configuration>
-            </plugin> 
         </plugins>
     </build>
     

@@ -9,11 +9,11 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgdqp.core.ProviderWSImpl;
+import fr.inria.edelweiss.kgdqp.core.ProviderImplCostMonitoring;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLEndpointClient;
-import fr.inria.edelweiss.kgdqp.strategies.ServiceQueryVisitorPar;
+import fr.inria.edelweiss.kgdqp.strategies.ServiceGrouper;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProviderImpl;
@@ -206,40 +206,12 @@ public class ServiceGroupingTest {
 
     @Test
     @Ignore
-    public void serviceFedQueryingSOAP() throws MalformedURLException, EngineException, IOException {
-        System.out.println("===========================");
-        System.out.println(sparqlHeterogeneousFedWSQuery);
-        Graph graph = Graph.create();
-        QueryProcessDQP execDQP = QueryProcessDQP.create(graph);
-        ProviderWSImpl p = ProviderWSImpl.create(WSImplem.SOAP);
-        execDQP.set(p);
-//        execDQP.setOptimize(false);
-
-        ArrayList<Long> values = new ArrayList<Long>();
-        for (int i = 0; i < nloop; i++) {
-            StopWatch sw = new StopWatch();
-            sw.start();
-            Mappings maps = execDQP.query(sparqlHeterogeneousFedWSQuery);
-            Long t = sw.getTime();
-            values.add(t);
-            System.out.println("[SOAP service querying] Results size " + maps.size() + " in " + t + " ms");
-            sw.stop();
-            sw.reset();
-
-            assertEquals(expectedResults, maps.size());
-        }
-        System.out.println("[SOAP service querying] Mean time : "+average(values)+" ms");
-        System.out.println("");
-    }
-
-    @Test
-    @Ignore
     public void serviceFedQueryingREST() throws MalformedURLException, EngineException, IOException {
         System.out.println("===========================");
         System.out.println(sparqlHeterogeneousFedRESTQuery);
         Graph graph = Graph.create();
         QueryProcessDQP execDQP = QueryProcessDQP.create(graph);
-        ProviderWSImpl p = ProviderWSImpl.create(WSImplem.REST);
+        ProviderImplCostMonitoring p = ProviderImplCostMonitoring.create();
         execDQP.set(p);
 //        execDQP.setOptimize(false);
 
@@ -268,8 +240,8 @@ public class ServiceGroupingTest {
         //---------------Service grouping-----------------------
         Graph g1 = Graph.create();
         QueryProcessDQP execDQP1 = QueryProcessDQP.create(g1);
-        execDQP1.addVisitor(new ServiceQueryVisitorPar(execDQP1));
-        ProviderWSImpl p = ProviderWSImpl.create(WSImplem.SOAP);
+        execDQP1.addVisitor(new ServiceGrouper(execDQP1));
+        ProviderImplCostMonitoring p = ProviderImplCostMonitoring.create();
         execDQP1.set(p);
 //        execDQP.setOptimize(false);
         execDQP1.addRemote(new URL("http://" + host + ":8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort"), WSImplem.SOAP);
@@ -308,8 +280,8 @@ public class ServiceGroupingTest {
         //---------------Service grouping-----------------------
         Graph g1 = Graph.create();
         QueryProcessDQP execDQP1 = QueryProcessDQP.create(g1);
-        execDQP1.addVisitor(new ServiceQueryVisitorPar(execDQP1));
-        ProviderWSImpl p = ProviderWSImpl.create(WSImplem.REST);
+        execDQP1.addVisitor(new ServiceGrouper(execDQP1));
+        ProviderImplCostMonitoring p = ProviderImplCostMonitoring.create();
         execDQP1.set(p);
 //        execDQP.setOptimize(false);
         execDQP1.addRemote(new URL("http://" + host + ":8091/kgserver-1.0.7-kgram-webservice/sparql"), WSImplem.REST);

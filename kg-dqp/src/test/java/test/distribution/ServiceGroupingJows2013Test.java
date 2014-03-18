@@ -5,14 +5,13 @@
 package test.distribution;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgdqp.core.ProviderWSImpl;
+import fr.inria.edelweiss.kgdqp.core.ProviderImplCostMonitoring;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
-import fr.inria.edelweiss.kgdqp.strategies.ServiceQueryVisitorPar;
+import fr.inria.edelweiss.kgdqp.strategies.ServiceGrouper;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.ProviderImpl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -92,7 +91,7 @@ public class ServiceGroupingJows2013Test {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void serviceGroupingFuseki() throws EngineException, MalformedURLException, IOException {
         String query = LS6;
 
@@ -102,8 +101,8 @@ public class ServiceGroupingJows2013Test {
         //---------------Service grouping-----------------------
         Graph g1 = Graph.create();
         QueryProcessDQP execDQP1 = QueryProcessDQP.create(g1);
-        execDQP1.addVisitor(new ServiceQueryVisitorPar(execDQP1));
-        ProviderWSImpl p = ProviderWSImpl.create(WSImplem.REST);
+        execDQP1.addVisitor(new ServiceGrouper(execDQP1));
+        ProviderImplCostMonitoring p = ProviderImplCostMonitoring.create();
 //        p.set("http://" + host + ":3030/KEGG", 1.1);
 //        p.set("http://" + host + ":3030/drugbank", 1.1);
 //        p.set("http://" + host + ":3030/chebi", 1.1);
@@ -219,7 +218,7 @@ public class ServiceGroupingJows2013Test {
         Graph g1 = Graph.create();
         QueryProcessDQP execDQP1 = QueryProcessDQP.create(g1);
 //        execDQP1.addVisitor(new ServiceQueryVisitorPar(execDQP1));
-        ProviderWSImpl p = ProviderWSImpl.create(WSImplem.REST);
+        ProviderImplCostMonitoring p = ProviderImplCostMonitoring.create();
 //        p.set("http://" + host + ":3030/KEGG", 1.1);
 //        p.set("http://" + host + ":3030/drugbank", 1.1);
 //        p.set("http://" + host + ":3030/chebi", 1.1);

@@ -149,31 +149,6 @@
                 <version>2.16</version>
             </plugin>
             
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxws-maven-plugin</artifactId>
-                <version>1.12</version>
-                <executions>
-                    <!-- ==================== -->
-                    <!-- Generation of WSDLs  -->
-                    <!-- ==================== -->
-                    <execution>
-                        <id>KgramWS</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>wsgen</goal>
-                        </goals>
-                        <configuration>
-                            <sei>fr.inria.edelweiss.kgramserver.webservice.RemoteProducer</sei>
-                            <verbose>false</verbose>
-                            <keep>false</keep>
-                            <genWsdl>true</genWsdl>
-                            <resourceDestDir>${basedir}/src/main/resources/webservices/kgram-ws</resourceDestDir>
-                            <staleFile>${project.build.directory}/jaxws/stale/RemoteProducer.stale</staleFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

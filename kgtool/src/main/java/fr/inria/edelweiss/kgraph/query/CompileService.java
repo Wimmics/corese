@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -13,6 +12,7 @@ import fr.inria.acacia.corese.triple.parser.Values;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -20,10 +20,10 @@ import fr.inria.edelweiss.kgram.core.Query;
 
 public class CompileService {
 	
-	ProviderImpl provider;
+	Provider provider;
         Group group;
 	
-	public CompileService(ProviderImpl p){
+	public CompileService(Provider p){
             provider = p;
 	}
 

@@ -24,432 +24,435 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.Construct;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 
-
 /**
- * Forward Rule Engine 
- * Use construct {} where {} SPARQL Query as Rule
- * 
- * TODO:
- * This engine creates target blank nodes for rule blank nodes
- * hence it may loop:
- * 
- * construct {?x ex:rel _:b2} 
- * where {?x ex:rel ?y}
- * 
+ * Forward Rule Engine Use construct {} where {} SPARQL Query as Rule
+ *
+ * TODO: This engine creates target blank nodes for rule blank nodes hence it
+ * may loop:
+ *
+ * construct {?x ex:rel _:b2} where {?x ex:rel ?y}
+ *
  * @author Olivier Corby, Edelweiss INRIA 2011
  */
 public class RuleEngine implements Engine {
-	private static final String UNKNOWN = "unknown";
 
+    private static final String UNKNOWN = "unknown";
+    private static Logger logger = Logger.getLogger(RuleEngine.class);
+    Graph graph;
+    QueryProcess exec;
+    List<Rule> rules;
+    RTable rtable;
+    boolean debug = false, isOptim = false, trace = false;
+    int loop = 0;
+    private boolean isActivate = true;
 
-	private static Logger logger = Logger.getLogger(RuleEngine.class);	
+    RuleEngine() {
+        rules = new ArrayList<Rule>();
+    }
 
-	
-	Graph graph;
-	QueryProcess exec;
-	List<Rule> rules;
-	
-	RTable rtable;
-	
-	boolean debug = false, isOptim = false;
-	int loop = 0;
+    void set(Graph g) {
+        graph = g;
+    }
 
+    public void set(QueryProcess p) {
+        exec = p;
+    }
 
-	private boolean isActivate = true;
-	
-	
-	RuleEngine(){
-		rules = new ArrayList<Rule>();
-	}
-	
-	void set(Graph g){
-		graph = g;
-	}
-	
-	public void set(QueryProcess p){
-		exec = p;
-	}
-        
-        public QueryProcess getQueryProcess(){
-            return exec;
+    public QueryProcess getQueryProcess() {
+        return exec;
+    }
+
+    public void set(Sorter s) {
+        if (exec != null) {
+            exec.set(s);
         }
-	
-	public void set(Sorter s){
-		if (exec!=null){
-			exec.set(s);
-		}
-	}
-	
-	public void setOptimize(boolean b){
-		isOptim = b;
-	}
-	
-	public static RuleEngine create(Graph g){
-		RuleEngine eng = new RuleEngine();
-		eng.set(g);
-		eng.set(QueryProcess.create(g));
-		return eng;
-	}
-	
-	public static RuleEngine create(QueryProcess q){
-		RuleEngine eng = new RuleEngine();
-		eng.set(q);
-		return eng;
-	}
+    }
 
-	public static RuleEngine create(Graph g, QueryProcess q){
-		RuleEngine eng = new RuleEngine();
-		eng.set(g);
-		eng.set(q);
-		return eng;
-	}
-	
-	public boolean process(){
-		if (graph==null){
-			set(Graph.create());
-		}
-		//OC:
-		//synEntail();
-		int size = graph.size();
-		entail();
-		return graph.size() > size;
-	}
-	
-	public int process(Graph g){
-		set(g);
-		if (exec==null){
-			set(QueryProcess.create(g));
-		}
-		return entail();
-	}
-	
-	public int process(Graph g, QueryProcess q){
-		set(g);
-		set(q);
-		return entail();
-	}
-	
-	public int process(QueryProcess q){
-		if (graph==null){
-			set(Graph.create());
-		}
-		set(q);
-		return entail();
-	}
-	
-	public Graph getGraph(){
-		return graph;
-	}
+    public void setOptimize(boolean b) {
+        isOptim = b;
+    }
+    
+    public void setTrace(boolean b) {
+        trace = b;
+    }
+    public static RuleEngine create(Graph g) {
+        RuleEngine eng = new RuleEngine();
+        eng.set(g);
+        eng.set(QueryProcess.create(g));
+        return eng;
+    }
 
-	
-	public void setDebug(boolean b){
-		debug = b;
-	}
-	
-	public void clear(){
-		rules.clear();
-	}
-	
-	/**
-	 * Define a construct {} where {} rule
-	 */
-	
-	public Query defRule(String rule) throws EngineException {
-		return defRule(UNKNOWN, rule);
-	}
-	
-	public void defRule(Query rule)  {
-		rules.add(Rule.create(UNKNOWN, rule));
-	}
-	
-	public void addRule(String rule)  {
-		 try {
-			defRule(rule);
-		} catch (EngineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public List<Rule> getRules(){
-		return rules;
-	}
-	
-	public Query defRule(String name, String rule) throws EngineException {
-		Query qq = exec.compileRule(rule);
-		
-		if (! qq.isConstruct()){
-			// template
-			qq.setRule(false);
-			ASTQuery ast = (ASTQuery) qq.getAST();
-			ast.setRule(false);
-		}
-		
-		if (qq != null){ // && qq.isConstruct()) {
-			rules.add(Rule.create(name, qq));
-			return qq;
-		}
-		return null;
-	}
-	
-	
-	int synEntail(){
-		try {
-			graph.writeLock().lock();
-			return entail();
-		}
-		finally {
-			graph.writeLock().unlock();
-		}
-	}
-	
-	
-	/**
-	 *  Process rule base at saturation 
-	 *  PRAGMA: not synchronized on write lock
-	 */
-	public int entail(){
-		
-		if (isOptim){
-			start();
-		}
+    public static RuleEngine create(QueryProcess q) {
+        RuleEngine eng = new RuleEngine();
+        eng.set(q);
+        return eng;
+    }
 
-		int size = graph.size(),
-		start = size;
-		loop = 0;
-		boolean go = true;
+    public static RuleEngine create(Graph g, QueryProcess q) {
+        RuleEngine eng = new RuleEngine();
+        eng.set(g);
+        eng.set(q);
+        return eng;
+    }
 
-		// Entailment 
-		graph.init();
-		
-		List<Entity> list = null, current;
-		
-		ITable t = null;		
-		
-		while (go){
-			
-			exec.getProducer().setMode(loop);
-			
-			// List of edges created by rules in this step (or by entailment if any)
-			current = list;
-			list = new ArrayList<Entity>();
+    public boolean process() {
+        if (graph == null) {
+            set(Graph.create());
+        }
+        //OC:
+        //synEntail();
+        int size = graph.size();
+        entail();
+        return graph.size() > size;
+    }
 
-			for (Rule rule : rules){
-				// graph.entail() is done once before rule application
-				
-				if (isOptim) {
-					t = record(rule);
-				}
-				
-				if (! isOptim  || 
-					(loop == 0 || accept(rule, getRecord(rule), t))){
-					//OC:
-					//graph.setUpdate(false);
-					if (debug){
-						rule.getQuery().setDebug(true);
-					}
-									
-					process(rule, list);
-				}
-				
-				if (isOptim) {
-					setRecord(rule, t);
-				}	
-				
-			}
-			
+    public int process(Graph g) {
+        set(g);
+        if (exec == null) {
+            set(QueryProcess.create(g));
+        }
+        return entail();
+    }
 
-			
-			if (graph.size() > size){
-				// There are new edges: entailment again
-				//OC:
-				//graph.entail(list);
-				size = graph.size();
-				loop++;
-			}
-			else {
-				go = false;
-			}
-		}
-		
-		if (debug) logger.debug("** Rule: " + (graph.size() - start));
-		
-		return graph.size() - start;
-		
-	}
-	
-	
+    public int process(Graph g, QueryProcess q) {
+        set(g);
+        set(q);
+        return entail();
+    }
 
-	
-	/**
-	 * Process one rule
-	 * Store created edges into list 
-	 */
-	int process(Rule rule, List<Entity> list) {
-		return run(rule, null, list);
-	}
-	
-	
-	int run(Rule rule, Mapping map, List<Entity> list) {
+    public int process(QueryProcess q) {
+        if (graph == null) {
+            set(Graph.create());
+        }
+        set(q);
+        return entail();
+    }
 
-		Query qq = rule.getQuery();
-		Construct cons =  Construct.create(qq, Entailment.RULE);
-		cons.setRule(rule, rule.getIndex());
-		cons.setInsertList(list);
+    public Graph getGraph() {
+        return graph;
+    }
 
-		int start = graph.size();
+    public void setDebug(boolean b) {
+        debug = b;
+    }
 
-		Mappings lMap =  exec.query(qq, map);
-		cons.insert(lMap, graph, null);	
+    public void clear() {
+        rules.clear();
+    }
 
-		if (debug || qq.isDebug()){
-			logger.info("** Mappings: " + lMap.size());
-			logger.info("** Graph: "  + graph.size());
-		}
+    /**
+     * Define a construct {} where {} rule
+     */
+    public Query defRule(String rule) throws EngineException {
+        return defRule(UNKNOWN, rule);
+    }
 
-		return graph.size() - start;
-	}
+    public void defRule(Query rule) {
+        rules.add(Rule.create(UNKNOWN, rule));
+    }
 
-	
-	/**
-	 * current: list of newly created edges
-	 * 
-	 */
-	int process(Rule rule, List<Entity> list, List<Entity> current) {
+    public void addRule(String rule) {
+        try {
+            defRule(rule);
+        } catch (EngineException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-		int start = graph.size();
-		Query qq = rule.getQuery();
-		Environment env = EnvironmentImpl.create(qq);
-		
-		for (Entity ent : current){
-			Edge qEdge = match(qq, ent.getEdge(), env);
-			if (qEdge!=null){
-				Mapping map = Mapping.create(qEdge, ent.getEdge());
-				run(rule, map, list);
-			}
-		}
+    public List<Rule> getRules() {
+        return rules;
+    }
 
-		return graph.size() - start;
-	}
-	
-	
-	Edge  match(Query q, Edge edge, Environment env){
-		Exp body = q.getBody();
-		for (Exp exp : body){
-			if (exp.isEdge()){
-				if (exec.getMatcher().match(exp.getEdge(), edge, env)){
-					return exp.getEdge();
-				}
-			}
-		}
-		return null;
-	}
-	
-	
-	
-	/****************************************************
-	 * 
-	 * Compute rule predicates
-	 * Accept rule if some predicate has new triple in graph
-	 * 
-	 * **************************************************/
-	
-	/**
-	 * Compute table of rule predicates, for all rules
-	 */
-	void start(){
-		rtable = new RTable();
-		
-		for (Rule rule : rules){
-			init(rule);
-		}
-		
-	}
-	
-	/**
-	 * Store list of predicates of this rule
-	 */
-	void init(Rule rule){	
-		rule.set(rule.getQuery().getNodeList());
-	}
-	
-	
-	
-	class ITable extends Hashtable<String, Integer>{
-		
-	}
-	
-	class RTable extends Hashtable<Rule, ITable>{
-		
-	}
-	
-	
-	/**
-	 * Record predicates cardinality in graph
-	 */
-	ITable record(Rule r){
-		ITable itable = new ITable();
-		
-		for (Node pred : r.getPredicates()){
-			int size = graph.size(pred);
-			itable.put(pred.getLabel(), size);
-		}
-		
-		return itable;
-	}
-	
-	
-	/**
-	 * Rule is accepted if one of its predicate has a new triple in graph
-	 */
-	boolean accept(Rule rule, ITable itable, ITable iitable){
-		for (Node pred : rule.getPredicates()){
-			String name = pred.getLabel();
-			if (iitable.get(name) > itable.get(name)){
-				return true;
-			}
-		}
-		//System.out.println("** RE: " + rule.getQuery().getAST());
-		return false;
-	}
-	
-	ITable getRecord(Rule r){
-		return rtable.get(r);
-	}
-	
-	void setRecord(Rule r, ITable t){
-		rtable.put(r, t);
-	}
+    public Query defRule(String name, String rule) throws EngineException {
+        Query qq = exec.compileRule(rule);
 
-	public void init(){
-	}
-	
-	public void onDelete() {		
-	}
+        if (!qq.isConstruct()) {
+            // template
+            qq.setRule(false);
+            ASTQuery ast = (ASTQuery) qq.getAST();
+            ast.setRule(false);
+        }
 
-	public void onInsert(Node gNode, Edge edge) {		
-	}
+        if (qq != null) { // && qq.isConstruct()) {
+            rules.add(Rule.create(name, qq));
+            return qq;
+        }
+        return null;
+    }
 
-	public void onClear() {		
-	}
+    int synEntail() {
+        try {
+            graph.writeLock().lock();
+            return entail();
+        } finally {
+            graph.writeLock().unlock();
+        }
+    }
 
-	public void setActivate(boolean b) {		
-		isActivate = b;
-	}
-	
-	
-	public boolean isActivate(){
-		return isActivate;
-	}
+    /**
+     * Process rule base at saturation PRAGMA: not synchronized on write lock
+     */
+    public int entail() {
 
-	public void remove() {
-		graph.clear(Entailment.RULE, true);
-	}
+        if (isOptim) {
+            start();
+        }
 
-	public int type() {
-		return RULE_ENGINE;
-	}
-	
-	
+        int size = graph.size(),
+                start = size;
+        loop = 0;
+        int skip = 0, run = 0, tskip = 0, trun = 0;
+        boolean go = true;
 
+        // Entailment 
+        graph.init();
+
+        List<Entity> list = null, current;
+
+        ITable t = null;
+        ResultWatcher rw = null;
+        if (isOptim){
+            rw = new ResultWatcher(); 
+            exec.addResultListener(rw);
+        }
+        while (go) {
+            skip = 0;
+            run = 0;
+            if (trace){
+                System.out.println("Loop: " + loop);
+            }
+            exec.getProducer().setMode(loop);
+
+            // List of edges created by rules in this step (or by entailment if any)
+            current = list;
+            list = new ArrayList<Entity>();
+
+            for (Rule rule : rules) {
+                // graph.entail() is done once before rule application
+                if (debug) {
+                    rule.getQuery().setDebug(true);
+                }
+
+                if (isOptim) {
+                    rw.start(rule);
+                    t = record(rule);
+
+                    if (loop == 0 || accept(rule, getRecord(rule), t)) {
+                        process(rule, list);
+                        if (debug){
+                            System.out.println("List: " + list.size());
+                        }
+                        run ++;                        
+                    }
+                    else {
+                        skip ++;
+                    }
+                    
+                    setRecord(rule, t);
+                    rw.finish(rule);
+                }
+                else {
+                   process(rule, list);
+                   run++;
+                }
+
+            }
+            if (debug){
+               System.out.println("Skip: " + skip);
+               System.out.println("Run: " + run);
+                System.out.println("Graph: " + graph.size());
+               tskip += skip;
+               trun += run;
+            }
+
+            if (trace){
+                System.out.println("Graph: " + graph.size());
+            }
+            if (graph.size() > size) {
+                // There are new edges: entailment again
+                size = graph.size();
+                loop++;
+                
+                if (isOptim){
+                    for (Entity ent : list){
+                        ent.getEdge().setIndex(loop);
+                    }
+                    rw.setLoop(loop);
+                }
+            } else {
+                go = false;
+            }
+        }
+        if (debug){
+            System.out.println("Total Skip: " + tskip);
+            System.out.println("Total Run: " + trun);
+        }
+        if (debug) {
+            logger.debug("** Rule: " + (graph.size() - start));
+        }
+
+        return graph.size() - start;
+
+    }
+
+    /**
+     * Process one rule Store created edges into list
+     */
+    int process(Rule rule, List<Entity> list) {
+        return run(rule, null, list);
+    }
+
+    int run(Rule rule, Mapping map, List<Entity> list) {
+
+        Query qq = rule.getQuery();
+        Construct cons = Construct.create(qq, Entailment.RULE);
+        cons.setRule(rule, rule.getIndex());
+        cons.setInsertList(list);
+
+        int start = graph.size();
+
+        Mappings lMap = exec.query(qq, map);
+        cons.insert(lMap, graph, null);
+
+        if (debug || qq.isDebug()) {
+            logger.info("** Mappings: " + lMap.size());
+            logger.info("** Inserted: " + (graph.size() - start));
+            if (lMap.size() > 0){
+                System.out.println(rule.getQuery().getAST());
+            }
+        }
+
+        return graph.size() - start;
+    }
+
+    /**
+     * current: list of newly created edges
+     *
+     */
+    int process(Rule rule, List<Entity> list, List<Entity> current) {
+
+        int start = graph.size();
+        Query qq = rule.getQuery();
+        Environment env = EnvironmentImpl.create(qq);
+
+        for (Entity ent : current) {
+            Edge qEdge = match(qq, ent.getEdge(), env);
+            if (qEdge != null) {
+                Mapping map = Mapping.create(qEdge, ent.getEdge());
+                run(rule, map, list);
+            }
+        }
+
+        return graph.size() - start;
+    }
+
+    Edge match(Query q, Edge edge, Environment env) {
+        Exp body = q.getBody();
+        for (Exp exp : body) {
+            if (exp.isEdge()) {
+                if (exec.getMatcher().match(exp.getEdge(), edge, env)) {
+                    return exp.getEdge();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * **************************************************
+     *
+     * Compute rule predicates Accept rule if some predicate has new triple in
+     * graph
+     *
+     * *************************************************
+     */
+    /**
+     * Compute table of rule predicates, for all rules
+     */
+    void start() {
+        rtable = new RTable();
+
+        for (Rule rule : rules) {
+            init(rule);
+        }
+
+    }
+
+    /**
+     * Store list of predicates of this rule
+     */
+    void init(Rule rule) {
+        rule.set(rule.getQuery().getNodeList());
+    }
+
+    class ITable extends Hashtable<String, Integer> {
+    }
+
+    class RTable extends Hashtable<Rule, ITable> {
+    }
+
+    /**
+     * Record predicates cardinality in graph
+     */
+    ITable record(Rule r) {
+        ITable itable = new ITable();
+
+        for (Node pred : r.getPredicates()) {
+            int size = graph.size(pred);
+            itable.put(pred.getLabel(), size);
+        }
+
+        return itable;
+    }
+
+    /**
+     * Rule is accepted if one of its predicate has a new triple in graph
+     */
+    boolean accept(Rule rule, ITable itable, ITable iitable) {
+        for (Node pred : rule.getPredicates()) {
+            String name = pred.getLabel();
+            if (iitable.get(name) > itable.get(name)) {
+                return true;
+            }
+       }
+        //System.out.println("** RE: " + rule.getQuery().getAST());
+        return false;
+    }
+
+    ITable getRecord(Rule r) {
+        return rtable.get(r);
+    }
+
+    void setRecord(Rule r, ITable t) {
+        rtable.put(r, t);
+    }
+
+    public void init() {
+    }
+
+    public void onDelete() {
+    }
+
+    public void onInsert(Node gNode, Edge edge) {
+    }
+
+    public void onClear() {
+    }
+
+    public void setActivate(boolean b) {
+        isActivate = b;
+    }
+
+    public boolean isActivate() {
+        return isActivate;
+    }
+
+    public void remove() {
+        graph.clear(Entailment.RULE, true);
+    }
+
+    public int type() {
+        return RULE_ENGINE;
+    }
 }

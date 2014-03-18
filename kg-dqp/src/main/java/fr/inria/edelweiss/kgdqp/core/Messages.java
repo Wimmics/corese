@@ -5,7 +5,7 @@
 package fr.inria.edelweiss.kgdqp.core;
 
 /**
- * Basic messages to be displayed i the UI.
+ * Basic messages to be displayed in the UI.
  * @author Alban Gaignard <alban.gaignard@cnrs.fr>
  */
 public class Messages {

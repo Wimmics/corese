@@ -77,7 +77,7 @@ public class ProviderImpl implements Provider {
 	
 	
 	// everybody is 1.0 except localhost
-	boolean isSparql0(Node serv){
+	public boolean isSparql0(Node serv){
 		Double f = version.get(serv.getLabel());
 		return (f == null || f == 1.0);
 	}

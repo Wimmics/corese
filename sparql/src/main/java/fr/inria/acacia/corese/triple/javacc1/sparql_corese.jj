@@ -679,7 +679,7 @@ Exp ConstructQuery() : { Exp stack1, stack2; boolean isRule = false;}
   
   {	
   astq.setConstruct(stack1); 	
-  astq.setRule(isRule);
+  astq.setRule(astq.isRule() || isRule);
   return stack2; }
   )
   

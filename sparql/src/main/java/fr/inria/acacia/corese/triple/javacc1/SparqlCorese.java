@@ -1291,7 +1291,7 @@
       stack2 = WhereClause();
       SolutionModifier();
   astq.setConstruct(stack1);
-  astq.setRule(isRule);
+  astq.setRule(astq.isRule() || isRule);
   {if (true) return stack2;}
       break;
     case FROM:

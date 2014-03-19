@@ -6,9 +6,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.Path;
@@ -79,6 +81,16 @@ public class SSNA implements ResultListener {
 	countPath 	= 0, 
 	countResult = 0, 
 	totalResult = 0;
+
+    @Override
+    public void listen(Exp exp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void listen(Expr exp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 	
 	class ListPath extends ArrayList<Path> {}
 	

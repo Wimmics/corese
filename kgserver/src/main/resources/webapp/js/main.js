@@ -558,9 +558,9 @@ function renderCostMultiTab(data) {
     
     table = table + "<caption><strong>Requests per subquery</strong></caption> \n";
     $.each(listQCost, function(index, item) {
-        //console.log(listQCost[index].query);
-        //console.log(listQCost[index].nbReq);
-        //console.log(listQCost[index].nbRes);
+        console.log(listQCost[index].query);
+        console.log(listQCost[index].nbReq);
+        console.log(listQCost[index].nbRes);
         var query = listQCost[index].query;
         var v = Math.round(100 * (listQCost[index].nbReq) / totalQReq);
         var p = '<div class="progress"> \n\
@@ -569,7 +569,7 @@ function renderCostMultiTab(data) {
                </div> \n\
                 </div>';
         table = table + "<tr> \n\
-                    <td>" + query + "</td>\n\
+                    <td>" + htmlEncode(query) + "</td>\n\
                     <td align=left >\n\
                     " + p + "\n\
                 </td></tr> \n";
@@ -595,7 +595,7 @@ function renderCostMultiTab(data) {
                 </div> \n\
             </div>';
         table = table + "<tr> \n\
-                    <td>" + query + "</td>\n\
+                    <td>" + htmlEncode(query) + "</td>\n\
                     <td align=left >\n\
                     " + p + "\n\
                 </td></tr> \n";
@@ -625,7 +625,7 @@ function renderCostMultiTab(data) {
                </div> \n\
             </div>';
         table = table + "<tr> \n\
-                    <td>" + source + "</td>\n\
+                    <td>" + htmlEncode(source) + "</td>\n\
                     <td align=left >\n\
                     " + p + "\n\
                 </td></tr> \n";
@@ -651,7 +651,7 @@ function renderCostMultiTab(data) {
                 </div> \n\
             </div>';
         table = table + "<tr> \n\
-                    <td>" + source + "</td>\n\
+                    <td>" + htmlEncode(source) + "</td>\n\
                     <td align=left >\n\
                     " + p + "\n\
                 </td></tr> \n";

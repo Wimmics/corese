@@ -157,7 +157,9 @@ public class Util {
 //            }
 
             json.append("{ \"query\" : \"" + key + "\", \"nbReq\" : \"" + qReqestsMap.get(key) + "\" , \"nbRes\" : \"" + qResultsMap.get(key) + "\" } ,\n");
-            totalQRequestsCost += qReqestsMap.get(key);
+            if (qReqestsMap.get(key) != null) {
+                totalQRequestsCost += qReqestsMap.get(key);
+            }
             if (qResultsMap.get(key) != null) {
                 totalQResultsCost += qResultsMap.get(key);
             }
@@ -173,7 +175,9 @@ public class Util {
 
         for (String key : srcReqestsMap.keySet()) {
             json.append("{ \"source\" : \"" + key + "\", \"nbReq\" : \"" + srcReqestsMap.get(key) + "\" , \"nbRes\" : \"" + srcResultsMap.get(key) + "\" } ,\n");
-            totalSrcRequestsCost += srcReqestsMap.get(key);
+            if (srcReqestsMap.get(key) != null) {
+                totalSrcRequestsCost += srcReqestsMap.get(key);
+            }
             if (srcResultsMap.get(key) != null) {
                 totalSrcResultsCost += srcResultsMap.get(key);
             }

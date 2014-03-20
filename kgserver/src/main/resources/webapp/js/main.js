@@ -381,6 +381,8 @@ function sparqlFed(sparqlQuery) {
 
     if ($('#checkAdvanced').prop('checked')) {
         pollCost();
+    } else {
+        $('#parAdvanced').html("");
     }
 
     var boolTPgrouping = $('#checkTPGrouping').prop('checked');

@@ -18,9 +18,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,6 +54,9 @@ public class ServiceGrouper implements QueryVisitor {
 
         //index initialization
         Exp body = ast.getBody();
+        logger.info("Building indices for ");
+        logger.info(body.toSparql());
+        
         buildIndex(body, indexEdgeSource, indexSourceEdge, ast, orderedTPs);
         // Source -> property index initialization
         for (Triple t : indexEdgeSource.keySet()) {
@@ -190,28 +190,26 @@ public class ServiceGrouper implements QueryVisitor {
                 union.set(0, rewriteQueryWithServices(arg0, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
                 //recursion 2
                 union.set(1, rewriteQueryWithServices(arg1, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
-            } else if (subExp.isAnd()) {
-                And and = (And) subExp;
-                Exp arg0 = and.get(0);
-                Exp arg1 = and.get(1);
-                //recursion 1
-                and.set(0, rewriteQueryWithServices(arg0, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
-                //recursion 2
-                and.set(1, rewriteQueryWithServices(arg1, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
-            } else if (subExp.isGraph()) {
+//            } else if (subExp.isAnd()) {
+//               
+//            } else if (subExp.isGraph()) {
 
             } else if (subExp.isTriple() && (!subExp.isFilter())) {
                 consecutiveTP.add(subExp);
                 tpToBeRemoved.add(subExp);
-            }
+            } 
         }
 
         Exp services = null;
         /// Grouping of consecutive TPs into SERVICE clauses
         if (consecutiveTP.size() > 0) {
+             logger.info("Found consecutive triple patterns into "+exp.toSparql());
             // SERVICE clause generation
             services = getSparqlServices(globalFilters, consecutiveTP, indexSourceEdge, indexEdgeSource, orderedTPs);
             exp.getBody().removeAll(tpToBeRemoved);
+        } else {
+            logger.info("No consecutive triple patterns into "+exp.toSparql());
+            return exp;
         }
 
         // RANKING consecutive SERVICE clauses

@@ -737,13 +737,13 @@ public class Graph //implements IGraph
 	/**
 	 * Pragma: nodes are already nodes of the graph
 	 */
-	public Entity add(EdgeImpl edge){
+	public Entity add(Entity edge){
 		// store edge in index 0
 		Entity ent = table.add(edge);
 		// tell other index that predicate has instances
 		if (ent != null){
 			addGraphNode(edge.getGraph());
-			addPropertyNode(edge.getEdgeNode());
+			addPropertyNode(edge.getEdge().getEdgeNode());
 			
 			for (Index ei : getIndexList()){
 				if (ei.getIndex() != 0){
@@ -773,12 +773,12 @@ public class Graph //implements IGraph
 	}
 
 	
-	public Entity addEdge(EdgeImpl edge){
+	public Entity addEdge(Entity edge){
 		Entity ent = add(edge);
 		if (ent != null){
 			setUpdate(true);
 			//OC:
-			manager.onInsert(ent.getGraph(), edge);
+			manager.onInsert(ent.getGraph(), edge.getEdge());
 //			if (inference!=null){
 //				inference.onInsert(ent.getGraph(), edge);
 //			}

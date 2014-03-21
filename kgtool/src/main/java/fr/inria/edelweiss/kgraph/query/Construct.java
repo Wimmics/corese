@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -53,7 +54,8 @@ public class Construct
 	boolean isDebug = false, 
 	isDelete = false,
 	isRule = false,
-	isInsert = false;
+	isInsert = false,
+        isBuffer = false;
 	
 	Object rule;
 	
@@ -98,8 +100,20 @@ public class Construct
 		Construct cons = new Construct(q, src);
 		return cons;
 	}
+        
+       public void setDefaultGraph(Node n){
+           defaultGraph = n;
+       }
+       
+       public void setGraph(Graph g){
+           graph = g;
+       }
 	
-	public void setDelete(boolean b){
+        public void setBuffer(boolean b){
+		isBuffer = b;
+	}
+
+        public void setDelete(boolean b){
 		isDelete = b;
 	}
 	
@@ -134,37 +148,43 @@ public class Construct
 		return lDelete;
 	}
 	
-	public Graph construct(Mappings lMap){
-		return construct(lMap, Graph.create());
+	public Graph construct(Mappings map){
+		return construct(map, null, Graph.create());
 	}
-	
-	public Graph delete(Mappings lMap, Graph g, Dataset ds){
+        
+	public Graph construct(Mappings map, Graph g){
+		return construct(map, null, g);
+	}
+        
+	public Graph delete(Mappings map, Graph g, Dataset ds){
 		setDelete(true);
 		if (ds!=null && ds.isUpdate()){
 			this.ds = ds;
 		}
-		return construct(lMap, g);
+		return construct(map, null, g);
 	}
 	
-	public Graph insert(Mappings lMap, Graph g, Dataset ds){
+	public Graph insert(Mappings map, Graph g, Dataset ds){
 		setInsert(true);
 		if (ds!=null && ds.isUpdate()){
 			this.ds = ds;
 		}
-		return construct(lMap, g);
+		return construct(map, null, g);
 	}
 	
 	
 	/**
-	 * Construct graph according to query and mapping 
+	 * Construct graph according to query and mapping/environment 
 	 */
-	public Graph construct(Mappings lMap, Graph g){
+	public Graph construct(Mappings map, Environment env, Graph g){
             	Exp exp = query.getConstruct();
 		if (isDelete){
 			exp = query.getDelete();
 		}
                 
-                graph = g;
+                if (g != null){
+                    graph = g;
+                }
                 if (exp.first().isGraph()){
                     // draft: graph kg:system { }
                     // in GraphStore
@@ -176,20 +196,37 @@ public class Construct
                 }
                              
                                
-		init();
-		//Node gNode = defaultGraph;
-                Node gNode = graph.getResourceNode(dtDefaultGraph, true, false);
+		//init();
 
-		if (isDelete) gNode = null;
+                Node gNode = defaultGraph;
+                if (gNode == null){
+                    gNode = graph.getResourceNode(dtDefaultGraph, true, false);
+                }
+
+		if (isDelete){
+                    gNode = null;
+                }
 		
-		for (Mapping map : lMap){
+                if (lInsert != null){
+                    map.setInsert(lInsert);
+                }
+		if (lDelete != null){
+                    map.setDelete(lDelete);
+                }
+                
+                if (env != null){
+                    clear();
+                    construct(gNode, exp, map, env);
+                }
+                else {
+                    for (Mapping m : map){
 			// each map has its own blank nodes:
 			clear();
-			construct(gNode, exp, lMap, map);
-			
+			construct(gNode, exp, map, m);
+                    }
 		}
 		
-		graph.index();
+		graph.prepare();
 		return graph;
 	}
 	
@@ -201,10 +238,7 @@ public class Construct
 	 * Recursive construct of exp with map
 	 * Able to process construct graph ?g {exp}
 	 */
-	void construct(Node gNode, Exp exp, Mappings lMap, Mapping map){
-		if (lInsert != null) lMap.setInsert(lInsert);
-		if (lDelete != null) lMap.setDelete(lDelete);
-		
+	void construct(Node gNode, Exp exp, Mappings map, Environment env){		
 		if (exp.isGraph()){
 			gNode = exp.getGraphName();
 			exp = exp.rest();
@@ -212,8 +246,7 @@ public class Construct
                 
 		for (Exp ee : exp.getExpList()){
 			if (ee.isEdge()){
-				EdgeImpl edge = construct(gNode, ee.getEdge(), map);
-
+				EdgeImpl edge = construct(gNode, ee.getEdge(), env);
                                 if (edge != null){
 					if (isDelete){
 						if (isDebug) logger.debug("** Delete: " + edge);
@@ -227,7 +260,7 @@ public class Construct
 							list = graph.delete(edge);
 						}
 						if (list != null){
-							lMap.setNbDelete(lMap.nbDelete() + list.size());
+							map.setNbDelete(map.nbDelete() + list.size());
 
 							if (lDelete != null){
 								lDelete.addAll(list);
@@ -237,10 +270,12 @@ public class Construct
 					}
 					else {
 						if (isDebug) logger.debug("** Construct: " + edge);
-						Entity ent = graph.addEdge(edge);
-						
+						Entity ent = edge;
+                                                if (! isBuffer){
+                                                    ent = graph.addEdge(edge);
+                                                }
 						if (ent != null){
-							lMap.setNbInsert(lMap.nbInsert() + 1);
+							map.setNbInsert(map.nbInsert() + 1);
 							if (lInsert != null){
 								lInsert.add(ent);
 							}
@@ -259,7 +294,7 @@ public class Construct
 				}
 			}
 			else {
-				construct(gNode, ee, lMap, map);
+				construct(gNode, ee, map, env);
 			}
 		}
 	}
@@ -282,7 +317,7 @@ public class Construct
 	/**
 	 * Construct target edge from query edge and map
 	 */
-	EdgeImpl construct(Node gNode, Edge edge, Mapping map){
+	EdgeImpl construct(Node gNode, Edge edge, Environment env){
 
 		Node pred = edge.getEdgeVariable();
 		if (pred == null){
@@ -290,11 +325,11 @@ public class Construct
 		}
 		
 		Node source   = null;
-		if (gNode!=null) source = construct(gNode, map);
-		Node property = construct(pred, map);
+		if (gNode!=null) source = construct(gNode, env);
+		Node property = construct(pred, env);
 		
-		Node subject = construct(source, edge.getNode(0), map);
-		Node object  = construct(source, edge.getNode(1), map);
+		Node subject = construct(source, edge.getNode(0), env);
+		Node object  = construct(source, edge.getNode(1), env);
 				
 		if ((source == null && ! isDelete) || subject == null || property == null || object == null){
 			return null;
@@ -321,7 +356,7 @@ public class Construct
 			 list.add(object);
 			 
 			 for (int i=2; i<edge.nbNode(); i++){
-				 Node n = construct(source, edge.getNode(i), map);
+				 Node n = construct(source, edge.getNode(i), env);
 				 if (n != null){
 					 graph.add(n);
 					 list.add(n);
@@ -360,18 +395,22 @@ public class Construct
 	/**
 	 * Construct target node from query node and map
 	 */
-	Node construct(Node qNode, Mapping map){
+	Node construct(Node qNode, Environment map){
 		return construct(null, qNode, map);
 	}
 		
-	Node construct(Node gNode, Node qNode, Mapping map){
+	Node construct(Node gNode, Node qNode, Environment map){
 		// search target node
 		Node node = table.get(qNode);
 		
 		if (node == null){
 			// target node not yet created
 			// search map node
-			Object value = map.getValue(qNode);
+                        Node nn = map.getNode(qNode.getLabel());
+			Object value = null;
+                        if (nn != null){
+                            value = nn.getValue();
+                        }
 			IDatatype dt = null;
 
 			if (value == null){
@@ -398,7 +437,7 @@ public class Construct
 		return node;
 	}
 	
-	IDatatype blank(Node qNode, Mapping map){
+	IDatatype blank(Node qNode, Environment map){
 		String str;
 		if (isRule){
 			str = blankRule(qNode, map);
@@ -418,16 +457,16 @@ public class Construct
 	 * graph will detect it, hence engine will not loop
 	 * 
 	 */
-	String blankRule(Node qNode, Mapping map){
+	String blankRule(Node qNode, Environment map){
 		// _:b + rule ID + "." + qNode ID
 		StringBuffer sb = new StringBuffer(root);
 		sb.append(getIndex(qNode));
 		
-		for (Node node : map.getQueryNodes()){
-			if (node.isVariable() && ! node.isBlank()){
+		for (Node qnode : map.getQueryNodes()){
+			if (qnode != null && qnode.isVariable() && ! qnode.isBlank()){
 				// node value ID
 				sb.append(DOT);
-				sb.append(map.getNode(node).getIndex());
+				sb.append(map.getNode(qnode).getIndex());
 			}
 		}
 		

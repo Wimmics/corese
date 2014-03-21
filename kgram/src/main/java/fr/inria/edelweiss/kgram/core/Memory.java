@@ -802,6 +802,10 @@ public class Memory implements Environment {
 	public Node getQueryNode(int n){
 		return qNodes[n];
 	}
+        
+	public Node[] getQueryNodes(){
+		return qNodes;
+	}
 	
 	public boolean isBound(Node qNode){
 		return getNode(qNode) != null;
@@ -822,6 +826,10 @@ public class Memory implements Environment {
 	public Entity[] getEdges(){
 		return result;
 	}
+        
+        public Node[] getNodes(){
+            return nodes;
+        }
 	
 
 	/**

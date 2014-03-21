@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -121,6 +122,7 @@ public class Query extends Exp {
 
 	private Exp templateGroup;
     private List<Node> argList;
+    private List<Entity> edgeList;
 
 	
 	Query(){
@@ -1865,6 +1867,20 @@ public class Query extends Exp {
     
     public void defArg(Node n) {
          argList.add(n);
+    }
+
+    /**
+     * @return the edgeList
+     */
+    public List<Entity> getEdgeList() {
+        return edgeList;
+    }
+
+    /**
+     * @param edgeList the edgeList to set
+     */
+    public void setEdgeList(List<Entity> edgeList) {
+        this.edgeList = edgeList;
     }
     
 	class VString extends ArrayList<String> {

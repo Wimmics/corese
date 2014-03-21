@@ -226,11 +226,8 @@ public class QuerySolver  {
 		init(query);
 		debug(query);
 		
-        if (producer instanceof MetaProducer){
-			query.setDistribute(true);
-			if (isSequence){
-				return queries(query, map);
-			}
+                if (producer instanceof MetaProducer){
+			query.setDistribute(true);			
 		}
 
 		Eval kgram = Eval.create(producer, evaluator, matcher);
@@ -293,7 +290,12 @@ public class QuerySolver  {
 		listener = el;
 	}
 
-	
+	public void removeResultListener(ResultListener el){
+		if (listener == el){
+                    listener = null;
+                }
+	}
+        
 	public Query compile(String squery) throws EngineException {
 		return compile(squery, null);
 	}
@@ -347,37 +349,7 @@ public class QuerySolver  {
 	public Mappings query(Query query){
 		return query(query, null);
 	}
-	
-	
-
-	
-	/**
-	 * Draft with several producers in sequence
-	 * TODO:
-	 * PB with aggregates, limit
-	 */
-	public Mappings queries(Query query, Mapping map){
 		
-		MetaProducer meta = (MetaProducer) producer;
-		
-		Mappings lMap = null;
-		
-		for (Producer p : meta){
-			
-			Eval kgram = Eval.create(p, evaluator, matcher);
-			if (lMap != null) kgram.setMappings(lMap);
-
-			events(kgram);
-
-			pragma(kgram, query);
-
-			lMap  = kgram.query(query, map);
-		}
-		
-		return lMap;
-	}
-	
-
 	void debug(Query query){
 		if (query.isDebug()){
 			logger.debug(query.getBody());

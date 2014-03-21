@@ -134,5 +134,8 @@ public interface Environment {
 	Map getMap();
         
         Entity[] getEdges();	
+        
+        Node[] getNodes();
 	
+        Node[] getQueryNodes();
 }

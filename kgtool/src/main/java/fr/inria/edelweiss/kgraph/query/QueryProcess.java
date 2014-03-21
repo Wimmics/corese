@@ -505,9 +505,9 @@ public class QueryProcess extends QuerySolver {
 		}
 		UpdateProcess up = UpdateProcess.create(this, ds);
 		up.setDebug(isDebug());
-		Mappings lMap = up.update(query);
-		//lMap.setGraph(getGraph());
-		return lMap;
+		Mappings map = up.update(query);
+		//map.setGraph(getGraph());
+		return map;
 	}
 	
 	
@@ -583,8 +583,8 @@ public class QueryProcess extends QuerySolver {
 
 	 */
 	
-	 void construct(Mappings lMap, Dataset ds){
-            Query query = lMap.getQuery();
+	 void construct(Mappings map, Dataset ds){
+            Query query = map.getQuery();
             Construct cons =  Construct.create(query);
             cons.setDebug(isDebug() || query.isDebug());
 				
@@ -592,9 +592,9 @@ public class QueryProcess extends QuerySolver {
             // the construct result graph may be skolemized
             // if kgram was told to do so
             gg.setSkolem(isSkolem());
-            gg = cons.construct(lMap, gg);
+            gg = cons.construct(map, gg);
 
-            lMap.setGraph(gg);
+            map.setGraph(gg);
 	}
         
         

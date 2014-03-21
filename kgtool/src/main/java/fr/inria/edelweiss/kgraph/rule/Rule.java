@@ -40,6 +40,10 @@ public class Rule {
 	public Query getQuery(){
 		return query;
 	}
+        
+        public Object getAST(){
+            return query.getAST();
+        }
 	
 	String getName(){
 		return name;

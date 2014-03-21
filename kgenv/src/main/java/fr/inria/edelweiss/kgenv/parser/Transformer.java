@@ -1393,7 +1393,7 @@ public class Transformer implements ExpType {
 		case EDGE: 
 			Node pred = exp.getEdge().getEdgeNode();
 			if (! list.contains(pred)) {
-				list.add(exp.getEdge().getEdgeNode());
+				list.add(pred);
 			}
 			break;
 
@@ -1439,7 +1439,9 @@ public class Transformer implements ExpType {
 	void visitRegex(Expression exp, List<Node> list){
 		if (exp.isConstant()){
 			Node node = compiler.createNode(exp.getConstant());
-			list.add(node);
+			if (! list.contains(node)){
+                            list.add(node);
+                        }
 		}
 		else if (exp.isTerm() && exp.isTest()){
 			// path @[ a foaf:Person ]

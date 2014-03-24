@@ -12,6 +12,7 @@ public class Rule {
 	List<Node> predicates;
 	String name;
 	int num;
+    private boolean isGeneric = false;
 	
 	Rule(String n, Query q){
 		query = q;
@@ -52,5 +53,13 @@ public class Rule {
 	int getIndex(){
 		return num;
 	}
+
+    void setGeneric(boolean b) {
+        isGeneric = true;    
+    }
+    
+    public boolean isGeneric(){
+        return isGeneric;
+    }
 
 }

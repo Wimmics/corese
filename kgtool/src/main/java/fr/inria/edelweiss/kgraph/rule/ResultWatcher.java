@@ -8,16 +8,13 @@ package fr.inria.edelweiss.kgraph.rule;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.query.Construct;
-import java.util.HashMap;
 
 /**
  * Watch query solutions of rules for RuleEngine
@@ -84,7 +81,7 @@ public class ResultWatcher implements ResultListener {
         
         for (Entity ent : env.getEdges()){
             
-            if (ent != null && ent.getEdge().getIndex() == loop){
+            if (ent != null && ent.getEdge().getIndex() >= loop){
                     cpos += 1;
                     return store(env);
             }

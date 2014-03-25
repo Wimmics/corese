@@ -392,7 +392,6 @@ function sparqlFed(sparqlQuery) {
         console.log("Triple pattern grouping disabled");
     }
 
-//        resetDQP();
 
     $.ajax({
         type: 'GET',
@@ -683,9 +682,9 @@ function renderD3(data, htmlCompId) {
     var svg = d3.select(htmlCompId).append("svg")
 //    	.attr("width", width)
 //    	.attr("height", height)
-            .attr("viewBox", "0 0 800 600")
+            .attr("viewBox", "0 0 600 400")
             .attr("width", "100%")
-            .attr("height", 600)
+            .attr("height", 400)
             .attr("preserveAspectRatio", "xMidYMid")
             .style("background-color", "#F4F2F5");
 

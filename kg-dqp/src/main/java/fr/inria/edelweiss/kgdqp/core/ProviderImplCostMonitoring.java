@@ -21,6 +21,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Provider;
@@ -28,6 +29,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.core.EntityImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.CompileService;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
@@ -63,6 +65,8 @@ public class ProviderImplCostMonitoring implements Provider {
     Hashtable<String, Double> version;
     QueryProcess defaut;
 
+    Graph provenance = Graph.create();
+    
     private int limit = 30;
 
     private ProviderImplCostMonitoring() {
@@ -388,20 +392,18 @@ public class ProviderImplCostMonitoring implements Provider {
                                 + " prov:wasGeneratedBy _:b1 ; \n"
                                 + " prov:wasAttributedTo <" + endpoint + "> ; \n"
                                 + " rdfs:label \"" + mapping.getQueryNode(i) + "\" ; \n"
-                                + " rdf:value \"" + mapping.getNode(i) + "\" ; \n"
-                                + " rdfs:comment \"" + serviceQuery + "\" ] \n"
+                                + " rdf:value " + mapping.getNode(i).getValue()+ " ; \n"
+                                + " rdfs:comment \"" + Constant.addEscapes(serviceQuery) + "\" ] \n"
                                 + "}";
                         try {
-                            Graph provG = Graph.create();
-                            QueryProcess qp = QueryProcess.create(provG);
+                            QueryProcess qp = QueryProcess.create(this.provenance);
                             qp.query(insertProv);
 
 //                            Graph g = Graph.create();
 //                            Node n = g.addBlank("_:bProv");
+//                            
 //                            EntityImpl e = EntityImpl.create(g.getRoot(), n);
 //                            e.setProvenance(provG);
-//                            
-//                            mapping.addNode(mapping.getQueryNode(i), e.getNode());
                         } catch (EngineException ex) {
                             logger.error("Error while inserting provenance:\n" + insertProv);
                             ex.printStackTrace();
@@ -423,4 +425,8 @@ public class ProviderImplCostMonitoring implements Provider {
 //		ProviderImplCostMonitoring impl = new ProviderImplCostMonitoring();
 //		System.out.println(impl.callSoapEndPoint());
 //	}
+
+    public Graph getProvenance() {
+        return provenance;
+    }
 }

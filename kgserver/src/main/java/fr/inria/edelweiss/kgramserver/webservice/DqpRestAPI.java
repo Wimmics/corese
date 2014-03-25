@@ -50,7 +50,7 @@ public class DqpRestAPI {
 
     private Logger logger = Logger.getLogger(DqpRestAPI.class);
     private static Graph graph = Graph.create(false);
-    private static Provider sProv = ProviderImplCostMonitoring.create();
+    private static ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();
     private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, false);
 
     /**
@@ -95,7 +95,7 @@ public class DqpRestAPI {
             output += " added to the federation engine";
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(output).build();
         } catch (MalformedURLException ex) {
-            logger.error (endpointURL + " is a malformed URL");
+            logger.error(endpointURL + " is a malformed URL");
             logger.error(ex.getMessage());
             return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("URL exception while configuring KGRAM-DQP").build();
         }
@@ -203,7 +203,8 @@ public class DqpRestAPI {
     }
 
     /**
-     * Web service for federated query processing with provenance documented results.
+     * Web service for federated query processing with provenance documented
+     * results.
      *
      * @param query the SPARQL query to be sent over the federation.
      * @return JSON data describing SPARQL results and the associated PROV
@@ -212,10 +213,36 @@ public class DqpRestAPI {
     @GET
     @Produces("application/sparql-results+json")
     @Path("/sparqlprov")
-    public Response getProvTriplesJSONForGet(@QueryParam("query") String query) {
+    public Response getProvTriplesJSONForGet(@QueryParam("query") String query, @DefaultValue("false") @QueryParam("tpgrouping") String tpgrouping, @QueryParam("slicing") String slicing) {
 
         execDQP.setProvEnabled(true);
+        sProv.setProvEnabled(true);
         logger.info("Federated querying: " + query);
+
+        QueryProcessDQP.queryCounter.clear();
+        QueryProcessDQP.queryVolumeCounter.clear();
+        QueryProcessDQP.sourceCounter.clear();
+        QueryProcessDQP.sourceVolumeCounter.clear();
+
+        logger.info("Federated querying: " + query);
+
+        // for TP groupping in SERVICE clauses
+        if (!tpgrouping.equals("false")) {
+            DqpRestAPI.execDQP.setGroupingEnabled(true);
+            logger.info("Service grouping enabled");
+
+            // for slicing in SERVICE clauses
+            try {
+                int sliceNb = Integer.valueOf(slicing);
+                if (sliceNb > 0) {
+                    DqpRestAPI.execDQP.addPragma(Pragma.SERVICE, Pragma.SLICE, sliceNb);
+                    logger.info("Slicing set to " + sliceNb);
+                }
+            } catch (NumberFormatException ex) {
+                logger.warn(slicing + " is not formatted as number for the slicing parameter");
+                logger.warn("Slicing disabled");
+            }
+        }
 
         try {
             StopWatch sw = new StopWatch();
@@ -233,6 +260,11 @@ public class DqpRestAPI {
                         resProv.copy(prov);
                     }
                 }
+            }
+
+            //For service provenance, to be cleaned
+            if (sProv.getProvenance() != null) {
+                resProv.copy(sProv.getProvenance());
             }
 
             //Filtering PROV annotations
@@ -284,6 +316,7 @@ public class DqpRestAPI {
 
     /**
      * Web service for federated query processing with XML SPARQL results.
+     *
      * @param query the initial SPARQL query.
      * @return the XML sparql results.
      */

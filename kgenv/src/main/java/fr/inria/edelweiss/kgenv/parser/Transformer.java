@@ -244,13 +244,11 @@ public class Transformer implements ExpType {
 	 * Also used by QueryGraph to compile RDF Graph as a Query
 	 */
 	public Query transform(Query q, ASTQuery ast){
-		//new
-		compiler.setAST(ast);
+
+            compiler.setAST(ast);
+                
 		if (ast.isConstruct() || ast.isDescribe()){
-			validate(ast.getInsert(), ast);
-			Exp cons = construct(ast);
-			q.setConstruct(cons);
-			q.setConstruct(true);
+			construct(q, ast);
 		}
 
 		if (ast.isDelete()){
@@ -299,7 +297,18 @@ public class Transformer implements ExpType {
 
 		return q;
 	}
-	
+        
+        
+       void construct(Query q, ASTQuery ast) {
+            validate(ast.getInsert(), ast);
+            //Exp cons = construct(ast);
+            Exp cons = compile(ast.getInsert(), false);
+            q.setConstruct(cons);
+            q.setConstruct(true);
+            
+            q.setConstructNodes(cons.getNodes());
+        }
+
 	
 	/**
 	 * Generate a new compiler for each (sub) query in order to get fresh new nodes

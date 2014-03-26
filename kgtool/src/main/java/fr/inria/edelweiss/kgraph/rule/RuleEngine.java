@@ -248,7 +248,7 @@ public class RuleEngine implements Engine {
 
         if (isOptimize) {
             // kgram return solutions that contain newly entailed edge
-            rw = new ResultWatcher();
+            rw = new ResultWatcher(graph);
             exec.addResultListener(rw);
         }
 
@@ -265,65 +265,63 @@ public class RuleEngine implements Engine {
             current = list;
             list = new ArrayList<Entity>();
 
-            if (loop == 0 || !isOptimization) {
 
-                for (Rule rule : rules) {
+            if (isOptimize){
+                rw.start(loop);
+            }
+            
+            for (Rule rule : rules) {
 
-                    if (debug) {
-                        rule.getQuery().setDebug(true);
-                    }
+                if (debug) {
+                    rule.getQuery().setDebug(true);
+                }
 
-                    int nbres = 0;
+                int nbres = 0;
 
-                    if (isOptimize) {
-                        // start exec ResultWatcher, it checks that each solution 
-                        // of rule contains at least one new edge 
-                        rw.start(rule);
-                        
-                        if (loop == 0) {
-                            // run all rules, add all solutions
-                            t = record(rule, loopIndex);
+                if (isOptimize) {
+                    // start exec ResultWatcher, it checks that each solution 
+                    // of rule contains at least one new edge 
+                    rw.start(rule);
+
+                    if (loop == 0) {
+                        // run all rules, add all solutions
+                        t = record(rule, loopIndex);
+                        nbres = process(rule, null, list, loopIndex);
+                        setRecord(rule, t);
+                        tnbres += nbres;
+                        nbrule++;
+                        loopIndex++;
+                    } else {
+                        // run rules for which new edges have been created
+                        // since previous run
+                        // boolean run = true;
+                        int save = graph.size();
+                        t = record(rule, loopIndex);
+                        ITable ot = getRecord(rule);
+                        rw.setLoop(ot.getIndex());
+                        if (accept(rule, ot, t)) {
                             nbres = process(rule, null, list, loopIndex);
                             setRecord(rule, t);
                             tnbres += nbres;
                             nbrule++;
                             loopIndex++;
-                        } 
-                        else {
-                            // run rules for which new edges have been created
-                            // since previous run
-                            // boolean run = true;
-                            //while (run) {
-                            int save = graph.size();
-                            t = record(rule, loopIndex);
-                            ITable ot = getRecord(rule);
-                            rw.setLoop(ot.getIndex());
-                            if (accept(rule, ot, t)) {
-                                nbres = process(rule, null, list, loopIndex);
-                                setRecord(rule, t);
-                                tnbres += nbres;
-                                nbrule++;
-                                loopIndex++;
-                            } else {
-                                skip++;
-                            }
-//                                if (graph.size() == save || rule.isGeneric()){
-//                                    run = false;
-//                                }
-                            //}
+                        } else {
+                            skip++;
                         }
 
-                        rw.finish(rule);
-                    } else {
-                        nbres = process(rule, null, list,  -1);
-                        nbrule++;
                     }
 
-                    if (trace) {
-                        stable.record(rule, nbres);
-                    }
+                    rw.finish(rule);
+                } else {
+                    nbres = process(rule, null, list, -1);
+                    nbrule++;
+                }
+
+                if (trace) {
+                    stable.record(rule, nbres);
                 }
             }
+
 
 
             if (trace) {
@@ -347,23 +345,14 @@ public class RuleEngine implements Engine {
                 size = graph.size();
                 loop++;
 
-//                if (isOptimize) {
-//                    // set loop number in newly entailed edges
-//                    for (Entity ent : list) {
-//                        ent.getEdge().setIndex(loop);
-//                    }
-//                    // set loop number in result listener 
-//                    rw.setLoop(loop);
-//                }
+
             } else {
                 go = false;
             }
 
-//            if (trace){
-//                Date d2 = new Date();
-//                System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / ( 1000.0));
-//            }
         }
+        
+        
         if (debug) {
             System.out.println("Total Skip: " + tskip);
             System.out.println("Total Run: " + trun);
@@ -386,7 +375,7 @@ public class RuleEngine implements Engine {
      */
     public void clean() {
         for (Entity ent : graph.getEdges()) {
-            ent.getEdge().setIndex(0);
+            ent.getEdge().setIndex(-1);
         }
     }
 
@@ -426,14 +415,18 @@ public class RuleEngine implements Engine {
         if (isConstruct) {
             // kgram ResultListener has created edges in List el
             // insert these edges into graph
-            for (Entity ee : le) {
-                Entity ent = graph.addEdge(ee);
-                if (ent != null) {
-                    list.add(ent);
-                }
-            }
+            int res = graph.add(le);
+//            if (le.size() > 10000){
+//                System.out.println("RE: " + le.size() + " " + res);
+//                System.out.println("RE: " + rule.getAST());
+//            }
+
         } else {
             // create edges from Mappings as usual
+//             if (map.size() > 5000){
+//                 System.out.println("RE: " + map.size());
+//                 System.out.println("RE: " + rule.getAST());
+//             }
             cons.insert(map, graph, null);
         }
         //qq.setEdgeList(null);
@@ -444,7 +437,8 @@ public class RuleEngine implements Engine {
             if (map.size() > 0) {
                 System.out.println(rule.getQuery().getAST());
             }
-        }
+        }               
+
 
         return graph.size() - start;
     }
@@ -499,8 +493,8 @@ public class RuleEngine implements Engine {
      */
     void init(Rule rule) {
         rule.set(rule.getQuery().getNodeList());
-        for (Node p : rule.getPredicates()){
-            if (p.equals(Graph.TOPREL)){
+        for (Node p : rule.getPredicates()) {
+            if (p.equals(Graph.TOPREL)) {
                 rule.setGeneric(true);
             }
         }
@@ -683,8 +677,6 @@ public class RuleEngine implements Engine {
         }
         return false;
     }
-    
-    
 
     /**
      * Return previous record of rule predicate cardinality

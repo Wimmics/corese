@@ -5,21 +5,28 @@
 
 package fr.inria.edelweiss.kgraph.rule;
 
+import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.core.Distinct;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.Construct;
+import java.util.List;
 
 /**
- * Watch query solutions of rules for RuleEngine
- * Check that a solution at loop n contains at least one 
+ * Watch kgram query solutions of rules for RuleEngine
+ * 1 Check that a solution at loop n contains at least one 
  * edge deduced at loop n-1 (that is a new edge)
+ * 2 Eliminate duplicate solution by a select distinct * on construct variables
+ * 3 Create Edge directly (without Mapping created)
  * Does not optimize with:
  * exists {}
  * Property Path
@@ -30,15 +37,19 @@ import fr.inria.edelweiss.kgraph.query.Construct;
  */
 public class ResultWatcher implements ResultListener {    
       
-    int loop = 0;
+    int loop = 0, ruleLoop = 0;
     int cpos = 0, cneg = 0;
     int cnode = 0;
-    boolean isWatch = true;
+    boolean isWatch = true, start = true;
     
     Construct cons;
     Mappings map;
+    Rule rule;
+    Graph graph;
+    Distinct dist;
     
-    ResultWatcher(){
+    ResultWatcher(Graph g){
+        graph = g;    
     }
     
     
@@ -51,20 +62,41 @@ public class ResultWatcher implements ResultListener {
     }
     
     void setLoop(int n){
+        ruleLoop = n;
+    }
+    
+    void start(int n){
         loop = n;
     }
 
     void start(Rule r){
+        rule = r;
         isWatch = true;
-    }
-    
-    void finish(Rule r){
-        
+        start = true;
+        init(r);
     }
     
     /**
-     * Check that environment contains at least one edge from preceding 
-     * RuleEngine loop just before returning a solution
+     * set up a distinct * on construct variables
+     * hence do not apply rule twice on same solution
+     */
+    void init(Rule r){
+        List<Node> list = r.getQuery().getConstructNodes();
+        if (list != null && ! list.isEmpty()){
+            dist = Distinct.create(list);
+        }
+    }
+    
+    void finish(Rule r){
+        dist = null;
+    }
+    
+    /**
+     * Environment contain a candidate solution
+     * Check that environment contains at least one new edge from preceding 
+     * RuleEngine loop 
+     * Check that this solution is not duplicate: select distinct * on construct variables
+     * This function is called by kgram just before returning a solution
      */
     @Override
     public boolean process(Environment env) {
@@ -72,7 +104,6 @@ public class ResultWatcher implements ResultListener {
             cpos += 1;
             return store(env);
         }
-        //428910
       
         if (loop == 0){
             cpos += 1;           
@@ -81,7 +112,7 @@ public class ResultWatcher implements ResultListener {
         
         for (Entity ent : env.getEdges()){
             
-            if (ent != null && ent.getEdge().getIndex() >= loop){
+            if (ent != null && ent.getEdge().getIndex() >= ruleLoop){
                     cpos += 1;
                     return store(env);
             }
@@ -93,12 +124,21 @@ public class ResultWatcher implements ResultListener {
     
     
     boolean store(Environment env){
+        if (dist != null){
+            // select distinct * on construct variables
+            if (! dist.isDistinct(env)){               
+                return false;
+            }
+        }
         if (cons == null){
+            // Mapping created by kgram
             return true;
         }
         else {
-           cons.construct(map, env, null);
-            return false;
+            // create Edge 
+            // no Mapping created by kgram
+          cons.construct(map, env, null);
+           return false;
         }
     }
 
@@ -118,13 +158,17 @@ public class ResultWatcher implements ResultListener {
    }
 
     @Override
-    public void listen(Exp exp) {
+    public Exp listen(Exp exp) {      
         switch (exp.type()){
             case Exp.PATH:
             case Exp.QUERY:                
                 isWatch = false;
         }
+        
+        return exp;
     }
+    
+ 
     
      @Override
    public void listen(Expr exp) {
@@ -140,4 +184,52 @@ public class ResultWatcher implements ResultListener {
      }
      
   
+     
+     
+     
+     
+     /*********************************************************************
+      * 
+      * 
+      */
+     
+     
+     
+    Exp compile(Exp exp){
+        Exp e1    = Exp.create(Exp.EDGE, exp.get(1).getEdge());
+        Exp e2    = Exp.create(Exp.EDGE, exp.get(0).getEdge());       
+        Exp ee    = Exp.create(Exp.AND, e1, e2); 
+        exp.get(0).setIndex(ruleLoop);
+        e1.setIndex(ruleLoop);
+        Exp union = Exp.create(Exp.UNION, exp, ee);
+        return union;
+    }
+    
+    boolean isTransitive(Rule r){
+        Exp exp = r.getQuery().getBody();              
+        if (exp.type() != Exp.AND
+            || r.getPredicates().size() != 1
+            || exp.size() != 2){
+            return false;
+        }
+        
+        for (Exp ee : exp){
+            if (! ee.isEdge()){
+                return false;
+            }
+            Edge edge = ee.getEdge();
+            if (edge.getEdgeVariable() != null){
+                return false;
+            }
+        }
+        
+        return true;
+    }
+     
+     
+     
+     
+     
+     
+     
 }

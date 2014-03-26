@@ -20,6 +20,8 @@ public interface Index {
 	int duplicate();
 
 	void index();
+        
+        void index(Node pred, boolean reduce);
 
 	void indexNode();
 
@@ -48,6 +50,7 @@ public interface Index {
 
 	Iterable<Entity> getEdges(Node pred, Node node, Node node2);
 	
+        Iterable<Entity> getEdges(Node pred, int index);
 	// ************** Update
 	
 	
@@ -55,7 +58,9 @@ public interface Index {
         
         void clearCache();
 
-	void clear(Node gNode);
+	void clearIndex(Node pred);
+
+        void clear(Node gNode);
 	
 	void copy(Node g1, Node g2);
 
@@ -64,7 +69,6 @@ public interface Index {
 	void move(Node g1, Node g2);
 
 	void setDuplicateEntailment(boolean value);
-
 
 
 }

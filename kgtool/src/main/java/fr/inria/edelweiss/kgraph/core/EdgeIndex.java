@@ -37,7 +37,7 @@ implements Index {
 	// do not create entailed edge in kg:entailment if it already exist in another graph
 	isOptim = false;
 	
-	Comparator<Entity>  comp, skip;
+	Comparator<Entity>  comp, skip, compList;
 	Graph graph;
 	Hashtable<Node, Node> types;
         List<Node> sortedProperties;
@@ -97,6 +97,10 @@ implements Index {
 	 */
 	Comparator<Entity> getComparator(final boolean skip){
 		
+//                if (index == Graph.ILIST){
+//                    return getListComparator();
+//                }
+            
 		return new Comparator<Entity>(){
 									
 			public int compare(Entity o1, Entity o2) {
@@ -142,6 +146,30 @@ implements Index {
 			}
 		};
 	}
+        
+        
+        
+        Comparator<Entity> getListComparator(){
+		
+		return new Comparator<Entity>(){
+									
+			public int compare(Entity o1, Entity o2) {
+                            int i1 = o1.getEdge().getIndex();
+                            int i2 = o2.getEdge().getIndex();
+                            if (i1 < i2){
+                                return -1;
+                            }
+                            else if (i1 == i2){
+                                return 0;
+                            }
+                            else {
+                                return 1;
+                            }
+                        }
+                };
+                        
+        }
+        
         
         Node getNode(Entity ent, int n){
             if (n == IGRAPH){
@@ -222,13 +250,17 @@ implements Index {
 		super.clear();
 	}
         
+       public void clearIndex(Node pred) {
+            List<Entity> l = get(pred);
+            if (l != null && l.size() > 0) {
+                l.clear();
+            }
+        }
+
         
         public void clearCache(){
             for (Node pred : getProperties()){
-                List<Entity> l = get(pred);
-                if (l != null){
-                    l.clear();
-                }
+               clearIndex(pred);
             }
         }
 	
@@ -236,12 +268,18 @@ implements Index {
 	 * Add a property in the table
 	 */
 	public Entity add(Entity edge){
-            if (index != IGRAPH && edge.nbNode() <= index){
+            if (index != IGRAPH && edge.nbNode() <= index) {
                 // use case:  additional node is not present, do not index on this node
                 // never happens for subject object and graph
                 return null;
             }
-		List<Entity> list = define(edge.getEdge().getEdgeNode());
+
+            List<Entity> list = define(edge.getEdge().getEdgeNode());
+
+//            if (index == Graph.ILIST) {
+//                list.add(edge);
+//                return edge;
+//            }
 		
 		Comparator cc = comp;
 		boolean needTag = index == 0 && graph.needTag(edge);
@@ -428,6 +466,13 @@ implements Index {
 		}
 	}
         
+        public void index(Node pred, boolean reduce){
+            index(pred);
+            if (reduce){
+                reduce(pred);
+            }
+        }
+
         public void index(Node pred){
             List<Entity> list = get(pred);
             Collections.sort(list, comp);
@@ -450,13 +495,13 @@ implements Index {
 		}
 	}
         
-        private void reduce(Node pred){
+        private void reduce(Node pred) {
             ArrayList<Entity> l1 = get(pred);
-			ArrayList<Entity> l2 = reduce(l1);
-			put(pred, l2);
-			if (l1.size()!=l2.size()){
-				graph.setSize(graph.size() - (l1.size()-l2.size()));
-			}
+            ArrayList<Entity> l2 = reduce(l1);
+            put(pred, l2);
+            if (l1.size() != l2.size()) {
+                graph.setSize(graph.size() - (l1.size() - l2.size()));
+            }
         }
 	
 	private ArrayList<Entity> reduce(List<Entity> list){
@@ -569,6 +614,18 @@ implements Index {
 		}
 		return null; 
 	}
+        
+        
+        public Iterable<Entity> getEdges(Node pred, int index){
+		List<Entity> list = checkGet(pred); 
+		if (list == null){
+			return list;
+		}
+                int n = find(list, index, 0, list.size());
+                System.out.println("EI: " + pred + " " + n + " " + list.size());
+                return new ListIterate(list, n);
+        }
+        
 	
 	void trace(List<Entity> list){
 		Node nn = list.get(0).getNode(1);
@@ -607,6 +664,46 @@ implements Index {
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
 			boolean b = ind<list.size() && same(getNode(list.get(ind), index), node);
+			return b;
+		}
+
+		@Override
+		public Entity next() {
+			// TODO Auto-generated method stub
+			Entity ent = list.get(ind++);
+			return ent;
+		}
+
+		@Override
+		public void remove() {
+			// TODO Auto-generated method stub
+
+		}
+
+
+	}
+        
+        
+        class ListIterate implements Iterable<Entity>, Iterator<Entity> {
+		List<Entity> list;
+		int ind, start; 
+		
+		ListIterate(List<Entity> l, int n){
+			list = l;
+			start = n;
+		}
+
+		@Override
+		public Iterator<Entity> iterator() {
+			ind = start;
+			return this;
+		}
+
+
+		@Override
+		public boolean hasNext() {
+			// TODO Auto-generated method stub
+			boolean b = ind<list.size();
 			return b;
 		}
 
@@ -669,7 +766,34 @@ implements Index {
 			}
 		}		
 	}
-	
+        
+        
+        int find(List<Entity> list, int index, int first, int last){
+		if (first >= last) {
+			return first;
+		}
+		else {
+			int mid = (first + last) / 2;
+			int res = compare(list.get(mid).getEdge().getIndex(), index);
+			if (res >= 0) {
+				return find(list, index, first, mid);
+			}
+			else {
+				return find(list, index,mid+1, last); 
+			}
+		}		
+	}
+        
+       int compare(int i1, int i2) {
+        if (i1 < i2) {
+            return -1;
+        } else if (i1 == i2) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+                    	
 	int compare(Entity ent, Node n1, Node n2){
 		Node tNode = getNode(ent, index);
 		int res = nodeCompare(tNode, n1);

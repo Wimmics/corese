@@ -56,6 +56,7 @@ public class Query extends Exp {
 		querySelectNodes,
 		// final query bindings nodes
 		bindingNodes;
+    private List<Node> constructNodes;
 	List<Node> relaxEdges;
 	List<Exp> selectExp, selectWithExp, orderBy, groupBy;
 	List<Filter> failure, pathFilter;
@@ -1881,6 +1882,20 @@ public class Query extends Exp {
      */
     public void setEdgeList(List<Entity> edgeList) {
         this.edgeList = edgeList;
+    }
+
+    /**
+     * @return the constructNodes
+     */
+    public List<Node> getConstructNodes() {
+        return constructNodes;
+    }
+
+    /**
+     * @param constructNodes the constructNodes to set
+     */
+    public void setConstructNodes(List<Node> constructNodes) {
+        this.constructNodes = constructNodes;
     }
     
 	class VString extends ArrayList<String> {

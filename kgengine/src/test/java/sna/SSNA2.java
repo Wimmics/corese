@@ -61,8 +61,8 @@ public class SSNA2 implements ResultListener {
 	totalResult = 0;
 
     @Override
-    public void listen(Exp exp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Exp listen(Exp exp) {
+        return exp;
     }
 
     @Override

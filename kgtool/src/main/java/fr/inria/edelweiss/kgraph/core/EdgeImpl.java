@@ -16,7 +16,7 @@ import java.util.List;
 public class EdgeImpl implements Edge, Entity {
 
     public static boolean displayGraph = true;
-    int index = 0;
+    int index = -1;
     protected Node graph, predicate;
     Node[] nodes;
 

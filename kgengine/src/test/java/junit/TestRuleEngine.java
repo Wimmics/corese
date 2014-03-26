@@ -1,7 +1,6 @@
 package junit;
 
 
-import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,14 +16,14 @@ import fr.inria.edelweiss.engine.model.api.LBind;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgpipe.Pipe;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.RuleLoad;
+import java.util.Date;
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -74,6 +73,70 @@ public class TestRuleEngine {
 		rengine.load(data + "engine/rule/meta.brul");
 	}
 	
+        
+        
+        @Test
+    public void testRuleOpt() throws LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.loadWE(data + "comma/comma.rdfs");
+
+        try {
+            ld.loadWE(data + "owlrule/owlrllite.rul");
+
+        } catch (LoadException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Start Rules");
+        RuleEngine re = ld.getRuleEngine();
+        re.setOptimize(true);// 86690 ** Time : 11.477
+        re.setConstructResult(true);
+        re.setTrace(true);
+        System.out.println("Graph: " + g.size());
+        Date d1 = new Date();
+        re.process();
+        Date d2 = new Date();
+        System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / ( 1000.0));
+
+                  
+        assertEquals(8200, g.size());
+               
+    }
+  
+        
+       @Test
+    public void testRuleNotOpt() throws LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.loadWE(data + "comma/comma.rdfs");
+
+        try {
+            ld.loadWE(data + "owlrule/owlrllite.rul");
+
+        } catch (LoadException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Start Rules");
+        RuleEngine re = ld.getRuleEngine();
+//        re.setOptimize(true);// 86690 ** Time : 11.477
+//        re.setConstructResult(true);
+        re.setTrace(true);
+        System.out.println("Graph: " + g.size());
+        Date d1 = new Date();
+        re.process();
+        Date d2 = new Date();
+        System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / ( 1000.0));
+
+                  
+        assertEquals(8200, g.size());
+               
+    }
+  
+          
+        
+        
 	
 	@Test
 	public void test1(){

@@ -100,11 +100,23 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		isDistinct  = ! subEval && q.isDistinct();
 		isListGroup = q.isListGroup();
 		setSelect(q.getSelect());
+                
 		if (isDistinct){
 			distinct = group(q.getSelectFun());
 			distinct.setDistinct(true);
 			distinct.setDuplicate(q.isDistribute());
 		}
+//                else if (q.isRule() 
+//                        && q.getConstructNodes() != null
+//                        && q.getConstructNodes().size() > 0){
+//                    // construct where
+//                    // simulate distinct * on construct variables
+//                    isDistinct = true;
+//                    setSelect(q.getConstructNodes());
+//                    distinct = Group.create(q.getConstructNodes());
+//                    distinct.setDistinct(true);
+//                    distinct.setDuplicate(q.isDistribute());
+//                }
 	}
 	
 	public void add(Mapping m){

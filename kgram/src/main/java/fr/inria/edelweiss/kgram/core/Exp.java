@@ -25,7 +25,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     static Exp empty = new Exp(EMPTY);
     // group edge even if there is a disconnected filter
     public static boolean groupEdge = true;
-    int type, index;
+    int type, index = -1;
     // optional success
     boolean // default status must be false (for order by desc())
             status = false,

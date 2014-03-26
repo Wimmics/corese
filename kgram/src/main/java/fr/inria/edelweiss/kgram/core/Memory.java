@@ -747,6 +747,7 @@ public class Memory implements Environment {
 						pop(res.getQueryEdge(i), res.getEdge(i));
 					}
 					// TODO: pop the nodes
+                                        System.out.println("**** MEMORY: push mapping fail on edges");
 					return false;
 				}
 				k++;

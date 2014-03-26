@@ -165,19 +165,8 @@ public class Eval implements ExpType, Plugin {
         if (map != null) {
             bind(map);
         }
-        if (!q.isFail()) {
-            if (q.getMappings() != null) {
-
-                for (Mapping m : q.getMappings()) {
-                    if (binding(m)) {
-                        eval(gNode, q);
-                        free(m);
-                    }
-                }
-            } else {
-                eval(gNode, q);
-            }
-
+        if (!q.isFail()) {           
+            query(gNode, q);
             aggregate();
             // order by
             complete();
@@ -190,7 +179,22 @@ public class Eval implements ExpType, Plugin {
 
         return results;
     }
-
+    
+    int query(Node gNode, Query q) {
+        if (q.getMappings() != null) {
+            for (Mapping m : q.getMappings()) {
+                if (binding(m)) {
+                    eval(gNode, q);
+                    free(m);
+                }
+            }
+            return 0;
+        } else {
+            return eval(gNode, q);
+        }
+    }
+    
+  
     public Mappings filter(Mappings map, Query q) {
         Query qq = map.getQuery();
         init(qq);
@@ -202,15 +206,16 @@ public class Eval implements ExpType, Plugin {
         return map;
     }
 
-    void eval(Node gNode, Query q) {
+    int eval(Node gNode, Query q) {
         if (q.isFunctional()) {
             // select xpath() as ?val
             // select unnest(fun()) as ?x
             function();
+            return 0;
         } else {
             Stack stack = Stack.create(q.getBody());
             set(stack);
-            eval(gNode, stack, 0, false);
+            return eval(gNode, stack, 0, false);
         }
     }
 
@@ -670,7 +675,7 @@ public class Eval implements ExpType, Plugin {
 
         Exp exp = stack.get(n);
         if (hasListener){
-            listener.listen(exp);
+            exp = listener.listen(exp);
         }
         
         if (isEvent) {
@@ -2536,6 +2541,9 @@ public class Eval implements ExpType, Plugin {
     public void addResultListener(ResultListener el) {
         listener = el;
         hasListener = listener != null;
+        if (hasListener){
+            evaluator.addResultListener(el);
+        }
     }
 
     public void addEventListener(EventListener el) {
@@ -2587,4 +2595,5 @@ public class Eval implements ExpType, Plugin {
     public Stack getStack() {
         return current;
     }
+ 
 }

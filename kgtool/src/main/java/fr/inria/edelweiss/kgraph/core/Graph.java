@@ -55,6 +55,8 @@ public class Graph //implements IGraph
         public static boolean valueOut = !true;
 	
 	public static final int IGRAPH = -1;
+        // edges in chronological order
+	public static final int ILIST  = -2;
 	// NB of Index (subject, object, graph)
 	public static final int LENGTH = 3;
 	
@@ -89,7 +91,7 @@ public class Graph //implements IGraph
 	// default graph (deprecated)
 	Index[] dtables;
 	// Table of index 0
-	Index table, 
+	Index table, tlist,
 	// for rdf:type, no named graph to speed up type test
 	dtable;
         // key -> Node
@@ -231,6 +233,7 @@ public class Graph //implements IGraph
 		lock = new ReentrantReadWriteLock();
 		
 		tables  = new ArrayList<Index>(length);
+                tlist   = new EdgeIndex(this, ILIST);
 		for (int i=0; i<length; i++){
 			// One table per node index
 			// edges are sorted according to ith Node
@@ -750,6 +753,7 @@ public class Graph //implements IGraph
 					ei.declare(edge);
 				}
 			}
+                        //tlist.declare(edge);
 			size++;
 		}
 		return ent;
@@ -786,7 +790,54 @@ public class Graph //implements IGraph
 		return ent;
 	}
 	
-
+      public int add(List<Entity> lin) {
+          return add(lin, null);
+      }
+      
+      public int add(List<Entity> lin, List<Entity> lout) {
+        int n = 0;
+        for (Entity ee : lin) {
+            Entity ent = addEdge(ee);
+            if (ent != null) {
+                n++;
+                if (lout != null) {
+                    lout.add(ent);
+                }
+            }
+        }
+        return n;
+    }
+     
+ 
+      public void addOpt(List<Entity> lin) {
+        // fake index not sorted, hence add(edge) is done at end of index list
+        isIndex = true;
+        HashMap<String, Node> t = new HashMap<String, Node>();
+        
+        for (Entity ee : lin) {
+            
+            Node pred = ee.getEdge().getEdgeNode();
+            
+            if (! t.containsKey(pred.getLabel())){
+                t.put(pred.getLabel(), pred);
+                
+                for (Index ei : tables){
+                    // clear all Index except Index(0)
+                    if (ei.getIndex() != 0){
+                        ei.clearIndex(pred);
+                    }
+                }
+            }
+            // add Entity at the end of list index
+            addEdge(ee);
+        }
+        
+        for (Node pred : t.values()){
+            // sort Index(0) again and remove duplicates
+            table.index(pred, true);
+        }
+      }
+     
 
 	
 	public EdgeImpl create(Node source, Node subject, Node predicate, Node value){
@@ -1368,6 +1419,9 @@ public class Graph //implements IGraph
 		if (n == IGRAPH){
 			return tables.get(tables.size()-1);
 		}
+                if (n == ILIST){
+                    return tlist;
+                }
 		if (n+1 >= tables.size() ){
 			//setIndex(n, new EdgeIndex(this, n));	
 		}
@@ -1852,7 +1906,7 @@ public class Graph //implements IGraph
             if (! (ent instanceof EdgeImpl)){
 			return null;
             }
-            return addEdge((EdgeImpl) ent);
+            return addEdge(ent);
         }
 
 	

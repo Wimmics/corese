@@ -35,7 +35,7 @@ public interface ResultListener {
 	
 	boolean leave(Entity ent, Regex exp, int size);
         
-        void listen(Exp exp);
+        Exp listen(Exp exp);
 	
         void listen(Expr exp);
 }

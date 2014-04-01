@@ -5,7 +5,7 @@
     <RDF:Description RDF:about="urn:mozilla:install-manifest">
 
         <em:name>RDF Triple Collector</em:name>
-        <em:version>1.0 b</em:version>
+        <em:version>${project.version}</em:version>
         <em:type>2</em:type>
         <em:id>fuqi.song@inria.fr</em:id>
         <em:description>RDF Triple Collector(RTC) aims to extract triples from web pages and support upload/query to Corese server.</em:description>

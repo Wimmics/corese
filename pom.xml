@@ -107,8 +107,9 @@
         <module>kgimport</module>
         <module>sparql</module>
         <module>rif</module>
+        <module>rtc</module><!-- RDF Triple Collector(firefox plugin)-->
         <!--<module>kgendpoint</module>-->
-    </modules>
+  </modules>
     
     <dependencyManagement>
         <dependencies>

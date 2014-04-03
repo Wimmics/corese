@@ -127,14 +127,14 @@ public class JSOND3Format extends RDFFormat {
                 group = 0;
             } else if (node.toString().contains("/sparql")) {
                 group = 2;
-            } 
+            }
             
             sdisplay(TAB);
             sdisplay(OOBJ);
             sdisplay("\"name\" : ");
             sdisplay(DQUOTE);
             
-            sdisplay(node.toString().replace("\"", "\\\""));
+            sdisplay(JSONFormat.addJSONEscapes(node.toString()));
             sdisplay(DQUOTE);
             sdisplay(V);
             sdisplay("\"group\" : " + group + " ");
@@ -154,7 +154,7 @@ public class JSOND3Format extends RDFFormat {
             sdisplay("\"name\" : ");
             sdisplay(DQUOTE);
             
-            sdisplay(Constant.addEscapes(node.toString()));
+            sdisplay(JSONFormat.addJSONEscapes(node.toString()));
             sdisplay(DQUOTE);
             sdisplay(V);
             sdisplay("\"group\" : 3 ");
@@ -187,7 +187,7 @@ public class JSOND3Format extends RDFFormat {
             sdisplay(V);
             sdisplay("\"label\" : ");
             sdisplay(DQUOTE);
-            sdisplay(edge.getEdgeNode().toString().replace("\"", "\\\""));
+            sdisplay(JSONFormat.addJSONEscapes(edge.getEdgeNode().toString()));
             sdisplay(DQUOTE);
             sdisplay(COBJ);
             sdisplay(V);

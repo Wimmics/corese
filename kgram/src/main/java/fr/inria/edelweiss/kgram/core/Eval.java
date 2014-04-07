@@ -675,7 +675,7 @@ public class Eval implements ExpType, Plugin {
 
         Exp exp = stack.get(n);
         if (hasListener){
-            exp = listener.listen(exp);
+            exp = listener.listen(exp, n);
         }
         
         if (isEvent) {

@@ -71,6 +71,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
     public void setPlugin(Proxy p) {
         plugin = p;
+        plugin.setEvaluator(eval);
     }
 
     public Proxy getPlugin() {

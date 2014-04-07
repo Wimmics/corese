@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -47,6 +48,7 @@ public class PluginImpl extends ProxyImpl {
     static Table table;
     MatcherImpl match;
     Loader ld;
+    Evaluator eval;
 
     PluginImpl(Matcher m) {
         if (table == null) {
@@ -59,6 +61,10 @@ public class PluginImpl extends ProxyImpl {
 
     public static PluginImpl create(Matcher m) {
         return new PluginImpl(m);
+    }
+    
+    public void setEvaluator(Evaluator ev) {
+        eval = ev;
     }
 
     public Object function(Expr exp, Environment env, Producer p) {
@@ -127,6 +133,9 @@ public class PluginImpl extends ProxyImpl {
                      case SKOLEM:               
                         return g.skolem(dt);    
                 }                
+                
+            case STL_PROCESS:
+                return process(exp, env, p, dt);
                 
             case PPRINT:
             case PPRINTALL:
@@ -550,6 +559,43 @@ public class PluginImpl extends ProxyImpl {
                 exp.getModality(), exp, env.getQuery());
         return dt;
     }
+     
+    /**
+     * st:process(var) : default variable processing by SPARQL Template
+     * Ask PPrinter what is default behavior
+     * set st:process() to it's default behavior
+     * the default behavior is st:apply-templates
+     */
+    public Object process(Expr exp, Environment env, Producer p, IDatatype dt) {
+        PPrinter pp = getPPrinter(env, p);
+        // overload current st:process() oper code to default behaviour oper code
+        // future executions of this st:process() will directly execute target default behavior
+        int oper = pp.getDefaultProcess();                     
+        exp.setOper(oper);
+        
+        switch(oper){
+            case TEMPLATE:
+                // st:process(?x) = st:call-template(ex:name, ?x)
+                Expr ct = pp.getDefaultProcessExp();
+                Expr name = ct.getExp(0);
+                exp.addExp(0, name);
+                Object res = function(exp, env, p, name.getValue(), dt);                   
+                return res;
+        }
+        
+        Object res = function(exp, env, p, dt);
+        // if we want STL_PROCESS to get back to it's initial behavior:
+        // unset the comment below
+        // exp.setOper(ExprType.STL_PROCESS);
+        return res;
+    }
+    
+    
+    /**
+     * 
+    
+     */
+
 
     IDatatype turtle(IDatatype o, Environment env, Producer prod) {
         PPrinter p = getPPrinter(env, prod);

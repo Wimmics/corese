@@ -259,4 +259,15 @@ public class Pattern implements ExprType, Expr {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+    @Override
+    public void setOper(int n) {
+    }
+
+    @Override
+    public void setExp(int i, Expr e) {
+    }
+    
+     public void addExp(int i, Expr e) {
+    }
 }

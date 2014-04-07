@@ -220,14 +220,14 @@ public class Transformer implements ExpType {
 		if (ast.isTemplate()){
 			q.setTemplate(true);
 			q.setAllResult(ast.isAllResult());
-			if (ast.isTurtle()){
-				q.setPragma(Pragma.TURTLE, Pragma.TURTLE);
-			}
+//			if (ast.isTurtle()){
+//				q.setPragma(Pragma.TURTLE, Pragma.TURTLE);
+//			}
 			if (ast.getSeparator()!=null){
 				q.setPragma(Pragma.SEPARATOR, ast.getSeparator());
 			}
 			if (ast.getName() != null) {
-				q.setPragma(Pragma.NAME, ast.getName());
+				q.setName(ast.getName());
 			}
 			ast.getTemplateGroup().compile(ast);
 			q.setTemplateGroup(Exp.create(FILTER, ast.getTemplateGroup()));

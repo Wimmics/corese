@@ -175,6 +175,8 @@ public interface ExprType {
 	public static int WRITE 	= 235;
 	public static int FOCUS_NODE 	= 236;
 	public static int XSDLITERAL 	= 237;
+	public static int STL_PROCESS 	= 238;
+	public static int STL_DEFINE 	= 239;
 
 
 	public static int ISSKOLEM 	= 240;

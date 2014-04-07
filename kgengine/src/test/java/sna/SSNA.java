@@ -83,7 +83,7 @@ public class SSNA implements ResultListener {
 	totalResult = 0;
 
     @Override
-    public Exp listen(Exp exp) {
+    public Exp listen(Exp exp, int n) {
         return exp;
     }
 

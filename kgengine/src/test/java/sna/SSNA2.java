@@ -61,7 +61,7 @@ public class SSNA2 implements ResultListener {
 	totalResult = 0;
 
     @Override
-    public Exp listen(Exp exp) {
+    public Exp listen(Exp exp, int n) {
         return exp;
     }
 

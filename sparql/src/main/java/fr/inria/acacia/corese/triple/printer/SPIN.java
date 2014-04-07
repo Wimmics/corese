@@ -232,10 +232,16 @@ public class SPIN implements ASTVisitor {
         subQuery = true;
         for (int i = 0; i < ast.getPrefixExp().size(); i++) {
             Triple t = ast.getPrefixExp().get(i).getTriple();
-            sb.append("@prefix " + t.getPredicate().getName()
-                    + ": " + KeywordPP.OPEN
-                    + t.getObject().getName()
-                    + KeywordPP.CLOSE);
+            if (t.getSubject().getLabel().equals(KeywordPP.BASE)){
+                sb.append("@base ");
+            }
+            else {
+                sb.append("@prefix " + t.getPredicate().getName());
+                sb.append(": ");
+            }
+            sb.append(KeywordPP.OPEN);
+            sb.append(t.getObject().getName());
+            sb.append(KeywordPP.CLOSE);
             sb.append(" ." + KeywordPP.SPACE_LN);
         }
     }
@@ -389,8 +395,10 @@ public class SPIN implements ASTVisitor {
      */
     @Override
     public void visit(Exp exp) {
-
-        if (exp.isAnd()) {
+        if (exp.isBind()){
+            visit((Binding) exp);
+        }
+        else if (exp.isAnd()) {
             visit((And) exp);
         } 
         else if (exp.isTriple()) {
@@ -631,10 +639,18 @@ public class SPIN implements ASTVisitor {
         ASTQuery ast = query.getQuery();
         Variable var   = ast.getSelectVar().get(0);
         Expression exp = ast.getExpression(var);
+        bind(exp, var);
+    }
+    
+     public void visit(Binding exp) {
+        bind(exp.getFilter(), exp.getVariable());
+    }
         
+        
+     void bind(Expression exp, Variable var) {
         ttype("sp:Bind");
         counter++;
-                
+
         sb.append(tab() + "sp:expression" + SPACE);
         visit(exp);
         sb.append(PT_COMMA);
@@ -769,9 +785,11 @@ public class SPIN implements ASTVisitor {
         if (bgp.isExist()) {
             visit((Exist) bgp);
         } else {
+            //sb.append(tab() +  OPAREN );
             for (Exp ee : bgp.getBody()) {
                 visit(ee);
             }
+            //sb.append(tab() +  CPAREN );
         }
     }
 

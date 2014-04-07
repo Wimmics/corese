@@ -496,6 +496,9 @@ public class NSManager {
     }
 
     public boolean isUserDefine() {
+        if (base != null){
+            return true;
+        }
         return size() > def.size();
     }
 

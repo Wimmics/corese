@@ -778,6 +778,12 @@ public class Term extends Expression {
 	public void setOper(String str){
 		setName(str);
 	}
+        
+         public void setOper(int n){
+            if (proc != null){
+                proc.setOper(n);
+            }
+        }
 	
 	
 	/**
@@ -839,6 +845,14 @@ public class Term extends Expression {
 	
 	public Expr getExp(int i){
 		return proc.getExp(i);
+	}
+        
+        public void setExp(int i, Expr e){
+             proc.setExp(i, e);
+	}
+        
+        public void addExp(int i, Expr e){
+             proc.addExp(i, e);
 	}
 	
 	public Expr getArg(){

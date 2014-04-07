@@ -481,6 +481,10 @@ implements Regex, Filter, Expr {
 		
 		return -1;
 	}
+        
+        public void setOper(int n){
+            
+        }
 
 	
 	public int type() {
@@ -520,7 +524,14 @@ implements Regex, Filter, Expr {
 	public Expr getExp(int i){
 		return null;
 	}
-
+        
+        public void setExp(int i, Expr e){
+            
+        }
+        
+        public void addExp(int i, Expr e){
+            
+        }
 	
 	public int getIndex() {
 		return -1;

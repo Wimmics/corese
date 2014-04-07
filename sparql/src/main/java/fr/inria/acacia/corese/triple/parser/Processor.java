@@ -86,8 +86,9 @@ public class Processor {
 	static final String EVAL 		= KGRAM + "eval";
         static final String PROLOG 		= KGRAM + "prolog";
 	static final String KGPPRINT		= ExpType.KPREF + ":" + "pprint"; 
-        static final String STL_PPRINT		= NSManager.STL_PREF + ":" + "apply-templates"; 
+        static final String STL_PPRINT		= NSManager.STL_PREF + ":" + "process"; 
 
+	static final String STL_PROCESS             = STL + "process"; 
         static final String FOCUS_NODE              = STL + "getFocusNode";
         static final String APPLY_TEMPLATES         = STL + "apply-templates";
         static final String APPLY_TEMPLATES_WITH    = STL + "apply-templates-with";
@@ -102,6 +103,7 @@ public class Processor {
 	static final String STL_PROLOG              = STL + "prolog"; 
 	static final String STL_INDENT              = STL + "indent"; 
 	static final String STL_LEVEL               = STL + "level"; 
+	static final String STL_DEFINE              = STL + "define"; 
 
 	static final String QNAME 	= KGRAM + "qname"; 
 	static final String TURTLE 	= KGRAM + "turtle"; 
@@ -229,6 +231,20 @@ public class Processor {
 	Expr getExp(int i){
 		return lExp.get(i);
 	}
+        
+        void setExp(int i, Expr e){
+            if (i < lExp.size()){
+                lExp.set(i, e);
+            }
+            else if (i == lExp.size()){
+                lExp.add(i, e);
+            }
+        }
+        
+        void addExp(int i, Expr e){
+            lExp.add(i, e);
+        }
+
 	
 	void setArguments(){
 		if (lExp == null){
@@ -247,6 +263,10 @@ public class Processor {
 	public int type(){
 		return type;
 	}
+        
+        void setOper(int n){
+            oper = n;
+        }
 	
 	public void compile(ASTQuery ast){
 		if (table == null){
@@ -402,20 +422,21 @@ public class Processor {
 		defoper(TEMPLATEWITH, 	ExprType.TEMPLATEWITH);
 		defoper(TURTLE,         ExprType.TURTLE);
                 
-                defoper(FOCUS_NODE, 	ExprType.FOCUS_NODE);
+                defoper(FOCUS_NODE,             ExprType.FOCUS_NODE);
                 defoper(APPLY_TEMPLATES, 	ExprType.PPRINT);
 		defoper(APPLY_TEMPLATES_WITH, 	ExprType.PPRINTWITH);
 		defoper(APPLY_ALL_TEMPLATES, 	ExprType.PPRINTALL);
 		defoper(APPLY_ALL_TEMPLATES_WITH,ExprType.PPRINTALLWITH);
 		defoper(CALL_TEMPLATE,          ExprType.TEMPLATE);
 		defoper(CALL_TEMPLATE_WITH, 	ExprType.TEMPLATEWITH);
+                defoper(STL_PROCESS,            ExprType.STL_PROCESS);
 		defoper(STL_TURTLE,             ExprType.TURTLE);
                 defoper(STL_URI,                ExprType.PPURI);
                 defoper(STL_PROLOG,             ExprType.PROLOG);
 		defoper(STL_INDENT,             ExprType.INDENT);
 		defoper(STL_LEVEL,              ExprType.LEVEL);
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
-		defoper(STL_XSDLITERAL,             ExprType.XSDLITERAL);
+		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 
 		defoper(LEVEL, 	ExprType.LEVEL);
 		defoper(INDENT, ExprType.INDENT);
@@ -424,6 +445,7 @@ public class Processor {
 		defoper(STL_XSDLITERAL, 	ExprType.XSDLITERAL);
 		defoper(VISITED, ExprType.VISITED);
 		defoper(PROLOG,  ExprType.PROLOG);
+		defoper(STL_DEFINE,  ExprType.STL_DEFINE);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

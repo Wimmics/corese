@@ -2806,9 +2806,9 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 			// variable of xsd:string() is not
 			exp = compileTemplateMeta((Term) exp);
 		}
-		else if (exp.getLabel().equals(TURTLE)){
-			setTurtle(true);
-		}
+//		else if (exp.getLabel().equals(TURTLE)){
+//			setTurtle(true);
+//		}
 		return exp;
 	}
 	

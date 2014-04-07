@@ -29,6 +29,9 @@ public class SPINProcess {
     QueryProcess exec;
     private boolean isDebug = false,
             isSPARQLCompliant = false;
+    // The environment may have a default base
+    // use case: W3C test case query have the query location path as default base
+    private String defaultBase;
 
 
     public static SPINProcess create() {
@@ -41,6 +44,11 @@ public class SPINProcess {
 
    public Graph getGraph(){
        return graph;
+   }
+   
+   public void setDefaultBase(String str){
+       defaultBase = str;
+       exec.setDefaultBase(str);
    }
    
     /**
@@ -102,6 +110,10 @@ public class SPINProcess {
     public Graph toSpinGraph(ASTQuery ast, Graph g, String src) throws EngineException {
         return toGraph(toSpin(ast, src), g);       
     }
+    
+     public Graph toSpinGraph(ASTQuery ast) throws EngineException {
+        return toGraph(toSpin(ast, null), Graph.create());       
+    }
 
     String toSpinSparql(ASTQuery ast) throws EngineException {
         if (isDebug) {
@@ -129,7 +141,7 @@ public class SPINProcess {
      public Graph toGraph(String spin, Graph g) throws EngineException {
         Load ld = Load.create(g);
         try {
-            ld.load(new ByteArrayInputStream(spin.getBytes("UTF-8")), "spin.ttl");
+            ld.load(new ByteArrayInputStream(spin.getBytes("UTF-8")), Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
             Logger.getLogger(SPINProcess.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedEncodingException ex) {

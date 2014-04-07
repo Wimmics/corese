@@ -71,22 +71,29 @@ public class Distinct {
         }
 	
 	
-	public boolean isDistinct(Node[] m){
+	public boolean isDistinct(Node[] key){
 										
-		if (table.containsKey(m)){
+		if (table.containsKey(key)){
 			return false;
 		}
-		table.put(m, m);		
+		table.put(key, key);		
 		return true;
 	}
         
         public boolean isDistinct(Environment env){
-            Node [] nodes = new Node[list.size()];
+            Node [] key = new Node[list.size()];
             int i = 0;
             for (Node node : list){
-                nodes[i++] = env.getNode(node);
+                key[i++] = env.getNode(node);
             }
-            return isDistinct(nodes);
+            return isDistinct(key);
+        }
+        
+        public boolean isDistinct(Node n1, Node n2){
+            Node [] key = new Node[2];
+            key[0] = n1;
+            key[1] = n2;
+            return isDistinct(key);
         }
 
 

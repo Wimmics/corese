@@ -102,6 +102,10 @@ public class Construct
     public void setBuffer(boolean b) {
         isBuffer = b;
     }
+    
+     public boolean isBuffer() {
+        return isBuffer;
+    }
 
     public void setDelete(boolean b) {
         isDelete = b;

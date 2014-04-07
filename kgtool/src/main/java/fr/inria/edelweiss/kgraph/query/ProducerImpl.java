@@ -145,10 +145,18 @@ public class ProducerImpl implements Producer {
         if (predicate == null) {
             return empty;
         }
+        
+        Query q = env.getQuery();
+        if (q.isRule() 
+                && q.getEdgeList() != null
+                && edge.getIndex() == q.getEdgeIndex()){
+            // draft: transitive rule (see RuleEngine)
+            //System.out.println("PI: " + q.getEdgeList().size() + " " + q.getAST());
+            return q.getEdgeList();
+        }
 
         Node node = null, node2 = null;
         int n = 0;
-        Query q = env.getQuery();
         boolean isType = false;
         
         for (Index ei : graph.getIndexList()) {

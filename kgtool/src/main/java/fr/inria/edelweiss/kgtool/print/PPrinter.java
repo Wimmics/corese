@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Exp;
@@ -54,6 +55,10 @@ public class PPrinter {
     public static final String TURTLE = PPNS + "turtle";
     public static final String TABLE = PPNS + "table";
     public static final String TYPECHECK = PPNS + "typecheck";
+    private static final String STL         = NSManager.STL;
+    private static final String STL_INIT    = STL + "init";
+    private static final String STL_START   = STL + "start";
+    private static final String STL_DEFAULT = STL + "default";   
     // default
     public static final String PPRINTER = TURTLE;
     private static final String OUT = ASTQuery.OUT;
@@ -81,8 +86,7 @@ public class PPrinter {
     private IDatatype EMPTY;
     boolean isTurtle = false;
     int nbt = 0, max = 0;
-    private static final String START = Exp.KGRAM + "start";
-    private static final String STL_START = Exp.STL + "start";
+   
     String start = STL_START;
     HashMap<Query, Integer> tcount;
     private boolean isHide = false;
@@ -93,11 +97,17 @@ public class PPrinter {
     // index and run templates according to focus node type
     // no subsumption (exact match on type)
     private boolean isOptimize = isOptimizeDefault;
+    
+    // default process of variable is st:apply-templates
+    // it may be overloaded
+    private int process = ExprType.PPRINT;
 
     static {
         table = new PPrinterTable();
     }
     private boolean isExplain = isExplainDefault();
+    private boolean hasDefault = false;
+    private Expr processExp;
 
     /**
      * @return the isCheck
@@ -231,7 +241,7 @@ public class PPrinter {
     }
 
     public NSManager getNSM() {
-        return nsm;
+       return nsm;
     }
 
     public void setDebug(boolean b) {
@@ -288,6 +298,14 @@ public class PPrinter {
 
     public boolean isVisited(IDatatype dt) {
         return stack.isVisited(dt);
+    }
+    
+    public int getDefaultProcess(){
+        return process;
+    }
+    
+    public Expr getDefaultProcessExp(){
+        return processExp;
     }
 
     /**
@@ -544,11 +562,18 @@ public class PPrinter {
             stack.pop();
         }
 
-        // no template match dt
+        // **** no template match dt ****
 
         if (temp != null) {
             // named template fail
             return EMPTY;
+        }
+        else if (hasDefault) {
+            // apply st:default named template
+            IDatatype res = pprint(args, dt1, dt2, STL_DEFAULT, allTemplates, sep, exp, q);
+            if (res != EMPTY) {
+                return res;
+            }
         }
 
         // default: display dt as is
@@ -808,9 +833,13 @@ public class PPrinter {
             for (Query q : qe.getTemplates()) {
                 q.setPPrinter(pp, this);
             }
+            
             for (Query q : qe.getNamedTemplates()) {
                 q.setPPrinter(pp, this);
+                init(q);
             }
+            
+            hasDefault = qe.getTemplate(STL_DEFAULT) != null;
 
             qe.sort();
         }
@@ -827,6 +856,37 @@ public class PPrinter {
         }
         //trace();
 
+    }
+    
+    /**
+     * The st:init pseudo template may contain a st:define statement such as:
+     * st:define(st:process(?in) = st:uri(?in))
+     * where st:process(?in) represents the processing of a variable in the template clause
+     * default processing is st:apply-templates(?x)
+     * hence it can be overloaded
+     * eg spin transformation mostly uses st:uri(?var).
+     */
+    void init(Query q){
+        if (q.getName() != null){
+            if (q.getName().equals(STL_INIT) && ! q.getSelectFun().isEmpty()){
+               Expr exp = q.getSelectFun().get(0).getFilter().getExp();
+               init(exp);
+            }
+        }
+    }
+    
+    /**
+     * exp = st:define(st:process(?in) = st:uri(?in))
+     * set default process to st:uri
+     * 
+     */
+    void init(Expr exp){
+        //System.out.println("PP: " + exp);         
+        Expr ee = exp.getExp(0).getExp(1); 
+        // ee = st:uri()
+        // set default st:process operation
+        process = ee.oper();
+        processExp = ee;
     }
 
     void load(Load ld, String pp) throws LoadException {

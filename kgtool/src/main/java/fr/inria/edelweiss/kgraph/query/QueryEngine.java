@@ -97,8 +97,8 @@ public class QueryEngine implements Engine {
 	 */
 	public void defTemplate(Query q){
                 q.setPrinterTemplate(true);
-		if (q.hasPragma(Pragma.NAME)){
-			table.put((String) q.getPragma(Pragma.NAME), q);
+		if (q.getName()!=null){
+			table.put(q.getName(), q);
 		}
 		else {
 			list.add(q);

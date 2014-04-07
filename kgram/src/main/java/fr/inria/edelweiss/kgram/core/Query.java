@@ -43,6 +43,7 @@ public class Query extends Exp {
 	private int number = 0;
 	boolean distinct = false;
 	int iNode = 0, iEdge = 0, iPath = 0;
+        private int edgeIndex = -1;
 	List<Node> from, named, selectNode;
 	// all nodes (on demand)
 	List<Node> 
@@ -124,6 +125,7 @@ public class Query extends Exp {
 	private Exp templateGroup;
     private List<Node> argList;
     private List<Entity> edgeList;
+    private String name;
 
 	
 	Query(){
@@ -1897,7 +1899,29 @@ public class Query extends Exp {
     public void setConstructNodes(List<Node> constructNodes) {
         this.constructNodes = constructNodes;
     }
-    
+
+    /**
+     * @return the edgeIndex
+     */
+    public int getEdgeIndex() {
+        return edgeIndex;
+    }
+
+    /**
+     * @param edgeIndex the edgeIndex to set
+     */
+    public void setEdgeIndex(int edgeIndex) {
+        this.edgeIndex = edgeIndex;
+    }
+
+    public void setName(String n) {
+        name = n;
+    }
+
+    public String getName() {
+        return name ;
+    }
+
 	class VString extends ArrayList<String> {
 		
 		void clear(int size){

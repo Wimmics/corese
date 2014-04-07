@@ -11,6 +11,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Distinct;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
@@ -253,7 +254,6 @@ public class RuleEngine implements Engine {
         }
 
         while (go) {
-            Date d1 = new Date();
             skip = 0;
             nbrule = 0;
             tnbres = 0;
@@ -383,13 +383,12 @@ public class RuleEngine implements Engine {
      * Process one rule Store created edges into list
      */
     int process(Rule rule, List<Entity> current, List<Entity> list, int loopIndex) {
+        Date d1 = new Date();
         boolean isConstruct = isOptimize && isConstructResult;
 
         Query qq = rule.getQuery();
-        //qq.setEdgeList(current);
         Construct cons = Construct.create(qq, Entailment.RULE);
         cons.setRule(rule, rule.getIndex());
-        //cons.setInsertList(list);
         cons.setGraph(graph);
         cons.setLoopIndex(loopIndex);
 
@@ -409,39 +408,115 @@ public class RuleEngine implements Engine {
         }
 
         int start = graph.size();
+        
+        process(qq, cons);
 
-        Mappings map = exec.query(qq, null);
+        if (graph.size() > start && isConstruct) {
+            
+            if (rule.isTransitive() || 
+                    rule.isGTransitive()) {
+                // optimization for transitive rules: eval at saturation
 
-        if (isConstruct) {
-            // kgram ResultListener has created edges in List el
-            // insert these edges into graph
-            int res = graph.add(le);
-//            if (le.size() > 10000){
-//                System.out.println("RE: " + le.size() + " " + res);
-//                System.out.println("RE: " + rule.getAST());
-//            }
+                boolean go = true;
 
-        } else {
-            // create edges from Mappings as usual
-//             if (map.size() > 5000){
-//                 System.out.println("RE: " + map.size());
-//                 System.out.println("RE: " + rule.getAST());
-//             }
-            cons.insert(map, graph, null);
-        }
-        //qq.setEdgeList(null);
+                while (go) {
+                    // if this rule is transitive, it is executed at saturation in a loop.
+                    // for loops after first one, kgram take new edge list into account
+                    // for evaluating the where part, the first query edge matches new edges only
 
-        if (debug || qq.isDebug()) {
-            logger.info("** Mappings: " + map.size());
-            logger.info("** Inserted: " + (graph.size() - start));
-            if (map.size() > 0) {
-                System.out.println(rule.getQuery().getAST());
+                    // consider list of edges created at preceeding loop:
+                    qq.setEdgeList(le);
+                    qq.setEdgeIndex(rule.getEdgeIndex());
+                    le = new ArrayList<Entity>();
+                    cons.setInsertList(le);
+
+                    int size = graph.size();
+
+                    process(qq, cons);
+
+                    if (graph.size() == size) {
+                        qq.setEdgeList(null);
+                        go = false;
+                    }
+                }
             }
-        }               
+            else if (rule.isTransitive()){
+                // draft
+                transitive(qq, le);
+            }
+           
+        }
 
+        Date d2 = new Date();
+        if (trace){
+            double tt = (d2.getTime() - d1.getTime()) / ( 1000.0) ;
+            if (tt > 1.0 ){
+                System.out.println("Time : " + tt);
+                System.out.println("Size: " + le.size());
+                System.out.println(rule.getAST());
+            }
+        }
 
         return graph.size() - start;
     }
+    
+    
+    // process rule
+    void process(Query qq, Construct cons) {
+        Mappings map = exec.query(qq, null);
+
+        if (cons.isBuffer()) {
+            // kgram ResultListener has created edges in List el
+            // insert these edges into graph
+            int res = graph.add(cons.getInsertList());
+        } else {
+            // create edges from Mappings as usual
+            cons.insert(map, graph, null);
+        }
+    }
+    
+    
+    void transitive(Query q, List<Entity> l){
+        Distinct dist = rw.getDistinct();
+        
+        while (l.size() > 0) {
+            
+            ArrayList<Entity> ll = new ArrayList<Entity>();
+            
+            for (Entity e1 : l) {
+                Node node = e1.getNode(1);
+                
+                Iterable<Entity> it = graph.getEdges(e1.getEdge().getEdgeNode(), node, 0);
+                if (it != null){               
+                    for (Entity e2 : it) {
+                        if (e2 != null) {
+                            Node n1 = e1.getNode(0);
+                            Node n2 = e2.getNode(1);
+                            if (dist.isDistinct(n1, n2)) {
+                                Entity ent = create(n1, n2, e1);
+                                ll.add(ent);
+                            }
+                        }
+                    }
+                }
+            }
+
+            l.clear();
+
+            for (Entity ent : ll) {                
+                Entity ee = graph.add(ent);
+                if (ee != null) {
+                    l.add(ee);
+                }
+            }
+        }
+    }
+    
+    
+    Entity create(Node n1, Node n2, Entity ent){
+        return graph.create(ent.getGraph(), n1, ent.getEdge().getEdgeNode(), n2);
+    }
+   
 
     /**
      * **************************************************

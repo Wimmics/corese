@@ -52,6 +52,9 @@ public class ResultWatcher implements ResultListener {
         graph = g;    
     }
     
+    public Distinct getDistinct(){
+        return dist;
+    }
     
     void setConstruct(Construct c){
         cons = c;
@@ -101,19 +104,16 @@ public class ResultWatcher implements ResultListener {
     @Override
     public boolean process(Environment env) {
         if (! isWatch){
-            cpos += 1;
             return store(env);
         }
       
         if (loop == 0){
-            cpos += 1;           
             return store(env);
         }
         
         for (Entity ent : env.getEdges()){
             
             if (ent != null && ent.getEdge().getIndex() >= ruleLoop){
-                    cpos += 1;
                     return store(env);
             }
         }
@@ -126,10 +126,12 @@ public class ResultWatcher implements ResultListener {
     boolean store(Environment env){
         if (dist != null){
             // select distinct * on construct variables
-            if (! dist.isDistinct(env)){               
+            if (! dist.isDistinct(env)){  
+                cneg += 1;
                 return false;
             }
         }
+        cpos+= 1;
         if (cons == null){
             // Mapping created by kgram
             return true;
@@ -158,13 +160,23 @@ public class ResultWatcher implements ResultListener {
    }
 
     @Override
-    public Exp listen(Exp exp) {      
-        switch (exp.type()){
+    public Exp listen(Exp exp, int n) {
+        switch (exp.type()) {
             case Exp.PATH:
-            case Exp.QUERY:                
+            case Exp.QUERY:
                 isWatch = false;
         }
-        
+
+        if (n == 0 && exp.type() == Exp.AND
+                && rule.isGTransitive()) {
+            if (rule.getQuery().getEdgeList() != null) {
+                // exp = where { ?p a owl:TransitiveProperty . ?x ?p ?y . ?y ?p ?z }
+                // there is a list of candidates for ?x ?p ?y
+                // skip first query edge: skip exp.get(0)
+                exp = Exp.create(Exp.AND, exp.get(1), exp.get(2));
+            }
+        }
+
         return exp;
     }
     
@@ -175,7 +187,7 @@ public class ResultWatcher implements ResultListener {
         switch (exp.type()){
             case ExpType.EXIST: 
                 isWatch = false;
-        }
+        }           
     }
      
      public String toString(){
@@ -205,27 +217,7 @@ public class ResultWatcher implements ResultListener {
         return union;
     }
     
-    boolean isTransitive(Rule r){
-        Exp exp = r.getQuery().getBody();              
-        if (exp.type() != Exp.AND
-            || r.getPredicates().size() != 1
-            || exp.size() != 2){
-            return false;
-        }
-        
-        for (Exp ee : exp){
-            if (! ee.isEdge()){
-                return false;
-            }
-            Edge edge = ee.getEdge();
-            if (edge.getEdgeVariable() != null){
-                return false;
-            }
-        }
-        
-        return true;
-    }
-     
+   
      
      
      

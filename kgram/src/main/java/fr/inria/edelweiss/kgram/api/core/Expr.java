@@ -23,7 +23,9 @@ public interface Expr {
 	List<Expr> getExpList();
 
 	Expr getExp(int i);
-	
+	void setExp(int i, Expr e);
+	void addExp(int i, Expr e);
+        
 	Expr getArg();
 	void setArg(Expr exp);
 
@@ -32,6 +34,8 @@ public interface Expr {
 	int type();
 
 	int oper();
+        
+        void setOper(int n);
 
 	boolean isAggregate();
 	

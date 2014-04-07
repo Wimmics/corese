@@ -452,7 +452,9 @@ public class RuleEngine implements Engine {
             double tt = (d2.getTime() - d1.getTime()) / ( 1000.0) ;
             if (tt > 1.0 ){
                 System.out.println("Time : " + tt);
-                System.out.println("Size: " + le.size());
+                if (le != null){
+                    System.out.println("Size: " + le.size());
+                }
                 System.out.println(rule.getAST());
             }
         }

@@ -5,6 +5,7 @@
 <!ENTITY wimmics.rtc.predicate "Predicate">
 <!ENTITY wimmics.rtc.object "Object">
 <!ENTITY wimmics.rtc.btn.query "Query">
+<!ENTITY wimmics.rtc.btn.reset "Reset">
 <!ENTITY wimmics.rtc.btn.upload "Upload">
 <!ENTITY wimmics.rtc.btn.download "Save(.ttl)">
 <!ENTITY wimmics.rtc.btn.download.json "Save(.json)">
@@ -15,7 +16,7 @@
 <!ENTITY wimmics.rtc.sparql.query "SPARQL query:">
 <!ENTITY wimmics.rtc.info "">
 <!ENTITY wimmics.rtc.server "Server:">
-<!ENTITY wimmics.rtc.server.address "http://localhost:8080/kgram/sparql">
+<!ENTITY wimmics.rtc.server.address "http://localhost:8080/kgram">
 <!ENTITY wimmics.rtc.default.sparql "select * where {?s ?o ?p}">
 <!ENTITY wimmics.rtc.default.details "Select one row above to see the details...">
 <!ENTITY wimmics.rtc.details "Details:">

@@ -9,7 +9,7 @@
 
 var graph;
 var triplesNo = 0, queryResultsNo = 0;
-var endpoint = "http://localhost:8080/kgram/sparql";
+//var endpoint = "http://localhost:8080/kgram/sparql";
 var graphName;
 var json;
 
@@ -223,7 +223,12 @@ function upload() {
         showMsg('Please input the server address!', true);
     }
     var insert = 'INSERT DATA { GRAPH <' + graphName + '> {' + graph.toString() + ' } }';
-    url += "/update";
+    
+    if ($('#radio-ldp').is(':selected')) {
+        url += "/ldp/upload";
+    } else {
+        url += "/sparql/update";
+    }
 
     $.ajax({
         type: 'POST',
@@ -235,7 +240,7 @@ function upload() {
         // dataType: "json",
         crossDomain: true,
         success: function() {
-            var msg = '* ' + triplesNo + ' triples uploaded successfully! [' + $('#rtc-server-address').val() + ']';
+            var msg = '* ' + triplesNo + ' triples uploaded successfully! [' + url + ']';
             showMsg(msg, true);
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -250,7 +255,7 @@ function upload() {
 //Execute sparql statement and return results
 function query() {
     //** 1 url process
-    var url = $("#rtc-server-address").val();
+    var url = $("#rtc-server-address").val() + "/sparql";
 
     if ($.trim(url).length < 1) {
         showMsg('Please input the server address!', true);
@@ -312,7 +317,7 @@ function fillList(data) {
         first.setAttribute(c.LABEL, '#');
         first.setAttribute('width', '30px');
         head.appendChild(first);
-        
+
         $.each(listVar, function(index, item) {
             addCell(head, c.TREE_COL, c.LABEL, item, 1);
             addCell(head, 'splitter', 'class', 'tree-splitter');
@@ -341,7 +346,7 @@ function fillList(data) {
             treeItem.appendChild(row);
             treechildren.appendChild(treeItem);
         });
-        
+
         $('#' + c.TABLE_RESULTS).append(treechildren);
     }
 

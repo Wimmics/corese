@@ -7,9 +7,9 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
          xmlns:html="http://www.w3.org/1999/xhtml" >
   
-<!-- Main XUL for the extensions -->
-<!-- @author Fuqi Song, wimmics INRIA - I3S-->
-<!-- @date March 2014-->
+    <!-- Main XUL for the extensions -->
+    <!-- @author Fuqi Song, wimmics INRIA - I3S-->
+    <!-- @date March 2014-->
 
     <script type="application/x-javascript" src="chrome://rtc/content/rtc.js" />
     <script type="application/x-javascript" src="chrome://rtc/content/js.lib/RDFa.1.2.0.js" />
@@ -66,6 +66,12 @@
                     </tree>
                     <hbox>
                         <spacer flex="1"/>
+                        <radiogroup>
+                            <hbox>
+                                <radio id='radio-endpoint' label="endpoint" selected="true" tooltiptext="Upload data to endpoint"/>
+                                <radio id='radio-ldp' label="ldp" selected="false" tooltiptext="Upload data to LDP"/>
+                            </hbox>
+                        </radiogroup>
                         <button id="rtc-upload" label="&wimmics.rtc.btn.upload;" oncommand="upload();" default="true"/>
                         <button id="rtc-download" label="&wimmics.rtc.btn.download;" oncommand="download(1);"/>
                     </hbox>
@@ -77,7 +83,7 @@
                 <!-- right side: query-->
                 <vbox width='400px' flex="1">
                     <label value="&wimmics.rtc.sparql.query;"/>
-                    <textbox id="rtc-sparql" multiline="true" rows="2" value="&wimmics.rtc.default.sparql;"/>
+                    <textbox id="rtc-sparql" multiline="true" rows="3" value="&wimmics.rtc.default.sparql;"/>
                     <hbox>
                         <spacer flex="1"/>
                         <radiogroup>
@@ -88,9 +94,10 @@
                         </radiogroup>
                     
                         <button id="rtc-query" label="&wimmics.rtc.btn.query;" oncommand="query();"/>
+                        <button id="rtc-reset" label="&wimmics.rtc.btn.reset;" oncommand="$('#rtc-sparql').val('&wimmics.rtc.default.sparql;');"/>
                     </hbox>
                     <label value="&wimmics.rtc.query.results;"/>
-                    <tree id='rtc-query-results' rows='9' seltype='single'
+                    <tree id='rtc-query-results' rows='8' seltype='single'
                           onselect="showDetails(this);">
                         <treecols>
                             <treecol label="&wimmics.rtc.id;" width="30px"/>

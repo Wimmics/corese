@@ -126,6 +126,7 @@ public class Query extends Exp {
     private List<Node> argList;
     private List<Entity> edgeList;
     private String name;
+    private String profile;
 
 	
 	Query(){
@@ -1922,7 +1923,15 @@ public class Query extends Exp {
         return name ;
     }
 
-	class VString extends ArrayList<String> {
+    public void setProfile(String uri) {
+        profile = uri;   
+    }
+
+    public String getProfile() {
+        return profile;   
+    }
+
+class VString extends ArrayList<String> {
 		
 		void clear(int size){
 			if (size == 0) clear();

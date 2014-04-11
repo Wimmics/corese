@@ -137,14 +137,14 @@ public class PluginImpl extends ProxyImpl {
             case STL_PROCESS:
                 return process(exp, env, p, dt);
                 
-            case PPRINT:
-            case PPRINTALL:
+            case APPLY_TEMPLATES:
+            case APPLY_ALL_TEMPLATES:
                 return pprint(dt, null, null, null, exp, env, p);
 
-            case TEMPLATE:
+            case CALL_TEMPLATE:
                 return pprint(null, dt, exp, env, p);
 
-            case PPRINTWITH:
+            case APPLY_TEMPLATES_WITH:
                 return pprint(dt, null, exp, env, p);
 
             case TURTLE:
@@ -228,24 +228,24 @@ public class PluginImpl extends ProxyImpl {
              case WRITE:                
                 return write(dt1, dt2);   
                 
-            case PPRINT:
-            case PPRINTALL:
+            case APPLY_TEMPLATES:
+            case APPLY_ALL_TEMPLATES:
                 // dt1: focus
                 // dt2: arg
                 return pprint(dt1, dt2, null, null, exp, env, p);
 
-            case PPRINTWITH:
-            case PPRINTALLWITH:
+            case APPLY_TEMPLATES_WITH:
+            case APPLY_ALL_TEMPLATES_WITH:
                 // dt1: uri of pprinter
                 // dt2: focus
                 return pprint(dt2, null, dt1, null, exp, env, p);
 
-            case TEMPLATE:
+            case CALL_TEMPLATE:
                 // dt1: template name
                 // dt2: focus
                 return pprint(dt2, null, null, dt1, exp, env, p);
 
-            case TEMPLATEWITH:
+            case CALL_TEMPLATE_WITH:
                 // dt1: uri pprinter
                 // dt2: template name
                 return pprint(dt1, dt2, exp, env, p);
@@ -267,19 +267,19 @@ public class PluginImpl extends ProxyImpl {
                 return setProperty(dt1, dt2.intValue(), dt3);
 
 
-            case TEMPLATE:
+            case CALL_TEMPLATE:
                 // dt1: template name
                 // dt2: focus
                 // dt3: arg
                 return pprint(args, dt2, dt3, null, dt1, exp, env, p);
 
-            case TEMPLATEWITH:
+            case CALL_TEMPLATE_WITH:
                 // dt1: uri pprinter
                 // dt2: template name
                 // dt3: focus
                 return pprint(dt3, null, dt1, dt2, exp, env, p);
 
-            case PPRINTWITH:
+            case APPLY_TEMPLATES_WITH:
                 // dt1: uri pprinter
                 // dt2: focus
                 // dt3: arg
@@ -533,8 +533,8 @@ public class PluginImpl extends ProxyImpl {
     IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
         PPrinter p = getPPrinter(env, prod, getLabel(tbase), null);
         return p.pprint(getLabel(temp),
-                exp.oper() == ExprType.PPRINTALL
-                || exp.oper() == ExprType.PPRINTALLWITH,
+                exp.oper() == ExprType.APPLY_ALL_TEMPLATES
+                || exp.oper() == ExprType.APPLY_ALL_TEMPLATES_WITH,
                 exp.getModality());
     }
 
@@ -554,8 +554,8 @@ public class PluginImpl extends ProxyImpl {
         PPrinter p = getPPrinter(env, prod, getLabel(tbase), focus);
         IDatatype dt = p.pprint(args, focus, arg,
                 getLabel(temp),
-                exp.oper() == ExprType.PPRINTALL
-                || exp.oper() == ExprType.PPRINTALLWITH,
+                exp.oper() == ExprType.APPLY_ALL_TEMPLATES
+                || exp.oper() == ExprType.APPLY_ALL_TEMPLATES_WITH,
                 exp.getModality(), exp, env.getQuery());
         return dt;
     }
@@ -574,7 +574,7 @@ public class PluginImpl extends ProxyImpl {
         exp.setOper(oper);
         
         switch(oper){
-            case TEMPLATE:
+            case CALL_TEMPLATE:
                 // st:process(?x) = st:call-template(ex:name, ?x)
                 Expr ct = pp.getDefaultProcessExp();
                 Expr name = ct.getExp(0);
@@ -716,6 +716,7 @@ public class PluginImpl extends ProxyImpl {
             PPrinter pp = PPrinter.create(g, p);
             ASTQuery ast = (ASTQuery) q.getAST();
             pp.setNSM(ast.getNSM());
+           // pp.setProfile(q.getProfile());
             q.setPPrinter(p, pp);
             return pp;
         }

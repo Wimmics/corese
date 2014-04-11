@@ -64,6 +64,7 @@ public class Processor {
 
 	private static final String DATATYPE = "datatype";
 	private static final String STR = "str";
+	private static final String XSDSTRING = RDFS.XSD + "string";
 	private static final String URI = "uri";
 	private static final String IRI = "iri";
 
@@ -88,6 +89,7 @@ public class Processor {
 	static final String KGPPRINT		= ExpType.KPREF + ":" + "pprint"; 
         static final String STL_PPRINT		= NSManager.STL_PREF + ":" + "process"; 
 
+	static final String STL_DEFAULT             = STL + "default"; 
 	static final String STL_PROCESS             = STL + "process"; 
         static final String FOCUS_NODE              = STL + "getFocusNode";
         static final String APPLY_TEMPLATES         = STL + "apply-templates";
@@ -206,10 +208,16 @@ public class Processor {
 	public static Hashtable<String, Integer> table;
 	public static Hashtable<Integer, String> tname, toccur;
 
-	
+	Processor(){
+        }
+        
 	Processor(Term t){
 		term = t;
 	}
+        
+        public static Processor create(){
+            return new Processor();
+        }
 	
 	
 	// Exp
@@ -274,17 +282,17 @@ public class Processor {
 		}
 		if (term.isFunction()){
 			type = ExprType.FUNCTION;
-			oper = getOperID();
+			oper = getOper();
 			switch(oper){
-				case ExprType.IN: 		compileInList(); break;
-				case ExprType.HASH: 	compileHash(); break;
-				case ExprType.URI: 		compileURI(ast); break;
-				case ExprType.CAST: 	compileCast(); break;
-				case ExprType.REGEX: 	compileRegex(); break;
-				case ExprType.STRREPLACE: 	compileReplace(); break;
-				case ExprType.XPATH: 	compileXPath(ast); break;
-				case ExprType.SQL:		compileSQL(ast); break;
-				case ExprType.EXTERNAL:	compileExternal(ast); break;
+				case ExprType.IN: 	compileInList(); break;
+				case ExprType.HASH:     compileHash(); break;
+				case ExprType.URI: 	compileURI(ast); break;
+				case ExprType.CAST:     compileCast(); break;
+				case ExprType.REGEX:    compileRegex(); break;
+				case ExprType.STRREPLACE: compileReplace(); break;
+				case ExprType.XPATH:    compileXPath(ast); break;
+				case ExprType.SQL:      compileSQL(ast); break;
+				case ExprType.EXTERNAL: compileExternal(ast); break;
 			}
 		}
 		else if (term.isAnd()){
@@ -301,7 +309,7 @@ public class Processor {
 		}
 		else {
 			type = ExprType.TERM;
-			oper = getOperID();
+			oper = getOper();
 		}
 		
 		if (oper == ExprType.UNDEF){
@@ -388,6 +396,7 @@ public class Processor {
 		defoper(REGEX, 		ExprType.REGEX);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
 		defoper(STR, 		ExprType.STR);
+		defoper(XSDSTRING, 	ExprType.XSDSTRING);
 		defoper(URI, 		ExprType.URI);
 		defoper(IRI, 		ExprType.URI);
 		defoper(SELF, 		ExprType.SELF);
@@ -413,22 +422,22 @@ public class Processor {
 		defoper(WRITE, 	ExprType.WRITE);
 		defoper(QNAME, 	ExprType.QNAME);
                 
-		defoper(PPRINT, 	ExprType.PPRINT);
-		defoper(EVAL, 		ExprType.PPRINT);
-		defoper(PPRINTWITH, 	ExprType.PPRINTWITH);
-		defoper(PPRINTALL, 	ExprType.PPRINTALL);
-		defoper(PPRINTALLWITH, 	ExprType.PPRINTALLWITH);
-		defoper(TEMPLATE, 	ExprType.TEMPLATE);
-		defoper(TEMPLATEWITH, 	ExprType.TEMPLATEWITH);
+		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
+		defoper(EVAL, 		ExprType.APPLY_TEMPLATES);
+		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);
+		defoper(PPRINTALL, 	ExprType.APPLY_ALL_TEMPLATES);
+		defoper(PPRINTALLWITH, 	ExprType.APPLY_ALL_TEMPLATES_WITH);
+		defoper(TEMPLATE, 	ExprType.CALL_TEMPLATE);
+		defoper(TEMPLATEWITH, 	ExprType.CALL_TEMPLATE_WITH);
 		defoper(TURTLE,         ExprType.TURTLE);
                 
                 defoper(FOCUS_NODE,             ExprType.FOCUS_NODE);
-                defoper(APPLY_TEMPLATES, 	ExprType.PPRINT);
-		defoper(APPLY_TEMPLATES_WITH, 	ExprType.PPRINTWITH);
-		defoper(APPLY_ALL_TEMPLATES, 	ExprType.PPRINTALL);
-		defoper(APPLY_ALL_TEMPLATES_WITH,ExprType.PPRINTALLWITH);
-		defoper(CALL_TEMPLATE,          ExprType.TEMPLATE);
-		defoper(CALL_TEMPLATE_WITH, 	ExprType.TEMPLATEWITH);
+                defoper(APPLY_TEMPLATES, 	ExprType.APPLY_TEMPLATES);
+		defoper(APPLY_TEMPLATES_WITH, 	ExprType.APPLY_TEMPLATES_WITH);
+		defoper(APPLY_ALL_TEMPLATES, 	ExprType.APPLY_ALL_TEMPLATES);
+		defoper(APPLY_ALL_TEMPLATES_WITH,ExprType.APPLY_ALL_TEMPLATES_WITH);
+		defoper(CALL_TEMPLATE,          ExprType.CALL_TEMPLATE);
+		defoper(CALL_TEMPLATE_WITH, 	ExprType.CALL_TEMPLATE_WITH);
                 defoper(STL_PROCESS,            ExprType.STL_PROCESS);
 		defoper(STL_TURTLE,             ExprType.TURTLE);
                 defoper(STL_URI,                ExprType.PPURI);
@@ -446,6 +455,7 @@ public class Processor {
 		defoper(VISITED, ExprType.VISITED);
 		defoper(PROLOG,  ExprType.PROLOG);
 		defoper(STL_DEFINE,  ExprType.STL_DEFINE);
+                defoper(STL_DEFAULT, ExprType.STL_DEFAULT);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);
@@ -514,14 +524,14 @@ public class Processor {
 		table.put(key.toLowerCase(), value);
 		tname.put(value, key);
 	}
+	       
 	
-	Integer getOper(String name){
-		return table.get(name.toLowerCase());
-	}
-	
-	int getOperID(){
-		String name = term.getLabel();
-		Integer n = getOper(name);
+	int getOper(){
+                return getOper(term.getLabel());
+        }
+                
+        public int getOper(String name){
+		Integer n = table.get(name.toLowerCase());
 		if (n == null){
 			if (name.startsWith(RDFS.XSDPrefix) || name.startsWith(RDFS.XSD) || 
 				name.startsWith(RDFS.RDFPrefix) || name.startsWith(RDFS.RDF)){
@@ -538,8 +548,7 @@ public class Processor {
 		//toccur.put(n, name);
 		return n;
 	}
-	
-	
+        	
 	public static void finish(){
 		for (Integer n : table.values()){
 			if (! toccur.containsKey(n)){

@@ -893,7 +893,7 @@ public class PPrinter {
      * 
      */
     void init(Expr exp) {
-        System.out.println("PP: " + exp);
+        //System.out.println("PP: " + exp);
         exp = exp.getExp(0);
         Expr ee = exp.getExp(1);
 

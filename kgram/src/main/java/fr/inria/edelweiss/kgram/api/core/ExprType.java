@@ -98,6 +98,7 @@ public interface ExprType {
 	public static int STRREPLACE = 79;
 	public static int FUUID 	 = 80;
 	public static int STRUUID 	 = 81;
+	public static int XSDSTRING 	 = 82;
 
 
 
@@ -156,12 +157,12 @@ public interface ExprType {
 	public static int PWEIGHT 	= 218;
 	public static int ANCESTOR 	= 219;
 		
-	public static int PPRINT 	= 220;
-	public static int PPRINTWITH 	= 221;
-	public static int PPRINTALL 	= 222;
-	public static int PPRINTALLWITH = 223;
-	public static int TEMPLATE 	= 224;
-	public static int TEMPLATEWITH 	= 225;
+	public static int APPLY_TEMPLATES 	= 220;
+	public static int APPLY_TEMPLATES_WITH 	= 221;
+	public static int APPLY_ALL_TEMPLATES 	= 222;
+	public static int APPLY_ALL_TEMPLATES_WITH = 223;
+	public static int CALL_TEMPLATE 	= 224;
+	public static int CALL_TEMPLATE_WITH 	= 225;
 
 	public static int QNAME 	= 226;
 	public static int TURTLE 	= 227;
@@ -176,11 +177,12 @@ public interface ExprType {
 	public static int FOCUS_NODE 	= 236;
 	public static int XSDLITERAL 	= 237;
 	public static int STL_PROCESS 	= 238;
-	public static int STL_DEFINE 	= 239;
+	public static int STL_DEFAULT 	= 239;
+	public static int STL_DEFINE 	= 240;
 
 
-	public static int ISSKOLEM 	= 240;
-	public static int SKOLEM 	= 241;
+	public static int ISSKOLEM 	= 250;
+	public static int SKOLEM 	= 251;
 
 
 }

@@ -579,15 +579,25 @@ void Template(Exp stack) :
     ( <DEBUG> { astq.setDebug(true); } ) ?
     
     ( cst = IRIrefConst() { astq.setName(cst); }    ) ?
+ 
+        
 
-      (<LPAREN>   
-
+      (<LPAREN>  
+ 
          var = Var() { astq.defArg(var); }
 
          (<COMMA> var = Var() { astq.defArg(var); }) *
 		   
        <RPAREN>
       ) ? 
+
+      (<LBRACKET>   
+
+         cst = IRIrefConst() { astq.defProfile(cst); }
+        		   
+       <RBRACKET>
+      ) ? 
+
   
 	<LBRACE>
 	

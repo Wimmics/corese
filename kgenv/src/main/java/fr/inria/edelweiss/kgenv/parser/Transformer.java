@@ -219,6 +219,7 @@ public class Transformer implements ExpType {
 	private void template(Query q, ASTQuery ast) {
 		if (ast.isTemplate()){
 			q.setTemplate(true);
+                        q.setProfile(ast.getProfile());
 			q.setAllResult(ast.isAllResult());
 //			if (ast.isTurtle()){
 //				q.setPragma(Pragma.TURTLE, Pragma.TURTLE);

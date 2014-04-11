@@ -248,6 +248,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
         
         // @(a b) rewritten as rdf:rest*/rdf:first a, b
         private int listType = L_LIST;
+        private String profile;
 
     /**
      * @return the defaultDataset
@@ -2985,6 +2986,14 @@ public class ASTQuery  implements Keyword, ASTVisitable {
         
         public List<Variable> getArgList(){
             return argList;
+        }
+        
+        public void defProfile(Constant cst){
+            profile = cst.getLabel();
+        }
+        
+        public String getProfile(){
+            return profile;
         }
 
 	

@@ -236,6 +236,9 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case STR:
                 return str(exp, dt);
+                
+            case XSDSTRING:
+                return xsdstring(exp, dt);    
 
             case STRLEN:
                 return getValue(dt.getLabel().length());
@@ -561,6 +564,10 @@ public class ProxyImpl implements Proxy, ExprType {
     // return a Literal (not a xsd:string)
     IDatatype str(Expr exp, IDatatype dt) {
         return DatatypeMap.createLiteral(dt.getLabel());
+    }
+    
+     IDatatype xsdstring(Expr exp, IDatatype dt) {
+        return DatatypeMap.newInstance(dt.getLabel());
     }
 
     IDatatype ucase(IDatatype dt) {

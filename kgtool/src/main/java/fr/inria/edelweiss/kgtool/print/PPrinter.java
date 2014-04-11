@@ -11,6 +11,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -32,15 +33,20 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.apache.log4j.Logger;
 
 /**
- * SPARQL-based RDF AST Pretty Printer Use case: pprint SPIN RDF in SPARQL
+ * SPARQL Template Transformation Engine
+ * 
+ * Use case: translate SPIN RDF into SPARQL
  * concrete syntax pprint OWL 2 RDF in functional syntax Use a list of templates
  * : template { presentation } where { pattern } Templates are loaded from a
- * directory or from a file in .rul format (same as rules) Templates can also be
- * defined using defTemplate() If called with kg:pprint(?x) : execute one
- * template on ?x If called with kg:pprintAll(?x) : execute all templates on ?x
+ * directory or from a file in .rul format (same as rules) 
+ * st:apply-templates(?x) : execute one template on ?x 
+ * st:apply-all-templates(?x) : execute all templates on ?x
+ * st:call-template(uri, ?x) execute named template
  *
  * Olivier Corby, Wimmics INRIA I3S - 2012
  */
@@ -48,17 +54,17 @@ public class PPrinter {
 
     private static final String NULL = "";
     public static final String PPLIB = "/template/";
-    public static final String PPNS = NSManager.PPN;
-    public static final String SQL = PPNS + "sql";
-    public static final String SPIN = PPNS + "spin";
-    public static final String OWL = PPNS + "owl";
-    public static final String TURTLE = PPNS + "turtle";
-    public static final String TABLE = PPNS + "table";
-    public static final String TYPECHECK = PPNS + "typecheck";
     private static final String STL         = NSManager.STL;
-    private static final String STL_INIT    = STL + "init";
+    public static final String SQL          = STL + "sql";
+    public static final String SPIN         = STL + "spin";
+    public static final String OWL          = STL + "owl";
+    public static final String TURTLE       = STL + "turtle";
+    public static final String TABLE        = STL + "table";
+    public static final String TYPECHECK    = STL + "typecheck";
+    private static final String STL_PROFILE    = STL + "profile";
     private static final String STL_START   = STL + "start";
     private static final String STL_DEFAULT = STL + "default";   
+    private static final String STL_TURTLE  = STL + "turtle";   
     // default
     public static final String PPRINTER = TURTLE;
     private static final String OUT = ASTQuery.OUT;
@@ -74,10 +80,11 @@ public class PPrinter {
     Query query;
     NSManager nsm;
     QueryProcess exec;
+    Processor proc;
     PPrinterStack stack;
     static PPrinterTable table;
     String pp = PPRINTER;
-    // separator of results of several templates kg:templateAll()
+    // separator of results of several templates st:apply-all-templates()
     String sepTemplate = NL;
     // separator of several results of one template
     String sepResult = " ";
@@ -98,9 +105,12 @@ public class PPrinter {
     // no subsumption (exact match on type)
     private boolean isOptimize = isOptimizeDefault;
     
-    // default process of variable is st:apply-templates
-    // it may be overloaded
-    private int process = ExprType.PPRINT;
+    // st:process() of template variable, may be overloaded
+    private int process = ExprType.APPLY_TEMPLATES;
+    // st:default process of template variable, may be overloaded
+    // used when all templates fail
+    // default is: return RDF term as is (effect is like xsd:string)
+    private int defaut  = ExprType.UNDEF;
 
     static {
         table = new PPrinterTable();
@@ -195,6 +205,7 @@ public class PPrinter {
         stack = new PPrinterStack(true);
         EMPTY = DatatypeMap.createLiteral(NULL);
         tcount = new HashMap<Query, Integer>();
+        proc = Processor.create();
     }
 
     public void setTemplates(String p) {
@@ -209,7 +220,7 @@ public class PPrinter {
         exec.setListPath(true);
         Producer prod = exec.getProducer();
         if (prod instanceof ProducerImpl) {
-            // return value as is for kg:pprint()
+            // return value as is for st:apply-templates()
             // no need to create a graph node in Producer
             ProducerImpl pi = (ProducerImpl) prod;
             pi.setSelfValue(true);
@@ -247,12 +258,20 @@ public class PPrinter {
     public void setDebug(boolean b) {
         isDebug = b;
     }
+    
+    public void setProcess(int type){
+        process = type;
+    }
+    
+    public void setDefault(int type){
+        defaut = type;
+    }
 
     public void setTurtle(boolean b) {
         isTurtle = b;
     }
 
-    // when several templates kg:templateAll()
+    // when several templates st:apply-all-templates()
     public void setTemplateSeparator(String s) {
         sepTemplate = s;
     }
@@ -309,9 +328,10 @@ public class PPrinter {
     }
 
     /**
-     * Pretty print the graph. Apply the first query that matches without
-     * bindings. Hence it may pprint a subpart of the graph, the subpart that
-     * matches the first query
+     * Transform the whole graph (no focus node) 
+     * Apply template st:start, if any
+     * Otherwise, apply the first template that matches without
+     * bindings.
      */
     public IDatatype pprint() {
         return pprint(null, false, null);
@@ -393,32 +413,29 @@ public class PPrinter {
     }
 
     /**
-     * exp : the fun call, e.g. kg:pprint(?x) dt : focus node to be printed temp
-     * : name of a template (may be null) allTemplates : execute all templates
-     * on focus and concat results sep : separator in case of allTemplates
-     *
-     * use case: template { ... ?w ... } where { ... ?w ... } Search a template
-     * that matches ?w By convention, ?w is bound to ?in, all templates use
-     * variable ?in as focus node and ?out as output node Execute the first
-     * template that matches ?w (all templates if allTemplates = true) Templates
-     * are sorted more "specific" first They are sorted using a pragma {
-     * kg:query kg:priority n } A template is applied only once on one node,
-     * hence we store in a stack : node -> template context of evaluation:
-     * select (kg:pprint(?x) as ?px) (concat (?px ...) as ?out) where {}
+     * exp: the fun call, eg st:apply-templates(?x) 
+     * dt1: focus node 
+     * dt2: arg
+     * args: list of args in case of st:call-template
+     * temp: name of a template (may be null) 
+     * allTemplates: execute all templates on focus and concat results 
+     * sep: separator in case of allTemplates
+     * use case: template {  ?w  } where {  ?w  } 
+     * Search a template that matches ?w By convention, ?w is bound to ?in, all templates use
+     * variable ?in as focus node in where clause and ?out as output node 
+     * Execute the first template that matches ?w (all templates if allTemplates = true) 
+     * Templates are sorted more "specific" first  using a 
+     * pragma {st:template st:priority n } 
+     * A template is applied only once on one node,
+     * hence we store in a stack : node -> template 
+     * context of evaluation: it is an extension function of a SPARQL query
+     * select (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
     public IDatatype pprint(Object[] args, IDatatype dt1, IDatatype dt2, String temp,
             boolean allTemplates, String sep, Expr exp, Query q) {
         if (dt1 == null) {
             return EMPTY;
         }
-
-//        if (pp == null) {
-//            String name = getPP(dt1);
-//            if (name != null) {
-//                pp = name;
-//                init();
-//            }
-//        }
 
         ArrayList<IDatatype> result = null;
         if (allTemplates) {
@@ -429,7 +446,6 @@ public class PPrinter {
         if (query != null && stack.size() == 0) {
             // just started with query in pprint() above
             // without focus node at that time
-            //if (exp != null){ 
             // push dt -> query in the stack
             // query is the first template that started pprint (see function above)
             // and at that time ?in was not bound
@@ -437,7 +453,6 @@ public class PPrinter {
             // template {"subClassOf(" ?in " " ?y ")"} where {?in rdfs:subClassOf ?y}
             start = true;
             stack.push(dt1, query);
-            //}
         }
 
         if (isDebug) {
@@ -457,19 +472,11 @@ public class PPrinter {
         List<Query> templateList = getTemplates(temp, type);
         Query tq = null;
         if (temp != null && templateList.size() == 1){
+            // named template may have specific arguments
             tq = templateList.get(0);
         }
         Mapping m = getMapping(args, dt1, dt2, tq);
 
-
-        if (isExplain && ! pp.equals(TURTLE)){
-            PPrinter p = PPrinter.create(g, TURTLE);
-            System.out.println();
-            System.out.println("PP focus node: (" + level() + ") type: " + type + " nbt: " + getTemplates(temp, type).size());
-            System.out.println(p.pprint(dt1).getLabel());
-            System.out.println();
-       }
-        
         for (Query qq : templateList) {
 
             if (isDetail) {
@@ -493,13 +500,7 @@ public class PPrinter {
                 }
 
                 n++;
-                
-                if (isExplain && ! pp.equals(TURTLE)){
-                    System.out.println("PP try: " + level() + "\n" + qq.getAST());
-                    System.out.println();
-                    qq.setDebug(true);
-                }
-                
+  
                 Mappings map = exec.query(qq, m);
 
                 stack.visit(dt1);
@@ -514,25 +515,12 @@ public class PPrinter {
 
                 if (res != null) {
 
-                    if (stat) {
-                        succ(qq);
-                    }
-
-                    if (isDebug) {
-                        trace(qq, res);
-                    }
-
-
                     if (allTemplates) {
                         result.add(res);
                     } else {
                         if (start) {
                             stack.pop();
                         }
-//                        if (pp.equals(SPIN)) {
-//                            PPrinter p = PPrinter.create(g, TURTLE);
-//                            System.out.println(n + " " + p.pprint(dt1).getLabel());
-//                        }
                         return res;
                     }
                 }
@@ -557,12 +545,14 @@ public class PPrinter {
                 return res;
             }
         }
+        
+        
+        // **** no template match dt ****
+
 
         if (start) {
             stack.pop();
         }
-
-        // **** no template match dt ****
 
         if (temp != null) {
             // named template fail
@@ -576,7 +566,7 @@ public class PPrinter {
             }
         }
 
-        // default: display dt as is
+        // use a default display (may be dt1 as is or st:turtle)
         return display(dt1, q);
     }
 
@@ -640,25 +630,13 @@ public class PPrinter {
     Node getNode(IDatatype dt) {
         Node n = graph.getNode(dt, false, false);
         if (n == null) {
-            // use case: kg:pprint("header")
+            // use case: st:apply-templates("header")
             n = fake.getNode(dt, true, true);
         }
         return n;
     }
 
     public IDatatype getResult(Mappings map) {
-        IDatatype dt;
-        if (isAllResult) {
-            // group_concat(?out)
-            dt = getAllResult(map);
-        } else {
-            // ?out
-            dt = getSimpleResult(map);
-        }
-        return dt;
-    }
-
-    public IDatatype getAllResult(Mappings map) {
         Node node = map.getTemplateResult();
         if (node == null) {
             return null;
@@ -666,27 +644,13 @@ public class PPrinter {
         return datatype(node);
     }
 
-    public IDatatype getSimpleResult(Mappings map) {
-        Node node = map.getNode(OUT);
-        if (node == null) {
-            return null;
-        }
-        return datatype(node);
-    }
 
     String separator(String sep) {
         if (sep == null) {
             return sepTemplate;
         }
         return sep;
-    }
-
-    String separator(Query q) {
-        if (q.hasPragma(Pragma.SEPARATOR)) {
-            return q.getStringPragma(Pragma.SEPARATOR);
-        }
-        return sepResult;
-    }
+    }  
 
     IDatatype datatype(Node n) {
         return (IDatatype) n.getValue();
@@ -714,7 +678,7 @@ public class PPrinter {
 
     /**
      * Concat results of several templates executed on same focus node
-     * kg:pprintAll(?x)
+     * st:apply-all-templates(?x)
      */
     IDatatype result(List<IDatatype> result, String sep) {
         StringBuilder sb = new StringBuilder();
@@ -741,19 +705,42 @@ public class PPrinter {
         return res;
     }
 
+    /**
+     * Default display when all templates fail
+     */
     IDatatype display(IDatatype dt, Query q) {
-        if (isTurtle || (q != null && q.hasPragma(Pragma.TURTLE))) {
-            return turtle(dt);
-        } else if (isHide) {
-            return EMPTY;
-        } else {
-            // the label of dt as in SPARQL concat()
-            return dt;
+        if (q != null && q.getProfile() != null){
+            return profile(dt, q.getProfile());
         }
+        else return display(dt, defaut);
+    }
+    
+    /**
+     * template [st:turtle]
+     * a template may overload the default display
+     */
+    IDatatype profile(IDatatype dt, String profile){
+        return display(dt, proc.getOper(profile));
+    }
+    
+   /**
+     * Display when all templates fail
+     * Default is to return IDatatype as is, 
+     * final result will be the string value (when used in a concat())
+     */
+    IDatatype display(IDatatype dt, int oper){
+    
+        switch (oper){
+            
+            case ExprType.TURTLE:
+                return turtle(dt);
+        }
+        
+        return dt;
     }
 
     /**
-     * pprint a URI, Literal, blank node in its Turtle syntax
+     * display RDF Node in its Turtle syntax
      */
     public IDatatype turtle(IDatatype dt) {
 
@@ -771,12 +758,17 @@ public class PPrinter {
         return dt;
     }
     
+    /**
+     * Display a Literal with its ^^xsd:datatype
+     * Use case: OWL 2 functional syntax
+     */
      public IDatatype xsdLiteral(IDatatype dt) {
         return DatatypeMap.newStringBuilder(dt.toSparql(true, true));
-    }
-    
-    
+    }    
 
+     /**
+      * @deprecated
+      * */
     String getPP(IDatatype dt) {
         IDatatype type = graph.getValue(RDF.TYPE, dt);
         if (type != null) {
@@ -822,7 +814,7 @@ public class PPrinter {
                 if (ld.getRuleEngine() != null) {
 
                     RuleEngine re = ld.getRuleEngine();
-                    qe = QueryEngine.create(graph);
+
                     for (Rule r : re.getRules()) {
                         Query q = r.getQuery();
                         qe.defQuery(q);
@@ -859,58 +851,99 @@ public class PPrinter {
     }
     
     /**
-     * The st:init pseudo template may contain a st:define statement such as:
+     * The st:profile named template may contain a st:define statement such as:
      * st:define(st:process(?in) = st:uri(?in))
-     * where st:process(?in) represents the processing of a variable in the template clause
+     * st:define(st:default(?in) = st:turtle(?in))
+     * where st:process(?in) represents the processing of a variable in template clause
      * default processing is st:apply-templates(?x)
-     * hence it can be overloaded
-     * eg spin transformation mostly uses st:uri(?var).
+     * it can be overloaded
+     * eg spin transformation uses st:uri(?var).
      */
     void init(Query q){
-        if (q.getName() != null){
-            if (q.getName().equals(STL_INIT) && ! q.getSelectFun().isEmpty()){
-               Expr exp = q.getSelectFun().get(0).getFilter().getExp();
-               init(exp);
+        if (q.getName() != null && q.getName().equals(STL_PROFILE)){
+               init(q.getSelectFun());
+        }
+    }
+    
+ 
+    void init(List<Exp> select) {
+        for (Exp exp : select) {
+            if (exp.getFilter() != null) {
+                initExp(exp.getFilter().getExp());
+            }
+        }
+    }
+    
+    void initExp(Expr exp) {
+        if (exp.oper() == ExprType.STL_DEFINE
+                && exp.getExpList().size() == 1
+                && exp.getExp(0).getExpList().size() == 2) {
+            init(exp);
+        }
+        else if (exp.oper() == ExprType.CONCAT){
+            for (Expr ee : exp.getExpList()){
+                initExp(ee);
             }
         }
     }
     
     /**
-     * exp = st:define(st:process(?in) = st:uri(?in))
-     * set default process to st:uri
+     * st:define(st:process(?in) = st:uri(?in))
+     * st:define(st:default(?in) = st:turtle(?in))
      * 
      */
-    void init(Expr exp){
-        //System.out.println("PP: " + exp);         
-        Expr ee = exp.getExp(0).getExp(1); 
-        // ee = st:uri()
-        // set default st:process operation
-        process = ee.oper();
-        processExp = ee;
+    void init(Expr exp) {
+        System.out.println("PP: " + exp);
+        exp = exp.getExp(0);
+        Expr ee = exp.getExp(1);
+
+        switch (exp.getExp(0).oper()) {
+
+            case ExprType.STL_PROCESS:
+                // ee = st:uri()
+                // set default st:process operation
+                setProcess(ee.oper());
+                processExp = ee;
+                break;
+                
+            case ExprType.STL_DEFAULT:
+                setDefault(ee.oper());
+                break;
+
+        }
     }
 
+    /**
+     * Predefined transformations loaded from Corese resource or ns.inria.fr server
+     */
     void load(Load ld, String pp) throws LoadException {
         String name = null;
-        if (nsm.inNamespace(pp, NSManager.STL)) {
-            // predefined pprinter: pp:owl pp:spin
+        if (nsm.inNamespace(pp, STL)) {
+            // predefined pprinter: st:owl st:spin
             // loaded from Corese resource
-            name = nsm.strip(pp, NSManager.STL);
-        } else if (nsm.inNamespace(pp, NSManager.PPN)) {
-            // predefined pprinter: stl:owl stl:spin
-            // loaded from Corese resource
-            name = nsm.strip(pp, NSManager.PPN);
-        } else {
+            name = nsm.strip(pp, STL);
+        }  else {
             ld.loadWE(pp);
             return;
-        }
+        }           
         String src = PPLIB + name;
 
         if (!ld.isRule(src)) {
-            src = src + Load.RULE;
+            src = src + Load.RULE;                  
         }
         InputStream stream = getClass().getResourceAsStream(src);
-        if (stream == null) {
-            throw LoadException.create(new IOException(pp));
+        if (stream == null) {             
+            try {
+                URL uri = new URL(pp);                
+                stream = uri.openStream();
+            } catch (MalformedURLException ex) {
+                throw LoadException.create(ex);
+            } catch (IOException ex) {                
+                throw LoadException.create(ex);
+            }
+            if (stream == null){
+                throw LoadException.create(new IOException(pp));
+            }
         }
         // use non synchronized load method because we may be inside a query 
         // with a read lock
@@ -935,9 +968,6 @@ public class PPrinter {
             if (!b) {
                 q.setFail(true);
             }
-//			if (name(q).equals("specialproperty.rq") ){
-//				q.setFail(true);
-//			}
         }
         qe.clean();
         if (stat) {
@@ -1007,4 +1037,6 @@ public class PPrinter {
     public void setAllResult(boolean isAllResult) {
         this.isAllResult = isAllResult;
     }
+
+   
 }

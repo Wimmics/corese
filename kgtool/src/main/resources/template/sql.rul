@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
-SPARQL Template Pretty Printer
-Corese/KGRAM - Wimmics Inria I3S - 2013
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 11 14:28:34 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -62,7 +63,7 @@ where {
 #
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
-template kg:start {
+template st:start {
   ?in
   ; separator = "\n\n"
 }
@@ -145,7 +146,7 @@ where {
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-  "VALUES (" kg:template(sql:comma, ?values)  ")"
+  "VALUES (" st:call-template(sql:comma, ?values)  ")"
 }
 where {
   ?in a sql:Values ;
@@ -187,7 +188,7 @@ values (?create ?label) {
 
 template  {
     "("   
-      kg:template(sql:comma, ?columns) 
+      st:call-template(sql:comma, ?columns) 
     ")"
 }
 where {     
@@ -289,7 +290,7 @@ values (?delete ?label) {
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-  kg:template(sql:and,?args)
+  st:call-template(sql:and,?args)
 }
 where {
   ?in a sql:And ;
@@ -305,7 +306,7 @@ where {
 prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-   kg:turtle(?value)
+   st:turtle(?value)
 }
 where {
   ?in a sql:Constant 
@@ -384,7 +385,7 @@ where {
 
 template {
    ?label "(" 
-      kg:template(sql:comma, ?args)
+      st:call-template(sql:comma, ?args)
    ")"
 }
 where {
@@ -416,7 +417,7 @@ values (?function ?label) {
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template {
-  ?label kg:template(sql:comma, ?args)
+  ?label st:call-template(sql:comma, ?args)
 }
 where {
 	?in a ?clause ;
@@ -440,7 +441,7 @@ values (?clause ?label) {
 
 template  {
     "(\n" 
-      kg:template(sql:semicolon, ?columnstable) 
+      st:call-template(sql:semicolon, ?columnstable) 
     "\n)"
 }
 where {    
@@ -538,7 +539,7 @@ values (?drop ?label) {
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-  	"SELECT " kg:template(sql:comma, ?select)
+  	"SELECT " st:call-template(sql:comma, ?select)
 }
 where {
   ?in a sql:Select ;
@@ -554,7 +555,7 @@ where {
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-  kg:template(sql:or, ?args)
+  st:call-template(sql:or, ?args)
 }
 where {
   ?in a sql:Or ;
@@ -570,7 +571,7 @@ where {
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-    kg:template(sql:line, ?body)
+    st:call-template(sql:line, ?body)
     if (! bound(?x), ";", "")
 }
 where { 

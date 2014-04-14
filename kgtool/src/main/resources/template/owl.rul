@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
-SPARQL Template Pretty Printer
-Corese/KGRAM - Wimmics Inria I3S - 2013
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 11 14:28:34 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -10,12 +11,31 @@ Corese/KGRAM - Wimmics Inria I3S - 2013
 <![CDATA[
 #
 # Starting template for OWL pretty printing from RDF to Functional Syntax
-# kg:pprintAll(?in) run all templates on each value of ?in
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
-template kg:import {
+template st:start {
+  st:apply-templates(?in)
+}
+where {
 
-   "Import(" group distinct { kg:uri(?i) } ")\n\n"
+  ?in a owl:Ontology   
+      
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template st:import {
+
+   "Import(" group distinct { ?i } ")\n\n"
    
 }
 where {
@@ -33,14 +53,33 @@ where {
 <body>
 <![CDATA[
 #
+# defaut processing of a variable is 
+# st:turtle on URI 
+# st:apply-templates on Blank and Literal
+# Literals are displayed by st:xsdLiteral  (literalvalue.rq)
+# otherwise must use st:turtle explicitely (e.g. cardinality.rq)
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:profile(?in) {
+    st:define(st:process(?in) =  st:uri(?in))    
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # Starting template for OWL pretty printing from RDF to Functional Syntax
-# kg:pprintAll() run all templates on each value 
+# st:apply-all-templates run all templates on each value 
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
-template  kg:body  {
-    
-#   kg:pprintAll(?t ; separator = "\n") ; separator = "\n\n"
- ?t  ; separator = "\n\n" 
+template  st:body  {
+    st:apply-templates(?t)  ; separator = "\n\n" 
 }
 where {
 
@@ -52,7 +91,14 @@ where {
       (isURI(?t) && ?y != owl:Ontology && ?p != owl:imports) ||
       # owl:AllDisjointClasses owl:NegativePropertyAssertion
       (isBlank(?t) && not exists { ?x ?q ?t } )
-    ) }    
+    )
+  # OWL vocabulary must not be pretty printed
+      filter (
+          ! strstarts(?t, owl:) 
+       && ! strstarts(?t, rdf:) 
+       && ! strstarts(?t, rdfs:)
+       && ! strstarts(?t, xsd:))
+    }    
   }
   order by ?t}
         
@@ -66,34 +112,13 @@ where {
 <body>
 <![CDATA[
 #
-# Starting template for OWL pretty printing from RDF to Functional Syntax
-# kg:pprintAll(?in) run all templates on each value of ?in
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template kg:start {
-  ?in
-}
-where {
-
-  ?in a owl:Ontology   
-      
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # template called by subclass in special case:
 # subclassOf(intersectionOf() ?y)
 #
-template kg:interunion {
+template st:interunion {
     xsd:string(if (bound(?t), ?ld, ?lo))
     "(" 
-      if (?p = owl:disjointUnionOf, kg:uri(?x), "") " "
+      if (?p = owl:disjointUnionOf, ?x, "") " "
       ?x  
     ")" 
 }
@@ -128,7 +153,7 @@ where {
 <body>
 <![CDATA[
 template {
-    xsd:string(?l) "("  kg:uri(?in) " "  kg:uri(?p) ")"   
+    xsd:string(?l) "("  ?in " "  ?p ")"   
 }
 where {
   ?in owl:propertyDisjointWith ?p ; a ?t
@@ -148,9 +173,9 @@ template {
     if (bound(?t), "DatatypeDefinition", "EquivalentClasses")
     "("  
       if (bound(?z), 
-	kg:template(kg:interunion, ?in),
-	kg:uri(?in)) 
-      " "  kg:uri(?y)  
+	st:call-template(st:interunion, ?in),
+	?in) 
+      " "  ?y  
     ")" 
 }
 where {
@@ -171,13 +196,13 @@ where {
 <body>
 <![CDATA[
 template {
-    "Declaration(Class(" kg:uri(?in)  "))"  "\n"
+    "Declaration(Class(" ?in  "))"  "\n"
 }
 where {
   ?in a owl:Class 
   filter(isURI(?in))
 }
-pragma { kg:template kg:priority 2 }
+pragma { st:template st:priority 2 }
 
 ]]>
 </body>
@@ -188,7 +213,7 @@ pragma { kg:template kg:priority 2 }
 <![CDATA[
 template {
     if (bound(?t) || bound(?dt), "Data", "Object")
-    "PropertyRange(" kg:uri(?in) " " kg:uri(?d) ")"
+    "PropertyRange(" ?in " " ?d ")"
 }
 where {
   ?in rdfs:range ?d 
@@ -208,7 +233,7 @@ where {
 template {
     if (isLiteral(?v), "DataPropertyAssertion", "ObjectPropertyAssertion") 
     "("
-	kg:uri(?p) " " kg:uri(?in) " " kg:uriLiteral(?v)
+	?p " " ?in " " ?v
     ")"
 }
 where {
@@ -228,7 +253,7 @@ where {
 <body>
 <![CDATA[
 template {
-  xsd:string(?l) "(" kg:uri(?y) ")"  
+  xsd:string(?l) "(" ?y ")"  
 }
 where {
   ?in ?p ?y
@@ -249,7 +274,7 @@ values (?p ?l){
 #
 template {
   if (bound(?t1) || bound(?t2), "DataAllValuesFrom", "ObjectAllValuesFrom")  
-  "(" kg:uri(?p) " " kg:uri(?z) ")"  
+  "(" ?p " " ?z ")"  
 }
 where {
   ?in owl:allValuesFrom ?z;
@@ -258,7 +283,7 @@ where {
     optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
 }
 
-#pragma { kg:template kg:priority 2 }
+#pragma { st:template st:priority 2 }
 ]]>
 </body>
 </rule>
@@ -276,9 +301,9 @@ template {
     "SubClassOf("  
      if (bound(?z),
 # special case: use a named template
-	kg:template(kg:interunion, ?in),
-	kg:uri(?in)) 
-      " "  kg:uri(?y)  
+	st:call-template(st:interunion, ?in),
+	?in) 
+      " "  ?y  
     ")" 
 }
 where {
@@ -287,7 +312,6 @@ where {
     { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
   }
 }
-#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -296,8 +320,8 @@ where {
 <body>
 <![CDATA[
 template {
-  if(bound(?t), "Data", "Object") 
-  "HasValue(" kg:uri(?y) " " kg:uri(?v) ")"  
+  if (bound(?t), "DataHasValue", "ObjectHasValue") 
+  "(" ?y " " ?v ")"  
 }
 where {
   ?in owl:hasValue ?v ;
@@ -312,7 +336,7 @@ where {
 <body>
 <![CDATA[
 template {
-    "InverseObjectProperties("  kg:uri(?in) " " kg:uri(?y) ")"  
+    "InverseObjectProperties("  ?in " " ?y ")"  
 }
 where {
   ?in owl:inverseOf ?y
@@ -326,8 +350,10 @@ where {
 <body>
 <![CDATA[
 template {
-  "DatatypeRestriction(" kg:uri(?dt) " " 
-      group  { kg:uri(?p) " " ?v ; separator = " "}
+  "DatatypeRestriction(" ?dt " " 
+      group  { ?p " " 
+      if (isURI(?v), st:turtle(?v), st:apply-templates(?v)) 
+      ; separator = " "}
   ")"  
 }
 where {
@@ -346,7 +372,7 @@ where {
 <![CDATA[
 template {
     if (bound(?t), "FunctionalDataProperty", "FunctionalObjectProperty")
-    "(" kg:uri(?in)  ")"   
+    "(" ?in  ")"   
 }
 where {
   ?in a owl:FunctionalProperty 
@@ -361,8 +387,8 @@ where {
 <![CDATA[
 template {
    "AnnotationAssertion(" 
-      kg:uri(rdfs:comment) " " 
-      kg:uri(?in) " " kg:turtle(?l)
+      st:uri(rdfs:comment) " " 
+      ?in " " st:turtle(?l)
    ")"
 }
 where {
@@ -386,9 +412,9 @@ template {
    "DisjointUnion("  
      if (bound(?z),
 # special case: use a named template
-	kg:template(kg:interunion, ?in),
-	kg:uri(?in)) 
-      " "  kg:uri(?y)  
+	st:call-template(st:interunion, ?in),
+	?in) 
+      " "  ?y  
     ")" 
 }
 where {
@@ -397,7 +423,7 @@ where {
     { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
   }
 }
-#pragma { kg:template kg:priority 2 }
+#pragma { st:template st:priority 2 }
 ]]>
 </body>
 </rule>
@@ -406,7 +432,7 @@ where {
 <body>
 <![CDATA[
 template {
-   "AnnotationAssertion(owl:deprecated " kg:uri(?in) " "true 
+   "AnnotationAssertion(owl:deprecated " ?in " "true 
    ")"  
 }
 where {
@@ -422,7 +448,7 @@ where {
 <body>
 <![CDATA[
 template {
-  "ObjectHasSelf(" kg:uri(?y) ")"  
+  "ObjectHasSelf(" ?y ")"  
 }
 where {
   ?in owl:hasSelf true ;
@@ -437,7 +463,7 @@ where {
 <![CDATA[
 template {
     xsd:string(?l) 
-    "ObjectProperty(" kg:uri(?in)  ")" 
+    "ObjectProperty(" ?in  ")" 
 }
 where {
   ?in a ?t
@@ -455,7 +481,7 @@ values (?t ?l) {
 <![CDATA[
 template {
    xsd:string(?l)
-   "("  kg:uri(?in) " " kg:uri(?y) ")"   
+   "("  ?in " " ?y ")"   
 }
 where {
    ?in ?p ?y 
@@ -472,16 +498,34 @@ values (?p ?l) {
 <body>
 <![CDATA[
 #
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+  st:xsdLiteral(?in)
+}
+where {
+  bind(st:getFocusNode() as ?in)
+  filter(isLiteral(?in))
+}
+pragma { st:template st:priority 1000 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # Starting template for OWL pretty printing from RDF to Functional Syntax
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template {
 
-  "Ontology(" kg:uri(?in) "\n\n"
+  "Ontology(" ?in "\n\n"
 
-    kg:template(kg:import, ?in)
+    st:call-template(st:import, ?in)
     
-    kg:template(kg:body, ?in)
+    st:call-template(st:body, ?in)
     
   "\n)"
 }
@@ -500,7 +544,7 @@ where {
 <![CDATA[
 template {
     xsd:string(?l) 
-    "ObjectProperty(" kg:uri(?in)  ")" 
+    "ObjectProperty(" ?in  ")" 
 }
 where {
   ?in a ?t
@@ -519,7 +563,9 @@ values (?t ?l) {
 <body>
 <![CDATA[
 template {
-    "Declaration(" xsd:string(?l) "(" kg:uri(?in)  "))"   
+    "Declaration(" xsd:string(?l) "(" 
+    ?in  
+    "))"   
 }
 where {
   ?in a ?t
@@ -538,12 +584,12 @@ values (?t ?l) {
 <body>
 <![CDATA[
 template {
-  kg:uri(?e) 
-  }
+  ?e 
+}
 where {
   ?in rdf:rest*/rdf:first ?e
 }
-pragma {kg:query kg:priority 1}
+pragma {st:template st:priority 1}
 ]]>
 </body>
 </rule>
@@ -558,13 +604,13 @@ template {
 
   if (?p = rdfs:subClassOf, "SubClassOf",  
   if (?p = owl:equivalentClass, "ObjectEquivalentClasses",
-    kg:uri(?p)))
+    ?p))
  
    "(Annotation(" 
-      kg:uri(?q)  " "  kg:uriLiteral(?c)
+      ?q  " "  st:uriLiteral(?c)
       ")\n"
       
-      kg:uri(?s) " " kg:uriLiteral(?t)
+      ?s " " st:uriLiteral(?t)
    ")"
 }
 where {
@@ -588,7 +634,7 @@ where {
 template {
     xsd:string(if (bound(?t), ?ld, ?lo))
     "(" 
-     if (?p = owl:disjointUnionOf, kg:uri(?in), "") " "
+     if (?p = owl:disjointUnionOf, ?in, "") " "
      ?y  
      ")" 
 }
@@ -620,7 +666,7 @@ values (?p ?lo ?ld) {
 #
 template {
   if (bound(?t1) || bound(?t2), "DataSomeValuesFrom", "ObjectSomeValuesFrom")  
-  "(" kg:uri(?p) " " kg:uri(?z) ")"  
+  "(" ?p " " ?z ")"  
 }
 where {
   ?in owl:someValuesFrom ?z ;
@@ -629,7 +675,6 @@ where {
     optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
 }
 
-#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -639,7 +684,7 @@ where {
 <![CDATA[
 template {
   if (bound(?t), "DataOneOf", "ObjectOneOf")
-  "(" ?y ")"  
+  "("  ?y ")"  
 }
 where {
   ?in owl:oneOf ?y 
@@ -682,9 +727,9 @@ template {
     "DisjointClasses("  
      if (bound(?z),
 # special case: use a named template
-	kg:template(kg:interunion, ?in),
-	kg:uri(?in)) 
-      " "  kg:uri(?y)  
+	st:call-template(st:interunion, ?in),
+	?in) 
+      " "  ?y  
     ")" 
 }
 where {
@@ -693,7 +738,7 @@ where {
     { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
   }
 }
-#pragma { kg:template kg:priority 2 }
+#pragma { st:template st:priority 2 }
 ]]>
 </body>
 </rule>
@@ -718,7 +763,6 @@ where {
 
   optional { ?in a ?t filter(?t = rdfs:Datatype) }
 }
-#pragma { kg:template kg:priority 2 }
 ]]>
 </body>
 </rule>
@@ -727,7 +771,7 @@ where {
 <body>
 <![CDATA[
 template {
-   xsd:string(?l) "(" kg:uri(?in) " " kg:uri(?p) ")"
+   xsd:string(?l) "(" ?in " " ?p ")"
 }
 where {
   ?in rdfs:subPropertyOf ?p ; a ?t 
@@ -747,14 +791,16 @@ values (?t ?l){
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template {
-if (! strstarts(?t, owl:) && ! strstarts(?t, rdf:) && ! strstarts(?t, rdfs:), 
-    concat("ClassAssertion(", kg:uri(?t), " ", kg:uri(?in), ")"),
-    "")
+  if (! strstarts(?t, owl:) 
+   && ! strstarts(?t, rdf:) 
+   && ! strstarts(?t, rdfs:), 
+      concat("ClassAssertion(", ?t, " ", ?in, ")"),
+      "")
 }
 where {
   ?in a ?t
 }
-pragma { kg:query kg:priority 1000 }
+pragma { st:template st:priority 1000 }
 ]]>
 </body>
 </rule>
@@ -764,7 +810,7 @@ pragma { kg:query kg:priority 1000 }
 <![CDATA[
 template {
     if (bound(?t), "DataPropertyDomain", "ObjectPropertyDomain")
-    "(" kg:uri(?in) " " kg:uri(?d) ")"
+    "(" ?in " " ?d ")"
 }
 where {
   ?in rdfs:domain ?d 
@@ -778,7 +824,7 @@ where {
 <body>
 <![CDATA[
 template {
-  "ObjectInverseOf(" kg:uri(?y) ")"  
+  "ObjectInverseOf(" ?y ")"  
 }
 where {
   ?in owl:inverseOf ?y
@@ -793,7 +839,7 @@ where {
 <![CDATA[
 template {
   if (bound(?t), xsd:string(?ld), xsd:string(?lo)) 
-    "(" ?n " " kg:uri(?p) ")"  
+    "(" st:turtle(?n) " " ?p ")"  
 }
 where {
   ?in ?q ?n ;
@@ -814,7 +860,7 @@ values (?q ?lo ?ld) {
 <![CDATA[
 template {
    "DifferentIndividuals("  
-      kg:uri(?in) " " ?l 
+      ?in " " ?l 
    ")"   
 }
 where {
@@ -832,12 +878,12 @@ where {
 <![CDATA[
 #
 # Starting template for OWL pretty printing from RDF to Functional Syntax
-# kg:pprintAll() run all templates  
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template   {
     
-   kg:pprintAll(?in ; separator = "\n") ; separator = "\n\n"
+   st:apply-all-templates(?in ; separator = "\n") 
+   ; separator = "\n\n"
     
 }
 where {
@@ -845,9 +891,15 @@ where {
 select distinct ?in where {
   ?in ?p ?y
   filter(isURI(?in))
+  # OWL vocabulary must not be pretty printed
+  filter (! strstarts(?in, owl:) 
+       && ! strstarts(?in, rdf:) 
+       && ! strstarts(?in, rdfs:)
+       && ! strstarts(?in, xsd:)
+       )
   }     
 }
-pragma { kg:template kg:priority 1 }
+pragma { st:template st:priority 1 }
 
 ]]>
 </body>
@@ -859,7 +911,7 @@ pragma { kg:template kg:priority 1 }
 template {
    "SubObjectPropertyOf(" 
       "ObjectPropertyChain(" ?l ") "
-      kg:uri(?in)
+      ?in
    ")"
 }
 where {
@@ -874,9 +926,9 @@ where {
 <![CDATA[
 template {
     xsd:string(?l)  
-    "PropertyAssertion(" 
-      kg:uri(?p) " " kg:uri(?s) " "  kg:uri(?t)
-   ")"
+    "(" 
+      ?p " " ?s " "  ?t
+    ")"
 }
 where {
   ?in a owl:NegativePropertyAssertion ;
@@ -885,8 +937,8 @@ where {
      ?q  ?t
 }
 values (?q ?l) {
-  (owl:targetIndividual "NegativeObject")
-  (owl:targetValue      "NegativeData")
+  (owl:targetIndividual "NegativeObjectPropertyAssertion")
+  (owl:targetValue      "NegativeDataPropertyAssertion")
 }
 ]]>
 </body>
@@ -896,9 +948,9 @@ values (?q ?l) {
 <body>
 <![CDATA[
 template {
-  "HasKey(" kg:uri(?in)  " ("  
-     group distinct { kg:uri(?op) } ") ("
-     group distinct { kg:uri(?dp) } 
+  "HasKey(" ?in  " ("  
+     group distinct { ?op } ") ("
+     group distinct { ?dp } 
    "))"
 }
 where {
@@ -920,7 +972,7 @@ where {
 <body>
 <![CDATA[
 template {
-    "Declaration(NamedIndividual(" kg:uri(?in)  "))"   
+    "Declaration(NamedIndividual(" ?in  "))"   
 }
 where {
   ?in a owl:NamedIndividual
@@ -934,7 +986,7 @@ where {
 <body>
 <![CDATA[
 template {
-    xsd:string(?l) "("  kg:uri(?in) " "  kg:uri(?p) ")"   
+    xsd:string(?l) "("  ?in " "  ?p ")"   
 }
 where {
   ?in owl:equivalentProperty ?p ; a ?t
@@ -953,7 +1005,7 @@ values (?t ?l) {
 template {
   if (bound(?t), xsd:string(?ld), xsd:string(?lo))
   "(" 
-    ?n " " kg:uri(?p) " "  kg:uri(?c) 
+    st:turtle(?n) " " ?p " "  ?c 
   ")"  
 }
 where {

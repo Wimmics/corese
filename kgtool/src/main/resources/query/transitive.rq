@@ -1,0 +1,19 @@
+#
+#  Check if a SPIN graph represent a transitive construct-where rule
+#  Olivier Corby, Wimmics Inria I3S, 2014
+#
+select * where {   
+  ?q a sp:Construct ;   
+    sp:templates ([ sp:subject ?x ; sp:predicate ?p ; sp:object ?z ]) .   
+  {   
+  ?q sp:where (   
+    [ sp:subject ?x ; sp:predicate ?p ; sp:object ?y ]   
+    [ sp:subject ?y ; sp:predicate ?p ; sp:object ?z ])   
+  }   
+  union {   
+  ?q sp:where (   
+    [ sp:subject ?p ; sp:predicate rdf:type ; sp:object owl:TransitiveProperty, ?t]   
+    [ sp:subject ?x ; sp:predicate ?p ; sp:object ?y ]   
+    [ sp:subject ?y ; sp:predicate ?p ; sp:object ?z ])   
+  }   
+}   

@@ -1127,12 +1127,12 @@ function RDFaGraph()
       }
    };
    this.base =  null;
-   this.toString = function(requestOptions) {
+   this.toString = function(requestOptions, replace) {
       var options = requestOptions && requestOptions.shorten ? { graph: this, shorten: true, prefixesUsed: {} } : null;
       s = "";
       for (var subject in this.subjects) {
          var snode = this.subjects[subject];
-         s += snode.toString(options);
+         s += snode.toString(options, replace);
          s += "\n";
       }
       var prolog = requestOptions && requestOptions.baseURI ? "@base <"+baseURI+"> .\n" : "";
@@ -1192,7 +1192,7 @@ function RDFaSubject(graph,subject) {
    this.types = [];
 }
 
-RDFaSubject.prototype.toString = function(options) {
+RDFaSubject.prototype.toString = function(options, replace) {
    var s = null;
    if (this.subject.substring(0,2)=="_:") {
       s = this.subject;
@@ -1204,6 +1204,16 @@ RDFaSubject.prototype.toString = function(options) {
    } else {
       s = "<" + this.subject + ">";
    }
+   
+   //replace the base uri of subject to server url
+   //Fuqi Song, April 2014
+   if(replace){
+        var pref = "http://";
+        var begin = s.indexOf(pref);
+        var domain = s.substring(begin, s.indexOf("/", pref.length+begin));
+        s= s.replace(domain, "http://localhost:8080/kgram/ldp");
+    }
+   
    var first = true;
    for (var predicate in this.predicates) {
       if (!first) {

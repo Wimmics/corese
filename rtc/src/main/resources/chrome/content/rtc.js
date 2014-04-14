@@ -9,7 +9,6 @@
 
 var graph;
 var triplesNo = 0, queryResultsNo = 0;
-//var endpoint = "http://localhost:8080/kgram/sparql";
 var graphName;
 var json;
 
@@ -209,7 +208,7 @@ function download(action) {
     }
 }
 ;
-
+var insert;
 function upload() {
     if (triplesNo === 0) {
         showMsg('no triples to upload', true);
@@ -222,13 +221,16 @@ function upload() {
     if ($.trim(url).length < 1) {
         showMsg('Please input the server address!', true);
     }
-    var insert = 'INSERT DATA { GRAPH <' + graphName + '> {' + graph.toString() + ' } }';
-    
+    //graph.toString return the triples in turtle format
+    var sGraph = graph.toString();
+
     if ($('#radio-ldp').is(':selected')) {
         url += "/ldp/upload";
+        sGraph = graph.toString({}, true);
     } else {
         url += "/sparql/update";
     }
+    insert = 'INSERT DATA { GRAPH <' + graphName + '> {' + sGraph + ' } }';
 
     $.ajax({
         type: 'POST',

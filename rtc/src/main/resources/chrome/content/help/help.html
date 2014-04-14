@@ -2,6 +2,7 @@
 <html><head><title>Instructions of RDF Triple Collector</title>
 
 
+
   
 
   
@@ -198,7 +199,7 @@ a {
 <div id="main">
 <h1 id="title">RDF Triple Collector (RTC)&nbsp;
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
-&nbsp;&nbsp;<a href="http://wimmics.inria.fr" target="_blank">&nbsp;</a><span style="font-weight: bold; font-size: 16px; line-height: 0%;"> </span><span style="font-weight: bold; font-size: 16px; line-height: 0%;">&nbsp;&nbsp; A firefox plugin for collecting RDF triples (v1.0b)</span></h1>
+&nbsp;&nbsp;<a href="http://wimmics.inria.fr" target="_blank">&nbsp;</a><span style="font-weight: bold; font-size: 16px; line-height: 0%;"> </span><span style="font-weight: bold; font-size: 16px; line-height: 0%;">&nbsp;&nbsp; A firefox plugin for collecting RDF triples (v1.1)</span></h1>
 <div class="section section-education">
 <h2 class="title">1 introduction</h2>
 RTC is an extension for Firefox, it aims at extracting
@@ -231,10 +232,10 @@ This extension only supports <a href="http://www.mozilla.org/en-US/firefox" targ
 </h2>
 A panel like follows should show when you open a new page(try <a href="http://fr.dbpedia.org/page/Sophia_Antipolis" target="_blank">Dbpedia:sophia
 antipolis</a>). If there are triples detected on this page, an icon <img style="width: 16px; height: 16px;" alt="" src="img/rdf.ico">
-will appear in address bar and triples will be listed in the left-side table. You can close the panel by clicking button <img style="width: 16px; height: 16px;" alt="" src="img/close.ico"> [Close] Close and reopen the
+will appear in address bar and triples will be listed in the left-side table. You can close the panel by clicking button <img style="width: 16px; height: 16px;" alt="" src="img/close.ico"> [Close] and reopen the
 panel by clicking the icon in address bar or via menu (tools/[RDF Triple Collector]).<br>
 <br>
-<img style="width: 900px;" alt="" src="img/ui%20v1.0b.png"><br><br>
+<img style="width: 900px;" alt="" src="img/ui%20v1.1.png"><br><br>
 <ul>
   <li>
 By clicking (or use key up &amp; down) on one row of triples, the details will display in the right-bottom text area;</li>
@@ -243,64 +244,49 @@ The triples in the list can be download to file in format of turtle (.ttl);</li>
   <li>
 Every time you switch between different tabs, the page will be
 reloaded, the results in the panel alwalys comforms to current browsing
-page. <img style="width: 16px; height: 16px;" alt="" src="img/reload.ico"> [Reload] button to re-extract triples on current page.<br>
+page. Use <img style="width: 16px; height: 16px;" alt="" src="img/reload.ico"> [Reload] button to re-extract triples on current page.<br>
   </li>
   <li>
 If the server has been started:</li>
 </ul>
 <div style="margin-left: 40px;">
 <ul>
-  <li>You can upload the triples to server. All these triples
+
+  <li>You can upload the triples to server(endpoint | ldp). All these triples
 will be inserted in a named graph naming after the url of the current
 page.</li>
-  <li>Query data:<br>
-  </li>
-  <li>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on this page: only query data from named graph of the current page</li>
-  <li>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; all on server: taking all data on server into account</li>
+  
+  
+  <li>Query data (endpoint):</li>
+  <ul>
+    <li>on this page: only query data from named graph of the current page</li>
+    <li>all on server: taking all data on server into account</li>
+    <li>ldp: use url pattern as "http://localhost:8080/kgram/ldp/xxx" in browser to query resources, where "xxx" refers to the name of resource to query<br>
+    </li>
+  </ul>
+
+  
+</ul>
+<ul>
+
   <li>The return results will be displayed in the table and details can be viewed also in the text area;</li>
   <li>The results can be saved to file in format of Json (.json); </li>
 </ul>
+
 </div>
+
 <ul>
   <li>The information about each operation is shown on the title bar in blue.</li>
   <li>
-The server address can be changed, but only support corese endpoint at time being.</li>
+The server address can be changed, but only support corese endpoint/ldp at time being.</li>
 </ul>
 &nbsp;&nbsp;&nbsp;&nbsp; <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp; The pages from <a href="http://fr.dbpedia.org/" target="_blank">dbpedia</a> are good samples to try, not many pages support RDFa at the moment.<br>
+<div style="margin-left: 40px;">&nbsp;
+* The pages from <a href="http://fr.dbpedia.org/" target="_blank">dbpedia</a> are good samples to try, not many pages support RDFa at the moment.<br>
+&nbsp; * For support and feedback, please contact <a href="http://www-sop.inria.fr/members/Fuqi.Song/">Fuqi Song</a>.</div>
+
 
 <div class="clear"> </div>
-</div>
-<div class="section section-work">
-<div class="clear"> </div>
-
-<br>
-
-<div class="section section-qualifications">
-<h2 class="title">TODO<br>
-
-</h2>
-<div class="set">
-<div class="item">
-<ul>
-  <li>Graph visulizaiton</li>
-  <li>Support other server/endpoint</li>
-  <li>Support other formats of saving results<br>
-  </li>
-
-</ul>
-<br>
-* For support and feedback, please contact <a href="http://www-sop.inria.fr/members/Fuqi.Song/">Fuqi Song</a>.<br>
-
-</div>
-</div>
-<div class="clear"> </div>
-</div>
-<div style="text-align: justify;">
-</div>
-</div>
-</div>
+</div></div>
 
 </body></html>

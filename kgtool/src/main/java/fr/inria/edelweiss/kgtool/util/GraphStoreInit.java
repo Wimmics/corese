@@ -7,7 +7,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.PPrinter;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,11 +97,11 @@ public class GraphStoreInit {
      * Dump Predefined PPrinters
      */
     void pprinter(Graph g) {
-        for (String ns : PPrinter.getTable().keySet()) {
+        for (String ns : Transformer.getTable().keySet()) {
             g.addEdge(g.addGraph(SYSTEM),
                     g.addResource(PPRINTER),
                     g.addProperty(ns),
-                    g.addResource(PPrinter.getPP(ns)));
+                    g.addResource(Transformer.getPP(ns)));
         }
     }
     

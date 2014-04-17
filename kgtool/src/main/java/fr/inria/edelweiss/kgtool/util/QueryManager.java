@@ -8,7 +8,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.print.PPrinter;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,8 +74,8 @@ public class QueryManager {
     void typecheck(Graph g){
         QueryProcess qp = QueryProcess.create(g, true);
         qp.add(graph);
-        PPrinter pp = PPrinter.create(qp, PPrinter.TYPECHECK);
-        Node res = pp.pprint();
+        Transformer pp = Transformer.create(qp, Transformer.TYPECHECK);
+        Node res = pp.process();
         if (! res.isBlank()){
             System.out.println("Type Check:\n" + res.getLabel());
         }

@@ -9,7 +9,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.PPrinter;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
@@ -164,7 +164,7 @@ public class SPINProcess {
 
 
     public String toSparql(Graph g, NSManager nsm) throws EngineException {
-        PPrinter p = PPrinter.create(g, PPrinter.SPIN);
+        Transformer p = Transformer.create(g, Transformer.SPIN);
         if (nsm != null) {
             p.setNSM(nsm);
         }

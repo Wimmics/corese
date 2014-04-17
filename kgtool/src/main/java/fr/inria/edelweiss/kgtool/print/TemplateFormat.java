@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgtool.print;
 
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -23,7 +24,7 @@ public class TemplateFormat {
 	Query query;
 	Graph graph;
 	private NSManager nsm;
-	PPrinter pp;
+	Transformer pp;
 	boolean isTurtle = false;
 	private boolean isDebug = false;
 	private boolean isCheck = false;
@@ -106,18 +107,18 @@ public class TemplateFormat {
 		if (graph == null){
 			return "";
 		}
-		PPrinter p = createPP();
+		Transformer p = createPP();
 		return p.toString();
 	}
 	
 	String template(){
-		PPrinter p = (PPrinter) query.getPP();
+		Transformer p = (Transformer) query.getPP();
 		IDatatype dt = p.getResult(map);
 		return dt.getLabel();
 	}
 	
-	PPrinter createPP(){
-		pp = PPrinter.create(graph, printer);
+	Transformer createPP(){
+		pp = Transformer.create(graph, printer);
 		if (isCheck){
 			pp.check();
 		}
@@ -139,11 +140,11 @@ public class TemplateFormat {
 		if (graph == null){
 			return new StringBuilder();
 		}
-		PPrinter p = createPP();
+		Transformer p = createPP();
 		return p.toStringBuilder();
 	}
 	
-	public PPrinter getPPrinter(){
+	public Transformer getPPrinter(){
 		return pp;
 	}
 	

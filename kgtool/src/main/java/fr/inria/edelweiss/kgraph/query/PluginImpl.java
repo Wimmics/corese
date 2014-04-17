@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.CoreseDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -89,7 +88,7 @@ public class PluginImpl extends ProxyImpl {
                 return indent(env, p);
 
             case PROLOG:
-                return prolog(env, p);
+                return prolog(null, env, p);
                 
             case FOCUS_NODE:
                 return getFocusNode(null, env);
@@ -139,6 +138,9 @@ public class PluginImpl extends ProxyImpl {
                         return g.skolem(dt);    
                 }                
                 
+             case PROLOG:
+                return prolog(dt, env, p);
+                 
             case STL_PROCESS:
                 return process(exp, env, p, dt);
                 
@@ -285,10 +287,18 @@ public class PluginImpl extends ProxyImpl {
                 return pprint(getArgs(args, 2), dt3, null, dt1, dt2, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
+            case APPLY_ALL_TEMPLATES_WITH:
                 // dt1: uri pprinter
                 // dt2: focus
                 // dt3: arg
-                return pprint(dt2, dt3, dt1, null, exp, env, p);
+                return pprint(getArgs(args, 1), dt2, dt3, dt1, null, exp, env, p);
+                
+                
+            case APPLY_TEMPLATES:
+            case APPLY_ALL_TEMPLATES:
+                // dt1: focus
+                // dt2: arg
+                return pprint(getArgs(args, 0), dt1, dt2, null, null, exp, env, p);    
 
         }
 
@@ -534,9 +544,13 @@ public class PluginImpl extends ProxyImpl {
         return getValue(qname);
     }
 
-    IDatatype prolog(Environment env, Producer prod) {
+    IDatatype prolog(IDatatype dt, Environment env, Producer prod) {
         Transformer p = getPPrinter(env, prod);
-        String pref = p.getNSM().toString();
+        String title = null;
+        if (dt != null){
+            title = dt.getLabel();
+        }
+        String pref = p.getNSM().toString(title);
         return getValue(pref);
     }
 

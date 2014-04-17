@@ -403,10 +403,17 @@ public class NSManager {
     }
 
     public String toString() {
-        return toString(false);
+        return toString(null, false);
+    }
+    
+    public String toString(String title) {
+        return toString(title, false);
     }
 
-    public String toString(boolean all) {
+    public String toString(String title, boolean all) {
+        if (title == null){
+            title = "prefix";
+        }
         StringBuffer sb = new StringBuffer();
         if (base != null) {
             sb.append("base <");
@@ -417,7 +424,8 @@ public class NSManager {
         for (String p : getPrefixSet()) {
             String ns = getNamespace(p);
             if (all || !isSystem(ns)) {
-                sb.append("prefix ");
+                sb.append(title);
+                sb.append(" ");
                 sb.append(p);
                 sb.append(": <");
                 sb.append(getNamespace(p));

@@ -579,5 +579,9 @@ implements Regex, Filter, Expr {
 		visitor.visit(this);
 	}
         
+        public Expression copy(Variable o, Variable n){
+            return this;
+        }
+        
 	
 }

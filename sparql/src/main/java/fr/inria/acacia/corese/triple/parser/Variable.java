@@ -210,5 +210,13 @@ public class Variable extends Atom {
 		}
 	}
 
+        public Variable copy(Variable o, Variable n){
+            if (this.equals(o)){
+                return create(n.getName());
+            }
+            else {
+                return this;
+            }
+        }
 	
 }

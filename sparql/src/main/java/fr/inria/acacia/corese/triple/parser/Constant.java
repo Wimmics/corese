@@ -431,6 +431,6 @@ public class Constant extends Atom {
 		cst.setretype(cst.getretype());
 		return cst;
 	}
-    
-
+        
+        
 }

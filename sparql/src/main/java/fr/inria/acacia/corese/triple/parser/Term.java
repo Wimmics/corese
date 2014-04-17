@@ -921,7 +921,21 @@ public class Term extends Expression {
 		// TODO Auto-generated method stub
 		return proc;
 	}
-	
-
+	              
+        public Term copy(Variable o, Variable n) {
+            Term f = null;
+            if (isFunction()) {
+                f = function(getName());
+                f.setLongName(getLongName());
+                f.setModality(getModality());
+            } else {
+                f = Term.create(getName());
+            }
+            for (Expression e : getArgs()) {
+                Expression ee = e.copy(o, n);
+                f.add(ee);
+            }
+            return f;
+    }
 
 }

@@ -19,10 +19,10 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.print.PPrinter;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TemplateFormat;
-import fr.inria.edelweiss.kgtool.print.TemplatePrinter;
+import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,8 +69,9 @@ public class PPrint {
 		translate(root + "template/sql/template",   lib + "sql.rul");
 		translate(root + "template/owl/template",   lib + "owl.rul");
 		translate(root + "template/turtle/template",lib + "turtle.rul");
+		translate(root + "template/table/template", lib + "table.rul");
 
-                translate(root + "typecheck/template",     lib + "typecheck.rul");       
+                //translate(root + "typecheck/template",     lib + "typecheck.rul");       
 	}
        
         
@@ -102,7 +103,7 @@ public class PPrint {
        
         QueryProcess exec = QueryProcess.create(g);
 
-            PPrinter tf = PPrinter.create(g);
+            Transformer tf = Transformer.create(g);
 //          tf.setCheck(true);
 //          tf.setDetail(true);
             tf.setTemplates(root + "spin/spin.rul");
@@ -116,7 +117,7 @@ public class PPrint {
             System.out.println("res: ");
             //String str = tf.toString();
 
-            IDatatype dd = tf.pprint(ExpType.KGRAM + "start");
+            IDatatype dd = tf.process(ExpType.KGRAM + "start");
             System.out.println(dd.getLabel());
            
 //            try {
@@ -182,7 +183,7 @@ public class PPrint {
 		
 		ld.load("/home/corby/Cours/2013/Corese/");
 		
-		PPrinter p = PPrinter.create(g, root + "pprint/test2");
+		Transformer p = Transformer.create(g, root + "pprint/test2");
 		NSManager nsm = NSManager.create();
 		nsm.definePrefix("h", "http://www.inria.fr/2007/09/11/humans.rdfs#");
 		nsm.definePrefix("i", "http://www.inria.fr/2007/09/11/humans.rdfs-instances#");
@@ -415,7 +416,7 @@ public class PPrint {
 //		Load ld = Load.create(g);
 //		ld.load(root + "math/eval.ttl");
 		
-		PPrinter pp = PPrinter.create(g, root + "pprint/test");
+		Transformer pp = Transformer.create(g, root + "pprint/test");
 		
 		
 		IDatatype dt = pp.template(ExpType.KGRAM + "rec", DatatypeMap.newInstance(12));
@@ -434,7 +435,7 @@ public class PPrint {
 		NSManager nsm = NSManager.create();https://www.google.fr/
 		nsm.definePrefix("m", "http://ns.inria.fr/2013/math#");
 		
-		PPrinter pp = PPrinter.create(g, root + "math/eval");
+		Transformer pp = Transformer.create(g, root + "math/eval");
 		pp.setNSM(nsm);
 		
 		System.out.println(pp);
@@ -585,7 +586,7 @@ public class PPrint {
 		nsm.definePrefix("ex", "http://www.example.org/");
 		nsm.definePrefix("ast", "http://www.inria.fr/2012/ast#");
 		
-		PPrinter pp = PPrinter.create(g, root + "pprint/template");
+		Transformer pp = Transformer.create(g, root + "pprint/template");
 		pp.setNSM(nsm);
 		
 		String cons = 

@@ -330,6 +330,11 @@ public class Load
         }
     }
 
+    
+     public void load(String path, int format) throws LoadException {
+        load(path, path, path, format);
+    }
+    
     public void load(String path, String base, String source) throws LoadException {
         load(path, base, source, getFormat(path));
     }

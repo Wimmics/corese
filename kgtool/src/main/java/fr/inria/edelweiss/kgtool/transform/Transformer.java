@@ -56,6 +56,7 @@ public class Transformer {
     public static final String SPIN         = STL + "spin";
     public static final String OWL          = STL + "owl";
     public static final String TURTLE       = STL + "turtle";
+    public static final String TRIG         = STL + "trig";
     public static final String TABLE        = STL + "table";
     public static final String TYPECHECK    = STL + "typecheck";
     private static final String STL_PROFILE    = STL + "profile";
@@ -560,7 +561,9 @@ public class Transformer {
         Mapping m = getMapping(args, dt1, dt2, tq);
 
         for (Query qq : templateList) {
-
+            
+            Mapping bm = m;
+            
             if (isDetail) {
                 qq.setDebug(true);
             }
@@ -582,8 +585,14 @@ public class Transformer {
                 }
 
                 n++;
-  
-                Mappings map = exec.query(qq, m);
+                
+                if (qq != tq && qq.getArgList() != null){
+                    // std template has arg list: create appropriate Mapping
+                    // TODO: we may want to check that card(arg) = card(param)
+                    bm = getMapping(args, dt1, dt2, qq);
+                }
+                
+                Mappings map = exec.query(qq, bm);
 
                 stack.visit(dt1);
 
@@ -695,10 +704,10 @@ public class Transformer {
         }
         List<Node> list = q.getArgList();
         if (n < list.size()){
-            return list.get(n).getLabel();
+           return list.get(n).getLabel();
         }
         else {
-            return getArg(n);
+           return getArg(n);
         }
  }
     

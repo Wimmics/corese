@@ -29,6 +29,8 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.StatListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
+import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryGraph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -114,6 +116,20 @@ public class TestQuery1 {
     }
 
     
+    @Test
+       public void testTrig() throws LoadException {
+            Graph g = Graph.create(true);
+            Load ld = Load.create(g);
+            ld.load(RDF.RDF, Load.TURTLE_FORMAT);
+            ld.load(RDFS.RDFS, Load.TURTLE_FORMAT);
+            
+            Transformer pp = Transformer.create(g, Transformer.TRIG);
+            String str = pp.transform();
+            assertEquals(9391, str.length());
+
+            
+       } 
+    
    @Test
     public void testPPOWL() throws EngineException, LoadException {
         Graph g = Graph.create();
@@ -137,7 +153,7 @@ public class TestQuery1 {
 
          map = exec.query(t2);
          
-         assertEquals(5790, map.getTemplateResult().getLabel().length());
+         assertEquals(5926, map.getTemplateResult().getLabel().length());
         
     }
     

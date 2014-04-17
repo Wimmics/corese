@@ -5,10 +5,14 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.CoreseDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.acacia.corese.triple.parser.Term;
+import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -29,7 +33,8 @@ import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.print.PPrinter;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
+import java.util.Arrays;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -41,7 +46,7 @@ import fr.inria.edelweiss.kgtool.print.PPrinter;
 public class PluginImpl extends ProxyImpl {
 
     static Logger logger = Logger.getLogger(PluginImpl.class);
-    static String DEF_PPRINTER = PPrinter.PPRINTER;
+    static String DEF_PPRINTER = Transformer.PPRINTER;
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
     // idem for setObject()
@@ -182,7 +187,7 @@ public class PluginImpl extends ProxyImpl {
     }
 
     private IDatatype visited(IDatatype dt, Environment env, Producer p) {
-        PPrinter pp = getPPrinter(env, p);
+        Transformer pp = getPPrinter(env, p);
         boolean b = pp.isVisited(dt);
         return getValue(b);
     }
@@ -271,13 +276,13 @@ public class PluginImpl extends ProxyImpl {
                 // dt1: template name
                 // dt2: focus
                 // dt3: arg
-                return pprint(args, dt2, dt3, null, dt1, exp, env, p);
+                return pprint(getArgs(args, 1), dt2, dt3, null, dt1, exp, env, p);
 
             case CALL_TEMPLATE_WITH:
                 // dt1: uri pprinter
                 // dt2: template name
                 // dt3: focus
-                return pprint(dt3, null, dt1, dt2, exp, env, p);
+                return pprint(getArgs(args, 2), dt3, null, dt1, dt2, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
                 // dt1: uri pprinter
@@ -288,6 +293,11 @@ public class PluginImpl extends ProxyImpl {
         }
 
         return null;
+    }
+    
+    
+    Object[] getArgs(Object[] obj, int n){
+        return Arrays.copyOfRange(obj, n, obj.length);
     }
 
     IDatatype similarity(Graph g, IDatatype dt1, IDatatype dt2) {
@@ -410,7 +420,7 @@ public class PluginImpl extends ProxyImpl {
     }
    
     private Object getFocusNode(IDatatype dt, Environment env) {
-        String name = PPrinter.IN;
+        String name = Transformer.IN;
         if (dt != null){
             name = dt.getLabel();
         }
@@ -525,14 +535,14 @@ public class PluginImpl extends ProxyImpl {
     }
 
     IDatatype prolog(Environment env, Producer prod) {
-        PPrinter p = getPPrinter(env, prod);
+        Transformer p = getPPrinter(env, prod);
         String pref = p.getNSM().toString();
         return getValue(pref);
     }
 
     IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
-        PPrinter p = getPPrinter(env, prod, getLabel(tbase), null);
-        return p.pprint(getLabel(temp),
+        Transformer p = getPPrinter(env, prod, getLabel(tbase), null);
+        return p.process(getLabel(temp),
                 exp.oper() == ExprType.APPLY_ALL_TEMPLATES
                 || exp.oper() == ExprType.APPLY_ALL_TEMPLATES_WITH,
                 exp.getModality());
@@ -551,8 +561,8 @@ public class PluginImpl extends ProxyImpl {
      }
      
      IDatatype pprint(Object[] args, IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
-        PPrinter p = getPPrinter(env, prod, getLabel(tbase), focus);
-        IDatatype dt = p.pprint(args, focus, arg,
+        Transformer p = getPPrinter(env, prod, getLabel(tbase), focus);
+        IDatatype dt = p.process(args, focus, arg,
                 getLabel(temp),
                 exp.oper() == ExprType.APPLY_ALL_TEMPLATES
                 || exp.oper() == ExprType.APPLY_ALL_TEMPLATES_WITH,
@@ -567,16 +577,57 @@ public class PluginImpl extends ProxyImpl {
      * the default behavior is st:apply-templates
      */
     public Object process(Expr exp, Environment env, Producer p, IDatatype dt) {
-        PPrinter pp = getPPrinter(env, p);
+        Transformer pp = getPPrinter(env, p);
         // overload current st:process() oper code to default behaviour oper code
         // future executions of this st:process() will directly execute target default behavior
-        int oper = pp.getDefaultProcess();                     
+        Expr def = pp.getProcessExp();
+        
+        if (def == null){
+            int oper = pp.getProcess();                     
+            exp.setOper(oper);
+            Object res = function(exp, env, p, dt);
+            // if we want STL_PROCESS to get back to it's initial behavior:
+            // unset the comment below
+            // exp.setOper(ExprType.STL_PROCESS);
+            return res;
+        }
+        else {     
+            Expr ee = rewrite(exp, def, (ASTQuery)env.getQuery().getAST());          
+            exp.setOper(SELF);
+            exp.setExp(0, ee);
+            return eval.eval(ee, env, p);
+        } 
+    }
+    
+    
+    /**
+     * proc: st:process(?y)
+     * def:  st:process(?x) = st:apply-templates(?x)
+     * copy def right exp and rename its variable (?x) as proc variable (?y)
+     * PRAGMA: do no process exists {} in def
+     */
+    Expr rewrite(Expr proc, Expr def, ASTQuery ast){
+        Term tproc = (Term) proc;
+        Term tdef  = (Term) def;
+        Variable v1 = tdef.getArg(0).getArg(0).getVariable(); // ?x
+        Variable v2 = tproc.getArg(0).getVariable(); // ?y
+        Expression tt = tdef.getArg(1).copy(v1, v2);
+        tt.compile(ast);
+        return tt;
+    }
+
+    
+     public Object process2(Expr exp, Environment env, Producer p, IDatatype dt) {
+        Transformer pp = getPPrinter(env, p);
+        // overload current st:process() oper code to default behaviour oper code
+        // future executions of this st:process() will directly execute target default behavior
+        int oper = pp.getProcess();                     
         exp.setOper(oper);
         
         switch(oper){
             case CALL_TEMPLATE:
                 // st:process(?x) = st:call-template(ex:name, ?x)
-                Expr ct = pp.getDefaultProcessExp();
+                Expr ct = pp.getProcessExp().getExp(1);
                 Expr name = ct.getExp(0);
                 exp.addExp(0, name);
                 Object res = function(exp, env, p, name.getValue(), dt);                   
@@ -591,6 +642,10 @@ public class PluginImpl extends ProxyImpl {
     }
     
     
+   
+    
+    
+    
     /**
      * 
     
@@ -598,19 +653,19 @@ public class PluginImpl extends ProxyImpl {
 
 
     IDatatype turtle(IDatatype o, Environment env, Producer prod) {
-        PPrinter p = getPPrinter(env, prod);
+        Transformer p = getPPrinter(env, prod);
         IDatatype dt = p.turtle(o);
         return dt;
     }
     
     IDatatype xsdLiteral(IDatatype o, Environment env, Producer prod) {
-        PPrinter p = getPPrinter(env, prod);
+        Transformer p = getPPrinter(env, prod);
         IDatatype dt = p.xsdLiteral(o);
         return dt;
     }
 
     IDatatype turtle(Environment env, Producer prod) {
-        PPrinter p = getPPrinter(env, prod);
+        Transformer p = getPPrinter(env, prod);
         p.setTurtle(true);
         return EMPTY;
     }
@@ -632,7 +687,7 @@ public class PluginImpl extends ProxyImpl {
     }
 
     int level(Environment env, Producer prod) {
-        PPrinter p = getPPrinter(env, prod);
+        Transformer p = getPPrinter(env, prod);
         return p.level();
     }
 
@@ -655,7 +710,7 @@ public class PluginImpl extends ProxyImpl {
     /**
      *
      */
-    PPrinter getPPrinter(Environment env, Producer p) {
+    Transformer getPPrinter(Environment env, Producer p) {
         return getPPrinter(env, p, (String) null, null);
     }
 
@@ -676,19 +731,19 @@ public class PluginImpl extends ProxyImpl {
     String getPP(Producer prod, IDatatype dt) {
         Graph g = getGraph(prod);
         if (g == null) {
-            return PPrinter.TURTLE;
+            return Transformer.TURTLE;
         }
         IDatatype type = g.getValue(RDF.TYPE, dt);
         if (type != null) {
-            String p = PPrinter.getPP(type.getLabel());
+            String p = Transformer.getPP(type.getLabel());
             if (p != null) {
                 return p;
             }
         }
-        return PPrinter.TURTLE;
+        return Transformer.TURTLE;
     }
 
-    PPrinter getPPrinter(Environment env, Producer prod, String t, IDatatype dt) {
+    Transformer getPPrinter(Environment env, Producer prod, String t, IDatatype dt) {
         Query q = env.getQuery();
         String p = null;
 
@@ -707,13 +762,13 @@ public class PluginImpl extends ProxyImpl {
         Object o = q.getPP(p);
 
         if (o != null) {
-            return (PPrinter) o;
+            return (Transformer) o;
         } else {
             Graph g = getGraph(prod);
             if (g == null) {
                 g = Graph.create();
             }
-            PPrinter pp = PPrinter.create(g, p);
+            Transformer pp = Transformer.create(g, p);
             ASTQuery ast = (ASTQuery) q.getAST();
             pp.setNSM(ast.getNSM());
            // pp.setProfile(q.getProfile());

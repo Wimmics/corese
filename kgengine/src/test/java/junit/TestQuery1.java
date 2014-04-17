@@ -34,7 +34,7 @@ import fr.inria.edelweiss.kgraph.query.QueryGraph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.PPrinter;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TemplateFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
@@ -42,6 +42,7 @@ import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.print.JSONLDFormat;
+import fr.inria.edelweiss.kgtool.transform.Loader;
 import fr.inria.edelweiss.kgtool.util.GraphStoreInit;
 import fr.inria.edelweiss.kgtool.util.QueryManager;
 import fr.inria.edelweiss.kgtool.util.QueryGraphVisitorImpl;
@@ -112,6 +113,52 @@ public class TestQuery1 {
         return graph;
     }
 
+    
+   @Test
+    public void testPPOWL() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        System.out.println("Load");
+        ld.load(data + "template/owl/data/primer.owl"); 
+        QueryProcess exec = QueryProcess.create(g);
+        
+         String t1 ="prefix f: <http://example.com/owl/families/> "
+                + "template  {  st:apply-templates-with(st:owl)}"
+                + "where {}";
+         
+         String t2 ="prefix f: <http://example.com/owl/families/> "
+                + "template  {  st:apply-templates-with(st:turtle)}"
+                + "where {}";
+         
+         
+         Mappings map = exec.query(t1);
+         
+         assertEquals(5393, map.getTemplateResult().getLabel().length());
+
+         map = exec.query(t2);
+         
+         assertEquals(5790, map.getTemplateResult().getLabel().length());
+        
+    }
+    
+    @Test
+    public void testPPSPIN() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        System.out.println("Load");
+        ld.load(data + "template/spin/data/"); 
+        QueryProcess exec = QueryProcess.create(g);
+        
+         String t1 ="prefix f: <http://example.com/owl/families/> "
+                + "template  {  st:apply-templates-with(st:spin)}"
+                + "where {}";
+                   
+         
+         Mappings map = exec.query(t1);
+         assertEquals(1843, map.getTemplateResult().getLabel().length());       
+        
+    }
+    
     
     
      @Test
@@ -677,7 +724,7 @@ public class TestQuery1 {
             Node node = qg.getRoot();
            // System.out.println(node);
             
-           PPrinter pp = PPrinter.create(tg, PPrinter.SPIN);
+           Transformer pp = Transformer.create(tg, Transformer.SPIN);
            pp.setNSM(sp.getNSM());
            
           
@@ -818,7 +865,7 @@ public class TestQuery1 {
     
     
     InputStream test(String pp) {
-        String lib = PPrinter.PPLIB;
+        String lib = Loader.PPLIB;
 
         InputStream stream = getClass().getResourceAsStream(lib + pp);
         if (stream != null) {

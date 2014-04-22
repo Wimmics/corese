@@ -230,8 +230,13 @@ public class Transformer implements ExpType {
 			if (ast.getName() != null) {
 				q.setName(ast.getName());
 			}
+                        
 			ast.getTemplateGroup().compile(ast);
 			q.setTemplateGroup(Exp.create(FILTER, ast.getTemplateGroup()));
+                        
+                        Term nl = Term.function(Processor.STL_NL);
+                        nl.compile(ast);
+                        q.setTemplateNL(Exp.create(FILTER, nl));
                         
                         for (Variable var : ast.getArgList()){
                             Node node = compiler.createNode(var);

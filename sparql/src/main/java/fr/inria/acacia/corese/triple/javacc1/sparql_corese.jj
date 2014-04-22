@@ -571,7 +571,7 @@ Exp TemplateQuery() : { Exp stack; }
 
 
 void Template(Exp stack) : 
-{ String str; Variable var; Constant cst; Expression exp; ExpressionList list; 
+{ String str; Variable var; Constant cst; Expression exp, sep; ExpressionList list; 
    List<Variable> varList;}
 {
     <TEMPLATE> { cst = null; }
@@ -615,7 +615,10 @@ void Template(Exp stack) :
 		  				      { list.add(exp); }
 		  			  ) * 
 		  			  
-		  			  ( <SEMICOLON>  <SEPARATOR>  <EQ>  str = String() { list.setSeparator(str); } ) ?  
+		  			  ( <SEMICOLON>  <SEPARATOR>  <EQ>  
+                                            str = String() { list.setSeparator(str); } 
+//                                            sep = PrimaryExpression(stack)
+                                          ) ?  
 		  			  
 		    <RBRACE>
 		    
@@ -626,7 +629,10 @@ void Template(Exp stack) :
 		  
 		) *
 		
-		( <SEMICOLON>  <SEPARATOR>  <EQ>  str = String() { astq.setSeparator(str); } ) ?
+		( <SEMICOLON>  <SEPARATOR>  <EQ>  
+                    str = String() { astq.setSeparator(str); } 
+//                    sep = PrimaryExpression(stack)
+                ) ?
 		
 	
 	<RBRACE>

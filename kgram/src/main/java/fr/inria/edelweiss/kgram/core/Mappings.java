@@ -3,11 +3,8 @@ package fr.inria.edelweiss.kgram.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -1091,6 +1088,13 @@ implements Comparator<Mapping> , Iterable<Mapping>
 
 	public Node getTemplateResult() {
 		return templateResult;
+	}
+        
+        public String getTemplateStringResult() {
+		if (templateResult == null){
+                    return null;
+                }
+                 return templateResult.getLabel();
 	}
 
 	private void setTemplateResult(Node templateResult) {

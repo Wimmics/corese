@@ -122,7 +122,7 @@ public class Query extends Exp {
         
 	private boolean isAllResult = false;
 
-	private Exp templateGroup;
+	private Exp templateGroup, templateNL;
     private List<Node> argList;
     private List<Entity> edgeList;
     private String name;
@@ -2405,6 +2405,14 @@ class VString extends ArrayList<String> {
 
 	public void setTemplateGroup(Exp templateGroup) {
 		this.templateGroup = templateGroup;
+	}
+        
+        public Exp getTemplateNL() {
+		return templateNL;
+	}
+
+	public void setTemplateNL(Exp nl) {
+		this.templateNL = nl;
 	}
 	
         public boolean isOptional(){

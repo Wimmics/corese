@@ -179,6 +179,7 @@ public interface ExprType {
 	public static int STL_PROCESS 	= 238;
 	public static int STL_DEFAULT 	= 239;
 	public static int STL_DEFINE 	= 240;
+	public static int STL_NL 	= 241;
 
 
 	public static int ISSKOLEM 	= 250;

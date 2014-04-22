@@ -282,6 +282,7 @@ public class Term extends Expression {
 				}
 				else {
 					sb.append(KeywordPP.COMMA);
+					sb.append(SPACE);
 				}
 			}
 		}

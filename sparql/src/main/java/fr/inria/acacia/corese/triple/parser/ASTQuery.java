@@ -154,7 +154,6 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	String text = null;
 	/** Represents the ASTQuery before compilation */
     String queryPrettyPrint = "";
-    private String separator;
  
 	
     /** Source body of the query returned by javacc parser */
@@ -234,7 +233,8 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 
 	private boolean renameBlankNode = true;
 
-	private String groupSeparator = System.getProperty("line.separator");
+	private String groupSeparator = " ";
+        private String templateSeparator = System.getProperty("line.separator");
 
 	private boolean isTemplate = false;
 	
@@ -2807,9 +2807,6 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 			// variable of xsd:string() is not
 			exp = compileTemplateMeta((Term) exp);
 		}
-//		else if (exp.getLabel().equals(TURTLE)){
-//			setTurtle(true);
-//		}
 		return exp;
 	}
 	
@@ -2882,7 +2879,13 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 * coalesce(kg:pprint(?x), "")
 	 * if ?x is unbound, empty string "" is returned
 	 */
-	Variable compile(Variable var){
+        Term compile(Variable var){		
+		Term t = createFunction(createQName(FUNPPRINT), var);
+		Term c = Term.function(COALESCE, t, getEmpty());		
+		return c;
+	}
+
+        Variable compile2(Variable var){
 		Variable tvar = varTemplate.get(var.getLabel());
 		if (tvar != null){
 			return tvar;
@@ -2957,11 +2960,11 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	}
 
 	public String getSeparator() {
-		return separator;
+		return templateSeparator;
 	}
 
 	public void setSeparator(String separator) {
-		this.separator = clean(separator);
+		this.templateSeparator = clean(separator);
 	}
 
 	public boolean isTurtle() {

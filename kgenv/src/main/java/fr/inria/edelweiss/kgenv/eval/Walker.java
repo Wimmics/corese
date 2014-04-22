@@ -17,8 +17,6 @@ import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.filter.Proxy;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Interpreter that perfom aggregate over current group list of Mapping
@@ -42,10 +40,11 @@ class Walker extends Interpreter {
 	Distinct distinct;
 	TreeData tree;
 	Evaluator eval;
+    private static final String NL = System.getProperty("line.separator");
 	
 	
 	
-	Walker(Expr exp, Node qNode, Proxy p, Environment env){
+	Walker(Expr exp, Node qNode, Proxy p, Environment env, Producer prod){
 		super(p);
 		eval = p.getEvaluator();
 		this.exp = exp;
@@ -53,6 +52,22 @@ class Walker extends Interpreter {
 		if (exp.getModality() != null){
 			sep = exp.getModality();
 		}
+                
+                if (env.getQuery().isTemplate()){ 
+                    if (sep.equals("\n") || sep.equals("\n\n")) {
+                        // get the indentation by evaluating a predefined st:nl()
+                        // computed by PluginImpl/Transformer
+                        // same as: separator = 'st:nl()'
+                        Expr nl = env.getQuery().getTemplateNL().getFilter().getExp();
+                        IDatatype dt = (IDatatype) eval.eval(nl, env, prod);
+                        String str = dt.getLabel();
+                        if (sep.equals("\n\n")){
+                            str = NL + str;
+                        }
+                        sep = str;
+                    }
+                }
+                
 		sb = new StringBuilder();
 		if (exp.isDistinct()){
 			// use case: count(distinct ?name)
@@ -160,8 +175,8 @@ class Walker extends Interpreter {
 	 */
 	public Node eval(Filter f, Environment env, Producer p){
 		Mapping map = (Mapping) env;
-		
-		switch (exp.oper()){
+
+                switch (exp.oper()){
 		
 		case GROUPCONCAT:
 			boolean isDistinct = f.getExp().isDistinct();

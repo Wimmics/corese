@@ -105,6 +105,7 @@ public class Processor {
 	static final String STL_PROLOG              = STL + "prolog"; 
 	static final String STL_INDENT              = STL + "indent"; 
 	static final String STL_LEVEL               = STL + "level"; 
+	public static final String STL_NL                  = STL + "nl"; 
 	static final String STL_DEFINE              = STL + "define"; 
 
 	static final String QNAME 	= KGRAM + "qname"; 
@@ -444,6 +445,7 @@ public class Processor {
                 defoper(STL_PROLOG,             ExprType.PROLOG);
 		defoper(STL_INDENT,             ExprType.INDENT);
 		defoper(STL_LEVEL,              ExprType.LEVEL);
+		defoper(STL_NL,                 ExprType.STL_NL);
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 

@@ -46,6 +46,8 @@ public class PluginImpl extends ProxyImpl {
 
     static Logger logger = Logger.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
+    private static final String NL = System.getProperty("line.separator");
+   
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
     // idem for setObject()
@@ -73,19 +75,16 @@ public class PluginImpl extends ProxyImpl {
 
     public Object function(Expr exp, Environment env, Producer p) {
 
-        switch (exp.oper()) {
-
-            case TURTLE:
-                return turtle(env, p);
+        switch (exp.oper()) {         
 
             case GRAPH:
                 return getGraph(p);
 
             case LEVEL:
                 return getLevel(env, p);
-
-            case INDENT:
-                return indent(env, p);
+                
+            case STL_NL:
+                return nl(null, env, p);
 
             case PROLOG:
                 return prolog(null, env, p);
@@ -138,7 +137,13 @@ public class PluginImpl extends ProxyImpl {
                         return g.skolem(dt);    
                 }                
                 
-             case PROLOG:
+          case INDENT:
+                return indent(dt, env, p);
+              
+            case STL_NL:
+                return nl(dt, env, p);   
+                
+            case PROLOG:
                 return prolog(dt, env, p);
                  
             case STL_PROCESS:
@@ -165,9 +170,6 @@ public class PluginImpl extends ProxyImpl {
             case FOCUS_NODE:
                 return getFocusNode(dt, env);    
 
-            case INDENT:
-                return indent(dt);
-
             case VISITED:
                 return visited(dt, env, p);
 
@@ -189,7 +191,7 @@ public class PluginImpl extends ProxyImpl {
     }
 
     private IDatatype visited(IDatatype dt, Environment env, Producer p) {
-        Transformer pp = getPPrinter(env, p);
+        Transformer pp = getTransformer(env, p);
         boolean b = pp.isVisited(dt);
         return getValue(b);
     }
@@ -543,9 +545,30 @@ public class PluginImpl extends ProxyImpl {
         }
         return getValue(qname);
     }
+    
+    /**
+     * Increment indentation level
+     */
+    IDatatype indent(IDatatype dt, Environment env, Producer prod) {
+        Transformer t = getTransformer(env, prod);
+        t.setLevel(t.getLevel() + dt.intValue());        
+        return EMPTY;
+    }
 
+    /**
+     * New Line with indentation given by t.getLevel()
+     * Increment level if dt!=null
+     */
+    IDatatype nl(IDatatype dt, Environment env, Producer prod) {
+        Transformer t = getTransformer(env, prod);
+        if (dt != null){
+            t.setLevel(t.getLevel() + dt.intValue());
+        }
+        return t.tabulate();
+   }
+    
     IDatatype prolog(IDatatype dt, Environment env, Producer prod) {
-        Transformer p = getPPrinter(env, prod);
+        Transformer p = getTransformer(env, prod);
         String title = null;
         if (dt != null){
             title = dt.getLabel();
@@ -555,7 +578,7 @@ public class PluginImpl extends ProxyImpl {
     }
 
     IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
-        Transformer p = getPPrinter(env, prod, getLabel(tbase), null);
+        Transformer p = getTransformer(env, prod, getLabel(tbase), null);
         return p.process(getLabel(temp),
                 exp.oper() == ExprType.APPLY_ALL_TEMPLATES
                 || exp.oper() == ExprType.APPLY_ALL_TEMPLATES_WITH,
@@ -575,7 +598,7 @@ public class PluginImpl extends ProxyImpl {
      }
      
      IDatatype pprint(Object[] args, IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
-        Transformer p = getPPrinter(env, prod, getLabel(tbase), focus);
+        Transformer p = getTransformer(env, prod, getLabel(tbase), focus);
         IDatatype dt = p.process(args, focus, arg,
                 getLabel(temp),
                 exp.oper() == ExprType.APPLY_ALL_TEMPLATES
@@ -591,7 +614,7 @@ public class PluginImpl extends ProxyImpl {
      * the default behavior is st:apply-templates
      */
     public Object process(Expr exp, Environment env, Producer p, IDatatype dt) {
-        Transformer pp = getPPrinter(env, p);
+        Transformer pp = getTransformer(env, p);
         // overload current st:process() oper code to default behaviour oper code
         // future executions of this st:process() will directly execute target default behavior
         Expr def = pp.getProcessExp();
@@ -631,35 +654,6 @@ public class PluginImpl extends ProxyImpl {
     }
 
     
-     public Object process2(Expr exp, Environment env, Producer p, IDatatype dt) {
-        Transformer pp = getPPrinter(env, p);
-        // overload current st:process() oper code to default behaviour oper code
-        // future executions of this st:process() will directly execute target default behavior
-        int oper = pp.getProcess();                     
-        exp.setOper(oper);
-        
-        switch(oper){
-            case CALL_TEMPLATE:
-                // st:process(?x) = st:call-template(ex:name, ?x)
-                Expr ct = pp.getProcessExp().getExp(1);
-                Expr name = ct.getExp(0);
-                exp.addExp(0, name);
-                Object res = function(exp, env, p, name.getValue(), dt);                   
-                return res;
-        }
-        
-        Object res = function(exp, env, p, dt);
-        // if we want STL_PROCESS to get back to it's initial behavior:
-        // unset the comment below
-        // exp.setOper(ExprType.STL_PROCESS);
-        return res;
-    }
-    
-    
-   
-    
-    
-    
     /**
      * 
     
@@ -667,21 +661,15 @@ public class PluginImpl extends ProxyImpl {
 
 
     IDatatype turtle(IDatatype o, Environment env, Producer prod) {
-        Transformer p = getPPrinter(env, prod);
+        Transformer p = getTransformer(env, prod);
         IDatatype dt = p.turtle(o);
         return dt;
     }
     
     IDatatype xsdLiteral(IDatatype o, Environment env, Producer prod) {
-        Transformer p = getPPrinter(env, prod);
+        Transformer p = getTransformer(env, prod);
         IDatatype dt = p.xsdLiteral(o);
         return dt;
-    }
-
-    IDatatype turtle(Environment env, Producer prod) {
-        Transformer p = getPPrinter(env, prod);
-        p.setTurtle(true);
-        return EMPTY;
     }
 
     IDatatype uri(Expr exp, IDatatype dt, Environment env, Producer prod) {
@@ -701,31 +689,15 @@ public class PluginImpl extends ProxyImpl {
     }
 
     int level(Environment env, Producer prod) {
-        Transformer p = getPPrinter(env, prod);
+        Transformer p = getTransformer(env, prod);
         return p.level();
-    }
-
-    IDatatype indent(IDatatype dt) {
-        return indent(dt.intValue());
-    }
-
-    IDatatype indent(int n) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            sb.append(" ");
-        }
-        return DatatypeMap.newStringBuilder(sb);
-    }
-
-    IDatatype indent(Environment env, Producer prod) {
-        return indent(level(env, prod));
     }
 
     /**
      *
      */
-    Transformer getPPrinter(Environment env, Producer p) {
-        return getPPrinter(env, p, (String) null, null);
+    Transformer getTransformer(Environment env, Producer p) {
+        return getTransformer(env, p, (String) null, null);
     }
 
     String getLabel(IDatatype dt) {
@@ -757,7 +729,7 @@ public class PluginImpl extends ProxyImpl {
         return Transformer.TURTLE;
     }
 
-    Transformer getPPrinter(Environment env, Producer prod, String t, IDatatype dt) {
+    Transformer getTransformer(Environment env, Producer prod, String t, IDatatype dt) {
         Query q = env.getQuery();
         String p = null;
 
@@ -766,12 +738,6 @@ public class PluginImpl extends ProxyImpl {
         } else if (q.hasPragma(Pragma.TEMPLATE)) {
             p = (String) q.getPragma(Pragma.TEMPLATE);
         } 
-//        else if (!q.isPrinterTemplate() && dt != null) {
-//            // q is a single template query (not member of a pprinter template set)
-//            // and it has no pprinter name 
-//            // search pprinter according to type of resource dt
-//            p = getPP(prod, dt);
-//        }
 
         Object o = q.getPP(p);
 

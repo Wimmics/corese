@@ -782,7 +782,7 @@ public class ProxyImpl implements Proxy, ExprType {
      * sum(?x)
      */
     public Object aggregate(Expr exp, Environment env, Producer p, Node qNode) {
-        Walker walk = new Walker(exp, qNode, this, env);
+        Walker walk = new Walker(exp, qNode, this, env, p);
 
         // apply the aggregate on current group Mapping, 
         env.aggregate(walk, p, exp.getFilter());

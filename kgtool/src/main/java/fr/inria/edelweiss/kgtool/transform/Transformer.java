@@ -87,10 +87,11 @@ public class Transformer {
     // separator of several results of one template
     String sepResult = " ";
     boolean isDebug = false;
+    private boolean isTrace = false;
     private boolean isDetail = false;
     private IDatatype EMPTY;
     boolean isTurtle = false;
-    int nbt = 0, max = 0, levelMax = Integer.MAX_VALUE;
+    int nbt = 0, max = 0, levelMax = Integer.MAX_VALUE, level = 0;
    
     String start = STL_START;
     HashMap<Query, Integer> tcount;
@@ -477,6 +478,14 @@ public class Transformer {
     public int maxLevel() {
         return max;
     }
+    
+    public int getLevel(){
+        return level;
+    }
+    
+    public void setLevel(int n){
+         level = n;
+    }
 
     public IDatatype process(Node node) {
         return process((IDatatype) node.getValue());
@@ -538,7 +547,7 @@ public class Transformer {
             stack.push(dt1, query);
         }
 
-        if (isDebug) {
+        if (isDebug || isTrace) {
             System.out.println("pprint: " + level() + " " + exp + " " + dt1);
         }
 
@@ -605,6 +614,9 @@ public class Transformer {
                 IDatatype res = getResult(map);
 
                 if (res != null) {
+                    if (isTrace){
+                        System.out.println(qq.getAST());
+                    }
 
                     if (allTemplates) {
                         result.add(res);
@@ -773,7 +785,8 @@ public class Transformer {
      */
     IDatatype result(List<IDatatype> result, String sep) {
         StringBuilder sb = new StringBuilder();
-
+        sep = getTab(sep);
+        
         for (IDatatype d : result) {
             StringBuilder b = d.getStringBuilder();
 
@@ -794,6 +807,35 @@ public class Transformer {
 
         IDatatype res = DatatypeMap.newStringBuilder(sb);
         return res;
+    }
+    
+    String getTab(String sep){
+        if (sep.equals("\n") || sep.equals("\n\n")){
+            String str = tab().toString();
+            if (sep.equals("\n\n")){
+                str = NL + str;
+            }
+            sep = str;
+        }
+        return sep;       
+    }
+    
+    public IDatatype tabulate(){
+        int n = getLevel();
+        return DatatypeMap.newStringBuilder(tab(n));   
+    }
+    
+    public StringBuilder tab(){
+          return tab(getLevel());   
+    }
+
+     public StringBuilder tab(int n){
+        StringBuilder sb = new StringBuilder();
+        sb.append(NL);
+        for (int i=0; i<2*n; i++){
+            sb.append(" ");
+        }
+        return sb;
     }
 
     /**
@@ -1067,6 +1109,20 @@ public class Transformer {
 
     Graph getGraph() {
         return graph;
+    }
+
+    /**
+     * @return the isTrace
+     */
+    public boolean isTrace() {
+        return isTrace;
+    }
+
+    /**
+     * @param isTrace the isTrace to set
+     */
+    public void setTrace(boolean isTrace) {
+        this.isTrace = isTrace;
     }
 
    

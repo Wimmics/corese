@@ -221,12 +221,7 @@ public class Transformer implements ExpType {
 			q.setTemplate(true);
                         q.setProfile(ast.getProfile());
 			q.setAllResult(ast.isAllResult());
-//			if (ast.isTurtle()){
-//				q.setPragma(Pragma.TURTLE, Pragma.TURTLE);
-//			}
-			if (ast.getSeparator()!=null){
-				q.setPragma(Pragma.SEPARATOR, ast.getSeparator());
-			}
+			
 			if (ast.getName() != null) {
 				q.setName(ast.getName());
 			}

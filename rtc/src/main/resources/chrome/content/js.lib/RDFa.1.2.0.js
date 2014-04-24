@@ -1203,16 +1203,17 @@ RDFaSubject.prototype.toString = function(options, replace) {
       }
    } else {
       s = "<" + this.subject + ">";
+      
+    //replace the base uri of subject to server url
+    //Fuqi Song, April 2014
+    if(replace){
+         var pref = "http://";
+         var begin = s.indexOf(pref);
+         var domain = s.substring(begin, s.indexOf("/", pref.length+begin));
+         s= s.replace(domain, "http://localhost:8080/kgram/ldp");
+     }
+     //end
    }
-   
-   //replace the base uri of subject to server url
-   //Fuqi Song, April 2014
-   if(replace){
-        var pref = "http://";
-        var begin = s.indexOf(pref);
-        var domain = s.substring(begin, s.indexOf("/", pref.length+begin));
-        s= s.replace(domain, "http://localhost:8080/kgram/ldp");
-    }
    
    var first = true;
    for (var predicate in this.predicates) {

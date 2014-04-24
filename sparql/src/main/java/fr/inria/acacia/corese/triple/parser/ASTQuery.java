@@ -226,6 +226,12 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	private static final String IF 		= Processor.IF;
 	private static final String FUNPPRINT 	= Processor.STL_PPRINT;
 	private static final String TURTLE 	= Processor.STL_TURTLE;
+        
+        private static final String STL_NL      = Processor.FUN_NL;
+        private static final String STL_INDENT  = Processor.FUN_INDENT;
+        private static final String IBOX        = "ibox";
+        private static final String SBOX        = "sbox";
+        private static final String BOX         = "box";
 
 	private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, COALESCE, IF};
 
@@ -245,11 +251,13 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	private boolean isTurtle;
 
 	private Term templateGroup;
-        
+        private Expression templateExpSeparator;
+
         // @(a b) rewritten as rdf:rest*/rdf:first a, b
         private int listType = L_LIST;
         private String profile;
-
+    
+     
     /**
      * @return the defaultDataset
      */
@@ -903,14 +911,18 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     }
     
     // TBD: clean this
+    public  Term createFunction(Constant name) {
+    	Term term =  createFunction(name.getName());
+    	term.setCName(name);
+    	return term;
+    }
+ 
     public  Term createFunction(Constant name, ExpressionList el) {
     	Term term =  createFunction(name.getName(), el);
     	term.setCName(name);
     	return term;
     }
-    
-
-    
+       
     public  Term createFunction(Constant name, Expression exp) {
     	Term term =  createFunction(name.getName(), exp);
     	term.setCName(name);
@@ -920,9 +932,8 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     public  Term createFunction(String name, ExpressionList el) {
     	Term term = createFunction(name);
     	term.setDistinct(el.isDistinct());
-    	if (el.getSeparator()!=null){
-    		term.setModality(clean(el.getSeparator()));
-    	}
+    	term.setModality(el.getSeparator());
+    	term.setArg(el.getExpSeparator());
     	for (Expression exp : el){
     		term.add(exp);
     	}
@@ -1330,7 +1341,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 		else if (! knownDatatype(datatype)){
 			datatype = getNSM().toNamespaceB(datatype);
 		}
-		s = clean(s);
+		//s = clean(s);
 		return  Constant.create(s, datatype, lang);
 	}
 	
@@ -2571,49 +2582,21 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	/**
 	 * Remove leading and trailing " or ' of a string
 	 */
-	public static String clean(String str) {
-		String res = str;
-		if (str.length() <= 1) return str;
-		
-		if ((str.startsWith(SQ3)  && str.endsWith(SQ3)) ||
-			(str.startsWith(SSQ3) && str.endsWith(SSQ3))){
-			res = str.substring(3,(str.length()-3));
-		}
-		else
-		if ((str.startsWith(SQ1) && str.endsWith(SQ1)) ||
-			(str.startsWith(SSQ) && str.endsWith(SSQ))){
-			res = str.substring(1,(str.length()-1));
-		}
-		return res;
-	}
-	
-	
-	/**
-	 * 
-	 * @deprecated
-	 */
-	
-	static String recClean(String str){
-		int index = str.indexOf(BS);
-		if (index != -1){
-			str = str.substring(0, index) + "\\" + 
-				  str.substring(index+BS.length());
-			return recClean(str);
-		}
-		index = str.indexOf(ESQ); //  \" -> "
-		if (index != -1){
-			str = str.substring(0, index) + "\"" + 
-				  str.substring(index+ESQ.length());
-			return recClean(str);
-		}
-		index = str.indexOf(ESSQ); //  \' -> "
-		if (index != -1){
-			str = str.substring(0, index) + "'" + 
-				  str.substring(index+ESSQ.length());
-			return recClean(str);
-		}
-		return str;
-	} 
+//	public static String clean(String str) {
+//		String res = str;
+//		if (str.length() <= 1) return str;
+//		
+//		if ((str.startsWith(SQ3)  && str.endsWith(SQ3)) ||
+//			(str.startsWith(SSQ3) && str.endsWith(SSQ3))){
+//			res = str.substring(3,(str.length()-3));
+//		}
+//		else
+//		if ((str.startsWith(SQ1) && str.endsWith(SQ1)) ||
+//			(str.startsWith(SSQ) && str.endsWith(SSQ))){
+//			res = str.substring(1,(str.length()-1));
+//		}
+//		return res;
+//	}
 	
 	public boolean isDefineExp(Expression exp){
 		return selectExp.get(exp) != null;
@@ -2723,23 +2706,52 @@ public class ASTQuery  implements Keyword, ASTVisitable {
      * template { group { } }
      */
     public Term createGroup(ExpressionList el) {
-    	if (el.getSeparator() == null){
+    	if (el.getSeparator() == null && el.getExpSeparator() == null){
     		el.setSeparator(groupSeparator);
     	}
-    	return createFunction(Processor.GROUPCONCAT, el);
+    	return createFunction(GROUPCONCAT, el);
     }
     
     /**
-     * 
-     * template group { }
-     * @deprecated
+     * box:  nl(+1) body nl(-1)
+     * sbox: nl(+1) body indent(-1)
+     * ibox: indent(+1) body indent(-1)
      */
-    public void createAllResult(ExpressionList el) {
-    	setAllResult(true);
-    	for (Expression exp : el){
-    		addTemplate(exp);
-    	}
+    public Term createBox(ExpressionList el, String type) {
+        String open  = STL_NL;
+        String close = STL_NL;
+        
+        if (! type.equals(BOX)){
+            close = STL_INDENT;
+        }
+        if (type.equals(IBOX)){
+            open = STL_INDENT;
+        }
+        
+        Constant fopen  = createQName(open);       
+        Constant fclose = createQName(close);       
+               
+        
+        Term t1 = createFunction(fopen, Constant.create(1));
+        Term t2 = createFunction(fclose, Constant.create(-1));
+        el.add(0, t1);
+        el.add(t2);
+        return createFunction(CONCAT, el);
     }
+    
+   /**
+    * vbox()
+    * if (type.equals(VBOX) && el.size() > 1){
+            // add NL between elements
+            Term t = createFunction(nl);
+            for (int i=1; i<el.size(); ){
+                el.add(i, t);
+                i += 2;
+            }
+        }
+    * @param s 
+    */
+       
     
     public void setGroupSeparator(String s){
     	groupSeparator = s;
@@ -2782,17 +2794,17 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 				return compileTemplate(template.get(0));
 			}
 			else {
-				for (Expression exp : template){
+				for (Expression exp : template){                                   
 					exp = compileTemplate(exp);
-					t.add(exp);
+					t.add(exp);                                   
 				}
 			}
 		}
 
 		return t;
 	}
-
-	
+        
+    
 	/**
 	 * if exp is a variable: (kg:pprint(?x) as ?px)
 	 * if exp is meta, e.g. group_concat(?exp): group_concat(kg:pprint(?exp))
@@ -2817,12 +2829,6 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 * Their variable argument are compiled as kg:pprint(var)
 	 */
 	boolean isMeta(Expression exp){
-//		if (exp.isTerm()){
-//			// TO BE REMOVED
-//			// in case of interpreter: eval/kg:pprint all variables in all exp
-//			// e.g. ?x + ?y
-//			return true;
-//		}
 		if (! exp.isFunction()){
 			return false;
 		}
@@ -2867,6 +2873,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 			t.add(ee);
 		}
 		
+                t.setArg(exp.getArg());
 		t.setModality(exp.getModality());
 		t.setDistinct(exp.isDistinct());
 		return t;
@@ -2907,6 +2914,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 		Term t = createFunction(TEMPLATEAGG);
 		t.add(var);
 		t.setModality(getSeparator());
+                t.setArg(getExpSeparator());
 		return t;
 	}
         
@@ -2962,10 +2970,21 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	public String getSeparator() {
 		return templateSeparator;
 	}
-
-	public void setSeparator(String separator) {
-		this.templateSeparator = clean(separator);
+       
+        public void setSeparator(String sep) {
+            this.templateSeparator = sep; //clean(sep);
 	}
+        
+        public void setSeparator(Expression exp) {
+            if (exp.isConstant()){
+		setSeparator(exp.getLabel());
+            }
+            templateExpSeparator = exp;            
+	}
+        
+        public Expression getExpSeparator(){
+            return templateExpSeparator;
+        }
 
 	public boolean isTurtle() {
 		return isTurtle;

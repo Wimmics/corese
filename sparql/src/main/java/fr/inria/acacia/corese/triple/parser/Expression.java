@@ -546,7 +546,7 @@ implements Regex, Filter, Expr {
 		
 	}
 	
-	public Expr getArg(){
+	public Expression getArg(){
 		return null;
 	}
 	

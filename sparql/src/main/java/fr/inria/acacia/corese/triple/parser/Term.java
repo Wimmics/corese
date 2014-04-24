@@ -62,7 +62,7 @@ public class Term extends Expression {
 	
 	ArrayList<Expression> args=new ArrayList<Expression>();
 	// additional system arg:
-	Expr exp;
+	Expression exp;
 	boolean isFunction = false,
 	isCount = false,
 	isPlus = false;
@@ -856,11 +856,11 @@ public class Term extends Expression {
              proc.addExp(i, e);
 	}
 	
-	public Expr getArg(){
+	public Expression getArg(){
 		return exp;
 	}
 	
-	public void setArg(Expr e){
+	public void setArg(Expression e){
 		exp = e;
 	}
 	
@@ -888,7 +888,9 @@ public class Term extends Expression {
 	// Exp
 	
 	public Expression compile(ASTQuery ast){
-		if (proc != null) return this;
+		if (proc != null){
+                    return this;
+                }
 		
 		for (Expression exp : getArgs()){
 			exp.compile(ast);
@@ -896,6 +898,11 @@ public class Term extends Expression {
 		
 		proc = new Processor(this);
 		proc.compile(ast);
+                
+                if (getArg() != null){
+                    getArg().compile(ast);
+                }
+                
 		return this;
 		
 	}
@@ -929,6 +936,9 @@ public class Term extends Expression {
                 f = function(getName());
                 f.setLongName(getLongName());
                 f.setModality(getModality());
+                if (getArg() != null){
+                    f.setArg(getArg().copy(o, n));
+                }
             } else {
                 f = Term.create(getName());
             }

@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -14,10 +15,11 @@ import java.util.Vector;
  * @author Virginie Bottollier
  */
 
-public class ExpressionList extends Vector<Expression> {
+public class ExpressionList extends ArrayList<Expression> {
 	
 	boolean isDistinct = false;
 	String separator;
+        Expression eseparator;
 
 	/** Use to keep the class version, to be consistent with the interface Serializable.java */
 	private static final long serialVersionUID = 1L;
@@ -38,9 +40,22 @@ public class ExpressionList extends Vector<Expression> {
 	public void setSeparator(String s){
 		separator = s;
 	}
-	
+               	
 	public String getSeparator(){
 		return separator;
+	}
+        
+        public void setExpSeparator(Expression e){
+            if (e.isConstant()){
+                setSeparator(e.getLabel());
+            }
+            else {
+		eseparator = e;
+            }
+	}
+               	
+	public Expression getExpSeparator(){
+		return eseparator;
 	}
 
 }

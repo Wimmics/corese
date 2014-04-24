@@ -39,7 +39,7 @@
             <hbox>
                 <toolbarbutton id="reload-panel" label="[Reload]" oncommand="loadTriples(gBrowser.contentDocument);" image="chrome://rtc/skin/reload.ico" tooltiptext="Reload"/>
                 <toolbarbutton id="close-panel" label="[Close]" oncommand="hideExt(true);" image="chrome://rtc/skin/close.ico" tooltiptext="close"/>
-                <toolbarbutton id="help" label="[Help]" oncommand="window.open('chrome://rtc/content/help/help.html','Insturctions', 'chrome,resizable');" image="chrome://rtc/skin/help.ico" tooltiptext="Help"/>
+                <toolbarbutton id="help" label="[Help]" oncommand="window.open('http://www-sop.inria.fr/members/Fuqi.Song/rtc/rtc.html','Insturctions', 'chrome,resizable');" image="chrome://rtc/skin/help.ico" tooltiptext="Help"/>
             </hbox>
         </toolbar>
         

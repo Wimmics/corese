@@ -103,11 +103,15 @@ public class Processor {
 	static final String STL_URILITERAL          = STL + "uriLiteral"; 
 	static final String STL_XSDLITERAL          = STL + "xsdLiteral"; 
 	static final String STL_PROLOG              = STL + "prolog"; 
-	static final String STL_INDENT              = STL + "indent"; 
 	static final String STL_LEVEL               = STL + "level"; 
-	public static final String STL_NL                  = STL + "nl"; 
-	static final String STL_DEFINE              = STL + "define"; 
+        static final String STL_DEFINE              = STL + "define";
+   
+	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
+	public static final String STL_NL           = STL + "nl"; 
+	static final String FUN_INDENT              = NSManager.STL_PREF + ":" + "indent"; 
+	static final String STL_INDENT              = STL + "indent"; 
 
+	       
 	static final String QNAME 	= KGRAM + "qname"; 
 	static final String TURTLE 	= KGRAM + "turtle"; 
 	static final String LEVEL 	= KGRAM + "level"; 

@@ -65,7 +65,12 @@ PARSER_BEGIN(SparqlCorese)
     /** To show some printings about the part of the parser which deals with Expression */
     boolean debug2 = show && false;
     static final String THIS = "?this";
-    
+
+    static final String SQ1 = "\"";
+    static final String SQ3 = "\"\"\"";
+    static final String SSQ = "'";
+    static final String SSQ3 = "'''";
+
 	public void setASTQuery(ASTQuery aq) {
 		astq = aq;
 		gast = aq;
@@ -182,49 +187,59 @@ PARSER_BEGIN(SparqlCorese)
     
     
     
-    /**
+        /**
 	 * Replace escape char by target char
 	 * 
 	 */
 	String remEscapes(String str){
-		StringBuffer retval = new StringBuffer();
+		StringBuilder retval = new StringBuilder();
+
+                // remove leading/trailing " or '
+                int start = 1, end = str.length() - 1;
 		
-		for (int i = 0; i < str.length(); i++) {
+                if ((str.startsWith(SQ3)  && str.endsWith(SQ3)) ||
+		    (str.startsWith(SSQ3) && str.endsWith(SSQ3))){
+                    // remove leading/trailing """ or '''
+                    start = 3;
+                    end = str.length() - 3;
+                }
+
+		for (int i = start; i < end; i++) {
 			
-	       if (str.charAt(i) == '\\' && i+1 < str.length()){
-	        	i += 1;       	
-	        	switch (str.charAt(i)){
-	        	
-	        	 case 'b':
-		              retval.append('\b');
-		              continue;
-		           case 't':
-		              retval.append('\t');
-		              continue;
-		           case 'n':
-		              retval.append('\n');
-		              continue;
-		           case 'f':
-		              retval.append('\f');
-		              continue;
-		           case 'r':
-		              retval.append('\r');
-		              continue;
-		           case '"':
-		              retval.append('\"');
-		              continue;
-		           case '\'':
-		              retval.append('\'');
-		              continue;
-		           case '\\':
-		              retval.append('\\');
-		              continue;
-	        	}
-	        
-	        }
-	        else {
-	        	retval.append(str.charAt(i));
-	        }
+                    if (str.charAt(i) == '\\' && i+1 < str.length()){
+                             i += 1;       	
+                             switch (str.charAt(i)){
+
+                              case 'b':
+                                   retval.append('\b');
+                                   continue;
+                                case 't':
+                                   retval.append('\t');
+                                   continue;
+                                case 'n':
+                                   retval.append('\n');
+                                   continue;
+                                case 'f':
+                                   retval.append('\f');
+                                   continue;
+                                case 'r':
+                                   retval.append('\r');
+                                   continue;
+                                case '"':
+                                   retval.append('\"');
+                                   continue;
+                                case '\'':
+                                   retval.append('\'');
+                                   continue;
+                                case '\\':
+                                   retval.append('\\');
+                                   continue;
+                             }
+
+                     }
+                     else {
+                             retval.append(str.charAt(i));
+                     }
 		}
 		
 		return retval.toString();
@@ -601,37 +616,24 @@ void Template(Exp stack) :
   
 	<LBRACE>
 	
-		( 
-		  (
-			exp = PrimaryExpression(stack)
+		( 		  
+                 (	exp = PrimaryExpression(stack)
+
+                  |
+
+                        exp = box(stack)
 			
 		  | 
+                        exp = group(stack)
+                 )
+
+                { astq.addTemplate(exp); }
 		  
-		    <GROUP>           { list = new ExpressionList(); str = null; }
-		  
-		     ( <DISTINCT>     { list.setDistinct(true); } ) ?
-		  		    
-		  	<LBRACE>  ( exp = PrimaryExpression(stack) 
-		  				      { list.add(exp); }
-		  			  ) * 
-		  			  
-		  			  ( <SEMICOLON>  <SEPARATOR>  <EQ>  
-                                            str = String() { list.setSeparator(str); } 
-//                                            sep = PrimaryExpression(stack)
-                                          ) ?  
-		  			  
-		    <RBRACE>
-		    
-		    { exp = astq.createGroup(list); }
-		  
-		  )
-		  { astq.addTemplate(exp); }
-		  
+		   
 		) *
 		
 		( <SEMICOLON>  <SEPARATOR>  <EQ>  
-                    str = String() { astq.setSeparator(str); } 
-//                    sep = PrimaryExpression(stack)
+                      sep = PrimaryExpression(stack) { astq.setSeparator(sep); }
                 ) ?
 		
 	
@@ -640,7 +642,58 @@ void Template(Exp stack) :
 	
 }
 
+Expression group(Exp stack) : 
+{  Expression box, exp, sep; ExpressionList list; }
+{
+ <GROUP>           { list = new ExpressionList(); }
+		  
+	( <DISTINCT>     { list.setDistinct(true); } ) ?
+		  		    
+	<LBRACE>  
+                  ( 
+                    ( exp = PrimaryExpression(stack) 
+                    | exp = box(stack)
+                    )
+                    { list.add(exp); }
+		  ) * 
+		  			  
+		  ( <SEMICOLON>  <SEPARATOR>  <EQ>  
+                   sep = PrimaryExpression(stack) { list.setExpSeparator(sep); } 
+                  ) ?  
+		  			  
+	<RBRACE>
+    { 
+        exp = astq.createGroup(list); 
+        return exp;
+    }
+		  		  
+		  
+}
 
+
+
+Expression box(Exp stack) : 
+{  Expression box, exp, sep; ExpressionList list; Token t; }
+{
+
+      ( t = <BOX> | t = <IBOX> | t = <SBOX> )     { list = new ExpressionList(); }
+
+      <LBRACE>  
+            ( 
+            (
+                  exp = PrimaryExpression(stack) 
+                | exp = group(stack)
+                | exp = box(stack)
+            )
+            { list.add(exp); }
+            ) *
+      <RBRACE>
+
+      { 
+        box = astq.createBox(list, t.image ); 
+        return box;
+      }
+}
 
 
 // ********************** END PP Template ******************************
@@ -2407,7 +2460,7 @@ Constant NumericLiteral() : { Token t; String datatype; }
    ( t = <INTEGER> { datatype = RDFS.qxsdInteger; } 
    | t = <DECIMAL> { datatype = RDFS.qxsdDecimal; } 
    | t = <DOUBLE>  { datatype = RDFS.qxsdDouble; } )
-   { return astq.createConstant(t.image, datatype); }
+   { return astq.createConstant(t.image, datatype, null); }
 }
 
 Constant RDFLiteral() : { Constant res; String iriref, s, lang; Token t; }
@@ -2679,6 +2732,9 @@ TOKEN [IGNORE_CASE] :
 | <RESULT: "result" >
 | <PROJECTION: "projection" >
 | <GROUP: "group" >
+| <BOX: "box" >
+| <IBOX: "ibox" >
+| <SBOX: "sbox" >
 | <HAVING: "having" >
 | <BINDINGS: "bindings" >
 | <VALUES: "values"  >

@@ -29,6 +29,7 @@ var c = {
 window.addEventListener("load", function load(event) {
     window.removeEventListener("load", load, false); //remove listener, no longer needed
     myExtension.init();
+    hideExt(true);
 }, false);
 
 // when switching the tabs, reload the document and re-extract triples

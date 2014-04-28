@@ -426,6 +426,9 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case CONCAT:
                 return concat(args);
+                
+            case STL_AND:
+                return and(args);
         }
 
 
@@ -712,6 +715,25 @@ public class ProxyImpl implements Proxy, ExprType {
         } else {
             return DatatypeMap.createLiteral(sb.toString());
         }
+    }
+    
+    IDatatype and(Object[] val){
+        for (Object obj : val){
+            if (obj == null){
+                return null;
+            }
+            
+            IDatatype dt = (IDatatype) obj;
+            try {
+                if (! dt.isTrue()){
+                    return DatatypeMap.FALSE;
+                }
+            } catch (CoreseDatatypeException ex) {
+                return null;
+            }
+            
+        }
+        return DatatypeMap.TRUE;
     }
 
     /**

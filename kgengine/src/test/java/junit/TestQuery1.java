@@ -116,6 +116,8 @@ public class TestQuery1 {
     }
 
     
+    
+    
     @Test
        public void testTrig() throws LoadException {
             Graph g = Graph.create(true);
@@ -130,7 +132,7 @@ public class TestQuery1 {
             
        } 
     
-   @Test
+    @Test
     public void testPPOWL() throws EngineException, LoadException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
@@ -149,11 +151,11 @@ public class TestQuery1 {
          
          Mappings map = exec.query(t1);
          
-         assertEquals(5393, map.getTemplateResult().getLabel().length());
+         assertEquals(5474, map.getTemplateResult().getLabel().length());
 
          map = exec.query(t2);
          
-         assertEquals(5926, map.getTemplateResult().getLabel().length());
+         assertEquals(6304, map.getTemplateResult().getLabel().length());
         
     }
     
@@ -171,7 +173,7 @@ public class TestQuery1 {
                    
          
          Mappings map = exec.query(t1);
-         assertEquals(1843, map.getTemplateResult().getLabel().length());       
+         assertEquals(2336, map.getTemplateResult().getLabel().length());       
         
     }
     

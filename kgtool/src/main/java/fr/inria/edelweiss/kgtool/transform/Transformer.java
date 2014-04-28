@@ -210,6 +210,10 @@ public class Transformer {
        return nsm;
     }
     
+    public QueryEngine getQueryEngine(){
+        return qe;
+    }
+    
     
     /** _________________________________________________________________ **/
     
@@ -781,7 +785,7 @@ public class Transformer {
 
     /**
      * Concat results of several templates executed on same focus node
-     * st:apply-all-templates(?x)
+     * st:apply-all-templates(?x ; separator = sep)
      */
     IDatatype result(List<IDatatype> result, String sep) {
         StringBuilder sb = new StringBuilder();
@@ -809,6 +813,9 @@ public class Transformer {
         return res;
     }
     
+    /**
+     * Separator of st:apply-all-templates
+     */
     String getTab(String sep){
         if (sep.equals("\n") || sep.equals("\n\n")){
             String str = tab().toString();
@@ -1123,6 +1130,25 @@ public class Transformer {
      */
     public void setTrace(boolean isTrace) {
         this.isTrace = isTrace;
+    }
+    
+    
+    public Mappings NSMtoMappings(){
+        Mappings map =  new Mappings();      
+        Node[] qq = new Node[2];
+        qq[0] = NodeImpl.createVariable("?p");
+        qq[1] = NodeImpl.createVariable("?n");
+        
+        for (String p : nsm.getPrefixSet()){
+            String ns = nsm.getNamespace(p);
+            if (! nsm.isSystem(ns)){
+                Node[] tn = new Node[2];
+                tn[0] = DatatypeMap.newInstance(p);
+                tn[1] = DatatypeMap.newResource(ns); 
+                map.add(Mapping.create(qq, tn));
+            }
+        }
+        return map;
     }
 
    

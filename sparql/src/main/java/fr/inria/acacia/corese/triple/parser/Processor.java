@@ -52,7 +52,6 @@ public class Processor {
 	public static final String COALESCE = "coalesce";
 	public static final String BNODE = "bnode";
 	public static final String GROUPCONCAT = "group_concat";
-	public static final String AGGAND = "agg_and";
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
 
@@ -86,8 +85,6 @@ public class Processor {
 	static final String TEMPLATEWITH	= KGRAM + "templateWith"; 
 	static final String EVAL 		= KGRAM + "eval";
         static final String PROLOG 		= KGRAM + "prolog";
-	static final String KGPPRINT		= ExpType.KPREF + ":" + "pprint"; 
-        static final String STL_PPRINT		= NSManager.STL_PREF + ":" + "process"; 
 
 	static final String STL_DEFAULT             = STL + "default"; 
 	static final String STL_PROCESS             = STL + "process"; 
@@ -105,11 +102,16 @@ public class Processor {
 	static final String STL_PROLOG              = STL + "prolog"; 
 	static final String STL_LEVEL               = STL + "level"; 
         static final String STL_DEFINE              = STL + "define";
-   
-	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
+        static final String STL_PREFIX              = STL + "prefix";
+ 	static final String STL_INDENT              = STL + "indent";
+ 	static final String STL_SELF                = STL + "self";
 	public static final String STL_NL           = STL + "nl"; 
-	static final String FUN_INDENT              = NSManager.STL_PREF + ":" + "indent"; 
-	static final String STL_INDENT              = STL + "indent"; 
+	public static final String AGGAND           = STL + "agg_and";
+	public static final String STL_AND          = STL + "and";
+        
+	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
+        public static final String FUN_PROCESS      = NSManager.STL_PREF + ":" + "process"; 
+	public static final String FUN_INDENT       = NSManager.STL_PREF + ":" + "indent"; 
 
 	       
 	static final String QNAME 	= KGRAM + "qname"; 
@@ -189,7 +191,8 @@ public class Processor {
 	static final String SHA512 	= "sha512";
 	
 	
-
+        public static final String[] aggregate = 
+	{AVG, COUNT, SUM, MIN, MAX, GROUPCONCAT, SAMPLE, AGGAND};
 	
 	Term term;
 	List<Expr> lExp;
@@ -392,6 +395,7 @@ public class Processor {
 		defoper(IF, 		ExprType.IF);
 		defoper(GROUPCONCAT,    ExprType.GROUPCONCAT);
 		defoper(AGGAND,         ExprType.AGGAND);
+		defoper(STL_AND,        ExprType.STL_AND);
 		defoper(SAMPLE, 	ExprType.SAMPLE);
 		defoper(LIST, 		ExprType.LIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
@@ -447,9 +451,11 @@ public class Processor {
 		defoper(STL_TURTLE,             ExprType.TURTLE);
                 defoper(STL_URI,                ExprType.PPURI);
                 defoper(STL_PROLOG,             ExprType.PROLOG);
+                defoper(STL_PREFIX,             ExprType.STL_PREFIX);
 		defoper(STL_INDENT,             ExprType.INDENT);
 		defoper(STL_LEVEL,              ExprType.LEVEL);
 		defoper(STL_NL,                 ExprType.STL_NL);
+		defoper(STL_SELF,               ExprType.SELF);
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 

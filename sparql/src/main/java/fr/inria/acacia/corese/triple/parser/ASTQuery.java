@@ -218,17 +218,19 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	public static final String OUT 		= "?out";
 	public static final String IN 		= "?in";
 	public static final String IN2 		= "?in_1";
-	private static final String GROUPCONCAT = Processor.GROUPCONCAT;
-        private static String TEMPLATEAGG       = GROUPCONCAT ;
-
+        
+	private static final String GROUPCONCAT = Processor.GROUPCONCAT;      
 	private static final String CONCAT 	= Processor.CONCAT;
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 		= Processor.IF;
-	private static final String FUNPPRINT 	= Processor.STL_PPRINT;
-	private static final String TURTLE 	= Processor.STL_TURTLE;
         
-        private static final String STL_NL      = Processor.FUN_NL;
-        private static final String STL_INDENT  = Processor.FUN_INDENT;
+        private static String TEMPLATE_AGG      = GROUPCONCAT ;
+        private static String TEMPLATE_CONCAT   = CONCAT ; 
+        
+ 	private static final String FUN_PROCESS = Processor.FUN_PROCESS;
+        private static final String FUN_NL      = Processor.FUN_NL;
+        private static final String FUN_INDENT  = Processor.FUN_INDENT;
+        
         private static final String IBOX        = "ibox";
         private static final String SBOX        = "sbox";
         private static final String BOX         = "box";
@@ -2718,14 +2720,14 @@ public class ASTQuery  implements Keyword, ASTVisitable {
      * ibox: indent(+1) body indent(-1)
      */
     public Term createBox(ExpressionList el, String type) {
-        String open  = STL_NL;
-        String close = STL_NL;
+        String open  = FUN_NL;
+        String close = FUN_NL;
         
         if (! type.equals(BOX)){
-            close = STL_INDENT;
+            close = FUN_INDENT;
         }
         if (type.equals(IBOX)){
-            open = STL_INDENT;
+            open = FUN_INDENT;
         }
         
         Constant fopen  = createQName(open);       
@@ -2787,7 +2789,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 * where variables are compiled as kg:pprint()
 	 */
 	Expression compileTemplateFun(){
-		Term t = Term.function(CONCAT);
+		Term t = Term.function(TEMPLATE_CONCAT);
 
 		if (template != null){
 			if (template.size() == 1){
@@ -2887,7 +2889,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 * if ?x is unbound, empty string "" is returned
 	 */
         Term compile(Variable var){		
-		Term t = createFunction(createQName(FUNPPRINT), var);
+		Term t = createFunction(createQName(FUN_PROCESS), var);
 		Term c = Term.function(COALESCE, t, getEmpty());		
 		return c;
 	}
@@ -2898,7 +2900,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 			return tvar;
 		}
 		Variable res = templateVariable(var);
-		Term t = createFunction(createQName(FUNPPRINT), var);
+		Term t = createFunction(createQName(FUN_PROCESS), var);
 		Term c = Term.function(COALESCE, t, getEmpty());
 		defSelect(res, c);
 		varTemplate.put(var.getLabel(), res);
@@ -2911,7 +2913,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 */
 	Term createTemplateGroup(){
 		Variable var = Variable.create(OUT);
-		Term t = createFunction(TEMPLATEAGG);
+		Term t = createFunction(TEMPLATE_AGG);
 		t.add(var);
 		t.setModality(getSeparator());
                 t.setArg(getExpSeparator());
@@ -2924,7 +2926,11 @@ public class ASTQuery  implements Keyword, ASTVisitable {
          * draft: agg_and
          */
         public static void setTemplateAggregate(String s){
-            TEMPLATEAGG = s;
+            TEMPLATE_AGG = s;
+        }
+        
+        public static void setTemplateConcat(String s){
+            TEMPLATE_CONCAT = s;
         }
 	
 	Constant getEmpty(){

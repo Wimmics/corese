@@ -696,7 +696,7 @@ public class Term extends Expression {
 	}
 	
 	public  boolean isAggregate(String name){
-		for (String n : Keyword.aggregate){
+		for (String n : Processor.aggregate){
 			if (n.equalsIgnoreCase(name)){ 
 				return true;
 			}
@@ -705,7 +705,7 @@ public class Term extends Expression {
 	}
 	
 	public boolean isRecAggregate(){
-		if (isAggregate(name)){
+		if (isAggregate(getLabel())){
 			return true;
 		}
 		for (Expr exp : getExpList()){

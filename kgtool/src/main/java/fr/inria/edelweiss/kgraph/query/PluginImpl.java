@@ -88,6 +88,9 @@ public class PluginImpl extends ProxyImpl {
             case PROLOG:
                 return prolog(null, env, p);
                 
+            case STL_PREFIX:
+                return prefix(env, p);
+                                     
             case FOCUS_NODE:
                 return getFocusNode(null, env);
 
@@ -144,7 +147,7 @@ public class PluginImpl extends ProxyImpl {
                 
             case PROLOG:
                 return prolog(dt, env, p);
-                 
+                
             case STL_PROCESS:
                 return process(exp, env, p, dt);
                 
@@ -574,6 +577,11 @@ public class PluginImpl extends ProxyImpl {
         }
         String pref = p.getNSM().toString(title);
         return getValue(pref);
+    }
+    
+    Mappings prefix(Environment env, Producer prod){
+         Transformer p = getTransformer(env, prod);                 
+         return p.NSMtoMappings();
     }
 
     IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {

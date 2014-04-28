@@ -180,6 +180,9 @@ public interface ExprType {
 	public static int STL_DEFAULT 	= 239;
 	public static int STL_DEFINE 	= 240;
 	public static int STL_NL 	= 241;
+	public static int STL_PREFIX 	= 242;
+	public static int STL_AGGREGATE = 243;
+	public static int STL_AND       = 244;
 
 
 	public static int ISSKOLEM 	= 250;

@@ -135,10 +135,6 @@ class Walker extends Interpreter {
                 return DatatypeMap.newStringBuilder(sb);
 
             case AGGAND:
-
-                if (isError) {
-                    return DatatypeMap.newInstance(false);
-                }
                 return DatatypeMap.newInstance(and);
 
         }
@@ -255,7 +251,7 @@ class Walker extends Interpreter {
             // eval ?x + ?y
             dt = (IDatatype) eval.eval(arg, map, p);
         }
-
+        
         if (dt != null) {
 
             switch (exp.oper()) {
@@ -332,8 +328,8 @@ class Walker extends Interpreter {
                             and &= b;
 
                         } catch (CoreseDatatypeException ex) {
-                            and = false;
-                        }
+                            isError = true;                        
+                       }
                     }
 
                     break;

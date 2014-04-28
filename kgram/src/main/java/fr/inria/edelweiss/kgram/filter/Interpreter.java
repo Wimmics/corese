@@ -261,6 +261,7 @@ public class Interpreter implements Evaluator, ExprType {
 			return eval(exp.getExp(0), env, p);
 		
 		case CONCAT:
+                case STL_AND:
 		case EXTERNAL:
 			// variable number of args: need array
 			break;

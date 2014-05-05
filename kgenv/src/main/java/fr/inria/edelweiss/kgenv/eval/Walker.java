@@ -43,19 +43,23 @@ class Walker extends Interpreter {
     TreeData tree;
     Evaluator eval;
     private static final String NL = System.getProperty("line.separator");
+    private boolean hasLang = false;
+    private String lang;
+    private boolean ok = true;
+    private boolean isString = true;
 
     Walker(Expr exp, Node qNode, Proxy p, Environment env, Producer prod) {
         super(p);
-        
+
         Query q = env.getQuery();
-        if (q != null 
+        if (q != null
                 && q.isNumbering()
                 && q.isTemplate()
-                && q.getTemplateGroup().getFilter().getExp() == exp){
-             // final aggregate of template   
+                && q.getTemplateGroup().getFilter().getExp() == exp) {
+            // final aggregate of template   
             isTemplateAgg = true;
         }
-               
+
         eval = p.getEvaluator();
         this.exp = exp;
         this.qNode = qNode;
@@ -63,9 +67,8 @@ class Walker extends Interpreter {
         if (exp.getArg() != null) {
             // separator as an evaluable expression: st:nl()
             IDatatype dt = (IDatatype) eval.eval(exp.getArg(), env, prod);
-            sep = dt.getLabel() ;
-        } 
-        else {
+            sep = dt.getLabel();
+        } else {
             if (exp.getModality() != null) {
                 sep = exp.getModality();
             }
@@ -85,7 +88,7 @@ class Walker extends Interpreter {
                 }
             }
         }
-        
+
         sb = new StringBuilder();
         if (exp.isDistinct()) {
             // use case: count(distinct ?name)
@@ -143,9 +146,11 @@ class Walker extends Interpreter {
 
             case GROUPCONCAT:
             case STL_GROUPCONCAT:
-                return DatatypeMap.newStringBuilder(sb);
+                return result(sb, isString, (ok && lang != null)?lang:null);
+               // return DatatypeMap.newStringBuilder(sb);
 
             case AGGAND:
+                
                 return DatatypeMap.newInstance(and);
 
         }
@@ -190,56 +195,7 @@ class Walker extends Interpreter {
 
             case GROUPCONCAT:
             case STL_GROUPCONCAT:
-                boolean isDistinct = f.getExp().isDistinct();
-                IDatatype[] value = null;
-                Tuple t = null;
-                if (isDistinct) {
-                    value = new IDatatype[exp.getExpList().size()];
-                    t = new Tuple(value);
-                }
-
-                StringBuffer res = new StringBuffer();
-
-                if (count++ > 0) {
-                    res.append(sep);
-                }
-
-                int i = 0;
-                for (Expr arg : exp.getExpList()) {
-                    
-                    if (arg.oper() != ExprType.GROUPBY) {
-                        // skip group_concat(?x, ?y, groupBy(?z))
-                        IDatatype dt = (IDatatype) eval.eval(arg, map, p);
-                        
-                        if (dt != null && dt.isFuture()){
-                                Expr ee = (Expr) dt.getObject();
-                                // template ?out = future(concat(str, st:number(), str))
-                                // eval(concat(str, st:number(), str))
-                                dt = (IDatatype) eval.eval(ee, map, p);                           
-                        }
-                        
-                        if (isDistinct) {
-                            value[i++] = dt;
-                        }
-
-                        if (dt != null) {                              
-                            if (dt.getStringBuilder() != null) {
-                               res.append(dt.getStringBuilder());                               
-                            } else {
-                                res.append(dt.getLabel());
-                            }
-                        }
-                    }
-                }
-
-
-                if (accept(f, t)) {
-                    //res.append(sep);
-                    sb.append(res);
-                }
-
-                return null;
-
+                return groupConcat(f, env, p);
 
             case COUNT:
 
@@ -274,7 +230,7 @@ class Walker extends Interpreter {
             // eval ?x + ?y
             dt = (IDatatype) eval.eval(arg, map, p);
         }
-        
+
         if (dt != null) {
 
             switch (exp.oper()) {
@@ -351,8 +307,8 @@ class Walker extends Interpreter {
                             and &= b;
 
                         } catch (CoreseDatatypeException ex) {
-                            isError = true;                        
-                       }
+                            isError = true;
+                        }
                     }
 
                     break;
@@ -364,6 +320,119 @@ class Walker extends Interpreter {
         return null;
     }
 
+    // with one argument
+    Node groupConcat(Filter f, Environment map, Producer p) {
+        
+        
+        if (count++ > 0) {
+            sb.append(sep);
+        }
+                
+        IDatatype dt = (IDatatype) eval.eval(f.getExp().getExp(0), map, p);
+        
+        if (dt != null && dt.isFuture()) {
+            Expr ee = (Expr) dt.getObject();
+            // template ?out = future(concat(str, st:number(), str))
+            // eval(concat(str, st:number(), str))
+            dt = (IDatatype) eval.eval(ee, map, p);
+        }
+                                             
+        if (accept(f, dt)) {
+            if (dt != null) {
+                
+                if (count == 1 && dt.hasLang()) {
+                    hasLang = true;
+                    lang = dt.getLang();
+                }
+                
+                if (ok) {
+                    if (hasLang) {
+                        if (!(dt.hasLang() && dt.getLang().equals(lang))) {
+                            ok = false;
+                        }
+                    } else if (dt.hasLang()) {
+                        ok = false;
+                    }
+
+                    if (!DatatypeMap.isString(dt)) {
+                        isString = false;
+                    }
+                } 
+                
+                if (dt.getStringBuilder() != null) {
+                    sb.append(dt.getStringBuilder());
+                } else {
+                    sb.append(dt.getLabel());
+                }
+            }
+        }
+        
+        return null;
+    }
+
+     IDatatype result(StringBuilder sb, boolean isString, String lang){
+        if (lang != null) {
+            return DatatypeMap.createLiteral(sb.toString(), null, lang);
+        } else if (isString) {
+            return DatatypeMap.newStringBuilder(sb);
+        } else {
+            return DatatypeMap.createLiteral(sb.toString());
+        }
+    }
+     
+    // with a list of arguments, without SPARQL semantics of @lang
+    Node groupConcat2(Filter f, Environment map, Producer p) {
+        boolean isDistinct = f.getExp().isDistinct();
+        IDatatype[] value = null;
+        Tuple t = null;
+        if (isDistinct) {
+            value = new IDatatype[exp.getExpList().size()];
+            t = new Tuple(value);
+        }
+
+        StringBuffer res = new StringBuffer();
+
+        if (count++ > 0) {
+            res.append(sep);
+        }
+
+        int i = 0;
+        for (Expr arg : exp.getExpList()) {
+
+            IDatatype dt = (IDatatype) eval.eval(arg, map, p);
+
+            if (dt != null && dt.isFuture()) {
+                Expr ee = (Expr) dt.getObject();
+                // template ?out = future(concat(str, st:number(), str))
+                // eval(concat(str, st:number(), str))
+                dt = (IDatatype) eval.eval(ee, map, p);
+            }
+
+            if (isDistinct) {
+                value[i++] = dt;
+            }
+
+            if (dt != null) {
+                if (dt.getStringBuilder() != null) {
+                    res.append(dt.getStringBuilder());
+                } else {
+                    res.append(dt.getLabel());
+                }
+            }
+
+        }
+
+
+        if (accept(f, t)) {
+            //res.append(sep);
+            sb.append(res);
+        }
+
+        return null;
+    }
+
+    
+    
     class TreeData extends TreeMap<IDatatype, IDatatype> {
 
         boolean hasNull = false;

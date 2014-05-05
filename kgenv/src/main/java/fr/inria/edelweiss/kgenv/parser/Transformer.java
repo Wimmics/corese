@@ -753,8 +753,8 @@ public class Transformer implements ExpType {
 	 * min(?l, groupBy(?x, ?y))
 	 */
 	void extendAggregate(Query qCurrent, Exp exp, Expression ee){
-		if (ee.isAggregate() && ee.arity()>1){
-			Expression g = ee.getArg(1);
+		if (ee.isAggregate() && ee.arity() > 1){
+			Expression g = ee.getArg(ee.arity() - 1);
 			if (g.oper() == ExprType.GROUPBY){
 				List<Exp> ob = orderBy(qCurrent, g.getArgs(), ast);
 				exp.setExpGroupBy(ob);

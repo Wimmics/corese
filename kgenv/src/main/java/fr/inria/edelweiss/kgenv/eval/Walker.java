@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -15,6 +16,7 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 
@@ -33,7 +35,7 @@ class Walker extends Interpreter {
     Node qNode, tNode;
     IDatatype dtres;
     int num = 0, count = 0;
-    boolean isError = false, first = true, and = true;
+    boolean isError = false, first = true, and = true, isTemplateAgg = false;
     StringBuilder sb;
     String sep = " ";
     Group group;
@@ -44,6 +46,16 @@ class Walker extends Interpreter {
 
     Walker(Expr exp, Node qNode, Proxy p, Environment env, Producer prod) {
         super(p);
+        
+        Query q = env.getQuery();
+        if (q != null 
+                && q.isNumbering()
+                && q.isTemplate()
+                && q.getTemplateGroup().getFilter().getExp() == exp){
+             // final aggregate of template   
+            isTemplateAgg = true;
+        }
+               
         eval = p.getEvaluator();
         this.exp = exp;
         this.qNode = qNode;
@@ -130,8 +142,7 @@ class Walker extends Interpreter {
                 return proxy.getValue(num);
 
             case GROUPCONCAT:
-                //String res = sb.toString();
-                //return proxy.getValue(res);
+            case STL_GROUPCONCAT:
                 return DatatypeMap.newStringBuilder(sb);
 
             case AGGAND:
@@ -178,6 +189,7 @@ class Walker extends Interpreter {
         switch (exp.oper()) {
 
             case GROUPCONCAT:
+            case STL_GROUPCONCAT:
                 boolean isDistinct = f.getExp().isDistinct();
                 IDatatype[] value = null;
                 Tuple t = null;
@@ -194,17 +206,28 @@ class Walker extends Interpreter {
 
                 int i = 0;
                 for (Expr arg : exp.getExpList()) {
+                    
+                    if (arg.oper() != ExprType.GROUPBY) {
+                        // skip group_concat(?x, ?y, groupBy(?z))
+                        IDatatype dt = (IDatatype) eval.eval(arg, map, p);
+                        
+                        if (dt != null && dt.isFuture()){
+                                Expr ee = (Expr) dt.getObject();
+                                // template ?out = future(concat(str, st:number(), str))
+                                // eval(concat(str, st:number(), str))
+                                dt = (IDatatype) eval.eval(ee, map, p);                           
+                        }
+                        
+                        if (isDistinct) {
+                            value[i++] = dt;
+                        }
 
-                    IDatatype dt = (IDatatype) eval.eval(arg, map, p);
-                    if (isDistinct) {
-                        value[i++] = dt;
-                    }
-
-                    if (dt != null) {
-                        if (dt.getStringBuilder() != null) {
-                            res.append(dt.getStringBuilder());
-                        } else {
-                            res.append(dt.getLabel());
+                        if (dt != null) {                              
+                            if (dt.getStringBuilder() != null) {
+                               res.append(dt.getStringBuilder());                               
+                            } else {
+                                res.append(dt.getLabel());
+                            }
                         }
                     }
                 }

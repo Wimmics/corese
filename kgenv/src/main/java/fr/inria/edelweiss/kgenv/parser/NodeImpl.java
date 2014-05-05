@@ -92,6 +92,10 @@ public class NodeImpl implements Node {
 		// TODO Auto-generated method stub
 		return atom.isBlank() || (isVariable() && atom.getVariable().isBlankNode());
 	}
+        
+        public boolean isFuture(){
+            return isConstant() && atom.getConstant().getDatatypeValue().isFuture();
+        }
 
 
 	@Override

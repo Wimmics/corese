@@ -18,7 +18,6 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
-import static fr.inria.edelweiss.kgram.api.core.ExprType.CONT;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
@@ -29,6 +28,8 @@ import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.filter.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -168,6 +169,10 @@ public class ProxyImpl implements Proxy, ExprType {
 
         switch (exp.oper()) {
 
+             case CONCAT:
+             case STL_CONCAT:
+                return concat(exp, env, p);
+                 
             case NUMBER:
                 return getValue(env.count());
 
@@ -423,10 +428,7 @@ public class ProxyImpl implements Proxy, ExprType {
                     env.getEventManager().send(e);
                 }
                 return TRUE;
-
-            case CONCAT:
-                return concat(args);
-                
+                           
             case STL_AND:
                 return and(args);
         }
@@ -659,27 +661,52 @@ public class ProxyImpl implements Proxy, ExprType {
      * literals with same lang return literal@lang all strings return string
      * else return literal error if not literal or string
      */
-    IDatatype concat(Object[] args) {
+    IDatatype concat(Expr exp, Environment env, Producer p) {
         String str = "";
         String lang = null;
 
-        if (args.length == 0) {
+        if (exp.arity() == 0) {
             return EMPTY;
         }
+        
+        // when template st:concat()
+        // st:number() is not evaluated now
+        // it will be evaluated by template group_concat aggregate
+        // return future(concat(str, st:number(), str))
+        boolean isFuture = exp.oper() == STL_CONCAT;
 
         StringBuilder sb = new StringBuilder();
-
-        IDatatype dt = datatype(args[0]);
+        ArrayList<Object> list = null;
         boolean ok = true, hasLang = false, isString = true;
-        if (dt.hasLang()) {
-            hasLang = true;
-            lang = dt.getLang();
-        }
 
-        for (Object obj : args) {
-
-            dt = datatype(obj);
-
+        int i = 0;
+        for (Expr ee : exp.getExpList()) {
+            
+            if (isFuture && ee.oper() == STL_NUMBER){
+                // create a future
+                if (list == null){
+                    list = new ArrayList<Object>();                  
+                }
+                if (sb.length()>0){
+                        list.add(result(sb, isString, (ok && lang != null)?lang:null));
+                        sb = new StringBuilder();
+                }
+                list.add(ee);
+                continue;
+            }
+            
+            Object obj = eval.eval(ee, env, p);
+            if (obj == null){
+                return null;
+            }
+            IDatatype dt = datatype(obj);
+            
+            if (i == 0 && dt.hasLang()) {
+                hasLang = true;
+                lang = dt.getLang();
+            }
+            i++;
+            
             if (!isStringLiteral(dt)) {
                 return null;
             }
@@ -705,10 +732,23 @@ public class ProxyImpl implements Proxy, ExprType {
                 }
             }
         }
-
-        //str = sb.toString();
-
-        if (ok && lang != null) {
+            
+        if (list != null){
+            // return ?out = future(concat(str, st:number(), str)
+            // will be evaluated by template group_concat(?out) aggregate
+            if (sb.length()>0){
+                list.add(result(sb, isString, (ok && lang != null)?lang:null));
+            }  
+            Expr e = plugin.createFunction(Processor.CONCAT, list, env);
+            IDatatype dt = DatatypeMap.createFuture(e);
+            return dt;
+        }
+        
+        return result(sb, isString, (ok && lang != null)?lang:null);
+    }
+    
+    IDatatype result(StringBuilder sb, boolean isString, String lang){
+        if (lang != null) {
             return DatatypeMap.createLiteral(sb.toString(), null, lang);
         } else if (isString) {
             return DatatypeMap.newStringBuilder(sb);
@@ -1005,5 +1045,10 @@ public class ProxyImpl implements Proxy, ExprType {
         }
 
         return FALSE;
+    }
+
+    @Override
+    public Expr createFunction(String name, List<Object> args, Environment env) {
+        return null;    
     }
 }

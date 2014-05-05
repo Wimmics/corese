@@ -695,11 +695,10 @@ public class ProxyImpl implements Proxy, ExprType {
                 continue;
             }
             
-            Object obj = eval.eval(ee, env, p);
-            if (obj == null){
+            IDatatype dt = (IDatatype) eval.eval(ee, env, p);
+            if (dt == null){
                 return null;
             }
-            IDatatype dt = datatype(obj);
             
             if (i == 0 && dt.hasLang()) {
                 hasLang = true;

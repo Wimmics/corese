@@ -8,7 +8,6 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -52,14 +51,7 @@ class Walker extends Interpreter {
         super(p);
 
         Query q = env.getQuery();
-        if (q != null
-                && q.isNumbering()
-                && q.isTemplate()
-                && q.getTemplateGroup().getFilter().getExp() == exp) {
-            // final aggregate of template   
-            isTemplateAgg = true;
-        }
-
+       
         eval = p.getEvaluator();
         this.exp = exp;
         this.qNode = qNode;
@@ -327,7 +319,7 @@ class Walker extends Interpreter {
         if (count++ > 0) {
             sb.append(sep);
         }
-                
+
         IDatatype dt = (IDatatype) eval.eval(f.getExp().getExp(0), map, p);
         
         if (dt != null && dt.isFuture()) {

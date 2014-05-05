@@ -5,10 +5,13 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
@@ -19,7 +22,6 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -33,6 +35,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -53,7 +56,7 @@ public class PluginImpl extends ProxyImpl {
     static Table table;
     MatcherImpl match;
     Loader ld;
-    Evaluator eval;
+    private Object dtnumber;
 
     PluginImpl(Matcher m) {
         if (table == null) {
@@ -62,15 +65,12 @@ public class PluginImpl extends ProxyImpl {
         if (m instanceof MatcherImpl) {
             match = (MatcherImpl) m;
         }
+        dtnumber = DatatypeMap.newInstance(Processor.FUN_NUMBER);
     }
 
     public static PluginImpl create(Matcher m) {
         return new PluginImpl(m);
-    }
-    
-    public void setEvaluator(Evaluator ev) {
-        eval = ev;
-    }
+    }   
 
     public Object function(Expr exp, Environment env, Producer p) {
 
@@ -90,6 +90,9 @@ public class PluginImpl extends ProxyImpl {
                 
             case STL_PREFIX:
                 return prefix(env, p);
+                
+            case STL_NUMBER:
+                return getValue(1 + env.count());
                                      
             case FOCUS_NODE:
                 return getFocusNode(null, env);
@@ -639,7 +642,7 @@ public class PluginImpl extends ProxyImpl {
             Expr ee = rewrite(exp, def, (ASTQuery)env.getQuery().getAST());          
             exp.setOper(SELF);
             exp.setExp(0, ee);
-            return eval.eval(ee, env, p);
+            return getEvaluator().eval(ee, env, p);
         } 
     }
     
@@ -766,5 +769,26 @@ public class PluginImpl extends ProxyImpl {
 
     public void setPPrinter(String str) {
         PPRINTER = str;
+    }
+    
+    /**
+     * create concat(str, st:number(), str)
+     */
+    public Expr createFunction(String name, List<Object> args, Environment env){
+        Term t = Term.function(name);
+        for (Object arg : args){
+            if (arg instanceof IDatatype){
+                // str: arg is a StringBuilder, keep it as is
+                Constant cst = Constant.create("Future", null, null);
+                cst.setDatatypeValue((IDatatype) arg);
+                t.add(cst);
+            }
+            else {
+                // st:number()
+               t.add((Expression) arg);
+            }
+        }
+        t.compile((ASTQuery)env.getQuery().getAST());
+        return t;
     }
 }

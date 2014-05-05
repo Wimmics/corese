@@ -85,6 +85,10 @@ public class NodeImpl implements Node, Entity {
         // TODO Auto-generated method stub
         return false;
     }
+    
+    public boolean isFuture(){
+        return dt.isFuture();
+    }
 
     @Override
     public boolean same(Node node) {

@@ -976,7 +976,7 @@ public class Transformer {
                 && exp.getExp(0).getExpList().size() == 2) {
             init(exp);
         }
-        else if (exp.oper() == ExprType.CONCAT){
+        else if (exp.oper() == ExprType.STL_CONCAT){
             for (Expr ee : exp.getExpList()){
                 initExp(ee);
             }

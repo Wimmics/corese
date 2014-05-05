@@ -585,7 +585,8 @@ public class ProducerImpl implements Producer {
             return null;
         }
         IDatatype dt = (IDatatype) value;
-        if (selfValue) {
+        if (selfValue || dt.isFuture()) {
+            // future: template intermediate result 
             return dt;
         }
         Node node = graph.getNode(dt, false, false);

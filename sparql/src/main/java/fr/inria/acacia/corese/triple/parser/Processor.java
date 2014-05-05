@@ -338,15 +338,16 @@ public class Processor {
 	
 	// TODO: error message
 	void check(ASTQuery ast){
-		if (term.isAggregate()){
-			if (oper() == ExprType.GROUPCONCAT || oper() == ExprType.STL_GROUPCONCAT){
-
-			}
-			else if (term.getArity() > 1){
-				ast.setCorrect(false);
-				//ast.addError("Arity error: ", term);
-			}
-		}
+		if (term.isAggregate()){ 
+                   if (term.getName().equalsIgnoreCase(COUNT)){
+                        if (term.getArity() > 1){
+                            ast.setCorrect(false);
+                        }
+                    }
+                    else if (term.getArity() != 1){
+                           ast.setCorrect(false);
+                    }
+                }
 	}
 	
 	

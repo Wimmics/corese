@@ -933,9 +933,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     
     public  Term createFunction(String name, ExpressionList el) {
     	Term term = createFunction(name);
-    	term.setDistinct(el.isDistinct());
-    	term.setModality(el.getSeparator());
-    	term.setArg(el.getExpSeparator());
+    	term.setModality(el);
     	for (Expression exp : el){
     		term.add(exp);
     	}
@@ -2704,15 +2702,32 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 * 
 	 **************************************************/
 
-	/**
-     * template { group { } }
+    /**
+     * template { group { exp } }
+     * ->
+     * group_concat(concat( exp ))
      */
     public Term createGroup(ExpressionList el) {
+        Term term = Term.function(CONCAT);
+        for (Expression exp : el){
+    		term.add(exp);
+    	} 
+        term = Term.function(GROUPCONCAT, term);
+    	if (el.getSeparator() == null && el.getExpSeparator() == null){
+    		el.setSeparator(groupSeparator);
+    	}
+        term.setModality(el);
+    	return term;
+    }
+    
+    public Term createGroup2(ExpressionList el) {
     	if (el.getSeparator() == null && el.getExpSeparator() == null){
     		el.setSeparator(groupSeparator);
     	}
     	return createFunction(GROUPCONCAT, el);
     }
+    
+    
     
     /**
      * box:  nl(+1) body nl(-1)

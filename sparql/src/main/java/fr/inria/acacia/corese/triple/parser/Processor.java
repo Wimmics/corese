@@ -105,10 +105,14 @@ public class Processor {
         static final String STL_PREFIX              = STL + "prefix";
  	static final String STL_INDENT              = STL + "indent";
  	static final String STL_SELF                = STL + "self";
+	public static final String STL_GROUPCONCAT  = STL + "group_concat"; 
+	public static final String STL_CONCAT       = STL + "concat"; 
 	public static final String STL_NL           = STL + "nl"; 
 	public static final String AGGAND           = STL + "agg_and";
 	public static final String STL_AND          = STL + "and";
+	public static final String STL_NUMBER       = STL + "number";
         
+	public static final String FUN_NUMBER       = NSManager.STL_PREF + ":"  + "_n_";
 	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
         public static final String FUN_PROCESS      = NSManager.STL_PREF + ":" + "process"; 
 	public static final String FUN_INDENT       = NSManager.STL_PREF + ":" + "indent"; 
@@ -159,7 +163,7 @@ public class Processor {
 	static final String STARTS 	= "strstarts";
 	static final String CONTAINS = "contains";
 	static final String ENCODE 	= "encode_for_uri";
-	static final String CONCAT 	= "concat"; 
+	public static final String CONCAT 	= "concat"; 
 	static final String STRBEFORE 	= "strbefore"; 
 	static final String STRAFTER 	= "strafter"; 
 	static final String STRREPLACE 	= "replace"; 
@@ -192,7 +196,7 @@ public class Processor {
 	
 	
         public static final String[] aggregate = 
-	{AVG, COUNT, SUM, MIN, MAX, GROUPCONCAT, SAMPLE, AGGAND};
+	{AVG, COUNT, SUM, MIN, MAX, GROUPCONCAT, STL_GROUPCONCAT, SAMPLE, AGGAND};
 	
 	Term term;
 	List<Expr> lExp;
@@ -335,7 +339,7 @@ public class Processor {
 	// TODO: error message
 	void check(ASTQuery ast){
 		if (term.isAggregate()){
-			if (oper() == ExprType.GROUPCONCAT){
+			if (oper() == ExprType.GROUPCONCAT || oper() == ExprType.STL_GROUPCONCAT){
 
 			}
 			else if (term.getArity() > 1){
@@ -458,16 +462,19 @@ public class Processor {
 		defoper(STL_SELF,               ExprType.SELF);
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
+		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
 
-		defoper(LEVEL, 	ExprType.LEVEL);
-		defoper(INDENT, ExprType.INDENT);
-		defoper(PPURI, 	ExprType.PPURI);
+		defoper(LEVEL,          ExprType.LEVEL);
+		defoper(INDENT,         ExprType.INDENT);
+		defoper(PPURI,          ExprType.PPURI);
 		defoper(URILITERAL, 	ExprType.URILITERAL);
-		defoper(STL_XSDLITERAL, 	ExprType.XSDLITERAL);
-		defoper(VISITED, ExprType.VISITED);
-		defoper(PROLOG,  ExprType.PROLOG);
-		defoper(STL_DEFINE,  ExprType.STL_DEFINE);
-                defoper(STL_DEFAULT, ExprType.STL_DEFAULT);
+		defoper(STL_XSDLITERAL, ExprType.XSDLITERAL);
+		defoper(VISITED,        ExprType.VISITED);
+		defoper(PROLOG,         ExprType.PROLOG);
+		defoper(STL_DEFINE,     ExprType.STL_DEFINE);
+                defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
+                defoper(STL_CONCAT,     ExprType.STL_CONCAT);
+                defoper(STL_GROUPCONCAT,     ExprType.STL_GROUPCONCAT);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

@@ -34,7 +34,8 @@ public class Test {
 			"optional {graph ?src2 {?x c:FirstName ?nn2}} " +
 			"graph ?src { optional { ?y c:FamilyName ?name ?y c:FirstName ?fn}}" +
 			"}" +
-			"[a e:Term ; e:term @(?x ?y); e:term ()]" +
+			"[a e:Term ; e:term @(?x ?y); e:term ()] "
+                        + "bind(sql('select from where') as (?x, ?y))" +
 			"} " +
 			"limit 15" ;
 
@@ -60,7 +61,7 @@ public class Test {
 					// subquery
 					ASTQuery q = ee.getQuery();
 				}
-				else if (ee.isOptional()){
+				else if (ee.isOption()){
 					// optional is unary (in Corese)
 				}
 				else if (ee.isMinus()){

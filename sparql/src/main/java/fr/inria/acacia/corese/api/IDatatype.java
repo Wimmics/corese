@@ -61,6 +61,8 @@ public interface IDatatype
      * @return true if we have a literal
      */
     boolean isLiteral();
+    
+    boolean isFuture();
 
     /**
      * Compare 2 datatypes

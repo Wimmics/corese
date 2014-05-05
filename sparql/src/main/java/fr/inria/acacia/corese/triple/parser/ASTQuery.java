@@ -224,8 +224,8 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 		= Processor.IF;
         
-        private static String TEMPLATE_AGG      = GROUPCONCAT ;
-        private static String TEMPLATE_CONCAT   = CONCAT ; 
+        private static String TEMPLATE_AGG      = Processor.STL_GROUPCONCAT ;
+        private static String TEMPLATE_CONCAT   = Processor.STL_CONCAT ; 
         
  	private static final String FUN_PROCESS = Processor.FUN_PROCESS;
         private static final String FUN_NL      = Processor.FUN_NL;

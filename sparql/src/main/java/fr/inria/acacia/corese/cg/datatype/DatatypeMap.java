@@ -461,7 +461,18 @@ public class DatatypeMap implements Cst, RDF {
             return dt;
         }
 	
-
+        /**
+         * obj is an Expr to be evaluated later
+         * such as concat(str, st:number(), str)
+         * use case: template with st:number()
+         */
+        public static IDatatype createFuture(Object obj){
+            CoreseUndefLiteral dt = new CoreseUndefLiteral();
+            dt.setDatatype(xsdstring);
+            dt.setObject(obj);
+            dt.setFuture(true);
+            return dt;
+        }
 	/**
 	 * Order of Datatypes & rdfs:Literal vs xsd:string
 	 */

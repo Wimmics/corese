@@ -360,6 +360,10 @@ public class CoreseDatatype
 	public boolean isLiteral() {
 		return true;
 	}
+        
+        public boolean isFuture() {
+		return false;
+	}
 	
 	public boolean isDecimal(){
 		return false;

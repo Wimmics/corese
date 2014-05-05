@@ -18,13 +18,20 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
  */
 
 public class CoreseUndefLiteral extends CoreseStringLiteral {
-    CoreseURI datatype=null ;
     static final int code = UNDEF;
+    static final String FUTURE = "Future";
+    
+    CoreseURI datatype=null ;
+    private Object object;
+    private boolean isFuture = false;
 
   public CoreseUndefLiteral(String value) {
       super(value);
   }
-
+  
+  public CoreseUndefLiteral() {
+      super(FUTURE);
+  }
   public void setDatatype(String uri) {
     datatype = getGenericDatatype(uri);
   }
@@ -60,6 +67,34 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
 	  return b;
 
   }
+
+    /**
+     * @return the object
+     */
+    public Object getObject() {
+        return object;
+    }
+
+    /**
+     * @param object the object to set
+     */
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
+    /**
+     * @return the isFuture
+     */
+    public boolean isFuture() {
+        return isFuture;
+    }
+
+    /**
+     * @param isFuture the isFuture to set
+     */
+    public void setFuture(boolean isFuture) {
+        this.isFuture = isFuture;
+    }
   
 
 }

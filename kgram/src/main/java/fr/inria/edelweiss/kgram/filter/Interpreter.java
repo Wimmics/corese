@@ -250,6 +250,7 @@ public class Interpreter implements Evaluator, ExprType {
 		case AVG:
 		case SAMPLE:
 		case GROUPCONCAT:
+                case STL_GROUPCONCAT:
                 case AGGAND:
 			return aggregate(exp, env, p);
 			
@@ -260,7 +261,10 @@ public class Interpreter implements Evaluator, ExprType {
 		case SELF:
 			return eval(exp.getExp(0), env, p);
 		
-		case CONCAT:
+		case CONCAT: 
+                case STL_CONCAT:
+                    return proxy.function(exp, env, p);
+                    
                 case STL_AND:
 		case EXTERNAL:
 			// variable number of args: need array

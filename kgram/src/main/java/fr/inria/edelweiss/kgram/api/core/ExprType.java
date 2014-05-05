@@ -182,7 +182,10 @@ public interface ExprType {
 	public static int STL_NL 	= 241;
 	public static int STL_PREFIX 	= 242;
 	public static int STL_AGGREGATE = 243;
-	public static int STL_AND       = 244;
+	public static int STL_CONCAT    = 244;
+	public static int STL_GROUPCONCAT= 245;
+	public static int STL_AND       = 246;
+	public static int STL_NUMBER    = 247;
 
 
 	public static int ISSKOLEM 	= 250;

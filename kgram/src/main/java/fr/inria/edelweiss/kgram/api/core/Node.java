@@ -60,6 +60,8 @@ public interface Node {
 	boolean isConstant();
 	
 	boolean isBlank();
+        
+        boolean isFuture();
 	
 	// the target value for Matcher and Evaluator
 	// for KGRAM query it returns IDatatype

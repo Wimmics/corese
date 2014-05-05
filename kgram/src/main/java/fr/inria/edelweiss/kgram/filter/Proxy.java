@@ -5,6 +5,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import java.util.List;
 
 public interface Proxy {
 	
@@ -57,5 +58,5 @@ public interface Proxy {
 	// type operators <=:
 	void setPlugin(Proxy p);
 
-
+        Expr createFunction(String name, List<Object> args, Environment env);
 }

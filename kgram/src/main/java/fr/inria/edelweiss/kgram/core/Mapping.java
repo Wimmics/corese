@@ -174,6 +174,13 @@ public class Mapping
 		qNodes = qq;
 		nodes = tt;
 	}
+        
+        public int count() {
+            if (lMap == null){
+                return 0;
+            }
+            return lMap.count();
+	}
 	
 	/**
 	 * Project on select variables of query 

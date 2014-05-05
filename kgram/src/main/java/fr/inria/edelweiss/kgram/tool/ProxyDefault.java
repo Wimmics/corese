@@ -7,6 +7,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.filter.Proxy;
+import java.util.List;
 
 public class ProxyDefault implements Proxy, ExprType {
 
@@ -131,5 +132,10 @@ public class ProxyDefault implements Proxy, ExprType {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public Expr createFunction(String name, List<Object> args, Environment env) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

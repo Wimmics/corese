@@ -127,6 +127,7 @@ public class Query extends Exp {
     private List<Entity> edgeList;
     private String name;
     private String profile;
+    private boolean isNumbering;
 
 	
 	Query(){
@@ -1929,6 +1930,14 @@ public class Query extends Exp {
 
     public String getProfile() {
         return profile;   
+    }
+
+    public void setNumbering(boolean b) {
+        isNumbering = b;
+    }
+    
+    public boolean isNumbering(){
+        return isNumbering;
     }
 
 class VString extends ArrayList<String> {

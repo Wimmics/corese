@@ -58,6 +58,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	// SPARQL: -1 (unbound first)
 	// Corese order: 1 (unbound last)
 	int unbound = -1;
+        int count = 0;
 	private int nbDelete = 0;
 	private int nbInsert = 0;
 	private Node templateResult;
@@ -115,6 +116,14 @@ implements Comparator<Mapping> , Iterable<Mapping>
 //                    distinct.setDuplicate(q.isDistribute());
 //                }
 	}
+        
+        int count(){
+            return count;
+        }
+        
+        void setCount(int n){
+            count = n;
+        }
 	
 	public void add(Mapping m){
 		list.add(m);
@@ -645,7 +654,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 			setTemplateResult(apply(eval, q.getTemplateGroup(), mem, p));
 		}
 	}
-	
+   
 	/**
 	 * Template perform additionnal group_concat(?out)
 	 */
@@ -656,8 +665,11 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		if (size() == 1){
 			// memory.getNode(?out)
 			Node node = memory.getNode(exp.getFilter().getExp().getExp(0));
-			return node;
+                        if (node == null || ! node.isFuture()){
+                            return node;
+                        }
 		}
+                
 		Node node = eval.eval(exp.getFilter(), memory, p);
 		memory.pop(firstMap);
 		return node;
@@ -726,14 +738,17 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 */
 	private	void aggregate(Group group, Evaluator eval, Exp exp, Memory mem, Producer p, int n){
 		//if (group == null) group = createGroup();
-
-		for (Mappings maps : group.getValues()){
+            int count = 0;
+		for (Mappings map : group.getValues()){
 			// eval aggregate filter for each group 
 			// set memory current group
 			// filter (e.g. count()) will consider this group
-			if (hasEvent) maps.setEventManager(manager);
-			mem.setGroup(maps);
-			maps.apply(eval, exp, mem, p, n);
+			if (hasEvent){
+                            map.setEventManager(manager);
+                        }
+                        map.setCount(count++);
+			mem.setGroup(map);
+			map.apply(eval, exp, mem, p, n);
 			mem.setGroup(null);
 		}
 	}
@@ -914,7 +929,9 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 * with Mapping as environment to get variable binding
 	 */
 	void process(Evaluator eval, Filter f, Environment env, Producer p){
+            int n = 0;
 		for (Mapping map : this){
+                    this.setCount(n++);
 			// in case there is a nested aggregate, map will be an Environment
 			// it must implement aggregate() and hence must know current Mappings group
 			map.setMappings(this);

@@ -141,6 +141,12 @@ public class Term extends Expression {
 	public Constant getCName(){
 		return cname;
 	}
+        
+        public void setModality(ExpressionList el){
+            setDistinct(el.isDistinct());
+            setModality(el.getSeparator());
+            setArg(el.getExpSeparator());
+        }
 
 	public void setDistinct(boolean b){
 		isDistinct = b;

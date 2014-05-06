@@ -632,21 +632,19 @@ public class Processor {
 	 * boolean res = match.matches();
 	 */
 	void compileRegex(){
-		if (term.getArg(1).isConstant()){
-			compilePattern(term.getArg(1).getName());
+		String sflag = null;
+                if (term.getArity() == 3){
+			sflag = term.getArg(2).getName();
+		}		
+                if (term.getArg(1).isConstant()){
+			compilePattern(term.getArg(1).getName(), sflag, true);
 		}
-
 	}
 	
 	
-	void compilePattern(String patdtvalue){
-		String sflag = null;
-		if (term.getArity()==3){
-			sflag = term.getArg(2).getName();
-		}
-
+	void compilePattern(String patdtvalue, String sflag, boolean regex){		
 		int flag = 0;
-		if (sflag!=null){ // flag argument "smix"
+		if (sflag != null){ // flag argument "smix"
 			for (int i = 0; i < IFLAG.length; i++){
 				if (sflag.indexOf(SFLAG[i]) != -1){ //is flag[i] present
 					flag =  flag | IFLAG[i]; // add the corresponding int flag
@@ -654,21 +652,31 @@ public class Processor {
 			}
 		}
 
-		if (!patdtvalue.startsWith("^") && !patdtvalue.startsWith(".*"))
+		if (regex && 
+                        !patdtvalue.startsWith("^") && !patdtvalue.startsWith(".*")){
 			patdtvalue = ".*"+patdtvalue;
-		if (!patdtvalue.endsWith("$") && !patdtvalue.endsWith(".*"))
+                }
+		if (regex && 
+                        !patdtvalue.endsWith("$") && !patdtvalue.endsWith(".*")){
 			patdtvalue = patdtvalue+".*";
-
-		if (flag == 0)
+                }
+		if (flag == 0){
 			pat = Pattern.compile(patdtvalue);
-		else pat = Pattern.compile(patdtvalue, flag);
+                }
+		else {
+                    pat = Pattern.compile(patdtvalue, flag);
+                }
 		
 		match = pat.matcher("");
 	}
 	
 	void compileReplace(){
 		if (term.getArg(1).isConstant()){
-			compileReplace(term.getArg(1).getName());
+                    String sflag = null;
+                    if (term.getArity() == 4){
+                            sflag = term.getArg(3).getName();
+                    }                    
+                    compilePattern(term.getArg(1).getName(), sflag, false);
 		}
 	}
 	
@@ -679,20 +687,19 @@ public class Processor {
 	}
 	
 	// replace('%abc@def#', '[^a-z0-9]', '-')
-	public String replace(String str, String rep){
+	public String replace(String str, String rep){           
 		match.reset(str);
 		String res = match.replaceAll(rep);
 		return res;
-	}
-	
-	public boolean regex(String str){
-		match.reset(str);
-		return match.matches();
-	}
+	}	
 	
 	public boolean regex(String str, String exp){
 		if (term.getArg(1).isVariable()){
-			compilePattern(exp);
+                    String sflag = null;
+                    if (term.getArity() == 3){
+                            sflag = term.getArg(2).getName();
+                    }	
+                    compilePattern(exp, sflag, true);
 		}
 		match.reset(str);
 		return match.matches();

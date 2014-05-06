@@ -46,13 +46,11 @@ public class SPIN implements ASTVisitor {
     private static final String SPOBJECT = "sp:object";
     private static final String SP_TRIPLE_PATH = "sp:TriplePath";
     private static final String SPPATH = "sp:path";
-    private static final String NL = "\n";
+    private static final String NL = System.getProperty("line.separator");
     private static final String SPRESULT_VARIABLES = "sp:resultVariables";
     private static final String SPFROM_NAMED = "sp:fromNamed";
     private static final String OSBRACKET = KeywordPP.OPEN_SQUARE_BRACKET;
     private static final String CSBRACKET = KeywordPP.CLOSE_SQUARE_BRACKET;
-    private static final String OBRACKET = KeywordPP.OPEN_BRACKET;
-    private static final String CBRACKET = KeywordPP.CLOSE_BRACKET;
     private static final String OPAREN   = KeywordPP.OPEN_PAREN;
     private static final String CPAREN   = KeywordPP.CLOSE_PAREN;
     private static final String SPACE    = KeywordPP.SPACE;
@@ -250,14 +248,12 @@ public class SPIN implements ASTVisitor {
          sb.append(tab() + OSBRACKET + SPACE + ATAB);
             counter++;
             sb.append(SP_CONSTRUCT + PT_COMMA);
-            sb.append(tab() + SPTEMPLATES + SPACE + OPAREN + NL);
+            sb.append(tab() + SPTEMPLATES );
 
             counter++;
-            for (int i = 0; i < ast.getConstruct().size(); i++) {
-                visit(ast.getConstruct().get(i));
-            }
+            visit(ast.getConstruct());           
             counter--;
-            sb.append(tab() + CPAREN + PT_COMMA);
+            sb.append(PT_COMMA);
 
             //WHERE
             where(ast);
@@ -659,7 +655,7 @@ public class SPIN implements ASTVisitor {
         sb.append(PT_COMMA);
 
         counter--;
-        sb.append(CSBRACKET + NL);
+        sb.append(tab() + CSBRACKET + NL);
     }
 
     @Override
@@ -729,16 +725,12 @@ public class SPIN implements ASTVisitor {
         visit(option.eget(0));
         
         sb.append(tab() + OSBRACKET + SPACE + ATAB);
-        counter++;
         sb.append("sp:Optional" + PT_COMMA);
-        sb.append(tab() + SPELEMENTS + SPACE + OPAREN + NL);
+        sb.append(tab() + SPELEMENTS + SPACE );
         counter++;
 
         visit(option.eget(1));
 
-
-        counter--;
-        sb.append(NL + tab() + CPAREN + NL);
         counter--;
         sb.append(tab() + CSBRACKET + NL);
     }
@@ -749,9 +741,8 @@ public class SPIN implements ASTVisitor {
 
         visit(minus.get(0));
         ttype("sp:Minus");
-        sb.append(tab() + SPELEMENTS + SPACE + OPAREN + NL);
+        sb.append(tab() + SPELEMENTS + SPACE );
         visit(minus.eget(1));
-        sb.append(NL + tab() + CPAREN + NL);
         sb.append(tab() + CSBRACKET + NL);
 
 
@@ -785,11 +776,11 @@ public class SPIN implements ASTVisitor {
         if (bgp.isExist()) {
             visit((Exist) bgp);
         } else {
-            //sb.append(tab() +  OPAREN );
+            sb.append(tab() +  OPAREN + NL);
             for (Exp ee : bgp.getBody()) {
                 visit(ee);
             }
-            //sb.append(tab() +  CPAREN );
+            sb.append(tab() +  CPAREN );
         }
     }
 
@@ -824,7 +815,6 @@ public class SPIN implements ASTVisitor {
     public void visit(Source source) {
 
         sb.append(tab() + OSBRACKET + SPACE + ATAB);
-        counter++;
         sb.append(SP + "NamedGraph" + PT_COMMA);
         sb.append(tab() + SP + "graphNameNode" + SPACE);
         //sb.append("<" + source.getSource().getName().replace("?", "") + ">" + PT_COMMA);
@@ -832,15 +822,11 @@ public class SPIN implements ASTVisitor {
         visit(source.getSource());
         sb.append(PT_COMMA);
 
-        sb.append(tab() + SPELEMENTS + SPACE + OPAREN + NL);
+        sb.append(tab() + SPELEMENTS + SPACE);
         counter++;
 
-        for (int i = 0; i < source.size(); i++) {
-            visit(source.get(i));
-        }
+        visit(source.get(0));
 
-        counter--;
-        sb.append(tab() + CPAREN + NL);
         counter--;
         sb.append(tab() + CSBRACKET + NL);
 
@@ -994,17 +980,11 @@ public class SPIN implements ASTVisitor {
      * @param ast
      */
     private void where(ASTQuery ast) {
-        sb.append(tab() + SP + KeywordPP.WHERE + SPACE + OPAREN + NL);
+        sb.append(tab() + SP + KeywordPP.WHERE + SPACE );
         counter++;
-
-        for (int i = 0; i < ast.getBody().size(); i++) {
-            visit((ast.getBody().eget(i)));
-            if (i < ast.getBody().size() - 1) {
-                sb.append(NL);
-            }
-        }
+        visit(ast.getBody());
         counter--;
-        sb.append(NL + tab() + CPAREN);
+        sb.append(NL);
 
     }
 
@@ -1063,12 +1043,12 @@ public class SPIN implements ASTVisitor {
                     sb.append("sp:DeleteWhere" + PT_COMMA);
 
                     //Where
-                    sb.append(tab() + "sp:where" + SPACE + OPAREN + NL);
+                    sb.append(tab() + "sp:where" );
                     counter++;
                     visit(composite.getBody());
                     counter--;
 
-                    sb.append(tab() + CPAREN + NL);
+                    sb.append(NL);
                     counter--;
                     dw = true;
                     sb.append(CSBRACKET);
@@ -1098,22 +1078,22 @@ public class SPIN implements ASTVisitor {
         }
 
         //DELETE_INSERT
-        for (int i = 0; i < composite.getUpdates().size(); i++) {
+        for (Composite c : composite.getUpdates()) {
             counter++;
 
             //Delete
-            if (composite.getUpdates().get(i).type() == Update.DELETE) {
-                sb.append(tab() + "sp:deletePattern" + SPACE + OPAREN + NL);
+            if (c.type() == Update.DELETE) {
+                sb.append(tab() + "sp:deletePattern");
             } //Insert
             else {
-                sb.append(tab() + "sp:insertPattern" + SPACE + OPAREN + NL);
+                sb.append(tab() + "sp:insertPattern");
             }
 
             counter++;
-            visit(composite.getUpdates().get(i).getPattern());
+            visit(c.getPattern());
             counter--;
 
-            sb.append(tab() + CPAREN + PT_COMMA);
+            sb.append(PT_COMMA);
             counter--;
         }
 
@@ -1147,12 +1127,12 @@ public class SPIN implements ASTVisitor {
 
         //Where
         counter++;
-        sb.append(tab() + "sp:where" + SPACE + OPAREN + NL);
+        sb.append(tab() + "sp:where" );
         counter++;
         visit(composite.getBody());
         counter--;
 
-        sb.append(tab() + CPAREN + NL);
+        sb.append(NL);
         counter--;
 
         sb.append(CSBRACKET);
@@ -1173,11 +1153,11 @@ public class SPIN implements ASTVisitor {
         }
 
         //DATA
-        sb.append(tab() + "sp:data" + SPACE + OPAREN + NL);
+        sb.append(tab() + "sp:data" );
         counter++;
         visit(composite.getData());
         counter--;
-        sb.append(tab() + CPAREN + NL);
+        sb.append( NL);
         counter--;
         sb.append(CSBRACKET);
     }

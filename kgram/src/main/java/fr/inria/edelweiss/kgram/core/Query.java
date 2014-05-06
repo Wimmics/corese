@@ -858,7 +858,7 @@ public class Query extends Exp {
 	public boolean check(){
 		if (getGroupBy().size()>0){
 			for (Exp exp : getSelectFun()){
-				if (! checkGroupBy(exp)){
+                            if (! checkGroupBy(exp)){
 					return false;
 				}
 			}
@@ -1017,6 +1017,7 @@ public class Query extends Exp {
 			// use case: select (exists{?x :p ?y} as ?b)
 			if (ee.getFilter()!=null){
 				index(this, ee.getFilter());
+                                compile(ee.getFilter());
 			}
 		}
 		
@@ -1035,8 +1036,8 @@ public class Query extends Exp {
 		for (Filter f : getPathFilter()){
 			index(this, f);
 		}
-		index(getOrderBy());
-		index(getGroupBy());
+		indexCompile(getOrderBy());
+		indexCompile(getGroupBy());
 		
 		if (getHaving()!=null){
 			index(this, getHaving().getFilter());
@@ -1059,12 +1060,13 @@ public class Query extends Exp {
 	}
 	
 	
-	void index(List<Exp> list){
+	void indexCompile(List<Exp> list){
 		for (Exp ee : list){
 			// use case: group by (exists{?x :p ?y} as ?b)
 			// use case: order by exists{?x :p ?y} 
 			if (ee.getFilter()!=null){
 				index(this, ee.getFilter());
+                                compile(ee.getFilter());
 			}
 		}
 	}
@@ -1606,7 +1608,7 @@ public class Query extends Exp {
 			}
 			lVar = list;
 			if (q.getHaving() != null){
-				compile(q.getHaving().getFilter(), new VString(), false);
+				compile(q.getHaving().getFilter());
 			}
 			// continue
 
@@ -2131,7 +2133,10 @@ class VString extends ArrayList<String> {
 		return b;
 	}
 	
-	
+	void compile(Filter f){
+             compile(f, new VString(), false);
+        }
+        
 	void compile(Filter f, VString lVar, boolean opt){
 		compile(f.getExp(), lVar, opt);
 	}

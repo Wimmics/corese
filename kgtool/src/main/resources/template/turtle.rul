@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 11 14:28:34 CEST 2014
+Tue May 06 10:32:29 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -14,16 +14,25 @@ Fri Apr 11 14:28:34 CEST 2014
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:start {
-  ?x
-  ; separator = "\n\n"
+  st:prolog("@prefix")
+  
+  group { 
+    st:apply-templates(?x)
+    ; separator = "\n\n"
+  }
 }
 where {
   select distinct ?x where { 
     ?x ?p ?y     
-    filter ( isURI(?x) || not exists { ?z ?q ?x } )
-  }
+    filter ( 
+      isURI(?x) 
+      || not exists { ?z ?q ?x }
+      || (isBlank(?x) 
+	  && exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) })
+    )
+  } order by ?x
 }
-order by ?x
+
 ]]>
 </body>
 </rule>
@@ -38,12 +47,17 @@ order by ?x
 template st:type {
   "a "
   group {
-          st:uri(?c)           
+          ?c           
           ; separator = ", " 
-   }
+  }
+  if (?rest, concat(" ;", st:nl()), "")
 }
 where {
   ?in rdf:type ?c 
+  
+    bind(
+    exists { ?in ?q ?v . filter (?q != rdf:type) }
+    as ?rest)
 }
 ]]>
 </body>
@@ -57,7 +71,7 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:rdf {
-  ?x
+  st:apply-templates(?x)
   ; separator = "\n\n"
 }
 where {
@@ -87,51 +101,30 @@ order by ?x
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template st:trig {
-  "graph " st:uri(?g) " {\n" 
-      group { ?x ; separator = "\n\n" }
-  "\n}"
-  ; separator = "\n\n"
-}
-where {
-  select distinct ?g ?x where { 
-  
-    graph ?g { 
-      ?x ?p ?y 
-      filter ( isURI(?x) || not exists { ?z ?q ?x } )
-    }
-  }
-}
-group by ?g
-order by ?g ?x
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
 template st:value {
              
-	st:uri(?p) " " 
+	?p " " 
 	
-        if (bound(?e),   st:call-template(st:list, ?y),
-          st:uriLiteral(?y))	
+        if (bound(?e), 
+	  st:call-template(st:list, ?y), 
+	  if (?refer, st:turtle(?y), ?y))
           
-        ; separator = " ;\n" 
+        ; separator = concat(" ;", st:nl()) 
+        
+#        ; separator = " ;\n" 
      
 }
 where {
   ?in ?p ?y 
   
-  filter(?p not in (rdf:type, rdfs:member))
+  filter(?p not in (rdf:type))
+  
+  bind(isBlank(?y) && exists { ?x ?q ?y . filter(?in != ?x) }
+    as ?refer)
     
   optional { ?y  rdf:first ?e }
 }
+order by ?p ?y
 ]]>
 </body>
 </rule>
@@ -145,7 +138,7 @@ where {
 #
 template st:list {
   "(" 
-    group { st:uri(?e) } 
+    group { ?e } 
   ")"
   
 }
@@ -166,7 +159,12 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:profile(?in) {
-    st:define(st:process(?in) =  st:apply-templates(?in))
+
+    st:define(st:process(?in) = 
+      if (isBlank(?in), st:apply-templates(?in), st:turtle(?in)))
+      
+    st:define(st:default(?in) = st:turtle(?in))
+    
 }
 where {
 }
@@ -182,13 +180,12 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:all {
-  ?x
+  st:apply-templates(?x)
   ; separator = "\n\n"
 }
 where {
   select distinct ?x where { 
     ?x ?p ?y 
-    
     filter ( isURI(?x) || not exists { ?z ?q ?x } )
   }
 }
@@ -205,7 +202,7 @@ order by ?x
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:rdfs {
-  ?x
+  st:apply-templates(?x)
   ; separator = "\n\n"
 }
 where {
@@ -234,21 +231,22 @@ order by ?x
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
-  "["
-      st:call-template(st:type, ?in)
-      
-      if (exists { ?in a ?t ; ?q ?v . filter (?q not in (rdf:type)) }, 
-         " ;\n", "")
+  if (?refer, concat(st:turtle(?in), " "), "[")
   
-      st:call-template(st:value, ?in)
+      ibox {
+	st:call-template(st:type, ?in)
+	  
+	st:call-template(st:value, ?in)
+      } 
       
-  "]"
+  if (?refer, " .", "]")
 }
 where {
-  ?in ?p ?y 
-  
+  ?in ?p ?y   
   filter(isBlank(?in))
   
+  bind (exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) }
+  as ?refer)
 }
 limit 1
 ]]>
@@ -263,41 +261,20 @@ limit 1
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
-  st:turtle(?in)
-}
-where {
-  ?x ?p ?in
-  filter(isLiteral(?in))
-}
-limit 1
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template {
-  st:uri(?in) " "
+  ?in " "
+      ibox { 
   
-      st:call-template(st:type, ?in)
+	st:call-template(st:type, ?in)
+	
+	st:call-template(st:value, ?in)
       
-      if (exists { ?in a ?t ; ?q ?v . filter (?q not in (rdf:type)) }, 
-         " ;\n", "")
- 
-      st:call-template(st:value, ?in)
+      } 
       
       " ."      
 }
 where {
-  ?in ?p ?y 
-  
-  filter(isUri(?in))
-  
+  ?in ?p ?y   
+  filter(isUri(?in))  
 }
 limit 1
 ]]>

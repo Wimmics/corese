@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 11 14:28:34 CEST 2014
+Tue May 06 10:32:29 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -62,7 +62,8 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:profile(?in) {
-    st:define(st:process(?in) =  st:uri(?in))    
+    st:define(st:process(?in) =  
+      if (isURI(?in), st:turtle(?in), st:apply-templates(?in)))    
 }
 where {
 }
@@ -118,13 +119,15 @@ where {
 template st:interunion {
     xsd:string(if (bound(?t), ?ld, ?lo))
     "(" 
-      if (?p = owl:disjointUnionOf, ?x, "") " "
-      ?x  
+      ibox {
+	if (?p = owl:disjointUnionOf, ?in, "") " "
+	?x  
+      }
     ")" 
 }
 where {
   ?in ?p ?x 
-  optional { ?in a ?t filter(?t = rdfs:Datatype) }
+  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
  }
 values (?p ?lo ?ld) {
   (owl:unionOf         "ObjectUnionOf" "DataUnionOf")
@@ -172,19 +175,21 @@ values (?t ?l) {
 template {
     if (bound(?t), "DatatypeDefinition", "EquivalentClasses")
     "("  
-      if (bound(?z), 
+      if (?iu, 
 	st:call-template(st:interunion, ?in),
-	?in) 
-      " "  ?y  
+	?in)
+	
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
     ")" 
 }
 where {
   ?in owl:equivalentClass  ?y 
   
-  optional { 
-    { ?in owl:intersectionOf ?z } union 
-    { ?in owl:unionOf ?z } 
-  }
+  bind (exists { ?in owl:intersectionOf|owl:unionOf ?z } 
+  as ?iu)
   
   optional { ?y a ?t filter(?t = rdfs:Datatype) }
 }
@@ -298,19 +303,19 @@ where {
 # depending if it is embedded in subClassOf or not
 #
 template {
-    "SubClassOf("  
-     if (bound(?z),
-# special case: use a named template
-	st:call-template(st:interunion, ?in),
-	?in) 
-      " "  ?y  
+    "SubClassOf(" 
+      ?in
+      
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
     ")" 
 }
 where {
   ?in rdfs:subClassOf ?y 
-  optional { 
-    { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
-  }
+  filter not exists { ?in owl:intersectionOf | owl:unionOf ?z } 
+
 }
 ]]>
 </body>
@@ -351,9 +356,10 @@ where {
 <![CDATA[
 template {
   "DatatypeRestriction(" ?dt " " 
-      group  { ?p " " 
-      if (isURI(?v), st:turtle(?v), st:apply-templates(?v)) 
-      ; separator = " "}
+      group  { 
+	?p " " 
+	if (isURI(?v), st:turtle(?v), st:apply-templates(?v))
+      }
   ")"  
 }
 where {
@@ -481,7 +487,7 @@ values (?t ?l) {
 <![CDATA[
 template {
    xsd:string(?l)
-   "("  ?in " " ?y ")"   
+   "("  ?in " " ?y ")"
 }
 where {
    ?in ?p ?y 
@@ -527,7 +533,7 @@ template {
     
     st:call-template(st:body, ?in)
     
-  "\n)"
+  "\n)\n"
 }
 where {
 
@@ -584,7 +590,9 @@ values (?t ?l) {
 <body>
 <![CDATA[
 template {
+  if (isBlank(?e), st:nl(), "")
   ?e 
+  ; separator = " "
 }
 where {
   ?in rdf:rest*/rdf:first ?e
@@ -718,6 +726,24 @@ where {
 <body>
 <![CDATA[
 #
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {}
+where {
+  ?in a ?t
+  filter (strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:))
+}
+pragma { st:template st:priority 1000 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # tricky case:
 # subclassOf(intersectionOf() ?y)
 # there are two templates for intersection/union 
@@ -748,7 +774,11 @@ where {
 <![CDATA[
 template {
     if (bound(?t), "Data", "Object") 
-    "IntersectionOf(" ?y  ")" 
+    "IntersectionOf(" 
+	ibox {
+	  ?y  
+	}
+    ")" 
 }
 where {
   ?in owl:intersectionOf ?y 
@@ -761,7 +791,7 @@ where {
   }
   filter (! bound(?z))
 
-  optional { ?in a ?t filter(?t = rdfs:Datatype) }
+  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
 }
 ]]>
 </body>
@@ -791,14 +821,13 @@ values (?t ?l){
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template {
-  if (! strstarts(?t, owl:) 
-   && ! strstarts(?t, rdf:) 
-   && ! strstarts(?t, rdfs:), 
-      concat("ClassAssertion(", ?t, " ", ?in, ")"),
-      "")
+   "ClassAssertion(" ?t " " ?in ")"
 }
 where {
   ?in a ?t
+  filter (!(strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:)) )
 }
 pragma { st:template st:priority 1000 }
 ]]>
@@ -881,8 +910,9 @@ where {
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template   {
-    
-   st:apply-all-templates(?in ; separator = "\n") 
+
+  st:apply-all-templates(?in ; separator = "\n") 
+   
    ; separator = "\n\n"
     
 }
@@ -916,6 +946,34 @@ template {
 }
 where {
   ?in owl:propertyChainAxiom ?l 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+template {
+    "SubClassOf(" 
+    
+    box { 
+      st:call-template(st:interunion, ?in)
+      st:nl()
+      ?y 
+    }
+      
+    ")" 
+}
+where {
+  ?in rdfs:subClassOf ?y 
+  filter exists { ?in owl:intersectionOf | owl:unionOf ?z } 
 }
 ]]>
 </body>

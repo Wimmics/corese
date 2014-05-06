@@ -467,12 +467,14 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case STRREPLACE:
 
-                if (args.length != 3) {
+                if (! (args.length == 3 || args.length == 4)) {
                     return null;
                 }
-                if (!isStringLiteral(dt)) {
+                
+                if (! isStringLiteral(dt)) {
                     return null;
                 }
+                
                 return strreplace(exp, dt, dt1, datatype(args[2]));
 
 

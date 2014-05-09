@@ -91,6 +91,7 @@ public class Processor {
         static final String FOCUS_NODE              = STL + "getFocusNode";
         static final String APPLY_TEMPLATES         = STL + "apply-templates";
         static final String APPLY_TEMPLATES_WITH    = STL + "apply-templates-with";
+  	static final String APPLY_TEMPLATES_ON      = STL + "apply-templates-on";
         static final String APPLY_ALL_TEMPLATES     = STL + "apply-all-templates";
         static final String APPLY_ALL_TEMPLATES_WITH= STL + "apply-all-templates-with";
         static final String CALL_TEMPLATE           = STL + "call-template";
@@ -105,6 +106,9 @@ public class Processor {
         static final String STL_PREFIX              = STL + "prefix";
  	static final String STL_INDENT              = STL + "indent";
  	static final String STL_SELF                = STL + "self";
+ 	static final String STL_LOAD                = STL + "load";
+ 	static final String STL_IMPORT              = STL + "import";
+        
 	public static final String STL_GROUPCONCAT  = STL + "group_concat"; 
 	public static final String STL_CONCAT       = STL + "concat"; 
 	public static final String STL_NL           = STL + "nl"; 
@@ -448,6 +452,7 @@ public class Processor {
                 defoper(FOCUS_NODE,             ExprType.FOCUS_NODE);
                 defoper(APPLY_TEMPLATES, 	ExprType.APPLY_TEMPLATES);
 		defoper(APPLY_TEMPLATES_WITH, 	ExprType.APPLY_TEMPLATES_WITH);
+		defoper(APPLY_TEMPLATES_ON, 	ExprType.APPLY_TEMPLATES_ON);
 		defoper(APPLY_ALL_TEMPLATES, 	ExprType.APPLY_ALL_TEMPLATES);
 		defoper(APPLY_ALL_TEMPLATES_WITH,ExprType.APPLY_ALL_TEMPLATES_WITH);
 		defoper(CALL_TEMPLATE,          ExprType.CALL_TEMPLATE);
@@ -464,6 +469,8 @@ public class Processor {
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
+		defoper(STL_LOAD,               ExprType.STL_LOAD);
+		defoper(STL_IMPORT,             ExprType.STL_IMPORT);
 
 		defoper(LEVEL,          ExprType.LEVEL);
 		defoper(INDENT,         ExprType.INDENT);

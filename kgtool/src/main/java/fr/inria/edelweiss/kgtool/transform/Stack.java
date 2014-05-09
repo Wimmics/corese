@@ -104,7 +104,7 @@ class Stack {
             sb.append(dt);
             sb.append(": ");
             for (Query q : map.get(dt)) {
-                sb.append(q.getStringPragma(Pragma.FILE));
+                sb.append(q.getAST());
                 sb.append(" ");
             }
             sb.append("\n");

@@ -18,7 +18,6 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -59,10 +58,12 @@ public class Transformer {
     public static final String TRIG         = STL + "trig";
     public static final String TABLE        = STL + "table";
     public static final String TYPECHECK    = STL + "typecheck";
-    private static final String STL_PROFILE    = STL + "profile";
-    private static final String STL_START   = STL + "start";
-    private static final String STL_DEFAULT = STL + "default";   
+    public static final String STL_PROFILE  = STL + "profile";
+    public static final String STL_START   = STL + "start";
+    public static final String STL_DEFAULT = STL + "default";   
     private static final String STL_TURTLE  = STL + "turtle";   
+    public static final String STL_IMPORT  = STL + "import";   
+    public static final String STL_PROCESS = STL + "process";   
     // default
     public static final String PPRINTER = TURTLE;
     private static final String OUT = ASTQuery.OUT;
@@ -95,6 +96,7 @@ public class Transformer {
    
     String start = STL_START;
     HashMap<Query, Integer> tcount;
+    HashMap<String, String> loaded, imported;
     private boolean isHide = false;
     public boolean stat = !true;
     private boolean isAllResult = true;
@@ -104,11 +106,11 @@ public class Transformer {
     private boolean isOptimize = isOptimizeDefault;
     
     // st:process() of template variable, may be overloaded
-    private int process = ExprType.APPLY_TEMPLATES;
+    private int process = ExprType.TURTLE;
     // st:default() process of template variable, may be overloaded
     // used when all templates fail
     // default is: return RDF term as is (effect is like xsd:string)
-    private int defaut  = ExprType.UNDEF;
+    private int defaut  = ExprType.TURTLE;
 
     static {
         table = new Table();
@@ -133,6 +135,8 @@ public class Transformer {
         EMPTY = DatatypeMap.createLiteral(NULL);
         tcount = new HashMap<Query, Integer>();
         proc = Processor.create();
+        loaded = new HashMap();
+        imported = new HashMap();
     }
     
     
@@ -423,6 +427,30 @@ public class Transformer {
     public IDatatype process(String temp) {
         return process(temp, false, null);
     }
+      
+    /**
+     * Recursively apply transformation on a graph that is loaded at runtime
+     */
+     public IDatatype processOn(String uri) {
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess saveQP = exec;
+        Stack saveStack = stack;
+        try {
+            load.load(uri, Load.TURTLE_FORMAT);
+            set(QueryProcess.create(g));
+            stack = new Stack(true);
+            IDatatype dt = process();
+            return dt;
+        } catch (LoadException ex) {
+            logger.error(ex);
+            return EMPTY;
+        }
+        finally {
+           set(saveQP);
+           stack = saveStack;
+        }
+    }      
 
     public IDatatype process(String temp, boolean all, String sep) {
         query = null;
@@ -490,7 +518,7 @@ public class Transformer {
     public void setLevel(int n){
          level = n;
     }
-
+    
     public IDatatype process(Node node) {
         return process((IDatatype) node.getValue());
     }
@@ -524,7 +552,6 @@ public class Transformer {
      */
     public IDatatype process(Object[] args, IDatatype dt1, IDatatype dt2, String temp,
             boolean allTemplates, String sep, Expr exp, Query q) {
-        
         if (dt1 == null) {
             return EMPTY;
         }
@@ -549,7 +576,7 @@ public class Transformer {
             // template {"subClassOf(" ?in " " ?y ")"} where {?in rdfs:subClassOf ?y}
             start = true;
             stack.push(dt1, query);
-        }
+       }
 
         if (isDebug || isTrace) {
             System.out.println("pprint: " + level() + " " + exp + " " + dt1);
@@ -580,7 +607,7 @@ public class Transformer {
             if (isDetail) {
                 qq.setDebug(true);
             }
-
+                        
             if (!qq.isFail() && !stack.contains(dt1, qq)) {
 
                 nbt++;
@@ -589,7 +616,7 @@ public class Transformer {
                     count++;
                 }
                 stack.push(dt1, qq);
-                if (stack.size() > max) {
+               if (stack.size() > max) {
                     max = stack.size();
                 }
 
@@ -665,7 +692,7 @@ public class Transformer {
             // named template fail
             return EMPTY;
         }
-        else if (hasDefault) {
+        else if (isHasDefault()) {
             // apply st:default named template
             IDatatype res = process(args, dt1, dt2, STL_DEFAULT, allTemplates, sep, exp, q);
             if (res != EMPTY) {
@@ -849,12 +876,17 @@ public class Transformer {
      * Default display when all templates fail
      */
     IDatatype display(IDatatype dt, Query q) {
-        if (q != null && q.getProfile() != null){
-            return profile(dt, q.getProfile());
+        if (q != null) {
+            Expr exp = q.getProfile(STL_DEFAULT);
+            if (exp != null) {
+                return display(dt, exp.oper());
+            } else if (q.getProfile() != null) {
+                return profile(dt, q.getProfile());
+            }
         }
-        else return display(dt, defaut);
+        return display(dt, defaut);
     }
-    
+
     /**
      * template [st:turtle]
      * a template may overload the default display
@@ -936,97 +968,15 @@ public class Transformer {
        setOptimize(table.isOptimize(pp));
        Loader load = new Loader(this);
        qe = load.load(pp);
-       hasDefault = qe.getTemplate(STL_DEFAULT) != null;
        if (isCheck()) {
             check();
        }
-       for (Query q : qe.getNamedTemplates()) {
-           init(q);
-       }
+       load.profile(qe, qe);
+       setHasDefault(qe.getTemplate(STL_DEFAULT) != null);
+       qe.sort();
    }
-    
-    
-    /**
-     * The st:profile named template may contain a st:define statement such as:
-     * st:define(st:process(?in) = st:uri(?in))
-     * st:define(st:default(?in) = st:turtle(?in))
-     * where st:process(?in) represents the processing of a variable in template clause
-     * default processing is st:apply-templates(?x)
-     * it can be overloaded
-     * eg spin transformation uses st:uri(?var).
-     */
-    void init(Query q){
-        if (q.getName() != null && q.getName().equals(STL_PROFILE)){
-               init(q.getSelectFun());
-        }
-    }
-    
- 
-    void init(List<Exp> select) {
-        for (Exp exp : select) {
-            if (exp.getFilter() != null) {
-                initExp(exp.getFilter().getExp());
-            }
-        }
-    }
-    
-    void initExp(Expr exp) {
-        if (exp.oper() == ExprType.STL_DEFINE
-                && exp.getExpList().size() == 1
-                && exp.getExp(0).getExpList().size() == 2) {
-            init(exp);
-        }
-        else if (exp.oper() == ExprType.STL_CONCAT){
-            for (Expr ee : exp.getExpList()){
-                initExp(ee);
-            }
-        }
-    }
-    
-    /**
-     * st:define(st:process(?in) = st:uri(?in))
-     * st:define(st:default(?in) = st:turtle(?in))
-     * 
-     */
-    void init(Expr exp) {
-        //System.out.println("PP: " + exp);
-        exp = exp.getExp(0);
-        if (! check(exp)){
-            logger.error("Incorrect profile expression: " + exp);
-            return ;        
-        }
-        Expr ee = exp.getExp(1);
-
-        switch (exp.getExp(0).oper()) {
-
-            case ExprType.STL_PROCESS:
-                // ee = st:uri()
-                // set default st:process operation
-                setProcess(ee.oper());
-                setProcessExp(exp);               
-                break;
-                
-            case ExprType.STL_DEFAULT:
-                setDefault(ee.oper());
-                break;
-                
-            case ExprType.LEVEL:
-                IDatatype dt = (IDatatype) ee.getValue();
-                setLevelMax(dt.intValue());                
-                break;
-                
-
-        }
-    }
-    
-    boolean check(Expr exp){
-        if (exp.getExp(0).oper() == ExprType.LEVEL){
-            return exp.getExp(1).type() == ExprType.CONSTANT;
-        }
-        return (exp.getExp(1).type() == ExprType.FUNCTION && exp.getExp(1).oper() != ExprType.UNDEF); 
-    }
-
- 
+   
+   
     /**
      * *************************************************************
      *
@@ -1151,5 +1101,36 @@ public class Transformer {
         return map;
     }
 
-   
+    public void load(String uri) {
+        if (loaded.containsKey(uri)){
+            return;
+        }
+        else {
+            loaded.put(uri, uri);
+        }
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        try {
+            load.load(uri, Load.TURTLE_FORMAT);
+            g.init();
+            exec.add(g);
+        } catch (LoadException ex) {
+            logger.error(ex);
+        }
+    }
+
+    /**
+     * @return the hasDefault
+     */
+    public boolean isHasDefault() {
+        return hasDefault;
+    }
+
+    /**
+     * @param hasDefault the hasDefault to set
+     */
+    public void setHasDefault(boolean hasDefault) {
+        this.hasDefault = hasDefault;
+    }
+         
 }

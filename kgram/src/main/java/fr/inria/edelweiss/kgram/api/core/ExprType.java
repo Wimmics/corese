@@ -161,10 +161,10 @@ public interface ExprType {
 	public static int APPLY_TEMPLATES_WITH 	= 221;
 	public static int APPLY_ALL_TEMPLATES 	= 222;
 	public static int APPLY_ALL_TEMPLATES_WITH = 223;
-	public static int CALL_TEMPLATE 	= 224;
-	public static int CALL_TEMPLATE_WITH 	= 225;
+	public static int APPLY_TEMPLATES_ON    = 224;
+	public static int CALL_TEMPLATE 	= 225;
+	public static int CALL_TEMPLATE_WITH 	= 226;
 
-	public static int QNAME 	= 226;
 	public static int TURTLE 	= 227;
 	public static int LEVEL 	= 228;
 	public static int INDENT 	= 229;
@@ -176,7 +176,8 @@ public interface ExprType {
 	public static int WRITE 	= 235;
 	public static int FOCUS_NODE 	= 236;
 	public static int XSDLITERAL 	= 237;
-	public static int STL_PROCESS 	= 238;
+	public static int QNAME 	= 238;
+        
 	public static int STL_DEFAULT 	= 239;
 	public static int STL_DEFINE 	= 240;
 	public static int STL_NL 	= 241;
@@ -186,10 +187,13 @@ public interface ExprType {
 	public static int STL_GROUPCONCAT= 245;
 	public static int STL_AND       = 246;
 	public static int STL_NUMBER    = 247;
+	public static int STL_LOAD      = 248;
+	public static int STL_IMPORT    = 249;
+	public static int STL_PROCESS 	= 250;
 
 
-	public static int ISSKOLEM 	= 250;
-	public static int SKOLEM 	= 251;
+	public static int ISSKOLEM 	= 270;
+	public static int SKOLEM 	= 271;
 
 
 }

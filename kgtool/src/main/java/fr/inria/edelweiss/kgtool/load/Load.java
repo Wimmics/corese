@@ -204,8 +204,12 @@ public class Load
         }
         return true;
     }
-
+    
     public int getFormat(String path) {
+        return getFormat(path, UNDEF_FORMAT);
+    }
+
+    public int getFormat(String path, int defaultFormat) {
         if (isRDFXML(path)){
             return RDFXML_FORMAT;
         }
@@ -228,7 +232,7 @@ public class Load
             return QUERY_FORMAT;
         }
         
-        return UNDEF_FORMAT;
+        return defaultFormat;
     }
     
     private boolean hasExtension(String path, String ext) {
@@ -330,16 +334,22 @@ public class Load
         }
     }
 
-    
+    /**
+     * format is a suggested format when path has no extension
+     */
      public void load(String path, int format) throws LoadException {
-        load(path, path, path, format);
+        localLoad(path, path, path, getFormat(path, format));
     }
     
     public void load(String path, String base, String source) throws LoadException {
-        load(path, base, source, getFormat(path));
+        localLoad(path, base, source, getFormat(path));
     }
-        
-     public void load(String path, String base, String source, int format) throws LoadException {
+    
+    public void load(String path, String base, String source, int format) throws LoadException {
+         localLoad(path, base, source, getFormat(path, format));
+    }
+ 
+     private void localLoad(String path, String base, String source, int format) throws LoadException {
        
         log(path);
 

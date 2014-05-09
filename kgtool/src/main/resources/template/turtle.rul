@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue May 06 10:32:29 CEST 2014
+Fri May 09 10:45:39 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -15,7 +15,6 @@ Tue May 06 10:32:29 CEST 2014
 #
 template st:start {
   st:prolog("@prefix")
-  
   group { 
     st:apply-templates(?x)
     ; separator = "\n\n"
@@ -154,6 +153,25 @@ where {
 <body>
 <![CDATA[
 #
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:test {
+  st:load(rdf:)
+  st:load(rdfs:)
+  st:call-template(st:start)
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # defaut processing of a variable is st:apply-templates 
 #
 # Olivier Corby, Wimmics Inria I3S, 2014
@@ -168,6 +186,25 @@ template st:profile(?in) {
 }
 where {
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:test2 {
+  st:load(rdf:)
+  st:call-template(st:start)
+  st:apply-templates-on(st:table, rdf:)  
+}
+where {
+}
+
 ]]>
 </body>
 </rule>
@@ -239,13 +276,16 @@ template {
 	st:call-template(st:value, ?in)
       } 
       
-  if (?refer, " .", "]")
+  if (?refer, " .", 
+  if (?nested, "]", "] ."))
 }
 where {
   ?in ?p ?y   
   filter(isBlank(?in))
   
-  bind (exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) }
+  bind (exists { ?a ?q ?in } as ?nested)
+  
+  bind (?nested && exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) }
   as ?refer)
 }
 limit 1

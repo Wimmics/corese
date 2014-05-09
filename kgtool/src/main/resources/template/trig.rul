@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue May 06 10:32:29 CEST 2014
+Fri May 09 10:45:39 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -69,9 +69,16 @@ template st:type(?x, ?g) {
           if (isBlank(?c), st:apply-templates(?c, ?g), st:turtle(?c))           
           ; separator = ", " 
    }
+   
+   if (?rest, concat(" ;", st:nl()), "")
+
 }
 where {
   graph ?g { ?x a ?c }
+  
+   bind(
+    exists { graph ?g { ?x ?q ?v . filter (?q != rdf:type) } }
+    as ?rest)
 }
 ]]>
 </body>
@@ -90,15 +97,18 @@ template st:value(?x, ?g) {
 	
         if (bound(?e), 
 	  st:call-template(st:list, ?y, ?g), 
-	  if (isBlank(?y), st:apply-templates(?y, ?g), st:turtle(?y)))
+	  if (?refer, st:turtle(?y), ?y))
           
-        ; separator = " ;\n" 
+        ; separator = concat(" ;", st:nl()) 
      
 }
 where {
   graph ?g { 
     ?x ?p ?y    
     filter(?p not in (rdf:type))
+      
+    bind(isBlank(?y) && exists { graph ?g { ?z ?q ?y . filter(?x != ?z) }}
+    as ?refer)  
       
     optional { ?y rdf:rest ?e } 
   }
@@ -158,24 +168,26 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template (?x, ?g) {
-  "["  
+    if (?refer, concat(st:turtle(?in), " "), "[")
+    ibox {
       st:call-template(st:type, ?x, ?g)
-      
-      if (?type, " ;\n", "")
-  
+        
       st:call-template(st:value, ?x, ?g)
-      
-  "]"
+    }
+    if (?refer, " .", 
+    if (?nested, "]", "] ."))   
 }
 where {
   graph ?g { 
     ?x ?p ?y  
     filter(isBlank(?x))
     
-    bind(exists { ?x a ?t ; ?q ?v . filter (?q not in (rdf:type)) }
-    as ?type)
+    bind (exists { graph ?g { ?a ?q ?x }} as ?nested)
+    
+    bind (?nested && 
+    exists { graph ?g { ?a ?q ?x . ?b ?r ?x filter(?a != ?b) }}
+    as ?refer)
   }
-  
 }
 limit 1
 ]]>
@@ -191,23 +203,17 @@ limit 1
 #
 template (?x, ?g) {
   ?x " "
-  
+  ibox {
       st:call-template(st:type, ?x, ?g)
-      
-      if (?type, " ;\n", "")
- 
+       
       st:call-template(st:value, ?x, ?g)
-      
+  }
       " ."      
 }
 where {
   graph ?g { 
     ?x ?p ?y 
     filter(isUri(?x))
-    
-    bind(exists { ?x a ?t ; ?q ?v . filter (?q not in (rdf:type)) }
-    as ?type)
-    
   }
   
 }

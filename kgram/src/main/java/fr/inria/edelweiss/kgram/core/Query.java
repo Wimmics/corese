@@ -68,6 +68,8 @@ public class Query extends Exp {
 	Node gNode, pathNode;
 	// outer main query that contains this (when subquery)
 	Query query, outerQuery;
+        // for templates
+        private Query templateProfile;
 	Object object, ast;
 
 	private Object pprinter;
@@ -77,7 +79,7 @@ public class Query extends Exp {
 	
 	HashMap<String, Object> pragma;
 	// Extended filters: pathNode()
-	Hashtable <String, Filter> ftable;
+	HashMap <String, Filter> ftable;
 	// Extended queries for type check
 	Hashtable<Edge, Query> table;
 	// Extended queries for additional group by
@@ -143,7 +145,7 @@ public class Query extends Exp {
 		
 		compiler 	= new Compile(this);
 		table 		= new Hashtable<Edge, Query>();
-		ftable 		= new Hashtable<String, Filter>();
+		ftable 		= new HashMap<String, Filter>();
 		pragma 		= new HashMap<String, Object>(); 
 		tprinter 	= new HashMap<String, Object> ();  
 		queries 	= new ArrayList<Query>();
@@ -1942,6 +1944,20 @@ public class Query extends Exp {
         return isNumbering;
     }
 
+    /**
+     * @return the templateProfile
+     */
+    public Query getTemplateProfile() {
+        return templateProfile;
+    }
+
+    /**
+     * @param templateProfile the templateProfile to set
+     */
+    public void setTemplateProfile(Query templateProfile) {
+        this.templateProfile = templateProfile;
+    }
+
 class VString extends ArrayList<String> {
 		
 		void clear(int size){
@@ -2295,6 +2311,17 @@ class VString extends ArrayList<String> {
 	public Filter getFilter(String name){
 		return ftable.get(name);
 	}
+        
+        public Expr getProfile(String name) {
+            if (templateProfile == null) {
+                return null;
+            }
+            Filter f = templateProfile.getFilter(name);
+            if (f == null) {
+                return null;
+            }
+            return f.getExp();
+        }
 	
 	public Filter getGlobalFilter(String name){
 		return getGlobalQuery().getFilter(name);

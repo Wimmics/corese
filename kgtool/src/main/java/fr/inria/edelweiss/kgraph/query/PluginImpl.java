@@ -142,7 +142,7 @@ public class PluginImpl extends ProxyImpl {
                         return g.skolem(dt);    
                 }                
                 
-          case INDENT:
+            case INDENT:
                 return indent(dt, env, p);
               
             case STL_NL:
@@ -171,6 +171,13 @@ public class PluginImpl extends ProxyImpl {
             case URILITERAL:
             case XSDLITERAL:
                 return uri(exp, dt, env, p);
+                
+            case STL_LOAD:
+                load(dt, env, p);
+                return EMPTY;
+                
+            case APPLY_TEMPLATES_ON:
+                return applyOn(null, dt, env, p);
                 
             case FOCUS_NODE:
                 return getFocusNode(dt, env);    
@@ -247,6 +254,12 @@ public class PluginImpl extends ProxyImpl {
                 // dt1: focus
                 // dt2: arg
                 return pprint(dt1, dt2, null, null, exp, env, p);
+                
+                
+            case APPLY_TEMPLATES_ON:
+                // dt1: transformation 
+                // dt2: graph 
+                return applyOn(dt1, dt2, env, p);    
 
             case APPLY_TEMPLATES_WITH:
             case APPLY_ALL_TEMPLATES_WITH:
@@ -448,7 +461,7 @@ public class PluginImpl extends ProxyImpl {
         return node.getValue();   
     }
 
-
+    
     class Table extends Hashtable<Integer, PTable> {
     }
 
@@ -624,10 +637,11 @@ public class PluginImpl extends ProxyImpl {
      * the default behavior is st:apply-templates
      */
     public Object process(Expr exp, Environment env, Producer p, IDatatype dt) {
+        Query q = env.getQuery();
         Transformer pp = getTransformer(env, p);
         // overload current st:process() oper code to default behaviour oper code
         // future executions of this st:process() will directly execute target default behavior
-        Expr def = pp.getProcessExp();
+        Expr def = q.getProfile(Transformer.STL_PROCESS); //pp.getProcessExp();
         
         if (def == null){
             int oper = pp.getProcess();                     
@@ -693,6 +707,16 @@ public class PluginImpl extends ProxyImpl {
             return pprint(dt, null, null, null, exp, env, prod);
         }
     }
+    
+    private void load(IDatatype dt, Environment env, Producer p) {
+        Transformer t = getTransformer(env, p);
+        t.load(dt.getLabel());
+    }
+
+    IDatatype applyOn(IDatatype trans, IDatatype graph, Environment env, Producer p){
+        Transformer t = getTransformer(env, p, getLabel(trans), null);
+        return t.processOn(graph.getLabel());
+    }
 
     IDatatype getLevel(Environment env, Producer prod) {
         return getValue(level(env, prod));
@@ -702,14 +726,7 @@ public class PluginImpl extends ProxyImpl {
         Transformer p = getTransformer(env, prod);
         return p.level();
     }
-
-    /**
-     *
-     */
-    Transformer getTransformer(Environment env, Producer p) {
-        return getTransformer(env, p, (String) null, null);
-    }
-
+  
     String getLabel(IDatatype dt) {
         if (dt == null) {
             return null;
@@ -739,6 +756,11 @@ public class PluginImpl extends ProxyImpl {
         return Transformer.TURTLE;
     }
 
+
+    Transformer getTransformer(Environment env, Producer p) {
+        return getTransformer(env, p, (String) null, null);
+    }
+    
     Transformer getTransformer(Environment env, Producer prod, String t, IDatatype dt) {
         Query q = env.getQuery();
         String p = null;

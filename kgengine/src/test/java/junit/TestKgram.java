@@ -16,9 +16,7 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 
 public class TestKgram extends TestSuite
@@ -70,9 +68,14 @@ public class TestKgram extends TestSuite
     		  for (int i = 0; i < 1; i++) {
                      // QueryProcess.setJoin(true);
                       
+                      
   suite.addTest(new CoreseTest2(true, "testQuery", corese,
-  "select distinct ?x where {?x c:hasCreated ?l ?x c:isMemberOf+ ?org ?pers ?pp ?x " +
-  "?org c:Include+ ?pers  ?pers c:hasCreated ?doc}" , 5));
+   "select  where { rdfs:domain rdfs:domain ?x} " +
+   "", 1));
+  
+ suite.addTest(new CoreseTest2(true, "testQuery", corese,
+        "select * where {?x ?p ?y optional{?y rdf:type ?class}" +
+        " filter (! bound(?class) && ! isLiteral(?y))}", 2));
 
 
                   }

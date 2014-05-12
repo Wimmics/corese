@@ -116,7 +116,39 @@ public class TestQuery1 {
     }
 
     
-    
+    @Test
+ public void testGCC() throws EngineException{
+      Graph g = Graph.create();
+      QueryProcess exec = QueryProcess.create(g);
+        
+      String init = "insert data {"
+              + "<John> rdf:value 'test'@fr, 'titi'@fr . "
+              + "<Jack> rdf:value 'test'@fr,'titi'@en . "
+              + "<Jim>  rdf:value 'test'@fr, 'titi' . "
+             + "}" ;
+      
+      String q = "select ?x (group_concat(?v) as ?g) (datatype(?g) as ?dt)where {"
+              + "?x rdf:value ?v"
+              + "}"
+              + "group by ?x "
+              + "order by ?x";
+        
+      exec.query(init);
+         
+      
+      Mappings map = exec.query(q);
+      System.out.println(map);
+      
+      IDatatype dt0 = (IDatatype) map.get(0).getValue("?g");
+      assertEquals(true, dt0.getDatatypeURI().equals(NSManager.XSD+"string"));
+      
+      IDatatype dt1 = (IDatatype) map.get(1).getValue("?g");
+      assertEquals(true, dt1.getDatatypeURI().equals(NSManager.XSD+"string"));
+      
+      IDatatype dt2 = (IDatatype) map.get(2).getValue("?g");
+      assertEquals(true, dt2.getLang().equals("fr"));
+
+  }
     
     @Test
        public void testTrig() throws LoadException {
@@ -127,7 +159,7 @@ public class TestQuery1 {
             
             Transformer pp = Transformer.create(g, Transformer.TRIG);
             String str = pp.transform();
-            assertEquals(9391, str.length());
+            assertEquals(9675, str.length());
 
             
        } 
@@ -155,7 +187,7 @@ public class TestQuery1 {
 
          map = exec.query(t2);
          
-         assertEquals(6304, map.getTemplateResult().getLabel().length());
+         assertEquals(6318, map.getTemplateResult().getLabel().length());
         
     }
     
@@ -173,7 +205,7 @@ public class TestQuery1 {
                    
          
          Mappings map = exec.query(t1);
-         assertEquals(2336, map.getTemplateResult().getLabel().length());       
+         assertEquals(2516, map.getTemplateResult().getLabel().length());       
         
     }
     
@@ -705,7 +737,6 @@ public class TestQuery1 {
     
     
     
-    @Test
      public void testSpinQueryGraph() {
         Graph g = Graph.create();
         Load ld = Load.create(g);
@@ -1185,16 +1216,10 @@ public class TestQuery1 {
                 + "}"
                 + "";
 
-        String query1 = "prefix ex: <http://example.org/> "
-                + "select (group_concat(distinct self(?n1), ?n2 ;  separator='; ') as ?t) where {"
-                + "?x ex:name ?n1 "
-                + "?y ex:name ?n2 "
-                + "filter(?x != ?y)"
-                + ""
-                + "}";
+       
 
         String query2 = "prefix ex: <http://example.org/> "
-                + "select (group_concat( self(?n1), ?n2 ;  separator='; ') as ?t) where {"
+                + "select (group_concat( concat(self(?n1), ?n2) ;  separator='; ') as ?t) where {"
                 + "?x ex:name ?n1 "
                 + "?y ex:name ?n2 "
                 + "filter(?x != ?y)"
@@ -1204,13 +1229,10 @@ public class TestQuery1 {
         try {
             exec.query(init);
 
-            Mappings map = exec.query(query1);
+            
+
+            Mappings map = exec.query(query2);
             IDatatype dt = (IDatatype) map.getValue("?t");
-            assertEquals("Results", 34, dt.getLabel().length());
-
-
-            map = exec.query(query2);
-            dt = (IDatatype) map.getValue("?t");
             assertEquals("Results", 70, dt.getLabel().length());
 
         } catch (EngineException e) {
@@ -2066,45 +2088,7 @@ public class TestQuery1 {
         }
     }
 
-    @Test
-    public void test32() {
-        // select (group_concat(distinct ?x, ?y) as ?str)
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-
-        String update = "insert data {"
-                + "<John>  <value> 1, 2 ."
-                + "<Jack>  <value> 3, 4 ."
-                + "<James> <value> 1, 2 ."
-                + "}";
-
-        String query = "select  (group_concat(distinct ?y, ?z) as ?str) where {"
-                + "?x <value> ?y, ?z. filter(?y < ?z)"
-                + "}";
-
-        // TODO: bug with distinct function 
-        String query2 = "select  (group_concat(distinct self(?y), self(?z)) as ?str) where {"
-                + "?x <value> ?y, ?z. filter(?y < ?z)"
-                + "}";
-
-        try {
-            exec.query(update);
-            Mappings map = exec.query(query);
-
-            IDatatype dt1 = getValue(map, "?str");
-            System.out.println(dt1);
-
-            Mappings map2 = exec.query(query2);
-            IDatatype dt2 = getValue(map2, "?str");
-            System.out.println(dt2);
-
-            assertEquals("Result", true, true);
-
-        } catch (EngineException e) {
-            assertEquals("Result", true, e);
-        }
-
-    }
+   
 
     @Test
     public void test33() {

@@ -41,7 +41,7 @@ public class PPrint {
         static String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
         static String root  = data;
         static String srclib = "/user/corby/home/NetBeansProjects/kgram/trunk/kgtool/src/main/resources/template/";
-        static String tgtlib = "/user/corby/home/NetBeansProjects/kgram/trunk/kgtool/target/classes/fr/inria/edelweiss/resource/template/";
+        static String tgtlib = "/user/corby/home/NetBeansProjects/kgram/trunk/kgtool/target/classes/template/";
 
 	static Graph graph;
 		
@@ -69,7 +69,12 @@ public class PPrint {
 		translate(root + "template/sql/template",   lib + "sql.rul");
 		translate(root + "template/owl/template",   lib + "owl.rul");
 		translate(root + "template/turtle/template",lib + "turtle.rul");
+		translate(root + "template/trig/template",  lib + "trig.rul");
 		translate(root + "template/table/template", lib + "table.rul");
+		translate(root + "template/typecheck/template", lib + "typecheck.rul");
+                
+               
+                
 
                 //translate(root + "typecheck/template",     lib + "typecheck.rul");       
 	}

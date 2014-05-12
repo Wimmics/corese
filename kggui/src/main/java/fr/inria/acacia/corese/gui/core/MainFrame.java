@@ -57,7 +57,7 @@ import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 /**
@@ -69,7 +69,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics Inria I3S - 2014-02-17";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics Inria I3S - 2014-05-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -113,6 +113,12 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem map;
     private JMenuItem success;
     private JMenuItem quit;
+    private JMenuItem iselect, iconstruct, iask, idescribe, 
+            iinsert, idelete, ideleteinsert,
+            iturtle, itrig, ispin, iowl, itypecheck;
+    
+    HashMap<Object, String> itable;
+    
     private JCheckBox checkBoxQuery;
     private JCheckBox checkBoxRule;
     private JCheckBox checkBoxVerbose;
@@ -133,9 +139,49 @@ public class MainFrame extends JFrame implements ActionListener {
     protected int selected;
     // Texte dans l'onglet requête 
     private String textQuery;
+    
     // Texte par défaut dans l'onglet requête 
-    private String defaultTextQuery = "SELECT ?x ?t WHERE\n{\n ?x rdf:type ?t\n}";
-
+    private static final String defaultSelectQuery = 
+            "select * where {\n ?x ?p ?y\n}";
+    
+    private static final String defaultConstructQuery = 
+            "construct {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}";
+    
+    private static final String defaultAskQuery = 
+            "ask \nwhere {\n  ?x ?p ?y\n}";    
+    
+    private static final String defaultDescribeQuery = 
+            "describe ?x \nwhere {\n  ?x ?p ?y\n}";   
+    
+    private static final String defaultInsertQuery = 
+            "insert {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}"; 
+  
+    private static final String defaultDeleteQuery = 
+            "delete {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}"; 
+    
+    private static final String defaultDeleteInsertQuery = 
+            "delete {\n ?x ?p ?y \n} \ninsert {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}";     
+    
+    
+    
+    private static final String defaultTemplateQuery = 
+            "template {\n st:apply-templates-with(st:turtle) \n} \nwhere {\n\n}";
+    
+    private static final String defaultTrigQuery = 
+            "template {\n st:apply-templates-with(st:trig) \n} \nwhere {\n\n}";
+    
+    private static final String defaultOWLQuery = 
+            "template {\n st:apply-templates-with(st:owl) \n} \nwhere {\n\n}";
+    
+    private static final String defaultSPINQuery = 
+            "template {\n st:apply-templates-with(st:spin) \n} \nwhere {\n\n}";
+    
+    private static final String defaultTypecheckQuery = 
+            "template {\n st:apply-templates-with(st:typecheck) \n} \nwhere {\n\n}";    
+    
+    
+    private String defaultQuery = defaultSelectQuery;
+            
     private IEngine myCorese = null;
     private CaptureOutput myCapturer = null;
     private final Logger logger = Logger.getLogger(MainFrame.class.getName());
@@ -250,10 +296,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 }
                 // Si l'onglet sélectionné est le "+" on crée un nouvel onglet Query
                 if (c == plus) {
-                    // s : texte par défaut dans la requête
-                    textQuery = defaultTextQuery;
-                    //Crée un nouvel onglet Query
-                    newQuery();
+                   execPlus();
                 }
             }
         });
@@ -287,6 +330,17 @@ public class MainFrame extends JFrame implements ActionListener {
         for (int i = 0; i < listJMenuItems.size(); i++) {
             listJMenuItems.get(i).setEnabled(false);
         }
+    }
+    
+    void execPlus() {
+        execPlus(defaultQuery);
+    }
+    
+      void execPlus(String str) {
+        // s : texte par défaut dans la requête
+        textQuery = str;
+        //Crée un nouvel onglet Query
+        newQuery();
     }
     
     void setStyleSheet(){
@@ -394,7 +448,24 @@ public class MainFrame extends JFrame implements ActionListener {
 
         saveResult = new JMenuItem("Save Result");
         saveResult.addActionListener(this);
-
+        
+        itable = new HashMap<Object, String>();
+        
+        iselect     = defItem("Select", defaultSelectQuery);
+        iconstruct  = defItem("Construct", defaultConstructQuery);
+        iask        = defItem("Ask", defaultAskQuery);
+        idescribe   = defItem("Describe", defaultDescribeQuery);      
+        iinsert     = defItem("Insert", defaultInsertQuery);
+        idelete     = defItem("Delete", defaultDeleteQuery);
+        ideleteinsert = defItem("DeleteInsert", defaultDeleteInsertQuery);
+                    
+        iturtle = defItem("Turtle", defaultTemplateQuery); 
+        itrig = defItem("Trig", defaultTrigQuery); 
+        ispin   = defItem("SPIN", defaultSPINQuery); 
+        iowl    = defItem("OWL", defaultOWLQuery); 
+        itypecheck = defItem("TypeCheck", defaultTypecheckQuery); 
+       
+        
         loadAndRunRule = new JMenuItem("Load&Run Rule");
         loadAndRunRule.addActionListener(this);
         cut = new JMenuItem("Cut");
@@ -426,7 +497,7 @@ public class MainFrame extends JFrame implements ActionListener {
         myRadio = new ButtonGroup();
 //        coreseBox = new JRadioButton("Corese - SPARQL 1.1");
 //        coreseBox.setSelected(true);
-//        coreseBox.addActionListener(this);
+//        coreseBox.addActionListener(this);system
         kgramBox = new JRadioButton("Corese/Kgram SPARQL 1.1");
         kgramBox.setSelected(true);
         kgramBox.addActionListener(this);
@@ -468,6 +539,8 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu editMenu = new JMenu("Edit");
         JMenu engineMenu = new JMenu("Engine");
         JMenu debugMenu = new JMenu("Debug");
+        JMenu queryMenu = new JMenu("Query");
+        JMenu templateMenu = new JMenu("Template");
         JMenu aboutMenu = new JMenu("?");
 
         //On ajoute tout au menu
@@ -481,6 +554,22 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(loadAndRunRule);
         fileMenu.add(loadStyle);
 
+        queryMenu.add(iselect);
+        queryMenu.add(iconstruct);
+        queryMenu.add(iask);
+        queryMenu.add(idescribe);
+        
+        queryMenu.add(idelete);
+        queryMenu.add(iinsert);
+        queryMenu.add(ideleteinsert);
+        
+        templateMenu.add(iturtle);
+        templateMenu.add(itrig);
+        templateMenu.add(iowl);
+        templateMenu.add(ispin);
+       
+        templateMenu.add(itypecheck);
+        
         editMenu.add(undo);
         editMenu.add(redo);
         editMenu.add(cut);
@@ -647,6 +736,8 @@ public class MainFrame extends JFrame implements ActionListener {
         menuBar.add(editMenu);
         menuBar.add(engineMenu);
         menuBar.add(debugMenu);
+        menuBar.add(queryMenu);
+        menuBar.add(templateMenu);
         menuBar.add(aboutMenu);
 
 
@@ -667,6 +758,13 @@ public class MainFrame extends JFrame implements ActionListener {
             saveQuery.setEnabled(false);
             saveResult.setEnabled(false);
         }
+    }
+    
+    JMenuItem defItem(String name, String query){
+        JMenuItem it = new JMenuItem(name);
+        it.addActionListener(this); 
+        itable.put(it, query);
+        return it;
     }
 
     //Actions du menu
@@ -835,7 +933,7 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         } //crée un nouvel onglet requête
         else if (e.getSource() == newQuery) {
-            textQuery = defaultTextQuery;
+            textQuery = defaultQuery();
             newQuery();
         } //Applique les règles chargées
         else if (e.getSource() == runRules) {
@@ -881,7 +979,15 @@ public class MainFrame extends JFrame implements ActionListener {
                 temp.getButtonTKgram().setEnabled(true);
             }
         }
+        else if (itable.get(e.getSource()) != null) {
+            String query = itable.get(e.getSource());
+            execPlus(query);
+        }                
+    }    
 
+    
+    String defaultQuery(){
+        return defaultQuery;
     }
 
     public static int getLineStartOffset(final JTextComponent textComponent, final int line) throws BadLocationException {

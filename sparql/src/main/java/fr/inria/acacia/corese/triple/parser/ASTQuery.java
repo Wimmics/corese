@@ -224,8 +224,8 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 		= Processor.IF;
         
-        private static String TEMPLATE_AGG      = Processor.STL_GROUPCONCAT ;
-        private static String TEMPLATE_CONCAT   = Processor.STL_CONCAT ; 
+        private static String FUN_TEMPLATE_AGG      = Processor.FUN_GROUPCONCAT ;
+        private static String FUN_TEMPLATE_CONCAT   = Processor.FUN_CONCAT ; 
         
  	private static final String FUN_PROCESS = Processor.FUN_PROCESS;
         private static final String FUN_NL      = Processor.FUN_NL;
@@ -2804,7 +2804,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 * where variables are compiled as kg:pprint()
 	 */
 	Expression compileTemplateFun(){
-		Term t = Term.function(TEMPLATE_CONCAT);
+		Term t = createFunction(createQName(FUN_TEMPLATE_CONCAT));
 
 		if (template != null){
 			if (template.size() == 1){
@@ -2928,7 +2928,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 */
 	Term createTemplateGroup(){
 		Variable var = Variable.create(OUT);
-		Term t = createFunction(TEMPLATE_AGG);
+		Term t = createFunction(createQName(FUN_TEMPLATE_AGG));
 		t.add(var);
 		t.setModality(getSeparator());
                 t.setArg(getExpSeparator());
@@ -2941,11 +2941,11 @@ public class ASTQuery  implements Keyword, ASTVisitable {
          * draft: agg_and
          */
         public static void setTemplateAggregate(String s){
-            TEMPLATE_AGG = s;
+            FUN_TEMPLATE_AGG = s;
         }
         
         public static void setTemplateConcat(String s){
-            TEMPLATE_CONCAT = s;
+            FUN_TEMPLATE_CONCAT = s;
         }
 	
 	Constant getEmpty(){

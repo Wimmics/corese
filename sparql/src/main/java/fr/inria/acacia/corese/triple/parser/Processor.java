@@ -120,6 +120,8 @@ public class Processor {
 	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
         public static final String FUN_PROCESS      = NSManager.STL_PREF + ":" + "process"; 
 	public static final String FUN_INDENT       = NSManager.STL_PREF + ":" + "indent"; 
+	public static final String FUN_CONCAT       = NSManager.STL_PREF + ":" + "concat"; 
+	public static final String FUN_GROUPCONCAT  = NSManager.STL_PREF + ":" + "group_concat"; 
 
 	       
 	static final String QNAME 	= KGRAM + "qname"; 

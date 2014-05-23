@@ -45,7 +45,7 @@
             <version>1.0.1</version>
         </dependency>
         
-        <dependency> 
+<!--        <dependency> 
             <groupId>thewebsemantic</groupId> 
             <artifactId>jenabean</artifactId> 
             <version>1.0.6</version> 
@@ -75,7 +75,7 @@
                     <groupId>org.hibernate.java-persistence</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
         
         <!--        <dependency>
             <groupId>com.hp.hpl.jena</groupId>

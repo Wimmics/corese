@@ -13,7 +13,6 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.tdb.TDBFactory;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

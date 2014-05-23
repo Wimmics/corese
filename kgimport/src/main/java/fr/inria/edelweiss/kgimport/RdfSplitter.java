@@ -5,6 +5,7 @@
  */
 package fr.inria.edelweiss.kgimport;
 
+import com.google.common.io.Files;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -20,8 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -461,8 +460,7 @@ public class RdfSplitter {
         File oDir = new File(rdfSplitter.getOutputDirPath());
         if (oDir.exists()) {
             logger.warn(rdfSplitter.getOutputDirPath() + " already exists !");
-            Path p = Files.createTempDirectory("rdf-fragments");
-            oDir = p.toFile();
+            oDir = Files.createTempDir();
             logger.warn(oDir.getAbsolutePath() + " created.");
             rdfSplitter.setOutputDirPath(oDir.getAbsolutePath());
         } else {

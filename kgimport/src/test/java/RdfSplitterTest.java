@@ -45,7 +45,7 @@ public class RdfSplitterTest {
     public void rdfFragment() throws ParseException, IOException, FileNotFoundException {
         String inPath = "/Users/gaignard/Documents/Experiences/ExpeFedBench-2013/FedBench-DS-2013/kegg/KEGG-2010-11";
         
-        String c1 = "-i "+inPath
+        String c1 = "-i "+inPath+" "
                 + "-o /tmp/frag -n 4";
 
 //        String c2 = "-i "+inPath
@@ -54,13 +54,13 @@ public class RdfSplitterTest {
 //        String c3 = "-i "+inPath
 //                + "-o /tmp/frag -n 4 -f 10 -f 20";
 
-        String c4 = "-i "+inPath
+        String c4 = "-i "+inPath+" "
                 + "-o /tmp/frag -f 10 -f 15";
 
-        String c5 = "-i "+inPath
+        String c5 = "-i "+inPath+" "
                 + "-o /tmp/frag -f 10 -tdb";
 
-        String c6 = "-i "+inPath
+        String c6 = "-i "+inPath+" "
                 + "-o /tmp/frag -p http://bio2rdf.org/ns/kegg -p http://bio2rdf.org/ns/bio2rdf";
 
         ArrayList<String> commandLines = new ArrayList<String>();

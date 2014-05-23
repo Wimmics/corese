@@ -96,6 +96,13 @@
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>sdb</artifactId>
         </dependency>-->
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>r09</version>
+        </dependency>
+        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

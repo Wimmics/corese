@@ -124,12 +124,14 @@ public class Dataset {
 	}
 
 	
-	public void addFrom(String s){
+	public Dataset addFrom(String s){
 		addFrom(Constant.create(s));
+                return this;
 	}
 	
-	public void addNamed(String s){
+	public Dataset addNamed(String s){
 		addNamed(Constant.create(s));
+                return this;
 
 	}
         

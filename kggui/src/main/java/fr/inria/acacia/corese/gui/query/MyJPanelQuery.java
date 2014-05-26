@@ -77,7 +77,7 @@ public final class MyJPanelQuery extends JPanel {
 
     private static final long serialVersionUID = 1L;
     //Boutton du panneau Query
-    private JButton buttonRun, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
+    private JButton buttonRun, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
     private JButton buttonSearch;
     private JButton buttonRefreshStyle, buttonDefaultStyle;
     //panneau de la newQuery
@@ -126,6 +126,7 @@ public final class MyJPanelQuery extends JPanel {
         add(paneQuery);
 
         buttonRun = new JButton();
+        buttonValidate = new JButton();
         buttonToSPIN = new JButton();
         buttonToSPARQL = new JButton();
         buttonProve = new JButton();
@@ -242,6 +243,7 @@ public final class MyJPanelQuery extends JPanel {
          */
         //Lancer une requête
         buttonRun.setText("Query");
+        buttonValidate.setText("Validate");
         buttonToSPIN.setText("to SPIN");
         buttonToSPARQL.setText("to SPARQL");
         buttonProve.setText("Prove");
@@ -300,6 +302,7 @@ public final class MyJPanelQuery extends JPanel {
 
         hSeq2.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 257, Short.MAX_VALUE);
         hSeq2.addComponent(buttonRun);
+        hSeq2.addComponent(buttonValidate);
         hSeq2.addComponent(buttonToSPIN);
         hSeq2.addComponent(buttonToSPARQL);
         hSeq2.addComponent(buttonProve);
@@ -321,6 +324,7 @@ public final class MyJPanelQuery extends JPanel {
         GroupLayout.SequentialGroup vSeq1 = pane_listenerLayout.createSequentialGroup();
 
         vParallel2.addComponent(buttonRun);
+        vParallel2.addComponent(buttonValidate);
         vParallel2.addComponent(buttonToSPIN);
         vParallel2.addComponent(buttonToSPARQL);
 
@@ -392,6 +396,7 @@ public final class MyJPanelQuery extends JPanel {
 
         ActionListener l_RunListener = createListener(coreseFrame, false);
         buttonRun.addActionListener(l_RunListener);
+        buttonValidate.addActionListener(l_RunListener);
         buttonToSPIN.addActionListener(l_RunListener);
         buttonToSPARQL.addActionListener(l_RunListener);
 
@@ -723,7 +728,9 @@ public final class MyJPanelQuery extends JPanel {
                             display(l_Results, coreseFrame);
                         }
                     } else {
+                        // buttonRun
                         Exec exec = new Exec(coreseFrame, query, isTrace);
+                        exec.setValidate(ev.getSource() == buttonValidate);
                         exec.process();
 
                         //Permet de passer a true toutes les options du trace KGram

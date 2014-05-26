@@ -8,14 +8,18 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 //import fr.inria.acacia.corese.util.Time;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgramenv.util.QueryExec;
+import fr.inria.edelweiss.kgraph.core.Graph;
 //import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import java.util.logging.Level;
 
 
 /**
@@ -23,11 +27,17 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
  */
 public class Exec extends Thread {
 	private static Logger logger = Logger.getLogger(Exec.class);
+        
+        static final String qvalidate = "template { st:apply-templates-with(st:spintypecheck) } where {}";
+        //static final String qvalidate = "template {st:apply-templates-with('/home/corby/AData/template/spintypecheck/template/')} where {}";
+        static final String qgraph = NSManager.STL+"query";
+        
 	MainFrame frame;
 	String query;
 	Buffer buffer;
 	MyJPanelQuery panel;
 	boolean debug = false;
+        private boolean validate = false;
 	
 	
 	public Exec(MainFrame f,  String q, boolean b){
@@ -50,7 +60,13 @@ public class Exec extends Thread {
 	 * run the thread in //
 	 */
 	public void run(){
-		IResults res = query();
+		IResults res;
+                if (isValidate()){
+                    res = validate();
+                }
+                else {
+                    res = query();
+                }
 		frame.setBuffer(null);
 		frame.getPanel().display(res,frame);
 	}
@@ -72,6 +88,27 @@ public class Exec extends Thread {
 		} 
 		return null;
 	}
+        
+        /**
+         * Translate SPARQL query to SPIN graph
+         * Apply spin typecheck transformation
+         */
+        IResults validate(){
+            try {
+                SPINProcess sp = SPINProcess.create();
+                Graph qg = sp.toSpinGraph(query);
+                qg.init();
+                Graph gg = ((GraphEngine) frame.getMyCorese()).getGraph();
+                gg.setNamedGraph(qgraph, qg);
+                QueryProcess exec = QueryProcess.create(gg, true);
+                Mappings map = exec.query(qvalidate);
+                return QueryResults.create(map);                
+            } catch (EngineException ex) {
+                java.util.logging.Logger.getLogger(Exec.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return QueryResults.create(new Mappings());
+        }
+
 	
 	/**
 	 * Create EvalListener
@@ -88,5 +125,19 @@ public class Exec extends Thread {
 		
 		exec.addEventListener(el);
 	}
+
+    /**
+     * @return the validate
+     */
+    public boolean isValidate() {
+        return validate;
+    }
+
+    /**
+     * @param validate the validate to set
+     */
+    public void setValidate(boolean validate) {
+        this.validate = validate;
+    }
 
 }

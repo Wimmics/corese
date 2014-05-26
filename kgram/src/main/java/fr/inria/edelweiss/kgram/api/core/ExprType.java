@@ -157,13 +157,7 @@ public interface ExprType {
 	public static int PWEIGHT 	= 218;
 	public static int ANCESTOR 	= 219;
 		
-	public static int APPLY_TEMPLATES 	= 220;
-	public static int APPLY_TEMPLATES_WITH 	= 221;
-	public static int APPLY_ALL_TEMPLATES 	= 222;
-	public static int APPLY_ALL_TEMPLATES_WITH = 223;
-	public static int APPLY_TEMPLATES_ON    = 224;
-	public static int CALL_TEMPLATE 	= 225;
-	public static int CALL_TEMPLATE_WITH 	= 226;
+	
 
 	public static int TURTLE 	= 227;
 	public static int LEVEL 	= 228;
@@ -190,6 +184,16 @@ public interface ExprType {
 	public static int STL_LOAD      = 248;
 	public static int STL_IMPORT    = 249;
 	public static int STL_PROCESS 	= 250;
+        
+        
+        public static int APPLY_TEMPLATES           = 251;
+	public static int APPLY_TEMPLATES_WITH      = 252;
+	public static int APPLY_TEMPLATES_ALL       = 253;
+	public static int APPLY_TEMPLATES_WITH_ALL  = 254;
+	public static int APPLY_TEMPLATES_GRAPH     = 255;
+	public static int APPLY_TEMPLATES_WITH_GRAPH= 256;
+	public static int CALL_TEMPLATE             = 257;
+	public static int CALL_TEMPLATE_WITH        = 258;
 
 
 	public static int ISSKOLEM 	= 270;

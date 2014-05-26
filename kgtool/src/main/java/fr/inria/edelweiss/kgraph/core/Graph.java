@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -2589,6 +2590,18 @@ public class Graph //implements IGraph
 	
     public Graph getNamedGraph(String name){
         return null;
+    }
+    
+    public void setNamedGraph(String name, Graph g) {
+    }
+    
+    public Dataset getDataset(){
+        Dataset ds = Dataset.create();
+        for (Node node : getGraphNodes()){
+            ds.addFrom(node.getLabel());
+            ds.addNamed(node.getLabel());
+        }
+        return ds;
     }
 	
 }

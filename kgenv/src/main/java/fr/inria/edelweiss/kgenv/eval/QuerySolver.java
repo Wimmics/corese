@@ -302,10 +302,15 @@ public class QuerySolver  {
 	
 	// rule: construct where 
 	public Query compileRule(String squery) throws EngineException {
+            return compileRule(squery, null);
+        }
+        
+        public Query compileRule(String squery, Dataset ds) throws EngineException {
 		Transformer transformer =  transformer();			
 		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
 		transformer.setPragma(getPragma());
+		transformer.set(ds);
 		Query query = transformer.transform(squery, true);
 		return query;	
 	}

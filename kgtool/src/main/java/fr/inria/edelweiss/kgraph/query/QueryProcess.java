@@ -169,8 +169,11 @@ public class QueryProcess extends QuerySolver {
 		return p;
 	}
 	
-	public static QueryProcess create(ProducerImpl prod){
-		Matcher match =  MatcherImpl.create(prod.getGraph());
+	public static QueryProcess create(Producer p){
+            Matcher match;
+            if (p instanceof ProducerImpl){
+                ProducerImpl prod = (ProducerImpl) p;
+		match =  MatcherImpl.create(prod.getGraph());
 		prod.set(match);
 		if (prod.isMatch()){
 			// there is local match in Producer
@@ -178,8 +181,13 @@ public class QueryProcess extends QuerySolver {
 			match =  MatcherImpl.create(prod.getGraph());
 			match.setMode(Matcher.RELAX);
 		}
-		QueryProcess exec = QueryProcess.create(prod,  match);
-		return exec;
+            }
+            else {
+                match = MatcherImpl.create(Graph.create());
+		match.setMode(Matcher.RELAX);
+            }
+            QueryProcess exec = QueryProcess.create(p,  match);
+            return exec;
 	}
 	
         /**

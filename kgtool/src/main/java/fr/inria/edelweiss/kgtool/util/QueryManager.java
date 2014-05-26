@@ -74,7 +74,7 @@ public class QueryManager {
     void typecheck(Graph g){
         QueryProcess qp = QueryProcess.create(g, true);
         qp.add(graph);
-        Transformer pp = Transformer.create(qp, Transformer.TYPECHECK);
+        Transformer pp = Transformer.create(qp, Transformer.RDFTYPECHECK);
         Node res = pp.process();
         if (! res.isBlank()){
             System.out.println("Type Check:\n" + res.getLabel());

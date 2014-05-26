@@ -1759,11 +1759,12 @@ public class Eval implements ExpType, Plugin {
 
         stack.set(n, exp.rest());
 
-        if (n == stack.size() - 1) {
-            // last statement: switch Producer to Path			
-            backtrack = eval(np, gNode, stack, n, option);
-            stack.reset(n, exp);
-        } else {
+//        if (n == stack.size() - 1) {
+//            // last statement: switch Producer to Path			
+//            backtrack = eval(np, gNode, stack, n, option);
+//            stack.reset(n, exp);
+//        } else 
+        {
             Exp next = getRestore(p, exp);
             stack.add(n + 1, next);
             backtrack = eval(np, gNode, stack, n, option);

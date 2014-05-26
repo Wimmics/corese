@@ -89,11 +89,18 @@ public class Processor {
 	static final String STL_DEFAULT             = STL + "default"; 
 	static final String STL_PROCESS             = STL + "process"; 
         static final String FOCUS_NODE              = STL + "getFocusNode";
+        
         static final String APPLY_TEMPLATES         = STL + "apply-templates";
         static final String APPLY_TEMPLATES_WITH    = STL + "apply-templates-with";
-  	static final String APPLY_TEMPLATES_ON      = STL + "apply-templates-on";
+  	static final String APPLY_TEMPLATES_ALL     = STL + "apply-templates-all";        
+  	static final String APPLY_TEMPLATES_GRAPH   = STL + "apply-templates-graph";        
+  	static final String APPLY_TEMPLATES_WITH_ALL= STL + "apply-templates-with-all";        
+   	static final String APPLY_TEMPLATES_WITH_GRAPH= STL + "apply-templates-with-graph";        
+       
+        // deprecated:
         static final String APPLY_ALL_TEMPLATES     = STL + "apply-all-templates";
         static final String APPLY_ALL_TEMPLATES_WITH= STL + "apply-all-templates-with";
+        
         static final String CALL_TEMPLATE           = STL + "call-template";
         static final String CALL_TEMPLATE_WITH      = STL + "call-template-with";
 	static final String STL_TURTLE              = STL + "turtle"; 
@@ -445,20 +452,26 @@ public class Processor {
 		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
 		defoper(EVAL, 		ExprType.APPLY_TEMPLATES);
 		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);
-		defoper(PPRINTALL, 	ExprType.APPLY_ALL_TEMPLATES);
-		defoper(PPRINTALLWITH, 	ExprType.APPLY_ALL_TEMPLATES_WITH);
+		defoper(PPRINTALL, 	ExprType.APPLY_TEMPLATES_ALL);
+		defoper(PPRINTALLWITH, 	ExprType.APPLY_TEMPLATES_WITH_ALL);
 		defoper(TEMPLATE, 	ExprType.CALL_TEMPLATE);
 		defoper(TEMPLATEWITH, 	ExprType.CALL_TEMPLATE_WITH);
-		defoper(TURTLE,         ExprType.TURTLE);
-                
+		defoper(TURTLE,         ExprType.TURTLE);                
                 defoper(FOCUS_NODE,             ExprType.FOCUS_NODE);
-                defoper(APPLY_TEMPLATES, 	ExprType.APPLY_TEMPLATES);
-		defoper(APPLY_TEMPLATES_WITH, 	ExprType.APPLY_TEMPLATES_WITH);
-		defoper(APPLY_TEMPLATES_ON, 	ExprType.APPLY_TEMPLATES_ON);
-		defoper(APPLY_ALL_TEMPLATES, 	ExprType.APPLY_ALL_TEMPLATES);
-		defoper(APPLY_ALL_TEMPLATES_WITH,ExprType.APPLY_ALL_TEMPLATES_WITH);
-		defoper(CALL_TEMPLATE,          ExprType.CALL_TEMPLATE);
-		defoper(CALL_TEMPLATE_WITH, 	ExprType.CALL_TEMPLATE_WITH);
+                
+                defoper(APPLY_TEMPLATES,            ExprType.APPLY_TEMPLATES);
+		defoper(APPLY_TEMPLATES_ALL,        ExprType.APPLY_TEMPLATES_ALL);
+		defoper(APPLY_TEMPLATES_GRAPH,      ExprType.APPLY_TEMPLATES_GRAPH);
+		defoper(APPLY_TEMPLATES_WITH,       ExprType.APPLY_TEMPLATES_WITH);
+		defoper(APPLY_TEMPLATES_WITH_ALL,   ExprType.APPLY_TEMPLATES_WITH_ALL);                
+		defoper(APPLY_TEMPLATES_WITH_GRAPH, ExprType.APPLY_TEMPLATES_WITH_GRAPH);
+		defoper(CALL_TEMPLATE,              ExprType.CALL_TEMPLATE);
+		defoper(CALL_TEMPLATE_WITH,         ExprType.CALL_TEMPLATE_WITH);
+                
+                // 3 deprecated:
+		defoper(APPLY_ALL_TEMPLATES, 	ExprType.APPLY_TEMPLATES_ALL);
+		defoper(APPLY_ALL_TEMPLATES_WITH,ExprType.APPLY_TEMPLATES_WITH_ALL);
+                
                 defoper(STL_PROCESS,            ExprType.STL_PROCESS);
 		defoper(STL_TURTLE,             ExprType.TURTLE);
                 defoper(STL_URI,                ExprType.PPURI);

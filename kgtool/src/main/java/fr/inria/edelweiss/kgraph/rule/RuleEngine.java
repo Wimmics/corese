@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -42,6 +43,7 @@ public class RuleEngine implements Engine {
     Graph graph;
     QueryProcess exec;
     List<Rule> rules;
+    private Dataset ds;
     private PTable ptable;
     RTable rtable;
     STable stable;
@@ -158,6 +160,10 @@ public class RuleEngine implements Engine {
     public void clear() {
         rules.clear();
     }
+    
+    public boolean isEmpty(){
+        return rules.isEmpty();
+    }
 
     /**
      * Define a construct {} where {} rule
@@ -188,7 +194,7 @@ public class RuleEngine implements Engine {
     }
 
     public Query defRule(String name, String rule) throws EngineException {
-        Query qq = exec.compileRule(rule);
+        Query qq = exec.compileRule(rule, ds);
 
         if (!qq.isConstruct()) {
             // template
@@ -603,6 +609,20 @@ public class RuleEngine implements Engine {
      */
     public void setConstructResult(boolean isConstructResult) {
         this.isConstructResult = isConstructResult;
+    }
+
+    /**
+     * @return the dataset
+     */
+    public Dataset getDataset() {
+        return ds;
+    }
+
+    /**
+     * @param dataset the dataset to set
+     */
+    public void setDataset(Dataset dataset) {
+        this.ds = dataset;
     }
 
     class PTable extends HashMap<String, List<Rule>> {

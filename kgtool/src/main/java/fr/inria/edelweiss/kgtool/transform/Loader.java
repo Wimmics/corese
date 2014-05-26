@@ -6,6 +6,7 @@
 package fr.inria.edelweiss.kgtool.transform;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -13,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -49,6 +51,7 @@ public class Loader {
     NSManager nsm;
     Transformer trans;
     HashMap<String, String> loaded;
+    Dataset ds;
     
     Loader(Transformer t){
         graph = t.getGraph();
@@ -57,13 +60,23 @@ public class Loader {
         loaded = new HashMap();
     }
     
+    void setDataset(Dataset ds){
+        this.ds = ds;
+    }
+    
      QueryEngine load(String pp) {
-        QueryEngine qe = null; 
+        QueryEngine qe = QueryEngine.create(graph); 
+        RuleEngine re  = RuleEngine.create(graph);       
+        qe.setDataset(ds);
+        re.setDataset(ds);
+        
         if (pp == null) {
-            qe = QueryEngine.create(graph);
+            // skip;
         } else {
             loaded.put(pp, pp);
             Load ld = Load.create(graph);
+            ld.setEngine(qe);
+            ld.setEngine(re);           
             try {
                 //ld.loadWE(pp);
                 load(ld, pp);
@@ -72,14 +85,9 @@ public class Loader {
                 logger.error("Transformer Load Error: " + pp);
             }
 
-            qe = ld.getQueryEngine();
+            if (qe.isEmpty()) {
 
-            if (qe == null) {
-                qe = QueryEngine.create(graph);
-
-                if (ld.getRuleEngine() != null) {
-
-                    RuleEngine re = ld.getRuleEngine();
+                if (! re.isEmpty()) {
 
                     for (Rule r : re.getRules()) {
                         Query q = r.getQuery();

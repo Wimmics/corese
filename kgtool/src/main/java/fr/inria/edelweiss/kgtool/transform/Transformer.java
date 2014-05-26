@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
@@ -30,6 +31,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,7 +59,8 @@ public class Transformer {
     public static final String TURTLE       = STL + "turtle";
     public static final String TRIG         = STL + "trig";
     public static final String TABLE        = STL + "table";
-    public static final String TYPECHECK    = STL + "typecheck";
+    public static final String RDFTYPECHECK = STL + "rdftypecheck";
+    public static final String SPINTYPECHECK= STL + "spintypecheck";
     public static final String STL_PROFILE  = STL + "profile";
     public static final String STL_START   = STL + "start";
     public static final String STL_DEFAULT = STL + "default";   
@@ -80,6 +83,7 @@ public class Transformer {
     NSManager nsm;
     QueryProcess exec;
     Processor proc;
+    private Dataset ds;
     Stack stack;
     static Table table;
     String pp = PPRINTER;
@@ -124,6 +128,10 @@ public class Transformer {
     Transformer(Graph g, String p) {
         this(QueryProcess.create(g, true), p);
     }
+    
+    Transformer(Producer prod, String p) {
+        this(QueryProcess.create(prod), p);
+    }
 
     Transformer(QueryProcess qp, String p) {
         pp = p;
@@ -150,6 +158,10 @@ public class Transformer {
 
     public static Transformer create(QueryProcess qp, String p) {
         return new Transformer(qp, p);
+    }
+    
+      public static Transformer create(Producer prod, String p) {
+        return new Transformer(prod, p);
     }
     
     public static Transformer create(String p) {
@@ -427,30 +439,6 @@ public class Transformer {
     public IDatatype process(String temp) {
         return process(temp, false, null);
     }
-      
-    /**
-     * Recursively apply transformation on a graph that is loaded at runtime
-     */
-     public IDatatype processOn(String uri) {
-        Graph g = Graph.create();
-        Load load = Load.create(g);
-        QueryProcess saveQP = exec;
-        Stack saveStack = stack;
-        try {
-            load.load(uri, Load.TURTLE_FORMAT);
-            set(QueryProcess.create(g));
-            stack = new Stack(true);
-            IDatatype dt = process();
-            return dt;
-        } catch (LoadException ex) {
-            logger.error(ex);
-            return EMPTY;
-        }
-        finally {
-           set(saveQP);
-           stack = saveStack;
-        }
-    }      
 
     public IDatatype process(String temp, boolean all, String sep) {
         query = null;
@@ -579,7 +567,7 @@ public class Transformer {
        }
 
         if (isDebug || isTrace) {
-            System.out.println("pprint: " + level() + " " + exp + " " + dt1);
+            System.out.println("pprint: " + level() + " " + exp + " " + dt1 + " " + dt2);
         }
 
         Graph g = graph;
@@ -967,6 +955,7 @@ public class Transformer {
    void init(){
        setOptimize(table.isOptimize(pp));
        Loader load = new Loader(this);
+       load.setDataset(ds);
        qe = load.load(pp);
        if (isCheck()) {
             check();
@@ -1131,6 +1120,24 @@ public class Transformer {
      */
     public void setHasDefault(boolean hasDefault) {
         this.hasDefault = hasDefault;
+    }
+
+    /**
+     * @return the dataset
+     */
+    public Dataset getDataset() {
+        return ds;
+    }
+
+    /**
+     * @param dataset the dataset to set
+     */
+    public void setDataset(Dataset dataset) {
+        this.ds = dataset;
+    }
+
+    public String getTransformation() {
+        return pp;
     }
          
 }

@@ -292,7 +292,11 @@ public class NSManager {
      * return <uri>
      */
     public String toPrefixURI(String nsname) {
-        if (nsname.contains("(") || nsname.contains(")")) {
+        if (nsname.contains("(") 
+                || nsname.contains(")")
+                || nsname.contains("'")
+                || nsname.contains("\"")                
+                ) {
             return uri(nsname);
         } else {
             String str = toPrefix(nsname, true);

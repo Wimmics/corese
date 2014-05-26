@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
@@ -31,11 +32,13 @@ import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -155,14 +158,17 @@ public class PluginImpl extends ProxyImpl {
                 return process(exp, env, p, dt);
                 
             case APPLY_TEMPLATES:
-            case APPLY_ALL_TEMPLATES:
+            case APPLY_TEMPLATES_ALL:
                 return pprint(dt, null, null, null, exp, env, p);
 
             case CALL_TEMPLATE:
-                return pprint(null, dt, exp, env, p);
+                return pprint(null, dt, null, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
-                return pprint(dt, null, exp, env, p);
+                return pprint(dt, null, null, exp, env, p);
+                
+            case APPLY_TEMPLATES_GRAPH:
+                return pprint(null, null, null, null, null, dt, exp, env, p);                
 
             case TURTLE:
                 return turtle(dt, env, p);
@@ -175,10 +181,7 @@ public class PluginImpl extends ProxyImpl {
             case STL_LOAD:
                 load(dt, env, p);
                 return EMPTY;
-                
-            case APPLY_TEMPLATES_ON:
-                return applyOn(null, dt, env, p);
-                
+                               
             case FOCUS_NODE:
                 return getFocusNode(dt, env);    
 
@@ -250,19 +253,18 @@ public class PluginImpl extends ProxyImpl {
                 return write(dt1, dt2);   
                 
             case APPLY_TEMPLATES:
-            case APPLY_ALL_TEMPLATES:
+            case APPLY_TEMPLATES_ALL:
                 // dt1: focus
                 // dt2: arg
                 return pprint(dt1, dt2, null, null, exp, env, p);
-                
-                
-            case APPLY_TEMPLATES_ON:
+                               
+            case APPLY_TEMPLATES_WITH_GRAPH:
                 // dt1: transformation 
                 // dt2: graph 
-                return applyOn(dt1, dt2, env, p);    
+                return pprint(dt1, null, dt2, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
-            case APPLY_ALL_TEMPLATES_WITH:
+            case APPLY_TEMPLATES_WITH_ALL:
                 // dt1: uri of pprinter
                 // dt2: focus
                 return pprint(dt2, null, dt1, null, exp, env, p);
@@ -275,7 +277,7 @@ public class PluginImpl extends ProxyImpl {
             case CALL_TEMPLATE_WITH:
                 // dt1: uri pprinter
                 // dt2: template name
-                return pprint(dt1, dt2, exp, env, p);
+                return pprint(dt1, dt2, null, exp, env, p);
 
         }
 
@@ -298,27 +300,33 @@ public class PluginImpl extends ProxyImpl {
                 // dt1: template name
                 // dt2: focus
                 // dt3: arg
-                return pprint(getArgs(args, 1), dt2, dt3, null, dt1, exp, env, p);
+                return pprint(getArgs(args, 1), dt2, dt3, null, dt1, null, exp, env, p);
 
             case CALL_TEMPLATE_WITH:
                 // dt1: uri pprinter
                 // dt2: template name
                 // dt3: focus
-                return pprint(getArgs(args, 2), dt3, null, dt1, dt2, exp, env, p);
+                return pprint(getArgs(args, 2), dt3, null, dt1, dt2, null, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
-            case APPLY_ALL_TEMPLATES_WITH:
+            case APPLY_TEMPLATES_WITH_ALL:
                 // dt1: uri pprinter
                 // dt2: focus
                 // dt3: arg
-                return pprint(getArgs(args, 1), dt2, dt3, dt1, null, exp, env, p);
+                return pprint(getArgs(args, 1), dt2, dt3, dt1, null, null, exp, env, p);
                 
                 
             case APPLY_TEMPLATES:
-            case APPLY_ALL_TEMPLATES:
+            case APPLY_TEMPLATES_ALL:
                 // dt1: focus
                 // dt2: arg
-                return pprint(getArgs(args, 0), dt1, dt2, null, null, exp, env, p);    
+                return pprint(getArgs(args, 0), dt1, dt2, null, null, null, exp, env, p);  
+                
+            case APPLY_TEMPLATES_WITH_GRAPH:
+                // dt1: transformation 
+                // dt2: graph 
+                // dt3; focus
+                return pprint(getArgs(args, 2), dt3, null, dt1, null, dt2, exp, env, p);
 
         }
 
@@ -599,15 +607,16 @@ public class PluginImpl extends ProxyImpl {
          Transformer p = getTransformer(env, prod);                 
          return p.NSMtoMappings();
     }
-
-    IDatatype pprint(IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(env, prod, getLabel(tbase), null);
+      
+    IDatatype pprint(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
+        Transformer p = getTransformer(env, prod, getLabel(trans), getLabel(name));
         return p.process(getLabel(temp),
-                exp.oper() == ExprType.APPLY_ALL_TEMPLATES
-                || exp.oper() == ExprType.APPLY_ALL_TEMPLATES_WITH,
+                exp.oper() == ExprType.APPLY_TEMPLATES_ALL
+                || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
                 exp.getModality());
     }
 
+ 
     /**
      * exp is the calling expression: kg:pprint kg:pprintAll kg:template focus
      * is the node to be printed tbase is the path of the template base to be
@@ -616,16 +625,17 @@ public class PluginImpl extends ProxyImpl {
      */
     
     
-     IDatatype pprint(IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
-          return pprint(null, focus, arg, tbase, temp, exp, env, prod); 
+     IDatatype pprint(IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, Expr exp, Environment env, Producer prod) {
+          return pprint(null, focus, arg, trans, temp, null, exp, env, prod); 
      }
      
-     IDatatype pprint(Object[] args, IDatatype focus, IDatatype arg, IDatatype tbase, IDatatype temp, Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(env, prod, getLabel(tbase), focus);
+     IDatatype pprint(Object[] args, IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, IDatatype name, 
+             Expr exp, Environment env, Producer prod) {        
+        Transformer p = getTransformer(env, prod, getLabel(trans), getLabel(name));
         IDatatype dt = p.process(args, focus, arg,
                 getLabel(temp),
-                exp.oper() == ExprType.APPLY_ALL_TEMPLATES
-                || exp.oper() == ExprType.APPLY_ALL_TEMPLATES_WITH,
+                exp.oper() == ExprType.APPLY_TEMPLATES_ALL
+                || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
                 exp.getModality(), exp, env.getQuery());
         return dt;
     }
@@ -713,11 +723,6 @@ public class PluginImpl extends ProxyImpl {
         t.load(dt.getLabel());
     }
 
-    IDatatype applyOn(IDatatype trans, IDatatype graph, Environment env, Producer p){
-        Transformer t = getTransformer(env, p, getLabel(trans), null);
-        return t.processOn(graph.getLabel());
-    }
-
     IDatatype getLevel(Environment env, Producer prod) {
         return getValue(level(env, prod));
     }
@@ -741,53 +746,77 @@ public class PluginImpl extends ProxyImpl {
         return null;
     }
 
-    String getPP(Producer prod, IDatatype dt) {
-        Graph g = getGraph(prod);
-        if (g == null) {
-            return Transformer.TURTLE;
-        }
-        IDatatype type = g.getValue(RDF.TYPE, dt);
-        if (type != null) {
-            String p = Transformer.getPP(type.getLabel());
-            if (p != null) {
-                return p;
-            }
-        }
-        return Transformer.TURTLE;
-    }
-
-
     Transformer getTransformer(Environment env, Producer p) {
         return getTransformer(env, p, (String) null, null);
     }
     
-    Transformer getTransformer(Environment env, Producer prod, String t, IDatatype dt) {
+    Transformer getTransformer(Environment env, Producer prod, String trans) {
+        return getTransformer(env, prod, trans, null);
+    }
+    
+    /**
+     * name is a named graph
+     * TODO: cache for named graph
+     */
+    Transformer getTransformer(Environment env, Producer prod, String trans, String name) {    
         Query q = env.getQuery();
         String p = null;
 
-        if (t != null) {
-            p = t;
+        if (trans != null) {
+            p = trans;
         } else if (q.hasPragma(Pragma.TEMPLATE)) {
             p = (String) q.getPragma(Pragma.TEMPLATE);
         } 
 
-        Object o = q.getPP(p);
-
-        if (o != null) {
-            return (Transformer) o;
-        } else {
-            Graph g = getGraph(prod);
-            if (g == null) {
-                g = Graph.create();
-            }
-            Transformer pp = Transformer.create(g, p);
-            ASTQuery ast = (ASTQuery) q.getAST();
-            pp.setNSM(ast.getNSM());
-           // pp.setProfile(q.getProfile());
-            q.setPPrinter(p, pp);
-            return pp;
+        Transformer t = (Transformer) q.getPP(p);
+        
+        if (p == null && t != null){
+            p = t.getTransformation();
         }
+        
+        if (name != null){
+            // transform named graph
+            try {
+                t = getTransformer((Graph) prod.getGraph(), p, name);
+            } catch (LoadException ex) {
+                logger.error(ex);
+                t = Transformer.create(Graph.create(), null);
+            }
+             t.setNSM(((ASTQuery) q.getAST()).getNSM());
+       }
+        else if (t == null) {         
+            t = Transformer.create(prod, p);
+            t.setNSM(((ASTQuery) q.getAST()).getNSM());
+            q.setPPrinter(p, t);
+        }
+        
+        return t;
     }
+    
+    /**
+     * Create Transformer for named graph 
+     */
+    Transformer getTransformer(Graph g, String trans, String name) throws LoadException {
+        Dataset ds = null;
+        Graph gg = g.getNamedGraph(name);    
+       if (gg == null) {
+            Node n = g.getGraphNode(name);
+            if (n == null) {
+                gg = Graph.create();
+                Load load = Load.create(gg);
+                load.load(name, Load.TURTLE_FORMAT);
+            } else {
+                gg = g;
+                ds = Dataset.create().addFrom(name);
+            }
+        }
+
+        Transformer t = Transformer.create(gg);
+        t.setDataset(ds);
+        t.setTemplates(trans);
+        return t;
+    }
+    
 
     public void setPPrinter(String str) {
         PPRINTER = str;

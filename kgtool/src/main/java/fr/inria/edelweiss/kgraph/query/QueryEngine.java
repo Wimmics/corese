@@ -3,8 +3,6 @@ package fr.inria.edelweiss.kgraph.query;
 import fr.inria.acacia.corese.api.IDatatype;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
@@ -21,8 +19,6 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.logic.RDF;
 
 /**
  * Equivalent of RuleEngine for Query
@@ -37,6 +33,7 @@ public class QueryEngine implements Engine {
 	Graph graph;
 	QueryProcess exec;
 	ArrayList<Query> list;
+        private Dataset ds;
 	HashMap<String, Query> table;
         TemplateIndex index;       
 
@@ -74,7 +71,7 @@ public class QueryEngine implements Engine {
 	
 	public Query defQuery(String q) throws EngineException {
 		//System.out.println("** QE: \n" + q);
-		Query qq = exec.compile(q);
+		Query qq = exec.compile(q, ds);
 		if (qq != null) {
 			ASTQuery ast = (ASTQuery) qq.getAST();
 			defQuery(qq);
@@ -140,6 +137,9 @@ public class QueryEngine implements Engine {
 		return table.values();
 	}
 	
+        public boolean isEmpty(){
+            return list.isEmpty() && table.isEmpty();
+        }
 	
 	public boolean  process(){
 		if (! isActivate){
@@ -268,6 +268,20 @@ public class QueryEngine implements Engine {
 		}
 		list = l;
 	}
+
+    /**
+     * @return the ds
+     */
+    public Dataset getDataset() {
+        return ds;
+    }
+
+    /**
+     * @param ds the ds to set
+     */
+    public void setDataset(Dataset ds) {
+        this.ds = ds;
+    }
 	
 
 }

@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -54,7 +55,7 @@ public class GraphEngine implements IEngine {
 	
 	GraphEngine (){
 		DatatypeMap.setLiteralAsString(false);
-		graph   = Graph.create(true);
+		graph   = GraphStore.create(true);
 		rengine = RuleEngine.create(graph);
 		qengine = QueryEngine.create(graph);
 		bengine = Engine.create(QueryProcess.create(graph, true));

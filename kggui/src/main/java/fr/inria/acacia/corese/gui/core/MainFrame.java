@@ -69,7 +69,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics Inria I3S - 2014-05-01";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-05-28";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -113,8 +113,9 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem map;
     private JMenuItem success;
     private JMenuItem quit;
-    private JMenuItem iselect, iconstruct, iask, idescribe, 
-            iinsert, idelete, ideleteinsert,
+    private JMenuItem iselect, igraph, iconstruct, iask, idescribe, 
+            iserviceCorese, iserviceDBpedia,
+            iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, itrig, ispin, iowl, itypecheck;
     
     HashMap<Object, String> itable;
@@ -144,6 +145,9 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String defaultSelectQuery = 
             "select * where {\n ?x ?p ?y\n}";
     
+    private static final String defaultGraphQuery = 
+            "select * where {\n  graph ?g {\n    ?x ?p ?y \n}\n}";    
+    
     private static final String defaultConstructQuery = 
             "construct {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}";
     
@@ -153,8 +157,21 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String defaultDescribeQuery = 
             "describe ?x \nwhere {\n  ?x ?p ?y\n}";   
     
+    private static final String defaultServiceCoreseQuery = 
+            "select * \nwhere {\nservice <http://localhost:8080/kgram/sparql/> {\n"
+            + "select * \nwhere {\n ?x ?p ?y \n} limit 10\n"
+            + "}\n}";   
+
+    private static final String defaultServiceDBpediaQuery = 
+            "select * \nwhere {\nservice <http://fr.dbpedia.org/sparql/> {\n"
+            + "select * \nwhere {\n <http://fr.dbpedia.org/resource/Paris> ?p ?y \n} limit 10\n"
+            + "}\n}";       
+    
     private static final String defaultInsertQuery = 
             "insert {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}"; 
+  
+    private static final String defaultInsertDataQuery = 
+            "insert data {\n <John> rdfs:label 'John' \n}"; 
   
     private static final String defaultDeleteQuery = 
             "delete {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}"; 
@@ -452,12 +469,18 @@ public class MainFrame extends JFrame implements ActionListener {
         itable = new HashMap<Object, String>();
         
         iselect     = defItem("Select", defaultSelectQuery);
+        igraph      = defItem("Graph", defaultGraphQuery);
         iconstruct  = defItem("Construct", defaultConstructQuery);
         iask        = defItem("Ask", defaultAskQuery);
-        idescribe   = defItem("Describe", defaultDescribeQuery);      
+        idescribe   = defItem("Describe", defaultDescribeQuery);
+        iserviceCorese    = defItem("Service Corese", defaultServiceCoreseQuery);
+        iserviceDBpedia    = defItem("Service DBpedia", defaultServiceDBpediaQuery);
+        
+        
         iinsert     = defItem("Insert", defaultInsertQuery);
+        iinsertdata = defItem("Insert Data", defaultInsertDataQuery);
         idelete     = defItem("Delete", defaultDeleteQuery);
-        ideleteinsert = defItem("DeleteInsert", defaultDeleteInsertQuery);
+        ideleteinsert = defItem("Delete Insert", defaultDeleteInsertQuery);
                     
         iturtle = defItem("Turtle", defaultTemplateQuery); 
         itrig = defItem("Trig", defaultTrigQuery); 
@@ -555,12 +578,16 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(loadStyle);
 
         queryMenu.add(iselect);
+        queryMenu.add(igraph);
         queryMenu.add(iconstruct);
         queryMenu.add(iask);
         queryMenu.add(idescribe);
+        queryMenu.add(iserviceCorese);
+        queryMenu.add(iserviceDBpedia);
         
         queryMenu.add(idelete);
         queryMenu.add(iinsert);
+        queryMenu.add(iinsertdata);
         queryMenu.add(ideleteinsert);
         
         templateMenu.add(iturtle);

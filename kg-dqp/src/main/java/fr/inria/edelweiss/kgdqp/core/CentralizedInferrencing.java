@@ -40,7 +40,7 @@ public class CentralizedInferrencing {
     static Logger logger = Logger.getLogger(CentralizedInferrencing.class);
 
     static final String pertinentRulesQueryOumy = "prefix sp: <http://spinrdf.org/sp#>\n"
-            + "Select   DISTINCT  (kg:pprintWith(pp:spin, ?r) as ?res) \n"
+            + "Select   DISTINCT  (st:apply-templates-with(st:spin, ?r) as ?res) \n"
             + "     WHERE{ \n"
             + "   ?a a sp:Construct\n"
             + "             ?a sp:where ?m\n"
@@ -71,7 +71,7 @@ public class CentralizedInferrencing {
             + "}";
 
     static final String pertinentRulesQuery = "prefix sp: <http://spinrdf.org/sp#>\n"
-            + "Select DISTINCT  (kg:pprintWith(pp:spin, ?r) as ?res)\n"
+            + "Select DISTINCT  (st:apply-templates-with(st:spin, ?r) as ?res)\n"
             + "WHERE {\n"
             + "{\n"
             + "# URI in ontology from owl: and rdfs:\n"
@@ -162,7 +162,7 @@ public class CentralizedInferrencing {
    
     
     static final String allRulesQuery = "prefix sp: <http://spinrdf.org/sp#>\n"
-            + "Select   DISTINCT  (kg:pprintWith(pp:spin, ?r) as ?res) \n"
+            + "Select   DISTINCT  (st:apply-templates-with(st:spin, ?r) as ?res) \n"
             + "     WHERE{ \n"
             + "   ?r a sp:Construct\n"
             + "}";
@@ -269,6 +269,9 @@ public class CentralizedInferrencing {
         // Rule engine initialization
         RuleEngine ruleEngine = RuleEngine.create(graph);
         ruleEngine.set(exec);
+        ruleEngine.setOptimize(true);
+        ruleEngine.setConstructResult(true);
+        ruleEngine.setTrace(true);
 
         StopWatch sw = new StopWatch();
         logger.info("Federated graph size : " + graph.size());

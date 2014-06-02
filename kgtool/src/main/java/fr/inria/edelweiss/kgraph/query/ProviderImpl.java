@@ -287,7 +287,8 @@ public class ProviderImpl implements Provider {
         urlConn.setRequestMethod("POST"); 
         urlConn.setDoOutput(true);
         urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        urlConn.setRequestProperty("Accept", "application/rdf+xml,  application/sparql-results+xml");
+        //urlConn.setRequestProperty("Accept", "application/rdf+xml,  application/sparql-results+xml");
+        urlConn.setRequestProperty("Accept", "application/sparql-results+xml, application/rdf+xml");
         urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
         urlConn.setRequestProperty("Accept-Charset", "UTF-8");
         urlConn.setReadTimeout(timeout);

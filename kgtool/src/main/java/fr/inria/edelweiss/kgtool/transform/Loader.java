@@ -51,6 +51,8 @@ public class Loader {
     NSManager nsm;
     Transformer trans;
     HashMap<String, String> loaded;
+    // Dataset to be set into query templates at compile time
+    // Use case: st:apply-templates-graph(st:turtle, stname)
     Dataset ds;
     
     Loader(Transformer t){
@@ -60,6 +62,9 @@ public class Loader {
         loaded = new HashMap();
     }
     
+    
+    // Dataset to be set into query templates at compile time
+    // Use case: st:apply-templates-graph(st:turtle, stname)    
     void setDataset(Dataset ds){
         this.ds = ds;
     }

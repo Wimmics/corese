@@ -94,8 +94,10 @@ public class Processor {
         static final String APPLY_TEMPLATES_WITH    = STL + "apply-templates-with";
   	static final String APPLY_TEMPLATES_ALL     = STL + "apply-templates-all";        
   	static final String APPLY_TEMPLATES_GRAPH   = STL + "apply-templates-graph";        
+  	static final String APPLY_TEMPLATES_NOGRAPH = STL + "apply-templates-nograph";        
   	static final String APPLY_TEMPLATES_WITH_ALL= STL + "apply-templates-with-all";        
    	static final String APPLY_TEMPLATES_WITH_GRAPH= STL + "apply-templates-with-graph";        
+   	static final String APPLY_TEMPLATES_WITH_NOGRAPH= STL + "apply-templates-with-nograph";        
        
         // deprecated:
         static final String APPLY_ALL_TEMPLATES     = STL + "apply-all-templates";
@@ -462,9 +464,11 @@ public class Processor {
                 defoper(APPLY_TEMPLATES,            ExprType.APPLY_TEMPLATES);
 		defoper(APPLY_TEMPLATES_ALL,        ExprType.APPLY_TEMPLATES_ALL);
 		defoper(APPLY_TEMPLATES_GRAPH,      ExprType.APPLY_TEMPLATES_GRAPH);
+		defoper(APPLY_TEMPLATES_NOGRAPH,    ExprType.APPLY_TEMPLATES_NOGRAPH);
 		defoper(APPLY_TEMPLATES_WITH,       ExprType.APPLY_TEMPLATES_WITH);
 		defoper(APPLY_TEMPLATES_WITH_ALL,   ExprType.APPLY_TEMPLATES_WITH_ALL);                
 		defoper(APPLY_TEMPLATES_WITH_GRAPH, ExprType.APPLY_TEMPLATES_WITH_GRAPH);
+		defoper(APPLY_TEMPLATES_WITH_NOGRAPH, ExprType.APPLY_TEMPLATES_WITH_NOGRAPH);
 		defoper(CALL_TEMPLATE,              ExprType.CALL_TEMPLATE);
 		defoper(CALL_TEMPLATE_WITH,         ExprType.CALL_TEMPLATE_WITH);
                 

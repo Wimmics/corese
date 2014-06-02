@@ -75,7 +75,7 @@ public class Query extends Exp {
 	private Object pprinter;
 	HashMap<String, Object> tprinter;  
 	Compile compiler;
-	Sorter sort;
+        private QuerySorter querySorter;
 	
 	HashMap<String, Object> pragma;
 	// Extended filters: pathNode()
@@ -158,7 +158,7 @@ public class Query extends Exp {
 		relaxEdges 		= new ArrayList<Node>();
 		argList 		= new ArrayList<Node>();
 
-		sort = new Sorter();
+                querySorter = new QuerySorter(this);
 
 	}
 	
@@ -176,20 +176,42 @@ public class Query extends Exp {
 	}
 	
 	public String toString(){
-		String str = super.toString();
+            StringBuilder sb = new StringBuilder();
 		if (selectExp.size()>0){
-			str = "select " + selectExp + "\n" + str;
+			sb.append("select ");
+                        sb.append(selectExp); 
+                        sb.append("\n");
 		}
+ 		sb.append(super.toString());
+                if (! getOrderBy().isEmpty()){
+                    sb.append("\n");
+                    sb.append("order by ");
+                    sb.append(getOrderBy());
+                }
+                if (! getGroupBy().isEmpty()){
+                    sb.append("\n");
+                    sb.append("group by ");
+                    sb.append(getGroupBy());
+                } 
+                if (getHaving() != null){
+                    sb.append("\n");
+                    sb.append("having ");
+                    sb.append(getHaving());
+                }
                 if (getMappings() != null && getMappings().size() > 0){
-                    str += "\n" + "values " + getBindingNodes() + "{";
-                    str += getMappings() + "}";
+                  sb.append("\n");
+                  sb.append("values");
+                  sb.append(getBindingNodes());
+                  sb.append("{");
+                  sb.append(getMappings());
+                  sb.append("}");
                 }
                 
-		return str;
+		return sb.toString();
 	}
 	
 	public void set(Sorter s){
-		sort = s;
+		querySorter.setSorter(s);
 	}
 	
 	public void set(Edge e, Query q){
@@ -1007,7 +1029,7 @@ public class Query extends Exp {
 		
 		// sort edges according to var connexity, assign filters
 		// recurse on subquery
-		compile();
+		querySorter.compile();
 		setAggregate();
 		// recurse on subquery
 		index(this, getBody(), true, false, -1);
@@ -1019,7 +1041,6 @@ public class Query extends Exp {
 			// use case: select (exists{?x :p ?y} as ?b)
 			if (ee.getFilter()!=null){
 				index(this, ee.getFilter());
-                                compile(ee.getFilter());
 			}
 		}
 		
@@ -1029,6 +1050,7 @@ public class Query extends Exp {
 			q.complete();
 		}
 	}
+        
 	
 	/**
 	 * 
@@ -1038,8 +1060,8 @@ public class Query extends Exp {
 		for (Filter f : getPathFilter()){
 			index(this, f);
 		}
-		indexCompile(getOrderBy());
-		indexCompile(getGroupBy());
+		index(getOrderBy());
+		index(getGroupBy());
 		
 		if (getHaving()!=null){
 			index(this, getHaving().getFilter());
@@ -1060,19 +1082,21 @@ public class Query extends Exp {
 			index(getPathNode());
 		}
 	}
+        
+	void compile(Filter f){
+            querySorter.compile(f);
+        }
 	
-	
-	void indexCompile(List<Exp> list){
+	void index(List<Exp> list){
 		for (Exp ee : list){
 			// use case: group by (exists{?x :p ?y} as ?b)
 			// use case: order by exists{?x :p ?y} 
 			if (ee.getFilter()!=null){
 				index(this, ee.getFilter());
-                                compile(ee.getFilter());
 			}
 		}
 	}
-	
+             	
 	public Query getQuery(){
 		return this;
 	}
@@ -1555,177 +1579,8 @@ public class Query extends Exp {
 	 */
 	
 	
-	/**
-	 * sort edges wrt binding
-	 * add BIND ?x = ?y 
-	 * move filter where variable are bound
-	 */
-	void compile(){
-		compile(this);
-	}
 	
-	
-	void compile(Exp exp){
-		VString bound =  new VString();
-		compile(exp, bound, false);
-	}
-
-        /**
-         * Recursively sort edges and filters wrt connection 
-         */
-	Exp compile(Exp exp, VString lVar, boolean option){
-		int type = exp.type();
-		
-		switch (type){
-		
-		case EDGE:
-		case XPATH:
-		case EVAL:
-		case NODE:
-                case GRAPHNODE:
-			break;
-			
-		case FILTER:
-			// compile inner exists {} if any
-			compile(exp.getFilter(), lVar, option);
-			break;
-                    
-                case BIND:
-                    compile(exp.getFilter(), lVar, option);
-                    break;
-			
-		case PATH:
-			//compiler.test(exp.getRegex());
-			break;
-
-		case QUERY:
-			// lVar = select varList
-			VString list = new VString();
-                        Query q = exp.getQuery();
-			for (Exp ee : q.getSelectFun()){
-				Node node = ee.getNode();
-				if (lVar.contains(node.getLabel())){
-					list.add(node.getLabel());
-				}
-			}
-			lVar = list;
-			if (q.getHaving() != null){
-				compile(q.getHaving().getFilter());
-			}
-			// continue
-
-		default: 
-			
-			if (type == OPTION || type == OPTIONAL ||type == UNION || type == NOT || type == MINUS){
-				option = true;
-			}
-				
-			
-			if (isSort){
-				// identify remarkable filters such as ?x = <uri>
-                                // create BIND(?x = <uri>) store it in FILTER 
-				findFilter(exp);
-				
-				int num = exp.size();
-				/**				
-				 * when BIND concern graph ?g variable, 
-				 * graph ?g is not considered as bound by sort
-				 * 
-				 * lBind : filter VAR = CST
-				 * 
-				 */
-				List<Exp> lBind = exp.varBind();
-				if (exp.type() == AND){
-					// sort edges wrt connection
-                                        // take OPT_BIND(var = exp) into account
-					sort.sort(this, exp, lVar, lBind);
-
-				}
-				// put filters where they are bound ASAP
-				sortFilter(exp, lVar);
-
-				// set BIND expressions before right edge
-                                // ?x ?p ?y . ?x ?q ?t . filter(?t = 12)
-                                // ->
-                                // BIND(?t = 12) . ?x ?q ?t . filter(?t = 12) .  ?x ?p ?y                        
-				exp.setBind();
-                                // set graph filter into graph
-				exp.graphFilter();
-				
-			}
-			
-			
-			int size = lVar.size();
-
-                        // bind graph variable
-			if (exp.isGraph() && exp.getGraphName().isVariable()){
-				// GRAPH {GRAPHNODE NODE} {EXP}
-				Node gNode = exp.getGraphName();
-				lVar.add(gNode.getLabel());
-			}
-		
-			for (Exp e : exp){
-				compile(e, lVar, option);
-				if (exp.type() == AND){
-					//  bound is used in nested patterns
-					e.addBind(lVar);
-				}
-			}
-			
-			lVar.clear(size);
-			//cleanNode(exp);	
-                    
-                        if (isTest()){
-                            testjoin(exp);
-                        }
-                        if (testJoin && exp.type() == AND){
-                            // group statements that are not connected in separate BGP 
-                            // generate a JOIN between them.
-                              Exp res = exp.join();
-                              if (res != exp){
-                                exp.getExpList().clear();
-                                exp.add(res);
-                              }
-                        }
-			
-		}
-                
-		if (exp.isOptional()){
-                    // A optional B
-                    // variables bound by A
-                    exp.first().setNodeList(exp.first().getNodes());
-                }
-                else if (exp.isJoin()){
-                    exp.bindNodes();
-                }
-                
-		return exp;
-	}
-	
-        
-      void testjoin(Exp exp) {
-            if (exp.type() == AND) {
-                Exp ee = exp.join();
-                if (ee != exp) {
-                    System.out.println("Q1: " + exp);
-                    System.out.println("Q2: " + ee);
-                }
-            }
-        }
-
-        
-	/**
-	 * Identify remarkable filter 
-	 * ?x < ?y ?x = ?y or ?x = cst or !bound()
-	 * filter is tagged
-	 */
-	void findFilter(Exp exp){
-		for (Exp ee : exp){
-			if (ee.isFilter()){
-				compiler.process(this, ee);
-			}
-		}
-	}
+                     
 	
 	/**
 	 * search for:
@@ -1957,24 +1812,6 @@ public class Query extends Exp {
     public void setTemplateProfile(Query templateProfile) {
         this.templateProfile = templateProfile;
     }
-
-class VString extends ArrayList<String> {
-		
-		void clear(int size){
-			if (size == 0) clear();
-			else
-			while(size()>size){
-				remove(size()-1);
-			}
-		}
-		
-		public boolean add(String var){
-			if (! contains(var)){
-				super.add(var);
-			}
-			return  true;
-		}
-	}
 	
 	
 	/**
@@ -2000,76 +1837,6 @@ class VString extends ArrayList<String> {
 	}
 	
 		
-	/**
-	 * Move filter at place where variables are bound in exp
-	 * expVar: list of bound variables
-         * TODO: exists {} could be eval earlier
-	 */
-	void sortFilter(Exp exp, VString expVar){
-		int size = expVar.size();
-		List<String> filterVar;
-		List<Exp> done = new ArrayList<Exp>();
-
-		for (int jf=exp.size()-1; jf>=0 ; jf--){
-			// reverse to get them in same order after placement
-
-			Exp f = exp.get(jf);
-
-			if (f.isFilter() && ! done.contains(f)){
-				//compiler.process(f);
-				Filter ff = f.getFilter();
-
-				if (compiler.isLocal(ff)){
-					//TODO: fix it
-					// optional {} !bound()
-					// !bound() should not be moved
-					done.add(f);
-					continue;
-				}
-
-				expVar.clear(size);
-
-				filterVar = ff.getVariables();
-				boolean isExist = isExist(ff);
-				
-				for (int je=0; je<exp.size() ; je++){
-					// search exp e after which filter f is bound
-					Exp e = exp.get(je);
-
-					e.share(filterVar, expVar);
-                                        boolean bound = bound(filterVar, expVar);
-                                        
-					if (bound || (isExist && je+1 == exp.size())){
-						// insert filter after exp
-						// an exist filter that is not bound is moved at the end because it 
-						// may bound its own variables.
-                                            if (bound && e.type() == OPTIONAL && e.first().size()>0){
-                                                e.first().add(ff);
-                                            }
-						e.addFilter(ff);
-						done.add(f);
-						if (jf < je){
-							// filter is before, move it after
-							exp.remove(f);
-							exp.add(je, f);
-							//jf--;
-						}
-						else if (jf > je+1){
-							// put if just behind
-							exp.remove(f);
-							exp.add(je+1, f);
-							jf++;
-						}
-
-						break;
-					}
-				}
-			}
-		}
-		
-		expVar.clear(size);
-
-	}
 	
 
 	/**
@@ -2147,33 +1914,6 @@ class VString extends ArrayList<String> {
 			}
 		}
 		return b;
-	}
-	
-	void compile(Filter f){
-             compile(f, new VString(), false);
-        }
-        
-	void compile(Filter f, VString lVar, boolean opt){
-		compile(f.getExp(), lVar, opt);
-	}
-	
-	/**
-	 * Compile pattern of exists {} if any
-	 */
-	void compile(Expr exp, VString lVar, boolean opt){
-		if (exp.oper() == ExprType.EXIST){
-			compile(getPattern(exp), lVar, opt);
-		}
-		else {
-			for (Expr ee : exp.getExpList()){
-				compile(ee, lVar, opt);
-			}
-		}
-	}
-	
-	
-	boolean isExist(Filter f){
-		return f.getExp().isExist();
 	}
 	
 	

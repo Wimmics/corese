@@ -1232,7 +1232,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     }
 
     /**
-     * If a filter carry a bind, set the bind before filter (and before edge)
+     * If a filter carry a bind, set the bind into its edge or path
      */
     void setBind() {
         for (int i = 1; i < size(); i++) {
@@ -1241,24 +1241,17 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                 Exp bind = f.first();
                 if (bind.type() == OPT_BIND
                         // no bind (?x = ?y) in case of JOIN
-                        && (!Query.testJoin || bind.isBindCst())
-                        // check that BIND() is linked to EDGE()
-                        && !getExpList().contains(bind)) {
+                        && (!Query.testJoin || bind.isBindCst())) {
                     int j = i - 1;
                     while (j > 0 && get(j).isFilter()) {
                         j--;
                     }
                     if (j >= 0) {
                         Exp g = get(j);
-
                         if ((g.isEdge() || g.isPath())
                                 && (bind.isBindCst() ? g.bind(bind.first().getNode()) : true)) {
                             bind.status(true);
-                            g.setBind(bind);
-                            // add bind before edge:
-                            //add(j, bind);
-                            // skip the added bind Exp:
-                            //i++;
+                            g.setBind(bind);                           
                         }
                     }
                 }
@@ -1295,7 +1288,6 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         }
     }
 
-    // TODO: filter is not an exist {}
     boolean match(Node node, Filter f) {
         if (!node.isVariable() || f.getExp().isRecExist()) {
             return false;
@@ -1543,7 +1535,6 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
      */
     void bindNodes(){
         for (Exp exp : getExpList()){
-            exp.setNodeList(exp.getNodes());
             exp.setNodeList(exp.getNodes());
         }
     }

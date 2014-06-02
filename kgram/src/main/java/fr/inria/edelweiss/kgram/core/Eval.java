@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -198,7 +199,7 @@ public class Eval implements ExpType, Plugin {
     public Mappings filter(Mappings map, Query q) {
         Query qq = map.getQuery();
         init(qq);
-        qq.compile(q.getHaving());
+        qq.compile(q.getHaving().getFilter());
         qq.index(qq, q.getHaving().getFilter());
         //q.complete();
 
@@ -1097,7 +1098,8 @@ public class Eval implements ExpType, Plugin {
             // Constant are not yet transformed into Node
             for (Object value : exp.getValues()) {
                 // get constant Node
-                Node node = prod.getNode(value);
+                Expr cst = (Expr) value;
+                Node node = prod.getNode(cst.getValue());                
                 if (node != null && prod.isBindable(node)) {
                     // store constant Node into Bind expression
                     // TODO: 

@@ -1,0 +1,3 @@
+select * where {
+  ?x ?p ?y
+}

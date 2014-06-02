@@ -1,0 +1,6 @@
+insert {
+  ?x ?p ?y
+}
+where {
+  ?x ?p ?y
+}

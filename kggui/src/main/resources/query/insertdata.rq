@@ -1,0 +1,6 @@
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix ex:   <http://example.org/>
+
+insert data {
+  ex:John foaf:name 'John'
+}

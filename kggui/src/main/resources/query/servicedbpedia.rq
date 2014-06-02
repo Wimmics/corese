@@ -1,0 +1,9 @@
+select * 
+where {
+  service <http://fr.dbpedia.org/sparql/> {
+     select * where {
+       <http://fr.dbpedia.org/resource/Paris> ?p ?y 
+     } 
+     limit 10
+  }
+}

@@ -1,0 +1,4 @@
+describe ?x
+where {
+  ?x ?p ?y
+}

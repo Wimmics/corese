@@ -192,8 +192,10 @@ public interface ExprType {
 	public static int APPLY_TEMPLATES_WITH_ALL  = 254;
 	public static int APPLY_TEMPLATES_GRAPH     = 255;
 	public static int APPLY_TEMPLATES_WITH_GRAPH= 256;
-	public static int CALL_TEMPLATE             = 257;
-	public static int CALL_TEMPLATE_WITH        = 258;
+        public static int APPLY_TEMPLATES_NOGRAPH   = 257;
+	public static int APPLY_TEMPLATES_WITH_NOGRAPH= 258;        
+	public static int CALL_TEMPLATE             = 259;
+	public static int CALL_TEMPLATE_WITH        = 260;
 
 
 	public static int ISSKOLEM 	= 270;

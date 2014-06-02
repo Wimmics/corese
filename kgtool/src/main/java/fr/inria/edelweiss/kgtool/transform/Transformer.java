@@ -31,7 +31,6 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -168,6 +167,48 @@ public class Transformer {
         Graph g = Graph.create();
         return new Transformer(g, p);
     }
+    
+   /**
+     * Create Transformer for named graph
+     * system named graph, 
+     * std named grapĥ: use Dataset from name 
+     * loaded graph
+     */
+    public static Transformer create(Graph g, String trans, String name) throws LoadException {
+        return create(g, trans, name, true);
+    }
+    
+    public static Transformer create(Graph g, String trans, String name, boolean with) throws LoadException {
+        Dataset ds = null;
+        Graph gg = g.getNamedGraph(name);
+        if (gg == null) {
+            Node n = g.getGraphNode(name);
+            if (n == null) {
+                gg = Graph.create();
+                Load load = Load.create(gg);
+                load.load(name, Load.TURTLE_FORMAT);
+            } 
+            else {
+                gg = g;
+                if (with){
+                    ds = Dataset.create();
+                    ds.addFrom(name);
+                    ds.addNamed(name);
+                }
+                else {
+                    ds = g.getDataset();
+                    ds.remFrom(name);
+                    ds.remNamed(name);
+                }
+            }
+        }
+
+        Transformer t = Transformer.create(gg);
+        t.setDataset(ds);
+        t.setTemplates(trans);
+        return t;
+    }
+    
     
      public String transform(){
         IDatatype dt = process();

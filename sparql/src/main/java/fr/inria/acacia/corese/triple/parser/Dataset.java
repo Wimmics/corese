@@ -135,6 +135,20 @@ public class Dataset {
 
 	}
         
+        public Dataset remFrom(String s){
+		if (from != null){
+                    from.remove(Constant.create(s));
+                }
+                return this;
+	}
+        
+          public Dataset remNamed(String s){
+		if (named != null){
+                    named.remove(Constant.create(s));
+                }
+                return this;
+	}
+        
         public void addFrom(Constant s){
             if (from == null) defFrom();
 		if (! from.contains(s)){

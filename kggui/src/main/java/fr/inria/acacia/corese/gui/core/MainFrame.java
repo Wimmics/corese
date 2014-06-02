@@ -69,7 +69,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-05-28";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-06-02";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -114,9 +114,9 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem success;
     private JMenuItem quit;
     private JMenuItem iselect, igraph, iconstruct, iask, idescribe, 
-            iserviceCorese, iserviceDBpedia,
+            iserviceCorese, iserviceDBpedia, ientailment,
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, itrig, ispin, iowl, itypecheck;
+            iturtle, itrig, ispin, iowl, itypecheck, icontent;
     
     HashMap<Object, String> itable;
     
@@ -142,61 +142,26 @@ public class MainFrame extends JFrame implements ActionListener {
     private String textQuery;
     
     // Texte par défaut dans l'onglet requête 
-    private static final String defaultSelectQuery = 
-            "select * where {\n ?x ?p ?y\n}";
-    
-    private static final String defaultGraphQuery = 
-            "select * where {\n  graph ?g {\n    ?x ?p ?y \n}\n}";    
-    
-    private static final String defaultConstructQuery = 
-            "construct {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}";
-    
-    private static final String defaultAskQuery = 
-            "ask \nwhere {\n  ?x ?p ?y\n}";    
-    
-    private static final String defaultDescribeQuery = 
-            "describe ?x \nwhere {\n  ?x ?p ?y\n}";   
-    
-    private static final String defaultServiceCoreseQuery = 
-            "select * \nwhere {\nservice <http://localhost:8080/kgram/sparql/> {\n"
-            + "select * \nwhere {\n ?x ?p ?y \n} limit 10\n"
-            + "}\n}";   
-
-    private static final String defaultServiceDBpediaQuery = 
-            "select * \nwhere {\nservice <http://fr.dbpedia.org/sparql/> {\n"
-            + "select * \nwhere {\n <http://fr.dbpedia.org/resource/Paris> ?p ?y \n} limit 10\n"
-            + "}\n}";       
-    
-    private static final String defaultInsertQuery = 
-            "insert {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}"; 
-  
-    private static final String defaultInsertDataQuery = 
-            "insert data {\n <John> rdfs:label 'John' \n}"; 
-  
-    private static final String defaultDeleteQuery = 
-            "delete {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}"; 
-    
-    private static final String defaultDeleteInsertQuery = 
-            "delete {\n ?x ?p ?y \n} \ninsert {\n ?x ?p ?y \n} \nwhere {\n  ?x ?p ?y\n}";     
-    
-    
-    
-    private static final String defaultTemplateQuery = 
-            "template {\n st:apply-templates-with(st:turtle) \n} \nwhere {\n\n}";
-    
-    private static final String defaultTrigQuery = 
-            "template {\n st:apply-templates-with(st:trig) \n} \nwhere {\n\n}";
-    
-    private static final String defaultOWLQuery = 
-            "template {\n st:apply-templates-with(st:owl) \n} \nwhere {\n\n}";
-    
-    private static final String defaultSPINQuery = 
-            "template {\n st:apply-templates-with(st:spin) \n} \nwhere {\n\n}";
-    
-    private static final String defaultTypecheckQuery = 
-            "template {\n st:apply-templates-with(st:typecheck) \n} \nwhere {\n\n}";    
-    
-    
+    private static final String defaultSelectQuery  = "select.rq";    
+    private static final String defaultGraphQuery   = "graph.rq";      
+    private static final String defaultConstructQuery = "construct.rq";    
+    private static final String defaultAskQuery     = "ask.rq";        
+    private static final String defaultDescribeQuery = "describe.rq";       
+    private static final String defaultServiceCoreseQuery = "servicecorese.rq";   
+    private static final String defaultServiceDBpediaQuery = "servicedbpedia.rq";          
+    private static final String defaultInsertQuery  = "insert.rq";   
+    private static final String defaultInsertDataQuery = "insertdata.rq";  
+    private static final String defaultDeleteQuery  = "delete.rq";    
+    private static final String defaultDeleteInsertQuery = "deleteinsert.rq";        
+    private static final String defaultEntailmentQuery = "entailment.rq";
+       
+    private static final String defaultTemplateQuery = "turtle.rq";    
+    private static final String defaultTrigQuery = "trig.rq";   
+    private static final String defaultOWLQuery = "owl.rq";   
+    private static final String defaultSPINQuery = "spin.rq";   
+    private static final String defaultTypecheckQuery = "typecheck.rq";     
+    private static final String defaultContentQuery = "content.rq";
+   
     private String defaultQuery = defaultSelectQuery;
             
     private IEngine myCorese = null;
@@ -205,6 +170,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private MyEvalListener el;
     Buffer buffer;
     private static String STYLE = "/style/";
+    private static String QUERY = "/query/";
     private static String STYLESHEET = "style.txt";
     private static String TXT = ".txt";
     private static String RQ = ".rq";
@@ -224,7 +190,14 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setSize(900, 700);
         this.setMinimumSize(this.getSize());
         this.setLocationRelativeTo(null);
-        this.setResizable(true);		
+        this.setResizable(true);
+        try {
+            defaultQuery = read(QUERY + defaultSelectQuery);
+        } catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
 		
         //setStyleSheet();
 
@@ -362,7 +335,7 @@ public class MainFrame extends JFrame implements ActionListener {
     
     void setStyleSheet(){
         try {
-            saveStylesheet = readStyleSheet(STYLE + STYLESHEET);
+            saveStylesheet = read(STYLE + STYLESHEET);
         } catch (LoadException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -475,12 +448,14 @@ public class MainFrame extends JFrame implements ActionListener {
         idescribe   = defItem("Describe", defaultDescribeQuery);
         iserviceCorese    = defItem("Service Corese", defaultServiceCoreseQuery);
         iserviceDBpedia    = defItem("Service DBpedia", defaultServiceDBpediaQuery);
-        
+        icontent    = defItem("Content", defaultContentQuery);
+
         
         iinsert     = defItem("Insert", defaultInsertQuery);
         iinsertdata = defItem("Insert Data", defaultInsertDataQuery);
         idelete     = defItem("Delete", defaultDeleteQuery);
         ideleteinsert = defItem("Delete Insert", defaultDeleteInsertQuery);
+        ientailment = defItem("Entailment", defaultEntailmentQuery);
                     
         iturtle = defItem("Turtle", defaultTemplateQuery); 
         itrig = defItem("Trig", defaultTrigQuery); 
@@ -589,6 +564,7 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iinsert);
         queryMenu.add(iinsertdata);
         queryMenu.add(ideleteinsert);
+        queryMenu.add(ientailment);
         
         templateMenu.add(iturtle);
         templateMenu.add(itrig);
@@ -596,6 +572,7 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(ispin);
        
         templateMenu.add(itypecheck);
+        templateMenu.add(icontent);
         
         editMenu.add(undo);
         editMenu.add(redo);
@@ -787,10 +764,24 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
     
-    JMenuItem defItem(String name, String query){
+    JMenuItem defItem2(String name, String query){
         JMenuItem it = new JMenuItem(name);
         it.addActionListener(this); 
         itable.put(it, query);
+        return it;
+    }
+    
+    JMenuItem defItem(String name, String q){
+        JMenuItem it = new JMenuItem(name);
+        it.addActionListener(this); 
+        try {
+            String str = read(QUERY + q);
+            itable.put(it, str);
+        } catch (LoadException ex) {
+            logger.error(ex);
+        } catch (IOException ex) {
+            logger.error(ex);
+        }
         return it;
     }
 
@@ -1300,7 +1291,7 @@ public class MainFrame extends JFrame implements ActionListener {
         return style;
     }
     
-    String readStyleSheet(String name) throws LoadException, IOException {
+    String read(String name) throws LoadException, IOException {
         InputStream stream = getClass().getResourceAsStream(name);
         if (stream == null) {
             throw new IOException(name);

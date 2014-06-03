@@ -116,6 +116,164 @@ public class TestQuery1 {
     }
 
     
+   @Test
+    public void testExists() throws EngineException {
+      
+      Graph g1 = Graph.create();
+      QueryProcess exec = QueryProcess.create(g1);
+        Graph g2 = Graph.create();
+      QueryProcess exec2 = QueryProcess.create(g2);
+      String init1 = "insert data { "
+              + "<John> rdfs:label 'John' "
+              + "<James> rdfs:label 'James'"
+              + "}";
+      
+       String init2 = "insert data { "
+              + "<Jim> rdfs:label 'Jim' "
+              + "}";
+      
+      
+      String q = "select "
+              + "(group_concat"
+              + "(exists {"
+              
+                    + "select "
+                    + "(group_concat(exists {"
+                            + "select "
+                            + "(group_concat(exists {"
+                            + "?x rdfs:label ?ll"
+                            + "}) as ?temp) "
+                            + "where {"
+                            + "?x rdfs:label ?l "
+                            + "}"         
+                    + "}) as ?temp) "
+                    + "where {"
+                    + "?x rdfs:label ?l "
+                    + "}"              
+              + "}"
+              
+              + ") "
+              + "as ?res) where {"
+             
+              + "?x rdfs:label ?l "
+              + ""
+              + "}";
+      
+      exec.query(init1);
+      exec2.query(init2);
+      
+      exec.add(g2);
+      
+      Mappings map = exec.query(q);
+      IDatatype dt = (IDatatype) map.getValue("?res");
+      System.out.println(map);
+      assertEquals("true true true", dt.stringValue());
+     }
+  
+    
+     @Test
+    public void testQQS() throws EngineException {
+      
+      Graph g = Graph.create();
+      QueryProcess exec = QueryProcess.create(g);
+
+      String init = "insert data { "
+              + "<John> rdfs:label 'John' "
+              + "<James> rdfs:label 'James'"
+              + "}";
+      
+      String q = "select * where {"
+              + "graph ?g {"
+              + "{"
+              + "?x rdfs:label 'John' "
+              + "filter exists { select * where {filter(?l = 'John') ?y rdfs:label ?l}} "
+              + "}"
+              + "union {filter(?l = 'John') ?x rdfs:label ?l}"
+              + "}"
+              + ""
+              + ""
+              + "}";
+      
+      exec.query(init);
+      
+      Mappings map = exec.query(q);
+      assertEquals(2, map.size());
+
+      
+     } 
+    
+    
+    @Test
+       public void testGTT() throws LoadException, EngineException {
+
+            Graph g = Graph.create();
+            Load ld = Load.create(g);
+            ld.load(RDF.RDF, Load.TURTLE_FORMAT);
+            ld.load(RDFS.RDFS, Load.TURTLE_FORMAT);
+            
+            Transformer t = Transformer.create(g, Transformer.TURTLE, RDF.RDF);
+            String str = t.transform();
+            //System.out.println(str);
+            assertEquals(3864, str.length());
+            
+            t = Transformer.create(g, Transformer.TURTLE, RDFS.RDFS);
+            str = t.transform();
+            //System.out.println(str);
+            assertEquals(3207, str.length());
+            
+             t = Transformer.create(g, Transformer.TURTLE);
+            str = t.transform();
+            //System.out.println(str);
+            assertEquals(6983, str.length());
+       } 
+    
+    @Test
+       public void testGT() throws LoadException, EngineException {
+            Graph g = Graph.create();
+            Load ld = Load.create(g);
+            ld.load(RDF.RDF, Load.TURTLE_FORMAT);
+            ld.load(RDFS.RDFS, Load.TURTLE_FORMAT);
+            
+            String t1 = "template { st:apply-templates-with-graph(st:turtle, rdf:)} where {}";
+            String t2 = "template { st:apply-templates-with-graph(st:turtle, rdfs:)} where {}";
+            String t3 = "template { st:apply-templates-with(st:turtle)} where {}";
+            
+            QueryProcess exec = QueryProcess.create(g);
+            Mappings map = exec.query(t1);
+            String str = map.getTemplateStringResult(); 
+            //System.out.println(str);
+            assertEquals(3864, str.length());
+            
+            map = exec.query(t2);
+            str = map.getTemplateStringResult(); 
+            //System.out.println(str);
+            assertEquals(3207, str.length());
+            
+            map = exec.query(t3);
+            str = map.getTemplateStringResult(); 
+            //System.out.println(str);
+            assertEquals(6983, str.length());
+       } 
+    
+    
+    
+     @Test
+    public void testTC() throws EngineException {
+        String query = "select * where {?x ?x ?y}";
+       String qvalidate = "template {st:apply-templates-with(st:spintypecheck)} where {}";
+        SPINProcess sp = SPINProcess.create();
+        Graph qg = sp.toSpinGraph(query);
+        qg.init();
+        Graph gg = GraphStore.create();
+        Load ld = Load.create(gg);
+        ld.load(data + "comma/model.rdf");
+        gg.setNamedGraph(NSManager.STL+"query", qg);
+        QueryProcess exec = QueryProcess.create(gg, true);
+        Mappings map = exec.query(qvalidate);
+        assertEquals(true, map.getTemplateStringResult().contains("?x ?x ?y"));      
+    }
+    
+    
     @Test
  public void testGCC() throws EngineException{
       Graph g = Graph.create();
@@ -137,7 +295,7 @@ public class TestQuery1 {
          
       
       Mappings map = exec.query(q);
-      System.out.println(map);
+      //System.out.println(map);
       
       IDatatype dt0 = (IDatatype) map.get(0).getValue("?g");
       assertEquals(true, dt0.getDatatypeURI().equals(NSManager.XSD+"string"));
@@ -159,7 +317,7 @@ public class TestQuery1 {
             
             Transformer pp = Transformer.create(g, Transformer.TRIG);
             String str = pp.transform();
-            assertEquals(9675, str.length());
+            assertEquals(10039, str.length());
 
             
        } 
@@ -168,7 +326,7 @@ public class TestQuery1 {
     public void testPPOWL() throws EngineException, LoadException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        System.out.println("Load");
+        //System.out.println("Load");
         ld.load(data + "template/owl/data/primer.owl"); 
         QueryProcess exec = QueryProcess.create(g);
         
@@ -195,7 +353,7 @@ public class TestQuery1 {
     public void testPPSPIN() throws EngineException, LoadException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        System.out.println("Load");
+        //System.out.println("Load");
         ld.load(data + "template/spin/data/"); 
         QueryProcess exec = QueryProcess.create(g);
         
@@ -284,7 +442,7 @@ public class TestQuery1 {
         try {
             exec.query(init);
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 1, map.size());
 
         } catch (EngineException e) {
@@ -293,7 +451,7 @@ public class TestQuery1 {
 
     }
     
-     @Test
+     //@Test
 
     public void testSDK() throws EngineException{
         QueryLoad ql = QueryLoad.create();
@@ -346,7 +504,7 @@ public class TestQuery1 {
             Mappings map = exec.query(init);
             IDatatype dt = (IDatatype) map.getValue("?c");
             assertEquals("Result", 5, dt.intValue());
-            System.out.println(g.display());
+            //System.out.println(g.display());
 
         } catch (EngineException e) {
             // TODO Auto-generated catch block
@@ -492,7 +650,7 @@ public class TestQuery1 {
         exec.query(init);
         
         Mappings map = exec.query(q);
-        System.out.println(map);
+        //System.out.println(map);
         
         assertEquals(5, map.size());
         assertEquals(false, gs.getProxy().typeCheck());
@@ -749,7 +907,7 @@ public class TestQuery1 {
         SPINProcess sp2 = SPINProcess.create();
     
         try {
-            //System.out.println(sp.toSpin(q));
+            ////System.out.println(sp.toSpin(q));
             Graph qg = sp.toSpinGraph(q);
             
             Graph tg = Graph.create();
@@ -771,7 +929,7 @@ public class TestQuery1 {
 
             // root of query AST
             Node node = qg.getRoot();
-           // System.out.println(node);
+           // //System.out.println(node);
             
            Transformer pp = Transformer.create(tg, Transformer.SPIN);
            pp.setNSM(sp.getNSM());
@@ -814,9 +972,9 @@ public class TestQuery1 {
             exec.query(init);
             Mappings map = man.query(query);
             assertEquals("result", 1, map.size());
-            System.out.println(map.getQuery().getAST());
-            System.out.println(map);
-           System.out.println("size: " + map.size());
+            //System.out.println(map.getQuery().getAST());
+            //System.out.println(map);
+           //System.out.println("size: " + map.size());
            
 
         } catch (EngineException ex) {
@@ -853,8 +1011,8 @@ public class TestQuery1 {
             Mappings m = exec.query(init);
             String str = sp.toSpinSparql(query);
             Mappings map = exec.query(str);
-            System.out.println(map);
-            System.out.println(map.getQuery().getAST());
+            //System.out.println(map);
+            //System.out.println(map.getQuery().getAST());
             assertEquals("result", 2, map.size());
 
         } catch (EngineException ex) {
@@ -890,7 +1048,7 @@ public class TestQuery1 {
         try {
             e2.query(init);
             Mappings map = e1.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("result", 1, map.size());
         } catch (EngineException ex) {
             Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
@@ -991,7 +1149,7 @@ public class TestQuery1 {
             assertEquals("result", 2, map2.size());
             
         } catch (EngineException ex) {           
-                 System.out.println(ex);
+                 //System.out.println(ex);
 
         }
         
@@ -1028,8 +1186,8 @@ public class TestQuery1 {
         try {
             exec.query(init);
             Mappings map = exec.query(query);
-            System.out.println(map);
-             System.out.println(map.size());
+            //System.out.println(map);
+             //System.out.println(map.size());
        } catch (EngineException ex) {
             Logger.getLogger(TestQuery1.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1075,15 +1233,15 @@ public class TestQuery1 {
         try {
             exec.query(init);
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 2, map.size());
 
             map = exec.query(query2);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 1, map.size());
 
             map = exec.query(query3);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 1, map.size());
 
         } catch (EngineException e) {
@@ -1119,7 +1277,7 @@ public class TestQuery1 {
         try {
             exec.query(init);
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 3, map.size());
 
 
@@ -1151,7 +1309,7 @@ public class TestQuery1 {
             Mappings map = exec.query(q);
             Node node = map.getTemplateResult();
 
-            System.out.println(node.getLabel());
+            //System.out.println(node.getLabel());
 
             assertEquals("result", true, node.getLabel().length() > 10);
 
@@ -1181,10 +1339,10 @@ public class TestQuery1 {
         String str = tf.toString();
 
         Date d2 = new Date();
-        //System.out.println(str);
+        ////System.out.println(str);
 
         assertEquals("Results", 3055, str.length());
-        System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / 1000.0);
+        //System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / 1000.0);
 
         str = nsm.toString() + "\n" + str;
 
@@ -1193,7 +1351,7 @@ public class TestQuery1 {
         Load ll = Load.create(gg);
         try {
             ll.load(io, "test.ttl");
-            System.out.println(g.size() + " " + (gg.size() + 1));
+            //System.out.println(g.size() + " " + (gg.size() + 1));
 
             assertEquals("Results", g.size(), gg.size());
         } catch (LoadException e) {
@@ -1347,14 +1505,14 @@ public class TestQuery1 {
             ld.loadWE("gogo.rdf");
             assertEquals("Result", false, true);
         } catch (LoadException e) {
-            System.out.println(e);
+            //System.out.println(e);
             assertEquals("Result", e, e);
         }
         try {
             ld.loadWE(data + "comma/fail.rdf");
             assertEquals("Result", false, true);
         } catch (LoadException e) {
-            System.out.println(e);
+            //System.out.println(e);
             assertEquals("Result", e, e);
         }
     }
@@ -1628,7 +1786,7 @@ public class TestQuery1 {
             StatListener el = StatListener.create();
             exec.addEventListener(el);
             Mappings map = exec.query(query);
-            //System.out.println(el);
+            ////System.out.println(el);
             assertEquals("Result", 22, map.size());
 
         } catch (EngineException e) {
@@ -1704,7 +1862,7 @@ public class TestQuery1 {
             Mappings map = exec.query(query);
             Mapping m = map.get(map.size() - 1);
             IDatatype dt = datatype(m.getNode("?num"));
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", map.size(), dt.getIntegerValue() + 1);
         } catch (EngineException e) {
             assertEquals("Result", true, e);
@@ -2110,7 +2268,7 @@ public class TestQuery1 {
             exec.query(update);
 
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 3, map.size());
 
         } catch (EngineException e) {
@@ -2138,7 +2296,7 @@ public class TestQuery1 {
             exec.query(update);
 
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 3, map.size());
 
         } catch (EngineException e) {
@@ -2167,7 +2325,7 @@ public class TestQuery1 {
             exec.query(update);
 
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 3, map.size());
 
         } catch (EngineException e) {
@@ -2196,7 +2354,7 @@ public class TestQuery1 {
             exec.query(update);
 
             Mappings map = exec.query(query);
-            //System.out.println(map);
+            ////System.out.println(map);
             assertEquals("Result", 0, map.size());
 
         } catch (EngineException e) {
@@ -2217,15 +2375,15 @@ public class TestQuery1 {
             g.init();
 
 //			RDFFormat f = RDFFormat.create(g);
-//			System.out.println(f);
+//			//System.out.println(f);
 
             assertEquals("Result", 3, g.size());
 
             String query = "select * where {?p rdf:type rdf:Property}";
 
             Mappings res = exec.query(query);
-//			System.out.println("** Res: " );
-//			System.out.println(res);
+//			//System.out.println("** Res: " );
+//			//System.out.println(res);
             assertEquals("Result", 2, res.size());
 
 
@@ -2633,7 +2791,7 @@ public class TestQuery1 {
 
             map = exec.query(query4);
             TripleFormat tf = TripleFormat.create(exec.getGraph(map));
-            System.out.println(tf);
+            //System.out.println(tf);
 
 
         } catch (EngineException e) {
@@ -2675,7 +2833,7 @@ public class TestQuery1 {
         try {
             Mappings map = exec.query(init);
             map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 2, map.size());
 
 
@@ -2726,9 +2884,9 @@ public class TestQuery1 {
         try {
             Mappings map = exec.query(init);
             map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             ResultFormat f = ResultFormat.create(map);
-            System.out.println(f);
+            //System.out.println(f);
             assertEquals("Result", 2, map.size());
 
 
@@ -2763,7 +2921,7 @@ public class TestQuery1 {
         try {
             Mappings map = exec.query(init);
             map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 3, map.size());
 
 
@@ -2854,7 +3012,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(graph);
         try {
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
 
             assertEquals("Result", 7, map.size());
 
@@ -2887,7 +3045,7 @@ public class TestQuery1 {
 
         try {
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
 
             assertEquals("Result", 1, map.size());
 
@@ -2957,7 +3115,7 @@ public class TestQuery1 {
 
             Mappings map = exec.query(query);
             assertEquals("Result", 2, map.size());
-            System.out.println(map);
+            //System.out.println(map);
 
 
         } catch (EngineException e) {
@@ -3042,7 +3200,7 @@ public class TestQuery1 {
             re.setDebug(true);
             re.process();
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 1, map.size());
 
 
@@ -3073,7 +3231,7 @@ public class TestQuery1 {
             Mappings map = exec.query(init);
             map = exec.query(query);
             ResultFormat f = ResultFormat.create(map);
-            System.out.println(f);
+            //System.out.println(f);
             assertEquals("Result", 3, map.size());
 
         } catch (EngineException e) {
@@ -3106,7 +3264,7 @@ public class TestQuery1 {
 
             XMLResult xml = XMLResult.create(exec.getProducer());
             Mappings m = xml.parseString(f.toString());
-            System.out.println(m);
+            //System.out.println(m);
 
             assertEquals("Result", 5, map.size());
 
@@ -3185,7 +3343,7 @@ public class TestQuery1 {
         try {
             Mappings map = exec.query(init);
             map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 5, map.size());
 
             IDatatype dt0 = (IDatatype) map.get(0).getNode("?x").getValue();
@@ -3232,8 +3390,8 @@ public class TestQuery1 {
             Node n1 = graph.getResource("http://www.inria.fr/acacia/comma#Person");
             Node n2 = graph.getResource("http://www.inria.fr/acacia/comma#Event");
 
-            System.out.println("ANC: " + n1);
-            System.out.println("ANC: " + n2);
+            //System.out.println("ANC: " + n1);
+            //System.out.println("ANC: " + n2);
             graph.setClassDistance();
             Node vv = graph.getClassDistance().ancestor(n1, n2);
             assertEquals("Result", aa.getLabel(), vv.getLabel());
@@ -3272,7 +3430,7 @@ public class TestQuery1 {
 
         try {
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 4, map.size());
 
         } catch (EngineException e) {
@@ -3315,7 +3473,7 @@ public class TestQuery1 {
         try {
             exec.query(init);
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 2, map.size());
 
         } catch (EngineException e) {
@@ -3459,13 +3617,13 @@ public class TestQuery1 {
         String query = "select * where {?x ?p ?y}";
 
         try {
-            //System.out.println("init");
+            ////System.out.println("init");
             exec.query(init);
-            //System.out.println("query");
+            ////System.out.println("query");
 
             Mappings map = exec.query(query);
-//			System.out.println(map);
-//			System.out.println(map.size());
+//			//System.out.println(map);
+//			//System.out.println(map.size());
 
             assertEquals("Result", 2, map.size());
 

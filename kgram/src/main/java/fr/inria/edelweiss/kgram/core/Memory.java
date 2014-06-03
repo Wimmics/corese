@@ -252,7 +252,7 @@ public class Memory implements Environment {
 				//Node outNode = subNode;
 				// get out Node with same label as sub Node :
 				// TODO:  optimize it ? 
-				Node outNode = query.getOuterNode(subNode);
+				Node outNode = query.getOuterNodeSelf(subNode);
 				copyInto(outNode, subNode, mem, n);
 				n++;
 			}

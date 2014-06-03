@@ -1126,6 +1126,14 @@ public class Query extends Exp {
 	Node getOuterNode(Node subNode){
 		return getExtNode(subNode.getLabel());
 	}
+        
+        Node getOuterNodeSelf(Node subNode){
+		Node n = getExtNode(subNode.getLabel());
+                if (n == null){
+                    return subNode;
+                }
+                return n;
+	}
 	
 	public Node getExtNode(Node qNode){
 		return getExtNode(qNode.getLabel());

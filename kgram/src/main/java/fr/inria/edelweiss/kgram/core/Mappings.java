@@ -651,7 +651,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
         
         void template(Evaluator eval, Query q, Memory mem, Producer p){
 		if (size() > 0 && q.isTemplate()){
-			setTemplateResult(apply(eval, q.getTemplateGroup(), mem, p));
+                    setTemplateResult(apply(eval, q.getTemplateGroup(), mem, p));
 		}
 	}
    

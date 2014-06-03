@@ -101,6 +101,7 @@ public class Eval implements ExpType, Plugin {
         match = m;
         plugin = this;
         lPathFinder = new ArrayList<PathFinder>();
+        e.setKGRAM(this);
     }
 
     public static Eval create(Producer p, Evaluator e, Matcher m) {
@@ -432,6 +433,14 @@ public class Eval implements ExpType, Plugin {
             mem = copyMemory(memory, query, null);
             exp.setObject(mem);
         }
+        return mem;
+    }
+    
+    // TODO: optimize by storing mem
+    public Memory getMemory(Mapping map, Exp exp) {
+        Memory mem = new Memory(match, evaluator);
+        mem.init(query);
+        mem.push(map, -1);
         return mem;
     }
 
@@ -2376,17 +2385,18 @@ public class Eval implements ExpType, Plugin {
             Node outNode; //= query.getNode(subNode);
             if (exp.size() == 0) {
                 // store outer node for next time
-                outNode = qq.getOuterNode(subNode);
+                outNode = qq.getOuterNodeSelf(subNode);                
                 exp.add(outNode);
             } else {
                 outNode = exp.get(0).getNode();
             }
+            
             if (node != null) {
                 // a value may be null because of an option {}
                 if (!(mm.match(outNode, node, env) && env.push(outNode, node, n))) {
                     for (int i = 0; i < k; i++) {
                         subNode = subQuery.getSelect().get(i);
-                        outNode = qq.getOuterNode(subNode);
+                        outNode = qq.getOuterNodeSelf(subNode);
                         Node value = res.getNode(subNode);
                         if (value != null) {
                             env.pop(outNode);
@@ -2415,7 +2425,7 @@ public class Eval implements ExpType, Plugin {
 
         for (Node subNode : subQuery.getSelect()) {
             if (ans.isBound(subNode)) {
-                Node outNode = qq.getOuterNode(subNode);
+                Node outNode = qq.getOuterNodeSelf(subNode);
                 env.pop(outNode);
                 env.popPath(outNode);
             }
@@ -2430,7 +2440,7 @@ public class Eval implements ExpType, Plugin {
 
         for (Node subNode : subQuery.getSelect()) {
             // get outer node:
-            Node outNode = qq.getOuterNode(subNode);
+            Node outNode = qq.getOuterNodeSelf(subNode);
             if (outNode != null && env.isBound(outNode)) {
                 return true;
             }

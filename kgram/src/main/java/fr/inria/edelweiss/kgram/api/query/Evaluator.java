@@ -72,6 +72,8 @@ public interface Evaluator {
 	Mappings eval(Filter f, Environment e, List<Node> nodes);
         
         void setProducer(Producer p);
+        
+        void setKGRAM(Object o);
 
         void addResultListener(ResultListener rl);
 }

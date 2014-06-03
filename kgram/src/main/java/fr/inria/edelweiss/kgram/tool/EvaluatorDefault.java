@@ -69,4 +69,8 @@ public class EvaluatorDefault implements Evaluator {
     public void addResultListener(ResultListener rl) {
     }
 
+    @Override
+    public void setKGRAM(Object o) {
+    }
+
 }

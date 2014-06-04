@@ -777,14 +777,27 @@ public class PluginImpl extends ProxyImpl {
             // transform named graph
             try {
                 boolean with = (exp == null) ? true : 
-                        exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
+                           exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
                         || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
-               t = Transformer.create((Graph) prod.getGraph(), p, name, with);
+                
+               Transformer gt = Transformer.create((Graph) prod.getGraph(), p, name, with);
+               
+               if (t == null){
+                   // get current transformer if any to get its NSManager 
+                  t = (Transformer) q.getPP(null);
+               }
+               if (t != null && t.getNSM().isUserDefine()){
+                   gt.setNSM(t.getNSM());
+               }
+               else {
+                   gt.setNSM(((ASTQuery) q.getAST()).getNSM());
+               }  
+               
+               t = gt;
             } catch (LoadException ex) {
                 logger.error(ex);
                 t = Transformer.create(Graph.create(), null);
             }
-             t.setNSM(((ASTQuery) q.getAST()).getNSM());
        }
         else if (t == null) {         
             t = Transformer.create(prod, p);

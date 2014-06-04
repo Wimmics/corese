@@ -440,8 +440,28 @@ public class Graph //implements IGraph
 			inference.setActivate(b);
 		}
 	}
-	
-	
+        
+        /**
+         * Use Case: GUI
+         * Remove or perform RDFS Entailment
+         */
+        synchronized public void setRDFSEntailment(boolean b){
+            if (b){
+                if (inference == null){
+                    setEntailment();
+                }
+                else {
+                   setEntailment(true);
+                }
+                setEntail(true);
+                init();
+            }
+            else if (inference != null){
+                    setEntailment(false);
+                    inference.remove();
+                }           
+        }
+              		
 	public void set(String property, boolean value){
 		localSet(property, value);
 		if (inference!=null){
@@ -650,16 +670,10 @@ public class Graph //implements IGraph
 		isDelete = b;
 		isDeletion = true;
 	}
-	
-	/**
-	 * @deprecated
-	 */
-//	public boolean isEntailment(){
-//		return isEntail;
-//	}
+		
 	
 	public boolean hasEntailment(){
-		return inference!=null;
+		return inference!=null && inference.isActivate();
 	}
 	
 

@@ -52,6 +52,7 @@ import fr.inria.acacia.corese.gui.event.MyEvalListener;
 import fr.inria.acacia.corese.gui.query.Buffer;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.event.Event;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.BufferedReader;
@@ -114,7 +115,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem success;
     private JMenuItem quit;
     private JMenuItem iselect, igraph, iconstruct, iask, idescribe, 
-            iserviceCorese, iserviceDBpedia, ientailment,
+            iserviceCorese, iserviceDBpedia, ientailment, irule,
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, itrig, ispin, iowl, itypecheck, icontent;
     
@@ -124,6 +125,9 @@ public class MainFrame extends JFrame implements ActionListener {
     private JCheckBox checkBoxRule;
     private JCheckBox checkBoxVerbose;
     private JCheckBox checkBoxLoad;
+    
+    private JCheckBox cbrdfs;
+
     private JMenuItem validate;
 //    private MyLoadListener ell;
 //    private MyQueryListener eql;
@@ -154,6 +158,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String defaultDeleteQuery  = "delete.rq";    
     private static final String defaultDeleteInsertQuery = "deleteinsert.rq";        
     private static final String defaultEntailmentQuery = "entailment.rq";
+    private static final String defaultRuleQuery = "rule.rq";
        
     private static final String defaultTemplateQuery = "turtle.rq";    
     private static final String defaultTrigQuery = "trig.rq";   
@@ -164,7 +169,7 @@ public class MainFrame extends JFrame implements ActionListener {
    
     private String defaultQuery = defaultSelectQuery;
             
-    private IEngine myCorese = null;
+    private GraphEngine myCorese = null;
     private CaptureOutput myCapturer = null;
     private final Logger logger = Logger.getLogger(MainFrame.class.getName());
     private MyEvalListener el;
@@ -199,21 +204,12 @@ public class MainFrame extends JFrame implements ActionListener {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 		
-        //setStyleSheet();
-
         //Initialise Corese
         myCapturer = aCapturer;
-//		ef.setProperty(EngineFactory.PROPERTY_FILE, p_PropertyPath);
-//	    ef.setProperty(EngineFactory.ENGINE_RULE_RUN, "true"); 
-        // myCorese = ef.newInstance();
-        setMyCoreseNewInstance();
-//	    myCorese.setProperty(EngineFactory.ENGINE_NAMESPACE,
-//					 "c http://www.inria.fr/acacia/comma# ");
+        setMyCoreseNewInstance(true);
 
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 
-
-        // this.setIconImage(new ImageIcon(java.lang.ClassLoader.getSystemResource(resourcePath + "corese_icon.gif")).getImage());
         //Initialise le menu
         initMenu();
 
@@ -456,6 +452,7 @@ public class MainFrame extends JFrame implements ActionListener {
         idelete     = defItem("Delete", defaultDeleteQuery);
         ideleteinsert = defItem("Delete Insert", defaultDeleteInsertQuery);
         ientailment = defItem("Entailment", defaultEntailmentQuery);
+        irule       = defItem("Rule", defaultRuleQuery);
                     
         iturtle = defItem("Turtle", defaultTemplateQuery); 
         itrig = defItem("Trig", defaultTrigQuery); 
@@ -509,6 +506,7 @@ public class MainFrame extends JFrame implements ActionListener {
         map = new JMenuItem("Map");
         success = new JMenuItem("Success");
         quit = new JMenuItem("Quit");
+        cbrdfs = new JCheckBox("RDFS Entailment");
         checkBoxLoad = new JCheckBox("Load");
         checkBoxQuery = new JCheckBox("Query");
         checkBoxRule = new JCheckBox("Rule");
@@ -565,7 +563,8 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iinsertdata);
         queryMenu.add(ideleteinsert);
         queryMenu.add(ientailment);
-        
+        queryMenu.add(irule);
+       
         templateMenu.add(iturtle);
         templateMenu.add(itrig);
         templateMenu.add(iowl);
@@ -589,7 +588,8 @@ public class MainFrame extends JFrame implements ActionListener {
         engineMenu.add(refresh);
 //        engineMenu.add(coreseBox);
 //        myRadio.add(coreseBox);
-        engineMenu.add(kgramBox);
+       // engineMenu.add(kgramBox);
+        engineMenu.add(cbrdfs);
         myRadio.add(kgramBox);
         aboutMenu.add(apropos);
         aboutMenu.add(tuto);
@@ -660,6 +660,18 @@ public class MainFrame extends JFrame implements ActionListener {
         quit.addActionListener(l_QuitListener);
 
         debugMenu.add(checkBoxLoad);
+        
+        cbrdfs.setEnabled(true);
+        cbrdfs.addItemListener(
+                new ItemListener() {
+                    
+            public void itemStateChanged(ItemEvent e) {               
+                setRDFSEntailment(cbrdfs.isSelected());
+            }
+            
+        });
+        cbrdfs.setSelected(true);
+
         checkBoxLoad.addItemListener(
                 new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -1272,12 +1284,16 @@ public class MainFrame extends JFrame implements ActionListener {
 
     //Réinitialise Corese
     public void setMyCoreseNewInstance() {
-        //if (isKgraph){
-        myCorese = GraphEngine.create();
-        //}
-//		else {
-//			myCorese = ef.newInstance();
-//		}
+        setMyCoreseNewInstance(cbrdfs.isSelected());       
+    }
+    
+    void setMyCoreseNewInstance(boolean rdfs) {
+        myCorese = GraphEngine.create(rdfs);       
+    }
+    
+    void setRDFSEntailment(boolean b){
+        Graph g = myCorese.getGraph();
+        g.setRDFSEntailment(b);
     }
 
     public Logger getLogger() {

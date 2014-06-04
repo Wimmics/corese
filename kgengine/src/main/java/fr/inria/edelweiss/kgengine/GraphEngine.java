@@ -53,9 +53,9 @@ public class GraphEngine implements IEngine {
 	private boolean isListGroup = false,
 	isDebug = false;
 	
-	GraphEngine (){
+	GraphEngine (boolean b){
 		DatatypeMap.setLiteralAsString(false);
-		graph   = GraphStore.create(true);
+		graph   = GraphStore.create(b);
 		rengine = RuleEngine.create(graph);
 		qengine = QueryEngine.create(graph);
 		bengine = Engine.create(QueryProcess.create(graph, true));
@@ -63,8 +63,13 @@ public class GraphEngine implements IEngine {
 	}
 	
 	public static GraphEngine create(){
-		return new GraphEngine();
+		return new GraphEngine(true);
 	}
+        
+        public static GraphEngine create(boolean rdfs){
+		return new GraphEngine(rdfs);
+	}
+        
 	
 	public void definePrefix(String p, String ns){
 		QueryProcess.definePrefix(p, ns);

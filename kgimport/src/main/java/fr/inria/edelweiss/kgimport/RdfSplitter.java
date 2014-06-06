@@ -18,13 +18,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.logging.Level;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -297,16 +297,21 @@ public class RdfSplitter {
      *
      * @param fragments
      * @param namePrefix
-     * @throws FileNotFoundException
      */
-    public void saveFragmentsRDF(Collection<Model> fragments, String namePrefix) throws FileNotFoundException {
+    public void saveFragmentsRDF(Collection<Model> fragments, String namePrefix) {
         int i = 1;
         for (Model frag : fragments) {
             File oF = new File(this.getOutputDirPath() + "/" + namePrefix + "-frag-" + i + ".rdf");
-            OutputStream oS = new FileOutputStream(oF);
-            frag.write(oS, "RDF/XML");
-            logger.info("Written " + oF.getAbsolutePath() + " - size = " + frag.size() + " triples");
-            i++;
+            OutputStream oS;
+            try {
+                oS = new FileOutputStream(oF);
+                frag.write(oS, "RDF/XML");
+                logger.info("Written " + oF.getAbsolutePath() + " - size = " + frag.size() + " triples");
+                i++;
+            } catch (FileNotFoundException ex) {
+                logger.error("File " + oF.getAbsolutePath() + " not found !");
+            }
+
         }
     }
 
@@ -314,17 +319,21 @@ public class RdfSplitter {
      * Saves a set of RDF fragments to RDF files.
      *
      * @param fragments the input fragments to be persisted.
-     * @throws FileNotFoundException
      */
-    public void saveFragmentsRDF(HashMap<String, Model> fragments) throws FileNotFoundException {
+    public void saveFragmentsRDF(HashMap<String, Model> fragments) {
         int i = 1;
         for (String k : fragments.keySet()) {
             Model frag = fragments.get(k);
             File oF = new File(this.getOutputDirPath() + "/" + k.replace("/", "_").replace(":", "_") + "-frag-" + i + ".rdf");
-            OutputStream oS = new FileOutputStream(oF);
-            frag.write(oS, "RDF/XML");
-            logger.info("Written " + oF.getAbsolutePath() + " - size = " + frag.size() + " triples");
-            i++;
+            OutputStream oS;
+            try {
+                oS = new FileOutputStream(oF);
+                frag.write(oS, "RDF/XML");
+                logger.info("Written " + oF.getAbsolutePath() + " - size = " + frag.size() + " triples");
+                i++;
+            } catch (FileNotFoundException ex) {
+                logger.error("File " + oF.getAbsolutePath() + " not found !");
+            }
         }
     }
 
@@ -333,9 +342,8 @@ public class RdfSplitter {
      *
      * @param fragments the input fragments to be persisted.
      * @param namePrefix the prefix used to name fragments.
-     * @throws FileNotFoundException
      */
-    public void saveFragmentsTDB(Collection<Model> fragments, String namePrefix) throws FileNotFoundException {
+    public void saveFragmentsTDB(Collection<Model> fragments, String namePrefix) {
         int i = 1;
         for (Model frag : fragments) {
 
@@ -359,9 +367,8 @@ public class RdfSplitter {
      * Saves a set of RDF fragments to a JENA TDB backend.
      *
      * @param fragments the input fragments to be persisted.
-     * @throws FileNotFoundException
      */
-    public void saveFragmentsTDB(HashMap<String, Model> fragments) throws FileNotFoundException {
+    public void saveFragmentsTDB(HashMap<String, Model> fragments) {
         int i = 1;
         for (String k : fragments.keySet()) {
             Model frag = fragments.get(k);
@@ -384,11 +391,8 @@ public class RdfSplitter {
      * arguments.
      *
      * @param args the input command line arguments.
-     * @throws FileNotFoundException
-     * @throws ParseException
-     * @throws IOException
      */
-    public static void main(String args[]) throws FileNotFoundException, ParseException, IOException {
+    public static void main(String args[]) {
 
         RdfSplitter rdfSplitter = new RdfSplitter();
 
@@ -415,119 +419,139 @@ public class RdfSplitter {
         String footer = "\nPlease report any issue to alban.gaignard@cnrs.fr";
 
         CommandLineParser parser = new BasicParser();
-        CommandLine cmd = parser.parse(options, args);
-        if (cmd.hasOption("h")) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("java -jar [].jar", header, options, footer, true);
-            System.exit(0);
-        }
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse(options, args);
 
-        if (!cmd.hasOption("i")) {
-            logger.warn("You must specify a valid input directory !");
-            System.exit(-1);
-        } else {
-            rdfSplitter.setInputDirPath(cmd.getOptionValue("i"));
-        }
-        if (!cmd.hasOption("o")) {
-            logger.warn("You must specify a valid output directory !");
-            System.exit(-1);
-        } else {
-            rdfSplitter.setOutputDirPath(cmd.getOptionValue("o"));
-        }
-        if (cmd.hasOption("p")) {
-            rdfSplitter.setInputPredicates(new ArrayList<String>(Arrays.asList(cmd.getOptionValues("p"))));
-        }
-        if (cmd.hasOption("f")) {
-            ArrayList<String> opts = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("f")));
-            for (String opt : opts) {
+            if (cmd.hasOption("h")) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("java -jar [].jar", header, options, footer, true);
+                System.exit(0);
+            }
+
+            if (!cmd.hasOption("i")) {
+                logger.warn("You must specify a valid input directory !");
+                System.exit(-1);
+            } else {
+                rdfSplitter.setInputDirPath(cmd.getOptionValue("i"));
+            }
+            if (!cmd.hasOption("o")) {
+                logger.warn("You must specify a valid output directory !");
+                System.exit(-1);
+            } else {
+                rdfSplitter.setOutputDirPath(cmd.getOptionValue("o"));
+            }
+            if (cmd.hasOption("p")) {
+                rdfSplitter.setInputPredicates(new ArrayList<String>(Arrays.asList(cmd.getOptionValues("p"))));
+            }
+            if (cmd.hasOption("f")) {
+                ArrayList<String> opts = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("f")));
+                for (String opt : opts) {
+                    try {
+                        rdfSplitter.getFragList().add(Integer.parseInt(opt));
+                    } catch (NumberFormatException e) {
+                        logger.error(opt + " cannot be pased as an percentage value.");
+                        System.exit(-1);
+                    }
+                }
+            }
+            if (cmd.hasOption("n")) {
                 try {
-                    rdfSplitter.getFragList().add(Integer.parseInt(opt));
+                    rdfSplitter.setFragNb(Integer.parseInt(cmd.getOptionValue("n")));
                 } catch (NumberFormatException e) {
-                    logger.error(opt + " cannot be pased as an percentage value.");
+                    logger.error(cmd.getOptionValue("n") + " cannot be pased as an integer value.");
                     System.exit(-1);
                 }
             }
-        }
-        if (cmd.hasOption("n")) {
-            try {
-                rdfSplitter.setFragNb(Integer.parseInt(cmd.getOptionValue("n")));
-            } catch (NumberFormatException e) {
-                logger.error(cmd.getOptionValue("n") + " cannot be pased as an integer value.");
+
+            File oDir = new File(rdfSplitter.getOutputDirPath());
+            if (oDir.exists()) {
+                logger.warn(rdfSplitter.getOutputDirPath() + " already exists !");
+                oDir = Files.createTempDir();
+                logger.warn(oDir.getAbsolutePath() + " created.");
+                rdfSplitter.setOutputDirPath(oDir.getAbsolutePath());
+            } else {
+                if (oDir.mkdir()) {
+                    logger.info(rdfSplitter.getOutputDirPath() + " created.");
+                }
+            }
+
+            if (!cmd.hasOption("n") && !cmd.hasOption("f") && !cmd.hasOption("p")) {
+                logger.error("You must specify just one fragmentation type through '-n', '-f', or 'p' options");
+                for (String arg : args) {
+                    logger.trace(arg);
+                }
                 System.exit(-1);
             }
-        }
 
-        File oDir = new File(rdfSplitter.getOutputDirPath());
-        if (oDir.exists()) {
-            logger.warn(rdfSplitter.getOutputDirPath() + " already exists !");
-            oDir = Files.createTempDir();
-            logger.warn(oDir.getAbsolutePath() + " created.");
-            rdfSplitter.setOutputDirPath(oDir.getAbsolutePath());
-        } else {
-            if (oDir.mkdir()) {
-                logger.info(rdfSplitter.getOutputDirPath() + " created.");
-            }
-        }
+            String fragName = rdfSplitter.getInputDirPath().substring(rdfSplitter.getInputDirPath().lastIndexOf("/") + 1);
 
-        if (!cmd.hasOption("n") && !cmd.hasOption("f") && !cmd.hasOption("p")) {
-            logger.error("You must specify just one fragmentation type through '-n', '-f', or 'p' options");
-            for (String arg : args) {
-                logger.trace(arg);
-            }
-            System.exit(-1);
-        }
-
-        String fragName = rdfSplitter.getInputDirPath().substring(rdfSplitter.getInputDirPath().lastIndexOf("/") + 1);
-
-        //Input data loading
-        Model model = ModelFactory.createDefaultModel();
-        File inputDir = new File(rdfSplitter.getInputDirPath());
-        if (inputDir.isDirectory()) {
-            for (File f : inputDir.listFiles()) {
-                logger.info("Loading " + f.getAbsolutePath());
-                InputStream iS = new FileInputStream(f);
-                if (f.getAbsolutePath().endsWith(".n3")) {
-                    model.read(iS, null, "N3");
-                } else if (f.getAbsolutePath().endsWith(".nt")) {
-                    model.read(iS, null, "N-TRIPLES");
-                } else if (f.getAbsolutePath().endsWith(".rdf")) {
-                    model.read(iS, null);
+            //Input data loading
+            Model model = ModelFactory.createDefaultModel();
+            File inputDir = new File(rdfSplitter.getInputDirPath());
+            if (inputDir.isDirectory()) {
+                for (File f : inputDir.listFiles()) {
+                    logger.info("Loading " + f.getAbsolutePath());
+                    if (f.isDirectory()) {
+                        String directory = f.getAbsolutePath();
+                        Dataset dataset = TDBFactory.createDataset(directory);
+                        dataset.begin(ReadWrite.READ);
+                        // Get model inside the transaction
+                        model.add(dataset.getDefaultModel());
+                        dataset.end();
+                    } else {
+                        InputStream iS;
+                        try {
+                            iS = new FileInputStream(f);
+                            if (f.getAbsolutePath().endsWith(".n3")) {
+                                model.read(iS, null, "N3");
+                            } else if (f.getAbsolutePath().endsWith(".nt")) {
+                                model.read(iS, null, "N-TRIPLES");
+                            } else if (f.getAbsolutePath().endsWith(".rdf")) {
+                                model.read(iS, null);
+                            }
+                        } catch (FileNotFoundException ex) {
+                            java.util.logging.Logger.getLogger(RdfSplitter.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                 }
-
                 logger.info("Loaded " + model.size() + " triples");
+            } else {
+                System.exit(0);
             }
-        } else {
-            System.exit(0);
-        }
 
-        StopWatch sw = new StopWatch();
-        if (cmd.hasOption("n")) {
-            sw.start();
-            if (cmd.hasOption("tdb")) {
-                rdfSplitter.saveFragmentsTDB(rdfSplitter.getFragHoriz(model, rdfSplitter.getFragNb()), "Homog-" + fragName);
-            } else {
-                rdfSplitter.saveFragmentsRDF(rdfSplitter.getFragHoriz(model, rdfSplitter.getFragNb()), "Homog-" + fragName);
+            StopWatch sw = new StopWatch();
+            if (cmd.hasOption("n")) {
+                sw.start();
+                if (cmd.hasOption("tdb")) {
+                    rdfSplitter.saveFragmentsTDB(rdfSplitter.getFragHoriz(model, rdfSplitter.getFragNb()), "Homog-" + fragName);
+                } else {
+                    rdfSplitter.saveFragmentsRDF(rdfSplitter.getFragHoriz(model, rdfSplitter.getFragNb()), "Homog-" + fragName);
+                }
+                logger.info("Homog horiz frag in " + sw.getTime() + "ms");
+                sw.reset();
+            } else if (cmd.hasOption("f")) {
+                sw.start();
+                if (cmd.hasOption("tdb")) {
+                    rdfSplitter.saveFragmentsTDB(rdfSplitter.getFragHoriz(model, rdfSplitter.getFragList()), "Inhomog-" + fragName);
+                } else {
+                    rdfSplitter.saveFragmentsRDF(rdfSplitter.getFragHoriz(model, rdfSplitter.getFragList()), "Inhomog-" + fragName);
+                }
+                logger.info("Inhomog horiz frag in " + sw.getTime() + "ms");
+                sw.reset();
+            } else if (cmd.hasOption("p")) {
+                sw.start();
+                if (cmd.hasOption("tdb")) {
+                    rdfSplitter.saveFragmentsTDB(rdfSplitter.getFragVert(model, rdfSplitter.getInputPredicates()));
+                } else {
+                    rdfSplitter.saveFragmentsRDF(rdfSplitter.getFragVert(model, rdfSplitter.getInputPredicates()));
+                }
+                logger.info("Vert frag in " + sw.getTime() + "ms");
+                sw.reset();
             }
-            logger.info("Homog horiz frag in " + sw.getTime() + "ms");
-            sw.reset();
-        } else if (cmd.hasOption("f")) {
-            sw.start();
-            if (cmd.hasOption("tdb")) {
-                rdfSplitter.saveFragmentsTDB(rdfSplitter.getFragHoriz(model, rdfSplitter.getFragList()), "Inhomog-" + fragName);
-            } else {
-                rdfSplitter.saveFragmentsRDF(rdfSplitter.getFragHoriz(model, rdfSplitter.getFragList()), "Inhomog-" + fragName);
-            }
-            logger.info("Inhomog horiz frag in " + sw.getTime() + "ms");
-            sw.reset();
-        } else if (cmd.hasOption("p")) {
-            sw.start();
-            if (cmd.hasOption("tdb")) {
-                rdfSplitter.saveFragmentsTDB(rdfSplitter.getFragVert(model, rdfSplitter.getInputPredicates()));
-            } else {
-                rdfSplitter.saveFragmentsRDF(rdfSplitter.getFragVert(model, rdfSplitter.getInputPredicates()));
-            }
-            logger.info("Vert frag in " + sw.getTime() + "ms");
-            sw.reset();
+
+        } catch (ParseException ex) {
+            logger.error("Impossible to parse the input command line " + cmd.toString());
         }
     }
 }

@@ -173,7 +173,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         args.add(create(FILTER, f));
     }
 
-    void set(int n, Exp e) {
+    public void set(int n, Exp e) {
         args.set(n, e);
     }
 
@@ -249,7 +249,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 
     public String toString() {
         String str = title() ;
-        
+
         if (type() == VALUES){
             str += getNodeList();
         }
@@ -285,7 +285,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         } else {
             int i = 0;
             for (Exp e : this) {
-                str += e + " "; 
+                str += e + " ";
                 if (type() == JOIN && i == 0){
                     str += "\n";
                 }
@@ -376,7 +376,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     public boolean isOptional() {
         return type == OPTIONAL;
     }
-    
+
     public boolean isJoin() {
         return type == JOIN;
     }
@@ -928,7 +928,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                     }
                 }
                 break;
-                
+
             case BIND:
                 share(getNode(), filterVar, expVar);
 
@@ -1028,7 +1028,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                     first().getNodes(lNode, lSelNode, lExistNode, blank);
                 }
                 break;
-                
+
             case BIND:
                 add(lSelNode, getNode());
                 break;
@@ -1041,7 +1041,6 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                     add(lSelNode, ee.getNode());
                 }
                 break;
-
 
             default:
                 for (Exp ee : this) {
@@ -1098,8 +1097,6 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         List<Node> lNode = new ArrayList<Node>();
         List<Node> lSelNode = new ArrayList<Node>();
         List<Node> lExistNode = new ArrayList<Node>();
-
-
 
         getNodes(lNode, lSelNode, lExistNode, blank);
 
@@ -1200,8 +1197,8 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     boolean isBindCst() {
         return type() == OPT_BIND && size() == 1;
     }
-    
-     boolean isBindVar() {
+
+    boolean isBindVar() {
         return type() == OPT_BIND && size() == 2;
     }
 
@@ -1528,7 +1525,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 
         return exp;
     }
-    
+
     /**
      * Nodes that may be bound by previous clause or by environment
      * except minus, etc.

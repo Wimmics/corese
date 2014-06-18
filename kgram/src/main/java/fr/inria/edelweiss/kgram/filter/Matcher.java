@@ -17,7 +17,7 @@ public class Matcher implements ExprType {
 		trace = false;
 	
 	
-	boolean match(Pattern qe, Expr te){
+	public boolean match(Pattern qe, Expr te){
 		Bind bind =  Bind.create();
 		return match(qe, te, bind);
 	}

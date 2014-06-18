@@ -55,7 +55,7 @@ public class Pattern implements ExprType, Expr {
 		add(new Pattern(e1));
 	}
 	
-	Pattern(int t, int o, int e1, int e2){
+	public Pattern(int t, int o, int e1, int e2){
 		this(t, o);
 		add(new Pattern(e1));
 		add(new Pattern(e2));

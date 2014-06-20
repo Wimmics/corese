@@ -4,12 +4,14 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgraph.stats.data.ReducedMap;
 import fr.inria.edelweiss.kgraph.stats.data.HashBucket;
-import fr.inria.edelweiss.kgram.sorter.core.IStatistics;
+import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.OBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.SUBJECT;
 import fr.inria.edelweiss.kgraph.stats.data.BaseMap;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.stats.data.SimpleAverage;
+import fr.inria.edelweiss.kgraph.stats.data.TripleHashTable;
 import fr.inria.edelweiss.kgtool.load.Load;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,21 +22,19 @@ import java.util.List;
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 20 mai 2014
  */
-public class MetaData implements IStatistics {
+public class MetaData {
 
     public static void main(String[] args) {
         Graph gg = Graph.create();
         Load ld = Load.create(gg);
         ld.load("/Users/fsong/Downloads/cog-2012.ttl");
-        //ld.load("/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale5000.ttl");
-        //MetaData md = MetaData.createInstance(gg);
-        //((EqualWidthHG) md.getHG()).stats();
-        //System.out.println(mapSN);
     }
 
     public static final int NA = -1;
 
     private static BaseMap subMap, preMap, objMap;
+    private static TripleHashTable thtable;
+
     private static Graph graph = null;
     private static int noOfAllResource, noOfAllObjects;
     private static final MetaData meta = new MetaData();
@@ -42,8 +42,11 @@ public class MetaData implements IStatistics {
     //Enable stats or not
     public static boolean enabled = true;
 
+    //Enable stats or not
+    public static boolean enable_htt = true;
+
     //options
-    private static Options[] options = Options.DEFAULT_OPTIONS;
+    private static final Options[] options = Options.DEFAULT_OPTIONS;
 
     //private constructor for singlenton
     private MetaData() {
@@ -52,6 +55,10 @@ public class MetaData implements IStatistics {
 
     public static MetaData getInstance() {
         return meta;
+    }
+
+    public static boolean enabled() {
+        return enabled;
     }
 
     /**
@@ -66,7 +73,7 @@ public class MetaData implements IStatistics {
 
     public static MetaData createInstance(Graph g, List<Options> options) {
         if (!enabled) {
-            return null;
+            return meta;
         }
 
         graph = g;
@@ -76,9 +83,9 @@ public class MetaData implements IStatistics {
     }
 
     public static void setOptions(List<Options> list) {
-         //check options
+        //check options
         //todo: when not all nodes are set
-        if (list != null && list.size() == 3) {
+        if (list != null) {
             list.toArray(options);
         }
     }
@@ -86,6 +93,10 @@ public class MetaData implements IStatistics {
     private static void checkOptions(List<Options> list) {
         setOptions(list);
         for (Options opt : options) {
+            if (opt.getHeuristic() == Options.HT_TRIPLE_HASH) {
+                thtable = new TripleHashTable(opt.getParameters());
+                continue;
+            }
             //1 obtain the variable according to the heuristic type
             BaseMap map = getInstance(opt.getHeuristic(), opt.getParameters());
             //2 create a new instance for corresponding var
@@ -118,6 +129,15 @@ public class MetaData implements IStatistics {
         noOfAllResource = mapSub.size();
         noOfAllObjects = mapObj.size();
 
+        //***2.1 create triple hash table
+        if (enable_htt && thtable != null) {
+            it = graph.getEdges().iterator();
+            thtable.setOptions(noOfAllResource, noOfAllObjects);
+            while (it.hasNext()) {
+                thtable.add((Edge) it.next());
+            }
+        }
+        
         //**3 if the map is reduced map, cut off
         reduce(subMap);
         reduce(preMap);
@@ -134,29 +154,24 @@ public class MetaData implements IStatistics {
     }
 
     //number of all triples
-    @Override
     public int getAllTriplesNumber() {
         return graph.size();
     }
 
     //number of discinct resources
-    @Override
     public int getResourceNumber() {
         return noOfAllResource;
     }
 
     //number of predicates
-    @Override
     public int getPropertyNumber() {
         return graph.getIndex().size();
     }
 
-    @Override
     public int getObjectNumber() {
         return noOfAllObjects;
     }
 
-    @Override
     public int getCountByValue(String val, int type) {
         switch (type) {
             case SUBJECT:
@@ -170,6 +185,10 @@ public class MetaData implements IStatistics {
         }
     }
 
+    public int getCountByTriple(Edge e) {
+        return thtable.get(e);
+    }
+    
     //private double selSubject, selPredicate, selObject;
     //monitor the state of graph, when the graph is changed, 
     //update the meta data

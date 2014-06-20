@@ -9,7 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import static fr.inria.edelweiss.kgram.api.core.Node.OBJECT;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import static fr.inria.edelweiss.kgram.sorter.core.BPGNode.BOUND;
+import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.NA;
 import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.PREDICATE;
 import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.SUBJECT;
 import java.util.List;
@@ -44,6 +44,10 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
         //**1 check the producer
         if (producer instanceof IStatistics) {
             this.meta = (IStatistics) producer;
+            if (!this.meta.enabled()) {
+                System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sorting !!");
+                return;
+            }
         } else {
             System.err.println("!! Producer type not compitable, cannot get statstics data !!");
             return;
@@ -76,19 +80,36 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
             return Integer.MAX_VALUE;
         }
 
+        //** patterns **
+        // pat = 0 :(s p o)
+        // pat = 1 :(s p ?) | (s ? o) | (? p o)
+        // pat = 2 :(s ? ?) | (? ? o) | (? p ?)
+        // pat = 3 :(? ? ?)
+        int pat = pattern[0] + pattern[1] + pattern[2];
         // if all variables in a triple pattern are bound, then selectiviy is set to app_0
-        if (pattern[0] + pattern[1] + pattern[2] == BOUND) {
-            return MIN_SEL_APP;
+        switch (pat) {
+            case 0:
+                return MIN_SEL_APP;
+            case 1:
+                return getSel(n);
+            case 2:
+                // selectiviy 
+                double ss = getSel(n.getSubject(), SUBJECT);
+                double sp = getSel(n.getPredicate(), PREDICATE);
+                double so = getSel(n.getObject(), OBJECT);
+
+                return ss * sp * so;
+            case 3:
+                return MAX_SEL;
+            default:
+                return NA;
         }
-
-        // selectiviy 
-        double ss = getSel(n.getSubject(), SUBJECT);
-        double sp = getSel(n.getPredicate(), PREDICATE);
-        double so = getSel(n.getObject(), OBJECT);
-
-        return ss * sp * so;
     }
 
+    private double getSel(BPGNode n){
+        return meta.getCountByTriple(n.getExp().getEdge()) * 1.0 / meta.getAllTriplesNumber();
+    }
+    
     private double getSel(Node varNode, int type) {
         double sel = MAX_SEL;
         if (!varNode.isVariable()) {

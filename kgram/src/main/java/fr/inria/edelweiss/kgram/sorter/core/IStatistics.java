@@ -1,5 +1,7 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
+import fr.inria.edelweiss.kgram.api.core.Edge;
+
 /**
  * Interface for getting statistics data from a graph
  *
@@ -8,9 +10,10 @@ package fr.inria.edelweiss.kgram.sorter.core;
  */
 public interface IStatistics {
 
-    public static final int SUBJECT = 0;
-    public static final int PREDICATE = 1;
-    public static final int OBJECT = 2;
+    public static final int SUBJECT = 1;
+    public static final int PREDICATE = 2;
+    public static final int OBJECT = 3;
+    public static final int NA = 0;
 
     int getAllTriplesNumber();
 
@@ -21,4 +24,8 @@ public interface IStatistics {
     int getObjectNumber();
 
     int getCountByValue(String val, int type);
+    
+    int getCountByTriple(Edge e);
+    
+    boolean enabled();
 }

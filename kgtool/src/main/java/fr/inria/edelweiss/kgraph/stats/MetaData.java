@@ -40,7 +40,7 @@ public class MetaData {
     private static final MetaData meta = new MetaData();
 
     //Enable stats or not
-    public static boolean enabled = true;
+    public static boolean enabled = false;
 
     //Enable stats or not
     public static boolean enable_htt = true;

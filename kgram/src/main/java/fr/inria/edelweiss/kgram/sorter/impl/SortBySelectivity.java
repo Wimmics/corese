@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgram.sorter;
+package fr.inria.edelweiss.kgram.sorter.impl;
 
 import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.BPGNode;

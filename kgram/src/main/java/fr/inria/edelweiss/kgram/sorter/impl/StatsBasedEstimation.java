@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgram.sorter;
+package fr.inria.edelweiss.kgram.sorter.impl;
 
 import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.BPGNode;
@@ -32,7 +32,7 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
     private IStatistics meta;
     private BPGraph g;
 
-    private final static double SEL_FILTER = 0.5;
+    private final static double SEL_FILTER = 1.0;
 
     public StatsBasedEstimation() {
         //todo 
@@ -40,9 +40,9 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
     }
 
     @Override
-    public void estimate(BPGraph g, Producer producer) {
+    public void estimate(BPGraph g, Producer producer, Object utility) {
         //**1 check the producer
-        if (producer instanceof IStatistics) {
+        if (producer instanceof IStatistics && producer instanceof Producer) {
             this.meta = (IStatistics) producer;
             if (!this.meta.enabled()) {
                 System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sorting !!");

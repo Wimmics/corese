@@ -23,7 +23,9 @@ public interface IEstimateSelectivity {
      * the given BP graph
      *
      * @param plein graph
-     * @param producer
+     * @param producer producer
+     * @param utility according to different implmenetation, the object is
+     * different - List<Exp> for non-stats based - etc...
      */
-    public void estimate(BPGraph plein, Producer producer);
+    public void estimate(BPGraph plein, Producer producer, Object utility);
 }

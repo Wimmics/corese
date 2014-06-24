@@ -42,7 +42,7 @@ public class BPGNode implements Node {
 
         if (exp.type() == EDGE) {
             Edge e = exp.getEdge();
-            pattern = new int[3];
+            pattern = new int[5];
             this.pattern[0] = e.getNode(0).isVariable() ? UNBOUND : BOUND;
             this.pattern[1] = e.getEdgeNode().isVariable() ? UNBOUND : BOUND;
             this.pattern[2] = e.getNode(1).isVariable() ? UNBOUND : BOUND;

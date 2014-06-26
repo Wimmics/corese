@@ -46,7 +46,7 @@ public class BPGraph {
 
         nodes = new ArrayList<BPGNode>();
         boundValues = new HashMap<String, List<String>>();
-        
+
         createNodeList(exp);
         createGraph();
     }
@@ -157,8 +157,9 @@ public class BPGraph {
     }
 
     /**
-     * Return the list of values for variable that binds to constants/list, etc..
-     * 
+     * Return the list of values for variable that binds to constants/list,
+     * etc..
+     *
      * @param n
      * @return null if not found, otherwise the list of values
      */
@@ -172,7 +173,7 @@ public class BPGraph {
      * @return
      */
     public List<BPGNode> getNodeList() {
-       return this.getNodeList(EMPTY);
+        return this.getNodeList(EMPTY);
     }
 
     /**
@@ -182,10 +183,10 @@ public class BPGraph {
      * @return
      */
     public List<BPGNode> getNodeList(int type) {
-        if(type != EDGE || type != VALUES || type!=FILTER){
+        if (type != EDGE && type != VALUES && type != FILTER) {
             return this.nodes;
         }
-        
+
         List<BPGNode> list = new ArrayList<BPGNode>();
         for (BPGNode node : this.nodes) {
             if (node.getType() == type) {
@@ -194,8 +195,8 @@ public class BPGraph {
         }
         return list;
     }
-    
-    public Map<BPGNode, List<BPGNode>> getGraph(){
+
+    public Map<BPGNode, List<BPGNode>> getGraph() {
         return this.graph;
     }
 }

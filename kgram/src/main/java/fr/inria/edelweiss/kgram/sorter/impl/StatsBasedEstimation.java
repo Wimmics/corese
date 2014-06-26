@@ -2,16 +2,16 @@ package fr.inria.edelweiss.kgram.sorter.impl;
 
 import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.BPGNode;
-import fr.inria.edelweiss.kgram.sorter.core.IStatistics;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import static fr.inria.edelweiss.kgram.api.core.Node.OBJECT;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.NA;
-import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.PREDICATE;
-import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.SUBJECT;
+import fr.inria.edelweiss.kgram.sorter.core.IProducer;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.NA;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.SUBJECT;
 import java.util.List;
 
 /**
@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class StatsBasedEstimation implements IEstimateSelectivity {
 
-    private IStatistics meta;
+    private IProducer meta;
     private BPGraph g;
 
     private final static double SEL_FILTER = 1.0;
@@ -42,8 +42,8 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
     @Override
     public void estimate(BPGraph g, Producer producer, Object utility) {
         //**1 check the producer
-        if (producer instanceof IStatistics && producer instanceof Producer) {
-            this.meta = (IStatistics) producer;
+        if (producer instanceof Producer) {
+            this.meta = (IProducer) producer;
             if (!this.meta.enabled()) {
                 System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sorting !!");
                 return;
@@ -106,10 +106,10 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
         }
     }
 
-    private double getSel(BPGNode n){
+    private double getSel(BPGNode n) {
         return meta.getCountByTriple(n.getExp().getEdge()) * 1.0 / meta.getAllTriplesNumber();
     }
-    
+
     private double getSel(Node varNode, int type) {
         double sel = MAX_SEL;
         if (!varNode.isVariable()) {

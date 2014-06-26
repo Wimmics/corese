@@ -4,9 +4,9 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgraph.stats.data.ReducedMap;
 import fr.inria.edelweiss.kgraph.stats.data.HashBucket;
-import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.OBJECT;
-import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.PREDICATE;
-import static fr.inria.edelweiss.kgram.sorter.core.IStatistics.SUBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.OBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.SUBJECT;
 import fr.inria.edelweiss.kgraph.stats.data.BaseMap;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.stats.data.SimpleAverage;
@@ -48,21 +48,31 @@ public class MetaData {
     //options
     private static final Options[] options = Options.DEFAULT_OPTIONS;
 
-    //private constructor for singlenton
+    //private constructor for singleton
     private MetaData() {
 
     }
 
+    /**
+     * Return the singleton instance of Meta datga
+     *
+     * @return
+     */
     public static MetaData getInstance() {
         return meta;
     }
 
+    /**
+     * Return the status of using meta data or not
+     *
+     * @return
+     */
     public static boolean enabled() {
         return enabled;
     }
 
     /**
-     * Create a instance of MetaData, singleton
+     * Create an instance of MetaData, singleton
      *
      * @param g Graph
      * @return
@@ -71,6 +81,13 @@ public class MetaData {
         return createInstance(g, null);
     }
 
+    /**
+     * Create an instance of MetaData with options
+     *
+     * @param g Graph
+     * @param options setting different stats methods
+     * @return
+     */
     public static MetaData createInstance(Graph g, List<Options> options) {
         if (!enabled) {
             return meta;
@@ -78,10 +95,15 @@ public class MetaData {
 
         graph = g;
         checkOptions(options);
-        process(g);
+        process();
         return meta;
     }
 
+    /**
+     * Set options for generating different stats data
+     *
+     * @param list of options
+     */
     public static void setOptions(List<Options> list) {
         //check options
         //todo: when not all nodes are set
@@ -90,6 +112,7 @@ public class MetaData {
         }
     }
 
+    //pre-process the options
     private static void checkOptions(List<Options> list) {
         setOptions(list);
         for (Options opt : options) {
@@ -104,7 +127,8 @@ public class MetaData {
         }
     }
 
-    private static void process(Graph g) {
+    //Main method for generating the stats data
+    private static void process() {
         long start = System.currentTimeMillis();
         BaseMap mapSub = new BaseMap(), mapObj = new BaseMap();
 
@@ -137,7 +161,7 @@ public class MetaData {
                 thtable.add((Edge) it.next());
             }
         }
-        
+
         //**3 if the map is reduced map, cut off
         reduce(subMap);
         reduce(preMap);
@@ -147,31 +171,56 @@ public class MetaData {
         System.out.println("====Meta data stats time (" + graph.size() + " triples):" + (end - start) + " ms====");
     }
 
+    //If using reduced map method, then reduce the size of map
     private static void reduce(BaseMap map) {
         if (map instanceof ReducedMap) {
             ((ReducedMap) map).cut();
         }
     }
 
-    //number of all triples
+    /**
+     * Return the number of all triples contained in a graph
+     *
+     * @return
+     */
     public int getAllTriplesNumber() {
         return graph.size();
     }
 
-    //number of discinct resources
+    /**
+     * Return the number of distinct subjects (resources)
+     *
+     * @return
+     */
     public int getResourceNumber() {
         return noOfAllResource;
     }
 
-    //number of predicates
+    /**
+     * Return the number of distinct property (precidate)
+     *
+     * @return
+     */
     public int getPropertyNumber() {
         return graph.getIndex().size();
     }
 
+    /**
+     * Return the number of distinct objects
+     *
+     * @return
+     */
     public int getObjectNumber() {
         return noOfAllObjects;
     }
 
+    /**
+     * Get the estimated selected triples by single value
+     *
+     * @param val value
+     * @param type subject | predicate|object
+     * @return
+     */
     public int getCountByValue(String val, int type) {
         switch (type) {
             case SUBJECT:
@@ -185,15 +234,21 @@ public class MetaData {
         }
     }
 
+    /**
+     * Get the estimated selected triples number according to the whole triple
+     *
+     * @param e Edge
+     * @return
+     */
     public int getCountByTriple(Edge e) {
         return thtable.get(e);
     }
-    
+
     //private double selSubject, selPredicate, selObject;
     //monitor the state of graph, when the graph is changed, 
     //update the meta data
     public void update() {
-        process(graph);
+        process();
         //ex. number of triples
     }
 
@@ -204,7 +259,8 @@ public class MetaData {
 
     //Set the graph that statistics is performed on
     public static void setGraph(Graph g) {
-        process(g);
+        graph = g;
+        process();
     }
 
     //todo with parameters

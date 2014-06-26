@@ -1,6 +1,6 @@
 package fr.inria.edelweiss.kgraph.stats;
 
-import fr.inria.edelweiss.kgram.sorter.core.IStatistics;
+import fr.inria.edelweiss.kgram.sorter.core.IProducer;
 
 /**
  * Options and parameters for setting meta data statistics
@@ -42,13 +42,13 @@ public class Options {
 
     //default options
     //subject
-    public final static Options DEF_OPT_SUB = new Options(HT_CUTOFF, IStatistics.SUBJECT, DEF_PARA_CUTOFF);
+    public final static Options DEF_OPT_SUB = new Options(HT_CUTOFF, IProducer.SUBJECT, DEF_PARA_CUTOFF);
     //predicate
-    public final static Options DEF_OPT_PRE = new Options(HT_FULL, IStatistics.PREDICATE, null);
+    public final static Options DEF_OPT_PRE = new Options(HT_FULL, IProducer.PREDICATE, null);
     //object
-    public final static Options DEF_OPT_OBJ = new Options(HT_HASH, IStatistics.OBJECT, DEF_PARA_HASH);
+    public final static Options DEF_OPT_OBJ = new Options(HT_HASH, IProducer.OBJECT, DEF_PARA_HASH);
     //other
-    public final static Options DEF_OPT_PAIR = new Options(HT_TRIPLE_HASH, IStatistics.NA, DEF_PARA_HTT);
+    public final static Options DEF_OPT_PAIR = new Options(HT_TRIPLE_HASH, IProducer.NA, DEF_PARA_HTT);
 
     public final static Options[] DEFAULT_OPTIONS = new Options[]{DEF_OPT_SUB, DEF_OPT_PRE, DEF_OPT_OBJ, DEF_OPT_PAIR};
 

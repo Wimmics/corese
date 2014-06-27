@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgram.sorter.core.IProducer;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.NA;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.PREDICATE;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.SUBJECT;
+import fr.inria.edelweiss.kgram.sorter.core.TriplePattern;
 import java.util.List;
 
 /**
@@ -75,7 +76,7 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
     }
 
     private double selTriplePattern(BPGNode n) {
-        int[] pattern = n.getPattern();
+        TriplePattern pattern = n.getPattern();
         if (pattern == null) {//not triples pattern, maybe filter
             return Integer.MAX_VALUE;
         }
@@ -85,9 +86,8 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
         // pat = 1 :(s p ?) | (s ? o) | (? p o)
         // pat = 2 :(s ? ?) | (? ? o) | (? p ?)
         // pat = 3 :(? ? ?)
-        int pat = pattern[0] + pattern[1] + pattern[2];
         // if all variables in a triple pattern are bound, then selectiviy is set to app_0
-        switch (pat) {
+        switch (pattern.getUnboundNumber()) {
             case 0:
                 return MIN_SEL_APP;
             case 1:

@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity.MAX_SEL;
 import static fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity.MIN_SEL_APP;
 import java.util.ArrayList;
@@ -30,18 +29,18 @@ public class TriplePattern {
 
     private BPGNode bpn;
 
-    public TriplePattern(BPGNode n) {
-        if (n.getType() != EDGE) {
-            return;
-        }
+    public TriplePattern(BPGNode n, int s, int p, int o) {
         this.bpn = n;
+        this.pattern[S] = s;
+        this.pattern[P] = p;
+        this.pattern[O] = o;
+
         // get the variables in the triple pattern
         n.getExp().getVariables(variables);
+    }
 
-        this.pattern[S] = n.getPattern()[S];
-        this.pattern[P] = n.getPattern()[P];
-        this.pattern[O] = n.getPattern()[O];
-        //todo
+    public int getUnboundNumber() {
+        return this.pattern[S] + this.pattern[P] + this.pattern[O];
     }
 
     public void setParameters(List<String> selectNodes, IProducer heuri, BPGraph graph) {
@@ -50,8 +49,8 @@ public class TriplePattern {
         this.setObjectType(heuri);
     }
 
-    //
-    public void setProjectionVariables(List<String> selectNodes) {
+    // PV: Get the number pf varaibles in a triple pattern appeared in the select nodes
+    private void setProjectionVariables(List<String> selectNodes) {
 
         if (variables.isEmpty() || selectNodes.isEmpty()) {
             return;
@@ -70,7 +69,8 @@ public class TriplePattern {
         this.pattern[PV] = count;
     }
 
-    public void setObjectType(IProducer heuri) {
+    //OT: Set the type for a bound object
+    private void setObjectType(IProducer heuri) {
         if (this.pattern[O] == BPGNode.BOUND) {
             this.pattern[OT] = heuri.isURI(this.bpn.getObject()) ? URI : LIT;
         } else {
@@ -78,7 +78,9 @@ public class TriplePattern {
         }
     }
 
-    public void setFilterNumber(BPGraph graph) {
+    // FV: filter variables
+    // FN: filter number
+    private void setFilterNumber(BPGraph graph) {
         List<BPGNode> nodes = graph.getNodeList(6);
 
         int noOfFilter = 0, noOfVariable = 0;
@@ -156,6 +158,10 @@ public class TriplePattern {
             match = match && (p1.pattern[i] == p2.pattern[i]);
         }
         return match;
+    }
+
+    public boolean match(TriplePattern p1) {
+        return match(p1, this);
     }
 
     public static void sort(List<TriplePattern> patterns) {

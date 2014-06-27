@@ -17,6 +17,7 @@ public interface IEstimateSelectivity {
     public final static double MIN_SEL = 0.0;
     //approximate minimum value, but not equal to 0
     public final static double MIN_SEL_APP = 1.0 / Double.MAX_VALUE;
+    public final static double NULL_SEL = -1;
 
     /**
      * Estimate and assign the selectvity (or other criteria) for each node in

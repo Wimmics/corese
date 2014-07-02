@@ -16,6 +16,8 @@ import java.util.List;
 /**
  * An implementation for sorting the triple pattern based on selectivity
  *
+ * TODO: depth-first search and breadth-first search using edge weight
+ * 
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 19 mai 2014
  */
@@ -52,7 +54,7 @@ public class SortBySelectivity implements ISort {
             return;
         }
 
-        List<BPGNode> lNodes = g.getGraph().get(n),
+        List<BPGNode> lNodes = g.getNodeList(n),
                 notVisitedLoc = new ArrayList<BPGNode>();
         //1 sort the list by selectivity of nodes
         notVisitedLoc.addAll(lNodes);
@@ -112,7 +114,7 @@ public class SortBySelectivity implements ISort {
         
         for (BPGNode f : others) {
             //1 get the list of edges that filter (values, etc..) f links to
-            List linkedNodes = g.getGraph().get(f);
+            List linkedNodes = g.getNodeList(f);
             if (visited.contains(f)) {
                 continue;
             }

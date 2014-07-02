@@ -4,8 +4,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity;
 import fr.inria.edelweiss.kgram.sorter.core.ISort;
-import fr.inria.edelweiss.kgram.sorter.SortBySelectivity;
-import fr.inria.edelweiss.kgram.sorter.StatsBasedEstimation;
+import fr.inria.edelweiss.kgram.sorter.impl.HeuristicsBasedEstimation;
+import fr.inria.edelweiss.kgram.sorter.impl.SortBySelectivity;
+import fr.inria.edelweiss.kgram.sorter.impl.StatsBasedEstimation;
 import java.util.List;
 
 /**
@@ -16,50 +17,59 @@ import java.util.List;
  */
 public class SorterNew extends Sorter {
 
-    public void sort(Exp exp, Producer prod) {
+    boolean print = false;
+
+    public void sort(Exp exp, Producer prod, List<Exp> parameters) {
         if (exp.size() < 2) {
             return;
         }
-
-        boolean print = false;
 
         if (print) {
             System.out.println("##EXP BEFORE:" + exp);
         }
         long start = System.currentTimeMillis();
-        //1 create graph (list of nodes and their relations)
-        BPGraph bpg = new BPGraph(exp);
-        long bk = System.currentTimeMillis();
-        if (print) {
-            System.out.println("##Exe time (create graph):" + (bk - start) + "ms");
-        }
         
-        // 2 assign selectivity
-        IEstimateSelectivity ies = new StatsBasedEstimation();
-        ies.estimate(bpg, prod);
-        bk = System.currentTimeMillis();
-        if (print) {
-            System.out.println("##Exe time (estimate sel):" + (bk - start) + "ms");
-        }
-
-        //3 find order
-        ISort is = new SortBySelectivity();
-        List l = is.sort(bpg);
-        bk = System.currentTimeMillis();
-        if (print) {
-            System.out.println("##Exe time (sorting):" + (bk - start) + "ms");
-        }
-        //4 rewrite
-        is.rewrite(exp, l);
-        //5 service
-//        if (bpg.noOfService() > 0) {
-//            service(exp, bpg.noOfService());
-//        }
-
+        //choose one
+        //this.sortWithStats(exp, prod, parameters);
+        this.sortWithoutStats(exp, prod, parameters);
+        
         long end = System.currentTimeMillis();
         if (print) {
             System.out.println("##EXP AFTER:" + exp);
             System.out.println("##Optimize time (total):" + (end - start) + "ms");
         }
+    }
+
+    public void sortWithoutStats(Exp exp, Producer prod, List<Exp> bindings) {
+        //1 create graph (list of nodes and their relations)
+        BPGraph bpg = new BPGraph(exp);
+
+        // 2 assign selectivity
+        IEstimateSelectivity ies = new HeuristicsBasedEstimation();
+        ies.estimate(bpg, prod, bindings);
+
+        //3 find order
+        ISort is = new SortBySelectivity();
+        List l = is.sort(bpg);
+
+        //4 rewrite
+        is.rewrite(exp, l);
+    }
+
+    public void sortWithStats(Exp exp, Producer prod, List<Exp> bindings) {
+
+        //1 create graph (list of nodes and their relations)
+        BPGraph bpg = new BPGraph(exp);
+
+        // 2 assign selectivity
+        IEstimateSelectivity ies = new StatsBasedEstimation();
+        ies.estimate(bpg, prod, bindings);
+
+        //3 find order
+        ISort is = new SortBySelectivity();
+        List l = is.sort(bpg);
+
+        //4 rewrite
+        is.rewrite(exp, l);
     }
 }

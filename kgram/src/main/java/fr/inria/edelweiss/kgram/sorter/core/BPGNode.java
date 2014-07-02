@@ -7,6 +7,9 @@ import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
+import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.O;
+import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.P;
+import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.S;
 import java.util.List;
 
 /**
@@ -25,7 +28,10 @@ public class BPGNode {
     //the value of the selectivity that the expression represents
     private double selectivity = -1;
 
+    //tripe pattern 7-tuple (S P O FV FN PV OT)
     private TriplePattern pattern = null;
+
+    private final BPGEdge edge = null;
 
     //private Iestimate
     public BPGNode(Exp exp) {
@@ -55,6 +61,19 @@ public class BPGNode {
 
     public int getType() {
         return this.exp.type();
+    }
+
+    public Node get(int i) {
+        switch (i) {
+            case S:
+                return getSubject();
+            case P:
+                return getPredicate();
+            case O:
+                return getObject();
+            default:
+                return null;
+        }
     }
 
     public Node getSubject() {

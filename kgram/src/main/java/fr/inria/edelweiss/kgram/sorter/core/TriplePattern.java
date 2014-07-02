@@ -21,13 +21,13 @@ public class TriplePattern {
     //FN: filter, variables appeared in how many filters 
     //PV: number of variables appeared in prejection variables(select nodes)
     //OT: type of bound object, URI|literal|NA
-    private final static int S = 0, P = 1, O = 2, FV = 3, FN = 4, PV = 5, OT = 6;
+    public final static int S = 0, P = 1, O = 2, FV = 3, FN = 4, PV = 5, OT = 6;
     private final static int PARAMETER_LEN = 7;
     private final static int NA = 2, URI = 1, LIT = 0;
     List<String> variables = new ArrayList<String>();
     private final int[] pattern = new int[PARAMETER_LEN];
 
-    private BPGNode bpn;
+    private final BPGNode bpn;
 
     public TriplePattern(BPGNode n, int s, int p, int o) {
         this.bpn = n;
@@ -41,6 +41,10 @@ public class TriplePattern {
 
     public int getUnboundNumber() {
         return this.pattern[S] + this.pattern[P] + this.pattern[O];
+    }
+
+    public int[] getBasicPattern() {
+        return new int[]{this.pattern[S], this.pattern[P], this.pattern[O]};
     }
 
     public void setParameters(List<String> selectNodes, IProducer heuri, BPGraph graph) {
@@ -131,10 +135,10 @@ public class TriplePattern {
      * @return
      */
     public int match() {
-        for (int i = 0; i < PATTERNS_BASIC.length; i++) {
+        for (int i = 0; i < BASIC_PATTERN.length; i++) {
             boolean match = true;
-            for (int j = 0; j < PATTERNS_BASIC[i].length; j++) {
-                match = match && (PATTERNS_BASIC[i][j] == this.pattern[j]);
+            for (int j = 0; j < BASIC_PATTERN[i].length; j++) {
+                match = match && (BASIC_PATTERN[i][j] == this.pattern[j]);
             }
 
             if (match) {
@@ -204,7 +208,8 @@ public class TriplePattern {
         return s;
     }
 
-    private final static int[][] PATTERNS_BASIC = new int[][]{
+    //TODO: extend to more complex patterns
+    private final static int[][] BASIC_PATTERN = new int[][]{
         {0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, 0, 1}, {1, 1, 0}, {0, 1, 1}, {1, 0, 1}, {1, 1, 1}
     };
     //first three bits: {s p o}, 0:bound, 1:unbound
@@ -247,5 +252,9 @@ public class TriplePattern {
         {1, 1, 1, NA, 1},
         {1, 1, 1, NA, 2},
         {1, 1, 1, NA, 3}
+    };
+
+    public static final int[][] JOINT_PATTERN = new int[][]{
+        {P, O}, {S, P}, {S, O}, {O, O}, {S, S}, {P, P}
     };
 }

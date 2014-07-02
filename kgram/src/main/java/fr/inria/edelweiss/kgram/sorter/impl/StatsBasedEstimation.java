@@ -4,15 +4,19 @@ import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.BPGNode;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
+import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import static fr.inria.edelweiss.kgram.api.core.Node.OBJECT;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.edelweiss.kgram.sorter.core.BPGEdge;
 import fr.inria.edelweiss.kgram.sorter.core.IProducer;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.NA;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.PREDICATE;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.SUBJECT;
 import fr.inria.edelweiss.kgram.sorter.core.TriplePattern;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +36,7 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
 
     private IProducer meta;
     private BPGraph g;
+    private List<Exp> bindings;
 
     private final static double SEL_FILTER = 1.0;
 
@@ -46,7 +51,14 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
         if (producer instanceof Producer) {
             this.meta = (IProducer) producer;
             if (!this.meta.enabled()) {
-                System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sorting !!");
+                System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sort !!");
+                return;
+            }
+
+            if ((utility instanceof List)) {
+                this.bindings = (List<Exp>) utility;
+            } else {
+                System.err.println("!! List of binding values are not available, unable to estimate selectivity !!");
                 return;
             }
         } else {
@@ -67,12 +79,15 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
             if (node.getType() == FILTER) {
                 double sf = this.getSel(node.getExp().getFilter());
                 node.setSelectivity(sf);
-                for (BPGNode n : this.g.getGraph().get(node)) {
+                for (BPGNode n : this.g.getNodeList(node)) {
                     //set the new selectivity
                     n.setSelectivity(n.getSelectivity() * sf);
                 }
             }
         }
+
+        //** 4 assign weights to edges
+        join();
     }
 
     private double selTriplePattern(BPGNode n) {
@@ -106,16 +121,21 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
         }
     }
 
+    //Get selectivity according to a whole triple
     private double getSel(BPGNode n) {
         return meta.getCountByTriple(n.getExp().getEdge()) * 1.0 / meta.getAllTriplesNumber();
     }
 
+    //Get selectivity by single variable and its type(sub, pre, obj)
     private double getSel(Node varNode, int type) {
         double sel = MAX_SEL;
+        //1 the variable is bound
         if (!varNode.isVariable()) {
             sel = getSel(varNode.getLabel(), type);
+            //2 unbound variable, check if bound to a list of constant values
         } else {
-            List<String> bind = this.g.isBound(varNode);
+            //if bound to some values, then cumulate the selectivity of each
+            List<String> bind = this.isBound(varNode);
             if (bind != null) {
                 sel = getSel(bind, type);
             }
@@ -123,6 +143,7 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
         return sel;
     }
 
+    //Calculate the selectivity of a list of values
     private double getSel(List<String> varibles, int type) {
         double sel = 0;
         for (String v : varibles) {
@@ -140,5 +161,29 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
     private double getSel(Filter f) {
         //todo: find a way to evaluate the selectivity of filter
         return SEL_FILTER;
+    }
+
+    private List<String> isBound(Node var) {
+        for (Exp exp : bindings) {
+            String v = exp.get(0).getNode().getLabel();
+            if (var.getLabel().equalsIgnoreCase(exp.get(0).getNode().getLabel())) {
+                List<String> lBind = new ArrayList<String>();
+                for (Expr ex : (List<Expr>) exp.getObject()) {
+                    lBind.add(ex.getLabel());
+                }
+                return lBind;
+            }
+        }
+        return null;
+    }
+
+    //Calculate the weight of an edge between two triple patterns
+    //just simply multiply the selectivity of the two nodes, can be improved
+    private void join() {
+        for (BPGEdge edge : g.getEdgeList()) {
+            double s1 = edge.get(0).getSelectivity();
+            double s2 = edge.get(1).getSelectivity();
+            edge.setWeight(s1 * s2);
+        }
     }
 }

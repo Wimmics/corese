@@ -1169,7 +1169,7 @@ public class Eval implements ExpType, Plugin {
         if (m != null){
             mem.push(m, -1);
         }
-        if ((main.isOptional() || main.isJoin()) && exp.getNodeList() != null){
+       if ((main.isOptional() || main.isJoin()) && exp.getNodeList() != null){
            // A optional B
             // bind variables of A from environment
             for (Node qnode : exp.getNodeList()){
@@ -1981,9 +1981,8 @@ public class Eval implements ExpType, Plugin {
         Iterator<Entity> it = entities.iterator();
 
         while (it.hasNext()) {
-//		for (Entity map : p.getEdges(gNode, qq.getFrom(gNode), qEdge,  env)){			
+            
             Entity ent = it.next();
-
             if (ent != null) {
                 nbEdge++;
                 boolean trace = false;

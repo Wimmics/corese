@@ -22,6 +22,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -34,7 +35,9 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -44,7 +47,7 @@ import java.util.List;
  *
  */
 public class PluginImpl extends ProxyImpl {
-
+    
     static Logger logger = Logger.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     private static final String NL = System.getProperty("line.separator");
@@ -56,6 +59,8 @@ public class PluginImpl extends ProxyImpl {
     MatcherImpl match;
     Loader ld;
     private Object dtnumber;
+    boolean isCache = false;
+    TreeNode cache;
 
     PluginImpl(Matcher m) {
         if (table == null) {
@@ -65,11 +70,26 @@ public class PluginImpl extends ProxyImpl {
             match = (MatcherImpl) m;
         }
         dtnumber = DatatypeMap.newInstance(Processor.FUN_NUMBER);
+        cache = new TreeNode();
     }
 
     public static PluginImpl create(Matcher m) {
         return new PluginImpl(m);
-    }   
+    }  
+    
+    public void setMode(int mode){
+        switch (mode){
+            
+            case Evaluator.CACHE_MODE:
+                isCache = true;
+            break;
+                
+            case Evaluator.NO_CACHE_MODE:
+                isCache = false;
+                cache.clear();
+            break;                
+        }
+    }
 
     public Object function(Expr exp, Environment env, Producer p) {
 
@@ -258,14 +278,24 @@ public class PluginImpl extends ProxyImpl {
             case APPLY_TEMPLATES_WITH_GRAPH:
             case APPLY_TEMPLATES_WITH_NOGRAPH:
                 // dt1: transformation 
-                // dt2: graph 
+                // dt2: graph            
                 return pprint(dt1, null, dt2, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
             case APPLY_TEMPLATES_WITH_ALL:
-                // dt1: uri of pprinter
+                // dt1: transformation
                 // dt2: focus
-                return pprint(dt2, null, dt1, null, exp, env, p);
+                if (isCache){
+                    IDatatype dt = cache.get(dt2);
+                    if (dt != null){
+                        return dt;
+                    }
+                }
+                IDatatype dt =  pprint(dt2, null, dt1, null, exp, env, p);
+                if (isCache){
+                    cache.put(dt2, dt);
+                }
+                return dt;
 
             case CALL_TEMPLATE:
                 // dt1: template name
@@ -273,7 +303,7 @@ public class PluginImpl extends ProxyImpl {
                 return pprint(dt2, null, null, dt1, exp, env, p);
 
             case CALL_TEMPLATE_WITH:
-                // dt1: uri pprinter
+                // dt1: transformation
                 // dt2: template name
                 return pprint(dt1, dt2, null, exp, env, p);
 
@@ -301,18 +331,28 @@ public class PluginImpl extends ProxyImpl {
                 return pprint(getArgs(args, 1), dt2, dt3, null, dt1, null, exp, env, p);
 
             case CALL_TEMPLATE_WITH:
-                // dt1: uri pprinter
+                // dt1: transformation
                 // dt2: template name
                 // dt3: focus
                 return pprint(getArgs(args, 2), dt3, null, dt1, dt2, null, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
             case APPLY_TEMPLATES_WITH_ALL:
-                // dt1: uri pprinter
+                // dt1: transformation
                 // dt2: focus
                 // dt3: arg
-                return pprint(getArgs(args, 1), dt2, dt3, dt1, null, null, exp, env, p);
-                
+                if (isCache){
+                    IDatatype dt = cache.get(dt2);
+                    if (dt != null){
+                        return dt;
+                    }
+                }
+                IDatatype dt = pprint(getArgs(args, 1), dt2, dt3, dt1, null, null, exp, env, p);
+                //System.out.println("PI: " + dt2 + " " + dt3 + " " + dt);
+                if (isCache){
+                    cache.put(dt2, dt);
+                }
+                return dt;
                 
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
@@ -834,4 +874,41 @@ public class PluginImpl extends ProxyImpl {
         t.compile((ASTQuery)env.getQuery().getAST());
         return t;
     }
+    
+    
+     public class TreeNode extends TreeMap<IDatatype, IDatatype> {
+
+         TreeNode(){
+            super(new Compare());
+        }
+         
+      }
+
+    /**
+     * This Comparator enables to retrieve an occurrence of a given Literal
+     * already existing in graph in such a way that two occurrences of same
+     * Literal be represented by same Node in graph It (may) represent (1
+     * integer) and (1.0 float) as two different Nodes Current implementation of
+     * EdgeIndex sorted by values ensure join (by dichotomy ...)
+     */
+     class Compare implements Comparator<IDatatype> {
+
+        public int compare(IDatatype dt1, IDatatype dt2) {
+
+            // xsd:integer differ from xsd:decimal 
+            // same node for same datatype 
+            if (dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null) {
+                int cmp = dt1.getDatatypeURI().compareTo(dt2.getDatatypeURI());
+                if (cmp != 0) {
+                    return cmp;
+                }
+            }
+
+            int res = dt1.compareTo(dt2);
+            return res;
+        }
+    }
+    
+    
+    
 }

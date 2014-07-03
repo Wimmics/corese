@@ -57,6 +57,8 @@ public interface Proxy {
 
 	// type operators <=:
 	void setPlugin(Proxy p);
+        
+        Proxy getPlugin();
 
         Expr createFunction(String name, List<Object> args, Environment env);
 }

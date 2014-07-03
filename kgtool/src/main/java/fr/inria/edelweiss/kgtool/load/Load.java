@@ -121,6 +121,9 @@ public class Load
 
     public void setLimit(int max) {
         limit = max;
+        if (build != null){
+            build.setLimit(limit);
+        }
     }
 
     void set(Graph g) {

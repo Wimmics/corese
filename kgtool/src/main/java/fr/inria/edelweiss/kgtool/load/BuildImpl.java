@@ -26,6 +26,8 @@ public class BuildImpl implements Build {
 	ArrayList<String> exclude;
 	Hashtable<String, String> blank;
 	boolean skip = false;
+        private int limit = Integer.MAX_VALUE;
+        
     private String resource, source;
     private Node node;
 
@@ -97,7 +99,9 @@ public class BuildImpl implements Build {
         }
 	
 	public boolean accept(String pred){
-		if (skip) return false;
+		if (skip || graph.size() > limit) {
+                    return false;
+                }
 		if (exclude.size() == 0) return true;
 		for (String ns : exclude){
 			if (pred.startsWith(ns)){
@@ -165,6 +169,20 @@ public class BuildImpl implements Build {
 		}
 		return id;
 	}
+
+    /**
+     * @return the limit
+     */
+    public int getLimit() {
+        return limit;
+    }
+
+    /**
+     * @param limit the limit to set
+     */
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
 	
 	
 

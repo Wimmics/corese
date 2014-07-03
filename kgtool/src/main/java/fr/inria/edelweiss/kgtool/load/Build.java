@@ -22,4 +22,6 @@ public interface Build {
 	 void start();
 	 
 	 void finish();
+
+         void setLimit(int limit);
 }

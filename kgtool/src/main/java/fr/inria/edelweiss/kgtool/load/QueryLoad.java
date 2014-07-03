@@ -92,10 +92,21 @@ public class QueryLoad {
         }
         return query;
     }
+    
+    public String getResource(String name) throws IOException {
+        InputStream stream = QueryLoad.class.getResourceAsStream(name);
+        if (stream == null) {
+            throw new IOException(name);
+        }
+        Reader fr = new InputStreamReader(stream);
+        String str = load(fr);
+        return str;
+    }
+    
 
     String load(Reader fr) throws IOException {
         BufferedReader fq = new BufferedReader(fr);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String str;
         while (true) {
             str = fq.readLine();

@@ -90,6 +90,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 SPARQLCompliant = false;
                 break;
         }
+        plugin.setMode(mode);
     }
 
     public void start() {

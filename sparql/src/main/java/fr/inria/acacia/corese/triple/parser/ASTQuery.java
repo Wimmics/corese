@@ -1949,7 +1949,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
     	} 
     	
     	// DataSet
-    	if (! isConstruct())    // because it's already done in the construct case
+    	//if (! isConstruct())    // because it's already done in the construct case
     		sb.append(NL);
     	
     	// From

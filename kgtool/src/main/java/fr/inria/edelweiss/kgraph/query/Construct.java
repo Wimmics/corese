@@ -22,6 +22,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgtool.util.Duplicate;
 
 /**
  * construct where describe where delete where
@@ -51,6 +52,7 @@ public class Construct
             isBuffer = false;
     Object rule;
     Hashtable<Node, Node> table;
+    Duplicate duplicate;
     private int loopIndex = -1;
 
     Construct(Query q) {
@@ -67,6 +69,7 @@ public class Construct
         table = new Hashtable<Node, Node>();
         count = 0;
         dtDefaultGraph = DatatypeMap.createResource(src);
+        duplicate =  Duplicate.create();
     }
 
     public static Construct create(Query q) {
@@ -318,10 +321,22 @@ public class Construct
         Node property = construct(pred, env);
 
         Node subject = construct(source, edge.getNode(0), env);
-        Node object = construct(source, edge.getNode(1), env);
+        Node object  = construct(source, edge.getNode(1), env);
 
         if ((source == null && !isDelete) || subject == null || property == null || object == null) {
             return null;
+        }
+        
+        if (isBuffer){
+            // optimized mode for Rule Engine
+            if (graph.exist(property, subject, object)){
+                // edge already exists: skip it
+                return null;
+            } 
+            if (duplicate.exist(property, subject, object)){
+                // edge already recorded: skip it
+                return null;
+            }
         }
 
         if (isDelete) {

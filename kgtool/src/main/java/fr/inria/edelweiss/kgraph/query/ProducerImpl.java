@@ -34,7 +34,8 @@ import fr.inria.edelweiss.kgraph.core.Index;
  *
  */
 public class ProducerImpl implements Producer {
-
+    public static final int OWL_RL = 1;
+    
     static final int IGRAPH = Graph.IGRAPH;
     static final String TOPREL = Graph.TOPREL;
     List<Entity> empty = new ArrayList<Entity>();
@@ -45,6 +46,8 @@ public class ProducerImpl implements Producer {
     Mapper mapper;
     MatcherImpl match;
     QueryEngine qengine;
+    FuzzyMatch fuzzy = new FuzzyMatch();
+    
     // if true, perform local match
     boolean isMatch = false;
     private boolean selfValue;
@@ -65,7 +68,15 @@ public class ProducerImpl implements Producer {
         return p;
     }
 
+    public FuzzyMatch getFuzzyMatch(){
+        return fuzzy;
+    }
+    
     public void setMode(int n) {
+        switch (n){
+            case OWL_RL :
+                fuzzy.owl();
+        }
     }
 
     void setMatch(boolean b) {
@@ -183,9 +194,17 @@ public class ProducerImpl implements Producer {
                             }
                         } 
                         else if (q.isMatchBlank() && node.isBlank()){
-                            // blank node deserve a recursive match, so we do not join
+                            // blank node may deserve a recursive match, we may not join
                             // use case: OWL blank match
-                            node = null;
+                            if (isFuzzy(edge, i)){
+                                // fuzzy match: skip join on node
+                                node = null;
+                            }
+                            else {
+                               // real join 
+                                n = i;
+                                break; 
+                            }
                         }                       
                         else {
                             n = i;
@@ -198,7 +217,7 @@ public class ProducerImpl implements Producer {
                 }
             }
         }
-
+        
         if (node == null && from.size() > 0) {
             // no query node has a value, ther is a from [named]
             // from named <uri>
@@ -213,12 +232,21 @@ public class ProducerImpl implements Producer {
         }
 
         Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
-
+        
         // check gNode/from/named
         it = complete(it, gNode, getNode(gNode, env), from);
         // in case of local Matcher
         it = complete(it, gNode, edge, env);
         return it;
+    }
+    
+    /**
+     * 
+     */
+    boolean isFuzzy(Edge edge, int i){
+         int type = fuzzy.fuzzy(edge.getLabel());
+         return 0 <= i  && i <= 1
+           && (i == type || type == 2);
     }
 
     /**

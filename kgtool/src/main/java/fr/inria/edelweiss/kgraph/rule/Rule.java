@@ -10,8 +10,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.OWL;
-import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.Closure;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
@@ -22,6 +21,7 @@ import java.util.logging.Logger;
 public class Rule {
 
     static String TRANS_QUERY = "";
+    static String TRANS_PSEUDO_QUERY = "";
         
     static final String TPVAR = "?t";
 
@@ -29,18 +29,23 @@ public class Rule {
     static final int DEFAULT = 0;
     static final int TRANSITIVE = 1;
     static final int GENERIC_TRANSITIVE = 2;
+    static final int PSEUDO_TRANSITIVE = 3;
     static int COUNT = 0;
     Query query;
     List<Node> predicates;
+    private Closure closure;
     String name;
     int num;
+    private double time = 0.0;
     int rtype = UNDEF;
     private boolean isGeneric = false;
-    
+    private boolean isClosure = false;
+   
     static {
         try {
             QueryLoad ql = QueryLoad.create();
             TRANS_QUERY = ql.read(Rule.class.getResourceAsStream("/query/transitive.rq"));
+            TRANS_PSEUDO_QUERY = ql.read(Rule.class.getResourceAsStream("/query/transitivepseudo.rq"));
         } catch (IOException ex) {
             Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -119,6 +124,12 @@ public class Rule {
                     res = GENERIC_TRANSITIVE;
                 }
             }
+//            else {
+//                map = exec.query(TRANS_PSEUDO_QUERY);
+//                if (map.size() > 0) {
+//                    res = PSEUDO_TRANSITIVE;
+//                }              
+//            }
             return res;
 
         } catch (EngineException ex) {
@@ -127,109 +138,23 @@ public class Rule {
         }
 
     }
-
-    int getType2() {
-        int res = DEFAULT;
-        Exp exp = getQuery().getBody();
-
-        if (!(exp.type() == Exp.AND
-                && (getPredicates().size() == 1 || getPredicates().size() == 2)
-                && (exp.size() == 2 || exp.size() == 3))) {
-            return DEFAULT;
-        }
-
-        int i = 0;
-        for (Exp ee : exp) {
-            if (!ee.isEdge()) {
-                return DEFAULT;
-            }
-            Edge edge = ee.getEdge();
-            if (exp.size() == 2 || i > 0) {
-                if (!(edge.getNode(0).isVariable() && edge.getNode(1).isVariable())) {
-                    return DEFAULT;
-                }
-            }
-
-            i++;
-        }
-
-        Edge e1 = exp.get(0).getEdge();
-        Edge e2 = exp.get(1).getEdge();
-
-        if (exp.size() == 3) {
-            res = GENERIC_TRANSITIVE;
-            e1 = exp.get(1).getEdge();
-            e2 = exp.get(2).getEdge();
-
-            Edge e0 = exp.get(0).getEdge();
-            if (!e0.getNode(1).getLabel().equals(OWL.TRANSITIVE)
-                    || !e0.getEdgeNode().getLabel().equals(RDF.TYPE)) {
-                return DEFAULT;
-            }
-            Node pred = e0.getNode(0);
-            if (!pred.isVariable()) {
-                return DEFAULT;
-            }
-            if (e1.getEdgeVariable() == null || !e1.getEdgeVariable().equals(pred)
-                    || e2.getEdgeVariable() == null || !e2.getEdgeVariable().equals(pred)) {
-                return DEFAULT;
-            }
-
-        } else {
-            if (!e1.getEdgeNode().equals(e2.getEdgeNode())) {
-                return DEFAULT;
-            }
-            res = TRANSITIVE;
-        }
-
-
-        boolean correct =
-                !e1.getNode(0).equals(e1.getNode(1))
-                && e1.getNode(1).equals(e2.getNode(0))
-                && !e2.getNode(0).equals(e2.getNode(1))
-                && !e1.getNode(0).equals(e2.getNode(1));
-
-        if (!correct) {
-            return DEFAULT;
-        }
-
-        Exp cons = getQuery().getConstruct();
-        if (cons.size() == 1 && cons.get(0).isEdge()) {
-            Edge edge = cons.get(0).getEdge();
-
-            if (edge.getEdgeVariable() == null
-                    && (e1.getEdgeVariable() != null
-                    || !edge.getEdgeNode().equals(e1.getEdgeNode()))) {
-                return DEFAULT;
-            }
-
-            if (edge.getEdgeVariable() != null
-                    && (e1.getEdgeVariable() == null
-                    || !edge.getEdgeVariable().equals(e1.getEdgeVariable()))) {
-                return DEFAULT;
-            }
-
-            if (!(edge.getNode(0).equals(e1.getNode(0))
-                    && edge.getNode(1).equals(e2.getNode(1)))) {
-                return DEFAULT;
-            }
-
-
-        }
-
-
-        return res;
-    }
-
+   
     public int getEdgeIndex() {
         switch (type()) {
             case TRANSITIVE:
+            case PSEUDO_TRANSITIVE:
                 return 0;
             case GENERIC_TRANSITIVE:
                 return 1;
             default:
                 return -1;
         }
+    }
+    
+     public boolean isAnyTransitive() {
+        return (type() == TRANSITIVE
+                || type() == GENERIC_TRANSITIVE);
+//                || type() == PSEUDO_TRANSITIVE);
     }
 
     public boolean isTransitive() {
@@ -239,51 +164,65 @@ public class Rule {
     public boolean isGTransitive() {
         return type() == GENERIC_TRANSITIVE;
     }
-
-    public boolean isTransitive2() {
-        Exp exp = getQuery().getBody();
-        if (exp.type() == Exp.AND
-                && getPredicates().size() == 1
-                && exp.size() == 2) {
-
-            for (Exp ee : exp) {
-                if (!ee.isEdge()) {
-                    return false;
-                }
-                Edge edge = ee.getEdge();
-                if (edge.getEdgeVariable() != null) {
-                    return false;
-                }
-                if (!(edge.getNode(0).isVariable() && edge.getNode(1).isVariable())) {
-                    return false;
-                }
-            }
-
-            Edge e1 = exp.get(0).getEdge();
-            Edge e2 = exp.get(1).getEdge();
-
-            boolean correct =
-                    !e1.getNode(0).equals(e1.getNode(1))
-                    && e1.getNode(1).equals(e2.getNode(0))
-                    && !e2.getNode(0).equals(e2.getNode(1))
-                    && !e1.getNode(0).equals(e2.getNode(1));
-
-            if (!correct) {
-                return false;
-            }
-
-            Exp cons = getQuery().getConstruct();
-            if (cons.size() == 1 && cons.get(0).isEdge()) {
-                Edge edge = cons.get(0).getEdge();
-                if (edge.getEdgeVariable() == null
-                        && edge.getEdgeNode().equals(e1.getEdgeNode())
-                        && edge.getNode(0).equals(e1.getNode(0))
-                        && edge.getNode(1).equals(e2.getNode(1))) {
-                    return true;
-                }
+    
+      public boolean isPseudoTransitive() {
+        return (type() == PSEUDO_TRANSITIVE);
+    }
+      
+      public boolean isClosure(){
+          return isClosure;
+      }
+      
+       public void setClosure(boolean b){
+           isClosure = b;
+      }
+    
+    public Node getTransitivePredicate(){
+        return query.getConstruct().get(0).getEdge().getEdgeNode();
+    }
+    
+     public Node getUniquePredicate(){
+        Exp cons = query.getConstruct();
+        if (cons.size() == 1 && cons.get(0).isEdge()){
+            Edge edge = cons.get(0).getEdge();
+            if (edge.getEdgeVariable() == null){
+                return edge.getEdgeNode();
             }
         }
-
-        return false;
+        return null;
     }
+    
+
+    /**
+     * @return the closure
+     */
+    public Closure getClosure() {
+        return closure;
+    }
+
+    /**
+     * @param closure the closure to set
+     */
+    public void setClosure(Closure closure) {
+        this.closure = closure;
+    }
+    
+    public void clean(){
+        closure = null;
+    }
+
+    /**
+     * @return the time
+     */
+    public double getTime() {
+        return time;
+    }
+
+    /**
+     * @param time the time to set
+     */
+    public void setTime(double time) {
+        this.time = time;
+    }
+    
 }

@@ -12,19 +12,23 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Distinct;
+import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.Closure;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.Construct;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 /**
  * Forward Rule Engine Use construct {} where {} SPARQL Query as Rule
@@ -37,7 +41,11 @@ import java.util.HashMap;
  * @author Olivier Corby, Edelweiss INRIA 2011
  */
 public class RuleEngine implements Engine {
-
+    public static final int STD = 0;
+    public static final int OWL_RL = 1;
+    public static final int OWL_RL_FULL = 2;
+    
+    
     private static final String UNKNOWN = "unknown";
     private static Logger logger = Logger.getLogger(RuleEngine.class);
     Graph graph;
@@ -64,6 +72,12 @@ public class RuleEngine implements Engine {
     private boolean isOptimization = false;
     int loop = 0;
     private boolean isActivate = true;
+    int profile = STD;
+    private boolean isOptTransitive = true;
+    private boolean isFunTransitive = false;
+    private boolean isConnect = false;
+    private boolean isDuplicate = false;
+    private boolean isSkipPath = false;
 
     RuleEngine() {
         rules = new ArrayList<Rule>();
@@ -76,6 +90,69 @@ public class RuleEngine implements Engine {
     public void set(QueryProcess p) {
         exec = p;
         p.setListPath(true);
+    }
+    
+    public void setProfile(int n){
+        profile = n;
+        
+        switch (n){
+            case OWL_RL_FULL :
+                try {
+                    owlrlFull();
+                } catch (IOException ex) {
+                    logger.error(ex);
+                } catch (EngineException ex) {
+                    logger.error(ex);
+                }
+                
+            // continue  
+                
+            case OWL_RL:
+                optimizeOWLRL();
+                
+            default:
+                
+                
+        }
+    }
+    
+    void optimizeOWLRL(){
+          setSpeedUp(true);
+          // In OWL RL, path exp does not prevent optimize ResultWatcher
+          // because path exp process OWL structural predicates
+          // mainly rdf:rest*/rdf:first
+          setSkipPath(true);
+          getQueryProcess().setListPath(true);
+    }
+    
+    
+    /**
+     * Replace duplicate OWL expressions by one of them
+     *
+     */
+    public void owlrlFull() throws IOException, EngineException{
+        QueryLoad ql = QueryLoad.create();
+        // replace different bnodes that represent same OWL expression
+        // by same bnode
+        String unify = ql.getResource("/query/unify2.rq");
+        // remove triples with obsolete bnodes as subject
+        String clean = ql.getResource("/query/clean.rq");
+        // tell Transformer to cache st:hash transformation result
+        exec.getEvaluator().setMode(Evaluator.CACHE_MODE);
+        // replace duplicate OWL expressions by one of them
+        Mappings m1 = exec.query(unify);
+        if (trace){
+            System.out.println("unify: " + m1.size());
+        }
+        Mappings m2 = exec.query(clean);
+         if (trace){
+            System.out.println("clean: " + m2.size());
+        }
+        exec.getEvaluator().setMode(Evaluator.NO_CACHE_MODE);
+    }
+    
+    public int getProfile(){
+        return profile;
     }
 
     public QueryProcess getQueryProcess() {
@@ -90,6 +167,12 @@ public class RuleEngine implements Engine {
 
     public void setOptimize(boolean b) {
         isOptimize = b;
+    }
+    
+     public void setSpeedUp(boolean b) {
+        setOptimize(b);
+        setConstructResult(b);
+        setFunTransitive(b);
     }
 
     public void setTrace(boolean b) {
@@ -164,6 +247,20 @@ public class RuleEngine implements Engine {
     public boolean isEmpty(){
         return rules.isEmpty();
     }
+    
+    public String getConstraintViolation(){
+        try {
+            String q = QueryLoad.create().getResource("/query/constraint.rq");
+            QueryProcess ex = QueryProcess.create(graph);
+            Mappings map = ex.query(q);
+            return map.getTemplateStringResult();
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
     /**
      * Define a construct {} where {} rule
@@ -219,10 +316,29 @@ public class RuleEngine implements Engine {
         }
     }
 
+    
+    
+    
     /**
      * Process rule base at saturation PRAGMA: not synchronized on write lock
      */
     public int entail() {
+        int start = graph.size();
+        try {
+            infer();
+            return graph.size() - start;
+        }
+        catch (OutOfMemoryError e){
+            logger.error("Out of Memory: Rule Engine");
+            return graph.size() - start;
+        }
+        finally {
+            cleanRules();
+        }
+    }
+    
+    
+    void infer(){
 
         if (isOptimize || isOptimization) {
             // consider only rules that match newly entailed edge predicates
@@ -256,6 +372,11 @@ public class RuleEngine implements Engine {
         if (isOptimize) {
             // kgram return solutions that contain newly entailed edge
             rw = new ResultWatcher(graph);
+            rw.setSkipPath(isSkipPath);
+            if (isConstructResult){
+                // Construct will take care of duplicates
+                rw.setDistinct(false);
+            }
             exec.addResultListener(rw);
         }
 
@@ -275,7 +396,6 @@ public class RuleEngine implements Engine {
             if (isOptimize){
                 rw.start(loop);
             }
-            
             for (Rule rule : rules) {
 
                 if (debug) {
@@ -292,7 +412,11 @@ public class RuleEngine implements Engine {
                     if (loop == 0) {
                         // run all rules, add all solutions
                         t = record(rule, loopIndex);
-                        nbres = process(rule, null, list, loopIndex);
+                        nbres = process(rule, null, list, loop, loopIndex, -1, nbrule);
+                        if (rule.isClosure()){
+                            // rule run at saturation: record nb edge after saturation
+                            t = record(rule, loopIndex);
+                        }
                         setRecord(rule, t);
                         tnbres += nbres;
                         nbrule++;
@@ -306,7 +430,10 @@ public class RuleEngine implements Engine {
                         ITable ot = getRecord(rule);
                         rw.setLoop(ot.getIndex());
                         if (accept(rule, ot, t)) {
-                            nbres = process(rule, null, list, loopIndex);
+                            nbres = process(rule, null, list, loop, loopIndex, ot.getIndex(), nbrule);
+                            if (rule.isClosure()){
+                                t = record(rule, loopIndex);
+                            }
                             setRecord(rule, t);
                             tnbres += nbres;
                             nbrule++;
@@ -319,7 +446,7 @@ public class RuleEngine implements Engine {
 
                     rw.finish(rule);
                 } else {
-                    nbres = process(rule, null, list, -1);
+                    nbres = process(rule, null, list, loop, -1, -1, nbrule);
                     nbrule++;
                 }
 
@@ -365,9 +492,14 @@ public class RuleEngine implements Engine {
         }
         if (debug) {
             logger.debug("** Rule: " + (graph.size() - start));
+        }       
+        
+    }
+    
+    void cleanRules(){
+        for (Rule r : rules){
+            r.clean();
         }
-
-        return graph.size() - start;
     }
 
     public void trace() {
@@ -388,7 +520,10 @@ public class RuleEngine implements Engine {
     /**
      * Process one rule Store created edges into list
      */
-    int process(Rule rule, List<Entity> current, List<Entity> list, int loopIndex) {
+    int process(Rule rule, List<Entity> current, List<Entity> list, int loop, int loopIndex, int prevIndex, int nbr) {
+        if (trace){
+            System.out.println(nbr + " " + rule.getAST());
+        }
         Date d1 = new Date();
         boolean isConstruct = isOptimize && isConstructResult;
 
@@ -397,6 +532,7 @@ public class RuleEngine implements Engine {
         cons.setRule(rule, rule.getIndex());
         cons.setGraph(graph);
         cons.setLoopIndex(loopIndex);
+        cons.setDebug(debug);
 
         List<Entity> le = null;
 
@@ -415,68 +551,83 @@ public class RuleEngine implements Engine {
 
         int start = graph.size();
         
-        process(qq, cons);
+        if (isFunTransitive() && rule.isTransitive() ){
+            // Java code emulate a transitive rule
+            Closure clos = getClosure(rule);
+            clos.setConnect(isConnect());
+            if (loop == 0){
+                clos.init(rule.getTransitivePredicate());
+            }
+            clos.closure(loop, loopIndex, prevIndex);
+            rule.setClosure(true);
+        }
+        else {
+            process(rule, cons);
 
-        if (graph.size() > start && isConstruct) {
-            
-            if (rule.isTransitive() || 
-                    rule.isGTransitive()) {
-                // optimization for transitive rules: eval at saturation
+            if (graph.size() > start && isConstruct) {
 
-                boolean go = true;
+                if (isOptTransitive() && rule.isAnyTransitive()){ 
+                    // optimization for transitive rules: eval at saturation
+                    
+                    rule.setClosure(true);
 
-                while (go) {
-                    // if this rule is transitive, it is executed at saturation in a loop.
-                    // for loops after first one, kgram take new edge list into account
-                    // for evaluating the where part, the first query edge matches new edges only
+                    boolean go = true;
 
-                    // consider list of edges created at preceeding loop:
-                    qq.setEdgeList(le);
-                    qq.setEdgeIndex(rule.getEdgeIndex());
-                    le = new ArrayList<Entity>();
-                    cons.setInsertList(le);
+                    while (go) {
+                        // if this rule is transitive, it is executed at saturation in a loop.
+                        // for loops after first one, kgram take new edge list into account
+                        // for evaluating the where part, the first query edge matches new edges only
 
-                    int size = graph.size();
+                        // consider list of edges created at preceeding loop:
+                        qq.setEdgeList(cons.getInsertList());
+                        qq.setEdgeIndex(rule.getEdgeIndex());
+                        le = new ArrayList<Entity>();
+                        cons.setInsertList(le);
 
-                    process(qq, cons);
+                        int size = graph.size();
 
-                    if (graph.size() == size) {
-                        qq.setEdgeList(null);
-                        go = false;
+                        process(rule, cons);
+
+                        if (graph.size() == size) {
+                            qq.setEdgeList(null);
+                            go = false;
+                        }
                     }
                 }
             }
-            else if (rule.isTransitive()){
-                // draft
-                transitive(qq, le);
-            }
-           
         }
 
         Date d2 = new Date();
         if (trace){
             double tt = (d2.getTime() - d1.getTime()) / ( 1000.0) ;
-            if (tt > 1.0 ){
+            if (tt > 1){
                 System.out.println("Time : " + tt);
-                if (le != null){
-                    System.out.println("Size: " + le.size());
-                }
-                System.out.println(rule.getAST());
+//                System.out.println(rule.getAST());
+                rule.setTime(tt + rule.getTime());
             }
+            System.out.println("New: " + (graph.size() - start));
+
         }
 
         return graph.size() - start;
     }
     
+    Closure getClosure(Rule r){
+       if (r.getClosure() == null){
+          r.setClosure(new Closure(graph, rw.getDistinct()));
+       }
+       return r.getClosure();
+    }
+   
     
     // process rule
-    void process(Query qq, Construct cons) {
+    void process(Rule r, Construct cons) {
+        Query qq = r.getQuery();      
         Mappings map = exec.query(qq, null);
 
         if (cons.isBuffer()) {
-            // kgram ResultListener has created edges in List el
-            // insert these edges into graph
-            int res = graph.add(cons.getInsertList());
+            // cons insert list contains only new edge that do not exist
+            graph.addOpt(r.getUniquePredicate(), cons.getInsertList());
         } else {
             // create edges from Mappings as usual
             cons.insert(map, graph, null);
@@ -484,48 +635,7 @@ public class RuleEngine implements Engine {
     }
     
     
-    void transitive(Query q, List<Entity> l){
-        Distinct dist = rw.getDistinct();
-        
-        while (l.size() > 0) {
-            
-            ArrayList<Entity> ll = new ArrayList<Entity>();
-            
-            for (Entity e1 : l) {
-                Node node = e1.getNode(1);
-                
-                Iterable<Entity> it = graph.getEdges(e1.getEdge().getEdgeNode(), node, 0);
-                if (it != null){               
-                    for (Entity e2 : it) {
-                        if (e2 != null) {
-                            Node n1 = e1.getNode(0);
-                            Node n2 = e2.getNode(1);
-                            if (dist.isDistinct(n1, n2)) {
-                                Entity ent = create(n1, n2, e1);
-                                ll.add(ent);
-                            }
-                        }
-                    }
-                }
-            }
-
-            l.clear();
-
-            for (Entity ent : ll) {                
-                Entity ee = graph.add(ent);
-                if (ee != null) {
-                    l.add(ee);
-                }
-            }
-        }
-    }
     
-    
-    Entity create(Node n1, Node n2, Entity ent){
-        return graph.create(ent.getGraph(), n1, ent.getEdge().getEdgeNode(), n2);
-    }
-   
-
     /**
      * **************************************************
      *
@@ -543,6 +653,8 @@ public class RuleEngine implements Engine {
         for (Rule rule : rules) {
             init(rule);
         }
+        
+        graph.indexResources();
     }
 
     /**
@@ -623,6 +735,76 @@ public class RuleEngine implements Engine {
      */
     public void setDataset(Dataset dataset) {
         this.ds = dataset;
+    }
+
+    /**
+     * @return the isFunTransitive
+     */
+    public boolean isFunTransitive() {
+        return isFunTransitive;
+    }
+
+    /**
+     * @param isFunTransitive the isFunTransitive to set
+     */
+    public void setFunTransitive(boolean isFunTransitive) {
+        this.isFunTransitive = isFunTransitive;
+    }
+
+    /**
+     * @return the isConnect
+     */
+    public boolean isConnect() {
+        return isConnect;
+    }
+
+    /**
+     * @param isConnect the isConnect to set
+     */
+    public void setConnect(boolean isConnect) {
+        this.isConnect = isConnect;
+    }
+
+    /**
+     * @return the isDuplicate
+     */
+    public boolean isDuplicate() {
+        return isDuplicate;
+    }
+
+    /**
+     * @param isDuplicate the isDuplicate to set
+     */
+    public void setDuplicate(boolean isDuplicate) {
+        this.isDuplicate = isDuplicate;
+    }
+
+    /**
+     * @return the isSkipPath
+     */
+    public boolean isSkipPath() {
+        return isSkipPath;
+    }
+
+    /**
+     * @param isSkipPath the isSkipPath to set
+     */
+    public void setSkipPath(boolean isSkipPath) {
+        this.isSkipPath = isSkipPath;
+    }
+
+    /**
+     * @return the isOptTransitive
+     */
+    public boolean isOptTransitive() {
+        return isOptTransitive;
+    }
+
+    /**
+     * @param isOptTransitive the isOptTransitive to set
+     */
+    public void setOptTransitive(boolean isOptTransitive) {
+        this.isOptTransitive = isOptTransitive;
     }
 
     class PTable extends HashMap<String, List<Rule>> {
@@ -785,7 +967,7 @@ public class RuleEngine implements Engine {
     void setRecord(Rule r, ITable t) {
         rtable.put(r, t);
     }
-
+    
     public void init() {
     }
 

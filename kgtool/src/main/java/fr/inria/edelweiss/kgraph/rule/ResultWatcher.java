@@ -5,7 +5,6 @@
 
 package fr.inria.edelweiss.kgraph.rule;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -15,10 +14,14 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Distinct;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.Construct;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,21 +38,25 @@ import java.util.List;
  * @author Olivier Corby, Wimmics Inria I3S, 2014
  *
  */
-public class ResultWatcher implements ResultListener {    
+public class ResultWatcher implements ResultListener, GraphListener {    
       
     int loop = 0, ruleLoop = 0;
     int cpos = 0, cneg = 0;
     int cnode = 0;
     boolean isWatch = true, start = true;
+    private boolean isDistinct = true;
+    private boolean isSkipPath = false;
     
     Construct cons;
     Mappings map;
     Rule rule;
     Graph graph;
     Distinct dist;
+    ArrayList<Entity> list;
     
     ResultWatcher(Graph g){
-        graph = g;    
+        graph = g;  
+        list = new ArrayList<Entity>();
     }
     
     public Distinct getDistinct(){
@@ -124,7 +131,7 @@ public class ResultWatcher implements ResultListener {
     
     
     boolean store(Environment env){
-        if (dist != null){
+        if (isDistinct && dist != null){
             // select distinct * on construct variables
             if (! dist.isDistinct(env)){  
                 cneg += 1;
@@ -163,6 +170,15 @@ public class ResultWatcher implements ResultListener {
     public Exp listen(Exp exp, int n) {
         switch (exp.type()) {
             case Exp.PATH:
+                if (isSkipPath){
+                    // skip path to check if a solution has new edges
+                }
+                else {
+                    // do not skip path to check if a solution has new edges
+                   isWatch = false;   
+                }
+                break;
+                
             case Exp.QUERY:
                 isWatch = false;
         }
@@ -215,6 +231,84 @@ public class ResultWatcher implements ResultListener {
         e1.setIndex(ruleLoop);
         Exp union = Exp.create(Exp.UNION, exp, ee);
         return union;
+    }
+    
+    
+    
+    /**************************************************************
+     * 
+     *  GraphListener
+     * 
+     *************************************************************/
+    
+    
+    public void clear(){
+        list.clear();
+    }
+    
+    public List<Entity> getList(){
+        return list;
+    }
+
+    @Override
+    public void addSource(Graph g) {
+    }
+
+    @Override
+    public boolean onInsert(Graph g, Entity ent) {
+        return true;   
+    }
+
+    @Override
+    public void insert(Graph g, Entity ent) {
+        // TODO
+        if (ent.getEdge().getLabel().equals(RDFS.SUBCLASSOF)){
+            list.add(ent);
+        }
+    }
+
+    @Override
+    public void delete(Graph g, Entity ent) {
+    }
+
+    @Override
+    public void start(Graph g, Query q) {
+    }
+
+    @Override
+    public void finish(Graph g, Query q, Mappings m) {
+    }
+
+    @Override
+    public void load(String path) {
+    }
+
+    /**
+     * @return the isSkipPath
+     */
+    public boolean isSkipPath() {
+        return isSkipPath;
+    }
+
+    /**
+     * @param isSkipPath the isSkipPath to set
+     */
+    public void setSkipPath(boolean isSkipPath) {
+        this.isSkipPath = isSkipPath;
+    }
+
+    /**
+     * @return the isDistinct
+     */
+    public boolean isDistinct() {
+        return isDistinct;
+    }
+
+    /**
+     * @param isDistinct the isDistinct to set
+     */
+    public void setDistinct(boolean isDistinct) {
+        this.isDistinct = isDistinct;
     }
     
    

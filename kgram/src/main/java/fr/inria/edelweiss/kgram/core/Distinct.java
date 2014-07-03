@@ -59,18 +59,23 @@ public class Distinct {
 		}
 	}
 
-
+        Distinct(){
+            table = new TreeMapping();
+        }
 	
 	Distinct(List<Node> l){
-		table = new TreeMapping();
-                list = l;
+            this();
+            list = l;
 	}
         
         public static Distinct create(List<Node> l){
             return new Distinct(l);
         }
 	
-	
+	public static Distinct create(){
+            return new Distinct();
+        }
+            
 	public boolean isDistinct(Node[] key){
 										
 		if (table.containsKey(key)){

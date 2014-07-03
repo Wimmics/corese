@@ -4,6 +4,7 @@ package fr.inria.edelweiss.kgraph.core;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import java.util.List;
 
 /**
  * Interface for Index for Graph 
@@ -34,13 +35,21 @@ public interface Index {
 
 	Entity add(Entity edge);
 	
-	Entity delete(Entity edge);
+	Entity add(Entity edge, boolean duplicate);
+        
+        void add(Node p, List<Entity> list);
+
+        Entity delete(Entity edge);
 
 	void delete(Node pred);
 
 	boolean exist(Entity edge);
+        
+        boolean exist(Node p, Node n1, Node n2);
 
 	void declare(Entity edge);
+        
+         void declare(Entity edge, boolean duplicate);        
 	
 	int size(Node pred);
 

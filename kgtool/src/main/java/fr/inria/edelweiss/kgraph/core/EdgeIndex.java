@@ -37,7 +37,7 @@ implements Index {
 	// do not create entailed edge in kg:entailment if it already exist in another graph
 	isOptim = false;
 	
-	Comparator<Entity>  comp, skip, compList;
+	Comparator<Entity>  comp, skipTag, skipGraph, compList;
 	Graph graph;
 	Hashtable<Node, Node> types;
         List<Node> sortedProperties;
@@ -45,7 +45,8 @@ implements Index {
 	EdgeIndex(Graph g, int n){
 		init(g, n);
 		comp  = getComparator();
-		skip  = getComparator(true);
+		skipTag  = getComparator(true, true);
+		skipGraph  = getComparator(false, false);
 		types = new Hashtable<Node, Node>();
 	}
 	
@@ -68,7 +69,7 @@ implements Index {
 	 */
 	
 	Comparator<Entity> getComparator(){
-		return getComparator(false);
+		return getComparator(false, true);
 	}
 	
 	
@@ -95,7 +96,7 @@ implements Index {
 	 * in this case the query edge have no tag, it matches all target edge with tag
 	 * 
 	 */
-	Comparator<Entity> getComparator(final boolean skip){
+	Comparator<Entity> getComparator(final boolean skipTag, final boolean duplicate){
 		
 //                if (index == Graph.ILIST){
 //                    return getListComparator();
@@ -127,10 +128,13 @@ implements Index {
 				if (o1.nbNode() == o2.nbNode()){
 					// same arity, common arity nodes are equal
 					// check graph
-					return nodeCompare(o1.getGraph(), o2.getGraph());
+                                    if (! duplicate){
+                                        return 0;
+                                    }
+                                    return  nodeCompare(o1.getGraph(), o2.getGraph());
 				}
 				
-				if (skip){
+				if (skipTag){
 					// use case: delete
 					// skip tag node
 					return nodeCompare(o1.getGraph(), o2.getGraph());
@@ -267,7 +271,14 @@ implements Index {
 	/** 
 	 * Add a property in the table
 	 */
-	public Entity add(Entity edge){
+        public Entity add(Entity edge){
+            return add(edge, false);
+        }
+        
+        /**
+         * noGraph == true => if edge already exists in another graph, do not add edge        
+         */
+	public Entity add(Entity edge, boolean duplicate){
             if (index != IGRAPH && edge.nbNode() <= index) {
                 // use case:  additional node is not present, do not index on this node
                 // never happens for subject object and graph
@@ -282,14 +293,18 @@ implements Index {
 //            }
 		
 		Comparator cc = comp;
-		boolean needTag = index == 0 && graph.needTag(edge);
+
+		boolean needTag = index == 0 && graph.needTag(edge);                 
 		if (needTag){
 			// this edge has no tag yet and it will need onefind
 			// let's see if there is the same triple (with another tag)
 			// in this case, we skip the insertion
 			// otherwise we tag the triple and we insert it 
-			cc = skip;
+			cc = skipTag;
 		}
+                else if (! duplicate){
+                    cc = skipGraph;
+                }
 		
 		if (isSort(edge)){
 			// edges are sorted, check presence by dichotomy
@@ -367,9 +382,20 @@ implements Index {
 		//complete(edge);
 		return edge;
 	}
-	
-	
-	
+        
+        /**
+         * PRAGMA:
+         * All Edge in list have p as predicate
+         * Use case: Rule Engine
+         */
+        public void add(Node p, List<Entity> list){
+            ArrayList<Entity> l = define(p);
+            if (index == 0 || l.size() > 0){
+                l.ensureCapacity(l.size() + list.size());
+                l.addAll(list);
+            }
+        }
+        
 	Entity tag(Entity ent){
 		EdgeImpl ee = (EdgeImpl) ent;
 		ee.setTag(graph.tag());
@@ -379,7 +405,7 @@ implements Index {
         // TBD
 	boolean same(Entity e1, Entity e2){
 		return e1.getNode(0).same(e2.getNode(0)) &&
-			   e1.getNode(1).same(e2.getNode(1));
+		       e1.getNode(1).same(e2.getNode(1));
 	}
 	
 	void complete(Entity ent){
@@ -432,16 +458,22 @@ implements Index {
 	 * If the list already contains edges, we add it now. 
 	 */
 	public void declare(Entity edge){
+            declare(edge, true);
+        }
+                       
+	public void declare(Entity edge, boolean duplicate){
 		List<Entity> list = define(edge.getEdge().getEdgeNode());
 		if (list.size()>0){
-			add(edge);
+			add(edge, duplicate);
 		}
 	}
+        
+        
 	
 	/**
 	 * Create and store an empty list if needed
 	 */
-	private List<Entity> define(Node predicate){
+	private ArrayList<Entity> define(Node predicate){
 		ArrayList<Entity> list = get(predicate);
 		if (list == null){
 			list = new ArrayList<Entity>(0);
@@ -545,11 +577,11 @@ implements Index {
 	 * Create the index of property pred on nth argument
 	 * It is synchronized on pred hence several synGetCheck can occur in parallel on different pred
 	 */
-	private List<Entity> synCheckGet(Node pred){
+	private List<Entity> synCheckGet(Node pred){         
 		synchronized (pred){
 			ArrayList<Entity> list = get(pred);
 			if (list != null && list.size()==0){
-				List<Entity> std = (List<Entity>) graph.getIndex().getEdges(pred, null);
+                           	List<Entity> std = (List<Entity>) graph.getIndex().getEdges(pred, null);
                                 list.ensureCapacity(std.size());
                                 if (index < 2){
                                     // we are sure that there are at least 2 nodes
@@ -614,6 +646,25 @@ implements Index {
 		}
 		return null; 
 	}
+        
+        /**
+         * Written for index = 0
+         */
+       public boolean exist(Node pred, Node n1, Node n2) {
+            List<Entity> list = checkGet(pred);
+            if (list == null) {
+                return false;
+            }
+            int n = find(list, n1, n2, 0, list.size());
+            if (n>=0 && n<list.size()){
+                Node t1 = list.get(n).getNode(0);
+                Node t2 = list.get(n).getNode(1);
+                if (same(n1, t1) && same(n2, t2)){
+                    return true;
+                }
+            }
+            return false;
+        }
         
         
         public Iterable<Entity> getEdges(Node pred, int index){
@@ -784,7 +835,7 @@ implements Index {
 		}		
 	}
         
-       int compare(int i1, int i2) {
+      int compare(int i1, int i2) {
         if (i1 < i2) {
             return -1;
         } else if (i1 == i2) {
@@ -792,7 +843,7 @@ implements Index {
         } else {
             return 1;
         }
-    }
+       }
                     	
 	int compare(Entity ent, Node n1, Node n2){
 		Node tNode = getNode(ent, index);
@@ -862,7 +913,7 @@ implements Index {
 	 */
 	Comparator<Entity> getComp(){
 		if (graph.hasTag()){
-			return skip;
+			return skipTag;
 		}
 		else {
 			return comp;

@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.query.MatchBNode;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -31,6 +32,8 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Comparator;
+import java.util.TreeMap;
 import org.apache.log4j.Logger;
 
 /**
@@ -732,7 +735,7 @@ public class Transformer {
         // use a default display (may be dt1 as is or st:turtle)
         return display(dt1, q);
     }
-
+ 
     /**
      * when st:call-template(name, v1, ... vn)
      * ldt = [name, v1, ... vn]
@@ -1180,5 +1183,9 @@ public class Transformer {
     public String getTransformation() {
         return pp;
     }
-         
+    
+    
+    
+     
+       
 }

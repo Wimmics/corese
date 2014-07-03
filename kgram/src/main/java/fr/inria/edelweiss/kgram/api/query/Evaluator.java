@@ -18,6 +18,10 @@ public interface Evaluator {
 	
 	static final int KGRAM_MODE 	= 0;
 	static final int SPARQL_MODE  	= 1;
+        
+        public static final int CACHE_MODE = 101;
+        public static final int NO_CACHE_MODE = 102;
+
 
 	
 	void setMode(int mode);

@@ -4,16 +4,12 @@ import java.util.HashMap;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeMap;
 
 /**
  * Match
@@ -33,6 +29,7 @@ public class MatcherImpl implements Matcher {
     Graph graph;
     Entailment entail;
     Cache table;
+    MatchBNode bnode;
     int mode = SUBSUME;
 
     class BTable extends HashMap<Node, Boolean> {
@@ -73,19 +70,18 @@ public class MatcherImpl implements Matcher {
         }
     }
 
-    MatcherImpl() {
-        //table = new Cache();
+    MatcherImpl(Graph g) {
+        graph = g;
+        entail = g.getEntailment();        
+        bnode = new MatchBNode(g);
     }
 
     public static MatcherImpl create() {
-        return new MatcherImpl();
+        return new MatcherImpl(Graph.create());
     }
 
     public static MatcherImpl create(Graph g) {
-        MatcherImpl m = new MatcherImpl();
-        m.graph = g;
-        m.entail = g.getEntailment();
-        return m;
+        return new MatcherImpl(g);
     }
 
     @Override
@@ -233,7 +229,7 @@ public class MatcherImpl implements Matcher {
         Query q = env.getQuery();
         if (q != null && q.isMatchBlank()
                 && n1.isBlank() && n2.isBlank()) {
-            b = match(graph, n1, n2, env, new TreeNode(), 0);            
+            b = bnode.same(n1, n2, env, 0);             
             return b;
         }
         return false;
@@ -259,147 +255,7 @@ public class MatcherImpl implements Matcher {
         return qdt.sameTerm(tdt);
     }
 
-    /**
-     * *********************************************************
-     *
-     *
-     **********************************************************
-     */
-    class TreeNode extends TreeMap<IDatatype, IDatatype> {
-
-        TreeNode() {
-            super(new Compare());
-        }
-    }
-
-    /**
-     * This Comparator enables to retrieve an occurrence of a given Literal
-     * already existing in graph in such a way that two occurrences of same
-     * Literal be represented by same Node in graph It (may) represent (1
-     * integer) and (1.0 float) as two different Nodes Current implementation of
-     * EdgeIndex sorted by values ensure join (by dichotomy ...)
-     */
-    class Compare implements Comparator<IDatatype> {
-
-        public int compare(IDatatype dt1, IDatatype dt2) {
-
-            // xsd:integer differ from xsd:decimal 
-            // same node for same datatype 
-            if (dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null) {
-                int cmp = dt1.getDatatypeURI().compareTo(dt2.getDatatypeURI());
-                if (cmp != 0) {
-                    return cmp;
-                }
-            }
-
-            int res = dt1.compareTo(dt2);
-            return res;
-        }
-    }
-
-    IDatatype getValue(Node n) {
-        return (IDatatype) n.getValue();
-    }
-
-    /**
-     * Two different blank nodes match if they have the same edges and their
-     * target nodes recursively match (same term or blank match) Use case: two
-     * OWL expressions are the same but use different blank nodes PRAGMA: does
-     * not compare named graph when compare edges
-     */
-    boolean match(Graph g, Node n1, Node n2, Environment env, TreeNode t, int n) {
-        if (n1.same(n2)) {
-            return true;
-        }
-
-        IDatatype dt = t.get(getValue(n1));
-        if (dt != null) {
-            // we forbid to match another blank node
-            // in some case it may happen
-            // TODO:  manage a list of IDatatype
-            boolean b = dt.same(getValue(n2));
-            return b;
-        } else {
-            t.put(getValue(n1), getValue(n2));
-        }
-
-        List<Entity> l1 = g.getEdgeListSimple(n1);
-        List<Entity> l2 = g.getEdgeListSimple(n2);
-
-        if (l1.size() != l2.size()) {
-
-            if (n == 0) {
-                
-               if (! clean(l1, l2)){
-                   // one of them may have one additional edge: remove it
-                   return false;
-               }
-
-            } else {
-                return false;
-            }
-        }
-
-        for (int i = 0; i < l1.size(); i++) {
-
-            Edge e1 = l1.get(i).getEdge();
-            Edge e2 = l2.get(i).getEdge();
-            boolean b = match(g, e1, e2, env, t, n + 1);
-            if (!b) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    boolean match(Graph g, Edge e1, Edge e2, Environment env, TreeNode t, int n) {
-
-        if (!match(e1, e2, env)) {
-            // TODO: rdf:type ???
-            // URI/Literal vs Blank ???
-            return false;
-        }
-
-        if (e1.getNode(1).isBlank() && e2.getNode(1).isBlank()) {
-            boolean b = match(g, e1.getNode(1), e2.getNode(1), env, t, n);
-            if (!b) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    boolean clean(List<Entity> l1, List<Entity> l2) {
-
-        if (l1.size() < l2.size()) {
-            List<Entity> tmp = l1;
-            l1 = l2;
-            l2 = tmp;
-        }
-
-        if (l1.size() - l2.size() > 1) {
-           return false;
-        }
-
-        boolean found = false;
-        for (int i = 0; i < l2.size(); i++) {
-
-            Edge e1 = l1.get(i).getEdge();
-            Edge e2 = l2.get(i).getEdge();
-
-            if (!e1.getEdgeNode().equals(e2.getEdgeNode())) {
-                l1.remove(l1.get(i));
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            l1.remove(l1.get(l1.size() - 1));
-        }
-
-        return true;
-    }
+  public MatchBNode getMatchBNode(){
+      return bnode;
+  }
 }

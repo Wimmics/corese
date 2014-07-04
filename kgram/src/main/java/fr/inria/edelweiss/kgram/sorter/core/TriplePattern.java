@@ -21,9 +21,8 @@ public class TriplePattern {
     //FN: filter, variables appeared in how many filters 
     //PV: number of variables appeared in prejection variables(select nodes)
     //OT: type of bound object, URI|literal|NA
-    public final static int S = 0, P = 1, O = 2, FV = 3, FN = 4, PV = 5, OT = 6;
-    private final static int PARAMETER_LEN = 7;
-    private final static int NA = 2, URI = 1, LIT = 0;
+    public final static int S = 0, P = 1, O = 2, FV = 3, FN = 4;
+    private final static int PARAMETER_LEN = 5;
     List<String> variables = new ArrayList<String>();
     private final int[] pattern = new int[PARAMETER_LEN];
 
@@ -47,39 +46,8 @@ public class TriplePattern {
         return new int[]{this.pattern[S], this.pattern[P], this.pattern[O]};
     }
 
-    public void setParameters(List<String> selectNodes, IProducer heuri, BPGraph graph) {
+    public void setParameters(BPGraph graph) {
         this.setFilterNumber(graph);
-        this.setProjectionVariables(selectNodes);
-        this.setObjectType(heuri);
-    }
-
-    // PV: Get the number pf varaibles in a triple pattern appeared in the select nodes
-    private void setProjectionVariables(List<String> selectNodes) {
-
-        if (variables.isEmpty() || selectNodes.isEmpty()) {
-            return;
-        }
-
-        //check the number of variables in triple pattern appeared in select nodes
-        int count = 0;
-        for (String proj : variables) {
-            for (String var : selectNodes) {
-                if (proj.equalsIgnoreCase(var)) {
-                    count++;
-                }
-            }
-        }
-
-        this.pattern[PV] = count;
-    }
-
-    //OT: Set the type for a bound object
-    private void setObjectType(IProducer heuri) {
-        if (this.pattern[O] == BPGNode.BOUND) {
-            this.pattern[OT] = heuri.isURI(this.bpn.getObject()) ? URI : LIT;
-        } else {
-            this.pattern[OT] = NA;
-        }
     }
 
     // FV: filter variables
@@ -184,16 +152,10 @@ public class TriplePattern {
                     return p1.pattern[FV] < p2.pattern[FV] ? 1 : -1;
                 } else if (p1.pattern[FN] != p2.pattern[FN]) {
                     return p1.pattern[FN] < p2.pattern[FN] ? 1 : -1;
-                    //for PV and OT, the smaller, the selectivity is higher
-                } else if (p1.pattern[PV] != p2.pattern[PV]) {
-                    return p1.pattern[PV] > p2.pattern[PV] ? 1 : -1;
-                } else if (p1.pattern[OT] != p2.pattern[OT]) {
-                    return p1.pattern[OT] > p2.pattern[OT] ? 1 : -1;
                 } else {
                     return 0;
                 }
             }
-
         });
     }
 
@@ -211,47 +173,6 @@ public class TriplePattern {
     //TODO: extend to more complex patterns
     private final static int[][] BASIC_PATTERN = new int[][]{
         {0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, 0, 1}, {1, 1, 0}, {0, 1, 1}, {1, 0, 1}, {1, 1, 1}
-    };
-    //first three bits: {s p o}, 0:bound, 1:unbound
-    //4th bit: type of bound object, 0:literal, 1:uri
-    //5th bit: number of prejection variables appeared in the triple pattern
-    private final static int[][] PATTERNS_COMPLEX = new int[][]{
-        //(s p o)
-        {0, 0, 0, LIT, 0},
-        {0, 0, 0, URI, 0},
-        //(s ? o)
-        {0, 1, 0, LIT, 0}, //(s ? o, literal, 0 proj. var.)
-        {0, 1, 0, URI, 0},
-        {0, 1, 0, LIT, 1},
-        {0, 1, 0, URI, 1},
-        //(? p o)
-        {1, 0, 0, LIT, 0},
-        {1, 0, 0, URI, 0},
-        {1, 0, 0, LIT, 1},
-        {1, 0, 0, URI, 1},
-        //(s p ?)
-        {0, 0, 1, NA, 0},
-        {0, 0, 1, NA, 1},
-        //(? ? o)
-        {1, 1, 0, LIT, 0},
-        {1, 1, 0, URI, 0},
-        {1, 1, 0, LIT, 1},
-        {1, 1, 0, URI, 1},
-        {1, 1, 0, LIT, 2},
-        {1, 1, 0, URI, 2},
-        //(s ? ?)
-        {0, 1, 1, NA, 0},
-        {0, 1, 1, NA, 1},
-        {0, 1, 1, NA, 2},
-        //(? p ?)
-        {1, 0, 1, NA, 0},
-        {1, 0, 1, NA, 1},
-        {1, 0, 1, NA, 2},
-        //(? ? ?)
-        {1, 1, 1, NA, 0},
-        {1, 1, 1, NA, 1},
-        {1, 1, 1, NA, 2},
-        {1, 1, 1, NA, 3}
     };
 
     public static final int[][] JOINT_PATTERN = new int[][]{

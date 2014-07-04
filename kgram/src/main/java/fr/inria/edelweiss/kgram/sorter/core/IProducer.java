@@ -24,11 +24,9 @@ public interface IProducer {
 
     int getObjectNumber();
 
-    int getCountByValue(String val, int type);
+    int getCountByValue(Node n, int type);
 
     int getCountByTriple(Edge e);
 
     boolean enabled();
-
-    boolean isURI(Node n);
 }

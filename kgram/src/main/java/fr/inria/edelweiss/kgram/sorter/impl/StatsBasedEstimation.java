@@ -108,11 +108,11 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
             case 1:
                 return getSel(n);
             case 2:
-                // selectiviy 
                 double ss = getSel(n.getSubject(), SUBJECT);
                 double sp = getSel(n.getPredicate(), PREDICATE);
                 double so = getSel(n.getObject(), OBJECT);
 
+                //two of them equal to 1.0
                 return ss * sp * so;
             case 3:
                 return MAX_SEL;
@@ -131,30 +131,21 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
         double sel = MAX_SEL;
         //1 the variable is bound
         if (!varNode.isVariable()) {
-            sel = getSel(varNode.getLabel(), type);
+            sel = meta.getCountByValue(varNode, type) * 1.0 / meta.getAllTriplesNumber();
             //2 unbound variable, check if bound to a list of constant values
-        } else {
+        } 
+        /*
+        else {
             //if bound to some values, then cumulate the selectivity of each
-            List<String> bind = this.isBound(varNode);
-            if (bind != null) {
-                sel = getSel(bind, type);
+            List<Node> lBind = this.isBound(varNode);
+            if (lBind != null) {
+                sel = 0;
+                for (Node v : lBind) {
+                    sel += meta.getCountByValue(v, type) * 1.0 / meta.getAllTriplesNumber();
+                }
             }
-        }
+        }*/
         return sel;
-    }
-
-    //Calculate the selectivity of a list of values
-    private double getSel(List<String> varibles, int type) {
-        double sel = 0;
-        for (String v : varibles) {
-            sel += getSel(v, type);
-        }
-        return sel;
-    }
-
-    //Get selectivity for a given String(node) and its variable type
-    private double getSel(String node, int type) {
-        return meta.getCountByValue(node, type) * 1.0 / meta.getAllTriplesNumber();
     }
 
     //Get selectivity for a filter
@@ -163,14 +154,15 @@ public class StatsBasedEstimation implements IEstimateSelectivity {
         return SEL_FILTER;
     }
 
-    private List<String> isBound(Node var) {
+    // todo
+    private List<Node> isBound(Node var) {
         for (Exp exp : bindings) {
-            String v = exp.get(0).getNode().getLabel();
             if (var.getLabel().equalsIgnoreCase(exp.get(0).getNode().getLabel())) {
-                List<String> lBind = new ArrayList<String>();
-                for (Expr ex : (List<Expr>) exp.getObject()) {
-                    lBind.add(ex.getLabel());
-                }
+                List<Node> lBind = new ArrayList<Node>();
+                Object o = exp.getObject();
+//                for (Expr ex : (List<Expr>) exp.getObject()) {
+//                    lBind.add(ex.);
+//                }
                 return lBind;
             }
         }

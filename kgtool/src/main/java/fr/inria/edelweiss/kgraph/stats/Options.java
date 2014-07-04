@@ -24,7 +24,7 @@ public class Options {
     private static final double TRI_LIMIT_BOTTOM = 0.10;
 
     //*** hash triple table ***
-    private static final double HTT_MAX_SIZE = 100;
+    private static final double HTT_MAX_SIZE = 500;
     //private static final double HTT_PRE = 10;
     //private static final double HTT_OBJ = 100;
 
@@ -46,7 +46,7 @@ public class Options {
     //predicate
     public final static Options DEF_OPT_PRE = new Options(HT_FULL, IProducer.PREDICATE, null);
     //object
-    public final static Options DEF_OPT_OBJ = new Options(HT_HASH, IProducer.OBJECT, DEF_PARA_HASH);
+    public final static Options DEF_OPT_OBJ = new Options(HT_HASH, IProducer.OBJECT, DEF_PARA_CUTOFF);
     //other
     public final static Options DEF_OPT_PAIR = new Options(HT_TRIPLE_HASH, IProducer.NA, DEF_PARA_HTT);
 

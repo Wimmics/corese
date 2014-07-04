@@ -13,33 +13,33 @@ import java.util.Map;
  */
 public class BaseMap {
 
-    Map<String, Integer> full;
+    Map<WrappedNode, Integer> full;
     int total = 0;
 
     public BaseMap() {
-        this.full = new HashMap<String, Integer>();
+        this.full = new HashMap<WrappedNode, Integer>();
     }
 
-    public void add(Node n) {
-        String v = n.getLabel();
-        if (this.full.containsKey(v)) {
-            this.full.put(v, this.full.get(v) + 1);
+    public void add(Node node) {
+        WrappedNode n = new WrappedNode(node);
+        if (this.full.containsKey(n)) {
+            this.full.put(n, this.full.get(n) + 1);
         } else {
-            this.full.put(v, 1);
+            this.full.put(n, 1);
         }
         total++;
     }
 
-    public int get(String s) {
-        Integer v = this.full.get(s);
-        return v == null ? 0 : v.intValue();
-    }
-
     public int get(Node n) {
-        return this.get(n.getLabel());
+        Integer v = this.full.get(new WrappedNode(n));
+        return v == null ? 0 : v.intValue();
     }
 
     public int size() {
         return this.full.size();
+    }
+    
+    public void clear(){
+        this.full.clear();
     }
 }

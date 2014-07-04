@@ -28,7 +28,8 @@ public class HashBucket extends BaseMap {
 
     @Override
     public void add(Node n) {
-        int v = hash(n.getLabel());
+        super.add(n);
+        int v = hash(n);
         if (this.bucket.containsKey(v)) {
             this.bucket.put(v, bucket.get(v) + 1);
         } else {
@@ -37,16 +38,14 @@ public class HashBucket extends BaseMap {
     }
 
     @Override
-    public int get(String s) {
-        Integer c = bucket.get(hash(s));
+    public int get(Node n) {
+        Integer c = bucket.get(hash(n));
         return c == null ? 0 : c;
     }
 
-    @Override
-    public int get(Node n) {
-        return this.get(n.getLabel());
+    public int length(){
+        return bucket.size();
     }
-
     //Generate a bucket size
     //the number of buckets is limited at highest BUCKET_NUMBER_MAX
     //the (average) size of each bucket is limited at least BUCKET_SIZE_MIN
@@ -60,8 +59,8 @@ public class HashBucket extends BaseMap {
         }
     }
 
-    private int hash(Object value) {
-        long hash = Long.valueOf(Integer.MAX_VALUE) + value.hashCode();
+    private int hash(Node value) {
+        long hash = Long.valueOf(Integer.MAX_VALUE) + value.getLabel().hashCode();
         return (int) (hash % this.bucketSize);
     }
 }

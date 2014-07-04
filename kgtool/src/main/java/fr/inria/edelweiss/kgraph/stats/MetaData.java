@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgraph.stats;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.stats.data.ReducedMap;
 import fr.inria.edelweiss.kgraph.stats.data.HashBucket;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.OBJECT;
@@ -130,7 +131,6 @@ public class MetaData {
     //Main method for generating the stats data
     private static void process() {
         long start = System.currentTimeMillis();
-        BaseMap mapSub = new BaseMap(), mapObj = new BaseMap();
 
         //**1 iterate all the triples and do statistics meanwhile
         Iterator<Entity> it = graph.getEdges().iterator();
@@ -143,15 +143,11 @@ public class MetaData {
             preMap.add(e.getEdgeNode());
             //object
             objMap.add(e.getNode(1));
-
-            //** 2 calculate the distinct number of subject/object
-            mapSub.add(e.getNode(0));
-            mapObj.add(e.getNode(1));
         }
 
         //** 2 get the number of distinct subject/object
-        noOfAllResource = mapSub.size();
-        noOfAllObjects = mapObj.size();
+        noOfAllResource = subMap.size();
+        noOfAllObjects = objMap.size();
 
         //***2.1 create triple hash table
         if (enable_htt && thtable != null) {
@@ -163,18 +159,40 @@ public class MetaData {
         }
 
         //**3 if the map is reduced map, cut off
-        reduce(subMap);
-        reduce(preMap);
-        reduce(objMap);
+        reduce();
+
+        //**4 clear unused map to save memory
+        clear();
 
         long end = System.currentTimeMillis();
         System.out.println("====Meta data stats time (" + graph.size() + " triples):" + (end - start) + " ms====");
     }
 
     //If using reduced map method, then reduce the size of map
-    private static void reduce(BaseMap map) {
-        if (map instanceof ReducedMap) {
-            ((ReducedMap) map).cut();
+    private static void reduce() {
+        if (subMap instanceof ReducedMap) {
+            ((ReducedMap) subMap).cut();
+        }
+
+        if (preMap instanceof ReducedMap) {
+            ((ReducedMap) preMap).cut();
+        }
+
+        if (objMap instanceof ReducedMap) {
+            ((ReducedMap) objMap).cut();
+        }
+    }
+
+    private static void clear() {
+        clear(subMap);
+        clear(preMap);
+        clear(objMap);
+    }
+
+    private static void clear(BaseMap map) {
+        if (map instanceof HashBucket
+                || map instanceof ReducedMap) {
+            map.clear();
         }
     }
 
@@ -217,23 +235,24 @@ public class MetaData {
     /**
      * Get the estimated selected triples by single value
      *
-     * @param val value
+     * @param n
      * @param type subject | predicate|object
      * @return
      */
-    public int getCountByValue(String val, int type) {
+    public int getCountByValue(Node n, int type) {
         switch (type) {
             case SUBJECT:
-                return subMap.get(val);
+                return subMap.get(n);
             case PREDICATE:
-                return preMap.get(val);
+                return preMap.get(n);
             case OBJECT:
-                return objMap.get(val);
+                return objMap.get(n);
             default:
                 return NA;
         }
     }
-
+    
+    
     /**
      * Get the estimated selected triples number according to the whole triple
      *

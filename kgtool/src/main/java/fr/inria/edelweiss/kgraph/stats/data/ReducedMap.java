@@ -5,6 +5,7 @@ import fr.inria.edelweiss.kgraph.stats.Options;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -17,7 +18,7 @@ import java.util.TreeMap;
  */
 public class ReducedMap extends BaseMap {
 
-    private Map<String, Integer> topXBottomY;
+    private Map<WrappedNode, Integer> topXBottomY;
 
     private int numResourcesCached = 0, numTriplesCached = 0;
     //nuymber of resources and triples in the whole graph
@@ -35,27 +36,29 @@ public class ReducedMap extends BaseMap {
     }
 
     public void cut() {
-        topXBottomY = new HashMap<String, Integer>();
+        topXBottomY = new HashMap<WrappedNode, Integer>();
         ValueComparator vc = new ValueComparator(this.full);
 
-        TreeMap<String, Integer> treeMap = new TreeMap<String, Integer>(vc);
+        TreeMap<WrappedNode, Integer> treeMap = new TreeMap<WrappedNode, Integer>(vc);
         treeMap.putAll(this.full);
+        //top X
         cutoff(treeMap, topXBottomY, options[0], options[1]);
+        //bottom Y
         cutoff(treeMap.descendingMap(), topXBottomY, options[2], options[3]);
 
-        avgNumber = (this.total - this.numTriplesCached) / (this.size() - this.numResourcesCached);
+        avgNumber = (this.total - this.numTriplesCached) / (super.size() - this.numResourcesCached);
     }
 
     // 10% top nodes and 10%bottom nodes
     // or the ones whose sum accumulative is greater than 50% of total triples
     // subject or predicate or object
-    private void cutoff(Map<String, Integer> fullSortedMap, Map<String, Integer> cutoff, double res_limit, double tri_limit) {
-        ArrayList<String> keys = new ArrayList<String>(fullSortedMap.keySet());
+    private void cutoff(Map<WrappedNode, Integer> fullSortedMap, Map<WrappedNode, Integer> cutoff, double res_limit, double tri_limit) {
+        List<WrappedNode> keys = new ArrayList<WrappedNode>(fullSortedMap.keySet());
         int triple = 0, resource = 0;
         int counter;
         for (int i = 0; i < keys.size(); i++) {
             if (triple < this.total * tri_limit
-                    && resource <= this.size() * res_limit) {
+                    && resource <= super.size() * res_limit) {
                 counter = fullSortedMap.get(keys.get(i));
                 triple += counter;
                 resource++;
@@ -70,31 +73,31 @@ public class ReducedMap extends BaseMap {
     }
 
     @Override
-    public int get(String value) {
-        if (topXBottomY.containsKey(value)) {
-            return topXBottomY.get(value);
+    public int get(Node node) {
+        WrappedNode n = new WrappedNode(node);
+        if (topXBottomY.containsKey(n)) {
+            return topXBottomY.get(n);
         } else {
             return avgNumber;
         }
     }
 
-    @Override
-    public int get(Node n) {
-        return this.get(n.getLabel());
+    public int length(){
+        return topXBottomY.size();
     }
-
     // Internal class for sorting tree map
-    class ValueComparator implements Comparator<String> {
+    class ValueComparator implements Comparator<WrappedNode> {
 
-        Map<String, Integer> base;
+        Map<WrappedNode, Integer> map;
 
-        public ValueComparator(Map<String, Integer> base) {
-            this.base = base;
+        public ValueComparator(Map<WrappedNode, Integer> base) {
+            this.map = base;
         }
 
         @Override
-        public int compare(String o1, String o2) {
-            Integer i1 = base.get(o1), i2 = base.get(o2);
+        public int compare(WrappedNode o1, WrappedNode o2) {
+            
+            Integer i1 = map.get(o1), i2 = map.get(o2);
             if (i1 == null || i2 == null) {
                 return -1;
             }
@@ -102,7 +105,7 @@ public class ReducedMap extends BaseMap {
             if (i1.intValue() < i2.intValue()) {
                 return 1;
             } else if (i1.intValue() == i2.intValue()) {
-                return o1.compareTo(o2);
+                return o1.getNode().compare(o2.getNode());
             } else {
                 return -1;
             }

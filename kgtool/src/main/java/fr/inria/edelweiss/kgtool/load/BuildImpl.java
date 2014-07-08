@@ -7,7 +7,6 @@ import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 
@@ -50,7 +49,7 @@ public class BuildImpl implements Build {
 			Node predicate 	= getProperty(pred);
 			Node value 	= getLiteral(pred, lit);
 			if (value == null) return;
-			EdgeImpl edge 	= getEdge(gnode, subject, predicate, value);
+			Entity edge 	= getEdge(gnode, subject, predicate, value);
 			process(gnode, edge);
 		}
 	}
@@ -61,7 +60,7 @@ public class BuildImpl implements Build {
 			Node subject 	= getSubject(subj);
 			Node predicate 	= getProperty(pred);
 			Node value 	= getNode(obj);
-			EdgeImpl edge 	= getEdge(gnode, subject, predicate, value);
+			Entity edge 	= getEdge(gnode, subject, predicate, value);
 			process(gnode, edge);
 		}
 	}
@@ -112,12 +111,12 @@ public class BuildImpl implements Build {
 	}
 	
 	
-	public void process(Node gNode, EdgeImpl edge){
+	public void process(Node gNode, Entity edge){
 		Entity ent = graph.addEdge(edge);
 	}
 	
 
-	public EdgeImpl getEdge(Node source, Node subject, Node predicate, Node value){
+	public Entity getEdge(Node source, Node subject, Node predicate, Node value){
 		if (source == null) source = graph.addGraph(Entailment.DEFAULT);
 		
 		return graph.create(source, subject, predicate, value);

@@ -1,8 +1,8 @@
 package fr.inria.edelweiss.kgtool.load;
 
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class AddTripleHelper implements ILoadSerialization {
                 break;
         }
 
-        EdgeImpl e = graph.create(source, s, p, o);
+        Entity e = graph.create(source, s, p, o);
         graph.addEdge(e);
     }
 

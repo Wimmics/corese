@@ -10,8 +10,8 @@ import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 
@@ -108,7 +108,7 @@ public class CreateImpl implements Creator {
 			o = getNode(object);
 		}
 		
-		EdgeImpl e = graph.create(source, s, p, o);
+		Entity e = graph.create(source, s, p, o);
 		graph.addEdge(e);
 	}
 	
@@ -125,7 +125,7 @@ public class CreateImpl implements Creator {
 			list.add(n);
 		}
 		
-		EdgeImpl e = graph.create(source, p, list);
+		Entity e = graph.create(source, p, list);
 		graph.addEdge(e);
 	}
 	

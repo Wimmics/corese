@@ -127,8 +127,17 @@ public class GraphEngine implements IEngine {
 	}
 	
 	public void runRuleEngine() {
+            runRuleEngine(false);
+        }
+        
+	public void runRuleEngine(boolean opt) {
 		rengine.setDebug(isDebug);
-		//rengine.process();
+		if (opt){
+                    rengine.setSpeedUp(true);
+                    rengine.setSkipPath(true);
+                    rengine.getQueryProcess().setListPath(true);
+                    rengine.setTrace(true);
+                }
 		graph.process(rengine);
 	}
 	

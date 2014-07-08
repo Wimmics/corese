@@ -5,6 +5,7 @@ import java.util.Date;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -142,7 +143,7 @@ DatatypeMap.setLiteralAsString(false);
 		Node predicate 	= g.addProperty("foaf:knows");
 		Node object 	= g.addResource ("s" + dv.intValue());
 		
-		EdgeImpl edge = g.create(source, subject, predicate, object);
+		Entity edge = g.create(source, subject, predicate, object);
 		//System.out.println(edge);
 		g.addEdge(edge);
 		

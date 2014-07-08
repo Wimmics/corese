@@ -3,7 +3,6 @@ package fr.inria.edelweiss.kgraph.logic;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Distinct;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.ArrayList;
 
@@ -23,6 +22,7 @@ static int count = 0;
     boolean isDistinct = true;
     private boolean isConnect = false;
     boolean isMessage = true;
+    private boolean isTrace = false;
 
     public Closure(Graph g, Distinct d) {
         graph = g;
@@ -43,13 +43,9 @@ static int count = 0;
         // named graph where entailments are stored
         src = graph.addGraph(Entailment.RULE);
         // predicate of transitive property
-        pred = graph.getPropertyNode(p);
-//            System.out.println("Cl: " + pred + " " + graph.size(pred));
-//            System.out.println("Cl: Res " + graph.nbResources());
-//           
-
+        pred = graph.getPropertyNode(p);       
         if (isConnect()) {
-            int i = graph.nbResources();            
+            int i = graph.getNodeIndex();            
             try {
                 connect = new boolean[i][];
                 for (Entity ent : graph.getEdges(pred)) {
@@ -121,12 +117,17 @@ static int count = 0;
 
         ArrayList<Entity> lnew = new ArrayList<Entity>(),
                 ltmp = new ArrayList<Entity>();
-
+        if (isTrace){
+            System.out.println("Cl: 0 "  + graph.size(pred));
+        }
         while (go) {
 
             Iterable<Entity> it1 = lnew;
             if (n == 0) {
                 it1 = graph.getEdges(pred);
+            }
+            else if (isTrace){
+                System.out.println("Cl: "  +n + " " + + lnew.size());               
             }
             n++;
             for (Entity e1 : it1) {
@@ -136,7 +137,7 @@ static int count = 0;
                 if (n1 == node) {
                     continue;
                 }
-                boolean ok = isFirst || e1.getEdge().getIndex() >= prevIndex;
+                boolean ok1 = isFirst || e1.getEdge().getIndex() >= prevIndex;
 
                 Iterable<Entity> it2 = graph.getEdges(pred, node, 0);
 
@@ -146,8 +147,8 @@ static int count = 0;
                         // join e2 on edge e1
                         if (e2 != null) {
 
-                            ok = isFirst || ok || e2.getEdge().getIndex() >= prevIndex;
-                            if (!ok) {
+                            boolean ok2 = ok1 || e2.getEdge().getIndex() >= prevIndex;
+                            if (!ok2) {
                                 // need at least one new edge
                                 continue;
                             }
@@ -158,8 +159,8 @@ static int count = 0;
                             }
 
                             if (!isConnected(n1, n2) && isDistinct(n1, n2)) {
-                                EdgeImpl ent = create(n1, n2);
-                                ent.setIndex(loopIndex);
+                                Entity ent = create(n1, n2);
+                                ent.getEdge().setIndex(loopIndex);
                                 ltmp.add(ent);
                                 connect(n1, n2);
                             }
@@ -170,6 +171,9 @@ static int count = 0;
             Node p = pred;
             if (p.getLabel().equals(Graph.TOPREL)){
                 p = null;
+            }
+            if (isTrace){
+                System.out.println("Cl: new " + ltmp.size());
             }
            graph.addOpt(p, ltmp);
            lnew = ltmp;
@@ -185,7 +189,7 @@ static int count = 0;
         return true;
     }
 
-    EdgeImpl create(Node n1, Node n2) {
+    Entity create(Node n1, Node n2) {
         return graph.create(src, n1, pred, n2);
     }
 
@@ -201,5 +205,19 @@ static int count = 0;
      */
     public void setConnect(boolean Connect) {
         this.isConnect = Connect;
+    }
+
+    /**
+     * @return the isTrace
+     */
+    public boolean isTrace() {
+        return isTrace;
+    }
+
+    /**
+     * @param isTrace the isTrace to set
+     */
+    public void setTrace(boolean isTrace) {
+        this.isTrace = isTrace;
     }
 }

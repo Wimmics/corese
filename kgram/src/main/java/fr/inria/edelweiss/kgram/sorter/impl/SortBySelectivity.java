@@ -7,7 +7,7 @@ import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity;
+import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -91,7 +91,7 @@ public class SortBySelectivity implements ISort {
 
         for (BPGNode node : lNodes) {
             double sel = node.getSelectivity();
-            if (sel != IEstimateSelectivity.NULL_SEL && sel < min) {
+            if (sel != IEstimate.NULL_SEL && sel < min) {
                 min = sel;
                 minNode = node;
             }

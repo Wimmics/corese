@@ -2,7 +2,7 @@ package fr.inria.edelweiss.kgram.sorter.impl;
 
 import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.BPGNode;
-import fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity;
+import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -32,7 +32,7 @@ import java.util.List;
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 19 mai 2014
  */
-public class StatsBasedEstimation implements IEstimateSelectivity {
+public class StatsBasedEstimation implements IEstimate {
 
     private IProducer meta;
     private BPGraph g;

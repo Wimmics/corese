@@ -1,7 +1,7 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
-import static fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity.MAX_SEL;
-import static fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity.MIN_SEL_APP;
+import static fr.inria.edelweiss.kgram.sorter.core.IEstimate.MAX_SEL;
+import static fr.inria.edelweiss.kgram.sorter.core.IEstimate.MIN_SEL_APP;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

@@ -7,7 +7,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.sorter.core.BPGEdge;
 import fr.inria.edelweiss.kgram.sorter.core.BPGNode;
 import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
-import fr.inria.edelweiss.kgram.sorter.core.IEstimateSelectivity;
+import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import fr.inria.edelweiss.kgram.sorter.core.TriplePattern;
 import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.JOINT_PATTERN;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 23 juin 2014
  */
-public class HeuristicsBasedEstimation implements IEstimateSelectivity {
+public class HeuristicsBasedEstimation implements IEstimate {
 
     public static boolean modeSimple = false;
     private BPGraph graph;

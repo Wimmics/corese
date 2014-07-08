@@ -8,7 +8,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  * @author Fuqi Song, WImmics Inria I3S
  * @date 19 mai 2014
  */
-public interface IEstimateSelectivity {
+public interface IEstimate {
 
     //value of selectivity [0, 1], when selected results cover all data set, then 
     //selectivity =1.0 (max), when no selected results, sel =1

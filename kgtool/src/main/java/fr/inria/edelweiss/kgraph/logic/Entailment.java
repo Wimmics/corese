@@ -12,7 +12,6 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.api.Engine;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import org.apache.log4j.Logger;
 
@@ -264,18 +263,18 @@ public class Entailment implements Engine {
     /**
      * Internal process of entailed edge
      */
-    void recordWithoutEntailment(Node gNode, Edge ee, EdgeImpl edge) {
+    void recordWithoutEntailment(Node gNode, Edge ee, Entity edge) {
         if (! graph.exist(edge)){
             targetList.add(edge);
         }       
     }
 
-    void recordWithEntailment(Node gNode, Edge ee, EdgeImpl edge) {
+    void recordWithEntailment(Node gNode, Edge ee, Entity edge) {
         recordWithoutEntailment(gNode, ee, edge);
-        define(gNode, edge);
+        define(gNode, edge.getEdge());
     }
 
-    EdgeImpl create(Node src, Node sub, Node pred, Node obj) {
+    Entity create(Node src, Node sub, Node pred, Node obj) {
         return graph.create(src, sub, pred, obj);
     }
 
@@ -353,7 +352,7 @@ public class Entailment implements Engine {
         Node gNode = graph.addGraph(ENTAIL);
         Node tNode = graph.addResource(S_PROPERTY);
         graph.add(pNode);
-        EdgeImpl ee = create(gNode, pNode, hasType, tNode);
+        Entity ee = create(gNode, pNode, hasType, tNode);
         recordWithoutEntailment(gNode, null, ee);
 
         if (isMember && pNode.getLabel().startsWith(S_BLI)) {
@@ -382,7 +381,7 @@ public class Entailment implements Engine {
         List<Node> list = table.get(pred);
         if (list != null) {
             for (Node type : list) {
-                EdgeImpl ee = create(gNode, edge.getNode(1), type, edge.getNode(0));
+                Entity ee = create(gNode, edge.getNode(1), type, edge.getNode(0));
                 recordWithoutEntailment(gNode, edge, ee);
             }
         }
@@ -397,10 +396,10 @@ public class Entailment implements Engine {
         List<Node> list = subproperty.get(pred);
         if (list != null) {
             for (Node sup : list) {
-                EdgeImpl ee = create(gNode, edge.getNode(0), sup, edge.getNode(1));
+                Entity ee = create(gNode, edge.getNode(0), sup, edge.getNode(1));
                 recordWithoutEntailment(gNode, edge, ee);
                 if (isMeta(sup)) {
-                    define(gNode, ee);
+                    define(gNode, ee.getEdge());
                 }
             }
         }
@@ -429,7 +428,7 @@ public class Entailment implements Engine {
 
         for (Node elem : list) {
             if (!elem.isBlank()) {
-                EdgeImpl ee;
+                Entity ee;
                 if (union) {
                     ee = create(gNode, elem, subClassOf, node);
                 } else {
@@ -487,7 +486,7 @@ public class Entailment implements Engine {
 
         if (list != null) {
             for (Node type : list) {
-                EdgeImpl ee = create(gNode, node, hasType, type);
+                Entity ee = create(gNode, node, hasType, type);
                 recordWithoutEntailment(gNode, edge, ee);
             }
         }
@@ -505,7 +504,7 @@ public class Entailment implements Engine {
 
         if (list != null) {
             for (Entity type : list) {
-                EdgeImpl ee =
+                Entity ee =
                         create(gNode, edge.getNode(0), hasType, type.getEdge().getNode(1));
                 recordWithoutEntailment(gNode, edge, ee);
             }

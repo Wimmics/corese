@@ -130,20 +130,29 @@ public class Workflow implements Engine {
 	 */	
 	boolean run(Engine e){
 		int size = 0;
-		boolean isSuccess = true;
-
-		while (isSuccess){
-			isSuccess = false;
+		boolean isSuccess = false;
+                int count = 2;
+                
+		while (count > 1){
+                    count = 0;
 			
 			if (isDebug) {
 				System.out.println("** W run: " + e.getClass().getName());
 			}
 			
 			if (e.isActivate()){
-				isSuccess = e.process() || isSuccess;
+				boolean b  = e.process();
+                                if (b){
+                                    isSuccess = true;
+                                    count++;
+                                }
 			}
 			
-			isSuccess = run() || isSuccess;
+			boolean b = run();
+                        if (b){
+                            isSuccess = true;
+                            count++;
+                        }
 		}
 		
 		return isSuccess;

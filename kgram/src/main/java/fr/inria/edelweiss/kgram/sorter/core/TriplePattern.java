@@ -38,14 +38,20 @@ public class TriplePattern {
         n.getExp().getVariables(variables);
     }
 
+    /**
+     * Get number of unbound values in a triple pattern 
+     * 
+     * @return 
+     */
     public int getUnboundNumber() {
         return this.pattern[S] + this.pattern[P] + this.pattern[O];
     }
 
-    public int[] getBasicPattern() {
-        return new int[]{this.pattern[S], this.pattern[P], this.pattern[O]};
-    }
-
+    /**
+     * Set the paramters other then basic pattern
+     * 
+     * @param graph 
+     */
     public void setParameters(BPGraph graph) {
         this.setFilterNumber(graph);
     }
@@ -136,6 +142,11 @@ public class TriplePattern {
         return match(p1, this);
     }
 
+    /**
+     * Sort a list of triple patterns according to predefined rules
+     * 
+     * @param patterns 
+     */
     public static void sort(List<TriplePattern> patterns) {
         Collections.sort(patterns, new Comparator<TriplePattern>() {
 

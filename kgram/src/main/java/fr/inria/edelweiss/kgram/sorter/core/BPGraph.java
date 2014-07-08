@@ -5,7 +5,6 @@ import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EMPTY;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
-import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,12 +25,12 @@ public class BPGraph {
     // list of edges
     private List<BPGEdge> edges = null;
     // data structure that used to represents the graph
-    // map(node, list of connected nodes)
-    //private Map<BPGNode, List<BPGNode>> graph = null;
+    // map(node, edges)
     private Map<BPGNode, List<BPGEdge>> graph = null;
 
     //for the moment, we just consider the AND and atomic relation 
     public BPGraph(Exp exp) {
+        //can be extended for the other exp types
         if (exp.type() != ExpType.AND) {
             return;
         }
@@ -63,6 +62,7 @@ public class BPGraph {
         // Filter 1: Connected edge 111, edge 112, ...
         // Filter 2...
         // ...
+        //values ...
         graph = new HashMap<BPGNode, List<BPGEdge>>();
 
         for (BPGNode bpn : nodes) {
@@ -88,17 +88,7 @@ public class BPGraph {
         }
     }
 
-    /**
-     * Return the list of values for variable that binds to constants/list,
-     * etc..
-     *
-     * @param n
-     * @return null if not found, otherwise the list of values
-     */
-    //public List<String> isBound(Node n) {
-    //   return boundValues.get(n.getLabel());
-    //}
-    
+    //check weather the edge is existing
     private BPGEdge exist(BPGNode n1, BPGNode n2) {
         for (BPGEdge bpe : edges) {
             if ((bpe.get(0).equals(n1) && bpe.get(1).equals(n2))

@@ -10,7 +10,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.sdb.SDBException;
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
@@ -18,10 +17,10 @@ import com.hp.hpl.jena.sdb.sql.JDBC;
 import com.hp.hpl.jena.sdb.sql.SDBConnection;
 import com.hp.hpl.jena.sdb.store.DatabaseType;
 import com.hp.hpl.jena.sdb.store.LayoutType;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 //import fr.inria.acacia.corese.api.IEngine;
 //import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import org.apache.log4j.Logger;
 
@@ -69,7 +68,7 @@ public class JenaGraphFactory {
             object = getNode(st.getObject());
 
             if (! ((subject == null) || (predicate == null) || (object == null) || (source == null))) {
-                EdgeImpl e = g.create(source, subject, predicate, object);
+                Entity e = g.create(source, subject, predicate, object);
                 g.add(e);
             }
         }

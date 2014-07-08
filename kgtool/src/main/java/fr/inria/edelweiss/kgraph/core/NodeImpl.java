@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.core;
+    package fr.inria.edelweiss.kgraph.core;
 
 
 import fr.inria.acacia.corese.api.IDatatype;
@@ -28,6 +28,7 @@ public class NodeImpl implements Node, Entity {
 
     public static Node create(IDatatype val) {
         return new NodeImpl(val);
+       //return val;
     }
 
     NodeImpl(Graph g, IDatatype val) {

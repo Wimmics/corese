@@ -28,7 +28,8 @@ implements Index {
 	static final int IGRAPH = Graph.IGRAPH;
 	private static Logger logger = Logger.getLogger(EdgeIndex.class);	
         static boolean byKey = Graph.valueOut;
-
+        static boolean byIndex = !true;
+        
 	int index = 0, other = 1;
 	int count = 0;
 	boolean isDebug = !true,
@@ -60,6 +61,10 @@ implements Index {
 			case Graph.IGRAPH: other = 0; break;
 		}
 	}
+        
+        public static void setCompareIndex(boolean b){
+            byIndex = b;
+        }
 	
 	
 	/**
@@ -74,16 +79,36 @@ implements Index {
 	
 	
 	static int nodeCompare(Node n1, Node n2){
+            if (byIndex){
+                return compare(n1.getIndex(), n2.getIndex());
+            }
             if (byKey){
 		return n1.getKey().compareTo(n2.getKey());
             }
+
             return n1.compare(n2);
 	}
+        
+        static int compare(int n1, int n2){
+            if (n1 < n2){
+                return -1;
+            }
+            else if (n1 == n2){
+                return 0;               
+            }
+            else {
+                return +1;
+            }
+        }
 	
 	static boolean same(Node n1, Node n2){
+            if (byIndex){
+                return n1.getIndex() == n2.getIndex();
+            }
             if (byKey){
 		return n1.getKey().equals(n2.getKey());
             }
+
             return n1.same(n2);
 	}
         
@@ -397,9 +422,8 @@ implements Index {
         }
         
 	Entity tag(Entity ent){
-		EdgeImpl ee = (EdgeImpl) ent;
-		ee.setTag(graph.tag());
-		return ent;
+            graph.tag(ent);
+            return ent;
 	}
 	
         // TBD
@@ -834,17 +858,7 @@ implements Index {
 			}
 		}		
 	}
-        
-      int compare(int i1, int i2) {
-        if (i1 < i2) {
-            return -1;
-        } else if (i1 == i2) {
-            return 0;
-        } else {
-            return 1;
-        }
-       }
-                    	
+                          	
 	int compare(Entity ent, Node n1, Node n2){
 		Node tNode = getNode(ent, index);
 		int res = nodeCompare(tNode, n1);
@@ -1116,17 +1130,7 @@ implements Index {
 	 * TODO:  setUpdate(true)
 	 */
 	private Entity copy(Node gNode, Entity ent){
-		EdgeImpl e = (EdgeImpl) ent;
-		EdgeImpl ee = e.copy();
-		ee.setGraph(gNode);
-                
-                if (graph.hasTag() && e.nbNode() == 3){
-                    // edge has a tag
-                    // copy must have a new tag
-                    tag(ee);
-                }
-		Entity res = graph.add(ee);
-		return res;
+		return graph.copy(gNode, ent);
 	}
 	
 	private void clear(Entity ent){

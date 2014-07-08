@@ -276,6 +276,10 @@ public class Graph //implements IGraph
             setValueTable(true);
         }
     }
+    
+    public static void setCompareIndex(boolean b){
+        EdgeIndex.setCompareIndex(b);
+    }
 
     public boolean isLog() {
         return log != null;
@@ -868,23 +872,23 @@ public class Graph //implements IGraph
         setIndex(false);
     }
 
-    public EdgeImpl create(Node source, Node subject, Node predicate, Node value) {
+    public Entity create(Node source, Node subject, Node predicate, Node value) {
         return fac.create(source, subject, predicate, value);
     }
 
-    public EdgeImpl createDelete(Node source, Node subject, Node predicate, Node value) {
+    public Entity createDelete(Node source, Node subject, Node predicate, Node value) {
         return fac.createDelete(source, subject, predicate, value);
     }
 
-    public EdgeImpl create(Node source, Node predicate, List<Node> list) {
+    public Entity create(Node source, Node predicate, List<Node> list) {
         return fac.create(source, predicate, list);
     }
 
-    public EdgeImpl createDelete(Node source, Node predicate, List<Node> list) {
+    public Entity createDelete(Node source, Node predicate, List<Node> list) {
         return fac.createDelete(source, predicate, list);
     }
 
-    public EdgeImpl create(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
+    public Entity create(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
         return null;
     }
 
@@ -892,6 +896,14 @@ public class Graph //implements IGraph
         return size;
     }
 
+    public int nbNodes() {
+        return nbIndividuals() + nbBlanks() + nbLiterals();
+    }
+
+    public int getNodeIndex(){
+        return nodeIndex;
+    }
+    
     public int nbResources() {
         return nbIndividuals() + nbBlanks();
     }
@@ -1627,11 +1639,6 @@ public class Graph //implements IGraph
 
     public void deleteGraph(String name) {
         graph.remove(getID(name));
-        //graph.remove(name);
-//		Node node = getGraphNode(name);
-//		if (node != null){
-//			graph.remove(node);
-//		}
     }
 
     void indexNode(IDatatype dt, Node node) {
@@ -1639,9 +1646,9 @@ public class Graph //implements IGraph
     }
 
     void index(IDatatype dt, Node node) {
-//		if (node.getIndex() == -1){
-//			node.setIndex(nodeIndex++);
-//		}
+        if (node.getIndex() == -1) {
+            node.setIndex(nodeIndex++);
+        }
     }
 
     /**
@@ -1916,14 +1923,8 @@ public class Graph //implements IGraph
         return addEdge(ent);
     }
 
-    public List<Entity> delete(Entity ent) {
-        if (!(ent instanceof EdgeImpl)) {
-            return null;
-        }
-        return delete((EdgeImpl) ent);
-    }
 
-    public List<Entity> delete(EdgeImpl edge) {
+    public List<Entity> delete(Entity edge) {
         List<Entity> res = null;
 
         if (edge.getGraph() == null) {
@@ -1942,14 +1943,14 @@ public class Graph //implements IGraph
         return res;
     }
 
-    public List<Entity> delete(EdgeImpl edge, List<Constant> from) {
+    public List<Entity> delete(Entity edge, List<Constant> from) {
         List<Entity> res = null;
 
         for (Constant str : from) {
             Node node = getGraphNode(str.getLabel());
 
             if (node != null) {
-                edge.setGraph(node);
+                fac.setGraph(edge, node);
                 Entity ent = basicDelete(edge);
                 if (ent != null) {
                     if (res == null) {
@@ -1990,11 +1991,11 @@ public class Graph //implements IGraph
     /**
      * delete occurrences of this edge in all graphs
      */
-    List<Entity> deleteAll(EdgeImpl edge) {
+    List<Entity> deleteAll(Entity edge) {
         ArrayList<Entity> res = null;
 
         for (Node graph : getGraphNodes()) {
-            edge.setGraph(graph);
+            fac.setGraph(edge, graph);
             Entity ent = basicDelete(edge);
             if (ent != null) {
                 if (res == null) {
@@ -2188,6 +2189,22 @@ public class Graph //implements IGraph
 
         Edge e = addEdge(g, p, list);
         return e;
+    }
+    
+    /**
+	 * TODO:  setUpdate(true)
+	 */
+     Entity copy(Node gNode, Entity ent) {
+        Entity e = fac.copy(ent);
+        fac.setGraph(e, gNode);
+
+        if (hasTag() && e.nbNode() == 3) {
+            // edge has a tag
+            // copy must have a new tag
+            tag(e);
+        }
+        Entity res = add(e);
+        return res;
     }
 
     /**
@@ -2411,6 +2428,10 @@ public class Graph //implements IGraph
         IDatatype dt = DatatypeMap.newInstance(tagString());
         Node tag = getNode(dt, true, true);
         return tag;
+    }
+    
+    void tag(Entity ent){
+        fac.tag(ent);
     }
 
     String tagString() {

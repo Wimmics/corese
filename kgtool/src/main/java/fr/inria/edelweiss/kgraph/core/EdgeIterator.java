@@ -20,7 +20,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	Iterable<Entity> iter;
 	Iterator<Entity> it;
 	Edge last;
-        EdgeImpl res;
+        //EdgeImpl res;
 	Node graph;
         Graph gg;
 	List<Node> from;
@@ -164,13 +164,13 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	}
         
         // simulate creation of only one edge for this iterator
-        Edge getResult(Entity ent) {
-            res.setGraph(ent.getGraph());
-            res.setEdgeNode(ent.getEdge().getEdgeNode());
-            res.setNode(0, ent.getNode(0));
-            res.setNode(1, ent.getNode(1));
-            return res;
-     }
+//        Edge getResult(Entity ent) {
+//            res.setGraph(ent.getGraph());
+//            res.setEdgeNode(ent.getEdge().getEdgeNode());
+//            res.setNode(0, ent.getNode(0));
+//            res.setNode(1, ent.getNode(1));
+//            return res;
+//        }
 	
 	/**
 	 * 

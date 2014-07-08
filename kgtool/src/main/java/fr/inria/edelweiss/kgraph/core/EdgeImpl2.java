@@ -4,7 +4,6 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,80 +12,71 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class EdgeImpl implements Edge, Entity {
+public class EdgeImpl2 implements Edge, Entity {
 
     public static boolean displayGraph = true;
     int index = -1;
-    protected Node graph, predicate;
-    Node[] nodes;
+    protected Node graph, predicate, subject, object;
 
-    public EdgeImpl() {
+    public EdgeImpl2() {
     }
 
 
-    EdgeImpl(Node g, Node p){
+    EdgeImpl2(Node g, Node p){
         graph = g;
         predicate = p;
     }
     
-    EdgeImpl(Node g, Node pred, Node subject, Node object) {
+    EdgeImpl2(Node g, Node pred, Node subject, Node object) {
         this(g, pred);
-        nodes = new Node[2];
-        nodes[0] = subject;
-        nodes[1] = object;
+        this.subject = subject;
+        this.object = object;
     }
     
-    EdgeImpl(Node g, Node pred, Node subject, Node object, Node arg1) {
-        this(g, pred);
-        nodes = new Node[3];
-        nodes[0] = subject;
-        nodes[1] = object;
-        nodes[2] = arg1;
+    EdgeImpl2(Node g, Node pred, Node subject, Node object, Node arg1) {
+        this(g, pred, subject, object);
    }
     
-     EdgeImpl(Node g, Node p, Node[] args) {
+     EdgeImpl2(Node g, Node p, Node[] args) {
         this(g, p);
-        nodes = args;
     }
 
-    public static EdgeImpl create(Node g, Node subject, Node pred, Node object) {
-        return new EdgeImpl(g, pred, subject, object);
+    public static EdgeImpl2 create(Node g, Node subject, Node pred, Node object) {
+        return new EdgeImpl2(g, pred, subject, object);
     }
 
-    public static EdgeImpl create(Node g, Node pred, List<Node> list) {
+    public static EdgeImpl2 create(Node g, Node pred, List<Node> list) {
         Node[] nodes = new Node[list.size()];
         list.toArray(nodes);
-        EdgeImpl e = new EdgeImpl(g, pred, nodes);
+        EdgeImpl2 e = new EdgeImpl2(g, pred, nodes);
         return e;
     }
     
-    public static EdgeImpl create(Node g, Node pred, Node[] nodes) {
-        return new EdgeImpl(g, pred, nodes);
+    public static EdgeImpl2 create(Node g, Node pred, Node[] nodes) {
+        return new EdgeImpl2(g, pred, nodes);
     }
 
     public void add(Node node){
-        nodes = Arrays.copyOf(nodes, nodes.length+1);
-        nodes[nodes.length-1] = node;
+        
     }
     
-    public EdgeImpl copy() {
-        return new EdgeImpl(getGraph(), getEdgeNode(), Arrays.copyOf(getNodes(), nbNode()));
+    public EdgeImpl2 copy() {
+        return new EdgeImpl2(getGraph(), getEdgeNode(), subject, object);
     }
     
     public void setNodes(Node[] args){
-        nodes = args;
+        
     }
     
     public Node[] getNodes(){
-        return nodes;
+        return null;    
     }
 
     public void setNode(int i, Node node) {
-        nodes[i] = node;       
+             
     }
     
-     public void setTag(Node node) {
-          add(node);  
+     public void setTag(Node node) {           
     }
 
     public String toString() {
@@ -116,10 +106,9 @@ public class EdgeImpl implements Edge, Entity {
 		sb.append("tuple");
 		sb.append("(");
 		sb.append(getEdgeNode());
-		for (Node n : nodes){
-			sb.append(" ");
-			sb.append(n);
-		}
+		sb.append(subject);
+		sb.append(" ");
+		sb.append(object);		
 		sb.append(")");
 		return sb.toString();
 	}
@@ -128,12 +117,7 @@ public class EdgeImpl implements Edge, Entity {
     @Override
     public boolean contains(Node node) {
         // TODO Auto-generated method stub
-        for (Node n : nodes) {
-            if (n.same(node)) {
-                return true;
-            }
-        }
-        return false;
+        return subject.same(node) || object.same(node);
     }
 
     @Override
@@ -157,12 +141,16 @@ public class EdgeImpl implements Edge, Entity {
 
     @Override
     public Node getNode(int n) {
-        return nodes[n];
+       switch(n){
+           case 0: return subject;
+           case 1: return object;
+       }
+       return null;
     }
 
     @Override
     public int nbNode() {
-        return nodes.length;
+        return 2;
     }
 
     @Override
@@ -197,10 +185,7 @@ public class EdgeImpl implements Edge, Entity {
     }
 
     @Override
-    public Object getProvenance() {       
-        if (nodes.length > 2){
-            return nodes[nodes.length-1].getObject();
-        }
+    public Object getProvenance() {              
         return null;    
     }
     

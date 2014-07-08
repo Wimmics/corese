@@ -19,7 +19,6 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.util.Duplicate;
@@ -236,21 +235,21 @@ public class Construct
 
         for (Exp ee : exp.getExpList()) {
             if (ee.isEdge()) {
-                EdgeImpl edge = construct(gNode, ee.getEdge(), env);
-                if (edge != null) {
+                Entity ent = construct(gNode, ee.getEdge(), env);
+                if (ent != null) {
                     // RuleEngine loop index
-                    edge.setIndex(loopIndex);
+                    ent.getEdge().setIndex(loopIndex);
                     if (isDelete) {
                         if (isDebug) {
-                            logger.debug("** Delete: " + edge);
+                            logger.debug("** Delete: " + ent);
                         }
                         List<Entity> list = null;
                         if (gNode == null && ds != null && ds.hasFrom()) {
                             // delete in default graph
-                            list = graph.delete(edge, ds.getFrom());
+                            list = graph.delete(ent, ds.getFrom());
                         } else {
                             // delete in all named graph
-                            list = graph.delete(edge);
+                            list = graph.delete(ent);
                         }
                         if (list != null) {
                             map.setNbDelete(map.nbDelete() + list.size());
@@ -262,11 +261,11 @@ public class Construct
 
                     } else {
                         if (isDebug) {
-                            logger.debug("** Construct: " + edge);
+                            logger.debug("** Construct: " + ent);
                         }
-                        Entity ent = edge;
+                        //Entity ent = edge;
                         if (!isBuffer) {
-                            ent = graph.addEdge(edge);
+                            ent = graph.addEdge(ent);
                         }
                         if (ent != null) {
                             map.setNbInsert(map.nbInsert() + 1);
@@ -307,7 +306,7 @@ public class Construct
     /**
      * Construct target edge from query edge and map
      */
-    EdgeImpl construct(Node gNode, Edge edge, Environment env) {
+    Entity construct(Node gNode, Edge edge, Environment env) {
 
         Node pred = edge.getEdgeVariable();
         if (pred == null) {
@@ -350,7 +349,7 @@ public class Construct
             graph.addGraphNode(source);
         }
 
-        EdgeImpl ee;
+        Entity ee;
 
         if (edge.nbNode() > 2) {
             // tuple()
@@ -374,7 +373,7 @@ public class Construct
         return ee;
     }
 
-    EdgeImpl create(Node source, Node property, List<Node> list) {
+    Entity create(Node source, Node property, List<Node> list) {
         if (isDelete) {
             return graph.createDelete(source, property, list);
         } else {
@@ -382,7 +381,7 @@ public class Construct
         }
     }
 
-    EdgeImpl create(Node source, Node subject, Node property, Node object) {
+    Entity create(Node source, Node subject, Node property, Node object) {
         if (isDelete) {
             return graph.createDelete(source, subject, property, object);
         } else {

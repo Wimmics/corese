@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 
@@ -24,12 +25,12 @@ public class Example {
 	
 	static final String RULE = "ftp://ftp-sop.inria.fr/wimmics/soft/rule/rdfs.rul";
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws LoadException{
 		new Example().process();
 	}
 	
 	
-	void process(){
+	void process() throws LoadException{
 		// create a graph with RDFS entailment
 		// without entailment is:
 		// Graph g = Graph.create();
@@ -38,8 +39,8 @@ public class Example {
 		// create a loader
 		Load ld = Load.create(g);
 		
-		ld.load(RDF.RDFS);
-		ld.load(RDF.RDF);
+		ld.load(RDF.RDFS, Load.TURTLE_FORMAT);
+		ld.load(RDF.RDF, Load.TURTLE_FORMAT);
 
 		// create a query solver
 		QueryProcess exec = QueryProcess.create(g);

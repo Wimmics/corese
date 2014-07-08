@@ -326,6 +326,9 @@ public class RuleEngine implements Engine {
         int start = graph.size();
         try {
             infer();
+            if (trace){
+                traceSize();
+            }
             return graph.size() - start;
         }
         catch (OutOfMemoryError e){
@@ -337,7 +340,22 @@ public class RuleEngine implements Engine {
         }
     }
     
-    
+    void traceSize() {
+        // Get current size of heap in bytes
+        long heapSize = Runtime.getRuntime().totalMemory();
+        System.out.println("size: " + heapSize / 1000000);
+
+        // Get maximum size of heap in bytes. The heap cannot grow beyond this size.
+        // Any attempt will result in an OutOfMemoryException.
+        long heapMaxSize = Runtime.getRuntime().maxMemory();
+        System.out.println("max size: " + heapMaxSize / 1000000);
+
+        // Get amount of free memory within the heap in bytes. This size will increase
+        // after garbage collection and decrease as new objects are created.
+        long heapFreeSize = Runtime.getRuntime().freeMemory();
+        System.out.println("free size: " + heapFreeSize / 1000000);
+    }
+     
     void infer(){
 
         if (isOptimize || isOptimization) {
@@ -522,7 +540,7 @@ public class RuleEngine implements Engine {
      */
     int process(Rule rule, List<Entity> current, List<Entity> list, int loop, int loopIndex, int prevIndex, int nbr) {
         if (trace){
-            System.out.println(nbr + " " + rule.getAST());
+           System.out.println(loop + " : " + nbr + "\n" + rule.getAST());
         }
         Date d1 = new Date();
         boolean isConstruct = isOptimize && isConstructResult;
@@ -602,10 +620,11 @@ public class RuleEngine implements Engine {
             double tt = (d2.getTime() - d1.getTime()) / ( 1000.0) ;
             if (tt > 1){
                 System.out.println("Time : " + tt);
-//                System.out.println(rule.getAST());
+                //System.out.println(rule.getAST());
                 rule.setTime(tt + rule.getTime());
             }
             System.out.println("New: " + (graph.size() - start));
+            System.out.println("Size: " + graph.size());
 
         }
 
@@ -614,7 +633,9 @@ public class RuleEngine implements Engine {
     
     Closure getClosure(Rule r){
        if (r.getClosure() == null){
-          r.setClosure(new Closure(graph, rw.getDistinct()));
+          Closure c = new Closure(graph, rw.getDistinct());
+          c.setTrace(trace);
+          r.setClosure(c);
        }
        return r.getClosure();
     }
@@ -654,7 +675,7 @@ public class RuleEngine implements Engine {
             init(rule);
         }
         
-        graph.indexResources();
+        //graph.indexResources();
     }
 
     /**

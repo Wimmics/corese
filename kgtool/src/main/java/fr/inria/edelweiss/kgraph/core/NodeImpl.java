@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 public class NodeImpl implements Node, Entity {
 
     String key = INITKEY;
+    public static boolean byIDatatype = false;
     Graph graph;
     // these fields can be removed:
     // index is used when an RDF graph is used as a query graph
@@ -27,8 +28,10 @@ public class NodeImpl implements Node, Entity {
     }
 
     public static Node create(IDatatype val) {
+        if (byIDatatype){
+            return val;
+        }
         return new NodeImpl(val);
-       //return val;
     }
 
     NodeImpl(Graph g, IDatatype val) {
@@ -78,7 +81,7 @@ public class NodeImpl implements Node, Entity {
     @Override
     public boolean isConstant() {
         // TODO Auto-generated method stub
-        return !getValue().isBlank();
+        return getValue().isConstant();
     }
 
     @Override
@@ -177,4 +180,8 @@ public class NodeImpl implements Node, Entity {
     public void setProvenance(Object obj){
         
     }
+
+    /*****/
+
+    
 }

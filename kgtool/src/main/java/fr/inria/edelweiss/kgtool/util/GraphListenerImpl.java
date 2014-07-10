@@ -130,7 +130,7 @@ public class GraphListenerImpl implements GraphListener {
 		}
 		IDatatype dt = (IDatatype) n.getValue();
 		try {
-			return at.getDatatypeValue().equals(dt);
+			return at.getDatatypeValue().equalsWE(dt);
 		} catch (CoreseDatatypeException e) {
 			return false;
 		}

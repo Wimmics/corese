@@ -1083,16 +1083,15 @@ implements Index {
 	
 	private void update(Node g1, Node g2, List<Entity> list, int n, int mode){
 		boolean incr = false;
-		if (g2!=null && g2.compare(g1) < 0){
+                boolean isBefore = false;
+		if (g2!=null && nodeCompare(g1, g2) < 0){
                     incr = true;
+                    isBefore = true;
                 }
 		for (int i = n; i<list.size(); ){
-
 			Entity ent = list.get(i), ee;
-			if (getNode(ent, index).same(g1)){
-				if (isDebug){ 
-					logger.debug("** EI update: " + index + " " + ent);
-                                }
+			if (same(getNode(ent, index), g1)){
+				
 				switch (mode){
 
 				case Graph.CLEAR:
@@ -1104,7 +1103,11 @@ implements Index {
 					clear(ent);
 					list.remove(i);
 					ee = copy(g2, ent);
-					if (incr && ee !=null){
+//					if (incr && ee !=null){
+//                                            i++;
+//                                        }
+                                        if (isBefore){}
+                                        else if (ee != null){
                                             i++;
                                         }
 					break;
@@ -1114,9 +1117,13 @@ implements Index {
 					// get next ent
 					i++;
 					// g2 is before g1 hence ent was added before hence incr i again
-					if (incr && ee!=null){
+                                        if (isBefore){}
+                                        else if (ee != null){
                                             i++;
                                         }
+//					if (incr && ee!=null){
+//                                            i++;
+//                                        }
 					break;
 				}
 			}

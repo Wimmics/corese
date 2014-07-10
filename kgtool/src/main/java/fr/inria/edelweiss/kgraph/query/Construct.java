@@ -49,6 +49,7 @@ public class Construct
             isRule = false,
             isInsert = false,
             isBuffer = false;
+    private boolean test = false;
     Object rule;
     Hashtable<Node, Node> table;
     Duplicate duplicate;
@@ -505,5 +506,19 @@ public class Construct
 
     public void setLoopIndex(int n) {
         loopIndex = n;
+    }
+
+    /**
+     * @return the test
+     */
+    public boolean isTest() {
+        return test;
+    }
+
+    /**
+     * @param test the test to set
+     */
+    public void setTest(boolean test) {
+        this.test = test;
     }
 }

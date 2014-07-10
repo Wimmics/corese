@@ -40,10 +40,10 @@ public class CoreseString extends CoreseStringLiteral { //CoreseStringableImpl{
   }
 
  
-  public boolean equals(IDatatype iod) throws CoreseDatatypeException {
+  public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case STRING:  return getLabel().equals(iod.getLabel());
-	  case LITERAL: return iod.equals(this);
+	  case LITERAL: return iod.equalsWE(this);
 	  case URI:
 	  case BLANK: return false;
 	  }

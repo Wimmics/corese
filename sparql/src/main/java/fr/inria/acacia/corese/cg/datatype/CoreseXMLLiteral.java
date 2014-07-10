@@ -56,7 +56,7 @@ public class CoreseXMLLiteral extends CoreseStringLiteral {
     }
     
     
-    public boolean equals(IDatatype iod) throws CoreseDatatypeException {
+    public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
     	switch (iod.getCode()){
     	case XMLLITERAL: return getLabel().equals(iod.getLabel());
     	case URI:

@@ -133,7 +133,7 @@ public interface IDatatype
      * equals, else false note: equals correponds to the SPARQL equals, with
      * type checking
      */
-    boolean equals(IDatatype iod) throws CoreseDatatypeException;
+    boolean equalsWE(IDatatype iod) throws CoreseDatatypeException;
 
     /**
      * test the equality (by value) between two instances of datatype class

@@ -127,7 +127,7 @@ public  class CoreseDouble extends CoreseNumber{
 		}	
 	}
 	
-	public boolean equals(IDatatype iod) throws CoreseDatatypeException{
+	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		case LONG:   
 		case INTEGER:   

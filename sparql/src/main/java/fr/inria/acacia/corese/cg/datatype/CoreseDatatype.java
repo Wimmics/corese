@@ -34,7 +34,7 @@ public class CoreseDatatype
 	static final CoreseString empty=new CoreseString("");
 	static final CoreseDatatypeException failure  = new CoreseDatatypeException("Datatype Exception, statically created");
 	static final Hashtable<String, CoreseString> lang2dataLang = new Hashtable<String, CoreseString>(); // 'en' -> CoreseString('en')
-    static final Hashtable<String, CoreseURI>    hdt = new Hashtable<String, CoreseURI>(); // datatype name -> CoreseURI datatype
+        static final Hashtable<String, CoreseURI>    hdt = new Hashtable<String, CoreseURI>(); // datatype name -> CoreseURI datatype
 	static final DatatypeMap dm = DatatypeMap.create();
 	static final NSManager nsm = NSManager.create();
 
@@ -42,7 +42,7 @@ public class CoreseDatatype
 	static boolean SPARQLCompliant = false; 
 	
 	static int cindex = 0;
-	//private int index = -1;
+	private int index = -1;
 	
 		
 	/**
@@ -835,7 +835,7 @@ public class CoreseDatatype
 	 * Every datatype has its own type safe equals
 	 * TODO: should rename it (but would lose compatibility)
 	 */
-	public boolean equals(IDatatype iod) throws CoreseDatatypeException {
+	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
 		throw failure();
 	}
 	
@@ -849,7 +849,7 @@ public class CoreseDatatype
 	
 	public boolean sameTerm(IDatatype iod) {
 		try {
-			return equals(iod);
+			return equalsWE(iod);
 		}
 		catch (CoreseDatatypeException e){
 			return false;
@@ -935,38 +935,22 @@ public class CoreseDatatype
 //			index = cindex++;
 //		}
 		//return index;
-            return -1;
+            return index;
 	}
 
 
 	public void setIndex(int n) {
-		//index = n;
+		index = n;
 	}
 
 
 	public boolean same(Node n) {
-		if (n instanceof IDatatype){
-			IDatatype dt = (IDatatype) n;
-			return sameTerm(dt);
-		}
-		else if (n.getValue() instanceof IDatatype){
-			IDatatype dt = (IDatatype) n.getValue();
-			return sameTerm(dt);
-		}
-		return this == n;
+            return sameTerm((IDatatype) n.getValue());
 	}
 
 
 	public int compare(Node n) {
-		if (n instanceof IDatatype){
-			IDatatype dt = (IDatatype) n;
-			return compareTo(dt);
-		}
-		else if (n.getValue() instanceof IDatatype){
-			IDatatype dt = (IDatatype) n.getValue();
-			return compareTo(dt);
-		}
-		return -1;
+            return compareTo((IDatatype) n.getValue());
 	}
 
 

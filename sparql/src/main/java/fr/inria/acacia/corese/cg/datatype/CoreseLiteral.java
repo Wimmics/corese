@@ -83,7 +83,7 @@ public class CoreseLiteral extends CoreseStringLiteral {
 	 * literal x string throw failure (?)
 	 *
 	 */
-	public boolean equals(IDatatype iod) throws CoreseDatatypeException{
+	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		
 		case STRING:  

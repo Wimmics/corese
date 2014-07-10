@@ -72,7 +72,7 @@ public class CoreseBlankNode extends CoreseResource {
 		throw failure();
 	}
 	
-	public boolean equals(IDatatype iod) throws CoreseDatatypeException{
+	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		case BLANK: return getLabel().equals(iod.getLabel()) ;
 		}

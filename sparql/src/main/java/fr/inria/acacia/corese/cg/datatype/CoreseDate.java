@@ -385,7 +385,7 @@ public class CoreseDate extends CoreseDatatype {
 		return this.getNormalizedLabel();
 	}
 	
-	public boolean equals(IDatatype iod) throws CoreseDatatypeException{
+	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		case DATE:
 			check(iod);

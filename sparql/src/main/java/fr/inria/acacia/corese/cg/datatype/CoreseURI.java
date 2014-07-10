@@ -71,7 +71,7 @@ public class CoreseURI extends CoreseResource {
 	  throw failure();
   }
 
-  public boolean equals(IDatatype iod) throws CoreseDatatypeException{
+  public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 	  switch (iod.getCode()){
 	  case URI: return getLabel().equals(iod.getLabel());
 	  }

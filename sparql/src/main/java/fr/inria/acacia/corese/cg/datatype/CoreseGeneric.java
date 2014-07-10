@@ -28,7 +28,7 @@ public class CoreseGeneric extends CoreseString {
 		return datatype;
 	}
 	
-	public boolean equals(IDatatype dt) throws CoreseDatatypeException {
+	public boolean equalsWE(IDatatype dt) throws CoreseDatatypeException {
 		switch (dt.getCode()){
 		case STRING: 
 			if (! getDatatypeURI().equals(dt.getDatatypeURI())) throw failure();

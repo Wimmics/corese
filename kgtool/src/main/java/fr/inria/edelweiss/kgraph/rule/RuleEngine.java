@@ -68,6 +68,7 @@ public class RuleEngine implements Engine {
     private boolean isOptimize = false;
     boolean debug = false,
             trace = false;
+    private boolean test = false;
     // RETE like, is not efficient
     private boolean isOptimization = false;
     int loop = 0;
@@ -500,7 +501,7 @@ public class RuleEngine implements Engine {
             } else {
                 go = false;
             }
-
+            
         }
         
         
@@ -551,6 +552,7 @@ public class RuleEngine implements Engine {
         cons.setGraph(graph);
         cons.setLoopIndex(loopIndex);
         cons.setDebug(debug);
+        cons.setTest(test);
 
         List<Entity> le = null;
 
@@ -826,6 +828,20 @@ public class RuleEngine implements Engine {
      */
     public void setOptTransitive(boolean isOptTransitive) {
         this.isOptTransitive = isOptTransitive;
+    }
+
+    /**
+     * @return the test
+     */
+    public boolean isTest() {
+        return test;
+    }
+
+    /**
+     * @param test the test to set
+     */
+    public void setTest(boolean test) {
+        this.test = test;
     }
 
     class PTable extends HashMap<String, List<Rule>> {

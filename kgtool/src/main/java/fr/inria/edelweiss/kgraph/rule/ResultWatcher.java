@@ -46,6 +46,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
     boolean isWatch = true, start = true;
     private boolean isDistinct = true;
     private boolean isSkipPath = false;
+    private boolean test = false;
     
     Construct cons;
     Mappings map;
@@ -109,7 +110,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
      * This function is called by kgram just before returning a solution
      */
     @Override
-    public boolean process(Environment env) {
+    public boolean process(Environment env) {       
         if (! isWatch){
             return store(env);
         }
@@ -309,6 +310,20 @@ public class ResultWatcher implements ResultListener, GraphListener {
      */
     public void setDistinct(boolean isDistinct) {
         this.isDistinct = isDistinct;
+    }
+
+    /**
+     * @return the test
+     */
+    public boolean isTest() {
+        return test;
+    }
+
+    /**
+     * @param test the test to set
+     */
+    public void setTest(boolean test) {
+        this.test = test;
     }
     
    

@@ -833,9 +833,13 @@ public class CoreseDatatype
 	
 	/**
 	 * Every datatype has its own type safe equals
-	 * TODO: should rename it (but would lose compatibility)
 	 */
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
+		throw failure();
+	}
+        
+        /** @deprecated **/
+        public boolean equals(IDatatype iod) throws CoreseDatatypeException {
 		throw failure();
 	}
 	

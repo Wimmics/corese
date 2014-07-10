@@ -134,6 +134,9 @@ public interface IDatatype
      * type checking
      */
     boolean equalsWE(IDatatype iod) throws CoreseDatatypeException;
+    
+    /** @deprecated **/
+    boolean equals(IDatatype iod) throws CoreseDatatypeException;
 
     /**
      * test the equality (by value) between two instances of datatype class

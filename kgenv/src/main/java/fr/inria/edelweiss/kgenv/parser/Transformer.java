@@ -57,6 +57,7 @@ public class Transformer implements ExpType {
 	String namespaces, base;
         private Dataset dataset;
 	BasicGraphPattern pragma;
+        private int planner = Query.STD_PLAN;
 	
 	Transformer(){
 		table = new Hashtable<Edge, Query>();
@@ -282,6 +283,7 @@ public class Transformer implements ExpType {
 		q.setDebug(ast.isDebug());
 		q.setCheck(ast.isCheck());
 		q.setRelax(ast.isMore());
+                q.setPlanProfile(getPlanProfile());
 
 		for (Edge edge : table.keySet()){
 			q.set(edge, table.get(edge));
@@ -1568,6 +1570,20 @@ public class Transformer implements ExpType {
 
     private boolean isJoinable(fr.inria.acacia.corese.triple.parser.Exp ee) {
         return ee.isBGP() || ee.isUnion() ;
+    }
+
+    /**
+     * @return the planner
+     */
+    public int getPlanProfile() {
+        return planner;
+    }
+
+    /**
+     * @param planner the planner to set
+     */
+    public void setPlanProfile(int planner) {
+        this.planner = planner;
     }
 
 	

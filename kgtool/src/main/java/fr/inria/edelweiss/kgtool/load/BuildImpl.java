@@ -182,7 +182,9 @@ public class BuildImpl implements Build {
     public void setLimit(int limit) {
         this.limit = limit;
     }
-	
-	
+    
+    public int nbBlank() {
+        return blank.size();
+    }
 
 }

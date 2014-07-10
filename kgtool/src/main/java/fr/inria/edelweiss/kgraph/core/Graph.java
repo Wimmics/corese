@@ -94,6 +94,7 @@ public class Graph //implements IGraph
     Hashtable<String, Node> graph;
     // property nodes: label -> Node (for performance)
     Hashtable<String, Node> property;
+    ArrayList<Node> nodes;
     NodeIndex gindex;
     ValueResolver values;
     Log log;
@@ -114,6 +115,7 @@ public class Graph //implements IGraph
             isEntail = true,
             isDebug = !true,
             hasDefault = !true;
+    private boolean isListNode = !true;
     // number of edges
     int size = 0;
     int nodeIndex = 0;
@@ -121,6 +123,7 @@ public class Graph //implements IGraph
     private String key;
     private String name;
     private boolean hasTag = false;
+    private boolean isTuple = false;
     public static final String SYSTEM = ExpType.KGRAM + "system";
     public int count = 0;
 
@@ -175,6 +178,21 @@ public class Graph //implements IGraph
         }
         return inference.typeCheck();
     }
+
+    /**
+     * @return the isTuple
+     */
+    public boolean isTuple() {
+        return isTuple;
+    }
+
+    /**
+     * @param isTuple the isTuple to set
+     */
+    public void setTuple(boolean isTuple) {
+        this.isTuple = isTuple;
+    }
+
 
     class TreeNode extends TreeMap<IDatatype, Entity> {
 
@@ -233,11 +251,12 @@ public class Graph //implements IGraph
         individual = new Hashtable<String, Entity>();
         blank = new Hashtable<String, Entity>();
         graph = new Hashtable<String, Node>();
+        nodes = new ArrayList<Node>();
         property = new Hashtable<String, Node>();
         gindex = new NodeIndex();
         values = new ValueResolverImpl();
         fac = new EdgeFactory(this);
-        manager = new Workflow(this);
+        manager = new Workflow(this);        
         key = hashCode() + ".";
     }
 
@@ -279,6 +298,10 @@ public class Graph //implements IGraph
     
     public static void setCompareIndex(boolean b){
         EdgeIndex.setCompareIndex(b);
+    }
+    
+     public static void setNodeAsDatatype(boolean b){
+        NodeImpl.byIDatatype = b;
     }
 
     public boolean isLog() {
@@ -1650,6 +1673,10 @@ public class Graph //implements IGraph
             node.setIndex(nodeIndex++);
         }
     }
+    
+    public Node getNode(int i){
+        return nodes.get(i);
+    }
 
     /**
      * Only for new node that does not exist
@@ -2454,6 +2481,9 @@ public class Graph //implements IGraph
 
     public void setTag(boolean b) {
         hasTag = b;
+        if (b){
+            setTuple(true);
+        }
     }
 
     /**

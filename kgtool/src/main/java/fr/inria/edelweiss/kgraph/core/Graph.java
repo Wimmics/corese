@@ -87,7 +87,10 @@ public class Graph //implements IGraph
     Hashtable<String, Entity> individual;
     // label -> Node
     Hashtable<String, Entity> blank;
-    SortedMap<IDatatype, Entity> literal;
+    SortedMap<IDatatype, Entity> 
+            literal, 
+            // table where same number with different datatype coincide
+            sliteral;
     // key -> Node
     Map<String, Entity> vliteral;
     // graph nodes: key -> Node
@@ -197,24 +200,32 @@ public class Graph //implements IGraph
     class TreeNode extends TreeMap<IDatatype, Entity> {
 
         TreeNode() {
-            super(new Compare());
+            this(true);
+        }
+        
+        TreeNode(boolean diff){
+            super(new Compare(diff));
         }
     }
 
     /**
      * This Comparator enables to retrieve an occurrence of a given Literal
      * already existing in graph in such a way that two occurrences of same
-     * Literal be represented by same Node in graph It (may) represent (1
-     * integer) and (1.0 float) as two different Nodes Current implementation of
-     * EdgeIndex sorted by values ensure join (by dichotomy ...)
+     * Literal be represented by same Node 
+     * It represent (1 integer) and (1.0 float) as two different Nodes 
      */
     class Compare implements Comparator<IDatatype> {
+        boolean diff = true;
+        
+        Compare(boolean b){
+            diff = b;
+        }
 
         public int compare(IDatatype dt1, IDatatype dt2) {
 
             // xsd:integer differ from xsd:decimal 
             // same node for same datatype 
-            if (dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null) {
+            if (diff && dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null) {
                 int cmp = dt1.getDatatypeURI().compareTo(dt2.getDatatypeURI());
                 if (cmp != 0) {
                     return cmp;
@@ -245,7 +256,8 @@ public class Graph //implements IGraph
             setIndex(i, new EdgeIndex(this, j));
         }
         table = getIndex(0);
-        literal = Collections.synchronizedSortedMap(new TreeNode());
+        literal  = Collections.synchronizedSortedMap(new TreeNode(true));
+        sliteral = Collections.synchronizedSortedMap(new TreeNode(false));
         vliteral = Collections.synchronizedMap(new HashMap<String, Entity>());
 
         individual = new Hashtable<String, Entity>();
@@ -1227,10 +1239,35 @@ public class Graph //implements IGraph
     public void addLiteralNode(IDatatype dt, Node node) {
         if (valueOut) {
             vliteral.put(node.getKey(), (Entity) node);
+            indexNode(dt, node);
         } else {
             literal.put(dt, (Entity) node);
+            indexLiteralNode(dt, node);       
         }
-        indexNode(dt, node);
+    }
+   
+    /**
+     * Assign an index to Literal Node
+     * Assign same index to same number values:
+     * 1, '1'^^xsd:double, 1.0 have same index
+     * If EdgeIndex is sorted by index, dichotomy enables join 
+     * on semantically equivalent values
+     */
+    void indexLiteralNode(IDatatype dt, Node node){
+        if (dt.isNumber()){
+            Entity n = sliteral.get(dt);
+            if (n == null){ 
+                sliteral.put(dt, (Entity) node);
+                indexNode(dt, node);                       
+            }
+            else if (node.getIndex() == -1){
+                // assign same index as existing same value
+                node.setIndex(n.getNode().getIndex()); 
+            }
+        }
+        else {
+            indexNode(dt, node);
+        }
     }
 
     public Node getLiteralNode(IDatatype dt) {

@@ -107,12 +107,12 @@ public class ProxyImpl implements Proxy, ExprType {
             switch (exp.oper()) {
 
                 case NEQ:
-                    b = !dt1.equals(dt2);
+                    b = !dt1.equalsWE(dt2);
                     break;
                 case IN:
                     return in(dt1, dt2);
                 case EQ:
-                    b = dt1.equals(dt2);
+                    b = dt1.equalsWE(dt2);
                     break;
                 case LT:
                     b = dt1.less(dt2);
@@ -1024,7 +1024,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
             for (IDatatype dt : dt2.getValues()) {
                 try {
-                    if (dt1.equals(dt)) {
+                    if (dt1.equalsWE(dt)) {
                         return TRUE;
                     }
                 } catch (CoreseDatatypeException e) {
@@ -1038,7 +1038,7 @@ public class ProxyImpl implements Proxy, ExprType {
             return FALSE;
         } else {
             try {
-                if (dt1.equals(dt2)) {
+                if (dt1.equalsWE(dt2)) {
                     return TRUE;
                 }
             } catch (CoreseDatatypeException e) {

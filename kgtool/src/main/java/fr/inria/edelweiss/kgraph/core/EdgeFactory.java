@@ -7,13 +7,10 @@ import java.util.List;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 
-/**
- * Create specific Edge for specific property Property Node is static rdf:type
- * -> EdgeType
- *
- * Graph Node is static: Entailed edge -> EdgeEntail Entailed type edge ->
- * EdgeTypeEntail
- *
+/*
+ * Factory creates Edges
+ * Quad : EdgeQuad
+ * Tuple: EdgeImpl
  * @author Olivier Corby, Edelweiss INRIA 2011
  *
  */
@@ -34,10 +31,11 @@ public class EdgeFactory {
 
 
     public Entity create(Node source, Node subject, Node predicate, Node value) {
-        if (hasTime()) {
-            return timeCreate(source, subject, predicate, value);
-        } else {
-            return stdCreate(source, subject, predicate, value);
+        if (graph.isTuple()){
+             return EdgeImpl.create(source, subject, predicate, value);
+        }
+        else {
+            return EdgeQuad.create(source, subject, predicate, value);
         }
     }
     
@@ -50,17 +48,19 @@ public class EdgeFactory {
      * Piece of code specific to EdgeImpl
      */
     public void setGraph(Entity ent, Node g) {
-        if (ent instanceof EdgeImpl) {
-            EdgeImpl e = (EdgeImpl) ent;
+        if (ent instanceof EdgeTop) {
+            EdgeTop e = (EdgeTop) ent;
             e.setGraph(g);
         }
+ 
     }
 
     public Entity copy(Entity ent) {
-        if (ent instanceof EdgeImpl) {
-            EdgeImpl e = (EdgeImpl) ent;
+        if (ent instanceof EdgeTop) {
+            EdgeTop e = (EdgeTop) ent;
             return e.copy();
-        } else {
+        }       
+        else {
             return create(ent.getGraph(), ent.getEdge().getEdgeNode(), ent.getNode(0), ent.getNode(1));
         }
     }
@@ -74,7 +74,7 @@ public class EdgeFactory {
     }
 
     public Entity createDelete(Node source, Node subject, Node predicate, Node value) {
-        return stdCreate(source, subject, predicate, value);
+        return EdgeQuad.create(source, subject, predicate, value);
     }
 
     /**

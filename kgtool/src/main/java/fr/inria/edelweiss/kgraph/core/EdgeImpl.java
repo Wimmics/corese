@@ -13,7 +13,8 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class EdgeImpl implements Edge, Entity {
+public class EdgeImpl extends EdgeTop 
+    implements Edge, Entity {
 
     public static boolean displayGraph = true;
     int index = -1;

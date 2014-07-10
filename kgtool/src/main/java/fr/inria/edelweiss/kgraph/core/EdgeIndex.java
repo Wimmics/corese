@@ -28,7 +28,7 @@ implements Index {
 	static final int IGRAPH = Graph.IGRAPH;
 	private static Logger logger = Logger.getLogger(EdgeIndex.class);	
         static boolean byKey = Graph.valueOut;
-        static boolean byIndex = !true;
+        static boolean byIndex = false;
         
 	int index = 0, other = 1;
 	int count = 0;

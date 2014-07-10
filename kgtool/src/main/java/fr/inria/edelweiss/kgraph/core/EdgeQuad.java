@@ -3,100 +3,61 @@ package fr.inria.edelweiss.kgraph.core;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import java.util.List;
 
 /**
- * Draft Graph Edge with int as Node Index
- * Not used yet
+ * Graph Edge as Quad
  *
- * @author Olivier Corby, Wimmics INRIA I3S 2014
+ * @author Olivier Corby, Wimmics, INRIA I3S, 2014
  *
  */
-public class EdgeImpl2 extends EdgeTop 
+public class EdgeQuad extends EdgeTop 
     implements Edge, Entity {
 
     public static boolean displayGraph = true;
     int index = -1;
-    Graph g;
-    protected int graph, predicate, subject, object;
+    protected Node graph, predicate, subject, object;
 
-    public EdgeImpl2() {
+    public EdgeQuad() {
     }
 
 
-    EdgeImpl2(Node g, Node p){
-        graph = g.getIndex();
-        predicate = p.getIndex();
-    }
-    
-    EdgeImpl2(Node g, Node pred, Node subject, Node object) {
-        this(g, pred);
-        this.subject = subject.getIndex();
-        this.object = object.getIndex();
-    }
-    
-    EdgeImpl2(int g, int pred, int s, int o) {
+    EdgeQuad(Node g, Node p){
         graph = g;
-        predicate = pred;
-        subject = s;
-        object = o;
+        predicate = p;
     }
     
-    EdgeImpl2(Node g, Node pred, Node subject, Node object, Node arg1) {
+    EdgeQuad(Node g, Node pred, Node subject, Node object) {
+        this(g, pred);
+        this.subject = subject;
+        this.object = object;
+    }
+    
+    
+    EdgeQuad(Node g, Node pred, Node subject, Node object, Node arg1) {
         this(g, pred, subject, object);
    }
     
-     EdgeImpl2(Node g, Node p, Node[] args) {
+     EdgeQuad(Node g, Node p, Node[] args) {
         this(g, p);
     }
-
-    public Entity setGraph(Graph g){
-        this.g = g;
-        return this;
-    } 
      
-    public static EdgeImpl2 create(Node g, Node subject, Node pred, Node object) {
-        return new EdgeImpl2(g, pred, subject, object);
-    }
-
-    public static EdgeImpl2 create(Node g, Node pred, List<Node> list) {
-        Node[] nodes = new Node[list.size()];
-        list.toArray(nodes);
-        EdgeImpl2 e = new EdgeImpl2(g, pred, nodes);
-        return e;
-    }
-    
-    public static EdgeImpl2 create(Node g, Node pred, Node[] nodes) {
-        return new EdgeImpl2(g, pred, nodes);
+    public static EdgeQuad create(Node g, Node subject, Node pred, Node object) {
+        return new EdgeQuad(g, pred, subject, object);
     }
 
     public void add(Node node){
         
     }
     
-    public EdgeImpl2 copy() {
-        return new EdgeImpl2(graph, predicate, subject, object);
-    }
-    
-    public void setNodes(Node[] args){
-        
-    }
-    
-    public Node[] getNodes(){
-        return null;    
+    public EdgeQuad copy() {
+        return new EdgeQuad(graph, predicate, subject, object);
     }
 
-    public void setNode(int i, Node node) {
-             
-    }
-    
-     public void setTag(Node node) {           
+ 
+    public void setTag(Node node) {           
     }
 
-    public String toString() {
-        if (nbNode()>2){
-            return tuple();
-        }
+    public String toString() {       
         String str = "";
         if (displayGraph) {
             str += getGraph() + " ";
@@ -104,17 +65,7 @@ public class EdgeImpl2 extends EdgeTop
         str += getNode(0) + " " + getEdgeNode() + " " + getNode(1);
         return str;
     }
-    
-    public String tuple() {
-        String str = "";
-        if (displayGraph) {
-            str += getGraph() + " ";
-        }
-       str += toParse();
-       
-        return str;
-    }
-    
+      
     public String toParse(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("tuple");
@@ -136,11 +87,11 @@ public class EdgeImpl2 extends EdgeTop
 
     @Override
     public Node getEdgeNode() {
-        return g.getNode(predicate);
+        return predicate;
     }
 
     public void setEdgeNode(Node node) {
-        predicate = node.getIndex();
+        predicate = node;
     }
 
     @Override
@@ -156,8 +107,8 @@ public class EdgeImpl2 extends EdgeTop
     @Override
     public Node getNode(int n) {
        switch(n){
-           case 0: return g.getNode(subject);
-           case 1: return g.getNode(object);
+           case 0: return subject;
+           case 1: return object;
        }
        return null;
     }
@@ -179,11 +130,11 @@ public class EdgeImpl2 extends EdgeTop
 
     @Override
     public Node getGraph() {
-        return g.getNode(graph);
+        return graph;
     }
 
     public void setGraph(Node gNode) {
-        graph = gNode.getIndex();
+        graph = gNode;
     }
 
     @Override

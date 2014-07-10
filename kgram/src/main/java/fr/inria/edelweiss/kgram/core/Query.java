@@ -26,6 +26,8 @@ import fr.inria.edelweiss.kgram.tool.Message;
  */
 
 public class Query extends Exp {
+    
+        public static final int STD_PLAN = 0;
 	
 	private static Logger logger = Logger.getLogger(Exp.class);	
 
@@ -110,7 +112,9 @@ public class Query extends Exp {
     private boolean isMatch = false;
 	
 	int mode = Matcher.UNDEF;
-
+        
+        int planner = STD_PLAN;
+        
 	private boolean isService = false;
 
 	private boolean isBind = false;
@@ -253,6 +257,14 @@ public class Query extends Exp {
 	public void setMode(int m){
 		mode = m;
 	}
+        
+        public void setPlanProfile(int n){
+            planner = n;
+        }
+        
+        public int getPlanProfile(){
+            return planner;
+        }
 	
 	public void addError(String mes, Object obj){
 		getGlobalQuery().setError(mes, obj);

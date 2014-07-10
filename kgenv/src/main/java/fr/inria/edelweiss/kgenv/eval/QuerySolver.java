@@ -90,6 +90,7 @@ public class QuerySolver  {
 	static int count = 0;
 	
 	static boolean test = true;
+        private int planner = Query.STD_PLAN;
 	
 	public QuerySolver (){
 	}
@@ -304,11 +305,16 @@ public class QuerySolver  {
             return compileRule(squery, null);
         }
         
+        void setParameter(Transformer transformer){
+            transformer.setNamespaces(NAMESPACES);
+            transformer.setPragma(getPragma());
+            transformer.setPlanProfile(getPlanProfile());
+        }
+        
         public Query compileRule(String squery, Dataset ds) throws EngineException {
-		Transformer transformer =  transformer();			
-		transformer.setNamespaces(NAMESPACES);
+		Transformer transformer =  transformer();
+                setParameter(transformer);
 		transformer.setBase(defaultBase);
-		transformer.setPragma(getPragma());
 		transformer.set(ds);
 		Query query = transformer.transform(squery, true);
 		return query;	
@@ -316,21 +322,18 @@ public class QuerySolver  {
 	
 	public Query compile(ASTQuery ast) {
 		Transformer transformer =  transformer();			
+                setParameter(transformer);
 		transformer.setSPARQLCompliant(isSPARQLCompliant);
-		transformer.setNamespaces(NAMESPACES);
-		transformer.setPragma(getPragma());
 		Query query = transformer.transform(ast);
 		return query;
 	}
 	
 	public Query compile(String squery, Dataset ds) throws EngineException {
 		Transformer transformer =  transformer();			
+                setParameter(transformer);
 		transformer.setSPARQLCompliant(isSPARQLCompliant);
-		transformer.setNamespaces(NAMESPACES);
 		transformer.setBase(defaultBase);
-		transformer.setPragma(getPragma());
 		transformer.set(ds);
-
 		Query query = transformer.transform(squery);
 		return query;
 	}
@@ -500,6 +503,20 @@ public class QuerySolver  {
      */
     public void setMatchBlank(boolean isMatchBlank) {
         this.isMatchBlank = isMatchBlank;
+    }
+
+    /**
+     * @return the planner
+     */
+    public int getPlanProfile() {
+        return planner;
+    }
+
+    /**
+     * @param planner the planner to set
+     */
+    public void setPlanProfile(int planner) {
+        this.planner = planner;
     }
 	
 }

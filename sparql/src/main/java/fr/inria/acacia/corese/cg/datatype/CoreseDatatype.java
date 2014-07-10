@@ -838,10 +838,6 @@ public class CoreseDatatype
 		throw failure();
 	}
         
-        /** @deprecated **/
-        public boolean equals(IDatatype iod) throws CoreseDatatypeException {
-		throw failure();
-	}
 	
 	// Java equals (for list membership ...)
 	public boolean equals(Object obj) {

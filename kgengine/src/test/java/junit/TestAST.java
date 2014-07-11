@@ -208,7 +208,7 @@ public class TestAST {
 		try {
 			boolean b = dt1.less(dt2);
 			assertEquals("Result", false, b);
-			b = dt1.equals(dt2);
+			b = dt1.equalsWE(dt2);
 			assertEquals("Result", false, b);
 			b = dt1.greater(dt2);
 			assertEquals("Result", false, b);
@@ -376,18 +376,18 @@ public void test21(){
 	IDatatype dt3 = DatatypeMap.createLiteral("test");
 
 	try {
-		assertEquals("Result", true, (dt1.equals(dt1)));
+		assertEquals("Result", true, (dt1.equalsWE(dt1)));
 		assertEquals("Result", false, (dt1.sameTerm(dt2)));
 		assertEquals("Result", false, (dt1.sameTerm(dt3)));
 		assertEquals("Result", RDF.rdflangString, dt1.getDatatypeURI());
 		
 		Constant cst = Constant.create(dt1);
 
-		assertEquals("Result", true, (dt1.equals(cst.getDatatypeValue())));
+		assertEquals("Result", true, (dt1.equalsWE(cst.getDatatypeValue())));
 		
 		cst = Constant.create("test", RDF.rdflangString, "en");
 		
-		assertEquals("Result", true, (dt1.equals(cst.getDatatypeValue())));
+		assertEquals("Result", true, (dt1.equalsWE(cst.getDatatypeValue())));
 
 
 	} catch (CoreseDatatypeException e) {

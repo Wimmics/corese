@@ -21,6 +21,13 @@
             <artifactId>kgengine</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>kgserver-stubs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgimport</artifactId>

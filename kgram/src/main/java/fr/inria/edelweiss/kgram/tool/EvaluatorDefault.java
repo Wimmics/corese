@@ -73,4 +73,9 @@ public class EvaluatorDefault implements Evaluator {
     public void setKGRAM(Object o) {
     }
 
+    @Override
+    public Node cast(Object obj, Environment e, Producer p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

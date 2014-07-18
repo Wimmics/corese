@@ -143,4 +143,9 @@ public class ProxyDefault implements Proxy, ExprType {
         return null;    
     }
 
+    @Override
+    public Object cast(Object obj, Environment env, Producer p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

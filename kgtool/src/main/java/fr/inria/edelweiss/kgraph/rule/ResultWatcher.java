@@ -5,6 +5,7 @@
 
 package fr.inria.edelweiss.kgraph.rule;
 
+import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -21,6 +22,7 @@ import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.Construct;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine.ITable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +49,8 @@ public class ResultWatcher implements ResultListener, GraphListener {
     private boolean isDistinct = true;
     private boolean isSkipPath = false;
     private boolean test = false;
+    boolean isNew = false;
+    int index = -1;
     
     Construct cons;
     Mappings map;
@@ -54,6 +58,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
     Graph graph;
     Distinct dist;
     ArrayList<Entity> list;
+    private boolean trace;
     
     ResultWatcher(Graph g){
         graph = g;  
@@ -83,8 +88,24 @@ public class ResultWatcher implements ResultListener, GraphListener {
     void start(Rule r){
         rule = r;
         isWatch = true;
+        isNew = false;
         start = true;
         init(r);
+    }
+    
+   /**
+    * If there is only one predicate in where with new edges
+    * (Only one occurrence of this predicate in where)
+    * We can focus on these new edge using listen(Edge, Entity)
+    */
+    void start(ITable t) {
+        if (t.getCount() == 1 
+                && rule.getQuery().nbPredicate(t.getPredicate()) == 1) {
+            index = rule.getQuery().getEdge(t.getPredicate()).getIndex();
+            if (index != -1) {
+                isNew = true;
+            }            
+        }
     }
     
     /**
@@ -115,7 +136,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
             return store(env);
         }
       
-        if (loop == 0){
+        if (loop == 0 || isNew){
             return store(env);
         }
         
@@ -182,6 +203,14 @@ public class ResultWatcher implements ResultListener, GraphListener {
                 
             case Exp.QUERY:
                 isWatch = false;
+                break;
+                
+            case Exp.UNION:
+            case Exp.OPTION:
+                // because we may not go through the branch with new edges
+                // check new at the end as usual
+                isNew = false;
+                break;
         }
 
         if (n == 0 && exp.type() == Exp.AND
@@ -324,6 +353,30 @@ public class ResultWatcher implements ResultListener, GraphListener {
      */
     public void setTest(boolean test) {
         this.test = test;
+    }
+
+    @Override
+    public boolean listen(Edge edge, Entity ent) {
+        if (isNew  
+                && edge.getIndex() == index 
+                && ent.getEdge().getIndex() < ruleLoop){
+             return false;           
+        }
+        return true;
+    }
+
+    /**
+     * @return the trace
+     */
+    public boolean isTrace() {
+        return trace;
+    }
+
+    /**
+     * @param trace the trace to set
+     */
+    public void setTrace(boolean trace) {
+        this.trace = trace;
     }
     
    

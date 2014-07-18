@@ -51,6 +51,9 @@ public interface Evaluator {
 	Node eval(Filter f, Environment e, Producer p);
 	
 	Object eval(Expr f, Environment e, Producer p);
+        
+        // cast Java object into IDatatype
+        Node cast(Object obj, Environment e, Producer p);
 
 	
 	/**

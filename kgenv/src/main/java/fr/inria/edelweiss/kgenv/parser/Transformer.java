@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.*;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.acacia.corese.triple.parser.Dataset;
@@ -270,9 +271,7 @@ public class Transformer implements ExpType {
 		having(q, ast);
 
 		if (ast.isRule()){
-			// rule need predicate nodes
-			List<Node> list = visit(q.getBody());
-			q.setNodeList(list);
+			new VisitQuery(compiler).visit(q);
 		}
 
 		if (compiler.isFail() || fail){
@@ -291,6 +290,7 @@ public class Transformer implements ExpType {
 
 		filters(q);
 		relax(q);
+                new QueryProfile(q).profile();
 
 		if (visit != null){
 			for (QueryVisitor v : visit){
@@ -1028,34 +1028,59 @@ public class Transformer implements ExpType {
 	}
 	
 
-	Exp compileEdge(Triple tt, boolean opt){
-		Edge r = compiler.compile(tt);
+	Exp compileEdge(Triple t, boolean opt){
+		Edge r = compiler.compile(t);
 		Exp exp = Exp.create(EDGE, r);
-
-		if (tt.isXPath()){
+                
+                if (t.isType()){
+                    Exp pe = pathType(ast, t);
+                    pe.setSystem(true);
+                    exp.setPath(pe);
+                }
+                
+		if (t.isXPath()){
 			// deprecated ?x xpath() ?y
 			exp.setType(EVAL);
-			Filter xpath = compiler.compile(tt.getXPath());
+			Filter xpath = compiler.compile(t.getXPath());
 			exp.setFilter(xpath);
 		}
-		else if (tt.isPath()){
-			exp.setType(PATH);
-			Expression regex = tt.getRegex();
-			if (regex == null){
-				// deprecated: there may be a match($path, regex)
-			}
-			else {
-				regex.compile(ast);
-				exp.setRegex(regex);
-			}
-			exp.setObject(tt.getMode());
+		else if (t.isPath()){
+			path(t, exp);
 		}
 		else if (ast.isCheck()) {
-			check(tt, r);
+			check(t, r);
 		}
 
 		return exp;
 	}
+        
+      void path(Triple tt, Exp exp) {
+            exp.setType(PATH);
+            Expression regex = tt.getRegex();
+            if (regex == null) {
+                // deprecated: there may be a match($path, regex)
+            } else {
+                regex.compile(ast);
+                exp.setRegex(regex);
+            }
+            exp.setObject(tt.getMode());
+      }
+      
+      /**
+       * 
+       * Generate rdf:type/rdfs:subClassOf*
+       */
+      Exp pathType(ASTQuery ast, Triple t){
+              Expression re = Term.create(Term.RE_SEQ, 
+                 ast.createQName(RDFS.rdftype),     
+                 Term.function(Term.STAR, ast.createQName(RDFS.rdfssubclassof)));
+              Triple p = ast.createPath(t.getSubject(), re, t.getObject());
+              Edge e = compiler.compile(p);
+              Exp exp = Exp.create(PATH, e);
+              re.compile(ast);
+              exp.setRegex(re);
+              return exp;         
+      }
 
 	
 	/**
@@ -1386,105 +1411,6 @@ public class Transformer implements ExpType {
 	 * Get Predicate Nodes for Rule
 	 * 
 	 ********************************************/
-	
-	List<Node> visit(Exp exp){
-		ArrayList<Node> list  = new ArrayList<Node>();
-		visit(exp, list);
-		//System.out.println("** T: " + list);
-		return list;
-	}
-
-	/**
-	 * Return predicate nodes of this exp:
-	 * edge, path regex and constraints, filter exists, query select having
-	 * TODO: query order|group by exists
-	 */
-	void visit(Exp exp, List<Node> list){
-		switch (exp.type()){
-		
-		case EDGE: 
-			Node pred = exp.getEdge().getEdgeNode();
-			if (! list.contains(pred)) {
-				list.add(pred);
-			}
-			break;
-
-		case PATH: 
-			visitRegex((Expression) exp.getRegex(), list);
-			break;
-			
-		case FILTER:
-			visit(exp.getFilter().getExp(), list);
-			break;
-				
-                case BIND:
-                    visit(exp.getFilter().getExp(), list);
-                    break;
-			
-		case QUERY:
-			Query q = exp.getQuery();
-			
-			for (Exp ee : q.getSelectFun()){
-				if (ee.getFilter()!=null){
-					visit(ee.getFilter().getExp(), list);
-				}
-			}
-			
-			if (q.getHaving()!=null){
-				visit(q.getHaving().getFilter().getExp(), list);
-			}			
-			// continue
-			
-		default: 
-			for (Exp ee : exp.getExpList()){
-				visit(ee, list);
-			}
-			
-		}
-	}
-	
-	
-	/**
-	 * exp is a Regex
-	 * return its predicates
-	 */
-	void visitRegex(Expression exp, List<Node> list){
-		if (exp.isConstant()){
-			Node node = compiler.createNode(exp.getConstant());
-			if (! list.contains(node)){
-                            list.add(node);
-                        }
-		}
-		else if (exp.isTerm() && exp.isTest()){
-			// path @[ a foaf:Person ]
-			Expression ee = exp.getExpr();
-			visit(ee, list);
-		}
-		else if (exp.isTerm() && exp.isNot()){
-			// ! p is a problem because we do not know the predicate nodes ...
-			// let's return top level property, it subsumes all properties
-			list.clear();
-			Node node = compiler.createNode(ASTQuery.getRootPropertyURI());
-			list.add(node);	
-		}
-		else {
-			for (Expression ee : exp.getArgs()){
-				visitRegex(ee, list);
-			}
-		}
-	}
-	
-	/**
-	 * Filter: check exists {}
-	 */
-	void visit(Expr exp, List<Node> list){
-		for (Expr ee : exp.getExpList()){
-			visit(ee, list);
-		}
-		if (exp.oper() == ExprType.EXIST){
-			visit((Exp) exp.getPattern(), list);
-		}
-	}
 	
 	
 	

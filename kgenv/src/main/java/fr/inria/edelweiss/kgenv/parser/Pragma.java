@@ -48,6 +48,8 @@ public class Pragma  {
 	public static final String EDGE 	= KG + "edge";
 	public static final String LOAD 	= KG + "load";
 	public static final String LIST 	= KG + "list";
+	public static final String STORE 	= KG + "store";       
+	public static final String TYPE 	= KG + "type";       
 	public static final String DISPLAY	= KG + "display";
 	public static final String EXPAND 	= KG + "expand";
 	public static final String PRELAX 	= KG + "relax";
@@ -303,17 +305,23 @@ public class Pragma  {
 				}
 			}
 		}
-		else if (subject.equals(PATH)){
-			 if (property.equals(COUNT)){
-				query.setCountPath(value(object));
-			}
+		else if (subject.equals(PATH)){			 
 			if (property.equals(LIST)){
 				query.setListPath(value(object));
 			}
-			else if (property.equals(LOOP)){
-				query.setCheckLoop(! value(object));
+			 if (property.equals(TYPE)){
+				query.setPathType(value(object));
 			}
-		}
+                        else if (property.equals(STORE)){
+				query.setStorePath(value(object));
+			}
+                        else if (property.equals(COUNT)){
+				query.setCountPath(value(object));
+			}
+                         else if (property.equals(LOOP)){
+				query.setCheckLoop(! value(object));
+			}                        
+                }
 		else if (subject.equals(QUERY)){
 			if (property.equals(DISPLAY)){
 				query.addInfo("AST:\n", ast);

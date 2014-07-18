@@ -56,7 +56,7 @@ public class GraphEngine implements IEngine {
 	GraphEngine (boolean b){
 		DatatypeMap.setLiteralAsString(false);
 		graph   = GraphStore.create(b);
-		rengine = RuleEngine.create(graph);
+		//rengine = RuleEngine.create(graph);
 		qengine = QueryEngine.create(graph);
 		bengine = Engine.create(QueryProcess.create(graph, true));
 		exec = QueryProcess.create(graph, true);
@@ -97,7 +97,7 @@ public class GraphEngine implements IEngine {
 
 	public Load loader(){
 		Load load = Load.create(graph);
-		load.setEngine(rengine);
+		//load.setEngine(rengine);
 		load.setEngine(qengine);
 		load.setPlugin(plugin);
 		load.setBuild(build);
@@ -118,8 +118,14 @@ public class GraphEngine implements IEngine {
 		}
 		else 
 		{
-			loader().load(path);
+                    Load ld = loader();
+                    ld.load(path);
+                    // in case of load rule
+                    if (ld.getRuleEngine() != null){
+                        rengine = ld.getRuleEngine();
+                    }
 		}
+                
 	}
 	
 	public void loadDir(String path) throws EngineException {
@@ -134,8 +140,9 @@ public class GraphEngine implements IEngine {
 		rengine.setDebug(isDebug);
 		if (opt){
                     rengine.setSpeedUp(true);
-                    rengine.setSkipPath(true);
+                    //rengine.setSkipPath(true);
                     rengine.getQueryProcess().setListPath(true);
+                    //rengine.getQueryProcess().setPathType(true);
                     rengine.setTrace(true);
                 }
 		graph.process(rengine);

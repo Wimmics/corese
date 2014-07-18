@@ -27,6 +27,7 @@ import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.Visit.TTable;
 import fr.inria.edelweiss.kgram.tool.EdgeInv;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
+import java.util.HashMap;
 
 
 /**********************************************************
@@ -104,6 +105,7 @@ public class PathFinder
 	private Evaluator evaluator;
 	private Query query;
 	private Mappings lMap ;
+        HashMap<Integer, Mappings> store;
 	private Filter filter;
 	private Memory mem;
 	private Edge edge;
@@ -133,6 +135,7 @@ public class PathFinder
 	isList = false,
 	checkLoop = false,
 	isCountPath = false,
+        isCache = !true,
 	trace = true;
 	
 	private int  maxLength = Integer.MAX_VALUE, 
@@ -155,6 +158,21 @@ public class PathFinder
 	// very short: eliminate any path >= best current path ('vs' = previous 's') to *any* target
 	private final static String ALL		="a";
 	public final static String INVERSE	="i";
+        private boolean isStorePath = true;
+
+    /**
+     * @return the isStorePath
+     */
+    public boolean isStorePath() {
+        return isStorePath;
+    }
+
+    /**
+     * @param isStorePath the isStorePath to set
+     */
+    public void setStorePath(boolean isStorePath) {
+        this.isStorePath = isStorePath;
+    }
 	
 
 	
@@ -180,6 +198,7 @@ public class PathFinder
 		matcher = match;
 		evaluator = eval;
 		lMap = new Mappings();
+                store = new HashMap<Integer, Mappings>();
 	}
 	
 	public static PathFinder create(Producer p, Matcher match, Evaluator eval, Query q) {
@@ -226,7 +245,8 @@ public class PathFinder
 		regexNode = node;
 		List<String> lVar = null;
 		if (f != null) lVar = f.getVariables();
-		lMap.clear();
+		//lMap.clear();
+                lMap = new Mappings();
 		this.edge = edge;
 		int n = index(edge, memo, lVar);
 		start(n);
@@ -311,10 +331,37 @@ public class PathFinder
 		this.gNode = gNode;
 		this.from = from;
 		this.memory = mem;
-		lMap.clear();
-		process(memory);
+                Node cstart = get(memory, index); 
+                
+                Mappings map = getMappings(cstart);
+                if (map != null){
+                    return map;
+                }
+                
+		//lMap.clear();
+                lMap = new Mappings();
+		process(cstart, memory);
+                putMappings(cstart, lMap);
 		return lMap;
 	}
+        
+        /**
+         * Retrieve solution in cache 
+         * TODO: manage two tables for two possible index
+         */
+        Mappings getMappings(Node cstart){
+            if (isCache && cstart != null){
+                Mappings map = store.get(cstart.getIndex());
+                return map;
+            }
+            return null;
+        }
+        
+        void putMappings(Node start, Mappings map){
+            if (isCache && start != null){
+                store.put(start.getIndex(), map);
+            }
+        }
 	
 	/**
 	 * Enumerate path in a parallel thread, return a synchronised buffer
@@ -333,7 +380,10 @@ public class PathFinder
 		return mbuffer;
 	}
 	
-	
+	int getIndex(){
+            return index;
+        }
+        
 	void mstart(Environment mem) {
 		//isStop = false;
 		// buffer store path enumeration
@@ -345,7 +395,8 @@ public class PathFinder
 	}
 	
 	public void run(){
-		process(memory);
+            Node cstart = get(memory, index);
+            process(cstart, memory);
 	}
 	
 	public void stop(){
@@ -454,7 +505,7 @@ public class PathFinder
 	}
 	
 	
-	void process(Environment memory){
+	void process(Node cstart, Environment memory){
 		// Is the source of edge bound ?
 		// In which case all path relations come from same source 
 		Node csource = null;
@@ -463,7 +514,7 @@ public class PathFinder
 		}
 		
 		// the start concept for path
-		Node cstart = get(memory, index);
+		//Node cstart = get(memory, index);
 		Path path = new Path(isReverse);
 		path.setMax(max);
 		path.setIsShort(isShort);
@@ -493,9 +544,16 @@ public class PathFinder
 	private Mapping result(Path path, Node gNode, Node src, Node start, boolean isReverse){
 		//if (edge.getIndex()==1)System.out.println(producer.getGraphNode(edge, edge) + " " + edge);
 		Edge ee = edge;
-		int length = 3;
-		if (src!=null) length = 4;
-		
+		int length = 3;		
+                int ip = 2, is = 3;
+                
+                if (! isStorePath){
+                    length = 2;
+                    is = 2;
+                }
+		if (src!=null){
+                    length += 1;
+                }
 		Node n1, n2;
 		if (path.size() == 0){
 			n1 = start;
@@ -515,27 +573,31 @@ public class PathFinder
 			qNodes = new Node[length];
 			qNodes[0] = ee.getNode(0);
 			qNodes[1] = ee.getNode(1);
-			qNodes[2] = ee.getEdgeVariable();
-			if (src!=null){
-				qNodes[3] = gNode;
-			}
+                        if (src!=null){
+                            qNodes[is] = gNode;
+                        }
+                        if (isStorePath){
+                            qNodes[ip] = ee.getEdgeVariable();	
+                        }
 		}
 		
 		Node[] tNodes = new Node[length];
 		tNodes[0] = n1;
 		tNodes[1] = n2;
-		tNodes[2] = getPathNode();
+                              
 		if (src!=null){
-			tNodes[3] = src;
+			tNodes[is] = src;
 		}
-		
-		Path edges = path.copy();
-		if (isReverse) edges.reverse();
-		Path[] lp = new Path[length];
-		lp[2] = edges;
-		
-		Mapping map =  Mapping.create(qNodes, tNodes);			
-		map.setPath(lp);
+				
+		Mapping map =  Mapping.create(qNodes, tNodes);
+                if (isStorePath){
+                    tNodes[ip] = getPathNode();
+                    Path edges = path.copy();
+                    if (isReverse) edges.reverse();
+                    Path[] lp = new Path[length];
+                    lp[ip] = edges;
+                    map.setPath(lp);
+                }
 		
 		return map;
 	}
@@ -675,7 +737,7 @@ public class PathFinder
 	 *  rewrite   ! (^ p)   as   ^ (! p)
 	 *  rewrite   ^(p/q)    as   ^q/^p
 	 */
-	void eval(Regex exp, Path path, Node start, Node src){
+	void eval(Regex exp, Path path, Node start, Node src){            
 		Record stack = new Record(Visit.create(isReverse, isCountPath));
 		stack.push(exp);
 		try {

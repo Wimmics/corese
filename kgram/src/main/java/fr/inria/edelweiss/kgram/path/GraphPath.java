@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgram.path;
 
 
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 
 /**
@@ -34,7 +35,8 @@ public class GraphPath extends Thread {
 	}
 	
 	void process(){
-		 finder.process(mem);
+            Node cstart = finder.get(mem, finder.getIndex());
+            finder.process(cstart, mem);
 	}
 	
 	

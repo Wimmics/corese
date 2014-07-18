@@ -1,0 +1,33 @@
+#
+# Factorize all occurrences of same Union/Intersection
+# into one occurrence everywhere
+# [] owl:unionOf (?c1 ?c2) 
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014 
+#
+delete {
+  ?a ?r ?b  
+  ?b ?ui ?b1
+  ?b1 rdf:first ?c1 ; rdf:rest ?b2
+  ?b2 rdf:first ?c2 ; rdf:rest ?b3
+}
+insert {
+  ?a ?r ?y
+}
+where {
+  # ?y is the representant of the set of similar U/I
+  {select (sample(?x) as ?y) ?ui ?c1 ?c2 
+  where {    
+    values ?ui { owl:unionOf owl:intersectioOf }    
+    ?x ?ui (?c1 ?c2)
+    }
+    group by ?ui ?c1 ?c2
+  }
+  
+  ?b ?ui ?b1
+  ?b1 rdf:first ?c1 ; rdf:rest ?b2
+  ?b2 rdf:first ?c2 ; rdf:rest ?b3
+  filter(?b != ?y)
+  
+  ?a ?r ?b
+}

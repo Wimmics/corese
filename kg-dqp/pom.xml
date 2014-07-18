@@ -9,9 +9,9 @@
     </parent>
     <groupId>fr.inria.wimmics</groupId>
     <artifactId>kgdqp</artifactId>
-  <version>3.1.4-SNAPSHOT</version>
+    <version>3.1.4-SNAPSHOT</version>
 
-<!--    <properties>
+    <!--    <properties>
         <build.version>${project.version}-r${buildNumber}</build.version>
     </properties>-->
 
@@ -19,11 +19,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgengine</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>kgserver-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!--        <dependency>
@@ -68,7 +63,7 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.18</version>
         </dependency>
-        <!--        <dependency>
+<!--        <dependency>
             <groupId>com.businessobjects</groupId>
             <artifactId>datafederator-jdbc-connector</artifactId>
             <version>1.0</version>
@@ -104,7 +99,7 @@
             </resource>
         </resources>
         <plugins>
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
                 <version>1.2</version>
@@ -159,7 +154,7 @@
                             <!--<finalName>kgdqp-${build.version}</finalName>-->
                             <archive>
                                 <manifest>
-                                    <mainClass>fr.inria.edelweiss.kgdqp.core.FedQueryingCLI</mainClass>
+                                    <mainClass>fr.inria.edelweiss.kgdqp.core.CentralizedInferrencingNoSpin</mainClass>
                                 </manifest>
                             </archive>
                            
@@ -201,7 +196,6 @@
                 </configuration>
                 <version>2.16</version>
             </plugin>
-            
         </plugins>
     </build>
 </project>

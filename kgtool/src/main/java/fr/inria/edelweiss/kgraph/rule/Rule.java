@@ -87,8 +87,17 @@ public class Rule {
         return name;
     }
 
-    int getIndex() {
+    public int getIndex() {
         return num;
+    }
+    
+    /**
+     * Index of edge with predicate p
+     * If there is only one occurrence of p
+     */
+    public int getIndex(Node p){
+        
+        return -1;
     }
 
     void setGeneric(boolean b) {

@@ -39,6 +39,7 @@ import fr.inria.acacia.corese.cg.datatype.RDF;
 	 static final String qrdfRest	= "rdf:rest";
 	 static final String qrdfNil 	= "rdf:nil";
 	 static final String qrdftype   = "rdf:type";
+	 static final String rdfssubclassof   = "rdfs:subClassOf";
 	 
 	 static final String rdftype    = "rdf:type";
 

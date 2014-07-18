@@ -51,9 +51,11 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     Object object;
     Regex regex;
     Exp next;
+    private Exp path;
     private Exp bind;
     Mappings map, templateMap;
     int min = -1, max = -1;
+    private boolean isSystem = false;
 
     /**
      * @return the bind
@@ -81,6 +83,32 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
      */
     public void setFunctional(boolean isFunctional) {
         this.isFunctional = isFunctional;
+    }
+
+    /**
+     * @return the path
+     */
+    public Exp getPath() {
+        return path;
+    }
+    
+    public boolean hasPath(){
+        return path != null;
+    }
+
+    /**
+     * @param path the path to set
+     */
+    public void setPath(Exp path) {
+        this.path = path;
+    }
+
+    public void setSystem(boolean b) {
+        isSystem = b;
+    }
+    
+    public boolean isSystem(){
+        return isSystem;
     }
 
     class VExp extends ArrayList<Exp> {

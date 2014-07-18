@@ -606,7 +606,7 @@ public class Memory implements Environment {
 		for (int i=0; i<length; i++){
 			Node qNode = edge.getNode(i);
 			if (qNode != null){
-				int n = qNode.getIndex();
+				int n = qNode.getIndex();                               
 				if (stack[n] > max){
 					max = stack[n];
 				}

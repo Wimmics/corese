@@ -86,6 +86,10 @@ public class Eval implements ExpType, Plugin {
             optim = true,
             draft = true;
     private boolean hasListener = false;
+    private boolean isPathType = false;
+    boolean storeResult = true;
+    private int nbResult;
+    
 
     //Edge previous;
     /**
@@ -169,10 +173,16 @@ public class Eval implements ExpType, Plugin {
         }
         if (!q.isFail()) {           
             query(gNode, q);
-            aggregate();
-            // order by
-            complete();
-            template();
+            
+            if (q.getQueryProfile() == Query.COUNT_PROFILE){
+                countProfile();
+            }
+            else {
+                aggregate();
+                // order by
+                complete();
+                template();
+            }
         }
 
         if (debug && !isSubEval && !q.isSubQuery()) {
@@ -180,6 +190,16 @@ public class Eval implements ExpType, Plugin {
         }
 
         return results;
+    }
+    
+    /**
+     * We just counted number of results: nbResult
+     * Just build a Mapping
+     */
+    void countProfile(){
+        Node n = evaluator.cast(nbResult, memory, producer);
+        Mapping m = Mapping.create(query.getSelectFun().get(0).getNode(), n);
+        results.add(m);
     }
     
     int query(Node gNode, Query q) {
@@ -362,6 +382,7 @@ public class Eval implements ExpType, Plugin {
         Eval ev = create(p, e, match);
         ev.setMemory(m);
         ev.set(provider);
+        ev.setPathType(isPathType);
         //ev.setSubEval(true);
         if (hasEvent) {
             ev.setEventManager(manager);
@@ -492,6 +513,17 @@ public class Eval implements ExpType, Plugin {
             debug = q.isDebug();
         }
         start(q);
+        profile(q);
+    }
+    
+    void profile(Query q){
+        switch (q.getQueryProfile()){
+            
+            // select (count(*) as ?c) where {}
+            // do not built Mapping, just count them
+            case Query.COUNT_PROFILE:
+                storeResult = false;
+        }
     }
 
     // partial init (for global query and subqueries)
@@ -573,8 +605,9 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             pathFinder.set(manager);
         }
-        pathFinder.set(listener);
-        pathFinder.setList(query.isListPath());
+        pathFinder.set(listener);       
+        pathFinder.setList(query.getOuterQuery().isListPath());
+        pathFinder.setStorePath(query.getOuterQuery().isStorePath() && ! exp.isSystem());
         // TODO: subQuery 
         pathFinder.setCheckLoop(query.isCheckLoop());
         pathFinder.setCountPath(query.isCountPath());
@@ -895,7 +928,12 @@ public class Eval implements ExpType, Plugin {
 
 
                 case EDGE:
-                    backtrack = edge(p, gNode, exp, stack, n, option);
+                    if (query.getOuterQuery().isPathType() && exp.hasPath()){
+                        backtrack = path(p, gNode, exp.getPath(), stack, n, option);
+                    }
+                    else {
+                        backtrack = edge(p, gNode, exp, stack, n, option);
+                    }
                     break;
 
 
@@ -1985,6 +2023,9 @@ public class Eval implements ExpType, Plugin {
             Entity ent = it.next();
             if (ent != null) {
                 nbEdge++;
+                if (hasListener &&  ! listener.listen(qEdge, ent)){
+                    continue;
+                }
                 boolean trace = false;
                 Edge edge = ent.getEdge();
                 graph = ent.getGraph();
@@ -2464,14 +2505,17 @@ public class Eval implements ExpType, Plugin {
         if (listener != null) {
             store = listener.process(memory);
         }
-        if (store) {
+        if (store){
+            nbResult++;
+        }
+        if (storeResult && store) {
             Mapping ans = memory.store(query, p, isSubEval);
             submit(ans);
             if (hasEvent) {
                 //send(Event.RESULT, query, ans);
                 send(Event.RESULT, ans);
             }
-        }
+        }            
     }
 
     void submit(Mapping map) {
@@ -2606,6 +2650,20 @@ public class Eval implements ExpType, Plugin {
 
     public Stack getStack() {
         return current;
+    }
+
+    /**
+     * @return the isPathType
+     */
+    public boolean isPathType() {
+        return isPathType;
+    }
+
+    /**
+     * @param isPathType the isPathType to set
+     */
+    public void setPathType(boolean isPathType) {
+        this.isPathType = isPathType;
     }
  
 }

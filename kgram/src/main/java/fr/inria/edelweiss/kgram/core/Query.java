@@ -28,6 +28,10 @@ import fr.inria.edelweiss.kgram.tool.Message;
 public class Query extends Exp {
     
         public static final int STD_PLAN = 0;
+        
+        public static final int STD_PROFILE   = -1;
+        public static final int COUNT_PROFILE = 1;
+
 	
 	private static Logger logger = Logger.getLogger(Exp.class);	
 
@@ -83,6 +87,9 @@ public class Query extends Exp {
 	// Extended filters: pathNode()
 	HashMap <String, Filter> ftable;
 	// Extended queries for type check
+        // nb occurrences of predicates in where
+        HashMap <String, Integer> ptable;
+        HashMap <String, Edge> etable;
 	Hashtable<Edge, Query> table;
 	// Extended queries for additional group by
 	List<Query> queries;
@@ -101,9 +108,12 @@ public class Query extends Exp {
 	isCheckLoop = false, isPipe = false, 
 	isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
 	// PathFinder list path instead of thread buffer: 50% faster but enumerate all path
-	isListPath = false,
-	// former path semantics was true
-	isCountPath = false,
+	isListPath = false;
+    private boolean isPathType = false;
+    private boolean isStorePath = true;
+
+	boolean 
+        isCountPath = false,
 	isCorrect = true, isConnect = false,
 	// join service send Mappings from first pattern to service
 	isMap = true,
@@ -114,6 +124,7 @@ public class Query extends Exp {
 	int mode = Matcher.UNDEF;
         
         int planner = STD_PLAN;
+        private int queryProfile = STD_PROFILE;
         
 	private boolean isService = false;
 
@@ -151,7 +162,9 @@ public class Query extends Exp {
 		table 		= new Hashtable<Edge, Query>();
 		ftable 		= new HashMap<String, Filter>();
 		pragma 		= new HashMap<String, Object>(); 
-		tprinter 	= new HashMap<String, Object> ();  
+		tprinter 	= new HashMap<String, Object> (); 
+                ptable          = new HashMap<String, Integer>();
+                etable          = new HashMap<String, Edge>();
 		queries 	= new ArrayList<Query>();
 
 		patternNodes 		= new ArrayList<Node>();
@@ -1354,7 +1367,18 @@ public class Query extends Exp {
 				n = qIndex(query, node);
 				min = Math.min(min, n);
 			}
-			
+                        
+			if (exp.hasPath()){
+                            // x rdf:type t
+                            // x rdf:type/rdfs:subClassOf* t
+                            Exp ep = exp.getPath();
+                            ep.getEdge().setIndex(edge.getIndex());
+                            for (int i=0; i<ep.nbNode(); i++){ 
+				Node node = ep.getNode(i);
+				n = qIndex(query, node);
+				min = Math.min(min, n);
+			}
+                        }
 			break;
 			
 		case VALUES:
@@ -2219,6 +2243,69 @@ public class Query extends Exp {
         public boolean isOptional(){
             return isOptional;
         }
+
+        public void recordPredicate(Node p, Edge edge) {
+            Integer i = ptable.get(p.getLabel());
+            if (i == null){
+                i = 0;
+            }
+            ptable.put(p.getLabel(), i+1);
+            etable.put(p.getLabel(), edge);
+        }
+
+        public int nbPredicate(Node p){
+            Integer n = ptable.get(p.getLabel());
+            if (n == null){
+                return 0;
+            }
+            return n;
+        }
+        
+        public Edge getEdge(Node p){
+            return etable.get(p.getLabel());
+        }
+
+    /**
+     * @return the queryProfile
+     */
+    public int getQueryProfile() {
+        return queryProfile;
+    }
+
+    /**
+     * @param queryProfile the queryProfile to set
+     */
+    public void setQueryProfile(int queryProfile) {
+        this.queryProfile = queryProfile;
+    }
+
+    /**
+     * @return the isPathType
+     */
+    public boolean isPathType() {
+        return isPathType;
+    }
+
+    /**
+     * @param isPathType the isPathType to set
+     */
+    public void setPathType(boolean isPathType) {
+        this.isPathType = isPathType;
+    }
+
+    /**
+     * @return the isStorePath
+     */
+    public boolean isStorePath() {
+        return isStorePath;
+    }
+
+    /**
+     * @param isStorePath the isStorePath to set
+     */
+    public void setStorePath(boolean isStorePath) {
+        this.isStorePath = isStorePath;
+    }
 	
 	
 }

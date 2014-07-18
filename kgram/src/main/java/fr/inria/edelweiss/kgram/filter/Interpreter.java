@@ -147,6 +147,15 @@ public class Interpreter implements Evaluator, ExprType {
     public Object eval(Expr exp, Environment env) {
         return eval(exp, env, producer);
     }
+    
+    // Integer to IDatatype to Node
+    // for kgram internal use of java values
+    // e.g. count(*) ...
+    public Node cast(Object obj, Environment env, Producer p){
+        Object val = proxy.cast(obj, env, p);
+        Node node = p.getNode(val);
+        return node;
+    }
 
     public Object eval(Expr exp, Environment env, Producer p) {
         //System.out.println("Interpret: " + exp + " " + env.getClass().getName());

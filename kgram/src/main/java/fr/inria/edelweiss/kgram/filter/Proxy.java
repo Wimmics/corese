@@ -44,6 +44,8 @@ public interface Proxy {
 
 	// functions isURI regex
 	Object eval(Expr exp, Environment env, Producer p, Object[] args);
+        
+        Object cast(Object obj, Environment env, Producer p);
 	
 	Object function(Expr exp, Environment env, Producer p);
 

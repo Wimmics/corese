@@ -58,6 +58,7 @@ import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -70,7 +71,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-06-02";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-07-14";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -98,7 +99,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem duplicate;
     private JMenuItem duplicateFrom;
     private JMenuItem newQuery;
-    private JMenuItem runRules;
+    private JMenuItem runRules, runRulesOpt;
     private JMenuItem reset;
     private ButtonGroup myRadio;
     private JRadioButton kgramBox;
@@ -479,6 +480,8 @@ public class MainFrame extends JFrame implements ActionListener {
         newQuery.addActionListener(this);
         runRules = new JMenuItem("Run Rules");
         runRules.addActionListener(this);
+        runRulesOpt = new JMenuItem("Run Rules Optimize");
+        runRulesOpt.addActionListener(this);        
         reset = new JMenuItem("Reset");
         reset.addActionListener(this);
         apropos = new JMenuItem("About Corese");
@@ -584,6 +587,7 @@ public class MainFrame extends JFrame implements ActionListener {
         editMenu.add(newQuery);
 
         engineMenu.add(runRules);
+        engineMenu.add(runRulesOpt);
         engineMenu.add(reset);
         engineMenu.add(refresh);
 //        engineMenu.add(coreseBox);
@@ -967,9 +971,12 @@ public class MainFrame extends JFrame implements ActionListener {
             newQuery();
         } //Applique les règles chargées
         else if (e.getSource() == runRules) {
-            myCorese.runRuleEngine();
-            appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
-        } //Remet tout à zéro
+           runRules(false);          
+        } 
+        else if (e.getSource() == runRulesOpt) {
+           runRules(true);
+        }        
+        //Remet tout à zéro
         else if (e.getSource() == reset) {
             ongletListener.getTextPaneLogs().setText("");
             ongletListener.getListLoadedFiles().removeAll();
@@ -1013,7 +1020,19 @@ public class MainFrame extends JFrame implements ActionListener {
             String query = itable.get(e.getSource());
             execPlus(query);
         }                
-    }    
+    } 
+    
+    void runRules(boolean opt){
+        if (opt){
+            cbrdfs.setSelected(false);
+            setRDFSEntailment(false);
+        }
+        Date d1 = new Date();
+        myCorese.runRuleEngine(opt);
+        Date d2 = new Date();
+        appendMsg("\nrules applied... \n" + myCapturer.getContent() + "\ndone.\n");
+        appendMsg("time: " + (d2.getTime() - d1.getTime()) / (1000.0));
+    }
 
     
     String defaultQuery(){
@@ -1288,6 +1307,8 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
     void setMyCoreseNewInstance(boolean rdfs) {
+        // Index the graph using int index instead of IDatatype values
+        Graph.setCompareIndex(true);
         myCorese = GraphEngine.create(rdfs);       
     }
     

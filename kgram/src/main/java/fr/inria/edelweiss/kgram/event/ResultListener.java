@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.event;
 
+import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -34,6 +35,8 @@ public interface ResultListener {
 	boolean enter(Entity ent, Regex exp, int size);
 	
 	boolean leave(Entity ent, Regex exp, int size);
+        
+        boolean listen(Edge edge, Entity ent);
         
         Exp listen(Exp exp, int n);
 	

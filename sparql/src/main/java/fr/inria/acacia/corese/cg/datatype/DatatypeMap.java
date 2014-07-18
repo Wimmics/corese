@@ -321,6 +321,12 @@ public class DatatypeMap implements Cst, RDF {
 		return null;
 	}
 	
+        public static IDatatype cast(Object obj){
+            if (obj instanceof Integer){
+                return newInstance((Integer) obj);
+            }
+            return newInstance(obj.toString());
+        }
 
 	public static IDatatype newInstance(double result) {
 		return new CoreseDouble(result);

@@ -414,6 +414,7 @@ public class RuleEngine implements Engine {
 
             if (isOptimize){
                 rw.start(loop);
+                rw.setTrace(trace);
             }
             for (Rule rule : rules) {
 
@@ -431,7 +432,7 @@ public class RuleEngine implements Engine {
                     if (loop == 0) {
                         // run all rules, add all solutions
                         t = record(rule, loopIndex);
-                        nbres = process(rule, null, list, loop, loopIndex, -1, nbrule);
+                        nbres = process(rule, t, null, list, loop, loopIndex, -1, nbrule);
                         if (rule.isClosure()){
                             // rule run at saturation: record nb edge after saturation
                             t = record(rule, loopIndex);
@@ -447,9 +448,10 @@ public class RuleEngine implements Engine {
                         int save = graph.size();
                         t = record(rule, loopIndex);
                         ITable ot = getRecord(rule);
-                        rw.setLoop(ot.getIndex());
                         if (accept(rule, ot, t)) {
-                            nbres = process(rule, null, list, loop, loopIndex, ot.getIndex(), nbrule);
+                            rw.setLoop(ot.getIndex());
+                            rw.start(t);
+                            nbres = process(rule, t, null, list, loop, loopIndex, ot.getIndex(), nbrule);
                             if (rule.isClosure()){
                                 t = record(rule, loopIndex);
                             }
@@ -465,7 +467,7 @@ public class RuleEngine implements Engine {
 
                     rw.finish(rule);
                 } else {
-                    nbres = process(rule, null, list, loop, -1, -1, nbrule);
+                    nbres = process(rule, null, null, list, loop, -1, -1, nbrule);
                     nbrule++;
                 }
 
@@ -539,7 +541,7 @@ public class RuleEngine implements Engine {
     /**
      * Process one rule Store created edges into list
      */
-    int process(Rule rule, List<Entity> current, List<Entity> list, int loop, int loopIndex, int prevIndex, int nbr) {
+    int process(Rule rule, ITable t, List<Entity> current, List<Entity> list, int loop, int loopIndex, int prevIndex, int nbr) {
         if (trace){
            System.out.println(loop + " : " + nbr + "\n" + rule.getAST());
         }
@@ -915,6 +917,8 @@ public class RuleEngine implements Engine {
     class ITable extends Hashtable<String, Integer> {
 
         private int index;
+        private Node predicate;
+        private int count = 0;
 
         ITable(int n) {
             index = n;
@@ -932,6 +936,34 @@ public class RuleEngine implements Engine {
          */
         public void setIndex(int index) {
             this.index = index;
+        }
+
+        /**
+         * @return the count
+         */
+        public int getCount() {
+            return count;
+        }
+
+        /**
+         * @param count the count to set
+         */
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        /**
+         * @return the predicate
+         */
+        public Node getPredicate() {
+            return predicate;
+        }
+
+        /**
+         * @param predicate the predicate to set
+         */
+        public void setPredicate(Node predicate) {
+            this.predicate = predicate;
         }
     }
 
@@ -985,13 +1017,16 @@ public class RuleEngine implements Engine {
      * Rule is selected if one of its predicate has a new triple in graph
      */
     boolean accept(Rule rule, ITable told, ITable tnew) {
+        int count = 0;
         for (Node pred : rule.getPredicates()) {
             String name = pred.getLabel();
             if (tnew.get(name) > told.get(name)) {
-                return true;
+                count++;               
+                tnew.setPredicate(pred);
             }
         }
-        return false;
+        tnew.setCount(count);
+        return count > 0;
     }
 
     /**

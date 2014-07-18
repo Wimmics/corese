@@ -64,6 +64,7 @@ public class Graph //implements IGraph
     static final String SKOLEM = ExpType.SKOLEM;
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;
+    private static boolean distinctDatatype = false;
     /**
      * Synchronization:
      *
@@ -308,8 +309,25 @@ public class Graph //implements IGraph
         }
     }
     
+    /**
+     * Edge Index is sorted on integer index value of Node
+     * PRAGMA:
+     * Do not use when QueryProcess with several graphs
+     * (index would not be the same in different graphs)
+     */
     public static void setCompareIndex(boolean b){
         EdgeIndex.setCompareIndex(b);
+    }
+    
+    /**
+     * if true: Keep number datatypes separate
+     * but Join fails on different datatypes
+     * default is false (hence join works)
+     * PRAGMA:
+     * true works only with setCompareIndex(true)
+     */
+    public static void setDistinctDatatype(boolean b){
+        distinctDatatype = b;
     }
     
      public static void setNodeAsDatatype(boolean b){
@@ -1242,7 +1260,12 @@ public class Graph //implements IGraph
             indexNode(dt, node);
         } else {
             literal.put(dt, (Entity) node);
-            indexLiteralNode(dt, node);       
+            if (distinctDatatype){
+               indexNode(dt, node);
+            }
+            else {
+                indexLiteralNode(dt, node); 
+            }
         }
     }
    

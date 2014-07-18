@@ -96,6 +96,11 @@ public class ProxyImpl implements Proxy, ExprType {
     public void start() {
         number = 0;
     }
+    
+     @Override 
+     public IDatatype cast(Object obj, Environment env, Producer p){
+         return DatatypeMap.cast(obj);
+     }
 
     @Override
     public Object eval(Expr exp, Environment env, Producer p, Object o1, Object o2) {

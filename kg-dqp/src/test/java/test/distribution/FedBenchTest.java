@@ -13,8 +13,6 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import java.io.*;
 import java.net.MalformedURLException;
 import org.junit.*;
-import wsimport.KgramWS.RemoteProducer;
-import wsimport.KgramWS.RemoteProducerServiceClient;
 
 /**
  *
@@ -90,21 +88,21 @@ public class FedBenchTest {
 ////        System.out.println(resZ);
     }
     
-    @Test
-    @Ignore
-    public void loadingTest() throws MalformedURLException {
-        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-
-        kg1.initEngine();
-        kg2.initEngine();
-        
-        String path1 = "/Users/gaignard/Desktop/FedBench-dataset/chebi.n3";
-        String path2 = "/Users/gaignard/Desktop/FedBench-dataset/kegg.dr.n3";
-        
-        kg2.loadRDF(path2);
-        kg1.loadRDF(path1);
-        System.out.println("Load done");
-    }
+//    @Test
+//    @Ignore
+//    public void loadingTest() throws MalformedURLException {
+//        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.6-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//
+//        kg1.initEngine();
+//        kg2.initEngine();
+//        
+//        String path1 = "/Users/gaignard/Desktop/FedBench-dataset/chebi.n3";
+//        String path2 = "/Users/gaignard/Desktop/FedBench-dataset/kegg.dr.n3";
+//        
+//        kg2.loadRDF(path2);
+//        kg1.loadRDF(path1);
+//        System.out.println("Load done");
+//    }
     
 }

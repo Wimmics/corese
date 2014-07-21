@@ -34,6 +34,22 @@ public class ServiceGroupingJows2013Test {
             + "UNION"
             + "{ $drug <http://dbpedia.org/ontology/Drug/meltingPoint> $melt . }"
             + "}";
+
+    static String LS2 = "SELECT ?predicate ?object WHERE {\n"
+            + "    { <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00201> ?predicate ?object . }\n"
+            + "    UNION    \n"
+            + "    { <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00201> <http://www.w3.org/2002/07/owl#sameAs> ?caff .\n"
+            + "      ?caff ?predicate ?object . } \n"
+            + "}";
+
+    static String LS3 = "SELECT ?Drug ?IntDrug ?IntEffect WHERE {\n"
+            + "    ?Drug <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Drug> .\n"
+            + "    ?Drug <http://www.w3.org/2002/07/owl#sameAs> ?y .\n"
+            + "    ?Int <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/interactionDrug1> ?y .\n"
+            + "    ?Int <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/interactionDrug2> ?IntDrug .\n"
+            + "    ?Int <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/text> ?IntEffect . \n"
+            + "}";
+
     static String LS4 = "SELECT ?drugDesc ?cpd ?equation WHERE {"
             + "     ?drug <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugCategory> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugcategory/cathartics> ."
             + "     ?drug <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/keggCompoundId> ?cpd ."
@@ -88,6 +104,35 @@ public class ServiceGroupingJows2013Test {
 
     @After
     public void tearDown() {
+    }
+
+    @Test
+    public void rewritingTest() throws MalformedURLException, EngineException {
+
+//        String query = LS1; //TODO OK 
+//        String query = LS2; //TODO OK 
+//        String query = LS3; //TODO fix rdf:type and sameAs predicates -> DONE
+//        String query = LS4; //TODO OK
+//        String query = LS5; //TODO OK
+//        String query = LS6; //TODO OK
+        String query = LS7; //TODO OK
+        
+        Graph g = Graph.create();
+        QueryProcessDQP execDQP = QueryProcessDQP.create(g);
+        execDQP.addVisitor(new ServiceGrouper(execDQP));
+        ProviderImplCostMonitoring p = ProviderImplCostMonitoring.create();
+        execDQP.set(p);
+
+//        execDQP.setOptimize(false);
+        execDQP.addRemote(new URL("http://" + host + ":8080/kgram/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://" + host + ":8081/kgram/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://" + host + ":8082/kgram/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://" + host + ":8083/kgram/sparql"), WSImplem.REST);
+
+        StopWatch sw = new StopWatch();
+        sw.start();
+        Mappings maps = execDQP.query(query);
+        System.out.println(maps);
     }
 
     @Test
@@ -177,7 +222,7 @@ public class ServiceGroupingJows2013Test {
                 + "    ?enzyme <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/ns/kegg#Enzyme> . \n"
                 + "}\n"
                 + "PRAGMA {kg:service kg:slice 50}";
-        
+
         String queryKeggDrugbankType = "SELECT ?drugDesc ?cpd ?equation WHERE {\n"
                 + "    SERVICE <http://localhost:3030/KEGG> {\n"
                 + "        {?enzyme <http://bio2rdf.org/ns/kegg#xSubstrate> ?cpd . \n"
@@ -192,7 +237,7 @@ public class ServiceGroupingJows2013Test {
                 + "    ?enzyme <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/ns/kegg#Enzyme> . \n"
                 + "}";
 //                + "PRAGMA {kg:service kg:slice 50}";
-        
+
         String queryDrugbankTypeKegg = "SELECT ?drugDesc ?cpd ?equation WHERE {\n"
                 + "    SERVICE <http://localhost:3030/drugbank> {\n"
                 + "        {?drug <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/description> ?drugDesc . \n"
@@ -205,10 +250,9 @@ public class ServiceGroupingJows2013Test {
                 + "        ?reaction <http://bio2rdf.org/ns/kegg#xEnzyme> ?enzyme . \n"
                 + "        ?reaction <http://bio2rdf.org/ns/kegg#equation> ?equation . }\n"
                 + "    }\n"
-                + "}" 
+                + "}"
                 + "PRAGMA {kg:service kg:slice 50}";
-        
-        
+
         String query = queryKeggDrugbankType;
 
         System.out.println("============= REST service grouping ==============");

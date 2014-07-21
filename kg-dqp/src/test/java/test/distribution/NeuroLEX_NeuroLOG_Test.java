@@ -29,8 +29,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import wsimport.KgramWS.RemoteProducer;
-import wsimport.KgramWS.RemoteProducerServiceClient;
 
 /**
  *
@@ -52,11 +50,12 @@ public class NeuroLEX_NeuroLOG_Test {
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
 
-        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://localhost:8091/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://localhost:8092/kgserver-1.0.7-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
-        kg1.initEngine();
-        kg2.initEngine();
+        
+//        kg1.initEngine();
+//        kg2.initEngine();
 
         File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-single-source-neurolex.rdf");
         File rep2 = new File("/Users/gaignard/Desktop/Open-LS-LinkedData/nlx_stage_all.owl");
@@ -70,9 +69,9 @@ public class NeuroLEX_NeuroLOG_Test {
 //        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 
         DataHandler data1 = new DataHandler(new FileDataSource(rep1));
-        kg1.uploadRDF(data1);
+//        kg1.uploadRDF(data1);
         DataHandler data2 = new DataHandler(new FileDataSource(rep2));
-        kg2.uploadRDF(data2);
+//        kg2.uploadRDF(data2);
     }
 
     @After

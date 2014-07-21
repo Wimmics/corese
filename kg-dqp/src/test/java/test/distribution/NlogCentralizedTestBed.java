@@ -33,8 +33,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import wsimport.KgramWS.RemoteProducer;
-import wsimport.KgramWS.RemoteProducerServiceClient;
 
 /**
  *
@@ -55,12 +53,12 @@ public class NlogCentralizedTestBed {
 
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 //        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 //        final RemoteProducer kg3 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8093/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 //        final RemoteProducer kg4 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8094/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
-        kg1.initEngine();
+//        kg1.initEngine();
 //        kg2.initEngine();
 //        kg3.initEngine();
 //        kg4.initEngine();
@@ -93,7 +91,7 @@ public class NlogCentralizedTestBed {
 
             @Override
             public void run() {
-                kg1.uploadRDF(data1);
+//                kg1.uploadRDF(data1);
             }
         });
 //        executor.submit(new Runnable() {

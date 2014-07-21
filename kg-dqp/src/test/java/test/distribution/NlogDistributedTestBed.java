@@ -31,8 +31,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import wsimport.KgramWS.RemoteProducer;
-import wsimport.KgramWS.RemoteProducerServiceClient;
 
 /**
  *
@@ -53,20 +51,20 @@ public class NlogDistributedTestBed {
 
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
-        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg3 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8093/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
-        final RemoteProducer kg4 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8094/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg1 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8091/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg2 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8092/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg3 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8093/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
+//        final RemoteProducer kg4 = RemoteProducerServiceClient.getPort("http://cavaco.unice.fr:8094/kgserver-1.0.2-kgram-webservice/RemoteProducerService.RemoteProducerServicePort");
 
-        kg1.initEngine();
-        kg2.initEngine();
-        kg3.initEngine();
-        kg4.initEngine();
-
-        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-irisa.rdf");
-        File rep2 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-ifr49.rdf");
-        File rep3 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-asclepios.rdf");
-        File rep4 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-i3s.rdf");
+//        kg1.initEngine();
+//        kg2.initEngine();
+//        kg3.initEngine();
+//        kg4.initEngine();
+//
+//        File rep1 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-irisa.rdf");
+//        File rep2 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-ifr49.rdf");
+//        File rep3 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-asclepios.rdf");
+//        File rep4 = new File("/Users/gaignard/Documents/These/DistributedSemanticRepositories/NeuroLOG-LinkedData/linkedData-source-i3s.rdf");
 
 //        Map<String, Object> reqCtxt1 = ((BindingProvider) kg1).getRequestContext();
 //        reqCtxt1.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
@@ -81,38 +79,38 @@ public class NlogDistributedTestBed {
 //        reqCtxt2.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 1024);
 //        reqCtxt2.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
 
-        final DataHandler data1 = new DataHandler(new FileDataSource(rep1));
-        final DataHandler data2 = new DataHandler(new FileDataSource(rep2));
-        final DataHandler data3 = new DataHandler(new FileDataSource(rep3));
-        final DataHandler data4 = new DataHandler(new FileDataSource(rep4));
+//        final DataHandler data1 = new DataHandler(new FileDataSource(rep1));
+//        final DataHandler data2 = new DataHandler(new FileDataSource(rep2));
+//        final DataHandler data3 = new DataHandler(new FileDataSource(rep3));
+//        final DataHandler data4 = new DataHandler(new FileDataSource(rep4));
 
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(new Runnable() {
 
             @Override
             public void run() {
-                kg1.uploadRDF(data1);
+//                kg1.uploadRDF(data1);
             }
         });
         executor.submit(new Runnable() {
 
             @Override
             public void run() {
-                kg2.uploadRDF(data2);
+//                kg2.uploadRDF(data2);
             }
         });
         executor.submit(new Runnable() {
 
             @Override
             public void run() {
-                kg3.uploadRDF(data3);
+//                kg3.uploadRDF(data3);
             }
         });
         executor.submit(new Runnable() {
 
             @Override
             public void run() {
-                kg4.uploadRDF(data4);
+//                kg4.uploadRDF(data4);
             }
         });
         executor.shutdown();

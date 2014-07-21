@@ -9,7 +9,6 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
-import fr.inria.edelweiss.kgdqp.sparqlendpoint.SPARQLSoapEndpointClient;
 import fr.inria.edelweiss.kgdqp.sparqlendpoint.SparqlEndpointInterface;
 import fr.inria.edelweiss.kgdqp.strategies.SourceSelectorWS;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizer;
@@ -53,8 +52,9 @@ public class RemoteProducerWSImpl implements Producer {
             rp = new SPARQLRestEndpointClient(url);
             logger.debug("REST endpoint instanciated " + url);
         } else {
-            rp = new SPARQLSoapEndpointClient(url);
-            logger.debug("SOAP endpoint instanciated " + url);
+//            rp = new SPARQLSoapEndpointClient(url);
+            logger.error("SOAP endpoint not supported anymore " + url);
+            rp = null;
         }
     }
 

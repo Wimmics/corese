@@ -6,6 +6,7 @@
 package fr.inria.edelweiss.kgdqp.core;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -18,7 +19,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -42,16 +42,21 @@ public class FedQueryingCLI {
 
         List<String> endpoints = new ArrayList<String>();
         String queryPath = null;
+        int slice = -1;
 
         Options options = new Options();
         Option helpOpt = new Option("h", "help", false, "print this message");
         Option queryOpt = new Option("q", "query", true, "specify the sparql query file");
         Option endpointOpt = new Option("e", "endpoints", true, "the list of federated sparql endpoint URLs");
+        Option groupingOpt = new Option("g", "grouping", true, "triple pattern optimisation");
+        Option slicingOpt = new Option("s", "slicing", true, "size of the slicing parameter");
         Option versionOpt = new Option("v", "version", false, "print the version information and exit");
         options.addOption(queryOpt);
         options.addOption(endpointOpt);
         options.addOption(helpOpt);
         options.addOption(versionOpt);
+        options.addOption(groupingOpt);
+        options.addOption(slicingOpt);
 
         String header = "Corese/KGRAM DQP command line interface";
         String footer = "\nPlease report any issue to alban.gaignard@cnrs.fr";
@@ -75,6 +80,14 @@ public class FedQueryingCLI {
         } else {
             queryPath = cmd.getOptionValue("q");
         }
+        if (cmd.hasOption("s")) {
+            try {
+                slice = Integer.parseInt(cmd.getOptionValue("s"));
+            } catch (NumberFormatException ex) {
+                logger.warn(cmd.getOptionValue("s") + " is not formatted as number for the slicing parameter");
+                logger.warn("Slicing disabled");
+            }
+        }
         if (cmd.hasOption("v")) {
             logger.info("version 3.0.4-SNAPSHOT");
             System.exit(0);
@@ -83,6 +96,13 @@ public class FedQueryingCLI {
         /////////////////
         Graph graph = Graph.create();
         QueryProcessDQP exec = QueryProcessDQP.create(graph);
+        exec.setGroupingEnabled(cmd.hasOption("g"));
+        if (slice > 0) {
+            exec.setSlice(slice);
+        }
+        Provider sProv = ProviderImplCostMonitoring.create();
+        exec.set(sProv);
+
         for (String url : endpoints) {
             try {
                 exec.addRemote(new URL(url), WSImplem.REST);
@@ -97,8 +117,8 @@ public class FedQueryingCLI {
         try {
             reader = new BufferedReader(new FileReader(queryPath));
         } catch (FileNotFoundException ex) {
-             logger.error("Query file "+queryPath+" not found !");
-             System.exit(1);
+            logger.error("Query file " + queryPath + " not found !");
+            System.exit(1);
         }
         char[] buf = new char[1024];
         int numRead = 0;
@@ -110,15 +130,15 @@ public class FedQueryingCLI {
             }
             reader.close();
         } catch (IOException ex) {
-           logger.error("Error while reading query file "+queryPath);
-           System.exit(1);
+            logger.error("Error while reading query file " + queryPath);
+            System.exit(1);
         }
 
         String sparqlQuery = fileData.toString();
 
-        Query q = exec.compile(sparqlQuery,null);
-        System.out.println(q);
-        
+//        Query q = exec.compile(sparqlQuery, null);
+//        System.out.println(q);
+
         StopWatch sw = new StopWatch();
         sw.start();
         Mappings map = exec.query(sparqlQuery);

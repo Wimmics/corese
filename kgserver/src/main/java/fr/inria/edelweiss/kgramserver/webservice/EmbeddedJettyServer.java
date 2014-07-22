@@ -96,6 +96,8 @@ public class EmbeddedJettyServer {
             ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
             jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
             jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.edelweiss.kgramserver.webservice");
+            jerseyServletHolder.setInitParameter("requestBufferSize", "8192");
+            jerseyServletHolder.setInitParameter("headerBufferSize", "8192");
             Context servletCtx = new Context(server, "/kgram", Context.SESSIONS);
             servletCtx.addServlet(jerseyServletHolder, "/*");
             logger.info("----------------------------------------------");

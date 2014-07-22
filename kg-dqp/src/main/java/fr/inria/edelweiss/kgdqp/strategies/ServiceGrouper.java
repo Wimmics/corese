@@ -56,7 +56,7 @@ public class ServiceGrouper implements QueryVisitor {
         Exp body = ast.getBody();
         logger.info("Building indices for ");
         logger.info(body.toSparql());
-        
+
         buildIndex(body, indexEdgeSource, indexSourceEdge, ast, orderedTPs);
         // Source -> property index initialization
         for (Triple t : indexEdgeSource.keySet()) {
@@ -179,9 +179,19 @@ public class ServiceGrouper implements QueryVisitor {
 
         for (int i = 0; i < exp.size(); i++) {
             Exp subExp = exp.get(i);
-            if (subExp.isOptional()) {
+            if (subExp.isBGP()) {
+                BasicGraphPattern bgp = (BasicGraphPattern) subExp;
+                Exp arg0 = bgp.get(0);
+                bgp.set(0, rewriteQueryWithServices(arg0, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
+            } else if (subExp.isOptional()) {
                 Option opt = (Option) subExp;
                 //TODO include optional elements into services ? 
+                Exp arg0 = opt.get(0);
+                Exp arg1 = opt.get(1);
+                 //recursion 1
+                opt.set(0, rewriteQueryWithServices(arg0, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
+                //recursion 2
+                opt.set(1, rewriteQueryWithServices(arg1, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
             } else if (subExp.isUnion()) {
                 Or union = (Or) subExp;
                 Exp arg0 = union.get(0);
@@ -197,63 +207,82 @@ public class ServiceGrouper implements QueryVisitor {
             } else if (subExp.isTriple() && (!subExp.isFilter())) {
                 consecutiveTP.add(subExp);
                 tpToBeRemoved.add(subExp);
-            } 
+            }
         }
 
         Exp services = null;
         /// Grouping of consecutive TPs into SERVICE clauses
         if (consecutiveTP.size() > 0) {
-             logger.info("Found consecutive triple patterns into "+exp.toSparql());
+            logger.info("Found consecutive triple patterns into " + exp.toSparql());
             // SERVICE clause generation
             services = getSparqlServices(globalFilters, consecutiveTP, indexSourceEdge, indexEdgeSource, orderedTPs);
             exp.getBody().removeAll(tpToBeRemoved);
         } else {
-            logger.info("No consecutive triple patterns into "+exp.toSparql());
+            logger.info("No consecutive triple patterns into " + exp.toSparql());
             return exp;
         }
 
         // RANKING consecutive SERVICE clauses
-        HashMap<Service, Integer> rankedServices = new HashMap<Service, Integer>();
+        HashMap<Exp, Integer> rankedExpressions = new HashMap<Exp, Integer>();
 
         logger.info("Ranking : ");
         logger.info(services.toSparql());
         for (Exp e : services.getBody()) {
-            if (e instanceof Service) {
-                Service s = (Service) e;
-                int freeVars = countFreeVars(s);
-                logger.info(freeVars + " free variables for " + s.toSparql());
-                rankedServices.put(s, freeVars);
-            }
+//            if (e instanceof Service) {
+//                Service s = (Service) e;
+            int freeVars = countFreeVars(e);
+            logger.info(freeVars + " free variables for " + e.toSparql());
+            rankedExpressions.put(e, freeVars);
+//            } else if (e instanceof Service) {
+//                //TODO What if e is a TP (rdf:type or sameas predicates !!
+//                
+//            }
         }
 
         // REORDERING consecutive SERVICE clauses
-        logger.info("Sorting services with the same score");
-        ArrayList<Map.Entry<Service, Integer>> serviceList = new ArrayList<Map.Entry<Service, Integer>>();
-        for (Map.Entry<Service, Integer> e : rankedServices.entrySet()) {
+        logger.info("Sorting services possibly with the same score");
+        ArrayList<Map.Entry<Exp, Integer>> serviceList = new ArrayList<Map.Entry<Exp, Integer>>();
+        for (Map.Entry<Exp, Integer> e : rankedExpressions.entrySet()) {
             serviceList.add(e);
         }
 
         final ArrayList<Exp> initTps = consecutiveTP;
-        Collections.sort(serviceList, new Comparator<Map.Entry<Service, Integer>>() {
+        Collections.sort(serviceList, new Comparator<Map.Entry<Exp, Integer>>() {
             @Override
-            public int compare(Map.Entry<Service, Integer> o1, Map.Entry<Service, Integer> o2) {
+            public int compare(Map.Entry<Exp, Integer> o1, Map.Entry<Exp, Integer> o2) {
                 if (o1.getValue() == o2.getValue()) {
-                    Service s1 = o1.getKey();
-                    Service s2 = o2.getKey();
+                    Exp e1 = o1.getKey();
+                    Exp e2 = o2.getKey();
 
-                    Exp e1 = s1.getBody().get(0).get(0);
-                    Exp e2 = s2.getBody().get(0).get(0);
-                    Integer initRankeE1 = getInitialRank(e1, initTps);
-                    Integer initRankeE2 = getInitialRank(e2, initTps);
+                    Exp firstE1 = null;
+                    Exp firstE2 = null;
+
+                    if (e1 instanceof Service) {
+                        firstE1 = e1.getBody().get(0).get(0);
+                    } else if (e1 instanceof Triple) {
+                        firstE1 = e1;
+                    } else {
+                        logger.warn("!!!!!!"); //TODO
+                    }
+                    if (e2 instanceof Service) {
+                        firstE2 = e2.getBody().get(0).get(0);
+                    } else if (e2 instanceof Triple) {
+                        firstE2 = e2;
+                    } else {
+                        logger.warn("!!!!!!"); //TODO
+                    }
+
+                    Integer initRankeE1 = getInitialRank(firstE1, initTps);
+                    Integer initRankeE2 = getInitialRank(firstE2, initTps);
 
                     if (initRankeE1 == -1) {
-                        logger.warn(e1.toSparql() + " was not found in " + initTps);
+                        logger.warn(firstE1.toSparql() + " was not found in " + initTps);
                     }
                     if (initRankeE2 == -1) {
-                        logger.warn(e2.toSparql() + " was not found in the list of consecutive triple patterns.");
+                        logger.warn(firstE2.toSparql() + " was not found in " + initTps);
                     }
 
-                    logger.info("Comparing : " + e1.toSparql() + " with " + e2.toSparql());
+                    logger.info("Comparing : " + firstE1.toSparql() + " with " + firstE2.toSparql());
                     return initRankeE1.compareTo(initRankeE2);
                 } else {
                     return o1.getValue().compareTo(o2.getValue());
@@ -262,7 +291,7 @@ public class ServiceGrouper implements QueryVisitor {
 
         });
 
-        for (Map.Entry<Service, Integer> e : serviceList) {
+        for (Map.Entry<Exp, Integer> e : serviceList) {
             exp.add(e.getKey());
         }
         logger.info(exp.toSparql());
@@ -290,43 +319,61 @@ public class ServiceGrouper implements QueryVisitor {
     }
 
     /**
-     * Counts free variables in an expression. 
+     * Counts free variables in an expression.
+     *
      * @param s an input expression.
-     * @return the number of free variables. 
+     * @return the number of free variables.
      */
     private int countFreeVars(Exp s) {
         int count = 0;
         ArrayList<Atom> freeVars = new ArrayList<Atom>();
-        for (Exp e : s.getBody()) {
-            if (e.isBGP()) {
-                count += countFreeVars(e);
-            } else if (e.isTriple()) {
-                Triple t = (Triple) e;
-                if (t.getSubject().isVariable() && !freeVars.contains(t.getSubject())) {
-                    freeVars.add(t.getSubject());
-                }
-                if (t.getObject().isVariable() && !freeVars.contains(t.getObject())) {
-                    freeVars.add(t.getObject());
-                }
-                if (t.getPredicate().isVariable() && !freeVars.contains(t.getPredicate())) {
-                    freeVars.add(t.getPredicate());
+        if (s instanceof Triple) {
+            Triple t = (Triple) s;
+            if (t.getSubject().isVariable() && !freeVars.contains(t.getSubject())) {
+                freeVars.add(t.getSubject());
+            }
+            if (t.getObject().isVariable() && !freeVars.contains(t.getObject())) {
+                freeVars.add(t.getObject());
+            }
+            if (t.getPredicate().isVariable() && !freeVars.contains(t.getPredicate())) {
+                freeVars.add(t.getPredicate());
+            }
+            count += freeVars.size();
+            return count;
+        } else {
+            for (Exp e : s.getBody()) {
+                if (e.isBGP()) {
+                    count += countFreeVars(e);
+                } else if (e.isTriple()) {
+                    Triple t = (Triple) e;
+                    if (t.getSubject().isVariable() && !freeVars.contains(t.getSubject())) {
+                        freeVars.add(t.getSubject());
+                    }
+                    if (t.getObject().isVariable() && !freeVars.contains(t.getObject())) {
+                        freeVars.add(t.getObject());
+                    }
+                    if (t.getPredicate().isVariable() && !freeVars.contains(t.getPredicate())) {
+                        freeVars.add(t.getPredicate());
+                    }
                 }
             }
+            count += freeVars.size();
+            return count;
         }
-        count += freeVars.size();
-        return count;
     }
 
     /**
-     * Transdorms a flat list of consecutive triple patterns into possibly a set of SERVICE clauses. 
-     * If TP candidates are hosted in more than one single data source, they are excluded from SERVICE clauses. 
-     * 
+     * Transdorms a flat list of consecutive triple patterns into possibly a set
+     * of SERVICE clauses. If TP candidates are hosted in more than one single
+     * data source, they are excluded from SERVICE clauses.
+     *
      * @param globalFilters some of the query filters. To be refined.
-     * @param consecutiveTPs the list of consecutive triple paterns to be possibly grouped. 
+     * @param consecutiveTPs the list of consecutive triple paterns to be
+     * possibly grouped.
      * @param indexSourceEdge the data source -> triple pattern index.
      * @param indexEdgeSource the triple pattern -> data source index.
      * @param orderedTPs the flat list of TPs appearing in the inout query.
-     * @return an expression containing triple patterns possibly grouped. 
+     * @return an expression containing triple patterns possibly grouped.
      */
     public Exp getSparqlServices(ArrayList<Exp> globalFilters, ArrayList<Exp> consecutiveTPs,
             HashMap<String, ArrayList<Triple>> indexSourceEdge,
@@ -381,16 +428,18 @@ public class ServiceGrouper implements QueryVisitor {
     }
 
     /**
-     * Transdorms a flat list of consecutive triple patterns into possibly a set of SERVICE clauses. 
-     * If TP candidates are hosted in more than one single data source, they are included into SERVICE clauses
-     * through OPTIONAL statements. 
-     * 
-     * @param globalFilters some of the query filters. To be refined. 
-     * @param consecutiveTPs the list of consecutive triple paterns to be possibly grouped. 
-     * @param indexSourceEdge the data source -> triple pattern index. 
-     * @param indexEdgeSource the triple pattern -> data source index. 
+     * Transdorms a flat list of consecutive triple patterns into possibly a set
+     * of SERVICE clauses. If TP candidates are hosted in more than one single
+     * data source, they are included into SERVICE clauses through OPTIONAL
+     * statements.
+     *
+     * @param globalFilters some of the query filters. To be refined.
+     * @param consecutiveTPs the list of consecutive triple paterns to be
+     * possibly grouped.
+     * @param indexSourceEdge the data source -> triple pattern index.
+     * @param indexEdgeSource the triple pattern -> data source index.
      * @param orderedTPs the flat list of TPs appearing in the inout query.
-     * @return an expression containing triple patterns possibly grouped. 
+     * @return an expression containing triple patterns possibly grouped.
      */
     public Exp getSparqlServicesWithOptionals(ArrayList<Exp> globalFilters, ArrayList<Exp> consecutiveTPs,
             HashMap<String, ArrayList<Triple>> indexSourceEdge,
@@ -442,10 +491,11 @@ public class ServiceGrouper implements QueryVisitor {
     }
 
     /**
-     * Checks if a triple pattern exists in the source -> triple pattern index. 
+     * Checks if a triple pattern exists in the source -> triple pattern index.
+     *
      * @param t the triple patterns.
-     * @param indexSourceEdge the source -> triple pattern index. 
-     * @return true if it exists in the index, false otherwise. 
+     * @param indexSourceEdge the source -> triple pattern index.
+     * @return true if it exists in the index, false otherwise.
      */
     public boolean existsInSourceIndex(Triple t, HashMap<String, ArrayList<Triple>> indexSourceEdge) {
         for (String url : indexSourceEdge.keySet()) {
@@ -458,8 +508,9 @@ public class ServiceGrouper implements QueryVisitor {
     }
 
     /**
-     * Prints the content of the triple pattern -> data source index. 
-     * @param indexEdgeSource the triple pattern -> data source index. 
+     * Prints the content of the triple pattern -> data source index.
+     *
+     * @param indexEdgeSource the triple pattern -> data source index.
      */
     private void dumpEdgeIndex(HashMap<Triple, ArrayList<String>> indexEdgeSource) {
         logger.info("Edge index");
@@ -473,8 +524,9 @@ public class ServiceGrouper implements QueryVisitor {
     }
 
     /**
-     * Prints the content of the data source -> triple pattern. 
-     * @param indexSourceEdge the data source -> triple pattern. 
+     * Prints the content of the data source -> triple pattern.
+     *
+     * @param indexSourceEdge the data source -> triple pattern.
      */
     private void dumpSourceIndex(HashMap<String, ArrayList<Triple>> indexSourceEdge) {
         logger.info("Source index");

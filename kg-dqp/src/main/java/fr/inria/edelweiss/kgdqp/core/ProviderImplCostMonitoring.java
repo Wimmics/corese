@@ -378,7 +378,7 @@ public class ProviderImplCostMonitoring implements Provider {
 
             while (it.hasNext()) {
                 Mapping mapping = it.next();
-                System.out.println("Annotating " + mapping);
+//                System.out.println("Annotating " + mapping);
 
                 if (mapping != null) {
                     //TODO provenance for node result ; associated rwSparql ; associated endpoint

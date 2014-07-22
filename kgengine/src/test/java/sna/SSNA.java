@@ -1,5 +1,6 @@
 package sna;
 
+import fr.inria.edelweiss.kgram.api.core.Edge;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -89,6 +90,11 @@ public class SSNA implements ResultListener {
 
     @Override
     public void listen(Expr exp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean listen(Edge edge, Entity ent) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 	

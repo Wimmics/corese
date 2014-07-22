@@ -215,8 +215,11 @@ public class DqpRestAPI {
     @Path("/sparqlprov")
     public Response getProvTriplesJSONForGet(@QueryParam("query") String query, @DefaultValue("false") @QueryParam("tpgrouping") String tpgrouping, @QueryParam("slicing") String slicing) {
 
-        execDQP.setProvEnabled(true);
-        sProv.setProvEnabled(true);
+        DqpRestAPI.sProv = ProviderImplCostMonitoring.create();
+        DqpRestAPI.execDQP.set(sProv);
+        
+        DqpRestAPI.execDQP.setProvEnabled(true);
+        DqpRestAPI.sProv.setProvEnabled(true);
         logger.info("Federated querying: " + query);
 
         QueryProcessDQP.queryCounter.clear();

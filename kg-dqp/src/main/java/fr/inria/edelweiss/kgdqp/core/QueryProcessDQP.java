@@ -76,9 +76,9 @@ public class QueryProcessDQP extends QueryProcess {
     }
 
     /**
-     * 
+     *
      * @param groupingEnabled
-     * @return 
+     * @return
      */
     public ServiceGrouper setGroupingEnabled(boolean groupingEnabled) {
         this.groupingEnabled = groupingEnabled;
@@ -92,7 +92,11 @@ public class QueryProcessDQP extends QueryProcess {
     }
 
     public void addRemote(URL url, WSImplem implem) {
-        add(new RemoteProducerWSImpl(url, implem, this.isProvEnabled()));
+        if (implem.equals(WSImplem.REST)) {
+            add(new RemoteProducerWSImpl(url, implem, this.isProvEnabled()));
+        } else {
+            logger.error("SOAP web services not supported anymore for remote communications with "+url);
+        }
     }
 
     public void addRemoteSQL(String url, String driver, String login, String password) {

@@ -149,6 +149,7 @@ public class RestServiceGroupingTest {
     }
 
     @Test
+    @Ignore
     public void queryRewritingTest() throws MalformedURLException, EngineException {
         Graph graph = Graph.create(false);
         ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();

@@ -17,7 +17,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
@@ -48,6 +48,7 @@ public class RulesProvTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
+    @Ignore
     public void hello() {
         try {
             String commandLine = "-l /Users/gaignard/Desktop/out/ -r /Users/gaignard/Desktop/VIP-rules/";

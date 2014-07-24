@@ -107,6 +107,7 @@ public class ServiceGroupingJows2013Test {
     }
 
     @Test
+    @Ignore
     public void rewritingTest() throws MalformedURLException, EngineException {
 
 //        String query = LS1; //TODO OK 

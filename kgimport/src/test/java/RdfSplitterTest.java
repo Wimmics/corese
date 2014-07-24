@@ -5,8 +5,11 @@
  */
 
 import fr.inria.edelweiss.kgimport.RdfSplitter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import org.apache.commons.cli.ParseException;
 import org.junit.After;
@@ -14,7 +17,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -42,8 +44,12 @@ public class RdfSplitterTest {
     }
 
     @Test
-    public void rdfFragment() throws ParseException, IOException, FileNotFoundException {
-        String inPath = "/Users/gaignard/Documents/Experiences/ExpeFedBench-2013/FedBench-DS-2013/kegg/KEGG-2010-11";
+    public void rdfFragment() throws ParseException, IOException, FileNotFoundException, URISyntaxException {
+//        String inPath = "/Users/gaignard/Documents/Experiences/ExpeFedBench-2013/FedBench-DS-2013/kegg/KEGG-2010-11";
+        
+        URL in = JenaLoadingTest.class.getClassLoader().getResource("fromKEGG");
+        File f = new File(in.toURI());
+        String inPath = f.getAbsolutePath();
         
         String c1 = "-i "+inPath+" "
                 + "-o /tmp/frag -n 4";

@@ -140,9 +140,8 @@ public class GraphEngine implements IEngine {
 		rengine.setDebug(isDebug);
 		if (opt){
                     rengine.setSpeedUp(true);
-                    //rengine.setSkipPath(true);
-                    rengine.getQueryProcess().setListPath(true);
-                    //rengine.getQueryProcess().setPathType(true);
+                    rengine.setSkipPath(true);
+                    //rengine.getQueryProcess().setCachePath(true);
                     rengine.setTrace(true);
                 }
 		graph.process(rengine);

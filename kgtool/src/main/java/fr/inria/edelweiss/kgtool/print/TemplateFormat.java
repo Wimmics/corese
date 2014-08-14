@@ -112,7 +112,7 @@ public class TemplateFormat {
 	}
 	
 	String template(){
-		Transformer p = (Transformer) query.getPP();
+		Transformer p = (Transformer) query.getTransformer();
 		IDatatype dt = p.getResult(map);
 		return dt.getLabel();
 	}

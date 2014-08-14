@@ -4,7 +4,6 @@ import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.BPGNode;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
-import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import static fr.inria.edelweiss.kgram.api.core.Node.OBJECT;
@@ -45,12 +44,20 @@ public class StatsBasedEstimation implements IEstimate {
         //this();
     }
 
+    public StatsBasedEstimation(IProducer meta) {
+        if (!this.meta.statsEnabled()) {
+            System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sort !!");
+            return;
+        }
+        this.meta = meta;
+    }
+
     @Override
     public void estimate(BPGraph g, Producer producer, Object utility) {
         //**1 check the producer
-        if (producer instanceof Producer) {
+        if (producer instanceof IProducer) {
             this.meta = (IProducer) producer;
-            if (!this.meta.enabled()) {
+            if (!this.meta.statsEnabled()) {
                 System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sort !!");
                 return;
             }
@@ -75,6 +82,7 @@ public class StatsBasedEstimation implements IEstimate {
         }
 
         //**3 add the selectivity of filter to linked variables
+        //@deprecated to remove
         for (BPGNode node : g.getNodeList()) {
             if (node.getType() == FILTER) {
                 double sf = this.getSel(node.getExp().getFilter());
@@ -90,31 +98,41 @@ public class StatsBasedEstimation implements IEstimate {
         join();
     }
 
-    private double selTriplePattern(BPGNode n) {
+    public double selTriplePattern(BPGNode n) {
         TriplePattern pattern = n.getPattern();
         if (pattern == null) {//not triples pattern, maybe filter
             return Integer.MAX_VALUE;
         }
 
-        //** patterns **
-        // pat = 0 :(s p o)
-        // pat = 1 :(s p ?) | (s ? o) | (? p o)
-        // pat = 2 :(s ? ?) | (? ? o) | (? p ?)
-        // pat = 3 :(? ? ?)
         // if all variables in a triple pattern are bound, then selectiviy is set to app_0
-        switch (pattern.getUnboundNumber()) {
-            case 0:
+        switch (pattern.match()) {
+            //{0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, 0, 1}, {1, 1, 0}, {0, 1, 1}, {1, 0, 1}, {1, 1, 1}
+            case 0:// {s p o}
                 return MIN_SEL_APP;
-            case 1:
-                return getSel(n);
-            case 2:
-                double ss = getSel(n.getSubject(), SUBJECT);
-                double sp = getSel(n.getPredicate(), PREDICATE);
-                double so = getSel(n.getObject(), OBJECT);
-
-                //two of them equal to 1.0
-                return ss * sp * so;
-            case 3:
+            case 1://{s ? o}
+                //if the value <0, means that the algorithm for evaluating the whole
+                //triple is not available, so use the other method
+                double p = getSel(n, PREDICATE);
+                if (p > 0) {
+                    return p;
+                }
+            case 2://{? p o}
+                double s = getSel(n, SUBJECT);
+                if (s > 0) {
+                    return s;
+                }
+            case 3://{s p ?}
+                double o = getSel(n, OBJECT);
+                if (o > 0) {
+                    return o;
+                }
+            case 4://{? ? o}
+                return getSel(n.getObject(), OBJECT);
+            case 5://{s ?  d?}
+                return getSel(n.getSubject(), SUBJECT);
+            case 6://{? p ?}
+                return getSel(n.getPredicate(), PREDICATE);
+            case 7://{? ? ?}
                 return MAX_SEL;
             default:
                 return NA;
@@ -122,8 +140,8 @@ public class StatsBasedEstimation implements IEstimate {
     }
 
     //Get selectivity according to a whole triple
-    private double getSel(BPGNode n) {
-        return meta.getCountByTriple(n.getExp().getEdge()) * 1.0 / meta.getAllTriplesNumber();
+    private double getSel(BPGNode n, int type) {
+        return meta.getCountByTriple(n.getExp().getEdge(), type) * 1.0 / meta.getAllTriplesNumber();
     }
 
     //Get selectivity by single variable and its type(sub, pre, obj)
@@ -133,18 +151,18 @@ public class StatsBasedEstimation implements IEstimate {
         if (!varNode.isVariable()) {
             sel = meta.getCountByValue(varNode, type) * 1.0 / meta.getAllTriplesNumber();
             //2 unbound variable, check if bound to a list of constant values
-        } 
+        }
         /*
-        else {
-            //if bound to some values, then cumulate the selectivity of each
-            List<Node> lBind = this.isBound(varNode);
-            if (lBind != null) {
-                sel = 0;
-                for (Node v : lBind) {
-                    sel += meta.getCountByValue(v, type) * 1.0 / meta.getAllTriplesNumber();
-                }
-            }
-        }*/
+         else {
+         //if bound to some values, then cumulate the selectivity of each
+         List<Node> lBind = this.isBound(varNode);
+         if (lBind != null) {
+         sel = 0;
+         for (Node v : lBind) {
+         sel += meta.getCountByValue(v, type) * 1.0 / meta.getAllTriplesNumber();
+         }
+         }
+         }*/
         return sel;
     }
 
@@ -155,20 +173,19 @@ public class StatsBasedEstimation implements IEstimate {
     }
 
     // todo
-    private List<Node> isBound(Node var) {
-        for (Exp exp : bindings) {
-            if (var.getLabel().equalsIgnoreCase(exp.get(0).getNode().getLabel())) {
-                List<Node> lBind = new ArrayList<Node>();
-                Object o = exp.getObject();
-//                for (Expr ex : (List<Expr>) exp.getObject()) {
-//                    lBind.add(ex.);
-//                }
-                return lBind;
-            }
-        }
-        return null;
-    }
-
+//    private List<Node> isBound(Node var) {
+//        for (Exp exp : bindings) {
+//            if (var.getLabel().equalsIgnoreCase(exp.get(0).getNode().getLabel())) {
+//                List<Node> lBind = new ArrayList<Node>();
+//                Object o = exp.getObject();
+////                for (Expr ex : (List<Expr>) exp.getObject()) {
+////                    lBind.add(ex.);
+////                }
+//                return lBind;
+//            }
+//        }
+//        return null;
+//    }
     //Calculate the weight of an edge between two triple patterns
     //just simply multiply the selectivity of the two nodes, can be improved
     private void join() {

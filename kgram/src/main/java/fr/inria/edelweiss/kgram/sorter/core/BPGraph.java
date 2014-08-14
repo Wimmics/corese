@@ -1,10 +1,10 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
-import fr.inria.edelweiss.kgram.api.core.ExpType;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EMPTY;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,35 +20,41 @@ import java.util.Map;
  */
 public class BPGraph {
 
+    private final static Node DEFAULT = null;
     // list of nodes
     private List<BPGNode> nodes = null;
+    
+     // list of nodes that not planned
+    private List<Exp> nodesNonPlanned = null;
+    
     // list of edges
     private List<BPGEdge> edges = null;
     // data structure that used to represents the graph
     // map(node, edges)
     private Map<BPGNode, List<BPGEdge>> graph = null;
 
+    private final List<Exp> bindings;
     //for the moment, we just consider the AND and atomic relation 
-    public BPGraph(Exp exp) {
+    public BPGraph(Exp exp, List<Exp> bindings) {
         //can be extended for the other exp types
-        if (exp.type() != ExpType.AND) {
-            return;
-        }
-
+//        if(exp.type() == ExpType.GRAPH){
+//            System.out.println(exp);
+//        }
+        this.bindings = bindings;
         nodes = new ArrayList<BPGNode>();
         edges = new ArrayList<BPGEdge>();
+        nodesNonPlanned = new ArrayList<Exp>();
 
-        createNodeList(exp);
+        //todo create graph node
+        Node gNode = DEFAULT;
+        createNodeList(exp, gNode);
         createGraph();
     }
 
     // Encapsulate expression into BPGNode and add them to a list
-    private void createNodeList(Exp exp) {
+    private void createNodeList(Exp exp, Node gNode) {
         for (Exp ee : exp) {
-            //TODO other types
-            if (ee.type() == Exp.FILTER || ee.type() == EDGE || ee.type() == Exp.VALUES) {
-                nodes.add(new BPGNode(ee));
-            }
+            nodes.add(new BPGNode(ee, gNode, this.bindings));
         }
     }
 
@@ -77,6 +83,8 @@ public class BPGraph {
                         if (bpn.getType() == FILTER) {
                             edge.setDirected(true);
                         }
+                        //set list of shared vairables
+                        edge.setVariables(bpn.shared(bpn2));
                         //add edge to graph and edge list
                         edges.add(edge);
                     }
@@ -145,4 +153,13 @@ public class BPGraph {
         }
         return l;
     }
+    
+    /**
+     * Get the list of vairable bound to constants
+     * @return 
+     */
+    public List<Exp> getBindings(){
+        return this.bindings;
+    }
+    
 }

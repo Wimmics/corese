@@ -502,7 +502,7 @@ public class Eval implements ExpType, Plugin {
         if (memory == null) {
             // when subquery, memory is already assigned
             // assign stack index to EDGE and NODE
-            q.complete();
+            q.complete(producer);
             memory = new Memory(match, evaluator);
             // create memory bind stack
             memory.init(q);

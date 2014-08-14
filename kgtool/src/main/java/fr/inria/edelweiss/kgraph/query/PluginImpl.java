@@ -807,7 +807,7 @@ public class PluginImpl extends ProxyImpl {
             p = (String) q.getPragma(Pragma.TEMPLATE);
         } 
 
-        Transformer t = (Transformer) q.getPP(p);
+        Transformer t = (Transformer) q.getTransformer(p);
         
         if (p == null && t != null){
             p = t.getTransformation();
@@ -824,7 +824,7 @@ public class PluginImpl extends ProxyImpl {
                
                if (t == null){
                    // get current transformer if any to get its NSManager 
-                  t = (Transformer) q.getPP(null);
+                  t = (Transformer) q.getTransformer(null);
                }
                if (t != null && t.getNSM().isUserDefine()){
                    gt.setNSM(t.getNSM());
@@ -839,10 +839,10 @@ public class PluginImpl extends ProxyImpl {
                 t = Transformer.create(Graph.create(), null);
             }
        }
-        else if (t == null) {         
+        else if (t == null) {    
             t = Transformer.create(prod, p);
             t.setNSM(((ASTQuery) q.getAST()).getNSM());
-            q.setPPrinter(p, t);
+            q.setTransformer(p, t);
         }
         
         return t;

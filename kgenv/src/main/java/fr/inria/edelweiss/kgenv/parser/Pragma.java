@@ -49,6 +49,7 @@ public class Pragma  {
 	public static final String LOAD 	= KG + "load";
 	public static final String LIST 	= KG + "list";
 	public static final String STORE 	= KG + "store";       
+	public static final String CACHE 	= KG + "cache";       
 	public static final String TYPE 	= KG + "type";       
 	public static final String DISPLAY	= KG + "display";
 	public static final String EXPAND 	= KG + "expand";
@@ -314,6 +315,9 @@ public class Pragma  {
 			}
                         else if (property.equals(STORE)){
 				query.setStorePath(value(object));
+			}
+                        else if (property.equals(CACHE)){
+				query.setCachePath(value(object));
 			}
                         else if (property.equals(COUNT)){
 				query.setCountPath(value(object));

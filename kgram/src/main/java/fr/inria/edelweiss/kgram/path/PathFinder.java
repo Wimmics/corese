@@ -173,6 +173,20 @@ public class PathFinder
     public void setStorePath(boolean isStorePath) {
         this.isStorePath = isStorePath;
     }
+
+    /**
+     * @return the isCache
+     */
+    public boolean isCache() {
+        return isCache;
+    }
+
+    /**
+     * @param isCache the isCache to set
+     */
+    public void setCache(boolean isCache) {
+        this.isCache = isCache;
+    }
 	
 
 	
@@ -350,7 +364,7 @@ public class PathFinder
          * TODO: manage two tables for two possible index
          */
         Mappings getMappings(Node cstart){
-            if (isCache && cstart != null){
+            if (isCache() && cstart != null){
                 Mappings map = store.get(cstart.getIndex());
                 return map;
             }
@@ -358,7 +372,7 @@ public class PathFinder
         }
         
         void putMappings(Node start, Mappings map){
-            if (isCache && start != null){
+            if (isCache() && start != null){
                 store.put(start.getIndex(), map);
             }
         }

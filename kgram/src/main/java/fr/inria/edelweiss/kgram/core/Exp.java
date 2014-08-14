@@ -1237,7 +1237,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         List<Exp> lBind = new ArrayList<Exp>();
         for (int i = 0; i < size(); i++) {
             Exp f = get(i);
-            if (f.isFilter() && f.size() > 0) {
+            if ((f.type == VALUES) || (f.isFilter() && f.size() > 0)) {
                 Exp bind = f.first();
                 if (bind.type() == OPT_BIND) {
                     if (bind.isBindCst()) {

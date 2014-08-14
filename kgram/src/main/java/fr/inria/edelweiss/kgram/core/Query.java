@@ -14,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.filter.Compile;
 import fr.inria.edelweiss.kgram.tool.Message;
 
@@ -27,7 +28,15 @@ import fr.inria.edelweiss.kgram.tool.Message;
 
 public class Query extends Exp {
     
-        public static final int STD_PLAN = 0;
+        public static final int NO_PLAN = 0;
+
+        public static final int PLAN_DEFAULT = 2;
+        public static final int PLAN_STATS_BASED = 3;
+        public static final int PLAN_RULE_BASED = 4;
+        public static final int PLAN_COMBINED = 5;
+        
+        //used to set the default query plan method 
+        public static final int STD_PLAN = PLAN_DEFAULT;
         
         public static final int STD_PROFILE   = -1;
         public static final int COUNT_PROFILE = 1;
@@ -1051,13 +1060,13 @@ public class Query extends Exp {
 	/**
 	 * Only on global query, not on subquery
 	 */
-	public void complete(){
+	public void complete(Producer prod){
 		if (isCompiled()) return;
 		else setCompiled(true);
 		
 		// sort edges according to var connexity, assign filters
 		// recurse on subquery
-		querySorter.compile();
+		querySorter.compile(prod);
 		setAggregate();
 		// recurse on subquery
 		index(this, getBody(), true, false, -1);
@@ -1075,7 +1084,7 @@ public class Query extends Exp {
 		complete2();
 		
 		for (Query q : getQueries()){
-			q.complete();
+			q.complete(prod);
 		}
 	}
         
@@ -1627,9 +1636,9 @@ public class Query extends Exp {
 	
 	
 	
-                     
 	
-	/**
+
+        /**
 	 * search for:
 	 * path(?from path ?to) . filter(?from = cst || ?to = cst)
 	 * compile to:

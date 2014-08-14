@@ -174,6 +174,7 @@ public class RuleEngine implements Engine {
         setOptimize(b);
         setConstructResult(b);
         setFunTransitive(b);
+        getQueryProcess().setListPath(b);
     }
 
     public void setTrace(boolean b) {
@@ -448,7 +449,13 @@ public class RuleEngine implements Engine {
                         int save = graph.size();
                         t = record(rule, loopIndex);
                         ITable ot = getRecord(rule);
+                        
                         if (accept(rule, ot, t)) {
+                            
+                            if (trace){
+                                trace(rule, ot, t);
+                            }
+                            
                             rw.setLoop(ot.getIndex());
                             rw.start(t);
                             nbres = process(rule, t, null, list, loop, loopIndex, ot.getIndex(), nbrule);
@@ -543,7 +550,8 @@ public class RuleEngine implements Engine {
      */
     int process(Rule rule, ITable t, List<Entity> current, List<Entity> list, int loop, int loopIndex, int prevIndex, int nbr) {
         if (trace){
-           System.out.println(loop + " : " + nbr + "\n" + rule.getAST());
+           System.out.println(loop + " : " + nbr + " " + ((rw!=null)?rw.isNew():""));
+           System.out.println(rule.getAST());
         }
         Date d1 = new Date();
         boolean isConstruct = isOptimize && isConstructResult;
@@ -1027,6 +1035,15 @@ public class RuleEngine implements Engine {
         }
         tnew.setCount(count);
         return count > 0;
+    }
+    
+    void trace(Rule rule, ITable told, ITable tnew){
+        for (Node pred : rule.getPredicates()) {
+            String name = pred.getLabel();
+            if (tnew.get(name) > told.get(name)) {
+                System.out.println(pred + " : " + (tnew.get(name) - told.get(name)) + "/" + tnew.get(name));
+            }
+        }
     }
 
     /**

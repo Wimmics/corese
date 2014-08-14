@@ -15,6 +15,7 @@ public class BPGEdge {
     private BPGNode n2;
     private double weight = -1;
     private boolean directed = false;
+    private List<String> variables = null;
 
     public BPGEdge(BPGNode n1, BPGNode n2) {
         this.n1 = n1;
@@ -34,6 +35,15 @@ public class BPGEdge {
         this.weight = weight;
     }
 
+    public void setVariables(List<String> variables) {
+        this.variables = variables;
+    }
+
+    public List<String> getVariables() {
+        return variables;
+    }
+
+    
     /**
      * Get one of the nodes in the edge
      * 

@@ -43,10 +43,12 @@ public class NodeImpl implements Node, Entity {
         return new NodeImpl(g, val);
     }
 
+    @Override
     public String toString() {
         return getValue().toSparql();
     }
 
+    @Override
     public int compare(Node node) {
         // TODO Auto-generated method stub
         return getValue().compareTo((IDatatype) node.getValue());
@@ -100,11 +102,20 @@ public class NodeImpl implements Node, Entity {
         return getValue().sameTerm((IDatatype) node.getValue());
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Node) {
             return same((Node) obj);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (this.key != null ? this.key.hashCode() : 0);
+        hash = 67 * hash + (this.dt != null ? this.dt.hashCode() : 0);
+        return hash;
     }
 
     @Override

@@ -2,6 +2,9 @@ package fr.inria.edelweiss.kgraph.stats.data;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.OBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.IProducer.SUBJECT;
 import fr.inria.edelweiss.kgraph.stats.Options;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +21,7 @@ public class TripleHashTable {
 
     private double[] options = Options.DEF_PARA_HTT;
 
+    //Size of table = Max * size of predicates * Max (500)
     private final Map<Triple, Integer> table = new HashMap<Triple, Integer>();
 
     public TripleHashTable(double[] options) {
@@ -60,9 +64,16 @@ public class TripleHashTable {
         }
     }
 
-    public int get(Edge e) {
-        Triple t = new Triple(e);
-        return table.containsKey(t) ? table.get(t) : 0;
+    public int get(Edge e, int type) {
+        Triple other = new Triple(e);
+        int count = 0;
+        for(Triple t :this.table.keySet()){
+            if(t.match(other, type)){
+                count += this.table.get(t);
+            }
+        }
+        return count;
+        //return table.containsKey(t) ? table.get(t) : 0;
     }
 
     class Triple {
@@ -99,10 +110,9 @@ public class TripleHashTable {
             boolean eo = this.o == other.o;
 
             //(s ? o) | (? p o) | (s p ?)
-            if ((es && eo) || (ep && eo) || (es && ep)) {
-                return true;
-            }
-
+//            if ((es && eo) || (ep && eo) || (es && ep)) {
+//                return true;
+//            }
             //(s p o)
             return es && ep && eo;
         }
@@ -114,6 +124,23 @@ public class TripleHashTable {
             hash = 53 * hash + (int) (this.o ^ (this.o >>> 32));
             hash = 53 * hash + (this.p != null ? this.p.hashCode() : 0);
             return hash;
+        }
+
+        public boolean match(Triple other, int type) {
+            boolean es = this.s == other.s;
+            boolean ep = (this.p == null) ? (other.p == null) : this.p.equals(other.p);
+            boolean eo = this.o == other.o;
+
+            switch (type) {
+                case SUBJECT:
+                    return ep && eo;
+                case PREDICATE:
+                    return es && eo;
+                case OBJECT:
+                    return es && ep;
+                default:
+                    return false;
+            }
         }
 
     }

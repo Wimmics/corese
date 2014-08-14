@@ -1,9 +1,7 @@
 package fr.inria.edelweiss.kgraph.stats;
 
-import fr.inria.edelweiss.kgram.sorter.core.IProducer;
-
 /**
- * Options and parameters for setting meta data statistics
+ * Options and parameters for setting meta data statistics 
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 17 juin 2014
@@ -24,11 +22,11 @@ public class Options {
     private static final double TRI_LIMIT_BOTTOM = 0.10;
 
     //*** hash triple table ***
-    private static final double HTT_MAX_SIZE = 500;
+    private static final double HTT_MAX_SIZE = 1000;
     //private static final double HTT_PRE = 10;
     //private static final double HTT_OBJ = 100;
 
-    //*** default parameters ***
+    //*** default parameters for each algorithm ***
     public final static double[] DEF_PARA_CUTOFF = new double[]{RES_LIMIT_TOP, TRI_LIMIT_TOP, RES_LIMIT_BOTTOM, TRI_LIMIT_BOTTOM};
     public final static double[] DEF_PARA_HASH = new double[]{BUCKET_SIZE_MIN, BUCKET_NUMBER_MAX};
     public final static double[] DEF_PARA_HTT = new double[]{HTT_MAX_SIZE, HTT_MAX_SIZE};
@@ -40,17 +38,11 @@ public class Options {
     public final static int HT_AVERAGE = 40;
     public final static int HT_TRIPLE_HASH = 50;
 
-    //default options
-    //subject
-    public final static Options DEF_OPT_SUB = new Options(HT_CUTOFF, IProducer.SUBJECT, DEF_PARA_CUTOFF);
-    //predicate
-    public final static Options DEF_OPT_PRE = new Options(HT_FULL, IProducer.PREDICATE, null);
-    //object
-    public final static Options DEF_OPT_OBJ = new Options(HT_HASH, IProducer.OBJECT, DEF_PARA_CUTOFF);
-    //other
-    public final static Options DEF_OPT_PAIR = new Options(HT_TRIPLE_HASH, IProducer.NA, DEF_PARA_HTT);
-
-    public final static Options[] DEFAULT_OPTIONS = new Options[]{DEF_OPT_SUB, DEF_OPT_PRE, DEF_OPT_OBJ, DEF_OPT_PAIR};
+    //default options for triple (sub, pre, obj), etc..
+    public final static int DEF_OPT_SUB = 11;
+    public final static int DEF_OPT_PRE = 22;
+    public final static int DEF_OPT_OBJ = 33;
+    public final static int DEF_OPT_TRIPLE = 44;
 
     private final int heuristic;
     private final int nodeType;

@@ -14,6 +14,7 @@ import java.util.Map;
 public class BaseMap {
 
     Map<WrappedNode, Integer> full;
+    //number of total values, not distinct
     int total = 0;
 
     public BaseMap() {

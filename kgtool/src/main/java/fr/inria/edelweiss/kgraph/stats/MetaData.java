@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.stats;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.sorter.core.IProducer;
 import fr.inria.edelweiss.kgraph.stats.data.ReducedMap;
 import fr.inria.edelweiss.kgraph.stats.data.HashBucket;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.OBJECT;
@@ -10,11 +11,22 @@ import static fr.inria.edelweiss.kgram.sorter.core.IProducer.PREDICATE;
 import static fr.inria.edelweiss.kgram.sorter.core.IProducer.SUBJECT;
 import fr.inria.edelweiss.kgraph.stats.data.BaseMap;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import static fr.inria.edelweiss.kgraph.stats.Options.DEF_OPT_OBJ;
+import static fr.inria.edelweiss.kgraph.stats.Options.DEF_OPT_TRIPLE;
+import static fr.inria.edelweiss.kgraph.stats.Options.DEF_OPT_PRE;
+import static fr.inria.edelweiss.kgraph.stats.Options.DEF_OPT_SUB;
+import static fr.inria.edelweiss.kgraph.stats.Options.DEF_PARA_CUTOFF;
+import static fr.inria.edelweiss.kgraph.stats.Options.DEF_PARA_HTT;
+import static fr.inria.edelweiss.kgraph.stats.Options.HT_CUTOFF;
+import static fr.inria.edelweiss.kgraph.stats.Options.HT_FULL;
+import static fr.inria.edelweiss.kgraph.stats.Options.HT_HASH;
+import static fr.inria.edelweiss.kgraph.stats.Options.HT_TRIPLE_HASH;
 import fr.inria.edelweiss.kgraph.stats.data.SimpleAverage;
-import fr.inria.edelweiss.kgraph.stats.data.TripleHashTable;
+import fr.inria.edelweiss.kgraph.stats.data.TripleHashTable2;
 import fr.inria.edelweiss.kgtool.load.Load;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Meta data that used to collect statistics from a graph such as, the number of
@@ -34,20 +46,20 @@ public class MetaData {
     public static final int NA = -1;
 
     private static BaseMap subMap, preMap, objMap;
-    private static TripleHashTable thtable;
+    private static TripleHashTable2 thtable;
 
     private static Graph graph = null;
     private static int noOfAllResource, noOfAllObjects;
-    private static final MetaData meta = new MetaData();
+    private static MetaData meta = null;
 
     //Enable stats or not
-    public static boolean enabled = false;
+    public static boolean enabled = true;
 
     //Enable stats or not
     public static boolean enable_htt = true;
 
     //options
-    private static final Options[] options = Options.DEFAULT_OPTIONS;
+    private static final Map<Integer, Options> options = new HashMap<Integer, Options>();
 
     //private constructor for singleton
     private MetaData() {
@@ -64,63 +76,51 @@ public class MetaData {
     }
 
     /**
-     * Return the status of using meta data or not
-     *
-     * @return
-     */
-    public static boolean enabled() {
-        return enabled;
-    }
-
-    /**
-     * Create an instance of MetaData, singleton
+     * Create an instance of MetaData with options
      *
      * @param g Graph
      * @return
      */
     public static MetaData createInstance(Graph g) {
-        return createInstance(g, null);
-    }
-
-    /**
-     * Create an instance of MetaData with options
-     *
-     * @param g Graph
-     * @param options setting different stats methods
-     * @return
-     */
-    public static MetaData createInstance(Graph g, List<Options> options) {
         if (!enabled) {
+            System.out.println("Statistics not enabled, use \"MetaData.enabled = true\" to enable stats!");
             return meta;
         }
 
+        meta = (meta == null) ? new MetaData() : meta;
         graph = g;
-        checkOptions(options);
+        checkOptions();
         process();
         return meta;
     }
 
     /**
-     * Set options for generating different stats data
+     * Add options to meta data statistics
      *
-     * @param list of options
+     * @param value
+     * @param opt
      */
-    public static void setOptions(List<Options> list) {
-        //check options
-        //todo: when not all nodes are set
-        if (list != null) {
-            list.toArray(options);
-        }
+    public static void addOption(int value, Options opt) {
+        options.put(value, opt);
     }
 
     //pre-process the options
-    private static void checkOptions(List<Options> list) {
-        setOptions(list);
-        for (Options opt : options) {
-            if (opt.getHeuristic() == Options.HT_TRIPLE_HASH) {
-                thtable = new TripleHashTable(opt.getParameters());
-                continue;
-            }
+    private static void checkOptions() {
+        //set default options
+        if (options.isEmpty()) {
+            addOption(DEF_OPT_SUB, new Options(HT_CUTOFF, IProducer.SUBJECT, DEF_PARA_CUTOFF));
+            addOption(DEF_OPT_PRE, new Options(HT_FULL, IProducer.PREDICATE, null));
+            addOption(DEF_OPT_OBJ, new Options(HT_HASH, IProducer.OBJECT, DEF_PARA_CUTOFF));
+            addOption(DEF_OPT_TRIPLE, new Options(HT_TRIPLE_HASH, IProducer.TRIPLE, DEF_PARA_HTT));
+        }
+
+        //stas for whole triple
+        if (options.containsKey(DEF_OPT_TRIPLE)) {
+            thtable = new TripleHashTable2(options.get(DEF_OPT_TRIPLE).getParameters());
+        }
+
+        //stats for each single map
+        for (Options opt : options.values()) {
             //1 obtain the variable according to the heuristic type
             BaseMap map = getInstance(opt.getHeuristic(), opt.getParameters());
             //2 create a new instance for corresponding var
@@ -131,7 +131,14 @@ public class MetaData {
     //Main method for generating the stats data
     private static void process() {
         long start = System.currentTimeMillis();
-
+        
+        //todo
+        Iterator<Node> itt = graph.getGraphNodes().iterator();
+        while(itt.hasNext()){
+           Node gNode = itt.next();
+           graph.getNodes(gNode);
+        }
+        
         //**1 iterate all the triples and do statistics meanwhile
         Iterator<Entity> it = graph.getEdges().iterator();
         while (it.hasNext()) {
@@ -143,6 +150,10 @@ public class MetaData {
             preMap.add(e.getEdgeNode());
             //object
             objMap.add(e.getNode(1));
+            
+            //todo: stats graph
+            //graph.getGraphNodes();
+            //((Entity)e).getGraph();
         }
 
         //** 2 get the number of distinct subject/object
@@ -251,35 +262,43 @@ public class MetaData {
                 return NA;
         }
     }
-    
-    
+
     /**
      * Get the estimated selected triples number according to the whole triple
      *
      * @param e Edge
+     * @param type
      * @return
      */
-    public int getCountByTriple(Edge e) {
-        return thtable.get(e);
+    public int getCountByTriple(Edge e, int type) {
+        return thtable == null ? -1 : thtable.get(e, type);
     }
 
-    //private double selSubject, selPredicate, selObject;
-    //monitor the state of graph, when the graph is changed, 
-    //update the meta data
-    public void update() {
-        process();
-        //ex. number of triples
+    
+    public int getCountByGraph(Node gNode){
+        
+        return 0;
+        //return graph.getGraphNodes()
     }
-
-    //reset the stats to empty with an empty graph
-    public void reset() {
+    /**
+     * reset the stats to empty with an empty graph
+     */
+    public static void reset() {
         setGraph(Graph.create());
     }
 
     //Set the graph that statistics is performed on
     public static void setGraph(Graph g) {
         graph = g;
+        update();
+    }
+
+    //monitor the state of graph, when the graph is changed, 
+    //update the meta data
+    public static void update() {
+        checkOptions();
         process();
+        //ex. number of triples
     }
 
     //todo with parameters

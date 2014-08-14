@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.O;
 import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.P;
 import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.S;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,29 +22,24 @@ import java.util.List;
  */
 public class BPGNode {
 
-    public final static int BOUND = 0, UNBOUND = 1;
-
     // the expression that the node encapsulates
     private final Exp exp;
     //the value of the selectivity that the expression represents
     private double selectivity = -1;
 
-    //tripe pattern 7-tuple (S P O FV FN PV OT)
+    //tripe pattern ?-tuple (S P O G FV FN)
     private TriplePattern pattern = null;
 
-    private final BPGEdge edge = null;
+    //private final BPGEdge edge = null;
+    private final Node graph;
 
     //private Iestimate
-    public BPGNode(Exp exp) {
+    public BPGNode(Exp exp, Node gNode, List<Exp> bindings) {
         this.exp = exp;
+        this.graph = gNode;
 
         if (exp.type() == EDGE) {
-            Edge e = exp.getEdge();
-
-            int s = e.getNode(0).isVariable() ? UNBOUND : BOUND;
-            int p = e.getEdgeNode().isVariable() ? UNBOUND : BOUND;
-            int o = e.getNode(1).isVariable() ? UNBOUND : BOUND;
-            pattern = new TriplePattern(this, s, p, o);
+            pattern = new TriplePattern(this, exp.getEdge(), bindings);
         } else {
             //set the selectivity of filter very big
             //so that it can be postioned at the end 
@@ -103,10 +99,15 @@ public class BPGNode {
      * @return true: shared; false: not share
      */
     public boolean isShared(BPGNode n) {
-        return isShared(this, n);
+        return shared(this, n).size() > 0;
     }
 
-    public boolean isShared(BPGNode bpn1, BPGNode bpn2) {
+    public List<String> shared(BPGNode n){
+        return this.shared(this, n);
+    }
+    
+    
+    public List<String> shared(BPGNode bpn1, BPGNode bpn2) {
         int type1 = bpn1.exp.type();
         int type2 = bpn2.exp.type();
 
@@ -135,10 +136,11 @@ public class BPGNode {
                 break;
         }
 
-        return false;
+        return new ArrayList();
     }
 
-    public boolean isShared(List<Node> values, Edge e) {
+    public List<String> isShared(List<Node> values, Edge e) {
+        List<String> l = new ArrayList<String>();
         Node n0 = e.getEdgeNode();
         Node n1 = e.getNode(0);
         Node n2 = e.getNode(1);
@@ -148,15 +150,16 @@ public class BPGNode {
             if (var.equalsIgnoreCase(n0.toString())
                     || var.equalsIgnoreCase(n1.toString())
                     || var.equalsIgnoreCase(n2.toString())) {
-                return true;
+                l.add(var);
             }
         }
 
-        return false;
+        return l;
     }
 
     //check between edge and filter
-    public boolean isShared(Filter f, Edge e) {
+    public List<String> isShared(Filter f, Edge e) {
+        List<String> l = new ArrayList<String>();
         Node n0 = e.getEdgeNode();
         Node n1 = e.getNode(0);
         Node n2 = e.getNode(1);
@@ -167,20 +170,44 @@ public class BPGNode {
             if (var.equalsIgnoreCase(n0.toString())
                     || var.equalsIgnoreCase(n1.toString())
                     || var.equalsIgnoreCase(n2.toString())) {
-                return true;
+                l.add(var);
             }
         }
 
-        return false;
+        return l;
     }
 
     //check between two edges
-    public boolean isShared(Edge e1, Edge e2) {
-        Node n0 = e2.getEdgeNode();
-        Node n1 = e2.getNode(0);
-        Node n2 = e2.getNode(1);
+    //!! to be checked / tested
+    public List<String> isShared(Edge e1, Edge e2) {
+        List<String> l = new ArrayList<String>();
+        List<Node> l1 = getVariables(e1);
+        List<Node> l2 = getVariables(e2);
 
-        return e1.getEdgeNode().same(n0) || e1.contains(n1) || e1.contains(n2);
+        for (Node n1 : l1) {
+            for (Node n2 : l2) {
+                if (n1.same(n2)) {
+                    l.add(n1.getLabel());
+                    break;
+                }
+            }
+        }
+        return l;
+    }
+
+    private List<Node> getVariables(Edge e) {
+        List l = new ArrayList<Edge>();
+        if (e.getNode(O).isVariable()) {
+            l.add(e.getNode(O));
+        }
+        if (e.getEdgeNode().isVariable()) {
+            l.add(e.getEdgeNode());
+        }
+        if (e.getNode(1).isVariable()) {
+            l.add(e.getNode(1));
+        }
+
+        return l;
     }
 
     /**

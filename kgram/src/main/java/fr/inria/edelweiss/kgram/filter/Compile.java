@@ -78,12 +78,12 @@ public class Compile implements ExprType {
 	 * x p t . y p z filter(y = x)
 	 * we can bind y = x before enumerate y p z
 	 */
-	public void process(Query q, Exp exp){
+            public void process(Query q, Exp exp){
 		Filter ff = exp.getFilter();
 		Expr ee = ff.getExp();
 				
 		switch (ee.oper()){
-
+                    
 		case NOT: 
                     if (! q.isOptional()){
                         // no use to detect !bound(?x) with SPARQL semantics
@@ -99,15 +99,17 @@ public class Compile implements ExprType {
 		case EQ:
 			eq(exp);
 			break;
-			
-			
+		//todo: IN, VALUES
+                case IN:
+                        in(exp);
+                        break;
 		default:
 			if (matcher.isGL(ee.oper())){
 				gl(exp);
 			}
 			
 		}
-		
+                
 	}
 	
 	/**
@@ -238,7 +240,62 @@ public class Compile implements ExprType {
 		
 	}
 
-	
+     /*
+     * ?x IN (2 4)
+     * only consider the case with all constants (for the moment)
+     */
+    void in(Exp exp) {
+        Filter ff = exp.getFilter();
+        Expr expr = ff.getExp();
+        List<Expr> ls = expr.getExpList();
+        List<Expr> values = ls.get(1).getExpList();
+        List<Expr> list = new ArrayList<Expr>();
+        //all has to be constants
+        for (Expr e : values) {
+            if (e.isVariable()) {
+                return;
+            }
+            list.add(e);
+        }
+
+        Node node = query.getProperAndSubSelectNode(ff.getVariables().get(0));
+        if (node != null) {
+            Exp bind = Exp.create(Exp.OPT_BIND, Exp.create(Exp.NODE, node));
+            bind.setObject(list);
+            exp.add(bind);
+        }
+    }
+
+    /*
+    /*
+     * values ?x (2 4)
+     * only consider the case with one variable (for the moment)
+     
+    public void values(Exp exp) {
+
+        Mappings mm = exp.getMappings();
+        List<Node> nodes = exp.getNodeList();
+
+        if (nodes == null || nodes.size() != 1) {
+            return;
+        }
+        
+        Node var = nodes.get(0);
+        List values = new ArrayList();
+
+        for (Mapping m : mm) {
+            if (m.isBound(nodes.get(0))) {
+                values.add(m.getValue(nodes.get(0)).toString());
+            }
+        }
+
+        //ATTENTIONS!!
+        //The type of list "values" are not same with the others as "List<Expr>"
+        Exp bind = Exp.create(Exp.OPT_BIND, Exp.create(Exp.NODE, var));
+        bind.setObject(values);
+        exp.add(bind);
+    }
+    */
 	List<Expr> getConstants(Expr exp){
 		List<Expr> list = new ArrayList<Expr>();
 		return getConstants(exp, list);

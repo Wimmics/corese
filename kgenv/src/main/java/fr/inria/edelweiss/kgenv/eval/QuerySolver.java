@@ -69,6 +69,7 @@ public class QuerySolver  {
 	isSPARQLCompliant = false;
     private boolean isPathType = false;
     private boolean isStorePath = true;
+    private boolean isCachePath = false;
         // two blank nodes match if they have the same description
         // (their edges  and target nodes math)
         // use case: match two OWL Blank nodes that represent the same exp
@@ -251,6 +252,7 @@ public class QuerySolver  {
 		q.setListPath(isListPath);
                 q.setPathType(isPathType);
                 q.setStorePath(isStorePath);
+                q.setCachePath(isCachePath());
 		q.setCountPath(isCountPath);
 		q.setCheckLoop(isCheckLoop);
 		q.setDetail(isDetail);
@@ -549,6 +551,20 @@ public class QuerySolver  {
      */
     public void setStorePath(boolean isStorePath) {
         this.isStorePath = isStorePath;
+    }
+
+    /**
+     * @return the isCachePath
+     */
+    public boolean isCachePath() {
+        return isCachePath;
+    }
+
+    /**
+     * @param isCachePath the isCachePath to set
+     */
+    public void setCachePath(boolean isCachePath) {
+        this.isCachePath = isCachePath;
     }
 	
 }

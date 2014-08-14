@@ -380,7 +380,9 @@ public class ResultWatcher implements ResultListener, GraphListener {
     }
     
    
-     
+     public boolean isNew(){
+         return isNew;
+     }
      
      
      

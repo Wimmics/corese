@@ -110,7 +110,10 @@ public class Query extends Exp {
 	// PathFinder list path instead of thread buffer: 50% faster but enumerate all path
 	isListPath = false;
     private boolean isPathType = false;
+    // store the list of edges of the path
     private boolean isStorePath = true;
+    // cache PP result in PathFinder
+    private boolean isCachePath = false;
 
 	boolean 
         isCountPath = false,
@@ -2170,22 +2173,25 @@ public class Query extends Exp {
 	}
 
 	
-	public Object getPP(String p) {
+	public Object getTransformer(String p) {
 		return getOuterQuery().getPPrinter(p);
 	}
 	
-	public Object getPP() {
+	public Object getTransformer() {
 		return getOuterQuery().getPPrinter(null);
-	}
-	
-	
+	}      
+       
+
+        public void setTransformer(String p, Object pprinter){
+            getOuterQuery().setPPrinter(p, pprinter);
+        }
+                 
 	public Object getPPrinter(String p) {
 		if (p == null){
 			return pprinter;
 		}
 		return tprinter.get(p);
 	}
-
 	public void setPPrinter(String p, Object pprinter) {
 		if (p == null){
 			// next kg:pprint() will use this one
@@ -2305,6 +2311,20 @@ public class Query extends Exp {
      */
     public void setStorePath(boolean isStorePath) {
         this.isStorePath = isStorePath;
+    }
+
+    /**
+     * @return the isCachePath
+     */
+    public boolean isCachePath() {
+        return isCachePath;
+    }
+
+    /**
+     * @param isCachePath the isCachePath to set
+     */
+    public void setCachePath(boolean isCachePath) {
+        this.isCachePath = isCachePath;
     }
 	
 	

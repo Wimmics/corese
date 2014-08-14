@@ -5,15 +5,15 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.filter.Compile;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Sort query edges to optimize query processing
- * Including exists {} edges
+ * Sort query edges to optimize query processing Including exists {} edges
  * Insert filters at place where variables are bound
- * 
+ *
  * @author Olivier Corby, Wimmics Inria I3S, 2014
  *
  */
@@ -21,30 +21,29 @@ public class QuerySorter implements ExpType {
 
     private boolean isSort = true;
     private boolean testJoin = false;
-    
+
     private Sorter sort;
     Query query;
     Compile compiler;
-    
-    
+    Producer prod;
+
+    //todo assign sorter here
     QuerySorter(Query q) {
         query = q;
         compiler = new Compile(q);
         sort = new Sorter();
     }
-    
+
     /**
-     * Contract:
-     * For each BGP:
-     * Sort Query Edges
-     * Insert Filters at first place where variables are bound
-     * This must be recursively done for exists {} pattern in filter
-     * and bind
-     * including select, order by, group by and having
+     * Contract: For each BGP: Sort Query Edges Insert Filters at first place
+     * where variables are bound This must be recursively done for exists {}
+     * pattern in filter and bind including select, order by, group by and
+     * having
      */
-    void compile() {
-       VString bound = new VString();
-       compile(query, bound, false);
+    void compile(Producer prod) {
+        this.prod = prod;
+        VString bound = new VString();
+        compile(query, bound, false);
     }
 
     /**
@@ -53,7 +52,7 @@ public class QuerySorter implements ExpType {
     void compile(Filter f) {
         compile(f, new VString(), false);
     }
-    
+
     /**
      * Compile additional filters that may contain exists {}.
      */
@@ -61,23 +60,19 @@ public class QuerySorter implements ExpType {
         compile(q.getSelectFun());
         compile(q.getOrderBy());
         compile(q.getGroupBy());
-        if (q.getHaving()!=null){
+        if (q.getHaving() != null) {
             compile(q.getHaving().getFilter());
-	}
+        }
     }
-    
-    
-    
-    /******************************************************/
-
-
 
     /**
+     * ***************************************************
+     */
+    /**
      * Recursively sort edges and filters edges are sorted wrt connection:
-     * successive edges share variables if possible 
-     * In each BGP, filters are inserted at the
-     * earliest place where their variables are bound
-     * lVar is the List of variables already bound 
+     * successive edges share variables if possible In each BGP, filters are
+     * inserted at the earliest place where their variables are bound lVar is
+     * the List of variables already bound
      */
     Exp compile(Exp exp, VString lVar, boolean option) {
         int type = exp.type();
@@ -100,13 +95,13 @@ public class QuerySorter implements ExpType {
             case BIND:
                 compile(exp.getFilter(), lVar, option);
                 break;
-         
+
             case QUERY:
                 // match query and subquery
                 Query q = exp.getQuery();
                 modifier(q);
-               // lVar = select varList
-                if (! lVar.isEmpty()){
+                // lVar = select varList
+                if (!lVar.isEmpty()) {
                     VString list = new VString();
                     for (Exp ee : q.getSelectFun()) {
                         Node node = ee.getNode();
@@ -116,45 +111,72 @@ public class QuerySorter implements ExpType {
                     }
                     lVar = list;
                 }
-                
-            // continue with subquery body
 
+            // continue with subquery body
             default:
 
-                if (type == OPTION || type == OPTIONAL 
-                        || type == UNION  || type == MINUS) {
+                if (type == OPTION || type == OPTIONAL
+                        || type == UNION || type == MINUS) {
                     option = true;
                 }
 
-
+                //******* Query plan BEGIN********
                 if (isSort) {
-                    
+
                     int num = exp.size();
-                  
+
                     // identify remarkable filters such as ?x = <uri>
                     // create OPT_BIND(?x = <uri>) store it in FILTER 
-                    List<Exp> lBind = findFilter(exp);
-                    
+                    List<Exp> lBind = findBindings(exp);
                     if (exp.type() == AND) {
                         // sort edges wrt connection
                         // take OPT_BIND(var = exp) into account
                         // TODO: graph ?g does not take into account OPT_BIND ?g = uri
-                        sort.sort(query, exp, lVar, lBind);
+                        switch (query.getPlanProfile()) {
+                            case Query.NO_PLAN:
+                                break;
+                            case Query.PLAN_DEFAULT:
+                                sort.sort(query, exp, lVar, lBind);
+                                sortFilter(exp, lVar);
+                                exp.setBind();
+                                break;
+                            case Query.PLAN_RULE_BASED:
+                                sort = new SorterNew();
+                                ((SorterNew) sort).sort(exp, lBind, null, Query.PLAN_RULE_BASED);
+                                setBind(exp, lBind);
+                                break;
+                            case Query.PLAN_STATS_BASED:
+                                //!! the first time using stats based method
+                                // then do statistics (create the instance)
+//                                IProducer ip = (IProducer) prod;
+//                                if (ip.statsEnabled() && !ip.statsInitialized()) {
+//                                    ip.createStatsInstance();
+//                                }
+                                //DO STATS WHEN LOADING
+                                
+                                sort = new SorterNew();
+                                ((SorterNew) sort).sort(exp, lBind, prod, Query.PLAN_STATS_BASED);
+                                setBind(exp, lBind);
+                                break;
+                            case Query.PLAN_COMBINED:
+                                
+                                break;
+                        }
                         service(exp);
                     }
                     // put filters where they are bound ASAP
-                    sortFilter(exp, lVar);
+                    //sortFilter(exp, lVar);
 
                     // set BIND expressions before right edge
                     // ?x ?p ?y . ?x ?q ?t . filter(?t = 12)
                     // ->
                     // OPT_BIND(?t = 12) . ?x ?q ?t . filter(?t = 12) .  ?x ?p ?y                        
-                    exp.setBind();
+                    //exp.setBind();
+                    //setBind(exp, lBind);
                     // set graph filter into graph
-                    exp.graphFilter();
-
+                    //exp.graphFilter();
                 }
-
+                //******* Query plan END********
 
                 int size = lVar.size();
 
@@ -165,7 +187,7 @@ public class QuerySorter implements ExpType {
                     lVar.add(gNode.getLabel());
                 }
 
-                for (Exp e : exp) {                    
+                for (Exp e : exp) {
                     compile(e, lVar, option);
                     if (exp.type() == AND) {
                         e.addBind(lVar);
@@ -196,8 +218,35 @@ public class QuerySorter implements ExpType {
 
         return exp;
     }
-    
-    
+
+    // put the binding variables to concerned edge
+    void setBind(Exp exp, List<Exp> bindings) {
+        for (Exp bid : bindings) {
+            Node n = bid.get(0).getNode();
+            if (bid.type() == OPT_BIND
+                    // no bind (?x = ?y) in case of JOIN
+                    && (!Query.testJoin || bid.isBindCst())) {
+
+                for (Exp g : exp) {
+                    if (((g.isEdge() || g.isPath()) && g.getEdge().contains(n))
+                            && (bid.isBindCst() ? g.bind(bid.first().getNode()) : true)) {
+                        if (g.getBind() == null) {
+                            bid.status(true);
+                            g.setBind(bid);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    boolean contains(Exp exp, Node n) {
+        if (!exp.isEdge()) {
+            return false;
+        }
+        return exp.getEdge().contains(n);
+    }
+
     void compile(Filter f, VString lVar, boolean opt) {
         compile(f.getExp(), lVar, opt);
     }
@@ -214,10 +263,7 @@ public class QuerySorter implements ExpType {
             }
         }
     }
-    
-    
 
-    
     void compile(List<Exp> list) {
         for (Exp ee : list) {
             // use case: group by (exists{?x :p ?y} as ?b)
@@ -227,12 +273,10 @@ public class QuerySorter implements ExpType {
             }
         }
     }
-    
 
     /**
      * Move filter at place where variables are bound in exp expVar: list of
-     * bound variables 
-     * TODO: exists {} could be eval earlier
+     * bound variables TODO: exists {} could be eval earlier
      */
     void sortFilter(Exp exp, VString expVar) {
         int size = expVar.size();
@@ -302,7 +346,7 @@ public class QuerySorter implements ExpType {
      * Identify remarkable filter ?x < ?y ?x = ?y or ?x = cst or !bound() filter
      * is tagged
      */
-    List<Exp> findFilter(Exp exp) {
+    List<Exp> findBindings(Exp exp) {
         for (Exp ee : exp) {
             if (ee.isFilter()) {
                 compiler.process(query, ee);
@@ -324,16 +368,15 @@ public class QuerySorter implements ExpType {
     public void setSorter(Sorter sort) {
         this.sort = sort;
     }
-    
-    
+
     /**
      * JOIN service
      */
-     void service(Exp exp) {
+    void service(Exp exp) {
         int hasService = 0;
-        for (Exp ee : exp){
-            if (isService(ee)){
-               hasService += 1; 
+        for (Exp ee : exp) {
+            if (isService(ee)) {
+                hasService += 1;
             }
         }
         if (hasService > 0) { // && q.isOptimize()){
@@ -342,17 +385,14 @@ public class QuerySorter implements ExpType {
         }
     }
 
-    
-     /**
+    /**
      * It is a service and it has an URI (not a variable)
      */
     boolean isService(Exp exp) {
         return exp.type() == Exp.SERVICE && !exp.first().getNode().isVariable();
     }
 
-    
-    
-      /**
+    /**
      * Draft: for each service in exp replace pattern . service by join(pattern,
      * service) it may be join(service, service)
      */
@@ -401,18 +441,6 @@ public class QuerySorter implements ExpType {
         exp.add(and);
 
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     class VString extends ArrayList<String> {
 

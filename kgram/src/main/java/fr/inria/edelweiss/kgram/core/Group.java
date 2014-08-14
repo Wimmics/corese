@@ -60,7 +60,6 @@ public class Group implements Comparator<Mappings>{
 			if (isDistinct){
 				return compareDistinct(m1, m2);
 			}
-			
 			for (int i = 0; i<size; i++){
 				Node qNode = list.get(i);
 				int res = compare(m1.getGroupBy(qNode, i), m2.getGroupBy(qNode, i));
@@ -138,7 +137,7 @@ public class Group implements Comparator<Mappings>{
 	}
 	
 	public void setExtend(boolean b){
-		isExtend = true;
+		isExtend = b;
 	}
 	
 	public void setDuplicate(boolean b){
@@ -177,7 +176,6 @@ public class Group implements Comparator<Mappings>{
 	 * add map in a group by
 	 */
 	public boolean add(Mapping map){
-		
 		if (isExtend){
 			// min(?l, groupBy(?x, ?y))
 			// store value of ?x ?y in an array to speed up

@@ -607,7 +607,10 @@ public class Eval implements ExpType, Plugin {
         }
         pathFinder.set(listener);       
         pathFinder.setList(query.getOuterQuery().isListPath());
+        // rdf:type/rdfs:subClassOf* generated system path does not store the list of edges
+        // to be optimized
         pathFinder.setStorePath(query.getOuterQuery().isStorePath() && ! exp.isSystem());
+        pathFinder.setCache(query.getOuterQuery().isCachePath());
         // TODO: subQuery 
         pathFinder.setCheckLoop(query.isCheckLoop());
         pathFinder.setCountPath(query.isCountPath());

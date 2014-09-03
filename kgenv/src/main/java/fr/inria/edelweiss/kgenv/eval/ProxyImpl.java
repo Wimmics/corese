@@ -303,6 +303,9 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case DISPLAY:
                 System.out.println(exp + " = " + dt);
+                if (dt.getObject() != null){
+                    System.out.println(exp + " = " + dt.getObject());
+                }
                 return TRUE;
 
             default:

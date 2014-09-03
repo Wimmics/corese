@@ -156,6 +156,7 @@ public interface ExprType {
 	public static int SETP 		= 217;
 	public static int PWEIGHT 	= 218;
 	public static int ANCESTOR 	= 219;
+	public static int PROVENANCE 	= 220;
 		
 	
 
@@ -184,7 +185,8 @@ public interface ExprType {
 	public static int STL_LOAD      = 248;
 	public static int STL_IMPORT    = 249;
 	public static int STL_PROCESS 	= 250;
-        
+ 	public static int STL_ISSTART 	= 226;
+       
         
         public static int APPLY_TEMPLATES           = 251;
 	public static int APPLY_TEMPLATES_WITH      = 252;

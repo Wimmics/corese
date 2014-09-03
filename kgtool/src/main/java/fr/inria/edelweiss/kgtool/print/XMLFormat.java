@@ -324,7 +324,12 @@ public class XMLFormat  {
 					str = String.format("%g", dt.doubleValue());
 				}
 				print("<literal datatype='" +  dt.getDatatype().getLabel()  +
-						"'>" + str + literal);
+						"'>" + str);
+                                if (dt.getObject() != null){
+                                    println("");
+                                    print(display(dt.getObject()));                                       
+                                }
+                                print(literal);
 			}
 			else {
 				print("<literal>" + str + literal);
@@ -338,6 +343,13 @@ public class XMLFormat  {
 		}
 		println(close);
 	}
+        
+       String display(Object o) {
+        if (o instanceof Query) {
+            o = ((Query) o).getAST();
+        } 
+        return o.toString();
+    }
 	
 	void printVariables(Vector<String> select){
 		for (String var : select) {

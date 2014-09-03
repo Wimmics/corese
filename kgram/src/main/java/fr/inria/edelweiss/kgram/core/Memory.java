@@ -948,7 +948,7 @@ public class Memory implements Environment {
 		return path.weight();
 	}
 	
-	Path getPath(Node qNode){
+	public Path getPath(Node qNode){
 		return lPath[qNode.getIndex()];
 	}
 	

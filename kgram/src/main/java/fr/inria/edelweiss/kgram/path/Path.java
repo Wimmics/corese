@@ -8,6 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.tool.EdgeInv;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.ProducerDefault;
@@ -33,6 +34,7 @@ public class Path extends ProducerDefault
 	int radius = 0;
 
 	public Path(){
+                setMode(Producer.EXTENSION);
 		path = new ArrayList<Entity>();
 	}
 	
@@ -42,7 +44,8 @@ public class Path extends ProducerDefault
 	}
 	
 	Path(int n){
-		path = new ArrayList<Entity>(n);
+            setMode(Producer.EXTENSION);            
+            path = new ArrayList<Entity>(n);
 	}
 	
 	public ArrayList<Entity> getEdges(){
@@ -380,15 +383,4 @@ public class Path extends ProducerDefault
 			Environment env) {
 		return nodes();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

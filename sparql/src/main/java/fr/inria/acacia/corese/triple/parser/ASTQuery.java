@@ -1123,12 +1123,16 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	public  Constant createProperty(Expression exp) {
 		if (exp.isConstant()){
 			// no regexp, std property
-			return (Constant) exp;
-		}
-		Constant cst =  createConstant(RootPropertyQN);
-		cst.setExpression(exp);
-		return cst;
+			return exp.getConstant();
+		}		
+		return createExpProperty(exp);
 	}
+        
+        Constant createExpProperty(Expression e){
+            Constant cst =  createConstant(RootPropertyQN);
+            cst.setExpression(e);
+            return cst;
+        }
 	
 
 	public  Triple createTriple(Atom predicate, List<Atom> list){
@@ -1145,6 +1149,19 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 */
 	public  Triple createTriple(Expression subject, Atom predicate, Expression object){
 		Expression exp = predicate.getExpression();
+                Variable var   = predicate.getIntVariable();
+                
+                if (predicate.isConstant() && exp == null && var != null){
+                    // ?x rdf:type :: ?e ?y
+                    // fake a path with predicate as regex
+                    // use case: kg:provenance(?e)
+                    predicate.getConstant().setVar(null);
+                    Constant p = createExpProperty(predicate);
+                    p.setVar(var);
+                    exp = predicate;
+                    predicate = p;
+                }
+                
 		Triple t;
 		if (exp == null){
 			t = Triple.create(subject, predicate, object);

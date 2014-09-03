@@ -32,6 +32,7 @@ import fr.inria.edelweiss.kgtool.load.Build;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.LoadPlugin;
+import java.util.Date;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram
@@ -43,7 +44,7 @@ public class GraphEngine implements IEngine {
 	static final String BRUL = "brul";
 	
 	private Graph graph;
-	private RuleEngine rengine;
+	private RuleEngine rengine, owlEngine;
 	private QueryEngine qengine;
 	private Engine bengine;
 	QueryProcess exec;
@@ -139,13 +140,24 @@ public class GraphEngine implements IEngine {
 	public void runRuleEngine(boolean opt) {
 		rengine.setDebug(isDebug);
 		if (opt){
-                    rengine.setSpeedUp(true);
-                    rengine.setSkipPath(true);
-                    //rengine.getQueryProcess().setCachePath(true);
+                    rengine.setSpeedUp(opt);
                     rengine.setTrace(true);
                 }
 		graph.process(rengine);
 	}
+        
+        // TODO: clean timestamp, clean graph index
+        public void setOWLRL(boolean run, boolean lite, boolean trace) {
+            if (run){
+                owlEngine = RuleEngine.create(graph);
+                owlEngine.setProfile((lite)? RuleEngine.OWL_RL_LITE: RuleEngine.OWL_RL);
+                owlEngine.setTrace(trace);
+                Date d1 = new Date();
+                owlEngine.process();
+                Date d2 = new Date();
+                System.out.println("Time: " + (d2.getTime() - d1.getTime()) / (1000.0));
+            }           
+        }
 	
 	public void runQueryEngine() {
 		qengine.setDebug(isDebug);
@@ -417,5 +429,5 @@ public class GraphEngine implements IEngine {
 		
 		
 	}
-
+    
 }

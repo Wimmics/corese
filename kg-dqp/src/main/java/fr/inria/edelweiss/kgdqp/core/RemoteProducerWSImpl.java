@@ -710,4 +710,18 @@ public class RemoteProducerWSImpl implements Producer {
     public Object getGraph() {
         return null;
     }
+
+    @Override
+    public int getMode() {
+        return Producer.DEFAULT;
+    }
+
+    @Override
+    public void setGraphNode(Node n) {
+    }
+
+    @Override
+    public Node getGraphNode() {
+        return null;
+    }
 }

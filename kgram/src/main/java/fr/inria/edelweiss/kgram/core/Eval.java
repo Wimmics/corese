@@ -71,6 +71,8 @@ public class Eval implements ExpType, Plugin {
     Mappings results,
             // initial results to be completed
             initialResults;
+    List<Node> empty = new ArrayList<Node>(0);
+    
     int // count number of eval() calls
             nbEdge = 0, nbCall = 0,
             rcount = 0,
@@ -1806,27 +1808,19 @@ public class Eval implements ExpType, Plugin {
      */
  
     private int inGraph(Producer p, Producer np, Node gNode, Exp exp, Stack stack, int n, boolean option) {
-
+        np.setGraphNode(exp.getGraphName());  // the new gNode
         int backtrack = n - 1;
 
         stack.set(n, exp.rest());
 
-//        if (n == stack.size() - 1) {
-//            // last statement: switch Producer to Path			
-//            backtrack = eval(np, gNode, stack, n, option);
-//            stack.reset(n, exp);
-//        } else 
-        {
-            Exp next = getRestore(p, exp);
-            stack.add(n + 1, next);
-            backtrack = eval(np, gNode, stack, n, option);
-            for (int i = n + 1; stack.get(i) != next;) {
-                stack.remove(i);
-            }
-            stack.remove(n + 1);
-            stack.set(n, exp);
+        Exp next = getRestore(p, exp);
+        stack.add(n + 1, next);
+        backtrack = eval(np, gNode, stack, n, option);
+        for (int i = n + 1; stack.get(i) != next;) {
+            stack.remove(i);
         }
-
+        stack.remove(n + 1);
+        stack.set(n, exp);
         return backtrack;
     }
     
@@ -1949,7 +1943,14 @@ public class Eval implements ExpType, Plugin {
         path.start(exp.getEdge(), query.getPathNode(), env, f);
         boolean isSuccess = false;
 
-        for (Mapping map : path.candidate(gNode, qq.getFrom(gNode), env)) {
+        List<Node> list = qq.getFrom(gNode);
+        Node bNode = gNode;
+        if (p.getMode() == Producer.EXTENSION){
+            list = empty;
+            bNode = p.getGraphNode();
+        }
+        
+        for (Mapping map : path.candidate(gNode, list, env)) {
             boolean success = match(map) && env.push(map, n);
 
             if (isEvent) {
@@ -1973,7 +1974,7 @@ public class Eval implements ExpType, Plugin {
 
         if (!isSuccess && optim) {
             // backjump to max index where nodes are bound for first time:
-            int bj = env.getIndex(gNode, exp.getEdge());
+            int bj = env.getIndex(bNode, exp.getEdge());
             backtrack = bj;
         }
         path.stop();
@@ -2017,14 +2018,23 @@ public class Eval implements ExpType, Plugin {
         env.setExp(exp);
         //Producer prod = producer;
         Query qq = query;
-
-        Iterable<Entity> entities = p.getEdges(gNode, qq.getFrom(gNode), qEdge, env);
-        Iterator<Entity> it = entities.iterator();
+        List<Node> list = qq.getFrom(gNode);
+        // the backtrack gNode
+        Node bNode = gNode;
+        if (p.getMode() == Producer.EXTENSION){
+            // Producer p comes from an overloaded graph ?g { }
+            // bypass from & from named
+            list = empty;
+            // overloaded graph node stored in the extension Producer (see inGraph())
+            bNode = p.getGraphNode();
+        }
+        Iterable<Entity> entities = p.getEdges(gNode, list, qEdge, env);
+        Iterator<Entity> it = entities.iterator();               
 
         while (it.hasNext()) {
             
             Entity ent = it.next();
-            if (ent != null) {
+            if (ent != null) {               
                 nbEdge++;
                 if (hasListener &&  ! listener.listen(qEdge, ent)){
                     continue;
@@ -2089,9 +2099,9 @@ public class Eval implements ExpType, Plugin {
             // (2) may backjump to (0) because they share x
             // in addition we may require to change the value of x by
             // setting edgeToDiffer to x r t
-            int bj = env.getIndex(gNode, qEdge);
+            //int bj = env.getIndex(gNode, qEdge);
+            int bj = env.getIndex(bNode, qEdge);
             backtrack = bj;
-
 //			if (draft && !option && ! isSubQuery && bj >=0 && stack.get(bj).isEdge()){
 //				// advanced backjump between edge only
 //				// require that edge at index bj change at least one node

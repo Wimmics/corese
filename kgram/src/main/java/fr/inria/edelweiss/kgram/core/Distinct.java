@@ -14,7 +14,22 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
  *
  */
 public class Distinct {
-	
+	private static boolean byIndex = false;
+
+    /**
+     * @return the byIndex
+     */
+    public static boolean isByIndex() {
+        return byIndex;
+    }
+
+    /**
+     * @param aByIndex the byIndex to set
+     */
+    public static void setCompareIndex(boolean aByIndex) {
+        byIndex = aByIndex;
+    }
+        
 	TreeMapping table;
         List<Node> list;
         
@@ -45,18 +60,33 @@ public class Distinct {
 		
 		int compare(Node n1, Node n2){
 			if (n1 == n2){
-				return 0;
+                            return 0;
 			}
 			else if (n1 == null){
-				return -1;
+                            return -1;
 			}
 			else if (n2 == null){
-				return +1;
+                            return +1;
 			}
-			else {
-				return n1.compare(n2);
+			else if (byIndex){
+                            return compare(n1.getIndex(), n2.getIndex());
 			}
+                        else {
+                            return n1.compare(n2);
+                        }
 		}
+                
+                int compare(int n1, int n2){
+                    if (n1 < n2){
+                        return -1;
+                    }
+                    else if (n1 == n2){
+                        return 0;
+                    }
+                    else {
+                        return 1;
+                    }
+                }
 	}
 
         Distinct(){

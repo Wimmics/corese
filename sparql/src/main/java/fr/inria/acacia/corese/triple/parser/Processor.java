@@ -71,10 +71,11 @@ public class Processor {
 	private static final String DEBUG = "trace";
 
 	static final String EXTERN 	= "extern";
-	public static final String XPATH 	= "xpath";
+	public static final String XPATH= "xpath";
 	static final String SQL 	= "sql";
-	static final String KGXPATH = KGRAM + "xpath";
+	static final String KGXPATH     = KGRAM + "xpath";
 	static final String KGSQL 	= KGRAM + "sql";
+	static final String PROVENANCE 	= KGRAM + "provenance";
 	
 	static final String WRITE 		= KGRAM + "write"; 
 	static final String PPRINT 		= KGRAM + "pprint"; 
@@ -92,6 +93,7 @@ public class Processor {
         
         static final String APPLY_TEMPLATES         = STL + "apply-templates";
         static final String APPLY_TEMPLATES_WITH    = STL + "apply-templates-with";
+        static final String ATW                     = STL + "atw";
   	static final String APPLY_TEMPLATES_ALL     = STL + "apply-templates-all";        
   	static final String APPLY_TEMPLATES_GRAPH   = STL + "apply-templates-graph";        
   	static final String APPLY_TEMPLATES_NOGRAPH = STL + "apply-templates-nograph";        
@@ -117,6 +119,7 @@ public class Processor {
  	static final String STL_SELF                = STL + "self";
  	static final String STL_LOAD                = STL + "load";
  	static final String STL_IMPORT              = STL + "import";
+	static final String STL_ISSTART             = STL + "isStart"; 
         
 	public static final String STL_GROUPCONCAT  = STL + "group_concat"; 
 	public static final String STL_CONCAT       = STL + "concat"; 
@@ -450,6 +453,7 @@ public class Processor {
 		
 		defoper(WRITE, 	ExprType.WRITE);
 		defoper(QNAME, 	ExprType.QNAME);
+		defoper(PROVENANCE, 	ExprType.PROVENANCE);
                 
 		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
 		defoper(EVAL, 		ExprType.APPLY_TEMPLATES);
@@ -459,13 +463,14 @@ public class Processor {
 		defoper(TEMPLATE, 	ExprType.CALL_TEMPLATE);
 		defoper(TEMPLATEWITH, 	ExprType.CALL_TEMPLATE_WITH);
 		defoper(TURTLE,         ExprType.TURTLE);                
-                defoper(FOCUS_NODE,             ExprType.FOCUS_NODE);
+                defoper(FOCUS_NODE,     ExprType.FOCUS_NODE);
                 
                 defoper(APPLY_TEMPLATES,            ExprType.APPLY_TEMPLATES);
 		defoper(APPLY_TEMPLATES_ALL,        ExprType.APPLY_TEMPLATES_ALL);
 		defoper(APPLY_TEMPLATES_GRAPH,      ExprType.APPLY_TEMPLATES_GRAPH);
 		defoper(APPLY_TEMPLATES_NOGRAPH,    ExprType.APPLY_TEMPLATES_NOGRAPH);
 		defoper(APPLY_TEMPLATES_WITH,       ExprType.APPLY_TEMPLATES_WITH);
+		defoper(ATW,                        ExprType.APPLY_TEMPLATES_WITH);
 		defoper(APPLY_TEMPLATES_WITH_ALL,   ExprType.APPLY_TEMPLATES_WITH_ALL);                
 		defoper(APPLY_TEMPLATES_WITH_GRAPH, ExprType.APPLY_TEMPLATES_WITH_GRAPH);
 		defoper(APPLY_TEMPLATES_WITH_NOGRAPH, ExprType.APPLY_TEMPLATES_WITH_NOGRAPH);
@@ -490,6 +495,7 @@ public class Processor {
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
 		defoper(STL_LOAD,               ExprType.STL_LOAD);
 		defoper(STL_IMPORT,             ExprType.STL_IMPORT);
+                defoper(STL_ISSTART,            ExprType.STL_ISSTART);
 
 		defoper(LEVEL,          ExprType.LEVEL);
 		defoper(INDENT,         ExprType.INDENT);

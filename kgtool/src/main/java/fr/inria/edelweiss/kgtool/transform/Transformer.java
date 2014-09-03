@@ -551,6 +551,10 @@ public class Transformer {
          level = n;
     }
     
+    public boolean isStart(){
+        return query != null && query.getName()!=null && query.getName().equals(STL_START);
+    }
+    
     public IDatatype process(Node node) {
         return process((IDatatype) node.getValue());
     }

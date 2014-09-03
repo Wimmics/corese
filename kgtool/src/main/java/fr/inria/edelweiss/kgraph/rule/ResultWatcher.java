@@ -40,7 +40,11 @@ import java.util.List;
  * @author Olivier Corby, Wimmics Inria I3S, 2014
  *
  */
-public class ResultWatcher implements ResultListener, GraphListener {    
+public class ResultWatcher implements ResultListener, GraphListener {   
+    // proportion of new edges under which we may consider only new edges
+    public static double LIMIT = 0.2;
+    // max sum of proportion of new edges
+    public static double TOTAL = 0.3;
       
     int loop = 0, ruleLoop = 0;
     int cpos = 0, cneg = 0;
@@ -59,6 +63,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
     Distinct dist;
     ArrayList<Entity> list;
     private boolean trace;
+    private boolean isTestable;
     
     ResultWatcher(Graph g){
         graph = g;  
@@ -87,9 +92,10 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
     void start(Rule r){
         rule = r;
-        isWatch = true;
+        isWatch = doit(true);
         isNew = false;
         start = true;
+        isTestable = false;
         init(r);
     }
     
@@ -98,13 +104,52 @@ public class ResultWatcher implements ResultListener, GraphListener {
     * (Only one occurrence of this predicate in where)
     * We can focus on these new edge using listen(Edge, Entity)
     */
-    void start(ITable t) {
-        if (t.getCount() == 1 
-                && rule.getQuery().nbPredicate(t.getPredicate()) == 1) {
-            index = rule.getQuery().getEdge(t.getPredicate()).getIndex();
+    void start(ITable ot, ITable nt) {
+        if (nt.getCount() == 1 
+                && rule.getQuery().nbPredicate(nt.getPredicate()) == 1) {
+            index = rule.getQuery().getEdge(nt.getPredicate()).getIndex();
             if (index != -1) {
-                isNew = true;
+                isNew = doit(true);
             }            
+        }
+        else if (loop > 0 && rule.getQuery().getEdgeList() == null) {
+            int n = 0;
+            boolean ok = true;
+            double tt = 0.0;
+            // new edges <= 10% edges
+            for (Node pred : rule.getPredicates()) {
+                String name = pred.getLabel();
+                if (nt.get(name) > ot.get(name)) {
+                    n++;
+                    // proportion of new edges
+                    double dd = ((double) (nt.get(name) - ot.get(name))) / (double) nt.get(name);
+                    // sum of proportion of new edges
+                    tt += dd;
+//                    if (dd >  LIMIT){
+//                        ok = false;
+//                        break;
+//                    }
+                }
+            }
+                    
+            // 2 edges and may be 1 a filter
+            if (n <= 2 && tt < TOTAL){// && ok){
+                Exp body = rule.getQuery().getBody();
+                int ne = 0, nf = 0;
+                
+                for (Exp exp : body){
+                    if (exp.isEdge() && exp.getEdge().getEdgeVariable() == null){
+                        ne++;
+                    }
+                    else if (exp.isFilter()){
+                        nf++;
+                    }
+                }
+                
+                if (ne == 2 && nf <= 1){
+                    isTestable = doit(true);
+                }
+            }
         }
     }
     
@@ -113,6 +158,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
      * hence do not apply rule twice on same solution
      */
     void init(Rule r){
+        r.getQuery().setEdgeList(null);
         List<Node> list = r.getQuery().getConstructNodes();
         if (list != null && ! list.isEmpty()){
             dist = Distinct.create(list);
@@ -131,26 +177,30 @@ public class ResultWatcher implements ResultListener, GraphListener {
      * This function is called by kgram just before returning a solution
      */
     @Override
-    public boolean process(Environment env) {       
-        if (! isWatch){
+    public boolean process(Environment env) {
+        if (!isWatch) {
             return store(env);
         }
-      
-        if (loop == 0 || isNew){
+
+        if (loop == 0 || isNew) {
             return store(env);
         }
-        
-        for (Entity ent : env.getEdges()){
-            
-            if (ent != null && ent.getEdge().getIndex() >= ruleLoop){
-                    return store(env);
+
+        for (Entity ent : env.getEdges()) {
+
+            if (ent != null && ent.getEdge().getIndex() >= ruleLoop) {
+                return store(env);
             }
         }
-        
+
         cneg += 1;
         return false;
     }
     
+    // return false to skip optimization
+    boolean doit(boolean b){
+        return b;
+    }
     
     boolean store(Environment env){
         if (isDistinct && dist != null){
@@ -191,6 +241,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
     @Override
     public Exp listen(Exp exp, int n) {
         switch (exp.type()) {
+            
             case Exp.PATH:
                 if (isSkipPath){
                     // skip path to check if a solution has new edges
@@ -213,19 +264,59 @@ public class ResultWatcher implements ResultListener, GraphListener {
                 break;
         }
 
-        if (n == 0 && exp.type() == Exp.AND
-                && rule.isGTransitive()) {
-            if (rule.getQuery().getEdgeList() != null) {
+        if (n == 0 && exp.type() == Exp.AND){
+                
+            if (rule.isGTransitive() && rule.getQuery().getEdgeList() != null) {
                 // exp = where { ?p a owl:TransitiveProperty . ?x ?p ?y . ?y ?p ?z }
                 // there is a list of candidates for ?x ?p ?y
                 // skip first query edge: skip exp.get(0)
                 exp = Exp.create(Exp.AND, exp.get(1), exp.get(2));
             }
+            else if (isTestable && graph.hasList()){
+                    isTestable = false;
+                    exp = union(exp);
+            }
+            
         }
 
         return exp;
     }
     
+    /**
+     * return Union with get new edges from Producer
+     * exp = 2 edge and may be 1 filter
+     * TODO: filter
+     */
+    Exp union(Exp exp){               
+        int fst = 0, snd = 1, flt = 2;
+        if (exp.size() == 3 && exp.get(1).isFilter()){
+            snd = 2;
+            flt = 1;
+        }
+                  
+        Exp e1 = Exp.create(Exp.EDGE, exp.get(fst).getEdge());
+        e1.setLevel(ruleLoop);
+        
+        Exp a1 = Exp.create(Exp.AND, e1, exp.get(snd));
+        if (exp.size() == 3){
+            a1.add(exp.get(flt));
+        }
+        
+        Exp e2 = Exp.create(Exp.EDGE, exp.get(snd).getEdge());
+        e2.setLevel(ruleLoop);
+        
+        Exp a2 = Exp.create(Exp.AND, e2, exp.get(fst));
+        if (exp.size() == 3){
+            a2.add(exp.get(flt));
+        }        
+        Exp ee = Exp.create(Exp.UNION, a1, a2);
+               
+        if (trace){
+            System.out.println("Compile: " + ee);
+        }
+
+        return ee;
+    }
  
     
      @Override

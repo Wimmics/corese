@@ -22,8 +22,11 @@ import fr.inria.edelweiss.kgraph.logic.Closure;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.Construct;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,10 +44,13 @@ import java.util.logging.Level;
  * @author Olivier Corby, Edelweiss INRIA 2011
  */
 public class RuleEngine implements Engine {
+    public static final int OWL_RL_FULL = -1;
     public static final int STD = 0;
     public static final int OWL_RL = 1;
-    public static final int OWL_RL_FULL = 2;
+    public static final int OWL_RL_LITE = 2;
     
+    public static final String OWL_RL_PATH      = "/rule/owlrl.rul";
+    public static final String OWL_RL_LITE_PATH = "/rule/owlrllite.rul";
     
     private static final String UNKNOWN = "unknown";
     private static Logger logger = Logger.getLogger(RuleEngine.class);
@@ -74,7 +80,7 @@ public class RuleEngine implements Engine {
     int loop = 0;
     private boolean isActivate = true;
     int profile = STD;
-    private boolean isOptTransitive = true;
+    private boolean isOptTransitive = false;
     private boolean isFunTransitive = false;
     private boolean isConnect = false;
     private boolean isDuplicate = false;
@@ -93,39 +99,63 @@ public class RuleEngine implements Engine {
         p.setListPath(true);
     }
     
-    public void setProfile(int n){
+    public void setProfile(int n) {
         profile = n;
-        
-        switch (n){
-            case OWL_RL_FULL :
+
+        switch (n) {
+
+            case OWL_RL:                   
+            case OWL_RL_LITE:    
+                optimizeOWLRL();
                 try {
-                    owlrlFull();
-                } catch (IOException ex) {
-                    logger.error(ex);
-                } catch (EngineException ex) {
+                    load(getPath(n));
+                } catch (LoadException ex) {
                     logger.error(ex);
                 }
-                
-            // continue  
-                
-            case OWL_RL:
-                optimizeOWLRL();
-                
-            default:
-                
-                
+                break;        
         }
     }
     
-    void optimizeOWLRL(){
-          setSpeedUp(true);
-          // In OWL RL, path exp does not prevent optimize ResultWatcher
-          // because path exp process OWL structural predicates
-          // mainly rdf:rest*/rdf:first
-          setSkipPath(true);
-          getQueryProcess().setListPath(true);
+    void load(String name) throws LoadException {
+        Load ld = Load.create(graph);
+        ld.setEngine(this);
+        InputStream stream = RuleEngine.class.getResourceAsStream(name);
+        ld.load(stream, Load.RULE_FORMAT);
     }
     
+    String getPath(int n){
+        switch (n){
+           case OWL_RL:    
+                return OWL_RL_PATH;
+                
+            case OWL_RL_LITE:    
+                return OWL_RL_LITE_PATH;
+        }
+        
+        return null;
+    }
+    
+    void optimizeOWLRL() {
+        setSpeedUp(true);
+        try {
+            cleanOWL();
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // enable index by timestamp
+        graph.setHasList(true);
+        
+    }
+    
+    /**
+     * Clean OWL RDF graph
+     */
+    public void cleanOWL() throws IOException, EngineException{
+        Cleaner cl = new Cleaner(graph);
+        cl.clean(Cleaner.OWL);
+    }
     
     /**
      * Replace duplicate OWL expressions by one of them
@@ -173,6 +203,7 @@ public class RuleEngine implements Engine {
      public void setSpeedUp(boolean b) {
         setOptimize(b);
         setConstructResult(b);
+        setOptTransitive(b);
         setFunTransitive(b);
         getQueryProcess().setListPath(b);
     }
@@ -302,8 +333,10 @@ public class RuleEngine implements Engine {
             ast.setRule(false);
         }
 
-        if (qq != null) { // && qq.isConstruct()) {
-            rules.add(Rule.create(name, qq));
+        if (qq != null) { 
+            Rule r = Rule.create(name, qq);
+            r.setIndex(rules.size());
+            rules.add(r);  
             return qq;
         }
         return null;
@@ -329,7 +362,7 @@ public class RuleEngine implements Engine {
         try {
             infer();
             if (trace){
-                traceSize();
+                //traceSize();
             }
             return graph.size() - start;
         }
@@ -338,7 +371,7 @@ public class RuleEngine implements Engine {
             return graph.size() - start;
         }
         finally {
-            cleanRules();
+            clean();
         }
     }
     
@@ -364,10 +397,6 @@ public class RuleEngine implements Engine {
             // consider only rules that match newly entailed edge predicates
             // consider solutions that contain at leat one newly entailed edge
             start();
-            if (loop != 0) {
-                // start a new rule processing
-                clean();
-            }
         }
         if (isOptimization) {
             // apply pertinent rules on newly entailed edges using kgram edge binding
@@ -386,7 +415,7 @@ public class RuleEngine implements Engine {
 
         List<Entity> list = null, current;
 
-        ITable t = null;
+        ITable nt = null;
         stable = new STable();
 
         if (isOptimize) {
@@ -432,13 +461,13 @@ public class RuleEngine implements Engine {
 
                     if (loop == 0) {
                         // run all rules, add all solutions
-                        t = record(rule, loopIndex);
-                        nbres = process(rule, t, null, list, loop, loopIndex, -1, nbrule);
-                        if (rule.isClosure()){
+                        nt = record(rule, loopIndex);
+                        nbres = process(rule, null, nt, null, list, loop, loopIndex,  nbrule);
+                        if (isClosure(rule)){
                             // rule run at saturation: record nb edge after saturation
-                            t = record(rule, loopIndex);
+                            nt = record(rule, loopIndex+1);
                         }
-                        setRecord(rule, t);
+                        setRecord(rule, nt);
                         tnbres += nbres;
                         nbrule++;
                         loopIndex++;
@@ -447,22 +476,22 @@ public class RuleEngine implements Engine {
                         // since previous run
                         // boolean run = true;
                         int save = graph.size();
-                        t = record(rule, loopIndex);
+                        nt = record(rule, loopIndex);
                         ITable ot = getRecord(rule);
                         
-                        if (accept(rule, ot, t)) {
+                        if (accept(rule, ot, nt)) {
                             
                             if (trace){
-                                trace(rule, ot, t);
+                                trace(rule, ot, nt);
                             }
                             
                             rw.setLoop(ot.getIndex());
-                            rw.start(t);
-                            nbres = process(rule, t, null, list, loop, loopIndex, ot.getIndex(), nbrule);
-                            if (rule.isClosure()){
-                                t = record(rule, loopIndex);
+                            rw.start(ot, nt);
+                            nbres = process(rule, ot, nt, null, list, loop, loopIndex,  nbrule);
+                            if (isClosure(rule)){
+                                nt = record(rule, loopIndex+1);
                             }
-                            setRecord(rule, t);
+                            setRecord(rule, nt);
                             tnbres += nbres;
                             nbrule++;
                             loopIndex++;
@@ -474,7 +503,7 @@ public class RuleEngine implements Engine {
 
                     rw.finish(rule);
                 } else {
-                    nbres = process(rule, null, null, list, loop, -1, -1, nbrule);
+                    nbres = process(rule, null, null, null, list, loop, -1,  nbrule);
                     nbrule++;
                 }
 
@@ -524,6 +553,33 @@ public class RuleEngine implements Engine {
         
     }
     
+    /**
+     * r is transitive closure
+     * OR
+     * r  = ?x rdf:type ?c2 :- ?x rdf:type ?c1 & ?c1 rdfs:subClassOf ?c2
+     * pr = ?c1 rdfs:subClassOf ?c3 := ?c1 rdfs:subClassOf ?c2 & ?c2 rdfs:subClassOf ?c3
+     * pr is closure
+     */
+    boolean isClosure(Rule r){
+        if (r.isClosure()){
+            // transitive rule at saturation
+            return true;
+        }
+        if (r.isPseudoTransitive()){
+            // r = rdf:type ? after pr = rdfs:subClassOf ?
+            if (r.getIndex() > 0){
+                Rule pr = rules.get(r.getIndex() - 1);
+                if (pr.isClosure()){
+                    // rdfs:subClassOf ?
+                    Node p  = pr.getUniquePredicate();
+                    Node pp = r.getQuery().getBody().get(1).getEdge().getEdgeNode();                      
+                    return p.equals(pp);
+                }
+            }
+        }
+        return false;
+    }
+    
     void cleanRules(){
         for (Rule r : rules){
             r.clean();
@@ -540,19 +596,19 @@ public class RuleEngine implements Engine {
      * Clean index of edges that are stored when isOptim=true
      */
     public void clean() {
-        for (Entity ent : graph.getEdges()) {
-            ent.getEdge().setIndex(-1);
-        }
+       graph.clean();
+       cleanRules();
     }
 
     /**
      * Process one rule Store created edges into list
      */
-    int process(Rule rule, ITable t, List<Entity> current, List<Entity> list, int loop, int loopIndex, int prevIndex, int nbr) {
+    int process(Rule rule, ITable ot, ITable nt, List<Entity> current, List<Entity> list, int loop, int loopIndex,  int nbr) {
         if (trace){
-           System.out.println(loop + " : " + nbr + " " + ((rw!=null)?rw.isNew():""));
+           System.out.println(loop + " : " + nbr + " : " + rule.getIndex() + " " + ((rw!=null)?rw.isNew():""));
            System.out.println(rule.getAST());
         }
+        
         Date d1 = new Date();
         boolean isConstruct = isOptimize && isConstructResult;
 
@@ -581,14 +637,18 @@ public class RuleEngine implements Engine {
 
         int start = graph.size();
         
-        if (isFunTransitive() && rule.isTransitive() ){
+        if (isOptTransitive() && isFunTransitive() && rule.isTransitive()){
             // Java code emulate a transitive rule
             Closure clos = getClosure(rule);
             clos.setConnect(isConnect());
             if (loop == 0){
-                clos.init(rule.getTransitivePredicate());
+                clos.init(rule.getPredicate(0), rule.getPredicate(1));
             }
-            clos.closure(loop, loopIndex, prevIndex);
+            int lIndex = -1;
+            if (ot != null){
+                lIndex = ot.getIndex();
+            }
+            clos.closure(loop, loopIndex, lIndex);
             rule.setClosure(true);
         }
         else {
@@ -598,7 +658,7 @@ public class RuleEngine implements Engine {
 
                 if (isOptTransitive() && rule.isAnyTransitive()){ 
                     // optimization for transitive rules: eval at saturation
-                    
+                    System.out.println("RE: " + rule.getAST());
                     rule.setClosure(true);
 
                     boolean go = true;
@@ -648,6 +708,7 @@ public class RuleEngine implements Engine {
           Closure c = new Closure(graph, rw.getDistinct());
           c.setTrace(trace);
           r.setClosure(c);
+          c.setQuery(r.getQuery());
        }
        return r.getClosure();
     }
@@ -1041,9 +1102,24 @@ public class RuleEngine implements Engine {
         for (Node pred : rule.getPredicates()) {
             String name = pred.getLabel();
             if (tnew.get(name) > told.get(name)) {
-                System.out.println(pred + " : " + (tnew.get(name) - told.get(name)) + "/" + tnew.get(name));
+                double dd = ((double)(tnew.get(name) - told.get(name))) / (double)tnew.get(name);
+                System.out.println(pred + " : " + (tnew.get(name) - told.get(name)) + "/" + tnew.get(name) + " = " + dd);
             }
         }
+    }
+    
+    // in case of Transitive Rule
+    boolean hasFewNew(Rule rule, ITable ot, ITable nt) {
+        for (Node pred : rule.getPredicates()) {
+            String name = pred.getLabel();
+            if (nt.get(name) > ot.get(name)) {
+                double dd = ((double) (nt.get(name) - ot.get(name))) / (double) nt.get(name);
+                if (dd > 0.01) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -1079,6 +1155,7 @@ public class RuleEngine implements Engine {
 
     public void remove() {
         graph.clear(Entailment.RULE, true);
+        graph.clean();
     }
 
     public int type() {

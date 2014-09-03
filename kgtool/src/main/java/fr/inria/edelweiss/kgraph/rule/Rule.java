@@ -22,9 +22,7 @@ public class Rule {
 
     static String TRANS_QUERY = "";
     static String TRANS_PSEUDO_QUERY = "";
-        
     static final String TPVAR = "?t";
-
     static final int UNDEF = -1;
     static final int DEFAULT = 0;
     static final int TRANSITIVE = 1;
@@ -40,7 +38,7 @@ public class Rule {
     int rtype = UNDEF;
     private boolean isGeneric = false;
     private boolean isClosure = false;
-   
+
     static {
         try {
             QueryLoad ql = QueryLoad.create();
@@ -54,7 +52,6 @@ public class Rule {
     Rule(String n, Query q) {
         query = q;
         name = n;
-        num = COUNT++;
     }
 
     public static Rule create(String n, Query q) {
@@ -91,12 +88,15 @@ public class Rule {
         return num;
     }
     
+    public void setIndex(int n){
+        num = n;
+    }
+
     /**
-     * Index of edge with predicate p
-     * If there is only one occurrence of p
+     * Index of edge with predicate p If there is only one occurrence of p
      */
-    public int getIndex(Node p){
-        
+    public int getIndex(Node p) {
+
         return -1;
     }
 
@@ -132,13 +132,13 @@ public class Rule {
                 } else {
                     res = GENERIC_TRANSITIVE;
                 }
+            } 
+            else {
+                map = exec.query(TRANS_PSEUDO_QUERY);
+                if (map.size() > 0) {
+                    res = PSEUDO_TRANSITIVE;
+                }
             }
-//            else {
-//                map = exec.query(TRANS_PSEUDO_QUERY);
-//                if (map.size() > 0) {
-//                    res = PSEUDO_TRANSITIVE;
-//                }              
-//            }
             return res;
 
         } catch (EngineException ex) {
@@ -147,7 +147,7 @@ public class Rule {
         }
 
     }
-   
+
     public int getEdgeIndex() {
         switch (type()) {
             case TRANSITIVE:
@@ -159,11 +159,10 @@ public class Rule {
                 return -1;
         }
     }
-    
-     public boolean isAnyTransitive() {
+
+    public boolean isAnyTransitive() {
         return (type() == TRANSITIVE
                 || type() == GENERIC_TRANSITIVE);
-//                || type() == PSEUDO_TRANSITIVE);
     }
 
     public boolean isTransitive() {
@@ -173,34 +172,42 @@ public class Rule {
     public boolean isGTransitive() {
         return type() == GENERIC_TRANSITIVE;
     }
-    
-      public boolean isPseudoTransitive() {
-        return (type() == PSEUDO_TRANSITIVE);
-    }
-      
-      public boolean isClosure(){
-          return isClosure;
-      }
-      
-       public void setClosure(boolean b){
-           isClosure = b;
-      }
-    
-    public Node getTransitivePredicate(){
-        return query.getConstruct().get(0).getEdge().getEdgeNode();
+
+    public boolean isPseudoTransitive() {
+        return (type() == PSEUDO_TRANSITIVE || type() == TRANSITIVE);
     }
     
-     public Node getUniquePredicate(){
+    /**
+     * 
+     * TODO: 
+     * only if pseudo rdf:type is after it's transitive rdfs:subClassOf
+     */
+    public boolean isLoop() {
+        return isClosure() || isPseudoTransitive();
+    }
+
+    public boolean isClosure() {
+        return isClosure;
+    }
+
+    public void setClosure(boolean b) {
+        isClosure = b;
+    }
+
+    public Node getPredicate(int i) {
+        return query.getBody().get(i).getEdge().getEdgeNode();
+    }
+
+    public Node getUniquePredicate() {
         Exp cons = query.getConstruct();
-        if (cons.size() == 1 && cons.get(0).isEdge()){
+        if (cons.size() == 1 && cons.get(0).isEdge()) {
             Edge edge = cons.get(0).getEdge();
-            if (edge.getEdgeVariable() == null){
+            if (edge.getEdgeVariable() == null) {
                 return edge.getEdgeNode();
             }
         }
         return null;
     }
-    
 
     /**
      * @return the closure
@@ -215,8 +222,8 @@ public class Rule {
     public void setClosure(Closure closure) {
         this.closure = closure;
     }
-    
-    public void clean(){
+
+    public void clean() {
         closure = null;
     }
 
@@ -233,5 +240,4 @@ public class Rule {
     public void setTime(double time) {
         this.time = time;
     }
-    
 }

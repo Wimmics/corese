@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
@@ -103,6 +104,9 @@ public class PluginImpl extends ProxyImpl {
                 
             case STL_NL:
                 return nl(null, env, p);
+                
+            case STL_ISSTART:
+                return isStart(env, p);
 
             case PROLOG:
                 return prolog(null, env, p);
@@ -215,9 +219,10 @@ public class PluginImpl extends ProxyImpl {
 
             case QNAME:
                 return qname(o, env);
-
-           
-
+                
+            case PROVENANCE:
+                return provenance(exp, env, o);
+          
         }
         return null;
     }
@@ -508,6 +513,20 @@ public class PluginImpl extends ProxyImpl {
         return node.getValue();   
     }
 
+    private Object provenance(Expr exp, Environment env, Object o) {
+        Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
+        if (qNode == null) {
+            return null;
+        }
+        Path p = env.getPath(qNode);
+        if (p.size() == 0){
+            return null;
+        }
+        Object prov = p.get(0).getProvenance();
+        return prov;
+    }
+
+
     
     class Table extends Hashtable<Integer, PTable> {
     }
@@ -645,6 +664,12 @@ public class PluginImpl extends ProxyImpl {
     Mappings prefix(Environment env, Producer prod){
          Transformer p = getTransformer(env, prod);                 
          return p.NSMtoMappings();
+    }
+    
+    IDatatype isStart(Environment env, Producer prod){
+         Transformer p = getTransformer(env, prod);  
+         boolean b = p.isStart();
+         return getValue(b);
     }
       
     IDatatype pprint(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {

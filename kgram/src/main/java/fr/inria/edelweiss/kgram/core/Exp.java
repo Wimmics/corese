@@ -55,6 +55,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     private Exp bind;
     Mappings map, templateMap;
     int min = -1, max = -1;
+    private int level = -1;
     private boolean isSystem = false;
 
     /**
@@ -109,6 +110,20 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     
     public boolean isSystem(){
         return isSystem;
+    }
+
+    /**
+     * @return the level
+     */
+    public int getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     class VExp extends ArrayList<Exp> {

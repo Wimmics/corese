@@ -71,7 +71,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-07-14";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-09-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -80,6 +80,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private String l_path;
     //Variable true ou false pr déterminer le mode Kgram ou Corese	
     private boolean isKgram = true; //false;
+    boolean trace = false;
     // Pour le menu 
     private JMenuItem loadRDF;
     private JMenuItem loadRDFs;
@@ -127,7 +128,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JCheckBox checkBoxVerbose;
     private JCheckBox checkBoxLoad;
     
-    private JCheckBox cbrdfs;
+    private JCheckBox cbrdfs, cbowlrl, cbowlrllite, cbtrace;
 
     private JMenuItem validate;
 //    private MyLoadListener ell;
@@ -509,7 +510,10 @@ public class MainFrame extends JFrame implements ActionListener {
         map = new JMenuItem("Map");
         success = new JMenuItem("Success");
         quit = new JMenuItem("Quit");
-        cbrdfs = new JCheckBox("RDFS Entailment");
+        cbtrace = new JCheckBox("Trace");
+        cbrdfs = new JCheckBox("RDFS");
+        cbowlrllite = new JCheckBox("OWL RL Lite");
+        cbowlrl = new JCheckBox("OWL RL");
         checkBoxLoad = new JCheckBox("Load");
         checkBoxQuery = new JCheckBox("Query");
         checkBoxRule = new JCheckBox("Rule");
@@ -594,6 +598,9 @@ public class MainFrame extends JFrame implements ActionListener {
 //        myRadio.add(coreseBox);
        // engineMenu.add(kgramBox);
         engineMenu.add(cbrdfs);
+        engineMenu.add(cbowlrl);
+        engineMenu.add(cbowlrllite);
+        engineMenu.add(cbtrace);
         myRadio.add(kgramBox);
         aboutMenu.add(apropos);
         aboutMenu.add(tuto);
@@ -665,16 +672,61 @@ public class MainFrame extends JFrame implements ActionListener {
 
         debugMenu.add(checkBoxLoad);
         
+        
+        cbtrace.setEnabled(true);
+        cbtrace.addItemListener(
+            new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                trace = cbtrace.isSelected();
+            }
+        });
+        cbtrace.setSelected(false);
+        
         cbrdfs.setEnabled(true);
         cbrdfs.addItemListener(
                 new ItemListener() {
                     
-            public void itemStateChanged(ItemEvent e) {               
+            public void itemStateChanged(ItemEvent e) {  
+//                if (cbrdfs.isSelected()){
+//                    cbowlrllite.setSelected(false);                   
+//                    cbowlrl.setSelected(false);                                      
+//                }
                 setRDFSEntailment(cbrdfs.isSelected());
             }
             
         });
         cbrdfs.setSelected(true);
+        
+        cbowlrl.setEnabled(true);
+        cbowlrl.setSelected(false);        
+        cbowlrl.addItemListener(
+                new ItemListener() {
+                    
+            public void itemStateChanged(ItemEvent e) {
+//                if (cbowlrl.isSelected()){
+//                    cbrdfs.setSelected(false);                   
+//                    cbowlrllite.setSelected(false);                   
+//                }
+                setOWLRL(cbowlrl.isSelected(), false);
+            }
+           
+        });
+        
+        cbowlrllite.setEnabled(true);
+        cbowlrllite.setSelected(false);        
+        cbowlrllite.addItemListener(
+                new ItemListener() {
+                    
+            public void itemStateChanged(ItemEvent e) {               
+//                if (cbowlrllite.isSelected()){
+//                    cbrdfs.setSelected(false);                   
+//                    cbowlrl.setSelected(false);                   
+//                }                
+                setOWLRL(cbowlrllite.isSelected(), true);
+            }      
+
+        });
+             
 
         checkBoxLoad.addItemListener(
                 new ItemListener() {
@@ -801,6 +853,13 @@ public class MainFrame extends JFrame implements ActionListener {
         return it;
     }
 
+       private void setOWLRL(boolean selected, boolean lite) {
+           Entailment e = new Entailment(myCorese);
+           e.setOWLRL(selected, lite);
+           e.setTrace(trace);
+           e.process();
+       }   
+    
     //Actions du menu
     public void actionPerformed(ActionEvent e) {
         //Appelle la fonction pour le chargement d'un fichier RDFS/OWL

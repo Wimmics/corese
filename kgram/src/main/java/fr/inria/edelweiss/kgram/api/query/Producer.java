@@ -15,6 +15,11 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 *
 */
 public interface Producer {
+
+        public static final int DEFAULT = 0;
+        public static final int SKIP_DUPLICATE_TEST = 1;
+        // Producer delivers from Path of from Provenance Graph
+        public static final int EXTENSION = 2;
 	
 	/**
 	 * KGRAM calls this method before executing a query.
@@ -30,6 +35,8 @@ public interface Producer {
 	 * A hook to tune Producer
 	 */
 	void setMode(int n);
+        
+        public int getMode();
 	
 	
 	/**
@@ -194,4 +201,8 @@ public interface Producer {
 	
          // May return an object that implement the RDF graph
          Object getGraph();
+         
+         void setGraphNode(Node n);
+         
+         Node getGraphNode();
 }

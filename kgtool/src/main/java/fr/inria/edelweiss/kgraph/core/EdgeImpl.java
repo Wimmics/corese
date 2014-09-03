@@ -210,8 +210,7 @@ public class EdgeImpl extends EdgeTop
      */
     public void setProvenance(Object obj) {
         if (!(obj instanceof Node)) {
-            Node prov = DatatypeMap.createObject("provenance");
-            prov.setObject(obj);
+            Node prov = DatatypeMap.createObject("provenance", obj);
             obj = prov;
         }
         add((Node) obj);

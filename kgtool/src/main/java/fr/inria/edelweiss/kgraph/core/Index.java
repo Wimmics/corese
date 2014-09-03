@@ -65,6 +65,8 @@ public interface Index {
 	
 	void clear();
         
+        void clean();
+        
         void clearCache();
 
 	void clearIndex(Node pred);

@@ -21,6 +21,14 @@ public abstract class EdgeTop implements Entity {
          public void setGraph(Node node){
              
          }
+         
+         public Object getProvenance(){
+             return null;
+         }
+         
+         public void setProvenance(Object o){
+             
+         }
 
 
 }

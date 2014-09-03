@@ -1,14 +1,12 @@
 package fr.inria.edelweiss.kgraph.core;
 
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.cg.datatype.RDF;
 import java.util.Iterator;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import java.util.ArrayList;
 
 /**
  * 
@@ -26,6 +24,9 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	List<Node> from;
 	boolean hasGraph, hasFrom;
 	private boolean hasTag = false;
+        private int level = -1;
+        boolean hasLevel = false;
+        private boolean isSpeedUp = false;
 	
 	EdgeIterator(){
                 init();
@@ -90,10 +91,6 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		return it.hasNext();
 	}
 	
-//	boolean same(Node n1, Node n2){
-//		return n1.same(n2);
-//	}
-	
 	boolean same(Node n1, Node n2){
 		return EdgeIndex.same(n1, n2);
 	}
@@ -117,7 +114,10 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 					}
 				}
 			}
-			else if (last != null){
+//			else if (isSpeedUp){
+//                            // rule engine takes care of duplicates
+//                        }                           
+                        else if (last != null){
 				// eliminate successive duplicates
 				if (! same(last.getEdgeNode(), ent.getEdge().getEdgeNode())){
 					// different properties: ok
@@ -149,9 +149,13 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 			}
 			
 			if (ok){
-				last = ent.getEdge();                                
+				last = ent.getEdge();
+                                
+                                if (hasLevel && last.getIndex() < level){
+                                    it = new ArrayList<Entity>().iterator();
+                                    return null;
+                                }
                                 return ent;
-                               //return getResult(ent);
 			}
 		}
 		return null;
@@ -235,5 +239,34 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
         Graph g = Graph.create();
         g.copy(ent);
         return g;
+    }
+
+    /**
+     * @return the level
+     */
+    public int getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(int level) {
+        this.level = level;
+        hasLevel = level!= -1;
+    }
+
+    /**
+     * @return the isSpeedUp
+     */
+    public boolean isSpeedUp() {
+        return isSpeedUp;
+    }
+
+    /**
+     * @param isSpeedUp the isSpeedUp to set
+     */
+    public void setSpeedUp(boolean isSpeedUp) {
+        this.isSpeedUp = isSpeedUp;
     }
 }

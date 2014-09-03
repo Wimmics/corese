@@ -22,6 +22,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Distinct;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -33,6 +34,7 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.api.ValueResolver;
 import fr.inria.edelweiss.kgraph.logic.*;
+import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import java.util.Map;
 
 /**
@@ -53,8 +55,8 @@ public class Graph //implements IGraph
     public static final int IGRAPH = -1;
     // edges in chronological order
     public static final int ILIST = -2;
-    // NB of Index (subject, object, graph)
-    public static final int LENGTH = 3;
+    // NB of Index (subject, object)
+    public static final int LENGTH = 2;
     static final int COPY = 0;
     static final int MOVE = 1;
     static final int ADD = 2;
@@ -65,6 +67,7 @@ public class Graph //implements IGraph
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;
     private static boolean distinctDatatype = false;
+    private int mode = 0;
     /**
      * Synchronization:
      *
@@ -81,7 +84,7 @@ public class Graph //implements IGraph
     // default graph (deprecated)
     Index[] dtables;
     // Table of index 0
-    Index table, tlist,
+    Index table, tlist, tgraph,
             // for rdf:type, no named graph to speed up type test
             dtable;
     // key -> Node
@@ -130,8 +133,12 @@ public class Graph //implements IGraph
     private boolean isTuple = false;
     public static final String SYSTEM = ExpType.KGRAM + "system";
     public int count = 0;
-
-    ;
+    
+    private boolean hasList = false;
+    
+    static {
+        setCompareIndex(true);
+    }
 	
 	// SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
 
@@ -197,6 +204,45 @@ public class Graph //implements IGraph
         this.isTuple = isTuple;
     }
 
+    /**
+     * @return the hasList
+     */
+    public boolean hasList() {
+        return hasList;
+    }
+
+    /**
+     * @param hasList the hasList to set
+     */
+    public void setHasList(boolean hasList) {
+        this.hasList = hasList;
+        setList();
+    }
+
+    void setList() {
+        if (hasList) {
+            tlist = new EdgeIndex(this, ILIST);
+            tables.add(tlist);
+        }
+        else if (tables.get(tables.size()-1).getIndex() == ILIST){
+            tables.remove(tables.size()-1);
+            tlist = null;
+        }
+    }
+
+    /**
+     * @return the mode
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * @param mode the mode to set
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
 
     class TreeNode extends TreeMap<IDatatype, Entity> {
 
@@ -246,16 +292,14 @@ public class Graph //implements IGraph
         lock = new ReentrantReadWriteLock();
 
         tables = new ArrayList<Index>(length);
-        tlist = new EdgeIndex(this, ILIST);
-        for (int i = 0; i < length; i++) {
-            // One table per node index
-            // edges are sorted according to ith Node
-            int j = i;
-            if (i == length - 1) {
-                j = IGRAPH;
-            }
-            setIndex(i, new EdgeIndex(this, j));
+        
+        for (int i = 0; i < length; i++) {            
+            tables.add(new EdgeIndex(this, i));
         }
+        
+        tgraph = new EdgeIndex(this, IGRAPH);
+        tables.add(tgraph);
+                           
         table = getIndex(0);
         literal  = Collections.synchronizedSortedMap(new TreeNode(true));
         sliteral = Collections.synchronizedSortedMap(new TreeNode(false));
@@ -271,7 +315,7 @@ public class Graph //implements IGraph
         fac = new EdgeFactory(this);
         manager = new Workflow(this);        
         key = hashCode() + ".";
-    }
+    }      
 
     public static Graph create() {
         return new Graph();
@@ -317,6 +361,8 @@ public class Graph //implements IGraph
      */
     public static void setCompareIndex(boolean b){
         EdgeIndex.setCompareIndex(b);
+        Distinct.setCompareIndex(b);
+        //MatcherImpl.setCompareIndex(b);
     }
     
     /**
@@ -686,6 +732,17 @@ public class Graph //implements IGraph
             isDelete = false;
         }
     }
+    
+    public void clean(){
+        // clean rule engine timestamp
+        for (Entity ent : getEdges()){
+            ent.getEdge().setIndex(-1);
+        }
+        // clean timestamp index
+        if (hasList){
+            tlist.clean();
+        }
+    }
 
     public void setUpdate(boolean b) {
         isUpdate = b;
@@ -744,11 +801,6 @@ public class Graph //implements IGraph
         for (Index ei : getIndexList()) {
             ei.index();
         }
-//		if (hasDefault){
-//			for (int i=0; i<tables.size(); i++){
-//				dtables[i].index();
-//			}
-//		}
         isIndex = false;
     }
 
@@ -1525,15 +1577,13 @@ public class Graph //implements IGraph
 
     // synchronized
     public Index getIndex(int n) {
-        if (n == IGRAPH) {
-            return tables.get(tables.size() - 1);
+        switch (n){
+            case IGRAPH: return tgraph;
+            case ILIST:  return tlist;              
         }
-        if (n == ILIST) {
-            return tlist;
-        }
-        if (n + 1 >= tables.size()) {
-            //setIndex(n, new EdgeIndex(this, n));	
-        }
+//        if (n + 1 >= tables.size()) {
+//            //setIndex(n, new EdgeIndex(this, n));	
+//        }
         return tables.get(n);
     }
 

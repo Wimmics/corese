@@ -12,6 +12,9 @@ import org.apache.log4j.Logger;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
+import java.util.Arrays;
+import org.semarglproject.vocab.RDF;
 
 /**
  * Table property node -> List<Edge>
@@ -26,12 +29,14 @@ import fr.inria.edelweiss.kgram.tool.MetaIterator;
 public class EdgeIndex extends Hashtable<Node, ArrayList<Entity>> 
 implements Index {
 	static final int IGRAPH = Graph.IGRAPH;
+	static final int ILIST  = Graph.ILIST;
 	private static Logger logger = Logger.getLogger(EdgeIndex.class);	
         static boolean byKey = Graph.valueOut;
         static boolean byIndex = false;
         
 	int index = 0, other = 1;
 	int count = 0;
+        int scoIndex = -1, typeIndex = -1;
 	boolean isDebug = !true,
                 isUpdate = true,
 	isIndexer = false,
@@ -42,10 +47,12 @@ implements Index {
 	Graph graph;
 	Hashtable<Node, Node> types;
         List<Node> sortedProperties;
+        // index of classes in subClassOf list
+        int[] scoIndexes, typeIndexes;
 
 	EdgeIndex(Graph g, int n){
 		init(g, n);
-		comp  = getComparator();
+		comp  = getComparator(n);
 		skipTag  = getComparator(true, true);
 		skipGraph  = getComparator(false, false);
 		types = new Hashtable<Node, Node>();
@@ -56,9 +63,8 @@ implements Index {
 		graph = g;
 		index = n;
 		switch (index){
-			case 0: other = 1; break;
-			case 1: other = 0; break;
-			case Graph.IGRAPH: other = 0; break;
+			case 0:  other = 1; break;
+			default: other = 0; break;
 		}
 	}
         
@@ -73,8 +79,11 @@ implements Index {
 	 * check all arguments for arity n
 	 */
 	
-	Comparator<Entity> getComparator(){
-		return getComparator(false, true);
+	Comparator<Entity> getComparator(int n){
+            switch (n){
+                case ILIST: return getListComparator();
+            }
+            return getComparator(false, true);
 	}
 	
 	
@@ -177,7 +186,7 @@ implements Index {
 	}
         
         
-        
+        // sort in reverse order of edge index
         Comparator<Entity> getListComparator(){
 		
 		return new Comparator<Entity>(){
@@ -185,7 +194,7 @@ implements Index {
 			public int compare(Entity o1, Entity o2) {
                             int i1 = o1.getEdge().getIndex();
                             int i2 = o2.getEdge().getIndex();
-                            if (i1 < i2){
+                            if (i1 > i2){
                                 return -1;
                             }
                             else if (i1 == i2){
@@ -270,6 +279,17 @@ implements Index {
 		str += "Total: " + total + "\n";
 		return str;
 	}
+        
+        /**
+         * Clean the content of the Index but keep the properties
+         * Hence Index can be reused
+         */
+        public void clean(){
+            for (Node p : getProperties()){
+                List l = get(p);
+                l.clear();
+            }
+        }
 	
 	public void clear(){
             isUpdate = true;
@@ -419,6 +439,9 @@ implements Index {
                 l.ensureCapacity(l.size() + list.size());
                 l.addAll(list);
             }
+            if (index == 0){
+                isUpdate = true;
+            }
         }
         
 	Entity tag(Entity ent){
@@ -533,6 +556,24 @@ implements Index {
             List<Entity> list = get(pred);
             Collections.sort(list, comp);
         }
+        
+     void sco(List<Entity> list, Node pred) {
+        if (list.size() > 0) {
+            if (pred.getLabel().equals(RDFS.SUBCLASSOF)) {
+                scoIndex = pred.getIndex();
+                if (scoIndexes == null) {
+                    scoIndexes = new int[graph.getNodeIndex()];
+                }
+                Arrays.fill(scoIndexes, -1);
+            } else if (pred.getLabel().equals(RDF.TYPE)) {
+                typeIndex = pred.getIndex();
+                if (typeIndexes == null) {
+                    typeIndexes = new int[graph.getNodeIndex()];
+                }
+                Arrays.fill(typeIndexes, -1);
+            }
+        }
+    }
 	
 	public void indexNode(){
 		for (Node pred : getProperties()){
@@ -617,7 +658,7 @@ implements Index {
                                         list.add(ent);
                                     }
                                 }
-				Collections.sort(list, comp);
+				index(pred);
 			}
 			return list;
 		}
@@ -645,14 +686,7 @@ implements Index {
 			return list;
 		}
 		// node is bound, enumerate edges where node = edge.getNode(index)
-		int n = 0;
-		
-		if (node2 == null){
-			n = find(list, node, 0, list.size());
-		}
-		else {
-			n = find(list, node, node2, 0, list.size());
-		}
+		int n = find(pred, list, node, node2);
 
 		if (n>=0 && n<list.size()){
 			Node tNode = getNode(list.get(n), index);
@@ -671,6 +705,54 @@ implements Index {
 		return null; 
 	}
         
+        int find(Node p, List<Entity> list, Node n1, Node n2) {
+            if (n2 == null) {
+                if (byIndex){
+                    //return get(p, list, n1);
+                    return find(list, n1.getIndex(), 0, list.size());
+                }
+                return find(list, n1, 0, list.size());
+            } else {
+                if (byIndex){
+                   return find(list, n1.getIndex(), n2.getIndex(), 0, list.size());
+                }
+                return find(list, n1, n2, 0, list.size());
+            }
+        }
+        
+        /**
+         * Index of class is cached for rdfs:subClassOf
+         */
+       int get(Node p, List<Entity> list, Node n) {
+            boolean ok = false;
+            
+            if (p.getIndex() == scoIndex && n.getIndex() < scoIndexes.length) {
+                ok = true;
+                int i = scoIndexes[n.getIndex()];
+                if (i != -1) {
+                    return i;
+                }
+            } else if (p.getIndex() == typeIndex && n.getIndex() < typeIndexes.length) {
+                ok = true;
+                int i = typeIndexes[n.getIndex()];
+                if (i != -1) {
+                    return i;
+                }
+            }
+
+
+            int i = find(list, n.getIndex(), 0, list.size());
+
+            if (ok) {
+                if (p.getIndex() == scoIndex) {
+                    scoIndexes[n.getIndex()] = i;
+                } else {
+                    typeIndexes[n.getIndex()] = i;
+                }
+            }
+            return i;
+        }
+        
         /**
          * Written for index = 0
          */
@@ -679,25 +761,31 @@ implements Index {
             if (list == null) {
                 return false;
             }
-            int n = find(list, n1, n2, 0, list.size());
+            int n;
+            if (byIndex){
+                n = find(list, n1.getIndex(), n2.getIndex(), 0, list.size());
+            }
+            else {
+                n = find(list, n1, n2, 0, list.size());
+            }
             if (n>=0 && n<list.size()){
-                Node t1 = list.get(n).getNode(0);
-                Node t2 = list.get(n).getNode(1);
-                if (same(n1, t1) && same(n2, t2)){
+                Entity ent = list.get(n);
+                if (same(n1, ent.getNode(0)) && same(n2, ent.getNode(1))){
                     return true;
                 }
             }
             return false;
         }
         
-        
+        /** 
+         * @deprecated
+         * */
         public Iterable<Entity> getEdges(Node pred, int index){
 		List<Entity> list = checkGet(pred); 
 		if (list == null){
 			return list;
 		}
                 int n = find(list, index, 0, list.size());
-                System.out.println("EI: " + pred + " " + n + " " + list.size());
                 return new ListIterate(list, n);
         }
         
@@ -816,8 +904,7 @@ implements Index {
 		}
 		else {
 			int mid = (first + last) / 2;
-			int res = compare(list.get(mid), node);
-			if (res >= 0) {
+			if (compare(list.get(mid), node) >= 0) {
 				return find(list, node, first, mid);
 			}
 			else {
@@ -832,8 +919,7 @@ implements Index {
 		}
 		else {
 			int mid = (first + last) / 2;
-			int res = compare(list.get(mid), node, node2);
-			if (res >= 0) {
+			if (compare(list.get(mid), node, node2) >= 0) {
 				return find(list, node, node2, first, mid);
 			}
 			else {
@@ -842,28 +928,51 @@ implements Index {
 		}		
 	}
         
-        
-        int find(List<Entity> list, int index, int first, int last){
+        // by index
+        int find(List<Entity> list, int n1, int n2, int first, int last){
 		if (first >= last) {
 			return first;
 		}
 		else {
 			int mid = (first + last) / 2;
-			int res = compare(list.get(mid).getEdge().getIndex(), index);
-			if (res >= 0) {
-				return find(list, index, first, mid);
+			if (compare(list.get(mid), n1, n2) >= 0) {
+				return find(list, n1, n2, first, mid);
 			}
 			else {
-				return find(list, index,mid+1, last); 
+				return find(list, n1, n2, mid+1, last); 
+			}
+		}		
+	}
+        
+        int find(List<Entity> list, int n1, int first, int last){
+		if (first >= last) {
+			return first;
+		}
+		else {
+			int mid = (first + last) / 2;
+			int res = compare(getNode(list.get(mid), index).getIndex(), n1);
+			if (res >= 0) {
+				return find(list, n1, first, mid);
+			}
+			else {
+				return find(list, n1, mid+1, last); 
 			}
 		}		
 	}
                           	
 	int compare(Entity ent, Node n1, Node n2){
-		Node tNode = getNode(ent, index);
-		int res = nodeCompare(tNode, n1);
+		int res = nodeCompare(getNode(ent, index), n1);
 		if (res == 0 && n2 != null){
 			res = nodeCompare(ent.getNode(other), n2);
+		}
+		return res;
+
+	}
+        
+        int compare(Entity ent, int n1, int n2){
+		int res = compare(getNode(ent, index).getIndex(), n1);
+		if (res == 0){
+			res = compare(ent.getNode(other).getIndex(), n2);
 		}
 		return res;
 

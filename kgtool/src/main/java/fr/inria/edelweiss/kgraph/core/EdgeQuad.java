@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -12,10 +13,11 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  */
 public class EdgeQuad extends EdgeTop 
     implements Edge, Entity {
-
+    static int pcount = 0;
     public static boolean displayGraph = true;
     int index = -1;
     protected Node graph, predicate, subject, object;
+    private Object prov;
 
     public EdgeQuad() {
     }
@@ -150,13 +152,17 @@ public class EdgeQuad extends EdgeTop
     }
 
     @Override
-    public Object getProvenance() {              
-        return null;    
+    public Object getProvenance() {
+        if (prov != null && ! (prov instanceof Node)) {
+            prov = DatatypeMap.createObject("p" + pcount++, prov);
+        }
+        return prov;
     }
     
-    /**
-     * Draft 
-     */
-    public void setProvenance(Object obj) {       
+    @Override    
+    public void setProvenance(Object obj) {         
+        prov = obj;
     }
+    
 }
+

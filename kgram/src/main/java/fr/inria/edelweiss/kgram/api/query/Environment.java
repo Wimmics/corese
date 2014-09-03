@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
+import fr.inria.edelweiss.kgram.path.Path;
 
 /**
  * Interface of the binding environment provided by KGRAM
@@ -80,6 +81,8 @@ public interface Environment {
 	 * @return
 	 */
 	int pathLength(Node qNode);
+        
+	Path getPath(Node qNode);        
 	
 	int pathWeight(Node qNode);
 	

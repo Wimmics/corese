@@ -25,7 +25,21 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
  *
  */
 public class MatcherImpl implements Matcher {
+    private static boolean byIndex = false;
 
+    /**
+     * @return the byIndex
+     */
+    public static boolean isByIndex() {
+        return byIndex;
+    }
+
+    /**
+     * @param aByIndex the byIndex to set
+     */
+    public static void setCompareIndex(boolean aByIndex) {
+        byIndex = aByIndex;
+    }
     Graph graph;
     Entailment entail;
     Cache table;
@@ -221,8 +235,8 @@ public class MatcherImpl implements Matcher {
     }
 
     @Override
-    public boolean same(Node node, Node n1, Node n2, Environment env) {
-        boolean b = n1.same(n2);
+    public boolean same(Node node, Node n1, Node n2, Environment env) {        
+        boolean b = same(n1, n2);        
         if (b) {
             return true;
         }
@@ -233,6 +247,10 @@ public class MatcherImpl implements Matcher {
             return b;
         }
         return false;
+    }
+    
+    boolean same(Node n1, Node n2){
+        return n1.same(n2);
     }
 
     @Override

@@ -29,8 +29,13 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	}
 	
 	public void setMode(int n){
-		
+            producer.setMode(n);
 	}
+        
+        @Override
+        public int getMode() {
+            return producer.getMode();
+        }
 	
 	public Iterator<Producer> iterator(){
 		return getProducerList().iterator();
@@ -179,6 +184,16 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     @Override
     public Object getGraph() {
         return producer.getGraph();
+    }
+
+    @Override
+    public void setGraphNode(Node n) {
+        producer.setGraphNode(n);
+    }
+
+    @Override
+    public Node getGraphNode() {
+        return producer.getGraphNode();
     }
 
 }

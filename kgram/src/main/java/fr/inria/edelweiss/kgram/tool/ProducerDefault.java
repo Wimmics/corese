@@ -18,9 +18,11 @@ import fr.inria.edelweiss.kgram.core.Mappings;
  *
  */
 public class ProducerDefault implements Producer {
+    int mode = Producer.DEFAULT;
+    Node graphNode;
 	
 	public void setMode(int n){
-		
+            mode = n;
 	}
 
 	@Override
@@ -125,5 +127,20 @@ public class ProducerDefault implements Producer {
     @Override
     public Object getGraph() {
         return null;
+    }
+
+    @Override
+    public int getMode() {
+        return mode;
+    }
+
+    @Override
+    public void setGraphNode(Node n) {
+        graphNode = n;
+    }
+
+    @Override
+    public Node getGraphNode() {
+        return graphNode;
     }
 }

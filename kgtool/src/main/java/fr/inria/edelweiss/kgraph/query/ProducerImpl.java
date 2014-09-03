@@ -8,6 +8,8 @@ import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgenv.eval.SQLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -26,6 +28,9 @@ import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
+import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Producer
@@ -37,6 +42,7 @@ public class ProducerImpl implements Producer {
     public static final int OWL_RL = 1;
     
     static final int IGRAPH = Graph.IGRAPH;
+    static final int ILIST  = Graph.ILIST;
     static final String TOPREL = Graph.TOPREL;
     List<Entity> empty = new ArrayList<Entity>();
     EdgeIterator ei;
@@ -47,10 +53,14 @@ public class ProducerImpl implements Producer {
     MatcherImpl match;
     QueryEngine qengine;
     FuzzyMatch fuzzy = new FuzzyMatch();
+    Node graphNode;
     
     // if true, perform local match
     boolean isMatch = false;
     private boolean selfValue;
+    private boolean speedUp = false;
+    private int index = -1;
+    int mode = DEFAULT;
 
     public ProducerImpl() {
         this(Graph.create());
@@ -72,10 +82,20 @@ public class ProducerImpl implements Producer {
         return fuzzy;
     }
     
+    public int getMode(){
+        return mode;
+    }
+    
     public void setMode(int n) {
         switch (n){
-            case OWL_RL :
-                fuzzy.owl();
+            case SKIP_DUPLICATE_TEST: 
+                setSpeedUp(true);
+                break;
+                
+            case EXTENSION:
+                mode = n;
+                break;
+                
         }
     }
 
@@ -110,10 +130,10 @@ public class ProducerImpl implements Producer {
     }
 
     Node getNode(Edge edge, Node gNode, int i) {
-        if (i == IGRAPH) {
-            return gNode;
-        } else {
-            return edge.getNode(i);
+        switch (i){
+            case IGRAPH: return gNode;
+            case ILIST: return null;
+            default: return edge.getNode(i);
         }
     }
 
@@ -121,7 +141,7 @@ public class ProducerImpl implements Producer {
         Node node = env.getNode(qNode);
         if (node == null) {
             if (qNode.isConstant()) {
-                node = graph.getNode(qNode);
+                node = graph.getNode(qNode);  
             }
         } else if (node.getKey() == Node.INITKEY) {
             // a Mapping node has no index
@@ -156,20 +176,34 @@ public class ProducerImpl implements Producer {
         if (predicate == null) {
             return empty;
         }
-        
+
         Query q = env.getQuery();
-        if (q.isRule() 
-                && q.getEdgeList() != null
-                && edge.getIndex() == q.getEdgeIndex()){
-            // draft: transitive rule (see RuleEngine)
-            //System.out.println("PI: " + q.getEdgeList().size() + " " + q.getAST());
-            return q.getEdgeList();
+        
+        int level = -1;
+        int n = 0;
+        
+        if (q.isRule()) {
+            if (q.getEdgeList() != null
+                    && edge.getIndex() == q.getEdgeIndex()) {
+                // draft: transitive rule (see RuleEngine)
+                //System.out.println("PI: " + q.getEdgeList().size() + " " + q.getAST());
+                return q.getEdgeList();
+            }
+            else {
+                Exp exp = env.getExp();
+                if (exp != null && exp.getEdge() == edge && exp.getLevel() != -1){
+                    level = exp.getLevel();
+                    n = ILIST;
+                    //System.out.println("PI: " + level);
+                }
+            }
         }
 
         Node node = null, node2 = null;
-        int n = 0;
         boolean isType = false;
         
+        if (level != -1){}
+        else 
         for (Index ei : graph.getIndexList()) {
             // enumerate graph index to get the index i of nodes in edge: 0, 1, GRAPHINDEX
             // by convention the index of last is the index of graph node
@@ -192,7 +226,7 @@ public class ProducerImpl implements Producer {
                                 // search a constant that is not in the graph: fail
                                 return empty;
                             }
-                        } 
+                        }
                         else if (q.isMatchBlank() && node.isBlank()){
                             // blank node may deserve a recursive match, we may not join
                             // use case: OWL blank match
@@ -217,9 +251,9 @@ public class ProducerImpl implements Producer {
                 }
             }
         }
-        
+
         if (node == null && from.size() > 0) {
-            // no query node has a value, ther is a from [named]
+            // no query node has a value, there is a from [named]
             // from named <uri>
             // graph ?g { }
             // <<bind>> ?g to uri 
@@ -230,13 +264,21 @@ public class ProducerImpl implements Producer {
                 return empty;
             }
         }
-
+               
         Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
         
         // check gNode/from/named
-        it = complete(it, gNode, getNode(gNode, env), from);
+        if (mode == EXTENSION){
+            if (it == null){
+                return empty;
+            }
+        }
+        else {
+            it = complete(q, it, gNode, getNode(gNode, env), from, level);
+        }
         // in case of local Matcher
         it = complete(it, gNode, edge, env);
+               
         return it;
     }
     
@@ -318,14 +360,23 @@ public class ProducerImpl implements Producer {
     /**
      * Check from/named if no gNode, eliminate duplicate successive edges
      */
-    Iterable<Entity> complete(Iterable<Entity> it, Node gNode, Node sNode,
+    
+    Iterable<Entity> complete(Query q, Iterable<Entity> it, Node gNode, Node sNode,
             List<Node> from) {
+        return complete(q, it, gNode, sNode, from, -1);
+    }
+        
+    Iterable<Entity> complete(Query q, Iterable<Entity> it, Node gNode, Node sNode,
+            List<Node> from, int level) {
         if (it == null) {
             it = empty;
         } else if (gNode == null) {
             // eliminate similar edges
             // check from 
-            it = new EdgeIterator(graph, it, from, false);
+            EdgeIterator ii = new EdgeIterator(graph, it, from, false);
+            ii.setLevel(level);
+            ii.setSpeedUp(speedUp);
+            it = ii;
         } else if (from.size() > 0 && sNode == null) {
             // check from [named]			
             it = new EdgeIterator(graph, it, from, true);
@@ -419,7 +470,7 @@ public class ProducerImpl implements Producer {
 //			return it;
 //		}
         // gNode, from
-        it = complete(it, gNode, src, from);
+        it = complete(env.getQuery(), it, gNode, src, from);
         return it;
     }
 
@@ -456,7 +507,7 @@ public class ProducerImpl implements Producer {
         if (meta.isEmpty()) {
             return empty;
         }
-        Iterable<Entity> it = complete(meta, gNode, src, from);
+        Iterable<Entity> it = complete(env.getQuery(), meta, gNode, src, from);
         return it;
     }
 
@@ -780,10 +831,10 @@ public class ProducerImpl implements Producer {
      @Override
     public boolean isProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
-        boolean b = dt.getObject() != null 
-                && dt.getObject() instanceof Graph;
-        if (b){
-            return true;
+        if (dt.getObject() != null) {
+            if (dt.getObject() instanceof Graph || dt.getObject() instanceof Query) {
+                return true;
+            }
         }
         return graph.getNamedGraph(node.getLabel()) != null;
     }
@@ -792,14 +843,68 @@ public class ProducerImpl implements Producer {
     public Producer getProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
         Object obj = dt.getObject();
-        if (obj != null && (obj instanceof Graph)){
-            return new ProducerImpl((Graph) obj);
+        
+        if (obj != null){ 
+            if (obj instanceof Graph){
+                return new ProducerImpl((Graph) obj);
+            }
+            else if (obj instanceof Query){
+                try {
+                    ASTQuery ast = (ASTQuery) ((Query) obj).getAST();
+                    SPINProcess sp = SPINProcess.create();
+                    Graph g = sp.toSpinGraph(ast);
+                    g.setMode(666);
+                    ProducerImpl pp =  new ProducerImpl(g);
+                    pp.setMode(EXTENSION);
+                    return pp;
+                } catch (EngineException ex) {
+                    
+                }
+            }
         }
         Graph g = graph.getNamedGraph(node.getLabel());
         if (g != null){
             return new ProducerImpl(g);
         }
         return null;
+    }
+
+    /**
+     * @return the speedUp
+     */
+    public boolean isSpeedUp() {
+        return speedUp;
+    }
+
+    /**
+     * @param speedUp the speedUp to set
+     */
+    public void setSpeedUp(boolean speedUp) {
+        this.speedUp = speedUp;
+    }
+
+    /**
+     * @return the index
+     */
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    @Override
+    public void setGraphNode(Node n) {
+        graphNode = n;
+    }
+
+    @Override
+    public Node getGraphNode() {
+        return graphNode;
     }
     
 }

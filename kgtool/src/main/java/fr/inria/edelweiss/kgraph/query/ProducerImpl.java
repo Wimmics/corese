@@ -23,11 +23,13 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.sorter.core.IProducer;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
+import fr.inria.edelweiss.kgraph.stats.MetaData;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,9 +40,10 @@ import java.util.logging.Logger;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class ProducerImpl implements Producer {
+public class ProducerImpl implements Producer, IProducer {
+
     public static final int OWL_RL = 1;
-    
+
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST  = Graph.ILIST;
     static final String TOPREL = Graph.TOPREL;
@@ -81,7 +84,7 @@ public class ProducerImpl implements Producer {
     public FuzzyMatch getFuzzyMatch(){
         return fuzzy;
     }
-    
+
     public int getMode(){
         return mode;
     }
@@ -156,7 +159,7 @@ public class ProducerImpl implements Producer {
     }
 
     /**
-     * 
+     *
      * @param gNode : null or graph name of a graph pattern: graph gNode { }
      * @param from :  null, from or from named if gNode != null
      * @param edge : query Edge
@@ -166,7 +169,7 @@ public class ProducerImpl implements Producer {
      * else : triple in named graph
      *    enumerate all occurrences of edge in named graphs
      *    gNode may be a constant value or it may have a value in env
-     * 
+     *
      */
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
@@ -201,7 +204,7 @@ public class ProducerImpl implements Producer {
 
         Node node = null, node2 = null;
         boolean isType = false;
-        
+
         if (level != -1){}
         else 
         for (Index ei : graph.getIndexList()) {
@@ -235,9 +238,9 @@ public class ProducerImpl implements Producer {
                                 node = null;
                             }
                             else {
-                               // real join 
+                                // real join 
                                 n = i;
-                                break; 
+                                break;
                             }
                         }                       
                         else {
@@ -266,7 +269,7 @@ public class ProducerImpl implements Producer {
         }
                
         Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
-        
+
         // check gNode/from/named
         if (mode == EXTENSION){
             if (it == null){
@@ -281,14 +284,14 @@ public class ProducerImpl implements Producer {
                
         return it;
     }
-    
+
     /**
-     * 
+     *
      */
     boolean isFuzzy(Edge edge, int i){
-         int type = fuzzy.fuzzy(edge.getLabel());
+        int type = fuzzy.fuzzy(edge.getLabel());
          return 0 <= i  && i <= 1
-           && (i == type || type == 2);
+                && (i == type || type == 2);
     }
 
     /**
@@ -826,9 +829,9 @@ public class ProducerImpl implements Producer {
     public void setSelfValue(boolean selfValue) {
         this.selfValue = selfValue;
     }
+
     
-    
-     @Override
+    @Override
     public boolean isProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
         if (dt.getObject() != null) {
@@ -867,6 +870,62 @@ public class ProducerImpl implements Producer {
             return new ProducerImpl(g);
         }
         return null;
+    }
+
+    /**
+     * ******** used for statistics, interface IStatistics ********
+     */
+    @Override
+    public int getAllTriplesNumber() {
+        return MetaData.getInstance().getAllTriplesNumber();
+    }
+
+    @Override
+    public int getResourceNumber() {
+        return MetaData.getInstance().getResourceNumber();
+    }
+
+    @Override
+    public int getObjectNumber() {
+        return MetaData.getInstance().getObjectNumber();
+    }
+
+    @Override
+    public int getPropertyNumber() {
+        return MetaData.getInstance().getPropertyNumber();
+    }
+
+    @Override
+    public int getCountByValue(Node n, int type) {
+        return MetaData.getInstance().getCountByValue(n, type);
+    }
+
+    @Override
+    public int getCountByTriple(Edge e, int type) {
+        return MetaData.getInstance().getCountByTriple(e, type);
+    }
+
+    public void resetMetaData() {
+        MetaData.reset();
+    }
+
+    public void updateMetaData() {
+        MetaData.update();
+    }
+
+    @Override
+    public boolean statsEnabled() {
+        return MetaData.enabled;
+    }
+
+    @Override
+    public boolean statsInitialized() {
+        return MetaData.enabled ? MetaData.getInstance() != null : false;
+    }
+
+    @Override
+    public void createStatsInstance() {
+        MetaData.createInstance(graph);
     }
 
     /**

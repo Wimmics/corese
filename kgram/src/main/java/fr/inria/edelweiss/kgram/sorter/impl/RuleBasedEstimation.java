@@ -2,9 +2,9 @@ package fr.inria.edelweiss.kgram.sorter.impl;
 
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.sorter.core.BPGEdge;
 import fr.inria.edelweiss.kgram.sorter.core.BPGNode;
 import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
@@ -29,8 +29,8 @@ public class RuleBasedEstimation implements IEstimate {
     private IProducer meta = null;
 
     @Override
-    public void estimate(BPGraph plein, Producer producer, Object utility) {
-        graph = plein;
+    public void estimate(BPGraph empty, Producer producer, Object utility) {
+        graph = empty;
         //**1 get stats if available
         int[] numbers = null;
         if (producer instanceof IProducer) {
@@ -42,10 +42,12 @@ public class RuleBasedEstimation implements IEstimate {
 
         //**2 estimate
         List<TriplePattern> patterns = new ArrayList<TriplePattern>();
-        for (BPGNode n : plein.getNodeList()) {
-            if (n.getType() == EDGE) {
+        for (BPGNode n : empty.getAllNodes()) {
+            if (n.getType() == EDGE || n.getType() == GRAPH) {
                 TriplePattern p = n.getPattern();
-                p.setParameters(graph);
+                if (n.getType() == EDGE) {
+                    p.setParameters(graph);
+                }
                 patterns.add(p);
             }
         }
@@ -64,7 +66,6 @@ public class RuleBasedEstimation implements IEstimate {
 
     //assign selectivity for nodes based on ?-tuple pattern
     private void assignSelForNode(List<TriplePattern> patterns) {
-        //todo, BUG
         //--put the same triple patterns in one list and assign the same selectivity to
         //--all the patterns in this list, needs to be improved by distinguwish the same patterns 
         //--using stats data if available
@@ -100,24 +101,34 @@ public class RuleBasedEstimation implements IEstimate {
 
     //assign weight/sel for edge between triple pattern
     private void assignSelForEdge() {
-        for (BPGEdge edge : graph.getEdgeList()) {
+        for (BPGEdge edge : graph.getAllEdges()) {
             assignSelForEdge(edge);
         }
     }
 
     private void assignSelForEdge(BPGEdge edge) {
         BPGNode n1 = edge.get(0), n2 = edge.get(1);
-        int[][] jp = JOINT_PATTERN;
-        //1. type of one of them is FILTER or VALUES
+
+        //1. type of one of them is FILTER or VALUES, ne assign pas le weight
         if (n1.getType() == FILTER || n2.getType() == FILTER
                 || n1.getType() == VALUES || n2.getType() == VALUES) {
             edge.setWeight(MAX_SEL);
             return;
         }
 
-        //2. two edges
-        //2.1 find the order in the pre-deinfed list of jointed pattern
-        int seq = 1;
+        // the number of shared variables (sv)
+        int sv = edge.getVariables().size();//should not be zero
+
+        //2 The edge connects at least a graph
+        if (n1.getType() == GRAPH || n2.getType() == GRAPH) {
+            edge.setWeight(sv == 0 ? 0 : 1.0 / 3.0 * sv);
+            return;
+        }
+
+        //3. two edges
+        //3.1 find the order in the pre-deinfed list of jointed pattern
+        int seq = -1;
+        int[][] jp = JOINT_PATTERN;
         for (int i = 0; i < jp.length; i++) {
             int p1 = jp[i][0], p2 = jp[i][1];
             //!!TODO 
@@ -129,12 +140,14 @@ public class RuleBasedEstimation implements IEstimate {
             }
         }
 
-        //number of shared variables (sv)
-        int sv = edge.getVariables().size();
-        double weight = (1 / seq * (sv == 0 ? 0 : 1 / sv));
-        edge.setWeight(weight);
+        //3.2. no pattern matched: means one( or both) of the patterns is (s p o) all bound
+        if (seq == -1) {
+            edge.setWeight(MIN_SEL);
+            return;
+        }
 
-        //3. no pattern matched: means one( or both) of the patterns is (s p o) all bound
-        edge.setWeight(MIN_SEL);
+        //3.3 pattern matched, assign weight
+        double weight = (1.0 / seq * (sv == 0 ? 0 : 1.0 / sv));
+        edge.setWeight(weight);
     }
 }

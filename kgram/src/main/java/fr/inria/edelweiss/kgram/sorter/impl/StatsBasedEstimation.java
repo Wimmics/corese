@@ -76,18 +76,18 @@ public class StatsBasedEstimation implements IEstimate {
         this.g = g;
 
         //**2 iterate the nodes and assign selectivity
-        for (BPGNode node : g.getNodeList()) {
+        for (BPGNode node : g.getAllNodes()) {
             double sel = selTriplePattern(node);
             node.setSelectivity(sel);
         }
 
         //**3 add the selectivity of filter to linked variables
         //@deprecated to remove
-        for (BPGNode node : g.getNodeList()) {
+        for (BPGNode node : g.getAllNodes()) {
             if (node.getType() == FILTER) {
                 double sf = this.getSel(node.getExp().getFilter());
                 node.setSelectivity(sf);
-                for (BPGNode n : this.g.getNodeList(node)) {
+                for (BPGNode n : this.g.getLinkedNodes(node)) {
                     //set the new selectivity
                     n.setSelectivity(n.getSelectivity() * sf);
                 }
@@ -189,7 +189,7 @@ public class StatsBasedEstimation implements IEstimate {
     //Calculate the weight of an edge between two triple patterns
     //just simply multiply the selectivity of the two nodes, can be improved
     private void join() {
-        for (BPGEdge edge : g.getEdgeList()) {
+        for (BPGEdge edge : g.getAllEdges()) {
             double s1 = edge.get(0).getSelectivity();
             double s2 = edge.get(1).getSelectivity();
             edge.setWeight(s1 * s2);

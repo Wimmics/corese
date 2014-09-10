@@ -3,8 +3,8 @@ package fr.inria.edelweiss.kgram.sorter.core;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EMPTY;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
-import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,13 +20,12 @@ import java.util.Map;
  */
 public class BPGraph {
 
-    private final static Node DEFAULT = null;
+    // private final static Node DEFAULT = null;
     // list of nodes
     private List<BPGNode> nodes = null;
-    
-     // list of nodes that not planned
-    private List<Exp> nodesNonPlanned = null;
-    
+
+    // list of nodes that not planned
+    //private List<Exp> nodesNonPlanned = null;
     // list of edges
     private List<BPGEdge> edges = null;
     // data structure that used to represents the graph
@@ -34,33 +33,28 @@ public class BPGraph {
     private Map<BPGNode, List<BPGEdge>> graph = null;
 
     private final List<Exp> bindings;
+
+    //private List<BPGraph> graphs = new ArrayList<BPGraph>();
     //for the moment, we just consider the AND and atomic relation 
     public BPGraph(Exp exp, List<Exp> bindings) {
         //can be extended for the other exp types
-//        if(exp.type() == ExpType.GRAPH){
-//            System.out.println(exp);
-//        }
         this.bindings = bindings;
         nodes = new ArrayList<BPGNode>();
         edges = new ArrayList<BPGEdge>();
-        nodesNonPlanned = new ArrayList<Exp>();
 
-        //todo create graph node
-        Node gNode = DEFAULT;
-        createNodeList(exp, gNode);
-        createGraph();
+        createNodes(exp);
+        createEdges();
     }
 
     // Encapsulate expression into BPGNode and add them to a list
-    private void createNodeList(Exp exp, Node gNode) {
+    private void createNodes(Exp exp) {
         for (Exp ee : exp) {
-            nodes.add(new BPGNode(ee, gNode, this.bindings));
+            nodes.add(new BPGNode(ee, this.bindings));
         }
     }
 
-
     //Create graph structure by finding variables sharing between nodes
-    private void createGraph() {
+    private void createEdges() {
         // Graph Structure:
         // Edge 1: connected edge11, edge 12, ...
         // Edge 2: connected edge 21, edge 22, ...\
@@ -108,16 +102,50 @@ public class BPGraph {
     }
 
     /**
+     * Return all the edges contained in the graph
+     *
+     * @return
+     */
+    public List<BPGEdge> getAllEdges() {
+        return this.edges;
+    }
+
+    /**
+     * Return all the edges with certain type contained in the graph
+     *
+     * @param type EDGE, else return all
+     * @return
+     */
+    public List<BPGEdge> getAllEdges(int type) {
+        if (type == EDGE) {
+            List<BPGEdge> lEdges = new ArrayList<BPGEdge>();
+            for (BPGEdge e : this.edges) {
+                if (e.get(0).getType() == EDGE && e.get(1).getType() == EDGE) {
+                    lEdges.add(e);
+                }
+            }
+            return lEdges;
+        }
+
+        return this.edges;
+    }
+    
+    /**
+     * Get all edges linked to a given node
+     * @param node
+     * @return 
+     */
+    public List<BPGEdge> getEdges(BPGNode node) {
+        return this.graph.get(node);
+    }
+
+    /**
      * Return list of nodes contained in the triple pattern graph
      *
      * @return
      */
-    public List<BPGNode> getNodeList() {
-        return this.getNodeList(EMPTY);
-    }
-
-    public List<BPGEdge> getEdgeList() {
-        return this.edges;
+    public List<BPGNode> getAllNodes() {
+        return this.getAllNodes(EMPTY);
     }
 
     /**
@@ -126,8 +154,8 @@ public class BPGraph {
      * @param type EDGE, VALUES, FILTER, otherwise return all
      * @return
      */
-    public List<BPGNode> getNodeList(int type) {
-        if (type != EDGE && type != VALUES && type != FILTER) {
+    public List<BPGNode> getAllNodes(int type) {
+        if (type != EDGE && type != VALUES && type != FILTER && type != GRAPH) {
             return this.nodes;
         }
 
@@ -146,20 +174,20 @@ public class BPGraph {
      * @param n node
      * @return list
      */
-    public List<BPGNode> getNodeList(BPGNode n) {
+    public List<BPGNode> getLinkedNodes(BPGNode n) {
         List<BPGNode> l = new ArrayList<BPGNode>();
         for (BPGEdge e : graph.get(n)) {
             l.add(e.get(n));
         }
         return l;
     }
-    
+
     /**
      * Get the list of vairable bound to constants
-     * @return 
+     *
+     * @return
      */
-    public List<Exp> getBindings(){
+    public List<Exp> getBindings() {
         return this.bindings;
     }
-    
 }

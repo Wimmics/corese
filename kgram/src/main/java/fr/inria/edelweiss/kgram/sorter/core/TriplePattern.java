@@ -1,6 +1,9 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import static fr.inria.edelweiss.kgram.sorter.core.IEstimate.MAX_SEL;
@@ -15,7 +18,7 @@ import java.util.List;
  * Class for constructing the pattern of a triple, including many parameters
  *
  * @author Fuqi Song, Wimmics Inria I3S
- * @date 25 juin 2014
+ * @date 25 juin 2014 new
  */
 public class TriplePattern {
 
@@ -24,18 +27,29 @@ public class TriplePattern {
     //FV: filter, number of variables(in the triple pattern) appeared in all the filters
     //    the more the better (less selectivity)
     //FN: filter, variables appeared in how many filters 
-    //PV: number of variables appeared in prejection variables(select nodes)
-    //OT: type of bound object, URI|literal|NA
+    //G: graph
     public final static int S = 0, P = 1, O = 2, G = 3, FV = 4, FN = 5;
     private final static int PARAMETER_LEN = 6;
+    //list of vairables appeared in the expression
     List<String> variables = new ArrayList<String>();
     private final int[] pattern = new int[PARAMETER_LEN];
 
     private final BPGNode bpn;
 
-    public TriplePattern(BPGNode n, Edge e, List<Exp> bindings) {
-        //the value of S P O can be: 0[bound], ?[length of constant list], Integer.MAX_VALUE[unbound]
+    public TriplePattern(BPGNode n) {
         this.bpn = n;
+    }
+
+    //For exp.type == GRAPH
+    public TriplePattern(BPGNode n, Node gNode, List<Exp> bindings) {
+        this(n);
+        this.pattern[G] = getNodeType(gNode, bindings);
+    }
+
+    //For exp.type == EDGE
+    public TriplePattern(BPGNode n, Edge e, List<Exp> bindings) {
+        //the value of S P O G can be: 0[bound], ?[length of constant list], Integer.MAX_VALUE[unbound]
+        this(n);
         this.pattern[S] = getNodeType(e.getNode(0), bindings);
         this.pattern[P] = getNodeType(e.getEdgeNode(), bindings);
         this.pattern[O] = getNodeType(e.getNode(1), bindings);
@@ -54,21 +68,21 @@ public class TriplePattern {
     }
 
     /**
-     * Set the paramters other then basic pattern
+     * Set the paramters other than basic paremeters, only can be set after
+     * construction of the whole basic pattern graph
      *
      * @param graph
      */
     public void setParameters(BPGraph graph) {
         this.setFilterNumber(graph);
-        //!!TODO set graph
-        // this.pattern[G] = getNodeType(null, bindings);
-
+        //other parameters can be added here if needed
+        //...
     }
 
     // FV: filter variables
     // FN: filter number
     private void setFilterNumber(BPGraph graph) {
-        List<BPGNode> nodes = graph.getNodeList(6);
+        List<BPGNode> nodes = graph.getAllNodes(FILTER);
 
         int noOfFilter = 0, noOfVariable = 0;
 
@@ -150,7 +164,7 @@ public class TriplePattern {
         for (int i = 0; i < p1.pattern.length; i++) {
             match = match && (p1.pattern[i] == p2.pattern[i]);
         }
-        return match && (compareWithStats(p1.bpn, p2.bpn, meta)==0);
+        return match && (compareWithStats(p1.bpn, p2.bpn, meta) == 0);
     }
 
     public boolean match(TriplePattern p1, IProducer meta) {
@@ -170,32 +184,50 @@ public class TriplePattern {
 
             @Override
             public int compare(TriplePattern o1, TriplePattern o2) {
-                 return compareTriple(o1, o2, bp, onlyBasic, meta);
+                return compareTriple(o1, o2, bp, onlyBasic, meta);
             }
         });
     }
 
+    //order by selectivity asending(0-1) (more selective - less selective)
     public static int compareTriple(TriplePattern p1, TriplePattern p2, final int[][] bp, final boolean onlyBasic, final IProducer meta) {
-        //get the sequence in the simple pattern list
-        int i1 = p1.match(bp), i2 = p2.match(bp);
-        //the first 3 pattern are not the same, return directly
-        if (i1 != i2) {
-            return i1 > i2 ? 1 : -1;
+        //GRAPH
+        //rule 1: GRAPH has more priority than EDGE
+        int type1 = p1.bpn.getExp().type();
+        int type2 = p2.bpn.getExp().type();
+
+        //if (type1 == GRAPH || type2 == GRAPH) {
+        if (type1 == GRAPH && type2 == EDGE) {
+            return 1;
+        } else if (type1 == EDGE && type2 == GRAPH) {
+            return -1;
+        } else if (type1 == GRAPH && type2 == GRAPH) {
+            return p1.pattern[G] > p2.pattern[G] ? 1 : -1;
+        } else {//EDGE - EDGE
+         //EDGE
+            //get the sequence in the simple pattern list
+            int i1 = p1.match(bp), i2 = p2.match(bp);
+            //the first 3 pattern are not the same, return directly
+            if (i1 != i2) {
+                return i1 > i2 ? 1 : -1;
             //compare the others
-            //for FV and FN, the bigger, the selectivity is higher
-            //todo add graph
-        } else if (!onlyBasic) {
-            if (p1.pattern[G] != p2.pattern[G]) {
-                return p1.pattern[G] < p2.pattern[G] ? 1 : -1;
-            } else if (p1.pattern[FV] != p2.pattern[FV]) {
-                return p1.pattern[FV] < p2.pattern[FV] ? 1 : -1;
-            } else if (p1.pattern[FN] != p2.pattern[FN]) {
-                return p1.pattern[FN] < p2.pattern[FN] ? 1 : -1;
+                //for FV and FN, the bigger, the selectivity is higher
+                //todo add graph
+            } else if (!onlyBasic) {
+                //Parameter G is not used for the moment!!
+//            if (p1.pattern[G] != p2.pattern[G]) {
+//                return p1.pattern[G] < p2.pattern[G] ? 1 : -1;
+//            } else 
+                if (p1.pattern[FV] != p2.pattern[FV]) {
+                    return p1.pattern[FV] < p2.pattern[FV] ? 1 : -1;
+                } else if (p1.pattern[FN] != p2.pattern[FN]) {
+                    return p1.pattern[FN] < p2.pattern[FN] ? 1 : -1;
+                } else {
+                    return compareWithStats(p1.bpn, p2.bpn, meta);
+                }
             } else {
                 return compareWithStats(p1.bpn, p2.bpn, meta);
             }
-        } else {
-            return compareWithStats(p1.bpn, p2.bpn, meta);
         }
     }
 

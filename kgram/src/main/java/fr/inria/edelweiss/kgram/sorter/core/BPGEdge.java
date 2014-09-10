@@ -69,7 +69,7 @@ public class BPGEdge {
      * 
      * @return 
      */
-    public List<BPGNode> get() {
+    public List<BPGNode> getNodes() {
         List l = new ArrayList();
         l.add(n1);
         l.add(n2);

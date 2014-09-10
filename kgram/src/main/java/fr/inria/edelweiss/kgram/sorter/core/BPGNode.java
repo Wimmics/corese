@@ -1,8 +1,11 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.AND;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPHNODE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -11,6 +14,7 @@ import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.O;
 import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.P;
 import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.S;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -31,15 +35,21 @@ public class BPGNode {
     private TriplePattern pattern = null;
 
     //private final BPGEdge edge = null;
-    private final Node graph;
-
+    //private final Node gNode;
     //private Iestimate
-    public BPGNode(Exp exp, Node gNode, List<Exp> bindings) {
+    public BPGNode(Exp exp, List<Exp> bindings) {
         this.exp = exp;
-        this.graph = gNode;
+        //this.gNode = gNode;
 
         if (exp.type() == EDGE) {
             pattern = new TriplePattern(this, exp.getEdge(), bindings);
+        } else if (exp.type() == GRAPH) {
+            //obtain the graph node
+            if (exp.size() > 0 && exp.get(0).type() == GRAPHNODE) {
+                //GRAPH{GRAPHNODE{NODE{data:aliceFoaf } } AND...}   
+                Node gNode = exp.get(0).get(0).getNode();
+                pattern = new TriplePattern(this, gNode, bindings);
+            }
         } else {
             //set the selectivity of filter very big
             //so that it can be postioned at the end 
@@ -99,14 +109,14 @@ public class BPGNode {
      * @return true: shared; false: not share
      */
     public boolean isShared(BPGNode n) {
-        return shared(this, n).size() > 0;
+        return this.shared(this, n).size() > 0;
     }
 
-    public List<String> shared(BPGNode n){
+    public List<String> shared(BPGNode n) {
         return this.shared(this, n);
     }
-    
-    
+
+    //!! to be checked / tested
     public List<String> shared(BPGNode bpn1, BPGNode bpn2) {
         int type1 = bpn1.exp.type();
         int type2 = bpn2.exp.type();
@@ -115,7 +125,9 @@ public class BPGNode {
             case EDGE:
                 switch (type2) {
                     case EDGE:
-                        return isShared(bpn1.exp.getEdge(), bpn2.exp.getEdge());
+                        return this.isShared(bpn1.exp.getEdge(), bpn2.exp.getEdge());
+                    case GRAPH:
+                        return this.isShared(bpn2.exp, bpn1.exp.getEdge());
                     default: ;
                 }
                 break;
@@ -130,7 +142,15 @@ public class BPGNode {
                 switch (type2) {
                     case EDGE:
                         return this.isShared(bpn1.exp.getNodeList(), bpn2.exp.getEdge());
-                    default:
+                    default:;
+                }
+            case GRAPH:
+                switch (type2) {
+                    case EDGE:
+                        return this.isShared(bpn1.exp, bpn2.exp.getEdge());
+                    case GRAPH:
+                        return this.isShared(bpn1.exp, bpn2.exp);
+                    default:;
                 }
             default:
                 break;
@@ -178,12 +198,62 @@ public class BPGNode {
     }
 
     //check between two edges
-    //!! to be checked / tested
     public List<String> isShared(Edge e1, Edge e2) {
-        List<String> l = new ArrayList<String>();
-        List<Node> l1 = getVariables(e1);
-        List<Node> l2 = getVariables(e2);
+        return this.compare(getVariables(e1), getVariables(e2));
+    }
 
+    //check between edge and graph
+    public List<String> isShared(Exp graph, Edge e) {
+        List<Node> lEdge = getVariables(e);
+        List<Node> lGraph = getVariablesByGraph(graph);
+
+        return this.compare(lEdge, lGraph);
+    }
+
+    //check between two graphs
+    public List<String> isShared(Exp g1, Exp g2) {
+        List<Node> lGraph1 = getVariablesByGraph(g1);
+        List<Node> lGraph2 = getVariablesByGraph(g2);
+        return this.compare(lGraph1, lGraph2);
+    }
+
+    private List<Node> getVariables(Edge e) {
+        List<Node> l = new ArrayList<Node>();
+        if (e.getNode(0).isVariable()) {
+            l.add(e.getNode(0));
+        }
+        if (e.getEdgeNode().isVariable()) {
+            l.add(e.getEdgeNode());
+        }
+        if (e.getNode(1).isVariable()) {
+            l.add(e.getNode(1));
+        }
+
+        return l;
+    }
+
+    //GRAPH{GRAPHNODE{NODE{data:aliceFoaf } } AND{EDGE{?alice foaf:mbox <mailto:alice@work.example>} ...}}
+    private List<Node> getVariablesByGraph(Exp graph) {
+        List<Node> l = new ArrayList<Node>();
+        for (Exp e : graph) {
+            if (e.type() == AND) {
+                for (Exp ee : e) {
+                    if (ee.type() == EDGE) {
+                        l.addAll(getVariables(ee.getEdge()));
+                    }
+                }
+            }
+        }
+        //remove duplicated items
+        HashSet h = new HashSet(l);
+        l.clear();
+        l.addAll(h);
+
+        return l;
+    }
+
+    private List<String> compare(List<Node> l1, List<Node> l2) {
+        List<String> l = new ArrayList<String>();
         for (Node n1 : l1) {
             for (Node n2 : l2) {
                 if (n1.same(n2)) {
@@ -191,20 +261,6 @@ public class BPGNode {
                     break;
                 }
             }
-        }
-        return l;
-    }
-
-    private List<Node> getVariables(Edge e) {
-        List l = new ArrayList<Edge>();
-        if (e.getNode(O).isVariable()) {
-            l.add(e.getNode(O));
-        }
-        if (e.getEdgeNode().isVariable()) {
-            l.add(e.getEdgeNode());
-        }
-        if (e.getNode(1).isVariable()) {
-            l.add(e.getNode(1));
         }
 
         return l;
@@ -225,6 +281,10 @@ public class BPGNode {
         } else if (this.exp.type() == FILTER && n.exp.type() == EDGE) {
             return true;
         } else if (this.exp.type() == VALUES && n.exp.type() == EDGE) {
+            return true;
+        } else if (this.exp.type() == GRAPH && n.exp.type() == EDGE) {
+            return true;
+        } else if (this.exp.type() == GRAPH && n.exp.type() == GRAPH) {
             return true;
         } else {
             return false;

@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgram.core;
 
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
@@ -71,19 +73,18 @@ public class SorterNew extends Sorter {
      * @return
      */
     private boolean sortable(Exp e) {
-        if (e.type() != Exp.AND) {
-            return false;
-        }
-        if (e.size() < 2) {
-            return false;
-        }
 
-        for (Exp ee : e) {
-            if (!(ee.type() == Exp.FILTER || ee.type() == EDGE || ee.type() == Exp.VALUES)) {
-                return false;
+        if (e.type() == Exp.AND && e.size() >1) {
+           
+            //check all sub expression type
+            for (Exp ee : e) {
+                if (!(ee.type() == Exp.FILTER || ee.type() == EDGE || ee.type() == VALUES || ee.type() == GRAPH)) {
+                    return false;
+                }
             }
+            return true;
         }
 
-        return true;
+        return false;
     }
 }

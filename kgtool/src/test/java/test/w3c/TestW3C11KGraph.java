@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
- 
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
@@ -26,7 +26,11 @@ import static org.junit.Assert.assertEquals;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
@@ -34,6 +38,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
@@ -46,7 +51,14 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.print.CSVFormat;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.print.TSVFormat;
+import fr.inria.edelweiss.kgtool.print.TemplateFormat;
+import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -70,29 +82,32 @@ public class TestW3C11KGraph {
     // root of test case RDF data
 
     static final String data0 = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-    
 //    static final String data = "/home/corby/NetBeansProjects/kgram/trunk/kgtool/src/test/resources/data/";
     static final String data = TestW3C11KGraph.class.getClassLoader().getResource("data").getPath()+"/";
-
     // old local copy:
     //static final String froot = data + "w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/";
     // new local copy:
     static final String froot = data + "w3c-sparql11/sparql11-test-suite/";
+    static final String frdf = data + "w3c-rdf/rdf-mt/tests/";
+    static final String wrdf = "https://dvcs.w3.org/hg/rdf/raw-file/default/rdf-mt/tests/";
+    
     // W3C test case:
     static final String wroot = "http://www.w3.org/2009/sparql/docs/tests/data-sparql11/";
-  //static final String RULE  = "/net/servers/ftp-sop/wimmics/soft/rule/rdfs.rul";
-    static final String RULE  = data + "w3c-sparql11/data/rdfs.rul";
+    //static final String RULE  = "/net/servers/ftp-sop/wimmics/soft/rule/rdfs.rul";
+    static final String RULE = data + "w3c-sparql11/data/rdfs.rul";
     static final String root0 = data0 + "test-suite-archive/data-r2/";
     static final String DC = "http://purl.org/dc/elements/1.1/";
+    
+    static final String TTL = "/home/corby/AData/work/w3c/";
+    static int cc = 0;
     /**
      * **********
-     * TO SET: 
-	 ***********
+     * TO SET: **********
      */
     // ** directory where data are:
     static final String root = froot;
     // ** directory where to save earl report:
-    static final String more = data + "w3c-sparql11/data/";
+    static final String more = data + "earl/";
     // query
     static final String man =
             "prefix mf:  <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> "
@@ -111,8 +126,9 @@ public class TestW3C11KGraph {
             + "optional {?x mf:result ?r}"
             + "optional {?x rdf:type ?t}"
             + "optional {?x mf:feature ?fq}"
-            + ""
-            + "optional { ?a qt:serviceData [qt:endpoint ?ep ; qt:data ?ed] }"
+            + "optional { ?x mf:recognizedDatatypes/rdf:rest*/rdf:first ?rdt }"
+            + "optional { ?x mf:unrecognizedDatatypes/rdf:rest*/rdf:first ?udt }"
+            + "optional { ?a qt:serviceData [ qt:endpoint ?ep ; qt:data ?ed ] }"
             + "{?man rdf:first ?x} "
             + "} "
             + "group by ?x order by ?q ";
@@ -151,7 +167,10 @@ public class TestW3C11KGraph {
     boolean trace = true;
     List<String> errors = new ArrayList<String>();
     List<String> names = new ArrayList<String>();
-//	Earl earl;
+    Earl earl;
+    private Graph spinGraph = Graph.create();
+
+  
 
     class Testing extends Hashtable<String, Integer> {
     }
@@ -176,7 +195,7 @@ public class TestW3C11KGraph {
         DatatypeMap.setSPARQLCompliant(true);
         tko = new Testing();
         tok = new Testing();
-//		earl = new Earl();
+		earl = new Earl();
     }
 
     public static void main(String[] args) {
@@ -219,6 +238,15 @@ public class TestW3C11KGraph {
         test(root0 + "expr-builtin");
         test(root0 + "construct");
     }
+    
+    
+
+    void testRDF() {
+        sparql1 = true;
+
+        test(wrdf, "manifest.ttl", false, true, true);
+        //test(wrdf, "manifest-az.ttl", false, true, true);
+   }
 
     /**
      * SPARQL 1.1
@@ -226,7 +254,7 @@ public class TestW3C11KGraph {
     void test1() {
         sparql1 = true;
 
-        test(root + "service");
+        //test(root + "service");
 
         test(root + "syntax-fed");
         test(root + "syntax-query");
@@ -270,14 +298,14 @@ public class TestW3C11KGraph {
     void test() {
         sparql1 = true;
         //test(root + "functions", false);
-        test(root + "functions");		 
-        
+        test(root + "bind");
+
 
     }
 
     void testelem() {
         sparql1 = false;
-        test(root0 + "dataset");
+        test(root0 + "bind");
     }
 
     @Test
@@ -288,13 +316,17 @@ public class TestW3C11KGraph {
         // 28 errors  416 success
         // 29 errors 04/05/12
         // 31 errors 11/05/12 because of optional DOT 
-        
+
 
         if (true) {
+            //QueryProcess.setJoin(true);
             //Graph.setValueTable(true);
+            Graph.setCompareIndex(true);
             test1();
             testUpdate();
-            //test0(); //29 errors
+            //testRDF();
+            // TODO: blank should not span BGP
+           // test0(); //24 errorstest
         } else {
             test();
         }
@@ -378,21 +410,33 @@ public class TestW3C11KGraph {
             println("*** Missing result: " + total + " " + nbtest);
         }
 
-        //earl.toFile(more + "earl.ttl");
+
+        process(spinGraph);
+
+        earl.toFile(more + "earl.ttl");
+        
+        Graph ge = Graph.create();
+        Load le = Load.create(ge);
+        try {
+            le.loadWE(more + "earl.ttl");
+            //System.out.println(ge);
+        } catch (LoadException ex) {
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         // There are 5 known erros
-        assertEquals("Results", 5, errors.size());
+        assertEquals("Results", 0, errors.size());
 
 
         //Processor.finish();
 
     }
-    
-    void println(String str){
+
+    void println(String str) {
         System.out.println(str);
     }
-    
-     void print(String str){
+
+    void print(String str) {
         System.out.print(str);
     }
 
@@ -400,23 +444,30 @@ public class TestW3C11KGraph {
      * Test one manifest
      */
     void skip(String path) {
-        test(path, false, false);
+        test(path, false, false, false);
     }
 
     void test(String path) {
-        test(path, false, true);
+        test(path, false, false, true);
     }
 
     void test(String path, boolean update) {
-        test(path, update, true);
+        test(path, update, false, true);
     }
 
     /**
      * Process one manifest Load manifest.ttl in a Graph SPARQL Query the graph
      * to get the query list, input and output list.
      */
-    void test(String path, boolean update, boolean process) {
-        String manifest = path + "/manifest.ttl";
+     void test(String path, boolean update, boolean isRDF, boolean process) {
+         if (! path.endsWith("/")){
+             path = path + "/";
+         }
+         test(path, "manifest.ttl", update, isRDF, process);
+     }
+     
+   void test(String path, String fman, boolean update, boolean isRDF, boolean process) {
+        String manifest = path + fman;
 
         try {
             System.out.println("** Load: " + pp(manifest));
@@ -449,8 +500,8 @@ public class TestW3C11KGraph {
 
                 if (!process) {
                     String test = getValue(map, "?x");
-//					earl.skip(test);
-                } else if (query(path, map, update)) {
+					earl.skip(test);
+                } else if (query(path, map, update, isRDF)) {
                     ok++;
                 } else {
                     ko++;
@@ -506,7 +557,7 @@ public class TestW3C11KGraph {
      *
      * @return
      */
-    boolean query(String path, Mapping map, boolean isUpdate) {
+    boolean query(String path, Mapping map, boolean isUpdate, boolean isRDF) {
         //System.out.println(map);
 
         String defbase = uri(path + File.separator);
@@ -516,16 +567,19 @@ public class TestW3C11KGraph {
 
         List<String> fdefault = getValueList(map, "?d");
 
-        String test = getValue(map, "?x");
-        String fquery = getValue(map, "?q");
-        String fresult = getValue(map, "?r");
-        String ent = getValue(map, "?ent");
-        String type = getValue(map, "?t");
-        String fq = getValue(map, "?fq");
+        String test     = getValue(map, "?x");
+        String fquery   = getValue(map, "?q");
+        String fresult  = getValue(map, "?r");
+        String ent      = getValue(map, "?ent");
+        String type     = getValue(map, "?t");
+        String fq       = getValue(map, "?fq");
 
 
         String[] ep = getValues(map, "?ep");
         String[] ed = getValues(map, "?ed");
+        
+        List<Node> rdt = map.getNodes("?rdt",  true);
+        List<Node> udt = map.getNodes("?udt",  true);
 
 
         boolean isEmpty = getValue(map, "?ee") != null;
@@ -547,7 +601,9 @@ public class TestW3C11KGraph {
             fquery = getValue(map, "?a");
         }
 
-       //if (! fquery.contains("uuid") ) return true;
+        // here
+
+       // if (! fquery.contains("bind08.rq") ) return true;
 
         if (trace) {
             System.out.println(pp(fquery));
@@ -557,13 +613,32 @@ public class TestW3C11KGraph {
             fresult = clean(fresult); // remove file://
         }
         fquery = clean(fquery);
-        QueryLoad ql = QueryLoad.create();
-        String query = ql.read(fquery);
 
-        if (query == null || query == "") {
-            System.out.println("** ERROR 1: " + fquery + " " + query);
-            System.out.println(map);
-           return false;
+        String query = "";
+        Graph qg = null;
+
+        if (isRDF) {
+            // action is a RDF graph
+            qg = Graph.create(true);
+            qg.set(Entailment.DATATYPE_INFERENCE, true);
+            Load ld = Load.create(qg);
+            try {
+                ld.loadWE(fquery);
+            } catch (LoadException ex) {
+                Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+                earl.define(test, false);
+                return false;
+            }
+
+        } else {
+            QueryLoad ql = QueryLoad.create();
+            query = ql.read(fquery);
+
+            if (query == null || query == "") {
+                System.out.println("** ERROR 1: " + fquery + " " + query);
+                System.out.println(map);
+                return false;
+            }
         }
 
         Graph graph = Graph.create();
@@ -579,7 +654,7 @@ public class TestW3C11KGraph {
         }
 
         Load load = Load.create(graph);
-        graph.setOptimize(true);
+        //graph.setOptimize(true);
         load.reset();
         QueryProcess exec = QueryProcess.create(graph, true);
         //exec.setSPARQLCompliant(true);
@@ -602,7 +677,18 @@ public class TestW3C11KGraph {
         int nbres = -1;
 
         // Load the result
-        if (fresult == null && output.getURIs().size() == 0) { //frnamed.size()==0){
+        if (isRDF) {
+            gres = Graph.create();
+           if (fresult.equals("true") || fresult.equals("false")) {
+            } else {
+                Load ld = Load.create(gres);
+                try {
+                    ld.loadWE(fresult);
+                } catch (LoadException ex) {
+                    Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } else if (fresult == null && output.getURIs().size() == 0) { //frnamed.size()==0){
             if (isEmpty) {
                 gres = Graph.create();
             }
@@ -676,40 +762,42 @@ public class TestW3C11KGraph {
          **********************************************************
          */
         // default base to interpret from <data.ttl>
-        exec.setDefaultBase(defbase);
         Query qq = null;
-        try {
-            qq = exec.compile(query);
+        if (!isRDF) {
+            exec.setDefaultBase(defbase);
+            try {
+                qq = exec.compile(query);
 
-            if (type == null) {
-            } else if (type.contains(POSITIVE)) {
+                if (type == null) {
+                } else if (type.contains(POSITIVE)) {
 
 //				if (! query.contains("LOAD")){
 //					// Extra test: exec the query
 //					exec.query(query);
 //				}
 
-                // positive syntax test
-                if (!qq.isCorrect()) {
-                    System.out.println("** Should be positive: " + fquery);
-                    names.add(fquery);
-                    errors.add(query);
-                }
+                    // positive syntax test
+                    if (!qq.isCorrect()) {
+                        System.out.println("** Should be positive: " + fquery);
+                        names.add(fquery);
+                        errors.add(query);
+                    }
 
-//				earl.define(test, qq.isCorrect());
-                return qq.isCorrect();
+				earl.define(test, qq.isCorrect());
+                    return qq.isCorrect();
+                }
+                // NEGATIVE is tested below, at runtime
+            } catch (EngineException e1) {
+                if (type != null && type.contains(NEGATIVE)) {
+				earl.define(test, true);
+                    return true;
+                }
+                System.out.println("** Parser Error: " + e1.getMessage());
+                names.add(fquery);
+                errors.add(query);
+			earl.define(test, false);
+                return false;
             }
-            // NEGATIVE is tested below, at runtime
-        } catch (EngineException e1) {
-            if (type != null && type.contains(NEGATIVE)) {
-//				earl.define(test, true);
-                return true;
-            }
-            System.out.println("** Parser Error: " + e1.getMessage());
-            names.add(fquery);
-            errors.add(query);
-//			earl.define(test, false);
-            return false;
         }
 
 
@@ -732,48 +820,49 @@ public class TestW3C11KGraph {
         fr.inria.acacia.corese.triple.parser.Dataset ds = fr.inria.acacia.corese.triple.parser.Dataset.create();
         ds.setUpdate(isUpdate);
 
-        // default graph
-        if (fdefault.size() == 0) {
-            for (Node node : qq.getFrom()) {
-                String name = node.getLabel();
-                fdefault.add(name);
+        if (!isRDF) {
+            // default graph
+            if (fdefault.isEmpty()) {
+                for (Node node : qq.getFrom()) {
+                    String name = node.getLabel();
+                    fdefault.add(name);
+                }
+            }
+
+            // named graphs
+            if (input.getURIs().isEmpty()) {
+                for (Node node : qq.getNamed()) {
+                    String name = node.getLabel();
+                    //fnamed.add(name);
+                    input.addURI(name);
+                }
+            }
+
+
+            // default graph
+            if (fdefault.size() > 0) {
+                // Load RDF files for default graph
+                ds.defFrom();
+                for (String file : fdefault) {
+                    ds.addFrom(file);
+                    load.load(file, file);
+                }
+            }
+
+
+            // named graphs
+            if (input.getURIs().size() > 0) {
+                // Load RDF files for named graphs
+                //namedGraph = new ArrayList<String>();
+                ds.defNamed();
+                int i = 0;
+                for (String file : input.getURIs()) {
+                    String name = input.getNameOrURI(i++);
+                    load.load(file, name);
+                    ds.addNamed(name);
+                }
             }
         }
-
-        // named graphs
-        if (input.getURIs().size() == 0) {
-            for (Node node : qq.getNamed()) {
-                String name = node.getLabel();
-                //fnamed.add(name);
-                input.addURI(name);
-            }
-        }
-
-
-        // default graph
-        if (fdefault.size() > 0) {
-            // Load RDF files for default graph
-            ds.defFrom();
-            for (String file : fdefault) {
-                ds.addFrom(file);
-                load.load(file, file);
-            }
-        }
-
-
-        // named graphs
-        if (input.getURIs().size() > 0) {
-            // Load RDF files for named graphs
-            //namedGraph = new ArrayList<String>();
-            ds.defNamed();
-            int i = 0;
-            for (String file : input.getURIs()) {
-                String name = input.getNameOrURI(i++);
-                load.load(file, name);
-                ds.addNamed(name);
-            }
-        }
-
 
 
         if (rdfs || rdf) {
@@ -817,35 +906,59 @@ public class TestW3C11KGraph {
          ****************************************************
          */
         try {
+            // may be used to test SPIN, etc.                 
+            //query = process(query, defbase);
+            Mappings res;
+            
+            if (isRDF){
+                // project the entailed graph on the action graph
+                exec = QueryProcess.create(qg);
+                res = exec.query(gres);               
+            }
+            else {
+                //System.out.println(query);
+                res = exec.sparql(query, ds, entail);
+            }
 
-            //exec.setOptimize(true);
-            //exec.setDebug(true);
-            Mappings res = exec.sparql(query, ds, entail);
+            //Mappings res = exec.sparql(query, ds, entail);
+//            System.out.println(res.getQuery().getAST());
+//            System.out.println(res);
 
 
-            String q =
-                    "prefix ex: <http://example.org/ns#> "
-                    + "select * where {"
-                    + "?x ?p ?y"
-                    + "}";
-
-
-//			Mappings mm = exec.query(q);
-//			System.out.println(ResultFormat.create(mm));
-//			System.out.println(mm.size());
-//			
-//			
-//			System.out.println(String.format("%.5g", new Double(12345678.9876543).doubleValue()));
-//			System.out.println(String.format("%.5f", new Double(12345678.9876543).doubleValue()));
-//			System.out.println(String.format("%.5e", new Double(12345678.9876543).doubleValue()));
-//			System.out.println(String.format("%g", new Double(1.75).doubleValue()));
-//			System.out.println(new Double(1.75).doubleValue());
-            //1 .0e6
             // CHECK RESULT
-            boolean result = true;
+            boolean result = true, b = true;
 
+             if (isRDF) {
+                if (gres.size() > 0) {
+                    // compare action and result graph
+                    result = res.size() > 0;
+//                    boolean tc = qg.typeCheck();
+//                    System.out.println("type check (opt): " + tc);
+                }
+                else if (fresult.equals("false")){
+                    // check action graph is flawed
+                    boolean tc = qg.typeCheck();
+                    System.out.println("type check: " + tc);
+                    result = ! tc;
+                }
+                
+                if (!rdt.isEmpty() || !udt.isEmpty()) {
+                    b = check(qg, rdt, udt);
+                }
+                
+                if (type.contains(POSITIVE)){
+                    result = result && b;
+                }
+                else {
+                    result = ! (result && b);
+                }
+                
+                if (!result){
+                    System.out.println("error: " + test);
+                }
 
-            if (type != null && type.contains(NEGATIVE)) {
+            }
+             else if (type != null && type.contains(NEGATIVE)) {
                 // KGRAM should detect an error here
                 if (res.getQuery().isCorrect()) {
                     System.out.println("** Should be false: " + res.getQuery().isCorrect());
@@ -866,10 +979,14 @@ public class TestW3C11KGraph {
                 // checked by hand
                 TSVFormat json = TSVFormat.create(res);
                 System.out.println(json);
-            } else if (gres != null) {
-                // construct where
+            }            
+            else if (gres != null) {
+               // construct where
                 Graph kg = exec.getGraph(res);
-                gres.setDebug(true);
+                if (kg == null){
+                    kg = graph;
+                }
+               gres.setDebug(true);
                 if (kg != null && !gres.compare(kg)) {
                     System.out.println("kgram:");
                     System.out.println(kg.display());
@@ -919,12 +1036,12 @@ public class TestW3C11KGraph {
                 errors.add(query);
             }
 
-//			earl.define(test, result);
+			earl.define(test, result);
             return result;
 
         } catch (EngineException e) {
             if (type != null && type.contains(NEGATIVE)) {
-//				earl.define(test, true);
+				earl.define(test, true);
                 return true;
             }
 
@@ -941,7 +1058,7 @@ public class TestW3C11KGraph {
             System.out.println(query);
             errors.add(query);
             names.add(fquery);
-//			earl.define(test, false);
+			earl.define(test, false);
             return false;
         }
     }
@@ -1173,6 +1290,38 @@ public class TestW3C11KGraph {
 
         return ok;
     }
+    
+    
+      private boolean check(Graph g, List<Node> rdt, List<Node> udt) {
+          boolean b1 = rdt(g, rdt, true);
+          boolean b2 = rdt(g, udt, false);
+          return b1 && b2;    
+      }
+      
+      // (un)recognized datatype
+     boolean rdt(Graph g, List<Node> list, boolean res) {
+         if (list.isEmpty()){
+            return true;
+         }
+         for (Node n : list) {
+             IDatatype dd = (IDatatype) n.getValue();
+
+             for (Entity ent : g.getEdges()) {
+                 IDatatype dt = (IDatatype) ent.getNode(1).getValue();                
+
+                if (dt.getDatatypeURI() != null) {
+                     if (dt.getDatatypeURI().equals(dd.getLabel())) {
+                         return res;
+                     }
+                 }
+                else if (dt.getLabel().equals(dd.getLabel())){
+                    // rdfs:range xsd:integer
+                    return res;
+                }
+             }
+         }
+         return !res;
+      }
 
     String pp(String name) {
         String pat = "sparql11/";
@@ -1299,5 +1448,147 @@ public class TestW3C11KGraph {
         }
 
         return res;
+    }
+
+    /**
+     * Generate SPIN query Pretty Print SPIN quert as SPARQL Parse SPARQL query
+     */
+    void spin(Query qq) {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+
+        ASTQuery ast = exec.getAST(qq);
+        //System.out.println(ast);
+
+        SPIN sp = SPIN.create();
+        sp.visit(ast);
+
+        // System.out.println("spin:\n" + sp);
+
+        String str = sp.toString();
+        try {
+            ld.load(new ByteArrayInputStream(str.getBytes("UTF-8")), "spin.ttl");
+        } catch (LoadException ex) {
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, "query: [" + str + "]");
+
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        TemplateFormat tf = TemplateFormat.create(g, "/home/corby/AData/spin/template");
+        tf.setNSM(ast.getNSM());
+        // System.out.println(tf);
+
+        String res = tf.toString();
+        try {
+            Query q = exec.compile(res);
+
+            //        if (res.length() == 0 ){
+            //            System.out.println(ast);
+            //            System.out.println("PP:");
+            //            System.out.println(res);
+            //            System.out.println("SPIN:");
+            //            System.out.println(str);
+            //        }
+
+        } catch (EngineException ex) {
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, "PP:\n" + res);
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, "AST:\n" + ast.toString());
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, "SPIN:\n" + str);
+
+        }
+    }
+
+    /**
+     * **************************************************
+     */
+    private String process(String query, String defbase) throws EngineException  {
+        //spin(query);
+        //System.out.println(query);
+        return toSPIN(query, defbase);
+    }
+    
+    
+    
+       private void spin(String query) {
+        SPINProcess sp = SPINProcess.create();
+        try {
+            String spin = sp.toSpin(query);
+            QueryLoad ql = QueryLoad.create();
+            String name = TTL + "f" + cc++ + ".ttl";
+            ql.write(name, spin);
+        } catch (EngineException ex) {
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+
+    private String toSPIN(String query, String defbase) throws EngineException {
+        System.out.println("query: \n" + query);
+        SPINProcess sp = SPINProcess.create();
+        sp.setSPARQLCompliant(true);
+        sp.setDefaultBase(defbase);
+        String str = sp.toSpinSparql(query);
+       System.out.println("result: " + str);
+       return str;
+    }
+
+    // add SPIN query into a global graph
+    void store(String query) {
+        try {
+            SPINProcess spin = SPINProcess.create();
+            String sp = spin.toSpin(query);
+            spin.toGraph(sp, spinGraph);
+        } catch (EngineException ex) {
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    // SPIN Graph
+    void process(Graph g) {
+        // query(g);
+    }
+
+    void pprint(Graph g) {
+        Transformer pp = Transformer.create(g, Transformer.SPIN);
+        NSManager nsm = NSManager.create();
+        nsm.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
+        nsm.definePrefix("ex", "http://www.example.org/");
+
+        pp.setNSM(nsm);
+        System.out.println(pp);
+    }
+
+    void query(Graph g) {
+        String q =
+                "prefix sp: <http://spinrdf.org/sp#>"
+                + "select distinct ?c (count(?x) as ?cc) where {"
+                // + "{?x a ?c} union "
+                + "{?x ?c ?v filter(strstarts(?c, sp:))}"
+                + "} "
+                + "group by ?c";
+
+        String q1 =
+                "prefix sp: <http://spinrdf.org/sp#>"
+                + "select  (count(*) as ?cc) where {"
+                // + "{?x a ?c} union "
+                + "{?x sp:subject ?s ; "
+                + "sp:object ?o"
+                + "{?x sp:predicate ?p } union { ?x sp:path ?p } "
+                + "}"
+                + "} "
+                + "";
+
+        QueryProcess exec = QueryProcess.create(g);
+        try {
+            Mappings map = exec.query(q);
+            System.out.println(map);
+        } catch (EngineException ex) {
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

@@ -44,7 +44,7 @@ public class TestRuleEngine {
 	
 	@BeforeClass
 	public static void init() throws EngineException {	
-		
+		//Graph.setCompareIndex(true);
 		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
 
 		graph = Graph.create(true);
@@ -65,6 +65,7 @@ public class TestRuleEngine {
 		}
 		
 		fengine = load.getRuleEngine();
+                fengine.setSpeedUp(true);
 
 		QueryProcess exec = QueryProcess.create(graph);
 		rengine = Engine.create(exec);
@@ -76,67 +77,90 @@ public class TestRuleEngine {
         
         
         @Test
-    public void testRuleOpt() throws LoadException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-        Load ld = Load.create(g);
-        ld.loadWE(data + "comma/comma.rdfs");
-
-        try {
-            ld.loadWE(data + "owlrule/owlrllite.rul");
-
-        } catch (LoadException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Start Rules");
-        RuleEngine re = ld.getRuleEngine();
-        re.setOptimize(true);// 86690 ** Time : 11.477
-        re.setConstructResult(true);
-        re.setTrace(true);
-        System.out.println("Graph: " + g.size());
-        Date d1 = new Date();
-        re.process();
-        Date d2 = new Date();
-        System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / ( 1000.0));
-
-                  
-        assertEquals(8200, g.size());
-               
-    }
-  
         
-       @Test
-    public void testRuleNotOpt() throws LoadException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-        Load ld = Load.create(g);
-        ld.loadWE(data + "comma/comma.rdfs");
-
-        try {
-            ld.loadWE(data + "owlrule/owlrllite.rul");
-
-        } catch (LoadException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Start Rules");
-        RuleEngine re = ld.getRuleEngine();
-//        re.setOptimize(true);// 86690 ** Time : 11.477
-//        re.setConstructResult(true);
-        re.setTrace(true);
+        public void testRuleOptimization() throws LoadException, EngineException { 
+            Graph g1 = testRuleOpt();
+            Graph g2 = testRuleNotOpt();
+            
+            QueryProcess e1 = QueryProcess.create(g1, true);
+            QueryProcess e2 = QueryProcess.create(g2, true);
+            
+            String q = "prefix c: <http://www.inria.fr/acacia/comma#>"
+                    + "select distinct ?x where {"
+                    + "?x a c:Person ; "
+                    + " c:hasCreated ?doc "
+                    + "?doc a c:Document"
+                    + "}";
+            
+            Mappings m1 = e1.query(q);
+            Mappings m2 = e2.query(q);
+            assertEquals(m1.size(), m2.size());
+        }      
+    
+    public Graph testRuleOpt() throws LoadException, EngineException {       
+        RuleEngine re = testRules();
+        Graph g = re.getGraph();
+        
+        re.setSpeedUp(true);
         System.out.println("Graph: " + g.size());
         Date d1 = new Date();
         re.process();
         Date d2 = new Date();
-        System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / ( 1000.0));
+        System.out.println("** Time opt: " + (d2.getTime() - d1.getTime()) / ( 1000.0));
+         validate(g, 37735);     
+                 
+        assertEquals(54028, g.size());
+        return g;
+    }
+        
+ 
+        
+    public Graph testRuleNotOpt() throws LoadException, EngineException {
+        RuleEngine re = testRules();
+        Graph g = re.getGraph();
+        
+        System.out.println("Graph: " + g.size());
+        Date d1 = new Date();
+        re.process();
+        Date d2 = new Date();
+        System.out.println("** Time std: " + (d2.getTime() - d1.getTime()) / ( 1000.0));
 
-                  
-        assertEquals(8200, g.size());
-               
+        validate(g, 41109);                
+        assertEquals(57402, g.size());
+        return g;
+            
     }
   
           
+       
+     RuleEngine testRules() throws LoadException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        ld.loadWE(data + "comma/comma.rdfs");
+        ld.loadWE(data + "comma/data");
+        ld.loadWE(data + "comma/data2");
+        try {
+            ld.loadWE(data + "owlrule/owlrllite-junit.rul");
+        } catch (LoadException e) {
+            e.printStackTrace();
+        }
+        RuleEngine re = ld.getRuleEngine();
+        return re;
+               
+    } 
         
-        
+     void validate(Graph g, int n) throws EngineException{
+         QueryProcess exec = QueryProcess.create(g);
+         String q = "select * "
+                 + "from kg:rule "
+                 + "where {?x ?p ?y}";
+         
+         Mappings map = exec.query(q);
+         assertEquals(n, map.size());
+     }
+     
+     
+     
 	
 	@Test
 	public void test1(){
@@ -220,7 +244,7 @@ public class TestRuleEngine {
 			assertEquals("Result", 4, map.size());
 			
 			map = exec.query(ent);
-			System.out.println(map);
+			//System.out.println(map);
 			
 		} catch (EngineException e) {
 			assertEquals("Result", 4, e);
@@ -239,7 +263,7 @@ public class TestRuleEngine {
 		String query = "select * where {graph ?g {?x ?p ?y}}";
 		try {
 			Mappings map = exec.query(query);
-			System.out.println(map);
+			//System.out.println(map);
 			assertEquals("Result", 9, map.size());
 		} catch (EngineException e) {
 			assertEquals("Result", 9, e);
@@ -300,7 +324,7 @@ public class TestRuleEngine {
 		
 		LBind bind = rengine.SPARQLProve(query);
 		assertEquals("Result", 4, bind.size());
-		System.out.println(bind);
+		//System.out.println(bind);
 		
 
 		re.process();
@@ -308,7 +332,7 @@ public class TestRuleEngine {
 		try {
 			Mappings map = exec.query(query);
 			assertEquals("Result", 4, map.size());
-			System.out.println(map);
+			//System.out.println(map);
 		} catch (EngineException e) {
 			assertEquals("Result", 4, e);
 		}
@@ -331,7 +355,7 @@ public class TestRuleEngine {
 		try {
 			exec.query(init);
 			Mappings map = exec.query(query);
-			System.out.println(map);
+			//System.out.println(map);
 			assertEquals("Result", 6, map.size());
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
@@ -382,7 +406,7 @@ public class TestRuleEngine {
 			assertEquals("Result", 4, map.size());
 			
 			map = exec.query(ent);
-			System.out.println(map);
+			//System.out.println(map);
 			
 		} catch (EngineException e) {
 			assertEquals("Result", 4, e);

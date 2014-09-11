@@ -217,8 +217,8 @@ public class GListener implements GraphListener, Tagger {
         store.add(new Operation());
     }
 
+
    
-    
     List<Operation> getOperations() {
         return store;
     }

@@ -21,6 +21,24 @@ import fr.inria.edelweiss.kgtool.print.ResultFormat;
 public class TestQueryDBPedia {
 	
 	
+    @Test
+	public void testDBP() throws EngineException{			
+		Graph graph = Graph.create();	
+		QueryProcess exec = QueryProcess.create(graph);	
+                String query = "select * where {"
+                        + "service <http://dbpedia.org/sparql/>{"
+                        + "select * where {"
+                        + "<http://dbpedia.org/resource/Paris> ?p ?y"
+                        + "} limit 10"
+                        + "}"
+                        + "}";
+                
+                Mappings map = exec.query(query);
+		assertEquals("Result", 10, map.size());
+
+                
+    }
+    
 	@Test
 	public void test61(){			
 		DatatypeMap.setLiteralAsString(false);

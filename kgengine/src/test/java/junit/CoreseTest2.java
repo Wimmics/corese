@@ -304,18 +304,21 @@ public class CoreseTest2 extends TestCase {
 //			Processor.finish();
 //		}
 		if (graph == null) init();
+                //QueryProcess.setSort(true);
 		QueryProcess exec = QueryProcess.create(graph);
 		//exec.set(SorterImpl.create(graph));
 		try {
                     
 //                        SPINProcess sp = SPINProcess.create();
 //                        String str = sp.toSpinSparql(query);
+                    //System.out.println("CT: " + query);
 			Mappings lMap = exec.query(query);
 			
 			if (TestKgram.displayResult){
 				System.out.println(lMap);
 			}
-			
+			//System.out.println(lMap.getQuery());
+                        //System.out.println(lMap);
 //			Query q = exec.compile(query);
 //			Mappings lMap = exec.query(exec.getAST(q).toString());
 												
@@ -343,6 +346,7 @@ public class CoreseTest2 extends TestCase {
 
 		graph = Graph.create(true);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
+                graph.setCompareIndex(true);
 
 		Load load = Load.create(graph);
 		graph.setOptimize(true);

@@ -18,7 +18,6 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Option;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -79,9 +78,13 @@ public class TestQuery1 {
 
     @BeforeClass
     static public void init() {
-        Graph.setValueTable(true);
-        Graph.setCompareKey(true);
-
+        if (false){
+            Graph.setValueTable(true);
+            Graph.setCompareKey(true);
+        }
+        else {
+            Graph.setCompareIndex(true);
+        }
         QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
         QueryProcess.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
 
@@ -115,6 +118,114 @@ public class TestQuery1 {
         return graph;
     }
 
+    @Test
+    
+    public void testTr() throws EngineException{
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        
+        String init = "prefix ex: <http://example.org/>"
+                + "insert data {"
+                + "ex:C4 owl:unionOf (ex:C5 ex:C6) "
+                + "ex:C0 owl:unionOf (ex:C2 ex:C3) "
+                + "ex:C1 owl:unionOf (ex:C2 ex:C3) "
+                + "}";
+        
+        exec.query(init);
+        
+        String q = "select *"
+                + "  where { "
+                + "    ?x owl:unionOf (?c1 ?c2)  ;"
+                + "       owl:unionOf ?l"
+                + "  }"
+                + "group by (st:apply-templates-with(st:hash2, ?l) as ?exp)"
+                ;
+        
+        Mappings map = exec.query(q);
+        
+        assertEquals(2, map.size());
+
+    }
+    
+   @Test
+    public void testOWLRL() throws EngineException, IOException {
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        Load ld = Load.create(gs);
+        try {
+            ld.loadWE(data + "template/owl/data/primer.owl");                             
+        } catch (LoadException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ld.load(data + "owlrule/owlrllite.rul");
+        RuleEngine re = ld.getRuleEngine();
+        Date d1 = new Date();
+        re.setProfile(re.OWL_RL_FULL);
+        re.process();
+       
+         String q = "prefix f: <http://example.com/owl/families/>"
+                + "select * "
+                + "where {"
+                + "graph kg:rule {"
+                 + "?x ?p ?y "
+                + "filter (isURI(?x) && strstarts(?x, f:) "
+                 + "    && isURI(?y) && strstarts(?y, f:))"
+                 + "}"
+                 + "filter not exists {graph ?g {?x ?p ?y filter(?g != kg:rule)}}"
+                + "}"
+                 + "order by ?x ?p ?y"
+                ;
+        Mappings map = exec.query(q);
+        assertEquals(94, map.size());
+
+    }  
+    
+    @Test
+    public void testOWLRL2() throws EngineException, IOException {
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        Load ld = Load.create(gs);
+        try {
+            ld.loadWE(data + "template/owl/data/primer.owl");                             
+        } catch (LoadException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ld.load(data + "owlrule/owlrllite.rul");
+        RuleEngine re = ld.getRuleEngine();
+        Date d1 = new Date();
+        //re.setProfile(re.OWL_RL);
+        re.process();
+       
+         String q = "prefix f: <http://example.com/owl/families/>"
+                + "select * "
+                + "where {"
+                + "graph kg:rule {"
+                 + "?x ?p ?y "
+                + "filter (isURI(?x) && strstarts(?x, f:) "
+                 + "    && isURI(?y) && strstarts(?y, f:))"
+                 + "}"
+                 + "filter not exists {graph ?g {?x ?p ?y filter(?g != kg:rule)}}"
+                + "}"
+                 + "order by ?x ?p ?y"
+                ;
+               
+        Mappings map = exec.query(q);
+        assertEquals(93, map.size());
+
+    }  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
    @Test
     public void testExists() throws EngineException {
@@ -341,11 +452,11 @@ public class TestQuery1 {
          
          Mappings map = exec.query(t1);
          
-         assertEquals(5474, map.getTemplateResult().getLabel().length());
+         assertEquals(5483, map.getTemplateResult().getLabel().length());
 
          map = exec.query(t2);
          
-         assertEquals(6318, map.getTemplateResult().getLabel().length());
+         assertEquals(6327, map.getTemplateResult().getLabel().length());
         
     }
     
@@ -428,7 +539,7 @@ public class TestQuery1 {
                 + "}";
 
         String query =
-                "select debug distinct ?x where {"
+                "select  distinct ?x where {"
                 + "?x rdfs:label ?n "
                 + "{?x rdfs:label ?a} "
                 + "{?x rdfs:label ?b} "
@@ -451,7 +562,7 @@ public class TestQuery1 {
 
     }
     
-     //@Test
+     @Test
 
     public void testSDK() throws EngineException{
         QueryLoad ql = QueryLoad.create();
@@ -712,7 +823,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(gs);
       
         String q = FOAF_PREF
-                + "select debug *"
+                + "select  *"
                 + "where {"
                 + "graph kg:system { "
                 + "?a kg:version+ ?b "
@@ -788,6 +899,7 @@ public class TestQuery1 {
                 + "insert data { <John> foaf:knows <Jim>, <James> }";
         
         Graph g = Graph.create();
+        g.setTuple(true);
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         
@@ -1238,11 +1350,11 @@ public class TestQuery1 {
 
             map = exec.query(query2);
             //System.out.println(map);
-            assertEquals("Result", 1, map.size());
+            assertEquals("Result", 2, map.size());
 
             map = exec.query(query3);
             //System.out.println(map);
-            assertEquals("Result", 1, map.size());
+            assertEquals("Result", 4, map.size());
 
         } catch (EngineException e) {
             assertEquals("Result", 2, e);
@@ -1757,7 +1869,7 @@ public class TestQuery1 {
     @Test
     public void test12() {
 
-        String query = "select debug *  where {"
+        String query = "select  *  where {"
                 + "?x rdf:type ?class; c:hasCreated ?doc}";
 
         try {
@@ -1913,9 +2025,9 @@ public class TestQuery1 {
 
         try {
             Mappings map = exec.query(query);
-            assertEquals("Result", 28, map.size());
+            assertEquals("Result", 31, map.size());
         } catch (EngineException e) {
-            assertEquals("Result", 28, e);
+            assertEquals("Result", 31, e);
         }
 
     }
@@ -2024,7 +2136,7 @@ public class TestQuery1 {
             QueryProcess exec = QueryProcess.create(graph);
             Mappings map = exec.query(query);
             IDatatype dt = getValue(map, "?max");
-            assertEquals("Result", 61, map.size());
+            assertEquals("Result", 64, map.size());
 
         } catch (EngineException e) {
             assertEquals("Result", true, e);
@@ -2059,7 +2171,7 @@ public class TestQuery1 {
     public void test24() {
 
         String query =
-                "select debug "
+                "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
                 + "graph $path {?a ?p ?b filter(?a = c:Engineer)}"
@@ -2151,7 +2263,7 @@ public class TestQuery1 {
     public void test28() {
 
         String query =
-                "select debug "
+                "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
                 + "graph $path {c:Engineer ?p ?b} "
@@ -2175,7 +2287,7 @@ public class TestQuery1 {
     public void test29() {
 
         String query =
-                "select debug "
+                "select  "
                 + "where {"
                 + "?class rdfs:subClassOf+ :: $path c:Person "
                 + "graph $path {?a ?p c:Person} "
@@ -2867,7 +2979,7 @@ public class TestQuery1 {
                 + "prefix i: <http://www.inria.fr/test/> "
                 + "construct {?su ?pr ?o} "
                 + "where {"
-                + "select debug * where {"
+                + "select  * where {"
                     + "values ?xml {<file://"
                     + text + "phrase.xml>"
                     + "}"
@@ -3197,7 +3309,7 @@ public class TestQuery1 {
 
         try {
             exec.query(init);
-            re.setDebug(true);
+           // re.setDebug(true);
             re.process();
             Mappings map = exec.query(query);
             //System.out.println(map);
@@ -3661,7 +3773,7 @@ public class TestQuery1 {
             Mappings map = exec.query(query);
             Query q = map.getQuery();
 
-            assertEquals("Result", 16, q.nbNodes());
+            assertEquals("Result", 20, q.nbNodes());
 
         } catch (EngineException e) {
             // TODO Auto-generated catch block

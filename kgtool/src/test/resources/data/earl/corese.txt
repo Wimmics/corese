@@ -1,0 +1,16 @@
+<http://www-sop.inria.fr/members/Olivier.Corby#me> a foaf:Person ;
+   foaf:homepage <http://www-sop.inria.fr/members/Olivier.Corby> ;
+   foaf:name "Olivier Corby" . 
+
+<http://wimmics.inria.fr/corese>
+      a  doap:Project ;
+      dc:creator    <http://wimmics.inria.fr> ;
+      foaf:maker    <http://wimmics.inria.fr> ;
+      doap:name     "Corese" ; 
+      doap:developer <http://www-sop.inria.fr/members/Olivier.Corby#me>;
+      doap:license <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html> ;
+      foaf:description "Corese is a Semantic Web Factory implementing RDF, RDFS, SPARQL 1.1 Query & Update and Inference Rules, developed at Inria & I3S" ;
+      foaf:homepage  <http://wimmics.inria.fr/corese> .
+      
+      
+

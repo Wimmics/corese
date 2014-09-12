@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgtool.util;
 
-import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;

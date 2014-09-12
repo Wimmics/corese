@@ -134,14 +134,14 @@ public class GraphEngine implements IEngine {
 	}
 	
 	public void runRuleEngine() {
-            runRuleEngine(false);
+            runRuleEngine(false, false);
         }
         
-	public void runRuleEngine(boolean opt) {
+	public void runRuleEngine(boolean opt, boolean trace) {
 		rengine.setDebug(isDebug);
 		if (opt){
                     rengine.setSpeedUp(opt);
-                    rengine.setTrace(true);
+                    rengine.setTrace(trace);
                 }
 		graph.process(rengine);
 	}
@@ -250,13 +250,6 @@ public class GraphEngine implements IEngine {
 	
 
 
-	
-	public void runRuleEngine(boolean rdf, boolean owl) {
-		
-		
-	}
-
-	
 	public IResults SPARQLProve(String query) throws EngineException {
 		LBind res = bengine.SPARQLProve(query);
 		if (res == null) return  null;

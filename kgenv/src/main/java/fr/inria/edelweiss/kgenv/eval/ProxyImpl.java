@@ -57,6 +57,9 @@ public class ProxyImpl implements Proxy, ExprType {
     // setMode(SPARQL_MODE) 
     boolean SPARQLCompliant = false;
     protected IDatatype EMPTY = DatatypeMap.newStringBuilder("");
+    
+    IDatatype[] intCache;
+    private static final int INTMAX = 100;
 
     public ProxyImpl() {
         sql = new SQLFun();
@@ -911,7 +914,20 @@ public class ProxyImpl implements Proxy, ExprType {
 
     @Override
     public IDatatype getValue(int value) {
+        if (value >= 0 && value < INTMAX){
+            return getValueCache(value);
+        }
         return DatatypeMap.newInstance(value);
+    }
+    
+    public IDatatype getValueCache(int value) {
+        if (intCache == null) {
+            intCache = new IDatatype[INTMAX];
+        }
+        if (intCache[value] == null) {
+            intCache[value] = DatatypeMap.newInstance(value);
+        }
+        return intCache[value];
     }
 
     public IDatatype getValue(long value) {
@@ -1060,5 +1076,14 @@ public class ProxyImpl implements Proxy, ExprType {
     @Override
     public Expr createFunction(String name, List<Object> args, Environment env) {
         return null;    
+    }
+
+    @Override
+    public void start(Producer p, Environment env) {
+        plugin.start(p, env);
+    }
+    
+     public void finish(Producer p, Environment env) {
+        plugin.finish(p, env);
     }
 }

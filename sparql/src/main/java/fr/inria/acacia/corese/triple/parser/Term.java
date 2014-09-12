@@ -727,12 +727,16 @@ public class Term extends Expression {
 	}
 	
 	public boolean isFunctional() {
-		return isFunction() && 
-		(name.equals(Processor.UNNEST) || 
-		name.equals(Processor.SQL) || 
-		name.equals(Processor.XPATH) ||
-		name.equals(Processor.SPARQL) ||
-		name.equals(Processor.EXTERN)) ;
+		if (! isFunction()){
+                    return false;
+                }
+                String str = getLabel();
+		return (str.equals(Processor.UNNEST) || 
+                str.equals(Processor.KGUNNEST) || 		
+                str.equals(Processor.SQL) || 
+		str.equals(Processor.XPATH) ||
+		//str.equals(Processor.SPARQL) ||
+		str.equals(Processor.EXTERN)) ;
 	}
 	
 	public boolean isBound(){

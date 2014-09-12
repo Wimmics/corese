@@ -71,7 +71,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-09-01";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-09-09";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -119,7 +119,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem iselect, igraph, iconstruct, iask, idescribe, 
             iserviceCorese, iserviceDBpedia, ientailment, irule,
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, itrig, ispin, iowl, itypecheck, icontent;
+            iturtle, itrig, ispin, iowl, itypecheck, icontent, isystem;
     
     HashMap<Object, String> itable;
     
@@ -168,7 +168,8 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String defaultSPINQuery = "spin.rq";   
     private static final String defaultTypecheckQuery = "typecheck.rq";     
     private static final String defaultContentQuery = "content.rq";
-   
+    private static final String defaultSystemQuery = "system.rq";
+  
     private String defaultQuery = defaultSelectQuery;
             
     private GraphEngine myCorese = null;
@@ -447,6 +448,7 @@ public class MainFrame extends JFrame implements ActionListener {
         iserviceCorese    = defItem("Service Corese", defaultServiceCoreseQuery);
         iserviceDBpedia    = defItem("Service DBpedia", defaultServiceDBpediaQuery);
         icontent    = defItem("Content", defaultContentQuery);
+        isystem    = defItem("System", defaultSystemQuery);
 
         
         iinsert     = defItem("Insert", defaultInsertQuery);
@@ -571,6 +573,7 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(ideleteinsert);
         queryMenu.add(ientailment);
         queryMenu.add(irule);
+        queryMenu.add(isystem);
        
         templateMenu.add(iturtle);
         templateMenu.add(itrig);
@@ -1087,7 +1090,7 @@ public class MainFrame extends JFrame implements ActionListener {
             setRDFSEntailment(false);
         }
         Date d1 = new Date();
-        myCorese.runRuleEngine(opt);
+        myCorese.runRuleEngine(opt, trace);
         Date d2 = new Date();
         appendMsg("\nrules applied... \n" + myCapturer.getContent() + "\ndone.\n");
         appendMsg("time: " + (d2.getTime() - d1.getTime()) / (1000.0));

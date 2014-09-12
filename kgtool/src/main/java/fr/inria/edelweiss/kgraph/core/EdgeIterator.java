@@ -15,6 +15,8 @@ import java.util.ArrayList;
  * Check graph ?g
  */
 public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
+        static final List<Entity> empty = new ArrayList<Entity>(0);
+        
 	Iterable<Entity> iter;
 	Iterator<Entity> it;
 	Edge last;
@@ -22,7 +24,8 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	Node graph;
         Graph gg;
 	List<Node> from;
-	boolean hasGraph, hasFrom;
+        Node fromNode;
+	boolean hasGraph, hasFrom, hasOneFrom;
 	private boolean hasTag = false;
         private int level = -1;
         boolean hasLevel = false;
@@ -37,6 +40,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		iter = i;
 		hasGraph = false;
 		hasFrom = false;
+		hasOneFrom = false;
                 init();
 	}
 	
@@ -63,6 +67,13 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 		from = list;
 		this.hasGraph = hasGraph;
 		hasFrom = from.size()>0;
+                hasOneFrom = from.size() == 1;
+                if (hasOneFrom){
+                    fromNode = g.getGraphNode(from.get(0).getLabel());
+                    if (fromNode == null){
+                        iter = empty;
+                    }
+                }
 		setTag(g.hasTag());
                 gg = g;
                 init();
@@ -152,7 +163,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 				last = ent.getEdge();
                                 
                                 if (hasLevel && last.getIndex() < level){
-                                    it = new ArrayList<Entity>().iterator();
+                                    it = empty.iterator();
                                     return null;
                                 }
                                 return ent;
@@ -181,9 +192,14 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	 * Check if entity graph node is member of from by dichotomy
 	 */
 	boolean isFrom(Entity ent, List<Node> from){
+            if (hasOneFrom){
+                return EdgeIndex.same(fromNode, ent.getGraph());
+            }
+            else {
 		Node g = ent.getGraph();
 		int res = find(from, g);
 		return res != -1;
+            }
 	}
 	
 	public boolean isFrom(List<Node> from, Node node){

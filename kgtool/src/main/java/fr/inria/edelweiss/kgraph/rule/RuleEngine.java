@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.rule;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -335,11 +336,20 @@ public class RuleEngine implements Engine {
 
         if (qq != null) { 
             Rule r = Rule.create(name, qq);
-            r.setIndex(rules.size());
+            declare(r);
             rules.add(r);  
             return qq;
         }
         return null;
+    }
+    
+    void declare(Rule r) {
+        Query q = r.getQuery();
+        q.setID(rules.size());
+        r.setIndex(rules.size());
+        Node prov = DatatypeMap.createObject(q.getAST().toString(), q);
+        q.setProvenance(prov);
+        r.setProvenance(prov);
     }
 
     int synEntail() {
@@ -398,11 +408,11 @@ public class RuleEngine implements Engine {
             // consider solutions that contain at leat one newly entailed edge
             start();
         }
-        if (isOptimization) {
-            // apply pertinent rules on newly entailed edges using kgram edge binding
-            // not so efficient
-            start2();
-        }
+//        if (isOptimization) {
+//            // apply pertinent rules on newly entailed edges using kgram edge binding
+//            // not so efficient
+//            start2();
+//        }
 
         int size = graph.size(),
                 start = size;
@@ -748,7 +758,7 @@ public class RuleEngine implements Engine {
             init(rule);
         }
         
-        //graph.indexResources();
+        graph.cleanEdge();
     }
 
     /**

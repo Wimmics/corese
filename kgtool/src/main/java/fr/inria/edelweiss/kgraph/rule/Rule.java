@@ -38,6 +38,7 @@ public class Rule {
     int rtype = UNDEF;
     private boolean isGeneric = false;
     private boolean isClosure = false;
+    private Node provenance;
 
     static {
         try {
@@ -239,5 +240,19 @@ public class Rule {
      */
     public void setTime(double time) {
         this.time = time;
+    }
+
+    /**
+     * @return the provenance
+     */
+    public Node getProvenance() {
+        return provenance;
+    }
+
+    /**
+     * @param provenance the provenance to set
+     */
+    public void setProvenance(Node provenance) {
+        this.provenance = provenance;
     }
 }

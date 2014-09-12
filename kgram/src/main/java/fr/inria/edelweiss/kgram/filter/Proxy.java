@@ -8,8 +8,12 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import java.util.List;
 
 public interface Proxy {
+    
+        void start(Producer p, Environment env);
 	
-	void setMode(int mode);
+        void finish(Producer p, Environment env);
+
+        void setMode(int mode);
 	
 	void setEvaluator(Evaluator eval);
 	

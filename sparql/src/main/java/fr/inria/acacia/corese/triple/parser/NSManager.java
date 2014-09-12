@@ -43,8 +43,9 @@ public class NSManager {
     public static final String SPIN = "http://spinrdf.org/sp#";
     public static final String SQL = "http://ns.inria.fr/ast/sql#";
     public static final String STL = ExpType.STL;
+    public static final String KGRAM = ExpType.KGRAM;
     static final String FPPP = "fp";
-    public static final String PPN = ExpType.KGRAM + "pprinter/";
+    public static final String PPN = KGRAM + "pprinter/";
     static final String PPP = "pp";
     private static final String SPIN_PREF = "sp";
     public static final String STL_PREF = "st";
@@ -163,7 +164,7 @@ public class NSManager {
         def.put(RDFS.XSD, RDFS.XSDPrefix);
         def.put(RDFS.OWL, RDFS.OWLPrefix);
 
-        def.put(ExpType.KGRAM, ExpType.KPREF);
+        def.put(KGRAM, ExpType.KPREF);
         def.put(RDFS.COS, RDFS.COSPrefix);
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);

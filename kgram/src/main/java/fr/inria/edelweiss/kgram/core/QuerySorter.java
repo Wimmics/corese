@@ -133,6 +133,7 @@ public class QuerySorter implements ExpType {
                         // take OPT_BIND(var = exp) into account
                         // TODO: graph ?g does not take into account OPT_BIND ?g = uri
                         switch (query.getPlanProfile()) {
+                            
                             case Query.NO_PLAN:
                                 break;
                             case Query.PLAN_DEFAULT:

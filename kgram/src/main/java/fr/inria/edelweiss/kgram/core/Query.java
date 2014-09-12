@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.filter.Compile;
@@ -26,7 +27,7 @@ import fr.inria.edelweiss.kgram.tool.Message;
  *
  */
 
-public class Query extends Exp {
+public class Query extends Exp implements Graphable {
     
         public static final int NO_PLAN = 0;
 
@@ -82,10 +83,14 @@ public class Query extends Exp {
 	// use case: graph ?g {{select where {}}}
 	Node gNode, pathNode;
 	// outer main query that contains this (when subquery)
+        private Node provenance;
+        // SPIN graph
+        private Object graph;
 	Query query, outerQuery;
         // for templates
         private Query templateProfile;
-	Object object, ast;
+	Graphable ast;
+        Object object;
 
 	private Object pprinter;
 	HashMap<String, Object> tprinter;  
@@ -132,7 +137,7 @@ public class Query extends Exp {
 	// construct where as a rule
 	isRule = false, isDetail = false;
     private boolean isMatch = false;
-	
+	private int id = -1;
 	int mode = Matcher.UNDEF;
         
         int planner = STD_PLAN;
@@ -267,11 +272,11 @@ public class Query extends Exp {
 		object = o;
 	}
 	
-	public Object getAST(){
+	public Graphable getAST(){
 		return ast;
 	}
 	
-	public void setAST(Object o){
+	public void setAST(Graphable o){
 		ast = o;
 	}
 	
@@ -283,7 +288,7 @@ public class Query extends Exp {
 		mode = m;
 	}
         
-        public void setPlanProfile(int n){
+        public void setPlanProfile(int n){           
             planner = n;
         }
         
@@ -2334,6 +2339,53 @@ public class Query extends Exp {
      */
     public void setCachePath(boolean isCachePath) {
         this.isCachePath = isCachePath;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getID() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the provenance
+     */
+    public Node getProvenance() {
+        return provenance;
+    }
+
+    /**
+     * @param provenance the provenance to set
+     */
+    public void setProvenance(Node provenance) {
+        this.provenance = provenance;
+    }
+
+    /**
+     * @return the graph
+     */
+    public Object getGraph() {
+        return graph;
+    }
+
+    /**
+     * @param graph the graph to set
+     */
+    public void setGraph(Object graph) {
+        this.graph = graph;
+    }
+
+    @Override
+    public String toGraph() {
+        return getAST().toGraph();
     }
 	
 	

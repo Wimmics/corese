@@ -247,6 +247,10 @@ public class Compile implements ExprType {
     void in(Exp exp) {
         Filter ff = exp.getFilter();
         Expr expr = ff.getExp();
+        List<String> lvar = ff.getVariables();
+        if (lvar.isEmpty()){
+            return;
+        }
         List<Expr> ls = expr.getExpList();
         List<Expr> values = ls.get(1).getExpList();
         List<Expr> list = new ArrayList<Expr>();
@@ -258,7 +262,7 @@ public class Compile implements ExprType {
             list.add(e);
         }
 
-        Node node = query.getProperAndSubSelectNode(ff.getVariables().get(0));
+        Node node = query.getProperAndSubSelectNode(lvar.get(0));
         if (node != null) {
             Exp bind = Exp.create(Exp.OPT_BIND, Exp.create(Exp.NODE, node));
             bind.setObject(list);

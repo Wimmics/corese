@@ -325,10 +325,6 @@ public class XMLFormat  {
 				}
 				print("<literal datatype='" +  dt.getDatatype().getLabel()  +
 						"'>" + str);
-                                if (dt.getObject() != null){
-                                    println("");
-                                    print(display(dt.getObject()));                                       
-                                }
                                 print(literal);
 			}
 			else {

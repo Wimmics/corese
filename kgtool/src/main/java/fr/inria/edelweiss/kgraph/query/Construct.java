@@ -19,10 +19,8 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.core.EdgeFactory;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgtool.util.Duplicate;
 
 /**
@@ -373,7 +371,7 @@ public class Construct
             ee = create(source, subject, property, object);
         }
         if (isBuffer){
-            ee.setProvenance(env.getQuery());
+            ee.setProvenance(env.getQuery().getProvenance());
         }
         return ee;
     }

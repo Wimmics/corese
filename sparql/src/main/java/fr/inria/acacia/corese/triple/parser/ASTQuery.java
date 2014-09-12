@@ -14,7 +14,9 @@ import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.acacia.corese.triple.update.ASTUpdate;
+import fr.inria.edelweiss.kgram.api.query.Graphable;
 
 /**
  * <p>Title: Corese</p>
@@ -29,7 +31,7 @@ import fr.inria.acacia.corese.triple.update.ASTUpdate;
  * @author Olivier Corby & Virginie Bottollier
  */
 
-public class ASTQuery  implements Keyword, ASTVisitable {
+public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 
 	/** Use to keep the class version, to be consistent with the interface Serializable.java */
 	private static final long serialVersionUID = 1L;
@@ -272,6 +274,22 @@ public class ASTQuery  implements Keyword, ASTVisitable {
      */
     public void setDefaultDataset(Dataset defaultDataset) {
         this.defaultDataset = defaultDataset;
+    }
+
+    @Override
+    public String toGraph() {
+       SPIN sp =  SPIN.create();
+       sp.visit(this);
+       return sp.toString();
+    }
+
+    @Override
+    public void setGraph(Object obj) {
+    }
+
+    @Override
+    public Object getGraph() {
+        return null;
     }
 
 
@@ -1149,19 +1167,7 @@ public class ASTQuery  implements Keyword, ASTVisitable {
 	 */
 	public  Triple createTriple(Expression subject, Atom predicate, Expression object){
 		Expression exp = predicate.getExpression();
-                Variable var   = predicate.getIntVariable();
-                
-                if (predicate.isConstant() && exp == null && var != null){
-                    // ?x rdf:type :: ?e ?y
-                    // fake a path with predicate as regex
-                    // use case: kg:provenance(?e)
-                    predicate.getConstant().setVar(null);
-                    Constant p = createExpProperty(predicate);
-                    p.setVar(var);
-                    exp = predicate;
-                    predicate = p;
-                }
-                
+                Variable var   = predicate.getIntVariable();                               
 		Triple t;
 		if (exp == null){
 			t = Triple.create(subject, predicate, object);

@@ -22,6 +22,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.core.Distinct;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -34,7 +35,6 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.api.ValueResolver;
 import fr.inria.edelweiss.kgraph.logic.*;
-import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import java.util.Map;
 
 /**
@@ -45,7 +45,7 @@ import java.util.Map;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Graph //implements IGraph 
+public class Graph implements Graphable 
 {
 
     private static Logger logger = Logger.getLogger(Graph.class);
@@ -57,6 +57,10 @@ public class Graph //implements IGraph
     public static final int ILIST = -2;
     // NB of Index (subject, object)
     public static final int LENGTH = 2;
+    
+    public static final int DEFAULT = 0;
+    public static final int EXTENSION = 1;
+
     static final int COPY = 0;
     static final int MOVE = 1;
     static final int ADD = 2;
@@ -67,7 +71,7 @@ public class Graph //implements IGraph
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;
     private static boolean distinctDatatype = false;
-    private int mode = 0;
+    private int mode = DEFAULT;
     /**
      * Synchronization:
      *
@@ -110,6 +114,7 @@ public class Graph //implements IGraph
     Tagger tag;
     Entailment inference, proxy;
     EdgeFactory fac;
+    private Node queryNode;
     private Distance classDistance, propertyDistance;
     private boolean isSkolem = false;
     // true when graph is modified and need index()
@@ -242,6 +247,34 @@ public class Graph //implements IGraph
      */
     public void setMode(int mode) {
         this.mode = mode;
+    }
+
+    @Override
+    public String toGraph() {
+        return null;
+    }
+
+    @Override
+    public void setGraph(Object obj) {
+    }
+
+    @Override
+    public Object getGraph() {
+        return this;
+    }
+
+    /**
+     * @return the queryNode
+     */
+    public Node getQueryNode() {
+        return queryNode;
+    }
+
+    /**
+     * @param queryNode the queryNode to set
+     */
+    public void setQueryNode(Node queryNode) {
+        this.queryNode = queryNode;
     }
 
     class TreeNode extends TreeMap<IDatatype, Entity> {
@@ -579,19 +612,36 @@ public class Graph //implements IGraph
         return hasDefault;
     }
 
-//	public List<Index> getTables(){
-//		return tables;
-//	}
-    public String toString() {
-        String str = "";
-        str += "Edge:       " + size() + "\n";
-        str += "Node:       " + (individual.size() + blank.size() + literal.size()) + "\n";
-        str += "Graph:      " + graph.size() + "\n";
-        str += "Property:   " + table.size() + "\n";
-        str += "Literal:    " + literal.size() + "\n";
-        str += "Individual: " + individual.size() + "\n";
-        str += "Blank: " + blank.size() + "\n";
-        str += "Duplicate:  " + table.duplicate() + "\n";
+    public String toString(){
+        return toRDF();
+    }
+    
+    public String toRDF() {
+        String str = "[ a kg:Graph ;\n";
+        str += "kg:edge     " + size() + " ;\n";
+        str += "kg:node     " + nbNodes() + " ;\n";
+        str += "kg:graph    " + graph.size() + " ;\n";
+        str += "kg:property " + table.size() + " ;\n";
+        str += "kg:uri      " + individual.size() + " ;\n";
+        str += "kg:bnode    " + blank.size() + " ;\n";
+        str += "kg:literal  " + literal.size() + " ;\n";       
+        str += "kg:date  "    + DatatypeMap.newDate() + " ;\n";       
+        str += "] . \n";
+        
+        str += "[ a kg:System ;"
+                + "kg:version '3.2' ;"
+                + "kg:date '2014-09-09'^^xsd:date ;"
+                + "kg:author 'Olivier Corby' ;"
+                + "kg:team <http://wimmics.inria.fr> ;"
+                + "kg:institution <http://www.inria.fr>, <http://www.i3s.unice.fr/> ;"
+                + "kg:feature "
+                + "'RDF', 'OWL 2 RL', "
+                + "'SPARQL 1.1 Query & Update' , "
+                + "'SPARQL Template Transformation' ,"
+                + "'Inference Rule' "
+                + "] . \n" ;
+        
+        str += table.toString();
         return str;
     }
 
@@ -734,16 +784,19 @@ public class Graph //implements IGraph
     }
     
     public void clean(){
-        // clean rule engine timestamp
-        for (Entity ent : getEdges()){
-            ent.getEdge().setIndex(-1);
-        }
         // clean timestamp index
         if (hasList){
             tlist.clean();
         }
     }
 
+     public void cleanEdge(){
+        // clean rule engine timestamp
+        for (Entity ent : getEdges()){
+            ent.getEdge().setIndex(-1);
+        }
+     }
+    
     public void setUpdate(boolean b) {
         isUpdate = b;
         if (isUpdate) {
@@ -1249,7 +1302,28 @@ public class Graph //implements IGraph
         return node;
     }
 
-    Node basicAddResource(String label) {
+    
+     Node basicAddResource(String label) {
+        String key = getID(label);
+        Node node = getNode(key, label);
+        if (node != null){
+            return node;
+        }
+        node = getGraphNode(key, label);
+        if (node == null) {
+            node = getPropertyNode(label);
+        }
+        if (node != null) {
+            add((IDatatype) node.getValue(), node);
+            return node;
+        }
+        IDatatype dt = DatatypeMap.createResource(label);
+        node = createNode(key, dt);
+        add(dt, node);
+        return node;
+    }
+    
+    Node basicAddResource2(String label) {
         String key = getID(label);
         Node node = getResource(key, label);
         if (node != null) {

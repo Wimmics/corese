@@ -140,8 +140,8 @@ public interface ExprType {
 	public static int NUMBER  	= 201;
 	public static int SIM 	  	= 202;
 	public static int EXTEQUAL	= 203;
-	public static int EXTCONT   = 204;
-	public static int PROCESS   = 205;
+	public static int EXTCONT       = 204;
+	public static int PROCESS       = 205;
 	public static int ENV   	= 206;
 	public static int DEPTH 	= 207;
 	public static int GRAPH 	= 208;
@@ -157,6 +157,12 @@ public interface ExprType {
 	public static int PWEIGHT 	= 218;
 	public static int ANCESTOR 	= 219;
 	public static int PROVENANCE 	= 220;
+	public static int INDEX 	= 221;
+	public static int TIMESTAMP 	= 222;
+	public static int ID            = 223;
+	public static int TEST          = 224;
+	public static int DESCRIBE      = 225;
+	public static int STORE         = 226;
 		
 	
 
@@ -185,7 +191,6 @@ public interface ExprType {
 	public static int STL_LOAD      = 248;
 	public static int STL_IMPORT    = 249;
 	public static int STL_PROCESS 	= 250;
- 	public static int STL_ISSTART 	= 226;
        
         
         public static int APPLY_TEMPLATES           = 251;
@@ -198,10 +203,13 @@ public interface ExprType {
 	public static int APPLY_TEMPLATES_WITH_NOGRAPH= 258;        
 	public static int CALL_TEMPLATE             = 259;
 	public static int CALL_TEMPLATE_WITH        = 260;
+        
+ 	public static int STL_ISSTART               = 261;
 
 
 	public static int ISSKOLEM 	= 270;
 	public static int SKOLEM 	= 271;
 
+	public static int QUERY 	= 272;
 
 }

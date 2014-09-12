@@ -1,5 +1,5 @@
 select (count(*) as ?c) 
-from kg:entailment
+from kg:rule
 where {
    ?x ?p ?y
 }

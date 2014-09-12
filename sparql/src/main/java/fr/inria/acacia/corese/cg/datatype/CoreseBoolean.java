@@ -73,7 +73,7 @@ public class CoreseBoolean extends CoreseStringLiteral {
    public IDatatype cast(IDatatype target, IDatatype javaType) {
 	   String lab = target.getLabel();
 	   if (lab.equals(RDF.xsdinteger)) {
-		   return new CoreseInteger(value());
+		   return DatatypeMap.newInstance(value());
 	   } else if (lab.equals(RDF.xsdfloat)) {
 		   return new CoreseFloat(value());
 	   } else if (lab.equals(RDF.xsddouble)) {

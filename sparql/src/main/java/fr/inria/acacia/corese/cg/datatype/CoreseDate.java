@@ -53,27 +53,27 @@ public class CoreseDate extends CoreseDatatype {
 		return code;
         }
         
-	public CoreseInteger getYear() {           
-            return new CoreseInteger(cal.theYear());
+	public IDatatype getYear() {           
+            return DatatypeMap.newInstance(cal.theYear());
          }
                      	
-	public CoreseInteger getMonth() {
-            return new CoreseInteger(cal.get(GregorianCalendar.MONTH) + 1);
+	public IDatatype getMonth() {
+            return DatatypeMap.newInstance(cal.get(GregorianCalendar.MONTH) + 1);
 	}
 	
-	public CoreseInteger getDay() {
-            return new CoreseInteger(cal.get(GregorianCalendar.DAY_OF_MONTH));
+	public IDatatype getDay() {
+            return DatatypeMap.newInstance(cal.get(GregorianCalendar.DAY_OF_MONTH));
 	}
 	
 	
-	public CoreseInteger getHour(){
+	public IDatatype getHour(){
 		int hour = cal.get(GregorianCalendar.HOUR_OF_DAY);
-		return new CoreseInteger(hour);
+		return DatatypeMap.newInstance(hour);
 	}
 	
-	public CoreseInteger getMinute(){
+	public IDatatype getMinute(){
 		int min = cal.get(GregorianCalendar.MINUTE);
-		return new CoreseInteger(min);
+		return DatatypeMap.newInstance(min);
 	}
 	
 	public CoreseDecimal getSecond(){

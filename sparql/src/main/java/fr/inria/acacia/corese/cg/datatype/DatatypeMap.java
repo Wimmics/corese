@@ -334,10 +334,10 @@ public class DatatypeMap implements Cst, RDF {
 	
 	public static IDatatype newInstance(double result, String datatype) {
 		if (datatype.equals(xsdinteger)){
-			return new CoreseInteger((int)result);
+			return newInstance((int)result);
 		}
 		else if (datatype.equals(xsdlong)){
-			return new CoreseLong((long)result);
+			return newInstance((long)result);
 		}
 		else if (datatype.equals(xsddecimal)){
 			return new CoreseDecimal(result);

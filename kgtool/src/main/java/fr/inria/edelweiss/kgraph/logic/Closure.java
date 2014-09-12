@@ -207,7 +207,7 @@ static int count = 0;
 
     Entity create(Node p, Node n1, Node n2) {
         Entity ent = graph.create(src, n1, p, n2);
-        ent.setProvenance(query);
+        ent.setProvenance(query.getProvenance());
         return ent;
     }
 

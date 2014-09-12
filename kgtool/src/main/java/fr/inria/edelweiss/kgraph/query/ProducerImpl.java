@@ -8,8 +8,6 @@ import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgenv.eval.SQLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -29,10 +27,8 @@ import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
+import fr.inria.edelweiss.kgtool.util.ValueCache;
 import fr.inria.edelweiss.kgraph.stats.MetaData;
-import fr.inria.edelweiss.kgtool.util.SPINProcess;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Producer
@@ -56,6 +52,8 @@ public class ProducerImpl implements Producer, IProducer {
     MatcherImpl match;
     QueryEngine qengine;
     FuzzyMatch fuzzy = new FuzzyMatch();
+    ValueCache vcache;
+    RDFizer toRDF;
     Node graphNode;
     
     // if true, perform local match
@@ -64,6 +62,8 @@ public class ProducerImpl implements Producer, IProducer {
     private boolean speedUp = false;
     private int index = -1;
     int mode = DEFAULT;
+    private IDatatype prevdt;
+    private Node prevnode;
 
     public ProducerImpl() {
         this(Graph.create());
@@ -74,6 +74,8 @@ public class ProducerImpl implements Producer, IProducer {
         local = Graph.create();
         mapper = new Mapper(this);
         ei = EdgeIterator.create(g);
+        toRDF = new RDFizer();
+        vcache = new ValueCache();
     }
 
     public static ProducerImpl create(Graph g) {
@@ -146,12 +148,18 @@ public class ProducerImpl implements Producer, IProducer {
             if (qNode.isConstant()) {
                 node = graph.getNode(qNode);  
             }
-        } else if (node.getKey() == Node.INITKEY) {
-            // a Mapping node has no index
-            // get target node if any
-            node = graph.getNode(node);
-        }
+        } 
+        else if (node.getIndex() == -1 || mode == EXTENSION){
+            node = graph.getNode(node); 
+        }           
         return node;
+//        if (//Graph.valueOut && 
+//                node.getKey() == Node.INITKEY) {
+//            // a Mapping/VALUES node has no index
+//            // get target node if any
+//            node = graph.getNode(node);           
+//        }
+        
     }
 
     boolean isType(Edge edge, Environment env) {
@@ -661,26 +669,44 @@ public class ProducerImpl implements Producer, IProducer {
         return list;
     }
 
-    public Node getNode(Object value) {
+    /**
+     * Return a Node given a value (IDatatype value)
+     * Use case: select/bind (exp as node)
+     * return the Node in the graph or 
+     * return the IDatatype value as is (to speed up)
+     * 
+     */
+    synchronized public Node getNode(Object value) {
         // TODO Auto-generated method stub
         if (!(value instanceof IDatatype)) {
             return null;
         }
         IDatatype dt = (IDatatype) value;
-        if (selfValue || dt.isFuture()) {
+        if (selfValue ||  dt.isFuture()) {
             // future: template intermediate result 
             return dt;
         }
-        Node node = graph.getNode(dt, false, false);
-        if (node == null) {
-            if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)) {
-                // blank generated for path node: do not store it
-                return local.getNode(dt, true, false);
-            } else {
-                node = local.getNode(dt, true, true);
-            }
+        
+        Node node = vcache.get(dt);
+        if (node != null){
+            return node;
         }
+        // look up Node value in the graph
+        node = graph.getNode(dt, false, false);
+        
+        if (node == null) {
+           node = dt;
+        }
+        
+        vcache.put(dt, node);
         return node;
+        
+        //        if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)) {
+//                // blank generated for path node: do not store it
+//                return local.getNode(dt, true, false);
+//            } else {
+//                node = local.getNode(dt, true, true);
+//        }
     }
 
     public Object getValue(Node node) {
@@ -733,7 +759,13 @@ public class ProducerImpl implements Producer, IProducer {
     public Mappings map(List<Node> nodes, Object object) {
         // TODO Auto-generated method stub
         if (object instanceof IDatatype) {
-            return map(nodes, (IDatatype) object);
+            IDatatype dt = (IDatatype) object;
+            if (dt.getObject() != null){
+                return map(nodes, dt.getObject());
+            }
+            else {
+                return map(nodes, dt);
+            }
         } else if (object instanceof SQLResult) {
             // sql()
             Mappings lMap = mapper.sql(nodes, (SQLResult) object);
@@ -832,13 +864,16 @@ public class ProducerImpl implements Producer, IProducer {
 
     
     @Override
+     /**
+      * Overloading of graph ?g { }
+      * The value of ?g may an extended graph producer
+      */
     public boolean isProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
         if (dt.getObject() != null) {
-            if (dt.getObject() instanceof Graph || dt.getObject() instanceof Query) {
-                return true;
-            }
+            return toRDF.isGraphAble(dt.getObject());
         }
+        // system named graph in a GraphStore
         return graph.getNamedGraph(node.getLabel()) != null;
     }
 
@@ -846,30 +881,20 @@ public class ProducerImpl implements Producer, IProducer {
     public Producer getProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
         Object obj = dt.getObject();
-        
-        if (obj != null){ 
-            if (obj instanceof Graph){
-                return new ProducerImpl((Graph) obj);
-            }
-            else if (obj instanceof Query){
-                try {
-                    ASTQuery ast = (ASTQuery) ((Query) obj).getAST();
-                    SPINProcess sp = SPINProcess.create();
-                    Graph g = sp.toSpinGraph(ast);
-                    g.setMode(666);
-                    ProducerImpl pp =  new ProducerImpl(g);
-                    pp.setMode(EXTENSION);
-                    return pp;
-                } catch (EngineException ex) {
-                    
-                }
-            }
+        Graph g = null;
+
+        if (obj == null) {
+            g = graph.getNamedGraph(node.getLabel());
+        } else {
+            g = toRDF.getGraph(obj);
         }
-        Graph g = graph.getNamedGraph(node.getLabel());
-        if (g != null){
-            return new ProducerImpl(g);
+
+        if (g == null) {
+            g = Graph.create();
         }
-        return null;
+        Producer p = ProducerImpl.create(g);
+        p.setMode(EXTENSION);
+        return p;
     }
 
     /**

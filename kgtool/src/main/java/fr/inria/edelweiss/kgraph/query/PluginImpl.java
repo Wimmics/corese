@@ -23,6 +23,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -32,6 +33,7 @@ import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
+import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
@@ -39,6 +41,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import javax.xml.stream.events.Namespace;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -48,7 +52,7 @@ import java.util.TreeMap;
  *
  */
 public class PluginImpl extends ProxyImpl {
-    
+
     static Logger logger = Logger.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     private static final String NL = System.getProperty("line.separator");
@@ -70,7 +74,7 @@ public class PluginImpl extends ProxyImpl {
         if (m instanceof MatcherImpl) {
             match = (MatcherImpl) m;
         }
-        dtnumber = DatatypeMap.newInstance(Processor.FUN_NUMBER);
+        dtnumber = getValue(Processor.FUN_NUMBER);
         cache = new TreeNode();
     }
 
@@ -89,6 +93,18 @@ public class PluginImpl extends ProxyImpl {
                 isCache = false;
                 cache.clear();
             break;                
+        }
+    }
+    
+    // DRAFT: store current query in the Graph
+    public void start(Producer p, Environment env){
+        
+    }
+    
+    public void finish(Producer p, Environment env){
+        Graph g = getGraph(p);
+        if (g != null){
+            g.setQueryNode(DatatypeMap.createObject("query", env.getQuery()));
         }
     }
 
@@ -127,6 +143,14 @@ public class PluginImpl extends ProxyImpl {
                 }
                 // solution similarity
                 return similarity(g, env);
+                
+            case DESCRIBE:
+                return describe(p, exp, env);
+                
+            case QUERY:
+                return query(p, exp, env);
+                         
+                
         }
 
         return null;
@@ -139,7 +163,7 @@ public class PluginImpl extends ProxyImpl {
 
             case KGRAM:
             case NODE:
-            case LOAD:
+           // case LOAD:
             case DEPTH:
             case SKOLEM:
                 
@@ -155,8 +179,8 @@ public class PluginImpl extends ProxyImpl {
                     case NODE:
                         return node(g, o);
 
-                    case LOAD:
-                        return load(g, o);
+//                    case LOAD:
+//                        return load(g, o);
 
                     case DEPTH:
                         return depth(g, o);
@@ -222,7 +246,22 @@ public class PluginImpl extends ProxyImpl {
                 
             case PROVENANCE:
                 return provenance(exp, env, o);
+                
+            case TIMESTAMP:
+                return timestamp(exp, env, o);
+                
+            case INDEX:
+               return index(p, exp, env, o); 
           
+            case ID:
+               return id(exp, env, dt); 
+                
+            case TEST:
+                return test(p, exp, env, dt);
+                
+             case LOAD:
+                return load(p, exp, env, dt);    
+           
         }
         return null;
     }
@@ -311,6 +350,9 @@ public class PluginImpl extends ProxyImpl {
                 // dt1: transformation
                 // dt2: template name
                 return pprint(dt1, dt2, null, exp, env, p);
+                
+            case STORE:
+                return store(p, dt1, dt2);
 
         }
 
@@ -513,20 +555,122 @@ public class PluginImpl extends ProxyImpl {
         return node.getValue();   
     }
 
-    private Object provenance(Expr exp, Environment env, Object o) {
+    Path getPath(Expr exp, Environment env){
         Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
         if (qNode == null) {
             return null;
         }
         Path p = env.getPath(qNode);
-        if (p.size() == 0){
-            return null;
-        }
-        Object prov = p.get(0).getProvenance();
-        return prov;
+        return p;
+    }
+    
+    Entity getEdge(Expr exp, Environment env){
+        Memory mem = (Memory) env;
+        return mem.getEdge(exp.getExp(0).getLabel());
+    }
+    
+    private Object provenance(Expr exp, Environment env, Object o) {
+       Entity e = getEdge(exp, env);
+       if (e == null){
+           return  null;
+       }
+        return e.getProvenance();
+    }
+    
+    // index of rule provenance object
+     private Object id(Expr exp, Environment env, IDatatype dt) {
+       Object obj = dt.getObject();
+       if (obj != null && obj instanceof Query){
+           Query q = (Query) obj;
+           return getValue(q.getID());
+       }
+       return null;
     }
 
+    private Object timestamp(Expr exp, Environment env, Object o) {
+         Entity e = getEdge(exp, env);
+        if (e == null){
+            return  null;
+        }
+        int level = e.getEdge().getIndex();
+        return getValue(level);
+    }
+    
+    public IDatatype index(Producer p, Expr exp, Environment env, Object o){
+        IDatatype dt = (IDatatype) o;
+        Node n = p.getNode(dt);
+        return getValue(n.getIndex());
+    }
+    
+    private Object test(Producer p, Expr exp, Environment env, IDatatype dt) {
+        IDatatype res = DatatypeMap.createObject("rule", env.getQuery());
+        return res;
+    }
+    
+    private Object query(Producer p, Expr exp, Environment env) {
+        Graph g = getGraph(p);
+        Node q = g.getQueryNode();
+        if (q == null){
+            q = DatatypeMap.createObject("query", env.getQuery());
+        }
+        return q;
+    }
 
+     private Object load(Producer p, Expr exp, Environment env, IDatatype dt) {
+         Graph g = Graph.create();
+         Load ld = Load.create(g);
+         try {
+             ld.load(dt.getLabel(), Load.TURTLE_FORMAT);
+         } catch (LoadException ex) {
+             logger.error("Load error: " + dt);
+         }
+        IDatatype res = DatatypeMap.createObject("load", g);
+        return res;
+    }
+    
+    private Object describe(Producer p, Expr exp, Environment env) {
+        IDatatype res = DatatypeMap.createObject("index", describe((Graph)p.getGraph()));
+        return res;
+    }
+    
+    
+    
+    /**
+     * Generate an RDF Graph that describes the KGRAM system and the 
+     * current RDF graph
+     */
+    Graphable describe(final Graph g){
+        return new Graphable(){
+
+            @Override
+            public String toGraph() {
+                return (g.toString());
+            }
+
+            @Override
+            public void setGraph(Object obj) {
+            }
+
+            @Override
+            public Object getGraph() {
+                return null;
+            }
+            
+        };
+    }
+
+    /**
+     * obj has getObject() which is Graphable
+     * store the graph has an extended named graph
+     */
+    private Object store(Producer p, IDatatype name, IDatatype obj) {
+        if (p.isProducer(obj)){
+            Producer pp = p.getProducer(obj);
+            Graph g = (Graph) p.getGraph();
+            g.setNamedGraph(name.getLabel(), (Graph) pp.getGraph());        
+        }
+        return obj;
+    }
     
     class Table extends Hashtable<Integer, PTable> {
     }
@@ -600,13 +744,18 @@ public class PluginImpl extends ProxyImpl {
         }
     }
 
-    Mappings kgram(Graph g, Object o) {
+    Object kgram(Graph g, Object o) {
         IDatatype dt = (IDatatype) o;
         String query = dt.getLabel();
         QueryProcess exec = QueryProcess.create(g, true);
         try {
             Mappings map = exec.sparqlQuery(query);
-            return map;
+            if (map.getGraph() == null){
+                return DatatypeMap.createObject("Mappings", map);
+            }
+            else {
+                return DatatypeMap.createObject("Graph", map.getGraph());
+            }
         } catch (EngineException e) {
             return new Mappings();
         }

@@ -76,6 +76,13 @@ public class Processor {
 	static final String KGXPATH     = KGRAM + "xpath";
 	static final String KGSQL 	= KGRAM + "sql";
 	static final String PROVENANCE 	= KGRAM + "provenance";
+	static final String INDEX 	= KGRAM + "index";
+	static final String ID          = KGRAM + "id";
+	static final String TIMESTAMP 	= KGRAM + "timestamp";
+	static final String TEST 	= KGRAM + "test";
+	static final String DESCRIBE 	= KGRAM + "describe";
+	static final String STORE 	= KGRAM + "store";
+	static final String QUERY 	= KGRAM + "query";
 	
 	static final String WRITE 		= KGRAM + "write"; 
 	static final String PPRINT 		= KGRAM + "pprint"; 
@@ -147,7 +154,7 @@ public class Processor {
 	static final String SKOLEM      = KGRAM + "skolem"; 
 
 	static final String UNNEST = "unnest";
-	static final String KGUNNEST = KGRAM +"unnest";
+	static final String KGUNNEST = KGRAM +UNNEST;
 	static final String SYSTEM = "system";
 	static final String GROUPBY = "groupBy";
 
@@ -454,7 +461,14 @@ public class Processor {
 		defoper(WRITE, 	ExprType.WRITE);
 		defoper(QNAME, 	ExprType.QNAME);
 		defoper(PROVENANCE, 	ExprType.PROVENANCE);
-                
+ 		defoper(INDEX,          ExprType.INDEX);
+ 		defoper(ID,             ExprType.ID);
+ 		defoper(TIMESTAMP,      ExprType.TIMESTAMP);
+ 		defoper(TEST,           ExprType.TEST);
+ 		defoper(DESCRIBE,       ExprType.DESCRIBE);
+ 		defoper(STORE,          ExprType.STORE);
+ 		defoper(QUERY,          ExprType.QUERY);
+               
 		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
 		defoper(EVAL, 		ExprType.APPLY_TEMPLATES);
 		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);

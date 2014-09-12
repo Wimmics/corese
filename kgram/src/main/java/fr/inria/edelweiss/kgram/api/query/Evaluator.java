@@ -6,6 +6,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 
 /**
@@ -83,4 +84,7 @@ public interface Evaluator {
         void setKGRAM(Object o);
 
         void addResultListener(ResultListener rl);
+        
+        void start(Environment env);
+        void finish(Environment env);
 }

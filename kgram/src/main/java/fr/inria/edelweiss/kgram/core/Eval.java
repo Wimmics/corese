@@ -190,7 +190,7 @@ public class Eval implements ExpType, Plugin {
         if (debug && !isSubEval && !q.isSubQuery()) {
             debug();
         }
-
+        evaluator.finish(memory);
         return results;
     }
     
@@ -512,6 +512,7 @@ public class Eval implements ExpType, Plugin {
                 memory.setEventManager(manager);
             }
             producer.init(q.nbNodes(), q.nbEdges());
+            evaluator.start(memory);
             debug = q.isDebug();
         }
         start(q);
@@ -617,7 +618,9 @@ public class Eval implements ExpType, Plugin {
         pathFinder.setCheckLoop(query.isCheckLoop());
         pathFinder.setCountPath(query.isCountPath());
         pathFinder.init(exp.getRegex(), exp.getObject(), exp.getMin(), exp.getMax());
-        lPathFinder.add(pathFinder);
+        if (p.getMode() != Producer.EXTENSION){
+            lPathFinder.add(pathFinder);
+        }
         return pathFinder;
     }
 
@@ -1871,9 +1874,9 @@ public class Eval implements ExpType, Plugin {
         if (lMap != null) {
             
             for (Mapping m : lMap) {
-                if (env.push(m, n)){
+                if (env.push(m, n, false)){
                     backtrack = eval(p, gNode, stack, n + 1, option);
-                    env.pop(m);
+                    env.pop(m, false);
                     if (backtrack < n){
                         return backtrack;
                     }
@@ -1951,6 +1954,7 @@ public class Eval implements ExpType, Plugin {
         }
         
         for (Mapping map : path.candidate(gNode, list, env)) {
+            boolean b =  match(map);
             boolean success = match(map) && env.push(map, n);
 
             if (isEvent) {

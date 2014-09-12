@@ -40,6 +40,7 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.jsonld.CoreseJsonTripleCallback;
 import fr.inria.edelweiss.kgtool.load.jsonld.JsonldLoader;
 import fr.inria.edelweiss.kgtool.load.rdfa.CoreseRDFaTripleSink;
+import java.io.ByteArrayInputStream;
 import java.util.logging.Level;
 import org.semarglproject.rdf.ParseException;
 
@@ -415,7 +416,14 @@ public class Load
         load(stream, UNDEF_FORMAT);
     }
 
-
+    public void loadString(String str, int format) throws LoadException{
+        try {
+            load(new ByteArrayInputStream(str.getBytes("UTF-8")), format);
+        } catch (UnsupportedEncodingException ex) {
+            throw new LoadException(ex);
+        }
+    }
+    
     public void load(InputStream stream, int format) throws LoadException {
         load(stream, Entailment.DEFAULT, format);
     }

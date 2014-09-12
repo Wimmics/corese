@@ -1,12 +1,14 @@
 package fr.inria.edelweiss.kgtool.load;
 
+import java.io.UnsupportedEncodingException;
+
 public class LoadException extends Exception {
 	
 	private Exception ex;
 	private Object object;
 	private String path;
 	
-	LoadException(Exception ee){
+	public LoadException(Exception ee){
 		this.set(ee);
 	}
 	

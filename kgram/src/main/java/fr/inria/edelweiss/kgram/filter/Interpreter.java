@@ -530,4 +530,13 @@ public class Interpreter implements Evaluator, ExprType {
     public int getMode() {
         return mode;
     }
+
+    @Override
+    public void start(Environment env) {
+        proxy.start(producer, env);
+    }
+ 
+    public void finish(Environment env) {
+        proxy.finish(producer, env);
+    }
 }

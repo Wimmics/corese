@@ -828,6 +828,26 @@ public class Memory implements Environment {
 		return result;
 	}
         
+        public Entity getEdge(Node qnode){
+            for (Edge e : getQueryEdges()){
+                  if (e.getEdgeVariable() != null 
+                   && e.getEdgeVariable().equals(qnode)){
+                      return getEdge(e);
+                  }
+            }
+            return null;
+        }
+        
+         public Entity getEdge(String var){
+            for (Edge e : getQueryEdges()){
+                  if (e.getEdgeVariable() != null 
+                   && e.getEdgeVariable().getLabel().equals(var)){
+                      return getEdge(e);
+                  }
+            }
+            return null;
+        }
+        
         public Node[] getNodes(){
             return nodes;
         }

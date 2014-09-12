@@ -270,13 +270,13 @@ implements Index {
 	}
 	
 	public String toString(){
-		String str = "Edges:\n";
+		String str = "[ a kg:Index ;\n";
 		int total = 0;
 		for (Node pred : getSortedProperties()){
 			total += get(pred).size();
-			str += pred + ": " + get(pred).size() +"\n";
+			str += pred + " " + get(pred).size() +" ;\n";
 		}
-		str += "Total: " + total + "\n";
+		str += "kg:total: " + total + "]";
 		return str;
 	}
         
@@ -707,8 +707,7 @@ implements Index {
         
         int find(Node p, List<Entity> list, Node n1, Node n2) {
             if (n2 == null) {
-                if (byIndex){
-                    //return get(p, list, n1);
+                if (byIndex){                    
                     return find(list, n1.getIndex(), 0, list.size());
                 }
                 return find(list, n1, 0, list.size());

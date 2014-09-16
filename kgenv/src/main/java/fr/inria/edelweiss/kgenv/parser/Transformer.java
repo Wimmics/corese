@@ -39,6 +39,8 @@ public class Transformer implements ExpType {
 
 	public static final String ROOT = "?_kgram_";
 	public static final String THIS = "?this";
+        private static final String EXTENSION     = Processor.KGEXTENSION;
+        private static final String EXT_NAMESPACE = NSManager.KGEXT;
 
 	int count = 0;
 
@@ -357,13 +359,17 @@ public class Transformer implements ExpType {
 	}
 	
 	Exp compileBind(Binding b){
-            Filter f = compileSelect(b.getFilter(), ast);
-            Node node = compiler.createNode(b.getVariable());
+            return compileBind(b.getFilter(), b.getVariable());
+        }
+         
+        Exp compileBind(Expression e, Variable var){
+            Filter f = compileSelect(e, ast);
+            Node node = compiler.createNode(var);
             Exp exp = Exp.create(BIND);
             exp.setFilter(f);
             exp.setNode(node);
             exp.setFunctional(f.isFunctional());
-            function(null, exp, b.getVariable());
+            function(null, exp, var);
             return exp;
         }
 	
@@ -911,10 +917,14 @@ public class Transformer implements ExpType {
 	 * Create a fake query node 
 	 */
 	Node createNode(){
-		String name = ROOT + count++;
+		String name = getVarName();
 		Node node = compiler.createNode(name);
 		return node;
 	}
+        
+        String getVarName(){
+            return ROOT + count++;
+        }
 
 	List<Node> nodes(List<Constant> from){
 		List<Node> nodes = new ArrayList<Node>();
@@ -998,10 +1008,12 @@ public class Transformer implements ExpType {
 
 				if (tmp != null){				
 
-					if (tmp.isQuery() && tmp.getQuery().isBind()){
-						hasBind = true;
-					}
-
+                                        if (tmp.isGraph() && tmp.getBind() != null){
+                                            // see compileGraph()
+                                            exp.add(tmp.getBind());
+                                            tmp.setBind(null);
+                                        }
+                                    
 					if (ee.isScope()){								
 						// add AND as a whole
 						exp.add(tmp);
@@ -1027,7 +1039,7 @@ public class Transformer implements ExpType {
 
 	}
 	
-
+      
 	Exp compileEdge(Triple t, boolean opt){
 		Edge r = compiler.compile(t);
 		Exp exp = Exp.create(EDGE, r);
@@ -1100,18 +1112,8 @@ public class Transformer implements ExpType {
 			break;
 
 		case GRAPH:
-			// bind the graph variable/uri
-			// use case: graph ?g {}
-			// no edge in graph pattern
-
-			Source srcexp = (Source) query;
-			Node src = compile(srcexp.getSource());
-			// create a NODE kgram expression for graph ?g
-			Exp node = Exp.create(NODE, src);
-			Exp gnode = Exp.create(GRAPHNODE, node);
-			exp.add(0, gnode);
+			compileGraph(exp, query);
 			break;
-
 
 		case NOT:
 			exp = Exp.create(NOT, exp);
@@ -1148,6 +1150,49 @@ public class Transformer implements ExpType {
 		return exp;
 	}
 
+        /**
+         * graph kg:describe BGP 
+         * ->
+         * bind(kg:describe() as ?g)
+         * graph ?g BGP
+         */
+       Exp compileGraph(Exp exp, fr.inria.acacia.corese.triple.parser.Exp query) {
+            Source srcexp = (Source) query;
+            Atom at  = srcexp.getSource();
+            Atom nat = getSrc(at);
+            Exp gr = compileGraph(exp, nat);
+            
+            if (at != nat){
+                // generate bind(kg:describe() as var)
+                Term fun = ast.createFunction(ast.createQName(EXTENSION), at.getConstant());
+                Exp b = compileBind(fun, nat.getVariable());
+                gr.setBind(b);
+            }
+            
+            return gr;
+        }
+           
+       
+       Atom getSrc(Atom at){
+           if (at.isConstant() && isSystemGraph(at.getConstant().getLabel())){
+               at = Variable.create(getVarName());  
+           }
+           return at;
+       }
+       
+       boolean isSystemGraph(String cst){
+           return cst.startsWith(EXT_NAMESPACE);
+       }
+       
+        Exp compileGraph(Exp exp, Atom at) {
+            Node src = compile(at);
+            // create a NODE kgram expression for graph ?g
+            Exp node = Exp.create(NODE, src);
+            Exp gnode = Exp.create(GRAPHNODE, node);
+            exp.add(0, gnode);
+            return exp;
+        }
+       
 	
 	Exp compileFilter(Triple triple, boolean opt){
 		List<Filter> qvec = compiler.compileFilter(triple);

@@ -41,8 +41,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import javax.xml.stream.events.Namespace;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -56,7 +54,9 @@ public class PluginImpl extends ProxyImpl {
     static Logger logger = Logger.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     private static final String NL = System.getProperty("line.separator");
-   
+    private static final String EXT_DESCRIBE = NSManager.KGEXT + "describe";
+    private static final String EXT_QUERY    = NSManager.KGEXT + "query";
+    
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
     // idem for setObject()
@@ -66,6 +66,7 @@ public class PluginImpl extends ProxyImpl {
     private Object dtnumber;
     boolean isCache = false;
     TreeNode cache;
+
 
     PluginImpl(Matcher m) {
         if (table == null) {
@@ -104,7 +105,7 @@ public class PluginImpl extends ProxyImpl {
     public void finish(Producer p, Environment env){
         Graph g = getGraph(p);
         if (g != null){
-            g.setQueryNode(DatatypeMap.createObject("query", env.getQuery()));
+            g.setQueryNode(DatatypeMap.createObject("query", env.getQuery(), IDatatype.QUERY));
         }
     }
 
@@ -260,7 +261,10 @@ public class PluginImpl extends ProxyImpl {
                 return test(p, exp, env, dt);
                 
              case LOAD:
-                return load(p, exp, env, dt);    
+                return load(p, exp, env, dt);
+                 
+             case EXTENSION:
+                return extension(p, exp, env, dt);     
            
         }
         return null;
@@ -596,6 +600,7 @@ public class PluginImpl extends ProxyImpl {
         return getValue(level);
     }
     
+    
     public IDatatype index(Producer p, Expr exp, Environment env, Object o){
         IDatatype dt = (IDatatype) o;
         Node n = p.getNode(dt);
@@ -607,11 +612,28 @@ public class PluginImpl extends ProxyImpl {
         return res;
     }
     
+    /**
+     * kg:extension(eng:describe)
+     * ->
+     * kg:describe()
+     */
+    private Object extension(Producer p, Expr exp, Environment env, IDatatype dt) {
+         String label = dt.getLabel();
+         if (label.equals(EXT_DESCRIBE)){
+             return describe(p, exp, env);
+         }
+         else if (label.equals(EXT_QUERY)){
+             return query(p, exp, env);
+         }
+         
+         return null;
+    }
+    
     private Object query(Producer p, Expr exp, Environment env) {
         Graph g = getGraph(p);
         Node q = g.getQueryNode();
         if (q == null){
-            q = DatatypeMap.createObject("query", env.getQuery());
+            q = DatatypeMap.createObject("query", env.getQuery(), IDatatype.QUERY);
         }
         return q;
     }
@@ -624,12 +646,12 @@ public class PluginImpl extends ProxyImpl {
          } catch (LoadException ex) {
              logger.error("Load error: " + dt);
          }
-        IDatatype res = DatatypeMap.createObject("load", g);
+        IDatatype res = DatatypeMap.createObject("load", g, IDatatype.GRAPH);
         return res;
     }
     
     private Object describe(Producer p, Expr exp, Environment env) {
-        IDatatype res = DatatypeMap.createObject("index", describe((Graph)p.getGraph()));
+        IDatatype res = DatatypeMap.createObject("index", describe((Graph)p.getGraph()), IDatatype.GRAPH);
         return res;
     }
     
@@ -751,10 +773,10 @@ public class PluginImpl extends ProxyImpl {
         try {
             Mappings map = exec.sparqlQuery(query);
             if (map.getGraph() == null){
-                return DatatypeMap.createObject("Mappings", map);
+                return DatatypeMap.createObject("Mappings", map, IDatatype.MAPPINGS);
             }
             else {
-                return DatatypeMap.createObject("Graph", map.getGraph());
+                return DatatypeMap.createObject("Graph", map.getGraph(), IDatatype.GRAPH);
             }
         } catch (EngineException e) {
             return new Mappings();

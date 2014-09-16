@@ -840,7 +840,7 @@ public class Memory implements Environment {
         
          public Entity getEdge(String var){
             for (Edge e : getQueryEdges()){
-                  if (e.getEdgeVariable() != null 
+                  if (e != null && e.getEdgeVariable() != null 
                    && e.getEdgeVariable().getLabel().equals(var)){
                       return getEdge(e);
                   }

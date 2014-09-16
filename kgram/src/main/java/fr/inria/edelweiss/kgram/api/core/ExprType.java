@@ -207,9 +207,10 @@ public interface ExprType {
  	public static int STL_ISSTART               = 261;
 
 
-	public static int ISSKOLEM 	= 270;
-	public static int SKOLEM 	= 271;
+	public static int ISSKOLEM 	= 300;
+	public static int SKOLEM 	= 301;
 
-	public static int QUERY 	= 272;
+	public static int QUERY 	= 302;
+	public static int EXTENSION 	= 303;
 
 }

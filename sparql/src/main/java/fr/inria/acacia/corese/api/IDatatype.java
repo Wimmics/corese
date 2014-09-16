@@ -3,6 +3,7 @@ package fr.inria.acacia.corese.api;
 import fr.inria.acacia.corese.cg.datatype.ICoresePolymorphDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 
 /**
@@ -39,6 +40,12 @@ public interface IDatatype
     static final int YEAR = 23;
     static final int DURATION = 24;
     static final int DATETIME = 25;
+    
+    static final String KGRAM           = ExpType.KGRAM;
+    public static final String RULE     = KGRAM + "Rule";
+    public static final String QUERY    = KGRAM + "Query";
+    public static final String GRAPH    = KGRAM + "Graph";
+    public static final String MAPPINGS = KGRAM + "Mappings";
 
     /**
      * @return true if we have a blanknode

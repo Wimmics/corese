@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class SorterNew extends Sorter {
 
-    boolean print = true;
+    boolean print = false;
 
     public void sort(Exp exp, List<Exp> bindings, Producer prod, int planType) {
         //0 sortable?
@@ -38,7 +38,7 @@ public class SorterNew extends Sorter {
         // 2 assign selectivity
         IEstimate ies ;
         switch (planType) {
-            case Query.PLAN_COMBINED:
+            //case Query.PLAN_COMBINED:
             case Query.PLAN_RULE_BASED:
                 ies = new RuleBasedEstimation();
                 break;

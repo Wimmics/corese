@@ -134,8 +134,8 @@ public class QuerySorter implements ExpType {
                         // TODO: graph ?g does not take into account OPT_BIND ?g = uri
                         switch (query.getPlanProfile()) {
                             
-                            case Query.NO_PLAN:
-                                break;
+//                            case Query.NO_PLAN:
+//                                break;
                             case Query.PLAN_DEFAULT:
                                 sort.sort(query, exp, lVar, lBind);
                                 sortFilter(exp, lVar);
@@ -159,9 +159,8 @@ public class QuerySorter implements ExpType {
                                 ((SorterNew) sort).sort(exp, lBind, prod, Query.PLAN_STATS_BASED);
                                 setBind(exp, lBind);
                                 break;
-                            case Query.PLAN_COMBINED:
-                                
-                                break;
+//                            case Query.PLAN_COMBINED:
+//                                break;
                         }
                         service(exp);
                     }

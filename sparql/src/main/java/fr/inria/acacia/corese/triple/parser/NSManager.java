@@ -44,6 +44,9 @@ public class NSManager {
     public static final String SQL = "http://ns.inria.fr/ast/sql#";
     public static final String STL = ExpType.STL;
     public static final String KGRAM = ExpType.KGRAM;
+    public static final String KPREF = ExpType.KPREF;
+    public static final String KGEXT = ExpType.KGRAM + "extension/";    
+    public static final String KEPREF = "eng";    
     static final String FPPP = "fp";
     public static final String PPN = KGRAM + "pprinter/";
     static final String PPP = "pp";
@@ -164,13 +167,13 @@ public class NSManager {
         def.put(RDFS.XSD, RDFS.XSDPrefix);
         def.put(RDFS.OWL, RDFS.OWLPrefix);
 
-        def.put(KGRAM, ExpType.KPREF);
+        def.put(KGRAM, KPREF);
+        def.put(KGEXT, KEPREF);
         def.put(RDFS.COS, RDFS.COSPrefix);
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);
         def.put(SPIN, SPIN_PREF);
         def.put(STL, STL_PREF);
-
     }
 
     // add default namespaces

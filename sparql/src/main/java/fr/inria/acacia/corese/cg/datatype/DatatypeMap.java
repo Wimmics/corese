@@ -467,6 +467,12 @@ public class DatatypeMap implements Cst, RDF {
             return dt;
         }
         
+         public static IDatatype createObject(String name, Object obj, String datatype){
+            IDatatype dt = createUndef(name, datatype);
+            dt.setObject(obj);
+            return dt;
+        } 
+         
         public static IDatatype createUndef(String label, String datatype){
             IDatatype dt = new CoreseUndefLiteral(label);
             dt.setDatatype(datatype);                  

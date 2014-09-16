@@ -3,6 +3,5 @@
 #
 select *
 where {
-  bind (kg:describe() as ?g)
-  graph ?g { bind(st:atw(st:turtle) as ?q) }
+  graph eng:describe { bind(st:atw(st:turtle) as ?q) }
 }

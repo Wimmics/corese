@@ -575,6 +575,7 @@ Exp TemplateQuery() : { Exp stack; }
 {
   {stack = BasicGraphPattern.create();}
   Template(stack)
+  ( DatasetClause() )*
   stack = WhereClause()
   SolutionModifier()  
   {

@@ -26,10 +26,15 @@ import java.util.List;
  */
 public class BPGNode {
 
+    private final static int NAH = -1;
     // the expression that the node encapsulates
     private final Exp exp;
-    //the value of the selectivity that the expression represents
-    private double selectivity = -1;
+    //INFO: 
+    //the smaller the value of unselectivity means the more selective the node
+    //the bigger the value of selectivity means the more selective the node
+    //unselectivity = 1-selectivity
+    //ex, if unselectivity = 0.2 (selectivity = 0.8)
+    private double unselectivity = NAH, selectivity = NAH;
 
     //tripe pattern ?-tuple (S P O G FV FN)
     private TriplePattern pattern = null;
@@ -51,9 +56,10 @@ public class BPGNode {
                 pattern = new TriplePattern(this, gNode, bindings);
             }
         } else {
-            //set the selectivity of filter very big
+            //set the unselectivity of filter very big
             //so that it can be postioned at the end 
-            this.selectivity = Integer.MAX_VALUE;
+            this.unselectivity = Integer.MAX_VALUE;
+            this.selectivity = Integer.MIN_VALUE;
         }
     }
 
@@ -94,12 +100,22 @@ public class BPGNode {
         return getType() == EDGE ? this.exp.getEdge().getNode(1) : null;
     }
 
+    public double getUnselectivity() {
+        return unselectivity;
+    }
+
+    public void setUnselectivity(double unselectivity) {
+        this.unselectivity = unselectivity;
+        this.selectivity = 1 - this.unselectivity;
+    }
+
     public double getSelectivity() {
         return selectivity;
     }
 
     public void setSelectivity(double selectivity) {
         this.selectivity = selectivity;
+        this.unselectivity = 1 - this.selectivity;
     }
 
     /**
@@ -293,7 +309,7 @@ public class BPGNode {
 
     @Override
     public String toString() {
-        return exp.toString() + "," + this.selectivity;
+        return exp.toString() + "," + this.unselectivity;
     }
 
     @Override

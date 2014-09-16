@@ -80,10 +80,10 @@ public class SortBySelectivity implements ISort {
         }
 
         BPGNode minNode = lNodes.get(0);
-        double min = minNode.getSelectivity();
+        double min = minNode.getUnselectivity();
 
         for (BPGNode node : lNodes) {
-            double sel = node.getSelectivity();
+            double sel = node.getUnselectivity();
             if (sel != IEstimate.NULL_SEL && sel < min) {
                 min = sel;
                 minNode = node;
@@ -135,7 +135,7 @@ public class SortBySelectivity implements ISort {
         Collections.sort(children, new Comparator<BPGNode>() {
             @Override
             public int compare(BPGNode o1, BPGNode o2) {
-                return Double.valueOf(o1.getSelectivity()).compareTo(Double.valueOf(o2.getSelectivity()));
+                return Double.valueOf(o1.getUnselectivity()).compareTo(Double.valueOf(o2.getUnselectivity()));
             }
         });
 
@@ -157,8 +157,8 @@ public class SortBySelectivity implements ISort {
         Collections.sort(children, new Comparator<BPGNode>() {
             @Override
             public int compare(BPGNode n1, BPGNode n2) {
-                double d1 = n1.getSelectivity() * weights.get(n1);
-                double d2 = n2.getSelectivity() * weights.get(n2);
+                double d1 = n1.getUnselectivity() * weights.get(n1);
+                double d2 = n2.getUnselectivity() * weights.get(n2);
                 return Double.valueOf(d1).compareTo(Double.valueOf(d2));
             }
         });

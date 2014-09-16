@@ -123,7 +123,7 @@ public class TriplePattern {
      */
     public void setSelectivity(int size, int index) {
         double itl = (MAX_SEL - MIN_SEL_APP) / (size - 1);
-        this.bpn.setSelectivity(itl * index + MIN_SEL_APP);
+        this.bpn.setUnselectivity(itl * index + MIN_SEL_APP);
     }
 
     /**
@@ -249,7 +249,7 @@ public class TriplePattern {
             s += this.pattern[i] + ", ";
         }
 
-        s += bpn.getSelectivity() + "] ";
+        s += bpn.getUnselectivity() + "] ";
         return s;
     }
 

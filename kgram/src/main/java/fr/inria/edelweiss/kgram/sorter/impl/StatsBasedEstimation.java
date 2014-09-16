@@ -32,18 +32,18 @@ import java.util.List;
  * @date 19 mai 2014
  */
 public class StatsBasedEstimation implements IEstimate {
-
+    
     private IProducer meta;
     private BPGraph g;
     private List<Exp> bindings;
-
+    
     private final static double SEL_FILTER = 1.0;
-
+    
     public StatsBasedEstimation() {
         //todo 
         //this();
     }
-
+    
     public StatsBasedEstimation(IProducer meta) {
         if (!this.meta.statsEnabled()) {
             System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sort !!");
@@ -51,7 +51,7 @@ public class StatsBasedEstimation implements IEstimate {
         }
         this.meta = meta;
     }
-
+    
     @Override
     public void estimate(BPGraph g, Producer producer, Object utility) {
         //**1 check the producer
@@ -61,7 +61,7 @@ public class StatsBasedEstimation implements IEstimate {
                 System.err.println("!! Meta deta statistics not enabled, unable to estimate selectivity and sort !!");
                 return;
             }
-
+            
             if ((utility instanceof List)) {
                 this.bindings = (List<Exp>) utility;
             } else {
@@ -72,24 +72,24 @@ public class StatsBasedEstimation implements IEstimate {
             System.err.println("!! Producer type not compitable, cannot get statstics data !!");
             return;
         }
-
+        
         this.g = g;
 
         //**2 iterate the nodes and assign selectivity
         for (BPGNode node : g.getAllNodes()) {
             double sel = selTriplePattern(node);
-            node.setSelectivity(sel);
+            node.setUnselectivity(sel);
         }
 
         //**3 add the selectivity of filter to linked variables
-        //@deprecated to remove
+        //@deprecated, to be removed
         for (BPGNode node : g.getAllNodes()) {
             if (node.getType() == FILTER) {
                 double sf = this.getSel(node.getExp().getFilter());
-                node.setSelectivity(sf);
+                node.setUnselectivity(sf);
                 for (BPGNode n : this.g.getLinkedNodes(node)) {
                     //set the new selectivity
-                    n.setSelectivity(n.getSelectivity() * sf);
+                    n.setUnselectivity(n.getUnselectivity() * sf);
                 }
             }
         }
@@ -97,7 +97,7 @@ public class StatsBasedEstimation implements IEstimate {
         //** 4 assign weights to edges
         join();
     }
-
+    
     public double selTriplePattern(BPGNode n) {
         TriplePattern pattern = n.getPattern();
         if (pattern == null) {//not triples pattern, maybe filter
@@ -190,9 +190,10 @@ public class StatsBasedEstimation implements IEstimate {
     //just simply multiply the selectivity of the two nodes, can be improved
     private void join() {
         for (BPGEdge edge : g.getAllEdges()) {
-            double s1 = edge.get(0).getSelectivity();
-            double s2 = edge.get(1).getSelectivity();
-            edge.setWeight(s1 * s2);
+            edge.setWeight(1.0);
+//            double s1 = edge.get(0).getSelectivity();
+//            double s2 = edge.get(1).getSelectivity();
+//            edge.setWeight(s1 * s2);
         }
     }
 }

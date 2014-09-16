@@ -274,7 +274,7 @@ implements Index {
 		int total = 0;
 		for (Node pred : getSortedProperties()){
 			total += get(pred).size();
-			str += pred + " " + get(pred).size() +" ;\n";
+			str += "kg:item [ rdf:predicate " + pred + "; rdf:value " + get(pred).size() +"] ;\n";
 		}
 		str += "kg:total: " + total + "]";
 		return str;

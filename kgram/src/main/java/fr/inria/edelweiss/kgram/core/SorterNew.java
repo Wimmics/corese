@@ -27,10 +27,8 @@ public class SorterNew extends Sorter {
         if (!sortable(exp)) {
             return;
         }
+        message("Before sorting:" + exp);
 
-        if (print) {
-            System.out.println("Before sorting:" + exp);
-        }
         long start = System.currentTimeMillis();
         //1 create graph (list of nodes and their relations)
         BPGraph bpg = new BPGraph(exp, bindings);
@@ -57,12 +55,8 @@ public class SorterNew extends Sorter {
 
         //4 rewrite
         is.rewrite(exp, l);
-        if (print) {
-            System.out.println("After sorting:" + exp);
-        }
-        if (print) {
-            System.out.println("== Query sorting time:" + (System.currentTimeMillis() - start) + "ms ==");
-        }
+        message("After sorting:" + exp);
+        message("== Query sorting time:" + (System.currentTimeMillis() - start) + "ms ==");
     }
 
     /**
@@ -74,6 +68,7 @@ public class SorterNew extends Sorter {
      */
     private boolean sortable(Exp e) {
 
+        //TODO !!! find a solution when the conditions can not be satisfied..
         if (e.type() == Exp.AND && e.size() >1) {
            
             //check all sub expression type
@@ -86,5 +81,9 @@ public class SorterNew extends Sorter {
         }
 
         return false;
+    }
+    
+    private void message(String msg){
+        if (print) System.out.println(msg);
     }
 }

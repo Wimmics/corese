@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.rule;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -347,7 +348,7 @@ public class RuleEngine implements Engine {
         Query q = r.getQuery();
         q.setID(rules.size());
         r.setIndex(rules.size());
-        Node prov = DatatypeMap.createObject(q.getAST().toString(), q);
+        Node prov = DatatypeMap.createObject(q.getAST().toString(), q, IDatatype.RULE);
         q.setProvenance(prov);
         r.setProvenance(prov);
     }
@@ -668,7 +669,7 @@ public class RuleEngine implements Engine {
 
                 if (isOptTransitive() && rule.isAnyTransitive()){ 
                     // optimization for transitive rules: eval at saturation
-                    System.out.println("RE: " + rule.getAST());
+                    //System.out.println("RE: " + rule.getAST());
                     rule.setClosure(true);
 
                     boolean go = true;

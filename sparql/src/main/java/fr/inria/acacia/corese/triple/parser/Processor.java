@@ -27,6 +27,7 @@ public class Processor {
 
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
         static final String KGRAM = ExpType.KGRAM;
+        static final String KPREF = ExpType.KPREF+":";
         static final String STL   = ExpType.STL;
 	public static final String BOUND = "bound";
 	public static final String COUNT = "count";
@@ -80,9 +81,11 @@ public class Processor {
 	static final String ID          = KGRAM + "id";
 	static final String TIMESTAMP 	= KGRAM + "timestamp";
 	static final String TEST 	= KGRAM + "test";
-	static final String DESCRIBE 	= KGRAM + "describe";
 	static final String STORE 	= KGRAM + "store";
-	static final String QUERY 	= KGRAM + "query";
+	public static final String DESCRIBE 	= KGRAM + "describe";
+	public static final String QUERY 	= KGRAM + "query";
+	public static final String EXTENSION 	= KGRAM + "extension";
+	public static final String KGEXTENSION 	= KPREF + "extension";
 	
 	static final String WRITE 		= KGRAM + "write"; 
 	static final String PPRINT 		= KGRAM + "pprint"; 
@@ -468,6 +471,7 @@ public class Processor {
  		defoper(DESCRIBE,       ExprType.DESCRIBE);
  		defoper(STORE,          ExprType.STORE);
  		defoper(QUERY,          ExprType.QUERY);
+ 		defoper(EXTENSION,      ExprType.EXTENSION);
                
 		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
 		defoper(EVAL, 		ExprType.APPLY_TEMPLATES);

@@ -1,0 +1,12 @@
+prefix prov: <http://www.w3.org/ns/prov#>
+construct {
+  ?p prov:wasGeneratedBy ?pr
+}
+from kg:rule
+where {
+  select distinct ?p ?pr where {
+    ?x ?p ?y
+    bind (kg:provenance(?p) as ?pr)
+  }
+}
+

@@ -162,6 +162,7 @@ public class Query extends Exp implements Graphable {
     private String name;
     private String profile;
     private boolean isNumbering;
+    private boolean isExtension = false;
 
 	
 	Query(){
@@ -2387,6 +2388,15 @@ public class Query extends Exp implements Graphable {
     public String toGraph() {
         return getAST().toGraph();
     }
+
+    public void setExtension(boolean b) {
+        isExtension = b;
+    }
+
+    public boolean isExtension() {
+        return isExtension;
+    }
+    
 	
 	
 }

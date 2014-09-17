@@ -71,7 +71,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-09-09";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-09-16";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -117,9 +117,10 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem success;
     private JMenuItem quit;
     private JMenuItem iselect, igraph, iconstruct, iask, idescribe, 
-            iserviceCorese, iserviceDBpedia, ientailment, irule,
+            iserviceCorese, iserviceDBpedia, 
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, itrig, ispin, iowl, itypecheck, icontent, isystem;
+            iturtle, itrig, ispin, iowl, itypecheck, icontent, 
+            ientailment, irule, isystem, iprovenance;
     
     HashMap<Object, String> itable;
     
@@ -169,6 +170,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String defaultTypecheckQuery = "typecheck.rq";     
     private static final String defaultContentQuery = "content.rq";
     private static final String defaultSystemQuery = "system.rq";
+    private static final String defaultProvenanceQuery = "provenance.rq";
   
     private String defaultQuery = defaultSelectQuery;
             
@@ -448,18 +450,19 @@ public class MainFrame extends JFrame implements ActionListener {
         iserviceCorese    = defItem("Service Corese", defaultServiceCoreseQuery);
         iserviceDBpedia    = defItem("Service DBpedia", defaultServiceDBpediaQuery);
         icontent    = defItem("Content", defaultContentQuery);
-        isystem    = defItem("System", defaultSystemQuery);
-
         
         iinsert     = defItem("Insert", defaultInsertQuery);
         iinsertdata = defItem("Insert Data", defaultInsertDataQuery);
         idelete     = defItem("Delete", defaultDeleteQuery);
         ideleteinsert = defItem("Delete Insert", defaultDeleteInsertQuery);
+        
         ientailment = defItem("Entailment", defaultEntailmentQuery);
         irule       = defItem("Rule", defaultRuleQuery);
-                    
+        isystem     = defItem("System", defaultSystemQuery);
+        iprovenance = defItem("Provenance", defaultProvenanceQuery);  
+        
         iturtle = defItem("Turtle", defaultTemplateQuery); 
-        itrig = defItem("Trig", defaultTrigQuery); 
+        itrig   = defItem("Trig", defaultTrigQuery); 
         ispin   = defItem("SPIN", defaultSPINQuery); 
         iowl    = defItem("OWL", defaultOWLQuery); 
         itypecheck = defItem("TypeCheck", defaultTypecheckQuery); 
@@ -546,6 +549,7 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu debugMenu = new JMenu("Debug");
         JMenu queryMenu = new JMenu("Query");
         JMenu templateMenu = new JMenu("Template");
+        JMenu explainMenu = new JMenu("Explain");
         JMenu aboutMenu = new JMenu("?");
 
         //On ajoute tout au menu
@@ -571,9 +575,11 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iinsert);
         queryMenu.add(iinsertdata);
         queryMenu.add(ideleteinsert);
-        queryMenu.add(ientailment);
-        queryMenu.add(irule);
-        queryMenu.add(isystem);
+        
+        explainMenu.add(ientailment);
+        explainMenu.add(irule);
+        explainMenu.add(iprovenance);
+        explainMenu.add(isystem);
        
         templateMenu.add(iturtle);
         templateMenu.add(itrig);
@@ -813,6 +819,7 @@ public class MainFrame extends JFrame implements ActionListener {
         menuBar.add(debugMenu);
         menuBar.add(queryMenu);
         menuBar.add(templateMenu);
+        menuBar.add(explainMenu);
         menuBar.add(aboutMenu);
 
 
@@ -1048,12 +1055,11 @@ public class MainFrame extends JFrame implements ActionListener {
         } //Recharge tous les fichiers déjà chargés
         else if (e.getSource() == refresh) {
             ongletListener.refresh(this);
-        } else if (e.getSource() == apropos) {
-            JOptionPane.showMessageDialog(apropos, "Corese");
-        } else if (e.getSource() == tuto) {
+        } 
+         else if (e.getSource() == apropos || e.getSource() == tuto) {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 try {
-                    Desktop.getDesktop().browse(new URI("http://www-sop.inria.fr/teams/edelweiss/wiki/wakka.php?wiki=CoreseTutorial"));
+                    Desktop.getDesktop().browse(new URI("http://wimmics.inria.fr/corese"));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } catch (URISyntaxException e1) {

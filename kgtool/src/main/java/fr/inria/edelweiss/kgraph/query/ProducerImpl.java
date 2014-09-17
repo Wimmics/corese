@@ -149,7 +149,9 @@ public class ProducerImpl implements Producer, IProducer {
                 node = graph.getNode(qNode);  
             }
         } 
-        else if (node.getIndex() == -1 || mode == EXTENSION){
+        else if (node.getIndex() == -1 || 
+                mode == EXTENSION || 
+                env.getQuery().getGlobalQuery().isExtension()){
             node = graph.getNode(node); 
         }           
         return node;
@@ -280,6 +282,7 @@ public class ProducerImpl implements Producer, IProducer {
 
         // check gNode/from/named
         if (mode == EXTENSION){
+            q.getGlobalQuery().setExtension(true);
             if (it == null){
                 return empty;
             }

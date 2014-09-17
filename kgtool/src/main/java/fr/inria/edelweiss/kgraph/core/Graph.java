@@ -629,8 +629,8 @@ public class Graph implements Graphable
         str += "] . \n";
         
         str += "[ a kg:System ;"
-                + "kg:version '3.2' ;"
-                + "kg:date '2014-09-09'^^xsd:date ;"
+                + "kg:version '3.1' ;"
+                + "kg:date '2014-09-16'^^xsd:date ;"
                 + "kg:author 'Olivier Corby' ;"
                 + "kg:team <http://wimmics.inria.fr> ;"
                 + "kg:institution <http://www.inria.fr>, <http://www.i3s.unice.fr/> ;"

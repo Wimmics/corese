@@ -41,6 +41,7 @@ import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -48,13 +49,12 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
 import javax.swing.JFrame;
@@ -438,15 +438,22 @@ public final class MyJPanelQuery extends JPanel {
         return fr.inria.edelweiss.kgraph.core.Graph.create();
     }
 
-    private String getLabel(String name) {
-        int ind = name.lastIndexOf("#");
-        if (ind == -1) {
-            ind = name.lastIndexOf("/");
+    private String getLabel(NSManager nsm, fr.inria.edelweiss.kgram.api.core.Node n) {
+        IDatatype dt = (IDatatype) n.getValue();
+        if (dt.isURI()){
+           return nsm.toPrefix(n.getLabel());
         }
-        if (ind == -1 || ind == name.length() - 1) {
-            return name;
+        else {
+            return n.getLabel();
         }
-        return name.substring(ind + 1);
+//        int ind = name.lastIndexOf("#");
+//        if (ind == -1) {
+//            ind = name.lastIndexOf("/");
+//        }
+//        if (ind == -1 || ind == name.length() - 1) {
+//            return name;
+//        }
+//        return name.substring(ind + 1);
     }
 
     String toString(Mappings map) {
@@ -462,28 +469,19 @@ public final class MyJPanelQuery extends JPanel {
     }
 
     public void display(IResults l_Results, MainFrame coreseFrame) {
-        if (l_Results == null) {
+        if (l_Results == null || ! (l_Results instanceof QueryResults)) {
             // go to XML for error message
             tabbedPaneResults.setSelectedIndex(1);
             return;
         }
 
-        boolean oneValue = true;
-        Mappings map = null;
+        QueryResults qr = (QueryResults) l_Results;
+        Mappings map = qr.getMappings();
+        Query q = map.getQuery();
+        ASTQuery ast = (ASTQuery) q.getAST();
+        boolean oneValue = !map.getQuery().isListGroup();
 
-        if (l_Results instanceof QueryResults) {
-            // in old Corese, there may be several values for one variable
-            // use case: group by ?x and pragma {kg:kgram kg:list true}
-            // this is deprecated
-            QueryResults qr = (QueryResults) l_Results;
-            map = qr.getMappings();
-            oneValue = !map.getQuery().isListGroup();
-            resultXML = toString(map);
-        } else {
-            // On affiche la version XML du résultat dans l'onglet XML
-            resultXML = l_Results.toString();
-        }
-
+        resultXML = toString(map);
         textAreaXMLResult.setText(resultXML.toString());
 
         // On affiche la version en arbre du résultat dans l'onglet Tree
@@ -510,10 +508,10 @@ public final class MyJPanelQuery extends JPanel {
         tabbedPaneResults.setSelectedIndex(1);
 
         if (l_Results.isConstruct() || l_Results.isDescribe()) {
-            displayGraph(getGraph(l_Results));
+            displayGraph((Graph) map.getGraph(), ast.getNSM());
         } // draft
         else if (map.getQuery().isTemplate() && map.getQuery().isPragma(KGGRAPH)) {
-            display(map);
+            display(map, ast.getNSM());
         }
 
     }
@@ -521,24 +519,22 @@ public final class MyJPanelQuery extends JPanel {
     /**
      * template return turtle graph description display as graph
      */
-    void display(Mappings map) {
+    void display(Mappings map, NSManager nsm) {
         fr.inria.edelweiss.kgram.api.core.Node res = map.getTemplateResult();
         if (res != null) {
             fr.inria.edelweiss.kgraph.core.Graph g = fr.inria.edelweiss.kgraph.core.Graph.create();
             Load ld = Load.create(g);
             String str = res.getLabel();
             try {
-                ld.load(new ByteArrayInputStream(str.getBytes("UTF-8")), "turtle.ttl");
-                displayGraph(g);
+                ld.loadString(str, Load.TURTLE_FORMAT);
+                displayGraph(g, nsm);
             } catch (LoadException ex) {
                 java.util.logging.Logger.getLogger(MyJPanelQuery.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (UnsupportedEncodingException ex) {
-                java.util.logging.Logger.getLogger(MyJPanelQuery.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } 
         }
     }
 
-    void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g) {
+    void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm) {
 
         int num = 0;
         String sujetUri, predicat, objetUri, temp = "http://www.inria.fr/acacia/corese#Results";
@@ -553,60 +549,50 @@ public final class MyJPanelQuery extends JPanel {
 
         for (Entity ent : edges) {
             fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
-            sujetUri = edge.getNode(0).getLabel();
-            objetUri = edge.getNode(1).getLabel();
+            fr.inria.edelweiss.kgram.api.core.Node n1 = edge.getNode(0);
+            fr.inria.edelweiss.kgram.api.core.Node n2 = edge.getNode(1);
+            
+            sujetUri = n1.getLabel();
+            objetUri = n2.getLabel();
 
-            predicat = getLabel(edge.getEdgeNode().getLabel());
+            predicat = getLabel(nsm, edge.getEdgeNode());
 
-            sujet = getLabel(sujetUri);
-            objet = getLabel(objetUri);
+            sujet = getLabel(nsm, n1);
+            objet = getLabel(nsm, n2);
 
             Node gsub = graph.getNode(sujetUri);
-            // if (find(sujetUri, graph.getNodeIterator()) == null) {
             if (gsub == null) {
                 gsub = graph.addNode(sujetUri);
                 gsub.addAttribute("label", sujet);
 //                gsub.addAttribute("ui.style", "fill-color:lightblue;size-mode:dyn-size;shape:rounded-box;");
-                //graph.getNode(sujetUri)
-//                    gsub.setAttribute("ui.class", sujet);
-                if (edge.getNode(0).isBlank()) {
-                    //graph.getNode(sujetUri)
+                if (n1.isBlank()) {                   
                     gsub.setAttribute("ui.class", "Blank");
                 }
-//                    Edge ee = graph.addEdge("temp" + num, sujetUri, temp);
 //                    ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
-
             }
             num++;
 
             if (isStyle(edge)) {
-                // draft style
                 // xxx kg:style ex:Wimmics
                 // it is a fake edge, do not create it
-//                gsub.setAttribute("ui.class", objet);
+                gsub.setAttribute("ui.class", objet);
             } else {
                 Node gobj = graph.getNode(objetUri);
-                //if (find(objetUri, graph.getNodeIterator()) == null) {
                 if (gobj == null) {
                     gobj = graph.addNode(objetUri);
                     gobj.addAttribute("label", objet);
-//                    gobj.setAttribute("ui.class", objet);
-                    if (edge.getNode(1).isBlank()) {
+                    if (n2.isBlank()) {
                         gobj.setAttribute("ui.class", "Blank");
                     }
-                    IDatatype dt = (IDatatype) edge.getNode(1).getValue();
+                    IDatatype dt = (IDatatype) n2.getValue();
                     if (dt.isLiteral()) {
                         gobj.setAttribute("ui.class", "Literal");
                     }
-
-//                        Edge ee = graph.addEdge("temp" + num, objetUri, temp);
-//                        ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
                 }
                 num++;
 
                 Edge ee = graph.addEdge("edge" + num, sujetUri, objetUri, true);
                 ee.addAttribute("label", predicat);
-//                ee.addAttribute("ui.class", predicat);
             }
         }
 

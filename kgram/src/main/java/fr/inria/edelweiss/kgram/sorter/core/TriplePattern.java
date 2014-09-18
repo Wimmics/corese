@@ -51,7 +51,7 @@ public class TriplePattern {
         //the value of S P O G can be: 0[bound], ?[length of constant list], Integer.MAX_VALUE[unbound]
         this(n);
         this.pattern[S] = getNodeType(e.getNode(0), bindings);
-        this.pattern[P] = getNodeType(e.getEdgeNode(), bindings);
+        this.pattern[P] = getNodeType(e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable(), bindings);
         this.pattern[O] = getNodeType(e.getNode(1), bindings);
 
         // get the variables in the triple pattern
@@ -196,21 +196,24 @@ public class TriplePattern {
         int type1 = p1.bpn.getExp().type();
         int type2 = p2.bpn.getExp().type();
 
+        //to/can be extended!!
         //if (type1 == GRAPH || type2 == GRAPH) {
+        //when comparing EDGE/GRAPH, EDGE has priority except if EDGE = (? ? ?)
         if (type1 == GRAPH && type2 == EDGE) {
-            return 1;
+            return (p2.match(bp) == (bp.length - 1)) ? -1 : 1;
         } else if (type1 == EDGE && type2 == GRAPH) {
-            return -1;
+            return (p1.match(bp) == (bp.length - 1)) ? 1 : -1;
+            //when comparing two GRAPHs, compare by the type of named graph (bound, unbound, etc...)
         } else if (type1 == GRAPH && type2 == GRAPH) {
             return p1.pattern[G] > p2.pattern[G] ? 1 : -1;
         } else {//EDGE - EDGE
-         //EDGE
+            //EDGE
             //get the sequence in the simple pattern list
             int i1 = p1.match(bp), i2 = p2.match(bp);
             //the first 3 pattern are not the same, return directly
             if (i1 != i2) {
                 return i1 > i2 ? 1 : -1;
-            //compare the others
+                //compare the others
                 //for FV and FN, the bigger, the selectivity is higher
                 //todo add graph
             } else if (!onlyBasic) {

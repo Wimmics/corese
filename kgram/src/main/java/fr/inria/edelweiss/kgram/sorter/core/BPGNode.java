@@ -93,7 +93,8 @@ public class BPGNode {
     }
 
     public Node getPredicate() {
-        return getType() == EDGE ? this.exp.getEdge().getEdgeNode() : null;
+        Edge e = this.exp.getEdge();
+        return getType() == EDGE ? (e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable()) : null;
     }
 
     public Node getObject() {
@@ -177,7 +178,7 @@ public class BPGNode {
 
     public List<String> isShared(List<Node> values, Edge e) {
         List<String> l = new ArrayList<String>();
-        Node n0 = e.getEdgeNode();
+        Node n0 = e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable();
         Node n1 = e.getNode(0);
         Node n2 = e.getNode(1);
 
@@ -196,7 +197,7 @@ public class BPGNode {
     //check between edge and filter
     public List<String> isShared(Filter f, Edge e) {
         List<String> l = new ArrayList<String>();
-        Node n0 = e.getEdgeNode();
+        Node n0 = e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable();
         Node n1 = e.getNode(0);
         Node n2 = e.getNode(1);
 
@@ -238,8 +239,8 @@ public class BPGNode {
         if (e.getNode(0).isVariable()) {
             l.add(e.getNode(0));
         }
-        if (e.getEdgeNode().isVariable()) {
-            l.add(e.getEdgeNode());
+        if (e.getEdgeVariable() !=null) {
+            l.add(e.getEdgeVariable());
         }
         if (e.getNode(1).isVariable()) {
             l.add(e.getNode(1));

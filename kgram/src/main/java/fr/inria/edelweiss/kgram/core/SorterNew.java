@@ -30,10 +30,11 @@ public class SorterNew extends Sorter {
         message("Before sorting:" + exp);
 
         long start = System.currentTimeMillis();
-        //1 create graph (list of nodes and their relations)
+        //1 create graph (list of nodes and their edges)
         BPGraph bpg = new BPGraph(exp, bindings);
 
-        // 2 assign selectivity
+        // 2 estimate cost/selectivity
+        // 2.1 find the corresponding algorithm
         IEstimate ies ;
         switch (planType) {
             //case Query.PLAN_COMBINED:
@@ -47,9 +48,10 @@ public class SorterNew extends Sorter {
                 ies = new RuleBasedEstimation();
         }
 
+        // 2.2 estimate
         ies.estimate(bpg, prod, bindings);
 
-        //3 find order
+        //3 sort and find the order
         ISort is = new SortBySelectivity();
         List l = is.sort(bpg);
 
@@ -66,7 +68,7 @@ public class SorterNew extends Sorter {
      * @param e expression to be sorted
      * @return
      */
-    private boolean sortable(Exp e) {
+    public boolean sortable(Exp e) {
 
         //TODO !!! find a solution when the conditions can not be satisfied..
         if (e.type() == Exp.AND && e.size() >1) {

@@ -143,8 +143,18 @@ public class QuerySorter implements ExpType {
                                 break;
                             case Query.PLAN_RULE_BASED:
                                 sort = new SorterNew();
-                                ((SorterNew) sort).sort(exp, lBind, null, Query.PLAN_RULE_BASED);
-                                setBind(exp, lBind);
+                                SorterNew sortNew = (SorterNew) sort;
+                                //can be sorted by rule-based method
+                                if (sortNew.sortable(exp)) {
+                                    sortNew.sort(exp, lBind, null, Query.PLAN_RULE_BASED);
+                                    setBind(exp, lBind);
+                                }else{//use the default method to do planning and correction
+                                    //PLAN_DEFAULT
+                                    sort.sort(query, exp, lVar, lBind);
+                                    sortFilter(exp, lVar);
+                                    exp.setBind();
+                                }
+
                                 break;
                             case Query.PLAN_STATS_BASED:
                                 //!! the first time using stats based method

@@ -96,7 +96,8 @@ public class TripleHashTable2 {
 
         Tuple(Edge e, int type) {
             long s = hash(e.getNode(0), (int) options[SUB]);
-            String p = e.getEdgeNode().getLabel();
+            Node en = e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable();
+            String p = en.getLabel();
             long o = hash(e.getNode(1), (int) options[OBJ]);
 
             switch (type) {

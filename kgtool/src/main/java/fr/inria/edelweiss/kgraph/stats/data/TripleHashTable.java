@@ -67,8 +67,8 @@ public class TripleHashTable {
     public int get(Edge e, int type) {
         Triple other = new Triple(e);
         int count = 0;
-        for(Triple t :this.table.keySet()){
-            if(t.match(other, type)){
+        for (Triple t : this.table.keySet()) {
+            if (t.match(other, type)) {
                 count += this.table.get(t);
             }
         }
@@ -84,7 +84,8 @@ public class TripleHashTable {
 
         Triple(Edge e) {
             this.s = hash(e.getNode(0), (int) options[SUB]);
-            this.p = e.getEdgeNode().getLabel();
+            Node en = e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable();
+            this.p = en.getLabel();
             this.o = hash(e.getNode(1), (int) options[OBJ]);
 
             //index: sss-ppppp-ooo

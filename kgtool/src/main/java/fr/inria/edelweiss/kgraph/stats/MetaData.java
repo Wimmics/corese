@@ -147,7 +147,7 @@ public class MetaData {
             //subject
             subMap.add(e.getNode(0));
             //predicate
-            preMap.add(e.getEdgeNode());
+            preMap.add(e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable());
             //object
             objMap.add(e.getNode(1));
             

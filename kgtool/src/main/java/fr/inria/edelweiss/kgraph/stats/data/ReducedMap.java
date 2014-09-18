@@ -46,7 +46,11 @@ public class ReducedMap extends BaseMap {
         //bottom Y
         cutoff(treeMap.descendingMap(), topXBottomY, options[2], options[3]);
 
-        avgNumber = (this.total - this.numTriplesCached) / (super.size() - this.numResourcesCached);
+        if(super.size()  == this.numResourcesCached){
+            avgNumber = 0;
+        }else{
+            avgNumber = (this.total - this.numTriplesCached) / (super.size() - this.numResourcesCached);
+        }
     }
 
     // 10% top nodes and 10%bottom nodes

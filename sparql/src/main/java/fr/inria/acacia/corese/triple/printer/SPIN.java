@@ -15,6 +15,7 @@ import java.util.List;
 public class SPIN implements ASTVisitor {
 
     private final static String SP = "sp:";
+    private final static String SPIN = NSManager.SPIN;
     private final static String XSD = "xsd:";
     private final static String RDF = KeywordPP.DRDF + ":";
     private final static String DECL = "[ a ";
@@ -64,12 +65,24 @@ public class SPIN implements ASTVisitor {
     private Boolean subQuery = false; 
     
     // var -> blank node
-    HashMap <String, String> tvar;
+    HashMap <String, String> tvar, tbnode;
 
     
     SPIN() {
         setBuffer(new StringBuffer());
-        tvar = new HashMap <String, String> ();
+        tvar   = new HashMap <String, String> ();
+        tbnode = new HashMap <String, String> ();        
+    }
+    
+    public void init(){
+        tvar.clear();
+        tbnode.clear();
+        subQuery = false;
+        counter = 0;
+    }
+    
+    public void nl(){
+        sb.append(NL);
     }
 
     public static SPIN create() {
@@ -108,6 +121,7 @@ public class SPIN implements ASTVisitor {
         displayVar();        
         if (src != null){
            sb.append("}");
+           sb.append(NL);
         }
     }
     
@@ -226,21 +240,24 @@ public class SPIN implements ASTVisitor {
     
 
     void visitProlog(ASTQuery ast) {
-        sb.append("@prefix sp: <http://spinrdf.org/sp#> .\n");
+        sb.append("@prefix sp: <" + SPIN +"> .\n");
         subQuery = true;
         for (int i = 0; i < ast.getPrefixExp().size(); i++) {
             Triple t = ast.getPrefixExp().get(i).getTriple();
-            if (t.getSubject().getLabel().equals(KeywordPP.BASE)){
-                sb.append("@base ");
+            if (! t.getObject().getName().equals(SPIN) || 
+                  t.getSubject().getLabel().equals(KeywordPP.BASE)){
+                if (t.getSubject().getLabel().equals(KeywordPP.BASE)){
+                    sb.append("@base ");
+                }
+                else {
+                    sb.append("@prefix " + t.getPredicate().getName());
+                    sb.append(": ");
+                }
+                sb.append(KeywordPP.OPEN);
+                sb.append(t.getObject().getName());
+                sb.append(KeywordPP.CLOSE);
+                sb.append(" ." + KeywordPP.SPACE_LN);
             }
-            else {
-                sb.append("@prefix " + t.getPredicate().getName());
-                sb.append(": ");
-            }
-            sb.append(KeywordPP.OPEN);
-            sb.append(t.getObject().getName());
-            sb.append(KeywordPP.CLOSE);
-            sb.append(" ." + KeywordPP.SPACE_LN);
         }
     }
     
@@ -931,11 +948,22 @@ public class SPIN implements ASTVisitor {
         if (var.isBlankNode()){
             // Plays the role of beeing a BN
             // pprint it as a BN
-            var.toString(sb);
+            //var.toString(sb);
+            sb.append(getName(var, tbnode));
         }
         else {
-           process(var); 
+           sb.append(getName(var, tvar));
+           //process(var); 
         }
+    }
+    
+    String getName(Variable var, HashMap tvar) {
+        String bn = (String) tvar.get(var.getLabel());
+        if (bn == null) {
+            bn = blank(var);
+            tvar.put(var.getLabel(), bn);
+        }
+        return bn;
     }
       
     void process(Variable var) {                    

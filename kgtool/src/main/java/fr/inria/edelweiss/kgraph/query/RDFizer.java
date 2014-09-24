@@ -13,8 +13,6 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,12 +60,10 @@ public class RDFizer {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         try {
-            ld.load(new ByteArrayInputStream(rdf.getBytes("UTF-8")), Load.TURTLE_FORMAT);
+            ld.loadString(rdf, Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
             Logger.getLogger(SPINProcess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(SPINProcess.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
         return g;
      }
      

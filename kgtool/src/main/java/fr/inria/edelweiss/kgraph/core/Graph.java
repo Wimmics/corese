@@ -114,7 +114,7 @@ public class Graph implements Graphable
     Tagger tag;
     Entailment inference, proxy;
     EdgeFactory fac;
-    private Node queryNode;
+    private Context context;
     private Distance classDistance, propertyDistance;
     private boolean isSkolem = false;
     // true when graph is modified and need index()
@@ -264,17 +264,20 @@ public class Graph implements Graphable
     }
 
     /**
-     * @return the queryNode
+     * @return the context
      */
-    public Node getQueryNode() {
-        return queryNode;
+    public Context getContext() {
+        if (context == null){
+            context = new Context(this);
+        }
+        return context;
     }
 
     /**
-     * @param queryNode the queryNode to set
+     * @param context the context to set
      */
-    public void setQueryNode(Node queryNode) {
-        this.queryNode = queryNode;
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     class TreeNode extends TreeMap<IDatatype, Entity> {
@@ -630,7 +633,7 @@ public class Graph implements Graphable
         
         str += "[ a kg:System ;"
                 + "kg:version '3.1' ;"
-                + "kg:date '2014-09-16'^^xsd:date ;"
+                + "kg:date '2014-09-23'^^xsd:date ;"
                 + "kg:author 'Olivier Corby' ;"
                 + "kg:team <http://wimmics.inria.fr> ;"
                 + "kg:institution <http://www.inria.fr>, <http://www.i3s.unice.fr/> ;"
@@ -642,7 +645,40 @@ public class Graph implements Graphable
                 + "] . \n" ;
         
         str += table.toString();
+        
+        for (Index t : getIndexList()){
+            if (t.getIndex() != 0 && t.cardinality() > 0){
+                str += t.toRDF();
+                str += "\n";
+            }
+        }
         return str;
+    }
+    
+     /**
+     * Generate an RDF Graph that describes the KGRAM system and the 
+     * current RDF graph
+     */
+    public Graphable describe(){
+        final Graph g = this;
+        
+        return new Graphable(){
+
+            @Override
+            public String toGraph() {
+                return (g.toRDF());
+            }
+
+            @Override
+            public void setGraph(Object obj) {
+            }
+
+            @Override
+            public Object getGraph() {
+                return null;
+            }
+            
+        };
     }
 
     public String toString2() {

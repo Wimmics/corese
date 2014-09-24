@@ -270,16 +270,36 @@ implements Index {
 	}
 	
 	public String toString(){
-		String str = "[ a kg:Index ;\n";
-		int total = 0;
-		for (Node pred : getSortedProperties()){
-			total += get(pred).size();
-			str += "kg:item [ rdf:predicate " + pred + "; rdf:value " + get(pred).size() +"] ;\n";
-		}
-		str += "kg:total: " + total + "]";
-		return str;
+		return toRDF();
 	}
         
+       public String toRDF() {
+            String str = "[ a kg:Index ;\n";
+            str += "kg:index " + index + ";\n";
+            String name = "rdf:predicate";           
+            int total = 0;
+            for (Node pred : getSortedProperties()) {
+                int i = get(pred).size();
+                if (i > 0){
+                    total += i;               
+                    str += "kg:item [ rdf:predicate " + pred + "; rdf:value " + i + "] ;\n";
+                }
+            }
+            str += "kg:total: " + total;
+            str += "]";
+            return str;
+        }
+       
+       
+        
+       public int cardinality() {
+            int total = 0;
+            for (Node pred : getProperties()) {
+                total += get(pred).size();
+            }
+            return total;
+       }
+               
         /**
          * Clean the content of the Index but keep the properties
          * Hence Index can be reused

@@ -13,10 +13,14 @@ import java.util.List;
  *
  */
 public interface Index {
+    
+        String toRDF();
 
 	int getIndex();
 	
 	int size();
+        
+        int cardinality();
 
 	int duplicate();
 

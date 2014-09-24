@@ -33,12 +33,14 @@ import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -54,8 +56,12 @@ public class PluginImpl extends ProxyImpl {
     static Logger logger = Logger.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     private static final String NL = System.getProperty("line.separator");
-    private static final String EXT_DESCRIBE = NSManager.KGEXT + "describe";
-    private static final String EXT_QUERY    = NSManager.KGEXT + "query";
+    private static final String KGEXT        = NSManager.KGEXT;
+    private static final int EXT_DESCRIBE = 0;
+    private static final int EXT_QUERY    = 1;
+    private static final int EXT_QUERIES  = 2;
+    private static final int EXT_ENGINE   = 3;
+    private static final int EXT_RECORD   = 4;
     
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
@@ -66,6 +72,8 @@ public class PluginImpl extends ProxyImpl {
     private Object dtnumber;
     boolean isCache = false;
     TreeNode cache;
+    
+    HashMap<String, Integer> map;
 
 
     PluginImpl(Matcher m) {
@@ -77,6 +85,16 @@ public class PluginImpl extends ProxyImpl {
         }
         dtnumber = getValue(Processor.FUN_NUMBER);
         cache = new TreeNode();
+        init();
+    }
+    
+    void init(){
+        map = new HashMap();
+        map.put(KGEXT + "describe", EXT_DESCRIBE);
+        map.put(KGEXT + "query",    EXT_QUERY);
+        map.put(KGEXT + "queries",  EXT_QUERIES);
+        map.put(KGEXT + "engine",   EXT_ENGINE);
+        map.put(KGEXT + "record",   EXT_RECORD);
     }
 
     public static PluginImpl create(Matcher m) {
@@ -105,7 +123,7 @@ public class PluginImpl extends ProxyImpl {
     public void finish(Producer p, Environment env){
         Graph g = getGraph(p);
         if (g != null){
-            g.setQueryNode(DatatypeMap.createObject("query", env.getQuery(), IDatatype.QUERY));
+            g.getContext().setQuery(env.getQuery());
         }
     }
 
@@ -146,11 +164,7 @@ public class PluginImpl extends ProxyImpl {
                 return similarity(g, env);
                 
             case DESCRIBE:
-                return describe(p, exp, env);
-                
-            case QUERY:
-                return query(p, exp, env);
-                         
+                return describe(p, exp, env);                                                         
                 
         }
 
@@ -264,7 +278,10 @@ public class PluginImpl extends ProxyImpl {
                 return load(p, exp, env, dt);
                  
              case EXTENSION:
-                return extension(p, exp, env, dt);     
+                return extension(p, exp, env, dt); 
+                 
+             case QUERY:
+                return query(p, exp, env, dt);    
            
         }
         return null;
@@ -613,25 +630,46 @@ public class PluginImpl extends ProxyImpl {
     }
     
     /**
-     * kg:extension(eng:describe)
+     * graph eng:describe {}
      * ->
-     * kg:describe()
+     * bind (kg:extension(eng:describe) as ?g)
+     * graph ?g { }
      */
     private Object extension(Producer p, Expr exp, Environment env, IDatatype dt) {
-         String label = dt.getLabel();
-         if (label.equals(EXT_DESCRIBE)){
-             return describe(p, exp, env);
-         }
-         else if (label.equals(EXT_QUERY)){
-             return query(p, exp, env);
-         }
-         
+         switch (map.get(dt.getLabel())){
+             case EXT_DESCRIBE: return describe(p, exp, env);
+             case EXT_QUERY:    return query(p, exp, env, null);
+             case EXT_QUERIES:  return query(p, exp, env, DatatypeMap.MINUSONE);
+             case EXT_ENGINE:   return engine(p, exp, env);
+             case EXT_RECORD:   return record(p, exp, env);
+         }        
          return null;
     }
     
-    private Object query(Producer p, Expr exp, Environment env) {
+    /**
+     * SPIN graph of rules of a rule engine  
+     */
+   private Object engine(Producer p, Expr exp, Environment env) {
         Graph g = getGraph(p);
-        Node q = g.getQueryNode();
+        Node q = g.getContext().getRuleEngineNode();
+        return q;
+    }
+   
+    private Object record(Producer p, Expr exp, Environment env) {
+        Graph g = getGraph(p);
+        Node q = g.getContext().getRecordNode();       
+        return q;
+    }
+   
+   private Object query(Producer p, Expr exp, Environment env, IDatatype dt) {
+        Graph g = getGraph(p);
+        Node q;
+        if (dt == null){
+            q = g.getContext().getQueryNode();
+        }
+        else {
+           q = g.getContext().getQueryNode(dt.intValue()); 
+        }
         if (q == null){
             q = DatatypeMap.createObject("query", env.getQuery(), IDatatype.QUERY);
         }
@@ -651,35 +689,11 @@ public class PluginImpl extends ProxyImpl {
     }
     
     private Object describe(Producer p, Expr exp, Environment env) {
-        IDatatype res = DatatypeMap.createObject("index", describe((Graph)p.getGraph()), IDatatype.GRAPH);
+        Graph g = (Graph) p.getGraph();
+        IDatatype res = DatatypeMap.createObject("index", g.describe(), IDatatype.GRAPH);
         return res;
     }
-    
-    
-    
-    /**
-     * Generate an RDF Graph that describes the KGRAM system and the 
-     * current RDF graph
-     */
-    Graphable describe(final Graph g){
-        return new Graphable(){
-
-            @Override
-            public String toGraph() {
-                return (g.toString());
-            }
-
-            @Override
-            public void setGraph(Object obj) {
-            }
-
-            @Override
-            public Object getGraph() {
-                return null;
-            }
-            
-        };
-    }
+         
 
     /**
      * obj has getObject() which is Graphable

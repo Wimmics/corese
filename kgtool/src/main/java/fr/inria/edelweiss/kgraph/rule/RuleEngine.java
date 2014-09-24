@@ -627,7 +627,7 @@ public class RuleEngine implements Engine, Graphable {
 
         Query qq = rule.getQuery();
         Construct cons = Construct.create(qq, Entailment.RULE);
-        cons.setRule(rule, rule.getIndex());
+        cons.setRule(rule, rule.getIndex(), rule.getProvenance());
         cons.setGraph(graph);
         cons.setLoopIndex(loopIndex);
         cons.setDebug(debug);

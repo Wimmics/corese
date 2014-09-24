@@ -22,7 +22,6 @@ import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.Construct;
-import fr.inria.edelweiss.kgraph.rule.RuleEngine.ITable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,11 +99,16 @@ public class ResultWatcher implements ResultListener, GraphListener {
     }
     
    /**
-    * If there is only one predicate in where with new edges
+    * (1) If there is only one predicate in where with new edges
     * (Only one occurrence of this predicate in where)
     * We can focus on these new edge using listen(Edge, Entity)
+    * (2) If there are two predicates and the proportion of new triples is small enough < 0.3
+    * we will focus on new triples using a specific Index of edges sorted by timestamp
+    * (see union())
     */
-    void start(ITable ot, ITable nt) {
+    void start(Record ot, Record nt) {
+        setLoop(ot.getIndex());
+
         if (nt.getCount() == 1 
                 && rule.getQuery().nbPredicate(nt.getPredicate()) == 1) {
             index = rule.getQuery().getEdge(nt.getPredicate()).getIndex();
@@ -116,19 +120,14 @@ public class ResultWatcher implements ResultListener, GraphListener {
             int n = 0;
             boolean ok = true;
             double tt = 0.0;
-            // new edges <= 10% edges
+            // new edges <= 30% edges
             for (Node pred : rule.getPredicates()) {
-                String name = pred.getLabel();
-                if (nt.get(name) > ot.get(name)) {
+                if (nt.get(pred) > ot.get(pred)) {
                     n++;
                     // proportion of new edges
-                    double dd = ((double) (nt.get(name) - ot.get(name))) / (double) nt.get(name);
+                    double dd = ((double) (nt.get(pred) - ot.get(pred))) / (double) nt.get(pred);
                     // sum of proportion of new edges
                     tt += dd;
-//                    if (dd >  LIMIT){
-//                        ok = false;
-//                        break;
-//                    }
                 }
             }
                     
@@ -273,6 +272,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
                 exp = Exp.create(Exp.AND, exp.get(1), exp.get(2));
             }
             else if (isTestable && graph.hasList()){
+                // focus on new edges in a specific graph Index sorted by timestamps
                     isTestable = false;
                     exp = union(exp);
             }
@@ -283,9 +283,11 @@ public class ResultWatcher implements ResultListener, GraphListener {
     }
     
     /**
-     * return Union with get new edges from Producer
-     * exp = 2 edge and may be 1 filter
-     * TODO: filter
+     * exp = 2 edge (and may be 1 filter)
+     * return { getNew(e1) e2 } union { getNew(e2) e1 }
+     * where getNew(e) is a directive to Producer to focus on new edges only
+     * new edges are those with level(e) >= ruleLoop
+     * There is a Graph Index where edges are sorted by level
      */
     Exp union(Exp exp){               
         int fst = 0, snd = 1, flt = 2;

@@ -1,18 +1,16 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.edelweiss.kgraph.rule;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.IOException;
 
 /**
- *
+ * Remove redundant bnodes from an RDF/OWL graph
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
  */
@@ -48,5 +46,23 @@ public class Cleaner {
              exec.query(qq);            
          }
    }
+    
+      /**
+     * Replace duplicate OWL expressions by one of them
+     * DRAFT
+     */
+    void owlrlFull() throws IOException, EngineException{
+        QueryLoad ql = QueryLoad.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        String unify = ql.getResource("/query/unify2.rq");
+        // remove triples with obsolete bnodes as subject
+        String clean = ql.getResource("/query/clean.rq");
+        // tell Transformer to cache st:hash transformation result
+        exec.getEvaluator().setMode(Evaluator.CACHE_MODE);
+        // replace duplicate OWL expressions by one of them
+        Mappings m1 = exec.query(unify);        
+        Mappings m2 = exec.query(clean);       
+        exec.getEvaluator().setMode(Evaluator.NO_CACHE_MODE);
+    }
 
 }

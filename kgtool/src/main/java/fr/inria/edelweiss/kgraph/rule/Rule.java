@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgraph.rule;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class Rule {
     Query query;
     List<Node> predicates;
     private Closure closure;
+    private Record record;
     String name;
     int num;
     private double time = 0.0;
@@ -50,7 +52,7 @@ public class Rule {
         }
     }
 
-    Rule(String n, Query q) {
+    public Rule(String n, Query q) {
         query = q;
         name = n;
     }
@@ -63,6 +65,13 @@ public class Rule {
     public static Rule create(Query q) {
         Rule r = new Rule("rule", q);
         return r;
+    }
+    
+    String toGraph(){
+        ASTQuery ast = (ASTQuery) getQuery().getAST();
+        SPIN sp = SPIN.create();
+        sp.visit(ast, "kg:r" + getIndex());
+        return sp.toString();
     }
 
     void set(List<Node> list) {
@@ -175,7 +184,20 @@ public class Rule {
     }
 
     public boolean isPseudoTransitive() {
-        return (type() == PSEUDO_TRANSITIVE || type() == TRANSITIVE);
+        return (type() == PSEUDO_TRANSITIVE); // || type() == TRANSITIVE);
+    }
+    
+    /**
+     * this = x type c2        :- x type c1        & c1 subclassof c2
+     * r    = c1 subclassof c3 :- c1 subclassof c2 & c2 subclassof c3
+     */
+    public boolean isPseudoTransitive(Rule r) {
+        if (isPseudoTransitive() && r.isTransitive()){            
+            Node p  = r.getUniquePredicate();
+            Node pp = getQuery().getBody().get(1).getEdge().getEdgeNode();                      
+            return p.equals(pp);
+        }
+        return false;
     }
     
     /**
@@ -183,9 +205,9 @@ public class Rule {
      * TODO: 
      * only if pseudo rdf:type is after it's transitive rdfs:subClassOf
      */
-    public boolean isLoop() {
-        return isClosure() || isPseudoTransitive();
-    }
+//    public boolean isLoop() {
+//        return isClosure() || isPseudoTransitive();
+//    }
 
     public boolean isClosure() {
         return isClosure;
@@ -226,6 +248,7 @@ public class Rule {
 
     public void clean() {
         closure = null;
+        record = null;
     }
 
     /**
@@ -254,5 +277,19 @@ public class Rule {
      */
     public void setProvenance(Node provenance) {
         this.provenance = provenance;
+    }
+
+    /**
+     * @return the record
+     */
+    public Record getRecord() {
+        return record;
+    }
+
+    /**
+     * @param record the record to set
+     */
+    public void setRecord(Record record) {
+        this.record = record;
     }
 }

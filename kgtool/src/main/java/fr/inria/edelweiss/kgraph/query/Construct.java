@@ -54,6 +54,7 @@ public class Construct
     Hashtable<Node, Node> table;
     Duplicate duplicate;
     private int loopIndex = -1;
+    private Node prov;
 
     Construct(Query q) {
         this(q, Entailment.DEFAULT);
@@ -118,10 +119,11 @@ public class Construct
         isInsert = b;
     }
 
-    public void setRule(Object r, int n) {
+    public void setRule(Object r, int n, Node prov) {
         isRule = true;
         rule = r;
         root = BLANK + n + DOT;
+        this.prov = prov;
     }
 
     public void setDebug(boolean b) {
@@ -370,8 +372,8 @@ public class Construct
         } else {
             ee = create(source, subject, property, object);
         }
-        if (isBuffer){
-            ee.setProvenance(env.getQuery().getProvenance());
+        if (prov != null){
+            ee.setProvenance(prov);
         }
         return ee;
     }

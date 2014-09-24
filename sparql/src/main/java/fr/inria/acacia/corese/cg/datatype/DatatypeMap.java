@@ -26,6 +26,7 @@ public class DatatypeMap implements Cst, RDF {
 	private static Logger logger = Logger.getLogger(DatatypeMap.class);
 	
 	public static IDatatype ZERO = newInstance(0);
+	public static IDatatype MINUSONE = newInstance(-1);
 
 	private static Hashtable<String, Mapping> ht ;
 	static DatatypeMap dm = DatatypeMap.create();

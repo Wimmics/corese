@@ -71,7 +71,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-09-16";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-09-23";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -119,8 +119,8 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem iselect, igraph, iconstruct, iask, idescribe, 
             iserviceCorese, iserviceDBpedia, 
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, itrig, ispin, iowl, itypecheck, icontent, 
-            ientailment, irule, isystem, iprovenance;
+            iturtle, itrig, ispin, iowl, itypecheck, 
+            ientailment, irule, isystem, iprovenance, iindex;
     
     HashMap<Object, String> itable;
     
@@ -168,7 +168,6 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String defaultOWLQuery = "owl.rq";   
     private static final String defaultSPINQuery = "spin.rq";   
     private static final String defaultTypecheckQuery = "typecheck.rq";     
-    private static final String defaultContentQuery = "content.rq";
     private static final String defaultSystemQuery = "system.rq";
     private static final String defaultProvenanceQuery = "provenance.rq";
   
@@ -449,7 +448,6 @@ public class MainFrame extends JFrame implements ActionListener {
         idescribe   = defItem("Describe", defaultDescribeQuery);
         iserviceCorese    = defItem("Service Corese", defaultServiceCoreseQuery);
         iserviceDBpedia    = defItem("Service DBpedia", defaultServiceDBpediaQuery);
-        icontent    = defItem("Content", defaultContentQuery);
         
         iinsert     = defItem("Insert", defaultInsertQuery);
         iinsertdata = defItem("Insert Data", defaultInsertDataQuery);
@@ -459,6 +457,7 @@ public class MainFrame extends JFrame implements ActionListener {
         ientailment = defItem("Entailment", defaultEntailmentQuery);
         irule       = defItem("Rule", defaultRuleQuery);
         isystem     = defItem("System", defaultSystemQuery);
+        iindex      = defItem("Index", "index.rq");
         iprovenance = defItem("Provenance", defaultProvenanceQuery);  
         
         iturtle = defItem("Turtle", defaultTemplateQuery); 
@@ -580,6 +579,7 @@ public class MainFrame extends JFrame implements ActionListener {
         explainMenu.add(irule);
         explainMenu.add(iprovenance);
         explainMenu.add(isystem);
+        explainMenu.add(iindex);
        
         templateMenu.add(iturtle);
         templateMenu.add(itrig);
@@ -587,7 +587,6 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(ispin);
        
         templateMenu.add(itypecheck);
-        templateMenu.add(icontent);
         
         editMenu.add(undo);
         editMenu.add(redo);

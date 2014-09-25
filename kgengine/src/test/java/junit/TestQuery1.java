@@ -78,6 +78,7 @@ public class TestQuery1 {
 
     @BeforeClass
     static public void init() {
+        //Query.STD_PLAN = Query.PLAN_RULE_BASED;
         if (false){
             Graph.setValueTable(true);
             Graph.setCompareKey(true);
@@ -117,9 +118,43 @@ public class TestQuery1 {
         ld.load(data + "comma/data");
         return graph;
     }
-
-    @Test
     
+    
+    
+    @Test 
+    public void testeng () throws EngineException{
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        Load ld = Load.create(gs);
+        ld.load(data + "template/owl/data/primer.owl");
+        
+        String q = "select * where {"
+                + "graph eng:describe {"
+                + "[] kg:index 0 ; kg:item [ rdf:predicate ?p ; rdf:value ?v ] "
+                + "}"
+                + "filter exists { ?x ?p ?y }"
+                + "}";
+        
+        Mappings map = exec.query(q);
+        
+        assertEquals(48, map.size());
+        
+        // query the SPIN graph of previous query
+         q = "select * where {"
+                + "graph eng:query {"
+                + "[] sp:predicate ?p "
+                 + "values ?p { rdf:predicate rdf:value} "
+                + "}"
+                + "}";
+         
+         map = exec.query(q);
+        
+        assertEquals(2, map.size());
+    }
+    
+    
+
+    @Test   
     public void testTr() throws EngineException{
         GraphStore gs = GraphStore.create();
         QueryProcess exec = QueryProcess.create(gs);
@@ -176,7 +211,7 @@ public class TestQuery1 {
                  + "order by ?x ?p ?y"
                 ;
         Mappings map = exec.query(q);
-        assertEquals(94, map.size());
+        assertEquals(93, map.size());
 
     }  
     
@@ -1770,7 +1805,7 @@ public class TestQuery1 {
     public void test10() {
 
         String query = "select  *  where {"
-      + "bind (unnest(kg:sparql('select * where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
+      + "bind (kg:unnest(kg:sparql('select * where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
       + "as (?a, ?b))"
         + "} ";
 
@@ -1787,6 +1822,34 @@ public class TestQuery1 {
             assertEquals("Result", true, e);
         }
     }
+    
+    
+     @Test
+    public void test10cons() {
+
+        String  query = 
+                "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "select  *  where {"
+      + "bind ((kg:sparql('"
+                + "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "construct  where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
+      + "as ?g)"
+                + "graph ?g { ?a ?p ?b }"
+        + "} ";
+
+        try {
+
+            QueryProcess exec = QueryProcess.create(graph);
+
+            Mappings map = exec.query(query);
+            assertEquals("Result", 5, map.size());
+            
+
+        } catch (EngineException e) {
+            assertEquals("Result", true, e);
+        }
+    }
+    
 
     @Test
     public void test11() {

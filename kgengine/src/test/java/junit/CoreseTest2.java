@@ -362,7 +362,7 @@ public class CoreseTest2 extends TestCase {
 		load.load(data + "comma/data2");
 		long t2 = new Date().getTime();
 		System.out.println((t2-t1) / 1000.0 + "s");
-		System.out.println(graph);
+		//System.out.println(graph);
 	}
 	
 	

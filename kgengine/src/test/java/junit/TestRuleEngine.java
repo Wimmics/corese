@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgpipe.Pipe;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -76,6 +77,80 @@ public class TestRuleEngine {
 	
         
         
+         @Test
+     public void testOWLRL() throws LoadException, EngineException{
+          GraphStore g = GraphStore.create();
+        Load ld = Load.create(g);
+        ld.loadWE(data + "template/owl/data/primer.owl");
+        RuleEngine re = RuleEngine.create(g);
+        re.setProfile(RuleEngine.OWL_RL_LITE);
+        re.process();
+        
+        String q = "select * "
+                + "from kg:rule "
+                + "where { ?x ?p ?y }";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        
+        assertEquals(371, map.size());
+        
+        String qq = "select distinct ?p ?pr "
+                + "from kg:rule "
+                + "where { ?x ?p ?y bind (kg:provenance(?p) as ?pr) }";
+        
+        map = exec.query(qq);
+        
+        assertEquals(30, map.size());
+        
+        String qqq = "select distinct ?q  "
+                + "from kg:rule "
+                + "where { "
+                + "?x ?p ?y bind (kg:provenance(?p) as ?pr) "
+                + "graph ?pr { [] sp:predicate ?q }"
+                + "} order by ?q";
+        
+        map = exec.query(qqq);
+        
+        assertEquals(19, map.size());
+        
+        String q4 = "select ?q  "
+                + "where { "
+                + "graph eng:engine { ?q a sp:Construct }"
+                + "} ";
+        
+        map = exec.query(q4);
+        
+        assertEquals(64, map.size());
+        
+        String q5 = "select ?q  "
+                + "where { "
+                + "graph eng:record { ?r a kg:Index }"
+                + "} ";
+        
+        map = exec.query(q5);
+        
+        assertEquals(157, map.size());
+        
+        String q6 = "select ?r  "
+                + "where { "
+                + "graph kg:re2 {  ?r a kg:Index  }"
+                + "} ";
+        
+        map = exec.query(q6);
+        assertEquals(3, map.size());
+        
+         String q7 = "select ?r  "
+                + "where { "
+                + "graph eng:queries {  ?r a sp:Construct  }"
+                + "} ";
+        
+        map = exec.query(q7);
+        assertEquals(4, map.size());
+     }
+        
+        
+        
         @Test
         
         public void testRuleOptimization() throws LoadException, EngineException { 
@@ -99,7 +174,7 @@ public class TestRuleEngine {
     
     public Graph testRuleOpt() throws LoadException, EngineException {       
         RuleEngine re = testRules();
-        Graph g = re.getGraph();
+        Graph g = re.getRDFGraph();
         
         re.setSpeedUp(true);
         System.out.println("Graph: " + g.size());
@@ -117,7 +192,7 @@ public class TestRuleEngine {
         
     public Graph testRuleNotOpt() throws LoadException, EngineException {
         RuleEngine re = testRules();
-        Graph g = re.getGraph();
+        Graph g = re.getRDFGraph();
         
         System.out.println("Graph: " + g.size());
         Date d1 = new Date();
@@ -159,7 +234,7 @@ public class TestRuleEngine {
          assertEquals(n, map.size());
      }
      
-     
+    
      
 	
 	@Test

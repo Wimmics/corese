@@ -80,10 +80,6 @@ import junit.GListener.Operation;
 import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.edelweiss.kgtool.util.QueryManager;
 import fr.inria.edelweiss.kgenv.parser.ExpandList;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
@@ -91,14 +87,19 @@ import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgraph.core.NodeImpl;
 import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import fr.inria.edelweiss.kgraph.rule.ResultWatcher;
+import fr.inria.edelweiss.kgraph.rule.Record;
+import local.RuleEngineOptimizer;
+import local.RuleOptimizer;
 import fr.inria.edelweiss.kgtool.print.JSONLDFormat;
 import fr.inria.edelweiss.kgtool.util.GraphStoreInit;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import fr.inria.edelweiss.kgtool.util.GraphUtil;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import static org.junit.Assert.assertEquals;
@@ -153,9 +154,9 @@ public class TestUnit {
         ld.load(data + "comma/comma.rdfs");
         ld.load(data + "comma/commatest.rdfs");
         ld.load(data + "comma/model.rdf");
-        ld.load(data + "comma/testrdf.rdf");
+      //  ld.load(data + "comma/testrdf.rdf");
         ld.load(data + "comma/data");
-        ld.load(data + "comma/data2");
+       // ld.load(data + "comma/data2");
 
     }
 
@@ -171,6 +172,114 @@ public class TestUnit {
     }
     
     
+      public void testvALUES() throws EngineException{
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String init = "insert data { <p1> a owl:ObjectProperty ; owl:equivalentProperty <p2>"
+                + "<p2> owl:equivalentProperty <p1>"
+                + "}";
+        exec.query(init);
+        
+        String q = "select debug * where {" +
+            "  ?in owl:equivalentProperty ?p " +
+            "  optional { ?in a ?t }" +
+            "  optional  { ?p a ?t }" +
+            "  filter (?t = ?tt)"  +
+            "}" +
+            "values (?tt ?l) {" +
+            "  (owl:ObjectProperty   \"EquivalentObjectProperties\")" +
+            "  (owl:DatatypeProperty \"EquivalentDataProperties\")" +
+            "}";
+        
+        Mappings map = exec.query(q);
+        
+          System.out.println(map);
+      }
+      
+      
+      
+       @Test
+    public void testOWLRLfgh() throws LoadException, EngineException{
+          Graph g = Graph.create();
+          g.getContext().setMax(100);
+        Load ld = Load.create(g);
+        ld.loadWE(data + "template/owl/data/primer.owl");
+        RuleEngine re = RuleEngine.create(g);
+        ld.load(data + "owlrule/owlrllite.rul");
+        re = ld.getRuleEngine();
+        //re.setProfile(RuleEngine.OWL_RL_LITE);
+        //re.setSpeedUp(false);
+        Date d1 = new Date();
+        re.process();
+        Date d2 = new Date();
+        System.out.println(g.size());    
+        System.out.println("Exec : " + (d2.getTime() - d1.getTime()) / (1000.0));
+        
+        String q = "select * "
+                + "from kg:rule "
+                + "where {"
+                + "?x ?p ?y "
+                + "bind (kg:provenance(?p) as ?pr)"
+                + "}"
+                + "limit 1";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+           System.out.println(map); 
+           
+      
+   }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public void test10dfgdhf() {
+Graph g = Graph.create(true);
+init(g);
+        String query = 
+                "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "select  *  where {"
+      + "bind (kg:unnest(kg:sparql('"
+                + "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "select * where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
+      + "as (?a, ?b))"
+        + "} ";
+        
+        query = 
+                "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "select  *  where {"
+      + "bind ((kg:sparql('"
+                + "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "construct  where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
+      + "as ?g)"
+                + "graph ?g { ?a ?p ?b }"
+        + "} ";
+
+        try {
+
+            QueryProcess exec = QueryProcess.create(g);
+
+            Mappings map = exec.query(query);
+            System.out.println(map.getQuery().getAST());
+            System.out.println(map);
+            assertEquals("Result", 3, map.size());
+            Node node = map.getNode("?a");
+            assertEquals("Result", true, node != null);
+
+        } catch (EngineException e) {
+            assertEquals("Result", true, e);
+        }
+    }
     
      public void testTrsdqsdf() throws EngineException{
         GraphStore gs = GraphStore.create();
@@ -291,8 +400,7 @@ public void testcache(){
         System.out.println("Load : " + (d2.getTime() - d1.getTime()) / (1000.0));
 
  }
-    @Test
-
+    
 public void testOWLRL() throws EngineException, IOException, LoadException {
         double d = 0.2;
         //System.out.println("Test: " + d);
@@ -304,8 +412,8 @@ public void testOWLRL() throws EngineException, IOException, LoadException {
         Date d1 = new Date();
         try {
           //ld.loadWE(data + "template/owl/data/tmp.owl");    
-          //ld.loadWE(data + "template/owl/data/fma3.2.owl");    
-            ld.loadWE(data + "template/owl/data/primer.owl");
+          ld.loadWE(data + "template/owl/data/fma3.2.owl");    
+          //  ld.loadWE(data + "template/owl/data/primer.owl");
 //            ld.loadWE(data + "work/dbpedia/dbpedia_3.9.owl");
 //            ld.loadWE(data + "work/dbpedia/persondata_en_uris_de.ttl");
 
@@ -345,7 +453,11 @@ public void testOWLRL() throws EngineException, IOException, LoadException {
        //re.setProfile(re.OWL_RL);
        // re.setTrace(true);
         //re.setConnect(true);
-        //re.setSpeedUp(true);        
+        
+//        re.setOptTransitive(false);        
+//        re.setFunTransitive(false);  
+        //re.setSpeedUp(false);
+        
         // Producer may return similar triples from different named graph. 
         // they will be filtered by construct triple exist checking
         //re.getQueryProcess().getProducer().setMode(Producer.SKIP_DUPLICATE_TEST);        
@@ -374,7 +486,7 @@ public void testOWLRL() throws EngineException, IOException, LoadException {
         System.out.println("Time: " + (d2.getTime() - d1.getTime()) / (1000.0));
         
         
-      test(gs);
+     // test(gs);
        
        
     }
@@ -469,8 +581,8 @@ Enum std  Time: 1.05
                 + "select *  "
                 //+ "from kg:rule "
                 + "where {"
-                + "bind(kg:query() as ?q)"
-                 + "graph ?q { ?x ?p ?y}"
+               // + "bind(kg:query() as ?q)"
+                 + "graph kg:describe { ?x ?p ?y}"
                
                 + "}";
         
@@ -483,7 +595,8 @@ Enum std  Time: 1.05
         Mappings map = exec.query(q);
         
         System.out.println(map);
-        System.out.println(((Query) gs.getQueryNode().getObject()).getAST());
+        System.out.println(((Query) gs.getContext().getQueryNode().getObject()).getAST());
+        System.out.println(map.getQuery());
 
     }
     

@@ -87,19 +87,13 @@ import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgraph.core.NodeImpl;
 import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import fr.inria.edelweiss.kgraph.rule.Record;
-import local.RuleEngineOptimizer;
-import local.RuleOptimizer;
 import fr.inria.edelweiss.kgtool.print.JSONLDFormat;
 import fr.inria.edelweiss.kgtool.util.GraphStoreInit;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import fr.inria.edelweiss.kgtool.util.GraphUtil;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import static org.junit.Assert.assertEquals;
@@ -210,7 +204,7 @@ public class TestUnit {
         //re.setProfile(RuleEngine.OWL_RL_LITE);
         //re.setSpeedUp(false);
         Date d1 = new Date();
-        re.process();
+        //re.process();
         Date d2 = new Date();
         System.out.println(g.size());    
         System.out.println("Exec : " + (d2.getTime() - d1.getTime()) / (1000.0));
@@ -223,10 +217,17 @@ public class TestUnit {
                 + "}"
                 + "limit 1";
         
+         String q2 = "select * "
+                 + "from eng:describe  "
+                + "where {"
+                + " bind (st:atw(st:turtle) as ?t) "
+                + "}";
+        
         QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.query(q);
+        Mappings map = exec.query(q2);
            System.out.println(map); 
-           
+                     
+
       
    }
     

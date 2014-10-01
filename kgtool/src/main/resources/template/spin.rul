@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri May 09 10:45:38 CEST 2014
+Mon Sep 22 15:04:49 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -969,7 +969,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  if (strstarts(?ope, sp:), strafter(?ope, sp:), ?ope) 
+  if (strstarts(?ope, sp:), strafter(?ope, sp:), ?ope)
   "(" 
     if (bound(?d), "distinct ", "")
     

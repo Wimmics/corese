@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri May 09 10:45:39 CEST 2014
+Mon Sep 22 15:04:49 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -159,9 +159,12 @@ template {
     xsd:string(?l) "("  ?in " "  ?p ")"   
 }
 where {
-  ?in owl:propertyDisjointWith ?p ; a ?t
+  ?in owl:propertyDisjointWith ?p 
+  optional { ?in a ?t }
+  optional  { ?p a ?t }
+  filter (?t = ?tt)
 }
-values (?t ?l) {
+values (?tt ?l) {
   (owl:ObjectProperty   "DisjointObjectProperties")
   (owl:DatatypeProperty "DisjointDataProperties")
 }
@@ -804,9 +807,12 @@ template {
    xsd:string(?l) "(" ?in " " ?p ")"
 }
 where {
-  ?in rdfs:subPropertyOf ?p ; a ?t 
+  ?in rdfs:subPropertyOf ?p 
+  optional { ?in a ?t }
+  optional  { ?p a ?t }
+  filter (?t = ?tt)
 }
-values (?t ?l){ 
+values (?tt ?l){ 
   (owl:ObjectProperty   "SubObjectPropertyOf")
   (owl:DatatypeProperty "SubDataPropertyOf" )
 }
@@ -1047,9 +1053,12 @@ template {
     xsd:string(?l) "("  ?in " "  ?p ")"   
 }
 where {
-  ?in owl:equivalentProperty ?p ; a ?t
+  ?in owl:equivalentProperty ?p 
+  optional { ?in a ?t }
+  optional  { ?p a ?t }
+  filter (?t = ?tt)
 }
-values (?t ?l) {
+values (?tt ?l) {
   (owl:ObjectProperty   "EquivalentObjectProperties")
   (owl:DatatypeProperty "EquivalentDataProperties")
 }

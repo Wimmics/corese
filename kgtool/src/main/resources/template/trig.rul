@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri May 09 10:45:39 CEST 2014
+Mon Sep 22 15:04:49 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -14,19 +14,20 @@ Fri May 09 10:45:39 CEST 2014
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:graph {
-  "graph " ?in " {\n" 
-      group { st:apply-templates(?x, ?in) ; separator = "\n\n" }
-  "\n}"
+  "graph " ?g " {" 
+   box {
+       st:apply-templates-with-graph(st:turtle, ?g) 
+    }
+  "}"
 }
 where {
-  select distinct ?in ?x 
-  where {
-    graph ?in { 
-      ?x ?p ?y     
-      filter ( isURI(?x) || not exists { ?z ?q ?x } )
+  select ?g where {
+    graph ?g {
+      filter exists { ?x ?p ?y }
     }
   }
 }
+order by ?g 
 ]]>
 </body>
 </rule>
@@ -41,99 +42,9 @@ where {
 template st:start {
   st:prolog("@prefix")
   
-  group {
-    st:call-template(st:graph, ?g)
-    ; separator = "\n\n"
-  }
+  st:call-template(st:graph)
 }
 where {
-  
-    graph ?g { }
-  
-}
-order by ?g 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Trig Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2014
-#
-template st:type(?x, ?g) {
-  "a "
-  group {
-          if (isBlank(?c), st:apply-templates(?c, ?g), st:turtle(?c))           
-          ; separator = ", " 
-   }
-   
-   if (?rest, concat(" ;", st:nl()), "")
-
-}
-where {
-  graph ?g { ?x a ?c }
-  
-   bind(
-    exists { graph ?g { ?x ?q ?v . filter (?q != rdf:type) } }
-    as ?rest)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Trig Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2014
-#
-template st:value(?x, ?g) {
-             
-	?p " " 
-	
-        if (bound(?e), 
-	  st:call-template(st:list, ?y, ?g), 
-	  if (?refer, st:turtle(?y), ?y))
-          
-        ; separator = concat(" ;", st:nl()) 
-     
-}
-where {
-  graph ?g { 
-    ?x ?p ?y    
-    filter(?p not in (rdf:type))
-      
-    bind(isBlank(?y) && exists { graph ?g { ?z ?q ?y . filter(?x != ?z) }}
-    as ?refer)  
-      
-    optional { ?y rdf:rest ?e } 
-  }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Trig Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2014
-#
-template st:list(?x, ?g) {
-  "(" 
-    group { 
-      if (isBlank(?e), st:apply-templates(?e, ?g), st:turtle(?e))
-    } 
-  ")"
-  
-}
-where {
-  ?x rdf:rest*/rdf:first ?e
 }
 ]]>
 </body>
@@ -156,68 +67,6 @@ template st:profile(?in) {
 }
 where {
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Trig Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2014
-#
-template (?x, ?g) {
-    if (?refer, concat(st:turtle(?in), " "), "[")
-    ibox {
-      st:call-template(st:type, ?x, ?g)
-        
-      st:call-template(st:value, ?x, ?g)
-    }
-    if (?refer, " .", 
-    if (?nested, "]", "] ."))   
-}
-where {
-  graph ?g { 
-    ?x ?p ?y  
-    filter(isBlank(?x))
-    
-    bind (exists { graph ?g { ?a ?q ?x }} as ?nested)
-    
-    bind (?nested && 
-    exists { graph ?g { ?a ?q ?x . ?b ?r ?x filter(?a != ?b) }}
-    as ?refer)
-  }
-}
-limit 1
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Trig Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2014
-#
-template (?x, ?g) {
-  ?x " "
-  ibox {
-      st:call-template(st:type, ?x, ?g)
-       
-      st:call-template(st:value, ?x, ?g)
-  }
-      " ."      
-}
-where {
-  graph ?g { 
-    ?x ?p ?y 
-    filter(isUri(?x))
-  }
-  
-}
-limit 1
 ]]>
 </body>
 </rule>

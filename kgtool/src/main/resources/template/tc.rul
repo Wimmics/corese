@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 22 09:01:59 CEST 2014
+Sun May 11 15:35:23 CEST 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -56,7 +56,7 @@ template  {
 where {
   select (count(distinct *) as ?c)
   where {
-    { ?x a rdfs:Class } union { ?x a owl:Class }
+    ?x a rdfs:Class 
   }
 }
 pragma { st:template st:priority 1 }
@@ -91,16 +91,7 @@ template  {
 where {
   select (count(distinct *) as ?c)
   where {
-	{?p a rdf:Property} union
-	{?p a owl:DatatypeProperty} union
-	{?p a owl:ObjectProperty} union 
-	{?p a owl:SymmetricProperty} union
-	{?p a owl:AsymmetricProperty} union
-	{?p a owl:TransitiveProperty} union
-	{?p a owl:ReflexiveProperty} union
-	{?p a owl:IrreflexiveProperty} union
-	{?p a owl:FunctionalProperty} union
-	{?p a owl:InverseFunctionalProperty}   
+    ?x a rdf:Property 
   }
 }
 pragma { st:template st:priority 1 }
@@ -120,31 +111,14 @@ where {
     ?x ?p ?v
     filter( ! strstarts(?p, rdf:) 
       && ! strstarts(?p, rdfs:) 
-      && ! strstarts(?p, owl:)
-      && ! strstarts(?p, xsd:)
-      ) 
+      && ! strstarts(?p, owl:)) 
 
     filter not exists { 
-      graph ?g { 
-	{?p a rdf:Property} union
-	{?p a owl:DatatypeProperty} union
-	{?p a owl:ObjectProperty} union 
-	{?p a owl:SymmetricProperty} union
-	{?p a owl:AsymmetricProperty} union
-	{?p a owl:TransitiveProperty} union
-	{?p a owl:ReflexiveProperty} union
-	{?p a owl:IrreflexiveProperty} union
-	{?p a owl:FunctionalProperty} union
-	{?p a owl:InverseFunctionalProperty} 
-	
-	filter(?g != kg:entailment) 
-      } 
+      graph ?g { ?p a rdf:Property filter(?g != kg:entailment) } 
     }
   }
   order by ?p
 }
-
-  
 ]]>
 </body>
 </rule>
@@ -159,13 +133,11 @@ where {
   select distinct ?c
   where {
     ?x a ?c
-    filter( 
-         ! isBlank(?c)
-      && ! strstarts(?c, rdf:) 
+    filter( ! strstarts(?c, rdf:) 
       && ! strstarts(?c, rdfs:) 
       && ! strstarts(?c, owl:)) 
 
-    filter not exists { {?c a rdfs:Class} union { ?c a owl:Class} }
+    filter not exists { ?c a rdfs:Class }
   }
   order by ?c
 }

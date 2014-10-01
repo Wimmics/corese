@@ -1,0 +1,18 @@
+prefix p: <http://fr.dbpedia.org/property/>
+prefix r: <http://fr.dbpedia.org/resource/>
+prefix o: <http://dbpedia.org/ontology/>
+construct {
+  r:Amédée_VII_de_Savoie p:successeur ?s
+  ?y p:successeur ?z
+  ?y o:wikiPageRedirects ?t 
+}
+where {
+  service <http://fr.dbpedia.org/sparql/> {
+     select * where {
+       r:Amédée_VII_de_Savoie p:successeur ?s ;
+         (p:successeur)+ ?y .
+       { ?y p:successeur ?z } union { ?y o:wikiPageRedirects ?t }
+     } 
+  }
+}
+pragma { kg:path kg:expand 11 }

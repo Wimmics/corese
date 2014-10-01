@@ -1,0 +1,9 @@
+construct {
+    [] a ?t ; rdf:value ?c
+}
+where {
+    select ?t (count(?x) as ?c){
+       ?x a ?t
+    }
+    group by ?t
+}

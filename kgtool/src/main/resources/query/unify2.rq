@@ -1,0 +1,64 @@
+#
+# Factorize an OWL RDF graph in such a way that different bnodes
+# representing the same AST OWL expression are collapsed into one bnode.
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014
+#
+prefix sp: <http://spinrdf.org/sp#> .
+delete { 
+    ?x ?p ?b . ?b ?p ?y
+}
+insert { 
+    ?x ?p ?r . ?r ?p ?y .
+    ?b sp:isReplacedBy ?r
+}
+where {
+    # select one bnode ?r for all bnodes ?b that represent the same expresssion 
+    # ?exp is computed by a transformation st:hash based on st:turtle
+    # except that RDF lists are ordered
+    
+    {select (sample(?b) as ?r) ?exp where {
+      
+        {             
+            values ?p { 
+                owl:allValuesFrom owl:someValuesFrom owl:onClass
+                owl:intersectionOf owl:unionOf owl:equivalentClass 
+                owl:complementOf owl:disjointWith  
+                rdfs:subClassOf rdf:type rdf:first
+            }
+
+            ?x ?p ?b . filter isBlank(?b) 
+        } 
+        union { 
+          # specific to OWL RL left part:
+          values ?p { rdfs:subClassOf owl:equivalentClass }
+          ?b ?p ?y . 
+          filter isBlank(?b) 
+          filter not exists { ?x ?q ?b }
+        }
+      }
+      group by (st:apply-templates-with(st:hash2, ?b, if (bound(?y), ?p, st:void)) as ?exp)
+      having (count(?b) > 1)
+    }
+                 
+     {             
+         values ?p { 
+                owl:allValuesFrom owl:someValuesFrom owl:onClass
+                owl:intersectionOf owl:unionOf owl:equivalentClass 
+                owl:complementOf owl:disjointWith  
+                rdfs:subClassOf rdf:type rdf:first
+          }
+
+          ?x ?p ?b . filter isBlank(?b) 
+        } 
+        union { 
+          # specific to OWL RL:
+          values ?p { rdfs:subClassOf owl:equivalentClass }
+          ?b ?p ?y . 
+          filter isBlank(?b) 
+          filter not exists { ?x ?q ?b }
+        }     
+                         
+    filter(?b != ?r)
+    filter(st:apply-templates-with(st:hash2, ?b, if (bound(?y), ?p, st:void)) = ?exp)                
+}

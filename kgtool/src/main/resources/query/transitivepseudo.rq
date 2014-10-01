@@ -1,0 +1,14 @@
+#
+#  Check if a SPIN graph represent a pseudo transitive construct-where rule
+#  ?x a ?c2 :- ?x a ?c1 & ?c1 subClassOf ?c2 
+#  Olivier Corby, Wimmics Inria I3S, 2014
+#
+select * where {   
+  ?q a sp:Construct ;   
+    sp:templates ([ sp:subject ?x ; sp:predicate ?p ; sp:object ?c2 ]) .   
+     
+  ?q sp:where (   
+    [ sp:subject ?x  ; sp:predicate ?p ; sp:object ?c1 ]   
+    [ sp:subject ?c1 ; sp:predicate ?r ; sp:object ?c2 ])   
+       
+}   

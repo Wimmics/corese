@@ -1,0 +1,13 @@
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014
+#
+prefix sp: <http://spinrdf.org/sp#> .
+delete { 
+    ?x ?p ?y
+}
+where {
+  ?x sp:isReplacedBy ?r
+  filter not exists { ?x rdf:rest ?b }
+  ?x ?p ?y
+  filter isBlank(?y)
+}

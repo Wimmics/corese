@@ -1,0 +1,46 @@
+#
+# Factorize an OWL RDF graph in such a way that different bnodes
+# representing the same AST OWL expression are collapsed into one bnode.
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014
+#
+prefix sp: <http://spinrdf.org/sp#> .
+delete { 
+    ?x ?p ?b 
+}
+insert { 
+    ?x ?p ?r 
+    ?b sp:isReplacedBy ?r
+}
+where {
+    # select one bnode ?r for all bnodes ?b that represent the same expresssion 
+    # ?exp is computed by a transformation st:hash based on st:turtle
+    # except that RDF lists are ordered
+    
+    {select (sample(?b) as ?r) ?exp where {
+
+        values ?p { 
+            owl:allValuesFrom owl:someValuesFrom owl:onClass
+            owl:intersectionOf owl:unionOf owl:equivalentClass 
+            owl:complementOf owl:disjointWith  
+            rdfs:subClassOf rdfs:domain rdfs:range rdf:type rdf:first
+        }
+
+        ?x ?p ?b . filter isBlank(?b)
+      }
+      group by (st:apply-templates-with(st:hash, ?b) as ?exp)
+      having (count(?b) > 1)
+    }
+                 
+    values ?p { 
+        owl:allValuesFrom owl:someValuesFrom owl:onClass
+        owl:intersectionOf owl:unionOf owl:equivalentClass
+        owl:complementOf owl:disjointWith  
+        rdfs:subClassOf rdf:type rdf:first
+    }
+    
+    ?x ?p ?b . filter isBlank(?b) 
+                                 
+    filter(?b != ?r)
+    filter(st:apply-templates-with(st:hash, ?b) = ?exp)                
+}

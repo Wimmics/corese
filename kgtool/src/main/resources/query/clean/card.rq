@@ -1,0 +1,34 @@
+#
+# Factorize all occurrences of same Restriction
+# into one occurrence everywhere
+# a owl:Restriction ; owl:onProperty ?p ; owl:allValuesFrom ?t
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014 
+#
+delete {
+  ?a ?r ?b
+  ?b owl:onProperty ?p ;
+     ?q ?t ;
+     a ?tb
+}
+insert {
+  ?a ?r ?y
+}
+where {
+
+  {select (sample(?x) as ?y) ?q ?p ?t 
+  where {
+    ?x owl:onProperty ?p
+    values ?q { owl:minCardinality owl:maxCardinality }
+    ?x ?q ?t
+    }
+    group by ?q ?p ?t
+  }
+
+  ?b owl:onProperty ?p ;
+     ?q ?t ;
+     a ?tb
+  
+  filter(?b != ?y)
+  ?a ?r ?b
+}

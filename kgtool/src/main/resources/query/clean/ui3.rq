@@ -10,7 +10,7 @@ delete {
   ?b ?ui ?b1
   ?b1 rdf:first ?c1 ; rdf:rest ?b2
   ?b2 rdf:first ?c2 ; rdf:rest ?b3
-  ?b3 rdf:first ?c3 ; rdf:rest ?b4
+  ?b3 rdf:first ?c3 ; rdf:rest rdf:nil
 }
 insert {
   ?a ?r ?y
@@ -28,7 +28,7 @@ where {
   ?b ?ui ?b1
   ?b1 rdf:first ?c1 ; rdf:rest ?b2
   ?b2 rdf:first ?c2 ; rdf:rest ?b3
-  ?b3 rdf:first ?c3 ; rdf:rest ?b4
+  ?b3 rdf:first ?c3 ; rdf:rest rdf:nil
   filter(?b != ?y)
   
   ?a ?r ?b

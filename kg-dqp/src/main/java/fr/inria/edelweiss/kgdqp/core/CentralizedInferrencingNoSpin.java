@@ -15,13 +15,15 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+//import java.nio.charset.StandardCharsets;
+//import java.nio.file.Files;
+//import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -268,13 +270,20 @@ public class CentralizedInferrencingNoSpin {
                     logger.info("Loading " + r.getAbsolutePath());
 //                ld.load(r.getAbsolutePath());
 
-                    byte[] encoded = Files.readAllBytes(Paths.get(r.getAbsolutePath()));
-                    String construct = new String(encoded, StandardCharsets.UTF_8);
+//                    byte[] encoded = Files.readAllBytes(Paths.get(r.getAbsolutePath()));
+//                    String construct = new String(encoded, "UTF-8"); //StandardCharsets.UTF_8);
+                    
+                    FileInputStream f = new FileInputStream(r);
+                    QueryLoad ql = QueryLoad.create();
+                    String construct = ql.read(f);
+                    f.close();
+
                     SPINProcess sp = SPINProcess.create();
                     String spinConstruct = sp.toSpin(construct);
                     
                     ld.load(new ByteArrayInputStream(spinConstruct.getBytes()), Load.TURTLE_FORMAT);
                     logger.info("Rules graph size : " + rulesG.size());
+                    
                 }
             }
         }

@@ -3,7 +3,7 @@ package fr.inria.acacia.corese.triple.parser;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -37,21 +37,28 @@ public class NSManager {
      */
     private static Logger logger = Logger.getLogger(NSManager.class);
     public static final String FPPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
-    public static final String XSD = RDFS.XSD;
-    public static final String RDF = RDFS.RDF;
-    public static final String OWL = RDFS.OWL;
+    public static final String XSD  = RDFS.XSD;
+    public static final String RDF  = RDFS.RDF;
+    public static final String OWL  = RDFS.OWL;
     public static final String SPIN = "http://spinrdf.org/sp#";
-    public static final String SQL = "http://ns.inria.fr/ast/sql#";
-    public static final String STL = ExpType.STL;
-    public static final String KGRAM = ExpType.KGRAM;
-    public static final String KPREF = ExpType.KPREF;
-    public static final String KGEXT = ExpType.KGRAM + "extension/";    
-    public static final String KEPREF = "eng";    
+    public static final String SQL  = "http://ns.inria.fr/ast/sql#";
+    public static final String FOAF  = "http://xmlns.com/foaf/0.1/";
+    
+    public static final String STL        = ExpType.STL;
+    public static final String KGRAM      = ExpType.KGRAM;
+    public static final String KPREF      = ExpType.KPREF;
+    // extended named graph: eng:describe eng:queries
+    public static final String KGEXT      = ExpType.KGRAM + "extension/";    
+    // construct extended named graph
+    public static final String KGEXTCONS  = ExpType.KGRAM + "construct/";    
+    public static final String KEPREF  = "eng";    
+    public static final String KECPREF = "cw";    
     static final String FPPP = "fp";
     public static final String PPN = KGRAM + "pprinter/";
     static final String PPP = "pp";
     private static final String SPIN_PREF = "sp";
-    public static final String STL_PREF = "st";
+    private static final String FOAF_PREF = "foaf";
+    public static final String  STL_PREF = "st";
     /**
      * prefix seed (ns1, ns2,...)
      */
@@ -62,18 +69,18 @@ public class NSManager {
     static final char[] end = {'#', '/', '?', ':'}; // may end an URI ...
     static final String pchar = ":";
     int count = 0;
-    Hashtable<String, String> def; // system namespace with prefered prefix
-    Hashtable<String, Integer> index;  // namespace -> number
-    Hashtable<String, String> tns;     // namespace -> prefix
-    Hashtable<String, String> tprefix; // prefix -> namespace
+    HashMap<String, String> def; // system namespace with prefered prefix
+    HashMap<String, Integer> index;  // namespace -> number
+    HashMap<String, String> tns;     // namespace -> prefix
+    HashMap<String, String> tprefix; // prefix -> namespace
     String base;
     URI baseURI;
     private String uri, exp;
     private Object object;
     private Object dt;
     private boolean isValid = true, ishtDoc = true;
-    private Hashtable<String, Object> htDoc;
-    private Hashtable<String, Boolean> htValid;
+    private HashMap<String, Object> htDoc;
+    private HashMap<String, Boolean> htValid;
     /**
      * Corresponds to the namespaces declared by default
      *
@@ -81,10 +88,10 @@ public class NSManager {
     private String defaultNamespaces = null;
 
     private NSManager() {
-        def = new Hashtable<String, String>();
-        tprefix = new Hashtable<String, String>();
-        tns = new Hashtable<String, String>();
-        index = new Hashtable<String, Integer>();
+        def = new HashMap<String, String>();
+        tprefix = new HashMap<String, String>();
+        tns = new HashMap<String, String>();
+        index = new HashMap<String, Integer>();
         define();
     }
 
@@ -129,11 +136,11 @@ public class NSManager {
         defNamespace();
     }
 
-    public Enumeration<String> getNamespaces() {
-        return tns.keys();
+    public Iterable<String> getNamespaces() {
+        return tns.keySet();
     }
 
-    public Enumeration<String> getPrefixes() {
+    public Iterable<String> getPrefixes() {
         return getPrefixEnum();
     }
 
@@ -167,12 +174,15 @@ public class NSManager {
         def.put(RDFS.XSD, RDFS.XSDPrefix);
         def.put(RDFS.OWL, RDFS.OWLPrefix);
 
+        def.put(SPIN, SPIN_PREF);
+        def.put(FOAF, FOAF_PREF);
+        
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);
+        def.put(KGEXTCONS, KECPREF);
         def.put(RDFS.COS, RDFS.COSPrefix);
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);
-        def.put(SPIN, SPIN_PREF);
         def.put(STL, STL_PREF);
     }
 
@@ -265,8 +275,8 @@ public class NSManager {
         return tprefix.get(prefix);
     }
 
-    Enumeration<String> getPrefixEnum() {
-        return tprefix.keys();
+    Iterable<String> getPrefixEnum() {
+        return tprefix.keySet();
     }
 
     public Set<String> getPrefixSet() {
@@ -634,8 +644,8 @@ public class NSManager {
     public boolean isValid(String name) {
         if (ishtDoc) {
             if (htDoc == null) {
-                htDoc = new Hashtable<String, Object>();
-                htValid = new Hashtable<String, Boolean>();
+                htDoc = new HashMap<String, Object>();
+                htValid = new HashMap<String, Boolean>();
             }
             Boolean valid = htValid.get(name);
             return (valid == null || valid);

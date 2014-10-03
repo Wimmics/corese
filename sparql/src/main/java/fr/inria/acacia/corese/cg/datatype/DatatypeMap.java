@@ -46,85 +46,23 @@ public class DatatypeMap implements Cst, RDF {
 
 	private class Mapping {
 		private String javatype = "";
-//		private String datatypeMarkerSet = "";
-//		private Hashtable<String, String> datatypeHashMarkerSet;
 		private Method method = null;
 		private Class cl = null;
 
-
-
 		public Mapping(String jtype){//, Hashtable<String, String> htms){
-			javatype = jtype;
-			//datatypeHashMarkerSet = htms;
-//			Class str = null;
-//			try{
-//				cl = Class.forName(jtype);
-//				str = Class.forName("java.lang.String");
-//			}
-//			catch(ClassNotFoundException e){
-//				//MUST not occur !!! jtype is always specified correctly
-//				//coming from the DatatypeMap
-//				logger.fatal(e.getMessage());
-//			}
-//
-//			Class[] methodArg = {str};
-//			try{
-//				try{
-//					//search in the class
-//					method = cl.getDeclaredMethod("getNormalizedLabel", methodArg);
-//				}
-//				catch(NoSuchMethodException e){
-//					//else in the superclass
-//					method = cl.getMethod("getNormalizedLabel", methodArg);
-//				}
-//			}
-//			catch(NoSuchMethodException e){
-//				//MUST not occur !!! getNormalizedLabel is a method of IDatatype
-//				//so, each CoreseDatatype implements this method, if not the project
-//				//doesn't compile
-//				logger.fatal(e.getMessage());
-//			}
+			javatype = jtype;			
 		}
-
-
-//		String getLiteralMarkerSet(String lang){
-//			return datatypeHashMarkerSet.get(lang);
-//		}
-//
-//
-//		String getDataTypeMarkerSet(){
-//			return datatypeMarkerSet;
-//		}
-//		
-//		void setDataTypeMarkerSet(String ms){
-//			 datatypeMarkerSet = ms;
-//		}
-//
-//		Hashtable<String, String> getDataTypeMarkerSetHash(){
-//			return datatypeHashMarkerSet;
-//		}
-//		
-//		void setDataTypeMarkerSetHash(Hashtable<String, String> dtms){
-//			 datatypeHashMarkerSet = dtms;
-//		}
-
+		
 		String getJavaType(){
 			return javatype;
 		}
-
-//		Method getNormalizedLabelMethod(){
-//			return method;
-//		}
-//
-//		Class getNormalizedLabelClass(){
-//			return cl;
-//		}
 	}
 
 
 	public DatatypeMap() {
-		if(ht == null) //as ht is static, DatatypeMap class is a singleton
+		if (ht == null){ //as ht is static, DatatypeMap class is a singleton
 			ht = new Hashtable<String, Mapping> ();
+                }
 		init();
 	}
 
@@ -133,14 +71,12 @@ public class DatatypeMap implements Cst, RDF {
 	}
 
 	public void put(String dt, String jtype, Hashtable<String, String> htms){
-		Mapping map = new Mapping(jtype);//,htms);
-		//map.setDataTypeMarkerSetHash(htms);
+		Mapping map = new Mapping(jtype);
 		ht.put(dt, map);
 	}
 
 	public void put(String dt, String jtype, String dtms){
-		Mapping map = new Mapping(jtype);//,dtms);
-		//map.setDataTypeMarkerSet(dtms);
+		Mapping map = new Mapping(jtype);
 		ht.put(dt, map);
 	}
 
@@ -384,7 +320,11 @@ public class DatatypeMap implements Cst, RDF {
 		return new CoreseURI(result);
 	}
 	
-	public static IDatatype newDate() {
+        public static IDatatype newResource(String ns, String name) {
+		return newResource(ns + name);
+	}
+
+        public static IDatatype newDate() {
 		try {
 			return new CoreseDateTime();
 		} catch (CoreseDatatypeException e) {

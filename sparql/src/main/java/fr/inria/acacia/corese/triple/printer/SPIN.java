@@ -265,6 +265,7 @@ public class SPIN implements ASTVisitor {
          sb.append(tab() + OSBRACKET + SPACE + ATAB);
             counter++;
             sb.append(SP_CONSTRUCT + PT_COMMA);
+            dataset(ast);
             sb.append(tab() + SPTEMPLATES );
 
             counter++;
@@ -321,7 +322,18 @@ public class SPIN implements ASTVisitor {
             sb.append(tab() + SPSTAR + SPACE + TRUE + PT_COMMA);
         }
 
-        if (ast.getFrom().size() != 0) {
+       visitSelectVar(ast);
+       
+       dataset(ast);
+
+        where(ast);
+        sb.append(PT_COMMA);
+        counter--;
+
+    } 
+    
+    void dataset(ASTQuery ast){
+         if (ast.getFrom().size() != 0) {
 
             sb.append(tab() + SPFROM + SPACE + OPAREN + SPACE);
 
@@ -341,17 +353,7 @@ public class SPIN implements ASTVisitor {
 
             sb.append(CPAREN + PT_COMMA);
         }
-
-       visitSelectVar(ast);
-
-        //WHERE
-        where(ast);
-        sb.append(PT_COMMA);
-        counter--;
-
-    } 
-    
-    
+    }
     
     
     void visitSelectVar(ASTQuery ast){

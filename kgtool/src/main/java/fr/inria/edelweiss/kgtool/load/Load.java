@@ -424,6 +424,15 @@ public class Load
         }
     }
     
+    
+     public void loadResource(String name, int format) throws  LoadException {
+        InputStream stream = Load.class.getResourceAsStream(name);
+        if (stream == null) {
+            throw new LoadException(new IOException(name));
+        }
+        load(stream, format);
+    }
+    
     public void load(InputStream stream, int format) throws LoadException {
         load(stream, Entailment.DEFAULT, format);
     }

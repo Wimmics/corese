@@ -29,9 +29,7 @@ public class RemoteQueryOptimizerSimple implements RemoteQueryOptimizer {
         if (env.getQuery().getAST() instanceof ASTQuery) {
             ASTQuery ast = (ASTQuery) env.getQuery().getAST();
             NSManager namespaceMgr = ast.getNSM();
-            Enumeration<String> prefixes = namespaceMgr.getPrefixes();
-            while (prefixes.hasMoreElements()) {
-                String p = prefixes.nextElement();
+            for (String p : namespaceMgr.getPrefixes()) {
                 sparqlPrefixes += "PREFIX " + p + ": " + "<" + namespaceMgr.getNamespace(p) + ">\n";
             }
         }

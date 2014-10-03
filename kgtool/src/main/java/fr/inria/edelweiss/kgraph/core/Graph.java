@@ -71,6 +71,8 @@ public class Graph implements Graphable
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;
     private static boolean distinctDatatype = false;
+    static boolean byIndexDefault = true;
+
     private int mode = DEFAULT;
     /**
      * Synchronization:
@@ -128,6 +130,7 @@ public class Graph implements Graphable
             isDebug = !true,
             hasDefault = !true;
     private boolean isListNode = !true;
+    boolean byIndex = byIndexDefault;
     // number of edges
     int size = 0;
     int nodeIndex = 0;
@@ -226,7 +229,7 @@ public class Graph implements Graphable
 
     void setList() {
         if (hasList) {
-            tlist = new EdgeIndex(this, ILIST);
+            tlist = new EdgeIndex(this, byIndex, ILIST);
             tables.add(tlist);
         }
         else if (tables.get(tables.size()-1).getIndex() == ILIST){
@@ -330,10 +333,10 @@ public class Graph implements Graphable
         tables = new ArrayList<Index>(length);
         
         for (int i = 0; i < length; i++) {            
-            tables.add(new EdgeIndex(this, i));
+            tables.add(new EdgeIndex(this, byIndex, i));
         }
         
-        tgraph = new EdgeIndex(this, IGRAPH);
+        tgraph = new EdgeIndex(this, byIndex, IGRAPH);
         tables.add(tgraph);
                            
         table = getIndex(0);
@@ -391,14 +394,29 @@ public class Graph implements Graphable
     
     /**
      * Edge Index is sorted on integer index value of Node
-     * PRAGMA:
-     * Do not use when QueryProcess with several graphs
-     * (index would not be the same in different graphs)
+     * Set default behavior for all graphs
+     * PRAGMA: PB with several graphs, index are not shared
      */
     public static void setCompareIndex(boolean b){
-        EdgeIndex.setCompareIndex(b);
+        byIndexDefault = b;
+        //EdgeIndex.setCompareIndex(b);
         Distinct.setCompareIndex(b);
         //MatcherImpl.setCompareIndex(b);
+    }
+    
+    /**
+     * set byIndex on this graph only
+     * reset EdgeIndex as well and sort edge list accordingly
+     */
+    public void setByIndex(boolean b){
+        byIndex = b;
+        for (Index id : getIndexList()){
+            id.setByIndex(b);
+        }
+    }
+    
+    public boolean isByIndex(){
+        return byIndex;
     }
     
     /**
@@ -620,39 +638,27 @@ public class Graph implements Graphable
     }
     
     public String toRDF() {
-        String str = "[ a kg:Graph ;\n";
-        str += "kg:edge     " + size() + " ;\n";
-        str += "kg:node     " + nbNodes() + " ;\n";
-        str += "kg:graph    " + graph.size() + " ;\n";
-        str += "kg:property " + table.size() + " ;\n";
-        str += "kg:uri      " + individual.size() + " ;\n";
-        str += "kg:bnode    " + blank.size() + " ;\n";
-        str += "kg:literal  " + literal.size() + " ;\n";       
-        str += "kg:date  "    + DatatypeMap.newDate() + " ;\n";       
-        str += "] . \n";
+        Serializer sb = new Serializer();
+        sb.open("kg:Graph");
         
-        str += "[ a kg:System ;"
-                + "kg:version '3.1' ;"
-                + "kg:date '2014-09-23'^^xsd:date ;"
-                + "kg:author 'Olivier Corby' ;"
-                + "kg:team <http://wimmics.inria.fr> ;"
-                + "kg:institution <http://www.inria.fr>, <http://www.i3s.unice.fr/> ;"
-                + "kg:feature "
-                + "'RDF', 'OWL 2 RL', "
-                + "'SPARQL 1.1 Query & Update' , "
-                + "'SPARQL Template Transformation' ,"
-                + "'Inference Rule' "
-                + "] . \n" ;
+        sb.appendPNL("kg:edge     ", size());
+        sb.appendPNL("kg:node     ", nbNodes()); 
+        sb.appendPNL("kg:graph    ", graph.size()); 
+        sb.appendPNL("kg:property ", table.size());  
+        sb.appendPNL("kg:uri      ", individual.size()); 
+        sb.appendPNL("kg:bnode    ", blank.size()); 
+        sb.appendPNL("kg:literal  ", literal.size()); 
+        sb.appendPNL("kg:date     ", DatatypeMap.newDate());
         
-        str += table.toString();
-        
+        sb.close();
+                              
         for (Index t : getIndexList()){
-            if (t.getIndex() != 0 && t.cardinality() > 0){
-                str += t.toRDF();
-                str += "\n";
+            if (t.getIndex() == 0 || t.cardinality() > 0){
+                sb.appendNL(t.toRDF());
             }
         }
-        return str;
+        
+        return sb.toString();
     }
     
      /**
@@ -660,25 +666,7 @@ public class Graph implements Graphable
      * current RDF graph
      */
     public Graphable describe(){
-        final Graph g = this;
-        
-        return new Graphable(){
-
-            @Override
-            public String toGraph() {
-                return (g.toRDF());
-            }
-
-            @Override
-            public void setGraph(Object obj) {
-            }
-
-            @Override
-            public Object getGraph() {
-                return null;
-            }
-            
-        };
+        return getContext();
     }
 
     public String toString2() {
@@ -928,9 +916,6 @@ public class Graph implements Graphable
         return table.getSortedProperties();
     }
 
-    /**
-     * Pragma: nodes are already nodes of the graph
-     */
     public Entity add(Entity edge) {
         return add(edge, true);
     }
@@ -1162,11 +1147,6 @@ public class Graph implements Graphable
         return nl;
     }
 
-    // all nodes
-    // TODO: check producer
-    public Node addNode(IDatatype dt) {
-        return getNode(dt, true, true);
-    }
 
     // used by construct
     public Node getNode(Node gNode, IDatatype dt, boolean create, boolean add) {
@@ -1186,6 +1166,16 @@ public class Graph implements Graphable
         return getNode(dt, false, false);
     }
 
+    public Node createNode(IDatatype dt){
+        return getNode(dt, true, false);
+    }
+    
+       // all nodes
+    // TODO: check producer
+    public Node addNode(IDatatype dt) {
+        return getNode(dt, true, true);
+    }
+    
     // used by construct
     public Node getNode(IDatatype dt, boolean create, boolean add) {
         if (dt.isLiteral()) {
@@ -1219,7 +1209,7 @@ public class Graph implements Graphable
             return node;
         }
         if (node == null && create) {
-            node = createNode(dt);
+            node = buildNode(dt);
         }
         if (add) {
             add(dt, node);
@@ -1379,7 +1369,7 @@ public class Graph implements Graphable
         node = getResource(label);
         if (node == null) {
             IDatatype dt = DatatypeMap.createResource(label);
-            node = createNode(dt);
+            node = buildNode(dt);
             indexNode(dt, node);
         }
         property.put(label, node);
@@ -1391,7 +1381,7 @@ public class Graph implements Graphable
         if (node == null) {
             IDatatype dt = DatatypeMap.createBlank(label);
             if (dt != null) {
-                node = createNode(dt);
+                node = buildNode(dt);
                 indexNode(dt, node);
                 addBlankNode(dt, node);
             }
@@ -1901,7 +1891,7 @@ public class Graph implements Graphable
     /**
      * Only for new node that does not exist
      */
-    Node createNode(IDatatype dt) {
+    Node buildNode(IDatatype dt) {
         return createNode(getKey(dt), dt);
     }
 
@@ -1928,7 +1918,7 @@ public class Graph implements Graphable
         if (dt == null) {
             return null;
         }
-        return createNode(dt);
+        return buildNode(dt);
     }
 
     /**
@@ -1939,30 +1929,27 @@ public class Graph implements Graphable
      ***************************************************************
      */
     public boolean compare(Graph g) {
-        return compare(g, false);
+        return compare(g, false, false);
+    }
+    
+    public boolean compare(Graph g, boolean isGraph) {
+        return compare(g, isGraph, false);
     }
 
-    public boolean compare(Graph g2, boolean isGraph) {
+    public boolean compare(Graph g2, boolean isGraph, boolean detail) {
         Graph g1 = this;
-//		if (isDebug){
-//			logger.debug(g1.getIndex());
-//			logger.debug(g2.getIndex());
-//		}
         if (g1.isIndex()) {
             index();
         }
         if (g2.isIndex()) {
             g2.index();
         }
+        
         if (g1.size() != g2.size()) {
             if (isDebug) {
-                logger.debug("** Graph Size: " + size() + " " + g2.size());
+                logger.error("** Graph Size: " + size() + " " + g2.size());
             }
-//			System.out.println(g1.display());
-//			System.out.println("___");
-//			System.out.println(g2.display());
-
-            return false;
+            //return false;
         }
 
 
@@ -1973,11 +1960,11 @@ public class Graph implements Graphable
             int s2 = g2.size(pred2);
             if (s1 != s2) {
                 ok = false;
-                System.out.println(pred1 + ": " + s1 + " vs " + s2);
+                logger.error(pred1 + ": " + s1 + " vs " + s2);
             }
         }
 
-        if (!ok) {
+        if (!ok && !detail) {
             return false;
         }
 
@@ -1993,7 +1980,7 @@ public class Graph implements Graphable
             if (pred2 == null) {
                 if (l1.iterator().hasNext()) {
                     if (isDebug) {
-                        logger.debug("Not found: " + pred1);
+                        logger.error("Not found: " + pred1);
                     }
                     return false;
                 }
@@ -2004,12 +1991,12 @@ public class Graph implements Graphable
 
                 for (Entity ent1 : l1) {
 
-                    if (true) {
+                    if (isByIndex()) {
                         // node index
                         boolean b = compare(g2, pred2, t, ent1, isGraph);
                         if (!b) {
                             if (isDebug) {
-                                logger.debug(ent1);
+                                logger.error(ent1);
                             }
                             return false;
                         }
@@ -2022,8 +2009,8 @@ public class Graph implements Graphable
                         Entity ent2 = it.next();
                         if (!compare(ent1, ent2, t, isGraph)) {
                             if (isDebug) {
-                                logger.debug(ent1);
-                                logger.debug(ent2);
+                                logger.error(ent1);
+                                logger.error(ent2);
                             }
                             return false;
                         }
@@ -2423,7 +2410,7 @@ public class Graph implements Graphable
      * Add a copy of the entity edge Use case: entity comes from another graph,
      * create a local copy of nodes
      */
-    public Edge copy(Entity ent) {
+    public Edge copy(Entity ent) {    
         Node g = basicAddGraph(ent.getGraph().getLabel());
         Node p = basicAddProperty(ent.getEdge().getEdgeNode().getLabel());
 
@@ -2541,6 +2528,27 @@ public class Graph implements Graphable
     void copyEdge(Entity ent) {
     }
 
+    /**
+     * Add edge and add it's nodes
+     */
+     public Entity add(Node source, Node subject, Node predicate, Node value) {
+        Entity e = fac.create(source, subject, predicate, value);
+        Entity ee = addEdgeWithNode(e);       
+        return ee;
+    }
+     
+    /**
+     * Add edge and add it's nodes
+     */     
+      public Entity add(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
+        Entity e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
+        Entity ee = addEdgeWithNode(e);       
+        return ee;
+    }
+     
+      /**
+       * Add Edge, not add nodes      
+       */
     public Edge addEdge(Node source, Node subject, Node predicate, Node value) {
         Entity e = fac.create(source, subject, predicate, value);
         Entity ee = addEdge(e);

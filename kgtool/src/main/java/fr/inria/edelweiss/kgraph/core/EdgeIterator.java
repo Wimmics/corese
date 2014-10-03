@@ -103,7 +103,8 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	}
 	
 	boolean same(Node n1, Node n2){
-		return EdgeIndex.same(n1, n2);
+            return gg.getIndex().same(n1, n2);
+		//return EdgeIndex.same(n1, n2);
 	}
 
 	@Override
@@ -193,7 +194,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	 */
 	boolean isFrom(Entity ent, List<Node> from){
             if (hasOneFrom){
-                return EdgeIndex.same(fromNode, ent.getGraph());
+                return same(fromNode, ent.getGraph());
             }
             else {
 		Node g = ent.getGraph();

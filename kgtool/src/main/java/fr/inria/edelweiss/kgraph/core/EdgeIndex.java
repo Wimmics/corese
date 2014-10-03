@@ -12,9 +12,6 @@ import org.apache.log4j.Logger;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.logic.RDFS;
-import java.util.Arrays;
-import org.semarglproject.vocab.RDF;
 
 /**
  * Table property node -> List<Edge>
@@ -28,11 +25,12 @@ import org.semarglproject.vocab.RDF;
  */
 public class EdgeIndex extends Hashtable<Node, ArrayList<Entity>> 
 implements Index {
+    private static final String NL = System.getProperty("line.separator");
 	static final int IGRAPH = Graph.IGRAPH;
 	static final int ILIST  = Graph.ILIST;
 	private static Logger logger = Logger.getLogger(EdgeIndex.class);	
         static boolean byKey = Graph.valueOut;
-        static boolean byIndex = false;
+        private boolean byIndex = true;
         
 	int index = 0, other = 1;
 	int count = 0;
@@ -50,8 +48,8 @@ implements Index {
         // index of classes in subClassOf list
         int[] scoIndexes, typeIndexes;
 
-	EdgeIndex(Graph g, int n){
-		init(g, n);
+	EdgeIndex(Graph g, boolean bi, int n){
+		init(g, bi, n);
 		comp  = getComparator(n);
 		skipTag  = getComparator(true, true);
 		skipGraph  = getComparator(false, false);
@@ -59,18 +57,16 @@ implements Index {
 	}
 	
 	
-	void init(Graph g, int n){
+	void init(Graph g, boolean bi, int n){
 		graph = g;
 		index = n;
+                byIndex = bi;
 		switch (index){
 			case 0:  other = 1; break;
 			default: other = 0; break;
 		}
 	}
         
-        public static void setCompareIndex(boolean b){
-            byIndex = b;
-        }
 	
 	
 	/**
@@ -87,8 +83,8 @@ implements Index {
 	}
 	
 	
-	static int nodeCompare(Node n1, Node n2){
-            if (byIndex){
+     int nodeCompare(Node n1, Node n2){
+            if (isByIndex()){
                 return compare(n1.getIndex(), n2.getIndex());
             }
             if (byKey){
@@ -98,7 +94,7 @@ implements Index {
             return n1.compare(n2);
 	}
         
-        static int compare(int n1, int n2){
+      int compare(int n1, int n2){
             if (n1 < n2){
                 return -1;
             }
@@ -110,8 +106,8 @@ implements Index {
             }
         }
 	
-	static boolean same(Node n1, Node n2){
-            if (byIndex){
+        public boolean same(Node n1, Node n2){
+            if (isByIndex()){
                 return n1.getIndex() == n2.getIndex();
             }
             if (byKey){
@@ -274,24 +270,25 @@ implements Index {
 	}
         
        public String toRDF() {
-            String str = "[ a kg:Index ;\n";
-            str += "kg:index " + index + ";\n";
-            String name = "rdf:predicate";           
+           Serializer sb = new Serializer();
+            sb.open("kg:Index");
+            sb.appendPNL("kg:index ", index);
             int total = 0;
             for (Node pred : getSortedProperties()) {
                 int i = get(pred).size();
                 if (i > 0){
                     total += i;               
-                    str += "kg:item [ rdf:predicate " + pred + "; rdf:value " + i + "] ;\n";
+                    sb.append("kg:item [ ");
+                    sb.appendP("rdf:predicate ", pred);
+                    sb.append("rdf:value ", i);
+                    sb.appendNL("] ;");
                 }
             }
-            str += "kg:total: " + total;
-            str += "]";
-            return str;
+            sb.appendNL("kg:total ", total);
+            sb.close();
+            return sb.toString();
         }
-       
-       
-        
+         
        public int cardinality() {
             int total = 0;
             for (Node pred : getProperties()) {
@@ -557,10 +554,14 @@ implements Index {
 	 * Sort edges by values of first Node and then by value of second Node
 	 */
 	public void index(){
+            index(true);
+        }
+        
+        public void index(boolean reduce){
 		for (Node pred : getProperties()){
 			index(pred);
 		}
-		if (index == 0){
+		if (reduce && index == 0){
 			reduce();
 		}
 	}
@@ -577,23 +578,23 @@ implements Index {
             Collections.sort(list, comp);
         }
         
-     void sco(List<Entity> list, Node pred) {
-        if (list.size() > 0) {
-            if (pred.getLabel().equals(RDFS.SUBCLASSOF)) {
-                scoIndex = pred.getIndex();
-                if (scoIndexes == null) {
-                    scoIndexes = new int[graph.getNodeIndex()];
-                }
-                Arrays.fill(scoIndexes, -1);
-            } else if (pred.getLabel().equals(RDF.TYPE)) {
-                typeIndex = pred.getIndex();
-                if (typeIndexes == null) {
-                    typeIndexes = new int[graph.getNodeIndex()];
-                }
-                Arrays.fill(typeIndexes, -1);
-            }
-        }
-    }
+//     void sco(List<Entity> list, Node pred) {
+//        if (list.size() > 0) {
+//            if (pred.getLabel().equals(RDFS.SUBCLASSOF)) {
+//                scoIndex = pred.getIndex();
+//                if (scoIndexes == null) {
+//                    scoIndexes = new int[graph.getNodeIndex()];
+//                }
+//                Arrays.fill(scoIndexes, -1);
+//            } else if (pred.getLabel().equals(RDF.TYPE)) {
+//                typeIndex = pred.getIndex();
+//                if (typeIndexes == null) {
+//                    typeIndexes = new int[graph.getNodeIndex()];
+//                }
+//                Arrays.fill(typeIndexes, -1);
+//            }
+//        }
+//    }
 	
 	public void indexNode(){
 		for (Node pred : getProperties()){
@@ -727,12 +728,12 @@ implements Index {
         
         int find(Node p, List<Entity> list, Node n1, Node n2) {
             if (n2 == null) {
-                if (byIndex){                    
+                if (isByIndex()){                    
                     return find(list, n1.getIndex(), 0, list.size());
                 }
                 return find(list, n1, 0, list.size());
             } else {
-                if (byIndex){
+                if (isByIndex()){
                    return find(list, n1.getIndex(), n2.getIndex(), 0, list.size());
                 }
                 return find(list, n1, n2, 0, list.size());
@@ -781,7 +782,7 @@ implements Index {
                 return false;
             }
             int n;
-            if (byIndex){
+            if (isByIndex()){
                 n = find(list, n1.getIndex(), n2.getIndex(), 0, list.size());
             }
             else {
@@ -818,6 +819,21 @@ implements Index {
 			}
 		}
 	}
+
+    /**
+     * @return the byIndex
+     */
+    public boolean isByIndex() {
+        return byIndex;
+    }
+
+    /**
+     * @param byIndex the byIndex to set
+     */
+    public void setByIndex(boolean byIndex) {
+        this.byIndex = byIndex;
+        index(false);
+    }
 	
 	
 	/**

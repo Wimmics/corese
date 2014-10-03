@@ -25,17 +25,20 @@ public interface Index {
 	int duplicate();
 
 	void index();
-        
+                
         void index(Node pred, boolean reduce);
 
 	void indexNode();
+        
+        void setByIndex(boolean b);
 
 	Iterable<Node> getProperties();
 	
 	Iterable<Node> getSortedProperties();
 	
 	Iterable<Node> getTypes();
-
+        
+        boolean same(Node n1, Node n2);
 
 	Entity add(Entity edge);
 	

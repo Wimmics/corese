@@ -7,7 +7,11 @@ import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.query.RDFizer;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Graph Execution Context
@@ -16,7 +20,7 @@ import java.util.ArrayList;
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
  */
-public class Context {
+public class Context implements Graphable {
 
     private ArrayList<Node> queryNodes;
     private Node ruleEngineNode;
@@ -122,5 +126,33 @@ public class Context {
     public void storeIndex(String name){
         Graph g = new RDFizer().getGraph(graph.describe());
         graph.setNamedGraph(name, g);
+    }
+
+    @Override
+    public String toGraph() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(toRDF());
+        sb.append(graph.toRDF());
+        return sb.toString();
+    }
+
+    @Override
+    public void setGraph(Object obj) {
+    }
+
+    @Override
+    public Object getGraph() {
+        return null;
+    }
+    
+    String toRDF(){
+        QueryLoad ql = QueryLoad.create();
+         String str = "";
+        try {
+            str = ql.getResource("/data/kgram.ttl");
+        } catch (IOException ex) {
+            Logger.getLogger(Context.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return str;
     }
 }

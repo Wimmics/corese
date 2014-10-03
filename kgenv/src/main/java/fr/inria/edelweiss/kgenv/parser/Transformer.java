@@ -41,6 +41,7 @@ public class Transformer implements ExpType {
 	public static final String THIS = "?this";
         private static final String EXTENSION     = Processor.KGEXTENSION;
         private static final String EXT_NAMESPACE = NSManager.KGEXT;
+        private static final String EXT_NAMESPACE_QUERY = NSManager.KGEXTCONS;
 
 	int count = 0;
 
@@ -167,7 +168,8 @@ public class Transformer implements ExpType {
 				v.visit(ast);
 			}
 		}
-		
+                // from extended named graph
+		preprocess(ast);
                 template(ast);
                 
 		Query q = compile(ast);
@@ -178,6 +180,22 @@ public class Transformer implements ExpType {
 		q = transform(q, ast);
 		return q;
 	}
+        
+        /**
+         * select * 
+         * from eng:describe 
+         * where { BGP }
+         * ->
+         * select * 
+         * where { graph eng:describe { BGP } }
+         */
+        void preprocess(ASTQuery ast){
+            if (ast.getFrom().size() == 1 &&
+                isSystemGraph(ast.getFrom().get(0).getLabel())){
+                Source exp = Source.create(ast.getFrom().get(0), ast.getQuery());
+                ast.setQuery(BasicGraphPattern.create(exp));
+            }
+        }
 	
         /**
          * Optimize values in template
@@ -1181,7 +1199,8 @@ public class Transformer implements ExpType {
        }
        
        boolean isSystemGraph(String cst){
-           return cst.startsWith(EXT_NAMESPACE);
+           return (cst.startsWith(EXT_NAMESPACE)
+                || cst.startsWith(EXT_NAMESPACE_QUERY));
        }
        
         Exp compileGraph(Exp exp, Atom at) {

@@ -53,6 +53,7 @@ public class ExtendGraph {
      void init(){
         map = new HashMap();
         map.put(KGEXT + "describe", EXT_DESCRIBE);
+        map.put(KGEXT + "system",   EXT_DESCRIBE);
         map.put(KGEXT + "query",    EXT_QUERY);
         map.put(KGEXT + "queries",  EXT_QUERIES);
         map.put(KGEXT + "engine",   EXT_ENGINE);

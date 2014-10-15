@@ -23,7 +23,7 @@ import java.util.HashMap;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class EdgeIndex //extends HashMap<Node, ArrayList<Entity>> 
+public class GraphIndex //extends HashMap<Node, ArrayList<Entity>> 
 implements Index {
     private static final String NL = System.getProperty("line.separator");
 	static final int IGRAPH = Graph.IGRAPH;
@@ -44,13 +44,15 @@ implements Index {
 	Comparator<Entity>  comp, skipTag, skipGraph, compList;
 	Graph graph;
         List<Node> sortedProperties;
+        // index of classes in subClassOf list
+        int[] scoIndexes, typeIndexes;
         HashMap<Node, ArrayList<Entity>> table ;
 
-	EdgeIndex(Graph g, boolean bi, int n){
+	GraphIndex(Graph g, boolean bi, int n){
 		init(g, bi, n);
-		comp        = getComparator(n);
-		skipTag     = getComparator(true, true);
-		skipGraph   = getComparator(false, false);
+		comp  = getComparator(n);
+		skipTag  = getComparator(true, true);
+		skipGraph  = getComparator(false, false);
                 table = new HashMap();
 	}
 	
@@ -135,7 +137,11 @@ implements Index {
 	 * 
 	 */
 	Comparator<Entity> getComparator(final boolean skipTag, final boolean duplicate){
-		            
+		
+//                if (index == Graph.ILIST){
+//                    return getListComparator();
+//                }
+            
 		return new Comparator<Entity>(){
 									
 			public int compare(Entity o1, Entity o2) {
@@ -344,75 +350,110 @@ implements Index {
         /**
          * noGraph == true => if edge already exists in another graph, do not add edge        
          */
-    public Entity add(Entity edge, boolean duplicate) {
-        if (index != IGRAPH && edge.nbNode() <= index) {
-            // use case:  additional node is not present, do not index on this node
-            // never happens for subject object and graph
-            return null;
-        }
+	public Entity add(Entity edge, boolean duplicate){
+            if (index != IGRAPH && edge.nbNode() <= index) {
+                // use case:  additional node is not present, do not index on this node
+                // never happens for subject object and graph
+                return null;
+            }
 
-        List<Entity> list = define(edge.getEdge().getEdgeNode());
+            List<Entity> list = define(edge.getEdge().getEdgeNode());
 
-        Comparator cc = comp;
+//            if (index == Graph.ILIST) {
+//                list.add(edge);
+//                return edge;
+//            }
+		
+		Comparator cc = comp;
 
-        boolean needTag = index == 0 && graph.needTag(edge);
-        if (needTag) {
-            // this edge has no tag yet and it will need onefind
-            // let's see if there is the same triple (with another tag)
-            // in this case, we skip the insertion
-            // otherwise we tag the triple and we insert it 
-            cc = skipTag;
-        } else if (!duplicate) {
-            cc = skipGraph;
-        }
-
-        if (isSort(edge)) {
-            // edges are sorted, check presence by dichotomy
-            int i = find(cc, list, edge, 0, list.size());
-            int res = 0;
-
-            if (i >= list.size()) {
-                i = list.size();
-            } 
-            else {
-                if (index == 0) {
-                    res = cc.compare(edge, list.get(i));
-                    if (res == 0) {
-                        // eliminate duplicate at load time for index 0
-                        count++;
-                        return null;
-                    }
+		boolean needTag = index == 0 && graph.needTag(edge);                 
+		if (needTag){
+			// this edge has no tag yet and it will need onefind
+			// let's see if there is the same triple (with another tag)
+			// in this case, we skip the insertion
+			// otherwise we tag the triple and we insert it 
+			cc = skipTag;
+		}
+                else if (! duplicate){
+                    cc = skipGraph;
                 }
-            }
+		
+		if (isSort(edge)){
+			// edges are sorted, check presence by dichotomy
+			int i = find(cc, list, edge, 0, list.size());
+			int res = 0;
+			
+			if (i>=list.size()){
+				if (isOptim && i>0 && graph.getProxy().isEntailment(edge.getGraph())){
+					// eliminate entailed edge if already exist in another graph
+					if (same(edge, list.get(i-1))){
+						count++;
+						return null;
+					}
+				}
+							
+				if (needTag){
+					tag(edge);
+				}
+				
+				if (onInsert(edge)){
+					list.add(edge);
+					logInsert(edge);
+				}
+				else {
+					return null;
+				}
+			}
+			else {
+				if (index == 0){
+					res = cc.compare(edge, list.get(i));
+					if (res == 0){
+						// eliminate duplicate at load time for index 0
+						count++;
+						return null;
+					}
+					else if (isOptim && graph.getProxy().isEntailment(edge.getGraph())){
+						// eliminate entailed edge if already exist in another graph
+						if (i > 0 && same(edge, list.get(i-1))){
+							count++;
+							return null;
+						}
+						if (same(edge, list.get(i))){
+							count++;
+							return null;
+						}
+					}
+				}
 
-            if (needTag) {
-                tag(edge);
-            }
+				if (needTag){
+					tag(edge);
+				}
+				
+				if (onInsert(edge)){
+					list.add(i, edge);
+					logInsert(edge);
+				}
+				else {
+					return null;
+				}
+					
+			}
+		}
+		else {
+			// edges are not already sorted (load time)
+			// add all edges, duplicates will be removed later when first query occurs
+			if (onInsert(edge)){
+				list.add(edge);
+				logInsert(edge);
+			}
+			else {
+				return null;
+			}
+		}
 
-            if (onInsert(edge)) {
-                list.add(i, edge);
-                logInsert(edge);
-            } 
-            else {
-                return null;
-            }
-
-
-        } 
-        else {
-            // edges are not already sorted (load time)
-            // add all edges, duplicates will be removed later when first query occurs
-            if (onInsert(edge)) {
-                list.add(edge);
-                logInsert(edge);
-            } else {
-                return null;
-            }
-        }
-
-        //complete(edge);
-        return edge;
-    }
+		//complete(edge);
+		return edge;
+	}
         
         /**
          * PRAGMA:
@@ -503,6 +544,10 @@ implements Index {
 			put(predicate, list);
 		}
 		return list;
+	}
+	
+	void set(Node predicate, ArrayList<Entity> list){
+		put(predicate, list);
 	}
 
 	/**
@@ -678,7 +723,39 @@ implements Index {
             }
         }
         
-      
+        /**
+         * Index of class is cached for rdfs:subClassOf
+         */
+       int get(Node p, List<Entity> list, Node n) {
+            boolean ok = false;
+            
+            if (p.getIndex() == scoIndex && n.getIndex() < scoIndexes.length) {
+                ok = true;
+                int i = scoIndexes[n.getIndex()];
+                if (i != -1) {
+                    return i;
+                }
+            } else if (p.getIndex() == typeIndex && n.getIndex() < typeIndexes.length) {
+                ok = true;
+                int i = typeIndexes[n.getIndex()];
+                if (i != -1) {
+                    return i;
+                }
+            }
+
+
+            int i = find(list, n.getIndex(), 0, list.size());
+
+            if (ok) {
+                if (p.getIndex() == scoIndex) {
+                    scoIndexes[n.getIndex()] = i;
+                } else {
+                    typeIndexes[n.getIndex()] = i;
+                }
+            }
+            return i;
+        }
+        
         /**
          * Written for index = 0
          */
@@ -702,7 +779,20 @@ implements Index {
             }
             return false;
         }
-             
+        
+        /** 
+         * @deprecated
+         * */
+        public Iterable<Entity> getEdges(Node pred, int index){
+		List<Entity> list = checkGet(pred); 
+		if (list == null){
+			return list;
+		}
+                int n = find(list, index, 0, list.size());
+                return new ListIterate(list, n);
+        }
+        
+	
 	void trace(List<Entity> list){
 		Node nn = list.get(0).getNode(1);
 		for (int i=0; i<list.size(); i++){
@@ -773,7 +863,46 @@ implements Index {
 
 
 	}
-            
+        
+        
+        class ListIterate implements Iterable<Entity>, Iterator<Entity> {
+		List<Entity> list;
+		int ind, start; 
+		
+		ListIterate(List<Entity> l, int n){
+			list = l;
+			start = n;
+		}
+
+		@Override
+		public Iterator<Entity> iterator() {
+			ind = start;
+			return this;
+		}
+
+
+		@Override
+		public boolean hasNext() {
+			// TODO Auto-generated method stub
+			boolean b = ind<list.size();
+			return b;
+		}
+
+		@Override
+		public Entity next() {
+			// TODO Auto-generated method stub
+			Entity ent = list.get(ind++);
+			return ent;
+		}
+
+		@Override
+		public void remove() {
+			// TODO Auto-generated method stub
+
+		}
+
+
+	}
 
 	int find(List<Entity> list, Node node){
 		int res = find(list, node, null, 0, list.size());
@@ -1080,8 +1209,10 @@ implements Index {
 	
 	
 	private void update(Node g1, Node g2, List<Entity> list, int n, int mode){
+		boolean incr = false;
                 boolean isBefore = false;
 		if (g2!=null && nodeCompare(g1, g2) < 0){
+                    incr = true;
                     isBefore = true;
                 }
 		for (int i = n; i<list.size(); ){
@@ -1099,6 +1230,9 @@ implements Index {
 					clear(ent);
 					list.remove(i);
 					ee = copy(g2, ent);
+//					if (incr && ee !=null){
+//                                            i++;
+//                                        }
                                         if (isBefore){}
                                         else if (ee != null){
                                             i++;
@@ -1114,6 +1248,9 @@ implements Index {
                                         else if (ee != null){
                                             i++;
                                         }
+//					if (incr && ee!=null){
+//                                            i++;
+//                                        }
 					break;
 				}
 			}

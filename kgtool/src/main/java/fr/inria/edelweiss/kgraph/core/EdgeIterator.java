@@ -20,7 +20,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	Iterable<Entity> iter;
 	Iterator<Entity> it;
 	Edge last;
-        //EdgeImpl res;
+        EdgeQuad res;
 	Node graph;
         Graph gg;
 	List<Node> from;
@@ -31,34 +31,36 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
         boolean hasLevel = false;
         private boolean isSpeedUp = false;
 	
-	EdgeIterator(){
-                init();
+	EdgeIterator(Graph g){
+            gg = g;
+            init();
 	}
 	
 	// eliminate duplicate edges due to same source
-	EdgeIterator(Iterable<Entity> i){
-		iter = i;
-		hasGraph = false;
-		hasFrom = false;
-		hasOneFrom = false;
-                init();
+	EdgeIterator(Graph g, Iterable<Entity> i){
+            gg = g;
+            iter = i;
+            hasGraph = false;
+            hasFrom = false;
+            hasOneFrom = false;
+            init();
 	}
 	
 	public static EdgeIterator create(Graph g){
-		EdgeIterator ei =   new EdgeIterator();
+		EdgeIterator ei =   new EdgeIterator(g);
 		ei.setTag(g.hasTag());		
 		return ei;
 	}
 
 	
 	public static EdgeIterator create(Graph g, Iterable<Entity> i){
-		EdgeIterator ei =  new EdgeIterator(i);
+		EdgeIterator ei =  new EdgeIterator(g, i);
 		ei.setTag(g.hasTag());
 		return ei;
 	}
         
         void init(){
-            //res = EdgeImpl.create(null, null, null, null);
+            res = EdgeQuad.create(null, null, null, null);
         }
 
 	
@@ -162,7 +164,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 			
 			if (ok){
 				last = ent.getEdge();
-                                
+                               // last = getResult(ent, res);
                                 if (hasLevel && last.getIndex() < level){
                                     it = empty.iterator();
                                     return null;
@@ -180,13 +182,13 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	}
         
         // simulate creation of only one edge for this iterator
-//        Edge getResult(Entity ent) {
-//            res.setGraph(ent.getGraph());
-//            res.setEdgeNode(ent.getEdge().getEdgeNode());
-//            res.setNode(0, ent.getNode(0));
-//            res.setNode(1, ent.getNode(1));
-//            return res;
-//        }
+        Edge getResult(Entity ent, EdgeQuad res) {
+            res.setGraph(ent.getGraph());
+            res.setEdgeNode(ent.getEdge().getEdgeNode());
+            res.setNode(0, ent.getNode(0));
+            res.setNode(1, ent.getNode(1));
+            return res;
+        }
 	
 	/**
 	 * 

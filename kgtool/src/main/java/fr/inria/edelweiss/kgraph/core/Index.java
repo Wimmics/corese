@@ -35,9 +35,7 @@ public interface Index {
 	Iterable<Node> getProperties();
 	
 	Iterable<Node> getSortedProperties();
-	
-	Iterable<Node> getTypes();
-        
+	        
         boolean same(Node n1, Node n2);
 
 	Entity add(Entity edge);
@@ -66,7 +64,6 @@ public interface Index {
 
 	Iterable<Entity> getEdges(Node pred, Node node, Node node2);
 	
-        Iterable<Entity> getEdges(Node pred, int index);
 	// ************** Update
 	
 	

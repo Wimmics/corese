@@ -131,6 +131,8 @@ public class Graph implements Graphable
             hasDefault = !true;
     private boolean isListNode = !true;
     boolean byIndex = byIndexDefault;
+    // draft optmize EdgeIndexer EdgeList
+    private boolean optIndex = !true;
     // number of edges
     int size = 0;
     int nodeIndex = 0;
@@ -229,12 +231,21 @@ public class Graph implements Graphable
 
     void setList() {
         if (hasList) {
-            tlist = new EdgeIndex(this, byIndex, ILIST);
+            tlist = createIndex(byIndex, ILIST);
             tables.add(tlist);
         }
         else if (tables.get(tables.size()-1).getIndex() == ILIST){
             tables.remove(tables.size()-1);
             tlist = null;
+        }
+    }
+    
+    Index createIndex(boolean b, int i){
+        if (isOptIndex()){
+           return new EdgeIndexer(this, b, i); 
+        }
+        else {
+            return new EdgeIndex(this, b, i);
         }
     }
 
@@ -281,6 +292,20 @@ public class Graph implements Graphable
      */
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    /**
+     * @return the optIndex
+     */
+    public boolean isOptIndex() {
+        return optIndex;
+    }
+
+    /**
+     * @param optIndex the optIndex to set
+     */
+    public void setOptIndex(boolean optIndex) {
+        this.optIndex = optIndex;
     }
 
     class TreeNode extends TreeMap<IDatatype, Entity> {
@@ -333,10 +358,10 @@ public class Graph implements Graphable
         tables = new ArrayList<Index>(length);
         
         for (int i = 0; i < length; i++) {            
-            tables.add(new EdgeIndex(this, byIndex, i));
+            tables.add(createIndex(byIndex, i));
         }
         
-        tgraph = new EdgeIndex(this, byIndex, IGRAPH);
+        tgraph = createIndex(byIndex, IGRAPH);
         tables.add(tgraph);
                            
         table = getIndex(0);
@@ -958,6 +983,35 @@ public class Graph implements Graphable
             add(ee.getNode(i));
         }
         return addEdge(ee);
+    }
+    
+    
+    public Node addList(List<Node> list) {
+        return addList(addGraph(Entailment.DEFAULT), list);
+    }
+    
+    public Node addList(Node g, List<Node> list){
+        addGraphNode(g);
+        Node fst = addProperty(RDF.FIRST);
+        Node rst = addProperty(RDF.REST);
+        Node nil = addResource(RDF.NIL);
+        Node head = addBlank();
+        Node cur = head;
+        Node tmp;
+        int s = list.size() - 1;
+        int i = 0;
+        
+        for (Node n : list){
+            tmp = nil;
+            if (i++ < s){
+                tmp = addBlank();
+            }
+            add(n);
+            addEdge(g, cur, fst, n);
+            addEdge(g, cur, rst, tmp);
+            cur = tmp;
+        }
+        return head;
     }
 
     public Entity addEdge(Entity edge) {
@@ -1741,10 +1795,6 @@ public class Graph implements Graphable
         return graph.values();
     }
 
-    public Iterable<Node> getTypeNodes() {
-        return table.getTypes();
-    }
-
     public Iterable<Entity> getNodes() {
         return individual.values();
     }
@@ -1949,7 +1999,7 @@ public class Graph implements Graphable
             if (isDebug) {
                 logger.error("** Graph Size: " + size() + " " + g2.size());
             }
-            //return false;
+            return false;
         }
 
 

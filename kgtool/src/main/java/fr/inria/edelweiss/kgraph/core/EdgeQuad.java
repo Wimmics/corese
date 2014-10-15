@@ -114,6 +114,13 @@ public class EdgeQuad extends EdgeTop
        }
        return null;
     }
+    
+    public void setNode(int i, Node n){
+        switch (i){
+            case 0: subject = n; break;
+            case 1: object  = n; break;
+        }
+    }
 
     @Override
     public int nbNode() {

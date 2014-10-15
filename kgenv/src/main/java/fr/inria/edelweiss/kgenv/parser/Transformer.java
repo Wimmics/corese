@@ -340,6 +340,7 @@ public class Transformer implements ExpType {
 		Exp ee = compile(ast.getExtBody(), false);
 		Query q = Query.create(ee);
 		q.setAST(ast);
+                q.setHasFunctional(ast.hasFunctional());
 		// use same compiler
 		bindings(q, ast);
 		path(q, ast);
@@ -376,17 +377,18 @@ public class Transformer implements ExpType {
 		return q;
 	}
 	
-	Exp compileBind(Binding b){
-            return compileBind(b.getFilter(), b.getVariable());
+	Exp compileBind(ASTQuery ast, Binding b){
+            return compileBind(ast, b.getFilter(), b.getVariable());
         }
          
-        Exp compileBind(Expression e, Variable var){
+        Exp compileBind(ASTQuery ast ,Expression e, Variable var){
             Filter f = compileSelect(e, ast);
             Node node = compiler.createNode(var);
             Exp exp = Exp.create(BIND);
             exp.setFilter(f);
             exp.setNode(node);
             exp.setFunctional(f.isFunctional());
+            ast.setHasFunctional(f.isFunctional());
             function(null, exp, var);
             return exp;
         }
@@ -992,7 +994,7 @@ public class Transformer implements ExpType {
 			break;
                     
                 case BIND:
-                    exp = compileBind((Binding)query);
+                    exp = compileBind(ast, (Binding)query);
                     break;
 
 		case SERVICE: 
@@ -1130,7 +1132,7 @@ public class Transformer implements ExpType {
 			break;
 
 		case GRAPH:
-			compileGraph(exp, query);
+			compileGraph(ast, exp, query);
 			break;
 
 		case NOT:
@@ -1174,7 +1176,7 @@ public class Transformer implements ExpType {
          * bind(kg:describe() as ?g)
          * graph ?g BGP
          */
-       Exp compileGraph(Exp exp, fr.inria.acacia.corese.triple.parser.Exp query) {
+       Exp compileGraph(ASTQuery ast, Exp exp, fr.inria.acacia.corese.triple.parser.Exp query) {
             Source srcexp = (Source) query;
             Atom at  = srcexp.getSource();
             Atom nat = getSrc(at);
@@ -1183,7 +1185,7 @@ public class Transformer implements ExpType {
             if (at != nat){
                 // generate bind(kg:describe() as var)
                 Term fun = ast.createFunction(ast.createQName(EXTENSION), at.getConstant());
-                Exp b = compileBind(fun, nat.getVariable());
+                Exp b = compileBind(ast, fun, nat.getVariable());
                 gr.setBind(b);
             }
             

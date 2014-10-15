@@ -260,6 +260,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         // @(a b) rewritten as rdf:rest*/rdf:first a, b
         private int listType = L_LIST;
         private String profile;
+    private boolean isFunctional;
     
      
     /**
@@ -292,6 +293,13 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         return null;
     }
 
+    public void setHasFunctional(boolean b) {
+        isFunctional = b;
+    }
+
+    public boolean hasFunctional(){
+        return isFunctional;
+    }
 
 	class ExprTable extends Hashtable<Expression,Expression> {};
 

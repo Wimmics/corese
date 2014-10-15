@@ -474,6 +474,9 @@ public class PluginImpl extends ProxyImpl {
             return getValue(0);
         }
         Memory memory = (Memory) env;
+        if (memory.getQueryEdges() == null){
+            return getValue(0);
+        }
         Hashtable<Node, Boolean> visit = new Hashtable<Node, Boolean>();
         Distance distance = g.setClassDistance();
 

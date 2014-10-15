@@ -35,7 +35,7 @@ public class Query extends Exp implements Graphable {
     public static final int PLAN_STATS_BASED = 3;
 
     //used to set the default query plan method 
-    public static final int STD_PLAN = PLAN_DEFAULT;
+    public static int STD_PLAN = PLAN_DEFAULT;
 
     public static final int STD_PROFILE = -1;
     public static final int COUNT_PROFILE = 1;
@@ -106,6 +106,7 @@ public class Query extends Exp implements Graphable {
     List<Query> queries;
 
     private boolean isCompiled = false;
+    private boolean hasFunctional = false;
 
     boolean isDebug = false, isCheck = false,
             isAggregate = false, isFunctional = false, isRelax = false,
@@ -290,6 +291,23 @@ public class Query extends Exp implements Graphable {
 
     public int getPlanProfile() {
         return planner;
+    }
+    
+    /**
+     * @return the hasFunctional
+     */
+    public boolean hasFunctional() {
+        return  // bind functional
+                hasFunctional || 
+                // query functional
+                isFunctional();
+    }
+
+    /**
+     * @param hasFunctional the hasFunctional to set
+     */
+    public void setHasFunctional(boolean hasFunctional) {
+        this.hasFunctional = hasFunctional;
     }
 
     public void addError(String mes, Object obj) {
@@ -731,6 +749,7 @@ public class Query extends Exp implements Graphable {
                     setAggregate(true);
                 } else if (exp.getFilter().isFunctional()) {
                     setFunctional(true);
+                    getOuterQuery().setHasFunctional(true);                   
                 }
             }
         }

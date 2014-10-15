@@ -1819,10 +1819,12 @@ public class Eval implements ExpType, Plugin {
         Exp next = getRestore(p, exp);
         stack.add(n + 1, next);
         backtrack = eval(np, gNode, stack, n, option);
-        for (int i = n + 1; stack.get(i) != next;) {
+        for (int i = n + 1; i < stack.size() && stack.get(i) != next; ) {
             stack.remove(i);
         }
-        stack.remove(n + 1);
+        if (stack.size() > n + 1){
+           stack.remove(n + 1);
+        }
         stack.set(n, exp);
         return backtrack;
     }

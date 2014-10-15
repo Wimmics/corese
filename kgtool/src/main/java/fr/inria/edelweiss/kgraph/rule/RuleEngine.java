@@ -130,12 +130,22 @@ public class RuleEngine implements Engine, Graphable {
 
             case OWL_RL:                   
             case OWL_RL_LITE:    
-                optimizeOWLRL();
+                //optimizeOWLRL();
                 try {
                     load(path.get(n));
                 } catch (LoadException ex) {
                     logger.error(ex);
                 }
+                break;        
+        }
+    }
+    
+    void processProfile(){
+        switch (profile) {
+
+            case OWL_RL:                   
+            case OWL_RL_LITE:    
+                optimizeOWLRL();               
                 break;        
         }
     }
@@ -391,6 +401,7 @@ public class RuleEngine implements Engine, Graphable {
     
     // take a picture of graph Index, store it in graph kg:re1
     void begin(){
+        processProfile();
         graph.getContext().storeIndex(NSManager.KGRAM+"re1");
     }
     
@@ -458,8 +469,7 @@ public class RuleEngine implements Engine, Graphable {
             }
             
             for (Rule rule : rules) {
-
-                if (debug) {
+               if (debug) {
                     rule.getQuery().setDebug(true);
                 }
 
@@ -488,7 +498,7 @@ public class RuleEngine implements Engine, Graphable {
                         int save = graph.size();
                         nt = record(rule, loopIndex, loop);
                         Record ot = rule.getRecord();
-                        
+
                         if (nt.accept(ot)) {
                             
                             if (trace){

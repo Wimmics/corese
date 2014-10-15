@@ -25,6 +25,7 @@ import fr.com.hp.hpl.jena.rdf.arp.ARP;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.exceptions.QueryLexicalException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.triple.api.Creator;
@@ -209,6 +210,7 @@ public class Load
         return true;
     }
     
+    // UNDEF_FORMAT loaded as RDF/XML
     public int getFormat(String path) {
         return getFormat(path, UNDEF_FORMAT);
     }
@@ -279,6 +281,10 @@ public class Load
     public void loadWE(String path) throws LoadException {
         loadWE(path, null);
     }
+    
+     public void loadWE(String path, int format) throws LoadException {
+        loadWE(path, null, format);
+    }
 
     public void load(String path, String src) {
         File file = new File(path);
@@ -306,9 +312,16 @@ public class Load
             }
         }
     }
-
-     
+    
      public void loadWE(String path, String src) throws LoadException {
+         loadWE(path, src, UNDEF_FORMAT);
+     }
+
+     /**
+      * format is a suggested default format when path has no extension
+      * default UNDEF_FORMAT is loaded as RDF/XML
+      */
+     public void loadWE(String path, String src, int format) throws LoadException {
         File file = new File(path);
         if (file.isDirectory()) {
             path += File.separator;
@@ -321,15 +334,17 @@ public class Load
                     return;
                 }
                 String name = path + f;
-                loadWE(name, src);
+                loadWE(name, src, format);
             }
         } else {
             if (debug) {
                 logger.info("** Load: " + nb++ + " " + graph.size() + " " + path);
             }
-            load(path, src, null);
+            load(path, src, null, format);
         }
     }
+     
+     
 
     void log(String name) {
         if (graph != null) {
@@ -361,10 +376,11 @@ public class Load
             loadRule(path, base);
             return;
         }
-        else if (format == QUERY_FORMAT) {
-            loadQuery(path, base);
-            return;
-        }
+//        else 
+//        if (format == QUERY_FORMAT) {
+//            loadQuery(path, base);
+//            return;
+//        }
 
         Reader read = null;
         InputStream stream = null;
@@ -468,6 +484,10 @@ public class Load
                 case RULE_FORMAT:
                     loadRule(stream, src);
                     break;
+                    
+                case QUERY_FORMAT:
+                    loadQuery(stream, src);
+                    break;
 
                 case RDFA_FORMAT:
                     loadRDFa(stream, path, base, src);
@@ -480,7 +500,8 @@ public class Load
                 case RDFXML_FORMAT:
                     loadRDFXML(stream, path, base, src);
                     break;
-
+                    
+                case UNDEF_FORMAT:
                 default:
                     loadRDFXML(stream, path, base, src);
             }
@@ -608,6 +629,20 @@ public class Load
         QueryLoad load = QueryLoad.create(qengine);
         load.load(path);
     }
+    
+    void loadQuery(Reader read, String src) throws LoadException  {
+        if (qengine == null) {
+            qengine = QueryEngine.create(graph);
+        }
+        QueryLoad load = QueryLoad.create(qengine);
+        try {
+            load.load(read);
+        } catch (EngineException ex) {
+            throw new LoadException(ex);
+        }
+
+    }
+    
 
     boolean suffix(String path) {
         //if (isURL(path)) return true;

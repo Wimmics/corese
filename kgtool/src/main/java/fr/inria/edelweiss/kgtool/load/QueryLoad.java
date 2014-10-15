@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class QueryLoad {
 
@@ -54,6 +56,17 @@ public class QueryLoad {
             }
         }
     }
+    
+       public void load(Reader read) throws LoadException, EngineException {
+        try {
+            String q = read(read);
+            if (q != null) {
+                engine.defQuery(q);
+            }
+        } catch (IOException ex) {
+            throw new LoadException(ex);
+        }
+    }
 
     boolean isURL(String name) {
         for (String s : PROTOCOLS) {
@@ -65,7 +78,7 @@ public class QueryLoad {
     }
 
     public String read(InputStream stream) throws IOException {
-        return load(new InputStreamReader(stream));
+        return read(new InputStreamReader(stream));
     }
 
     public String read(String name) {
@@ -79,7 +92,7 @@ public class QueryLoad {
                 fr = new FileReader(name);
             }
             
-            query = load(fr);
+            query = read(fr);
 
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
@@ -99,12 +112,12 @@ public class QueryLoad {
             throw new IOException(name);
         }
         Reader fr = new InputStreamReader(stream);
-        String str = load(fr);
+        String str = read(fr);
         return str;
     }
     
 
-    String load(Reader fr) throws IOException {
+    String read(Reader fr) throws IOException {
         BufferedReader fq = new BufferedReader(fr);
         StringBuilder sb = new StringBuilder();
         String str;

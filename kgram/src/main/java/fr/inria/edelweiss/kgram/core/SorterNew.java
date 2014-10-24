@@ -4,16 +4,15 @@ import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.sorter.core.BPGraph;
+import fr.inria.edelweiss.kgram.sorter.core.QPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import fr.inria.edelweiss.kgram.sorter.core.ISort;
-import fr.inria.edelweiss.kgram.sorter.impl.RuleBasedEstimation;
-import fr.inria.edelweiss.kgram.sorter.impl.SortBySelectivity;
-import fr.inria.edelweiss.kgram.sorter.impl.StatsBasedEstimation;
+import fr.inria.edelweiss.kgram.sorter.impl.qpv1.DepthFirstBestSearch;
+import fr.inria.edelweiss.kgram.sorter.impl.qpv1.HeuristicsBasedEstimation;
 import java.util.List;
 
 /**
- * A new sorter, based on triple pattern graph and selectivity
+ * A new sorter for QP
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 5 juin 2014
@@ -31,29 +30,35 @@ public class SorterNew extends Sorter {
 
         long start = System.currentTimeMillis();
         //1 create graph (list of nodes and their edges)
-        BPGraph bpg = new BPGraph(exp, bindings);
-
+        QPGraph bpg = new QPGraph(exp, bindings);
+        long stop1 = System.currentTimeMillis();
+        message("==BPG creating time:" + (stop1 - start) + "ms");
         // 2 estimate cost/selectivity
         // 2.1 find the corresponding algorithm
-        IEstimate ies ;
+
+        IEstimate ies;
         switch (planType) {
-            //case Query.PLAN_COMBINED:
-            case Query.PLAN_RULE_BASED:
-                ies = new RuleBasedEstimation();
-                break;
-            case Query.PLAN_STATS_BASED:
-                ies = new StatsBasedEstimation();
-                break;
+            case Query.QP_HEURISTICS_BASED:
             default:
-                ies = new RuleBasedEstimation();
+                ies = new HeuristicsBasedEstimation();
         }
 
         // 2.2 estimate
         ies.estimate(bpg, prod, bindings);
+        long stop2 = System.currentTimeMillis();
+        message("==Cost estimation time:" + (stop2 - stop1) + "ms");
 
         //3 sort and find the order
-        ISort is = new SortBySelectivity();
+        ISort is ;
+         switch (planType) {
+            case Query.QP_HEURISTICS_BASED:
+            default:
+                is = new DepthFirstBestSearch();
+        }
+         
         List l = is.sort(bpg);
+        long stop3 = System.currentTimeMillis();
+        message("==Sorting time:" + (stop3 - stop2) + "ms");
 
         //4 rewrite
         is.rewrite(exp, l);
@@ -69,10 +74,8 @@ public class SorterNew extends Sorter {
      * @return
      */
     public boolean sortable(Exp e) {
+        if (e.type() == Exp.AND && e.size() > 1) {
 
-        //TODO !!! find a solution when the conditions can not be satisfied..
-        if (e.type() == Exp.AND && e.size() >1) {
-           
             //check all sub expression type
             for (Exp ee : e) {
                 if (!(ee.type() == Exp.FILTER || ee.type() == EDGE || ee.type() == VALUES || ee.type() == GRAPH)) {
@@ -84,8 +87,10 @@ public class SorterNew extends Sorter {
 
         return false;
     }
-    
-    private void message(String msg){
-        if (print) System.out.println(msg);
+
+    private void message(String msg) {
+        if (print) {
+            System.out.println(msg);
+        }
     }
 }

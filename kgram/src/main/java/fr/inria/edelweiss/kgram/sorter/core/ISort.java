@@ -4,7 +4,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.List;
 
 /**
- * Interface for sorting and rewriting the BP node in a given BP graph
+ * Interface for sorting and rewriting the QPG nodes
  * 
  * @author Fuqi Song, WImmics Inria I3S
  * @date 19 mai 2014
@@ -12,12 +12,17 @@ import java.util.List;
 public interface ISort {
 
     /**
-     * Generate a directed graph
+     * Sort the QPG node
      *
      * @param unsorted graph
-     * @return directed graph
+     * @return List of sorted QPG Node
      */
-    public List<BPGNode> sort(BPGraph unsorted);
+    public List<QPGNode> sort(QPGraph unsorted);
 
-    public void rewrite(Exp exp, List<BPGNode> nodes);
+    /**
+     * Rewrite the SPARQL exp according to give order of nodes
+     * @param exp
+     * @param nodes 
+     */
+    public void rewrite(Exp exp, List<QPGNode> nodes);
 }

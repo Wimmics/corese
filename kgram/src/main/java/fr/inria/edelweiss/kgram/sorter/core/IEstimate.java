@@ -3,21 +3,18 @@ package fr.inria.edelweiss.kgram.sorter.core;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 
 /**
- * Interface for estimating the selectivity of BP node in a given BP Graph
+ * Interface for estimating the cost of nodes and edges in QPGraph
  *
  * @author Fuqi Song, WImmics Inria I3S
  * @date 19 mai 2014
  */
 public interface IEstimate {
 
-    //value of selectivity [0, 1], when selected results cover all data set, then 
-    //selectivity =1.0 (max), when no selected results, sel =1
-    //when only one triple is selected, is approximate minimum
-    public final static double MAX_SEL = 1.0;
-    public final static double MIN_SEL = 0.0;
+    public final static double MAX_COST = 1.0;
+    public final static double MIN_COST = 0.0;
     //approximate minimum value, but not equal to 0
-    public final static double MIN_SEL_APP = 1.0 / Double.MAX_VALUE;
-    public final static double NULL_SEL = -1;
+    public final static double MIN_COST_0 = 1.0 / Double.MAX_VALUE;
+    public final static double NA_COST = -1;
 
     /**
      * Estimate and assign the selectvity (or other criteria) for each node in
@@ -25,8 +22,8 @@ public interface IEstimate {
      *
      * @param plein graph
      * @param producer producer
-     * @param utility according to different implmenetation, the object is
-     * different - List<Exp> for non-stats based - etc...
+     * @param parameters parameters for different implementations
      */
-    public void estimate(BPGraph plein, Producer producer, Object utility);
+    public void estimate(QPGraph plein, Producer producer, Object parameters);
+    
 }

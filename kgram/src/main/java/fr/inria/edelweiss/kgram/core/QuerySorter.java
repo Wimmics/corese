@@ -133,44 +133,22 @@ public class QuerySorter implements ExpType {
                         // take OPT_BIND(var = exp) into account
                         // TODO: graph ?g does not take into account OPT_BIND ?g = uri
                         switch (query.getPlanProfile()) {
-                            
-//                            case Query.NO_PLAN:
-//                                break;
-                            case Query.PLAN_DEFAULT:
+
+                            //case Query.PLAN_STATS_BASED:
+                            case Query.QP_HEURISTICS_BASED:
+                                SorterNew sortNew = new SorterNew();
+                                //can be sorted by heuristics-based method
+                                if (sortNew.sortable(exp)) {
+                                    sortNew.sort(exp, lBind, prod, Query.QP_HEURISTICS_BASED);
+                                    setBind(exp, lBind);
+                                    break;
+                                }
+                                //else continue to use the default method to do planning and correction
+                            case Query.QP_DEFAULT:
                                 sort.sort(query, exp, lVar, lBind);
                                 sortFilter(exp, lVar);
                                 exp.setBind();
                                 break;
-                            case Query.PLAN_RULE_BASED:
-                                sort = new SorterNew();
-                                SorterNew sortNew = (SorterNew) sort;
-                                //can be sorted by rule-based method
-                                if (sortNew.sortable(exp)) {
-                                    sortNew.sort(exp, lBind, null, Query.PLAN_RULE_BASED);
-                                    setBind(exp, lBind);
-                                }else{//use the default method to do planning and correction
-                                    //PLAN_DEFAULT
-                                    sort.sort(query, exp, lVar, lBind);
-                                    sortFilter(exp, lVar);
-                                    exp.setBind();
-                                }
-
-                                break;
-                            case Query.PLAN_STATS_BASED:
-                                //!! the first time using stats based method
-                                // then do statistics (create the instance)
-//                                IProducer ip = (IProducer) prod;
-//                                if (ip.statsEnabled() && !ip.statsInitialized()) {
-//                                    ip.createStatsInstance();
-//                                }
-                                //DO STATS WHEN LOADING
-                                
-                                sort = new SorterNew();
-                                ((SorterNew) sort).sort(exp, lBind, prod, Query.PLAN_STATS_BASED);
-                                setBind(exp, lBind);
-                                break;
-//                            case Query.PLAN_COMBINED:
-//                                break;
                         }
                         service(exp);
                     }

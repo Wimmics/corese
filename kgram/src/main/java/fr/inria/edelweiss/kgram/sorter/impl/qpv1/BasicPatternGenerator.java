@@ -1,45 +1,58 @@
-package fr.inria.edelweiss.kgram.sorter.core;
+package fr.inria.edelweiss.kgram.sorter.impl.qpv1;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Exp;
-import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.BOUND;
-import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.O;
-import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.P;
-import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.S;
-import static fr.inria.edelweiss.kgram.sorter.core.TriplePattern.UNBOUND;
-import java.util.List;
+import static fr.inria.edelweiss.kgram.sorter.core.AbstractCostModel.BOUND;
+import static fr.inria.edelweiss.kgram.sorter.core.AbstractCostModel.UNBOUND;
+import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
+import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.O;
+import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.P;
+import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.S;
 
 /**
- * Utility.java
+ * Generate the basic patterns ordering by the selectivity acorrding to the size
+ * of Subject, Predicate and Object Ns, Np and No
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 8 août 2014
  */
-public class Utility {
-
-    public static void main(String[] args) {
-        System.out.println(Utility.generateBasicPattern());
-        Utility.generateBasicPattern(new int[]{30, 20, 10}, true);
-        System.out.println(Utility.BASIC_PATTERN);
-    }
+public class BasicPatternGenerator {
 
     public static int[][] BASIC_PATTERN = null;
     private final static int[] default_order = {P, S, O};//p<s<o
     private final static int TRIPLE_LEN = 3, PATTERN_LEN = 8;
 
+    /**
+     * Generate the default basic pattern orders using Np < Ns < No
+     *
+     * @return
+     */
     public static int[][] generateBasicPattern() {
         return generateBasicPattern(null, true);
+    }
+
+    private static int[] getNumbers(IProducerQP ip) {
+        int[] numbers = null;
+        if (ip != null
+                && ip.getSize(IProducerQP.SUBJECT) != IProducerQP.NA
+                && ip.getSize(IProducerQP.OBJECT) != IProducerQP.NA) {
+            
+            numbers = new int[]{
+               ip.getSize(IProducerQP.SUBJECT),
+             ip.getSize(IProducerQP.PREDICATE),
+           ip.getSize(IProducerQP.OBJECT)};
+        }
+
+        return numbers;
     }
 
     /**
      * Generate the basic patterns using the numbers of distince subject,
      * predicate and objects
      *
-     * @param numbers array of distinct number s p o
+     * @param producer
      * @param regen if re-generate the patterns
      * @return
      */
-    public static int[][] generateBasicPattern(int[] numbers, boolean regen) {
+    public static int[][] generateBasicPattern(IProducerQP producer, boolean regen) {
         if (BASIC_PATTERN != null && !regen) {
             return BASIC_PATTERN;
         }
@@ -47,6 +60,7 @@ public class Utility {
         //1 step: get the order of s, p, o according to the number of distinct s, p, o
         // using default settings if the numbers of s, p, o are not available
         int[] order = default_order;
+        int[] numbers = getNumbers(producer);
         if (numbers != null && numbers.length == TRIPLE_LEN) {
             order = order3Numbers(numbers);
         }
@@ -102,16 +116,5 @@ public class Utility {
         int x = arr[a];
         arr[a] = arr[b];
         arr[b] = x;
-    }
-
-    public static boolean isBound(List<Exp> bindings, Node var) {
-        for (Exp exp : bindings) {
-            if (var.getLabel().equalsIgnoreCase(exp.get(0).getNode().getLabel())) {
-                //todo in future (or not)??
-                //calculate the number of constants bound to this variable
-                return true;
-            }
-        }
-        return false;
     }
 }

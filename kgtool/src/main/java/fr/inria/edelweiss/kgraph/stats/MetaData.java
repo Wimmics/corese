@@ -3,12 +3,11 @@ package fr.inria.edelweiss.kgraph.stats;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.sorter.core.IProducer;
 import fr.inria.edelweiss.kgraph.stats.data.ReducedMap;
 import fr.inria.edelweiss.kgraph.stats.data.HashBucket;
-import static fr.inria.edelweiss.kgram.sorter.core.IProducer.OBJECT;
-import static fr.inria.edelweiss.kgram.sorter.core.IProducer.PREDICATE;
-import static fr.inria.edelweiss.kgram.sorter.core.IProducer.SUBJECT;
+import static fr.inria.edelweiss.kgraph.stats.IStats.OBJECT;
+import static fr.inria.edelweiss.kgraph.stats.IStats.PREDICATE;
+import static fr.inria.edelweiss.kgraph.stats.IStats.SUBJECT;
 import fr.inria.edelweiss.kgraph.stats.data.BaseMap;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import static fr.inria.edelweiss.kgraph.stats.Options.DEF_OPT_OBJ;
@@ -34,6 +33,7 @@ import java.util.Map;
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 20 mai 2014
+ * @deprecated
  */
 public class MetaData {
 
@@ -108,10 +108,10 @@ public class MetaData {
     private static void checkOptions() {
         //set default options
         if (options.isEmpty()) {
-            addOption(DEF_OPT_SUB, new Options(HT_CUTOFF, IProducer.SUBJECT, DEF_PARA_CUTOFF));
-            addOption(DEF_OPT_PRE, new Options(HT_FULL, IProducer.PREDICATE, null));
-            addOption(DEF_OPT_OBJ, new Options(HT_HASH, IProducer.OBJECT, DEF_PARA_CUTOFF));
-            addOption(DEF_OPT_TRIPLE, new Options(HT_TRIPLE_HASH, IProducer.TRIPLE, DEF_PARA_HTT));
+            addOption(DEF_OPT_SUB, new Options(HT_CUTOFF, IStats.SUBJECT, DEF_PARA_CUTOFF));
+            addOption(DEF_OPT_PRE, new Options(HT_FULL, IStats.PREDICATE, null));
+            addOption(DEF_OPT_OBJ, new Options(HT_HASH, IStats.OBJECT, DEF_PARA_CUTOFF));
+            addOption(DEF_OPT_TRIPLE, new Options(HT_TRIPLE_HASH, IStats.TRIPLE, DEF_PARA_HTT));
         }
 
         //stas for whole triple

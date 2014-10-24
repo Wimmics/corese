@@ -2,9 +2,9 @@ package fr.inria.edelweiss.kgraph.stats.data;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import static fr.inria.edelweiss.kgram.sorter.core.IProducer.OBJECT;
-import static fr.inria.edelweiss.kgram.sorter.core.IProducer.PREDICATE;
-import static fr.inria.edelweiss.kgram.sorter.core.IProducer.SUBJECT;
+import static fr.inria.edelweiss.kgraph.stats.IStats.OBJECT;
+import static fr.inria.edelweiss.kgraph.stats.IStats.PREDICATE;
+import static fr.inria.edelweiss.kgraph.stats.IStats.SUBJECT;
 import fr.inria.edelweiss.kgraph.stats.Options;
 import java.util.HashMap;
 import java.util.Map;

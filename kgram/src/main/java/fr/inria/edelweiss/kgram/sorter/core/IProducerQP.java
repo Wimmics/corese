@@ -10,14 +10,6 @@ package fr.inria.edelweiss.kgram.sorter.core;
  */
 public interface IProducerQP {
 
-    public static final int ALL = 0;
-    public static final int SUBJECT = 1;
-    public static final int PREDICATE = 2;
-    public static final int OBJECT = 3;
-    public static final int TRIPLE = 4;
-    public static final int NA = -1;
-
-
     /**
      * Return the size of triples according to different types
      * 

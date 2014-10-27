@@ -1,11 +1,12 @@
 package fr.inria.edelweiss.kgram.sorter.impl.qpv1;
 
-import static fr.inria.edelweiss.kgram.sorter.core.AbstractCostModel.BOUND;
-import static fr.inria.edelweiss.kgram.sorter.core.AbstractCostModel.UNBOUND;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.BOUND;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.NA;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.OBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.SUBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.UNBOUND;
 import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.O;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.P;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.S;
 
 /**
  * Generate the basic patterns ordering by the selectivity acorrding to the size
@@ -17,7 +18,7 @@ import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.S;
 public class BasicPatternGenerator {
 
     public static int[][] BASIC_PATTERN = null;
-    private final static int[] default_order = {P, S, O};//p<s<o
+    private final static int[] default_order = {PREDICATE, SUBJECT, OBJECT};//p<s<o
     private final static int TRIPLE_LEN = 3, PATTERN_LEN = 8;
 
     /**
@@ -32,13 +33,13 @@ public class BasicPatternGenerator {
     private static int[] getNumbers(IProducerQP ip) {
         int[] numbers = null;
         if (ip != null
-                && ip.getSize(IProducerQP.SUBJECT) != IProducerQP.NA
-                && ip.getSize(IProducerQP.OBJECT) != IProducerQP.NA) {
+                && ip.getSize(SUBJECT) != NA
+                && ip.getSize(OBJECT) != NA) {
             
             numbers = new int[]{
-               ip.getSize(IProducerQP.SUBJECT),
-             ip.getSize(IProducerQP.PREDICATE),
-           ip.getSize(IProducerQP.OBJECT)};
+               ip.getSize(SUBJECT),
+             ip.getSize(PREDICATE),
+           ip.getSize(OBJECT)};
         }
 
         return numbers;

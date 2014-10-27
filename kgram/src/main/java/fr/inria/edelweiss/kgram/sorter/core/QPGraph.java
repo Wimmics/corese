@@ -33,9 +33,11 @@ public class QPGraph {
 
     public QPGraph(Exp exp, List<Exp> bindings) {
         this.bindings = bindings;
-        nodes = new ArrayList<QPGNode>();
-        edges = new ArrayList<QPGEdge>();
+        this.nodes = new ArrayList<QPGNode>();
+        this.edges = new ArrayList<QPGEdge>();
 
+        //this.bindings = qs.findBindings(exp);
+        
         createNodes(exp);
         createEdges();
     }

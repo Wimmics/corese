@@ -10,6 +10,9 @@ import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.OBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.SUBJECT;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +26,6 @@ import java.util.List;
  */
 public class QPGNode {
 
-    public final static int S = 0, P = 1, O = 2;
     // the expression that the node encapsulates
     private final Exp exp;
     private final int type;
@@ -48,32 +50,6 @@ public class QPGNode {
         return this.type;
     }
 
-    public Node get(int i) {
-        switch (i) {
-            case S:
-                return getSubject();
-            case P:
-                return getPredicate();
-            case O:
-                return getObject();
-            default:
-                return null;
-        }
-    }
-
-    public Node getSubject() {
-        return getType() == EDGE ? this.exp.getEdge().getNode(0) : null;
-    }
-
-    public Node getPredicate() {
-        Edge e = this.exp.getEdge();
-        return getType() == EDGE ? (e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable()) : null;
-    }
-
-    public Node getObject() {
-        return getType() == EDGE ? this.exp.getEdge().getNode(1) : null;
-    }
-
     public double getCost() {
         return cost;
     }
@@ -82,6 +58,24 @@ public class QPGNode {
         this.cost = cost;
     }
 
+    public Node getExpNode(int i) {
+        if (this.type != EDGE) {
+            return null;
+        }
+
+        switch (i) {
+            case SUBJECT:
+                return this.exp.getEdge().getNode(0);
+            case PREDICATE:
+                Edge e = this.exp.getEdge();
+                return (e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable());
+            case OBJECT:
+                return this.exp.getEdge().getNode(1);
+            default:
+                return null;
+        }
+    }
+    
     /**
      * Check if two QPG node share same variables
      *

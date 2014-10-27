@@ -20,6 +20,12 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.ALL;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.NA;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.OBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.SUBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.TRIPLE;
 import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
 import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
@@ -938,17 +944,17 @@ public class ProducerImpl implements Producer, IProducerQP {
     @Override
     public int getCount(QPGNode qpgn, int type) {
         switch (type) {
-            case IProducerQP.PREDICATE:
+            case PREDICATE:
                 // case 1: unbound
-                if (qpgn.getPredicate().isVariable()) {
-                    return getSize(IProducerQP.PREDICATE);
+                if (qpgn.getExpNode(PREDICATE).isVariable()) {
+                    return getSize(PREDICATE);
                 }
 
                 // case 2: bound
                 Iterator<Node> it = this.graph.getProperties().iterator();
                 while (it.hasNext()) {
                     Node predNode = it.next();
-                    if (qpgn.getPredicate().getLabel().equalsIgnoreCase(predNode.getLabel())) {
+                    if (qpgn.getExpNode(PREDICATE).getLabel().equalsIgnoreCase(predNode.getLabel())) {
                         return this.graph.size(predNode);
                     }
                 }
@@ -957,11 +963,11 @@ public class ProducerImpl implements Producer, IProducerQP {
                 return 0;
             //to do for SUBJECT | OBJECT
             //for the moment, cannot get these values directly
-            case IProducerQP.SUBJECT:
-            case IProducerQP.OBJECT:
-            case IProducerQP.TRIPLE:
+            case SUBJECT:
+            case OBJECT:
+            case TRIPLE:
             default:
-                return IProducerQP.NA;
+                return NA;
         }
 
     }
@@ -969,16 +975,16 @@ public class ProducerImpl implements Producer, IProducerQP {
     @Override
     public int getSize(int type) {
         switch (type) {
-            case IProducerQP.ALL:
+            case ALL:
                 return this.graph.size();
-            case IProducerQP.PREDICATE:
+            case PREDICATE:
                 return this.graph.getIndex().size();
             //to do for SUBJECT | OBJECT
             //for the moment, cannot get these values directIProducerQP      
-            case IProducerQP.SUBJECT:
-            case IProducerQP.OBJECT:
+            case SUBJECT:
+            case OBJECT:
             default:
-                return IProducerQP.NA;
+                return NA;
         }
     }
 

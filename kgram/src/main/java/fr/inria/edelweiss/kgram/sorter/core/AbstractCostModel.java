@@ -12,7 +12,7 @@ import java.util.List;
 public abstract class AbstractCostModel {
 
     
-    public final static int BOUND = 1, LIST = 1, UNBOUND = Integer.MAX_VALUE;
+
 
     /**
      * Abstract method for estimating the cost using the model

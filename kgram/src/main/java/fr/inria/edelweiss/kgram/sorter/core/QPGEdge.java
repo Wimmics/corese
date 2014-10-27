@@ -1,6 +1,6 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
-import fr.inria.edelweiss.kgram.sorter.impl.qpv1.QPGEdgeWeightModel;
+import fr.inria.edelweiss.kgram.sorter.impl.qpv1.QPGEdgeCostModel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class QPGEdge {
 
         //set list of shared vairables
         this.variables = n1.shared(n2);
-        this.costModel = new QPGEdgeWeightModel(this);
+        this.costModel = new QPGEdgeCostModel(this);
     }
 
     public double getCost() {

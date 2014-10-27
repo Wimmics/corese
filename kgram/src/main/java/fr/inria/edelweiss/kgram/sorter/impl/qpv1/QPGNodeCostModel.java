@@ -8,14 +8,16 @@ import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPHNODE;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.sorter.core.AbstractCostModel;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.BOUND;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.LIST;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.NA;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.UNBOUND;
 import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import fr.inria.edelweiss.kgram.sorter.core.QPGraph;
 import static fr.inria.edelweiss.kgram.sorter.core.IEstimate.MAX_COST;
 import static fr.inria.edelweiss.kgram.sorter.core.IEstimate.MIN_COST_0;
 import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.O;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.P;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.S;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,15 +31,11 @@ import java.util.List;
  */
 public class QPGNodeCostModel extends AbstractCostModel {
 
-    private final static int[][] DEFAULT_BASIC_PATTERN = new int[][]{
-        {0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, 0, 1}, {1, 1, 0}, {0, 1, 1}, {1, 0, 1}, {1, 1, 1}
-    };
-
     //FV: filter, number of variables(in the triple pattern) appeared in all the filters
     //    the more the better (less selectivity)
     //FN: filter, variables appeared in how many filters 
     //G: graph
-    private final static int G = 3, FF = 4, FV = 5;
+    private final static int S = 0, P = 1, O = 2, G = 3, FF = 4, FV = 5;
     private final static int PARAMETER_LEN = 6;
     //list of vairables appeared in the expression
     List<String> variables = new ArrayList<String>();
@@ -68,11 +66,11 @@ public class QPGNodeCostModel extends AbstractCostModel {
 
     @Override
     public void estimate(List<Object> params) {
-        if(!(isParametersOK(params) && estimatable())){
+        if (!(isParametersOK(params) && estimatable())) {
             this.node.setCost(Integer.MAX_VALUE);
             return;
         }
-        
+
         int size = (Integer) params.get(0);
         int index = (Integer) params.get(1);
 
@@ -166,13 +164,6 @@ public class QPGNodeCostModel extends AbstractCostModel {
     }
 
     /**
-     * @return @deprecated
-     */
-    public final int match() {
-        return this.match(DEFAULT_BASIC_PATTERN);
-    }
-
-    /**
      * Sort a list of triple patterns according to predefined rules
      *
      * @param patterns
@@ -210,11 +201,11 @@ public class QPGNodeCostModel extends AbstractCostModel {
             //EDGE
             //get the sequence in the simple pattern list
             int i1 = m1.match(bp), i2 = m2.match(bp);
-            int np1 = IProducerQP.NA, np2 = IProducerQP.NA;
-            boolean flag = m1.pattern[S] ==1 && m1.pattern[P] ==0 && m1.pattern[O] ==1;//only for {? p ?}, because for other patterns it not accurate
+            int np1 = NA, np2 = NA;
+            boolean flag = m1.pattern[S] == 1 && m1.pattern[P] == 0 && m1.pattern[O] == 1;//only for {? p ?}, because for other patterns it not accurate
             if (ip != null && flag) {
-                np1 = ip.getCount(m1.node, IProducerQP.PREDICATE);
-                np2 = ip.getCount(m2.node, IProducerQP.PREDICATE);
+                np1 = ip.getCount(m1.node, PREDICATE);
+                np2 = ip.getCount(m2.node, PREDICATE);
             }
             if (i1 != i2) {//R2
                 return i1 > i2 ? 1 : -1;
@@ -258,7 +249,7 @@ public class QPGNodeCostModel extends AbstractCostModel {
                 || !(params.get(1) instanceof Integer)) {
             return false;
         }
-        
+
         return true;
     }
 

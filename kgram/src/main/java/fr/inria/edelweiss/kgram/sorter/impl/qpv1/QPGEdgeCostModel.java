@@ -7,30 +7,31 @@ import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.OBJECT;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.PREDICATE;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.SUBJECT;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import static fr.inria.edelweiss.kgram.sorter.core.IEstimate.MAX_COST;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.O;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.P;
-import static fr.inria.edelweiss.kgram.sorter.core.QPGNode.S;
 import java.util.List;
 
 /**
- * QPGEdgeWeight.java
+ * Cost model for QPG edge 
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 20 oct. 2014
  */
-public class QPGEdgeWeightModel extends AbstractCostModel {
+public class QPGEdgeCostModel extends AbstractCostModel {
 
     //weight 6, 5, 4, 3, 2, 1
     private static final int[][] JOINT_PATTERN = new int[][]{
-        {P, O}, {S, P}, {S, O}, {O, O}, {S, S}, {P, P}
+        {PREDICATE, OBJECT}, {SUBJECT, PREDICATE}, {SUBJECT, OBJECT},
+        {OBJECT, OBJECT}, {SUBJECT, SUBJECT}, {PREDICATE, PREDICATE}
     };
     private final QPGEdge edge;
     private int Nshare = 0;
     private int Jtype = -1;
 
-    public QPGEdgeWeightModel(QPGEdge edge) {
+    public QPGEdgeCostModel(QPGEdge edge) {
         this.edge = edge;
         if (this.estimatable()) {
             if(this.edge.get(0).getType()== EDGE &&this.edge.get(1).getType()== EDGE){
@@ -54,8 +55,8 @@ public class QPGEdgeWeightModel extends AbstractCostModel {
         for (int i = 0; i < jp.length; i++) {
             int p1 = jp[i][0], p2 = jp[i][1];
             
-            if (node1.get(p1).getLabel().equals(node2.get(p2).getLabel())
-                    || node1.get(p2).getLabel().equals(node2.get(p1).getLabel())) {
+            if (node1.getExpNode(p1).getLabel().equals(node2.getExpNode(p2).getLabel())
+                    || node1.getExpNode(p2).getLabel().equals(node2.getExpNode(p1).getLabel())) {
                 Jtype = jp.length - i;
             }
         }

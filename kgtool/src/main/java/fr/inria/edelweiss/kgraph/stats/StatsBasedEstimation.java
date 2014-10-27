@@ -11,6 +11,7 @@ import static fr.inria.edelweiss.kgram.api.core.Node.OBJECT;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.sorter.core.QPGEdge;
+import fr.inria.edelweiss.kgram.sorter.impl.qpv1.BasicPatternGenerator;
 import static fr.inria.edelweiss.kgraph.stats.IStats.PREDICATE;
 import static fr.inria.edelweiss.kgraph.stats.IStats.SUBJECT;
 import java.util.List;
@@ -103,7 +104,7 @@ public class StatsBasedEstimation implements IEstimate {
         }
 
         // if all variables in a triple pattern are bound, then selectiviy is set to app_0
-        switch (pattern.match()) {
+        switch (pattern.match(BasicPatternGenerator.generateBasicPattern())) {
             //{0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {0, 0, 1}, {1, 1, 0}, {0, 1, 1}, {1, 0, 1}, {1, 1, 1}
             case 0:// {s p o}
                 return MIN_COST_0;
@@ -125,11 +126,11 @@ public class StatsBasedEstimation implements IEstimate {
                     return o;
                 }
             case 4://{? ? o}
-                return getSel(n.getObject(), OBJECT);
+                return getSel(n.getExpNode(OBJECT), OBJECT);
             case 5://{s ?  d?}
-                return getSel(n.getSubject(), SUBJECT);
+                return getSel(n.getExpNode(SUBJECT), SUBJECT);
             case 6://{? p ?}
-                return getSel(n.getPredicate(), PREDICATE);
+                return getSel(n.getExpNode(PREDICATE), PREDICATE);
             case 7://{? ? ?}
                 return MAX_COST;
             default:

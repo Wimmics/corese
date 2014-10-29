@@ -199,6 +199,7 @@ public class RemoteProducerWSImpl implements Producer {
         String rwSparql = qo.getSparqlQuery(gNode, from, qEdge, env);
 
         Graph g = Graph.create(false);
+        g.setTuple(true);
         InputStream is = null;
         try {
             StopWatch sw = new StopWatch();
@@ -338,6 +339,8 @@ public class RemoteProducerWSImpl implements Producer {
         }
 
         Graph g = Graph.create();
+        g.setTuple(true);
+        
         logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
 
         // count number of queries
@@ -494,6 +497,8 @@ public class RemoteProducerWSImpl implements Producer {
 
         // Remote query processing
         Graph g = Graph.create();
+        g.setTuple(true);
+        
 //        logger.debug("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
 
         if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
@@ -674,7 +679,7 @@ public class RemoteProducerWSImpl implements Producer {
             Entity entity = it.next();
             Edge e = entity.getEdge();
             if (e != null) {
-                                //TODO provenance for node result ; associated rwSparql ; associated endpoint
+                //TODO provenance for node result ; associated rwSparql ; associated endpoint
                 //TODO TimeStamping
                 //TODO duration ?
 

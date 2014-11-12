@@ -70,7 +70,8 @@ public class Option extends Exp {
 	
 	public StringBuffer toString(StringBuffer sb) {
             if (isOptional()){
-                sb.append(eget(0).toString());
+                //sb.append(eget(0).toString());
+                toString(eget(0), sb);
  		sb.append(KeywordPP.SPACE + KeywordPP.OPTIONAL + KeywordPP.SPACE);
                 sb.append(eget(1).toString());
            }
@@ -82,6 +83,16 @@ public class Option extends Exp {
             }
             return sb;
 	}
+        
+        void toString(Exp exp, StringBuffer sb){
+            if (exp.isBGP()){
+                // skip { } around exp
+                exp.display(sb);
+            }
+            else {
+                exp.toString(sb);
+            }
+        }
 	
 	public boolean validate(ASTQuery ast, boolean exist){
 		boolean ok = true;

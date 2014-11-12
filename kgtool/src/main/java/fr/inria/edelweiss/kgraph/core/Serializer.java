@@ -11,48 +11,54 @@ public class Serializer {
     static final String NL = System.getProperty("line.separator");
     StringBuilder sb;
 
-    Serializer() {
+    public Serializer() {
         sb = new StringBuilder();
     }
 
-    void append(Object s1) {
+    public void append(Object s1) {
         sb.append(s1);
     }
 
-    void append(Object s1, Object s2) {
+    public void append(Object s1, Object s2) {
         sb.append(s1);
         sb.append(s2);
     }
 
-    void appendNL(Object s1, Object s2) {
+    public void appendNL(Object s1, Object s2) {
         append(s1, s2);
         append(NL);
     }
     
-    void nl(){
+    public void nl(){
         sb.append(NL);
     }
  
-    void appendNL(Object s1) {
+    public void appendNL(Object s1) {
         sb.append(s1);
         sb.append(NL);
     }
+    
+    public void appendPNL(Object s1) {
+        sb.append(s1);
+        append(" ; ");
+        sb.append(NL);
+    }
 
-    void appendPNL(Object s1, Object s2) {
+    public void appendPNL(Object s1, Object s2) {
         append(s1, s2);
-        append(";", NL);
+        append(" ;", NL);
     }
     
-     void appendP(Object s1, Object s2) {
+     public void appendP(Object s1, Object s2) {
         append(s1, s2);
-        append("; ");
+        append(" ; ");
     }
     
-    void open(String type){
+    public void open(String type){
         appendPNL("[] a ", type);
     }
     
-    void close(){
+    public void close(){
         appendNL(".");
     }
 

@@ -1496,7 +1496,7 @@ public class Query extends Exp implements Graphable {
                                 exp.setFree(true);
                             }
                             if (isDebug()) {
-                                Message.log(Message.FREE, exp);
+                                //Message.log(Message.FREE, exp);
                             }
                         }
                 }

@@ -117,7 +117,7 @@ public class Sorter {
      * Edge with node in bindings has advantage
      */
     protected boolean beforeBind(Query q, Exp e2, Exp e1) {
-        Mappings list = q.getMappings();
+        Mappings list = q.getActualMappings();
         if (list != null && list.size() > 0) {
             Mapping map = list.get(0);
             if (e1.bind(map)) {

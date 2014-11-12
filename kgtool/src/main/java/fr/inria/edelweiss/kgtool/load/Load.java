@@ -376,11 +376,11 @@ public class Load
             loadRule(path, base);
             return;
         }
-//        else 
-//        if (format == QUERY_FORMAT) {
-//            loadQuery(path, base);
-//            return;
-//        }
+        else 
+        if (format == QUERY_FORMAT) {
+            loadQuery(path, base);
+            return;
+        }
 
         Reader read = null;
         InputStream stream = null;

@@ -132,7 +132,7 @@ public class PluginImpl extends ProxyImpl {
                 
             case STL_NUMBER:
                 return getValue(1 + env.count());
-                                     
+                                                    
             case FOCUS_NODE:
                 return getFocusNode(null, env);
 
@@ -197,6 +197,9 @@ public class PluginImpl extends ProxyImpl {
             case STL_PROCESS:
                 return process(exp, env, p, dt);
                 
+            case STL_GET:
+                return get(exp, env, p, dt);
+                
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
                 return pprint(dt, null, null, null, exp, env, p);
@@ -229,7 +232,11 @@ public class PluginImpl extends ProxyImpl {
             case VISITED:
                 return visited(dt, env, p);
 
-
+            case EVEN: 
+                return even(exp, dt);
+                
+            case ODD:
+                return odd(exp, dt);
 
             case GET:
                 return getObject(o);
@@ -355,6 +362,12 @@ public class PluginImpl extends ProxyImpl {
                 
             case STORE:
                 return ext.store(p, dt1, dt2);
+                
+            case STL_SET:
+                return set(exp, env, p, dt1, dt2);
+                
+            case STL_GET:
+                return get(exp, env, p, dt1, dt2);    
 
         }
 
@@ -612,8 +625,17 @@ public class PluginImpl extends ProxyImpl {
         IDatatype res = DatatypeMap.createObject("rule", env.getQuery());
         return res;
     }
+
+    private Object even(Expr exp, IDatatype dt) {
+        boolean b = dt.intValue() % 2 == 0 ;
+        return getValue(b);
+    }
     
-   
+    private Object odd(Expr exp, IDatatype dt) {
+        boolean b = dt.intValue() % 2 != 0 ;
+        return getValue(b);        
+    }
+    
   
     class Table extends Hashtable<Integer, PTable> {
     }
@@ -769,7 +791,7 @@ public class PluginImpl extends ProxyImpl {
     }
       
     IDatatype pprint(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, getLabel(trans), getLabel(name));
+        Transformer p = getTransformer(exp, env, prod, trans, getLabel(name));
         return p.process(getLabel(temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
@@ -791,7 +813,7 @@ public class PluginImpl extends ProxyImpl {
      
      IDatatype pprint(Object[] args, IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, IDatatype name, 
              Expr exp, Environment env, Producer prod) {        
-        Transformer p = getTransformer(exp, env, prod, getLabel(trans), getLabel(name));
+        Transformer p = getTransformer(exp, env, prod, trans, getLabel(name));
         IDatatype dt = p.process(args, focus, arg,
                 getLabel(temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
@@ -829,6 +851,28 @@ public class PluginImpl extends ProxyImpl {
             return getEvaluator().eval(ee, env, p);
         } 
     }
+    
+    public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt) {
+        Transformer t = getTransformer(env, p);        
+        return t.get(dt.getLabel());
+    }
+    
+     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        Transformer t = getTransformer(env, p);        
+        IDatatype dt = get(exp, env, p, dt1);
+        if (dt == null){
+            return FALSE;
+        }
+        boolean b =  dt.equals(dt2);
+        return getValue(b);
+    }
+    
+    public Object set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        Transformer t = getTransformer(env, p); 
+        t.set(dt1.getLabel(), dt2);
+        return TRUE;
+    }
+    
     
     
     /**
@@ -907,10 +951,10 @@ public class PluginImpl extends ProxyImpl {
     }
 
     Transformer getTransformer(Environment env, Producer p) {
-        return getTransformer(null, env, p, (String) null, null);
+        return getTransformer(null, env, p, (IDatatype) null, null);
     }
     
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, String trans) {
+    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype trans) {
         return getTransformer(exp, env, prod, trans, null);
     }
     
@@ -918,10 +962,11 @@ public class PluginImpl extends ProxyImpl {
      * name is a named graph
      * TODO: cache for named graph
      */    
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, String trans, String name) {    
+    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, String name) {    
         Query q = env.getQuery();
+        ASTQuery ast = (ASTQuery) q.getAST();
         String p = null;
-
+        String trans = getLabel(uri);
         if (trans != null) {
             p = trans;
         } else if (q.hasPragma(Pragma.TEMPLATE)) {
@@ -942,6 +987,9 @@ public class PluginImpl extends ProxyImpl {
                         || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
                 
                Transformer gt = Transformer.create((Graph) prod.getGraph(), p, name, with);
+               gt.init(ast);
+                // set after init
+               gt.set(Transformer.STL_URI, uri);
                
                if (t == null){
                    // get current transformer if any to get its NSManager 
@@ -950,9 +998,6 @@ public class PluginImpl extends ProxyImpl {
                if (t != null && t.getNSM().isUserDefine()){
                    gt.setNSM(t.getNSM());
                }
-               else {
-                   gt.setNSM(((ASTQuery) q.getAST()).getNSM());
-               }  
                
                t = gt;
             } catch (LoadException ex) {
@@ -962,7 +1007,10 @@ public class PluginImpl extends ProxyImpl {
        }
         else if (t == null) {    
             t = Transformer.create(prod, p);
-            t.setNSM(((ASTQuery) q.getAST()).getNSM());
+            // set after init
+            t.init(ast);
+            t.set(Transformer.STL_URI, uri);  
+            
             q.setTransformer(p, t);
         }
         

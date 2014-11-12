@@ -716,9 +716,8 @@ public class Memory implements Environment {
 	
 	boolean push(Mapping res, int n, boolean isEdge){
 		int k = 0;
-
 		for (Node qNode : res.getQueryNodes()){
-			if (qNode.getIndex()>=0){
+			if (qNode != null && qNode.getIndex()>=0){
 				// use case: skip select fun() as var
 				// when var has no index
 				Node node = res.getNode(k);

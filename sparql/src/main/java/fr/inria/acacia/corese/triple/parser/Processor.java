@@ -117,6 +117,7 @@ public class Processor {
         
         static final String CALL_TEMPLATE           = STL + "call-template";
         static final String CALL_TEMPLATE_WITH      = STL + "call-template-with";
+        static final String CTW                     = STL + "ctw";
 	static final String STL_TURTLE              = STL + "turtle"; 
 	static final String STL_URI                 = STL + "uri"; 
 	static final String STL_URILITERAL          = STL + "uriLiteral"; 
@@ -130,6 +131,8 @@ public class Processor {
  	static final String STL_LOAD                = STL + "load";
  	static final String STL_IMPORT              = STL + "import";
 	static final String STL_ISSTART             = STL + "isStart"; 
+	static final String STL_SET                 = STL + "set"; 
+	static final String STL_GET                 = STL + "get"; 
         
 	public static final String STL_GROUPCONCAT  = STL + "group_concat"; 
 	public static final String STL_CONCAT       = STL + "concat"; 
@@ -175,6 +178,8 @@ public class Processor {
 	static final String SETP     = KGRAM + "setProperty";
 	static final String LOAD     = KGRAM + "load";
 	static final String NUMBER   = KGRAM + "number";
+	static final String EVEN     = KGRAM + "even";
+	static final String ODD      = KGRAM + "odd";
 	static final String DISPLAY  = KGRAM + "display";
 	static final String EXTEQUAL = KGRAM + "equals";
 	static final String EXTCONT  = KGRAM + "contains";
@@ -494,6 +499,7 @@ public class Processor {
 		defoper(APPLY_TEMPLATES_WITH_NOGRAPH, ExprType.APPLY_TEMPLATES_WITH_NOGRAPH);
 		defoper(CALL_TEMPLATE,              ExprType.CALL_TEMPLATE);
 		defoper(CALL_TEMPLATE_WITH,         ExprType.CALL_TEMPLATE_WITH);
+		defoper(CTW,                        ExprType.CALL_TEMPLATE_WITH);
                 
                 // 3 deprecated:
 		defoper(APPLY_ALL_TEMPLATES, 	ExprType.APPLY_TEMPLATES_ALL);
@@ -514,6 +520,8 @@ public class Processor {
 		defoper(STL_LOAD,               ExprType.STL_LOAD);
 		defoper(STL_IMPORT,             ExprType.STL_IMPORT);
                 defoper(STL_ISSTART,            ExprType.STL_ISSTART);
+                defoper(STL_SET,                ExprType.STL_SET);
+                defoper(STL_GET,                ExprType.STL_GET);
 
 		defoper(LEVEL,          ExprType.LEVEL);
 		defoper(INDENT,         ExprType.INDENT);
@@ -541,6 +549,9 @@ public class Processor {
 		
 		defoper(LOAD,    ExprType.LOAD);
 		defoper(NUMBER,  ExprType.NUMBER);
+		defoper(EVEN,  ExprType.EVEN);
+		defoper(ODD,   ExprType.ODD);
+                
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);
 		defoper(EXTCONT, ExprType.EXTCONT);

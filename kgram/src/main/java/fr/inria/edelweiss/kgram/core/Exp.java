@@ -516,6 +516,13 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     public Mappings getTemplateMappings() {
         return templateMap;
     }
+    
+     public Mappings getActualMappings() {
+         if (map != null){
+             return map;
+         }
+        return templateMap;
+    }
 
     public void setTemplateMappings(Mappings m) {
         templateMap = m;

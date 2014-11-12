@@ -205,6 +205,8 @@ public interface ExprType {
 	public static int CALL_TEMPLATE_WITH        = 260;
         
  	public static int STL_ISSTART               = 261;
+ 	public static int STL_SET                   = 262;
+ 	public static int STL_GET                   = 263;
 
 
 	public static int ISSKOLEM 	= 300;
@@ -212,5 +214,7 @@ public interface ExprType {
 
 	public static int QUERY 	= 302;
 	public static int EXTENSION 	= 303;
+	public static int EVEN          = 304;
+	public static int ODD           = 305;
 
 }

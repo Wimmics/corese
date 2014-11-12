@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Values;
@@ -231,7 +232,10 @@ public class CompileService {
 				ast.setSaveBody(ast.getBody());
 			}
 			BasicGraphPattern body = BasicGraphPattern.create();
-			body.add(ast.getSaveBody());
+                        for (Exp e : ast.getSaveBody()){                            
+                            body.add(e);
+                        }
+			//body.add(ast.getSaveBody());
 			body.add(Triple.create(f));
 			ast.setBody(body);
 		}
@@ -264,7 +268,6 @@ public class CompileService {
 			for (Node qv : q.getSelect()){
 				String var = qv.getLabel();
 				Node val   = map.getNode(var);
-
 				if (val != null){
 					Variable v = Variable.create(var);
 					IDatatype dt = (IDatatype) val.getValue();

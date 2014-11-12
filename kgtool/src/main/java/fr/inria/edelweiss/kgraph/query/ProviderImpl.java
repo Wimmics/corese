@@ -52,7 +52,7 @@ public class ProviderImpl implements Provider {
 
 	private static Logger logger = Logger.getLogger(ProviderImpl.class);
 	
-	static final String LOCALHOST = "http://localhost:8080/corese/sparql";
+	static final String LOCALHOST = "http://localhost:8080/kgram/";
 
 	HashMap<String, QueryProcess> table;
 	Hashtable<String, Double> version;
@@ -78,6 +78,9 @@ public class ProviderImpl implements Provider {
 	
 	// everybody is 1.0 except localhost
 	public boolean isSparql0(Node serv){
+            if (serv.getLabel().startsWith(LOCALHOST)){
+                return false;
+            }
 		Double f = version.get(serv.getLabel());
 		return (f == null || f == 1.0);
 	}
@@ -200,8 +203,8 @@ public class ProviderImpl implements Provider {
 			if (g.isDebug()){
 				logger.info("** Provider query: \n" + query);
 			}
-			
-			//logger.info("** Provider: \n" + query);
+
+                        //logger.info("** Provider: \n" + query);
 			
 			InputStream stream = doPost(serv.getLabel(), query, timeout);
 			

@@ -696,7 +696,7 @@ public class ProxyImpl implements Proxy, ExprType {
         int i = 0;
         for (Expr ee : exp.getExpList()) {
             
-            if (isFuture && ee.oper() == STL_NUMBER){
+            if (isFuture && isNumber(ee)){
                 // create a future
                 if (list == null){
                     list = new ArrayList<Object>();                  
@@ -758,6 +758,24 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         
         return result(sb, isString, (ok && lang != null)?lang:null);
+    }
+    
+    boolean isNumber(Expr e){
+        if  (e.oper() == STL_NUMBER){
+            return true;
+        }
+        if  (e.oper() == CONCAT){
+            // use case:  group { st:number() }
+            return false;
+        }
+        if (e.arity() > 0){
+            for (Expr a : e.getExpList()){
+                if (isNumber(a)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     IDatatype result(StringBuilder sb, boolean isString, String lang){

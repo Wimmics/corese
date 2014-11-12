@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY c      "http://www.inria.fr/acacia/sdk#">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+]>
+<!--
+# Sudoku Problem Solving with a SPARQL Query on a RDF Graph
+# Olivier Corby - INRIA 2011
+ -->
+<rdf:RDF 
+xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" 
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+xmlns:c="http://www.inria.fr/acacia/sdk#" 
+xml:base="http://www.inria.fr/acacia/sdk#">
+
+
+<c:SDK>
+ 
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</c:cell>
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</c:cell>
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</c:cell>
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</c:cell>
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</c:cell>
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</c:cell>
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</c:cell>
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</c:cell>
+ <c:cell rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</c:cell>
+
+</c:SDK>
+
+
+ 
+ </rdf:RDF>

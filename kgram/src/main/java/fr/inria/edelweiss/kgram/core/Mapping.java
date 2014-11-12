@@ -70,8 +70,9 @@ public class Mapping
 	Mapping(Edge[] query, Entity[] result, Node[] qnodes, Node[] nodes){
 		this.qEdges = query;
 		this.edges = result;
-		this.qNodes = qnodes;
-		this.nodes = nodes;
+                init(qnodes, nodes);
+//		this.qNodes = qnodes;
+//		this.nodes = nodes;
 	}
 	
 	Mapping(Node[] qnodes, Node[] nodes){
@@ -157,7 +158,7 @@ public class Mapping
 
 	void init(Node[] qnodes, Node[] nodes){
 		this.qNodes = qnodes;
-		this.nodes = nodes;
+		this.nodes = nodes;                 
 	}
 	
 	public void bind(Node qNode, Node tNode){

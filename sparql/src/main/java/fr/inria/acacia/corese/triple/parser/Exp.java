@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import java.util.Iterator;
 
 /**
  * <p>Title: Corese</p>
@@ -21,7 +22,7 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
  * @author Olivier Corby
  */
 
-public abstract class Exp extends Statement {
+public abstract class Exp extends Statement implements Iterable<Exp> {
 	
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(Exp.class); 
@@ -46,6 +47,10 @@ public abstract class Exp extends Statement {
 		}
 		return body.add(exp);
 	}
+        
+        public Iterator<Exp> iterator(){
+            return body.iterator();
+        }
 	
 	boolean isBinary(){
 		return isMinus() || isOptional();
@@ -154,6 +159,10 @@ public abstract class Exp extends Statement {
 	
 	
 	public StringBuffer toString(StringBuffer sb) {
+            return display(sb);
+        }
+         
+        public StringBuffer display(StringBuffer sb) {        
 		if (size() == 0) return sb;
 
 		get(0).toString(sb);

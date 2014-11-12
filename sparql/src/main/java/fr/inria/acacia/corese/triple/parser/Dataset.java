@@ -19,6 +19,7 @@ public class Dataset {
 	static final Constant CEMPTY = Constant.create(EMPTY);
 
 	List<Constant> from, named, with;
+        private Context context;
 
         // true when used by update (delete in default graph specified by from)
 	// W3C test case is true
@@ -43,10 +44,15 @@ public class Dataset {
 		return new Dataset(f, n);
 	}
         
-       public static Dataset newInstance(List<String> f, List<String> n) {
-        if (f == null && n == null) {
-            return null;
+        public static Dataset newInstance(List<String> f, List<String> n) {
+             if (f == null && n == null) {
+                return null;
+            }
+            return newInstance(f, n);
         }
+        
+       public static Dataset instance(List<String> f, List<String> n) {
+       
         ArrayList<Constant> from = null, named = null;
         if (f != null) {
             from = new ArrayList<Constant>();
@@ -177,6 +183,20 @@ public class Dataset {
 			addFrom(CEMPTY);
 		}
 	}
+
+    /**
+     * @return the context
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
+    }
 		
 
 }

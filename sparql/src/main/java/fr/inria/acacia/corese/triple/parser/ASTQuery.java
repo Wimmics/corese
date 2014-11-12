@@ -276,6 +276,13 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     public void setDefaultDataset(Dataset defaultDataset) {
         this.defaultDataset = defaultDataset;
     }
+    
+    public Context getContext(){
+        if (defaultDataset == null){
+            return null;
+        }
+        return defaultDataset.getContext();
+    }
 
     @Override
     public String toGraph() {

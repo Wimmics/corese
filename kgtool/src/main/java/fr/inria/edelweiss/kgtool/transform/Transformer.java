@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
@@ -61,14 +62,17 @@ public class Transformer {
     public static final String TURTLE       = STL + "turtle";
     public static final String TRIG         = STL + "trig";
     public static final String TABLE        = STL + "table";
+    public static final String HTML         = STL + "html";
+    public static final String RDFRESULT    = STL + "result";
     public static final String RDFTYPECHECK = STL + "rdftypecheck";
     public static final String SPINTYPECHECK= STL + "spintypecheck";
     public static final String STL_PROFILE  = STL + "profile";
-    public static final String STL_START   = STL + "start";
-    public static final String STL_DEFAULT = STL + "default";   
+    public static final String STL_START    = STL + "start";
+    public static final String STL_DEFAULT  = STL + "default";   
     private static final String STL_TURTLE  = STL + "turtle";   
-    public static final String STL_IMPORT  = STL + "import";   
-    public static final String STL_PROCESS = STL + "process";   
+    public static final String STL_IMPORT   = STL + "import";   
+    public static final String STL_PROCESS  = STL + "process";   
+    public static final String STL_URI      = STL + "uri";
     // default
     public static final String PPRINTER = TURTLE;
     private static final String OUT = ASTQuery.OUT;
@@ -103,6 +107,7 @@ public class Transformer {
     String start = STL_START;
     HashMap<Query, Integer> tcount;
     HashMap<String, String> loaded, imported;
+    private Context context;
     private boolean isHide = false;
     public boolean stat = !true;
     private boolean isAllResult = true;
@@ -136,7 +141,8 @@ public class Transformer {
     }
 
     Transformer(QueryProcess qp, String p) {
-        pp = p;
+        context = new Context();
+        setTransformation(p);
         fake = Graph.create();
         set(qp);
         nsm = NSManager.create();
@@ -360,8 +366,12 @@ public class Transformer {
     
     
     public void setTemplates(String p) {
-        pp = p;
+        setTransformation(p);
         init();
+    }
+    
+    void setTransformation(String p){
+        pp = p;
     }
 
     private void tune(QueryProcess exec) {
@@ -511,6 +521,12 @@ public class Transformer {
             //qq.setPPrinter(pp, this);
             // remember start with qq for function pprint below
             query = qq;
+            if (query.getName() != null){
+                context.setURI(STL_START, qq.getName());
+            }
+            else {
+                context.set(STL_START, (String)null);
+            }
             Mappings map = exec.query(qq);
 
             query = null;
@@ -551,7 +567,7 @@ public class Transformer {
          level = n;
     }
     
-    public boolean isStart(){
+    public boolean isStart(){        
         return query != null && query.getName()!=null && query.getName().equals(STL_START);
     }
     
@@ -1187,9 +1203,43 @@ public class Transformer {
     public String getTransformation() {
         return pp;
     }
+
+    public IDatatype get(String name) {
+        return getContext().get(name);
+    }
     
+    public void set(String name, IDatatype dt2){
+        getContext().set(name, dt2);
+    }
+
+    /**
+     * @return the context
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
+    }
     
-    
-     
+    /**
+     * Inherit NSManager & context of query that called this Transformer
+     * Use case:
+     * query = template { st:atw(st:cdn) } where {}
+     * query is run by service
+     * context contains service URI
+     * 
+     */
+    public void init(ASTQuery ast){
+        Context c = ast.getContext();
+        if (c != null){
+            setContext(c);
+        }
+        setNSM(ast.getNSM());
+    }
        
 }

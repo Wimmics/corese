@@ -1,27 +1,34 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.print.CSVFormat;
+import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import fr.inria.edelweiss.kgtool.print.JSOND3Format;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TSVFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -40,14 +47,20 @@ import org.apache.log4j.Logger;
  *
  * @author Eric TOGUEM, eric.toguem@uy1.uninet.cm
  * @author Alban Gaignard, alban.gaignard@cnrs.fr
+ * @author Olivier Corby
  */
 @Path("sparql")
 public class SPARQLRestAPI {
+    static final String NL = System.getProperty("line.separator");
 
-    private Logger logger = Logger.getLogger(SPARQLRestAPI.class);
-    private static Graph graph = Graph.create(false);
+    private Logger logger = Logger.getLogger(RemoteProducer.class);
+    private static GraphStore graph  = GraphStore.create(false);
     private static QueryProcess exec = QueryProcess.create(graph);
     private String headerAccept = "Access-Control-Allow-Origin";
+    
+    QueryProcess getQueryProcess(){
+        return exec; //QueryProcess.create(graph);
+    }
 
     /**
      * This webservice is used to reset the endpoint. This could be useful if we
@@ -55,18 +68,28 @@ public class SPARQLRestAPI {
      */
     @POST
     @Path("/reset")
-    public Response initRDF(@DefaultValue("false") @FormParam("entailments") String entailments) {
+    public Response initRDF(
+            @DefaultValue("false") @FormParam("owlrl") String owlrl,
+            @DefaultValue("false") @FormParam("entailments") String entailments) {
         String output;
-        exec.getGraph().remove();
-        if (entailments.equals("false")) {
-            graph = Graph.create(false);
-            exec = QueryProcess.create(graph);
-            logger.info(output = "Endpoint successfully reset *without* entailments.");
+        //exec.getGraph().remove();
+        boolean ent = entailments.equals("true");
+        boolean owl = owlrl.equals("true");
+        graph = GraphStore.create(ent);
+        exec = QueryProcess.create(graph);
+        if (ent) {            
+            logger.info(output = "Endpoint successfully reset *with* RDFS entailments.");
         } else {
-            graph = Graph.create(true);
-            exec = QueryProcess.create(graph);
-            logger.info(output = "Endpoint successfully reset *with* entailments.");
+            logger.info(output = "Endpoint successfully reset *without* RDFS entailments.");
         }
+        
+        if (owl){
+            RuleEngine re = RuleEngine.create(graph);
+            re.setProfile(RuleEngine.OWL_RL_LITE);
+            graph.addEngine(re);
+        }
+        
+        logger.info("OWL RL: " + owl);
         return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
 
@@ -108,47 +131,68 @@ public class SPARQLRestAPI {
         }
 
         logger.debug(remotePath);
-
-        if (remotePath.startsWith("http")) {
-            if (remotePath.endsWith(".rdf") || remotePath.endsWith(".ttl") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".owl")) {
-                Load ld = Load.create(graph);
-                ld.load(remotePath, source);
-            } else {
-                //TODO loading of .n3 or .nt
-                logger.error("TODO loading of .n3 or .nt");
-                return Response.status(404).header(headerAccept, "*").entity(output).build();
-            }
-            
-        } else {
-            logger.info("Loading " + remotePath);
-            File f = new File(remotePath);
-            if (!f.exists()) {
-                logger.error(output = "File " + remotePath + " not found on the server!");
-                return Response.status(404).header(headerAccept, "*").entity(output).build();
-            }
-            if (f.isDirectory()) {
-                Load ld = Load.create(graph);
-                ld.load(remotePath, source);
-            } else if (remotePath.endsWith(".rdf") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".ttl") || remotePath.endsWith(".owl")) {
-                Load ld = Load.create(graph);
-                ld.load(remotePath, source);
-            } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {
-                FileInputStream fis = null;
-                logger.warn("NOT Loaded " + f.getAbsolutePath());
-            }
+        
+        
+        Load ld = Load.create(graph);
+        try {
+            // path with extension : use extension
+            // path with no extension : load as turtle 
+            // use case: rdf: is in Turtle
+            ld.loadWE(remotePath, source, Load.TURTLE_FORMAT);
+        } catch (LoadException ex) {
+            logger.error(ex);
+            return Response.status(404).header(headerAccept, "*").entity(output).build();
         }
+        
         logger.info(output = "Successfully loaded " + remotePath);
         return Response.status(200).header(headerAccept, "*").entity(output).build();
+
+//        if (remotePath.startsWith("http")) {
+//            if (remotePath.endsWith(".rdf") || remotePath.endsWith(".ttl") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".owl")) {
+//                Load ld = Load.create(graph);
+//                ld.load(remotePath, source);
+//            } else {
+//                //TODO loading of .n3 or .nt
+//                logger.error("TODO loading of .n3 or .nt");
+//                return Response.status(404).header(headerAccept, "*").entity(output).build();
+//            }
+//
+//        } else {
+//            logger.info("Loading " + remotePath);
+//            File f = new File(remotePath);
+//            if (!f.exists()) {
+//                logger.error(output = "File " + remotePath + " not found on the server!");
+//                return Response.status(404).header(headerAccept, "*").entity(output).build();
+//            }
+//            if (f.isDirectory()) {
+//                Load ld = Load.create(graph);
+//                ld.load(remotePath, source);
+//            } else if (remotePath.endsWith(".rdf") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".ttl") || remotePath.endsWith(".owl")) {
+//                Load ld = Load.create(graph);
+//                ld.load(remotePath, source);
+//            } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {
+//                FileInputStream fis = null;
+//                logger.warn("NOT Loaded " + f.getAbsolutePath());
+//            }
+//        }
+//        
+//        logger.info(output = "Successfully loaded " + remotePath);
+//        return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
 
+    // DQP query for triple store index
     @GET
     @Produces("application/sparql-results+xml")
     public Response getTriplesXMLForGet(@QueryParam("query") String query,
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
+            //System.out.println("Rest: " + query);
+            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+//            System.out.println("Rest: " + map);
+//            System.out.println("Rest: " + map.size());
             return Response.status(200).header(headerAccept, "*").entity(
-                    ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+                    ResultFormat.create(map).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
@@ -156,19 +200,172 @@ public class SPARQLRestAPI {
         }
     }
 
+    // Query Corese Server here
     @GET
     @Produces("application/sparql-results+json")
     public Response getTriplesJSONForGet(@QueryParam("query") String query,
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+//            System.out.println("Rest JSON");
+//            System.out.println(map);
+//            System.out.println(map.size());
+            return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(map).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
+    
+    // Template generate HTML
+    
+    @POST
+    @Produces("text/html")
+    @Path("template")
+    public Response queryPOSTHTML(
+            @FormParam("query") String query, // SPARQL query
+            @FormParam("name")  String name,  // SPARQL query name (in webapp/query)
+            @FormParam("value") String value, // values clause that may complement query           
+            @FormParam("transform")  String transform,  // Transformation URI to post process result
+            @FormParam("default-graph-uri") List<String> defaultGraphUris,
+            @FormParam("named-graph-uri")   List<String> namedGraphUris) {
+        return queryGETHTML(query, name, value, transform, defaultGraphUris, namedGraphUris);
+    }
+    
+    @GET
+    @Produces("text/html")
+    @Path("history")
+    public Response history(@QueryParam("uri") String uri)  {
+       String name      = "frdbpedia.rq";
+       String transform = "st:navlab";
+       String value     = "values ?r {<" + uri + ">}";
+       return queryGETHTML(null, name, value, transform, null, null);
+    }
+    
+    
+    @GET
+    @Produces("text/html")
+    @Path("template")
+    public Response queryGETHTML(
+            @QueryParam("query") String query, // SPARQL query
+            @QueryParam("name")  String name,  // SPARQL query name (in webapp/query or path or URL)
+            @QueryParam("value") String value, // values clause that may complement query           
+            @QueryParam("transform")  String transform,  // Transformation URI to post process result
+            @QueryParam("default-graph-uri") List<String> defaultGraphUris,
+            @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
+        try {
+//            System.out.println("S: name =  " + name);
+//            System.out.println("S: query = " + query);
+//            System.out.println("S: value = " + value);
+//            System.out.println("S: trans = " + transform);
+            String squery = query;
+            
+            if (query == null){ 
+                if (name != null) {
+                    // name of a query
+                    squery = getQuery(name);
+                }
+                else if (transform != null){                  
+                    // name of a transformation to run
+                    squery = getTemplate(transform);
+                }
+            }
+            
+            if (value != null){
+                // additional values clause
+               squery += value;
+            }
+             
+            
+            // servlet context given to query process and result format
+            Context ctx = createContext(squery, name, "/kgram/sparql/template");       
+            Dataset ds  = createDataset(defaultGraphUris, namedGraphUris, ctx);
+            Mappings map = getQueryProcess().query(squery, ds);
+                                
+            HTMLFormat ft = HTMLFormat.create(map);
+            ft.setContext(ctx);                       
+            if ((query != null || name != null)  && transform != null){
+                // present result with user defined transformation
+                ft.setTransformation(transform);
+            }
+            
+            return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();               
+           } catch (Exception ex) {
+            logger.error("Error while querying the remote KGRAM engine");
+            ex.printStackTrace();
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
+        }
+    }
+    
+    
+    
+    Context createContext(String query, String name, String service) {
+        Context ctx = new Context();
+        if (query != null) {
+            ctx.set(Context.STL_QUERY, query);
+        }
+        if (name != null) {
+            ctx.set(Context.STL_NAME, name);
+        }
+        ctx.set(Context.STL_SERVICE, service);
+        return ctx;
+    }
+        
+    String getTemplate(String name) {
+        String sep = "";
+        if (name.contains("/")) {
+            sep = "'";
+        }
+        String query = "template { st:atw("
+                + sep + name + sep
+                + ")} where {}";
+        return query;
+    }
+    
+    
+    
+    
+    
+    @GET
+    @Produces("application/sparql-results+json")
+    @Path("/draw")
+    public Response getJSON(@QueryParam("query") String query) {
+
+        logger.info("Querying: " + query);
+
+        try {
+           
+            Mappings maps = exec.query(query);
+            logger.info(maps.size());
+
+            Graph g =  (Graph) maps.getGraph();
+                   
+            String mapsProvJson = "{ \"mappings\" : "
+                    + JSONFormat.create(maps).toString()
+                    + " , "
+                    + "\"d3\" : "
+                    + JSOND3Format.create(g).toString()
+                    + " }";
+
+//            System.out.println(mapsProvJson);
+            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(mapsProvJson).build();
+        } catch (Exception ex) {
+            logger.error("Error while querying the remote KGRAM-DQP engine");
+            ex.printStackTrace();
+            return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error while querying the remote KGRAM engine").build();
+        }
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     @GET
     @Produces("application/sparql-results+json")
@@ -178,7 +375,7 @@ public class SPARQLRestAPI {
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
 
-            Mappings m = exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings m = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
 
             String mapsD3 = "{ \"mappings\" : "
                     + JSONFormat.create(m).toString()
@@ -203,7 +400,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -216,7 +413,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -229,8 +426,11 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            logger.debug(query);
-            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+//            System.out.println("Rest RDF XML Get");
+//            System.out.println(map);
+//            System.out.println(map.size());
+            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -243,7 +443,10 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            Mappings maps = exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings maps = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+//            System.out.println("Rest Turtle Get");
+//            System.out.println(maps);
+//            System.out.println(maps.size());
             String ttl = TripleFormat.create(maps, true).toString();
             logger.debug(query);
             logger.debug(ttl);
@@ -265,7 +468,12 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            //System.out.println("Rest Post RDF XML: "+ query);
+            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+//            System.out.println("Rest: " + map);
+//            System.out.println("Rest: " + map.size());
+            
+            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -283,7 +491,11 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            //System.out.println("Rest Post JSON: "+ query);
+            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+//            System.out.println(map);
+//            System.out.println(map.size());
+            return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(map).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -301,7 +513,7 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -319,7 +531,7 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -337,7 +549,11 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+           // System.out.println("Rest Post RDF XML");
+            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+//            System.out.println(map);
+//            System.out.println(map.size());
+            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -352,7 +568,7 @@ public class SPARQLRestAPI {
             @FormParam("named-graph-uri") List<String> namedGraphUris,
             String message) {
         try {
-            return Response.status(200).header(headerAccept, "*").entity(TripleFormat.create(exec.query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TripleFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -370,7 +586,7 @@ public class SPARQLRestAPI {
         try {
             logger.info(query);
             if (query != null) {
-                exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
+                getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
             } else {
                 logger.warn("Null update query !");
             }
@@ -394,7 +610,7 @@ public class SPARQLRestAPI {
         try {
             logger.info(message);
             if (message != null) {
-                exec.query(message, createDataset(defaultGraphUris, namedGraphUris));
+                getQueryProcess().query(message, createDataset(defaultGraphUris, namedGraphUris));
             } else {
                 logger.warn("Null update query !");
             }
@@ -412,7 +628,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            Mappings mp = exec.query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings mp = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
             return Response.status(mp.size() > 0 ? 200 : 400).header(headerAccept, "*").entity("Query has no response").build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
@@ -429,9 +645,16 @@ public class SPARQLRestAPI {
      * @param namedGraphUris
      * @return a dataset if the parameters are not null or empty.
      */
-    private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris) {
-        if (((defaultGraphUris != null) && (!defaultGraphUris.isEmpty())) || ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
-            Dataset ds = Dataset.newInstance(defaultGraphUris, namedGraphUris);
+        private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris) {
+            return createDataset(defaultGraphUris, namedGraphUris, null);
+        }
+        
+    private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris, Context c) {
+        if (c != null ||
+                ((defaultGraphUris != null) && (!defaultGraphUris.isEmpty())) || 
+                ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
+            Dataset ds = Dataset.instance(defaultGraphUris, namedGraphUris);
+            ds.setContext(c);
             return ds;
         } else {
             return null;
@@ -452,4 +675,57 @@ public class SPARQLRestAPI {
         out.flush();
         out.close();
     }
+    
+    
+    String getQuery(String name) throws IOException {
+        String res = "";
+        try {
+            res = getResource("/webapp/query/" + name);
+        } catch (IOException ex) {
+            QueryLoad ql = QueryLoad.create();
+            res = ql.read(name);
+            if (res == null){
+                throw new IOException(name);
+            }
+        }
+        return res;
+    }
+    
+    String getResource(String name) throws IOException {
+        InputStream stream = SPARQLRestAPI.class.getResourceAsStream(name);
+        if (stream == null) {
+            throw new IOException(name);
+        }
+        Reader fr = new InputStreamReader(stream);
+        String str = read(fr);
+        return str;
+    }
+    
+
+    String read(Reader fr) throws IOException {
+        BufferedReader fq = new BufferedReader(fr);
+        StringBuilder sb = new StringBuilder();
+        String str;
+        while (true) {
+            str = fq.readLine();
+            if (str == null) {
+                fq.close();
+                break;
+            }
+            sb.append(str);
+            sb.append(NL);
+        }
+        return sb.toString();
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

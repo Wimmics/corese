@@ -47,20 +47,23 @@ public class EmbeddedJettyServer {
     private static Logger logger = Logger.getLogger(EmbeddedJettyServer.class);
     private static int port = 8080;
     private static boolean entailments = false;
+    private static boolean owlrl = false;
     private static String dataPath = null;
 
     public static void main(String args[]) throws Exception {
 
 //        PropertyConfigurator.configure(EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties"));
 //        logger.debug("Started.");
-        Options options = new Options();
-        Option portOpt = new Option("p", "port", true, "specify the server port");
-        Option helpOpt = new Option("h", "help", false, "print this message");
-        Option entailOpt = new Option("e", "entailments", false, "enable RDFS entailments");
-        Option dataOpt = new Option("l", "load", true, "data file or directory to be loaded");
-        Option versionOpt = new Option("v", "version", false, "print the version information and exit");
+        Options options     = new Options();
+        Option portOpt      = new Option("p", "port", true, "specify the server port");
+        Option helpOpt      = new Option("h", "help", false, "print this message");
+        Option entailOpt    = new Option("e", "entailments", false, "enable RDFS entailments");
+        Option owlrlOpt     = new Option("o", "owlrl", false, "enable OWL RL entailments");
+        Option dataOpt      = new Option("l", "load", true, "data file or directory to be loaded");
+        Option versionOpt   = new Option("v", "version", false, "print the version information and exit");
         options.addOption(portOpt);
         options.addOption(entailOpt);
+        options.addOption(owlrlOpt);
         options.addOption(dataOpt);
         options.addOption(helpOpt);
         options.addOption(versionOpt);
@@ -86,8 +89,12 @@ public class EmbeddedJettyServer {
             if (cmd.hasOption("e")) {
                 entailments = true;
             } 
+            if (cmd.hasOption("o")) {
+                owlrl = true;
+            } 
             if (cmd.hasOption("l")) {
                 dataPath = cmd.getOptionValue("l");
+                System.out.println("Server: " + dataPath);
             } 
 
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
@@ -128,12 +135,16 @@ public class EmbeddedJettyServer {
 
             MultivaluedMap formData = new MultivaluedMapImpl();
             formData.add("entailments", Boolean.toString(entailments));
+            formData.add("owlrl", Boolean.toString(owlrl));
             service.path("sparql").path("reset").post(formData);
 
             if (dataPath != null) {
-                formData = new MultivaluedMapImpl();
-                formData.add("remote_path", dataPath);
-                service.path("sparql").path("load").post(formData);
+                String[] lp = dataPath.split(";");
+                for (String p : lp){
+                    formData = new MultivaluedMapImpl();
+                    formData.add("remote_path", p);
+                    service.path("sparql").path("load").post(formData);
+                }
             }
             
             server.join();

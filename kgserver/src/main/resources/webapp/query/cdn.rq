@@ -1,0 +1,5 @@
+template {
+  st:call-template-with(st:cdn, st:substart, ?min, ?max, ?sdate)
+} 
+where {
+}

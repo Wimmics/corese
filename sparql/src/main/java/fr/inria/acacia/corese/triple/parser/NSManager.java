@@ -43,7 +43,8 @@ public class NSManager {
     public static final String SPIN = "http://spinrdf.org/sp#";
     public static final String SQL  = "http://ns.inria.fr/ast/sql#";
     public static final String FOAF  = "http://xmlns.com/foaf/0.1/";
-    
+    public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
+
     public static final String STL        = ExpType.STL;
     public static final String KGRAM      = ExpType.KGRAM;
     public static final String KPREF      = ExpType.KPREF;
@@ -310,6 +311,7 @@ public class NSManager {
                 || nsname.contains(")")
                 || nsname.contains("'")
                 || nsname.contains("\"")                
+                || nsname.contains(",")                
                 ) {
             return uri(nsname);
         } else {

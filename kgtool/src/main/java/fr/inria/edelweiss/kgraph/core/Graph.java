@@ -132,7 +132,7 @@ public class Graph implements Graphable
     private boolean isListNode = !true;
     boolean byIndex = byIndexDefault;
     // draft optmize EdgeIndexer EdgeList
-    private boolean optIndex = !true;
+    private boolean optIndex = true;
     // number of edges
     int size = 0;
     int nodeIndex = 0;

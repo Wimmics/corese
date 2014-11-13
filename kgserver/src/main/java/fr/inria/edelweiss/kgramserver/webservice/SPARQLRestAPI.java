@@ -256,10 +256,6 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
         try {
-//            System.out.println("S: name =  " + name);
-//            System.out.println("S: query = " + query);
-//            System.out.println("S: value = " + value);
-//            System.out.println("S: trans = " + transform);
             String squery = query;
             
             if (query == null){ 

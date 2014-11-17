@@ -284,21 +284,7 @@ public class UpdateProcess {
 		ast.setSelectAll(true);
 		// where {pat}
 		ast.setBody(ope.getBody());		
-		
-//		for (Constant uri : ope.getUsing()){
-//			// using -> from
-//			ast.setFrom(uri);
-//		}
-//		for (Constant uri : ope.getNamed()){
-//			// using named -> from named
-//			ast.setNamed(uri);
-//		}
-//		Constant src = ope.getWith();
-//		if (src!=null && ope.getUsing().size()==0){
-//			ast.setFrom(src);
-//		}
-                
-                
+                ast.setValues(ope.getValues());
                if (ope.getDataset().isEmpty()){
                    if (ope.getWith() != null){
                         // SPARQL requires that if there is WITH and if the endpoint Dataset has named graph

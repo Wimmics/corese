@@ -6,6 +6,7 @@ import java.util.List;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Exp;
+import fr.inria.acacia.corese.triple.parser.Values;
 /**
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2011
@@ -30,6 +31,7 @@ public class Composite extends Update {
 	
 	Constant with;
         Dataset ds;
+        private Values values;
 	
 	Composite(int t){
 		type = t;
@@ -145,6 +147,20 @@ public class Composite extends Update {
         public Dataset getDataset(){
             return ds;
         }
+
+    /**
+     * @return the values
+     */
+    public Values getValues() {
+        return values;
+    }
+
+    /**
+     * @param values the values to set
+     */
+    public void setValues(Values values) {
+        this.values = values;
+    }
 	
 	
 }

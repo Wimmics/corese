@@ -431,10 +431,14 @@ public class Load
     public void load(InputStream stream) throws LoadException {
         load(stream, UNDEF_FORMAT);
     }
+    
+    public void loadString(String str, int format) throws LoadException {
+        loadString(str, Entailment.DEFAULT, format);
+    }
 
-    public void loadString(String str, int format) throws LoadException{
+    public void loadString(String str, String src, int format) throws LoadException{
         try {
-            load(new ByteArrayInputStream(str.getBytes("UTF-8")), format);
+            load(new ByteArrayInputStream(str.getBytes("UTF-8")), src, format);
         } catch (UnsupportedEncodingException ex) {
             throw new LoadException(ex);
         }

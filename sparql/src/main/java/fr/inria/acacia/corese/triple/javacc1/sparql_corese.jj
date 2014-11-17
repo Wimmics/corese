@@ -489,7 +489,7 @@ void DeleteInsertData() : {Exp exp; Composite ope, upd;}
 
 // create an AST as a whole
 
-void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri;}
+void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri; Values values;}
 {
 	{upd = Composite.create(Update.COMPOSITE);}
 	
@@ -528,6 +528,8 @@ void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri;}
 	) *
 	
 	<WHERE> exp = GroupGraphPattern()
+
+        (values = ValueBindings() {upd.setValues(values); } ) ?
 	
 	{ upd.setBody(exp); astu.add(upd); }
 

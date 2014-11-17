@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgramserver.webservice;
 
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
@@ -10,7 +11,6 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.print.CSVFormat;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import fr.inria.edelweiss.kgtool.print.JSOND3Format;
@@ -18,17 +18,12 @@ import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TSVFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -51,13 +46,20 @@ import org.apache.log4j.Logger;
  */
 @Path("sparql")
 public class SPARQLRestAPI {
-    static final String NL = System.getProperty("line.separator");
 
-    private Logger logger = Logger.getLogger(RemoteProducer.class);
+    private Logger logger = Logger.getLogger(SPARQLRestAPI.class);
     private static GraphStore graph  = GraphStore.create(false);
     private static QueryProcess exec = QueryProcess.create(graph);
     private String headerAccept = "Access-Control-Allow-Origin";
+    Profile mprofile;
+    NSManager nsm;
     
+    
+    public SPARQLRestAPI(){
+        mprofile = new Profile();
+        nsm = NSManager.create();
+    }
+            
     QueryProcess getQueryProcess(){
         return exec; //QueryProcess.create(graph);
     }
@@ -92,7 +94,7 @@ public class SPARQLRestAPI {
         logger.info("OWL RL: " + owl);
         return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
-
+    
 //    @POST
 //    @Path("/upload")
 //    @Consumes("multipart/form-data")
@@ -225,23 +227,15 @@ public class SPARQLRestAPI {
     @Produces("text/html")
     @Path("template")
     public Response queryPOSTHTML(
+            @FormParam("profile")  String profile,  // query + transform
+            @FormParam("uri")  String resource,  // query + transform
             @FormParam("query") String query, // SPARQL query
             @FormParam("name")  String name,  // SPARQL query name (in webapp/query)
             @FormParam("value") String value, // values clause that may complement query           
             @FormParam("transform")  String transform,  // Transformation URI to post process result
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri")   List<String> namedGraphUris) {
-        return queryGETHTML(query, name, value, transform, defaultGraphUris, namedGraphUris);
-    }
-    
-    @GET
-    @Produces("text/html")
-    @Path("history")
-    public Response history(@QueryParam("uri") String uri)  {
-       String name      = "frdbpedia.rq";
-       String transform = "st:navlab";
-       String value     = "values ?r {<" + uri + ">}";
-       return queryGETHTML(null, name, value, transform, null, null);
+        return queryGETHTML(profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
     }
     
     
@@ -249,6 +243,8 @@ public class SPARQLRestAPI {
     @Produces("text/html")
     @Path("template")
     public Response queryGETHTML(
+            @QueryParam("profile")  String profile,  // query + transform
+            @QueryParam("uri")  String resource,  // URI of resource focus
             @QueryParam("query") String query, // SPARQL query
             @QueryParam("name")  String name,  // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value") String value, // values clause that may complement query           
@@ -257,6 +253,25 @@ public class SPARQLRestAPI {
             @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
         try {
             String squery = query;
+            
+            if (profile != null){
+                // prodile declare a construct where query followed by a transformation
+                String uprofile = nsm.toNamespace(profile);
+                // may load a new profile
+                mprofile.define(uprofile);
+                if (name == null) {
+                    // parameter name overload profile name
+                    name = mprofile.getQuery(uprofile);
+                }
+                if (transform == null){
+                    // transform parameter overload profile transform
+                    transform = mprofile.getTransform(uprofile);  
+                }            
+                if (resource != null){
+                    // resource that must be given as a binding value to the query
+                    value = mprofile.getValues(uprofile, resource);
+                }
+            }
             
             if (query == null){ 
                 if (name != null) {
@@ -276,11 +291,11 @@ public class SPARQLRestAPI {
              
             
             // servlet context given to query process and result format
-            Context ctx = createContext(squery, name, "/kgram/sparql/template");       
+            Context ctx = createContext(profile, squery, name, "/kgram/sparql/template");       
             Dataset ds  = createDataset(defaultGraphUris, namedGraphUris, ctx);
             Mappings map = getQueryProcess().query(squery, ds);
                                 
-            HTMLFormat ft = HTMLFormat.create(map);
+            HTMLFormat ft = HTMLFormat.create(graph, map);
             ft.setContext(ctx);                       
             if ((query != null || name != null)  && transform != null){
                 // present result with user defined transformation
@@ -297,8 +312,11 @@ public class SPARQLRestAPI {
     
     
     
-    Context createContext(String query, String name, String service) {
+    Context createContext(String profile, String query, String name, String service) {
         Context ctx = new Context();
+        if (profile != null) {
+            ctx.set(Context.STL_PROFILE, profile);
+        }        
         if (query != null) {
             ctx.set(Context.STL_QUERY, query);
         }
@@ -672,56 +690,9 @@ public class SPARQLRestAPI {
         out.close();
     }
     
-    
     String getQuery(String name) throws IOException {
-        String res = "";
-        try {
-            res = getResource("/webapp/query/" + name);
-        } catch (IOException ex) {
-            QueryLoad ql = QueryLoad.create();
-            res = ql.read(name);
-            if (res == null){
-                throw new IOException(name);
-            }
-        }
-        return res;
+        return mprofile.getResource("/webapp/query/", name);
     }
-    
-    String getResource(String name) throws IOException {
-        InputStream stream = SPARQLRestAPI.class.getResourceAsStream(name);
-        if (stream == null) {
-            throw new IOException(name);
-        }
-        Reader fr = new InputStreamReader(stream);
-        String str = read(fr);
-        return str;
-    }
-    
-
-    String read(Reader fr) throws IOException {
-        BufferedReader fq = new BufferedReader(fr);
-        StringBuilder sb = new StringBuilder();
-        String str;
-        while (true) {
-            str = fq.readLine();
-            if (str == null) {
-                fq.close();
-                break;
-            }
-            sb.append(str);
-            sb.append(NL);
-        }
-        return sb.toString();
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
 }

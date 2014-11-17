@@ -24,14 +24,20 @@ public class HTMLFormat {
     private String transformation;
     
     Mappings map;
+    Graph graph;
     private Context context;
     
-    HTMLFormat(Mappings m){
+    HTMLFormat(Graph g, Mappings m){
+        graph = g;
         map = m;
     }
     
+    public static HTMLFormat create(Graph g, Mappings m){
+        return new HTMLFormat(g, m);
+    }
+    
     public static HTMLFormat create(Mappings m){
-        return new HTMLFormat(m);
+        return new HTMLFormat(null, m);
     }
     
     public String toString(){
@@ -54,6 +60,9 @@ public class HTMLFormat {
         else if (map.getGraph()!=null){
             Graph g = (Graph) map.getGraph();
             return process(g, getTransformation(constructTransform));       
+        }
+        else if (map.getQuery().isUpdate() && graph != null){
+            return process(graph, getTransformation(constructTransform));       
         }
         else {
             Graph g = select();

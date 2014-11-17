@@ -20,6 +20,7 @@ public class Context {
     public static final String STL_QUERY    = STL + "query";
     public static final String STL_NAME     = STL + "name"; // query path name
     public static final String STL_SERVICE  = STL + "service";
+    public static final String STL_PROFILE  = STL + "profile";
     
     HashMap<String, IDatatype> table;
 

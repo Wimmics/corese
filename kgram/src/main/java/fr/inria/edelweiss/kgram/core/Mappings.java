@@ -43,6 +43,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	hasEvent = false,
 	// if true, store all Mapping of the group
 	isListGroup = false;
+        boolean sortWithDesc = true;
 	Query query;
 	List<Mapping>  list;
 	private List<Entity> insert;
@@ -343,6 +344,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
          * Sort according to node
          */
         void sort(Node node){
+            sortWithDesc = false;
             for (Mapping m : this){
                 m.setOrderBy(m.getNode(node));
             }
@@ -394,11 +396,9 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		Node[] order1 = r1.getOrderBy();
 		Node[] order2 = r2.getOrderBy();
 
-		//boolean reverse[]=query.getReverse(); // sort in reverse order
 		List<Exp> orderBy = query.getOrderBy();
 
 		int res = 0;
-		
 		for (int i = 0; i < order1.length && i < order2.length && res == 0; i++) {
 
 			if (order1[i] != null && order2[i] != null) { // sort ?x
@@ -420,10 +420,10 @@ implements Comparator<Mapping> , Iterable<Mapping>
 				res = 0;
 			}
 			
-			if (! orderBy.isEmpty() && orderBy.get(i).status()){ 
+			if (! orderBy.isEmpty() && orderBy.get(i).status() && sortWithDesc){ 
 				res = desc(res);
 			}
-
+                        
 		}
 		return res;
 	}

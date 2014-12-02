@@ -86,7 +86,7 @@ public class SPARQLRestAPI {
         boolean owl = owlrl.equals("true");
         graph = GraphStore.create(ent);
         exec = QueryProcess.create(graph);
-        //exec.setMode(QueryProcess.SERVER_MODE);
+        exec.setMode(QueryProcess.SERVER_MODE);
         if (ent) {            
             logger.info(output = "Endpoint successfully reset *with* RDFS entailments.");
         } else {

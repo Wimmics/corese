@@ -79,7 +79,7 @@ public class HTMLFormat {
     
     String process(Graph g, String trans){       
         Transformer t = Transformer.create(g, trans);
-        context.set(Transformer.STL_URI, trans);
+        context.set(Transformer.STL_TRANSFORM, trans);
         t.setContext(context);
         return t.toString();
     }

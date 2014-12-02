@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,15 +34,20 @@ public class Profile {
     HashMap<String,  Service> map; 
     NSManager nsm;
     
-    class Service {
+    public class Service {
         private String query;
         private String transform;
         private String variable ;
+        private String[] load;
         
         Service(String t, String q, String v){
             query = q;
             transform = t;
             variable = v;
+        }
+        
+        Service(String[] l){
+            load = l;
         }
 
         /**
@@ -71,7 +77,7 @@ public class Profile {
         public void setTransform(String transform) {
             this.transform = transform;
         }
-
+        
         /**
          * @return the variable
          */
@@ -85,6 +91,20 @@ public class Profile {
         public void setVariable(String variable) {
             this.variable = variable;
         }
+
+        /**
+         * @return the load
+         */
+        public String[] getLoad() {
+            return load;
+        }
+
+        /**
+         * @param load the load to set
+         */
+        public void setLoad(String[] load) {
+            this.load = load;
+        }
     }
     
     Profile(){
@@ -92,6 +112,10 @@ public class Profile {
         nsm = NSManager.create();
         init(DATA, "profile.ttl");
     }
+    
+     public Collection<Service> getServices(){
+            return map.values();
+        }
     
     void define(String name){
         if (! map.containsKey(name)){
@@ -102,7 +126,8 @@ public class Profile {
     void init(String path, String name){       
         try {
             Graph g = load(path, name);
-            init(g);           
+            init(g); 
+            initLoad(g);
         } catch (IOException ex) {
             Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (LoadException ex) {
@@ -169,6 +194,26 @@ public class Profile {
                 (trans==null)?null:trans.getLabel(), 
                 (query==null)?null:query.getLabel(), 
                 (var==null)?null: var.getLabel());
+        map.put(profile.getLabel(), s);
+    }
+    
+     void initLoad(Graph g) throws IOException, EngineException{
+        String str = getResource(QUERY + "profileLoad.rq");
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(str);
+        for (Mapping m : map){
+            initLoad(m);
+        }
+    }
+    
+    void initLoad(Mapping m){
+        Node profile = m.getNode("?p");
+        Node load    = m.getNode("?ld");
+        if (load == null){
+            return;
+        }
+        String [] list = load.getLabel().split(";");
+        Service s = new Service(list);
         map.put(profile.getLabel(), s);
     }
     

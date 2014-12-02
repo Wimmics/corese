@@ -7,6 +7,7 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgramserver.webservice.Profile.Service;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -85,7 +86,7 @@ public class SPARQLRestAPI {
         boolean owl = owlrl.equals("true");
         graph = GraphStore.create(ent);
         exec = QueryProcess.create(graph);
-        exec.setMode(QueryProcess.SERVER_MODE);
+        //exec.setMode(QueryProcess.SERVER_MODE);
         if (ent) {            
             logger.info(output = "Endpoint successfully reset *with* RDFS entailments.");
         } else {
@@ -99,7 +100,25 @@ public class SPARQLRestAPI {
         }
         
         logger.info("OWL RL: " + owl);
+        init();
         return Response.status(200).header(headerAccept, "*").entity(output).build();
+    }
+    
+    void init(){
+        for (Service s : mprofile.getServices()){
+            String[] load = s.getLoad();
+            if (load != null){
+                Load ld = Load.create(graph);
+                for (String f : load){
+                    try {
+                        logger.info("Load: " + f);
+                        ld.loadWE(f, f, Load.TURTLE_FORMAT);
+                    } catch (LoadException ex) {
+                        java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }
     }
     
 //    @POST

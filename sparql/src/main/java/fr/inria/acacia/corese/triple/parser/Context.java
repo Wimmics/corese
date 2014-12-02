@@ -21,6 +21,8 @@ public class Context {
     public static final String STL_NAME     = STL + "name"; // query path name
     public static final String STL_SERVICE  = STL + "service";
     public static final String STL_PROFILE  = STL + "profile";
+    public static final String STL_TRANSFORM= STL + "transform";
+    public static final String STL_URI      = STL + "uri";
     
     HashMap<String, IDatatype> table;
 

@@ -51,7 +51,7 @@ public class PluginImpl extends ProxyImpl {
 
     static Logger logger = Logger.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
-    public static boolean writeAuthorized = true;
+    public static boolean readWriteAuthorized = true;
     private static final String NL = System.getProperty("line.separator");
   
     String PPRINTER = DEF_PPRINTER;
@@ -557,7 +557,7 @@ public class PluginImpl extends ProxyImpl {
 
     
     private IDatatype write(IDatatype dtfile, IDatatype dt) {
-        if (writeAuthorized){
+        if (readWriteAuthorized){
             QueryLoad ql = QueryLoad.create();
             ql.write(dtfile.getLabel(), dt.getLabel());
         }
@@ -694,6 +694,9 @@ public class PluginImpl extends ProxyImpl {
     }
 
     IDatatype load(Graph g, Object o) {
+        if (! readWriteAuthorized){
+            return FALSE;
+        }
         loader(g);
         IDatatype dt = (IDatatype) o;
         try {

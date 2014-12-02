@@ -12,24 +12,20 @@ and open the template in the editor.
         <h3>Examples</h3>
   
   <!-- <a href="/kgram/sparql/template?query=template { st:ctw(st:cdn, st:substart, 1401, 1500, 'XV') } where {}">Embedded Transformation</a> -->
-        <ol>
-            <li><a href="/kgram/sparql/template?name=local.rq&value=values ?r {&lt;http://fr.dbpedia.org/resource/Louis_XIV_de_France&gt;}&transform=st:navlab">Local Navigator</a></li>
-            <li><a href="/kgram/sparql/template?name=local.rq&value=values ?r {&lt;http://fr.dbpedia.org/resource/Louis_XIV_de_France&gt;}&transform=/home/corby/AData/template/navlab">Local Navigator & Transformation</a></li>
-            <li><a href="/kgram/sparql/template?name=frdbpedia.rq&value=values ?r {&lt;http://fr.dbpedia.org/resource/Louis_XIV_de_France&gt;}&transform=st:navlab">Fr DBpedia Navigator (France)</a></li>
-            <li><a href="/kgram/sparql/template?name=/home/corby/AQuery/frdbpedia.rq&value=values ?r {&lt;http://fr.dbpedia.org/resource/Louis_XIV_de_France&gt;}&transform=/home/corby/AData/template/navlab">Fr DBpedia Navigator Local query & transform (France)</a></li>
-            <li><a href="/kgram/sparql/template?name=frdbpedia.rq&value=values ?r {<http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)>}&transform=st:navlab">Fr DBpedia Navigator (EdS)</a></li>
-            <li><a href="/kgram/sparql/template?name=frdbpedia.rq&value=values ?r {<http://fr.dbpedia.org/resource/Auguste>}&transform=st:navlab">Fr DBpedia Navigator (Rome)</a></li>
-            <li><a href="/kgram/sparql/template?name=frdbpediaplace.rq&value=values ?r {<http://fr.dbpedia.org/resource/Paris>}&transform=st:navlab">Fr DBpedia Navigator (Place)</a></li>            
-            <li><a href="/kgram/sparql/template?name=dbpedia.rq&value=values ?r {&lt;http://dbpedia.org/resource/Augustus&gt;}&transform=st:navlab">En DBpedia Navigator (Rome)</a></li>
-            <li><a href="/kgram/sparql/template?transform=st:cdn">Embedded Transformation</a></li>
-            <li><a href="/kgram/sparql/template?transform=/home/corby/AData/cdn/template">External Transformation</a></li>
-            <li><a href="/kgram/sparql/template?transform=st:html">Dataset Content</a></li>
-            <li><a href="/kgram/sparql/template?transform=st:system">System Description</a></li>
-            <li>
-                <a href='/kgram/sparql/template?query=load &lt;http://localhost:8080/data/sdk.rdf&gt;'>Load Sudoku</a> <br/>
-                <a href="/kgram/sparql/template?name=sdk.rq">Sudoku Solver</a>
-            </li>
-        </ol>
+<ol>
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Louis_XIV_de_France&profile=st:navlab">Local Server</a></li> <!-- Must load demo/history.ttl -->
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Louis_XIV_de_France&profile=st:dbpedia">DBpedia fr (France)</a></li>
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)&profile=st:dbpedia">DBpedia fr (EdS)</a></li>
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Auguste&profile=st:dbpedia">DBpedia fr (Rome)</a></li>
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Paris&profile=st:dbpedia">DBpedia fr (Place)</a></li>
+<li><a href="/kgram/sparql/template?uri=http://dbpedia.org/resource/Augustus&profile=st:personen">DBpedia en (Rome)</a></li>
+<li><a href="/kgram/sparql/template?transform=st:html">Dataset Content</a></li>
+<li><a href="/kgram/sparql/template?transform=st:system">System Description</a></li>
+<li>
+    <a href='/kgram/sparql/template?query=load &lt;http://localhost:8080/data/sdk.ttl&gt;'>Load Sudoku</a> <br/>
+    <a href="/kgram/sparql/template?name=sdk.rq">Sudoku Solver</a>
+</li>
+</ol>
   
   
   
@@ -66,7 +62,26 @@ and open the template in the editor.
 </form>
 
 
-  
+  <h3>DBpedia Query</h3>
+
+<form method='get' action='/kgram/sparql/template'>
+    
+   <select name="transform">
+    <option value="st:result">Binding</option>
+    <option value="st:html">Triple</option>
+  </select> 
+    <br/>
+  <textarea name='query'>
+  select * where {
+    service <http://fr.dbpedia.org/sparql> {
+        <http://fr.dbpedia.org/resource/Paris> ?p ?y
+    }
+  }
+  </textarea>   
+    
+  <br/>
+  <input type='submit' value='Submit'>
+</form>
   
   
 </html>

@@ -110,7 +110,7 @@ public class QueryProcess extends QuerySolver {
         public void initMode(){
             switch (getMode()){
                 case SERVER_MODE:
-                    PluginImpl.writeAuthorized = false;
+                    PluginImpl.readWriteAuthorized = false;
             }
         }
         

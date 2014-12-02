@@ -457,6 +457,9 @@ public class QueryProcess extends QuerySolver {
 	
 	
 	Mappings synUpdate(Query query,  Dataset ds) throws EngineException{
+            if (getMode() == SERVER_MODE){
+                return new Mappings();
+            }
             Graph g = getGraph();
 		GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
 		try {

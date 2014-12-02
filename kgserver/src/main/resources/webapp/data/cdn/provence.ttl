@@ -1,0 +1,158 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:context
+
+r:Raimond-Bérenger_III_de_Barcelone
+a foaf:Person ;
+cn:date 1113 ;
+rdfs:label "Raimond Bérenger Ier" ;
+rdfs:comment "Comte de Provence, comte de Barcelone, épouse Douce Ire, fondation de la Maison de Barcelone (princes catalans)" .
+
+r:Bérenger-Raimond_de_Provence a foaf:Person ;
+cn:date 1130 ;
+rdfs:label "Bérenger Raimond" ;
+rdfs:comment "Comte de Provence" .
+
+r:Raimond-Bérenger_II_de_Provence a foaf:Person ;
+cn:date 1144 ;
+rdfs:label "Raimond Bérenger II" ;
+rdfs:comment "Comte de Provence" .
+
+<http://fr.dbpedia.org/resource/Alphonse_II_d'Aragon> a foaf:Person ;
+cn:date 1166 ;
+rdfs:label "Alphonse Ier" ;
+rdfs:comment "Comte de Provence" .
+
+r:Alphonse_II_de_Provence a foaf:Person ;
+cn:date 1196 ;
+rdfs:label "Alphonse II" ;
+rdfs:comment "Comte de Provence" .
+
+r:Raimond_Bérenger_IV_de_Provence a foaf:Person ;
+cn:date 1205 ;
+rdfs:label "Raimond Bérenger IV" ;
+rdfs:comment "Comte de Provence" .
+
+<http://fr.dbpedia.org/resource/Béatrice_de_Savoie_(1198-1266)> a foaf:Person ;
+cn:date 1219 ;
+rdfs:label "Béatrice de Savoie" ;
+rdfs:comment "Fille de Thomas Ier, épouse Raimond Bérenger IV" .
+
+r:Barcelonnette a o:Place ;
+cn:date 1231 ;
+rdfs:label "Barcelonnette" ;
+rdfs:comment "Fondation de la ville par Raimond Bérenger IV" .
+
+<http://fr.dbpedia.org/resource/Charles_Ier_de_Sicile> a foaf:Person ;
+cn:date 1246 ; 
+rdfs:label "Charles I d'Anjou" ;
+cn:icon <http://upload.wikimedia.org/wikipedia/commons/f/fa/Capitolini-MonumentoCarloAngi%C3%B2-ArnolfoDiCambio-2.jpg>;
+rdfs:comment "Comte de Provence, frère de Saint Louis, épouse Béatrice de Provence, fille de Raimond Béranger IV. Fondation de la Maison d'Anjou (les angevins)"  .
+
+[] cn:date 1266 ; 
+rdfs:label "Charles I d'Anjou" ; 
+rdfs:comment "Roi de Naples"  .
+
+<http://fr.dbpedia.org/resource/Charles_II_d'Anjou> a foaf:Person ;
+cn:date 1285 ; 
+rdfs:label "Charles II d'Anjou" ; 
+rdfs:comment "Comte de Provence, roi de Naples"  .
+
+r:Robert_Ier_de_Naples a foaf:Person ;
+cn:date 1309 ; 
+rdfs:label "Robert d'Anjou" ; 
+rdfs:comment "Comte de Provence, roi de Naples" ; 
+cn:icon <http://upload.wikimedia.org/wikipedia/commons/5/5b/Robert1b.jpg>  .
+
+
+<http://fr.dbpedia.org/resource/Papauté_d'Avignon> 
+cn:date 1309  ; rdfs:label "Papauté d'Avignon"  .
+
+
+r:Jeanne_Ire_de_Naples cn:date 1343 ; a foaf:Person ;
+rdfs:label "Jeanne Ire" ; 
+cn:icon <http://upload.wikimedia.org/wikipedia/commons/f/fd/Jeanne_I%C3%A8re_de_Naples%2C_dite_la_Reine_Jeanne%2C_comtesse_de_Provence.jpg>;
+rdfs:comment "Comtesse de Provence, reine de Naples" .
+
+
+r:Louis_Ier_de_Naples a foaf:Person ;
+cn:date 1380 ; 
+rdfs:label "Louis d'Anjou" ; 
+rdfs:comment "Frère de Charles V, adopté par Jeanne Ire "  .
+
+
+r:Charles_III_de_Naples a foaf:Person ;
+cn:date 1382 ; 
+rdfs:label "Charles de Duras" ;
+rdfs:comment "Fait assassiner Jeanne Ire"  .
+
+
+<http://fr.dbpedia.org/resource/Louis_II_d'Anjou> a foaf:Person ;
+cn:date 1384 ; 
+rdfs:label "Louis II d'Anjou" ;
+rdfs:comment "Comte de Provence" 
+
+<http://fr.dbpedia.org/resource/Louis_III_d'Anjou> a foaf:Person ;
+cn:date 1417 ; 
+rdfs:label "Louis III d'Anjou" ;
+rdfs:comment "Comte de Provence" 
+
+
+
+<http://fr.dbpedia.org/resource/René_d'Anjou> a foaf:Person ;
+cn:date 1434 ; 
+rdfs:label "René d'Anjou" ;
+rdfs:comment "Comte de Provence" 
+
+<http://fr.dbpedia.org/resource/Charles_V_d'Anjou> a foaf:Person ;
+cn:date 1480 ; 
+rdfs:label "Charles V d'Anjou" ;
+rdfs:comment "Dernier comte de Provence" 
+
+
+r:Histoire_de_la_Provence cn:date 1481 ; 
+rdfs:label "Provence" ;
+rdfs:comment "Rattachement à la France".
+
+
+r:Saint-Paul-de-Vence a o:Place ;
+cn:date 1547 ;
+rdfs:label "Saint Paul de Vence";
+rdfs:comment "Ville frontière, rempart bastionné construit sur ordre de François Ier".
+
+r:Fort_Carré a o:Place ;
+cn:date 1553 ;
+rdfs:label "Fort Carré d'Antibes";
+rdfs:comment "Ville frontière, construction du fort de 1553 à 1585".
+
+r:Entrevaux a o:Place ;
+cn:date 1692 ;
+rdfs:label "Entrevaux";
+cn:icon <http://upload.wikimedia.org/wikipedia/commons/e/e4/Entrevaux_-_Porte_d%27Italie.jpg>;
+rdfs:comment "Modernisation de la citadelle".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

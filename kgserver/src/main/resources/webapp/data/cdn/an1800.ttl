@@ -1,0 +1,25 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+r:Royaume_de_Sardaigne cn:date 1814 ; 
+rdfs:label "Restauration Sarde" ;
+rdfs:comment "Retour du Comté de Nice et de la Savoie au royaume de Piémont-Sardaigne" ;
+cn:icon <http://upload.wikimedia.org/wikipedia/commons/5/5a/TannerMapKingdomSardinia1839.jpg> .
+
+r:Gênes a o:Place ;
+rdfs:label "Gênes";
+cn:date 1853 ; 
+rdfs:comment "Suppression du port franc de Nice au profit de Gênes" .
+
+r:Annexion_du_comté_de_Nice_à_la_France 
+cn:date 1860 ; rdfs:label "La France annexe Nice et la Savoie".
+
+
+<http://fr.dbpedia.org/resource/Royaume_d'Italie_(1861-1946)> 
+cn:date 1861  ; 
+rdfs:label "Unification italienne" ;
+rdfs:comment "Victor-Emmanuel II roi d'Italie" .

@@ -1,0 +1,16 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+
+
+[] cn:date 1385 ; rdfs:label "Barcelonnette, Cuneo et Stura rejoignent la Savoie" .
+
+r:Dédition_de_Nice_à_la_Savoie 
+cn:date 1388 ; 
+rdfs:label "Dédition de Nice" ;
+rdfs:comment "Nice, Puget-Théniers et Lantosque quittent la Provence pour la souveraineté du comte de  Savoie"  .
+

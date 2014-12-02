@@ -1,0 +1,82 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+
+<> cn:topic cn:context
+
+
+
+
+r:Xe_siècle cn:date 901 ;
+rdfs:label "Xe Siècle" ;
+rdfs:comment ""  .
+
+r:XIe_siècle cn:date 1001 ;
+rdfs:label "XIe Siècle" ;
+rdfs:comment "" .
+
+r:XIIe_siècle cn:date 1101 ;
+rdfs:label "XIIe Siècle" ;
+rdfs:comment "Les Croisades" .
+
+r:XIIIe_siècle cn:date 1201 ;
+rdfs:label "XIIIe Siècle" ;
+rdfs:comment "Les Croisades"  .
+
+r:XIVe_siècle cn:date 1301 ;
+rdfs:label "XIVe Siècle" ;
+rdfs:comment "La Guerre de cent ans, la Peste"  .
+
+r:XVe_siècle cn:date 1401 ;
+rdfs:label "XVe Siècle" ;
+rdfs:comment "Jeanne d'Arc, Christophe Colomb"  .
+
+r:XVIe_siècle cn:date 1501 ;
+rdfs:label "XVIe Siècle" ;
+rdfs:comment "Renaissance, Guerres de religion"  .
+
+r:XVIIe_siècle cn:date 1601 ;
+rdfs:label "XVIIe Siècle" ;
+rdfs:comment "Louis XIV, Galilée, Newton"  .
+
+r:XVIIIe_siècle cn:date 1701 ;
+rdfs:label "XVIIIe Siècle" ;
+rdfs:comment "Les Lumières, la Révolution".
+
+r:XIXe_siècle cn:date 1801 ;
+rdfs:label "XIXe Siècle" ;
+rdfs:comment "Les Révolutions, la République"  .
+
+r:XXe_siècle cn:date 1901 ;
+rdfs:label "XXe Siècle" ;
+rdfs:comment "" .
+
+
+cn:X     rdfs:label "X" ; cn:start  901 ; cn:finish 1000 .
+cn:XI    rdfs:label "XI" ; cn:start 1001 ; cn:finish 1100 .
+cn:XII   rdfs:label "XII" ; cn:start 1101 ; cn:finish 1200 .
+cn:XIII  rdfs:label "XIII" ; cn:start 1201 ; cn:finish 1300 .
+cn:XIV   rdfs:label "XIV" ; cn:start 1301 ; cn:finish 1400 .
+cn:XV    rdfs:label "XV" ; cn:start 1401 ; cn:finish 1500 .
+cn:XVI   rdfs:label "XVI" ; cn:start 1501 ; cn:finish 1600 .
+cn:XVII  rdfs:label "XVII" ; cn:start 1601 ; cn:finish 1700 .
+cn:XVIII rdfs:label "XVIII" ; cn:start 1701 ; cn:finish 1800 .
+cn:XIX   rdfs:label "XIX" ; cn:start 1801 ; cn:finish 1900 .
+cn:XX    rdfs:label "XX" ; cn:start 1901 ; cn:finish 2000 .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

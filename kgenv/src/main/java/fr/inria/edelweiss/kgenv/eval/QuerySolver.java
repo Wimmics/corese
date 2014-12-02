@@ -47,6 +47,9 @@ public class QuerySolver  {
 	public static final int STD_ENTAILMENT  = 0;
 	public static final int RDF_ENTAILMENT  = 1;
 	public static final int RDFS_ENTAILMENT = 2;
+        
+        public static final int DEFAULT_MODE = 0;
+        public static final int SERVER_MODE  = 1;
 
 	static String NAMESPACES;
 
@@ -82,6 +85,7 @@ public class QuerySolver  {
 	boolean isSequence = false;
 	
 	int slice = 0;
+        private int mode = DEFAULT_MODE;
 	
 	// set default base for SPARQL Query
 	// it is overloaded if query has a base (cf prefix/base)
@@ -565,6 +569,24 @@ public class QuerySolver  {
      */
     public void setCachePath(boolean isCachePath) {
         this.isCachePath = isCachePath;
+    }
+
+    /**
+     * @return the mode
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * @param mode the mode to set
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
+        initMode();
+    }
+    
+    public void initMode(){       
     }
 	
 }

@@ -5,7 +5,7 @@ construct {
 }
 where {
     graph ?g {
-        [] st:topic st:cdn
+        [] st:topic st:spqr
         ?x ?p ?y
     }
 }

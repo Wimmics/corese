@@ -9,29 +9,33 @@ prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
 construct debug {
-  ?r a foaf:Person 
+  ?r a ?class 
   ?r rdfs:label ?label ; rdfs:comment ?com
   ?r o:wikipedia ?pr ; o:dbpedia ?r
   
   ?r ?qq ?s        ?s rdfs:label ?ls     ?qq rdfs:label ?lq
   ?r p:naissance ?b ?r p:décès ?d
   ?r o:thumbnail  ?ic
+  ?r p:latitude ?lat ; p:longitude ?lon
 }
 where {
 
 service <http://fr.dbpedia.org/sparql> {
 
-  
-  ?r rdfs:label ?label . filter(lang(?label) = 'fr')
-    
-  optional { ?r rdfs:comment ?com . filter(lang(?com) = 'fr') }
-#  optional { ?r p:fonction ?f }
-#  optional { ?r o:title ?t }
+  ?r rdfs:label ?label . filter(lang(?label) = 'fr')    
+  ?r rdfs:comment ?com . filter(lang(?com) = 'fr')
+ 
   optional { ?r p:naissance ?b . ?r p:décès ?d }  
   optional { ?r o:thumbnail  ?ic  }
-  
+#  optional { ?r p:latitude ?lat ; p:longitude ?lon }  
+#  optional { ?r geo:lat ?lat ; geo:lon ?long } 
+  optional { 
+    ?r ?plat ?lat filter(?plat = p:latitude  || ?plat = geo:lat)
+    ?r ?plon ?lon filter(?plon = p:longitude || ?plon = geo:long) 
+  }
   optional {
     ?r ?q ?s 
     
@@ -41,6 +45,11 @@ service <http://fr.dbpedia.org/sparql> {
     || ?q = p:père   || ?q = o:father
     || ?q = p:successeur   || ?q = o:successor 
     || ?q = p:prédécesseur || ?q = o:predecessor
+    || ?q = o:residence 
+    
+    || ?q = p:sud || ?q = p:nord || ?q = p:est || ?q = p:ouest
+    || ?q = p:sudEst  || ?q = p:sudOuest
+    || ?q = p:nordEst || ?q = p:nordOuest 
     ) 
     
     filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'fr') 
@@ -49,8 +58,7 @@ service <http://fr.dbpedia.org/sparql> {
     filter(lang(?lq) = 'fr' || lang(?lq) = 'en')
 
   }
-	      
- 
+	     
 }
 
 bind (if (?q = p:successeur,   o:successor,
@@ -59,6 +67,8 @@ bind (if (?q = p:successeur,   o:successor,
       if (?q = p:père, o:father,
       ?q)))) 
       as ?qq)
+      
+bind (if (bound(?lat), o:Place, foaf:Person) as ?class)     
       
 bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr)   
       

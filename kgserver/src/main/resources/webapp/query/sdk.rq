@@ -2,7 +2,7 @@
 # Sudoku Problem Solving with a SPARQL Query on a RDF Graph
 # Olivier Corby - INRIA I3S 2011-2014
 #
-prefix c: <http://www.inria.fr/acacia/sdk#>
+prefix c: <http://ns.inria.fr/sdk/>
 template {
  """
 <html>

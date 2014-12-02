@@ -1,0 +1,11 @@
+prefix o: <http://dbpedia.org/ontology/>
+
+construct {
+    ?r a o:Resource ;
+      ?p ?v
+}
+where {
+  service <http://dbpedia.org/sparql> {
+    ?r ?p ?v
+  }
+}

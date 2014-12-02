@@ -1,0 +1,5 @@
+select * where {
+   ?p st:transform ?t 
+   optional { ?p st:query ?q }
+   optional { ?p st:variable ?v }
+}

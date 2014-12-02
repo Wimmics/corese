@@ -51,6 +51,7 @@ public class PluginImpl extends ProxyImpl {
 
     static Logger logger = Logger.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
+    public static boolean writeAuthorized = true;
     private static final String NL = System.getProperty("line.separator");
   
     String PPRINTER = DEF_PPRINTER;
@@ -556,8 +557,10 @@ public class PluginImpl extends ProxyImpl {
 
     
     private IDatatype write(IDatatype dtfile, IDatatype dt) {
-        QueryLoad ql = QueryLoad.create();
-        ql.write(dtfile.getLabel(), dt.getLabel());
+        if (writeAuthorized){
+            QueryLoad ql = QueryLoad.create();
+            ql.write(dtfile.getLabel(), dt.getLabel());
+        }
         return dt;
     }
    
@@ -989,7 +992,7 @@ public class PluginImpl extends ProxyImpl {
                Transformer gt = Transformer.create((Graph) prod.getGraph(), p, name, with);
                gt.init(ast);
                 // set after init
-               gt.set(Transformer.STL_URI, uri);
+               gt.set(Transformer.STL_TRANSFORM, uri);
                
                if (t == null){
                    // get current transformer if any to get its NSManager 
@@ -1009,7 +1012,7 @@ public class PluginImpl extends ProxyImpl {
             t = Transformer.create(prod, p);
             // set after init
             t.init(ast);
-            t.set(Transformer.STL_URI, uri);  
+            t.set(Transformer.STL_TRANSFORM, uri);  
             
             q.setTransformer(p, t);
         }

@@ -1,0 +1,4 @@
+select ?p (group_concat(?l ; separator = ";") as ?ld) where {
+   ?p st:load ?l
+}
+group by ?p

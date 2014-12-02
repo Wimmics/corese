@@ -1,9 +1,11 @@
 
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
@@ -18,6 +20,7 @@ import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TSVFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,6 +54,8 @@ public class SPARQLRestAPI {
     private static GraphStore graph  = GraphStore.create(false);
     private static QueryProcess exec = QueryProcess.create(graph);
     private String headerAccept = "Access-Control-Allow-Origin";
+    private static final String DEFAULT_TRANSFORM = Transformer.NAVLAB;
+    
     Profile mprofile;
     NSManager nsm;
     
@@ -79,6 +84,7 @@ public class SPARQLRestAPI {
         boolean owl = owlrl.equals("true");
         graph = GraphStore.create(ent);
         exec = QueryProcess.create(graph);
+        exec.setMode(QueryProcess.SERVER_MODE);
         if (ent) {            
             logger.info(output = "Endpoint successfully reset *with* RDFS entailments.");
         } else {
@@ -253,6 +259,7 @@ public class SPARQLRestAPI {
             @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
         try {
             String squery = query;
+            Node uri = null;
             
             if (profile != null){
                 // prodile declare a construct where query followed by a transformation
@@ -268,9 +275,14 @@ public class SPARQLRestAPI {
                     transform = mprofile.getTransform(uprofile);  
                 }            
                 if (resource != null){
-                    // resource that must be given as a binding value to the query
-                    value = mprofile.getValues(uprofile, resource);
+                    // resource given as a binding value to the query
+                    value = mprofile.getValues(uprofile, resource);                   
                 }
+            }
+            
+            if (resource != null){
+                // resource to be given to the transformation as graph Node via Context
+                uri = graph.getResource(resource);
             }
             
             if (query == null){ 
@@ -282,19 +294,29 @@ public class SPARQLRestAPI {
                     // name of a transformation to run
                     squery = getTemplate(transform);
                 }
+                else {
+                    squery = getTemplate(DEFAULT_TRANSFORM);
+                }
             }
             
             if (value != null){
                 // additional values clause
                squery += value;
             }
-             
-            
+                        
             // servlet context given to query process and result format
-            Context ctx = createContext(profile, squery, name, "/kgram/sparql/template");       
+            Context ctx = createContext(uri, profile, transform, squery, name, "/kgram/sparql/template");       
             Dataset ds  = createDataset(defaultGraphUris, namedGraphUris, ctx);
             Mappings map = getQueryProcess().query(squery, ds);
                                 
+            if (resource != null && uri == null){
+                // query (insert where) may have created the resource 
+               uri = graph.getResource(resource);
+               if (uri != null){
+                   ctx.set(Context.STL_URI, (IDatatype) uri.getValue());
+               }
+            }
+            
             HTMLFormat ft = HTMLFormat.create(graph, map);
             ft.setContext(ctx);                       
             if ((query != null || name != null)  && transform != null){
@@ -312,16 +334,22 @@ public class SPARQLRestAPI {
     
     
     
-    Context createContext(String profile, String query, String name, String service) {
+    Context createContext(Node uri, String profile, String trans, String query, String name, String service) {
         Context ctx = new Context();
         if (profile != null) {
             ctx.set(Context.STL_PROFILE, profile);
-        }        
+        }
+        if (trans != null) {
+            ctx.set(Context.STL_TRANSFORM, trans);
+        }  
         if (query != null) {
             ctx.set(Context.STL_QUERY, query);
         }
         if (name != null) {
             ctx.set(Context.STL_NAME, name);
+        }
+        if (uri != null){
+            ctx.set(Context.STL_URI, (IDatatype) uri.getValue());
         }
         ctx.set(Context.STL_SERVICE, service);
         return ctx;

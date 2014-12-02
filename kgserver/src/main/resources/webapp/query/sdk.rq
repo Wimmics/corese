@@ -12,7 +12,7 @@ template {
 <body>
 <h3>Semantic Web Sudoku Solver</h3>
 
-<form id='example' method='get' action='/kgram/sparql/template'>
+<form id='example' method='get' action='/kgram/sparql/sdk'>
 
    <button type="submit" name="submit" onclick="submitform();">Submit</button>
 

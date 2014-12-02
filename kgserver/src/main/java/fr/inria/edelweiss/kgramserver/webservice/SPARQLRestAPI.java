@@ -146,7 +146,9 @@ public class SPARQLRestAPI {
             // path with extension : use extension
             // path with no extension : load as turtle 
             // use case: rdf: is in Turtle
-            ld.loadWE(remotePath, source, Load.TURTLE_FORMAT);
+            if (exec.getMode() != QueryProcess.SERVER_MODE){
+                ld.loadWE(remotePath, source, Load.TURTLE_FORMAT);
+            }
         } catch (LoadException ex) {
             logger.error(ex);
             return Response.status(404).header(headerAccept, "*").entity(output).build();

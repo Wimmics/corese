@@ -71,7 +71,7 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-09-23";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-12-02";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -185,6 +185,8 @@ public class MainFrame extends JFrame implements ActionListener {
     private static String RQ = ".rq";
     private static String XML = ".xml";
     private static String RDF = ".rdf";
+    private static final String URI_CORESE = "http://wimmics.inria.fr/corese";
+    private static final String URI_GRAPHSTREAM = "http://graphstream-project.org/";
 
     /**
      * Crée la fenêtre principale, initialise Corese
@@ -1055,27 +1057,22 @@ public class MainFrame extends JFrame implements ActionListener {
         else if (e.getSource() == refresh) {
             ongletListener.refresh(this);
         } 
-         else if (e.getSource() == apropos || e.getSource() == tuto) {
+         else if (e.getSource() == apropos || e.getSource() == tuto || e.getSource() == doc) {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 try {
-                    Desktop.getDesktop().browse(new URI("http://wimmics.inria.fr/corese"));
+                    String uri = URI_CORESE;
+                    if (e.getSource() == doc){
+                       uri = URI_GRAPHSTREAM;
+                    }
+                    Desktop.getDesktop().browse(new URI(uri));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } catch (URISyntaxException e1) {
                     e1.printStackTrace();
                 }
             }
-        } else if (e.getSource() == doc) {
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                try {
-                    Desktop.getDesktop().browse(new URI("http://graphstream.sourceforge.net/tutorials/tut105.html"));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (URISyntaxException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        } else if (e.getSource() == kgramBox) {
+        } 
+         else if (e.getSource() == kgramBox) {
             isKgram = true;
             //DatatypeMap.setLiteralAsString(true);
             for (int i = 0; i < monTabOnglet.size(); i++) {

@@ -154,7 +154,10 @@ public class Profile {
         Node query   = m.getNode("?q");
         Node var     = m.getNode("?v");
         Node trans   = m.getNode("?t");
-        Service s = new Service(trans.getLabel(), query.getLabel(), var.getLabel());
+        Service s = new Service(
+                (trans==null)?null:trans.getLabel(), 
+                (query==null)?null:query.getLabel(), 
+                (var==null)?null: var.getLabel());
         map.put(profile.getLabel(), s);
     }
     

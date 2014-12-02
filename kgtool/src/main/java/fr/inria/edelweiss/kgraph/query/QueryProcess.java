@@ -106,6 +106,14 @@ public class QueryProcess extends QuerySolver {
 		}
 	}
         
+        @Override
+        public void initMode(){
+            switch (getMode()){
+                case SERVER_MODE:
+                    PluginImpl.writeAuthorized = false;
+            }
+        }
+        
         public void setManager(Manager man){
             manager = man;
         }

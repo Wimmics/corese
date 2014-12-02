@@ -61,6 +61,7 @@ public class Transformer {
     public static final String TABLE        = STL + "table";
     public static final String HTML         = STL + "html";
     public static final String RDFRESULT    = STL + "result";
+    public static final String NAVLAB       = STL + "navlab";
     public static final String RDFTYPECHECK = STL + "rdftypecheck";
     public static final String SPINTYPECHECK= STL + "spintypecheck";
     public static final String STL_PROFILE  = STL + "profile";
@@ -69,7 +70,7 @@ public class Transformer {
     private static final String STL_TURTLE  = STL + "turtle";   
     public static final String STL_IMPORT   = STL + "import";   
     public static final String STL_PROCESS  = STL + "process";   
-    public static final String STL_URI      = STL + "uri";
+    public static final String STL_TRANSFORM = Context.STL_TRANSFORM;
     // default
     public static final String PPRINTER = TURTLE;
     private static final String OUT = ASTQuery.OUT;

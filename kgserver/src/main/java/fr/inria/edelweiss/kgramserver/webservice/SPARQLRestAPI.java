@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -249,6 +250,24 @@ public class SPARQLRestAPI {
     
     @GET
     @Produces("text/html")
+    @Path("sdk")
+    public Response sdk(@QueryParam("profile")  String profile,  // query + transform
+            @QueryParam("uri")  String resource,  // URI of resource focus
+            @QueryParam("query") String query, // SPARQL query
+            @QueryParam("name")  String name,  // SPARQL query name (in webapp/query or path or URL)
+            @QueryParam("value") String value, // values clause that may complement query           
+            @QueryParam("transform")  String transform,  // Transformation URI to post process result
+            @QueryParam("default-graph-uri") List<String> defaultGraphUris,
+            @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
+         Graph g =  new Profile().getGraph("/webapp/data/", "sdk.ttl");
+         QueryProcess exec = QueryProcess.create(g);
+         return template(exec, profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
+    }
+    
+    
+    
+    @GET
+    @Produces("text/html")
     @Path("template")
     public Response queryGETHTML(
             @QueryParam("profile")  String profile,  // query + transform
@@ -259,6 +278,20 @@ public class SPARQLRestAPI {
             @QueryParam("transform")  String transform,  // Transformation URI to post process result
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
+        
+        return template(getQueryProcess(), profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);       
+    }
+    
+    public Response template(
+            QueryProcess exec,
+            String profile,  // query + transform
+            String resource,  // URI of resource focus
+            String query, // SPARQL query
+            String name,  // SPARQL query name (in webapp/query or path or URL)
+            String value, // values clause that may complement query           
+            String transform,  // Transformation URI to post process result
+            List<String> defaultGraphUris,
+            List<String> namedGraphUris) {
         try {
             String squery = query;
             Node uri = null;
@@ -309,7 +342,7 @@ public class SPARQLRestAPI {
             // servlet context given to query process and result format
             Context ctx = createContext(uri, profile, transform, squery, name, "/kgram/sparql/template");       
             Dataset ds  = createDataset(defaultGraphUris, namedGraphUris, ctx);
-            Mappings map = getQueryProcess().query(squery, ds);
+            Mappings map = exec.query(squery, ds);
                                 
             if (resource != null && uri == null){
                 // query (insert where) may have created the resource 

@@ -120,6 +120,17 @@ public class Profile {
         return g;
     }
     
+    Graph getGraph(String path, String name){
+        try {
+            return load(path, name);
+        } catch (IOException ex) {
+            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (LoadException ex) {
+            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Graph.create();
+    }
+    
     String getQuery(String profile){
         return map.get(profile).getQuery();
     }

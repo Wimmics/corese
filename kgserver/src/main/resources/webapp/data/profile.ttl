@@ -1,0 +1,54 @@
+#
+# SWS profile: a construct query and a HTML transformation
+#
+
+
+st:dbpedia a st:Profile ;
+  st:query     "frdbpedia.rq" ;
+  st:variable  "?r" ;
+  st:transform st:navlab .
+
+st:dbpediacopy a st:Profile ;
+  st:query     "frdbpediains.rq" ;
+  st:variable  "?r" ;
+  st:transform st:navlab .
+
+st:dbpediaall a st:Profile ;
+  st:query     "frdbpediaall.rq" ;
+  st:variable  "?r" ;
+  st:transform st:navlab .
+
+
+st:navlab a st:Profile ;
+  st:transform st:navlab .
+
+st:html a st:Profile ;
+  st:transform st:html .
+
+st:local a st:Profile ;
+  st:query     "local.rq" ;
+  st:variable  "?r" ;
+  st:transform st:navlab .
+
+st:personen a st:Profile ;
+  st:query     "dbpedia.rq" ;
+  st:variable  "?r" ;
+  st:transform st:navlab .  
+  
+  
+st:bound a st:Profile ;
+st:query "bound.rq";
+st:transform st:navlab .  
+ 
+st:mglt a st:Profile ;
+st:query "mglt.rq";
+st:transform st:navlab . 
+
+st:spqr a st:Profile ;
+st:query "spqr.rq";
+st:transform st:navlab . 
+       
+st:cdn a st:Profile ;
+st:query "cdn.rq";
+st:transform st:navlab .  
+

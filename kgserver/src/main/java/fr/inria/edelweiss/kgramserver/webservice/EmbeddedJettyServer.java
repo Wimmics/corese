@@ -112,7 +112,7 @@ public class EmbeddedJettyServer {
             logger.info("----------------------------------------------");
 
             ResourceHandler resource_handler = new ResourceHandler();
-            resource_handler.setWelcomeFiles(new String[]{"index.html"});
+            resource_handler.setWelcomeFiles(new String[]{"demo.html"});
 //            resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
             resource_handler.setResourceBase(webappUri.getRawPath());
             ContextHandler staticContextHandler = new ContextHandler();

@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.GroupLayout;
@@ -35,8 +34,6 @@ import javax.swing.undo.CannotUndoException;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResult;
-import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
@@ -421,22 +418,6 @@ public final class MyJPanelQuery extends JPanel {
         return null;
     }
 
-    private Iterable<Entity> getEdges(IResults l) {
-        if (l instanceof QueryResults) {
-            // kgraph
-            QueryResults qr = (QueryResults) l;
-            return qr.getEdges();
-        }
-        return new ArrayList<Entity>();
-    }
-
-    fr.inria.edelweiss.kgraph.core.Graph getGraph(IResults l) {
-        if (l instanceof QueryResults) {
-            QueryResults qr = (QueryResults) l;
-            return qr.getGraph();
-        }
-        return fr.inria.edelweiss.kgraph.core.Graph.create();
-    }
 
     private String getLabel(NSManager nsm, fr.inria.edelweiss.kgram.api.core.Node n) {
         IDatatype dt = (IDatatype) n.getValue();
@@ -446,14 +427,6 @@ public final class MyJPanelQuery extends JPanel {
         else {
             return n.getLabel();
         }
-//        int ind = name.lastIndexOf("#");
-//        if (ind == -1) {
-//            ind = name.lastIndexOf("/");
-//        }
-//        if (ind == -1 || ind == name.length() - 1) {
-//            return name;
-//        }
-//        return name.substring(ind + 1);
     }
 
     String toString(Mappings map) {
@@ -474,9 +447,13 @@ public final class MyJPanelQuery extends JPanel {
             tabbedPaneResults.setSelectedIndex(1);
             return;
         }
-
         QueryResults qr = (QueryResults) l_Results;
         Mappings map = qr.getMappings();
+        display(map, coreseFrame);
+    }
+        
+    void display(Mappings map, MainFrame coreseFrame) {
+
         Query q = map.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
@@ -490,16 +467,9 @@ public final class MyJPanelQuery extends JPanel {
         DefaultTreeModel treeModel = new DefaultTreeModel(root);
         treeResult = new JTree(treeModel);
         treeResult.setShowsRootHandles(true);
-        // Pour chaque resultat de l_Results on crée un noeud "result"
-        //if (l_Results.size()<1000)      
 
-        int i = 1;
-        if (oneValue) {
-            display(root, map);
-        } else {
-            display(root, l_Results);
-        }
-
+        display(root, map);
+       
         TreePath myPath = treeResult.getPathForRow(0);
         treeResult.expandPath(myPath);
         scrollPaneTreeResult.setViewportView(treeResult);
@@ -507,7 +477,7 @@ public final class MyJPanelQuery extends JPanel {
         //pointe sur le résultat XML
         tabbedPaneResults.setSelectedIndex(1);
 
-        if (l_Results.isConstruct() || l_Results.isDescribe()) {
+        if (q.isConstruct()) {
             displayGraph((Graph) map.getGraph(), ast.getNSM());
         } // draft
         else if (map.getQuery().isTemplate() && map.getQuery().isPragma(KGGRAPH)) {
@@ -534,20 +504,60 @@ public final class MyJPanelQuery extends JPanel {
         }
     }
 
-    void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm) {
+    void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm) {      
+        graph = create(g, nsm);
+        graph.addAttribute("ui.stylesheet", stylesheet);
+        graph.addAttribute("ui.antialias");
+        textPaneStyleGraph.setText(stylesheet);
 
+        //permet de visualiser correctement le graphe dans l'onglet de Corese
+        LinLog lLayout = new LinLog();
+        lLayout.setQuality(0.9);
+        lLayout.setGravityFactor(0.9);
+
+        Viewer sgv = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_SWING_THREAD);
+        sgv.enableAutoLayout(lLayout);
+        View sgr = sgv.addDefaultView(false);       
+        //View 	sgr = sgv.addView("test", GraphRenderer renderer) 
+        sgr.getCamera().setAutoFitView(true);
+
+        //Dégrise le bouton et ajoute le texte dans le textPane
+        buttonRefreshStyle.setEnabled(true);
+        buttonDefaultStyle.setEnabled(true);
+
+        JPanel panelStyleGraph = new JPanel();
+        panelStyleGraph.setLayout(new BorderLayout());
+
+        panelStyleGraph.add(textPaneStyleGraph, BorderLayout.CENTER);
+        panelStyleGraph.add(textAreaLinesGraph, BorderLayout.WEST);
+
+        JScrollPane jsStyleGraph = new JScrollPane();
+        jsStyleGraph.setViewportView(panelStyleGraph);
+
+        final JSplitPane jpGraph = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, jsStyleGraph, sgr);
+        jpGraph.setContinuousLayout(true);
+        scrollPaneTreeResult.setViewportView(jpGraph);
+
+        //pointe sur l'onglet Graph
+        tabbedPaneResults.setSelectedIndex(0);
+
+    }
+    
+    
+    
+    MultiGraph create(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm){
+    //            graph.addNode(temp).addAttribute("ui.style", "fill-color:white;");
+    //                gsub.addAttribute("ui.style", "fill-color:lightblue;size-mode:dyn-size;shape:rounded-box;");
+    //                    ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
         int num = 0;
-        String sujetUri, predicat, objetUri, temp = "http://www.inria.fr/acacia/corese#Results";
+        String sujetUri, predicat, objetUri;         
 
-        graph = new MultiGraph(g.getName(), false, true);
-//            graph.addNode(temp).addAttribute("ui.style", "fill-color:white;");
+        String sujet;
+        String objet;
 
-        String sujet = null;
-        String objet = null;
-
-        Iterable<Entity> edges = g.getEdges();
-
-        for (Entity ent : edges) {
+        MultiGraph graph = new MultiGraph(g.getName(), false, true);
+        
+        for (Entity ent : g.getEdges()) {
             fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
             fr.inria.edelweiss.kgram.api.core.Node n1 = edge.getNode(0);
             fr.inria.edelweiss.kgram.api.core.Node n2 = edge.getNode(1);
@@ -564,11 +574,9 @@ public final class MyJPanelQuery extends JPanel {
             if (gsub == null) {
                 gsub = graph.addNode(sujetUri);
                 gsub.addAttribute("label", sujet);
-//                gsub.addAttribute("ui.style", "fill-color:lightblue;size-mode:dyn-size;shape:rounded-box;");
                 if (n1.isBlank()) {                   
                     gsub.setAttribute("ui.class", "Blank");
                 }
-//                    ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
             }
             num++;
 
@@ -595,42 +603,10 @@ public final class MyJPanelQuery extends JPanel {
                 ee.addAttribute("label", predicat);
             }
         }
-
-        textPaneStyleGraph.setText(stylesheet);
-        graph.addAttribute("ui.stylesheet", stylesheet);
-        graph.addAttribute("ui.antialias");
-
-        //permet de visualiser correctement le graphe dans l'onglet de Corese
-        LinLog lLayout = new LinLog();
-        lLayout.setQuality(0.9);
-        lLayout.setGravityFactor(0.9);
-
-        Viewer sgv = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_SWING_THREAD);
-        sgv.enableAutoLayout(lLayout);
-        View sgr = sgv.addDefaultView(false);
-        sgr.getCamera().setAutoFitView(true);
-
-        //Dégrise le bouton et ajoute le texte dans le textPane
-        buttonRefreshStyle.setEnabled(true);
-        buttonDefaultStyle.setEnabled(true);
-
-        JPanel panelStyleGraph = new JPanel();
-        panelStyleGraph.setLayout(new BorderLayout());
-
-        panelStyleGraph.add(textPaneStyleGraph, BorderLayout.CENTER);
-        panelStyleGraph.add(textAreaLinesGraph, BorderLayout.WEST);
-
-        JScrollPane jsStyleGraph = new JScrollPane();
-        jsStyleGraph.setViewportView(panelStyleGraph);
-
-        final JSplitPane jpGraph = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, jsStyleGraph, sgr);
-        jpGraph.setContinuousLayout(true);
-        scrollPaneTreeResult.setViewportView(jpGraph);
-
-        //pointe sur l'onglet Graph
-        tabbedPaneResults.setSelectedIndex(0);
-
+        
+        return graph;
     }
+    
 
     private boolean isStyle(fr.inria.edelweiss.kgram.api.core.Edge edge) {
         return edge.getLabel().equals(KGSTYLE);
@@ -656,33 +632,7 @@ public final class MyJPanelQuery extends JPanel {
             i++;
         }
     }
-
-    /**
-     * Display result using IResults
-     *
-     * @deprecated
-     */
-    void display(DefaultMutableTreeNode root, IResults l_Results) {
-        int i = 1;
-        for (IResult res : l_Results) {
-            DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
-            // Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
-
-            for (String var : l_Results.getVariables()) {
-                IResultValue[] lres = res.getResultValues(var);
-                if (lres != null) {
-
-                    for (IResultValue val : lres) {
-                        x.add(new DefaultMutableTreeNode(var));
-                        x.add(new DefaultMutableTreeNode(val.getDatatypeValue().toString()));
-                        root.add(x);
-                    }
-                }
-            }
-            i++;
-        }
-    }
-
+   
     private ActionListener createListener(final MainFrame coreseFrame, final boolean isTrace) {
 
         return new ActionListener() {

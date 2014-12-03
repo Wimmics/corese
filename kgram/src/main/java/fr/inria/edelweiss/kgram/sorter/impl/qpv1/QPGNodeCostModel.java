@@ -43,14 +43,19 @@ public class QPGNodeCostModel extends AbstractCostModel {
 
     private final QPGNode node;
 
-    public QPGNodeCostModel(QPGNode n, Edge e, List<Exp> bindings) {
+    public QPGNodeCostModel(QPGNode n, List<Exp> bindings) {
         this.node = n;
+        //todo with GNode
+        Node gNode = null;
 
         if (n.getType() == EDGE) {
+            Edge e = n.getExp().getEdge();
+
             //the value of S P O G can be: 0[bound], ?[length of constant list], Integer.MAX_VALUE[unbound]
             this.pattern[S] = getNodeType(e.getNode(0), bindings);
             this.pattern[P] = getNodeType(e.getEdgeVariable() == null ? e.getEdgeNode() : e.getEdgeVariable(), bindings);
             this.pattern[O] = getNodeType(e.getNode(1), bindings);
+            this.pattern[G] = (gNode == null) ? BOUND : getNodeType(gNode, bindings); //triple pattern appeared in default graph is considered as BOUND
 
             // get the variables in the triple pattern
             n.getExp().getVariables(variables);
@@ -58,9 +63,9 @@ public class QPGNodeCostModel extends AbstractCostModel {
             //obtain the graph node
             if (n.getExp().size() > 0 && n.getExp().get(0).type() == GRAPHNODE) {
                 //GRAPH{GRAPHNODE{NODE{data:aliceFoaf } } AND...}   
-                Node gNode = n.getExp().get(0).get(0).getNode();
+                gNode = n.getExp().get(0).get(0).getNode();
                 this.pattern[G] = getNodeType(gNode, bindings);
-            }
+            }            
         }
     }
 
@@ -82,7 +87,7 @@ public class QPGNodeCostModel extends AbstractCostModel {
     //Bound (constant) or unbound(varaible) or detected constant(s) (list of constant(s))
     private int getNodeType(Node n, List<Exp> bindings) {
         if (n == null) {
-            return -1;
+            return NA;
         }
         return n.isVariable() ? (isBound(bindings, n) ? LIST : UNBOUND) : BOUND;
     }

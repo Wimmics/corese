@@ -31,11 +31,20 @@ public class QPGNode {
     private final int type;
     private QPGNodeCostModel costModel = null;
     private double cost = -1;
+    //the nested QPG in a QPG node, ex, GRAPH
+    //and for future extionson, ex, UNION
+    private QPGraph nested = null;
 
     public QPGNode(Exp exp, List<Exp> bindings) {
         this.exp = exp;
         this.type = exp.type();
-        this.costModel = new QPGNodeCostModel(this, exp.getEdge(), bindings);
+        
+        //TBD
+//        if(this.type == GRAPH || ??){
+//            nested = new QPGraph(exp, null);
+//        }
+        
+        this.costModel = new QPGNodeCostModel(this, bindings);
     }
 
     public QPGNodeCostModel getCostModel() {
@@ -58,6 +67,13 @@ public class QPGNode {
         this.cost = cost;
     }
 
+    /**
+     * Get the Kgram Node in the triple pattern (EDGE) according to the type
+     * subject, predicate, or object
+     * 
+     * @param i type
+     * @return 
+     */
     public Node getExpNode(int i) {
         if (this.type != EDGE) {
             return null;

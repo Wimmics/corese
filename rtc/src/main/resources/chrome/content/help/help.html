@@ -3,6 +3,8 @@
 
 
 
+
+
   
 
   
@@ -208,85 +210,72 @@ querying data using SPARQL. The extraction of triples is based on <a target="_bl
 triples uploading and querying are based on <a target="_blank" href="http://wimmics.inria.fr/corese">Corese/KGRAM</a>.<br>
 Main features:<br>
 <ul>
+
   <li>Extract RDF triples</li>
   <li>Upload data to server</li>
   <li>SPARQL query<br>
 </li>
-  <li>Save data to file</li>
+  <li>Save data to file</li><br>
 </ul>
+<h2 class="title">2 Installation<br>
+</h2>
 
-<div class="clear"> </div>
-</div>
-<div class="section section-1389641839455">
-<h2 class="title">2 INstallation and UI</h2>
 <ul>
-  <li>
-This extension only supports <a href="http://www.mozilla.org/en-US/firefox" target="_blank">Mozila Firefox</a> brwoser;</li>
-  <li>Download the extension from [where];</li>
-  <li>Follow the extension installation steps to install the extension and restart the browser;</li>
-  <li>In order to upload and query data, you need to download <a href="http://www.mozilla.org/en-US/firefox" target="_blank">corese server</a> and start it.<br>
+<li>
+This extension only supports <a href="http://www.mozilla.org/en-US/firefox" target="_blank">Mozila Firefox</a> brwoser;</li><li>Download the extension from [<a href="http://www-sop.inria.fr/members/Fuqi.Song/rtc/1.1/rtc-1.1b.xpi">here</a>];</li><li>Follow the extension installation steps to install the extension and restart the browser;</li><li>In order to upload and query data, you need to download <a href="http://www.mozilla.org/en-US/firefox" target="_blank">corese server</a> and start it.<br>
   </li>
 </ul>
+
 <br>
+
 <h2 class="title">3 Instructions<br>
 </h2>
+
 A panel like follows should show when you open a new page(try <a href="http://fr.dbpedia.org/page/Sophia_Antipolis" target="_blank">Dbpedia:sophia
 antipolis</a>). If there are triples detected on this page, an icon <img style="width: 16px; height: 16px;" alt="" src="img/rdf.ico">
 will appear in address bar and triples will be listed in the left-side table. You can close the panel by clicking button <img style="width: 16px; height: 16px;" alt="" src="img/close.ico"> [Close] and reopen the
 panel by clicking the icon in address bar or via menu (tools/[RDF Triple Collector]).<br>
 <br>
-<img style="width: 900px;" alt="" src="img/ui%20v1.1.png"><br><br>
+<img style="width: 900px;" alt="" src="img/ui%20v1.1.png"><br>
+<br>
+
 <ul>
-  <li>
-By clicking (or use key up &amp; down) on one row of triples, the details will display in the right-bottom text area;</li>
-  <li>
-The triples in the list can be download to file in format of turtle (.ttl);</li>
-  <li>
+<li>
+By clicking (or use key up &amp; down) on one row of triples, the details will display in the right-bottom text area;</li><li>
+The triples in the list can be download to file in format of turtle (.ttl);</li><li>
 Every time you switch between different tabs, the page will be
 reloaded, the results in the panel alwalys comforms to current browsing
 page. Use <img style="width: 16px; height: 16px;" alt="" src="img/reload.ico"> [Reload] button to re-extract triples on current page.<br>
-  </li>
-  <li>
+  </li><li>
 If the server has been started:</li>
 </ul>
+
 <div style="margin-left: 40px;">
-<ul>
-
-  <li>You can upload the triples to server(endpoint | ldp). All these triples
+<ul><li>You can upload the triples to server(endpoint | ldp). All these triples
 will be inserted in a named graph naming after the url of the current
-page.</li>
-  
-  
-  <li>Query data (endpoint):</li>
-  <ul>
-    <li>on this page: only query data from named graph of the current page</li>
-    <li>all on server: taking all data on server into account</li>
-    <li>ldp: use url pattern as "http://localhost:8080/kgram/ldp/xxx" in browser to query resources, where "xxx" refers to the name of resource to query<br>
-    </li>
-  </ul>
-
-  
-</ul>
-<ul>
-
-  <li>The return results will be displayed in the table and details can be viewed also in the text area;</li>
-  <li>The results can be saved to file in format of Json (.json); </li>
-</ul>
+page.</li><li>Query data (endpoint):</li><ul><li>on this page: only query data from named graph of the current page</li><li>all on server: taking all data on server into account</li><li>ldp:
+use url pattern as "http://localhost:8080/kgram/ldp/xxx" in browser to
+query resources, where "xxx" refers to the name of resource to query<br>
+    </li></ul></ul>
+<ul><li>The return results will be displayed in the table and details can be viewed also in the text area;</li><li>The results can be saved to file in format of Json (.json); </li></ul>
 
 </div>
 
+
 <ul>
-  <li>The information about each operation is shown on the title bar in blue.</li>
-  <li>
+<li>The information about each operation is shown on the title bar in blue.</li><li>
 The server address can be changed, but only support corese endpoint/ldp at time being.</li>
 </ul>
-&nbsp;&nbsp;&nbsp;&nbsp; <br>
-<div style="margin-left: 40px;">&nbsp;
-* The pages from <a href="http://fr.dbpedia.org/" target="_blank">dbpedia</a> are good samples to try, not many pages support RDFa at the moment.<br>
-&nbsp; * For support and feedback, please contact <a href="http://www-sop.inria.fr/members/Fuqi.Song/">Fuqi Song</a>.</div>
+<br>
+<div style="margin-left: 40px;">* The pages from <a href="http://fr.dbpedia.org/" target="_blank">dbpedia</a> are good samples to try, not many pages support RDFa at the moment.<br>
+* For support and feedback, please contact <a href="http://www-sop.inria.fr/members/Fuqi.Song/">Fuqi Song</a>.</div>
+<ul>
+
+</ul>
 
 
 <div class="clear"> </div>
-</div></div>
+</div>
+</div>
 
 </body></html>

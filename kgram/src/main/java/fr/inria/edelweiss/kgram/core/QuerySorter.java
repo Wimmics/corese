@@ -334,7 +334,7 @@ public class QuerySorter implements ExpType {
      * Identify remarkable filter ?x < ?y ?x = ?y or ?x = cst or !bound() filter
      * is tagged
      */
-    List<Exp> findBindings(Exp exp) {
+    public List<Exp> findBindings(Exp exp) {
         for (Exp ee : exp) {
             if (ee.isFilter()) {
                 compiler.process(query, ee);

@@ -65,16 +65,23 @@
             <version>0.6.1</version>
         </dependency>
         <!-- JSON-LD parser-->
-         <dependency>
-             <groupId>com.github.jsonld-java</groupId>
-             <artifactId>jsonld-java</artifactId>
-             <version>0.3</version>
-         </dependency>   
+        <dependency>
+            <groupId>com.github.jsonld-java</groupId>
+            <artifactId>jsonld-java</artifactId>
+            <version>0.3</version>
+        </dependency>   
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <scope>test</scope>
             <version>6.8.8</version>
+        </dependency>
+        <!-- For testing the correctness of Corese against BSBM-->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>2.10.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -126,8 +133,8 @@
                     </execution>
                 </executions>
             </plugin>-->
-			
-			
+            
+      	 	
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>

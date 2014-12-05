@@ -2,85 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Dec 02 08:22:14 CET 2014
+Fri Dec 05 10:22:58 CET 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template st:table {
-
- "<tr class='s" 
-   if (kg:even(st:number()), 1, 0)
- "'>"
- 
-  "<th>"  st:number() "</th>"
-  
-    st:apply-templates(?s)
- 
- "</tr>"
- 
-}
-where {
-  ?x rs:solution ?s 
-  ?s rs:index ?i
-  
-}
-order by ?i
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:esc(?x) {
-
-  str(?d)
-    
-}
-where {
-
-   bind(st:turtle(?x) as ?t)
-   
-   bind(
-    if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) 
-    as ?d) 
-    
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:query {
-  """
-  <h3>Query</h3>
-  <form method='post' action='"""
-  
-  st:get(st:service)
-  
-  """'>
-    <textarea cols='60' rows='15' name='query'>"""
-
-    st:get(st:query)
-    
-  """</textarea>
-    <br/>
-    <input type='submit' value='Submit'/>
-  </form>
-  """
-}
-where {
-}
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -94,6 +19,40 @@ template st:start {
   
   st:call-template(st:tail)
 
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:query {
+  """
+  <h3>Query</h3>
+  <form method='post' action='"""
+    
+  st:get(st:service)
+  
+  """'>
+  
+   <select name="profile">
+    <option value="st:ldp">LDP</option>
+    <option value="st:result">STD</option>
+   </select> 
+  
+    <br/>
+    <textarea cols='60' rows='15' name='query'>"""
+
+    st:get(st:query)
+    
+  """</textarea>
+    <br/>
+    <input type='submit' value='Submit'/>
+  </form>
+  """
 }
 where {
 }
@@ -167,6 +126,85 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:link(?uri, ?title) {
+   "<a href=\""  str(?uri) "\">" str(?title) "</a>"
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template st:table {
+
+ "<tr class='s" 
+   if (kg:even(st:number()), 1, 0)
+ "'>"
+ 
+  "<th>"  st:number() "</th>"
+  
+    st:apply-templates(?s)
+ 
+ "</tr>"
+ 
+}
+where {
+  ?x rs:solution ?s 
+  ?s rs:index ?i
+  
+}
+order by ?i
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:esc(?x) {
+
+  str(?d)
+    
+}
+where {
+
+   bind(st:turtle(?x) as ?t)
+   
+   bind(
+    if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) 
+    as ?d) 
+    
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:display(?x) {
+
+  if (! bound(?profile), 
+    st:call-template(st:esc, ?x),
+    if (?profile = st:ldp, 
+      st:call-template(st:linkprofile, ?x),
+      st:call-template(st:linkesc, ?x)))
+          
+}
+where {
+      bind (st:get(st:profile) as ?profile)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:head {
   """
   <html>
@@ -200,18 +238,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:link(?uri, ?title) {
-   "<a href='"  str(?uri) "'>" str(?title) "</a>"
-}
-where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:linkesc(?x) {
 
   if (isURI(?x), 
@@ -231,10 +257,46 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:linkprofile(?x) {
+
+  if (isURI(?x), 
+    st:call-template(st:link, st:call-template(st:transform, ?x), ?e),
+    str(?e))
+    
+}
+where {
+
+  bind (st:call-template(st:esc, ?x) as ?e)
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:transform(?x) {
+
+    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" st:get(st:profile)
+    
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template  {
  
-    "<td>"  str(?res)   "</td>" ; separator = " "
+    "<td>"  
+    coalesce(st:call-template(st:display, ?val), "&nbsp;")
+    "</td>" ; separator = " "
   
 }
 where {
@@ -245,7 +307,6 @@ where {
     ?in rs:binding [ rs:variable ?var ; rs:value ?val ]
   }
   
-  bind (coalesce(st:call-template(st:esc, ?val), "&nbsp;") as ?res)
 }
 order by ?var
 ]]>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Dec 02 08:22:14 CET 2014
+Fri Dec 05 10:22:58 CET 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -59,6 +59,7 @@ where {
     (o:child 		"Enfants")
     (o:residence 	"Résidence")
     (rdfs:comment 	"Résumé")
+    (o:wikiPageRedirects "Voir aussi")
     (o:wikipedia	"Wikipedia")
     (o:dbpedia		"DBpedia")
   }
@@ -181,7 +182,7 @@ template st:page {
 
   st:call-template(st:head, st:head)
 
-  st:call-template(st:select)
+  st:call-template(st:selecttry)
    
   st:call-template(st:tail, st:tail)
   
@@ -204,7 +205,7 @@ where {
 template st:link(?x) {
 
       st:get(st:service) 
-      "?uri=" str(?x)          
+      "?uri=" encode_for_uri(?x)          
       st:call-template(st:transform)
       
 }
@@ -425,6 +426,28 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+template st:default {
+"<a href=\"" 
+    str(?uri) 
+  "\">"  
+    str(?uri) 
+  "</a>"
+}
+where {
+    bind(st:get(st:uri) as ?uri)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:head {
   """
 <?xml version="1.0" encoding="UTF-8"?>
@@ -462,6 +485,29 @@ template st:head {
 where {
 
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+template st:selecttry {
+
+  if (bound(?t), 
+    st:call-template(st:select),
+    st:call-template(st:default))
+  
+}
+where {
+  optional { ?x a ?t }
+}
+limit 1
 ]]>
 </body>
 </rule>

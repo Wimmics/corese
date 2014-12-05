@@ -16,9 +16,8 @@ construct  {
   ?r rdfs:label ?label ; rdfs:comment ?com
   ?r o:wikipedia ?pr ; o:dbpedia ?r
   
-  ?r ?qq ?s        ?s rdfs:label ?ls     ?qq rdfs:label ?lq
-  ?r p:naissance ?b ?r p:décès ?d
-  ?r o:thumbnail  ?ic
+  ?r ?qq ?s  ?s rdfs:label ?ls ?qq rdfs:label ?lq
+  ?r ?pp ?vv
   ?r p:latitude ?lat ; p:longitude ?lon
 }
 where {
@@ -26,16 +25,12 @@ where {
 service <http://fr.dbpedia.org/sparql> {
 
   ?r rdfs:label ?label . filter(lang(?label) = 'fr')    
-  ?r rdfs:comment ?com . filter(lang(?com) = 'fr')
+  optional {  ?r rdfs:comment ?com . filter(lang(?com) = 'fr') }
  
-  optional { ?r p:naissance ?b . ?r p:décès ?d }  
-  optional { ?r o:thumbnail  ?ic  }
-#  optional { ?r p:latitude ?lat ; p:longitude ?lon }  
-#  optional { ?r geo:lat ?lat ; geo:lon ?long } 
-  optional { 
-    ?r ?plat ?lat filter(?plat = p:latitude  || ?plat = geo:lat)
-    ?r ?plon ?lon filter(?plon = p:longitude || ?plon = geo:long) 
-  }
+  optional { ?r ?pp ?vv . filter(?pp = p:naissance || ?pp = p:décès || ?pp = o:thumbnail) }
+  
+  optional { ?r ?plat ?lat filter(?plat = p:latitude  || ?plat = geo:lat)
+             ?r ?plon ?lon filter(?plon = p:longitude || ?plon = geo:long) }
   optional {
     ?r ?q ?s 
     
@@ -50,6 +45,8 @@ service <http://fr.dbpedia.org/sparql> {
     || ?q = p:sud || ?q = p:nord || ?q = p:est || ?q = p:ouest
     || ?q = p:sudEst  || ?q = p:sudOuest
     || ?q = p:nordEst || ?q = p:nordOuest 
+    
+    || ?q = o:wikiPageRedirects
     ) 
     
     filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'fr') 

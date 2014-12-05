@@ -1,34 +1,43 @@
-<!--
-To change this template, choose Tools | Templates
-and open the template in the editor.
--->
-<!DOCTYPE html>
 <html>
     <head>
-        <title>SPARQL Web Template Transformation</title>
+        <title>Corese Web Server Demo</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link href="style.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
-        <h3>Examples</h3>
+        <table style="width:100%"><tr>
+                <td><a href='http://www.inria.fr/centre/sophia'><img alt ='INRIA' src='http://www.inria.fr/var/inria/storage/images/medias/inria/images-corps/logo-inria-scientifique-couleur/404505-4-fre-FR/logo-inria-scientifique-couleur.jpg'/></a></td>
+                <td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a></td>
+                <td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='http://www.i3s.unice.fr/I3S/LOGOS/NewlogoI3S-250x70.png' /></a></td>
+            </tr></table>
+        
+        <h2>Corese Web Server</h2>
+        <p>
+           <a href='http://wimmics.inria.fr/corese'>Corese</a> is a Semantic Web Factory implementing RDF, RDFS, SPARQL and Inference Rules.           
+           This site presents an hypertext navigator on top of DBpedia implemented with Corese and
+           <a href='http://ns.inria.fr/sparql-template'>SPARQL Template Transformation Language</a>.        
+        </p>
+               
+        <h3>DBpedia Browsing</h3>
   
   <!-- <a href="/kgram/sparql/template?query=template { st:ctw(st:cdn, st:substart, 1401, 1500, 'XV') } where {}">Embedded Transformation</a> -->
 <ol>
-<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Louis_XIV_de_France&profile=st:dbpedia">DBpedia fr (France)</a></li>
-<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)&profile=st:dbpedia">DBpedia fr (EdS)</a></li>
-<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Auguste&profile=st:dbpedia">DBpedia fr (Rome)</a></li>
-<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Paris&profile=st:dbpedia">DBpedia fr (Place)</a></li>
-<li><a href="/kgram/sparql/template?uri=http://dbpedia.org/resource/Augustus&profile=st:personen">DBpedia en (Rome)</a></li>
-<li><a href="/kgram/sparql/template?transform=st:cdn">History</a></li>
-<!--
-<li>
-<a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Louis_XIV_de_France&profile=st:navlab">Local Server</a></li> 
-<li><a href="/kgram/sparql/template?transform=st:html">Dataset Content</a></li>
-<li><a href="/kgram/sparql/template?transform=st:system">System Description</a></li>
--->
-<li>
-    <a href="/kgram/sparql/sdk?name=sdk.rq">Sudoku Solver</a>
-</li>
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Louis_XIV_de_France&profile=st:dbpedia">France</a></li>
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)&profile=st:dbpedia">Sabaudia</a></li>
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Auguste&profile=st:dbpedia">Rome</a></li>
+<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Paris&profile=st:dbpedia">Places</a></li>
+<li><a href="/kgram/sparql/template?uri=http://dbpedia.org/resource/Augustus&profile=st:personen">Rome (DBpedia en)</a></li>
 </ol>
+  
+  <h3>History RDF Dataset Linked with DBpedia</h3>
+<ul>
+<li><a href="/kgram/sparql/template?transform=st:cdn">History</a></li>
+</ul>
+
+<h3>SPARQL Sudoku Solver</h3>  
+<ul>
+<li><a href="/kgram/sparql/sdk?name=sdk.rq">Sudoku Solver</a></li>
+</ul>
   
   
   
@@ -36,12 +45,12 @@ and open the template in the editor.
 
 <form method='get' action='/kgram/sparql/template'>
     
-   <select name="transform">
-    <option value="st:result">Binding</option>
-    <option value="st:html">Triple</option>
+   <select name="profile">
+    <option value="st:ldp">LDP</option>
+    <option value="st:result">STD</option>
   </select> 
     <br/>
-  <textarea name='query'>
+  <textarea cols='60' rows='10' name='query'>
   select * where {
     ?x ?p ?y
   }
@@ -55,7 +64,7 @@ and open the template in the editor.
 <h3>Construct Query</h3>
 
 <form method='get' action='/kgram/sparql/template'>
-  <textarea name='query'>
+  <textarea cols='60' rows='10' name='query'>
   construct where {
     ?x ?p ?y
   }
@@ -74,7 +83,7 @@ and open the template in the editor.
     <option value="st:html">Triple</option>
   </select> 
     <br/>
-  <textarea name='query'>
+  <textarea cols='60' rows='10' name='query'>
   select * where {
     service <http://fr.dbpedia.org/sparql> {
         <http://fr.dbpedia.org/resource/Paris> ?p ?y

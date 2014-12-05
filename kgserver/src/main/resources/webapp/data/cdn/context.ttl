@@ -85,7 +85,8 @@ cn:date 1378  ; rdfs:label "Schisme catholique" .
 
 
 
-<http://fr.dbpedia.org/resource/Bataille_d'Azincourt> cn:date 1415 ;
+<http://fr.dbpedia.org/resource/Bataille_d'Azincourt> a o:Place ;
+cn:date 1415 ;
 rdfs:label "Bataille d'Azincourt" .
 
 

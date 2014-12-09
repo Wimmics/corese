@@ -84,7 +84,7 @@ public class SPARQLRestAPI {
         boolean owl = owlrl.equals("true");
         graph = GraphStore.create(ent);
         exec = QueryProcess.create(graph);
-        exec.setMode(QueryProcess.SERVER_MODE);
+        //exec.setMode(QueryProcess.SERVER_MODE);
         if (ent) {            
             logger.info(output = "Endpoint successfully reset *with* RDFS entailments.");
         } else {
@@ -310,7 +310,7 @@ public class SPARQLRestAPI {
             List<String> defaultGraphUris,
             List<String> namedGraphUris) {
         try {
-            String squery = query;
+            String squery = query, pquery = query;
             
             if (profile != null){
                 // prodile declare a construct where query followed by a transformation
@@ -330,12 +330,23 @@ public class SPARQLRestAPI {
                     value = mprofile.getValues(uprofile, resource);                   
                 }
             }
+            
+            if (exec.getMode() == QueryProcess.SERVER_MODE){
+                // check profile, transform and query
+                if (profile != null && ! nsm.toNamespace(profile).startsWith(NSManager.STL)){
+                    return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + profile).build();                        
+                }
+                if (transform != null && ! nsm.toNamespace(transform).startsWith(NSManager.STL)){
+                    return Response.status(500).header(headerAccept, "*").entity("Undefined transform: " + transform).build();                                            
+                }
+            }
                        
             
             if (query == null){ 
                 if (name != null) {
                     // name of a query
                     squery = getQuery(name);
+                    pquery = squery;
                 }
                 else if (transform != null){                  
                     // name of a transformation to run
@@ -349,20 +360,15 @@ public class SPARQLRestAPI {
             if (value != null){
                 // additional values clause
                squery += value;
+               if (pquery != null){
+                   pquery = squery;
+               }
             }
-               //System.out.println(squery);         
+            //System.out.println(squery);         
             // servlet context given to query process and result format
-            Context ctx = createContext(resource, profile, transform, squery, name, "/kgram/sparql/template");       
+            Context ctx = createContext(resource, profile, transform, pquery, name, "/kgram/sparql/template");       
             Dataset ds  = createDataset(defaultGraphUris, namedGraphUris, ctx);
             Mappings map = exec.query(squery, ds);
-                                
-//            if (resource != null && uri == null){
-//                // query (insert where) may have created the resource 
-//               uri = graph.getResource(resource);
-//               if (uri != null){
-//                   ctx.set(Context.STL_URI, (IDatatype) uri.getValue());
-//               }
-//            }
             
             HTMLFormat ft = HTMLFormat.create(graph, map);
             ft.setContext(ctx);                       
@@ -765,6 +771,11 @@ public class SPARQLRestAPI {
     }
     
     String getQuery(String name) throws IOException {
+        if (exec.getMode() == QueryProcess.SERVER_MODE){
+            // only predefined queries
+            return mprofile.getResource("/webapp/query/" + name);
+        }
+        // local or external query 
         return mprofile.getResource("/webapp/query/", name);
     }
     

@@ -29,6 +29,12 @@
 <li><a href="/kgram/sparql/template?uri=http://dbpedia.org/resource/Augustus&profile=st:personen">Rome (DBpedia en)</a></li>
 </ol>
   
+<h3>SPARQL Tutorial</h3>
+<ul>
+<li><a href="/kgram/sparql/template?transform=st:web">Tutorial</a></li>
+</ul>
+
+  
   <h3>History RDF Dataset Linked with DBpedia</h3>
 <ul>
 <li><a href="/kgram/sparql/template?transform=st:cdn">History</a></li>
@@ -78,10 +84,10 @@
 
 <form method='get' action='/kgram/sparql/template'>
     
-   <select name="transform">
-    <option value="st:result">Binding</option>
-    <option value="st:html">Triple</option>
-  </select> 
+    <select name="profile">
+    <option value="st:ldp">LDP</option>
+    <option value="st:result">STD</option>
+    </select> 
     <br/>
   <textarea cols='60' rows='10' name='query'>
   select * where {
@@ -89,6 +95,8 @@
         <http://fr.dbpedia.org/resource/Paris> ?p ?y
     }
   }
+  limit 10
+  offset 10
   </textarea>   
     
   <br/>

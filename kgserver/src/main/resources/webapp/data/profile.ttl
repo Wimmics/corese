@@ -34,6 +34,9 @@ st:result a st:Profile ;
   st:variable  "?r" ;
   st:transform st:result .
 
+st:web a st:Profile ;
+   st:transform st:web .
+
 # select where result format
 # URI as ldp to the server
 st:ldp a st:Profile ;

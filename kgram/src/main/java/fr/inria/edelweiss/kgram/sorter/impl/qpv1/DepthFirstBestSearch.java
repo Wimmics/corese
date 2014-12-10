@@ -11,7 +11,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.sorter.core.QPGEdge;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +51,7 @@ public class DepthFirstBestSearch implements ISort {
 
         //each loop is a sub graph
         while (!notVisited.isEmpty()) {
-            Map<QPGNode, Double> nextNodesPool = new HashMap<QPGNode, Double>();
+            Map<QPGNode, Double> nextNodesPool = new LinkedHashMap<QPGNode, Double>();
             QPGNode first = findFirst(notVisited, nextNodesPool);
             route(first, nextNodesPool);
         }

@@ -18,7 +18,8 @@ import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
 public class BasicPatternGenerator {
 
     public static int[][] BASIC_PATTERN = null;
-    private final static int[] default_order = {PREDICATE, SUBJECT, OBJECT};//p<s<o
+    private final static int P = 1, S = 0, O = 2;
+    private final static int[] default_order = {P, S, O};//p<s<o
     private final static int TRIPLE_LEN = 3, PATTERN_LEN = 8;
 
     /**
@@ -35,11 +36,11 @@ public class BasicPatternGenerator {
         if (ip != null
                 && ip.getSize(SUBJECT) != NA
                 && ip.getSize(OBJECT) != NA) {
-            
+
             numbers = new int[]{
-               ip.getSize(SUBJECT),
-             ip.getSize(PREDICATE),
-           ip.getSize(OBJECT)};
+                ip.getSize(SUBJECT),
+                ip.getSize(PREDICATE),
+                ip.getSize(OBJECT)};
         }
 
         return numbers;

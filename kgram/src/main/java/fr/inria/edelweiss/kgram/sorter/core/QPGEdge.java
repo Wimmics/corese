@@ -14,7 +14,7 @@ public class QPGEdge {
 
     public final static int BI_DIRECT = 10;
     public final static int SIMPLE = 20;
-    
+
     private final QPGNode n1;
     private final QPGNode n2;
     private AbstractCostModel costModel = null;
@@ -56,7 +56,6 @@ public class QPGEdge {
         this.type = type;
     }
 
-    
     /**
      * Get one of the nodes in the edge
      *
@@ -92,5 +91,35 @@ public class QPGEdge {
     @Override
     public String toString() {
         return "{ " + n1 + ", " + n2 + ", " + cost + ", " + type + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (this.n1 != null ? this.n1.hashCode() : 0);
+        hash = 59 * hash + (this.n2 != null ? this.n2.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        if (this.n1 == null || this.n2 == null) {
+            return false;
+        }
+
+        final QPGEdge other = (QPGEdge) obj;
+        if (other.n1 == null || other.n2 == null) {
+            return false;
+        }
+
+        return (this.n1.equals(other.n1) && this.n2.equals(other.n2))
+                || (this.n1.equals(other.n2) && this.n2.equals(other.n1));
     }
 }

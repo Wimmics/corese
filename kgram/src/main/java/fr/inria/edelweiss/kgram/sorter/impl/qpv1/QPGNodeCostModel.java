@@ -79,6 +79,12 @@ public class QPGNodeCostModel extends AbstractCostModel {
         int size = (Integer) params.get(0);
         int index = (Integer) params.get(1);
 
+        //size == 1 means there is only one list, in which all nodes should have same costs
+        if(size == 1){
+            this.node.setCost(MAX_COST);
+            return;
+        }
+        
         double itl = (MAX_COST - MIN_COST_0) / (size - 1);
         this.node.setCost(itl * index + MIN_COST_0);
     }

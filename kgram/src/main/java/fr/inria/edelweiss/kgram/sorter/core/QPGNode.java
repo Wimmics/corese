@@ -33,7 +33,7 @@ public class QPGNode {
     private double cost = -1;
     //the nested QPG in a QPG node, ex, GRAPH
     //and for future extionson, ex, UNION
-    private QPGraph nested = null;
+    //private QPGraph nested = null;
 
     public QPGNode(Exp exp, List<Exp> bindings) {
         this.exp = exp;
@@ -117,10 +117,10 @@ public class QPGNode {
                         return this.isShared(bpn1.exp.getEdge(), bpn2.exp.getEdge());
                     case GRAPH:
                         return this.isShared(bpn2.exp, bpn1.exp.getEdge());
-//                    case FILTER:
-//                        return this.isShared(bpn2.exp.getFilter(), bpn1.exp.getEdge());
-//                    case VALUES:
-//                        return this.isShared(bpn2.exp.getNodeList(), bpn1.exp.getEdge());
+                    case FILTER:
+                        return this.isShared(bpn2.exp.getFilter(), bpn1.exp.getEdge());
+                    case VALUES:
+                        return this.isShared(bpn2.exp.getNodeList(), bpn1.exp.getEdge());
                     default: ;
                 }
                 break;
@@ -147,10 +147,10 @@ public class QPGNode {
                         return this.isShared(bpn1.exp, bpn2.exp.getEdge());
                     case GRAPH:
                         return this.isShared(bpn1.exp, bpn2.exp);
-//                    case FILTER:
-//                        return this.isShared(bpn2.exp.getFilter(), bpn1.exp);
-//                    case VALUES:
-//                        return this.isShared(bpn2.exp.getNodeList(), bpn1.exp);
+                    case FILTER:
+                        return this.isShared(bpn2.exp.getFilter(), bpn1.exp);
+                    case VALUES:
+                        return this.isShared(bpn2.exp.getNodeList(), bpn1.exp);
                     default:;
                 }
             default:

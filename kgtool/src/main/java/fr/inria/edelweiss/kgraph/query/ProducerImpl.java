@@ -156,19 +156,16 @@ public class ProducerImpl implements Producer, IProducerQP {
             if (qNode.isConstant()) {
                 node = graph.getNode(qNode);
             }
-        } else if (node.getIndex() == -1
-                || mode == EXTENSION
-                || env.getQuery().getGlobalQuery().isExtension()) {
+        } else if (isExtern(node, env)) {
             node = graph.getNode(node);
         }
         return node;
-//        if (//Graph.valueOut && 
-//                node.getKey() == Node.INITKEY) {
-//            // a Mapping/VALUES node has no index
-//            // get target node if any
-//            node = graph.getNode(node);           
-//        }
-
+    }
+    
+    boolean isExtern(Node node, Environment env){
+        return node.getIndex() == -1
+                || mode == EXTENSION
+                || env.getQuery().getGlobalQuery().isExtension() ;
     }
 
     boolean isType(Edge edge, Environment env) {
@@ -442,7 +439,7 @@ public class ProducerImpl implements Producer, IProducerQP {
      */
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env,
             Regex exp, Node src, Node start, int index) {
-
+        
         if (start == null) {
             Node qNode = edge.getNode(index);
             if (qNode.isConstant()) {
@@ -452,6 +449,10 @@ public class ProducerImpl implements Producer, IProducerQP {
                     return empty;
                 }
             }
+        }
+        
+        if (isExtern(start, env)){
+            start = graph.getNode(start);
         }
 
         if (exp.isReverse()) {

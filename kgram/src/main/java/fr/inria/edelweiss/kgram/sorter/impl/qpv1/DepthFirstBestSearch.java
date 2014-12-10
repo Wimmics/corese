@@ -77,12 +77,15 @@ public class DepthFirstBestSearch implements ISort {
         for (QPGNode node : lNodes) {
             double cost = node.getCost();
             if (cost == IEstimate.NA_COST) continue;
+            //number of linked edges
+            int es1 = this.g.getEdges(node) == null ? 0 : this.g.getEdges(node).size();
+            int es2 = this.g.getEdges(minNode) == null ? 0 : this.g.getEdges(minNode).size();
 
             //if two nodes with same cost, on choose the one with more edges
-            if ((cost < minNode.getCost()) ||
-                    ((cost == minNode.getCost()) && (this.g.getEdges(node).size() > this.g.getEdges(minNode).size()))) {
+            if ((cost < minNode.getCost())
+                    || (cost == minNode.getCost() && es1 > es2)) {
                 minNode = node;
-            } 
+            }
         }
         this.queue(minNode, pool);
         return minNode;

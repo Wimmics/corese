@@ -20,36 +20,44 @@
                
         <h3>DBpedia Browsing</h3>
   
-  <!-- <a href="/kgram/sparql/template?query=template { st:ctw(st:cdn, st:substart, 1401, 1500, 'XV') } where {}">Embedded Transformation</a> -->
+  <!-- <a href="/sparql/template?query=template { st:ctw(st:cdn, st:substart, 1401, 1500, 'XV') } where {}">Embedded Transformation</a> -->
 <ol>
-<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Louis_XIV_de_France&profile=st:dbpedia">France</a></li>
-<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)&profile=st:dbpedia">Sabaudia</a></li>
-<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Auguste&profile=st:dbpedia">Rome</a></li>
-<li><a href="/kgram/sparql/template?uri=http://fr.dbpedia.org/resource/Paris&profile=st:dbpedia">Places</a></li>
-<li><a href="/kgram/sparql/template?uri=http://dbpedia.org/resource/Augustus&profile=st:personen">Rome (DBpedia en)</a></li>
+<li><a href="/sparql/template?uri=http://fr.dbpedia.org/resource/Louis_XIV_de_France&profile=st:dbpedia">France</a>
+</li>
+<li><a href="/sparql/template?uri=http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)&profile=st:dbpedia">Sabaudia</a></li>
+<li><a href="/sparql/template?uri=http://fr.dbpedia.org/resource/Auguste&profile=st:dbpedia">Rome</a></li>
+<li><a href="/sparql/template?uri=http://fr.dbpedia.org/resource/Paris&profile=st:dbpedia">Places</a></li>
+<li><a href="/sparql/template?uri=http://dbpedia.org/resource/Augustus&profile=st:personen">Rome (DBpedia en)</a></li>
 </ol>
+  
+<h3>History RDF Dataset Linked with DBpedia</h3>
+<ul>
+<li><a href="/sparql/template?transform=st:cdn">History</a></li>
+</ul>
+ 
   
 <h3>SPARQL Tutorial</h3>
 <ul>
-<li><a href="/kgram/sparql/template?transform=st:web">Tutorial</a></li>
+<li><a href="/sparql/template?transform=st:web">Tutorial</a></li>
 </ul>
 
-  
-  <h3>History RDF Dataset Linked with DBpedia</h3>
+<h3>SPARQL SPIN Transformer</h3>  
 <ul>
-<li><a href="/kgram/sparql/template?transform=st:cdn">History</a></li>
+<li><a href="/sparql/tospin">SPARQL SPIN</a></li>
 </ul>
-
+  
+  
+ 
 <h3>SPARQL Sudoku Solver</h3>  
 <ul>
-<li><a href="/kgram/sparql/sdk?name=sdk.rq">Sudoku Solver</a></li>
+<li><a href="/sparql/sdk?name=sdk.rq">Sudoku Solver</a></li>
 </ul>
   
-  
+
   
 <h3>Select Query</h3>
 
-<form method='get' action='/kgram/sparql/template'>
+<form method='get' action='/sparql/template'>
     
    <select name="profile">
     <option value="st:ldp">LDP</option>
@@ -69,7 +77,7 @@
 
 <h3>Construct Query</h3>
 
-<form method='get' action='/kgram/sparql/template'>
+<form method='get' action='/sparql/template'>
   <textarea cols='60' rows='10' name='query'>
   construct where {
     ?x ?p ?y
@@ -82,7 +90,7 @@
 
   <h3>DBpedia Query</h3>
 
-<form method='get' action='/kgram/sparql/template'>
+<form method='get' action='/sparql/template'>
     
     <select name="profile">
     <option value="st:ldp">LDP</option>

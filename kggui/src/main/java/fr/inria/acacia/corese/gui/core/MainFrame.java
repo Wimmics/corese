@@ -71,7 +71,8 @@ public class MainFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2014-12-02";
+    private static final int LOAD = 1;
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-01-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -1231,6 +1232,7 @@ public class MainFrame extends JFrame implements ActionListener {
      * Charge un fichier dans CORESE
      */
     public void load(Filter filter) {
+        controler(LOAD);
         l_path = null;
         JFileChooser fileChooser = new JFileChooser(l_path_courant);
         fileChooser.setMultiSelectionEnabled(true);
@@ -1253,8 +1255,23 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
     }
+    
+    
+    void controler(int event){
+        switch (event){
+            
+            case LOAD:
+                cbowlrllite.setSelected(false);                   
+                cbowlrl.setSelected(false);  
+                break;
+                
+        }
+    }
+    
+    
 
     public void load(String fichier) {
+        controler(LOAD);
         try {
             myCorese.load(fichier);
             appendMsg(myCapturer.getContent());

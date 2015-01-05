@@ -451,7 +451,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             }
         }
         
-        if (isExtern(start, env)){
+        if (start != null && isExtern(start, env)){
             start = graph.getNode(start);
         }
 

@@ -23,8 +23,9 @@ function alertTimeout(wait) {
 }
 
 // The root URL for the RESTful services
-var rootURL = "http://" + window.location.host + "/kgram";
-console.log("Connected to the Corese/KGRAM endpoint " + rootURL);
+//var rootURL = "http://"+window.location.host+"/kgram";
+var rootURL = "http://"+window.location.host;
+console.log("Connected to the Corese/KGRAM endpoint "+rootURL);
 
 // reset the connected data sources so that when the page is reloaded, the gui is synchronized with the server. 
 resetDQP();

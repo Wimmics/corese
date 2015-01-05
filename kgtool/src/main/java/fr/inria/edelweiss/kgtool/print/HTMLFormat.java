@@ -1,7 +1,7 @@
 package fr.inria.edelweiss.kgtool.print;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Apply HTML Transformation on Mappings :
+ * Apply HTML Transformation on Mappings or on Graph :
  * construct : result graph
  * select    : serialization of Mappings into RDF
  * 
@@ -19,6 +19,7 @@ import java.util.logging.Logger;
  *
  */
 public class HTMLFormat {
+    static final String defaultTransform   = Transformer.HTML;
     static final String constructTransform = Transformer.HTML;
     static final String selectTransform    = Transformer.RDFRESULT;
     private String transformation;
@@ -26,18 +27,27 @@ public class HTMLFormat {
     Mappings map;
     Graph graph;
     private Context context;
+    NSManager nsm;
     
-    HTMLFormat(Graph g, Mappings m){
+    HTMLFormat(Graph g, Mappings m, Context c){
         graph = g;
         map = m;
+        context = c;
+        nsm = NSManager.create();
     }
     
-    public static HTMLFormat create(Graph g, Mappings m){
-        return new HTMLFormat(g, m);
+    
+    
+    public static HTMLFormat create(Graph g, Mappings m, Context c){
+        return new HTMLFormat(g, m, c);
     }
     
-    public static HTMLFormat create(Mappings m){
-        return new HTMLFormat(null, m);
+//    public static HTMLFormat create(Mappings m){
+//        return new HTMLFormat(null, m);
+//    }
+//    
+    public static HTMLFormat create(Graph g, Context c){
+        return new HTMLFormat(g, null, c);
     }
     
     public String toString(){
@@ -49,7 +59,13 @@ public class HTMLFormat {
     }
     
     String process(){
-        if (map.getQuery().isTemplate()){
+        transformation = context.stringValue(Context.STL_TRANSFORM);
+        if (map == null){
+            // no query processing
+           return process(graph, getTransformation(transformation));        
+        }
+        else if (map.getQuery().isTemplate()){
+            // the query was a template
             if (map.getTemplateResult() != null){
                 return map.getTemplateStringResult();
             }
@@ -58,6 +74,7 @@ public class HTMLFormat {
             }
         }
         else if (map.getGraph()!=null){
+            // query was construct where 
             Graph g = (Graph) map.getGraph();
             return process(g, getTransformation(constructTransform));       
         }
@@ -65,7 +82,10 @@ public class HTMLFormat {
             return process(graph, getTransformation(constructTransform));       
         }
         else {
+            // query was select where
+            // generate a RDF graph with bindings of select
             Graph g = select();
+            // process the RDF graph of bindings
             return process(g, getTransformation(selectTransform));   
         }
     }
@@ -74,7 +94,10 @@ public class HTMLFormat {
         if (transformation != null){
             return expand(transformation);
         }
-        return def;
+        if (def != null){
+           return expand(def); 
+        }
+        return defaultTransform;
     }
     
     String process(Graph g, String trans){       
@@ -85,8 +108,8 @@ public class HTMLFormat {
     }
     
     String expand(String str){
-        ASTQuery ast = (ASTQuery) map.getQuery().getAST();
-        return ast.getNSM().toNamespace(str);
+        //ASTQuery ast = (ASTQuery) map.getQuery().getAST();
+        return nsm.toNamespace(str);
     }
       
     

@@ -55,6 +55,7 @@ public class Transformer {
     private static final String STL         = NSManager.STL;
     public static final String SQL          = STL + "sql";
     public static final String SPIN         = STL + "spin";
+    public static final String TOSPIN       = STL + "tospin";
     public static final String OWL          = STL + "owl";
     public static final String TURTLE       = STL + "turtle";
     public static final String TRIG         = STL + "trig";

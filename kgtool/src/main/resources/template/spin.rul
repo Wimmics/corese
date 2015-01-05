@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Dec 09 08:50:13 CET 2014
+Mon Dec 22 16:32:22 CET 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -1085,8 +1085,9 @@ template {
 where {
   ?in rdf:rest*/rdf:first ?exp
 }
-#default list is behind all other list templates
-pragma {st:template st:priority 1000}
+# default list is behind all other list templates
+# after listoption
+pragma {st:template st:priority 1001}
 
 
 
@@ -1356,6 +1357,33 @@ values (?ope ?lab) {
 (sp:or  "||")
 
 }
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  ?exp
+}
+where {
+  ?x rdf:first ?in
+  ?x rdf:rest ?r . ?r rdf:first [ a ?t ]
+  filter(?t in (sp:Optional, sp:Minus))
+  ?in rdf:rest*/rdf:first ?exp
+}
+#default list is behind all other list templates
+pragma {st:template st:priority 1000}
 
 
 

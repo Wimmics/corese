@@ -2,10 +2,43 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Dec 09 08:50:13 CET 2014
+Mon Dec 22 16:32:22 CET 2014
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+#
+# In this transformation:
+# When st:get(st:uri) is bound and uri starts by st:
+# it is considered as the name of a template to execute (e.g. ex:minus)
+#
+template st:start {
+
+  st:call-template(st:head)
+  
+  st:call-template(st:selectquery, ?page)
+
+  st:call-template(?page)
+      
+  st:call-template(st:tail)
+
+}
+where {
+
+  bind (st:get(st:uri) as ?uri)
+  
+  # uri starting with st: is a named template to execute
+  bind (if (bound(?uri) && strstarts(?uri, st:),
+	  ?uri, st:page)
+      as ?page)
+  
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -14,7 +47,7 @@ template st:minus {
 """
 <h3>Minus</h3>
 <p>
-Cette requête retourne les ressources ?x instance du type Person ou Place.
+Cette requête retourne les ressources instance du type Person sauf celles qui ont une propriété cn:begin.
 </p>
 """
    st:call-template(st:query-name, st:minus,
@@ -41,26 +74,17 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:start {
+template st:query-param(?t) {
 
-  st:call-template(st:head)
-  
-  st:call-template(st:selectquery, ?page)
-
-  st:call-template(?page)
-    
-  st:call-template(st:tail)
-
+   """
+   <input type='hidden' name='transform' value='""" st:get(st:transform) """'/>
+   
+   <input type='hidden' name='uri' value='""" ?t """'/>
+   """
+   
 }
 where {
 
-  bind (st:get(st:uri) as ?uri)
-  
-  # uri starting with st: is a named template to execute
-  bind (if (bound(?uri) && strstarts(?uri, st:),
-	  ?uri, st:page)
-      as ?page)
-  
 }
 ]]>
 </body>
@@ -69,20 +93,12 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:index {
-
-  st:call-template(st:href, st:queries, "Queries")
-     
-}
-where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
+#
+# Select a page where to go
+# The page is the value of uri argument
+# The page is a named template
+# The st:start template serves the page
+#
 template st:selectquery(?t) {
 
 """
@@ -108,7 +124,8 @@ template st:selectquery(?t) {
     
  """  
  </select>
-  <input type='submit' value='Submit'  />
+ 
+  <input type='submit' value='Choose'  />
  </form>
  """
 }
@@ -116,14 +133,32 @@ where {
 }
 values (?page ?title) {
   (st:type 	"Type")
+  (st:bgp 	"BGP")
+  (st:filter 	"Filter")
   (st:count 	"Count")
   (st:count-group "Count Group")
-  (st:dbpedia 	"Service")
   (st:union 	"Union")
   (st:optional 	"Optional")
   (st:minus 	"Minus")
+  (st:exists 	"Exists")
   (st:graph 	"Graph") 
   (st:path 	"Path") 
+  (st:dbpedia 	"Service")
+  (st:construct "Construct")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:index {
+
+  st:call-template(st:href, st:queries, "Queries")
+     
+}
+where {
 }
 ]]>
 </body>
@@ -194,21 +229,20 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Generate a form with a SPARQL query ?q to submit
+# Argument uri ?t is the name of page that presents the result of query (st:minus)
+# because there is a text for each different query (could be factorized)
+#
 template st:query-name(?t, ?q) {
   """
-  <form method='post' action='"""
-    
-  st:get(st:service)
-  
-  """'>
+  <form method='post' action='"""  st:get(st:service)   """'>
        
-   <input type='submit' value='Submit'/>
+   <input type='submit' value='Submit'/>"""
    
-   <input type='hidden' name='transform' value='/home/corby/AData/template/web'/>
-   
-   <input type='hidden' name='uri' value='""" ?t """'/>
-   
-   <br/>
+   if (?t != st:construct, st:call-template(st:query-param, ?t), "")
+
+   """<br/>
     <textarea cols='60' rows='10' name='query'>"""str(?q)
     
   """</textarea>
@@ -216,6 +250,7 @@ template st:query-name(?t, ?q) {
   """
 }
 where {
+
 }
 ]]>
 </body>
@@ -250,28 +285,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-
-template st:result {
-   
-  st:call-template(st:open)
-  
-  st:call-template(st:table)
-  
-  st:call-template(st:close)
-    
-}
-where {
-  ?r rs:solution ?s
-}
-limit 1
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:optional {
 
 """
@@ -296,6 +309,28 @@ select * where {
 }
 where {
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:result {
+   
+  st:call-template(st:open)
+  
+  st:call-template(st:table)
+  
+  st:call-template(st:close)
+    
+}
+where {
+  ?r rs:solution ?s
+}
+limit 1
 ]]>
 </body>
 </rule>
@@ -339,7 +374,11 @@ Cette requête retourne les ressources ?x instance d'un type ?t.
 </p>
 """
    st:call-template(st:query-name, st:type,
-   coalesce(st:get(st:query), """select * where { ?x a ?t }""")
+   coalesce(st:get(st:query), 
+"""
+select * where { 
+  ?x a ?t 
+}""")
    )
    
    st:call-template(st:result)
@@ -355,10 +394,72 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:exists {
+
+"""
+<h3>Exists</h3>
+<p>
+Cette requête retourne les ressources instance du type Person sauf celles qui ont une propriété cn:begin.
+</p>
+"""
+   st:call-template(st:query-name, st:minus,
+   coalesce(st:get(st:query), 
+   """
+prefix o:  <http://dbpedia.org/ontology/>
+prefix cn: <http://cdn.fr/schema/>
+select * where { 
+  ?x a foaf:Person  
+  filter not exists { ?x cn:begin ?d }
+}""")
+   )
+   
+     st:call-template(st:result)
+
+   
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:display(?x) {
 
     st:call-template(st:linkprofile, ?x)
         
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:bgp {
+
+"""
+<h3>BGP</h3>
+<p>
+Cette requête retourne les ressources ?x instance d'un type ?t ayant un label ?l.
+</p>
+"""
+   st:call-template(st:query-name, st:bgp,
+   coalesce(st:get(st:query), 
+   """
+select * where { 
+  ?x a ?t ;
+    rdfs:label ?l
+}""")
+   )
+   
+   st:call-template(st:result)
+   
+     
 }
 where {
 }
@@ -461,10 +562,9 @@ template st:query(?q) {
   
   """'>
   
-   <select name="transform">
-    <option value="/home/corby/AData/template/web">web</option>
-    <option value="st:web">web</option>
-   </select>
+     <input type='hidden' name='transform' value='""" st:get(st:transform) """'/>
+
+   
    <br/>
     <textarea cols='60' rows='10' name='query'>"""str(?q)
     
@@ -513,6 +613,38 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:construct {
+
+"""
+<h3>Construct</h3>
+<p>
+Cette requête construit un graphe résultat.
+</p>
+"""
+   st:call-template(st:query-name, st:construct,
+   coalesce(st:get(st:query), 
+"""
+construct { 
+  ?x foaf:name ?l 
+}
+where { 
+  ?x rdfs:label ?l 
+}""")
+   )
+   
+   st:call-template(st:result)
+   
+     
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:tail {
   
   """  
@@ -540,27 +672,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:banner  {
-"""
-<table style="width:100%">
-<tr>
-<td><a href='http://www.inria.fr/centre/sophia'><img alt ='INRIA' src='http://www.inria.fr/var/inria/storage/images/medias/inria/images-corps/logo-inria-scientifique-couleur/404505-4-fre-FR/logo-inria-scientifique-couleur.jpg'/></a></td>
-
-<td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a></td>
-
-<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='http://www.i3s.unice.fr/I3S/LOGOS/NewlogoI3S-250x70.png' /></a></td>
-</tr>
-</table>
-"""
-}
-where {}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:decl {
 
@@ -577,6 +688,27 @@ template st:decl {
 }
 where {
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:banner  {
+"""
+<table style="width:100%">
+<tr>
+<td><a href='http://www.inria.fr/centre/sophia'><img alt ='INRIA' src='http://www.inria.fr/var/inria/storage/images/medias/inria/images-corps/logo-inria-scientifique-couleur/404505-4-fre-FR/logo-inria-scientifique-couleur.jpg'/></a></td>
+
+<td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a></td>
+
+<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='http://www.i3s.unice.fr/I3S/LOGOS/NewlogoI3S-250x70.png' /></a></td>
+</tr>
+</table>
+"""
+}
+where {}
 ]]>
 </body>
 </rule>
@@ -613,9 +745,9 @@ Cette requête retourne les ressources reliées par un chemin.
    """
 prefix p:  <http://fr.dbpedia.org/property/>
 select * where { 
-    <http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)> p:successeur+ ?y
+    ?x p:successeur+ ?y
 }
-#values ?x { <http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)> }
+values ?x { <http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)> }
 """)
    )
    
@@ -772,6 +904,37 @@ where {
 
   bind (st:call-template(st:esc, ?x) as ?e)
     
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:filter {
+
+"""
+<h3>Filter</h3>
+<p>
+Cette requête retourne les ressources ?x instance d'un type ?t ayant un label ?l qui contient "Emmanuel".
+</p>
+"""
+   st:call-template(st:query-name, st:filter,
+   coalesce(st:get(st:query), 
+   """
+select * where { 
+  ?x a ?t ;
+    rdfs:label ?l
+    filter(strcontains(?l, "Emmanuel"))
+}""")
+   )
+   
+   st:call-template(st:result)
+   
+     
+}
+where {
 }
 ]]>
 </body>

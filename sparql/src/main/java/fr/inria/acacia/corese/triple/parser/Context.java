@@ -44,8 +44,40 @@ public class Context {
         table.put(name, DatatypeMap.newResource(str));
         return this;
     }
+    
+    public Context setTransform(String str) {
+        return setURI(STL_TRANSFORM, str);
+    }
+    
+    public Context setProfile(String str) {
+        return setURI(STL_PROFILE, str);
+    }
+     
+    public Context setURI(String str) {
+        return setURI(STL_URI, str);
+    }
+     
+    public Context setQuery(String str) {
+        return set(STL_QUERY, str);
+    }
+    
+      public Context setName(String str) {
+        return set(STL_NAME, str);
+    }
+      
+    public Context setService(String str) {
+        return set(STL_SERVICE, str);
+    }
 
     public IDatatype get(String name) {
         return table.get(name);
+    }
+    
+    public String stringValue(String name) {
+        IDatatype dt = table.get(name);
+        if (dt == null){
+            return null;
+        }
+        return dt.getLabel();
     }
 }

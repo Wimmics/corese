@@ -24,4 +24,6 @@ public interface Build {
 	 void finish();
 
          void setLimit(int limit);
+         
+         int getLimit();
 }

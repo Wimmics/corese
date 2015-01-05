@@ -105,10 +105,12 @@ public class EmbeddedJettyServer {
             jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.edelweiss.kgramserver.webservice");
             jerseyServletHolder.setInitParameter("requestBufferSize", "8192");
             jerseyServletHolder.setInitParameter("headerBufferSize", "8192");
-            Context servletCtx = new Context(server, "/kgram", Context.SESSIONS);
+            //Context servletCtx = new Context(server, "/kgram", Context.SESSIONS);
+            Context servletCtx = new Context(server, "/", Context.SESSIONS);
             servletCtx.addServlet(jerseyServletHolder, "/*");
             logger.info("----------------------------------------------");
-            logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/kgram");
+            //logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/kgram");
+            logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/");
             logger.info("----------------------------------------------");
 
             ResourceHandler resource_handler = new ResourceHandler();
@@ -131,7 +133,8 @@ public class EmbeddedJettyServer {
             //server initialization
             ClientConfig config = new DefaultClientConfig();
             Client client = Client.create(config);
-            WebResource service = client.resource(new URI("http://localhost:" + port+"/kgram"));
+            //WebResource service = client.resource(new URI("http://localhost:" + port+"/kgram"));
+            WebResource service = client.resource(new URI("http://localhost:" + port+"/"));
 
             MultivaluedMap formData = new MultivaluedMapImpl();
             formData.add("entailments", Boolean.toString(entailments));

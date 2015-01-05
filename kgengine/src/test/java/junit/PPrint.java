@@ -69,13 +69,19 @@ public class PPrint {
 		translate(root + "template/sql/template",   lib + "sql.rul");
 		translate(root + "template/owl/template",   lib + "owl.rul");
 		translate(root + "template/turtle/template",lib + "turtle.rul");
-		translate(root + "template/hash/template",lib + "hash.rul");
-		translate(root + "template/hash2/template",lib + "hash2.rul");
+		translate(root + "template/hash/template",  lib + "hash.rul");
+		translate(root + "template/hash2/template", lib + "hash2.rul");
 		translate(root + "template/trig/template",  lib + "trig.rul");
 		translate(root + "template/table/template", lib + "table.rul");
 		translate(root + "template/rdftypecheck/template", lib + "rdftypecheck.rul");
 		translate(root + "template/spintypecheck/template", lib + "spintypecheck.rul");
+		translate(root + "template/html",   lib + "html.rul");
+		translate(root + "template/result", lib + "result.rul");
+		translate(root + "template/web",    lib + "web.rul");
+		translate(root + "template/tospin",    lib + "tospin.rul");
+		translate(root + "template/system", lib + "system.rul");
                 
+		translate(root + "template/navlab",       lib + "navlab.rul");		
                 translate(root + "cdn/template", lib + "cdn.rul");
 
                

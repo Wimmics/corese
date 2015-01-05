@@ -671,12 +671,17 @@ public class Load
     }
 
     void imports(String uri) {
-        if (!loaded.contains(uri)) {
+        if (! loaded.contains(uri)) {
             loaded.put(uri, uri);
             if (debug) {
                 logger.info("Import: " + uri);
             }
+            
+            Build save = build;
+            build = BuildImpl.create(graph);
+            build.setLimit(save.getLimit());
             load(uri);
+            build = save;
         }
     }
 

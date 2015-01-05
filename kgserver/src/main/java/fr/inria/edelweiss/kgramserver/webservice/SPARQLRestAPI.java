@@ -1,6 +1,7 @@
 
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
@@ -20,6 +21,7 @@ import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TSVFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,20 +51,27 @@ import org.apache.log4j.Logger;
  */
 @Path("sparql")
 public class SPARQLRestAPI {
-
-    private Logger logger = Logger.getLogger(SPARQLRestAPI.class);
+    private static final String headerAccept = "Access-Control-Allow-Origin";
+    private static final String DEFAULT_TRANSFORM = Transformer.HTML;    
+    private static final String TEMPLATE_SERVICE = "/sparql/template";
+    public static final String TOSPIN_SERVICE    = "/sparql/tospin";
+    public static final String TOSPARQL_SERVICE  = "/sparql/tosparql";
+    public static final String SDK_SERVICE       = "/sparql/sdk";
+    
+    private static Logger logger = Logger.getLogger(SPARQLRestAPI.class);
+    private static boolean isDebug = false;
+    private static boolean isDetail = false;
+    
     private static GraphStore graph  = GraphStore.create(false);
     private static QueryProcess exec = QueryProcess.create(graph);
-    private String headerAccept = "Access-Control-Allow-Origin";
-    private static final String DEFAULT_TRANSFORM = Transformer.NAVLAB;
-    
-    Profile mprofile;
-    NSManager nsm;
+   
+    private static Profile mprofile;
+    private static NSManager nsm;
+  
     
     
     public SPARQLRestAPI(){
-        mprofile = new Profile();
-        nsm = NSManager.create();
+        
     }
             
     QueryProcess getQueryProcess(){
@@ -103,6 +112,9 @@ public class SPARQLRestAPI {
     }
     
     void init(){
+        nsm = NSManager.create();
+        mprofile = new Profile();
+        
         for (Service s : mprofile.getServices()){
             String[] load = s.getLoad();
             if (load != null){
@@ -216,6 +228,9 @@ public class SPARQLRestAPI {
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
             //System.out.println("Rest: " + query);
+            if (query == null){
+                throw new Exception("No query");
+            }
             Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println("Rest: " + map);
 //            System.out.println("Rest: " + map.size());
@@ -268,20 +283,89 @@ public class SPARQLRestAPI {
     @GET
     @Produces("text/html")
     @Path("sdk")
-    public Response sdk(@QueryParam("profile")  String profile,  // query + transform
-            @QueryParam("uri")  String resource,  // URI of resource focus
+    public Response sdk(
             @QueryParam("query") String query, // SPARQL query
             @QueryParam("name")  String name,  // SPARQL query name (in webapp/query or path or URL)
-            @QueryParam("value") String value, // values clause that may complement query           
-            @QueryParam("transform")  String transform,  // Transformation URI to post process result
-            @QueryParam("default-graph-uri") List<String> defaultGraphUris,
-            @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
+            @QueryParam("value") String value) // values clause that may complement query           
+     {
          Graph g =  new Profile().getGraph("/webapp/data/", "sdk.ttl");
          QueryProcess exec = QueryProcess.create(g);
-         return template(exec, profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
+         return template(exec, g, null, null, query, name, value, null, SDK_SERVICE, null, null);
     }
     
     
+     @POST
+    @Produces("text/html")
+    @Path("tospin")
+    public Response toSPINPOST(@FormParam("query") String query){
+         return toSPIN(query);
+     }
+    
+    @GET
+    @Produces("text/html")
+    @Path("tospin")
+    public Response toSPIN(@QueryParam("query") String query) {
+        SPINProcess sp = SPINProcess.create();       
+        Graph g;
+        try {
+            if (query == null){
+                query = "select * where {"
+                        + "?x ?p ?y"
+                        + "}";
+            }
+            g = sp.toSpinGraph(query);
+            
+            Context c = new Context().setTransform(Transformer.TOSPIN).setQuery(query).setService(TOSPIN_SERVICE);            
+            HTMLFormat ft = HTMLFormat.create(g, c);                           
+            
+            return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();    
+ 
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
+        }       
+     }
+    
+    
+    @POST
+    @Produces("text/html")
+    @Path("tosparql")
+    public Response toSPARQLPOST(@FormParam("query") String query) 
+    {
+         return toSPARQL(query);
+     }
+    
+    @GET
+    @Produces("text/html")
+    @Path("tosparql")
+    public Response toSPARQL(@QueryParam("query") String query) {
+        Graph g = Graph.create();
+        try {
+            Load ld = Load.create(g);
+            if (query != null){
+                ld.loadString(query, Load.TURTLE_FORMAT);
+            }
+            
+            Context c = new Context().setTransform(Transformer.TOSPIN).setQuery(query).setService(TOSPARQL_SERVICE);            
+            HTMLFormat ft = HTMLFormat.create(g, c);                           
+            
+            return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();              
+            
+        } catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
+            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
+        }       
+     }
+    
+    
+    
+    
+    @GET
+    @Produces("text/html")
+    @Path("resource")
+    public Response ldp(){
+        return Response.status(200).header(headerAccept, "*").entity("resource").build();               
+     }
     
     @GET
     @Produces("text/html")
@@ -296,21 +380,24 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
         
-        return template(getQueryProcess(), profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);       
+        return template(getQueryProcess(), graph, 
+                profile, resource, query, name, value, transform, TEMPLATE_SERVICE,
+                defaultGraphUris, namedGraphUris);       
     }
     
     public Response template(
-            QueryProcess exec,
+            QueryProcess exec, Graph g,
             String profile,  // query + transform
             String resource,  // URI of resource focus
             String query, // SPARQL query
             String name,  // SPARQL query name (in webapp/query or path or URL)
             String value, // values clause that may complement query           
             String transform,  // Transformation URI to post process result
+            String service,
             List<String> defaultGraphUris,
             List<String> namedGraphUris) {
         try {
-            String squery = query, pquery = query;
+            String squery = query;
             
             if (profile != null){
                 // prodile declare a construct where query followed by a transformation
@@ -330,8 +417,18 @@ public class SPARQLRestAPI {
                     value = mprofile.getValues(uprofile, resource);                   
                 }
             }
+                            
+            if (query == null && name != null) {
+                 // name of a query
+                 squery = getQuery(name);
+            }
             
-            if (exec.getMode() == QueryProcess.SERVER_MODE){
+            if (value != null && squery != null){
+                // additional values clause
+               squery += value;               
+            }
+            
+            if (exec != null && exec.getMode() == QueryProcess.SERVER_MODE){
                 // check profile, transform and query
                 if (profile != null && ! nsm.toNamespace(profile).startsWith(NSManager.STL)){
                     return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + profile).build();                        
@@ -340,42 +437,28 @@ public class SPARQLRestAPI {
                     return Response.status(500).header(headerAccept, "*").entity("Undefined transform: " + transform).build();                                            
                 }
             }
-                       
+ 
             
-            if (query == null){ 
-                if (name != null) {
-                    // name of a query
-                    squery = getQuery(name);
-                    pquery = squery;
+            if (isDebug){
+                System.out.println("query: \n" + squery);
+            }         
+            // servlet context given to query process and transformation
+            Context ctx = createContext(resource, profile, transform, squery, name, service); // /kgram/sparql/template"); 
+            Mappings map = null;
+            
+            if (squery != null && exec != null){
+                Dataset ds  = createDataset(defaultGraphUris, namedGraphUris, ctx);
+                map = exec.query(squery, ds);
+
+                if (isDetail) {
+                    System.out.println(map);
                 }
-                else if (transform != null){                  
-                    // name of a transformation to run
-                    squery = getTemplate(transform);
-                }
-                else {
-                    squery = getTemplate(DEFAULT_TRANSFORM);
+                if (isDebug) {
+                    System.out.println("map: " + map.size());
                 }
             }
             
-            if (value != null){
-                // additional values clause
-               squery += value;
-               if (pquery != null){
-                   pquery = squery;
-               }
-            }
-            //System.out.println(squery);         
-            // servlet context given to query process and result format
-            Context ctx = createContext(resource, profile, transform, pquery, name, "/kgram/sparql/template");       
-            Dataset ds  = createDataset(defaultGraphUris, namedGraphUris, ctx);
-            Mappings map = exec.query(squery, ds);
-            
-            HTMLFormat ft = HTMLFormat.create(graph, map);
-            ft.setContext(ctx);                       
-            if ((query != null || name != null)  && transform != null){
-                // present result with user defined transformation
-                ft.setTransformation(transform);
-            }
+            HTMLFormat ft = HTMLFormat.create(g, map, ctx);                           
             
             return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();               
            } catch (Exception ex) {
@@ -386,24 +469,37 @@ public class SPARQLRestAPI {
     }
     
     
+    @GET
+    @Path("/debug")
+    public Response setDebug(@QueryParam("value") String debug, @QueryParam("detail") String detail) {
+        if (debug != null){
+             isDebug = debug.equals("true");
+        }
+        if (detail != null){
+            isDetail = detail.equals("true");
+        }
+        return Response.status(200).header(headerAccept, "*").entity("debug: " + isDebug + " ; " + "detail: " + isDetail).build();
+    }
+    
+    
     Context createContext(String uri, String profile, String trans, String query, String name, String service) {
         Context ctx = new Context();
         if (profile != null) {
-            ctx.setURI(Context.STL_PROFILE, nsm.toNamespace(profile));
+            ctx.setProfile(nsm.toNamespace(profile));
         }
         if (trans != null) {
-            ctx.setURI(Context.STL_TRANSFORM, nsm.toNamespace(trans));
+            ctx.setTransform(nsm.toNamespace(trans));
         }  
         if (uri != null){
-            ctx.setURI(Context.STL_URI, nsm.toNamespace(uri)); 
+            ctx.setURI(nsm.toNamespace(uri)); 
         }
         if (query != null) {
-            ctx.set(Context.STL_QUERY, query);
+            ctx.setQuery(query);
         }
         if (name != null) {
-            ctx.set(Context.STL_NAME, name);
+            ctx.setName(name);
         }
-        ctx.set(Context.STL_SERVICE, service);
+        ctx.setService(service);
         return ctx;
     }
           
@@ -520,6 +616,9 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
+            if (query == null){
+                throw new Exception("No query");
+            }
             Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println("Rest RDF XML Get");
 //            System.out.println(map);

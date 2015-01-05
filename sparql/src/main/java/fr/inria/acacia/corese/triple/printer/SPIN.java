@@ -687,9 +687,9 @@ public class SPIN implements ASTVisitor {
         counter++;
 
         for (int i = 0; i < or.size(); i++) {
-            sb.append(OPAREN);
+           // sb.append(OPAREN);
             visit(or.eget(i));
-            sb.append(CPAREN);
+           // sb.append(CPAREN);
         }
 
         counter--;

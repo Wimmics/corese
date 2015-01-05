@@ -4,7 +4,7 @@ prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 
-construct debug {
+construct  {
   ?r a foaf:Person
   ?r rdfs:label ?label 
   ?r ?qq ?s        ?s rdfs:label ?ls

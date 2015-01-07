@@ -53,6 +53,7 @@ import org.apache.log4j.Logger;
 public class SPARQLRestAPI {
     private static final String headerAccept = "Access-Control-Allow-Origin";
     private static final String DEFAULT_TRANSFORM = Transformer.HTML;    
+    public static final String PROFILE_DEFAULT   = "profile.ttl";
     private static final String TEMPLATE_SERVICE = "/sparql/template";
     public static final String TOSPIN_SERVICE    = "/sparql/tospin";
     public static final String TOSPARQL_SERVICE  = "/sparql/tosparql";
@@ -85,15 +86,20 @@ public class SPARQLRestAPI {
     @POST
     @Path("/reset")
     public Response initRDF(
-            @DefaultValue("false") @FormParam("owlrl") String owlrl,
-            @DefaultValue("false") @FormParam("entailments") String entailments) {
+            @DefaultValue("false") @FormParam("owlrl")       String owlrl,
+            @DefaultValue("false") @FormParam("entailments") String entailments, 
+            @DefaultValue("false") @FormParam("load")        String load) {
         String output;
-        //exec.getGraph().remove();
         boolean ent = entailments.equals("true");
         boolean owl = owlrl.equals("true");
+        boolean ld  = load.equals("true");
+        
         graph = GraphStore.create(ent);
         exec = QueryProcess.create(graph);
+        
+        // remove comment to prevent SPARQL Update:
         //exec.setMode(QueryProcess.SERVER_MODE);
+        
         if (ent) {            
             logger.info(output = "Endpoint successfully reset *with* RDFS entailments.");
         } else {
@@ -105,21 +111,27 @@ public class SPARQLRestAPI {
             re.setProfile(RuleEngine.OWL_RL_LITE);
             graph.addEngine(re);
         }
-        
+                     
         logger.info("OWL RL: " + owl);
         init();
+        if (ld){
+            loadProfileData();
+        }
         return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
-    
+      
     void init(){
         nsm = NSManager.create();
         mprofile = new Profile();
-        
-        for (Service s : mprofile.getServices()){
+        mprofile.init(Profile.DATA, PROFILE_DEFAULT);              
+    }
+    
+    void loadProfileData() {
+        for (Service s : mprofile.getServices()) {
             String[] load = s.getLoad();
-            if (load != null){
+            if (load != null) {
                 Load ld = Load.create(graph);
-                for (String f : load){
+                for (String f : load) {
                     try {
                         logger.info("Load: " + f);
                         ld.loadWE(f, f, Load.TURTLE_FORMAT);
@@ -130,6 +142,7 @@ public class SPARQLRestAPI {
             }
         }
     }
+    
     
 //    @POST
 //    @Path("/upload")
@@ -186,38 +199,6 @@ public class SPARQLRestAPI {
         
         logger.info(output = "Successfully loaded " + remotePath);
         return Response.status(200).header(headerAccept, "*").entity(output).build();
-
-//        if (remotePath.startsWith("http")) {
-//            if (remotePath.endsWith(".rdf") || remotePath.endsWith(".ttl") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".owl")) {
-//                Load ld = Load.create(graph);
-//                ld.load(remotePath, source);
-//            } else {
-//                //TODO loading of .n3 or .nt
-//                logger.error("TODO loading of .n3 or .nt");
-//                return Response.status(404).header(headerAccept, "*").entity(output).build();
-//            }
-//
-//        } else {
-//            logger.info("Loading " + remotePath);
-//            File f = new File(remotePath);
-//            if (!f.exists()) {
-//                logger.error(output = "File " + remotePath + " not found on the server!");
-//                return Response.status(404).header(headerAccept, "*").entity(output).build();
-//            }
-//            if (f.isDirectory()) {
-//                Load ld = Load.create(graph);
-//                ld.load(remotePath, source);
-//            } else if (remotePath.endsWith(".rdf") || remotePath.endsWith(".rdfs") || remotePath.endsWith(".ttl") || remotePath.endsWith(".owl")) {
-//                Load ld = Load.create(graph);
-//                ld.load(remotePath, source);
-//            } else if (remotePath.endsWith(".n3") || remotePath.endsWith(".nt")) {
-//                FileInputStream fis = null;
-//                logger.warn("NOT Loaded " + f.getAbsolutePath());
-//            }
-//        }
-//        
-//        logger.info(output = "Successfully loaded " + remotePath);
-//        return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
 
     // DQP query for triple store index
@@ -872,10 +853,10 @@ public class SPARQLRestAPI {
     String getQuery(String name) throws IOException {
         if (exec.getMode() == QueryProcess.SERVER_MODE){
             // only predefined queries
-            return mprofile.getResource("/webapp/query/" + name);
+            return mprofile.getResource(Profile.QUERY + name);
         }
         // local or external query 
-        return mprofile.getResource("/webapp/query/", name);
+        return mprofile.getResource(Profile.QUERY, name);
     }
     
     

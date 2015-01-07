@@ -49,6 +49,10 @@ public class EmbeddedJettyServer {
     private static boolean entailments = false;
     private static boolean owlrl = false;
     private static String dataPath = null;
+    // profile.ttl may contain data to be loaded
+    // use -lp option to effectively load profile data
+    // default is do not load
+    private static boolean loadProfileData = false;
 
     public static void main(String args[]) throws Exception {
 
@@ -60,11 +64,13 @@ public class EmbeddedJettyServer {
         Option entailOpt    = new Option("e", "entailments", false, "enable RDFS entailments");
         Option owlrlOpt     = new Option("o", "owlrl", false, "enable OWL RL entailments");
         Option dataOpt      = new Option("l", "load", true, "data file or directory to be loaded");
+        Option profileOpt   = new Option("lp", "profile", false, "load profile data");
         Option versionOpt   = new Option("v", "version", false, "print the version information and exit");
         options.addOption(portOpt);
         options.addOption(entailOpt);
         options.addOption(owlrlOpt);
         options.addOption(dataOpt);
+        options.addOption(profileOpt);
         options.addOption(helpOpt);
         options.addOption(versionOpt);
 
@@ -96,7 +102,9 @@ public class EmbeddedJettyServer {
                 dataPath = cmd.getOptionValue("l");
                 System.out.println("Server: " + dataPath);
             } 
-
+            if (cmd.hasOption("lp")) {
+                loadProfileData = true;
+            } 
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
             Server server = new Server(port);
 
@@ -139,6 +147,7 @@ public class EmbeddedJettyServer {
             MultivaluedMap formData = new MultivaluedMapImpl();
             formData.add("entailments", Boolean.toString(entailments));
             formData.add("owlrl", Boolean.toString(owlrl));
+            formData.add("load", Boolean.toString(loadProfileData));
             service.path("sparql").path("reset").post(formData);
 
             if (dataPath != null) {

@@ -108,9 +108,8 @@ public class Profile {
     }
     
     Profile(){
-        map      = new HashMap();
+        map = new HashMap();
         nsm = NSManager.create();
-        init(DATA, "profile.ttl");
     }
     
      public Collection<Service> getServices(){

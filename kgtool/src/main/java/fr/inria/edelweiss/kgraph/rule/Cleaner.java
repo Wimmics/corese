@@ -41,8 +41,13 @@ public class Cleaner {
     void clean(Graph g, String[] lq) throws IOException, EngineException{
          QueryLoad ql = QueryLoad.create();
          QueryProcess exec = QueryProcess.create(g);
+         // escape QueryProcess write lock in case 
+         // RuleEngine was run by Workflow Manager by init() by query()
+         // because query() have read lock
+         // it works because init() is also synchronized
+         exec.setSynchronized(true);
          for (String q : lq){
-             String qq = ql.getResource(data + q);           
+             String qq = ql.getResource(data + q); 
              exec.query(qq);            
          }
    }

@@ -24,6 +24,7 @@ st:navlab a st:Profile ;
   st:transform st:navlab .
 
 st:html a st:Profile ;
+  st:query "construct.rq" ;
   st:variable "?r" ;  
   st:transform st:html .
 
@@ -43,6 +44,11 @@ st:ldp a st:Profile ;
   st:query  "navigate.rq";
   st:variable  "?r" ;
   st:transform st:result .
+
+st:ldpc a st:Profile ;
+  st:query  "construct.rq";
+  st:variable  "?r" ;
+  st:transform st:html .
 
 st:local a st:Profile ;
   st:query     "local.rq" ;

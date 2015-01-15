@@ -147,15 +147,18 @@ public class QueryEngine implements Engine {
 		}
 		
 		boolean b = false;
-		
-		for (Query q : list){
-			// TRICKY:
+		if (isWorkflow){
+                    // TRICKY:
 			// This engine is part of a workflow which is processed by graph.init()
 			// hence it is synchronized by graph.init() 
 			// We are here because a query is processed, hence a (read) lock has been taken
-			// tell the query that it is already synchronized to prevent QueryProcess synUpdate
+			// tell the query processor that it is already synchronized to prevent QueryProcess synUpdate
 			// to take a write lock that would cause a deadlock
-			q.setSynchronized(isWorkflow);
+                    exec.setSynchronized(true);
+                }
+		for (Query q : list){
+			
+			//q.setSynchronized(isWorkflow);
 			if (isDebug){
 				q.setDebug(isDebug);
 				System.out.println(q.getAST());

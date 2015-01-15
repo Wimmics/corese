@@ -735,14 +735,14 @@ public class Graph implements Graphable
         String sep = System.getProperty("line.separator");
         StringBuffer sb = new StringBuffer();
 
-        if (getIndex() instanceof EdgeIndex) {
-            EdgeIndex ie = (EdgeIndex) getIndex();
+        if (getIndex() instanceof EdgeIndexer) {
+            EdgeIndexer ie = (EdgeIndexer) getIndex();
 
             for (Node p : getSortedProperties()) {
                 if (sb.length() > 0) {
                     sb.append(NL);
                 }
-                List<Entity> list = ie.get(p);
+                EdgeList list = ie.get(p);
                 sb.append(p + " (" + list.size() + ") : ");
                 sb.append(sep);
                 for (Entity ent : list) {
@@ -809,7 +809,7 @@ public class Graph implements Graphable
             // redefine meta properties
             update();
         }
-
+        
         if (isEntail) {
             if (isDebug) {
                 logger.info("Graph entailment");

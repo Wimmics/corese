@@ -463,10 +463,11 @@ public class QueryProcess extends QuerySolver {
             Graph g = getGraph();
 		GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
 		try {
-			if (! query.isSynchronized()){
+			if (! isSynchronized()){ // && ! query.isSynchronized()){
 				// TRICKY:
-				// if query comes from workflow, it is synchronized by graph.init()
-				// and it already has a lock by synQuery/synUpdate
+				// if query comes from workflow or from RuleEngine cleaner, 
+                                // it is synchronized by graph.init()
+				// and it already has a lock by synQuery/synUpdate                           
 				writeLock();
 			}
 			if (gl != null){
@@ -485,7 +486,7 @@ public class QueryProcess extends QuerySolver {
 			if (gl != null){
 				g.removeListener(gl);
 			}
-			if (! query.isSynchronized()){
+			if (! isSynchronized()){ // && ! query.isSynchronized()){
 				writeUnlock();
 			}
 		}

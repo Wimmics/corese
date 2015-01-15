@@ -15,7 +15,7 @@ import java.util.HashMap;
  *
  */
 public class Context {
-
+    public static final String NL           = System.getProperty("line.separator");
     public static final String STL          = NSManager.STL;
     public static final String STL_QUERY    = STL + "query";
     public static final String STL_NAME     = STL + "name"; // query path name
@@ -28,6 +28,17 @@ public class Context {
 
     public Context() {
         table = new HashMap();
+    }
+    
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        for (String key : table.keySet()){
+            sb.append(key);
+            sb.append(" : ");
+            sb.append(table.get(key));
+            sb.append(NL);
+        }
+        return sb.toString();
     }
 
     public Context set(String name, IDatatype value) {

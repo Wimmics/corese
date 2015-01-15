@@ -7,6 +7,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import fr.inria.edelweiss.kgtool.util.MappingsProcess;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,10 +98,10 @@ public class HTMLFormat {
         if (def != null){
            return expand(def); 
         }
-        return defaultTransform;
+       return defaultTransform;
     }
     
-    String process(Graph g, String trans){       
+    String process(Graph g, String trans){  
         Transformer t = Transformer.create(g, trans);
         context.set(Transformer.STL_TRANSFORM, trans);
         t.setContext(context);
@@ -113,7 +114,7 @@ public class HTMLFormat {
     }
       
     
-    Graph select(){
+    Graph select2(){
         RDFResultFormat rdf = RDFResultFormat.create(map);
         Graph g = Graph.create();
         Load ld = Load.create(g);
@@ -122,7 +123,12 @@ public class HTMLFormat {
         } catch (LoadException ex) {
             Logger.getLogger(HTMLFormat.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return g;
+        return g;             
+    }
+    
+    Graph select(){
+        MappingsProcess mp = MappingsProcess.create(map);
+        return mp.getGraph(); 
     }
 
     /**

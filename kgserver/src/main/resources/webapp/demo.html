@@ -78,6 +78,11 @@
 <h3>Construct Query</h3>
 
 <form method='get' action='/sparql/template'>
+     <select name="profile">
+    <option value="st:ldpc">LDP</option>
+    <option value="st:html">STD</option>
+  </select> 
+    <br/>
   <textarea cols='60' rows='10' name='query'>
   construct where {
     ?x ?p ?y

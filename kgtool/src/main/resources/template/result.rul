@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Dec 22 16:32:22 CET 2014
+Thu Jan 15 09:41:55 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -60,78 +60,13 @@ template st:start {
 
   st:call-template(st:head)
   
-  st:call-template(?page)
+  st:call-template(st:page)
     
   st:call-template(st:tail)
 
 }
 where {
 
-  bind (st:get(st:uri) as ?uri)
-  
-  # uri starting with st: is a named template to execute
-  bind (if (bound(?uri) && strstarts(?uri, st:),
-	  ?uri, st:page)
-      as ?page)
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:queries {
-"<ol>"
-
-  "<li>" st:call-template(st:href, st:type, "type") "</li>"
-  
-  "<li>" st:call-template(st:href, st:count, "count") "</li>"
-    
-  "<li>" st:call-template(st:href, st:dbpedia, "dbpedia") "</li>"
-
-  "</ol>"
-    
-}
-where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:dbpedia {
-
-   st:call-template(st:query, 
-   """select * where { 
-     service <http://fr.dbpedia.org/sparql> {
-      select * where {
-	<http://fr.dbpedia.org/resource/Paris> ?p ?y 
-      }
-      limit 20 offset 20
-      }
-   }"""
-   )
-   
-}
-where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:index {
-
-  st:call-template(st:href, st:queries, "Queries")
-     
-}
-where {
 }
 ]]>
 </body>
@@ -184,6 +119,27 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:banner  {
+"""
+<table style="width:100%">
+<tr>
+<td><a href='http://www.inria.fr/centre/sophia'><img alt ='INRIA' src='http://www.inria.fr/var/inria/storage/images/medias/inria/images-corps/logo-inria-scientifique-couleur/404505-4-fre-FR/logo-inria-scientifique-couleur.jpg'/></a></td>
+
+<td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a></td>
+
+<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='http://www.i3s.unice.fr/I3S/LOGOS/NewlogoI3S-250x70.png' /></a></td>
+</tr>
+</table>
+"""
+}
+where {}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:decl {
 
@@ -207,30 +163,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:banner  {
-"""
-<table style="width:100%">
-<tr>
-<td><a href='http://www.inria.fr/centre/sophia'><img alt ='INRIA' src='http://www.inria.fr/var/inria/storage/images/medias/inria/images-corps/logo-inria-scientifique-couleur/404505-4-fre-FR/logo-inria-scientifique-couleur.jpg'/></a></td>
-
-<td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a></td>
-
-<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='http://www.i3s.unice.fr/I3S/LOGOS/NewlogoI3S-250x70.png' /></a></td>
-</tr>
-</table>
-"""
-}
-where {}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:page {
   
-  st:call-template(st:query, st:get(st:query))
+  st:call-template(st:query, coalesce(st:get(st:query), ""))
  
   st:call-template(st:open)
   
@@ -250,43 +185,6 @@ where {
 <![CDATA[
 template st:link(?uri, ?title) {
    "<a href=\""  str(?uri) "\">" str(?title) "</a>"
-}
-where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:count {
-
-   st:call-template(st:query, 
-   """select (count(*) as ?c) where { ?x ?p ?y }"""
-   )
-   
-}
-where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate a hyperlink to a dynamic web page ?l
-# In response to click on the link, st:start template will check the uri and
-# in this case redirect to uri named template
-#
-template st:href(?l, ?t) {
-
-   "<a href='" st:get(st:service) 
-   "?uri=" ?l 
-   "&profile=" st:get(st:profile)    
-    "'>" str(?t) "</a>"   
 }
 where {
 }
@@ -326,33 +224,19 @@ order by ?i
 <![CDATA[
 template st:esc(?x) {
 
-  str(?d)
+  str(?tt)
     
 }
 where {
 
    bind(st:turtle(?x) as ?t)
    
+   bind (replace(?t, "<", "&lt;") as ?tt)
+   
    bind(
     if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) 
     as ?d) 
     
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:type {
-
-   st:call-template(st:query, 
-   """select * where { ?x a ?t }"""
-   )
-   
-}
-where {
 }
 ]]>
 </body>
@@ -456,7 +340,9 @@ where {
 template st:linkprofile(?x) {
 
   if (isURI(?x), 
-    st:call-template(st:link, st:call-template(st:transform, ?x), ?e),
+    st:call-template(st:link, 
+      coalesce(st:call-template(st:transform, ?x), encode_for_uri(?x)),
+      ?e),
     str(?e))
     
 }

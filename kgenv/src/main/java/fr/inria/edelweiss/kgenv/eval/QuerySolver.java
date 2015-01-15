@@ -70,6 +70,7 @@ public class QuerySolver  {
 	isDebug = false,
 	isOptimize = false,
 	isSPARQLCompliant = false;
+    private boolean isSynchronized = false;
     private boolean isPathType = false;
     private boolean isStorePath = true;
     private boolean isCachePath = false;
@@ -587,6 +588,20 @@ public class QuerySolver  {
     }
     
     public void initMode(){       
+    }
+
+    /**
+     * @return the isSynchronized
+     */
+    public boolean isSynchronized() {
+        return isSynchronized;
+    }
+
+    /**
+     * @param isSynchronized the isSynchronized to set
+     */
+    public void setSynchronized(boolean isSynchronized) {
+        this.isSynchronized = isSynchronized;
     }
 	
 }

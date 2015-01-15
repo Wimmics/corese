@@ -437,14 +437,17 @@ public class Load
     }
 
     public void loadString(String str, String src, int format) throws LoadException{
+         loadString(str, src, src, src, format);
+    }
+    
+     public void loadString(String str, String path, String src, String base, int format) throws LoadException{
         try {
-            load(new ByteArrayInputStream(str.getBytes("UTF-8")), src, format);
+            load(new ByteArrayInputStream(str.getBytes("UTF-8")), path, src, base, format);
         } catch (UnsupportedEncodingException ex) {
             throw new LoadException(ex);
         }
     }
-    
-    
+     
      public void loadResource(String name, int format) throws  LoadException {
         InputStream stream = Load.class.getResourceAsStream(name);
         if (stream == null) {
@@ -466,7 +469,8 @@ public class Load
 
         try {
             Reader read = reader(stream);
-            synLoad(read, path, source, base, format);
+            synLoad(read, path, base, source,  format);
+//            synLoad(read, path, source, base, format);
         } catch (UnsupportedEncodingException e) {
             throw new LoadException(e);
         }

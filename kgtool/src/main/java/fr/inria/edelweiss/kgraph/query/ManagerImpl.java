@@ -41,7 +41,7 @@ public class ManagerImpl implements Manager {
 
     ManagerImpl(Graph g) {
         graph = g;
-        graph.init();
+        //graph.init();
         load = getLoader(LOADER);
         load.init(graph);
     }

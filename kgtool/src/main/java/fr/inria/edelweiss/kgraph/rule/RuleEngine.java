@@ -364,7 +364,7 @@ public class RuleEngine implements Engine, Graphable {
         r.setProvenance(prov);
     }
 
-    int synEntail() {
+    public int synEntail() {
         try {
             graph.writeLock().lock();
             return entail();

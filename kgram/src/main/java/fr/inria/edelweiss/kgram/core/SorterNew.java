@@ -1,15 +1,18 @@
 package fr.inria.edelweiss.kgram.core;
 
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import static fr.inria.edelweiss.kgram.sorter.core.Const.plannable;
 import fr.inria.edelweiss.kgram.sorter.core.QPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import fr.inria.edelweiss.kgram.sorter.core.ISort;
 import fr.inria.edelweiss.kgram.sorter.impl.qpv1.DepthFirstBestSearch;
 import fr.inria.edelweiss.kgram.sorter.impl.qpv1.HeuristicsBasedEstimation;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A new sorter for QP
@@ -21,76 +24,95 @@ public class SorterNew extends Sorter {
 
     boolean print = false;
 
-    public void sort(Exp exp, List<Exp> bindings, Producer prod, int planType) {
-        //0 sortable?
-        if (!sortable(exp)) {
-            return;
-        }
-        message("Before sorting:" + exp);
+    public void sort(Exp expression, List<Exp> bindings, Producer prod, int planType) {
+        if(expression.size() < 2) return;
 
+        Map<Integer, List<Exp>> ESGs = tokenize(expression);
+        if (ESGs.isEmpty()) return;
+
+        message("** Before sorting [whole]" + expression);
         long start = System.currentTimeMillis();
-        //1 create graph (list of nodes and their edges)
-        QPGraph bpg = new QPGraph(exp, bindings);
-        long stop1 = System.currentTimeMillis();
-        message("==BPG creating time:" + (stop1 - start) + "ms");
-        // 2 estimate cost/selectivity
-        // 2.1 find the corresponding algorithm
 
-        IEstimate ies;
-        switch (planType) {
-            case Query.QP_HEURISTICS_BASED:
-            default:
-                ies = new HeuristicsBasedEstimation();
-        }
+        // === Iterate each sub set and create ESG and sorting === 
+        for (Entry<Integer, List<Exp>> entrySet : ESGs.entrySet()) {
+            Integer startIndex = entrySet.getKey();
+            List<Exp> exps = entrySet.getValue();
 
-        // 2.2 estimate
-        ies.estimate(bpg, prod, bindings);
-        long stop2 = System.currentTimeMillis();
-        message("==Cost estimation time:" + (stop2 - stop1) + "ms");
+            message(" -- Sorting [before], " + exps.size() + " :" + exps);
 
-        //3 sort and find the order
-        ISort is ;
-         switch (planType) {
-            case Query.QP_HEURISTICS_BASED:
-            default:
-                is = new DepthFirstBestSearch();
-        }
-         
-        List l = is.sort(bpg);
-        long stop3 = System.currentTimeMillis();
-        message("==Sorting time:" + (stop3 - stop2) + "ms");
+            // ** 1 create graph (list of nodes and their edges) **
+            QPGraph bpg = new QPGraph(exps, bindings);
+            long stop1 = System.currentTimeMillis();
 
-        //4 rewrite
-        is.rewrite(exp, l);
-        message("After sorting:" + exp);
-        message("== Query sorting time:" + (System.currentTimeMillis() - start) + "ms ==");
-    }
-
-    /**
-     * Check weather an expression can be sorted, now only support sorting AND
-     * with sub-expression: FILTER, EDGE, VALUES and length >= 2
-     *
-     * @param e expression to be sorted
-     * @return
-     */
-    public boolean sortable(Exp e) {
-        if (e.type() == Exp.AND && e.size() > 1) {
-
-            //check all sub expression type
-            for (Exp ee : e) {
-                if (!(ee.type() == Exp.FILTER || ee.type() == EDGE || ee.type() == VALUES || ee.type() == GRAPH)) {
-                    return false;
-                }
+            // ** 2 estimate cost/selectivity **
+            // ** 2.1 find the corresponding algorithm **
+            IEstimate ies;
+            switch (planType) {
+                case Query.QP_HEURISTICS_BASED:
+                default:
+                    ies = new HeuristicsBasedEstimation();
             }
-            return true;
+
+            // ** 2.2 estimate **
+            ies.estimate(bpg, prod, bindings);
+
+            // ** 3 sort and find the order **
+            ISort is;
+            switch (planType) {
+                case Query.QP_HEURISTICS_BASED:
+                default:
+                    is = new DepthFirstBestSearch();
+            }
+
+            List l = is.sort(bpg);
+            message(" -- Sorting time:" + (System.currentTimeMillis() - stop1) + "ms");
+            message(" -- Sorting [after] :" + exps+"\n");
+
+            // ** 4 rewrite **
+            is.rewrite(expression, l, startIndex);
         }
 
-        return false;
+        message("** After sorting [whole]:" + expression);
+        message("** Query sorting time:" + (System.currentTimeMillis() - start) + "ms **\n");
+
+    }
+    
+    // === Split one expression into several subsets that can be sorted
+    //ex. T1, T2, F, OPT, T3, T4, VA, UNION, T5, T6 will be splited
+    // (0, <T1, T2, F>)
+    // (4, <T3, T4, VA>)
+    // (8, <T5, T6>)
+    private Map<Integer, List<Exp>> tokenize(Exp e) {
+        List<Exp> aESG = new ArrayList<Exp>();
+        Map<Integer, List<Exp>> ESGs = new LinkedHashMap<Integer, List<Exp>>();
+        ESGs.put(0, aESG);
+
+        // == 1. split the expressions
+        List<Exp> exps = e.getExpList();
+        for (int i = 0; i < exps.size(); i++) {
+            Exp ee = exps.get(i);
+            if (plannable(ee.type())) {
+                if (i > 0 && !plannable(exps.get(i - 1).type())) {
+                    aESG = new ArrayList<Exp>();
+                    ESGs.put(i, aESG);
+                }
+
+                aESG.add(ee);
+            }
+        }
+
+        // == 2.remove the ones containing less that 2 expressions
+        Iterator<Entry<Integer, List<Exp>>> it = ESGs.entrySet().iterator();
+        while (it.hasNext()) {
+            if (it.next().getValue().size() < 2) {
+                it.remove();
+            }
+        }
+
+        return ESGs;
     }
 
     private void message(String msg) {
-        if (print) {
-            System.out.println(msg);
-        }
+        if (print) System.out.println(msg);
     }
 }

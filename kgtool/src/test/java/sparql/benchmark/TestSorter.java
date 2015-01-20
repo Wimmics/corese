@@ -1,6 +1,5 @@
 package sparql.benchmark;
 
-import sparql.benchmark.bsbm.BSBMQueries;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -9,7 +8,7 @@ import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
-import java.util.List;
+import sparql.benchmark.bsbm.BSBMQueries;
 
 /**
  * TestSorter.java
@@ -40,7 +39,33 @@ public class TestSorter {
             + "    kg:productXYZ bsbm:productPropertyNumeric1 ?propertyNumeric1 .\n"
             + "    kg:productXYZ bsbm:productPropertyNumeric2 ?propertyNumeric2 .\n"
             + "    OPTIONAL { kg:productXYZ bsbm:productPropertyTextual4 ?propertyTextual4 }\n"
+            + "    OPTIONAL { kg:productXYZ bsbm:productPropertyNumeric4 ?propertyNumeric4 }\n"
             + "    OPTIONAL { kg:productXYZ bsbm:productPropertyTextual5 ?propertyTextual5 }\n"
+            + "}";
+
+    public final static String G222 = "PREFIX bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/>\n"
+            + "PREFIX bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>\n"
+            + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+            + "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
+            + "\n"
+            + "SELECT ?label ?comment ?producer ?productFeature ?propertyTextual1 ?propertyTextual2 ?propertyTextual3\n"
+            + " ?propertyNumeric1 ?propertyNumeric2 ?propertyTextual4 ?propertyTextual5 ?propertyNumeric4 \n"
+            + "WHERE {\n"
+            + "    OPTIONAL { kg:productXYZ bsbm:productPropertyTextual4 ?propertyTextual4 }\n"
+            + "    kg:productXYZ rdfs:label ?label .\n"
+            + "    kg:productXYZ rdfs:comment ?comment .\n"
+            + "    kg:productXYZ bsbm:producer ?p .\n"
+            + "    ?p rdfs:label ?producer .\n"
+            + "    kg:productXYZ dc:publisher ?p . \n"
+            + "    kg:productXYZ bsbm:productFeature ?f .\n"
+            + "    ?f rdfs:label ?productFeature .\n"
+            + "    OPTIONAL { kg:productXYZ bsbm:productPropertyTextual4 ?propertyTextual4 }\n"
+            + "    kg:productXYZ bsbm:productPropertyTextual1 ?propertyTextual1 .\n"
+            + "    kg:productXYZ bsbm:productPropertyTextual2 ?propertyTextual2 .\n"
+            + "    OPTIONAL { kg:productXYZ bsbm:productPropertyTextual5 ?propertyTextual5 }\n"
+            + "    kg:productXYZ bsbm:productPropertyTextual3 ?propertyTextual3 .\n"
+            + "    kg:productXYZ bsbm:productPropertyNumeric1 ?propertyNumeric1 .\n"
+            + "    kg:productXYZ bsbm:productPropertyNumeric2 ?propertyNumeric2 .\n"
             + "    OPTIONAL { kg:productXYZ bsbm:productPropertyNumeric4 ?propertyNumeric4 }\n"
             + "}";
 
@@ -79,17 +104,15 @@ public class TestSorter {
             + "SELECT DISTINCT ?product ?productLabel\n"
             + "WHERE { \n"
             + "	?product rdfs:label ?productLabel .\n"
-            + " FILTER (bsbm:xyz = ?product)\n"
-            + "	?ProductXYZ bsbm:productFeature ?prodFeature .\n"
+            + " FILTER (<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer1/Product54> != ?product)\n"
+            + "	<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer1/Product54> bsbm:productFeature ?prodFeature .\n"
             + "	?product bsbm:productFeature ?prodFeature .\n"
-            + "	?ProductXYZ bsbm:productPropertyNumeric1 ?origProperty1 .\n"
+            + "	<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer1/Product54> bsbm:productPropertyNumeric1 ?origProperty1 .\n"
             + "	?product bsbm:productPropertyNumeric1 ?simProperty1 .\n"
             + "	FILTER (?simProperty1 < (?origProperty1 + 120) && ?simProperty1 = (?origProperty1 - 120))\n"
-            + "	?ProductXYZ bsbm:productPropertyNumeric2 ?origProperty2 .\n"
+            + "	<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer1/Product54> bsbm:productPropertyNumeric2 ?origProperty2 .\n"
             + "	?product bsbm:productPropertyNumeric2 ?simProperty2 .\n"
             + "	FILTER (?simProperty2 < (?origProperty2 + 170) && ?simProperty2 > (?origProperty2 - 170))\n"
-            + " Filter (?simProperty2 IN (2, 4, 6, 7))."
-            + " values (?origProperty2) {(66) (bsbm:t)}"
             + "}\n"
             + "ORDER BY ?productLabel\n"
             + "LIMIT 5";
@@ -466,8 +489,8 @@ public class TestSorter {
             + "Group By ?feature     }   }   "
             + "Order By desc(?withFeaturePrice/?withoutFeaturePrice) ?feature   "
             + "Limit 10";
-    
-        private static final String Bi_Q02 = ""
+
+    private static final String Bi_Q02 = ""
             + "prefix bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>     \n"
             + "\n"
             + "SELECT ?otherProduct ?sameFeatures   \n"
@@ -486,23 +509,109 @@ public class TestSorter {
             + "}   \n"
             + "\n"
             + "Order By desc(?sameFeatures) ?otherProduct";
- private static final String Bi_Q03 = "prefix bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>   prefix bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/>   prefix rev: <http://purl.org/stuff/rev#>   prefix dc: <http://purl.org/dc/elements/1.1/>   prefix xsd: <http://www.w3.org/2001/XMLSchema#>    Select ?product (xsd:float(?monthCount)/?monthBeforeCount As ?ratio)   {     { Select ?product (count(?review) As ?monthCount)       {         ?review bsbm:reviewFor ?product .         ?review dc:date ?date .         Filter(?date >= \"2007-07-23\"^^<http://www.w3.org/2001/XMLSchema#date> && ?date < \"2007-08-20\"^^<http://www.w3.org/2001/XMLSchema#date>)        }       Group By ?product     }  {       Select ?product (count(?review) As ?monthBeforeCount)       {         ?review bsbm:reviewFor ?product .         ?review dc:date ?date .         Filter(?date >= \"2007-06-25\"^^<http://www.w3.org/2001/XMLSchema#date> && ?date < \"2007-07-23\"^^<http://www.w3.org/2001/XMLSchema#date>) #       }       Group By ?product       Having (count(?review)>0)     }   }   Order By desc(xsd:float(?monthCount) / ?monthBeforeCount) ?product ";
-        
+    private static final String Bi_Q03 = "prefix bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>   prefix bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/>   prefix rev: <http://purl.org/stuff/rev#>   prefix dc: <http://purl.org/dc/elements/1.1/>   prefix xsd: <http://www.w3.org/2001/XMLSchema#>    Select ?product (xsd:float(?monthCount)/?monthBeforeCount As ?ratio)   {     { Select ?product (count(?review) As ?monthCount)       {         ?review bsbm:reviewFor ?product .         ?review dc:date ?date .         Filter(?date >= \"2007-07-23\"^^<http://www.w3.org/2001/XMLSchema#date> && ?date < \"2007-08-20\"^^<http://www.w3.org/2001/XMLSchema#date>)        }       Group By ?product     }  {       Select ?product (count(?review) As ?monthBeforeCount)       {         ?review bsbm:reviewFor ?product .         ?review dc:date ?date .         Filter(?date >= \"2007-06-25\"^^<http://www.w3.org/2001/XMLSchema#date> && ?date < \"2007-07-23\"^^<http://www.w3.org/2001/XMLSchema#date>) #       }       Group By ?product       Having (count(?review)>0)     }   }   Order By desc(xsd:float(?monthCount) / ?monthBeforeCount) ?product ";
+
+    private static final String EXISTS_02 = ""
+            + "prefix ex: <http://www.example.org/>\n"
+            + "\n"
+            + "select * where {\n"
+            + "?s ?p ex:o2\n"
+            + "filter exists {ex:s ex:p ex:o}\n"
+            + "}";
+
+    private static final String Qb6 = "prefix bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>   \n"
+            + "prefix bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/>   \n"
+            + "prefix rev: <http://purl.org/stuff/rev#>   \n"
+            + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> \n"
+            + "   \n"
+            + "Select ?reviewer (avg(xsd:float(?score)) As ?reviewerAvgScore)   \n"
+            + "{     \n"
+            + "{ Select (avg(xsd:float(?score)) As ?avgScore)\n"
+            + "       {         \n"
+            + "	?product bsbm:producer <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer12/Producer12> .         \n"
+            + "	?review bsbm:reviewFor ?product .         \n"
+            + "	{ ?review bsbm:rating1 ?score . } UNION         \n"
+            + "	{ ?review bsbm:rating2 ?score . } UNION         \n"
+            + "	{ ?review bsbm:rating3 ?score . } UNION         \n"
+            + "	{ ?review bsbm:rating4 ?score . }       \n"
+            + "	}     \n"
+            + "       }\n"
+            + "     \n"
+            + "?product bsbm:producer <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer12/Producer12> .     \n"
+            + "?review bsbm:reviewFor ?product .     \n"
+            + "?review rev:reviewer ?reviewer .     \n"
+            + "{ ?review bsbm:rating1 ?score . } UNION     \n"
+            + "{ ?review bsbm:rating2 ?score . } UNION     \n"
+            + "{ ?review bsbm:rating3 ?score . } UNION     \n"
+            + "{ ?review bsbm:rating4 ?score . }   \n"
+            + "}   \n"
+            + "\n"
+            + "Group By ?reviewer   Having (avg(xsd:float(?score)) > min(?avgScore) * 1.5)\n"
+            + "  ";
+
+    public static final String Q_bind08 = "PREFIX : <http://example.org/> \n"
+            + "\n"
+            + "SELECT ?s ?p ?o ?z\n"
+            + "{\n"
+            + "  ?s ?p ?o .\n"
+            + "  BIND(?z+10 AS ?z10)\n"
+            + "  FILTER(?z = 3 )\n"
+            + "  BIND(?o+1 AS ?z)\n"
+            + "  FILTER(?s = 33 )\n"
+            + "  VALUES ?z10 {10 20}\n"
+            + "}";
+
+    public static final String Q_slow = "select * where {?x ?p ?y optional {?a ?a ?a} ?z ?q ?t filter(?x = ?y && ! (?y = ?x))  }";
+
+    public static final String QQ33 = "PREFIX : <http://example.org/> \n"
+            + "\n"
+            + "SELECT ?s ?p ?o ?z\n"
+            + "{\n"
+            + "  ?s ?p ?o .\n"
+            + "  BIND(?o+1 AS ?z)\n"
+            + "  FILTER(?z = 3 )\n"
+            + "}";
+
+    public static final String  query_werid = 
+                "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "select  *  where {"
+      + "bind ((kg:sparql('"
+                + "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "construct  where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
+      + "as ?g)"
+                + "graph ?g { ?a ?p ?b }"
+        + "} ";
     public static void main(String[] args) throws EngineException {
 
-        //test96(Qx100, Query.QP_DEFAULT);   
-        //test96(Qx100, Query.QP_HEURISTICS_BASED);
-        //test96(Qx54, Query.QP_HEURISTICS_BASED);
-        // test96(Qx3, Query.QP_HEURISTICS_BASED);
-        //test96(Qx3, Query.QP_DEFAULT);
-        //test(Q10,"/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_HEURISTICS_BASED, "Q 10");
-        // test(Q7, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_DEFAULT, "Q 7 QP_DEFAULT");
-        //test(Q7, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_HEURISTICS_BASED_2, "Q 7 QP_HEURISTICS_BASED_2");
-        //test(Q7, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_HEURISTICS_BASED, "Q 7 QP_HEURISTICS_BASED");
-        //test(ssss, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale100.ttl", Query.QP_DEFAULT, "Q_BI_Q4");
-        test(BSBMQueries.Bi_Q02, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_DEFAULT, "Bi_Q02");
-        test(BSBMQueries.Bi_Q02_SUB1, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_DEFAULT, "Bi_Q02 sub query");
+//        test96(Qx100, Query.QP_DEFAULT);
+//        test96(Qx100, Query.QP_HEURISTICS_BASED);
+//        test96(Qx54, Query.QP_HEURISTICS_BASED);
+//        test96(Qx3, Query.QP_HEURISTICS_BASED);
+//        test96(Qx3, Query.QP_DEFAULT);
+//        test(Q10, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_HEURISTICS_BASED, "Q 10");
+//        test(Q7, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_DEFAULT, "Q 7 QP_DEFAULT");
+//        test(Q7, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_HEURISTICS_BASED, "Q 7 QP_HEURISTICS_BASED");
+//        test(ssss, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale100.ttl", Query.QP_DEFAULT, "Q_BI_Q4");
+//        test(BSBMQueries.Bi_Q02, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_DEFAULT, "Bi_Q02");
+//        test(BSBMQueries.Bi_Q02_SUB1, "/Users/fsong/NetBeansProjects/bsbmtools-0.2/scale1000.ttl", Query.QP_DEFAULT, "Bi_Q02 sub query");
+//        for (Object[] query : BSBMQueries.BI_USE_CASE) {
+//            System.out.println("=== " + query[0].toString() + " ===");
+//            test(query[1].toString(), "/Users/fsong/NetBeansProjects/bsbm/data/scale100.ttl", Query.QP_DEFAULT, query[0].toString());
+//            test(query[1].toString(), "/Users/fsong/NetBeansProjects/bsbm/data/scale100.ttl", Query.QP_HEURISTICS_BASED, query[0].toString());
+//        }
+        // test(G22, "/Users/fsong/NetBeansProjects/bsbm/data/scale100.ttl", Query.QP_HEURISTICS_BASED, "Qb6");
+        //test(Q_bind08, "/Users/fsong/NetBeansProjects/kgram/kgtool/src/test/resources/data/w3c-sparql11/sparql11-test-suite/bind/data.ttl", Query.QP_HEURISTICS_BASED, "Qb6");
+        //test(Q_bind08, "/Users/fsong/NetBeansProjects/kgram/kgtool/src/test/resources/data/w3c-sparql11/sparql11-test-suite/bind/data.ttl", Query.QP_DEFAULT, "Qb6");
+        // test(QC2, "/Users/fsong/NetBeansProjects/bsbm/data/scale100.ttl", Query.QP_HEURISTICS_BASED, "Qb6");
+        //t//est(BSBM_BI_Q4, "/Users/fsong/NetBeansProjects/bsbm/data/scale100.ttl", Query.QP_HEURISTICS_BASED, "Qb6");
+        test(Q_slow, "/Users/fsong/NetBeansProjects/kgram/kgengine/src/test/resources/data/comma/query.rdf", Query.QP_DEFAULT, "Q_slow");
+        test(Q_slow, "/Users/fsong/NetBeansProjects/kgram/kgengine/src/test/resources/data/comma/query.rdf", Query.QP_HEURISTICS_BASED, "Q_slow 2");
 
+        //test(Q_slow, "/Users/fsong/NetBeansProjects/bsbm/data/scale100.ttl", Query.QP_DEFAULT, "Q_slow");
+        //test(Q_slow, "/Users/fsong/NetBeansProjects/bsbm/data/scale1000.ttl", Query.QP_HEURISTICS_BASED, "Q_slow 2");
+        
+        //testQuery1(query_werid, Query.QP_DEFAULT);
+        //testQuery1(query_werid, Query.QP_HEURISTICS_BASED);
     }
 
     static void test96(String query, int qp) throws EngineException {
@@ -528,6 +637,25 @@ public class TestSorter {
         System.out.println("== Querying time:" + (System.currentTimeMillis() - start) + "ms ==");
 
     }
+    
+    static void testQuery1(String query, int qp) throws EngineException {
+        Graph gg = Graph.create();
+        Load load = Load.create(gg);
+
+        String data = "/Users/fsong/NetBeansProjects/kgram/kgengine/src/test/resources/data/";
+        load.load(data + "comma/comma.rdfs");
+        load.load(data + "comma/model.rdf");
+        load.load(data + "comma/data");
+        QueryProcess exec = QueryProcess.create(gg);
+        exec.setPlanProfile(qp);
+
+        long start = System.currentTimeMillis();
+        Mappings m = exec.query(query);
+
+        System.out.println("\n" + m.getQuery() + "  size:" + m.size());
+        System.out.println("== Querying time:" + (System.currentTimeMillis() - start) + "ms ==");
+
+    }
 
     static void test(String query, String data, int qp, String name) throws EngineException {
         Graph gg = Graph.create();
@@ -540,6 +668,6 @@ public class TestSorter {
         Mappings m = exec.query(query);
 
         System.out.println("============" + name + "=============\n" + m.getQuery() + "  \n size:" + m.size());
-        System.out.println("== Querying time:" + (System.currentTimeMillis() - start) + "ms ==");
+        System.out.println("== Querying time:" + (System.currentTimeMillis() - start) + "ms ==\n\n");
     }
 }

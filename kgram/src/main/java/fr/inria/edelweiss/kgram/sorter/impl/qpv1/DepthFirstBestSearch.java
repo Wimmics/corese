@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.sorter.impl.qpv1;
 
+import static fr.inria.edelweiss.kgram.api.core.ExpType.BIND;
 import fr.inria.edelweiss.kgram.sorter.core.QPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import fr.inria.edelweiss.kgram.sorter.core.ISort;
@@ -27,18 +28,20 @@ import java.util.Map;
  * 3 recursively search until all nodes have been visited
  *
  * 4 every time one node is added to visited, check FILTER & VALUES
+ * ++ 4.1 now also check BIND 20Jan2015
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 23 Oct. 2014
  */
 public class DepthFirstBestSearch implements ISort {
 
-    private final List<QPGNode> visited, notVisited;
+    private final List<QPGNode> visited, notVisited, binds;
     private QPGraph g = null;
 
     public DepthFirstBestSearch() {
         this.visited = new ArrayList<QPGNode>();
         this.notVisited = new ArrayList<QPGNode>();
+        this.binds = new ArrayList<QPGNode>();
     }
 
     @Override
@@ -48,6 +51,7 @@ public class DepthFirstBestSearch implements ISort {
         List<QPGNode> sortableNodes = g.getAllNodes(EDGE);
         sortableNodes.addAll(g.getAllNodes(GRAPH));
         notVisited.addAll(sortableNodes);
+        binds.addAll(g.getAllNodes(BIND));
 
         //each loop is a sub graph
         while (!notVisited.isEmpty()) {
@@ -55,15 +59,23 @@ public class DepthFirstBestSearch implements ISort {
             QPGNode first = findFirst(notVisited, nextNodesPool);
             route(first, nextNodesPool);
         }
+
+        //for other left nodes, ex. filter/values/bind not related to any vairables, optional
+        //just add them at the end of visited list
+        for (QPGNode n : g.getAllNodes()) {
+            if (!visited.contains(n)) {
+                visited.add(n);
+            }
+        }
         return visited;
     }
 
     //search in one connected graph, depth-first
     private void route(QPGNode previous, Map<QPGNode, Double> nextNodesPool) {
         if (previous == null) return;
-       
+
         // while there is still node not visited in the pool
-        QPGNode next ;
+        QPGNode next;
         while ((next = findNext(nextNodesPool)) != null) {
             route(next, nextNodesPool);
         }
@@ -72,7 +84,7 @@ public class DepthFirstBestSearch implements ISort {
     //Find the bpg node with the smallest selectivity as starting routing point
     private QPGNode findFirst(List<QPGNode> lNodes, Map<QPGNode, Double> pool) {
         if (lNodes == null || lNodes.isEmpty()) return null;
-        
+
         QPGNode minNode = lNodes.get(0);
         for (QPGNode node : lNodes) {
             double cost = node.getCost();
@@ -102,7 +114,7 @@ public class DepthFirstBestSearch implements ISort {
         for (Map.Entry<QPGNode, Double> entry : pool.entrySet()) {
             QPGNode qPGNode = entry.getKey();
             Double double1 = entry.getValue();
-            if(double1 < cost){
+            if (double1 < cost) {
                 cost = double1;
                 next = qPGNode;
             }
@@ -123,15 +135,16 @@ public class DepthFirstBestSearch implements ISort {
         //2.1 remove from relevant list
         notVisited.remove(minNode);
         pool.remove(minNode);
-
+        
+        //2.5 add binds
+        addBinds(minNode);
         //3 check (and add) filter
         this.addFilters();
-        
+
         //4. find adjacent nodes
         findAdjacentNodes(minNode, pool);
     }
 
-    
     //for a filter, if all linked vairables have been visited, 
     //then add this filter just after these triple patterns
     private void addFilters() {
@@ -139,24 +152,9 @@ public class DepthFirstBestSearch implements ISort {
         //others.addAll(g.getNodeList(VALUES));
 
         for (QPGNode f : filters) {
-            //1 get the list of edges that filter (values, etc..) f links to
-            List linkedNodes = this.g.getLinkedNodes(f);
-            if (visited.contains(f)) {
-                continue;
-            }
-
-            //2 check this list contains un visited node
-            boolean flag = true;
-            for (QPGNode unVistiedNode : notVisited) {
-                if (linkedNodes.contains(unVistiedNode)) {
-                    flag = false;
-                    break;
-                }
-            }
-
-            //3 if flag=true, means there are no edges left linking to the filter (values, etc...)
-            //so add this filter to the sequence, just after the triples patterns
-            if (flag) {
+            //if there are no edges left linking to the filter (values, etc...)
+            //add this filter to the sequence, just after the triples patterns
+            if (!visited.contains(f) && !intersect(this.g.getLinkedNodes(f), notVisited, binds)) {
                 visited.add(f);
             }
         }
@@ -167,16 +165,9 @@ public class DepthFirstBestSearch implements ISort {
         List<QPGNode> values = this.g.getAllNodes(VALUES);
 
         for (QPGNode v : values) {
-            if (visited.contains(v)) {
-                continue;
-            }
-
-            //1 get the list of edges that VALUES v links to
-            List linkedNodes = this.g.getLinkedNodes(v);
-
-            //2 if the VALUES use this (first) triple pattern, then add it to
+            //if the VALUES use this (first) triple pattern, then add it to
             //visited list, before all linked nodes
-            if (linkedNodes.contains(min)) {
+            if (!visited.contains(v) && g.getLinkedNodes(v).contains(min)) {
                 visited.add(v);
             }
         }
@@ -213,16 +204,47 @@ public class DepthFirstBestSearch implements ISort {
         }
     }
 
-    @Override
-    public void rewrite(Exp exp, List<QPGNode> nodes) {
-        //the expression
-        if (exp.size() == nodes.size()) {
-            for (int i = 0; i < nodes.size(); i++) {
-                QPGNode node = nodes.get(i);
-                exp.set(i, node.getExp());
+    //Check BIND expressions
+    private void addBinds(QPGNode min) {
+        for (QPGNode q : g.getLinkedNodes(min)) {
+            List<QPGNode> linkedBinds = g.getLinkedNodes(q, true, true);
+
+            //for BIND, it also can have FILTERs and VALUES, and also it can depends on the
+            //other BINDs expressions, so need to check recusively
+            while (q.getType()== BIND && !visited.contains(q) && !intersect(linkedBinds, notVisited, binds)) {
+                this.addValues(q);
+
+                visited.add(q);
+                binds.remove(q);
+                addBinds(q);
+
+                this.addFilters();
             }
-        } else {
-            //todo
+        }
+    }
+
+    /**
+     * Check if the first list has same nodes with the other two lists of nodes
+     * @param list
+     * @param notVisited
+     * @param binds
+     * @return 
+     */
+    private boolean intersect(List<QPGNode> list, List<QPGNode> notVisited, List<QPGNode> binds) {
+        for (QPGNode q : list) {
+            if (notVisited.contains(q) || binds.contains(q)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public void rewrite(Exp exp, List<QPGNode> nodes, int start) {
+        for (int i = 0; i < nodes.size(); i++) {
+            QPGNode node = nodes.get(i);
+            exp.set(start + i, node.getExp());
         }
     }
 }

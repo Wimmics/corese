@@ -23,6 +23,7 @@ public interface ISort {
      * Rewrite the SPARQL exp according to give order of nodes
      * @param exp
      * @param nodes 
+     * @param start 
      */
-    public void rewrite(Exp exp, List<QPGNode> nodes);
+    public void rewrite(Exp exp, List<QPGNode> nodes, int start);
 }

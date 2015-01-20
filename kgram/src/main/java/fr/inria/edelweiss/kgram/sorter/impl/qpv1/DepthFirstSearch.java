@@ -227,15 +227,10 @@ public class DepthFirstSearch implements ISort {
     }
 
     @Override
-    public void rewrite(Exp exp, List<QPGNode> nodes) {
-        //the expression
-        if (exp.size() == nodes.size()) {
-            for (int i = 0; i < nodes.size(); i++) {
-                QPGNode node = nodes.get(i);
-                exp.set(i, node.getExp());
-            }
-        } else {
-            //todo
+    public void rewrite(Exp exp, List<QPGNode> nodes, int start) {
+        for (int i = 0; i < nodes.size(); i++) {
+            QPGNode node = nodes.get(i);
+            exp.set(start + i, node.getExp());
         }
     }
 }

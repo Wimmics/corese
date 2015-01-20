@@ -1,5 +1,12 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
+import static fr.inria.edelweiss.kgram.api.core.ExpType.BIND;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.OPTIONAL;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
+
 /**
  * Constants
  *
@@ -16,4 +23,27 @@ public final class Const {
     public static final int NA = -1;
 
     public final static int BOUND = 0, LIST = 0, UNBOUND = Integer.MAX_VALUE;
+
+    public static final int[] EVALUABLE_TYPES = {EDGE, GRAPH};
+    public static final int[] NOT_EVALUABLE_TYPES = {FILTER, VALUES, BIND, OPTIONAL};
+
+    public static boolean plannable(int type) {
+        for (int e : NOT_EVALUABLE_TYPES) {
+            if (type == e) {
+                return true;
+            }
+        }
+
+        return evaluable(type);
+    }
+
+    public static boolean evaluable(int type) {
+        for (int e : EVALUABLE_TYPES) {
+            if (type == e) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

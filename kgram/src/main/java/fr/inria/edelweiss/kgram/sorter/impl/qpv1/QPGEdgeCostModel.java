@@ -7,6 +7,7 @@ import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
+import fr.inria.edelweiss.kgram.sorter.core.Const;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.OBJECT;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.PREDICATE;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.SUBJECT;
@@ -72,9 +73,8 @@ public class QPGEdgeCostModel extends AbstractCostModel {
         QPGNode node1 = edge.get(0), node2 = edge.get(1);
 
         int tNode1 = node1.getType(), tNode2 = node2.getType();
-        //1. type of one of them is FILTER or VALUES, ne assign pas le weight
-        if (tNode1 == FILTER || tNode2 == FILTER
-                || tNode1 == VALUES || tNode2 == VALUES) {
+        //1. type of one of them is FILTER or VALUES or BIND, ne assign pas le weight
+        if (!Const.evaluable(tNode1) && !Const.evaluable(tNode2)) {
             this.edge.setCost(MAX_COST);
             return;
         }
@@ -114,10 +114,6 @@ public class QPGEdgeCostModel extends AbstractCostModel {
 
     @Override
     final public boolean estimatable() {
-        int tn1 = this.edge.get(0).getType();
-        int tn2 = this.edge.get(1).getType();
-
-        return ((tn1 == EDGE && (tn2 == GRAPH || tn2 == EDGE))
-                || (tn2 == EDGE && (tn1 == GRAPH || tn1 == EDGE)));
+        return Const.evaluable(this.edge.get(0).getType()) && Const.evaluable(this.edge.get(1).getType());
     }
 }

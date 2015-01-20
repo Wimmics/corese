@@ -8,6 +8,7 @@ import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPHNODE;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.sorter.core.AbstractCostModel;
+import fr.inria.edelweiss.kgram.sorter.core.Const;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.BOUND;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.LIST;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.NA;
@@ -266,7 +267,7 @@ public class QPGNodeCostModel extends AbstractCostModel {
 
     @Override
     public boolean estimatable() {
-        return (this.node.getType() == EDGE) || (this.node.getType() == GRAPH);
+        return Const.evaluable(this.node.getType());
     }
 
 }

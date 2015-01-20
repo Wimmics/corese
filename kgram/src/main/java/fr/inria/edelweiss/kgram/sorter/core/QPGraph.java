@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
+import static fr.inria.edelweiss.kgram.api.core.ExpType.BIND;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EMPTY;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
@@ -42,6 +43,17 @@ public class QPGraph {
         createEdges();
     }
 
+    public QPGraph(List<Exp> exps, List<Exp> bindings) {
+        this.bindings = bindings;
+        this.nodes = new ArrayList<QPGNode>();
+        this.edges = new ArrayList<QPGEdge>();
+
+        //this.bindings = qs.findBindings(exp);
+        
+        createNodes(exps);
+        createEdges();
+    }
+    
     // Encapsulate expression into BPGNode and add them to a list
     private void createNodes(Exp exp) {
         for (Exp ee : exp) {
@@ -49,6 +61,13 @@ public class QPGraph {
         }
     }
 
+      // Encapsulate expression into BPGNode and add them to a list
+    private void createNodes(List<Exp> exps) {
+        for (Exp ee : exps) {
+            nodes.add(new QPGNode(ee, this.bindings));
+        }
+    }
+    
     //Create graph structure by finding variables sharing between nodes
     private void createEdges() {
         // Graph Structure:
@@ -60,28 +79,18 @@ public class QPGraph {
         // ...
         //values ...
         graph = new HashMap<QPGNode, List<QPGEdge>>();
-        QPGNode bpn, bpn2;
-        for (int i = 0; i < nodes.size() - 1; i++) {
-            bpn = nodes.get(i);
-
+        for (QPGNode bpn1 : nodes) {
             //List<QPGEdge> ledges = new ArrayList<QPGEdge>();
-            for (int j = i + 1; j < nodes.size(); j++) {
-                bpn2 = nodes.get(j);
-
+            for (QPGNode bpn2 : nodes) {
+                if(bpn1.equals(bpn2)) continue;
+                
                 //make sure not repeated
-                if (bpn.isShared(bpn2)) {
-                    //check weather the edge already existed
-                    //QPGEdge edge = this.exist(bpn, bpn2);
-                    //if (edge == null) {
-                    QPGEdge edge = new QPGEdge(bpn, bpn2);
+                if (bpn1.isShared(bpn2)) {
+                    QPGEdge edge = new QPGEdge(bpn1, bpn2);
                     edges.add(edge);
-
-                    //}
-                    //ledges.add(edge);
                     createIndex(edge);
                 }
             }
-            //graph.put(bpn, ledges);
         }
     }
 
@@ -106,17 +115,6 @@ public class QPGraph {
             ledges.add(edge);
             graph.put(n2, ledges);
         }
-    }
-
-    //check whether the edge is existing
-    private QPGEdge exist(QPGNode n1, QPGNode n2) {
-        for (QPGEdge bpe : edges) {
-            if ((bpe.get(0).equals(n1) && bpe.get(1).equals(n2))
-                    || (bpe.get(0).equals(n2) && bpe.get(1).equals(n1))) {
-                return bpe;
-            }
-        }
-        return null;
     }
 
     /**
@@ -203,17 +201,16 @@ public class QPGraph {
      * @return
      */
     public List<QPGNode> getAllNodes(int type) {
-        if (type != EDGE && type != VALUES && type != FILTER && type != GRAPH) {
-            return this.nodes;
-        }
-
-        List<QPGNode> list = new ArrayList<QPGNode>();
-        for (QPGNode node : this.nodes) {
-            if (node.getType() == type) {
-                list.add(node);
+        if (Const.plannable(type)) {
+            List<QPGNode> list = new ArrayList<QPGNode>();
+            for (QPGNode node : this.nodes) {
+                if (node.getType() == type) {
+                    list.add(node);
+                }
             }
+            return list;
         }
-        return list;
+        return this.nodes;
     }
 
     /**
@@ -230,6 +227,39 @@ public class QPGraph {
         
         for (QPGEdge e : graph.get(n)) {
             l.add(e.get(n));
+        }
+        return l;
+    }
+    
+    /**
+     * Get nodes linked to the given node
+     *
+     * @param n node
+     * @param directed
+     * @param in
+     * @return list
+     */
+    public List<QPGNode> getLinkedNodes(QPGNode n, boolean directed, boolean in) {
+        if (!directed) {
+            return this.getLinkedNodes(n);
+        }
+
+        List<QPGNode> l = new ArrayList<QPGNode>();
+        if (!graph.containsKey(n)) {
+            return l;
+        }
+
+        for (QPGEdge e : graph.get(n)) {
+            if (in) {
+                if (e.get(1).equals(n)) {
+                    l.add(e.get(0));
+                }
+            } else {
+                if (e.get(0).equals(n)) {
+                    l.add(e.get(1));
+                }
+            }
+
         }
         return l;
     }

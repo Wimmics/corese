@@ -34,12 +34,14 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.jetty.handler.HandlerList;
 import org.mortbay.jetty.handler.ResourceHandler;
+import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 /**
  * Embedded HTTP server for Corese. Using Jetty implementation.
- *
+ * Modified: add the optionsl to enable SSL connection, Fuqi Song, 21 Jan 2015
+ * 
  * @author alban.gaignard@cnrs.fr
  */
 public class EmbeddedJettyServer {
@@ -53,19 +55,29 @@ public class EmbeddedJettyServer {
     // use -lp option to effectively load profile data
     // default is do not load
     private static boolean loadProfileData = false;
+    
+    //options for SSL connection
+    private static boolean enableSsl = false;
+    private static int portSsl = 8443;
+    private static String keystore, password;
 
     public static void main(String args[]) throws Exception {
 
 //        PropertyConfigurator.configure(EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties"));
 //        logger.debug("Started.");
-        Options options     = new Options();
-        Option portOpt      = new Option("p", "port", true, "specify the server port");
-        Option helpOpt      = new Option("h", "help", false, "print this message");
-        Option entailOpt    = new Option("e", "entailments", false, "enable RDFS entailments");
-        Option owlrlOpt     = new Option("o", "owlrl", false, "enable OWL RL entailments");
-        Option dataOpt      = new Option("l", "load", true, "data file or directory to be loaded");
-        Option profileOpt   = new Option("lp", "profile", false, "load profile data");
-        Option versionOpt   = new Option("v", "version", false, "print the version information and exit");
+        Options options = new Options();
+        Option portOpt = new Option("p", "port", true, "specify the server port");
+        Option helpOpt = new Option("h", "help", false, "print this message");
+        Option entailOpt = new Option("e", "entailments", false, "enable RDFS entailments");
+        Option owlrlOpt = new Option("o", "owlrl", false, "enable OWL RL entailments");
+        Option dataOpt = new Option("l", "load", true, "data file or directory to be loaded");
+        Option profileOpt = new Option("lp", "profile", false, "load profile data");
+        Option versionOpt = new Option("v", "version", false, "print the version information and exit");
+        Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
+        Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
+        Option keystoreOpt = new Option("jks", "keystore", true, "java key store name (../keystore/xxx)");
+        Option keypasswordOpt = new Option("pwd", "password", true, "java key store password (key, store, trust store)");
+
         options.addOption(portOpt);
         options.addOption(entailOpt);
         options.addOption(owlrlOpt);
@@ -73,6 +85,10 @@ public class EmbeddedJettyServer {
         options.addOption(profileOpt);
         options.addOption(helpOpt);
         options.addOption(versionOpt);
+        options.addOption(sslOpt);
+        options.addOption(portSslOpt);
+        options.addOption(keystoreOpt);
+        options.addOption(keypasswordOpt);
 
         String header = "Once launched, the server can be managed through a web user interface, available at http://localhost:<PortNumber>\n\n";
         String footer = "\nPlease report any issue to alban.gaignard@cnrs.fr";
@@ -84,27 +100,46 @@ public class EmbeddedJettyServer {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp("kgserver", header, options, footer, true);
                 System.exit(0);
-            } 
+            }
             if (cmd.hasOption("p")) {
                 port = Integer.parseInt(cmd.getOptionValue("p"));
-            } 
+            }
             if (cmd.hasOption("v")) {
                 logger.info("version 1.0.7");
                 System.exit(0);
-            } 
+            }
             if (cmd.hasOption("e")) {
                 entailments = true;
-            } 
+            }
             if (cmd.hasOption("o")) {
                 owlrl = true;
-            } 
+            }
             if (cmd.hasOption("l")) {
                 dataPath = cmd.getOptionValue("l");
                 System.out.println("Server: " + dataPath);
-            } 
+            }
             if (cmd.hasOption("lp")) {
                 loadProfileData = true;
-            } 
+            }
+            //Option for SSL connection
+            if (cmd.hasOption("ssl")) {
+                enableSsl = true;
+                if (cmd.hasOption("pssl")) {
+                    portSsl = Integer.parseInt(cmd.getOptionValue("pssl"));
+                }
+
+                if (cmd.hasOption("jks")) {
+                    keystore = cmd.getOptionValue("jks");
+                } else {
+                    throw new ParseException("Please specify the path of keystore for SSL.");
+                }
+
+                if (cmd.hasOption("pwd")) {
+                    password = cmd.getOptionValue("pwd");
+                } else {
+                    throw new ParseException("Please specify the password of keystore for SSL.");
+                }
+            }
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
             Server server = new Server(port);
 
@@ -136,13 +171,30 @@ public class EmbeddedJettyServer {
             handlers.setHandlers(new Handler[]{staticContextHandler, servletCtx});
             server.setHandler(handlers);
 
+            // === SSL Connector begin ====
+            if (enableSsl) {
+                SslSocketConnector sslConnector = new SslSocketConnector();
+                sslConnector.setPort(portSsl);
+                sslConnector.setServer(server);
+                sslConnector.setServer(server);
+                sslConnector.setKeystore(webappUri.getRawPath() + "/keystore/" + keystore);
+                sslConnector.setKeyPassword(password);
+                sslConnector.setPassword(password);
+                sslConnector.setTruststore(webappUri.getRawPath() + "/keystore/" + keystore);
+                sslConnector.setTrustPassword(password);
+
+                server.addConnector(sslConnector);
+                logger.info("Corese SSL connection https://localhost:" + portSsl);
+            }
+            // === SSL Connector end ====
+
             server.start();
-            
+
             //server initialization
             ClientConfig config = new DefaultClientConfig();
             Client client = Client.create(config);
             //WebResource service = client.resource(new URI("http://localhost:" + port+"/kgram"));
-            WebResource service = client.resource(new URI("http://localhost:" + port+"/"));
+            WebResource service = client.resource(new URI("http://localhost:" + port + "/"));
 
             MultivaluedMap formData = new MultivaluedMapImpl();
             formData.add("entailments", Boolean.toString(entailments));
@@ -152,13 +204,13 @@ public class EmbeddedJettyServer {
 
             if (dataPath != null) {
                 String[] lp = dataPath.split(";");
-                for (String p : lp){
+                for (String p : lp) {
                     formData = new MultivaluedMapImpl();
                     formData.add("remote_path", p);
                     service.path("sparql").path("load").post(formData);
                 }
             }
-            
+
             server.join();
 
         } catch (ParseException exp) {

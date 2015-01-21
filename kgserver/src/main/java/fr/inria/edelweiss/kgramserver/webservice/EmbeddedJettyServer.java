@@ -40,7 +40,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 /**
  * Embedded HTTP server for Corese. Using Jetty implementation.
- * Modified: add the optionsl to enable SSL connection, Fuqi Song, 21 Jan 2015
+ * Modified: add the options to enable SSL connection, Fuqi Song, 21 Jan 2015
  * 
  * @author alban.gaignard@cnrs.fr
  */

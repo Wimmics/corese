@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Dec 22 16:32:22 CET 2014
+Fri Jan 23 10:56:40 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -27,7 +27,7 @@ where {
 template st:query(?q) {
   """
   <h3>SPARQL Query</h3>
-  <form method='post' action='/sparql/tospin'>
+  <form method='post' action='/spin/tospin'>
     <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
     
     <textarea cols='60' rows='15' name='query'>"""str(?q)
@@ -65,7 +65,7 @@ where {
 template st:queryspin(?q) {
   """
   <h3>SPIN Query</h3>
-  <form method='post' action='/sparql/tosparql'>
+  <form method='post' action='/spin/tosparql'>
     <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
     
     <textarea cols='60' rows='15' name='query'>"""str(?q)

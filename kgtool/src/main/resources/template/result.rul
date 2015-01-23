@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jan 15 09:41:55 CET 2015
+Thu Jan 15 16:17:21 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -360,11 +360,12 @@ where {
 <![CDATA[
 template st:transform(?x) {
 
-    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" st:get(st:profile)
+    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" ?profile
     
 }
 where {
-
+# switch to st:ldpc profile: construct where query on URI
+  bind (if (st:get(st:profile) = st:ldp, st:ldpc, st:get(st:profile)) as ?profile)
 }
 ]]>
 </body>

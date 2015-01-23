@@ -1,34 +1,24 @@
 
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgramserver.webservice.Profile.Service;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.CSVFormat;
-import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import fr.inria.edelweiss.kgtool.print.JSOND3Format;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TSVFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
-import fr.inria.edelweiss.kgtool.transform.Transformer;
-import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -42,7 +32,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 /**
- * KGRAM engine exposed as a rest web service. The engine can be remotely
+ * KGRAM SPARQL endpoint exposed as a rest web service. The engine can be remotely
  * initialized, populated with an RDF file, and queried through SPARQL requests.
  *
  * @author Eric TOGUEM, eric.toguem@uy1.uninet.cm
@@ -52,22 +42,15 @@ import org.apache.log4j.Logger;
 @Path("sparql")
 public class SPARQLRestAPI {
     private static final String headerAccept = "Access-Control-Allow-Origin";
-    private static final String DEFAULT_TRANSFORM = Transformer.HTML;    
-    public static final String PROFILE_DEFAULT   = "profile.ttl";
-    private static final String TEMPLATE_SERVICE = "/sparql/template";
-    public static final String TOSPIN_SERVICE    = "/sparql/tospin";
-    public static final String TOSPARQL_SERVICE  = "/sparql/tosparql";
-    public static final String SDK_SERVICE       = "/sparql/sdk";
-    
+    public static final String PROFILE_DEFAULT   = "profile.ttl";        
     private static Logger logger = Logger.getLogger(SPARQLRestAPI.class);
     private static boolean isDebug = false;
     private static boolean isDetail = false;
-    
-    private static GraphStore graph  = GraphStore.create(false);
-    private static QueryProcess exec = QueryProcess.create(graph);
-   
+    static String localProfile;
+    static TripleStore store = new TripleStore(false, false);
+    // set true to prevent update/load
+    static boolean isProtected = true;
     private static Profile mprofile;
-    private static NSManager nsm;
   
     
     
@@ -76,7 +59,11 @@ public class SPARQLRestAPI {
     }
             
     QueryProcess getQueryProcess(){
-        return exec; //QueryProcess.create(graph);
+        return getTripleStore().getQueryProcess(); 
+    }
+    
+    static TripleStore getTripleStore(){
+        return store;
     }
 
     /**
@@ -88,75 +75,44 @@ public class SPARQLRestAPI {
     public Response initRDF(
             @DefaultValue("false") @FormParam("owlrl")       String owlrl,
             @DefaultValue("false") @FormParam("entailments") String entailments, 
-            @DefaultValue("false") @FormParam("load")        String load) {
+            @DefaultValue("false") @FormParam("load")        String load,
+            @FormParam("profile")  String profile) {
         String output;
         boolean ent = entailments.equals("true");
         boolean owl = owlrl.equals("true");
         boolean ld  = load.equals("true");
-        
-        graph = GraphStore.create(ent);
-        exec = QueryProcess.create(graph);
-        
-        // remove comment to prevent SPARQL Update:
-        //exec.setMode(QueryProcess.SERVER_MODE);
-        
-        if (ent) {            
-            logger.info(output = "Endpoint successfully reset *with* RDFS entailments.");
-        } else {
-            logger.info(output = "Endpoint successfully reset *without* RDFS entailments.");
-        }
-        
-        if (owl){
-            RuleEngine re = RuleEngine.create(graph);
-            re.setProfile(RuleEngine.OWL_RL_LITE);
-            graph.addEngine(re);
-        }
-                     
-        logger.info("OWL RL: " + owl);
+        localProfile = profile;
+        store = new TripleStore(ent, owl);
         init();
         if (ld){
             loadProfileData();
         }
-        return Response.status(200).header(headerAccept, "*").entity(output).build();
+        store.init(isProtected);
+        mprofile.setProtect(isProtected);
+        return Response.status(200).header(headerAccept, "*").entity("Endpoint reset").build();
     }
       
     void init(){
-        nsm = NSManager.create();
         mprofile = new Profile();
-        mprofile.init(Profile.DATA, PROFILE_DEFAULT);              
+        mprofile.init(Profile.DATA, PROFILE_DEFAULT); 
+        if (localProfile != null){
+            mprofile.init("", localProfile);
+        }
+    }
+    
+    static Profile getProfile(){
+        return mprofile;
     }
     
     void loadProfileData() {
         for (Service s : mprofile.getServices()) {
             String[] load = s.getLoad();
             if (load != null) {
-                Load ld = Load.create(graph);
-                for (String f : load) {
-                    try {
-                        logger.info("Load: " + f);
-                        ld.loadWE(f, f, Load.TURTLE_FORMAT);
-                    } catch (LoadException ex) {
-                        java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+                getTripleStore().load(load);
             }
         }
     }
     
-    
-//    @POST
-//    @Path("/upload")
-//    @Consumes("multipart/form-data")
-//    public Response uploadFile(@FormDataParam("file") InputStream f) {
-//
-//        // your code here to copy file to destFile
-//        System.out.println("Received file " + f);
-//
-//        String output;
-//        logger.info(output = "File uploaded.");
-//        return Response.status(200).header(headerAccept, "*").entity(output).build();
-//    }
-
     /**
      * This webservice is used to load a dataset to the endpoint. Therefore, if
      * we have many files for our datastore, we could load them by recursivelly
@@ -184,13 +140,12 @@ public class SPARQLRestAPI {
         logger.debug(remotePath);
         
         
-        Load ld = Load.create(graph);
         try {
             // path with extension : use extension
             // path with no extension : load as turtle 
             // use case: rdf: is in Turtle
-            if (exec.getMode() != QueryProcess.SERVER_MODE){
-                ld.loadWE(remotePath, source, Load.TURTLE_FORMAT);
+            if (getTripleStore().getMode() != QueryProcess.SERVER_MODE){
+                getTripleStore().load(remotePath, source);
             }
         } catch (LoadException ex) {
             logger.error(ex);
@@ -212,7 +167,7 @@ public class SPARQLRestAPI {
             if (query == null){
                 throw new Exception("No query");
             }
-            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println("Rest: " + map);
 //            System.out.println("Rest: " + map.size());
             return Response.status(200).header(headerAccept, "*").entity(
@@ -231,7 +186,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println("Rest JSON");
 //            System.out.println(map);
 //            System.out.println(map.size());
@@ -243,211 +198,7 @@ public class SPARQLRestAPI {
         }
     }
     
-    // Template generate HTML
-    
-    @POST
-    @Produces("text/html")
-    @Path("template")
-    public Response queryPOSTHTML(
-            @FormParam("profile")  String profile,  // query + transform
-            @FormParam("uri")  String resource,  // query + transform
-            @FormParam("query") String query, // SPARQL query
-            @FormParam("name")  String name,  // SPARQL query name (in webapp/query)
-            @FormParam("value") String value, // values clause that may complement query           
-            @FormParam("transform")  String transform,  // Transformation URI to post process result
-            @FormParam("default-graph-uri") List<String> defaultGraphUris,
-            @FormParam("named-graph-uri")   List<String> namedGraphUris) {
-        return queryGETHTML(profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
-    }
-    
-    
-    @GET
-    @Produces("text/html")
-    @Path("sdk")
-    public Response sdk(
-            @QueryParam("query") String query, // SPARQL query
-            @QueryParam("name")  String name,  // SPARQL query name (in webapp/query or path or URL)
-            @QueryParam("value") String value) // values clause that may complement query           
-     {
-         Graph g =  new Profile().getGraph("/webapp/data/", "sdk.ttl");
-         QueryProcess exec = QueryProcess.create(g);
-         return template(exec, g, null, null, query, name, value, null, SDK_SERVICE, null, null);
-    }
-    
-    
-     @POST
-    @Produces("text/html")
-    @Path("tospin")
-    public Response toSPINPOST(@FormParam("query") String query){
-         return toSPIN(query);
-     }
-    
-    @GET
-    @Produces("text/html")
-    @Path("tospin")
-    public Response toSPIN(@QueryParam("query") String query) {
-        SPINProcess sp = SPINProcess.create();       
-        Graph g;
-        try {
-            if (query == null){
-                query = "select * where {"
-                        + "?x ?p ?y"
-                        + "}";
-            }
-            g = sp.toSpinGraph(query);
-            
-            Context c = new Context().setTransform(Transformer.TOSPIN).setQuery(query).setService(TOSPIN_SERVICE);            
-            HTMLFormat ft = HTMLFormat.create(g, c);                           
-            
-            return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();    
- 
-        } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
-            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
-        }       
-     }
-    
-    
-    @POST
-    @Produces("text/html")
-    @Path("tosparql")
-    public Response toSPARQLPOST(@FormParam("query") String query) 
-    {
-         return toSPARQL(query);
-     }
-    
-    @GET
-    @Produces("text/html")
-    @Path("tosparql")
-    public Response toSPARQL(@QueryParam("query") String query) {
-        Graph g = Graph.create();
-        try {
-            Load ld = Load.create(g);
-            if (query != null){
-                ld.loadString(query, Load.TURTLE_FORMAT);
-            }
-            
-            Context c = new Context().setTransform(Transformer.TOSPIN).setQuery(query).setService(TOSPARQL_SERVICE);            
-            HTMLFormat ft = HTMLFormat.create(g, c);                           
-            
-            return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();              
-            
-        } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
-            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
-        }       
-     }
-    
-    
-    
-    
-    @GET
-    @Produces("text/html")
-    @Path("resource")
-    public Response ldp(){
-        return Response.status(200).header(headerAccept, "*").entity("resource").build();               
-     }
-    
-    @GET
-    @Produces("text/html")
-    @Path("template")
-    public Response queryGETHTML(
-            @QueryParam("profile")  String profile,  // query + transform
-            @QueryParam("uri")  String resource,  // URI of resource focus
-            @QueryParam("query") String query, // SPARQL query
-            @QueryParam("name")  String name,  // SPARQL query name (in webapp/query or path or URL)
-            @QueryParam("value") String value, // values clause that may complement query           
-            @QueryParam("transform")  String transform,  // Transformation URI to post process result
-            @QueryParam("default-graph-uri") List<String> defaultGraphUris,
-            @QueryParam("named-graph-uri")   List<String> namedGraphUris) {
-        
-        return template(getQueryProcess(), graph, 
-                profile, resource, query, name, value, transform, TEMPLATE_SERVICE,
-                defaultGraphUris, namedGraphUris);       
-    }
-    
-    public Response template(
-            QueryProcess exec, Graph g,
-            String profile,  // query + transform
-            String resource,  // URI of resource focus
-            String query, // SPARQL query
-            String name,  // SPARQL query name (in webapp/query or path or URL)
-            String value, // values clause that may complement query           
-            String transform,  // Transformation URI to post process result
-            String service,
-            List<String> defaultGraphUris,
-            List<String> namedGraphUris) {
-        try {
-            String squery = query;
-            
-            if (profile != null){
-                // prodile declare a construct where query followed by a transformation
-                String uprofile = nsm.toNamespace(profile);
-                // may load a new profile
-                mprofile.define(uprofile);
-                if (name == null) {
-                    // parameter name overload profile name
-                    name = mprofile.getQuery(uprofile);
-                }
-                if (transform == null){
-                    // transform parameter overload profile transform
-                    transform = mprofile.getTransform(uprofile);  
-                }            
-                if (resource != null){
-                    // resource given as a binding value to the query
-                    value = mprofile.getValues(uprofile, resource);                   
-                }
-            }
-                            
-            if (query == null && name != null) {
-                 // name of a query
-                 squery = getQuery(name);
-            }
-            
-            if (value != null && squery != null){
-                // additional values clause
-               squery += value;               
-            }
-            
-            if (exec != null && exec.getMode() == QueryProcess.SERVER_MODE){
-                // check profile, transform and query
-                if (profile != null && ! nsm.toNamespace(profile).startsWith(NSManager.STL)){
-                    return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + profile).build();                        
-                }
-                if (transform != null && ! nsm.toNamespace(transform).startsWith(NSManager.STL)){
-                    return Response.status(500).header(headerAccept, "*").entity("Undefined transform: " + transform).build();                                            
-                }
-            }
- 
-            
-            if (isDebug){
-                System.out.println("query: \n" + squery);
-            }         
-            // servlet context given to query process and transformation
-            Context ctx = createContext(resource, profile, transform, squery, name, service); // /kgram/sparql/template"); 
-            Mappings map = null;
-            
-            if (squery != null && exec != null){
-                Dataset ds  = createDataset(defaultGraphUris, namedGraphUris, ctx);
-                map = exec.query(squery, ds);
-
-                if (isDetail) {
-                    System.out.println(map);
-                }
-                if (isDebug) {
-                    System.out.println("map: " + map.size());
-                }
-            }
-            
-            HTMLFormat ft = HTMLFormat.create(g, map, ctx);                           
-            
-            return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();               
-           } catch (Exception ex) {
-            logger.error("Error while querying the remote KGRAM engine");
-            ex.printStackTrace();
-            return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
-        }
-    }
+   
     
     
     @GET
@@ -463,26 +214,7 @@ public class SPARQLRestAPI {
     }
     
     
-    Context createContext(String uri, String profile, String trans, String query, String name, String service) {
-        Context ctx = new Context();
-        if (profile != null) {
-            ctx.setProfile(nsm.toNamespace(profile));
-        }
-        if (trans != null) {
-            ctx.setTransform(nsm.toNamespace(trans));
-        }  
-        if (uri != null){
-            ctx.setURI(nsm.toNamespace(uri)); 
-        }
-        if (query != null) {
-            ctx.setQuery(query);
-        }
-        if (name != null) {
-            ctx.setName(name);
-        }
-        ctx.setService(service);
-        return ctx;
-    }
+  
           
     String getTemplate(String name) {
         String sep = "";
@@ -508,7 +240,7 @@ public class SPARQLRestAPI {
 
         try {
            
-            Mappings maps = exec.query(query);
+            Mappings maps = getTripleStore().query(query);
             logger.info(maps.size());
 
             Graph g =  (Graph) maps.getGraph();
@@ -546,7 +278,7 @@ public class SPARQLRestAPI {
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
 
-            Mappings m = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings m = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
 
             String mapsD3 = "{ \"mappings\" : "
                     + JSONFormat.create(m).toString()
@@ -571,7 +303,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -584,7 +316,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -600,7 +332,7 @@ public class SPARQLRestAPI {
             if (query == null){
                 throw new Exception("No query");
             }
-            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println("Rest RDF XML Get");
 //            System.out.println(map);
 //            System.out.println(map.size());
@@ -617,7 +349,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            Mappings maps = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings maps = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println("Rest Turtle Get");
 //            System.out.println(maps);
 //            System.out.println(maps.size());
@@ -643,7 +375,7 @@ public class SPARQLRestAPI {
                 query = message;
             }
             //System.out.println("Rest Post RDF XML: "+ query);
-            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println("Rest: " + map);
 //            System.out.println("Rest: " + map.size());
             
@@ -666,7 +398,7 @@ public class SPARQLRestAPI {
                 query = message;
             }
             //System.out.println("Rest Post JSON: "+ query);
-            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println(map);
 //            System.out.println(map.size());
             return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(map).toString()).build();
@@ -687,7 +419,7 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -705,7 +437,7 @@ public class SPARQLRestAPI {
             if (query.equals("")) {
                 query = message;
             }
-            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -724,7 +456,7 @@ public class SPARQLRestAPI {
                 query = message;
             }
            // System.out.println("Rest Post RDF XML");
-            Mappings map = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
 //            System.out.println(map);
 //            System.out.println(map.size());
             return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
@@ -742,7 +474,7 @@ public class SPARQLRestAPI {
             @FormParam("named-graph-uri") List<String> namedGraphUris,
             String message) {
         try {
-            return Response.status(200).header(headerAccept, "*").entity(TripleFormat.create(getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(TripleFormat.create(getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris))).toString()).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
@@ -760,7 +492,7 @@ public class SPARQLRestAPI {
         try {
             logger.info(query);
             if (query != null) {
-                getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+                getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
             } else {
                 logger.warn("Null update query !");
             }
@@ -784,7 +516,7 @@ public class SPARQLRestAPI {
         try {
             logger.info(message);
             if (message != null) {
-                getQueryProcess().query(message, createDataset(defaultGraphUris, namedGraphUris));
+                getTripleStore().query(message, createDataset(defaultGraphUris, namedGraphUris));
             } else {
                 logger.warn("Null update query !");
             }
@@ -802,7 +534,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            Mappings mp = getQueryProcess().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            Mappings mp = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
             return Response.status(mp.size() > 0 ? 200 : 400).header(headerAccept, "*").entity("Query has no response").build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
@@ -850,14 +582,7 @@ public class SPARQLRestAPI {
         out.close();
     }
     
-    String getQuery(String name) throws IOException {
-        if (exec.getMode() == QueryProcess.SERVER_MODE){
-            // only predefined queries
-            return mprofile.getResource(Profile.QUERY + name);
-        }
-        // local or external query 
-        return mprofile.getResource(Profile.QUERY, name);
-    }
+   
     
     
 }

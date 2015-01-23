@@ -1,0 +1,107 @@
+package fr.inria.edelweiss.kgramserver.webservice;
+
+import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.util.logging.Level;
+import org.apache.log4j.Logger;
+
+/**
+ *
+ * @author Olivier Corby, Wimmics INRIA I3S, 2015
+ *
+ */
+public class TripleStore {
+
+    private static Logger logger = Logger.getLogger(TripleStore.class);
+    GraphStore graph = GraphStore.create(false);
+    QueryProcess exec = QueryProcess.create(graph);
+    boolean rdfs = false, owl = false;
+
+    TripleStore(boolean rdfs, boolean owl) {
+        graph = GraphStore.create(rdfs);
+        exec  = QueryProcess.create(graph);
+        this.owl = owl;
+    }
+    
+    
+    TripleStore(GraphStore g){
+        graph = g;
+        exec = QueryProcess.create(g);
+    }
+    
+    TripleStore(GraphStore g, boolean b){
+        graph = g;
+        exec = QueryProcess.create(g, b);
+    }
+    
+    QueryProcess getQueryProcess(){
+        return exec;
+    }
+    
+    Graph getGraph(){
+        return graph;
+    }
+    
+    int getMode(){
+        return exec.getMode();
+    }
+    
+    void setMode(int m){
+        exec.setMode(m);                              
+    }
+    
+    void init(boolean b) {
+       
+        if (b){
+            exec.setMode(QueryProcess.SERVER_MODE);
+        }
+
+        if (rdfs) {
+            logger.info("Endpoint successfully reset with RDFS entailments.");
+        }
+
+        if (owl) {
+            RuleEngine re = RuleEngine.create(graph);
+            re.setProfile(RuleEngine.OWL_RL_LITE);
+            graph.addEngine(re);
+            if (owl) {
+                logger.info("Endpoint successfully reset with OWL RL entailments.");
+            }
+
+        }
+        
+    }
+    
+    
+    void load(String[] load) {
+        Load ld = Load.create(graph);
+        for (String f : load) {
+            try {
+                logger.info("Load: " + f);
+                ld.loadWE(f, f, Load.TURTLE_FORMAT);
+            } catch (LoadException ex) {
+                java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    void load(String path, String src) throws LoadException{
+        Load ld = Load.create(graph);
+        ld.loadWE(path, src, Load.TURTLE_FORMAT);
+    }
+    
+    Mappings query(String query, Dataset ds) throws EngineException{
+        return exec.query(query, ds);
+    }
+
+    Mappings query(String query) throws EngineException{
+        return exec.query(query);
+    }
+}

@@ -1,0 +1,177 @@
+
+package fr.inria.edelweiss.kgramserver.webservice;
+
+import java.util.List;
+
+/**
+ *
+ * @author Olivier Corby, Wimmics INRIA I3S, 2015
+ *
+ */
+public class Param {
+    private String service;
+    private String profile;    
+    private String transform;
+    private String uri;
+    private String name;
+    private String query;
+    private String value;
+    private String lang;
+    private List<String> from;
+    private List<String>  named;
+    
+    Param(String s, String p, String t, String u, String n, String q){
+        service = s;
+        profile = p;
+        transform = t;
+        uri = u;
+        name = n;
+        query = q;
+    }
+
+    /**
+     * @return the service
+     */
+    public String getService() {
+        return service;
+    }
+
+    /**
+     * @param service the service to set
+     */
+    public void setService(String service) {
+        this.service = service;
+    }
+
+    /**
+     * @return the profile
+     */
+    public String getProfile() {
+        return profile;
+    }
+
+    /**
+     * @param profile the profile to set
+     */
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
+
+    /**
+     * @return the transform
+     */
+    public String getTransform() {
+        return transform;
+    }
+
+    /**
+     * @param transform the transform to set
+     */
+    public void setTransform(String transform) {
+        this.transform = transform;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * @return the lang
+     */
+    public String getLang() {
+        return lang;
+    }
+
+    /**
+     * @param lang the lang to set
+     */
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
+
+    /**
+     * @return the from
+     */
+    public List<String> getFrom() {
+        return from;
+    }
+
+    /**
+     * @param from the from to set
+     */
+    public void setFrom(List<String> from) {
+        this.from = from;
+    }
+
+    /**
+     * @return the named
+     */
+    public List<String> getNamed() {
+        return named;
+    }
+
+    /**
+     * @param named the named to set
+     */
+    public void setNamed(List<String> named) {
+        this.named = named;
+    }
+    
+    public void setDataset(List<String> from, List<String> named){
+        setFrom(from);
+        setNamed(named);
+    }
+
+}

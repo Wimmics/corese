@@ -1,0 +1,275 @@
+package fr.inria.edelweiss.kgramserver.webservice;
+
+import fr.inria.acacia.corese.triple.parser.NSManager;
+import java.util.ArrayList;
+import java.util.List;
+
+
+/**
+ * Specification of a Profile (eg a Transformation)
+ * or a Server with specific content to be loaded
+ * 
+ * @author Olivier Corby, Wimmics INRIA I3S, 2015
+ *
+ */
+public class Service {
+    static final String PDATA   = NSManager.STL + "data";
+    static final String PSCHEMA = NSManager.STL + "schema";
+    static final String PCONTEXT= NSManager.STL + "context";  
+    
+    private String name;
+    private String query;
+    private String transform;
+    private String variable;
+    private String server;
+    private String lang;
+    
+    private String[] load;
+    private List<Doc> data;
+    private List<Doc> schema;
+    private List<Doc> context;
+    
+
+    /**
+     * @return the data
+     */
+    public List<Doc> getData() {
+        if (data == null) {
+            data = new ArrayList();
+        }
+        return data;
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(List<Doc> data) {
+        this.data = data;
+    }
+
+    /**
+     * @return the schema
+     */
+    public List<Doc> getSchema() {
+        if (schema == null) {
+            schema = new ArrayList();
+        }
+        return schema;
+    }
+
+    /**
+     * @param schema the schema to set
+     */
+    public void setSchema(List<Doc> schema) {
+        this.schema = schema;
+    }
+
+    /**
+     * @return the queries
+     */
+    public List<Doc> getContext() {
+        if (context == null) {
+            context = new ArrayList();
+        }
+        return context;
+    }
+
+    /**
+     * @param queries the queries to set
+     */
+    public void setContext(List<Doc> queries) {
+        this.context = queries;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    boolean isRDFSEntailment() {
+        return getSchema().size() > 0;
+    }
+
+    /**
+     * @return the server
+     */
+    public String getServer() {
+        return server;
+    }
+
+    /**
+     * @param server the server to set
+     */
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    /**
+     * @return the lang
+     */
+    public String getLang() {
+        return lang;
+    }
+
+    /**
+     * @param lang the lang to set
+     */
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
+
+    class Doc {
+
+        private String uri;
+        private String name;
+
+        Doc(String u, String n) {
+            uri = u;
+            name = n;
+        }
+
+        /**
+         * @return the uri
+         */
+        public String getUri() {
+            return uri;
+        }
+
+        /**
+         * @param uri the uri to set
+         */
+        public void setUri(String uri) {
+            this.uri = uri;
+        }
+
+        /**
+         * @return the name
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * @param name the name to set
+         */
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    Service(String name) {
+        this.name = name;
+    }
+
+    Service(String t, String q, String v) {
+        query = q;
+        transform = t;
+        variable = v;
+    }
+
+    Service(String[] l) {
+        load = l;
+    }
+
+    public String toString() {
+        String s = "";
+        s += "transform: " + transform + "\n";
+        s += "variable: " + variable + "\n";
+        s += "query: " + query + "\n";
+        s += "data: ";
+        for (Doc d : getData()) {
+            s += d.getUri() + " ";
+        }
+        s += "\n";
+        s += "schema: ";
+        for (Doc d : getSchema()) {
+            s += d.getUri() + " ";
+        }
+        s += "\n";
+        s += "queries: ";
+        for (Doc d : getContext()) {
+            s += d.getUri() + " ";
+        }
+        s += "\n";
+        return s;
+    }
+
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    /**
+     * @return the transform
+     */
+    public String getTransform() {
+        return transform;
+    }
+
+    /**
+     * @param transform the transform to set
+     */
+    public void setTransform(String transform) {
+        this.transform = transform;
+    }
+
+    /**
+     * @return the variable
+     */
+    public String getVariable() {
+        return variable;
+    }
+
+    /**
+     * @param variable the variable to set
+     */
+    public void setVariable(String variable) {
+        this.variable = variable;
+    }
+
+    /**
+     * @return the load
+     */
+    public String[] getLoad() {
+        return load;
+    }
+
+    /**
+     * @param load the load to set
+     */
+    public void setLoad(String[] load) {
+        this.load = load;
+    }
+
+    // prop = st:data st:schema st:queries
+    // uri of doc to load
+    // name of graph 
+    void add(String prop, String uri, String name) {
+        Doc d = new Doc(uri, name);
+        if (prop.equals(PDATA)) {
+            getData().add(d);
+        } else if (prop.equals(PSCHEMA)) {
+            getSchema().add(d);
+        } else if (prop.equals(PCONTEXT)) {
+            getContext().add(d);
+        }
+    }
+}

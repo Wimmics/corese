@@ -51,6 +51,8 @@ public class EmbeddedJettyServer {
     private static boolean entailments = false;
     private static boolean owlrl = false;
     private static String dataPath = null;
+    private static String localProfile = null;
+    
     // profile.ttl may contain data to be loaded
     // use -lp option to effectively load profile data
     // default is do not load
@@ -65,26 +67,30 @@ public class EmbeddedJettyServer {
 
 //        PropertyConfigurator.configure(EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties"));
 //        logger.debug("Started.");
-        Options options = new Options();
-        Option portOpt = new Option("p", "port", true, "specify the server port");
-        Option helpOpt = new Option("h", "help", false, "print this message");
-        Option entailOpt = new Option("e", "entailments", false, "enable RDFS entailments");
-        Option owlrlOpt = new Option("o", "owlrl", false, "enable OWL RL entailments");
-        Option dataOpt = new Option("l", "load", true, "data file or directory to be loaded");
-        Option profileOpt = new Option("lp", "profile", false, "load profile data");
-        Option versionOpt = new Option("v", "version", false, "print the version information and exit");
-        Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
-        Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
-        Option keystoreOpt = new Option("jks", "keystore", true, "java key store name (../keystore/xxx)");
+        Options options     = new Options();
+        Option portOpt      = new Option("p", "port", true, "specify the server port");
+        Option helpOpt      = new Option("h", "help", false, "print this message");
+        Option entailOpt    = new Option("e", "entailments", false, "enable RDFS entailments");
+        Option owlrlOpt     = new Option("o", "owlrl", false, "enable OWL RL entailments");
+        Option dataOpt      = new Option("l", "load", true, "data file or directory to be loaded");
+        Option profileOpt   = new Option("lp", "profile", false, "load profile data");
+        Option locProfileOpt= new Option("pp", "profile", true, "local profile");
+        Option versionOpt   = new Option("v", "version", false, "print the version information and exit");
+        
+        Option sslOpt       = new Option("ssl", "ssl", false, "enable ssl connection ?");
+        Option portSslOpt   = new Option("pssl", "pssl", true, "port of ssl connection");
+        Option keystoreOpt  = new Option("jks", "keystore", true, "java key store name (../keystore/xxx)");
         Option keypasswordOpt = new Option("pwd", "password", true, "java key store password (key, store, trust store)");
-
+       
         options.addOption(portOpt);
         options.addOption(entailOpt);
         options.addOption(owlrlOpt);
         options.addOption(dataOpt);
         options.addOption(profileOpt);
+        options.addOption(locProfileOpt);
         options.addOption(helpOpt);
         options.addOption(versionOpt);
+        
         options.addOption(sslOpt);
         options.addOption(portSslOpt);
         options.addOption(keystoreOpt);
@@ -140,6 +146,10 @@ public class EmbeddedJettyServer {
                     throw new ParseException("Please specify the password of keystore for SSL.");
                 }
             }
+            if (cmd.hasOption("pp")) {
+                localProfile = cmd.getOptionValue("pp");
+                System.out.println("Profile: " + localProfile);
+            }  
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
             Server server = new Server(port);
 
@@ -200,6 +210,10 @@ public class EmbeddedJettyServer {
             formData.add("entailments", Boolean.toString(entailments));
             formData.add("owlrl", Boolean.toString(owlrl));
             formData.add("load", Boolean.toString(loadProfileData));
+            if (localProfile != null){
+                formData.add("profile", localProfile);
+            }
+            
             service.path("sparql").path("reset").post(formData);
 
             if (dataPath != null) {

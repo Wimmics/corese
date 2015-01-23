@@ -14,7 +14,7 @@ template {
 <body>
 <h3>SPARQL Sudoku Solver</h3>
 
-<form id='example' method='get' action='/sparql/sdk'>
+<form id='example' method='get' action='/sdk'>
 
    <button type="submit" name="submit" onclick="submitform();">Submit</button>
 

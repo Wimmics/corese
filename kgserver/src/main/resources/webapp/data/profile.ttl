@@ -83,12 +83,12 @@ st:load <cdn/aa_siecle.ttl>, <cdn/fr.ttl>, <cdn/eds.ttl>, <cdn/emp.ttl>,
 
 st:tutorial1 a st:Server ;
   st:data     [ st:uri <tutorial/human.rdf>  ; st:name st:data ] ;
-  st:context  [ st:uri <tutorial/query.ttl>  ; st:name st:context ] .
+  st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
 
 st:tutorial2 a st:Server ;
   st:data     [ st:uri <tutorial/human.rdf>  ; st:name st:data ] ;
   st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;
-  st:context  [ st:uri <tutorial/query.ttl>  ; st:name st:context ] .
+  st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
 
 
 st:tutordf a st:Profile ;

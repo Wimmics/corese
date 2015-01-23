@@ -15,24 +15,26 @@ import java.util.HashMap;
  *
  */
 public class Context {
-    public static final String NL           = System.getProperty("line.separator");
-    public static final String STL          = NSManager.STL;
-    public static final String STL_QUERY    = STL + "query";
-    public static final String STL_NAME     = STL + "name"; // query path name
-    public static final String STL_SERVICE  = STL + "service";
-    public static final String STL_PROFILE  = STL + "profile";
-    public static final String STL_TRANSFORM= STL + "transform";
-    public static final String STL_URI      = STL + "uri";
-    
+
+    public static final String NL = System.getProperty("line.separator");
+    public static final String STL = NSManager.STL;
+    public static final String STL_QUERY = STL + "query";
+    public static final String STL_NAME = STL + "name"; // query path name
+    public static final String STL_SERVICE = STL + "service";
+    public static final String STL_PROFILE = STL + "profile";
+    public static final String STL_TRANSFORM = STL + "transform";
+    public static final String STL_URI = STL + "uri";
+    public static final String STL_CONTEXT = STL + "context";
+    public static final String STL_LANG = STL + "lang";
     HashMap<String, IDatatype> table;
 
     public Context() {
         table = new HashMap();
     }
-    
-    public String toString(){
+
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (String key : table.keySet()){
+        for (String key : table.keySet()) {
             sb.append(key);
             sb.append(" : ");
             sb.append(table.get(key));
@@ -55,38 +57,80 @@ public class Context {
         table.put(name, DatatypeMap.newResource(str));
         return this;
     }
-    
+
     public Context setTransform(String str) {
         return setURI(STL_TRANSFORM, str);
     }
-    
+
+    public String getTransform() {
+        return stringValue(STL_TRANSFORM);
+    }
+
     public Context setProfile(String str) {
         return setURI(STL_PROFILE, str);
     }
-     
+
+    public String getProfile() {
+        return stringValue(STL_PROFILE);
+    }
+
     public Context setURI(String str) {
         return setURI(STL_URI, str);
     }
-     
+
+    public String getURI() {
+        return stringValue(STL_URI);
+    }
+
     public Context setQuery(String str) {
         return set(STL_QUERY, str);
     }
-    
-      public Context setName(String str) {
+
+    // add values clause to query
+    public Context addValue(String value) {
+        String squery = getQuery();
+        if (getURI() == null && squery != null) {
+            setQuery(squery + value);
+        }
+        return this;
+    }
+
+    public String getQuery() {
+        return stringValue(STL_QUERY);
+    }
+
+    public Context setName(String str) {
         return set(STL_NAME, str);
     }
-      
+
+    public String getName() {
+        return stringValue(STL_NAME);
+    }
+
     public Context setService(String str) {
         return set(STL_SERVICE, str);
     }
 
+    public String getService() {
+        return stringValue(STL_SERVICE);
+    }
+    
+    public Context setLang(String str) {
+        return set(STL_LANG, str);
+    }
+
+    public String getLang() {
+        return stringValue(STL_LANG);
+    }
+
+
     public IDatatype get(String name) {
         return table.get(name);
     }
-    
+
     public String stringValue(String name) {
         IDatatype dt = table.get(name);
-        if (dt == null){
+        if (dt == null) {
             return null;
         }
         return dt.getLabel();

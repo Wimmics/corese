@@ -448,12 +448,16 @@ public class Load
         }
     }
      
-     public void loadResource(String name, int format) throws  LoadException {
+    public void loadResource(String name, int format) throws  LoadException {
+        loadResource(name, Entailment.DEFAULT, format);
+    }
+     
+     public void loadResource(String name, String src, int format) throws  LoadException {
         InputStream stream = Load.class.getResourceAsStream(name);
         if (stream == null) {
             throw new LoadException(new IOException(name));
         }
-        load(stream, format);
+        load(stream, src, format);
     }
     
     public void load(InputStream stream, int format) throws LoadException {

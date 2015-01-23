@@ -61,6 +61,7 @@ public class Transformer {
     public static final String TRIG         = STL + "trig";
     public static final String TABLE        = STL + "table";
     public static final String HTML         = STL + "html";
+    public static final String SPARQL       = STL + "sparql";
     public static final String RDFRESULT    = STL + "result";
     public static final String NAVLAB       = STL + "navlab";
     public static final String RDFTYPECHECK = STL + "rdftypecheck";
@@ -1234,10 +1235,10 @@ public class Transformer {
      * 
      */
     public void init(ASTQuery ast){
-        Context c = ast.getContext();
-        if (c != null){
-            setContext(c);
-        }
+//        Context c = ast.getContext();
+//        if (c != null){
+//            setContext(c);
+//        }
         setNSM(ast.getNSM());
     }
        

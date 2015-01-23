@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgtool.print;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -20,9 +21,9 @@ import java.util.logging.Logger;
  *
  */
 public class HTMLFormat {
-    static final String defaultTransform   = Transformer.HTML;
-    static final String constructTransform = Transformer.HTML;
-    static final String selectTransform    = Transformer.RDFRESULT;
+    static final String defaultTransform   = Transformer.SPARQL;
+    static final String constructTransform = Transformer.SPARQL;
+    static final String selectTransform    = Transformer.SPARQL;
     private String transformation;
     
     Mappings map;
@@ -68,7 +69,7 @@ public class HTMLFormat {
         else if (map.getQuery().isTemplate()){
             // the query was a template
             if (map.getTemplateResult() != null){
-                return map.getTemplateStringResult();
+               return map.getTemplateStringResult();
             }
             else {
                 return "";
@@ -104,6 +105,12 @@ public class HTMLFormat {
     String process(Graph g, String trans){  
         Transformer t = Transformer.create(g, trans);
         context.set(Transformer.STL_TRANSFORM, trans);
+        // triple store graph has a st:context graph
+        // add it to the transformer context
+        Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
+        if (cg != null){
+            context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
+        }
         t.setContext(context);
         return t.toString();
     }

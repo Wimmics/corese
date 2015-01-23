@@ -69,8 +69,8 @@ st:transform st:navlab .
 
 ###################################
 
-#@base <http://corese.inria.fr/data/>
-@base <http://localhost:8080/data/>
+@base <http://corese.inria.fr/data/>
+#@base <http://localhost:8080/data/>
 
 
 st:loadHistory a st:Profile ;
@@ -79,7 +79,7 @@ st:load <cdn/aa_siecle.ttl>, <cdn/fr.ttl>, <cdn/eds.ttl>, <cdn/emp.ttl>,
 <cdn/an1000.ttl>, <cdn/an1100.ttl>, <cdn/an1200.ttl>, <cdn/an1300.ttl>, <cdn/an1400.ttl>, 
 <cdn/an1500.ttl>, <cdn/an1600.ttl>, <cdn/an1700.ttl>, <cdn/an1800.ttl>, <cdn/an1900.ttl> .
 
-@base <file:///user/corby/home/NetBeansProjects/kgram/trunk/kgserver/src/main/resources/webapp/data/>
+#@base <file:///user/corby/home/NetBeansProjects/kgram/trunk/kgserver/src/main/resources/webapp/data/>
 
 st:tutorial1 a st:Server ;
   st:data     [ st:uri <tutorial/human.rdf>  ; st:name st:data ] ;

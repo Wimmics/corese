@@ -1,8 +1,6 @@
 package fr.inria.acacia.corese.api;
 
-import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 
 
 import fr.inria.acacia.corese.exceptions.EngineException;
@@ -125,9 +123,9 @@ public interface IEngine {
 	 * Apply rule base on graph base<br />
 	 * It should be called only when rules have been previously loaded 
 	 */
-	public void runRuleEngine();
+	public boolean runRuleEngine();
 	
-	public void runRuleEngine(boolean rdf, boolean owl);
+	public boolean runRuleEngine(boolean rdf, boolean owl);
 	
 	public void runQueryEngine();
 

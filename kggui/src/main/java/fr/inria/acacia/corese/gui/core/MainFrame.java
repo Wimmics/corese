@@ -72,7 +72,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-01-01";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-01-15";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -971,8 +971,10 @@ public class MainFrame extends JFrame implements ActionListener {
                             appendMsg("Loading file from path : " + f.getAbsolutePath() + "\n");
                             appendMsg(myCapturer.getContent() + "\ndone.\n\n");
                             ongletListener.getModel().addElement(l_path);
-                            myCorese.runRuleEngine();
-                            appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
+                            boolean b = myCorese.runRuleEngine();
+                            if (b){
+                                appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
+                            }
                         } catch (EngineException e1) {
                             e1.printStackTrace();
                         }
@@ -1093,10 +1095,12 @@ public class MainFrame extends JFrame implements ActionListener {
             setRDFSEntailment(false);
         }
         Date d1 = new Date();
-        myCorese.runRuleEngine(opt, trace);
+        boolean b = myCorese.runRuleEngine(opt, trace);
         Date d2 = new Date();
-        appendMsg("\nrules applied... \n" + myCapturer.getContent() + "\ndone.\n");
-        appendMsg("time: " + (d2.getTime() - d1.getTime()) / (1000.0));
+        if (b){
+            appendMsg("\nrules applied... \n" + myCapturer.getContent() + "\ndone.\n");
+            appendMsg("time: " + (d2.getTime() - d1.getTime()) / (1000.0));
+        }
     }
 
     

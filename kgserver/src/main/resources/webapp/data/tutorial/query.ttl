@@ -3,7 +3,8 @@
 #
 # Olivier Corby - Wimmics Inria I3S - 2015
 #
-@base <http://localhost:8080/data/>
+#@base <http://localhost:8080/data/>
+@base <http://corese.inria.fr/data/>
 st:tutorial2 a st:Server ;
   st:data     [ st:uri <tutorial/human.rdf>  ; st:name st:data ] ;
   st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;

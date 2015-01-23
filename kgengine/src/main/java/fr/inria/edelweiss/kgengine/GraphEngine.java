@@ -33,6 +33,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.LoadPlugin;
 import java.util.Date;
+import org.apache.log4j.Logger;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram
@@ -41,6 +42,7 @@ import java.util.Date;
  * 
  */
 public class GraphEngine implements IEngine {
+    private static Logger logger = Logger.getLogger(GraphEngine.class);
 	static final String BRUL = "brul";
 	
 	private Graph graph;
@@ -133,17 +135,22 @@ public class GraphEngine implements IEngine {
 		load(path);
 	}
 	
-	public void runRuleEngine() {
-            runRuleEngine(false, false);
+	public boolean runRuleEngine() {
+            return runRuleEngine(false, false);
         }
         
-	public void runRuleEngine(boolean opt, boolean trace) {
+	public boolean runRuleEngine(boolean opt, boolean trace) {
+            if (rengine == null){
+                logger.error("No rulebase available yet");
+                return false;
+            }
 		rengine.setDebug(isDebug);
 		if (opt){
                     rengine.setSpeedUp(opt);
                     rengine.setTrace(trace);
                 }
 		graph.process(rengine);
+                return true;
 	}
         
         // TODO: clean timestamp, clean graph index

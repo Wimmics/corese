@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgtool.print;
 
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
@@ -36,16 +37,27 @@ public class RDFResultFormat implements Graphable {
         sb.nl();
         sb.appendPNL("[] a rs:ResultSet");       
         Query q = map.getQuery();
-        
-        for (Node n : q.getSelect()){
+        ASTQuery ast = (ASTQuery) q.getAST();
+        if (ast != null && ast.isAsk()){
+            sb.append("rs:boolean ", map.size() > 0);
+            sb.appendNL(" .");
+        }
+        else {
+            body(sb);
+        }
+        return sb;
+    }
+    
+    void body(Serializer sb) {
+        Query q = map.getQuery();
+        for (Node n : q.getSelect()) {
             sb.append("rs:resultVariable '", getName(n));
             sb.appendPNL("'");
         }
         int i = 0;
-        for (Mapping m : map){
+        for (Mapping m : map) {
             process(m, sb, i++);
         }
-        return sb;
     }
     
     void process(Mapping m, Serializer sb, int i){

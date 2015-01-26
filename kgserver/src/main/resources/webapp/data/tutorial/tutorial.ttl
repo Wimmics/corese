@@ -8,25 +8,23 @@
 #@base <http://localhost:8080/data/>
 st:tutorial2 a st:Server ;
   st:data     [ st:uri <tutorial/human.rdf>  ; st:name st:data ] ;
-  st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;
+#  st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
 
 
 [] a st:Query ;
-st:name st:all ;
+st:name st:begin ;
 rdfs:label "Triple Pattern" ;
-rdfs:comment "Ecrire une requête qui retourne tout le graphe"@fr ;
+rdfs:comment "Ecrire une requête qui retourne tous les triplets du graphe."@fr ;
 rdfs:comment "Return the whole graph"@en ;
 
 st:query 
-"""
-select * where { 
-   
+"""select * where { 
+
 }""" ;
 
 st:solution 
-"""
-select * where { 
+"""select * where { 
    ?x ?p ?y
 }""" 
 .
@@ -35,46 +33,113 @@ select * where {
 [] a st:Query ;
 st:name st:type ;
 rdfs:label "Type" ;
-rdfs:comment "Retourner les instances du type personne."@fr ;
+rdfs:comment "Retourner les instances du type h:Person."@fr ;
 rdfs:comment "Return instances of type person."@en ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
-  ?x  h:Person 
+  
 }""" ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x a h:Person 
 }""" 
 .
 
+[] a st:Query ;
+st:name st:bgp ;
+rdfs:label "BGP" ;
+rdfs:comment "Retourne les instances de personne ayant un nom (h:name)."@fr ;
+rdfs:comment "Return instances of person having a name."@en ;
+st:reference <http://www.w3.org/TR/sparql11-query/#BasicGraphPatterns> ;
+
+st:query 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x a h:Person 
+  
+}""" ;
+
+st:solution 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x a h:Person ;
+     h:name ?n
+}""" 
+.
+
+
 
 [] a st:Query ;
 st:name st:bnode ;
 rdfs:label "Blank Node" ;
-rdfs:comment "Les blank nodes sont des variables anonymes qui ne sont pas retournées dans le résultat."@fr ;
+rdfs:comment "Trouver les personnes qui ont une valeur pour h:hasFriend en utilisant un blank node. "@fr ;
 rdfs:comment "Blank nodes are anonymous variables that are not returned in the result."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#QSynBlankNodes> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
-  ?x a h:Person ;
-  h:hasFriend  
+  ?x a h:Person 
+  
 }""" ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x a h:Person ;
   h:hasFriend []
+}""" 
+
+.
+
+
+[] a st:Query ;
+st:name st:pvariable ;
+rdfs:label "Property Variable" ;
+rdfs:comment "Trouver les valeurs des propriétés des instances de personne. "@fr ;
+rdfs:comment "Find person property values."@en ;
+
+st:query 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x a h:Person 
+  
+}""" ;
+
+st:solution 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x a h:Person ;
+    ?p ?v
+}""" 
+
+.
+
+
+[] a st:Query ;
+st:name st:pvariable2 ;
+rdfs:label "Property Variable" ;
+rdfs:comment "Trouver des ressources différentes qui ont  même  valeur pour une même propriété. "@fr ;
+rdfs:comment "Find person property values."@en ;
+
+st:query 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+   
+  
+}""" ;
+
+st:solution 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x ?p ?v
+  ?y ?p ?v
+  filter (strstarts(?p, h:))
+  filter(?x != ?y)
 }""" 
 
 .
@@ -85,7 +150,7 @@ st:name st:list ;
 rdfs:label "List" ;
 rdfs:comment """Enumérer les trois éléments d'une liste."""@fr ;
 rdfs:comment """Enumerate list elements."""@en ;
-#st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#collections> ;
 
 st:query 
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
@@ -102,38 +167,25 @@ select * where {
 """ 
 .
 
-[] a st:Query ;
-st:name st:bgp ;
-rdfs:label "BGP" ;
-rdfs:comment "Retourne les instances de personne ayant un nom."@fr ;
-rdfs:comment "Return instances of person having a name."@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#BasicGraphPatterns> ;
-st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select * where { 
-  ?x a h:Person ;
-    h:name ?n
-}""" 
-.
+
+
+
 
 [] a st:Query ;
 st:name st:count ;
 rdfs:label "Count" ;
-rdfs:comment """Compter le nombre de solution avec un opérateur d'aggrégation."""@fr ;
+rdfs:comment """Compter le nombre de solutions avec un opérateur d'aggrégation."""@fr ;
 rdfs:comment """Count the number of results using an aggregate operator."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#aggregates> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select (    as ?c) where { 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select      where { 
   ?x ?p ?y 
 }""" ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select (count(*) as ?c) where { 
   ?x ?p ?y 
 }""" 
@@ -145,11 +197,10 @@ st:name st:group ;
 rdfs:label "Group By" ;
 rdfs:comment """Compter le nombre de solutions. Retourner un  résultat pour chaque valeur de ?x."""@fr ;
 rdfs:comment """Count the number of solutions. Return one result for each value of ?x."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#GroupPatterns> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#groupby> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select ?x (count(*) as ?c) where { 
    ?x h:hasChild ?y 
 } 
@@ -157,8 +208,7 @@ select ?x (count(*) as ?c) where {
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select ?x (count(*) as ?c) where { 
    ?x h:hasChild ?y 
 } 
@@ -170,14 +220,13 @@ group by ?x
 [] a st:Query ;
 st:name st:gconcat ;
 rdfs:label "Group concat" ;
-rdfs:comment """Concaténer la liste des amis pour chaque valeur de ?x."""@fr ;
+rdfs:comment """Concaténer la liste des noms (?n) pour chaque valeur de ?x."""@fr ;
 rdfs:comment """Concatenate the list of friends."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#GroupPatterns> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#aggregates> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select ?x (  as ?l) where { 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select ?x      where { 
    ?x h:hasChild ?y 
    ?y h:name ?n
 } 
@@ -185,8 +234,7 @@ group by ?x
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select ?x (group_concat(?n) as ?l) where { 
    ?x h:hasChild ?y 
    ?y h:name ?n
@@ -202,22 +250,20 @@ st:name st:having ;
 rdfs:label "Having" ;
 rdfs:comment """Compter le nombre de solutions. Retourne un  résultat pour chaque valeur de ?x dont le compteur est > 1."""@fr ;
 rdfs:comment """Count the number of solutions, return  results where value of counter > 1."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#GroupPatterns> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#having> ;
 
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select ?x (count(*) as ?c) where { 
    ?x h:hasChild ?y 
 } 
 group by ?x
-having (  )
+
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select ?x (count(*) as ?c) where { 
    ?x h:hasChild ?y 
 } 
@@ -230,14 +276,13 @@ having (count(*) > 1)
 
 [] a st:Query ;
 st:name st:order ;
-rdfs:label "Order" ;
+rdfs:label "Order By" ;
 rdfs:comment "Retourner les ressources instance de type personne, triées par ordre alphabétique."@fr ;
 rdfs:comment "Return instances of person in alphabetical order."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#modOrderBy> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x a h:Person ;
   h:name ?n
@@ -246,8 +291,7 @@ select * where {
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x a h:Person ;
   h:name ?n
@@ -266,51 +310,80 @@ rdfs:comment "Return distinct results."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#modDuplicates> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select distinct ?x ?y where { 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select       ?x ?y where { 
   ?x ?p ?v .
   ?y ?p ?v
-  values ?p {  h:shoesize h:shirtsize }
+  filter (?p = h:shoesize || ?p = h:shirtsize)
+  filter (?x != ?y)
 }
-
-""" ;
+order by ?x ?y""" ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select distinct ?x ?y where { 
   ?x ?p ?v .
   ?y ?p ?v
-  values ?p {  h:shoesize h:shirtsize }
+  filter (?p = h:shoesize || ?p = h:shirtsize)
+  filter (?x != ?y)
 }
 order by ?x ?y""" 
 .
 
 
 
+
+[] a st:Query ;
+st:name st:distinct2 ;
+rdfs:label "Distinct" ;
+rdfs:comment "Eliminer les doublons en remplaçant l'opérateur != par <."@fr ;
+rdfs:comment "Return distinct results."@en ;
+st:reference <http://www.w3.org/TR/sparql11-query/#modDuplicates> ;
+
+st:query 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select distinct ?x ?y where { 
+  ?x ?p ?v .
+  ?y ?p ?v
+  filter (?p = h:shoesize || ?p = h:shirtsize)
+  filter (?x != ?y)
+}
+order by ?x ?y""" ;
+
+st:solution 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select distinct ?x ?y where { 
+  ?x ?p ?v .
+  ?y ?p ?v
+  filter (?p = h:shoesize || ?p = h:shirtsize)
+  filter (?x < ?y)
+}
+order by ?x ?y""" 
+.
+
+
+
+
 [] a st:Query ;
 st:name st:filter ;
 rdfs:label "Filter" ;
-rdfs:comment """Retourner les ressources  ayant un nom  qui contient la lettre 'l'."""@fr ;
+rdfs:comment """A l'aide d'un filtre, retourner les ressources  avec un nom  qui contient la lettre 'l'."""@fr ;
 rdfs:comment """Return resources with name containing letter 'l'."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#expressions> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#func-contains> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x h:name ?n
-  filter(  )
+  
 }
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x h:name ?n
-  filter(strcontains(?n, "l"))
+  filter(contains(?n, "l"))
 }
 """ 
 .
@@ -321,20 +394,18 @@ st:name st:lang ;
 rdfs:label "Language" ;
 rdfs:comment """Retourner les ressources  ayant un nom  taggé en français."""@fr ;
 rdfs:comment """Return resources with name tagged in french."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#expressions> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#func-lang> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x h:name ?n
-  filter(  )
+
 }
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x h:name ?n
   filter(lang(?n) = "fr")
@@ -342,17 +413,41 @@ select * where {
 """ 
 .
 
+
+[] a st:Query ;
+st:name st:lang2 ;
+rdfs:label "Language" ;
+rdfs:comment """Retourner la ressource  dont le  nom  est le littéral 'Sophie' taggé en français."""@fr ;
+rdfs:comment """Return resources with name Sophie tagged in french."""@en ;
+st:reference <http://www.w3.org/TR/sparql11-query/#matchLangTags> ;
+
+st:query 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x h:name "Sophie"
+}
+""" ;
+
+st:solution 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x h:name "Sophie"@fr	
+}
+""" 
+.
+
+
+
 [] a st:Query ;
 st:name st:datatype ;
 rdfs:label "Datatype" ;
 rdfs:comment """Retourner les datatypes des littéraux."""@fr ;
 rdfs:comment """Return literals with a datatype value."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#expressions> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#func-datatype> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select * (   as ?d) where { 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select *    where { 
   ?x ?p ?v
   filter (strstarts(?p, h:))
   filter (isLiteral(?v))
@@ -360,8 +455,7 @@ select * (   as ?d) where {
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * (datatype(?v) as ?d) where { 
   ?x ?p ?v
   filter (strstarts(?p, h:))
@@ -374,19 +468,18 @@ select * (datatype(?v) as ?d) where {
 [] a st:Query ;
 st:name st:date ;
 rdfs:label "Date" ;
-rdfs:comment """Décomposer la date."""@fr ;
+rdfs:comment """Décomposer la date en année, mois, jour, heure, minute et seconde."""@fr ;
 rdfs:comment """Return the date."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#expressions> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#func-date-time> ;
 
 st:query 
-"""
-select (now() as ?n)
-  (year(?n) as ?y)
-  (	as ?m)
-  (	as ?d)
-  (	as ?hr)
-  ( 	as ?mn)
-  (	as ?sc)
+"""select (now() as ?n)
+  (year(?n) 	as ?ye)
+
+  
+  
+  
+   
 where { 
  
 }
@@ -394,14 +487,13 @@ where {
 """ ;
 
 st:solution 
-"""
-select (now() as ?n)
-  (year(?n) 	as ?y)
-  (month(?n) 	as ?m)
-  (day(?n) 	as ?d)
-  (hours(?n) 	as ?hr)
-  (minutes(?n) 	as ?mn)
-  (seconds(?n) 	as ?sc)
+"""select (now() as ?n)
+  (year(?n) 	as ?ye)
+  (month(?n) 	as ?mo)
+  (day(?n) 	as ?da)
+  (hours(?n) 	as ?ho)
+  (minutes(?n) 	as ?mi)
+  (seconds(?n) 	as ?se)
 where { 
  
 }
@@ -415,21 +507,19 @@ st:name st:regex ;
 rdfs:label "Regex" ;
 rdfs:comment """Retourner les URI qui matchent une expression régulière."""@fr ;
 rdfs:comment """Return URI that match a regular expression."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#expressions> ;
+st:reference <http://www.w3.org/TR/sparql11-query/#func-regex> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select *
 where { 
   ?x a ?t 
-  filter (  )  
+  
 }
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select *
 where { 
   ?x a ?t 
@@ -450,23 +540,53 @@ rdfs:comment """If then else."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#func-if> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select * (  as ?s) where { 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select *      
+where { 
   ?x h:age ?a
 }
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select * (if (?a >= 18, "majeur", "mineur") as ?s) where { 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * (if (?a >= 18, "majeur", "mineur") as ?s) 
+where { 
   ?x h:age ?a
 }
 """ 
 
+.
+
+
+[] a st:Query ;
+st:name st:in ;
+rdfs:label "In" ;
+rdfs:comment """Fixer la valeur de ?x à i:Lucas, i:Pierre ou bien i:Mark avec l'opérateur de liste in."""@fr ;
+rdfs:comment """Fix ?x value with in."""@en ;
+st:reference <http://www.w3.org/TR/sparql11-query/#func-in> ;
+
+st:query 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+prefix i: <http://www.inria.fr/2007/humans.rdfs-instances#>
+select *      
+where { 
+  ?x h:age ?a
+  
+}
+""" ;
+
+st:solution 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+prefix i: <http://www.inria.fr/2007/humans.rdfs-instances#>
+select *  
+where { 
+  ?x h:age ?a
+  filter (?x in (i:Lucas, i:Pierre, i:Mark))
+}
+""" 
 
 .
+
 
 
 
@@ -478,16 +598,14 @@ rdfs:comment """Return instances of Man or Woman."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#alternatives> ;
 
 st:query 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   { ?x a h:Man }     { ?x a h:Woman }
 }
 """ ;
 
 st:solution 
-"""
-prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   { ?x a h:Man } union { ?x a h:Woman }
 }
@@ -501,7 +619,7 @@ select * where {
 [] a st:Query ;
 st:name st:optional ;
 rdfs:label "Optional" ;
-rdfs:comment """Retourner les ressources ?x instance de Man ayant éventuellement un conjoint. """@fr ;
+rdfs:comment """Retourner les instances de Man ayant éventuellement un conjoint. """@fr ;
 rdfs:comment """Return instances of Man possibly having a spouse."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#optionals> ;
 
@@ -524,9 +642,35 @@ select * where {
 
 
 [] a st:Query ;
+st:name st:minus ;
+rdfs:label "Minus" ;
+rdfs:comment """Retourner les instances de Woman n'ayant pas de conjoint, en utilisant la clause minus. """@fr ;
+rdfs:comment """Return instances of Man not having a spouse. """@en ;
+st:reference <http://www.w3.org/TR/sparql11-query/#neg-minus> ;
+
+st:query 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x a h:Woman  
+       
+}
+""" ;
+
+st:solution 
+"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
+select * where { 
+  ?x a h:Woman  
+  minus { ?x h:hasSpouse ?s }
+}
+""" 
+
+.
+
+
+[] a st:Query ;
 st:name st:exists ;
 rdfs:label "Exists" ;
-rdfs:comment """Retourner les ressources ?x instance de Man ayant  un conjoint. """@fr ;
+rdfs:comment """Retourner les instances de Man ayant  un conjoint (h:hasSpouse), utiliser la clause exists. """@fr ;
 rdfs:comment """Return instances of Man having a spouse. """@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#neg-pattern> ;
 
@@ -534,7 +678,7 @@ st:query
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x a h:Man  
-  filter  {    }
+
 }
 """ ;
 
@@ -558,7 +702,7 @@ st:query
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x a h:Man  
-  filter  {  }
+  
 }
 """ ;
 
@@ -572,30 +716,6 @@ select * where {
 .
 
 
-[] a st:Query ;
-st:name st:minus ;
-rdfs:label "Minus" ;
-rdfs:comment """Retourner les ressources ?x instance de Woman n'ayant pas de conjoint. """@fr ;
-rdfs:comment """Return instances of Man not having a spouse. """@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#neg-minus> ;
-
-st:query 
-"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select * where { 
-  ?x a h:Woman  
-       { ?x h:hasSpouse ?s }
-}
-""" ;
-
-st:solution 
-"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select * where { 
-  ?x a h:Woman  
-  minus { ?x h:hasSpouse ?s }
-}
-""" 
-
-.
 
 
 
@@ -605,12 +725,12 @@ st:name st:graph ;
 rdfs:label "Named Graph" ;
 rdfs:comment """Retourner le (ou les) graphe nommé dans lequel se trouvent des solutions."""@fr ;
 rdfs:comment """Return  named graph(s) where there are solutions."""@en ;
-
+st:reference <http://www.w3.org/TR/sparql11-query/#rdfDataset> ;
 st:query 
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
-        {
-  ?x a h:Woman  
+           {
+    ?x a h:Woman  
   }
 }
 """ ;
@@ -618,8 +738,8 @@ select * where {
 st:solution 
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
-graph ?g {
-  ?x a h:Woman  
+  graph ?g {
+    ?x a h:Woman  
   }
 }
 """ 
@@ -629,7 +749,7 @@ graph ?g {
 [] a st:Query ;
 st:name st:from ;
 rdfs:label "From" ;
-rdfs:comment """Spécifier le graphe nommé kg:data utilisé pour constituer le graphe par défaut. """@fr ;
+rdfs:comment """Spécifier le graphe nommé st:data pour constituer le graphe par défaut. """@fr ;
 rdfs:comment """Specify the named graph(s) used to form the default graph. """@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#unnamedGraph> ;
 
@@ -657,7 +777,7 @@ where {
 [] a st:Query ;
 st:name st:from-named ;
 rdfs:label "From Named" ;
-rdfs:comment """Spécifier le  graphe nommé kg:data sur lequel l'énoncé graph ?g sera évalué """@fr ;
+rdfs:comment """Spécifier le  graphe nommé st:data sur lequel l'énoncé graph ?g sera évalué """@fr ;
 rdfs:comment """Specify the named graphs where the named graph pattern is evaluated."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#namedGraphs> ;
 
@@ -686,7 +806,7 @@ where {
 [] a st:Query ;
 st:name st:subquery ;
 rdfs:label "Subquery" ;
-rdfs:comment """Calculer l'age min et l'age max dans une sous-requête emboîtée, trouver les ressources ayant l'age min et celles ayant l'age max"""@fr ;
+rdfs:comment """Calculer l'age min et l'age max dans la sous-requête emboîtée, trouver ainsi les ressources ayant l'age min et celles ayant l'age max"""@fr ;
 rdfs:comment """Execute part of the query in a nested subquery."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#subqueries> ;
 
@@ -694,10 +814,9 @@ st:query
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
 
-  {select (  as ?max) (   as ?min) 
+  {select 
    where {
-     ?x a h:Person ;
-       h:age ?age 
+     ?x h:age ?age 
   }}
   
   ?x h:age ?age 
@@ -711,8 +830,7 @@ select * where {
 
   {select (max(?age) as ?max) (min(?age) as ?min) 
    where {
-     ?x a h:Person ;
-       h:age ?age 
+     ?x h:age ?age 
   }}
   
   ?x h:age ?age 
@@ -726,7 +844,7 @@ select * where {
 [] a st:Query ;
 st:name st:bind ;
 rdfs:label "Bind" ;
-rdfs:comment """Créer une variable pour le résultat d'un calcul sur ?n."""@fr ;
+rdfs:comment """Avec la clause bind () créer une variable pour le résultat d'un calcul sur ?n, par exemple avec ucase."""@fr ;
 rdfs:comment """Create a variable for the result of a computation."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#bind> ;
 
@@ -735,7 +853,7 @@ st:query
 select * where { 
   ?x a h:Person ;
     h:name ?n .
-    bind (  )
+    
 }
 """ ;
 
@@ -753,7 +871,7 @@ select * where {
 [] a st:Query ;
 st:name st:values ;
 rdfs:label "Values" ;
-rdfs:comment """Fixer les valeurs de la variable ?n à 'John', 'Alice' et 'Lucas'."""@fr ;
+rdfs:comment """Fixer les valeurs de la variable ?n à 'John', 'Alice' ou 'Lucas' avec la clause values."""@fr ;
 rdfs:comment """Set values of some variables."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#inline-data> ;
 
@@ -762,7 +880,7 @@ st:query
 select * where { 
     ?x h:name ?n ;
     optional { ?x h:age  ?a } 
-    values    {    }
+    
 }
 """ ;
 
@@ -790,7 +908,7 @@ st:query
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select * where { 
   ?x a h:Person .
-  ?x      ?y
+  
 }
 """ ;
 
@@ -812,9 +930,8 @@ rdfs:comment """Query fr.dbpedia.org SPARQL endpoint."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-federated-query/#service> ;
 
 st:query 
-"""
-select * where { 
-       <http://fr.dbpedia.org/sparql> {
+"""select * where { 
+                                         {
    select * where {
      <http://fr.dbpedia.org/resource/Antibes> ?p ?y 
    }
@@ -825,8 +942,7 @@ select * where {
 """ ;
 
 st:solution 
-"""
-select * where { 
+"""select * where { 
   service <http://fr.dbpedia.org/sparql> {
    select * where {
      <http://fr.dbpedia.org/resource/Antibes> ?p ?y 
@@ -842,15 +958,13 @@ select * where {
 [] a st:Query ;
 st:name st:construct ;
 rdfs:label "Construct" ;
-rdfs:comment """Construire un graphe résultat."""@fr ;
+rdfs:comment """Transformer la requête pour construire un graphe résultat."""@fr ;
 rdfs:comment """Create a result graph."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#construct> ;
 
 st:query 
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-     {
-  ?x h:hasFriend ?y
-}
+select *
 where { 
   ?x a h:Person .
   ?x h:hasFriend+ ?y .
@@ -875,13 +989,13 @@ where {
 [] a st:Query ;
 st:name st:describe ;
 rdfs:label "Describe" ;
-rdfs:comment """Décrire la ressource ?x."""@fr ;
+rdfs:comment """Transformer la requête pour décrire la ressource ?x."""@fr ;
 rdfs:comment """Describe a resource."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#describe> ;
 
 st:query 
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-     ?x where {
+select ?x where {
   ?x h:age 12 .
 }
 """ ;
@@ -898,13 +1012,14 @@ describe ?x where {
 [] a st:Query ;
 st:name st:ask ;
 rdfs:label "Ask" ;
-rdfs:comment """Répondre par vrai ou faux."""@fr ;
+rdfs:comment """Transformer la requête pour répondre par vrai ou faux."""@fr ;
 rdfs:comment """Answer true of false."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#ask> ;
 
 st:query 
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-      {
+select * where 
+{
   ?x h:age 12 .
 }
 """ ;
@@ -935,7 +1050,7 @@ st:query
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select ?x ?e where {
   ?x h:list ?l
-  ?l      ?e
+  
 }
 """ ;
 
@@ -952,14 +1067,14 @@ select ?x ?e where {
 [] a st:Query ;
 st:name st:position ;
 rdfs:label "List Position" ;
-rdfs:comment """Enumérer les éléments d'une liste en donnant leur position."""@fr ;
+rdfs:comment """Enumérer les éléments d'une liste en donnant leur position dans la liste."""@fr ;
 rdfs:comment """Enumerate list elements using a path with the elements position."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
 
 st:query 
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select ?x ?e (count(?mid) as ?pos) where {
-  ?x h:list ?l
+  ?x h:list ?lst
  
  
   ?node rdf:first ?e
@@ -971,64 +1086,13 @@ order by ?pos
 st:solution 
 """prefix h: <http://www.inria.fr/2007/humans.rdfs#>
 select ?x ?e (count(?mid) as ?pos) where {
-  ?x h:list ?l
-  ?l rdf:rest* ?mid 
-  ?mid rdf:rest* ?node
+  ?x h:list ?lst
+  ?lst  rdf:rest* ?mid 
+  ?mid  rdf:rest* ?node
   ?node rdf:first ?e
 }
 group by ?node
 order by ?pos
-""" 
-.
-
-
-
-[] a st:Query ;
-st:name st:subsume ;
-rdfs:label "Subsumption" ;
-rdfs:comment """Retourner les instances de la classe h:Person, et de ses sous-classes, en utilisant un chemin."""@fr ;
-rdfs:comment """Return class instances using a path."""@en ;
-st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
-
-st:query 
-"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select ?x where {
-  ?x      h:Person
-}
-""" ;
-
-st:solution 
-"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select ?x where {
-  ?x rdf:type/rdfs:subClassOf* h:Person
-}
-""" 
-.
-
-
-[] a st:Query ;
-st:name st:rdfs ;
-rdfs:label "RDFS Entailments" ;
-rdfs:comment """Enumérer les déductions RDFS  en interrogeant le graphe kg:entailment (il n'y a peut être pas de réponse)."""@fr ;
-rdfs:comment """Enumerate RDFS entailments."""@en ;
-#st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
-
-st:query 
-"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select * 
-
-where {
-  ?x ?p ?y 
-}
-""" ;
-
-st:solution 
-"""prefix h: <http://www.inria.fr/2007/humans.rdfs#>
-select * 
-from kg:entailment
-where {
-  ?x ?p ?y 
-}
 """ 
 .
 
@@ -1045,10 +1109,9 @@ rdfs:comment """Enumère les requêtes."""@fr ;
 rdfs:comment """Enumerate queries."""@en ;
 #st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
 st:query 
-"""
-select ?q  
+"""select ?q  
 where {
-  graph st:context { ?x st:query ?q }
+  graph st:context { ?x st:solution ?q }
 }
 """ 
 .

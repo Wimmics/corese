@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jan 23 10:56:40 CET 2015
+Sun Jan 25 17:28:59 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -326,6 +326,22 @@ template st:display(?x) {
 }
 where {
       bind (st:get(st:profile) as ?profile)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Trap select * where {} solution as there is no variable (see solution.rq)
+#
+template st:default {
+
+}
+where {
+
 }
 ]]>
 </body>

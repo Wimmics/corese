@@ -1,13 +1,17 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgramserver.webservice.Service.Doc;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -83,9 +87,24 @@ public class Tutorial {
             for (Doc d : s.getContext()) {
                 lq.load(d.getUri(), d.getName());
             }
+            
+            init(gg);
         }
         return g;
     }
+    
+    static void init(Graph g){
+        String init = 
+                "insert { ?q st:index ?n }"
+              + "where  { ?q a st:Query bind (kg:number()+1 as ?n) }";
+        QueryProcess exec = QueryProcess.create(g);
+        try {
+            exec.query(init);
+        } catch (EngineException ex) {
+            Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
 
    TripleStore getStore(String name){
        return map.get(name);

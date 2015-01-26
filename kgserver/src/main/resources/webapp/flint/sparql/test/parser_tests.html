@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <title>Parser tests</title>
+    <script src="runmode/codemirror_rm.js">//</script>
+    <script src="runmode/runmode.js">//</script>
+    <script src="runtests.js">//</script>
+    <script src="../sparql10querymode_ll1.js">//</script>
+    <script src="../sparql11querymode_ll1.js">//</script>
+    <script src="../sparql11updatemode_ll1.js">//</script>
+    <script src="sparql10query_all_tests.js">//</script>
+    <script src="sparql11query_all_tests.js">//</script>
+    <script src="sparql11update_all_tests.js">//</script>
+  </head><body>
+    <h1>Parser tests</h1>
+
+    <button onclick="runParserTests('sparql10',sparql10query_all_tests);">Run tests sparql1.0</button>
+    <button onclick="runParserTests('sparql11query',sparql11query_all_tests);">Run tests sparql1.1 query</button>
+    <button onclick="runParserTests('sparql11update',sparql11update_all_tests);">Run tests sparql1.1 update</button>
+    <pre id="output"></pre>
+  </body></html>

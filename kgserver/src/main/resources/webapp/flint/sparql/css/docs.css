@@ -1,0 +1,890 @@
+.CodeMirror-gutter {
+	width: 3em;
+	background: white;
+}
+
+.CodeMirror {
+	font-size: 14px;
+	float: left;
+	height: 303px;
+	background: white;
+	margin-left: 3px;
+	border: solid 1px #aaa;
+}
+
+.CodeMirror div div pre {
+	margin: 3px;
+}
+
+.CodeMirror pre {
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	-o-border-radius: 0;
+	border-radius: 0;
+	border-width: 0;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	font-family: inherit;
+	margin: 0;
+}
+
+/* Main Flint editor */
+#flint-editor {
+	overflow: auto;
+	border: 1px solid #aaa;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	font-family: verdana;
+	padding: 0em;
+	margin: 0em;
+	background: #eee;
+}
+
+#flint-editor a {
+	text-decoration: none;
+}
+
+#flint-editor form {
+	margin: 0em;
+	padding: 0em;
+}
+
+#flint-editor #flint-title {
+	font-size: 0.9em;
+	background: #1373d8;
+	background: -moz-linear-gradient(top, #1373d8, #42a2d7);
+	background: -webkit-gradient(linear, left top, left bottom, from(#1373d8),
+		to(#42a2d7) );
+	font-weight: normal;
+	font-style: normal;
+	color: #FFF;
+	padding: 5px 10px;
+	margin: 0em;
+}
+
+#flint-editor #flint-toolbar {
+	display: block;
+	padding: 0em;
+	margin: 0em;
+	width: 100%;
+	font-size: 0.8em;
+	background: #eee;
+	background: -moz-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#eee) );
+	overflow: auto;
+	border-bottom: solid 1px #ddd;
+}
+
+#flint-editor #flint-status {
+	clear: both;
+	display: block;
+	padding: 3px 10px;
+	margin: 0em;
+	font-size: 0.8em;
+	background: #eee;
+	overflow: auto;
+	border-bottom: solid 1px #ddd;
+	border-top: solid 1px #ddd
+}
+
+#flint-toolbar img {
+	height: 20px
+}
+
+#flint-editor #flint-menu {
+	display: block;
+	padding: 0em;
+	margin: 0em;
+	width: 100%;
+	font-size: 0.8em;
+	background: #eee;
+	background: -moz-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#eee) );
+	overflow: auto;
+	border-bottom: solid 1px #888;
+	list-style-type: none;
+	list-style-image: none;
+}
+
+#flint-editor #flint-menu li {
+	float: left;
+	display: block;
+	width: 80px;
+	height: 25px;
+	overflow: hidden;
+	background: #eee;
+	background: -moz-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#eee) );
+	border-right: solid 1px #ddd
+}
+
+#flint-editor #flint-menu li span {
+	color: black;
+	padding: 3px 10px;
+	height: 25px;
+	line-height: 25px;
+}
+
+#flint-editor #flint-menu li:hover {
+	background: #aaa;
+}
+
+#flint-menu li:hover ul {
+	display: block;
+	margin: 0em;
+	padding: 0em;
+	z-index: 200;
+	position: absolute;
+	border-bottom: solid 1px #888;
+}
+
+*+html #flint-menu li:hover ul {
+	position: relative;
+}
+
+#flint-menu span {
+	cursor: default;
+}
+
+.flint-submenu {
+}
+
+#flint-editor li,#flint-editor img {
+	clear: none;
+	margin: 0 !important;
+}
+
+#flint-editor #flint-menu li li {
+	float: none;
+	display: block;
+	border-right: solid 1px #888;
+	border-bottom: solid 1px #ddd;
+	width: 170px;
+	background: #eee;
+}
+
+#flint-editor #flint-menu li li span img {
+	border: none;
+	padding-right: 10px;
+	vertical-align: middle
+}
+
+#flint-editor #flint-menu li li .flint-menu-filler {
+	padding-left: 0px;
+	padding-right: 26px;
+	margin: 0px;
+	float: left;
+}
+
+#flint-editor #flint-menu li li[class=flint-menu-disabled] span {
+	color: #bbb;
+}
+
+#flint-editor #flint-menu li li[class=flint-menu-z]:hover {
+	background-color: #eee;
+}
+
+#flint-editor #flint-menu li li[class=flint-menu-enabled]:hover {
+	background-color: #ddd;
+}
+
+#flint-editor #flint-toolbar li {
+	float: left;
+	display: block;
+	text-align: center;
+	width: 30px;
+	background: #eee;
+	background: -moz-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#eee) );
+	color: black;
+	padding: 5px 10px;
+}
+
+#flint-editor #flint-toolbar li.flint-toolbar-enabled:hover {
+	cursor: default;
+	background: #ddd;
+}
+
+#flint-editor #flint-toolbar li.flint-toolbar-disabled {
+	opacity: 0.5;
+}
+
+.flint-toolbar-start {
+	border-left: solid 1px #ccc;
+}
+
+#flint-coolbar,#flint-endpoint-bar {
+	clear: both;
+	background: #eee;
+	overflow: auto;
+	background: -moz-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#eee) );
+}
+
+#flint-endpoint-bar {
+	display: none;
+}
+
+#flint-coolbar h2,#flint-endpoint-bar h2 {
+	display: block;
+	float: left;
+	font-weight: normal;
+	width: 60px;
+	font-size: 0.8em;
+	padding: 7px 10px;
+	margin: 0em;
+	color: #000;
+}
+
+#flint-endpoint-output-formats {
+	float: right;
+	width: 200px;
+}
+
+#flint-dataset-output-formats {
+	float: left;
+	width: 200px;
+}
+
+#flint-dataset-output-formats h2,#flint-endpoint-output-formats h2 {
+	width: 50px;
+	color: #000;
+}
+
+#flint-coolbar-modes h2,#flint-endpoint-modes h2 {
+	width: 35px;
+	color: #000;
+}
+
+#flint-coolbar select,#flint-endpoint-bar select {
+	float: left;
+	width: 200px;
+	margin-top: 5px;
+}
+
+#flint-dataset-mimeset-select,#flint-endpoint-mimeset-select {
+	width: 120px !important;
+}
+
+#flint-dataset-mimeset-construct,#flint-endpoint-mimeset-construct {
+	width: 120px !important;
+}
+
+#flint-coolbar input {
+	display: block;
+	margin-top: 8px;
+	float: left;
+	width: 25px;
+}
+
+#flint-endpoint-bar input,#flint-coolbar input {
+	display: block;
+	margin-top: 4px;
+	float: left;
+	width: 250px;
+}
+
+#flint-coolbar label {
+	display: block;
+	margin-top: 7px;
+	float: left;
+	width: 85px;
+	font-size: 0.8em
+}
+
+#flint-dataset,#flint-endpoint-input {
+	float: left;
+	width: 295px;
+}
+
+#flint-endpoint-url {
+	width: 200px !important;
+}
+
+#flint-coolbar-modes,#flint-endpoint-modes {
+	float: left;
+	width: 220px;
+}
+
+#flint-coolbar-mode-select,#flint-endpoint-mode-select {
+	width: 150px !important
+}
+
+#flint-editor input.flint-submit-button {
+	float: right;
+	width: 60px;
+	margin: 2px 10px;
+	display: block;
+	border: solid 1px #aaa;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	padding: 3px;
+	background-color: #ccc;
+}
+
+#flint-editor input.flint-info-button {
+	float: right;
+	width: 60px;
+	margin: 2px 10px;
+	display: block;
+	border: solid 1px #aaa;
+	padding: 3px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	background-color: #ccc;
+}
+
+#flint-editor #flint-endpoint-datainfo {
+	width: 120px;
+}
+
+#flint-editor input.flint-info-button:hover {
+	cursor: default;
+	background-color: #aaa;
+}
+
+#flint-editor input.flint-submit-button:hover {
+	cursor: default;
+	background-color: #aaa;
+}
+
+#flint-editor #flint-form {
+	padding: 0em;
+	margin: 0em;
+}
+
+#flint-sidebar {
+	float: right;
+	width: 30px;
+	height: 332px;
+	padding: 3px;
+	overflow: hidden;
+}
+
+#flint-sidebar-grabber {
+	float: right;
+	width: 8px;
+	margin-top: 28px;
+	height: 306px;
+	border-right: solid 1px #aaa;
+	margin-right: -2px
+}
+
+#flint-sidebar-grabber:hover {
+	cursor: default;
+}
+
+#flint-sidebar-grabber-button {
+	float: none;
+	margin-top: 121px;
+	width: 8px;
+	height: 20px;
+	background: #bbb;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-right: solid 1px #bbb;
+	display: block;
+}
+
+#flint-sidebar-content {
+	position: relative;
+	border-left: solid 1px #aaa;
+	border-top: solid 1px #aaa;
+	border-bottom: solid 1px #aaa;
+	border-right: solid 1px #aaa;
+	min-width: 100px;
+	max-width: 98%;
+	height: 294px;
+	font-size: 0.8em;
+	padding: 5px;
+	overflow: hidden;
+	background: #fff;
+}
+
+#flint-sidebar-content ul {
+	list-style-type: none;
+	list-style-image: none;
+	margin-left: 0em;
+	margin-top: 0em;
+	padding-left: 0em;
+	white-space: nowrap;
+	font-size: 0.85em;
+}
+
+#flint-sidebar-commands {
+	height: 284px;
+	overflow: auto;
+	//min-width: 490px;
+	margin: 15px -5px 0px -5px;
+}
+
+#flint-command-table li {
+	display: block;
+	float: left;
+}
+
+#flint-command-table button {
+	border: solid 1px #888;
+	display: block;
+	border-radius: 2px;
+	padding: 2px;
+	width: 114px;
+	margin: 3px;
+	font-size: 1em;
+	color: black;
+	overflow: hidden;
+	background-color: white;
+}
+
+#flint-command-table button[disabled] {
+	border-color: #aaa;
+	color: #bbb;
+}
+
+#flint-command-table button:hover {
+	background-color: #aaa;
+}
+
+#flint-sidebar-command-filter {
+	position: absolute;
+	left: 0;
+	top: 0;
+	overflow: hidden;
+	right: 0;
+	//min-width: 490px;
+	height: 15px;
+	background: #f0f0f0;
+	border-bottom: solid 1px #aaa;
+}
+
+#flint-sidebar-command-filter li {
+	display: block;
+	float: left;
+	margin: 0px 0px !important;
+	border-right: solid 1px #ccc;
+	border-radius: 2px;
+	padding: 2px 5px;
+	text-align: center;
+}
+
+#flint-sidebar-command-filter li:hover {
+	cursor: default;
+	background: #aaa;
+}
+
+#flint-sidebar-content li:hover {
+	cursor: default;
+}
+
+#flint-editor-container {
+	padding-top: 3px;
+}
+
+#flint-scroll-tabs-left {
+	float: left;
+	margin-left: 3px;
+	width: 24px;
+	height: 24px;
+	opacity: 0.5;
+}
+
+#flint-scroll-tabs-left:hover,#flint-scroll-tabs-right:hover {
+	cursor: default;
+}
+
+#flint-scroll-tabs-right {
+	float: right;
+	width: 24px;
+	height: 24px;
+	opacity: 0.5;
+	margin-right: 10px;
+}
+
+#flint-editor-tabs-container {
+	overflow: hidden;
+	height: 25px;
+}
+
+#flint-editor-tabs {
+	float: left;
+	display: block;
+	margin: 0em;
+	padding-left: 0px;
+	font-size: 0.7em;
+	overflow: hidden;
+	height: 25px;
+	list-style-type: none;
+	list-style-image: none;
+	background: #eee
+}
+
+#flint-editor-tabs li {
+	float: left;
+	display: block;
+	width: 90px;
+	padding-left: 3px;;
+	height: 25px;
+	text-align: left;
+	padding-left: 10px;
+	line-height: 25px;
+	overflow: hidden;
+	border-top: solid 1px #888;
+	border-left: solid 1px #888;
+	border-right: solid 1px #888;
+	-webkit-border-top-left-radius: 12px;
+	-webkit-border-top-right-radius: 12px;
+	-moz-border-radius-topleft: 12px;
+	-moz-border-radius-topright: 12px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	background: #bbb;
+	background: -moz-linear-gradient(top, #ddd, #bbb);
+	background: -webkit-gradient(linear, left top, left bottom, from(#ddd),
+		to(#bbb) );
+}
+
+.flint-editor-tab-selected {
+	background: #ddd !important;
+	background: -moz-linear-gradient(top, #ffffff, #ddd) !important;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff),
+		to(#ddd) ) !important;
+}
+
+#flint-editor-tabs li:hover {
+	cursor: default;
+	background: #aaa;
+}
+
+#flint-sidebar-options {
+	display: block;
+	margin: 0em;
+	padding-left: 5px;
+	width: 100%;
+	font-size: 0.7em;
+	overflow: hidden;
+	height: 25px;
+	list-style-type: none;
+	list-style-image: none;
+	background: #eee
+}
+
+#flint-sidebar-options li {
+	float: left;
+	display: block;
+	width: 80px;
+	padding-left: 3px;;
+	height: 25px;
+	text-align: center;
+	line-height: 25px;
+	overflow: hidden;
+	border-top: solid 1px #888;
+	border-left: solid 1px #888;
+	border-right: solid 1px #888;
+	-webkit-border-top-left-radius: 12px;
+	-webkit-border-top-right-radius: 12px;
+	-moz-border-radius-topleft: 12px;
+	-moz-border-radius-topright: 12px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	background: #bbb;
+	background: -moz-linear-gradient(top, #ddd, #bbb);
+	background: -webkit-gradient(linear, left top, left bottom, from(#ddd),
+		to(#bbb) );
+}
+
+#flint-sidebar-options li:hover {
+	cursor: default;
+	background: #aaa;
+}
+
+#flint-sidebar-options li.flint-sidebar-selected {
+	background: #ddd;
+	background: -moz-linear-gradient(top, #ffffff, #ddd);
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff),
+		to(#ddd) );
+}
+
+.flint-property {
+	padding: 2px;
+}
+
+.flint-property:hover {
+	background: #aaa;
+}
+
+.flint-class {
+	padding: 2px;
+}
+
+.flint-class:hover {
+	background: #aaa;
+}
+
+#flint-samples {
+	font-size: 1em;
+}
+
+#flint-samples h3 {
+	font-weight: bold;
+	font-style: normal;
+	font-size: 1em;
+	margin: 0em;
+	color: white;
+	padding: 3px;
+	background: #1373d8;
+	background: -moz-linear-gradient(top, #1373d8, #42a2d7);
+	background: -webkit-gradient(linear, left top, left bottom, from(#1373d8),
+		to(#42a2d7) );
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+
+.flint-sample {
+	border: solid 1px #fff;
+	padding-bottom: 20px;
+	font-size: 1.2em;
+	padding: 5px;
+}
+
+.flint-sample p {
+	color: black;
+	font-size: 0.8em;
+	margin-top: 10px;
+	margin-bottom: 0em;
+	margin-left: 0em;
+	margin-right: 0em;
+	padding: 0em;
+	font-style: italic;
+}
+
+.flint-sample pre {
+	font-size: 1.1em;
+}
+
+.flint-sample:hover {
+	border: dashed 1px #ccc;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+}
+
+.flint-prefix {
+	padding: 2px;
+	font-size: 1.2em;
+}
+
+.flint-prefix:hover {
+	background: #aaa;
+}
+
+#flint-results-area {
+	height: 200px;
+	background: white;
+	padding: 3px;
+	overflow: auto;
+}
+
+#flint-results-container {
+	
+}
+
+#flint-results {
+	width: 100%;
+	margin: 0px;
+	padding: 0em;
+	font-size: 0.85em;
+	border: none;
+	height: 197px;
+}
+
+#flint-results-table {
+	font-size: 0.7em;
+	margin: 10px 0px;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#flint-results-table thead {
+	border-top: solid 2px #aaa;
+	border-bottom: solid 2px #aaa;
+	color: black;
+	margin-bottom: 5px;
+}
+
+#flint-results-table thead th {
+	padding: 5px;
+	text-align: left;
+}
+
+#flint-results-table tbody {
+	max-height: 170px;
+	overflow: scroll;
+}
+
+#flint-results-table tbody td {
+	border: solid 1px #eee;
+	padding: 5px;
+	vertical-align: top;
+}
+
+#flint-results-mode {
+	display: block;
+	float: right;
+	border: solid 1px #ccc;
+	border-radius: 3px;
+	padding: 3px;
+	font-size: 10px;
+	line-height: 10px;
+	height: 10px;
+}
+
+#flint-results-mode:hover {
+	cursor: default;
+	background-color: #aaa;
+}
+
+#flint-results-loader {
+	width: 100%;
+	margin: 0px;
+	padding-top: 20px;
+	padding-bottom: 0px;
+	text-align: center;
+	font-size: 0.8em;
+	font-weight: normal;
+	display: none;
+	background: white;
+	border: none;
+}
+
+#flint-results-loader img {
+	vertical-align: middle;
+}
+
+h2#flint-results-heading {
+	background: #eee;
+	background: -moz-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#eee) );
+	font-size: 0.80em;
+	font-weight: normal;
+	font-style: normal;
+	color: black;
+	padding: 5px 10px;
+	margin: 0em;
+	border-top: solid 1px #888;
+	border-bottom: none;
+}
+
+.flint-dialog {
+	z-index: 10000;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	visibility: hidden;
+}
+
+.flint-dialog-body {
+	margin-top: 200px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 450px;
+	height: 200px;
+	border: solid 5px #888;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	background: #eee;
+	background: -moz-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff),
+		to(#eee) );
+	-moz-box-shadow: rgba(0, 0, 0, 0.25) 0 8px 12px;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.25) 0 8px 12px;
+	box-shadow: rgba(0, 0, 0, 0.25) 0 8px 12px;
+}
+
+.flint-dialog-body-container {
+	position: relative;
+	height: 200px;
+}
+
+.flint-dialog h2 {
+	font-size: 0.9em;
+	background: #1373d8;
+	background: -moz-linear-gradient(top, #1373d8, #42a2d7);
+	background: -webkit-gradient(linear, left top, left bottom, from(#1373d8),
+		to(#42a2d7) );
+	padding: 1%;
+	color: white;
+	margin: 0em;
+}
+
+.flint-dialog p {
+	padding: 5px;
+	font-size: 0.8em;
+	margin-bottom: 0.5em;
+}
+
+#flint-dialog-buttons {
+	
+}
+
+.flint-close {
+	width: 16px;
+	height: 16px;
+	float: right;
+	display: block;
+	background-image: url('Close_16x16.png');
+}
+
+.flint-tab-close {
+	width: 16px;
+	height: 16px;
+	float: right;
+	margin-right: 5px;
+	margin-top: 7px;
+	display: block;
+	background: url('Close_12x12.png') no-repeat;
+}
+
+.flint-close:hover,.flint-tab-close:hover {
+	cursor: default;
+}
+
+.flint-close-button,.flint-okay-button {
+	position: absolute;
+	width: 60px;
+	font-size: 0.8em;
+	text-align: center;
+	margin: 2px 10px;
+	display: block;
+	border: solid 1px #aaa;
+	padding: 3px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	background-color: #ccc;
+}
+
+.flint-close-button {
+	bottom: 5px;
+	right: 5px;
+}
+
+.flint-okay-button {
+	bottom: 5px;
+	right: 85px;
+}
+
+.flint-close-button:hover,.flint-okay-button:hover {
+	cursor: default;
+	background-color: #aaa;
+}

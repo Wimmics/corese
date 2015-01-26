@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Flint SPARQL Editor Demo</title>
+<script type="text/javascript" src="sparql/jquery-1.5.2.min.js">//</script>
+<script type="text/javascript" src="sparql/lib/codemirror.js">//</script>
+<script type="text/javascript" src="sparql/sparql10querymode_ll1.js">//</script>
+<script type="text/javascript" src="sparql/sparql11querymode_ll1.js">//</script>
+<script type="text/javascript" src="sparql/sparql11updatemode_ll1.js">//</script>
+<script type="text/javascript" src="sparql/init-local.js">//</script>
+<script type="text/javascript" src="sparql/flint-editor.js">//</script>
+<link rel="stylesheet" href="sparql/lib/codemirror.css"/>
+<link rel="stylesheet" href="sparql/css/sparqlcolors.css"/>
+<link rel="stylesheet" href="sparql/css/docs.css"/>
+</head>
+<body>
+
+<div id="flint-test">
+</div>
+<script>
+var  flintConfig  =  {
+    "interface":  {
+      "toolbar":  true,
+      "menu":  true
+    },
+    "namespaces":  [
+      {"name":  "RDF",  "prefix":  "rdf",  "uri":  "http://www.w3.org/1999/02/22-rdf-syntax-ns#"},
+	  {"name":  "RDFS",  "prefix":  "rdfs",  "uri":  "http://www.w3.org/2000/01/rdf-schema#"},
+	  {"name":  "OWL",  "prefix":  "owl",  "uri":  "http://www.w3.org/2002/07/owl#"},
+      {"name":  "SKOS Core",  "prefix":  "skos",  "uri":  "http://www.w3.org/2004/02/skos/core#"},	  
+	  {"name":  "DBpedia Ontology",  "prefix":  "db",  "uri":  "http://dbpedia.org/ontology/"},
+	  {"name":  "Friend  of  a  friend",  "prefix":  "foaf",  "uri":  "http://xmlns.com/foaf/0.1/"} ,
+    ],
+    "defaultEndpointParameters":  {
+      "queryParameters":  {
+        "format":  "output",
+        "query":  "query",
+		"update" : "update"
+      },
+      "selectFormats":  [
+        {"name":  "Plain  text",  "format":  "text",  "type":  "text/plain"},
+        {"name":  "SPARQL-XML",  "format":  "sparql",  "type":  "application/sparql-results+xml"},
+        {"name":  "JSON",  "format":  "json",  "type":  "application/sparql-results+json"}
+      ],
+      "constructFormats":  [
+        {"name":  "Plain  text",  "format":  "text",  "type":  "text/lain"},
+        {"name":  "RDF/XML",  "format":  "rdfxml",  "type":  "application/rdf+xml"},
+        {"name":  "Turtle",  "format":  "turtle",  "type":  "application/turtle"}
+      ]
+    },
+    "endpoints":  [
+      {"name":  "DBpedia FR",
+        "uri":  "http://fr.dbpedia.org/sparql",
+        
+      }
+    }
+</script>
+
+</body>
+</html>

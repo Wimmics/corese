@@ -94,11 +94,11 @@ public class Transformer {
     public Response template(TripleStore store, Param par) {
 
         
-        
+        Context ctx = null;
         try {
 
             par = mprofile.complete(par);
-            Context ctx = create(par);
+            ctx = create(par);
                        
             if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {
                 // check profile, transform and query
@@ -139,16 +139,28 @@ public class Transformer {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
             String err = ex.toString();
-//            if (ctx != null && ctx.getQuery() != null){
-//                err += "\n\n" + ctx.getQuery();
-//            }
-            return Response.status(500).header(headerAccept, "*").entity(err).build();
+            String q = null;
+            if (ctx != null && ctx.getQuery() != null){
+                q = ctx.getQuery();
+            }
+            return Response.status(500).header(headerAccept, "*").entity(error(err, q)).build();
         }
     }
 
-    
+    String error(String err, String q){
+        String mes = "<html><head><link href=\"/style.css\" rel=\"stylesheet\" type=\"text/css\" /></head>"
+                + "<body><h3>Error</h3>";
+        mes += "<pre>" + clean(err) + "</pre>";
+        if (q != null){
+            mes += "<pre>" + clean(q) + "</pre>";
+        }
+        mes += "</body></html>";
+        return mes;
+    }
 
-   
+   String clean(String s){
+       return s.replace("<", "&lt;");
+   }
 
     Context create(Param par) {
         Context ctx = new Context();

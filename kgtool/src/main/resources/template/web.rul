@@ -2,71 +2,71 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jan 23 10:56:40 CET 2015
+Sun Jan 25 17:28:59 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
 <rule>
 <body>
 <![CDATA[
+template st:prev(?t) {
+
+  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
+  "<button type='button'>Previous</button>"
+  "</a>"  
+    
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i - 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # Generate a form with a SPARQL query ?q to submit
-# Argument uri ?t is the name of query (st:minus)
+# Argument  ?n is the name of query (st:minus)
+# ?q actual query, ?t query template, ?s query solution
 #
-template st:form(?t, ?q, ?s) {
+template st:form(?n, ?q, ?t, ?s) {
   """
-  <script type="text/javascript">
-    
-        function showHide()
-        {
-            if(document.getElementById('cb').checked)
-            {
-                document.getElementById('sol').style.visibility = 'visible';
+   <script type="text/javascript">   
+        function showHide(){
+            if (document.getElementById('cb').checked){
+                document.getElementById('query').value = document.getElementById('sol').value;
             }
-            else
-            {
-                document.getElementById('sol').style.visibility = 'hidden';
+            else {
+                document.getElementById('query').value = document.getElementById('tmp').value;
             }
         }
-
-    </script>
-  
-  
-  
-  <table>
-  <tr>
-  <td>
-   <form method='post' id='exo' action='' >
+   </script>
        
-   <input type='submit' value='Submit'/>
+   <form method='post'  action='' >   
+   <input type='hidden' id='tmp' value='"""str(?t)"""' />
+   <input type='hidden' id='sol' value='"""str(?s)"""' />
+   <input type='hidden' name='uri' value='""" ?n """'/>
+   <input type='hidden' name='profile' value='""" st:get(st:profile) """'/>       
+   <input type='submit' value='Submit' />
    """
-   if (?s != st:null, 
+   
+   if (?s = st:null, "",
      """<input id="cb" type="checkbox" onclick="showHide();"  />
-     <label for="cb">Show solution</label>""", "")
-    
-   """
-   <input type='hidden' name='profile' value='""" st:get(st:profile) """'/>
-   
-   <input type='hidden' name='uri' value='""" ?t """'/>
-   
+        <label for="cb">Show solution</label>""")
+        
+   """     
    <br/>
-    <textarea cols='50' rows='10' name='query'>"""str(?q)
-    
-  """</textarea>
-  </form>
-  </td>
-  
-  <td>
-   
-   <div id='sol' action='' style='visibility:hidden'>
-    <textarea cols='50' rows='10' name='query'>"""str(?s)
-    
-  """</textarea>
-   </div>
-  
-  </td>
-  </tr>
-  </table>
+   <textarea cols='50' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
+   </form>
   """
 }
 where {
@@ -99,7 +99,7 @@ template st:start {
 }
 where {
 
-  bind (coalesce(st:get(st:uri), st:null) as ?uri)
+  bind (coalesce(st:get(st:uri), st:begin) as ?uri)
   
 }
 ]]>
@@ -119,18 +119,22 @@ template st:select(?t) {
 """
 <h3>Select a query</h3>
 
-<form method='get' action=''>
+"""   
+"""<form method='get' action=''>
 
   <input type='hidden' name='profile' value='""" st:get(st:profile) """' />
 """
+
+  st:call-template(st:prev, ?t)
 
   "<select name='uri' onChange='submit()'>"
   
     st:call-template(st:list, ?t)  
     
-  "</select>"
-  
-  
+  "</select>" 
+
+  st:call-template(st:next, ?t)
+ 
 """ 
 </form>
 """
@@ -183,7 +187,7 @@ template st:display(?n) {
 "</p>"
 
    st:call-template(st:form, ?n,
-     coalesce(st:get(st:query), str(?q)), coalesce(?s, st:null))
+     coalesce(st:get(st:query), str(?q)), str(?q), coalesce(?s, st:null))
    
    st:call-template(st:result)
       
@@ -197,7 +201,7 @@ where {
       rdfs:comment ?c ;
       st:query     ?q
       optional { ?qt st:reference ?r }
-      optional { ?qt st:solution ?s }
+      optional { ?qt st:solution  ?s }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
   }
 }
@@ -216,7 +220,7 @@ template st:list(?t) {
   "<option value='" ?q "'" 
     if (?q = ?t, "selected='true'", "")
   ">" 
-  st:number() ". " str(?title) 
+  str(?i) ". " str(?title) 
   "</option>" 
    
 }
@@ -224,10 +228,12 @@ where {
   bind (st:get(st:context) as ?g)
   graph ?g {
     [] a st:Query ;
+      st:index ?i ;
       st:name ?q ;
       rdfs:label ?title
   }
 }
+order by ?i
 ]]>
 </body>
 </rule>
@@ -254,6 +260,30 @@ template st:tail {
 }
 where {
 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:next(?t) {
+
+  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
+  "<button type='button'>Next</button>"
+  "</a>"  
+    
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i + 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
 }
 ]]>
 </body>

@@ -25,6 +25,7 @@ public class Context {
     public static final String STL_TRANSFORM = STL + "transform";
     public static final String STL_URI = STL + "uri";
     public static final String STL_CONTEXT = STL + "context";
+    public static final String STL_DATASET = STL + "dataset";
     public static final String STL_LANG = STL + "lang";
     HashMap<String, IDatatype> table;
 
@@ -100,7 +101,7 @@ public class Context {
     }
 
     public Context setName(String str) {
-        return set(STL_NAME, str);
+        return setURI(STL_NAME, str);
     }
 
     public String getName() {

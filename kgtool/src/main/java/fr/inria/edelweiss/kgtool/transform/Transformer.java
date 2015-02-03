@@ -1241,5 +1241,19 @@ public class Transformer {
 //        }
         setNSM(ast.getNSM());
     }
+    
+    
+   /**
+   * this new Transformer  inherit information from current transformer (if any)
+   */
+    public void complete(Transformer ct) {
+        if (ct != null) {
+            // tt is current transformer, t is new transformer
+            IDatatype dt = ct.get(Context.STL_DATASET);
+            if (dt != null){
+                set(Context.STL_DATASET, dt);
+            }
+        }
+    }
        
 }

@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
@@ -965,24 +966,22 @@ public class PluginImpl extends ProxyImpl {
     }
     
     /**
+     * uri: transformation URI
      * name is a named graph
      * TODO: cache for named graph
      */    
     Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, String name) {    
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
-        String p = null;
-        String trans = getLabel(uri);
-        if (trans != null) {
-            p = trans;
-        } else if (q.hasPragma(Pragma.TEMPLATE)) {
-            p = (String) q.getPragma(Pragma.TEMPLATE);
+        String transform = getLabel(uri);
+        if (transform == null && q.hasPragma(Pragma.TEMPLATE)) {
+            transform = (String) q.getPragma(Pragma.TEMPLATE);
         } 
 
-        Transformer t = (Transformer) q.getTransformer(p);
+        Transformer t = (Transformer) q.getTransformer(transform);
         
-        if (p == null && t != null){
-            p = t.getTransformation();
+        if (transform == null && t != null){
+            transform = t.getTransformation();
         }
         
         if (name != null){
@@ -992,14 +991,14 @@ public class PluginImpl extends ProxyImpl {
                            exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
                         || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
                 
-               Transformer gt = Transformer.create((Graph) prod.getGraph(), p, name, with);
+               Transformer gt = Transformer.create((Graph) prod.getGraph(), transform, name, with);
                gt.init(ast);
                 // set after init
                gt.set(Transformer.STL_TRANSFORM, uri);
                
                if (t == null){
                    // get current transformer if any to get its NSManager 
-                  t = (Transformer) q.getTransformer(null);
+                  t = (Transformer) q.getTransformer();
                }
                if (t != null && t.getNSM().isUserDefine()){
                    gt.setNSM(t.getNSM());
@@ -1012,18 +1011,19 @@ public class PluginImpl extends ProxyImpl {
             }
        }
         else if (t == null) {    
-            t = Transformer.create(prod, p);
+            t = Transformer.create(prod, transform);
             // set after init
             t.init(ast);
+            // TODO: uri vs transform ???
             t.set(Transformer.STL_TRANSFORM, uri);  
-            
-            q.setTransformer(p, t);
+            t.complete((Transformer) q.getTransformer());
+            q.setTransformer(transform, t);
         }
         
         return t;
     }
     
-  
+ 
 
     public void setPPrinter(String str) {
         PPRINTER = str;

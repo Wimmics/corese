@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rdf [
-   <!ENTITY humans   "http://www.inria.fr/2007/humans.rdfs"> 
+   <!ENTITY humans   "http://www.inria.fr/2015/humans"> 
    <!ENTITY rdfs     "http://www.w3.org/2000/01/rdf-schema">
     ]>
 
 <rdf:RDF  
    xmlns:rdf ="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:rdfs="&rdfs;#"
+   xmlns:st  ="http://ns.inria.fr/sparql-template/"
    xmlns     ="&rdfs;#"
    xml:base  ="&humans;#">
 

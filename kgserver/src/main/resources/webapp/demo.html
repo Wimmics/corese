@@ -32,13 +32,14 @@
   
 <h3>History RDF Dataset Linked with DBpedia</h3>
 <ul>
-<li><a href="/template?transform=st:cdn">History</a></li>
+<!-- <li><a href="/template?transform=st:cdn">History</a></li> -->
+<li><a href="/tutorial/cdn?transform=st:cdn">History</a></li>
 </ul>
  
   
 <h3>SPARQL Tutorial</h3>
 <ul>
-<li><a href="/tutorial/rdf?profile=st:web">Tutorial RDF</a></li>
+<li><a href="/tutorial/rdf">Tutorial RDF</a></li>
 <li><a href="/tutorial/rdfs?profile=st:weben">Tutorial RDFS</a></li>
 </ul>
 
@@ -51,17 +52,24 @@
  
 <h3>SPARQL Sudoku Solver</h3>  
 <ul>
-<li><a href="/sdk?name=sdk.rq">Sudoku Solver</a></li>
+<!-- <li><a href="/sdk?name=sdk.rq">Sudoku Solver</a></li>-->
+<li><a href="/sdk">Sudoku Solver</a></li>
 </ul>
   
+
+
+
 <h3>SPARQL Query</h3>
 
-<form method='get' action='/template'>
+<form method='get' id='serv' action='/template'>
     
-   <select name="profile">
-    <option value="st:sparql">LDP</option>
-    <option value="st:std">STD</option>
-  </select> 
+   <select name="tmp" id='select' onChange="document.getElementById('serv').action = document.getElementById('select').value;">
+    <option value="/template">Server</option>
+    <option value="/tutorial/rdf">Tutorial RDF</option>
+    <option value="/tutorial/cdn">Tutorial CDN</option>
+   </select> 
+    
+    <input type='hidden' name='profile' value='st:sparql' />
     <br/>
   <textarea cols='60' rows='10' name='query'>
   select * where {
@@ -72,7 +80,10 @@
   <br/>
   <input type='submit' value='Submit'>
 </form>
+
+
   
+
   <h3>DBpedia Query</h3>
 
 <form method='get' action='/template'>

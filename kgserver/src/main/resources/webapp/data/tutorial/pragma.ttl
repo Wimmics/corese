@@ -1,0 +1,15 @@
+@prefix h:  <http://www.inria.fr/2015/humans#>
+@prefix st: <http://ns.inria.fr/sparql-template/>
+
+h:Person 	st:icon </img/person.png> .
+
+h:Man 		st:icon </img/male.png> .
+
+h:Woman 	st:icon </img/female.png> .
+
+h:Lecturer 	st:icon </img/professor.jpg> .
+
+h:Researcher 	st:icon </img/professor.jpg> .
+
+h:Researcher rdfs:seeAlso h:Lecturer .
+h:Lecturer   rdfs:seeAlso h:Researcher .

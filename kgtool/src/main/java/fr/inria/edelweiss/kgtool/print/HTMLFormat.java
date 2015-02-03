@@ -111,6 +111,7 @@ public class HTMLFormat {
         if (cg != null){
             context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
         }
+        context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
         t.setContext(context);
         return t.toString();
     }

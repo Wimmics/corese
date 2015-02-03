@@ -1,0 +1,8 @@
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+select * where {
+  bind(kg:write('/tmp/tmp.ttl', st:atw(st:turtle)) as ?res)
+}

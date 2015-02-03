@@ -1,0 +1,48 @@
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+construct  {
+  ?r a foaf:Person
+  ?r rdfs:label ?label 
+  ?r ?qq ?s        ?s rdfs:label ?ls
+  ?r p:naissance ?b ?r p:décès ?d
+  ?r o:thumbnail  ?ic
+}
+where {
+
+service <http://dbpedia.org/sparql> {
+
+  ?r rdfs:label ?label . filter(lang(?label) = 'fr')
+  
+  optional { ?r p:naissance ?b . ?r p:décès ?d }
+  
+  optional { ?r o:thumbnail  ?ic  }
+  
+  optional {
+    ?r ?q ?s 
+    
+    filter(
+       ?q = o:spouse || ?q = o:child
+    || ?q = p:mère   || ?q = o:mother
+    || ?q = p:père   || ?q = o:father
+    || ?q = p:successeur   || ?q = o:successor 
+    || ?q = p:prédécesseur || ?q = o:predecessor
+    ) 
+    
+    filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'fr') 
+  }
+	      
+ 
+}
+
+bind (if (?q = p:successeur,   o:successor,
+      if (?q = p:prédécesseur, o:predecessor,
+      if (?q = p:mère, o:mother,
+      if (?q = p:père, o:father,
+      ?q)))) 
+      as ?qq)
+  
+}

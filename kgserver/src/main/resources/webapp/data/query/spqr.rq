@@ -1,0 +1,11 @@
+prefix o:    <http://dbpedia.org/ontology/>
+
+construct {
+    ?x ?p ?y
+}
+where {
+    graph ?g {
+        [] st:topic st:spqr
+        ?x ?p ?y
+    }
+}

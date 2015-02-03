@@ -1,0 +1,67 @@
+#
+# SPARQL Query 
+# Extract a subgraph from dbpedia, to be processed by HTML Transformation st:navlab
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014
+#
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+construct debug {
+  ?r a ?class 
+  ?r rdfs:label ?label ; rdfs:comment ?com
+  ?r o:wikipedia ?pr ; o:dbpedia ?r
+  
+  ?r ?qq ?s        ?s rdfs:label ?ls     ?qq rdfs:label ?lq
+  ?r p:naissance ?b ?r p:décès ?d
+  ?r o:thumbnail  ?ic
+  ?r p:latitude ?lat ; p:longitude ?lon
+}
+where {
+
+
+  ?r rdfs:label ?label . filter(lang(?label) = 'fr')    
+  ?r rdfs:comment ?com . filter(lang(?com) = 'fr')
+ 
+  optional { ?r p:naissance ?b . ?r p:décès ?d }  
+  optional { ?r o:thumbnail  ?ic  }
+  optional { ?r p:latitude ?lat ; p:longitude ?lon }  
+  optional {
+    ?r ?q ?s 
+    
+    filter(
+       ?q = o:spouse || ?q = o:child
+    || ?q = p:mère   || ?q = o:mother
+    || ?q = p:père   || ?q = o:father
+    || ?q = p:successeur   || ?q = o:successor 
+    || ?q = p:prédécesseur || ?q = o:predecessor
+    || ?q = o:residence 
+    
+    || ?q = p:sud || ?q = p:nord || ?q = p:est || ?q = p:ouest
+    || ?q = p:sudEst  || ?q = p:sudOuest
+    || ?q = p:nordEst || ?q = p:nordOuest 
+    ) 
+    
+    filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'fr') 
+    
+#    ?q rdfs:label ?lq     filter(lang(?lq) = 'fr' || lang(?lq) = 'en')
+
+  }
+	     
+
+bind (if (?q = p:successeur,   o:successor,
+      if (?q = p:prédécesseur, o:predecessor,
+      if (?q = p:mère, o:mother,
+      if (?q = p:père, o:father,
+      ?q)))) 
+      as ?qq)
+      
+bind (if (bound(?lat), o:Place, foaf:Person) as ?class)     
+      
+bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr)   
+      
+  
+}

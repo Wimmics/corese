@@ -1,0 +1,5 @@
+select * where {
+   { ?r ?p ?x } union 
+   { ?y ?q ?r } union 
+   { ?z ?r ?t }   
+}

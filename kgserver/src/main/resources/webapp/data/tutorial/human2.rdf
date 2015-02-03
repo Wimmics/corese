@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+   <!ENTITY humans   "http://www.inria.fr/2015/humans"> 
+   <!ENTITY xsd      "http://www.w3.org/2001/XMLSchema#"> ]>
+ 
+<rdf:RDF  
+   xmlns:rdf ="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:xsd ="&xsd;" 
+   xmlns     ="&humans;#" 
+   xml:base  ="&humans;-instances" >
+   
+
+
+<Man rdf:ID="Lucas">
+	<shoesize rdf:datatype="&xsd;integer" >7</shoesize>
+	<trouserssize rdf:datatype="&xsd;integer" >28</trouserssize>
+	<age rdf:datatype="&xsd;integer" >12</age>
+	<shirtsize rdf:datatype="&xsd;integer" >8</shirtsize>
+	<name>Lucas</name>
+	<hasMother rdf:resource="#Catherine"/>
+</Man>
+
+<Man rdf:ID="Gaston">
+  <rdf:type rdf:resource="&humans;#Researcher"/>
+	<shoesize rdf:datatype="&xsd;integer" >11</shoesize>
+	<trouserssize rdf:datatype="&xsd;integer" >38</trouserssize>
+	<age rdf:datatype="&xsd;integer" >102</age>
+	<shirtsize rdf:datatype="&xsd;integer" >12</shirtsize>
+	<name>Gaston</name>
+	<hasChild rdf:resource="#Pierre"/>
+	<hasChild rdf:resource="#Jack"/>
+</Man>
+
+<Lecturer rdf:about="#Laura"/>
+
+<Person rdf:ID="William">
+	<hasSpouse rdf:resource="#Laura"/>
+	<shoesize rdf:datatype="&xsd;integer" >10</shoesize>
+	<age rdf:datatype="&xsd;integer" >42</age>
+	<trouserssize rdf:datatype="&xsd;integer" >46</trouserssize>
+	<shirtsize rdf:datatype="&xsd;integer" >13</shirtsize>
+	<name>William</name>
+</Person>
+
+<Man rdf:ID="Pierre">
+	<shoesize rdf:datatype="&xsd;integer" >8</shoesize>
+	<age rdf:datatype="&xsd;integer" >71</age>
+	<trouserssize rdf:datatype="&xsd;integer" >30</trouserssize>
+	<shirtsize rdf:datatype="&xsd;integer" >9</shirtsize>
+	<name>Pierre</name>
+</Man>
+
+<Person rdf:ID="Karl">
+	<hasSpouse rdf:resource="#Catherine"/>
+	<hasFriend rdf:resource="#Sophie"/>
+	<shoesize rdf:datatype="&xsd;integer" >7</shoesize>
+	<age rdf:datatype="&xsd;integer" >36</age>
+	<shirtsize rdf:datatype="&xsd;integer" >9</shirtsize>
+	<trouserssize rdf:datatype="&xsd;integer" >40</trouserssize>
+</Person>
+
+<Person rdf:ID="Sophie">
+   <name xml:lang='fr'>Sophie</name>
+</Person>   
+
+
+<Woman rdf:ID="Catherine">
+  <hasMother rdf:resource="#Laura"/>
+  <name xml:lang='fr'>Catherine</name>
+</Woman>
+
+<Researcher rdf:about="#Laura">
+  <name>Laura</name>
+</Researcher>
+
+<Person rdf:about="#John">
+	<shirtsize rdf:datatype="&xsd;integer" >12</shirtsize>
+	<trouserssize rdf:datatype="&xsd;integer" >44</trouserssize>
+	<hasParent rdf:resource="#Sophie"/>
+	<list rdf:parseType='Collection'>
+	  <rdf:Description rdf:about='#Jean' />
+	  <rdf:Description rdf:about='#Johan' />
+	  <rdf:Description rdf:about='#Johnny' />	  
+	</list>
+</Person>
+
+</rdf:RDF>

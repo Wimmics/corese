@@ -11,11 +11,7 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -35,9 +31,10 @@ import java.util.logging.Logger;
 public class Profile {
     
     static final String NL = System.getProperty("line.separator");
-    static final String DATA    = "/webapp/data/" ;
-    static final String QUERY   = "/webapp/query/" ;
-    
+    static final String SERVER  = "http://localhost:" + EmbeddedJettyServer.port;
+    static final String DATA    = SERVER + "/data/";
+    static final String QUERY   = DATA + "query/";
+      
     HashMap<String,  Service> map, servers; 
     NSManager nsm;
     
@@ -130,13 +127,31 @@ public class Profile {
     
     void define(String name){
         if (! map.containsKey(name) && ! isProtected){
-            init(DATA, name);
+            //init(WEBAPP_DATA, name);
+            System.out.println("Profile: " + name);
+            init(name);
         }
     }
   
-    void init(String path, String name){       
+    
+    void process(Graph g) throws IOException, EngineException {
+        init(g);
+        initLoad(g);
+        initLoader(g);
+    }
+    
+    
+    void initServer(String name) {
+        init(DATA + name);
+    }
+    
+    /**
+     * 
+     * path = DATA + profile.ttl
+     */
+     void init(String path){       
         try {
-            Graph g = load(path, name);
+            Graph g = load(path);
             process(g);
         } catch (IOException ex) {
             Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
@@ -146,54 +161,37 @@ public class Profile {
             Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
         }       
     }
-    
-    void process(Graph g) throws IOException, EngineException {
-        init(g);
-        initLoad(g);
-        initLoader(g);
-    }
-    
-    GraphStore load(String path, String name) throws IOException, LoadException {
-        GraphStore g = GraphStore.create();
-        String str = getResource(path, name);
-        Load load = Load.create(g);
-        load.loadString(str, name, Load.TURTLE_FORMAT);
-        return g;
-    }
-    
-    GraphStore getGraph(String name){
-        return getGraph(DATA, name);
-    }
-    
-    GraphStore getGraph(String path, String name){
-        try {
-            return load(path, name);
-        } catch (IOException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (LoadException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return GraphStore.create();
-    }
-    
-    // name = webapp/data/...
-    GraphStore loadResource(String name) throws LoadException {
-        GraphStore g = GraphStore.create();
-        Load ld = Load.create(g);
-        ld.loadResource(name, ld.getFormat(name, Load.TURTLE_FORMAT));
-        return g;
-    }
-    
-     String loadQuery(String name) throws IOException {
-        if (isProtected) {
-            // only predefined queries
-            return getResource(Profile.QUERY + name);
-        }
-        // local or external query 
-        return getResource(Profile.QUERY, name);
-    }
-    
      
+     
+     GraphStore loadServer(String name) throws IOException, LoadException {
+         return load(DATA + name);
+     }
+     
+     GraphStore load(String path) throws IOException, LoadException {
+        GraphStore g = GraphStore.create();
+        Load load = Load.create(g);
+        load.load(path, Load.TURTLE_FORMAT);
+        return g;
+    }
+     
+    String read(String path) throws IOException {
+        QueryLoad ql = QueryLoad.create();
+        String res = ql.read(path);
+        if (res == null) {
+            throw new IOException(path);
+        }
+        return res;
+    }
+    
+    
+     String loadQuery(String path) throws IOException {
+        if (isProtected && ! path.startsWith(SERVER)){
+             throw new IOException(path);           
+        }
+        return read(path);
+    }
+    
+
      Service getService(String name){
          return map.get(name);
      }
@@ -208,7 +206,7 @@ public class Profile {
     }
     
     void init(Graph g) throws IOException, EngineException{
-        String str = getResource(QUERY + "profile.rq");
+        String str = read(QUERY + "profile.rq");
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
         for (Mapping m : map){
@@ -246,7 +244,7 @@ public class Profile {
     }
     
      void initLoad(Graph g) throws IOException, EngineException{
-        String str = getResource(QUERY + "profileLoad.rq");
+        String str = read(QUERY + "profileLoad.rq");
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
         for (Mapping m : map){
@@ -270,75 +268,32 @@ public class Profile {
     void initLoader(Graph g) throws EngineException{
         String str = "select * where {"
                 + "?s a st:Server "
+                + "values ?p { st:data st:schema st:context }"
                 + "?s ?p ?d "
                 + "?d st:uri ?u "
-                + "?d st:name ?n "
-                + "values ?p { st:data st:schema st:context }"
+                + "optional { ?d st:name ?n } "
                 + "}";
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
-        
         for (Mapping m :map){
             Node sn = m.getNode("?s");
             Node p = m.getNode("?p");
             Node u = m.getNode("?u");
             Node n = m.getNode("?n");
-            
            Service s = findServer(sn.getLabel());
-           s.add(p.getLabel(), u.getLabel(), (n != null)?n.getLabel():null); 
+           s.add(p.getLabel(), u.getLabel(), (n != null)?n.getLabel():null);
         }
                 
     }
     
     Service findServer(String name){
-        Service s = map.get(name);
+        Service s = servers.get(name);
         if (s == null){
             s = new Service(name);
-            map.put(name, s);
             servers.put(name, s);
         }
         return s;
     }
     
-    String getResource(String path, String name) throws IOException {
-        String res = "";
-        try {
-            res = getResource(path + name);
-        } catch (IOException ex) {
-            QueryLoad ql = QueryLoad.create();
-            res = ql.read(name);
-            if (res == null){
-                throw new IOException(name);
-            }
-        }
-        return res;
-    }
-    
-    String getResource(String name) throws IOException {
-        InputStream stream = Profile.class.getResourceAsStream(name);
-        if (stream == null) {
-            throw new IOException(name);
-        }
-        Reader fr = new InputStreamReader(stream);
-        String str = read(fr);
-        return str;
-    }
-    
-
-    String read(Reader fr) throws IOException {
-        BufferedReader fq = new BufferedReader(fr);
-        StringBuilder sb = new StringBuilder();
-        String str;
-        while (true) {
-            str = fq.readLine();
-            if (str == null) {
-                fq.close();
-                break;
-            }
-            sb.append(str);
-            sb.append(NL);
-        }
-        return sb.toString();
-    }
 
 }

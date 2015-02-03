@@ -49,7 +49,7 @@ public class SPARQLRestAPI {
     static String localProfile;
     static TripleStore store = new TripleStore(false, false);
     // set true to prevent update/load
-    static boolean isProtected = true;
+    static boolean isProtected = false;
     private static Profile mprofile;
   
     
@@ -94,9 +94,15 @@ public class SPARQLRestAPI {
       
     void init(){
         mprofile = new Profile();
-        mprofile.init(Profile.DATA, PROFILE_DEFAULT); 
+        //mprofile.init(Profile.WEBAPP_DATA, PROFILE_DEFAULT);
+        mprofile.initServer(PROFILE_DEFAULT);
         if (localProfile != null){
-            mprofile.init("", localProfile);
+            //mprofile.init("", localProfile);
+            if (! localProfile.startsWith("http://") &&
+                ! localProfile.startsWith("file://")){
+                localProfile = "file://" + localProfile;
+            }
+            mprofile.init(localProfile);
         }
     }
     
@@ -182,6 +188,8 @@ public class SPARQLRestAPI {
     // Query Corese Server here
     @GET
     @Produces("application/sparql-results+json")
+//    @Path("json")
+
     public Response getTriplesJSONForGet(@QueryParam("query") String query,
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
@@ -388,6 +396,7 @@ public class SPARQLRestAPI {
 
     @POST
     @Produces("application/sparql-results+json")
+//    @Path("json")
     public Response getTriplesJSONForPost(@DefaultValue("")
             @FormParam("query") String query,
             @FormParam("default-graph-uri") List<String> defaultGraphUris,

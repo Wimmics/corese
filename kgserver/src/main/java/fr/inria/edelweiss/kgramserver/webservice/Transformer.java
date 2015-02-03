@@ -122,7 +122,7 @@ public class Transformer {
 
             if (squery != null && store != null) {
                 Dataset ds = createDataset(par.getFrom(), par.getNamed(), ctx);
-                map = store.getQueryProcess().query(squery, ds);
+                map = store.query(squery, ds);
 
                 if (isDetail) {
                     System.out.println(map);

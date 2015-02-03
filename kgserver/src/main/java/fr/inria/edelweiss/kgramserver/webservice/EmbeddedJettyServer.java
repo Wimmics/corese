@@ -47,7 +47,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 public class EmbeddedJettyServer {
 
     private static Logger logger = Logger.getLogger(EmbeddedJettyServer.class);
-    private static int port = 8080;
+    static int port = 8080;
     private static boolean entailments = false;
     private static boolean owlrl = false;
     private static String dataPath = null;
@@ -151,6 +151,7 @@ public class EmbeddedJettyServer {
                 System.out.println("Profile: " + localProfile);
             }  
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
+            System.out.println("Jetty: " + webappUri);
             Server server = new Server(port);
 
             ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);

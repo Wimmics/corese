@@ -45,7 +45,7 @@ public class TripleStore {
         return exec;
     }
     
-    Graph getGraph(){
+    GraphStore getGraph(){
         return graph;
     }
     

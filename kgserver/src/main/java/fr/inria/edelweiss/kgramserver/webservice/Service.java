@@ -136,7 +136,7 @@ public class Service {
             uri = u;
             name = n;
         }
-
+             
         /**
          * @return the uri
          */
@@ -164,6 +164,16 @@ public class Service {
         public void setName(String name) {
             this.name = name;
         }
+        
+        boolean similar(Doc d){
+            if (! getUri().equals(d.getUri())){
+                return false;
+            }
+            if (getName() == null || d.getName() == null){
+                return getName() == d.getName();
+            }
+            return  getName().equals(d.getName());
+        }
     }
 
     Service(String name) {
@@ -182,6 +192,7 @@ public class Service {
 
     public String toString() {
         String s = "";
+        s += "name: " + name + "\n";
         s += "transform: " + transform + "\n";
         s += "variable: " + variable + "\n";
         s += "query: " + query + "\n";
@@ -263,13 +274,25 @@ public class Service {
     // uri of doc to load
     // name of graph 
     void add(String prop, String uri, String name) {
+        if (name == null){
+            name = uri;
+        }
         Doc d = new Doc(uri, name);
         if (prop.equals(PDATA)) {
-            getData().add(d);
+            add(getData(),d);
         } else if (prop.equals(PSCHEMA)) {
-            getSchema().add(d);
+            add(getSchema(), d);
         } else if (prop.equals(PCONTEXT)) {
-            getContext().add(d);
+            add(getContext(), d);
         }
+    }
+    
+    void add(List<Doc> list, Doc doc){
+        for (Doc d : list){
+            if (d.similar(doc)){
+                return;
+            }
+        }
+        list.add(doc);
     }
 }

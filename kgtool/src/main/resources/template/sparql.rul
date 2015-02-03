@@ -2,57 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Jan 25 17:28:59 CET 2015
+Mon Feb 02 15:00:58 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-template st:close {
-  
-  "</table>"
-   
-}
-where {
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:query(?q) {
-  """
-  <h3>Query</h3>
-  <form method='post' action='"""
-    
-  st:get(st:service)
-  
-  """'>
-  
-   <select name="profile">
-    <option value="st:sparql">LDP</option>
-    <option value="st:std">STD</option>
-   </select> 
-  
-    <br/>
-    <textarea cols='60' rows='10' name='query'>"""str(?q)
-    
-  """</textarea>
-    <br/>
-    <input type='submit' value='Submit'/>
-  </form>
-  """
-}
-where {
-}
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -103,16 +56,211 @@ order by ?v
 <rule>
 <body>
 <![CDATA[
-template st:opencons {
+template st:link(?uri, ?title) {
+   "<a href=\""  str(?uri) "\">" str(?title) "</a>"
+}
+where {
+}
+]]>
+</body>
+</rule>
 
-  """
-  <h3>Result</h3>
-  <table>
-  <tr class='s1'>
-  <th></th><th>subject</th><th>property</th><th>object</th>
-  </tr>
-  """
+<rule>
+<body>
+<![CDATA[
+#
+# Utility template to be used by another transformation to
+# integrate SPARQL Query Results without headings
+#
+template st:result(?service, ?profile) {
+   
+  st:call-template(st:page)
+      
+}
+where {
+  bind (st:set(st:service, coalesce(?service, "/template")) as ?s)
+  bind (st:set(st:profile, coalesce(?profile, st:sparql)) as ?p)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template st:table {
+
+ "<tr class='s" 
+   if (kg:even(st:number()), 1, 0)
+ "'>"
+ 
+  "<th>"  st:number() "</th>"
   
+    st:apply-templates(?s)
+ 
+ "</tr>"
+ 
+}
+where {
+  ?x rs:solution ?s 
+  ?s rs:index ?i
+  
+}
+order by ?i
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:display(?x) {
+  if (! bound(?profile), 
+    st:call-template(st:esc, ?x),
+    if (?profile = st:sparql ||
+        ?profile = <file:///home/corby/AData/demo/sparql.ttl>, 
+      st:call-template(st:linkprofile, ?x),
+      st:call-template(st:linkesc, ?x)))
+          
+}
+where {
+      bind (st:get(st:profile) as ?profile)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Trap select * where {} solution as there is no variable (see solution.rq)
+#
+template st:default {
+
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:pageask {
+"""
+  <h3>Result</h3>
+  <p>
+  """      
+  ?b  
+  "</p>"
+}
+where {
+  ?r rs:boolean ?b
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:linkprofile(?x) {
+
+  if (isURI(?x), 
+    st:call-template(st:link, 
+      coalesce(st:call-template(st:transform, ?x), encode_for_uri(?x)),
+      ?e),
+    str(?e))
+    
+}
+where {
+
+  bind (st:call-template(st:esc, ?x) as ?e)
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:transform(?x) {
+
+    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" st:get(st:profile)
+    
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:pageselect {
+   
+  st:call-template(st:open)
+  
+  st:call-template(st:table)
+  
+  st:call-template(st:close)
+    
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:close {
+  
+  "</table>"
+   
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:query(?q) {
+  """
+  <h3>Query</h3>
+  <form method='post' action='"""
+    
+  st:get(st:service)
+  
+  """'>
+  
+   <select name="profile">
+    <option value="st:sparql">LDP</option>
+    <option value="st:std">STD</option>
+   </select> 
+  
+    <br/>
+    <textarea cols='60' rows='10' name='query'>"""str(?q)
+    
+  """</textarea>
+    <br/>
+    <input type='submit' value='Submit'/>
+  </form>
+  """
 }
 where {
 }
@@ -150,19 +298,16 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template st:decl {
+template st:opencons {
 
   """
   <h3>Result</h3>
   <table>
+  <tr class='s1'>
+  <th></th><th></th><th>subject</th><th>property</th><th>object</th><th></th>
+  </tr>
   """
   
- "<tr class='s1'><td/>"
- 
-  st:call-template(st:th)
-  
- "</tr>\n"
 }
 where {
 }
@@ -195,6 +340,29 @@ where {}
 <body>
 <![CDATA[
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template st:decl {
+
+  """
+  <h3>Result</h3>
+  <table>
+  """
+  
+ "<tr class='s1'><td/>"
+ 
+  st:call-template(st:th)
+  
+ "</tr>\n"
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 
 template st:page {
    
@@ -215,38 +383,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:link(?uri, ?title) {
-   "<a href=\""  str(?uri) "\">" str(?title) "</a>"
-}
-where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Utility template to be used by another transformation to
-# integrate SPARQL Query Results without headings
-#
-template st:result(?service, ?profile) {
-   
-  st:call-template(st:page)
-      
-}
-where {
-  bind (st:set(st:service, coalesce(?service, "/template")) as ?s)
-  bind (st:set(st:profile, coalesce(?profile, st:sparql)) as ?p)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:pagecons {
    
   st:call-template(st:opencons)
@@ -258,33 +394,6 @@ template st:pagecons {
 }
 where {
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template st:table {
-
- "<tr class='s" 
-   if (kg:even(st:number()), 1, 0)
- "'>"
- 
-  "<th>"  st:number() "</th>"
-  
-    st:apply-templates(?s)
- 
- "</tr>"
- 
-}
-where {
-  ?x rs:solution ?s 
-  ?s rs:index ?i
-  
-}
-order by ?i
 ]]>
 </body>
 </rule>
@@ -315,34 +424,20 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:display(?x) {
-
-  if (! bound(?profile), 
-    st:call-template(st:esc, ?x),
-    if (?profile = st:sparql, 
-      st:call-template(st:linkprofile, ?x),
-      st:call-template(st:linkesc, ?x)))
-          
+#
+#  Get an optional icon from the dataset and display it
+#
+template st:show(?x) {
+    "<img width='35' src='"  str(?l)   "' />" 
 }
 where {
-      bind (st:get(st:profile) as ?profile)
+  bind (st:get(st:dataset) as ?g)
+  graph ?g { 
+    { ?x st:icon ?l }  
+    union { ?x a ?t . ?t st:icon ?l }  
+  }
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Trap select * where {} solution as there is no variable (see solution.rq)
-#
-template st:default {
-
-}
-where {
-
-}
+limit 1
 ]]>
 </body>
 </rule>
@@ -373,19 +468,19 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-
-template st:pageask {
-"""
-  <h3>Result</h3>
-  <p>
-  """      
-  ?b  
-  "</p>"
+#
+#  Get an optional icon from the dataset and display it
+#
+template st:show2(?x) {
+    st:call-template(st:display, ?y) 
 }
 where {
-  ?r rs:boolean ?b
+  bind (st:get(st:dataset) as ?g)
+  graph ?g { 
+     ?x rdfs:seeAlso ?y   
+  }
 }
+limit 1
 ]]>
 </body>
 </rule>
@@ -443,69 +538,17 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:linkprofile(?x) {
-
-  if (isURI(?x), 
-    st:call-template(st:link, 
-      coalesce(st:call-template(st:transform, ?x), encode_for_uri(?x)),
-      ?e),
-    str(?e))
-    
-}
-where {
-
-  bind (st:call-template(st:esc, ?x) as ?e)
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:pageselect {
-   
-  st:call-template(st:open)
-  
-  st:call-template(st:table)
-  
-  st:call-template(st:close)
-    
-}
-where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:transform(?x) {
-
-    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" st:get(st:profile)
-    
-}
-where {
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:tablecons {
 
  "<tr class='s" 
    if (kg:even(st:number()), 1, 0)
  "'>"
  "<th>"      st:number()
- "</th><td>" st:call-template(st:display, ?x) 
+ "</th><td>" st:call-template(st:show,    ?x) 
+ "</td><td>" st:call-template(st:display, ?x) 
  "</td><td>" st:call-template(st:display, ?p) 
  "</td><td>" st:call-template(st:display, ?y) 
+ "</th><td>" st:call-template(st:show,    ?y) 
  "</td>"
  "</tr>"
  

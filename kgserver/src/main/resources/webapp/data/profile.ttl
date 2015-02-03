@@ -4,17 +4,17 @@
 
 
 st:dbpedia a st:Profile ;
-  st:query     "frdbpedia.rq" ;
+  st:query     <query/frdbpedia.rq> ;
   st:variable  "?r" ;
   st:transform st:navlab .
 
 st:dbpediacopy a st:Profile ;
-  st:query     "frdbpediains.rq" ;
+  st:query     <query/frdbpediains.rq> ;
   st:variable  "?r" ;
   st:transform st:navlab .
 
 st:dbpediaall a st:Profile ;
-  st:query     "frdbpediaall.rq" ;
+  st:query     <query/frdbpediaall.rq> ;
   st:variable  "?r" ;
   st:transform st:navlab .
 
@@ -31,70 +31,81 @@ st:weben a st:Profile ;
    st:transform st:web .
 
 st:sparql a st:Profile ;
-    st:query "construct.rq" ;
+    st:query <query/construct.rq> ;
     st:variable "?r" ;
     st:transform st:sparql .
 
 st:std a st:Profile ;
-    st:query "construct.rq" ;
+    st:query <query/construct.rq> ;
     st:variable "?r" ;
     st:transform st:sparql .
 
 st:local a st:Profile ;
-  st:query     "local.rq" ;
+  st:query     <query/local.rq> ;
   st:variable  "?r" ;
   st:transform st:navlab .
 
 st:personen a st:Profile ;
-  st:query     "dbpedia.rq" ;
+  st:query     <query/dbpedia.rq> ;
   st:variable  "?r" ;
   st:transform st:navlab .  
-  
-  
+
 st:bound a st:Profile ;
-st:query "bound.rq";
+st:query <query/bound.rq>;
 st:transform st:navlab .  
  
 st:mglt a st:Profile ;
-st:query "mglt.rq";
+st:query <query/mglt.rq>;
 st:transform st:navlab . 
 
 st:spqr a st:Profile ;
-st:query "spqr.rq";
+st:query <query/spqr.rq>;
 st:transform st:navlab . 
        
 st:cdn a st:Profile ;
-st:query "cdn.rq";
+st:query <query/cdn.rq>;
 st:transform st:navlab .  
 
 ###################################
 
-@base <http://corese.inria.fr/data/>
-#@base <http://localhost:8080/data/>
 
-
+# Dataset of the SPARQL endpoint
+# deprecated, see below
 st:loadHistory a st:Profile ;
-st:load <cdn/aa_siecle.ttl>, <cdn/fr.ttl>, <cdn/eds.ttl>, <cdn/emp.ttl>, 
+st:load2 <cdn/aa_siecle.ttl>, <cdn/fr.ttl>, <cdn/eds.ttl>, <cdn/emp.ttl>, 
 <cdn/provence.ttl>, <cdn/icon.rdf>, <cdn/context.ttl>, 
 <cdn/an1000.ttl>, <cdn/an1100.ttl>, <cdn/an1200.ttl>, <cdn/an1300.ttl>, <cdn/an1400.ttl>, 
 <cdn/an1500.ttl>, <cdn/an1600.ttl>, <cdn/an1700.ttl>, <cdn/an1800.ttl>, <cdn/an1900.ttl> .
 
+
+# Dataset of specific services, e.g. /tutorial/rdf
+
 #@base <file:///user/corby/home/NetBeansProjects/kgram/trunk/kgserver/src/main/resources/webapp/data/>
 
 st:tutorial1 a st:Server ;
-  st:data     [ st:uri <tutorial/human.rdf>  ; st:name st:data ] ;
+  st:data     
+    [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
+    [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
+    [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
 
 st:tutorial2 a st:Server ;
-  st:data     [ st:uri <tutorial/human.rdf>  ; st:name st:data ] ;
+  st:data     
+    [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
+    [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ;
   st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
 
+# /tutorial/cdn
+st:cdn a st:Server ;
+st:data 
+    [ st:uri <cdn/aa_siecle.ttl> ], [ st:uri <cdn/fr.ttl> ], [ st:uri <cdn/eds.ttl> ], [ st:uri  <cdn/emp.ttl> ], 
+    [ st:uri <cdn/provence.ttl> ], [ st:uri <cdn/icon.rdf> ], [ st:uri <cdn/context.ttl> ], 
+    [ st:uri <cdn/an1000.ttl> ], [ st:uri <cdn/an1100.ttl> ], [ st:uri <cdn/an1200.ttl> ], [ st:uri <cdn/an1300.ttl> ], 
+    [ st:uri  <cdn/an1400.ttl> ], 
+    [ st:uri <cdn/an1500.ttl> ], [ st:uri <cdn/an1600.ttl> ], [ st:uri <cdn/an1700.ttl> ], [ st:uri <cdn/an1800.ttl> ], 
+    [ st:uri <cdn/an1900.ttl> ] .
 
-st:tutordf a st:Profile ;
-    st:server st:tutorial1 ;
-    st:transform st:web ;
-    st:lang "fr" .
 
 
 #st:loadLocal a st:Profile ; st:load <paca/mglt.ttl>, <paca/spqr.ttl>, <paca/borne.ttl>, <paca/cdn.ttl> .

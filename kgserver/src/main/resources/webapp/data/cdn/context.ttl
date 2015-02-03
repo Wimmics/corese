@@ -143,7 +143,10 @@ cn:date 1517  ; rdfs:label "Thèses de Martin Luther" ;
 cn:icon <http://upload.wikimedia.org/wikipedia/commons/9/90/Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg> .
 
 
-
+r:Nicolas_Copernic a foaf:Person ;
+cn:date 1543 ;
+rdfs:label "Nicolas Copernic" ;
+rdfs:comment "Théorie de l'héliocentrisme (1473-1543)" .
 
 <http://fr.dbpedia.org/resource/Bataille_de_Saint-Quentin_(1557)> cn:date 1557 ;
 rdfs:label "Bataille de Saint-Quentin" ;

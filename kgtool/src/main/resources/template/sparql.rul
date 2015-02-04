@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Feb 03 16:52:41 CET 2015
+Wed Feb 04 13:29:58 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -247,7 +247,13 @@ template st:query(?q) {
   
   """'>
   
-   <select name="profile">
+   <select name="profile">"""
+   
+   if (bound(?prof) && ?prof not in (st:sparql, st:std),
+    concat("<option value='", str(?prof), "'>Local</option>"),
+    "")
+   
+   """
     <option value="st:sparql">LDP</option>
     <option value="st:std">STD</option>
    </select> 
@@ -260,6 +266,28 @@ template st:query(?q) {
     <input type='submit' value='Submit'/>
   </form>
   """
+}
+where {
+  bind (st:get(st:profile) as ?prof)
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:opencons {
+
+  """
+  <h3>Result</h3>
+  <table>
+  <tr class='s1'>
+  <th></th><th></th><th>subject</th><th>property</th><th>object</th><th></th>
+  </tr>
+  """
+  
 }
 where {
 }
@@ -289,26 +317,6 @@ template st:tail {
 }
 where {
 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:opencons {
-
-  """
-  <h3>Result</h3>
-  <table>
-  <tr class='s1'>
-  <th></th><th></th><th>subject</th><th>property</th><th>object</th><th></th>
-  </tr>
-  """
-  
-}
-where {
 }
 ]]>
 </body>
@@ -428,6 +436,7 @@ where {
 #
 template st:show(?x) {
     "<img width='35' src='"  str(?l)   "' />" 
+#    st:call-template(st:show2, ?x)
 }
 where {
   bind (st:get(st:dataset) as ?g)
@@ -437,6 +446,34 @@ where {
   }
 }
 limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:tablecons2 {
+
+ "<tr class='s" 
+   if (kg:even(st:number()), 1, 0)
+ "'>"
+ "<th>"      st:number()
+ "</th><td>" st:call-template(st:show,    ?x) 
+ "</td><td>" st:call-template(st:display, ?x)
+ "</td><td>" st:call-template(st:tablecons3, ?x)
+ "</td>"
+ "</tr>"
+ 
+}
+where {
+  select distinct ?x where {
+    ?x ?p ?y
+    bind (st:get(st:uri) as ?uri)
+    filter (if (bound(?uri), ?uri in (?x, ?p, ?y), true))
+    }
+}
+order by ?x 
 ]]>
 </body>
 </rule>
@@ -460,6 +497,32 @@ template st:open {
 }
 where {
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:tablecons3(?x) {
+"<table>"
+group  {
+ "<tr>"
+ "<td>" st:call-template(st:display, ?p) 
+ "</td><td>" st:call-template(st:display, ?y) 
+ "</th><td>" st:call-template(st:show,    ?y) 
+ "</td>"
+ "</tr>"
+ }
+ "</table>"
+ 
+}
+where {
+  ?x ?p ?y
+  bind (st:get(st:uri) as ?uri)
+  filter (if (bound(?uri), ?uri in (?x, ?p, ?y), true))
+}
+order by ?x ?p ?y
 ]]>
 </body>
 </rule>

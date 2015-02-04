@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Feb 03 16:35:53 CET 2015
+Tue Feb 03 16:52:41 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -118,9 +118,9 @@ order by ?i
 template st:display(?x) {
   if (! bound(?profile), 
     st:call-template(st:esc, ?x),
-    if (?profile = st:sparql, 
-      st:call-template(st:linkprofile, ?x),
-      st:call-template(st:linkesc, ?x)))
+    if (?profile = st:std, 
+      st:call-template(st:linkesc, ?x),
+      st:call-template(st:linkprofile, ?x)))
           
 }
 where {

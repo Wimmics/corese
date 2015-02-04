@@ -323,7 +323,7 @@ public class Tutorial {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris) {
 
-        Param par = new Param(CDN_SERVICE, profile, (transform==null)?CDN:transform, resource, name, query);
+        Param par = new Param(CDN_SERVICE, profile, (transform==null && profile==null)?CDN:transform, resource, name, query);
         par.setValue(value);
         par.setDataset(namedGraphUris, namedGraphUris);
         return new Transformer().template(getTripleStore(CDN), par);
@@ -342,7 +342,7 @@ public class Tutorial {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
 
-        Param par = new Param(CDN_SERVICE, profile, (transform==null)?CDN:transform, resource, name, query);
+        Param par = new Param(CDN_SERVICE, profile, (transform==null && profile==null)?CDN:transform, resource, name, query);
         par.setValue(value);
         par.setDataset(namedGraphUris, namedGraphUris);
         return new Transformer().template(getTripleStore(CDN), par);

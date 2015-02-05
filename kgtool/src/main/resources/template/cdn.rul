@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jan 23 10:56:40 CET 2015
+Thu Feb 05 11:15:46 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -383,13 +383,13 @@ template  cn:table(?min, ?max) {
 
 }
 where {
-  select distinct ?d ?min ?max where {
+  {select distinct ?d  where {
     values ?p { cn:date cn:begin } 
     ?uri ?p ?d 
-    filter(?min <= ?d && ?d <= ?max)
-  }
-  order by asc(?d)
+  }}
+  filter(?min <= ?d && ?d <= ?max)
 }
+order by asc(?d)
 ]]>
 </body>
 </rule>

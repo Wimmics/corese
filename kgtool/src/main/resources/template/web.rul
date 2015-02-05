@@ -2,76 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 02 15:00:58 CET 2015
+Thu Feb 05 11:15:46 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-template st:prev(?t) {
-
-  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
-  "<button type='button'>Previous</button>"
-  "</a>"  
-    
-}
-where {
-  bind (st:get(st:context) as ?g)
-  
-  graph ?g {
-    ?q1 st:name ?t ; st:index ?i
-    bind (?i - 1 as ?j)
-    ?q2 st:index ?j ;
-	st:name ?n 
-  }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate a form with a SPARQL query ?q to submit
-# Argument  ?n is the name of query (st:minus)
-# ?q actual query, ?t query template, ?s query solution
-#
-template st:form(?n, ?q, ?t, ?s) {
-  """
-   <script type="text/javascript">           
-        function show(name){
-            document.getElementById('query').value = document.getElementById(name).value;
-        }
-   </script>
-       
-   <form method='post'  action='' >   
-   <input type='hidden' id='tmp' value='"""str(?t)"""' />
-   <input type='hidden' id='sol' value='"""str(?s)"""' />
-   <input type='hidden' name='uri' value='""" ?n """'/>
-   <input type='hidden' name='profile' value='""" st:get(st:profile) """'/> 
-   """
-   
-   if (?s = st:null, "", 
-   """<input type='button' onclick="show('sol')" value='Solution' />
-      <input type='button' onclick="show('tmp')" value='Template' /> 
-   """)
-   
-   """
-   <input type='submit' value='Submit' />
-   <br/>
-   <textarea cols='60' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
-   </form>
-  """
-}
-where {
-
-}
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -105,38 +39,17 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Select a query name to display and execute
-# query name bound to uri param
-# Generate query names list from context graph
-#
-template st:select(?t) {
+template st:content2(?t, ?p) {
 
-"""
-<h3>Select a query</h3>
-
-"""   
-"""<form method='get' action=''>
-
-  <input type='hidden' name='profile' value='""" st:get(st:profile) """' />
-"""
-
-  st:call-template(st:prev, ?t)
-
-  "<select name='uri' onChange='submit()'>"
-  
-    st:call-template(st:list, ?t)  
-    
-  "</select>" 
-
-  st:call-template(st:next, ?t)
+  str(?t) "<br/>"    group distinct { "<a href='" str(?d) "'>" str(?d) "</a>" ; separator="<br/>"} "<br/>"
  
-""" 
-</form>
-"""
-
 }
 where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    ?ds a st:Dataset
+    ?ds ?p [ st:uri ?d ]
+  }
 }
 ]]>
 </body>
@@ -146,91 +59,14 @@ where {
 <body>
 <![CDATA[
 template st:content {
-  group distinct { "<a href='" str(?d) "'>RDF Dataset</a>" } " - "
-  group distinct { "<a href='" str(?s) "'>RDFS Vocabulary</a>" } " - "
-  group distinct { "<a href='" str(?c) "'>SPARQL Queries</a>" }
   
+  st:call-template(st:content2, "Data:",   st:data)
+  st:call-template(st:content2, "Schema:", st:schema)
+  st:call-template(st:content2, "Query:",  st:context)
 }
 where {
-  bind(st:get(st:context) as ?g)
-  graph ?g {
-    ?ds a st:Dataset
-    optional { ?ds st:data    [ st:uri ?d ] }
-    optional { ?ds st:schema  [ st:uri ?s ] }
-    optional { ?ds st:context [ st:uri ?c ] }
-  }
-}
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
-<![CDATA[
-#
-# ?n is the st:name of a query
-# get definition of query in context graph
-# display query and eventually result of query
-# st:get(st:query) is user query
-# ?q is tutorial query
-#
-template st:display(?n) {
-
-"<h3>" str(?l) "</h3>"
-"<p>"  
-  str(?c) 
-  if (bound(?r), 
-    concat("<br/><a href='", str(?r), "'>(", str(?r), ")</a>"), "")
-"</p>"
-
-   st:call-template(st:form, ?n,
-     coalesce(st:get(st:query), str(?q)), str(?q), coalesce(?s, st:null))
-   
-   st:call-template(st:result)
-      
 }
-where {
-  # named graph that contains definition of queries
-  bind (st:get(st:context) as ?g)
-  graph ?g {
-    ?qt st:name    ?n ;
-      rdfs:label   ?l ;
-      rdfs:comment ?c ;
-      st:query     ?q
-      optional { ?qt st:reference ?r }
-      optional { ?qt st:solution  ?s }
-      filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
-  }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate query names list from context graph
-#
-template st:list(?t) {
-
-  "<option value='" ?q "'" 
-    if (?q = ?t, "selected='true'", "")
-  ">" 
-  str(?i) ". " str(?title) 
-  "</option>" 
-   
-}
-where {
-  bind (st:get(st:context) as ?g)
-  graph ?g {
-    [] a st:Query ;
-      st:index ?i ;
-      st:name ?q ;
-      rdfs:label ?title
-  }
-}
-order by ?i
 ]]>
 </body>
 </rule>
@@ -242,7 +78,15 @@ template st:tail {
   
   """ 
   <p> <hr/> </p>
+  """
   
+  st:call-template(st:content) 
+  
+  """ 
+  <p> <hr/> </p>
+  """
+  
+  """
   <table style="width:100%">
   <tr>
   <td>
@@ -330,6 +174,204 @@ where {}
 <rule>
 <body>
 <![CDATA[
+#
+# Display result of query
+# RDF graph is a result graph
+#
+
+template st:result {
+
+   st:call-template-with(st:sparql, st:result, st:get(st:service), st:sparql)
+    
+}
+where {
+  bind (st:get(st:query) as ?query)
+  filter bound(?query)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:prev(?t) {
+
+  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
+  "<button type='button'>Previous</button>"
+  "</a>"  
+    
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i - 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate a form with a SPARQL query ?q to submit
+# Argument  ?n is the name of query (st:minus)
+# ?q actual query, ?t query template, ?s query solution
+#
+template st:form(?n, ?q, ?t, ?s) {
+  """
+   <script type="text/javascript">           
+        function show(name){
+            document.getElementById('query').value = document.getElementById(name).value;
+        }
+   </script>
+       
+   <form method='post'  action='' >   
+   <input type='hidden' id='tmp' value='"""str(?t)"""' />
+   <input type='hidden' id='sol' value='"""str(?s)"""' />
+   <input type='hidden' name='uri' value='""" ?n """'/>
+   <input type='hidden' name='profile' value='""" st:get(st:profile) """'/> 
+   """
+   
+   if (?s = st:null, "", 
+   """<input type='button' onclick="show('sol')" value='Solution' />
+      <input type='button' onclick="show('tmp')" value='Template' /> 
+   """)
+   
+   """
+   <input type='submit' value='Submit' />
+   <br/>
+   <textarea cols='60' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
+   </form>
+  """
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Select a query name to display and execute
+# query name bound to uri param
+# Generate query names list from context graph
+#
+template st:select(?t) {
+
+"""
+<h3>Select a query</h3>
+
+"""   
+"""<form method='get' action=''>
+
+  <input type='hidden' name='profile' value='""" st:get(st:profile) """' />
+"""
+
+  st:call-template(st:prev, ?t)
+
+  "<select name='uri' onChange='submit()'>"
+  
+    st:call-template(st:list, ?t)  
+    
+  "</select>" 
+
+  st:call-template(st:next, ?t)
+ 
+""" 
+</form>
+"""
+
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# ?n is the st:name of a query
+# get definition of query in context graph
+# display query and eventually result of query
+# st:get(st:query) is user query
+# ?q is tutorial query
+#
+template st:display(?n) {
+
+"<h3>" str(?l) "</h3>"
+"<p>"  
+  str(?c) 
+  if (bound(?r), 
+    concat("<br/><a href='", str(?r), "'>(", str(?r), ")</a>"), "")
+"</p>"
+
+   st:call-template(st:form, ?n,
+     coalesce(st:get(st:query), str(?q)), str(?q), coalesce(?s, st:null))
+   
+   st:call-template(st:result)
+      
+}
+where {
+  # named graph that contains definition of queries
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    ?qt st:name    ?n ;
+      rdfs:label   ?l ;
+      rdfs:comment ?c ;
+      st:query     ?q
+      optional { ?qt st:reference ?r }
+      optional { ?qt st:solution  ?s }
+      filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate query names list from context graph
+#
+template st:list(?t) {
+
+  "<option value='" ?q "'" 
+    if (?q = ?t, "selected='true'", "")
+  ">" 
+  str(?i) ". " str(?title) 
+  "</option>" 
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    [] a st:Query ;
+      st:index ?i ;
+      st:name ?q ;
+      rdfs:label ?title
+  }
+}
+order by ?i
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:head {
   """
   <html>
@@ -350,31 +392,9 @@ template st:head {
   
   "<h2>SPARQL Tutorial</h2>"
   
-  st:call-template(st:content)
 }
 where {
 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Display result of query
-# RDF graph is a result graph
-#
-
-template st:result {
-
-   st:call-template-with(st:sparql, st:result, st:get(st:service), st:sparql)
-    
-}
-where {
-  bind (st:get(st:query) as ?query)
-  filter bound(?query)
 }
 ]]>
 </body>

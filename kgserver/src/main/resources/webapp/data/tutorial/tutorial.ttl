@@ -9,11 +9,11 @@
 # recall the dataset for the Transformation
 st:tutorial a st:Dataset ;
   st:data     
-  [ st:uri <human1.rdf>  ; st:name st:data1 ] ,
-  [ st:uri <human2.rdf>  ; st:name st:data2 ] ,
-  [ st:uri <pragma.ttl>  ; st:name st:pragma ] ;
-#  st:schema   [ st:uri <human.rdfs> ; st:name st:schema ] ;
-  st:context  [ st:uri <tutorial.ttl>  ; st:name st:context ] .
+  [ st:uri "/data/tutorial/human1.rdf"  ; st:name st:data1 ] ,
+  [ st:uri "/data/tutorial/human2.rdf"  ; st:name st:data2 ] ,
+  [ st:uri "/data/tutorial/pragma.ttl"  ; st:name st:pragma ] ;
+#  st:schema   [ st:uri "/data/tutorial/human.rdfs" ; st:name st:schema ] ;
+  st:context  [ st:uri "/data/tutorial/tutorial.ttl"  ; st:name st:context ] .
 
 
 [] a st:Query ;

@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.ARP;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
@@ -41,8 +40,12 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.jsonld.CoreseJsonTripleCallback;
 import fr.inria.edelweiss.kgtool.load.jsonld.JsonldLoader;
 import fr.inria.edelweiss.kgtool.load.rdfa.CoreseRDFaTripleSink;
+import fr.inria.edelweiss.kgtool.load.sesame.ParserLoaderSesame;
+import fr.inria.edelweiss.kgtool.load.sesame.ParserTripleHandlerSesame;
 import java.io.ByteArrayInputStream;
-import java.util.logging.Level;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.Rio;
 import org.semarglproject.rdf.ParseException;
 
 /**
@@ -66,6 +69,8 @@ public class Load
     static final String[] QUERIES = {QUERY, UPDATE};
     static final String TURTLE = ".ttl";
     static final String NT = ".nt";
+    static final String TRIG = ".trig";
+    static final String NQUADS = ".nq";
     static final String HTML = ".html";
     static final String XHTML = ".xhtml";
     static final String SVG = ".svg";
@@ -76,7 +81,7 @@ public class Load
     static final String[] EXT_RDFA = {HTML, XHTML, SVG, XML};
     static final String[] RDF_XML = {EXT_RDF, EXT_RDFS, EXT_OWL};
     static final String JSONLD = ".jsonld";
-    static final String[] SUFFIX = {EXT_RDF, EXT_RDFS, EXT_OWL, TURTLE, NT, RULE, BRULE, IRULE, QUERY, UPDATE, HTML, XHTML, SVG, XML, JSONLD};
+    static final String[] SUFFIX = {EXT_RDF, EXT_RDFS, EXT_OWL, TURTLE, NT, NQUADS, TRIG, RULE, BRULE, IRULE, QUERY, UPDATE, HTML, XHTML, SVG, XML, JSONLD};
     static final String HTTP = "http://";
     static final String FTP = "ftp://";
     static final String FILE = "file://";
@@ -209,7 +214,7 @@ public class Load
         }
         return true;
     }
-    
+
     // UNDEF_FORMAT loaded as RDF/XML
     public int getFormat(String path) {
         return getFormat(path, UNDEF_FORMAT);
@@ -237,10 +242,15 @@ public class Load
         else if (isQuery(path)){
             return QUERY_FORMAT;
         }
-        
+        else if (hasExtension(path, TRIG)){
+            return TRIG_FORMAT;
+        }
+        else if (hasExtension(path, NQUADS)){
+            return NQUADS_FORMAT;
+        }
         return defaultFormat;
     }
-    
+
     private boolean hasExtension(String path, String ext) {
         return path.toLowerCase().endsWith(ext);
     }
@@ -312,8 +322,8 @@ public class Load
             }
         }
     }
-    
-     public void loadWE(String path, String src) throws LoadException {
+
+    public void loadWE(String path, String src) throws LoadException {
          loadWE(path, src, UNDEF_FORMAT);
      }
 
@@ -356,20 +366,20 @@ public class Load
     /**
      * format is a suggested format when path has no extension
      */
-     public void load(String path, int format) throws LoadException {
+    public void load(String path, int format) throws LoadException {
         localLoad(path, path, path, getFormat(path, format));
     }
-    
+
     public void load(String path, String base, String source) throws LoadException {
         localLoad(path, base, source, getFormat(path));
     }
-    
+
     public void load(String path, String base, String source, int format) throws LoadException {
-         localLoad(path, base, source, getFormat(path, format));
+        localLoad(path, base, source, getFormat(path, format));
     }
- 
-     private void localLoad(String path, String base, String source, int format) throws LoadException {
-       
+
+    private void localLoad(String path, String base, String source, int format) throws LoadException {
+
         log(path);
 
         if (format == RULE_FORMAT) {
@@ -486,13 +496,18 @@ public class Load
     void synLoad(Reader stream, String path, String base, String src, int format) throws LoadException {
         try {
             writeLock().lock();
-            
+
             switch (format) {
                 case TURTLE_FORMAT:
                 case NT_FORMAT:
                     loadTurtle(stream, path, base, src);
                     break;
-
+                    
+                case NQUADS_FORMAT:
+                case TRIG_FORMAT:
+                    loadWithSesame(stream, path, base, src);
+                    break;
+                    
                 case RULE_FORMAT:
                     loadRule(stream, src);
                     break;
@@ -520,9 +535,9 @@ public class Load
         } finally {
             writeLock().unlock();
         }
-    }
+        }
 
-       Lock writeLock() {
+    Lock writeLock() {
         return graph.writeLock();
     }
 
@@ -607,6 +622,24 @@ public class Load
         }
     }
 
+        //load turtle with parser sesame(openRDF)
+        //can surpot format:.ttl, .nt, .nq and .trig
+        //now only used for .trig and .nq
+        void loadWithSesame(Reader stream, String path, String base, String src) throws LoadException {
+        ParserTripleHandlerSesame handler = new ParserTripleHandlerSesame(graph, src);
+        handler.setHelper(renameBlankNode, limit);
+        ParserLoaderSesame loader = ParserLoaderSesame.create(stream, base);
+
+        try {
+            loader.loadWithSesame(handler, Rio.getParserFormatForFileName(path));
+        } catch (IOException ex) {
+            throw LoadException.create(ex, path);
+        } catch (RDFParseException ex) {
+            throw LoadException.create(ex, path);
+        } catch (RDFHandlerException ex) {
+            throw LoadException.create(ex, path);
+        }
+    }
     void loadRule(String path, String src) throws LoadException {
         if (engine == null) {
             engine = RuleEngine.create(graph);
@@ -739,7 +772,7 @@ public class Load
     public void setRenameBlankNode(boolean renameBlankNode) {
         this.renameBlankNode = renameBlankNode;
     }
-    
+
     
     
  
@@ -765,7 +798,7 @@ public class Load
         // ici source était aussi la base ... (au lieu de path)
         load(stream, path, source, source, getFormat(path));
     }
-    
+
    
     
 }

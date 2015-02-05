@@ -15,7 +15,7 @@ where {
 
 service <http://dbpedia.org/sparql> {
 
-  ?r rdfs:label ?label . filter(lang(?label) = 'fr')
+  ?r rdfs:label ?label . filter(lang(?label) = 'en')
   
   optional { ?r p:naissance ?b . ?r p:décès ?d }
   
@@ -32,7 +32,7 @@ service <http://dbpedia.org/sparql> {
     || ?q = p:prédécesseur || ?q = o:predecessor
     ) 
     
-    filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'fr') 
+    filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'en') 
   }
 	      
  

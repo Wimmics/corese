@@ -13,6 +13,8 @@ public interface Loader {
     static final int RULE_FORMAT   = 5;
     static final int QUERY_FORMAT  = 6;
     static final int UNDEF_FORMAT  = 7;
+    static final int TRIG_FORMAT  = 8;
+    static final int NQUADS_FORMAT  = 9;
 
 	void init(Object o);
 	

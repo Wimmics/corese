@@ -316,9 +316,9 @@ class Walker extends Interpreter {
     Node groupConcat(Filter f, Environment map, Producer p) {
         
         
-        if (count++ > 0) {
-            sb.append(sep);
-        }
+//        if (count++ > 0) {
+//            sb.append(sep);
+//        }
 
         IDatatype dt = (IDatatype) eval.eval(f.getExp().getExp(0), map, p);
         
@@ -332,7 +332,7 @@ class Walker extends Interpreter {
         if (accept(f, dt)) {
             if (dt != null) {
                 
-                if (count == 1 && dt.hasLang()) {
+                if (count == 0 && dt.hasLang()) { // 0 vs 1
                     hasLang = true;
                     lang = dt.getLang();
                 }
@@ -350,6 +350,10 @@ class Walker extends Interpreter {
                         isString = false;
                     }
                 } 
+                
+                if (count++ > 0) {
+                    sb.append(sep);
+                }
                 
                 if (dt.getStringBuilder() != null) {
                     sb.append(dt.getStringBuilder());

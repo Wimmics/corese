@@ -2736,7 +2736,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	 *                     Template
 	 * template { ?x ... } where {}
 	 * ->
-	 * select (kg:pprint(?x) as ?px) ... (concat(?px ...) as ?out) where {}
+	 * select (st:process(?x) as ?px) ... (concat(?px ...) as ?out) where {}
 	 * 
 	 **************************************************/
 
@@ -2825,8 +2825,8 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	 * template { "construct {" ?x "} where {" ?y "}" }
 	 * ->
 	 * select 
-	 * (kg:pprint(?x) as ?px)
-	 * (kg:pprint(?y) as ?py)
+	 * (st:process(?x) as ?px)
+	 * (st:process(?y) as ?py)
 	 * (concat(.. ?px .. ?py ..) as ?out)
 	 */
 	void compileTemplate(){
@@ -2839,7 +2839,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	
 	/**
 	 * Compile the template as a concat() 
-	 * where variables are compiled as kg:pprint()
+	 * where variables are compiled as st:process()
 	 */
 	Expression compileTemplateFun(){
 		Term t = createFunction(createQName(FUN_TEMPLATE_CONCAT));
@@ -2861,16 +2861,16 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         
     
 	/**
-	 * if exp is a variable: (kg:pprint(?x) as ?px)
-	 * if exp is meta, e.g. group_concat(?exp): group_concat(kg:pprint(?exp))
-	 * if exp is a simple function: xsd:string(?x)  (no pprint)
+	 * if exp is a variable: (st:process(?x) as ?px)
+	 * if exp is meta, e.g. group_concat(?exp): group_concat(st:process(?exp))
+	 * if exp is a simple function: xsd:string(?x)  (no st:process)
 	 */
 	Expression compileTemplate(Expression exp){
 		if (exp.isVariable()){
 			exp = compile(exp.getVariable());
 		}
 		else if (isMeta(exp)){
-			// variables of meta functions are compiled as kg:pprint()
+			// variables of meta functions are compiled as st:process()
 			// variable of xsd:string() is not
 			exp = compileTemplateMeta((Term) exp);
 		}
@@ -2881,7 +2881,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	/**
 	 * Some function play a special role in template:
 	 * concat, group_concat, coalesce, if
-	 * Their variable argument are compiled as kg:pprint(var)
+	 * Their variable argument are compiled as st:process(var)
 	 */
 	boolean isMeta(Expression exp){
 		if (! exp.isFunction()){
@@ -2938,7 +2938,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	
 	/**
 	 * In template { } a variable ?x is compiled as:
-	 * coalesce(kg:pprint(?x), "")
+	 * coalesce(st:process(?x), "")
 	 * if ?x is unbound, empty string "" is returned
 	 */
         Term compile(Variable var){		

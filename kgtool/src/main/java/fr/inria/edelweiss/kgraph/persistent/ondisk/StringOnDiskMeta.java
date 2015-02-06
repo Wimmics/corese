@@ -1,12 +1,14 @@
 package fr.inria.edelweiss.kgraph.persistent.ondisk;
 
 /**
+ * Store meta infor of string stored in file
+ *
  * Meta.java
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 janv. 2015
  */
-public class LiteralOnDiskMeta {
+public class StringOnDiskMeta {
 
     //node id
     private int nid;
@@ -15,7 +17,7 @@ public class LiteralOnDiskMeta {
     private int offset;
     private int length;
 
-    public LiteralOnDiskMeta(int nid, int fid, int offset, int length) {
+    public StringOnDiskMeta(int nid, int fid, int offset, int length) {
         this.nid = nid;
         this.fid = fid;
         this.offset = offset;
@@ -56,6 +58,6 @@ public class LiteralOnDiskMeta {
 
     @Override
     public String toString() {
-        return "Meta " + "[" + nid + ", " + fid + ", " + offset + ", " + length + ']';
+        return "String " + "[" + nid + ", " + fid + ", " + offset + ", " + length + ']';
     }
 }

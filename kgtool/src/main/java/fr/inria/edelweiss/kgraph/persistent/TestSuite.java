@@ -15,9 +15,11 @@ import java.text.DecimalFormat;
 public class TestSuite {
 
     public static void main(String args[]) throws IOException {
+        //testSpeedInSingleFiles();
+        Parameters.MAX_FILE_SIZE =  512 * MB;
+        testCorrectness();
 
-        testSpeedInSingleFiles();
-        //testCorrectness();
+        //testSpeed();
     }
 
     private static void testSpeedInSingleFiles() throws IOException {
@@ -52,13 +54,15 @@ public class TestSuite {
             {256 * KB, 512 * KB}
         };
 
-        int[] buffer_size = {1 * MB, 2 * MB, 4 * MB, 8 * MB, 16 * MB, 32 * MB};
-        for (int c : buffer_size) {
-            System.out.println("\n======= " + convert(c, true) + " ========");
-            Parameters.BUF_SIZE = c;
-            new TestSuite(Test2, 1000, Test2.length).test();
-            new TestSuite(Test1, 100, Test1.length).test();
-        }
+        new TestSuite(Test2, 1000, Test2.length).test();
+//        
+//        int[] buffer_size = {1 * MB, 2 * MB, 4 * MB, 8 * MB, 16 * MB, 32 * MB};
+//        for (int c : buffer_size) {
+//            System.out.println("\n======= " + convert(c, true) + " ========");
+//            //Parameters.BUF_SIZE = c;
+//            
+//            new TestSuite(Test1, 100, Test1.length).test();
+//        }
 
     }
 

@@ -1,6 +1,8 @@
 package fr.inria.edelweiss.kgraph.persistent.ondisk;
 
 /**
+ * Manage all the paramters
+ * 
  * Parameters.java
  *
  * @author Fuqi Song, Wimmics Inria I3S
@@ -20,13 +22,13 @@ public class Parameters {
     //should be greater than MAX_LIT_LEN
     //public static int MAX_LIT_LEN_InFile = 512 * MB;//
 
-    public static int MAX_FILE_SIZE = 512 * MB;
+    public static long MAX_FILE_SIZE = 512 * MB;
 
     //threshod: when the accumulated number of literals to delete reach this number
     //perform batch delete
-    public static int THRESHOLD_TO_DELETE_NB = 150;
+    public static int THRESHOLD_TO_DELETE_NB = 300;
     public static int THRESHOLD_TO_DELETE_SIZE = 256 * MB;
-    public static int CACHE_LITERAL_SIZE = 1000;
+    public static int CACHE_LITERAL_SIZE = 100;
 
     public final static String MODE = "rw";
 
@@ -34,6 +36,11 @@ public class Parameters {
     //!! has to be greater than MAX_LIT_LEN_InFile
     public static int BUF_SIZE = 4 * MB;
     public static int CACHE_FILE_SIZE = 4;
+    
+    //if save the strings to file and persistent
+    //false: when system exit, all files and infor will be deleted
+    //true: files will be kept after exiting the system
+    public static boolean PERSISTENT = false;
 
     //number of buffers, currently only support 1
     //public static int BUF_NUM = 1;

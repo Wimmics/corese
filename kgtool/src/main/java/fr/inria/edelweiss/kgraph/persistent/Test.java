@@ -1,7 +1,7 @@
 package fr.inria.edelweiss.kgraph.persistent;
 
 import fr.inria.acacia.corese.cg.datatype.persistent.IOperation;
-import fr.inria.edelweiss.kgraph.persistent.ondisk.LiteralOnDiskManager;
+import fr.inria.edelweiss.kgraph.persistent.ondisk.StringOnDiskManager;
 import fr.inria.edelweiss.kgraph.persistent.ondisk.Parameters;
 import java.io.File;
 import java.io.FileWriter;
@@ -27,7 +27,7 @@ public class Test {
     public Test(int min, int max) {
         this.min = min;
         this.max = max;
-        manager = LiteralOnDiskManager.getInstance(true);
+        manager = StringOnDiskManager.getInstance(true);
     }
 
     public void close() {
@@ -99,7 +99,7 @@ public class Test {
         for (Map.Entry<Integer, String> entrySet : literalsTmp.entrySet()) {
             Integer key = entrySet.getKey();
             String value = entrySet.getValue();
-            if (manager.threshold(value.length())) {
+            if (manager.check(value.length())) {
                 manager.write(key, value);
                 counter++;
             }
@@ -133,7 +133,7 @@ public class Test {
         for (Map.Entry<Integer, String> entrySet : literalsAll.entrySet()) {
             //Integer key = entrySet.getKey();
             String value = entrySet.getValue();
-            if (manager.threshold(value.length())) {
+            if (manager.check(value.length())) {
                 writer.write(value);
                 counter++;
             }
@@ -179,7 +179,7 @@ public class Test {
                 if (literalsAll.get(key).equals(literalsRead.get(key))) {
                     correct++;
                 } else {
-                    System.out.println("[Read Error]: "+((LiteralOnDiskManager)manager).getLiteralsOnDiskMeta(key)+" ====");
+                    System.out.println("[Read Error]: "+((StringOnDiskManager)manager).getLiteralsOnDiskMeta(key)+" ====");
                     //System.out.println("=== orginal literal ===\n" + literalsAll.get(key));
                     //System.out.println("\n=== read literal ===\n" + literalsRead.get(key));
                 }

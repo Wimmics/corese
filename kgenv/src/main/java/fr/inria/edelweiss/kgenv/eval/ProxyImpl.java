@@ -522,7 +522,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return DatatypeMap.createLiteral(str);
     }
 
-    String encodeForUri(String str) {
+    public String encodeForUri(String str) {
 
         StringBuilder sb = new StringBuilder(2 * str.length());
 

@@ -9,8 +9,8 @@
 	
     <groupId>fr.inria.wimmics</groupId>
     <artifactId>corese</artifactId>
-  <version>3.1.4-SNAPSHOT</version>
-<!--    <properties>
+    <version>3.1.4-SNAPSHOT</version>
+    <!--    <properties>
         <corese-version>3.0.7</corese-version>
     </properties>-->
     
@@ -69,28 +69,62 @@
                             <skip>true</skip>
                     </configuration>
             </plugin>-->
+            <!--
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <configuration>
+                        <descriptorId>jar-with-dependencies</descriptorId>
+                        <archive>
+                            <manifest>
+                                <mainClass>fr.inria.acacia.corese.gui.core.MainFrame</mainClass>
+                                <addClasspath>false</addClasspath>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <configuration>
-                            <descriptorId>jar-with-dependencies</descriptorId>
-                            <archive>
-                                <manifest>
-                                    <mainClass>fr.inria.acacia.corese.gui.core.MainFrame</mainClass>
-                                    <addClasspath>false</addClasspath>
-                                </manifest>
-                            </archive>
-                        </configuration>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>fr.inria.acacia.corese.gui.core.MainFrame</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-			
 			
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -111,7 +145,7 @@
                 </configuration>
             </plugin>
 			
-
+            
         </plugins>
     </build>
 </project>

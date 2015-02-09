@@ -9,7 +9,6 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
@@ -227,6 +226,9 @@ public class PluginImpl extends ProxyImpl {
             case STL_LOAD:
                 load(dt, env, p);
                 return EMPTY;
+                
+            case READ:
+                return read(dt, env, p);
                                
             case FOCUS_NODE:
                 return getFocusNode(dt, env);    
@@ -932,6 +934,18 @@ public class PluginImpl extends ProxyImpl {
     private void load(IDatatype dt, Environment env, Producer p) {
         Transformer t = getTransformer(env, p);
         t.load(dt.getLabel());
+    }
+    
+    IDatatype read(IDatatype dt, Environment env, Producer p){
+        if (! readWriteAuthorized){
+            return null;
+        }
+        QueryLoad ql = QueryLoad.create();
+        String str = ql.read(dt.getLabel());
+        if (str == null){
+            str = "";
+        }
+        return DatatypeMap.newInstance(str);
     }
 
     IDatatype getLevel(Environment env, Producer prod) {

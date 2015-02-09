@@ -43,6 +43,7 @@ import fr.inria.edelweiss.kgtool.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserLoaderSesame;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserTripleHandlerSesame;
 import java.io.ByteArrayInputStream;
+import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.Rio;
@@ -504,8 +505,10 @@ public class Load
                     break;
                     
                 case NQUADS_FORMAT:
+                    loadWithSesame(stream, path, base, src, RDFFormat.NQUADS);
+                    break;
                 case TRIG_FORMAT:
-                    loadWithSesame(stream, path, base, src);
+                    loadWithSesame(stream, path, base, src, RDFFormat.TRIG);
                     break;
                     
                 case RULE_FORMAT:
@@ -625,13 +628,13 @@ public class Load
         //load turtle with parser sesame(openRDF)
         //can surpot format:.ttl, .nt, .nq and .trig
         //now only used for .trig and .nq
-        void loadWithSesame(Reader stream, String path, String base, String src) throws LoadException {
+    void loadWithSesame(Reader stream, String path, String base, String src, RDFFormat format) throws LoadException {
         ParserTripleHandlerSesame handler = new ParserTripleHandlerSesame(graph, src);
         handler.setHelper(renameBlankNode, limit);
         ParserLoaderSesame loader = ParserLoaderSesame.create(stream, base);
 
         try {
-            loader.loadWithSesame(handler, Rio.getParserFormatForFileName(path));
+            loader.loadWithSesame(handler, format);
         } catch (IOException ex) {
             throw LoadException.create(ex, path);
         } catch (RDFParseException ex) {

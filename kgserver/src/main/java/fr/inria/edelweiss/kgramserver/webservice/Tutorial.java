@@ -36,11 +36,13 @@ public class Tutorial {
     static final String TUTORIAL1_SERVICE = "/tutorial/rdf";
     static final String TUTORIAL2_SERVICE = "/tutorial/rdfs";
     static final String TUTORIAL3_SERVICE = "/tutorial/huto";
+    static final String TUTORIAL4_SERVICE = "/tutorial/demo";
     static final String CDN_SERVICE       = "/tutorial/cdn";
     
     static final String TUTORIAL1 = NSManager.STL + "tutorial1";
     static final String TUTORIAL2 = NSManager.STL + "tutorial2";
     static final String HUTO      = NSManager.STL + "huto";
+    static final String DEMO      = NSManager.STL + "demo";
     static final String CDN       = NSManager.STL + "cdn";
     static final String WEB       = NSManager.STL + "web";
     
@@ -130,9 +132,15 @@ public class Tutorial {
         String init = 
                 "insert { ?q st:index ?n }"
               + "where  { ?q a st:Query bind (kg:number()+1 as ?n) }";
+        
+        String init2 = 
+                "insert { ?q st:query ?query }"
+              + "where  { ?q a st:Query ; st:queryURI ?uri . bind (kg:read(?uri) as ?query) }";
+        
         QueryProcess exec = QueryProcess.create(g);
         try {
             exec.query(init);
+            exec.query(init2);
         } catch (EngineException ex) {
             Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -282,7 +290,7 @@ public class Tutorial {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris) {
 
-        Param par = new Param(TUTORIAL3_SERVICE, profile, transform, resource, name, query);
+        Param par = new Param(TUTORIAL3_SERVICE, (profile==null)?WEB:profile, transform, resource, name, query);
         par.setValue(value);
         par.setDataset(namedGraphUris, namedGraphUris);
         return new Transformer().template(getTripleStore(HUTO), par);
@@ -301,10 +309,48 @@ public class Tutorial {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
 
-        Param par = new Param(TUTORIAL3_SERVICE, profile, transform, resource, name, query);
+        Param par = new Param(TUTORIAL3_SERVICE, (profile==null)?WEB:profile, transform, resource, name, query);
         par.setValue(value);
         par.setDataset(namedGraphUris, namedGraphUris);
         return new Transformer().template(getTripleStore(HUTO), par);
+    }
+    
+     @POST
+    @Produces("text/html")
+    @Path("demo")
+    public Response demoPost(
+            @FormParam("profile") String profile, // query + transform
+            @FormParam("uri") String resource, // query + transform
+            @FormParam("query") String query, // SPARQL query
+            @FormParam("name") String name, // SPARQL query name (in webapp/query)
+            @FormParam("value") String value, // values clause that may complement query           
+            @FormParam("transform") String transform, // Transformation URI to post process result
+            @FormParam("default-graph-uri") List<String> defaultGraphUris,
+            @FormParam("named-graph-uri") List<String> namedGraphUris) {
+
+        Param par = new Param(TUTORIAL4_SERVICE, (profile==null)?WEB:profile, transform, resource, name, query);
+        par.setValue(value);
+        par.setDataset(namedGraphUris, namedGraphUris);
+        return new Transformer().template(getTripleStore(DEMO), par);
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path("demo")
+    public Response demoGet(
+            @QueryParam("profile") String profile, // query + transform
+            @QueryParam("uri") String resource, // URI of resource focus
+            @QueryParam("query") String query, // SPARQL query
+            @QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
+            @QueryParam("value") String value, // values clause that may complement query           
+            @QueryParam("transform") String transform, // Transformation URI to post process result
+            @QueryParam("default-graph-uri") List<String> defaultGraphUris,
+            @QueryParam("named-graph-uri") List<String> namedGraphUris) {
+
+        Param par = new Param(TUTORIAL4_SERVICE, (profile==null)?WEB:profile, transform, resource, name, query);
+        par.setValue(value);
+        par.setDataset(namedGraphUris, namedGraphUris);
+        return new Transformer().template(getTripleStore(DEMO), par);
     }
     
     

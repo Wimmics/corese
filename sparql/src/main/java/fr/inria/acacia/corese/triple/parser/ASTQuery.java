@@ -2846,11 +2846,11 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 
 		if (template != null){
 			if (template.size() == 1){
-				return compileTemplate(template.get(0));
+				return compileTemplate(template.get(0), false);
 			}
 			else {
 				for (Expression exp : template){                                   
-					exp = compileTemplate(exp);
+					exp = compileTemplate(exp, false);
 					t.add(exp);                                   
 				}
 			}
@@ -2865,14 +2865,14 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	 * if exp is meta, e.g. group_concat(?exp): group_concat(st:process(?exp))
 	 * if exp is a simple function: xsd:string(?x)  (no st:process)
 	 */
-	Expression compileTemplate(Expression exp){
+	Expression compileTemplate(Expression exp, boolean coalesce){
 		if (exp.isVariable()){
-			exp = compile(exp.getVariable());
+			exp = compile(exp.getVariable(), coalesce);
 		}
 		else if (isMeta(exp)){
 			// variables of meta functions are compiled as st:process()
 			// variable of xsd:string() is not
-			exp = compileTemplateMeta((Term) exp);
+			exp = compileTemplateMeta((Term) exp, coalesce);
 		}
 		return exp;
 	}
@@ -2899,14 +2899,17 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 		return exp.getName().equals(IF);
 	}
 	
-	
+	boolean isCoalesce(Expression exp){
+		return exp.getName().equals(COALESCE);
+	}
+        
 	/**
 	 * concat()
 	 * group_concat()
 	 * if()
 	 * coalesce()
 	 */
-	Term compileTemplateMeta(Term exp){		
+	Term compileTemplateMeta(Term exp, boolean coalesce){		
 		Term t;
 		if (exp.isFunction()){
 			t = Term.function(exp.getName());
@@ -2915,6 +2918,8 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 			t = Term.create(exp.getName());
 		}
 		boolean isIF = isIF(exp);
+                boolean isCoalesce = isCoalesce(exp);
+                
 		int count = 0;
 		
 		for (Expression ee : exp.getArgs()){
@@ -2922,7 +2927,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 				// not compile the test of if(test, then, else)
 			}
 			else {
-				ee = compileTemplate(ee);
+				ee = compileTemplate(ee, coalesce || isCoalesce);
 			}
 			count++;
 			t.add(ee);
@@ -2940,25 +2945,28 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	 * In template { } a variable ?x is compiled as:
 	 * coalesce(st:process(?x), "")
 	 * if ?x is unbound, empty string "" is returned
+         * if we are already inside a coalesce, return st:process(?x)
 	 */
-        Term compile(Variable var){		
+        Term compile(Variable var, boolean coalesce){		
 		Term t = createFunction(createQName(FUN_PROCESS), var);
-		Term c = Term.function(COALESCE, t, getEmpty());		
-		return c;
+                if (! coalesce){
+                    t = Term.function(COALESCE, t, getEmpty());
+                }
+		return t;
 	}
 
-        Variable compile2(Variable var){
-		Variable tvar = varTemplate.get(var.getLabel());
-		if (tvar != null){
-			return tvar;
-		}
-		Variable res = templateVariable(var);
-		Term t = createFunction(createQName(FUN_PROCESS), var);
-		Term c = Term.function(COALESCE, t, getEmpty());
-		defSelect(res, c);
-		varTemplate.put(var.getLabel(), res);
-		return res;
-	}
+//        Variable compile2(Variable var){
+//		Variable tvar = varTemplate.get(var.getLabel());
+//		if (tvar != null){
+//			return tvar;
+//		}
+//		Variable res = templateVariable(var);
+//		Term t = createFunction(createQName(FUN_PROCESS), var);
+//		Term c = Term.function(COALESCE, t, getEmpty());
+//		defSelect(res, c);
+//		varTemplate.put(var.getLabel(), res);
+//		return res;
+//	}
 	
 	/**
 	 * 

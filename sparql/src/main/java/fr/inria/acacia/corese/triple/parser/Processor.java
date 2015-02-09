@@ -87,6 +87,7 @@ public class Processor {
 	public static final String EXTENSION 	= KGRAM + "extension";
 	public static final String KGEXTENSION 	= KPREF + "extension";
 	
+	static final String READ 		= KGRAM + "read"; 
 	static final String WRITE 		= KGRAM + "write"; 
 	static final String PPRINT 		= KGRAM + "pprint"; 
 	static final String PPRINTWITH 		= KGRAM + "pprintWith"; 
@@ -466,8 +467,9 @@ public class Processor {
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(GROUPBY, ExprType.GROUPBY);
 		
-		defoper(WRITE, 	ExprType.WRITE);
-		defoper(QNAME, 	ExprType.QNAME);
+		defoper(READ,           ExprType.READ);
+		defoper(WRITE,          ExprType.WRITE);
+		defoper(QNAME,          ExprType.QNAME);
 		defoper(PROVENANCE, 	ExprType.PROVENANCE);
  		defoper(INDEX,          ExprType.INDEX);
  		defoper(ID,             ExprType.ID);

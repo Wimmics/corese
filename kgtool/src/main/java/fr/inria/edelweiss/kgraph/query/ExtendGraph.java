@@ -137,7 +137,9 @@ public class ExtendGraph {
          Graph g = Graph.create();
          Load ld = Load.create(g);
          try {
-             ld.load(dt.getLabel(), Load.TURTLE_FORMAT);
+             if (PluginImpl.readWriteAuthorized){
+                ld.load(dt.getLabel(), Load.TURTLE_FORMAT);
+             }
          } catch (LoadException ex) {
              logger.error("Load error: " + dt);
          }

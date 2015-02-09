@@ -216,5 +216,6 @@ public interface ExprType {
 	public static int EXTENSION 	= 303;
 	public static int EVEN          = 304;
 	public static int ODD           = 305;
+	public static int READ          = 306;
 
 }

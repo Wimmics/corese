@@ -188,11 +188,11 @@ public class StatsBasedEstimation implements IEstimate {
     //Calculate the weight of an edge between two triple patterns
     //just simply multiply the selectivity of the two nodes, can be improved
     private void join() {
-        for (QPGEdge edge : g.getAllEdges()) {
-            edge.setCost(1.0);
-//            double s1 = edge.get(0).getSelectivity();
-//            double s2 = edge.get(1).getSelectivity();
-//            edge.setWeight(s1 * s2);
-        }
+//        for (QPGEdge edge : g.getAllEdges()) {
+//            edge.setCost(1.0);
+////            double s1 = edge.get(0).getSelectivity();
+////            double s2 = edge.get(1).getSelectivity();
+////            edge.setWeight(s1 * s2);
+//        }
     }
 }

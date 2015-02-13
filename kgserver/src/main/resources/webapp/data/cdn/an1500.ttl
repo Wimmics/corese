@@ -52,11 +52,11 @@ rdfs:comment "Emmanuel-Philibert récupère la Savoie et le Piémont" .
 
 r:Fort_du_mont_Alban cn:date 1560 ; a o:Place ;
 rdfs:label "Fort du mont Alban" ;
-cn:icon <http://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG>  .
+st:icon <http://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG>  .
 
 r:Citadelle_Saint-Elme cn:date 1560 ; a o:Place ;
 rdfs:label "Citadelle de Villefranche" ;
-cn:icon <http://4.bp.blogspot.com/-lSwNPM_SAbE/UtK8wVHQnDI/AAAAAAAADgs/TgCSFFwzKVc/s1600/P1060197.JPG>.
+st:icon <http://4.bp.blogspot.com/-lSwNPM_SAbE/UtK8wVHQnDI/AAAAAAAADgs/TgCSFFwzKVc/s1600/P1060197.JPG>.
 
 
 r:Sénat_de_Savoie cn:date 1560 ;
@@ -70,7 +70,7 @@ r:Turin a o:Place ;
 cn:date 1563 ; 
 rdfs:label "Turin" ;
 rdfs:comment "Capitale des Etats de Savoie, succède à Chambéry" ;
-cn:icon <http://1.bp.blogspot.com/-_VRkIJQPM5w/U-NOZFfRylI/AAAAAAAADvM/e_cs7pMmTQc/s1600/P1070482.JPG>  .
+st:icon <http://1.bp.blogspot.com/-_VRkIJQPM5w/U-NOZFfRylI/AAAAAAAADvM/e_cs7pMmTQc/s1600/P1070482.JPG>  .
 
 
 [] cn:date 1576 ;

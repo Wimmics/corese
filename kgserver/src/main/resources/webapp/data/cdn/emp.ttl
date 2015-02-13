@@ -25,7 +25,7 @@ rdfs:label "Frédéric II" .
 
 r:Henri_VII_du_Saint_Empire a foaf:Person ;
 cn:date 1312 ;
-cn:icon <https://upload.wikimedia.org/wikipedia/commons/a/a9/Henry_Lux_head.jpg> ;
+st:icon <https://upload.wikimedia.org/wikipedia/commons/a/a9/Henry_Lux_head.jpg> ;
 rdfs:label "Henri_VII" .
 
 r:Louis_IV_du_Saint-Empire a foaf:Person ;

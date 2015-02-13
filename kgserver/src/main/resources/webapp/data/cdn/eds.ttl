@@ -22,7 +22,6 @@ cn:begin 1047 ; cn:end 1051 ; foaf:name "Amédée Ier"  ; rdfs:label "Comte de S
 
 r:Othon_Ier_de_Savoie  a foaf:Person ;
 p:successeur r:Pierre_Ier_de_Savoie  ;
-cn:icon "";
 cn:begin 1051 ; cn:end 1060 ; foaf:name "Othon Ier"  ; rdfs:label "Comte de Savoie"  .
 
 
@@ -30,7 +29,7 @@ r:Pierre_Ier_de_Savoie  a foaf:Person ;
 p:successeur r:Amédée_II_de_Savoie  ;
 cn:begin 1060 ; cn:end 1078 ; foaf:name "Pierre Ier"  ; 
 rdfs:label "Comte de Savoie" ; 
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/7/79/Pietro_I_di_Savoia_Denaro_Segusino.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/7/79/Pietro_I_di_Savoia_Denaro_Segusino.jpg> .
 
 
 r:Amédée_II_de_Savoie  a foaf:Person ;
@@ -78,7 +77,7 @@ cn:begin 1263 ; cn:end 1268 ; foaf:name "Pierre II"  ; rdfs:label "Comte de Savo
 r:Philippe_Ier_de_Savoie a foaf:Person ;
 p:successeur r:Amédée_V_de_Savoie  ;
 cn:begin 1268 ; cn:end 1285 ; foaf:name "Philippe Ier"  ; 
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/c/ce/Filippo_I_di_Savoia.jpg> ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/c/ce/Filippo_I_di_Savoia.jpg> ;
 rdfs:label "Comte de Savoie"  .
 
 
@@ -114,13 +113,13 @@ r:Louis_Ier_de_Savoie a foaf:Person ;
 p:successeur r:Amédée_IX_de_Savoie ;
 cn:begin 1440 ; cn:end 1465 ; 
 foaf:name "Louis Ier"  ; rdfs:label "Duc de Savoie" ; 
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/4/49/Lodovico_di_Savoia.jpg>   .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/4/49/Lodovico_di_Savoia.jpg>   .
 
 r:Amédée_IX_de_Savoie a foaf:Person ;
 p:successeur r:Philibert_Ier_de_Savoie ;
 cn:begin 1465 ; cn:end 1472 ; 
 foaf:name "Amédée IX" ; rdfs:label "Duc de Savoie" ; 
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/f/f6/Antoine_de_Lohny_Amedeo_IX.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/f/f6/Antoine_de_Lohny_Amedeo_IX.jpg> .
 
 r:Philibert_Ier_de_Savoie a foaf:Person ;
 p:successeur r:Charles_Ier_de_Savoie ;
@@ -137,7 +136,7 @@ r:Charles_Jean_Amédée_de_Savoie a foaf:Person ;
 p:successeur r:Philippe_II_de_Savoie ;
 cn:begin 1490 ; cn:end 1496 ; 
 foaf:name "Charles Jean Amédée" ; rdfs:label "Duc de Savoie" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/0/02/Carlo_II_di_Savoia.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/0/02/Carlo_II_di_Savoia.jpg> .
 
 
 r:Philippe_II_de_Savoie a foaf:Person ;

@@ -140,7 +140,7 @@ cn:date 1516  ; rdfs:label "Charles Quint Roi d'Espagne" .
 
 r:Martin_Luther a foaf:Person ;
 cn:date 1517  ; rdfs:label "Thèses de Martin Luther" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/9/90/Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/9/90/Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg> .
 
 
 r:Nicolas_Copernic a foaf:Person ;
@@ -204,13 +204,13 @@ r:François-Jean_Lefebvre_de_La_Barre a foaf:Person ;
 cn:date 1766  ;
 rdfs:label "François-Jean Lefebvre de la Barre" ;
 rdfs:comment "Torturé, décapité et brûlé pour blasphème et sacrilège" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/4/45/Chevalier_de_la_barre_statuecouleur.png>  .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/4/45/Chevalier_de_la_barre_statuecouleur.png>  .
 
 r:Voltaire a foaf:Person ;
 cn:date 1778 ;
 rdfs:label "Voltaire" ;
 rdfs:comment "1694-1778" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/c/c2/D%27apr%C3%A8s_Maurice_Quentin_de_La_Tour%2C_Portrait_de_Voltaire%2C_d%C3%A9tail_du_visage_%28ch%C3%A2teau_de_Ferney%29.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/c/c2/D%27apr%C3%A8s_Maurice_Quentin_de_La_Tour%2C_Portrait_de_Voltaire%2C_d%C3%A9tail_du_visage_%28ch%C3%A2teau_de_Ferney%29.jpg> .
 
 r:Révolution_française
 cn:date 1789  ; rdfs:label "Révolution française"  .
@@ -218,7 +218,7 @@ cn:date 1789  ; rdfs:label "Révolution française"  .
 <http://fr.dbpedia.org/resource/Déclaration_des_droits_de_l'homme_et_du_citoyen_de_1789>
 cn:date 1789 ;
 rdfs:label "Déclaration des droits de l'homme et du citoyen" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/a/aa/Le_Barbier_Dichiarazione_dei_diritti_dell%27uomo.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/a/aa/Le_Barbier_Dichiarazione_dei_diritti_dell%27uomo.jpg> .
 
 r:Wolfgang_Amadeus_Mozart a foaf:Person ;
 cn:date 1791 ;
@@ -227,7 +227,7 @@ rdfs:comment "1756-1791" .
 
 <http://fr.dbpedia.org/resource/Première_République_(France)> cn:date 1792  ; 
 rdfs:label "République française" ; 
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/3/34/France_1800.png>  .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/3/34/France_1800.png>  .
 
 [] cn:date 1793 ;
 rdfs:label "Exécution de Louis XVI".
@@ -252,7 +252,7 @@ rdfs:comment "Résistance dans le Var et les Basses-Alpes sévèrement réprimé
 
 <http://fr.dbpedia.org/resource/Commune_de_Paris_(1871)>
 cn:date 1871 ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/6/67/La_barricade_de_la_place_Blanche_d%C3%A9fendue_par_des_femmes_lors_de_la_Semaine_sanglante.jpg> ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/6/67/La_barricade_de_la_place_Blanche_d%C3%A9fendue_par_des_femmes_lors_de_la_Semaine_sanglante.jpg> ;
 rdfs:label "Commune de Paris" .
 
 
@@ -268,5 +268,5 @@ rdfs:label "Victor-Emmanuel III" .
 rdfs:label "100e anniversaire de l'annexion de Nice et de la Savoie" .
 
 [] cn:date 1988 ;
-cn:icon <http://www.publications-sorbonne.fr/fr/Resources/titles/28405100461340/Images/28405100461340M.jpg> ;
+st:icon <http://www.publications-sorbonne.fr/fr/Resources/titles/28405100461340/Images/28405100461340M.jpg> ;
 rdfs:label "600e anniversaire de la dédition de Nice" .

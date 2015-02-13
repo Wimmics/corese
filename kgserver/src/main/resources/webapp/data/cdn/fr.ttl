@@ -7,12 +7,12 @@
 
 r:Robert_Ier_de_France a foaf:Person ;
 cn:date 922 ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/0/0e/Robert1.jpg> ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/0/0e/Robert1.jpg> ;
 rdfs:label "Robert Ier" .
 
 r:Raoul_de_Bourgogne a foaf:Person ;
 cn:date 923 ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/c/cd/Rudolph_of_France.jpg> ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/c/cd/Rudolph_of_France.jpg> ;
 rdfs:label "Raoul" .
 
 r:Louis_IV_de_France a foaf:Person ;
@@ -33,7 +33,7 @@ cn:date 987  ; rdfs:label "Hugues Capet"  .
 
 r:Robert_II_de_France a foaf:Person ;
 cn:date 996  ; rdfs:label "Robert le Pieux" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/5/52/Seal_of_Robert_II.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/5/52/Seal_of_Robert_II.jpg> .
 
 r:Henri_Ier_de_France a foaf:Person ;
 cn:date 1031  ; rdfs:label "Henri Ier" .

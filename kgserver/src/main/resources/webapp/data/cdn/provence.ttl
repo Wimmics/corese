@@ -49,7 +49,7 @@ rdfs:comment "Fondation de la ville par Raimond Bérenger IV" .
 <http://fr.dbpedia.org/resource/Charles_Ier_de_Sicile> a foaf:Person ;
 cn:date 1246 ; 
 rdfs:label "Charles I d'Anjou" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/f/fa/Capitolini-MonumentoCarloAngi%C3%B2-ArnolfoDiCambio-2.jpg>;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/f/fa/Capitolini-MonumentoCarloAngi%C3%B2-ArnolfoDiCambio-2.jpg>;
 rdfs:comment "Comte de Provence, frère de Saint Louis, épouse Béatrice de Provence, fille de Raimond Béranger IV. Fondation de la Maison d'Anjou (les angevins)"  .
 
 [] cn:date 1266 ; 
@@ -65,7 +65,7 @@ r:Robert_Ier_de_Naples a foaf:Person ;
 cn:date 1309 ; 
 rdfs:label "Robert d'Anjou" ; 
 rdfs:comment "Comte de Provence, roi de Naples" ; 
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/5/5b/Robert1b.jpg>  .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/5/5b/Robert1b.jpg>  .
 
 
 <http://fr.dbpedia.org/resource/Papauté_d'Avignon> 
@@ -74,7 +74,7 @@ cn:date 1309  ; rdfs:label "Papauté d'Avignon"  .
 
 r:Jeanne_Ire_de_Naples cn:date 1343 ; a foaf:Person ;
 rdfs:label "Jeanne Ire" ; 
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/f/fd/Jeanne_I%C3%A8re_de_Naples%2C_dite_la_Reine_Jeanne%2C_comtesse_de_Provence.jpg>;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/f/fd/Jeanne_I%C3%A8re_de_Naples%2C_dite_la_Reine_Jeanne%2C_comtesse_de_Provence.jpg>;
 rdfs:comment "Comtesse de Provence, reine de Naples" .
 
 
@@ -131,7 +131,7 @@ rdfs:comment "Ville frontière, construction du fort de 1553 à 1585".
 r:Entrevaux a o:Place ;
 cn:date 1692 ;
 rdfs:label "Entrevaux";
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/e/e4/Entrevaux_-_Porte_d%27Italie.jpg>;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/e/e4/Entrevaux_-_Porte_d%27Italie.jpg>;
 rdfs:comment "Modernisation de la citadelle".
 
 

@@ -8,7 +8,7 @@
 r:Royaume_de_Sardaigne cn:date 1814 ; 
 rdfs:label "Restauration Sarde" ;
 rdfs:comment "Retour du Comté de Nice et de la Savoie au royaume de Piémont-Sardaigne" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/5/5a/TannerMapKingdomSardinia1839.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/5/5a/TannerMapKingdomSardinia1839.jpg> .
 
 r:Gênes a o:Place ;
 rdfs:label "Gênes";

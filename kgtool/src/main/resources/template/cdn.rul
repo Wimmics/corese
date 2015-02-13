@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 05 11:15:46 CET 2015
+Wed Feb 11 14:05:31 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -478,8 +478,8 @@ template cn:dynlink(?date) {
 
       st:get(st:service) 
       "?uri=" ?date
-      "&transform=" st:get(st:transform) 
-    
+#      "&transform=" st:get(st:transform) 
+      "&profile=" st:get(st:profile)
 }
 where {
   
@@ -639,7 +639,7 @@ where {
   optional { ?in cn:link ?lnk }
   optional { ?in rdfs:comment ?c }
   optional { ?in cn:list ?l }
-  optional { ?in cn:icon ?ii }
+  optional { ?in st:icon ?ii }
   
   bind (
     if (bound(?ii), ?ii,
@@ -679,7 +679,7 @@ template {
 where {
   ?in cn:begin ?d ; foaf:name ?mds .  
   optional { ?in cn:link ?lnk }
-  optional { ?in cn:icon ?ii }
+  optional { ?in st:icon ?ii }
   optional { ?in rdfs:comment ?cc }
   
   bind (

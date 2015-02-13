@@ -64,20 +64,13 @@ st:spqr a st:Profile ;
 st:query <query/spqr.rq>;
 st:transform st:navlab . 
        
-st:cdn a st:Profile ;
-st:query <query/cdn.rq>;
-st:transform st:navlab .  
+#st:cdn a st:Profile ;
+#st:query <query/cdn.rq>;
+#st:transform st:navlab .  
 
 ###################################
 
 
-# Dataset of the SPARQL endpoint
-# deprecated, see below
-st:loadHistory a st:Profile ;
-st:load2 <cdn/aa_siecle.ttl>, <cdn/fr.ttl>, <cdn/eds.ttl>, <cdn/emp.ttl>, 
-<cdn/provence.ttl>, <cdn/icon.rdf>, <cdn/context.ttl>, 
-<cdn/an1000.ttl>, <cdn/an1100.ttl>, <cdn/an1200.ttl>, <cdn/an1300.ttl>, <cdn/an1400.ttl>, 
-<cdn/an1500.ttl>, <cdn/an1600.ttl>, <cdn/an1700.ttl>, <cdn/an1800.ttl>, <cdn/an1900.ttl> .
 
 
 # Dataset of specific services, e.g. /tutorial/rdf
@@ -85,6 +78,8 @@ st:load2 <cdn/aa_siecle.ttl>, <cdn/fr.ttl>, <cdn/eds.ttl>, <cdn/emp.ttl>,
 #@base <file:///user/corby/home/ADataServer/>
 
 st:tutorial1 a st:Server ;
+  st:service "rdf" ;
+  st:transform st:web ;
   st:data     
     [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
     [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
@@ -92,6 +87,9 @@ st:tutorial1 a st:Server ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
 
 st:tutorial2 a st:Server ;
+  st:service "rdfs" ;
+  st:transform st:web ;
+  st:lang "en" ;
   st:data     
     [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
     [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
@@ -101,10 +99,13 @@ st:tutorial2 a st:Server ;
 
 # /tutorial/cdn
 st:cdn a st:Server ;
-st:data 
+    st:service "cdn" ;
+    st:transform st:cdn ;
+    st:data 
     [ st:uri <cdn/aa_siecle.ttl> ], [ st:uri <cdn/fr.ttl> ], [ st:uri <cdn/eds.ttl> ], 
     [ st:uri <cdn/emp.ttl> ],  [ st:uri <cdn/provence.ttl> ], [ st:uri <cdn/icon.rdf> ], 
-    [ st:uri <cdn/context.ttl> ],  [ st:uri <cdn/an1000.ttl> ], [ st:uri <cdn/an1100.ttl> ], 
+    [ st:uri <cdn/context.ttl> ],  
+    [ st:uri <cdn/an1000.ttl> ], [ st:uri <cdn/an1100.ttl> ], 
     [ st:uri <cdn/an1200.ttl> ], [ st:uri <cdn/an1300.ttl> ], [ st:uri  <cdn/an1400.ttl> ], 
     [ st:uri <cdn/an1500.ttl> ], [ st:uri <cdn/an1600.ttl> ], [ st:uri <cdn/an1700.ttl> ], 
     [ st:uri <cdn/an1800.ttl> ], [ st:uri <cdn/an1900.ttl> ] .

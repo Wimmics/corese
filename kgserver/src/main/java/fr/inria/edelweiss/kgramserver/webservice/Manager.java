@@ -1,0 +1,200 @@
+package fr.inria.edelweiss.kgramserver.webservice;
+
+import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Dataset Manager Load Profile Datasets into TripleStores Manage a map of
+ * TripleStore
+ *
+ * @author Olivier Corby, Wimmics INRIA I3S, 2015
+ *
+ */
+public class Manager {
+
+    static final String STCONTEXT = Context.STL_CONTEXT;
+    static HashMap<String, TripleStore> 
+            // by dataset URI; e.g. st:cdn
+            mapURI;
+            // name to URI (e.g. /template/cdn, cdn is the name of the service)
+    // cdn -> st:cdn
+    static HashMap<String, String> 
+        mapService;
+    static NSManager nsm;
+
+    static {
+        init();
+    }
+
+    /**
+     * Create a TripleStore for each server definition from profile and load its
+     * content
+     */
+    static void init() {
+        mapURI = new HashMap<String, TripleStore>();
+        mapService = new HashMap<String, String>();
+        nsm = NSManager.create();
+        Profile p = getProfile();
+        for (Service s : p.getServers()) {
+            System.out.println("Load: " + s.getName());
+            try {
+                createTripleStore(p, s);
+            } catch (LoadException ex) {
+                Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        // draft
+        // complete();
+    }
+
+    TripleStore getTripleStore(String name) {
+        return mapURI.get(name);
+    }
+    
+    TripleStore getTripleStoreByService(String name) {
+        String uri = getURI(name);
+        if (uri == null){
+            return null;
+        }
+        return getTripleStore(uri);
+    }
+    
+    String getURI(String name){
+        return mapService.get(name);
+    }
+
+    static Profile getProfile() {
+        return Transformer.getProfile();
+    }
+
+    static TripleStore createTripleStore(Profile p, Service s) throws LoadException {
+        TripleStore store = new TripleStore(create(s), true);
+        store.init(p.isProtected());
+        mapURI.put(s.getName(), store);
+        if (s.getService()!=null){
+            mapService.put(s.getService(), s.getName());
+        }
+        return store;
+    }
+
+    /**
+     * Create TripleStore and Load data from profile service definitions
+     */
+    static GraphStore create(Service s) throws LoadException {
+        GraphStore g = GraphStore.create(s.isRDFSEntailment());
+        Load ld = Load.create(g);
+
+        for (Service.Doc d : s.getData()) {
+            ld.load(d.getUri(), d.getUri(), d.getName());
+        }
+        for (Service.Doc d : s.getSchema()) {
+            ld.load(d.getUri(), d.getUri(), d.getName());
+        }
+
+        if (s.getContext().size() > 0) {
+            Graph gg = Graph.create();
+            g.setNamedGraph(STCONTEXT, gg);
+            Load lq = Load.create(gg);
+
+            for (Service.Doc d : s.getContext()) {
+                lq.load(d.getUri(), d.getUri(), d.getName());
+            }
+
+            init(gg);
+        }
+        return g;
+    }
+
+    /**
+     * Complete context graph by: 1) add index to queries 2) load query from
+     * st:queryURI and insert st:query
+     */
+    static void init(Graph g) {
+        String init =
+                "insert { ?q st:index ?n }"
+                + "where  { ?q a st:Query bind (kg:number() as ?n) }";
+
+        String init2 =
+                "insert { ?q st:query ?query }"
+                + "where  { ?q a st:Query ; st:queryURI ?uri . bind (kg:read(?uri) as ?query) }";
+
+        QueryProcess exec = QueryProcess.create(g);
+        try {
+            exec.query(init);
+            exec.query(init2);
+        } catch (EngineException ex) {
+            Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    //****************************** DRAFT *****************
+    /*
+     * try uri, then name
+     * uri is the URI of a query. If a dataset is assigned to uri, use the dataset
+     * otherwise use default triple store
+     * draft
+     * */
+    TripleStore getTripleStore(String uri, String name) throws LoadException {
+        if (uri != null) {
+            String extURI = nsm.toNamespace(uri);
+            TripleStore t = getTripleStore(extURI);
+            if (t != null) {
+                return t;
+            }
+            Service s = getProfile().getService(extURI);
+            if (s != null) {
+                t = createTripleStore(getProfile(), s);
+                TripleStore tt = getTripleStore(name);
+                t.getGraph().setNamedGraph(STCONTEXT, tt.getGraph().getNamedGraph(STCONTEXT));
+                return t;
+            }
+        }
+        return getTripleStore(name);
+    }
+
+    // context graph may contain service definition
+    // add them to profile
+    // draft
+    static void complete() {
+        for (TripleStore ts : mapURI.values()) {
+            Graph g = ts.getGraph().getNamedGraph(STCONTEXT);
+            if (g != null) {
+                try {
+                    getProfile().initLoader(g);
+                } catch (EngineException ex) {
+                    Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
+    // draft
+    TripleStore getServer(String uri, String profile) {
+        if (profile == null) {
+            return Transformer.getTripleStore();
+        }
+        TripleStore st = getStore(profile);
+        if (st == null) {
+            st = Transformer.getTripleStore();
+        }
+        return st;
+    }
+
+    // draft
+    TripleStore getStore(String name) {
+        Service s = getProfile().getService(nsm.toNamespace(name));
+        if (s == null || s.getServer() == null) {
+            return null;
+        }
+        return getTripleStore(s.getServer());
+    }
+}

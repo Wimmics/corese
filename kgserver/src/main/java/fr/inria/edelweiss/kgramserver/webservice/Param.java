@@ -28,6 +28,20 @@ public class Param {
         name = n;
         query = q;
     }
+    
+    public String toString(){
+        String str = "";
+        str += "profile: "   + getValue(profile) + "\n";
+        str += "transform: " + getValue(transform) + "\n" ;
+        return str;
+    }
+    
+    String getValue(String str) {
+        if (str == null) {
+            return "";
+        }
+        return str;
+    }
 
     /**
      * @return the service

@@ -17,7 +17,12 @@ public class Service {
     static final String PSCHEMA = NSManager.STL + "schema";
     static final String PCONTEXT= NSManager.STL + "context";  
     
+    // uri of this Service/Profile definition
+    // subject of the description
     private String name;
+    // name of the service if any (e.g. cdn for template/cdn)
+    // value of st:service property
+    private String service;
     private String query;
     private String transform;
     private String variable;
@@ -125,6 +130,20 @@ public class Service {
      */
     public void setLang(String lang) {
         this.lang = lang;
+    }
+
+    /**
+     * @return the service
+     */
+    public String getService() {
+        return service;
+    }
+
+    /**
+     * @param service the service to set
+     */
+    public void setService(String service) {
+        this.service = service;
     }
 
     class Doc {

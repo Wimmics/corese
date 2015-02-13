@@ -33,10 +33,11 @@ import java.util.logging.Logger;
 public class Profile {
 
     static final String NL = System.getProperty("line.separator");
-    static String SERVER;
-    static String DATA, QUERY;
-
-    HashMap<String, Service> map, servers;
+    static  String SERVER  = "http://localhost:" + EmbeddedJettyServer.port;
+    static  String DATA = SERVER + "/data/";
+    static  String QUERY = DATA + "query/";
+      
+    HashMap<String,  Service> map, servers; 
     NSManager nsm;
 
     boolean isProtected = false;
@@ -274,16 +275,19 @@ public class Profile {
                 + "?s ?p ?d "
                 + "?d st:uri ?u "
                 + "optional { ?d st:name ?n } "
+                + "optional { ?s st:service ?sv } "
                 + "}";
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
         for (Mapping m : map) {
             Node sn = m.getNode("?s");
+            Node sv = m.getNode("?sv");
             Node p = m.getNode("?p");
             Node u = m.getNode("?u");
             Node n = m.getNode("?n");
-            Service s = findServer(sn.getLabel());
-            s.add(p.getLabel(), u.getLabel(), (n != null) ? n.getLabel() : null);
+           Service s = findServer(sn.getLabel());
+           s.setService((sv==null)?null:sv.getLabel());
+           s.add(p.getLabel(), u.getLabel(), (n != null)?n.getLabel():null);
         }
 
     }

@@ -3,7 +3,6 @@ package fr.inria.edelweiss.kgramserver.webservice;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -39,6 +38,10 @@ public class TripleStore {
     TripleStore(GraphStore g, boolean b){
         graph = g;
         exec = QueryProcess.create(g, b);
+    }
+    
+    public String toString(){
+        return graph.toString();
     }
     
     QueryProcess getQueryProcess(){

@@ -15,6 +15,25 @@ st:tutorial a st:Dataset ;
 #  st:schema   [ st:uri "/data/tutorial/human.rdfs" ; st:name st:schema ] ;
   st:context  [ st:uri "/data/tutorial/tutorial.ttl"  ; st:name st:context ] .
 
+  
+  
+  
+[] a st:Query ;
+st:name st:intro ;
+rdfs:label "Introduction" ;
+rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
+Une question est alors posée avec un canevas de réponse à compléter. En cliquant sur 'Solution', on obtient la réponse attendue, en cliquant sur 'Template', le canevas réapparaît. 'Submit' soumet la requête SPARQL au serveur. 'Dataset' donne accès au graphe RDF."""@fr ;
+rdfs:comment ""@en ;
+
+st:query 
+"""select * where { 
+
+}""" 
+.
+
+  
+  
+  
 
 [] a st:Query ;
 st:name st:begin ;
@@ -33,9 +52,7 @@ st:solution
 }""" 
 .
 
-# assign a dataset to a query:
-#st:begin a st:Server ;
-#  st:data [ st:uri <human.rdfs> ; st:name st:test ] ;
+
 
 
 [] a st:Query ;
@@ -1510,9 +1527,40 @@ order by ?pos
 
 
 
+[] a st:Query ;
+st:name st:relevant ;
+rdfs:label "Order by relevance" ;
+rdfs:comment """Enumérer les résultats avec les solutions les plus complètes d'abord."""@fr ;
+rdfs:comment """Enumerate results in order of most complete solutions first."""@en ;
+st:reference <http://www.w3.org/TR/sparql11-query/#modOrderBy> ;
 
+st:query 
+"""prefix h: <http://www.inria.fr/2015/humans#>
+select * where {
+   ?x a h:Person 
+   optional { ?x h:name ?n }
+   optional { ?x h:shirtsize ?si }
+   optional { ?x h:shoesize  ?so }
+}
+order by desc(?c)
+""" ;
 
-
+st:solution 
+"""prefix h: <http://www.inria.fr/2015/humans#>
+select * where {
+   ?x a h:Person 
+   optional { ?x h:name ?n }
+   optional { ?x h:shirtsize ?si }
+   optional { ?x h:shoesize  ?so }
+   bind (
+    if (bound(?n),  1, 0) + 
+    if (bound(?si), 1, 0) + 
+    if (bound(?so), 1, 0)
+   as ?c)
+}
+order by desc(?c)
+""" 
+.
 
 
 

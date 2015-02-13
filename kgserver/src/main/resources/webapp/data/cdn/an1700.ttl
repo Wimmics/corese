@@ -9,7 +9,7 @@ r:Château_de_Nice a o:Place ;
 cn:date 1706 ; 
 rdfs:label "Château de Nice" ;
 rdfs:comment "Détruit sur ordre de Louis XIV" ;
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/6/69/Détails_d%27un_plan_de_Nice_de_1625_.jpg>.
+st:icon <http://upload.wikimedia.org/wikipedia/commons/6/69/Détails_d%27un_plan_de_Nice_de_1625_.jpg>.
 
 
 
@@ -26,7 +26,7 @@ r:Port_Lympia a o:Place ;
 cn:date 1750 ; 
 rdfs:label "Port Lympia";
 rdfs:comment "Creusement du port artificel de Nice";
-cn:icon <http://upload.wikimedia.org/wikipedia/commons/3/36/Vue_du_port_de_Nice.jpg> .
+st:icon <http://upload.wikimedia.org/wikipedia/commons/3/36/Vue_du_port_de_Nice.jpg> .
 
 
 

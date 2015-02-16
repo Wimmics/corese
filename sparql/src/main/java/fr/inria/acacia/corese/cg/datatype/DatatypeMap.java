@@ -597,5 +597,11 @@ public class DatatypeMap implements Cst, RDF {
              return dt.getDatatypeURI().equals(range);            
          }
 
-
+        public static boolean persistentable(IDatatype dt) {
+            
+            return (dt instanceof CoreseLiteral
+                || dt instanceof CoreseUndefLiteral
+                || dt instanceof CoreseXMLLiteral
+                || dt instanceof CoreseString);
+    }
 }

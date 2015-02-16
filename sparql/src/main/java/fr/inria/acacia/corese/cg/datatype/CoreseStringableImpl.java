@@ -3,6 +3,7 @@ package fr.inria.acacia.corese.cg.datatype;
 import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.persistent.api.IOperation;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
 /**
@@ -31,17 +32,36 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	static int code = STRINGABLE;
 	public static int count = 0;
 	String value = "";
-
+        private int storageMode = IOperation.STORAGE_RAM;
+        private IOperation manager ;
+        private int id;
+        
 	public CoreseStringableImpl() {}
 
-	public CoreseStringableImpl(String str) {
-		setValue(str);
+        public CoreseStringableImpl(String str) {
+            setValue(str);
 	}
-
-	public void setValue(String str) {
-		this.value = str;
-	}
-
+          
+        @Override
+        public void setValue(String str){
+            this.value = str;
+        }
+        
+        @Override
+        public final void setValue(String str, int nid, IOperation mgr){
+            if(str == null || str.isEmpty()) return;
+            if(mgr == null){
+                this.setValue(str);
+                return;
+            }
+            
+            this.manager = mgr;
+            this.id = nid;
+            
+            this.storageMode = manager.getStorageType();
+            this.manager.write(this.id, str);
+            this.value = "";
+        }
 	/**
 	 * Cast a literal to a boolean may be allowed: when the value
 	 * can be cast to a float, double, decimal or integer, if this value is 0, then return false, else return true
@@ -65,10 +85,20 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 		return code;
 	}
 
-	public String getLabel(){
-		return value;
+        @Override
+        public String getLabel(){
+            if(storageMode == IOperation.STORAGE_RAM || manager == null){
+               	return value;
+            }else{
+                String s = manager.read(this.id);
+                if(s == null){
+                    logger.error("Read string ["+id+"] from file error!");
+                    return value;
+                }
+                return s;
+            }
 	}
-
+        
 	public String getLowerCaseLabel(){
 		return getLabel().toLowerCase();
 	}

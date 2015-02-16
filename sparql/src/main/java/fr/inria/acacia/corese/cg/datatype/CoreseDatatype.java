@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import static fr.inria.acacia.corese.cg.datatype.Cst.jTypeInteger;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.acacia.corese.persistent.api.IOperation;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.NSManager;
@@ -428,6 +429,9 @@ public class CoreseDatatype
 	}
 	
 	public void setValue(String str) {}
+        
+        @Override
+        public void setValue(String str, int nid, IOperation pmgr) {}
 	
 	public String getNormalizedLabel() {
 		return "";
@@ -1032,4 +1036,4 @@ public class CoreseDatatype
     public void setProvenance(Object obj){
         
     }
-}
+    }

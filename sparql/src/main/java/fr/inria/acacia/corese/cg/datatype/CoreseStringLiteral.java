@@ -16,7 +16,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
 public class CoreseStringLiteral extends CoreseStringableImpl{
   static int code=STRING;
-
+  
 
   public CoreseStringLiteral() {}
 

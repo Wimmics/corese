@@ -31,9 +31,6 @@ public class Query extends Exp implements Graphable {
     public static final int QP_DEFAULT = 1;
     public static final int QP_HEURISTICS_BASED = 2;
 
-    //not recommend for testing only
-    //public static final int PLAN_STATS_BASED = 3;
-
     //used to set the default query plan method 
     public static int STD_PLAN = QP_DEFAULT;
 

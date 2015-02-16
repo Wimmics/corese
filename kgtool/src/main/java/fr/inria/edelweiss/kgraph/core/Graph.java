@@ -28,6 +28,9 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.acacia.corese.persistent.api.IOperation;
+import fr.inria.acacia.corese.persistent.api.Parameters;
+import fr.inria.acacia.corese.persistent.api.PersistentFactory;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -45,19 +48,18 @@ import java.util.Map;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Graph implements Graphable 
-{
+public class Graph implements Graphable {
 
     private static Logger logger = Logger.getLogger(Graph.class);
-    public static final String TOPREL =
-            fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
+    public static final String TOPREL
+            = fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
     public static boolean valueOut = !true;
     public static final int IGRAPH = -1;
     // edges in chronological order
     public static final int ILIST = -2;
     // NB of Index (subject, object)
     public static final int LENGTH = 2;
-    
+
     public static final int DEFAULT = 0;
     public static final int EXTENSION = 1;
 
@@ -83,7 +85,7 @@ public class Graph implements Graphable
      * can occur synchronized: indexNode (index of nodes for path) synchronized:
      * synGetCheck (EdgeIndex) may generate index of nth arg during read see
      * occurrences of graph.readLock() graph.writeLock()
-	 *
+     *
      */
     ReentrantReadWriteLock lock;
     ArrayList<Index> tables;
@@ -97,8 +99,7 @@ public class Graph implements Graphable
     Hashtable<String, Entity> individual;
     // label -> Node
     Hashtable<String, Entity> blank;
-    SortedMap<IDatatype, Entity> 
-            literal, 
+    SortedMap<IDatatype, Entity> literal,
             // table where same number with different datatype coincide
             sliteral;
     // key -> Node
@@ -143,15 +144,16 @@ public class Graph implements Graphable
     private boolean isTuple = false;
     public static final String SYSTEM = ExpType.KGRAM + "system";
     public int count = 0;
-    
+
     private boolean hasList = false;
-    
+
+    private IOperation persistentMgr;
+
     static {
         setCompareIndex(true);
     }
-	
-	// SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
 
+    // SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
     /**
      * @return the isSkolem
      */
@@ -233,18 +235,16 @@ public class Graph implements Graphable
         if (hasList) {
             tlist = createIndex(byIndex, ILIST);
             tables.add(tlist);
-        }
-        else if (tables.get(tables.size()-1).getIndex() == ILIST){
-            tables.remove(tables.size()-1);
+        } else if (tables.get(tables.size() - 1).getIndex() == ILIST) {
+            tables.remove(tables.size() - 1);
             tlist = null;
         }
     }
-    
-    Index createIndex(boolean b, int i){
-        if (isOptIndex()){
-           return new EdgeIndexer(this, b, i); 
-        }
-        else {
+
+    Index createIndex(boolean b, int i) {
+        if (isOptIndex()) {
+            return new EdgeIndexer(this, b, i);
+        } else {
             return new EdgeIndex(this, b, i);
         }
     }
@@ -281,7 +281,7 @@ public class Graph implements Graphable
      * @return the context
      */
     public Context getContext() {
-        if (context == null){
+        if (context == null) {
             context = new Context(this);
         }
         return context;
@@ -313,8 +313,8 @@ public class Graph implements Graphable
         TreeNode() {
             this(true);
         }
-        
-        TreeNode(boolean diff){
+
+        TreeNode(boolean diff) {
             super(new Compare(diff));
         }
     }
@@ -322,13 +322,14 @@ public class Graph implements Graphable
     /**
      * This Comparator enables to retrieve an occurrence of a given Literal
      * already existing in graph in such a way that two occurrences of same
-     * Literal be represented by same Node 
-     * It represent (1 integer) and (1.0 float) as two different Nodes 
+     * Literal be represented by same Node It represent (1 integer) and (1.0
+     * float) as two different Nodes
      */
     class Compare implements Comparator<IDatatype> {
+
         boolean diff = true;
-        
-        Compare(boolean b){
+
+        Compare(boolean b) {
             diff = b;
         }
 
@@ -356,16 +357,16 @@ public class Graph implements Graphable
         lock = new ReentrantReadWriteLock();
 
         tables = new ArrayList<Index>(length);
-        
-        for (int i = 0; i < length; i++) {            
+
+        for (int i = 0; i < length; i++) {
             tables.add(createIndex(byIndex, i));
         }
-        
+
         tgraph = createIndex(byIndex, IGRAPH);
         tables.add(tgraph);
-                           
+
         table = getIndex(0);
-        literal  = Collections.synchronizedSortedMap(new TreeNode(true));
+        literal = Collections.synchronizedSortedMap(new TreeNode(true));
         sliteral = Collections.synchronizedSortedMap(new TreeNode(false));
         vliteral = Collections.synchronizedMap(new HashMap<String, Entity>());
 
@@ -377,9 +378,9 @@ public class Graph implements Graphable
         gindex = new NodeIndex();
         values = new ValueResolverImpl();
         fac = new EdgeFactory(this);
-        manager = new Workflow(this);        
+        manager = new Workflow(this);
         key = hashCode() + ".";
-    }      
+    }
 
     public static Graph create() {
         return new Graph();
@@ -416,46 +417,43 @@ public class Graph implements Graphable
             setValueTable(true);
         }
     }
-    
+
     /**
-     * Edge Index is sorted on integer index value of Node
-     * Set default behavior for all graphs
-     * PRAGMA: PB with several graphs, index are not shared
+     * Edge Index is sorted on integer index value of Node Set default behavior
+     * for all graphs PRAGMA: PB with several graphs, index are not shared
      */
-    public static void setCompareIndex(boolean b){
+    public static void setCompareIndex(boolean b) {
         byIndexDefault = b;
         //EdgeIndex.setCompareIndex(b);
         Distinct.setCompareIndex(b);
         //MatcherImpl.setCompareIndex(b);
     }
-    
+
     /**
-     * set byIndex on this graph only
-     * reset EdgeIndex as well and sort edge list accordingly
+     * set byIndex on this graph only reset EdgeIndex as well and sort edge list
+     * accordingly
      */
-    public void setByIndex(boolean b){
+    public void setByIndex(boolean b) {
         byIndex = b;
-        for (Index id : getIndexList()){
+        for (Index id : getIndexList()) {
             id.setByIndex(b);
         }
     }
-    
-    public boolean isByIndex(){
+
+    public boolean isByIndex() {
         return byIndex;
     }
-    
+
     /**
-     * if true: Keep number datatypes separate
-     * but Join fails on different datatypes
-     * default is false (hence join works)
-     * PRAGMA:
-     * true works only with setCompareIndex(true)
+     * if true: Keep number datatypes separate but Join fails on different
+     * datatypes default is false (hence join works) PRAGMA: true works only
+     * with setCompareIndex(true)
      */
-    public static void setDistinctDatatype(boolean b){
+    public static void setDistinctDatatype(boolean b) {
         distinctDatatype = b;
     }
-    
-     public static void setNodeAsDatatype(boolean b){
+
+    public static void setNodeAsDatatype(boolean b) {
         NodeImpl.byIDatatype = b;
     }
 
@@ -658,39 +656,39 @@ public class Graph implements Graphable
         return hasDefault;
     }
 
-    public String toString(){
+    public String toString() {
         return toRDF();
     }
-    
+
     public String toRDF() {
         Serializer sb = new Serializer();
         sb.open("kg:Graph");
-        
+
         sb.appendPNL("kg:edge     ", size());
-        sb.appendPNL("kg:node     ", nbNodes()); 
-        sb.appendPNL("kg:graph    ", graph.size()); 
-        sb.appendPNL("kg:property ", table.size());  
-        sb.appendPNL("kg:uri      ", individual.size()); 
-        sb.appendPNL("kg:bnode    ", blank.size()); 
-        sb.appendPNL("kg:literal  ", literal.size()); 
+        sb.appendPNL("kg:node     ", nbNodes());
+        sb.appendPNL("kg:graph    ", graph.size());
+        sb.appendPNL("kg:property ", table.size());
+        sb.appendPNL("kg:uri      ", individual.size());
+        sb.appendPNL("kg:bnode    ", blank.size());
+        sb.appendPNL("kg:literal  ", literal.size());
         sb.appendPNL("kg:date     ", DatatypeMap.newDate());
-        
+
         sb.close();
-                              
-        for (Index t : getIndexList()){
-            if (t.getIndex() == 0 || t.cardinality() > 0){
+
+        for (Index t : getIndexList()) {
+            if (t.getIndex() == 0 || t.cardinality() > 0) {
                 sb.appendNL(t.toRDF());
             }
         }
-        
+
         return sb.toString();
     }
-    
-     /**
-     * Generate an RDF Graph that describes the KGRAM system and the 
-     * current RDF graph
+
+    /**
+     * Generate an RDF Graph that describes the KGRAM system and the current RDF
+     * graph
      */
-    public Graphable describe(){
+    public Graphable describe() {
         return getContext();
     }
 
@@ -809,7 +807,7 @@ public class Graph implements Graphable
             // redefine meta properties
             update();
         }
-        
+
         if (isEntail) {
             if (isDebug) {
                 logger.info("Graph entailment");
@@ -831,21 +829,21 @@ public class Graph implements Graphable
             isDelete = false;
         }
     }
-    
-    public void clean(){
+
+    public void clean() {
         // clean timestamp index
-        if (hasList){
+        if (hasList) {
             tlist.clean();
         }
     }
 
-     public void cleanEdge(){
+    public void cleanEdge() {
         // clean rule engine timestamp
-        for (Entity ent : getEdges()){
+        for (Entity ent : getEdges()) {
             ent.getEdge().setIndex(-1);
         }
-     }
-    
+    }
+
     public void setUpdate(boolean b) {
         isUpdate = b;
         if (isUpdate) {
@@ -970,7 +968,7 @@ public class Graph implements Graphable
 
     public boolean exist(Node p, Node n1, Node n2) {
         p = getPropertyNode(p);
-        if (p == null){
+        if (p == null) {
             return false;
         }
         return table.exist(p, n1, n2);
@@ -984,13 +982,12 @@ public class Graph implements Graphable
         }
         return addEdge(ee);
     }
-    
-    
+
     public Node addList(List<Node> list) {
         return addList(addGraph(Entailment.DEFAULT), list);
     }
-    
-    public Node addList(Node g, List<Node> list){
+
+    public Node addList(Node g, List<Node> list) {
         addGraphNode(g);
         Node fst = addProperty(RDF.FIRST);
         Node rst = addProperty(RDF.REST);
@@ -1000,10 +997,10 @@ public class Graph implements Graphable
         Node tmp;
         int s = list.size() - 1;
         int i = 0;
-        
-        for (Node n : list){
+
+        for (Node n : list) {
             tmp = nil;
-            if (i++ < s){
+            if (i++ < s) {
                 tmp = addBlank();
             }
             add(n);
@@ -1049,7 +1046,6 @@ public class Graph implements Graphable
         return n;
     }
 
-
     public void addOpt(Node p, List<Entity> list) {
         if (list.isEmpty()) {
             return;
@@ -1061,15 +1057,13 @@ public class Graph implements Graphable
             add(p, list);
         }
     }
-        
-     /**
-     * PRAGMA: 
-     * there is no duplicate in list, all edges are inserted
-     * predicate is declared in graph
-     * TODO:
-     * if same predicate, perform ensureCapacity on Index list
-     */       
-     void add(Node p, List<Entity> list) {
+
+    /**
+     * PRAGMA: there is no duplicate in list, all edges are inserted predicate
+     * is declared in graph TODO: if same predicate, perform ensureCapacity on
+     * Index list
+     */
+    void add(Node p, List<Entity> list) {
         setIndex(true);
         for (Index ei : getIndexList()) {
             ei.add(p, list);
@@ -1079,9 +1073,8 @@ public class Graph implements Graphable
         size += list.size();
     }
 
-    
     public void addOpt(List<Entity> list) {
-        if (list.isEmpty()){
+        if (list.isEmpty()) {
             return;
         }
         // fake index not sorted, hence add(edge) is done at end of index list
@@ -1133,10 +1126,10 @@ public class Graph implements Graphable
         return nbIndividuals() + nbBlanks() + nbLiterals();
     }
 
-    public int getNodeIndex(){
+    public int getNodeIndex() {
         return nodeIndex;
     }
-    
+
     public int nbResources() {
         return nbIndividuals() + nbBlanks();
     }
@@ -1192,7 +1185,6 @@ public class Graph implements Graphable
 //		if (n != null){
 //			nl.add(n);
 //		}
-
         if (nl.size() == 0) {
             n = getTopProperty();
             nl.add(n);
@@ -1200,7 +1192,6 @@ public class Graph implements Graphable
 
         return nl;
     }
-
 
     // used by construct
     public Node getNode(Node gNode, IDatatype dt, boolean create, boolean add) {
@@ -1220,16 +1211,16 @@ public class Graph implements Graphable
         return getNode(dt, false, false);
     }
 
-    public Node createNode(IDatatype dt){
+    public Node createNode(IDatatype dt) {
         return getNode(dt, true, false);
     }
-    
-       // all nodes
+
+    // all nodes
     // TODO: check producer
     public Node addNode(IDatatype dt) {
         return getNode(dt, true, true);
     }
-    
+
     // used by construct
     public Node getNode(IDatatype dt, boolean create, boolean add) {
         if (dt.isLiteral()) {
@@ -1382,11 +1373,10 @@ public class Graph implements Graphable
         return node;
     }
 
-    
-     Node basicAddResource(String label) {
+    Node basicAddResource(String label) {
         String key = getID(label);
         Node node = getNode(key, label);
-        if (node != null){
+        if (node != null) {
             return node;
         }
         node = getGraphNode(key, label);
@@ -1402,7 +1392,7 @@ public class Graph implements Graphable
         add(dt, node);
         return node;
     }
-    
+
     Node basicAddResource2(String label) {
         String key = getID(label);
         Node node = getResource(key, label);
@@ -1466,35 +1456,30 @@ public class Graph implements Graphable
             indexNode(dt, node);
         } else {
             literal.put(dt, (Entity) node);
-            if (distinctDatatype){
-               indexNode(dt, node);
-            }
-            else {
-                indexLiteralNode(dt, node); 
+            if (distinctDatatype) {
+                indexNode(dt, node);
+            } else {
+                indexLiteralNode(dt, node);
             }
         }
     }
-   
+
     /**
-     * Assign an index to Literal Node
-     * Assign same index to same number values:
-     * 1, '1'^^xsd:double, 1.0 have same index
-     * If EdgeIndex is sorted by index, dichotomy enables join 
-     * on semantically equivalent values
+     * Assign an index to Literal Node Assign same index to same number values:
+     * 1, '1'^^xsd:double, 1.0 have same index If EdgeIndex is sorted by index,
+     * dichotomy enables join on semantically equivalent values
      */
-    void indexLiteralNode(IDatatype dt, Node node){
-        if (dt.isNumber()){
+    void indexLiteralNode(IDatatype dt, Node node) {
+        if (dt.isNumber()) {
             Entity n = sliteral.get(dt);
-            if (n == null){ 
+            if (n == null) {
                 sliteral.put(dt, (Entity) node);
-                indexNode(dt, node);                       
-            }
-            else if (node.getIndex() == -1){
+                indexNode(dt, node);
+            } else if (node.getIndex() == -1) {
                 // assign same index as existing same value
-                node.setIndex(n.getNode().getIndex()); 
+                node.setIndex(n.getNode().getIndex());
             }
-        }
-        else {
+        } else {
             indexNode(dt, node);
         }
     }
@@ -1731,9 +1716,11 @@ public class Graph implements Graphable
 
     // synchronized
     public Index getIndex(int n) {
-        switch (n){
-            case IGRAPH: return tgraph;
-            case ILIST:  return tlist;              
+        switch (n) {
+            case IGRAPH:
+                return tgraph;
+            case ILIST:
+                return tlist;
         }
 //        if (n + 1 >= tables.size()) {
 //            //setIndex(n, new EdgeIndex(this, n));	
@@ -1926,6 +1913,10 @@ public class Graph implements Graphable
 
     void indexNode(IDatatype dt, Node node) {
         index(dt, node);
+
+        if (persistentable(dt)) {
+            dt.setValue(dt.getLabel(), node.getIndex(), persistentMgr);
+        }
     }
 
     void index(IDatatype dt, Node node) {
@@ -1933,8 +1924,41 @@ public class Graph implements Graphable
             node.setIndex(nodeIndex++);
         }
     }
+
+    //check if store dt to file
+    boolean persistentable(IDatatype dt) {
+
+        boolean r = (persistentMgr != null) && persistentMgr.enabled() && (dt != null);
+        if (!r) {
+            return false;
+        }
+
+        r &= DatatypeMap.persistentable(dt);
+
+        r &= persistentMgr.check(dt.getLabel());
+
+        return r;
+    }
+
+    // ==== example: how to set up parameters ====
+    // Graph g = Graph.create();
+    // Parameters params = Parameters.create();
+    // params.add(Parameters.type.MAX_LIT_LEN, 128);
+    // g.setPersistent(IOperation.STORAGE_FILE, params);
+    public void setPersistent(int type, Parameters params) {
+        persistentMgr = PersistentFactory.create(type, params);
+        persistentMgr.enable(true);
+    }
+
+    public void setPersistent(int type) {
+        this.setPersistent(type, null);
+    }
+
+    public IOperation getPersistent(){
+        return this.persistentMgr;
+    }
     
-    public Node getNode(int i){
+    public Node getNode(int i) {
         return nodes.get(i);
     }
 
@@ -1981,7 +2005,7 @@ public class Graph implements Graphable
     public boolean compare(Graph g) {
         return compare(g, false, false);
     }
-    
+
     public boolean compare(Graph g, boolean isGraph) {
         return compare(g, isGraph, false);
     }
@@ -1994,14 +2018,13 @@ public class Graph implements Graphable
         if (g2.isIndex()) {
             g2.index();
         }
-        
+
         if (g1.size() != g2.size()) {
             if (isDebug) {
                 logger.error("** Graph Size: " + size() + " " + g2.size());
             }
             return false;
         }
-
 
         boolean ok = true;
         for (Node pred1 : g1.getProperties()) {
@@ -2017,7 +2040,6 @@ public class Graph implements Graphable
         if (!ok && !detail) {
             return false;
         }
-
 
         TBN t = new TBN();
 
@@ -2207,7 +2229,6 @@ public class Graph implements Graphable
         return addEdge(ent);
     }
 
-
     public List<Entity> delete(Entity edge) {
         List<Entity> res = null;
 
@@ -2327,6 +2348,9 @@ public class Graph implements Graphable
         isUpdate = false;
         isDelete = false;
         size = 0;
+        if (persistentMgr != null) {
+            persistentMgr.clean();
+        }
     }
 
     void clearNodes() {
@@ -2460,7 +2484,7 @@ public class Graph implements Graphable
      * Add a copy of the entity edge Use case: entity comes from another graph,
      * create a local copy of nodes
      */
-    public Edge copy(Entity ent) {    
+    public Edge copy(Entity ent) {
         Node g = basicAddGraph(ent.getGraph().getLabel());
         Node p = basicAddProperty(ent.getEdge().getEdgeNode().getLabel());
 
@@ -2474,11 +2498,11 @@ public class Graph implements Graphable
         Edge e = addEdge(g, p, list);
         return e;
     }
-    
+
     /**
-	 * TODO:  setUpdate(true)
-	 */
-     Entity copy(Node gNode, Entity ent) {
+     * TODO: setUpdate(true)
+     */
+    Entity copy(Node gNode, Entity ent) {
         Entity e = fac.copy(ent);
         fac.setGraph(e, gNode);
 
@@ -2510,7 +2534,6 @@ public class Graph implements Graphable
             add(ent);
         }
         isIndex = false;
-
 
         table.index();
 
@@ -2581,24 +2604,24 @@ public class Graph implements Graphable
     /**
      * Add edge and add it's nodes
      */
-     public Entity add(Node source, Node subject, Node predicate, Node value) {
+    public Entity add(Node source, Node subject, Node predicate, Node value) {
         Entity e = fac.create(source, subject, predicate, value);
-        Entity ee = addEdgeWithNode(e);       
+        Entity ee = addEdgeWithNode(e);
         return ee;
     }
-     
+
     /**
      * Add edge and add it's nodes
-     */     
-      public Entity add(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
+     */
+    public Entity add(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
         Entity e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
-        Entity ee = addEdgeWithNode(e);       
+        Entity ee = addEdgeWithNode(e);
         return ee;
     }
-     
-      /**
-       * Add Edge, not add nodes      
-       */
+
+    /**
+     * Add Edge, not add nodes
+     */
     public Edge addEdge(Node source, Node subject, Node predicate, Node value) {
         Entity e = fac.create(source, subject, predicate, value);
         Entity ee = addEdge(e);
@@ -2734,8 +2757,8 @@ public class Graph implements Graphable
         Node tag = getNode(dt, true, true);
         return tag;
     }
-    
-    void tag(Entity ent){
+
+    void tag(Entity ent) {
         fac.tag(ent);
     }
 
@@ -2759,7 +2782,7 @@ public class Graph implements Graphable
 
     public void setTag(boolean b) {
         hasTag = b;
-        if (b){
+        if (b) {
             setTuple(true);
         }
     }
@@ -2880,7 +2903,6 @@ public class Graph implements Graphable
 
                 break;
 
-
             case ExpType.UNION:
 
                 for (Exp ee : exp.getExpList()) {
@@ -2889,7 +2911,6 @@ public class Graph implements Graphable
                     }
                 }
                 return false;
-
 
             case ExpType.AND:
             case ExpType.GRAPH:

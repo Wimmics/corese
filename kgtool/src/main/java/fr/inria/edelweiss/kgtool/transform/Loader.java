@@ -122,6 +122,7 @@ public class Loader {
      */
     void load(Load ld, String pp) throws LoadException {
         String name = null;
+        pp = clean(pp);
         if (nsm.inNamespace(pp, STL)) {
             // predefined pprinter: st:owl st:spin
             // loaded from Corese resource
@@ -155,7 +156,13 @@ public class Loader {
 
     }
     
-    
+    // remove #
+    String clean(String uri){
+        if (uri.contains("#")){
+            return uri.substring(0, uri.indexOf("#"));
+        }
+        return uri;
+    }
     
      /**
     * 

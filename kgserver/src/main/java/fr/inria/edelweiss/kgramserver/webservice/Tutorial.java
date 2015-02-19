@@ -1,8 +1,5 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import java.util.HashMap;
 import java.util.List;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;

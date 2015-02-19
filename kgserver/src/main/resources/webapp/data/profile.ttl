@@ -41,6 +41,9 @@ st:std a st:Profile ;
     st:query <query/construct.rq> ;
     st:variable "?r" ;
     st:transform st:sparql .
+
+st:rdfs a st:Profile ;
+    st:transform st:rdfs .
     
 st:local a st:Profile ;
   st:query     <query/local.rq> ;
@@ -108,7 +111,7 @@ st:cdn a st:Server ;
     [ st:uri <cdn/an1000.ttl> ], [ st:uri <cdn/an1100.ttl> ], 
     [ st:uri <cdn/an1200.ttl> ], [ st:uri <cdn/an1300.ttl> ], [ st:uri  <cdn/an1400.ttl> ], 
     [ st:uri <cdn/an1500.ttl> ], [ st:uri <cdn/an1600.ttl> ], [ st:uri <cdn/an1700.ttl> ], 
-    [ st:uri <cdn/an1800.ttl> ], [ st:uri <cdn/an1900.ttl> ] .
+    [ st:uri <cdn/an1800.ttl> ], [ st:uri <cdn/an1900.ttl> ],  [ st:uri <cdn/pos.ttl> ].
 
 
 

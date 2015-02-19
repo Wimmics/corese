@@ -9,8 +9,11 @@
 
 [] cn:date 1385 ; rdfs:label "Barcelonnette, Cuneo et Stura rejoignent la Savoie" .
 
+
+
+
 r:Dédition_de_Nice_à_la_Savoie 
 cn:date 1388 ; 
 rdfs:label "Dédition de Nice" ;
-rdfs:comment "Nice, Puget-Théniers et Lantosque quittent la Provence pour la souveraineté du comte de  Savoie"  .
+rdfs:comment "Nice, Puget-Théniers et Lantosque optent pour la souveraineté du comte de  Savoie (au détriment du comte de Provence)"  .
 

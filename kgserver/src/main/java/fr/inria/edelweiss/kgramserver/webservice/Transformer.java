@@ -185,6 +185,7 @@ public class Transformer {
          if (par.getLang() != null){
             ctx.setLang(par.getLang());
         }
+         ctx.setServer(Profile.SERVER);
         return ctx;
     }
 

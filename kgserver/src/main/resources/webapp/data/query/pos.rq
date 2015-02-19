@@ -1,0 +1,14 @@
+prefix o:    <http://dbpedia.org/ontology/>
+prefix p:    <http://fr.dbpedia.org/property/>
+insert {
+  graph kg:pos {
+    ?x p:longitude ?lon ; p:latitude ?lat
+  }
+}
+where {
+  ?x a o:Place ;
+  minus { ?x p:latitude ?l }
+  service <http://fr.dbpedia.org/sparql> {
+    ?x p:longitute ?lon ; p:latitude ?lat
+  }
+}

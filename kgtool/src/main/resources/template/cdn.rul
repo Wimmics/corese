@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Feb 11 14:05:31 CET 2015
+Wed Feb 18 10:38:21 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -478,8 +478,10 @@ template cn:dynlink(?date) {
 
       st:get(st:service) 
       "?uri=" ?date
-#      "&transform=" st:get(st:transform) 
-      "&profile=" st:get(st:profile)
+      coalesce(
+	concat("&profile=", st:get(st:profile)),
+	concat("&transform=", st:get(st:transform)), 
+	"")
 }
 where {
   
@@ -514,6 +516,30 @@ template  cn:wikidate(?d) {
 
   "<a href='http://fr.wikipedia.org/wiki/" ?d "'>" ?d "</a>"
 
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cn: <http://cdn.fr/schema/>
+template cn:list {
+  """
+  <table class='center'>
+  <tr>
+  <td><a href='?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia'>Carte</a></td>
+
+  <td><a href='?name="""st:get(st:server) """/data/query/cdnplace.rq&transform=st:sparql%23core&profile=st:dbpedia'>Lieu</a></td>
+
+  <td><a href='?name="""st:get(st:server) """/data/query/cdnperson.rq&transform=st:sparql%23core&profile=st:dbpedia'>Personne</a></td>
+  </tr>
+  </table>
+  """
 }
 where {
 
@@ -602,8 +628,11 @@ template cn:index(?title) {
     
     "</a></td><td>&nbsp;&nbsp;</td>"
     }
-    
-"</tr></table>"
+"</tr>"
+"</table>"
+
+st:call-template(cn:list)   
+
 }
 where {
   

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Feb 11 14:05:31 CET 2015
+Wed Feb 18 10:38:21 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -293,7 +293,7 @@ where {
 # Geolocate resource on a map given lat et long
 #
 
-template st:locate(?lat, ?lon) {
+template st:locate(?r, ?lat, ?lon) {
   """
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
   <script>
@@ -302,7 +302,7 @@ template st:locate(?lat, ?lon) {
       str(?lat) "," str(?lon)     
       """);
       
-    var mapOptions = {zoom: 10, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};
+    var mapOptions = {zoom: 7, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};
             
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     
@@ -310,7 +310,7 @@ template st:locate(?lat, ?lon) {
       alert( "Latitude: "+event.latLng.lat()+" "+", longitude: "+event.latLng.lng() ); 
     });"""
     
-    st:call-template(st:locateall, ?lat, ?lon)
+    st:call-template(st:locateall, ?r)
 
     "var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });"
      
@@ -565,7 +565,7 @@ where {
 #
 prefix p:    <http://fr.dbpedia.org/property/>
 
-template st:locateall(?lt, ?ln) {
+template st:locateall(?r) {
 
   "var pos" st:number()  " = new google.maps.LatLng("      
       str(?lat) "," str(?lon) ");"
@@ -579,8 +579,12 @@ template st:locateall(?lt, ?ln) {
   
 }
 where {
-  ?in p:longitude ?lon ; p:latitude ?lat
-  filter(?lon != ?ln || ?lat != ?lt)
+
+  bind (st:get(st:dataset) as ?g)
+  graph ?g {
+    ?in p:longitude ?lon ; p:latitude ?lat
+    filter(?in != ?r)
+    }
 }
 ]]>
 </body>
@@ -692,7 +696,7 @@ template {
   """</table>
   """
   
-  st:call-template(st:locate, ?lat, ?lon)
+  st:call-template(st:locate, ?in, ?lat, ?lon)
 
 }
 where {

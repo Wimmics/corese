@@ -25,10 +25,7 @@ rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next'
 Une question est alors posée avec un canevas de réponse à compléter. En cliquant sur 'Solution', on obtient la réponse attendue, en cliquant sur 'Template', le canevas réapparaît. 'Submit' soumet la requête SPARQL au serveur. 'Dataset' donne accès au graphe RDF."""@fr ;
 rdfs:comment ""@en ;
 
-st:query 
-"""select * where { 
-
-}""" 
+st:query ""
 .
 
   

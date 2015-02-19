@@ -104,7 +104,7 @@ public class HTMLFormat {
     
     String process(Graph g, String trans){  
         Transformer t = Transformer.create(g, trans);
-        context.set(Transformer.STL_TRANSFORM, trans);
+        context.setTransform(trans);
         // triple store graph has a st:context graph
         // add it to the transformer context
         Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);

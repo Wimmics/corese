@@ -58,7 +58,8 @@ r:Croisade_des_Albigeois cn:date 1208 ;
 rdfs:label "Croisade contre les Cathares" ;
 rdfs:comment "1208-1229" .
 
-r:Bataille_de_Bouvines cn:date 1214 ;
+r:Bataille_de_Bouvines a o:Place ;
+cn:date 1214 ;
 rdfs:label "Bataille de Bouvines" .
 
 
@@ -110,7 +111,7 @@ rdfs:comment "1452-1519" .
 rdfs:label "Fin de la Guerre de cent ans" .
 
 
-r:Chute_de_Constantinople
+r:Chute_de_Constantinople a o:Place ;
 cn:date 1453 ;
 rdfs:label "Constantinople" ;
 rdfs:comment "Prise par les Ottomans" .
@@ -131,7 +132,7 @@ rdfs:label "Reconquista";
 rdfs:comment "Expulsion des Musulmans et des Juifs d'Espagne par les Rois catholiques"  .
 
 
-r:Bataille_de_Marignan 
+r:Bataille_de_Marignan a o:Place ;
 cn:date 1515  ; rdfs:label "Bataille de Marignan"  .
 
 [] 
@@ -148,12 +149,14 @@ cn:date 1543 ;
 rdfs:label "Nicolas Copernic" ;
 rdfs:comment "Théorie de l'héliocentrisme (1473-1543)" .
 
-<http://fr.dbpedia.org/resource/Bataille_de_Saint-Quentin_(1557)> cn:date 1557 ;
+<http://fr.dbpedia.org/resource/Bataille_de_Saint-Quentin_(1557)> a o:Place ;
+cn:date 1557 ;
 rdfs:label "Bataille de Saint-Quentin" ;
 rdfs:comment "A la tête de l'armée impériale, Emmanuel-Philibert défait les français" .
 
 
-r:Bataille_de_Lépante cn:date 1571 ;
+r:Bataille_de_Lépante a o:Place ;
+cn:date 1571 ;
 rdfs:label "Bataille de Lépante" .
 
 r:Massacre_de_la_Saint-Barthélemy 
@@ -246,7 +249,7 @@ rdfs:label "Révolution française de 1848" .
 
 
 <http://fr.dbpedia.org/resource/Coup_d'État_du_2_décembre_1851> cn:date 1851  ; rdfs:label "Coup d'Etat de Napoléon III" ;
-rdfs:comment "Résistance dans le Var et les Basses-Alpes sévèrement réprimée par des dizaines d'exécution" .
+rdfs:comment "Résistance dans le Var et les Basses-Alpes sévèrement réprimée par des dizaines d'exécutions" .
 
 
 

@@ -84,16 +84,29 @@ rdfs:label "Louis d'Anjou" ;
 rdfs:comment "Frère de Charles V, adopté par Jeanne Ire "  .
 
 
+
+
 r:Charles_III_de_Naples a foaf:Person ;
 cn:date 1382 ; 
 rdfs:label "Charles de Duras" ;
 rdfs:comment "Fait assassiner Jeanne Ire"  .
+
+<http://fr.dbpedia.org/resource/Union_d'Aix> cn:date 1382 ;
+rdfs:label "Union d'Aix" ;
+rdfs:comment "Prémices de la guerre de succession entre Duras et Anjou" .
 
 
 <http://fr.dbpedia.org/resource/Louis_II_d'Anjou> a foaf:Person ;
 cn:date 1384 ; 
 rdfs:label "Louis II d'Anjou" ;
 rdfs:comment "Comte de Provence" 
+
+
+r:Jean_Grimaldi_de_Bueil a foaf:Person ;
+cn:date 1388 ;
+rdfs:label "Jean Grimaldi de Beuil" ;
+rdfs:comment "Prépare, avec son frère Annibal, la dédition de Nice à la Savoie" .
+
 
 <http://fr.dbpedia.org/resource/Louis_III_d'Anjou> a foaf:Person ;
 cn:date 1417 ; 

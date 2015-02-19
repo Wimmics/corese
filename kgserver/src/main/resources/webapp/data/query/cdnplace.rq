@@ -1,0 +1,9 @@
+prefix o: <http://dbpedia.org/ontology/> 
+construct {
+  ?x rdfs:label ?l
+} 
+where {
+  ?x a o:Place; 
+  rdfs:label ?l
+} 
+order by ?x

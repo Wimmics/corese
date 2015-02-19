@@ -21,12 +21,14 @@ public class Context {
     public static final String STL_QUERY = STL + "query";
     public static final String STL_NAME = STL + "name"; // query path name
     public static final String STL_SERVICE = STL + "service";
+    public static final String STL_SERVER = STL + "server";
     public static final String STL_PROFILE = STL + "profile";
     public static final String STL_TRANSFORM = STL + "transform";
     public static final String STL_URI = STL + "uri";
     public static final String STL_CONTEXT = STL + "context";
     public static final String STL_DATASET = STL + "dataset";
     public static final String STL_LANG = STL + "lang";
+    public static final String STL_PARAM = STL + "param";
     HashMap<String, IDatatype> table;
 
     public Context() {
@@ -111,7 +113,15 @@ public class Context {
     public Context setService(String str) {
         return set(STL_SERVICE, str);
     }
+    
+    public Context setServer(String str) {
+        return setURI(STL_SERVER, str);
+    }
 
+    public Context setParam(String str) {
+        return setURI(STL_PARAM, str);
+    }
+    
     public String getService() {
         return stringValue(STL_SERVICE);
     }

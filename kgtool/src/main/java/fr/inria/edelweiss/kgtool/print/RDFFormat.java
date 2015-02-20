@@ -23,6 +23,8 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.OWL;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 /**
  * 
@@ -186,10 +188,13 @@ public class RDFFormat {
 	public void write(String name) throws IOException{
 		StringBuilder sb = getStringBuilder();
 		FileOutputStream fos = new FileOutputStream(name);
-		for (int i = 0; i<sb.length(); i++){
-			fos.write(sb.charAt(i));
-		}
-		fos.close();
+                Writer out = new OutputStreamWriter(fos); //, "UTF8");
+                out.write(sb.toString());
+                out.close();
+//		for (int i = 0; i<sb.length(); i++){
+//			fos.write(sb.charAt(i));
+//		}
+//		fos.close();
 	}
 
 	

@@ -73,7 +73,9 @@ st:transform st:navlab .
 
 ###################################
 
-
+st:default st:load <tutorial/human1.rdf> , 
+    <tutorial/human2.rdf> ,
+    <tutorial/pragma.ttl> .
 
 
 # Dataset of specific services, e.g. /tutorial/rdf

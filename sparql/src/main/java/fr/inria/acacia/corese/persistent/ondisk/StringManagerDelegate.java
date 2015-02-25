@@ -74,7 +74,7 @@ public class StringManagerDelegate {
                 buffer = fhWirte.allocalteBuffer();
             } else {
                 //bigger than the buffer, create temporarity a bigger buffer than can put all strings once
-                int tmp_buf_size = (remainingLiteral % buf_size + 1) * buf_size;
+                int tmp_buf_size = ((int)(remainingLiteral / buf_size) + 1) * buf_size;
                 buffer = fhWirte.allocalteBuffer(tmp_buf_size);
             }
             ////put the second part of string [length - buf_size, end) to file

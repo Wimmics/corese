@@ -142,20 +142,6 @@ public final class StringOnDiskManager implements IOperation {
         return IOperation.STORAGE_FILE;
     }
 
-    /**
-     * Load meta data from xml file to RAM
-     */
-    public void load() {
-        //to be extended
-    }
-
-    /**
-     * Save the meta data and file information to file, for reusing next time
-     */
-    public void save() {
-
-    }
-
     @Override
     public boolean enabled() {
         return this.enabled;
@@ -164,6 +150,28 @@ public final class StringOnDiskManager implements IOperation {
     @Override
     public void enable(boolean enable) {
         this.enabled = enable;
+    }
+
+    /**
+     * Load meta data from xml file to RAM
+     * @param meta
+     */
+    @Override
+    public void load(String meta) {
+        //to be extended
+    }
+
+    /**
+     * Save the meta data and file information to file, for reusing next time
+     * @param dir
+     */
+    @Override
+    public void export(String dir) {
+        //meta.rdf
+        //data 
+        // - file1.txt
+        // - file2.txt
+        //...
     }
 
 }

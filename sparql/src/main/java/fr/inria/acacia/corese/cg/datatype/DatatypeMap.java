@@ -599,7 +599,9 @@ public class DatatypeMap implements Cst, RDF {
 
         public static boolean persistentable(IDatatype dt) {
             
-            return (dt instanceof CoreseLiteral
+            return (
+                dt instanceof CoreseStringLiteral 
+                || dt instanceof CoreseLiteral
                 || dt instanceof CoreseUndefLiteral
                 || dt instanceof CoreseXMLLiteral
                 || dt instanceof CoreseString);

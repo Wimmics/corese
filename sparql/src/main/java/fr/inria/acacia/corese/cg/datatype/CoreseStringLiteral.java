@@ -2,6 +2,8 @@ package fr.inria.acacia.corese.cg.datatype;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.acacia.corese.persistent.api.IOperation;
+import org.apache.log4j.Logger;
 
 /**
  * <p>Title: Corese</p>
@@ -16,8 +18,12 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
 public class CoreseStringLiteral extends CoreseStringableImpl{
   static int code=STRING;
+  private static Logger logger = Logger.getLogger(CoreseStringLiteral.class);
   
-
+  private int storageMode = IOperation.STORAGE_RAM;
+  private IOperation manager ;
+  private int id;
+        
   public CoreseStringLiteral() {}
 
   public CoreseStringLiteral(String value) {
@@ -108,5 +114,33 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  throw failure();
   }
   
-  
+        @Override
+        public void setValue(String str, int nid, IOperation mgr){
+            if(str == null || str.isEmpty()) return;
+            if(mgr == null){
+                this.setValue(str);
+                return;
+            }
+            
+            this.manager = mgr;
+            this.id = nid;
+            
+            this.storageMode = manager.getStorageType();
+            this.manager.write(this.id, str);
+            this.value = "";
+        }
+
+        @Override
+        public String getLabel(){
+            if(storageMode == IOperation.STORAGE_RAM || manager == null){
+               	return value;
+            }else{
+                String s = manager.read(this.id);
+                if(s == null){
+                    logger.error("Read string ["+id+"] from file error!");
+                    return value;
+                }
+                return s;
+            }
+	}
 }

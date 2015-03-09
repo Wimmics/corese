@@ -22,7 +22,6 @@ public class Parameters {
     //BUF_SIZE: buffer size
     //CONNECTED_FH_NB: 
     public enum type {
-
         MAX_LIT_LEN, MAX_FILE_SIZE, THRESHOLD_TO_DELETE_NB, CACHED_STRING_NB, BUF_SIZE, CONNECTED_FH_NB
     };
 

@@ -102,5 +102,5 @@ public class CoreseLiteral extends CoreseStringLiteral {
 		}
 		throw failure();
 	}
-
-}
+        
+            }

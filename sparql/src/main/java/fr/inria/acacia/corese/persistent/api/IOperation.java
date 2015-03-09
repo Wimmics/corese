@@ -75,4 +75,8 @@ public interface IOperation {
      * Clean up, ex, close connections
      */
     public void clean();
+    
+    public void load(String meta);
+    
+    public void export(String dir);
 }

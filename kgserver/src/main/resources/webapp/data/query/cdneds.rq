@@ -1,0 +1,12 @@
+@prefix cn: <http://cdn.fr/schema/>
+
+select ?d ?l ?x
+where {
+graph ?g {
+  [] cn:topic cn:mds
+  ?x a foaf:Person ; 
+     rdfs:label ?l ;
+     cn:begin ?d
+  }
+} 
+order by ?d

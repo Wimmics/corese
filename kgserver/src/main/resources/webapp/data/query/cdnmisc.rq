@@ -1,0 +1,13 @@
+@prefix cn: <http://cdn.fr/schema/>
+
+select ?d ?l ?x
+where {
+graph ?g {
+  [] cn:topic ?t 
+  filter (?t not in (cn:mds, cn:fr))
+  ?x a foaf:Person ; 
+     rdfs:label ?l ;
+     cn:date ?d
+  }
+} 
+order by ?d

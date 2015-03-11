@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgramserver.webservice;
 
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -43,6 +45,7 @@ import org.apache.log4j.Logger;
 public class SPARQLRestAPI {
     private static final String headerAccept = "Access-Control-Allow-Origin";
     public static final String PROFILE_DEFAULT   = "profile.ttl";        
+    public static final String DEFAULT           = NSManager.STL + "default";        
     private static Logger logger = Logger.getLogger(SPARQLRestAPI.class);
     private static boolean isDebug = false;
     private static boolean isDetail = false;
@@ -85,7 +88,8 @@ public class SPARQLRestAPI {
         store = new TripleStore(ent, owl);
         init();
         if (ld){
-            loadProfileData();
+            //loadProfileData();
+           Manager.init(store);
         }
         store.init(isProtected);
         mprofile.setProtect(isProtected);

@@ -22,6 +22,8 @@ import java.util.logging.Logger;
 public class Manager {
 
     static final String STCONTEXT = Context.STL_CONTEXT;
+    private static String DEFAULT = NSManager.STL + "default";
+    
     static HashMap<String, TripleStore> 
             // by dataset URI; e.g. st:cdn
             mapURI;
@@ -45,11 +47,14 @@ public class Manager {
         nsm = NSManager.create();
         Profile p = getProfile();
         for (Service s : p.getServers()) {
-            System.out.println("Load: " + s.getName());
-            try {
-                createTripleStore(p, s);
-            } catch (LoadException ex) {
-                Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+            if (! s.getName().equals(DEFAULT)){
+                // default if the sparql endpoint
+                System.out.println("Load: " + s.getName());
+                try {
+                    initTripleStore(p, s);
+                } catch (LoadException ex) {
+                    Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         // draft
@@ -76,21 +81,28 @@ public class Manager {
         return Transformer.getProfile();
     }
 
-    static TripleStore createTripleStore(Profile p, Service s) throws LoadException {
-        TripleStore store = new TripleStore(create(s), true);
-        store.init(p.isProtected());
+    static TripleStore initTripleStore(Profile p, Service s) throws LoadException {
+        TripleStore store = createTripleStore(p, s);
         mapURI.put(s.getName(), store);
         if (s.getService()!=null){
             mapService.put(s.getService(), s.getName());
         }
         return store;
     }
+    
+     static TripleStore createTripleStore(Profile p, Service s) throws LoadException {
+        GraphStore g = GraphStore.create(s.isRDFSEntailment());
+        TripleStore store = new TripleStore(g, true);
+        init(store, s);
+        store.init(p.isProtected());       
+        return store;
+    }
 
     /**
      * Create TripleStore and Load data from profile service definitions
      */
-    static GraphStore create(Service s) throws LoadException {
-        GraphStore g = GraphStore.create(s.isRDFSEntailment());
+    static GraphStore init(TripleStore ts, Service s) throws LoadException {
+        GraphStore g = ts.getGraph();
         Load ld = Load.create(g);
 
         for (Service.Doc d : s.getData()) {
@@ -113,7 +125,18 @@ public class Manager {
         }
         return g;
     }
-
+    
+    static void init(TripleStore ts) {
+        Service s = getProfile().getServer(DEFAULT);
+        if (s != null) {
+            try {
+                Manager.init(ts, s);
+            } catch (LoadException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     /**
      * Complete context graph by: 1) add index to queries 2) load query from
      * st:queryURI and insert st:query
@@ -152,7 +175,7 @@ public class Manager {
             }
             Service s = getProfile().getService(extURI);
             if (s != null) {
-                t = createTripleStore(getProfile(), s);
+                t = initTripleStore(getProfile(), s);
                 TripleStore tt = getTripleStore(name);
                 t.getGraph().setNamedGraph(STCONTEXT, tt.getGraph().getNamedGraph(STCONTEXT));
                 return t;

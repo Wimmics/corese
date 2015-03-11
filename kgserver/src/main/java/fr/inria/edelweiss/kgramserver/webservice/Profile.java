@@ -293,12 +293,16 @@ public class Profile {
     }
 
     Service findServer(String name) {
-        Service s = servers.get(name);
+        Service s = getServer(name);
         if (s == null) {
             s = new Service(name);
             servers.put(name, s);
         }
         return s;
+    }
+    
+    Service getServer(String name){
+        return servers.get(name);
     }
 
 }

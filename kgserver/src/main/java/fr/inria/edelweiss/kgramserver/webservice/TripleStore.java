@@ -24,11 +24,15 @@ public class TripleStore {
     boolean rdfs = false, owl = false;
 
     TripleStore(boolean rdfs, boolean owl) {
-        graph = GraphStore.create(rdfs);
-        exec  = QueryProcess.create(graph);
-        this.owl = owl;
+       this(rdfs, owl, true);
     }
     
+    // 
+    TripleStore(boolean rdfs, boolean owl, boolean b) {
+        graph = GraphStore.create(rdfs);
+        exec  = QueryProcess.create(graph, b);
+        this.owl = owl;
+    }
     
     TripleStore(GraphStore g){
         graph = g;
@@ -58,6 +62,10 @@ public class TripleStore {
     
     void setMode(int m){
         exec.setMode(m);                              
+    }
+    
+    void setOWL(boolean b){
+        owl = b;
     }
     
     void init(boolean b) {

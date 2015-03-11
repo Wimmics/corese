@@ -73,9 +73,13 @@ st:transform st:navlab .
 
 ###################################
 
-st:default st:load <tutorial/human1.rdf> , 
-    <tutorial/human2.rdf> ,
-    <tutorial/pragma.ttl> .
+#st:default st:load <tutorial/human1.rdf> ,  <tutorial/human2.rdf> , <tutorial/pragma.ttl> .
+
+st:default a st:Server ;
+st:data     
+    [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
+    [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
+    [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] .
 
 
 # Dataset of specific services, e.g. /tutorial/rdf
@@ -107,13 +111,14 @@ st:cdn a st:Server ;
     st:service "cdn" ;
     st:transform st:cdn ;
     st:data 
-    [ st:uri <cdn/aa_siecle.ttl> ], [ st:uri <cdn/fr.ttl> ], [ st:uri <cdn/eds.ttl> ], 
-    [ st:uri <cdn/emp.ttl> ],  [ st:uri <cdn/provence.ttl> ], [ st:uri <cdn/icon.rdf> ], 
-    [ st:uri <cdn/context.ttl> ],  
+    [ st:uri <cdn/aa_siecle.ttl> ], [ st:uri <cdn/fr.ttl> ], [ st:uri <cdn/franc.ttl> ],
+    [ st:uri <cdn/eds.ttl> ], 
+    [ st:uri <cdn/emp.ttl> ],    [ st:uri <cdn/provence.ttl> ], [ st:uri <cdn/icon.rdf> ], 
+    [ st:uri <cdn/icon.ttl> ],   [ st:uri <cdn/context.ttl> ],  
     [ st:uri <cdn/an1000.ttl> ], [ st:uri <cdn/an1100.ttl> ], 
     [ st:uri <cdn/an1200.ttl> ], [ st:uri <cdn/an1300.ttl> ], [ st:uri  <cdn/an1400.ttl> ], 
     [ st:uri <cdn/an1500.ttl> ], [ st:uri <cdn/an1600.ttl> ], [ st:uri <cdn/an1700.ttl> ], 
-    [ st:uri <cdn/an1800.ttl> ], [ st:uri <cdn/an1900.ttl> ],  [ st:uri <cdn/pos.ttl> ].
+    [ st:uri <cdn/an1800.ttl> ], [ st:uri <cdn/an1900.ttl> ], [ st:uri <cdn/pos.ttl> ].
 
 
 

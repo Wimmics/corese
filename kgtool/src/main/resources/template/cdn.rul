@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Feb 18 10:38:21 CET 2015
+Tue Mar 10 14:57:31 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -54,10 +54,10 @@ template cn:content(?c) {
     <table class='center'>
     <tr class='head'> 
     <th>Date</th> 
-    <th>Souverain France</th> 
-    <th>Empereur Germanique</th> 
-    <th>Souverain Savoie</th> 
-    <th>Contexte</th> 
+    <th>Souverain France</th> '''
+#    <th>Empereur Germanique</th> 
+#    <th>Souverain Savoie</th> 
+    '''<th>Contexte</th> 
     <th>Savoie, Piémont, Comté de Nice</th> 
     </tr>
     '''
@@ -115,7 +115,7 @@ prefix cn: <http://cdn.fr/schema/>
 
 template st:start {
    
-   st:call-template(st:substart, (coalesce(st:get(st:uri), cn:XV)))   
+   st:call-template(st:substart, (coalesce(st:get(st:uri), cn:XIV)))   
         
 }
 where {
@@ -371,13 +371,15 @@ template  cn:table(?min, ?max) {
 
   "<td>" st:call-template(cn:date, ?d, cn:fr) "</td>"
   
-  "<td>" st:call-template(cn:date, ?d, cn:emp) "</td>"  
+#  "<td>" st:call-template(cn:date, ?d, cn:emp) "</td>"  
 
-  "<td>" st:call-template(cn:date, ?d, cn:mds) "</td>"
+#  "<td>" st:call-template(cn:date, ?d, cn:mds) "</td>"
 
-  "<td>" st:call-template(cn:date, ?d, cn:context) "</td>"
+  "<td>" st:call-template(cn:date, ?d, cn:emp)
+         st:call-template(cn:date, ?d, cn:context) "</td>"
 
-  "<td>" st:call-template(cn:date, ?d, cn:cdn) "</td>"
+  "<td>" st:call-template(cn:date, ?d, cn:mds)
+         st:call-template(cn:date, ?d, cn:cdn) "</td>"
 
   "</tr>\n"
 
@@ -537,6 +539,13 @@ template cn:list {
   <td><a href='?name="""st:get(st:server) """/data/query/cdnplace.rq&transform=st:sparql%23core&profile=st:dbpedia'>Lieu</a></td>
 
   <td><a href='?name="""st:get(st:server) """/data/query/cdnperson.rq&transform=st:sparql%23core&profile=st:dbpedia'>Personne</a></td>
+  
+  <td><a href='?name="""st:get(st:server) """/data/query/cdnfr.rq&transform=st:sparql%23core&profile=st:dbpedia'>France</a></td>  
+  
+  <td><a href='?name="""st:get(st:server) """/data/query/cdneds.rq&transform=st:sparql%23core&profile=st:dbpedia'>Savoie</a></td>  
+  
+  <td><a href='?name="""st:get(st:server) """/data/query/cdnmisc.rq&transform=st:sparql%23core&profile=st:dbpedia'>Autre</a></td>  
+  
   </tr>
   </table>
   """
@@ -609,39 +618,68 @@ where {
 #
 prefix cn: <http://cdn.fr/schema/>
 
-template cn:index(?title) {
-"<table class='center'><tr>"
+template cn:elem(?title) {
 
-  group {
-    "<td><a href=\"" 
-    
-    if (st:get(st:type, st:static),
-      # static link
-      concat("#", str(?date)),  
-      # dynamic link to corese server
-      st:call-template(cn:dynlink, ?century)
-    )
-    
-    "\">" 
+    "<td><a href=\""  st:call-template(cn:dynlink, ?century) "\">" 
     
     "<div" ?class ">" ?date "</div>"
     
     "</a></td><td>&nbsp;&nbsp;</td>"
-    }
-"</tr>"
-"</table>"
+ 
+}
+where {
+  
+  ?century cn:start ?min ; cn:finish ?max ; rdfs:label ?date
+  
+  bind (if (?date = ?title, " class='bold'", "") as ?class)
+     
+}
+order by ?min
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate Century Index
+# Hypertext link may trigger Corese server 
+# Answer using SPARQL Template Transformation
+#
+prefix cn: <http://cdn.fr/schema/>
+
+template cn:index(?title) {
+
+"<table class='center'><tr>"
+
+  if (bound(?before), 
+    concat("<td><a href='", st:call-template(cn:dynlink, ?before), "'>Avant</a></td><td>&nbsp;&nbsp;</td>"), 
+    "")
+    
+  st:call-template(cn:elem, ?title)
+  
+  if (bound(?after), 
+    concat("<td><a href='", st:call-template(cn:dynlink, ?after), "'>Après</a></td>"), 
+    "")  
+    
+"</tr></table>"
+
 
 st:call-template(cn:list)   
 
 }
 where {
   
-  ?century cn:start ?min ; cn:finish ?max ; rdfs:label ?date
-
-bind (if (?date = ?title, " class='bold'", "")
-  as ?class)
+  ?century rdfs:label ?title ; 
+    cn:start ?min 
+       
+  bind (?min - 100 as ?be)
+  bind (?min + 100 as ?af)
+  
+  optional { ?before cn:start ?be }
+  optional { ?after  cn:start ?af }
 }
-order by ?min
 ]]>
 </body>
 </rule>
@@ -706,7 +744,7 @@ template {
   
 }
 where {
-  ?in cn:begin ?d ; foaf:name ?mds .  
+  ?in cn:begin ?d ; rdfs:label ?mds .  
   optional { ?in cn:link ?lnk }
   optional { ?in st:icon ?ii }
   optional { ?in rdfs:comment ?cc }

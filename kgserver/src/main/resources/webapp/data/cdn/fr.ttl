@@ -5,6 +5,55 @@
 
 <> cn:topic cn:fr
 
+
+
+
+r:Pépin_le_Bref a foaf:Person ;
+cn:date 751 ;
+rdfs:label "Pépin le Bref" .
+
+r:Carloman_Ier a foaf:Person ;
+cn:date 768 ;
+rdfs:label "Carloman Ier" .
+
+r:Charlemagne a foaf:Person ;
+cn:date 800 ;
+rdfs:label "Charlemagne" .
+
+
+r:Louis_le_Pieux a foaf:Person ;
+cn:date 814 ;
+rdfs:label "Louis le Pieux" .
+
+r:Charles_II_le_Chauve a foaf:Person ;
+cn:date 843 ;
+rdfs:label "Charles II le Chauve" .
+
+r:Louis_II_de_France a foaf:Person ;
+cn:date 877 ;
+rdfs:label "Louis II le Bègue" .
+
+r:Louis_III_de_France a foaf:Person ;
+cn:date 879 ;
+rdfs:label "Louis III" .
+
+r:Carloman_II a foaf:Person ;
+cn:date 879 ;
+rdfs:label "Carloman II" .
+
+r:Charles_III_le_Gros a foaf:Person ;
+cn:date 881 ;
+rdfs:label "Charles III le Gros" .
+
+<http://fr.dbpedia.org/resource/Eudes_de_France> a foaf:Person ;
+cn:date 888 ;
+rdfs:label "Eudes" .
+
+r:Charles_III_de_France a foaf:Person ;
+cn:date 898 ;
+rdfs:label "Charles III" .
+
+
 r:Robert_Ier_de_France a foaf:Person ;
 cn:date 922 ;
 st:icon <http://upload.wikimedia.org/wikipedia/commons/0/0e/Robert1.jpg> ;
@@ -29,7 +78,8 @@ rdfs:label "Louis V" .
 
 
 r:Hugues_Capet a foaf:Person ;
-cn:date 987  ; rdfs:label "Hugues Capet"  .
+cn:date 987  ; rdfs:label "Hugues Capet" ;
+rdfs:comment "Dynastie des Capétiens" .
 
 r:Robert_II_de_France a foaf:Person ;
 cn:date 996  ; rdfs:label "Robert le Pieux" ;
@@ -75,7 +125,8 @@ cn:date 1322  ; rdfs:label "Charles IV"  .
 
 
 r:Philippe_VI_de_France a foaf:Person ;
-cn:date 1328  ; rdfs:label "Philippe VI" .
+cn:date 1328  ; rdfs:label "Philippe VI" ;
+rdfs:comment "Capétiens de Valois".
 
 
 r:Jean_II_de_France a foaf:Person ;
@@ -127,7 +178,8 @@ cn:date 1574  ;
 rdfs:label "Henri III" .
 
 r:Henri_IV_de_France a foaf:Person ;
-cn:date 1594  ; rdfs:label "Henri IV"  .
+cn:date 1594  ; rdfs:label "Henri IV" ;
+rdfs:comment "Capétiens de Bourbon" .
 
 r:Louis_XIII_de_France a foaf:Person ;
 cn:date 1610  ; rdfs:label "Louis XIII".

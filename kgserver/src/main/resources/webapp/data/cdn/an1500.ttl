@@ -5,6 +5,11 @@
 
 <> cn:topic cn:cdn
 
+r:André_Provana_de_Leyni a foaf:Person ;
+cn:date 1511 ;
+rdfs:label "André Provana de Leyni" ;
+rdfs:comment "Chef militaire des États de Savoie (1511-1592)" .
+
 r:Louise_de_Savoie a foaf:Person ;
 cn:date 1515 ;
 rdfs:label "Louise de Savoie" ;
@@ -25,6 +30,10 @@ rdfs:comment "avec François Ier,  Charles Quint, le pape Paul III et Charles II
 
 [] cn:date 1539 ;
 rdfs:label "Hôtel des Monnaies à Nice" .
+
+r:Darse_de_Villefranche-sur-Mer a o:Place ;
+cn:date 1539 ;
+rdfs:label "Darse de Villefranche-sur-Mer" .
 
 <http://fr.dbpedia.org/resource/Siège_de_Nice_(1543)>
 cn:date 1543 ; 

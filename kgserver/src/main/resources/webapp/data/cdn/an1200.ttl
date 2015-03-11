@@ -8,7 +8,7 @@
 
 
 r:Château_de_Chambéry 
-#a o:Place ;
+a o:Place ;
 cn:date 1295 ; 
 rdfs:label "Château de Chambéry" ;
 rdfs:comment "Résidence des comtes de Savoie"  .

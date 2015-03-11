@@ -10,16 +10,26 @@ rdfs:label "Restauration Sarde" ;
 rdfs:comment "Retour du Comté de Nice et de la Savoie au royaume de Piémont-Sardaigne" ;
 st:icon <http://upload.wikimedia.org/wikipedia/commons/5/5a/TannerMapKingdomSardinia1839.jpg> .
 
+[] rdfs:label "Bornage du comté de Nice" ;
+cn:date 1823 ;
+cn:link <http://oliviercorby.blogspot.fr/p/borne.html> ;
+st:icon <http://4.bp.blogspot.com/-qzoiYjYSTRc/VEQFeGtksNI/AAAAAAAAD7w/7EDR3HBG0W4/s320/P1080438.JPG> .
+
+r:Statut_albertin cn:date 1848 ;
+rdfs:label "Statuto" .
+
 r:Gênes a o:Place ;
 rdfs:label "Gênes";
 cn:date 1853 ; 
 rdfs:comment "Suppression du port franc de Nice au profit de Gênes" .
 
+r:Camillo_Cavour a foaf:Person ;
+cn:date 1858 ;
+rdfs:label "Camillo Cavour" ;
+rdfs:comment "Entrevue de Plombières avec Napoléon III" .
+
 r:Annexion_du_comté_de_Nice_à_la_France 
 cn:date 1860 ; rdfs:label "La France annexe Nice et la Savoie".
 
 
-<http://fr.dbpedia.org/resource/Royaume_d'Italie_(1861-1946)> 
-cn:date 1861  ; 
-rdfs:label "Unification italienne" ;
-rdfs:comment "Victor-Emmanuel II roi d'Italie" .
+

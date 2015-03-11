@@ -5,10 +5,57 @@
 
 <> cn:topic cn:context
 
-[] cn:date 987  ; rdfs:label "Fondation de la dynastie des Capétiens"  .
+r:Abbaye_de_Lérins a o:Place ;
+cn:date 410 ;
+rdfs:label "Abbaye de Lérins" ;
+rdfs:comment "Fondée par Honorat d'Arles" .
+
+r:Royaume_wisigoth cn:date 418 ;
+rdfs:label "Royaume Wisigoth" ;
+rdfs:comment "Capitale Toulouse (418-711)" .
+
+r:Attila a foaf:Person ;
+cn:date 453 ;
+rdfs:label "Attila" ;
+rdfs:comment "395-453" .
+
+r:Romulus_Augustule a foaf:Person ;
+cn:date 476 ;
+rdfs:label "Romulus Augustule" ;
+rdfs:comment "Fin de l'Empire Romain d'Occident" .
+
+<http://fr.dbpedia.org/resource/Bataille_de_Tolbiac_(496)> a o:Place ;
+cn:date 496 ;
+rdfs:label "Bataille de Tolbiac" .
 
 
+r:Mahomet a foaf:Person ;
+cn:date 570 ;
+rdfs:label "Mahomet" .
 
+r:Conquête_musulmane_de_la_péninsule_Ibérique cn:date 711 ;
+rdfs:label "Al Andalus" .
+
+r:Charles_Martel a foaf:Person ;
+cn:date 717 ;
+rdfs:label "Charles Martel" ;
+rdfs:comment "Maire du Palais" .
+
+<http://fr.dbpedia.org/resource/Bataille_de_Poitiers_(732)> a o:Place ;
+cn:date 732 ;
+rdfs:label "Bataille de Poitiers" .
+
+r:Âge_des_Vikings cn:date 793 ;
+rdfs:label "Âge des Vikings" ;
+rdfs:comment "793-1066" .
+
+r:Traité_de_Verdun cn:date 843 ;
+rdfs:label "Traité de Verdun" .
+
+r:Pénitence_de_Canossa 
+cn:date 1077 ;
+rdfs:label "Canossa" ;
+rdfs:comment "Le souverain germanique Henri IV en pénitence devant le Pape Grégoire VII qui l'avait excommunié" .
 
 r:Première_croisade cn:date 1096 ;
 rdfs:label "1re croisade" ;
@@ -39,10 +86,31 @@ rdfs:label "7e croisade" ;
 rdfs:comment "1244 - 1254" .
 
 
+r:Al-Khwarismi a foaf:Person ;
+cn:date 780 ;
+rdfs:label "Al-Khwârizmî" ;
+rdfs:comment "780-850" .
+
+r:Avicenne a foaf:Person ;
+cn:date 980 ;
+rdfs:label "Avicenne" ;
+rdfs:comment "980-1037" .
+
+r:Averroès a foaf:Person ;
+cn:date 1126 ;
+rdfs:label "Averroès" ;
+rdfs:comment "1126-1198" .
+
+
 <http://fr.dbpedia.org/resource/Henri_II_d'Angleterre> a foaf:Person ;
 cn:date 1154 ;
 rdfs:label "Henri Plantagenêt" ;
 rdfs:comment "Roi d'Angleterre, 1154 - 1189" .
+
+r:Gengis_Khan a foaf:Person ;
+cn:date 1155 ;
+rdfs:label "Gengis Khan" ;
+rdfs:comment "1155-1227" .
 
 <http://fr.dbpedia.org/resource/Richard_Ier_d'Angleterre> a foaf:Person ;
 cn:date 1189 ;
@@ -58,12 +126,18 @@ r:Croisade_des_Albigeois cn:date 1208 ;
 rdfs:label "Croisade contre les Cathares" ;
 rdfs:comment "1208-1229" .
 
+
+r:Guelfes_et_gibelins cn:date 1210 ;
+rdfs:label "Conflit Guelfes vs Gibelins" .
+
 r:Bataille_de_Bouvines a o:Place ;
 cn:date 1214 ;
 rdfs:label "Bataille de Bouvines" .
 
 
-
+r:Inquisition_médiévale cn:date 1233 ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Konrad_von_Marburg.jpg/190px-Konrad_von_Marburg.jpg> ;
+rdfs:label "Inquisition en France" .
 
 r:Guerre_de_Cent_Ans cn:date 1337  ; rdfs:label "Guerre de cent ans"  .
 
@@ -83,8 +157,15 @@ cn:date 1378  ; rdfs:label "Schisme catholique" .
 
 
 
+r:Jean_Ier_de_Bourgogne a foaf:Person ;
+cn:date 1405 ;
+rdfs:label "Jean sans Peur" ;
+rdfs:comment "Duc de Bourgogne" .
 
 
+r:Guerre_civile_entre_Armagnacs_et_Bourguignons cn:date 1407 ;
+rdfs:label "Guerre civile entre Armagnacs et Bourguignons" ;
+rdfs:comment "1407-1435" .
 
 <http://fr.dbpedia.org/resource/Bataille_d'Azincourt> a o:Place ;
 cn:date 1415 ;
@@ -113,8 +194,8 @@ rdfs:label "Fin de la Guerre de cent ans" .
 
 r:Chute_de_Constantinople a o:Place ;
 cn:date 1453 ;
-rdfs:label "Constantinople" ;
-rdfs:comment "Prise par les Ottomans" .
+rdfs:label "Chute de Constantinople" ;
+rdfs:comment "Prise par les Ottomans : fin de l'Empire byzantin" .
 
 r:Nicolas_Machiavel a foaf:Person ;
 cn:date 1469 ;
@@ -140,7 +221,9 @@ cn:date 1516  ; rdfs:label "Charles Quint Roi d'Espagne" .
 
 
 r:Martin_Luther a foaf:Person ;
-cn:date 1517  ; rdfs:label "Thèses de Martin Luther" ;
+cn:date 1517  ; 
+rdfs:label "Martin Luther" ;
+rdfs:comment "Thèses de la Réforme" ;
 st:icon <http://upload.wikimedia.org/wikipedia/commons/9/90/Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg> .
 
 
@@ -159,6 +242,12 @@ r:Bataille_de_Lépante a o:Place ;
 cn:date 1571 ;
 rdfs:label "Bataille de Lépante" .
 
+r:Johannes_Kepler a foaf:Person ;
+cn:date 1571 ;
+rdfs:label "Kepler" ;
+rdfs:comment "Trajectoire elliptique des planètes (1571-1630)" .
+
+
 r:Massacre_de_la_Saint-Barthélemy 
 cn:date 1572  ; rdfs:label "Saint Barthélemy" ;
 rdfs:comment "Massacre des Protestants"  .
@@ -168,25 +257,49 @@ rdfs:comment "Massacre des Protestants"  .
 r:Édit_de_Nantes 
 cn:date 1598  ; rdfs:label "Edit de Nantes".
 
+r:Jules_Mazarin a foaf:Person ;
+cn:date 1602 ;
+rdfs:label "Mazarin" ;
+rdfs:comment "1602-1661" .
+
 <http://fr.dbpedia.org/resource/Galilée_(savant)> a foaf:Person ;
 cn:date 1616 ;
 rdfs:label "Galilée" ;
-rdfs:comment "Condamné par l'inquisition"  .
+rdfs:comment "Condamné par l'inquisition (1564-1642)"  .
+
+r:Jean-Baptiste_Colbert a foaf:Person ;
+cn:date 1619 ;
+rdfs:label "Colbert" ;
+rdfs:comment "1619-1683" .
 
 r:Molière a foaf:Person ;
 cn:date 1622 ;
 rdfs:label "Molière" ;
 rdfs:comment "1622-1673" .
 
+r:Sébastien_Le_Prestre_de_Vauban a foaf:Person ;
+cn:date 1633 ;
+rdfs:label "Sébastien Le Prestre de Vauban" ;
+rdfs:comment "1633-1707" .
+
+r:Armand_Jean_du_Plessis_de_Richelieu a foaf:Person ;
+rdfs:label "Richelieu" ;
+cn:date 1642 ;
+rdfs:comment "1585-1642" .
 
 r:Isaac_Newton a foaf:Person ; cn:date 1684 ;
 rdfs:label "Isaac Newton" ;
-rdfs:comment "Loi de la gravitation"  .
+rdfs:comment "Loi de la gravitation (1643-1727)"  .
 
 
 <http://fr.dbpedia.org/resource/Édit_de_Fontainebleau_(1685)> 
 cn:date 1685  ; rdfs:label "Révocation de l'Edit de Nantes" .
 
+
+r:Invasion_du_Dauphiné_en_1692 cn:date 1692 ;
+rdfs:label "Invasion du Dauphiné" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Blason_province_fr_Dauphine.svg/182px-Blason_province_fr_Dauphine.svg.png> ;
+rdfs:comment "Duc de Savoie Amédée II et  Ligue d'Augsbourg" .
 
 
 
@@ -252,6 +365,14 @@ rdfs:label "Révolution française de 1848" .
 rdfs:comment "Résistance dans le Var et les Basses-Alpes sévèrement réprimée par des dizaines d'exécutions" .
 
 
+r:Bataille_de_Solférino a o:Place ;
+cn:date 1859 ;
+rdfs:label "Bataille de Solférino" .
+
+<http://fr.dbpedia.org/resource/Royaume_d'Italie_(1861-1946)> 
+cn:date 1861  ; 
+rdfs:label "Unification italienne" ;
+rdfs:comment "Victor-Emmanuel II roi d'Italie" .
 
 <http://fr.dbpedia.org/resource/Commune_de_Paris_(1871)>
 cn:date 1871 ;

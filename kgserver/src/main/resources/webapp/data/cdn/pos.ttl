@@ -1,6 +1,65 @@
 @prefix p: <http://fr.dbpedia.org/property/>
 @prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
 
+r:Comtat_Venaissin p:latitude "44.0833"^^xsd:float ;
+  p:longitude "5.0"^^xsd:float .
+
+
+r:Bataille_de_Solférino p:latitude "45.3672"^^xsd:float ;
+  p:longitude "10.5664"^^xsd:float .
+
+
+r:Avignon p:latitude "43.95"^^xsd:double ;
+  p:longitude "4.81694"^^xsd:double  .
+
+
+r:Château_des_Seigneurs_de_la_Brigue p:latitude "44.0621"^^xsd:double ;
+  p:longitude "7.61481"^^xsd:double .
+
+r:Abbaye_de_Lérins p:latitude "43.5064"^^xsd:double ;
+  p:longitude "7.04698"^^xsd:double .
+
+<http://fr.dbpedia.org/resource/Bataille_de_Tolbiac_(496)> p:latitude "50.6753"^^xsd:float ;
+  p:longitude "6.60111"^^xsd:float .
+
+r:Château_de_Villeneuve-Loubet p:latitude "43.6598"^^xsd:double ;
+  p:longitude "7.12423"^^xsd:double  .
+
+r:Colmars p:latitude "44.1822"^^xsd:double ;
+  p:longitude "6.62722"^^xsd:double .
+
+r:Darse_de_Villefranche-sur-Mer p:latitude "43.6984"^^xsd:double ;
+  p:longitude "7.30833"^^xsd:double .
+
+r:Seyne p:latitude "44.3514"^^xsd:double ;
+  p:longitude "6.35694"^^xsd:double .
+
+
+
+
+r:La_Garde-Freinet p:latitude "43.3175"^^xsd:double ;
+  p:longitude "6.47"^^xsd:double .
+  
+
+
+r:Abbaye_de_Sénanque p:latitude "43.9283"^^xsd:double ;
+  p:longitude "5.18694"^^xsd:double .
+
+r:Abbaye_du_Thoronet p:latitude "43.4603"^^xsd:double ;
+  p:longitude "6.2639"^^xsd:double .
+
+r:Basilique_Sainte-Marie-Madeleine_de_Saint-Maximin-la-Sainte-Baume p:latitude "43.4527"^^xsd:double ;
+  p:longitude "5.86338"^^xsd:double .
+
+r:Durrës a o:Place ;
+rdfs:label "Durazzo" ;
+p:latitude  41.316667  ;
+p:longitude 19.45  .
+
+  r:Canossa a o:Place ;
+  p:latitude "44.6"^^xsd:double ;
+  p:longitude "10.4167"^^xsd:double .
 
 r:Bataille_de_Marignan
 p:latitude  45.366670 ;

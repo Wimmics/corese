@@ -1,7 +1,6 @@
 package test.persistent;
 
 import fr.inria.acacia.corese.persistent.api.IOperation;
-import fr.inria.acacia.corese.persistent.api.PersistentManager;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 
@@ -22,6 +21,6 @@ public class LoadLiteralsTest {
         Load l = Load.create(g);
         l.load(path);
         System.out.println(g);
-        System.out.println(PersistentManager.getManager(IOperation.STORAGE_FILE));
+        System.out.println(g.getPersistent());
     }
 }

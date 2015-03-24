@@ -1,6 +1,5 @@
 package test.persistent;
 
-import fr.inria.acacia.corese.persistent.ondisk.Constants;
 import static fr.inria.acacia.corese.persistent.ondisk.Constants.KB;
 import static fr.inria.acacia.corese.persistent.ondisk.Constants.MB;
 import java.io.IOException;
@@ -15,10 +14,8 @@ import java.text.DecimalFormat;
 public class TestSuite {
 
     public static void main(String args[]) throws IOException {
-        //testSpeedInSingleFiles();
-        //Constants.MAX_FILE_SIZE =  512 * MB;
-        testCorrectness();
-
+        testSpeedInSingleFiles();
+        //testCorrectness();
         //testSpeed();
     }
 
@@ -35,7 +32,7 @@ public class TestSuite {
             {1 * MB, 2 * MB},};
 
         //Constants.MAX_LIT_LEN = 0;
-        new TestSuite(Test1, 100, Test1.length, 512 * MB).test();
+        new TestSuite(Test1, 100, Test1.length, 256 * MB).test();
     }
 
     private static void testSpeed() throws IOException {

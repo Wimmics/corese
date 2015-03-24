@@ -84,7 +84,7 @@ public class Test {
         System.out.println("[Generate]: " + count + " records generated.");
         return length / count;
     }
-
+        
     public double[] writeNIO(int nRecords, boolean generated) {
         // === 1 generate strings ===
         Map<Integer, String> literalsTmp = new HashMap<Integer, String>();
@@ -98,10 +98,10 @@ public class Test {
         for (Map.Entry<Integer, String> entrySet : literalsTmp.entrySet()) {
             Integer key = entrySet.getKey();
             String value = entrySet.getValue();
-            if (manager.check(value)) {
+            //if (manager.check(value)) {
                 manager.write(key, value);
                 counter++;
-            }
+            //}
         }
         long time = System.currentTimeMillis() - start;
         System.out.println("[Write]: " + (generated ? nRecords : TestSuite.texts.length) + " records wrote to file.");

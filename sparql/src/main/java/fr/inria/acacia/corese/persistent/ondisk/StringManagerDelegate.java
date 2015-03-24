@@ -4,9 +4,11 @@ import fr.inria.acacia.corese.persistent.api.Parameters;
 import fr.inria.acacia.corese.persistent.api.Parameters.type;
 import static fr.inria.acacia.corese.persistent.ondisk.Constants.BEGIN;
 import java.io.IOException;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,9 +54,10 @@ public class StringManagerDelegate {
     public StringOnDiskMeta write(int id, String literal) {
 
         FileHandler fhWirte = fhManager.get();
+        byte[] bytesLiteral = literal.getBytes(Charset.forName(Constants.ENCODING));
 
         //if the current file space is not sufficient, create new file 
-        if (fhWirte == null || fhWirte.capacity() < literal.length()) {
+        if (fhWirte == null || fhWirte.capacity() < bytesLiteral.length) {
             fhWirte = fhManager.createNewFile();
         }
 
@@ -64,24 +67,24 @@ public class StringManagerDelegate {
         int buf_size = params.get(type.BUF_SIZE);
         int remainingInBuffer = buf_size - buffer.position();
         //** buffer is insuffcient 
-        if (remainingInBuffer < literal.length()) {
+        if (remainingInBuffer < bytesLiteral.length) {
             //put the first part of string [0, length - buf_size) to file
-            buffer.put(literal.substring(BEGIN, remainingInBuffer).getBytes(Charset.forName(Constants.ENCODING)));
+            buffer.put(Arrays.copyOfRange(bytesLiteral, BEGIN, remainingInBuffer));
 
-            int remainingLiteral = literal.length() - remainingInBuffer;
+            int remainingLiteral = bytesLiteral.length - remainingInBuffer;
             //if the rest of literal is smaller than the buffer
             if (remainingLiteral <= buf_size) {
                 buffer = fhWirte.allocalteBuffer();
             } else {
                 //bigger than the buffer, create temporarity a bigger buffer than can put all strings once
-                int tmp_buf_size = ((int)(remainingLiteral / buf_size) + 1) * buf_size;
+                int tmp_buf_size = ((int) (remainingLiteral / buf_size) + 1) * buf_size;
                 buffer = fhWirte.allocalteBuffer(tmp_buf_size);
             }
             ////put the second part of string [length - buf_size, end) to file
-            buffer.put(literal.substring(remainingInBuffer).getBytes(Charset.forName(Constants.ENCODING)));
+            buffer.put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
 
         } else {//put the whole string to buffer -->> to file
-            buffer.put(literal.getBytes(Charset.forName(Constants.ENCODING)));
+            buffer.put(bytesLiteral);
         }
 
         StringOnDiskMeta meta = new StringOnDiskMeta(id, fhWirte.getFid(), (int) offset, literal.length());

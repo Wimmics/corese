@@ -305,11 +305,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return dt.getDatatype();
 
             case DISPLAY:
-                System.out.println(exp + " = " + dt);
-                if (dt.getObject() != null){
-                    System.out.println(exp + " = " + dt.getObject());
-                }
-                return TRUE;
+               return display(exp, dt, null);
 
             default:
                 if (plugin != null) {
@@ -319,6 +315,23 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         return null;
     }
+    
+    IDatatype display(Expr exp, IDatatype dt, IDatatype arg) {
+        if (arg == null){
+            System.out.println(exp + " = " + dt);
+        }
+        else {
+            if (! arg.equals(FALSE)){
+                System.out.println(arg.stringValue());
+            }
+            System.out.println(dt.stringValue());
+            System.out.println();
+        }
+        if (dt.getObject() != null) {
+            System.out.println(exp + " = " + dt.getObject());
+        }
+        return TRUE;
+    }
 
     public Object function(Expr exp, Environment env, Producer p, Object o1, Object o2) {
         IDatatype dt = (IDatatype) o1;
@@ -326,6 +339,9 @@ public class ProxyImpl implements Proxy, ExprType {
         boolean b;
 
         switch (exp.oper()) {
+            
+             case DISPLAY:
+               return display(exp, dt, dt1);
 
             case CONT:
                 return getValue(dt.contains(dt1));

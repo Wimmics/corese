@@ -215,7 +215,8 @@ public class Transformer implements ExpType {
             if (ast.getValues() != null && 
                     body.size() > 0 && 
                     body instanceof BasicGraphPattern &&
-                    body.get(0).isTriple()){
+                    body.get(0).isTriple() &&
+                  ! body.get(0).isFilter()){
                 
                 Triple t = body.get(0).getTriple();
                 

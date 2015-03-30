@@ -1359,7 +1359,7 @@ void GraphPatternNotTriples(Exp stack) : {ASTQuery ast; Values values;}
  	| ForallGraphPattern(stack)
  	| IfThenElse(stack)
  	| ExistGraphPattern(stack)
- 	| <LBRACE> SubQuery(stack) <RBRACE>
+// 	| <LBRACE> SubQuery(stack) <RBRACE>
  	| Bind(stack) 
  	| values = Values() { stack.add(values); }
 }

@@ -687,9 +687,14 @@ public class SPIN implements ASTVisitor {
         counter++;
 
         for (int i = 0; i < or.size(); i++) {
-           // sb.append(OPAREN);
-            visit(or.eget(i));
-           // sb.append(CPAREN);
+           Exp e = or.eget(i);
+           if (! e.isBGP()){
+               sb.append(OPAREN);
+           }
+           visit(e);
+           if (! e.isBGP()){
+               sb.append(CPAREN);
+           }
         }
 
         counter--;
@@ -774,7 +779,7 @@ public class SPIN implements ASTVisitor {
         sb.append(tab() + OSBRACKET + SPACE + ATAB);
         counter++;
         sb.append("sp:Exists" + PT_COMMA);
-        sb.append(tab() + SPELEMENTS + SPACE + OPAREN + NL);
+        sb.append(tab() + SPELEMENTS + SPACE +  NL);
         counter++;
 
         for (int i = 0; i < exist.size(); i++) {
@@ -782,7 +787,7 @@ public class SPIN implements ASTVisitor {
         }
 
         counter--;
-        sb.append(tab() + CPAREN + NL);
+        sb.append(tab() + NL);
         counter--;
         sb.append(tab() + CSBRACKET + NL);
 
@@ -815,7 +820,7 @@ public class SPIN implements ASTVisitor {
         sb.append(tab() + "sp:serviceURI" + SPACE);
         visit(service.getService());
         sb.append(PT_COMMA);
-        sb.append(tab() + SPELEMENTS + SPACE + OPAREN + NL);
+        sb.append(tab() + SPELEMENTS + SPACE +  NL);
         counter++;
 
         for (Exp ee : service.getBody()) {
@@ -823,7 +828,7 @@ public class SPIN implements ASTVisitor {
         }
 
         counter--;
-        sb.append(tab() + CPAREN + NL);
+        sb.append(tab() + NL);
         counter--;
         sb.append(tab() + CSBRACKET + NL);
 
@@ -920,6 +925,9 @@ public class SPIN implements ASTVisitor {
 
     String opeName(Term term) {
         if (term.isFunction()) {
+            if (term.getCName() != null){
+                return term.getCName().toString();
+            }
             return funName(term);
         } else {
             return symToName(term.getName());

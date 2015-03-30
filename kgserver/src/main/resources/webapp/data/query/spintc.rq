@@ -1,0 +1,13 @@
+prefix tc: </home/corby/AData/template/spintc/>
+prefix t:  </home/corby/AData/template/spinhtml/template/>
+template {
+    st:apply-templates-with(t:query.rq)
+}
+where {
+     filter(st:visit(st:start, st:trace))      
+     filter(st:visit(st:trace, st:default, false))
+     filter(st:visit(st:trace, st:fail, true))
+          
+     bind (st:apply-templates-with(tc:main)
+     as ?res)    
+}

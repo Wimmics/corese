@@ -1,0 +1,7 @@
+prefix t: </home/corby/AData/template/spinhtml/>
+template {
+    st:apply-templates-with(t:main)
+}
+where {
+
+}

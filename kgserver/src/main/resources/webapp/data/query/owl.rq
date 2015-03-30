@@ -1,0 +1,6 @@
+template {
+    st:call-template-with(st:owl, st:html)
+}
+where {
+
+}

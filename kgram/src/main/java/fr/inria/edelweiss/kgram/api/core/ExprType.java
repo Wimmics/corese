@@ -207,6 +207,9 @@ public interface ExprType {
  	public static int STL_ISSTART               = 261;
  	public static int STL_SET                   = 262;
  	public static int STL_GET                   = 263;
+ 	public static int STL_BOOLEAN               = 264;
+ 	public static int STL_VISIT                 = 265;
+ 	public static int STL_VISITED               = 266;
 
 
 	public static int ISSKOLEM 	= 300;

@@ -37,6 +37,28 @@ public abstract class Exp extends Statement implements Iterable<Exp> {
 	
 	public  boolean add(Exp exp){
 		if (exp.isBinary() && exp.size() == 1){
+                    BasicGraphPattern bgp;
+                    
+                    if (size() == 1 && get(0).isBGP()){
+                        bgp = (BasicGraphPattern) get(0);                       
+                    }
+                    else {
+			bgp = BasicGraphPattern.create();
+			for (Exp e : body){
+				bgp.add(e);
+			}
+                    }
+                    
+                    exp.add(0, bgp);
+                    body.clear();
+                    return add(exp);
+                    
+		}
+		return body.add(exp);
+	}
+        
+        public  boolean add2(Exp exp){
+		if (exp.isBinary() && exp.size() == 1){
 			BasicGraphPattern bgp = BasicGraphPattern.create();
 			for (Exp e : body){
 				bgp.add(e);

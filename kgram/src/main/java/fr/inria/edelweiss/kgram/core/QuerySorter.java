@@ -299,6 +299,7 @@ public class QuerySorter implements ExpType {
                         // an exist filter that is not bound is moved at the end because it 
                         // may bound its own variables.
                         if (bound && e.isOptional() && e.first().size() > 0) {
+                            // add filter in first arg of optional
                             e.first().add(ff);
                         }
                         e.addFilter(ff);

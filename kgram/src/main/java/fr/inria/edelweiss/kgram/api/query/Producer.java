@@ -7,6 +7,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 
 /**
  * Interface for the Connector that produces candidate edges for KGRAM 
@@ -197,7 +198,10 @@ public interface Producer {
          */
          boolean isProducer(Node node);
 
-         Producer getProducer(Node node);
+         Producer getProducer(Node node, Environment env);
+         
+         // use case: Producer created for a specific query
+         Query getQuery();
 	
          // May return an object that implement the RDF graph
          Object getGraph();

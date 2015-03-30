@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 
 
 /**
@@ -120,9 +121,14 @@ public class ProducerDefault implements Producer {
     }
 
     @Override
-    public Producer getProducer(Node node) {
+    public Producer getProducer(Node node, Environment env) {
         return null;
     }
+    
+    @Override
+        public Query getQuery(){
+            return null;
+        }
 
     @Override
     public Object getGraph() {

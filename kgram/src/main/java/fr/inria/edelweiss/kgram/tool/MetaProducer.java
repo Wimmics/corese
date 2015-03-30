@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 
 /**
  * Meta Producer that manages several Producer
@@ -44,6 +45,11 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	public Producer getProducer(){
 		return producer;
 	}
+        
+        @Override
+        public Query getQuery(){
+            return producer.getQuery();
+        }
 	
 	public static MetaProducer create(){
 		return new MetaProducer();
@@ -177,8 +183,8 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     }
 
     @Override
-    public Producer getProducer(Node node) {
-        return producer.getProducer(node);
+    public Producer getProducer(Node node, Environment env) {
+        return producer.getProducer(node, env);
     }
 
     @Override

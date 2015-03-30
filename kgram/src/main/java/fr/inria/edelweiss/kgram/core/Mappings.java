@@ -63,6 +63,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	private int nbDelete = 0;
 	private int nbInsert = 0;
 	private Node templateResult;
+        private boolean isFake = false;
 	
 
 
@@ -497,6 +498,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 			if (qq.isAggregate()){
 				// SPARQL test cases requires that aggregate on empty result set return one empty result ...
 				add(new Mapping());
+                                isFake = true;
 			}
 			return ;
 		}
@@ -650,7 +652,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
         }
         
         void template(Evaluator eval, Query q, Memory mem, Producer p){
-		if (size() > 0 && q.isTemplate()){
+		if (size() > 0 && ! isFake && q.isTemplate()){
                     setTemplateResult(apply(eval, q.getTemplateGroup(), mem, p));
 		}
 	}
@@ -663,11 +665,14 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		// bind the Mapping in memory to retrieve group by variables
 		memory.aggregate(firstMap);
 		if (size() == 1){
-			// memory.getNode(?out)
-			Node node = memory.getNode(exp.getFilter().getExp().getExp(0));
-                        if (node == null || ! node.isFuture()){
-                            return node;
-                        }
+                    // memory.getNode(?out)
+                    Node node = memory.getNode(exp.getFilter().getExp().getExp(0));
+                    //if (node == null || ! node.isFuture()){
+                    if (node != null && !node.isFuture()) {
+                        // if (node == null) go to aggregate below because we want it to be uniform
+                        // whether there is one or several results
+                        return node;
+                    }
 		}
                 
 		Node node = eval.eval(exp.getFilter(), memory, p);

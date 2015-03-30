@@ -134,6 +134,9 @@ public class Processor {
 	static final String STL_ISSTART             = STL + "isStart"; 
 	static final String STL_SET                 = STL + "set"; 
 	static final String STL_GET                 = STL + "get"; 
+	static final String STL_VISIT               = STL + "visit"; 
+	static final String STL_VISITED             = STL + "visited"; 
+	static final String STL_BOOLEAN             = STL + "boolean"; 
         
 	public static final String STL_GROUPCONCAT  = STL + "group_concat"; 
 	public static final String STL_CONCAT       = STL + "concat"; 
@@ -524,6 +527,9 @@ public class Processor {
                 defoper(STL_ISSTART,            ExprType.STL_ISSTART);
                 defoper(STL_SET,                ExprType.STL_SET);
                 defoper(STL_GET,                ExprType.STL_GET);
+                defoper(STL_VISIT,              ExprType.STL_VISIT);
+                defoper(STL_VISITED,            ExprType.STL_VISITED);
+                defoper(STL_BOOLEAN,            ExprType.STL_BOOLEAN);
 
 		defoper(LEVEL,          ExprType.LEVEL);
 		defoper(INDENT,         ExprType.INDENT);

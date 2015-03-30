@@ -18,6 +18,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -204,7 +205,7 @@ public class RemoteProducerWSImpl implements Producer {
         try {
             StopWatch sw = new StopWatch();
             sw.start();
-
+                      
             if (SourceSelectorWS.ask(qEdge, this, env)) {
                 logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
                 String sparqlRes = rp.getEdges(rwSparql);
@@ -653,7 +654,7 @@ public class RemoteProducerWSImpl implements Producer {
     }
 
     @Override
-    public Producer getProducer(Node node) {
+    public Producer getProducer(Node node, Environment env) {
         return null;
     }
 
@@ -723,6 +724,12 @@ public class RemoteProducerWSImpl implements Producer {
 
     @Override
     public Node getGraphNode() {
+        return null;
+    }
+
+  
+    @Override
+    public Query getQuery() {
         return null;
     }
 }

@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -523,10 +524,7 @@ public class RemoteSqlProducerImpl implements Producer {
         return false;
     }
 
-    @Override
-    public Producer getProducer(Node node) {
-        return null;
-    }
+ 
 
     @Override
     public Object getGraph() {
@@ -544,6 +542,16 @@ public class RemoteSqlProducerImpl implements Producer {
 
     @Override
     public Node getGraphNode() {
+        return null;
+    }
+
+    @Override
+    public Producer getProducer(Node node, Environment env) {
+        return null;
+    }
+
+    @Override
+    public Query getQuery() {
         return null;
     }
 }

@@ -36,6 +36,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
@@ -124,6 +125,9 @@ public class PluginImpl extends ProxyImpl {
                 
             case STL_ISSTART:
                 return isStart(env, p);
+                
+            case STL_VISITED:
+                return visited(exp, env, p);
 
             case PROLOG:
                 return prolog(null, env, p);
@@ -133,6 +137,10 @@ public class PluginImpl extends ProxyImpl {
                 
             case STL_NUMBER:
                 return getValue(1 + env.count());
+                
+            case APPLY_TEMPLATES_ALL:
+            case APPLY_TEMPLATES:  
+                return pprint(null, null, null, exp, env, p);    
                                                     
             case FOCUS_NODE:
                 return getFocusNode(null, env);
@@ -201,6 +209,12 @@ public class PluginImpl extends ProxyImpl {
             case STL_GET:
                 return get(exp, env, p, dt);
                 
+            case STL_BOOLEAN:
+                return bool(exp, env, p, dt);
+                
+            case STL_VISITED:
+                return visited(exp, env, p, dt);                
+                
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
                 return pprint(dt, null, null, null, exp, env, p);
@@ -209,6 +223,7 @@ public class PluginImpl extends ProxyImpl {
                 return pprint(null, dt, null, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
+            case APPLY_TEMPLATES_WITH_ALL:
                 return pprint(dt, null, null, exp, env, p);
                 
             case APPLY_TEMPLATES_GRAPH:
@@ -365,10 +380,13 @@ public class PluginImpl extends ProxyImpl {
                 return pprint(dt1, dt2, null, exp, env, p);
                 
             case STORE:
-                return ext.store(p, dt1, dt2);
+                return ext.store(p, env, dt1, dt2);
                 
             case STL_SET:
                 return set(exp, env, p, dt1, dt2);
+                
+           case STL_VISIT:
+                return visit(exp, env, p, dt1, dt2, null);
                 
             case STL_GET:
                 return get(exp, env, p, dt1, dt2);    
@@ -432,6 +450,9 @@ public class PluginImpl extends ProxyImpl {
                 // dt2: graph 
                 // dt3; focus
                 return pprint(getArgs(args, 2), dt3, null, dt1, null, dt2, exp, env, p);
+                
+            case STL_VISIT:
+                return visit(exp, env, p, dt1, dt2, dt3);
 
         }
 
@@ -640,6 +661,13 @@ public class PluginImpl extends ProxyImpl {
     private Object odd(Expr exp, IDatatype dt) {
         boolean b = dt.intValue() % 2 != 0 ;
         return getValue(b);        
+    }
+
+    private IDatatype bool(Expr exp, Environment env, Producer p, IDatatype dt) {
+        if (dt.stringValue().contains("false")){
+            return FALSE;
+        }
+        return TRUE;
     }
     
   
@@ -882,7 +910,24 @@ public class PluginImpl extends ProxyImpl {
         return TRUE;
     }
     
+     public Object visited(Expr exp, Environment env, Producer p) {
+        Transformer t = getTransformer(env, p); 
+        Collection<IDatatype> list = t.visited();
+        return DatatypeMap.createObject("list", list);
+    }
+     
+    public Object visited(Expr exp, Environment env, Producer p, IDatatype dt) {
+        Transformer t = getTransformer(env, p); 
+        boolean b = t.visited(dt);
+        return getValue(b);
+    }
     
+    // Visitor design pattern
+    public Object visit(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
+        Transformer t = getTransformer(env, p); 
+        t.visit(dt1, dt2, dt3);
+        return TRUE;
+    }
     
     /**
      * proc: st:process(?y)

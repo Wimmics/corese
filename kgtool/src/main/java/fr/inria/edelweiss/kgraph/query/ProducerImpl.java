@@ -34,6 +34,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
+import java.util.Collection;
 
 /**
  * Producer
@@ -60,6 +61,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     ValueCache vcache;
     RDFizer toRDF;
     Node graphNode;
+    private Query query;
 
     // if true, perform local match
     boolean isMatch = false;
@@ -283,6 +285,8 @@ public class ProducerImpl implements Producer, IProducerQP {
         // check gNode/from/named
         if (mode == EXTENSION) {
             q.getGlobalQuery().setExtension(true);
+        }
+        if (mode == EXTENSION && getQuery() == q) {
             if (it == null) {
                 return empty;
             }
@@ -774,8 +778,21 @@ public class ProducerImpl implements Producer, IProducerQP {
         } else if (object instanceof Mappings) {
             return map(nodes, (Mappings) object);
         }
+        else if (object instanceof Collection){
+            return map(nodes, (Collection<IDatatype>)object);
+        }
         return new Mappings();
     }
+    
+    Mappings map(List<Node> lNodes, Collection<IDatatype> list) {
+        Mappings map = new Mappings();
+        for (IDatatype dt : list){
+            Mapping m =  Mapping.create(lNodes.get(0), dt);
+            map.add(m);
+        }
+        return map;
+    }
+
 
     Mappings map(List<Node> lNodes, Mappings map) {
         map.setNodes(lNodes);
@@ -878,7 +895,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
 
     @Override
-    public Producer getProducer(Node node) {
+    public Producer getProducer(Node node, Environment env) {
         IDatatype dt = (IDatatype) node.getValue();
         Object obj = dt.getObject();
         Graph g = null;
@@ -892,8 +909,11 @@ public class ProducerImpl implements Producer, IProducerQP {
         if (g == null) {
             g = Graph.create();
         }
-        Producer p = ProducerImpl.create(g);
+        ProducerImpl p = ProducerImpl.create(g);
         p.setMode(EXTENSION);
+        // producer remember the query that createt it
+        // use case: templates may share this producer
+        p.setQuery(env.getQuery());
         return p;
     }
 
@@ -987,6 +1007,20 @@ public class ProducerImpl implements Producer, IProducerQP {
             default:
                 return NA;
         }
+    }
+
+    /**
+     * @return the query
+     */
+    public Query getQuery() {
+        return query;
+    }
+
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(Query query) {
+        this.query = query;
     }
 
 }

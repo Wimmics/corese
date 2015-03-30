@@ -32,6 +32,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import org.apache.log4j.Logger;
 
 /**
@@ -48,7 +49,7 @@ import org.apache.log4j.Logger;
  *
  * Olivier Corby, Wimmics INRIA I3S - 2012
  */
-public class Transformer {
+public class Transformer  {
     private static Logger logger = Logger.getLogger(Transformer.class);
 
     private static final String NULL = "";
@@ -68,6 +69,7 @@ public class Transformer {
     public static final String SPINTYPECHECK= STL + "spintypecheck";
     public static final String STL_PROFILE  = STL + "profile";
     public static final String STL_START    = STL + "start";
+    public static final String STL_TRACE    = STL + "trace";
     public static final String STL_DEFAULT  = STL + "default";   
     private static final String STL_TURTLE  = STL + "turtle";   
     public static final String STL_IMPORT   = STL + "import";   
@@ -82,7 +84,7 @@ public class Transformer {
     private static boolean isOptimizeDefault = false;
     private static boolean isExplainDefault = false;
 
-    
+    private TemplateVisitor visitor;
     Graph graph, fake;
     QueryEngine qe;
     Query query;
@@ -1211,7 +1213,7 @@ public class Transformer {
     public void set(String name, IDatatype dt2){
         getContext().set(name, dt2);
     }
-
+    
     /**
      * @return the context
      */
@@ -1248,10 +1250,68 @@ public class Transformer {
    */
     public void complete(Transformer ct) {
         if (ct != null) {
-            // tt is current transformer, t is new transformer
             IDatatype dt = ct.get(Context.STL_DATASET);
             if (dt != null){
                 set(Context.STL_DATASET, dt);
+            }
+            if (ct.getVisitor() != null){
+                setVisitor(ct.getVisitor());
+            }
+        }
+    }
+
+    /**
+     * @return the visitor
+     */
+    public TemplateVisitor getVisitor() {
+        return visitor;
+    }
+
+    /**
+     * @param visitor the visitor to set
+     */
+    public void setVisitor(TemplateVisitor visitor) {
+        this.visitor = visitor;
+        if (visitor != null){
+            visitor.setGraph(graph);
+        }
+    }
+    
+    public void visit(IDatatype name, IDatatype obj, IDatatype arg){
+        if (visitor != null){
+            visitor.visit(name, obj, arg);
+        }
+        else {
+            initVisit(name, obj, arg);
+        }
+    }
+    
+    public Collection<IDatatype> visited(){
+        if (visitor != null){
+           return visitor.visited();
+        }
+        return new ArrayList<IDatatype>();
+    }
+    
+    public boolean visited(IDatatype dt){
+        if (visitor != null){
+            return visitor.isVisited(dt);
+        }
+        return false;
+    }
+    
+    public IDatatype visitedGraph(){
+        if (visitor == null){
+            return null;
+        }
+        return visitor.visitedGraph();
+    } 
+    
+    void initVisit(IDatatype name, IDatatype obj, IDatatype arg){
+        if (name.getLabel().equals(STL_START)){
+            if (obj.getLabel().equals(STL_TRACE)){
+                setVisitor(new DefaultVisitor());
+                visitor.visit(name, obj, arg);
             }
         }
     }

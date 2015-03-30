@@ -1,0 +1,25 @@
+package fr.inria.edelweiss.kgtool.transform;
+
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.edelweiss.kgraph.core.Graph;
+import java.util.Collection;
+
+/**
+ * Visitor that can be associated to a transformation
+ * use case:
+ * filter(st:visit(st:exp, ?x, true))
+ * @author Olivier Corby - INRIA I3S -2015
+ */
+public interface TemplateVisitor {
+    
+    void visit(IDatatype name, IDatatype object, IDatatype arg);
+    
+    void setGraph(Graph g);
+        
+    Collection<IDatatype> visited();
+    
+    boolean isVisited(IDatatype dt);
+
+    public IDatatype visitedGraph();
+    
+}

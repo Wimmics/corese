@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -41,6 +42,7 @@ public class ExtendGraph {
     private static final int EXT_ENGINE   = 3;
     private static final int EXT_RECORD   = 4;
     private static final int EXT_STACK    = 5;
+    private static final int EXT_VISITED  = 6;
     
     HashMap<String, Integer> map;
     PluginImpl plugin;
@@ -59,6 +61,7 @@ public class ExtendGraph {
         map.put(KGEXT + "engine",   EXT_ENGINE);
         map.put(KGEXT + "record",   EXT_RECORD);
         map.put(KGEXT + "stack",    EXT_STACK);
+        map.put(KGEXT + "visited",  EXT_VISITED);
     }
     
      /**
@@ -78,6 +81,7 @@ public class ExtendGraph {
              case EXT_ENGINE:   return engine(p, exp, env);
              case EXT_RECORD:   return record(p, exp, env);
              case EXT_STACK:    return stack(p, exp, env);
+             case EXT_VISITED:  return visited(p, exp, env);
          }        
          return null;
     }
@@ -111,6 +115,12 @@ public class ExtendGraph {
         Node q = g.getContext().getRuleEngineNode();
         return q;
     }
+    
+    Object visited(Producer p, Expr exp, Environment env) {
+        Transformer t = plugin.getTransformer(env, p);
+        return t.visitedGraph();
+    }
+
    
      Object record(Producer p, Expr exp, Environment env) {
         Graph g = getGraph(p);
@@ -158,9 +168,9 @@ public class ExtendGraph {
      * obj has getObject() which is Graphable
      * store the graph has an extended named graph
      */
-     Object store(Producer p, IDatatype name, IDatatype obj) {
+     Object store(Producer p, Environment env, IDatatype name, IDatatype obj) {
         if (p.isProducer(obj)){
-            Producer pp = p.getProducer(obj);
+            Producer pp = p.getProducer(obj, env);
             Graph g = (Graph) p.getGraph();
             g.setNamedGraph(name.getLabel(), (Graph) pp.getGraph());        
         }

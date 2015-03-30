@@ -31,7 +31,6 @@ import fr.inria.acacia.corese.triple.api.Creator;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.LoadTurtle;
 import fr.inria.edelweiss.kgraph.api.Loader;
-import static fr.inria.edelweiss.kgraph.api.Loader.NT_FORMAT;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -43,10 +42,10 @@ import fr.inria.edelweiss.kgtool.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserLoaderSesame;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserTripleHandlerSesame;
 import java.io.ByteArrayInputStream;
+import java.net.URLConnection;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.Rio;
 import org.semarglproject.rdf.ParseException;
 
 /**
@@ -215,6 +214,29 @@ public class Load
         }
         return true;
     }
+    
+    int getTypeFormat(String contentType, int format){
+        if (contentType.startsWith("text/turtle")){
+            return TURTLE_FORMAT;
+        }
+        if (contentType.startsWith("text/n3")){
+            return NT_FORMAT;
+        }
+        if (contentType.startsWith("text/trig")){
+            return TRIG_FORMAT;
+        }
+        if (contentType.startsWith("text/n-quads")){
+            return NQUADS_FORMAT;
+        }        
+        if (contentType.startsWith("application/rdf+xml")){
+            return RDFXML_FORMAT;
+        }
+        if (contentType.startsWith("application/json")){
+            return JSONLD_FORMAT;
+        }
+        
+        return format;
+    }
 
     // UNDEF_FORMAT loaded as RDF/XML
     public int getFormat(String path) {
@@ -222,6 +244,9 @@ public class Load
     }
 
     public int getFormat(String path, int defaultFormat) {
+        if (defaultFormat != UNDEF_FORMAT){
+            return defaultFormat;
+        }
         if (isRDFXML(path)){
             return RDFXML_FORMAT;
         }
@@ -399,8 +424,13 @@ public class Load
         try {
             if (isURL(path)) {
                 URL url = new URL(path);
-                stream = url.openStream();
-                read = reader(stream);
+                URLConnection c = url.openConnection();
+                String contentType = c.getContentType();
+                stream = c.getInputStream();
+                read = reader(stream); 
+                if (format == UNDEF_FORMAT && contentType != null){
+                    format = getTypeFormat(contentType, format);
+                }
             } else {
                 read = new FileReader(path);
             }
@@ -429,7 +459,7 @@ public class Load
             }
         }
     }
-
+    
     Reader reader(InputStream stream) throws UnsupportedEncodingException {
         return new InputStreamReader(stream);
     }
@@ -550,9 +580,9 @@ public class Load
             src = plugin.statSource(src);
             base = plugin.statBase(base);
         }
-
+        String save = source;
         source = src;
-        build.setSource(source);
+        build.setSource(src);
         build.start();
         ARP arp = new ARP();
         try {
@@ -571,6 +601,7 @@ public class Load
         }
         finally {
             build.finish();
+            source = save;
         }
     }
 

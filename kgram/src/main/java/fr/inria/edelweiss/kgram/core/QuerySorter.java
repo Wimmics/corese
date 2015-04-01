@@ -133,9 +133,12 @@ public class QuerySorter implements ExpType {
                         // take OPT_BIND(var = exp) into account
                         // TODO: graph ?g does not take into account OPT_BIND ?g = uri
                         switch (query.getPlanProfile()) {
+                            case Query.QP_T0:
+                                sortFilter(exp, lVar);
+                                break;
                             case Query.QP_HEURISTICS_BASED:
                                 sort = new SorterNew();
-                                ((SorterNew)sort).sort(exp, lBind, prod, Query.QP_HEURISTICS_BASED);
+                                ((SorterNew)sort).sort(exp, lBind, prod, query.getPlanProfile());
                                 exp.setBind();
                                 break;
                             case Query.QP_DEFAULT:

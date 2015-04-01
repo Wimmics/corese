@@ -28,8 +28,9 @@ import fr.inria.edelweiss.kgram.tool.Message;
  */
 public class Query extends Exp implements Graphable {
 
-    public static final int QP_DEFAULT = 1;
-    public static final int QP_HEURISTICS_BASED = 2;
+    public static final int QP_T0 = 0; //No QP settings
+    public static final int QP_DEFAULT = 1; //Default Corese QP
+    public static final int QP_HEURISTICS_BASED = 2;//Heuristics based QP
 
     //used to set the default query plan method 
     public static int STD_PLAN = QP_DEFAULT;

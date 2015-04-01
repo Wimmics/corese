@@ -49,6 +49,8 @@ public class SorterNew extends Sorter {
             IEstimate ies;
             switch (planType) {
                 case Query.QP_HEURISTICS_BASED:
+                    ies = new HeuristicsBasedEstimation();
+                    break;
                 default:
                     ies = new HeuristicsBasedEstimation();
             }
@@ -66,7 +68,7 @@ public class SorterNew extends Sorter {
 
             List l = is.sort(bpg);
             message(" -- Sorting time:" + (System.currentTimeMillis() - stop1) + "ms");
-            message(" -- Sorting [after] :" + exps+"\n");
+            message(" -- Sorting [after] :" + exps+ "\n");
 
             // ** 4 rewrite **
             is.rewrite(expression, l, startIndex);
@@ -76,7 +78,7 @@ public class SorterNew extends Sorter {
         message("** Query sorting time:" + (System.currentTimeMillis() - start) + "ms **\n");
 
     }
-    
+
     // === Split one expression into several subsets that can be sorted
     //ex. T1, T2, F, OPT, T3, T4, VA, UNION, T5, T6 will be splited
     // (0, <T1, T2, F>)
@@ -113,6 +115,8 @@ public class SorterNew extends Sorter {
     }
 
     private void message(String msg) {
-        if (print) System.out.println(msg);
+        if (print) {
+            System.out.println(msg);
+        }
     }
 }

@@ -25,7 +25,7 @@ public class JsonldLoader {
     /**
      * logger from log4j
      */
-    private static Logger logger = Logger.getLogger(RDFaLoader.class);
+    private static Logger logger = Logger.getLogger(JsonldLoader.class);
 
     private Reader reader;
     private InputStream is;

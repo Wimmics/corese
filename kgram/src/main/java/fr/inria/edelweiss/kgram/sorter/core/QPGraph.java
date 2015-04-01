@@ -1,11 +1,6 @@
 package fr.inria.edelweiss.kgram.sorter.core;
 
-import static fr.inria.edelweiss.kgram.api.core.ExpType.BIND;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.EMPTY;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
 import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.ArrayList;
 import java.util.HashMap;

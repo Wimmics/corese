@@ -270,4 +270,4 @@ public class QPGNodeCostModel extends AbstractCostModel {
         return Const.evaluable(this.node.getType());
     }
 
-}
+    }

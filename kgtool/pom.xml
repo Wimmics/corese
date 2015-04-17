@@ -104,13 +104,6 @@
             <scope>test</scope>
             <version>6.8.8</version>
         </dependency>
-        <!--estimate the size of objects in memeory in bytes-->
-        <dependency>
-            <groupId>com.javamex.classmexer</groupId>
-            <artifactId>classmexer</artifactId>
-            <version>0.3</version>  
-            <scope>test</scope>
-        </dependency>  
         <!-- For testing the correctness of Corese against BSBM-->
         <dependency>
             <groupId>org.apache.jena</groupId>

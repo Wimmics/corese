@@ -889,9 +889,13 @@ public class PluginImpl extends ProxyImpl {
         } 
     }
     
-    public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt) {
+    public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt) {           
+        return get(exp, env, p, dt.getLabel());
+    }
+    
+    public IDatatype get(Expr exp, Environment env, Producer p, String name) {
         Transformer t = getTransformer(env, p);        
-        return t.get(dt.getLabel());
+        return t.get(name);
     }
     
      public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
@@ -1049,11 +1053,9 @@ public class PluginImpl extends ProxyImpl {
                 boolean with = (exp == null) ? true : 
                            exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
                         || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
-                
+                                              
                Transformer gt = Transformer.create((Graph) prod.getGraph(), transform, name, with);
-               gt.init(ast);
-                // set after init
-               gt.set(Transformer.STL_TRANSFORM, uri);
+               complete(q, gt, uri);
                
                if (t == null){
                    // get current transformer if any to get its NSManager 
@@ -1071,18 +1073,29 @@ public class PluginImpl extends ProxyImpl {
        }
         else if (t == null) {    
             t = Transformer.create(prod, transform);
-            // set after init
-            t.init(ast);
-            // TODO: uri vs transform ???
-            t.set(Transformer.STL_TRANSFORM, uri);  
-            t.complete((Transformer) q.getTransformer());
+            complete(q, t, uri);
             q.setTransformer(transform, t);
+        }
+        else {
+            Graph g = t.getGraph();
+            if (g != prod.getGraph()){
+                // Transformer exist but with another graph
+                // create a new one
+                t = Transformer.create(prod, transform);
+                complete(q, t, uri);
+            }
         }
         
         return t;
     }
     
- 
+    void complete(Query q, Transformer t, IDatatype uri){
+            // set after init
+            t.init((ASTQuery) q.getAST());
+            // TODO: uri vs transform ???
+            t.set(Transformer.STL_TRANSFORM, uri);  
+            t.complete((Transformer) q.getTransformer());
+    }
 
     public void setPPrinter(String str) {
         PPRINTER = str;

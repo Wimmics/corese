@@ -93,6 +93,7 @@ public class Manager {
      static TripleStore createTripleStore(Profile p, Service s) throws LoadException {
         GraphStore g = GraphStore.create(s.isRDFSEntailment());
         TripleStore store = new TripleStore(g, true);
+        store.setOWL(s.isOWLEntailment());
         init(store, s);
         store.init(p.isProtected());       
         return store;

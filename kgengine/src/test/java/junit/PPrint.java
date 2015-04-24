@@ -66,20 +66,35 @@ public class PPrint {
                 String lib = srclib;
                 
                 translate(root + "template/spin/template",  lib + "spin.rul");
+                translate(root + "template/spinhtml/template",  lib + "spinhtml.rul");
 		translate(root + "template/sql/template",   lib + "sql.rul");
 		translate(root + "template/owl/template",   lib + "owl.rul");
 		translate(root + "template/turtle/template",lib + "turtle.rul");
 		translate(root + "template/hash/template",  lib + "hash.rul");
 		translate(root + "template/hash2/template", lib + "hash2.rul");
 		translate(root + "template/trig/template",  lib + "trig.rul");
-		translate(root + "template/table/template", lib + "table.rul");
 		translate(root + "template/rdftypecheck/template", lib + "rdftypecheck.rul");
-		translate(root + "template/spintypecheck/template", lib + "spintypecheck.rul");
-		translate(root + "template/html",   lib + "html.rul");
+		translate(root + "template/sparql", lib + "sparql.rul");
 		translate(root + "template/result", lib + "result.rul");
 		translate(root + "template/web",    lib + "web.rul");
+		translate(root + "template/rdfs",    lib + "rdfs.rul");
 		translate(root + "template/tospin",    lib + "tospin.rul");
 		translate(root + "template/system", lib + "system.rul");
+		translate(root + "template/locate",       lib + "locate.rul");
+                
+ 		translate(root + "template/owlrl/main",     lib + "owlrl.rul");
+ 		translate(root + "template/owlrl/axiom",    lib + "axiom.rul");
+ 		translate(root + "template/owlrl/subexp",   lib + "subexp.rul");
+ 		translate(root + "template/owlrl/superexp", lib + "superexp.rul");
+ 		translate(root + "template/owlrl/equivexp", lib + "equivexp.rul");
+                
+ 		translate(root + "template/spintc/main",     lib + "spintc.rul");
+ 		translate(root + "template/spintc/template", lib + "spintcbody.rul");
+                
+                
+		translate(root + "template/turtlehtml/template",lib + "turtlehtml.rul");
+		translate(root + "template/turtlehtml/main",lib + "hturtle.rul");
+               
                 
 		translate(root + "template/navlab",       lib + "navlab.rul");		
                 translate(root + "cdn/template", lib + "cdn.rul");

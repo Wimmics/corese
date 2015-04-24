@@ -4,10 +4,13 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import java.util.List;
@@ -33,6 +36,8 @@ public class Transformer {
     private static Logger logger = Logger.getLogger(Transformer.class);
     private static final String headerAccept = "Access-Control-Allow-Origin";
     private static final String TEMPLATE_SERVICE = "/template";
+    private static final String RESULT = NSManager.STL + "result";
+    private static final String LOAD   = NSManager.STL + "load";
     private static Profile mprofile;
     private static NSManager nsm;
     boolean isDebug, isDetail;
@@ -53,6 +58,7 @@ public class Transformer {
     static TripleStore getTripleStore() {
         return SPARQLRestAPI.getTripleStore();
     }
+   
 
     // Template generate HTML
     @POST
@@ -134,7 +140,7 @@ public class Transformer {
 
             HTMLFormat ft = HTMLFormat.create(store.getGraph(), map, ctx);
 
-            return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();
+            return Response.status(200).header(headerAccept, "*").entity(result(par, ft)).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
@@ -145,6 +151,34 @@ public class Transformer {
             }
             return Response.status(500).header(headerAccept, "*").entity(error(err, q)).build();
         }
+    }
+    
+    /**
+     * Return transformation result as a HTML textarea
+     * hence it is protected wrt img ...
+     */
+    String protect(Param p, HTMLFormat ft){
+        fr.inria.edelweiss.kgtool.transform.Transformer t = 
+            fr.inria.edelweiss.kgtool.transform.Transformer.create(RESULT);
+        Context c = t.getContext();
+        c.set(RESULT, ft.toString());
+        c.set(LOAD, (p.getLoad() == null) ? "" : p.getLoad());
+        c.setTransform((p.getTransform()== null) ? "" : p.getTransform());        
+        IDatatype res = t.process();
+        return res.stringValue();
+    }
+    
+    String result(Param p, HTMLFormat ft){
+        if (p.isProtect()){
+            return protect(p, ft);
+        }
+        return ft.toString();
+    }
+    
+    String get(String name){
+        fr.inria.edelweiss.kgtool.transform.Transformer t = 
+            fr.inria.edelweiss.kgtool.transform.Transformer.create(NSManager.STL + "sparql#" + name); 
+        return t.stransform();
     }
 
     String error(String err, String q){

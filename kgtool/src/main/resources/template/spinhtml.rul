@@ -42,21 +42,22 @@ order by xsd:integer(substr(?p, 1 + strlen(sp:arg)))
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template st:start {
-  ?in
-  if (?t in (sp:Select, sp:Construct, sp:Ask, sp:Describe), "", ";")
-  ; separator = "\n\n"
+
+  st:call-template-with(st:sparql, st:head)
+  st:call-template-with(st:sparql, st:banner)
+
+  "<h3>SPARQL</h3>"
+
+  "\n<pre>\n"
+
+  st:call-template(st:main)
+  
+  "\n</pre>\n"
+   st:call-template-with(st:sparql, st:tail)
+
 }
 where {
-  ?in a ?t 
-  
-  values ?t {
-    sp:Select sp:Construct sp:Ask sp:Describe
-    sp:SPARQLUpdate 
-    sp:InsertData sp:DeleteData sp:Modify sp:DeleteWhere
-    sp:Load sp:Drop sp:Clear sp:Create sp:Copy sp:Move sp:Add
-   }
-    
-  filter( not exists { { ?a sp:query ?in } union { ?a rdf:first ?in } } )
+ 
 }
 
 
@@ -75,7 +76,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template sp:from {
-   "from " ?f st:nl() ; separator = ""
+   st:call-template(sp:kw, "from") " " ?f st:nl() ; separator = ""
 }
 where {
   ?in sp:from/rdf:rest*/rdf:first ?f
@@ -97,10 +98,16 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template sp:named {
-   "from named " ?f st:nl() ; separator = ""
+   if (st:visited(?l), "<span class='fail'>", "")
+   st:call-template(sp:kw, "from named")
+   " " ?f st:nl() 
+   if (st:visited(?l), "</span>", "")
+   
+   ; separator = ""
 }
 where {
-  ?in sp:fromNamed/rdf:rest*/rdf:first ?f
+  ?in sp:fromNamed ?l
+  ?l rdf:rest*/rdf:first ?f
 }
 
 
@@ -119,10 +126,12 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template sp:list {
+  if(?b, "\n  ", "")
   ?exp  ; separator = " "
 }
 where {
   ?in rdf:rest*/rdf:first ?exp
+  bind ( exists { ?exp sp:expression ?e } as ?b )
 }
 
 
@@ -143,8 +152,16 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:profile(?in) {
+
     st:define(st:process(?in) =  
-	if (isBlank(?in), st:apply-templates(?in), st:turtle(?in)))    
+	if (isBlank(?in), 
+	  if (st:visited(?in), 
+	    concat("<span class='fail'>", st:apply-templates(?in), "</span>"),
+	    st:apply-templates(?in)), 
+	  if (strstarts(st:turtle(?in), "<"), 
+	    replace(st:turtle(?in), "<", "&lt;"),
+	    st:turtle(?in)))) 
+	
 }
 where {
 }
@@ -181,6 +198,19 @@ order by xsd:integer(substr(?p, 1 + strlen(sp:arg)))
 <rule>
 <body>
 <![CDATA[
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template sp:kw(?x) {
+  "<span class='kw'>" str(?x) "</span>" 
+}
+where {}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # SPARQL-based RDF AST Pretty-printer
 # Olivier Corby, Wimmics Inria I3S, 2013
@@ -197,6 +227,39 @@ template sp:construct {
 where {
   ?in a sp:Construct ; 
      sp:templates ?temp 
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template st:main {
+  ?in
+  if (?t in (sp:Select, sp:Construct, sp:Ask, sp:Describe), "", ";")
+  ; separator = "\n\n"
+}
+where {
+  ?in a ?t 
+  
+  values ?t {
+    sp:Select sp:Construct sp:Ask sp:Describe
+    sp:SPARQLUpdate 
+    sp:InsertData sp:DeleteData sp:Modify sp:DeleteWhere
+    sp:Load sp:Drop sp:Clear sp:Create sp:Copy sp:Move sp:Add
+   }
+    
+  filter( not exists { { ?a sp:query ?in } union { ?a rdf:first ?in } } )
 }
 
 
@@ -574,9 +637,10 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "service " 
-  if (bound(?b), "silent ", "")
-  ?g " {" ?b "}"
+  st:call-template(sp:kw, "service") " " 
+  if (bound(?b), concat(st:call-template(sp:kw, "silent"), " "), "")
+  ?g 
+  ibox { st:nl() ?b } 
 }
 where {
   ?in a sp:Service ;
@@ -624,7 +688,7 @@ where {
 prefix sp:<http://spinrdf.org/sp#> .
 
 template  {
-  "values (" 
+  st:call-template(sp:kw, "values") " (" 
     st:call-template(sp:list, ?var)    
   ") {"
      box { ?list }
@@ -653,39 +717,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-    "{" 
-    
-    group {
-      box {
-	st:call-template(sp:listnl, ?e) 
-      }
-      ; separator = "} union {"
-    }
-    
-    "}" 
-}
-where {
-?in a sp:Union ; 
-    sp:elements/rdf:rest*/rdf:first ?e
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  "desc(" st:call-template(sp:list, ?e) ")"
+  st:call-template(sp:kw, "desc") "(" st:call-template(sp:list, ?e) ")"
 }
 where {
   ?in a sp:Desc ;
@@ -732,7 +764,7 @@ prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
   st:prolog() 
-  "ask {" 
+  st:call-template(sp:kw, "ask") " {" 
     box {
       st:call-template(sp:listnl, ?a) 
     }
@@ -858,7 +890,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "filter(" ?exp ")"
+  st:call-template(sp:kw, "filter") " (" ?exp ")"
 }
 where {
 ?in a sp:Filter ;
@@ -881,7 +913,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "having(" st:call-template(sp:list, ?in) ")\n"
+  st:call-template(sp:kw, "having") " (" st:call-template(sp:list, ?in) ")\n"
 }
 where {
   ?q sp:having ?in
@@ -903,7 +935,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "order by " st:call-template(sp:list, ?in)
+  st:call-template(sp:kw, "order by") " " st:call-template(sp:list, ?in)
   st:nl()
 }
 where {
@@ -926,7 +958,7 @@ where {
 prefix sp:<http://spinrdf.org/sp#> .
 
 template  {
-  "{" ?q "}"
+  ?q 
 }
 where {
   ?in a sp:SubQuery ;
@@ -951,7 +983,7 @@ prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
   st:prolog() 
-  "describe " st:call-template(sp:list, ?list)    
+  st:call-template(sp:kw, "describe") " " st:call-template(sp:list, ?list)    
   st:nl()
   "where {"
      box {
@@ -1066,7 +1098,7 @@ prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
   st:prolog() 
-  "describe " st:call-template(sp:list, ?list)   
+  st:call-template(sp:kw, "describe") " " st:call-template(sp:list, ?list)   
 }
 where {
   ?in a sp:Describe ;
@@ -1117,16 +1149,17 @@ pragma {st:template st:priority 1001}
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
+    
+      ?e1
+      st:nl() st:call-template(sp:kw, "union") st:nl() 
+      ?e2
        
-      box {
-	?e 
-      }
-      ; separator = " union "
-        
 }
 where {
-?in a sp:Union ; 
-    sp:elements/rdf:rest*/rdf:first ?e
+  ?in a sp:Union ; 
+      sp:elements ?l 
+  ?l rdf:first ?e1 ;
+      rdf:rest/rdf:first ?e2
 }
 
 
@@ -1145,7 +1178,8 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "bind (" ?e " as " ?v ")"
+  st:call-template(sp:kw, "bind") " (" ?e " " 
+  st:call-template(sp:kw, "as") " " ?v ")"
 }
 where {
   ?in a sp:Bind  ;
@@ -1169,7 +1203,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-   "minus {" 
+   st:call-template(sp:kw, "minus") " {" 
       box {
 	st:call-template(sp:listnl, ?e)
       }
@@ -1195,7 +1229,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "group by " st:call-template(sp:list, ?in)
+  st:call-template(sp:kw, "group by") " " st:call-template(sp:list, ?in)
   st:nl()
 }
 where {
@@ -1218,7 +1252,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  ?e " " str(?l) " ("     
+  ?e " " st:call-template(sp:kw, str(?l)) " ("     
      st:call-template(sp:argin, ?in)
   ")"
 }
@@ -1297,18 +1331,18 @@ prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
   st:prolog() 
-  "construct "   st:call-template(sp:construct, ?in)
+  st:call-template(sp:kw, "construct") " "   st:call-template(sp:construct, ?in)
   st:nl()
-  "where {" 
+  st:call-template(sp:kw, "where") " {" 
      box {
       st:call-template(sp:listnl, ?where)
      }
   "}"
-  
+  st:nl()
   ?group
   ?order
-  if (bound(?l), concat("\nlimit ", ?l), "")  
-  if (bound(?o), concat("\noffset " , ?o), "") 
+  if (bound(?l), concat(st:call-template(sp:kw, "limit"),  " ", ?l, st:nl()), "")  
+  if (bound(?o), concat(st:call-template(sp:kw, "offset"), " ", ?o, st:nl()), "") 
   ?having 
   
    st:call-template(sp:values, ?in)
@@ -1409,7 +1443,7 @@ pragma {st:template st:priority 1000}
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "exists {" st:call-template(sp:listnl, ?b) "}"
+  st:call-template(sp:kw, "exists") " {" st:call-template(sp:listnl, ?b) "}"
 }
 where {
   ?in a sp:Exists  ;
@@ -1484,7 +1518,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "graph " ?g " {" 
+  st:call-template(sp:kw, "graph") " " ?g " {" 
   box {
     if (?b = rdf:nil, "", 
       st:call-template(sp:listnl, ?b))
@@ -1513,7 +1547,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-   "optional {" 
+   st:call-template(sp:kw, "optional") " {" 
       box {   
 	st:call-template(sp:listnl, ?b)
       }  
@@ -1642,30 +1676,34 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  if (! (exists {?x ?p ?in}), st:prolog(), "") 
-  
-  "select " 
-  if (bound(?t), "distinct ", "")
+#  if (! (exists {?x ?p ?in}), st:prolog(), "") 
+  st:call-template(sp:kw, "select") " " 
+  if (bound(?t), st:call-template(sp:kw,"distinct "), "")
   if (bound(?r), "reduced ", "")
   if (bound(?select), 
     st:call-template(sp:list, ?select), 
     "*")  
-    st:nl()
+  
+  st:nl()
   st:call-template(sp:from, ?in)
   st:call-template(sp:named, ?in)
   
-  "where {" 
+  st:call-template(sp:kw, "where") " {" 
       box { 
 	st:call-template(sp:listnl, ?where) 
       } 
   "}" 
+  
   st:nl()
   
   ?group
   ?order
-  if (bound(?l), concat(st:nl(), "limit ", ?l), "")  
-  if (bound(?o), concat(st:nl(), "offset " , ?o), "") 
   ?having 
+  
+  if (bound(?l), 
+  concat(st:call-template(sp:kw, "limit"),  " ", ?l, st:nl()), "")  
+  if (bound(?o), 
+  concat(st:call-template(sp:kw, "offset"), " ", ?o, st:nl()), "") 
   
   st:call-template(sp:values, ?in)
 }

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 24 14:30:32 CEST 2015
+Fri Apr 24 14:30:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -14,11 +14,12 @@ Fri Apr 24 14:30:32 CEST 2015
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:start {
-  st:prolog("@prefix")
+
   group { 
     st:apply-templates(?x)
     ; separator = "\n\n"
   }
+
 }
 where {
   select distinct ?x where { 
@@ -46,14 +47,28 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:type {
+"<span class='type'>"
+
   group {
-         "a " if (?refer, st:turtle(?c), ?c)           
-          ; separator = concat(" ;", st:nl()) 
+  
+     if (bound(?pr), "<span class='tag'>", "")        
+         "a " 
+     if (bound(?pr), "</span>", "")  
+     
+     if (?refer, st:turtle(?c), ?c)  
+     
+     if (bound(?pr), st:call-template(st:provenance, ?pr), "")
+     
+     ; separator = concat(" ;", st:nl()) 
   }
+  
+  "</span>"
   if (?rest, concat(" ;", st:nl()), "")
 }
 where {
-  ?in rdf:type ?c 
+  values ?p { rdf:type }
+  ?in ?p ?c 
+  bind (kg:provenance(?p) as ?pr)
   
     bind(
     exists { ?in ?q ?v . filter (?q != rdf:type) }
@@ -105,19 +120,21 @@ order by ?x
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:value {
-             
-	?p " " 
+
+     if (bound(?pr), "<span class='tag'>", "")                     
+     ?p " " 	
+     if (bound(?pr), "</span>", "")        
 	       
-	if (?refer, st:turtle(?y), 
-	if (isURI(?y) && ?y = rdf:nil, "()", ?y))
-          
-        ; separator = concat(" ;", st:nl()) 
-        
-#        ; separator = " ;\n" 
-     
+    if (?refer, st:turtle(?y), 
+    if (isURI(?y) && ?y = rdf:nil, "()", ?y))
+    
+    if (bound(?pr), st:call-template(st:provenance, ?pr), "")
+	
+    ; separator = concat(" ;", st:nl())             
 }
 where {
   ?in ?p ?y 
+  bind (kg:provenance(?p) as ?pr)
   
   filter(?p not in (rdf:type))
   
@@ -138,38 +155,15 @@ order by ?p ?y
 <rule>
 <body>
 <![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:list {
-  "(" 
-    group { ?e } 
-  ")"
+template st:provenance(?pr) {
+
+  "<img src='/img/smarker.png' onclick='alert(\"" str(?b) "\")'  />"
+   
+}
+where {
   
+  bind ( replace(str(?pr), "\n", "\\\\n") as ?b ) 
 }
-where {
-  ?in rdf:rest*/rdf:first ?e
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:test {
-  st:load(rdf:)
-  st:load(rdfs:)
-  st:call-template(st:start)
-}
-where {
-}
-
 ]]>
 </body>
 </rule>
@@ -185,32 +179,15 @@ where {
 template st:profile(?in) {
 
     st:define(st:process(?in) = 
-      if (isBlank(?in), st:apply-templates(?in), st:turtle(?in)))
+      if (isBlank(?in), st:apply-templates(?in), 
+	if (strstarts(st:turtle(?in), "<"), replace(st:turtle(?in), "<", "&lt;"), 		st:turtle(?in))	
+    ))
       
     st:define(st:default(?in) = st:turtle(?in))
-    
+
 }
 where {
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:test2 {
-  st:load(rdf:)
-  st:call-template(st:start)
-  st:apply-templates-with-graph(st:table, rdf:)  
-}
-where {
-}
-
 ]]>
 </body>
 </rule>
@@ -276,18 +253,21 @@ order by ?x
 template {
   if (?refer, concat(st:turtle(?in), " "), "[")
   
-      ibox {
-	st:call-template(st:type, ?in)
-	  
-	st:call-template(st:value, ?in)
-      } 
+  if (st:visited(?in), "<span class='fail'>", "")
+  
+  ibox {      
+	st:call-template(st:type, ?in)	  
+	st:call-template(st:value, ?in)	
+   } 
+      
+   if (st:visited(?in), "</span>", "")      
       
   if (?refer, " .", 
   if (?nested, "]", "] ."))
 }
 where {
   ?in ?p ?y   
-  filter(isBlank(?in))
+  filter (isBlank(?in))
   filter not exists { ?in rdf:first ?e }
   
   bind (exists { ?a ?q ?in } as ?nested)
@@ -341,20 +321,23 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
-  ?in " "
+  if (st:visited(?in), "<span class='fail'>", "")
+  ?in 
+  if (st:visited(?in), "</span>", "")      
+     
       ibox { 
-  
+	st:nl()
 	st:call-template(st:type, ?in)
 	
 	st:call-template(st:value, ?in)
       
       } 
-      
+            
       " ."      
 }
 where {
   ?in ?p ?y   
-  filter(isUri(?in))  
+  filter(isUri(?in))
 }
 limit 1
 ]]>

@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 24 14:30:33 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc  
+}
+where {
+  ?in owl:AllDisjointClasses ?z
+  
+   bind (
+    not exists { 
+      ?z rdf:rest*/rdf:first ?e      
+      filter(! st:call-template-with(st:subexp, st:subClassExpression, ?e))
+    }
+    as ?suc
+  )
+  
+  filter(st:visit(st:disjointClass, ?in, ?suc))
+
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template {
+  ?suc  
+}
+where {
+
+  ?in rdfs:subClassOf ?y
+  
+  filter (
+    isURI(?in) ||
+    not exists { ?x ?p ?in }
+  )
+  
+  bind (
+    st:call-template-with(st:subexp,   st:subClassExpression, ?in) &&
+    st:call-template-with(st:superexp, st:superClassExpression, ?y)  
+  as ?suc)
+  
+  filter(st:visit(st:subClass, ?in, ?suc))
+
+        
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc
+}
+where {
+  ?in owl:equivalentClass ?y
+  
+  filter (
+    isURI(?in) ||
+    not exists { ?x ?p ?in }
+  )
+ 
+  bind (
+    st:call-template-with(st:equivexp, st:equivClassExpression, ?in) &&
+    st:call-template-with(st:equivexp, st:equivClassExpression, ?y)  
+  as ?suc)
+  
+  filter(st:visit(st:equivClass, ?in, ?suc))
+
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc 
+}
+where {
+  ?in owl:disjointWith ?y
+  
+  filter (
+    isURI(?in) ||
+    not exists { ?x ?p ?in }
+  )
+   
+  bind (
+    st:call-template-with(st:subexp, st:subClassExpression, ?in) && 
+    st:call-template-with(st:subexp, st:subClassExpression, ?y)  
+  as ?suc)
+  
+  filter(st:visit(st:disjointClass, ?in, ?suc))
+
+
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Forbidden in OWL RL
+#
+template {
+  false
+}
+where {
+
+  { ?in owl:disjointUnionOf ?y }
+  union { ?in a owl:ReflexiveProperty }
+  
+  filter(st:visit(st:fail, ?in, false))
+ 
+}
+limit 1
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc  
+}
+where {
+  ?in rdfs:domain|rdfs:range ?y
+      
+  bind (
+    isURI(?y) ||
+    st:call-template-with(st:superexp, st:superClassExpression, ?y)  
+  as ?suc)
+  
+  filter(st:visit(st:domain, ?in, ?suc))
+
+    
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc  
+}
+where {
+  ?in owl:hasKey ?z
+  
+   bind (
+     st:call-template-with(st:subexp, st:subClassExpression, ?in)
+   as ?suc)
+   
+   filter(st:visit(st:key, ?in, ?suc))
+ 
+    
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template {
+  ?suc  
+}
+where {
+  ?in a owl:NamedIndividual, ?t
+  
+  filter (
+    isURI(?in) ||
+    not exists { ?x ?p ?in }
+  )
+ 
+ bind (isURI(?t) ||
+   st:call-template-with(st:superexp, st:superClassExpression, ?t) 
+ as ?suc)
+ 
+ filter(st:visit(st:individual, ?in, ?suc))
+
+      
+}
+
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

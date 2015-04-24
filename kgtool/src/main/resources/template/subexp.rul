@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 24 14:30:33 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:subClassExpression(?x) {
+  ?suc
+}
+where {
+    bind (
+      if (isURI(?x), ?x != owl:Thing, 
+         st:boolean(st:apply-templates-all(?x))) 
+    as ?suc)
+    
+#  filter(st:visit(st:sub, ?x, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+  ?in owl:intersectionOf|owl:unionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
+  
+  bind (
+    st:call-template(st:subClassExpression, ?e)
+    as ?suc
+  )
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+   ?in a owl:Restriction ;
+	owl:onProperty ?p 
+	
+   bind (
+     exists {
+	{ ?in owl:hasValue ?v }
+	union
+	{ ?in owl:someValuesFrom ?e
+	  filter (?e = owl:Thing ||
+	    st:call-template(st:subClassExpression, ?e)) }
+      }
+      as ?suc)     
+}
+	    
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if there is an unauthorized OWL property for subClassExpression ?in
+# return false in this case, otherwise template fails (return nothing)
+#
+template {
+  false
+}
+where {
+    ?in ?p ?y
+    
+    bind (
+      ?p in (
+        owl:intersectionOf, owl:unionOf, owl:oneOf,
+	owl:onProperty, owl:hasValue, owl:someValuesFrom,
+	rdf:type,
+	# these two axioms have subClassExpression arguments:
+	rdfs:subClassOf, owl:disjointWith, owl:hasKey)
+      as ?suc)
+      	
+      filter (st:visit(st:fail, ?in, ?suc))
+      filter (! ?suc)
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+  ?in owl:oneOf ?z 
+  
+  bind (    
+   not exists {      
+	?z rdf:rest*/rdf:first ?individual 
+	filter (! isURI(?individual))
+    }
+    as ?suc)
+    
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

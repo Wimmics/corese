@@ -1,0 +1,238 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 24 14:30:33 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+#
+# TODO: subquery select var bind only var
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template st:bound(?b, ?n) {
+  ?suc
+}
+where {
+     
+   bind (
+   (exists { ?b (sp:subject|sp:predicate|sp:object)/sp:varName ?n } ||
+    exists { ?b a sp:Bind   ; sp:variable/sp:varName ?n } ||
+    exists { ?b a sp:Values ; sp:variables/rdf:rest*/rdf:first/sp:varName ?n } ||
+    exists { 
+      ?b a sp:Select 
+      { ?b sp:resultVariables/rdf:rest*/rdf:first/sp:varName ?n }
+      union 
+      { ?b sp:star true ; sp:where/(! sp:void)* ?bb
+        filter (st:call-template(st:bound, ?bb, ?n))
+      }
+      }) 
+    &&
+    not exists { ?m a sp:Minus . ?m (!sp:void)* ?b }
+   as ?suc)
+   
+   
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc 
+}
+where {
+    
+    ?q sp:resultVariables ?sel    
+    ?sel rdf:rest*/rdf:first ?v
+    ?v sp:expression ?e 
+    ?v sp:varName ?n
+    ?sel rdf:rest*/rdf:first ?w
+    ?w sp:varName ?n
+    filter (?v != ?w)
+
+    bind (false as ?suc)
+    
+    filter(st:visit(st:fail, ?v, ?suc))
+      
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  
+   ?q (sp:where|sp:resultVariables)/(! sp:void)+ ?f
+   ?f ?p ?v
+   ?v sp:varName ?n
+   filter(strstarts(?p, sp:arg))
+   
+   bind ( 
+    exists { ?q sp:where/(! sp:void)+ ?b
+      filter (st:call-template(st:bound, ?b, ?n)) }
+   as ?suc)
+   
+   filter(st:visit(st:fail, ?v, ?suc))
+   
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  ?q (sp:orderBy|sp:groupBy)/rdf:rest*/rdf:first/(!sp:void)* ?v 
+  ?v sp:varName ?n
+  
+  bind (st:call-template(st:bound, ?q, ?n) as ?suc)
+  
+  filter (st:visit(st:fail, ?v, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  
+  ?a rdf:rest+ ?b
+  ?b rdf:first ?f
+  
+  ?f a sp:Bind ; sp:variable ?v
+  ?v sp:varName ?n
+   
+  bind (
+    not exists { 
+	     ?a rdf:rest* ?c 
+	     ?c rdf:rest* ?b
+	     filter (?b != ?c)
+	     ?c rdf:first ?d
+	     filter st:call-template(st:bound, ?d, ?n) 
+	     }
+    as ?suc)
+  
+   filter (st:visit(st:fail, ?f, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+   
+   ?minus a sp:Minus 
+   ?exp (sp:where|sp:elements)/rdf:rest*/rdf:first ?minus
+   
+   ?minus (! sp:void)*/(sp:subject|sp:predicate|sp:object) ?v
+   ?v sp:varName ?n
+   
+   bind( exists { 
+      ?exp (sp:where|sp:elements)/rdf:rest* ?r 
+      ?r rdf:first ?e
+      filter (?e != ?minus)
+      filter exists { ?r rdf:rest*/rdf:first ?minus }
+      bind (st:call-template(st:bound, ?e, ?n) as ?suc)
+    } 
+    as ?suc)
+    
+   filter(st:visit(st:fail, ?minus, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc 
+}
+where {
+    
+    ?q sp:fromNamed ?l
+    
+    bind ( exists { ?q sp:where/(! sp:void)/rdf:type sp:NamedGraph } as ?suc)
+    
+    filter(st:visit(st:fail, ?l, ?suc))
+          
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# share with filter: triple bind values
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc 
+}
+where {
+    
+    ?q sp:resultVariables ?sel    
+    ?sel rdf:rest*/rdf:first ?v
+    ?v sp:varName ?n
+
+    bind ( 
+      exists { ?q sp:where/(! sp:void)+ ?b
+      filter (st:call-template(st:bound, ?b, ?n)) }
+    as ?bound) 
+    
+    bind (
+      if (exists { ?v sp:expression ?e }, ! ?bound, ?bound)
+    as ?suc)
+    
+    filter (st:visit(st:fail, ?v, ?suc))
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

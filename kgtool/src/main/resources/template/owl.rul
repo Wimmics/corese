@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Feb 18 10:38:21 CET 2015
+Fri Apr 24 14:30:32 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -14,12 +14,41 @@ Wed Feb 18 10:38:21 CET 2015
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template st:start {
-  st:apply-templates(?in)
+
+  st:call-template(?start)
+  
 }
 where {
 
-  ?in a owl:Ontology   
+  bind (
+    if (exists { ?in a owl:Ontology }, st:ontology, st:body) 
+  as ?start)  
       
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template st:html {
+  st:call-template-with(st:sparql, st:head)
+  st:call-template-with(st:sparql, st:banner)
+  "<h3>OWL Functional Syntax</h3>"
+  "<pre>"
+  st:call-template(st:start)
+  "</pre>"
+  
+  st:call-template-with(st:sparql, st:tail)
+}
+where {
+     bind(st:set(st:html, true) as ?ctx) 
 }
 
 ]]>
@@ -53,6 +82,34 @@ where {
 <body>
 <![CDATA[
 #
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template st:ontology {
+
+  "Ontology(" ?in "\n\n"
+
+    st:call-template(st:import, ?in)
+    
+    st:call-template(st:body)
+    #, ?in)
+    
+  "\n)\n"
+}
+where {
+
+  ?in a owl:Ontology   
+      
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # defaut processing of a variable is 
 # st:turtle on URI 
 # st:apply-templates on Blank and Literal
@@ -63,7 +120,12 @@ where {
 #
 template st:profile(?in) {
     st:define(st:process(?in) =  
-      if (isURI(?in), st:turtle(?in), st:apply-templates(?in)))    
+      if (isURI(?in), 
+	if (coalesce(st:get(st:html), false) && 
+	    strstarts(st:turtle(?in), "<"), 
+	    replace(st:turtle(?in), "<", "&lt;"), 
+	    st:turtle(?in)),	
+	st:apply-templates(?in)))    
 }
 where {
 }
@@ -84,7 +146,7 @@ template  st:body  {
 }
 where {
 
-  ?in a owl:Ontology 
+#  ?in a owl:Ontology 
 
   {select distinct ?t where {
     { ?t ?p ?y 
@@ -517,33 +579,6 @@ where {
   filter(isLiteral(?in))
 }
 pragma { st:template st:priority 1000 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Starting template for OWL pretty printing from RDF to Functional Syntax
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-
-  "Ontology(" ?in "\n\n"
-
-    st:call-template(st:import, ?in)
-    
-    st:call-template(st:body, ?in)
-    
-  "\n)\n"
-}
-where {
-
-  ?in a owl:Ontology   
-      
-}
-
 ]]>
 </body>
 </rule>

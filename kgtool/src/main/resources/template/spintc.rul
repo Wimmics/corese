@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 24 14:30:33 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+#
+#
+# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
+#
+prefix tc: </user/corby/home/AData/template/spintc/>
+
+template st:start {
+  st:boolean(st:apply-templates-with-all(st:spintcbody))
+}
+where {
+}
+
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

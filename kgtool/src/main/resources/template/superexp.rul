@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 24 14:30:33 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:superClassExpression(?x) {
+  ?suc
+}
+where {
+    bind (
+      if (isURI(?x), ?x != owl:Thing, 
+         st:boolean(st:apply-templates-all(?x))) 
+    as ?suc)
+      
+  filter(st:visit(st:super, ?x, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template {
+  ?suc
+}
+where {
+  ?in owl:complementOf ?z 
+  
+  bind (
+    st:call-template-with(st:subexp, st:subClassExpression, ?z)
+  as ?suc)
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template {
+  ?suc
+}
+where {   
+      ?in a owl:Restriction ;
+	  owl:onProperty ?p
+
+	{ ?in owl:allValuesFrom ?e	  
+	  bind (st:call-template(st:superClassExpression, ?e) as ?suc)
+	}
+	union	
+	{ ?in owl:hasValue ?v 	  
+	  bind (true as ?suc) }
+	union	
+	{ ?in owl:maxCardinality ?v	  
+	  bind (?v in (0, 1) as ?suc) 
+          filter(st:visit(st:fail, ?in, ?suc))
+	}
+	union	
+	{ ?in owl:maxQualifiedCardinality ?v ;
+	  owl:onClass ?f 	  
+	  bind (
+	    ?v in (0, 1)  && 
+	    (?f = owl:Thing ||
+	    st:call-template-with(st:subexp, st:subClassExpression, ?f)) 
+	  as ?suc )
+          filter(st:visit(st:fail, ?in, ?suc))
+	 }  
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if there is an unauthorized OWL property for superClassExpression ?in
+# return false in this case, otherwise template fails (return nothing)
+#
+template {
+  false
+}
+where {
+    ?in ?p ?y
+    
+    bind (
+      ?p in (
+        owl:intersectionOf, owl:complementOf, 
+	owl:onProperty, owl:hasValue, owl:allValuesFrom, 
+	owl:maxCardinality, owl:maxQualifiedCardinality, owl:onClass,
+	rdf:type
+	)
+      as ?suc)
+      	
+      filter (st:visit(st:fail, ?in, ?suc))
+      filter (! ?suc)
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+  ?in owl:intersectionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
+  
+  bind (
+    st:call-template(st:superClassExpression, ?e)
+    as ?suc
+  )
+  
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

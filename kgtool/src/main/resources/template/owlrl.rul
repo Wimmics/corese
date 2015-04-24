@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 24 14:30:33 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+#
+# Check OWL RL conformance using STTL
+# axiom:    OWL class and property axioms
+# subexp:   subClassExpression
+# superexp: superClassExpression
+# equivexp: equivClassExpression
+# http://www.w3.org/TR/owl2-profiles/#OWL_2_RL
+#
+# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
+#
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template st:start {
+  st:boolean(st:apply-templates-with-all(st:axiom))
+}
+where {
+}
+
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

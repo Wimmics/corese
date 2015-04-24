@@ -7,6 +7,7 @@ package fr.inria.edelweiss.kgraph.query;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -35,6 +36,7 @@ public class ExtendGraph {
     private static final String KGEXT     = NSManager.KGEXT;
     private static final String KGEXTQUERY = NSManager.KGEXTCONS;    
     private static final String QUERY = "/query/";
+    private static final String STL_DATASET = Context.STL_DATASET;
 
     private static final int EXT_DESCRIBE = 0;
     private static final int EXT_QUERY    = 1;
@@ -43,6 +45,7 @@ public class ExtendGraph {
     private static final int EXT_RECORD   = 4;
     private static final int EXT_STACK    = 5;
     private static final int EXT_VISITED  = 6;
+    private static final int EXT_DATASET  = 7;
     
     HashMap<String, Integer> map;
     PluginImpl plugin;
@@ -62,6 +65,7 @@ public class ExtendGraph {
         map.put(KGEXT + "record",   EXT_RECORD);
         map.put(KGEXT + "stack",    EXT_STACK);
         map.put(KGEXT + "visited",  EXT_VISITED);
+        map.put(KGEXT + "dataset",  EXT_DATASET);
     }
     
      /**
@@ -82,6 +86,7 @@ public class ExtendGraph {
              case EXT_RECORD:   return record(p, exp, env);
              case EXT_STACK:    return stack(p, exp, env);
              case EXT_VISITED:  return visited(p, exp, env);
+             case EXT_DATASET:  return plugin.get(exp, env, p, STL_DATASET);
          }        
          return null;
     }

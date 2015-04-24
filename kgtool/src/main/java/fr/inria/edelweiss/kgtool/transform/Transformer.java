@@ -229,6 +229,14 @@ public class Transformer  {
         return dt.getLabel();
     }
      
+     public String stransform(){
+         String s = transform();
+         if (s == null){
+             return "";
+         }
+         return s;
+     }
+     
     /**
      * URI of the RDF graph to transform
      */
@@ -374,6 +382,19 @@ public class Transformer  {
     
     void setTransformation(String p){
         pp = p;
+        setStarter(p);
+    }
+    
+    /**
+     * p = http://ns.inria.fr/name#core
+     * fragment #core means start transformation with st:core
+     * otherwise st:start
+     */
+    void setStarter(String p){
+        if (p != null && p.contains("#")){
+            String name = p.substring(1 + p.indexOf("#"));
+            setStart(STL + name);
+        }  
     }
 
     private void tune(QueryProcess exec) {
@@ -1119,10 +1140,10 @@ public class Transformer  {
         this.isAllResult = isAllResult;
     }
 
-    Graph getGraph() {
+    public Graph getGraph() {
         return graph;
     }
-
+    
     /**
      * @return the isTrace
      */

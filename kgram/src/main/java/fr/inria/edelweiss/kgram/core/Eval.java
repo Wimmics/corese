@@ -453,7 +453,8 @@ public class Eval implements ExpType, Plugin {
             mem.start();
             memory.copyInto(null, mem);
         } else {
-            mem = copyMemory(memory, query, null);
+            //mem = copyMemory(memory, query, null);
+            mem = copyMemory(memory, memory.getQuery(), null);
             exp.setObject(mem);
         }
         return mem;

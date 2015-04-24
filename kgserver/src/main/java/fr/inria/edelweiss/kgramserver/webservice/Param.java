@@ -17,8 +17,10 @@ public class Param {
     private String query;
     private String value;
     private String lang;
+    private String load;
     private List<String> from;
     private List<String>  named;
+    private boolean protect = false;
     
     Param(String s, String p, String t, String u, String n, String q){
         service = s;
@@ -186,6 +188,28 @@ public class Param {
     public void setDataset(List<String> from, List<String> named){
         setFrom(from);
         setNamed(named);
+    }
+
+    void setProtect(boolean b) {
+        protect = true;
+    }
+
+    boolean isProtect() {
+        return protect;
+    }
+
+    /**
+     * @return the load
+     */
+    public String getLoad() {
+        return load;
+    }
+
+    /**
+     * @param load the load to set
+     */
+    public void setLoad(String load) {
+        this.load = load;
     }
 
 }

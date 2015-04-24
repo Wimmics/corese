@@ -6,6 +6,8 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,12 +33,18 @@ public class Processor {
     public static final String QUERY  = Profile.QUERY;
     
     static HashMap<String, String> map;
+    static URI base;
     
     static {
+        try {
+            base = new URI(Profile.SERVER);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+        }
         map = new HashMap();
         map.put("owl",      QUERY + "owl.rq");
         map.put("owlrl",    QUERY + "owlrl.rq");
-        map.put("sparql",     QUERY + "spintc.rq");
+        map.put("sparql",   QUERY + "spintc.rq");
         
         map.put("turtle",   QUERY + "turtle.rq");
 //        map.put("sparql",   QUERY + "sparql.rq");
@@ -44,22 +52,31 @@ public class Processor {
         
     @POST
     @Produces("text/html")
-    public Response typecheckPost(@FormParam("uri") String uri,
-                            @PathParam("serv") String serv) {
-        return typecheck(uri, serv);
+    public Response typecheckPost(
+            @FormParam("uri") String uri,
+            @FormParam("transform") String trans,
+            @PathParam("serv") String serv) {
+        return typecheck(uri, trans, serv);
     }
 
     @GET
     @Produces("text/html")
-    public Response typecheck(@QueryParam("uri") String uri,
-                            @PathParam("serv") String serv) {
+    public Response typecheck(
+            @QueryParam("uri") String uri,
+            @QueryParam("transform") String trans,
+            @PathParam("serv") String serv) {
         GraphStore g;
+        
         try {            
+            URI url = new URI(uri);
+            if (! url.isAbsolute()){
+                url = base.resolve(uri);
+            }
             if (serv.equals("sparql") || serv.equals("spin")){
-                g = loadSPARQL(uri);
+                g = loadSPARQL(url.toString());
             }
             else {
-               g = load(uri); 
+               g = load(url.toString()); 
             }                       
         }  catch (LoadException ex) {
             Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
@@ -67,14 +84,24 @@ public class Processor {
         } catch (EngineException ex) {
             Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
             return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
-       }
+       } catch (URISyntaxException ex) {
+            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+            return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
+        }
         
-         String temp = map.get(serv);
-         if (temp == null){
-             temp = QUERY+"turtle.rq";
+         String temp = null;
+         if (trans == null){
+            temp = map.get(serv);
+            if (temp == null){
+                temp = QUERY+"turtle.rq";
+            }
          }
-         Param par = new Param("/process", null, null, null, temp, null);
-         
+        
+         Param par = new Param("/process", null, trans, null, temp, null);
+         par.setLoad(uri);
+         if (trans != null){
+             par.setProtect(true);
+         }
          return new Transformer().template(new TripleStore(g), par);
     }
     

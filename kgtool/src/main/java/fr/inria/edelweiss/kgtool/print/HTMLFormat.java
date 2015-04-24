@@ -5,12 +5,8 @@ import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.MappingsProcess;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Apply HTML Transformation on Mappings or on Graph :
@@ -64,7 +60,7 @@ public class HTMLFormat {
         transformation = context.stringValue(Context.STL_TRANSFORM);
         if (map == null){
             // no query processing
-           return process(graph, getTransformation(transformation));        
+           return process(map, graph, getTransformation(transformation));        
         }
         else if (map.getQuery().isTemplate()){
             // the query was a template
@@ -78,17 +74,17 @@ public class HTMLFormat {
         else if (map.getGraph()!=null){
             // query was construct where 
             Graph g = (Graph) map.getGraph();
-            return process(g, getTransformation(constructTransform));       
+            return process(map, g, getTransformation(constructTransform));       
         }
         else if (map.getQuery().isUpdate() && graph != null){
-            return process(graph, getTransformation(constructTransform));       
+            return process(map, graph, getTransformation(constructTransform));       
         }
         else {
             // query was select where
             // generate a RDF graph with bindings of select
             Graph g = select();
             // process the RDF graph of bindings
-            return process(g, getTransformation(selectTransform));   
+            return process(map, g, getTransformation(selectTransform));   
         }
     }
     
@@ -102,7 +98,7 @@ public class HTMLFormat {
        return defaultTransform;
     }
     
-    String process(Graph g, String trans){  
+    String process(Mappings map, Graph g, String trans){ 
         Transformer t = Transformer.create(g, trans);
         context.setTransform(trans);
         // triple store graph has a st:context graph
@@ -113,6 +109,13 @@ public class HTMLFormat {
         }
         context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
         t.setContext(context);
+        
+        if (map != null && map.getQuery() != null){
+            Transformer tr = (Transformer) map.getQuery().getTransformer();
+            if (tr != null && tr.getVisitor() != null){
+                t.setVisitor(tr.getVisitor());
+            }
+        }
         return t.toString();
     }
     
@@ -121,19 +124,6 @@ public class HTMLFormat {
         return nsm.toNamespace(str);
     }
       
-    
-    Graph select2(){
-        RDFResultFormat rdf = RDFResultFormat.create(map);
-        Graph g = Graph.create();
-        Load ld = Load.create(g);
-        try {
-            ld.loadString(rdf.toString(), Load.TURTLE_FORMAT);
-        } catch (LoadException ex) {
-            Logger.getLogger(HTMLFormat.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return g;             
-    }
-    
     Graph select(){
         MappingsProcess mp = MappingsProcess.create(map);
         return mp.getGraph(); 

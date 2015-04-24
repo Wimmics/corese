@@ -1,0 +1,34 @@
+prefix ex: <http://example.org/>
+select distinct ?z ?x ?t  (ex:test(?o) as ?a)
+(group_concat(distinct ?x ; separator=" ;") as ?res)
+from ex:g1
+from ex:g2
+from named ex:g2
+from named ex:g3
+where {
+  { ?x ex:p1/ex:p2* 12
+    <http://example.org/test?x=a&y=b> ?r ?x
+  }
+  union { ?x ?x "test" bind (1 as ?x) ?x ?x ?ff }
+  optional { ?x ?q "2015-03-14"^^xsd:date }
+  minus { ?y ?y ?y }
+  service <http://example.org/test> {
+    ?x ?p ?a .
+    ?a ?q [] 
+  }
+  filter (if (?x, ?w != ?y, xsd:datatype(?x + 2 * ?y) ))
+  filter exists { ?x ?p ?x }
+  filter (?x in (1, ?y, "a"))
+  bind (ex:f(?xx) as ?fx)
+  values ?z { 10 }
+  {select * where { 
+    ?x ?p ?a }
+  }
+#  graph ex:gg { ?x ?x ?a }
+}
+order by ?a ?xyz desc(?y)
+group by ?z ?zz
+having (?x > ?y)
+limit 10
+offset 10
+values ?x { ex:a UNDEF ex:b }

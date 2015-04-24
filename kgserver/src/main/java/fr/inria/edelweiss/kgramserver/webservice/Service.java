@@ -101,7 +101,19 @@ public class Service {
     }
 
     boolean isRDFSEntailment() {
-        return getSchema().size() > 0;
+        return !  isOWLEntailment() && ! getSchema().isEmpty();
+    }
+    
+    boolean isOWLEntailment(){
+        if (getSchema().isEmpty()){
+            return false;
+        }
+        for (Doc d : getSchema()){
+            if (d.getUri().endsWith(".owl")){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

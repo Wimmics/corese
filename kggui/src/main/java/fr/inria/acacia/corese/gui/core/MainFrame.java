@@ -72,7 +72,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-01-15";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-05-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -120,7 +120,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem iselect, igraph, iconstruct, iask, idescribe, 
             iserviceCorese, iserviceDBpedia, 
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, itrig, ispin, iowl, itypecheck, 
+            iturtle, irdfxml, itrig, ispin, iowl, itypecheck, 
             ientailment, irule, isystem, iprovenance, iindex;
     
     HashMap<Object, String> itable;
@@ -165,6 +165,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String defaultRuleQuery = "rule.rq";
        
     private static final String defaultTemplateQuery = "turtle.rq";    
+    private static final String defaultRDFXMLQuery = "rdfxml.rq";    
     private static final String defaultTrigQuery = "trig.rq";   
     private static final String defaultOWLQuery = "owl.rq";   
     private static final String defaultSPINQuery = "spin.rq";   
@@ -464,6 +465,7 @@ public class MainFrame extends JFrame implements ActionListener {
         iprovenance = defItem("Provenance", defaultProvenanceQuery);  
         
         iturtle = defItem("Turtle", defaultTemplateQuery); 
+        irdfxml = defItem("RDF/XML", defaultRDFXMLQuery); 
         itrig   = defItem("Trig", defaultTrigQuery); 
         ispin   = defItem("SPIN", defaultSPINQuery); 
         iowl    = defItem("OWL", defaultOWLQuery); 
@@ -585,6 +587,7 @@ public class MainFrame extends JFrame implements ActionListener {
         explainMenu.add(iindex);
        
         templateMenu.add(iturtle);
+        templateMenu.add(irdfxml);
         templateMenu.add(itrig);
         templateMenu.add(iowl);
         templateMenu.add(ispin);

@@ -307,6 +307,10 @@ public class NSManager {
      * return <uri>
      */
     public String toPrefixURI(String nsname) {
+        return toPrefixURI(nsname, true);
+    }
+    
+    public String toPrefixURI(String nsname, boolean skip) {
         if (nsname.contains("(") 
                 || nsname.contains(")")
                 || nsname.contains("'")
@@ -315,7 +319,7 @@ public class NSManager {
                 ) {
             return uri(nsname);
         } else {
-            String str = toPrefix(nsname, true);
+            String str = toPrefix(nsname, skip);
             if (str.equals(nsname)) {
                 return uri(nsname);
             } else {

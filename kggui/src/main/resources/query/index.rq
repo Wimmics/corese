@@ -3,7 +3,8 @@ template {
 }
 where {
   graph eng:describe {
-    [] rdf:predicate ?p ; rdf:value ?v 
+    [] kg:index 0 ; 
+       kg:item [ rdf:predicate ?p ; rdf:value ?v ]     
   }
 }
 order by desc(?v) ?p

@@ -54,7 +54,9 @@ public class PluginImpl extends ProxyImpl {
     static String DEF_PPRINTER = Transformer.PPRINTER;
     public static boolean readWriteAuthorized = true;
     private static final String NL = System.getProperty("line.separator");
-  
+    private static final String VISIT_DEFAULT_NAME = NSManager.STL+"default";
+    private static final IDatatype VISIT_DEFAULT = DatatypeMap.newResource(VISIT_DEFAULT_NAME);
+    
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
     // idem for setObject()
@@ -66,6 +68,7 @@ public class PluginImpl extends ProxyImpl {
     TreeNode cache;
     
     ExtendGraph ext;
+   
 
     PluginImpl(Matcher m) {
         if (table == null) {
@@ -213,7 +216,10 @@ public class PluginImpl extends ProxyImpl {
                 return bool(exp, env, p, dt);
                 
             case STL_VISITED:
-                return visited(exp, env, p, dt);                
+                return visited(exp, env, p, dt); 
+                
+            case STL_VISIT:
+                return visit(exp, env, p, null, dt, null);    
                 
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
@@ -381,6 +387,9 @@ public class PluginImpl extends ProxyImpl {
                 
             case STORE:
                 return ext.store(p, env, dt1, dt2);
+                
+            case TURTLE:
+                return turtle(dt1, dt2, env, p);     
                 
             case STL_SET:
                 return set(exp, env, p, dt1, dt2);
@@ -929,6 +938,9 @@ public class PluginImpl extends ProxyImpl {
     // Visitor design pattern
     public Object visit(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
         Transformer t = getTransformer(env, p); 
+        if (dt1 == null){
+            dt1 = VISIT_DEFAULT;
+        }
         t.visit(dt1, dt2, dt3);
         return TRUE;
     }
@@ -956,7 +968,13 @@ public class PluginImpl extends ProxyImpl {
      */
 
 
-    IDatatype turtle(IDatatype o, Environment env, Producer prod) {
+    IDatatype turtle(IDatatype o, IDatatype o2, Environment env, Producer prod) {
+        Transformer p = getTransformer(env, prod);
+        IDatatype dt = p.turtle(o, o2.equals(TRUE));
+        return dt;
+    }
+    
+     IDatatype turtle(IDatatype o, Environment env, Producer prod) {
         Transformer p = getTransformer(env, prod);
         IDatatype dt = p.turtle(o);
         return dt;

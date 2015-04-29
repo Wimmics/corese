@@ -145,7 +145,7 @@ public class DefaultVisitor implements TemplateVisitor {
             if (! distinct.containsKey(obj)){
                 list.add(obj);
                 distinct.put(obj, obj);
-                storeGraph(name, obj);
+                //storeGraph(name, obj);
             }
         }
         else {

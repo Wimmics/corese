@@ -516,7 +516,7 @@ public class Transformer  {
     public IDatatype process(String temp) {
         return process(temp, false, null);
     }
-
+    
     public IDatatype process(String temp, boolean all, String sep) {
         query = null;
         ArrayList<IDatatype> result = new ArrayList<IDatatype>();
@@ -601,6 +601,11 @@ public class Transformer  {
     public IDatatype process(IDatatype dt) {
         return process(null, dt, null, null, false, null, null, null);
     }
+    
+    public IDatatype process(IDatatype[] a){
+        return process(a, (a.length>0)?a[0]:null, null, null, false, null, null, null);
+    }
+
 
     public IDatatype template(String temp, IDatatype dt) {
         return process(null, dt, null, temp, false, null, null, null);
@@ -626,7 +631,7 @@ public class Transformer  {
      * select (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
     public IDatatype process(Object[] args, IDatatype dt1, IDatatype dt2, String temp,
-            boolean allTemplates, String sep, Expr exp, Query q) {
+            boolean allTemplates, String sep, Expr exp, Query q) {      
         if (dt1 == null) {
             return EMPTY;
         }
@@ -700,7 +705,6 @@ public class Transformer  {
                 }
 
                 n++;
-                
                 if (qq != tq && qq.getArgList() != null){
                     // std template has arg list: create appropriate Mapping
                     // TODO: we may want to check that card(arg) = card(param)
@@ -708,7 +712,6 @@ public class Transformer  {
                 }
                 
                 Mappings map = exec.query(qq, bm);
-
                 stack.visit(dt1);
 
                 if (!allTemplates) {
@@ -990,9 +993,16 @@ public class Transformer  {
      * display RDF Node in its Turtle syntax
      */
     public IDatatype turtle(IDatatype dt) {
+        return turtle(dt, false);
+    }
+    
+    /**
+     * force = true: if no prefix generate prefix
+     */
+    public IDatatype turtle(IDatatype dt, boolean force) {
 
         if (dt.isURI()) {
-            String uri = nsm.toPrefixURI(dt.getLabel());
+            String uri = nsm.toPrefixURI(dt.getLabel(), ! force);
             dt = DatatypeMap.newStringBuilder(uri);          
         } else if (dt.isLiteral()) {
             if (dt.getCode() == IDatatype.INTEGER || dt.getCode() == IDatatype.BOOLEAN) {
@@ -1299,13 +1309,11 @@ public class Transformer  {
     }
     
     public void visit(IDatatype name, IDatatype obj, IDatatype arg){
-        if (visitor != null){
-            visitor.visit(name, obj, arg);
-        }
-        else {
+        if (visitor == null){
             initVisit(name, obj, arg);
         }
-    }
+        visitor.visit(name, obj, arg);        
+   }
     
     public Collection<IDatatype> visited(){
         if (visitor != null){
@@ -1329,6 +1337,10 @@ public class Transformer  {
     } 
     
     void initVisit(IDatatype name, IDatatype obj, IDatatype arg){
+        setVisitor(new DefaultVisitor());
+    }
+        
+    void initVisit2(IDatatype name, IDatatype obj, IDatatype arg){
         if (name.getLabel().equals(STL_START)){
             if (obj.getLabel().equals(STL_TRACE)){
                 setVisitor(new DefaultVisitor());

@@ -9,3 +9,46 @@
  p { text-align: justify }
  
  h1,h2,h3,h4 { color: #00428C }
+ 
+  .color { color: #00428C ; 
+          font-weight: bold }
+       
+  .fail {
+    color:red;
+    border-color: red
+   }
+   
+  .tag {
+    color:orange;
+   }
+   
+   .provenance {
+    color:grey;
+   }
+   
+   .type {
+     color:green
+    }
+    
+    .kw {
+      font-weight: bold;
+      color:green
+    }
+  
+ pre {
+  font-size: 120%;
+  font-weight: bold;
+  line-height: 120%;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  border-style: solid;
+  border-left-width: 0.5em;
+  border-top-width: thin;
+  border-right-width: thin;
+  border-bottom-width: thin;
+  border-color: #5C4DC4;
+  color: #00428C;
+  background-color: #E4E5E7;
+}         

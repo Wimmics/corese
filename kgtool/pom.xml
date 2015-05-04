@@ -102,9 +102,17 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <scope>test</scope>
-            <version>6.8.8</version>
+            <version>6.8.21</version>
         </dependency>
-        <!-- For testing the correctness of Corese against BSBM-->
+        
+        <!--estimate the size of objects in memeory in bytes-->
+        <!--
+        <dependency>
+            <groupId>com.javamex.classmexer</groupId>
+            <artifactId>classmexer</artifactId>
+            <version>0.3</version>  
+        </dependency> 
+        --> 
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
@@ -119,7 +127,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <excludes>
-                    <exclude>data/**</exclude>
+                    <!--exclude>data/**</exclude-->
                     <exclude>licenses/**</exclude>
                 </excludes>
             </resource>

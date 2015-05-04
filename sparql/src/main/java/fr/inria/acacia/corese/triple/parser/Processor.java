@@ -144,6 +144,7 @@ public class Processor {
 	public static final String AGGAND           = STL + "agg_and";
 	public static final String STL_AND          = STL + "and";
 	public static final String STL_NUMBER       = STL + "number";
+	public static final String STL_FUTURE       = STL + "future";
         
 	public static final String FUN_NUMBER       = NSManager.STL_PREF + ":"  + "_n_";
 	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
@@ -522,6 +523,7 @@ public class Processor {
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
+		defoper(STL_FUTURE,             ExprType.STL_FUTURE);
 		defoper(STL_LOAD,               ExprType.STL_LOAD);
 		defoper(STL_IMPORT,             ExprType.STL_IMPORT);
                 defoper(STL_ISSTART,            ExprType.STL_ISSTART);

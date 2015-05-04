@@ -957,6 +957,7 @@ public class Transformer  {
         if (q != null) {
             Expr exp = q.getProfile(STL_DEFAULT);
             if (exp != null) {
+                // st:profile st:default
                 return display(dt, exp.oper());
             } else if (q.getProfile() != null) {
                 return profile(dt, q.getProfile());
@@ -968,6 +969,7 @@ public class Transformer  {
     /**
      * template [st:turtle]
      * a template may overload the default display
+     * @deprecated
      */
     IDatatype profile(IDatatype dt, String profile){
         return display(dt, proc.getOper(profile));
@@ -977,6 +979,7 @@ public class Transformer  {
      * Display when all templates fail
      * Default is to return IDatatype as is, 
      * final result will be the string value (when used in a concat())
+     * TODO: implement st:default
      */
     IDatatype display(IDatatype dt, int oper){
     
@@ -986,6 +989,7 @@ public class Transformer  {
                 return turtle(dt);
         }
         
+        // implements str()
         return dt;
     }
 

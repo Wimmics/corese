@@ -209,6 +209,9 @@ public class PluginImpl extends ProxyImpl {
             case STL_PROCESS:
                 return process(exp, env, p, dt);
                 
+            case STL_FUTURE:
+                return dt;    
+                
             case STL_GET:
                 return get(exp, env, p, dt);
                 

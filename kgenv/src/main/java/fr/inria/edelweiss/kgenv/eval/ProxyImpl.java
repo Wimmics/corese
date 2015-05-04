@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -710,9 +711,13 @@ public class ProxyImpl implements Proxy, ExprType {
         boolean ok = true, hasLang = false, isString = true;
 
         int i = 0;
-        for (Expr ee : exp.getExpList()) {
+        List<Expr> argList = exp.getExpList();
+        for (int j = 0; j < argList.size(); ) {
             
-            if (isFuture && isNumber(ee)){
+            // Do not touch to j++ (see below int k = j;) 
+            Expr ee = argList.get(j++);
+           
+            if (isFuture && isFuture(ee)){
                 // create a future
                 if (list == null){
                     list = new ArrayList<Object>();                  
@@ -726,8 +731,28 @@ public class ProxyImpl implements Proxy, ExprType {
             }
             
             IDatatype dt = (IDatatype) eval.eval(ee, env, p);
+            
             if (dt == null){
                 return null;
+            }
+
+            if (isFuture && dt.isFuture()){
+                // result of ee is a Future
+                // use case: ee = box { e1 st:number() e2 }
+                // ee = st:concat(e1, st:number(), e2) 
+                // dt = Future(concat(e1, st:number(), e2))
+                // insert Future arg list (e1, st:number(), e2) into current argList
+                // arg list is inserted after ee (indice j is already  set to j++)
+                ArrayList<Expr> el = new ArrayList(argList.size());
+                el.addAll(argList);
+                Expr future = (Expr) dt.getObject();
+                int k = j;
+
+                for (Expr arg : future.getExpList()){
+                    el.add(k++, arg);
+                }
+                argList = el;
+                continue; 
             }
             
             if (i == 0 && dt.hasLang()) {
@@ -745,8 +770,7 @@ public class ProxyImpl implements Proxy, ExprType {
             } else {
                 sb.append(dt.getLabel());
             }
-            //str += dt.getLabel();
-
+          
             if (ok) {
                 if (hasLang) {
                     if (!(dt.hasLang() && dt.getLang().equals(lang))) {
@@ -760,6 +784,7 @@ public class ProxyImpl implements Proxy, ExprType {
                     isString = false;
                 }
             }
+            
         }
             
         if (list != null){
@@ -776,17 +801,19 @@ public class ProxyImpl implements Proxy, ExprType {
         return result(sb, isString, (ok && lang != null)?lang:null);
     }
     
-    boolean isNumber(Expr e){
-        if  (e.oper() == STL_NUMBER){
+    boolean isFuture(Expr e){
+        if  (e.oper() == STL_NUMBER 
+                //|| e.oper() == STL_FUTURE
+                ){
             return true;
         }
-        if  (e.oper() == CONCAT){
-            // use case:  group { st:number() }
+        if  (e.oper() == CONCAT || e.oper() == STL_CONCAT){
+            // use case:  group { st:number() } box { st:number() }
             return false;
         }
         if (e.arity() > 0){
             for (Expr a : e.getExpList()){
-                if (isNumber(a)){
+                if (isFuture(a)){
                     return true;
                 }
             }

@@ -237,7 +237,8 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         private static final String SBOX        = "sbox";
         private static final String BOX         = "box";
 
-	private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, COALESCE, IF};
+        // functions whose variable are compiled as (coalesce(st:process(?x), "")
+        private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, FUN_TEMPLATE_CONCAT, COALESCE, IF};
 
 	private Constant empty;
 
@@ -2758,14 +2759,6 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     	return term;
     }
     
-    public Term createGroup2(ExpressionList el) {
-    	if (el.getSeparator() == null && el.getExpSeparator() == null){
-    		el.setSeparator(groupSeparator);
-    	}
-    	return createFunction(GROUPCONCAT, el);
-    }
-    
-    
     
     /**
      * box:  nl(+1) body nl(-1)
@@ -2791,7 +2784,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         Term t2 = createFunction(fclose, Constant.create(-1));
         el.add(0, t1);
         el.add(t2);
-        return createFunction(CONCAT, el);
+        return createFunction(createQName(FUN_TEMPLATE_CONCAT), el);
     }
     
    /**
@@ -2846,11 +2839,11 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 
 		if (template != null){
 			if (template.size() == 1){
-				return compileTemplate(template.get(0), false);
+				return compileTemplate(template.get(0), false, false);
 			}
 			else {
 				for (Expression exp : template){                                   
-					exp = compileTemplate(exp, false);
+					exp = compileTemplate(exp, false, false);
 					t.add(exp);                                   
 				}
 			}
@@ -2865,14 +2858,14 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	 * if exp is meta, e.g. group_concat(?exp): group_concat(st:process(?exp))
 	 * if exp is a simple function: xsd:string(?x)  (no st:process)
 	 */
-	Expression compileTemplate(Expression exp, boolean coalesce){
+	Expression compileTemplate(Expression exp, boolean coalesce, boolean group){
 		if (exp.isVariable()){
 			exp = compile(exp.getVariable(), coalesce);
 		}
 		else if (isMeta(exp)){
 			// variables of meta functions are compiled as st:process()
 			// variable of xsd:string() is not
-			exp = compileTemplateMeta((Term) exp, coalesce);
+			exp = compileTemplateMeta((Term) exp, coalesce, group);
 		}
 		return exp;
 	}
@@ -2903,20 +2896,24 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 		return exp.getName().equals(COALESCE);
 	}
         
+        boolean isGroup(Expression exp){
+		return exp.getName().equals(GROUPCONCAT);
+	}
+        
+        // st:concat()
+        boolean isSTCONCAT(Expression exp){
+		return exp.getName().equals(FUN_TEMPLATE_CONCAT);
+	}
+        
 	/**
-	 * concat()
+	 * concat() st:concat()
 	 * group_concat()
 	 * if()
 	 * coalesce()
+         * copy the function and compile its variable as (coalesce(st:process(?var), "")
 	 */
-	Term compileTemplateMeta(Term exp, boolean coalesce){		
-		Term t;
-		if (exp.isFunction()){
-			t = Term.function(exp.getName());
-		}
-		else {
-			t = Term.create(exp.getName());
-		}
+	Term compileTemplateMeta(Term exp, boolean coalesce, boolean group){		
+		Term t = copy(exp, group);
 		boolean isIF = isIF(exp);
                 boolean isCoalesce = isCoalesce(exp);
                 
@@ -2927,7 +2924,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 				// not compile the test of if(test, then, else)
 			}
 			else {
-				ee = compileTemplate(ee, coalesce || isCoalesce);
+				ee = compileTemplate(ee, coalesce || isCoalesce, group || isGroup(exp));
 			}
 			count++;
 			t.add(ee);
@@ -2939,7 +2936,25 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 		return t;
 		
 	}
-
+        
+       Term copy(Term exp, boolean group) {
+        Term t;
+        if (exp.isFunction()) {
+            if (group && isSTCONCAT(exp)) {
+                // group {  box {} } := group_concat(concat( .. st:concat()))
+                // rewrite box st:concat() as concat() in case box{ st:number() }
+                // otherwise st:number() would act as a Future in st:concat()
+                t = Term.function(CONCAT);
+            } else if (exp.getCName() != null) {
+                t = createFunction(exp.getCName());
+            } else {
+                t = Term.function(exp.getName());
+            }
+        } else {
+            t = Term.create(exp.getName());
+        }
+        return t;
+    }
 	
 	/**
 	 * In template { } a variable ?x is compiled as:
@@ -2954,19 +2969,6 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
                 }
 		return t;
 	}
-
-//        Variable compile2(Variable var){
-//		Variable tvar = varTemplate.get(var.getLabel());
-//		if (tvar != null){
-//			return tvar;
-//		}
-//		Variable res = templateVariable(var);
-//		Term t = createFunction(createQName(FUN_PROCESS), var);
-//		Term c = Term.function(COALESCE, t, getEmpty());
-//		defSelect(res, c);
-//		varTemplate.put(var.getLabel(), res);
-//		return res;
-//	}
 	
 	/**
 	 * 

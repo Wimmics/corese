@@ -47,8 +47,25 @@
 <li><a href="/process/spin?uri=/data/query/test.rq">SPARQL 2 SPIN</a></li>
 </ul>
 
+<h3>Self Service</h3>
+<form method='get' id='serv' action='/process/test'>
+    
+    <input type='text' id='uri' name='uri'/>
+    <label for='uri'>RDF graph URI</label>
+    <br/>
+    <select name='transform' id='sel'>
+        <option>st:turtle</option>
+        <option>st:rdfxml</option>
+        <option>st:owl</option>
+        <option>st:spin</option>
+    </select>
+    <label for='sel'>Transformation</label>
+    <br/>
+    <input type='submit' value='Submit'>
 
-  
+
+</form>
+
  
 <h3>SPARQL Sudoku Solver</h3>  
 <ul>

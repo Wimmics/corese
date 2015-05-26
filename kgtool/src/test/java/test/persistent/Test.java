@@ -1,7 +1,7 @@
 package test.persistent;
 
-import fr.inria.acacia.corese.persistent.api.IOperation;
-import fr.inria.acacia.corese.persistent.ondisk.StringOnDiskManager;
+import fr.inria.acacia.corese.storage.api.IStore;
+import fr.inria.acacia.corese.storage.fs.StringManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import org.apache.commons.lang.RandomStringUtils;
  */
 public class Test {
 
-    private IOperation manager;
+    private IStore manager;
     private Map<Integer, String> literalsAll = new HashMap<Integer, String>();
     private int min, max;
     private int index = 1;
@@ -26,7 +26,7 @@ public class Test {
     public Test(int min, int max) {
         this.min = min;
         this.max = max;
-        manager = StringOnDiskManager.create();
+        manager = StringManager.create();
     }
 
     public void close() {
@@ -178,7 +178,7 @@ public class Test {
                 if (literalsAll.get(key).equals(literalsRead.get(key))) {
                     correct++;
                 } else {
-                    System.out.println("[Read Error]: "+((StringOnDiskManager)manager).getLiteralsOnDiskMeta(key)+" ====");
+                    System.out.println("[Read Error]: "+((StringManager)manager).getLiteralsOnDiskMeta(key)+" ====");
                     //System.out.println("=== orginal literal ===\n" + literalsAll.get(key));
                     //System.out.println("\n=== read literal ===\n" + literalsRead.get(key));
                 }

@@ -1,7 +1,7 @@
 package test.persistent;
 
-import static fr.inria.acacia.corese.persistent.ondisk.Constants.KB;
-import static fr.inria.acacia.corese.persistent.ondisk.Constants.MB;
+import static fr.inria.acacia.corese.storage.fs.Constants.KB;
+import static fr.inria.acacia.corese.storage.fs.Constants.MB;
 import java.io.IOException;
 import java.text.DecimalFormat;
 

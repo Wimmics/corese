@@ -6,6 +6,8 @@ import fr.inria.acacia.corese.storage.cache.LRUCache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manager all the files and file handlers, including a poop of handlers for
@@ -65,15 +67,14 @@ public class FileHandlersManager extends LRUCache<Integer, FileHandler> {
             return fhForWrite;
         }
         int fid = (Integer) key;
-        //fh in the pool
-        if (this.containsKey(fid)) {
+
+        if (this.containsKey(fid)) { //fh in the pool
             return super.get(fid);
-            //not in the pool, but in the maintenence list
-        } else if (allFiles.containsKey(fid)) {
+
+        } else if (allFiles.containsKey(fid)) { //not in the pool, but in the maintenence list
             return this.getFileHandler(fid, allFiles.get(fid));
-            //not anywhere
-        } else {
-            System.out.println("File handler [id" + fid + "] not yet initialized!");
+        } else {//not anywhere
+            Logger.getLogger(FileHandlersManager.class.getName()).log(Level.WARNING, "File handler id [{0}]  not yet initialized!", fid);
             return null;
         }
     }
@@ -95,7 +96,6 @@ public class FileHandlersManager extends LRUCache<Integer, FileHandler> {
     public final FileHandler createNewFile() {
         FileHandler fhNew = this.getFileHandler(counter++, null);
         fhForWrite = fhNew;
-        System.out.println("[FH manager]: new file " + fhForWrite.getFid() + " created");
         return fhForWrite;
     }
 

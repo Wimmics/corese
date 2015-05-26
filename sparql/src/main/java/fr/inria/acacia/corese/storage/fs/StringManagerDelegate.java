@@ -123,7 +123,7 @@ public class StringManagerDelegate {
                 }
             }
         }
-        System.out.println("[Delete on disk]: " + toDelete.size() + " records are deleted!");
+        Logger.getLogger(StringManagerDelegate.class.getName()).log(Level.INFO, "{0} records are deleted!", toDelete.size());
         
         this.clean();
         this.fhManager = newManager.fhManager;

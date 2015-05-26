@@ -28,7 +28,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.acacia.corese.storage.api.IStore;
+import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
@@ -147,7 +147,7 @@ public class Graph implements Graphable {
 
     private boolean hasList = false;
 
-    private IStore storageMgr;
+    private IStorage storageMgr;
 
     static {
         setCompareIndex(true);
@@ -1958,7 +1958,7 @@ public class Graph implements Graphable {
         this.setStorage(type, null);
     }
 
-    public IStore getStorageMgr(){
+    public IStorage getStorageMgr(){
         return this.storageMgr;
     }
     

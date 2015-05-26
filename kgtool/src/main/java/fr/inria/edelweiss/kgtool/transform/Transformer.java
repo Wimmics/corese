@@ -8,6 +8,7 @@ import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
@@ -59,6 +60,7 @@ public class Transformer  {
     public static final String TOSPIN       = STL + "tospin";
     public static final String OWL          = STL + "owl";
     public static final String TURTLE       = STL + "turtle";
+    public static final String RDFXML       = STL + "rdfxml";
     public static final String TRIG         = STL + "trig";
     public static final String TABLE        = STL + "table";
     public static final String HTML         = STL + "html";
@@ -893,7 +895,12 @@ public class Transformer  {
      * st:apply-all-templates(?x ; separator = sep)
      */
     IDatatype result(List<IDatatype> result, String sep) {
-        StringBuilder sb = new StringBuilder();
+        return stringResult(result, sep);
+    }
+        
+        
+     IDatatype stringResult(List<IDatatype> result, String sep) {
+       StringBuilder sb = new StringBuilder();
         sep = getTab(sep);
         
         for (IDatatype d : result) {
@@ -916,6 +923,31 @@ public class Transformer  {
 
         IDatatype res = DatatypeMap.newStringBuilder(sb);
         return res;
+    }
+    
+    /**
+     * AND aggregate for boolean result
+     */
+    IDatatype booleanResult(List<IDatatype> result) {
+        boolean isError = false, and = true;
+        for (IDatatype dt : result) {
+            if (dt == null) {
+                isError = true;
+            } else {
+                try {
+                    boolean b = dt.isTrue();
+                    and &= b;
+
+                } catch (CoreseDatatypeException ex) {
+                    isError = true;
+                }
+            }
+        }
+        
+        if (isError){
+            return DatatypeMap.FALSE;
+        }
+        return (and) ? DatatypeMap.TRUE  :DatatypeMap.FALSE;
     }
     
     /**
@@ -1319,6 +1351,21 @@ public class Transformer  {
         visitor.visit(name, obj, arg);        
    }
     
+    TemplateVisitor defVisitor(){
+        if (visitor == null){
+            initVisit();
+        }
+        return visitor;
+    }
+    
+    public IDatatype vset(IDatatype obj, IDatatype prop, IDatatype arg){
+        return defVisitor().set(obj, prop, arg);
+    }
+    
+    public IDatatype vget(IDatatype obj, IDatatype prop){
+        return defVisitor().get(obj, prop);
+    }
+    
     public Collection<IDatatype> visited(){
         if (visitor != null){
            return visitor.visited();
@@ -1341,6 +1388,10 @@ public class Transformer  {
     } 
     
     void initVisit(IDatatype name, IDatatype obj, IDatatype arg){
+        initVisit();
+    }
+    
+    void initVisit(){
         setVisitor(new DefaultVisitor());
     }
         

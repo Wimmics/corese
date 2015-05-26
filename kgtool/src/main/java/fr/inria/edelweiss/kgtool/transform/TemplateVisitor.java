@@ -14,6 +14,10 @@ public interface TemplateVisitor {
     
     void visit(IDatatype name, IDatatype object, IDatatype arg);
     
+    IDatatype set(IDatatype obj, IDatatype prop, IDatatype val);
+    
+    IDatatype get(IDatatype obj, IDatatype prop);
+   
     void setGraph(Graph g);
         
     Collection<IDatatype> visited();

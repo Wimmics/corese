@@ -33,12 +33,14 @@ public class DefaultVisitor implements TemplateVisitor {
     static final String SILENT      = STL + "silent";
     static final String ACCEPT      = STL + "accept";
     static final String DEFAULT     = STL + "default";
+    static final String SET         = STL + "set";
+    static final String GET         = STL + "get";
    
     Graph graph, visitedGraph;
     IDatatype visitedNode;
     HashMap <String, Boolean> map;
     ArrayList<IDatatype> list;
-    private HashMap<IDatatype, IDatatype> distinct;
+    private HashMap<IDatatype, IDatatype> distinct, value;
     
     private String transform = Transformer.TURTLE;
     private boolean silent = true;
@@ -55,6 +57,7 @@ public class DefaultVisitor implements TemplateVisitor {
     DefaultVisitor(){
         map      = new HashMap();
         distinct = new HashMap();
+        value    = new HashMap();
         list     = new ArrayList();
         visitedGraph = Graph.create();
         visitedNode = DatatypeMap.createObject("graph", visitedGraph);
@@ -66,7 +69,7 @@ public class DefaultVisitor implements TemplateVisitor {
     
     void visit(String name, IDatatype obj, IDatatype arg){
         if (name.equals(TRACE) || name.equals(START)){
-            set(name, obj.getLabel(), arg);
+            define(name, obj.getLabel(), arg);
         }
         else {
            process(name, obj, arg);
@@ -76,7 +79,7 @@ public class DefaultVisitor implements TemplateVisitor {
     /**
      * st:visit(st:trace, st:subexp, true)
      */
-    void set(String name, String obj, IDatatype arg){
+    void define(String name, String obj, IDatatype arg){
         if (arg == null){
             return;
         }
@@ -248,6 +251,15 @@ public class DefaultVisitor implements TemplateVisitor {
      */
     public void setDistinct(HashMap<IDatatype, IDatatype> distinct) {
         this.distinct = distinct;
+    }
+
+    public IDatatype set(IDatatype obj, IDatatype prop, IDatatype arg) {
+          value.put(obj, arg);
+          return arg;
+    }
+    
+    public IDatatype get(IDatatype obj, IDatatype prop) {
+          return value.get(obj);
     }
 
 }

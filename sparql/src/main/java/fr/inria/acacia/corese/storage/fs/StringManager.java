@@ -1,10 +1,10 @@
-package fr.inria.acacia.corese.persistent.ondisk;
+package fr.inria.acacia.corese.storage.fs;
 
-import fr.inria.acacia.corese.persistent.cache.LRUCache;
-import fr.inria.acacia.corese.persistent.api.IOperation;
-import fr.inria.acacia.corese.persistent.api.Parameters;
-import fr.inria.acacia.corese.persistent.api.Parameters.type;
-import fr.inria.acacia.corese.persistent.cache.ICache;
+import fr.inria.acacia.corese.storage.cache.LRUCache;
+import fr.inria.acacia.corese.storage.api.IStore;
+import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.acacia.corese.storage.api.Parameters.type;
+import fr.inria.acacia.corese.storage.cache.ICache;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,51 +12,46 @@ import java.util.Map;
  * Manager all the strings that have been stored in file, including a cache for
  * quick access the read strings
  *
- * LiteralOnDiskManager.java
- *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 janv. 2015 new
  */
-public final class StringOnDiskManager implements IOperation {
+public final class StringManager implements IStore {
 
     private boolean enabled = true;
-    private Map<Integer, StringOnDiskMeta> stringsOnDisk = null;
-    private Map<Integer, StringOnDiskMeta> stringsToDelete = null;
+    private Map<Integer, StringMeta> stringsOnDisk = null;
+    private Map<Integer, StringMeta> stringsToDelete = null;
 
-    private static StringOnDiskManager manager ;
     private StringManagerDelegate delegate = null;
     private ICache<Integer, String> cache = null;
     private Parameters params = null;
 
-    private StringOnDiskManager() {
-        this(null);
-    }
-
-    private StringOnDiskManager(Parameters params) {
+    private StringManager(Parameters params) {
         this.init();
-        if (params == null) {
-            params = Parameters.create();
-        }
-
-        this.params = params;
+        this.params = (params == null) ? Parameters.create() : params;
 
         delegate = new StringManagerDelegate(this.params);
         cache = new LRUCache<Integer, String>(this.params.get(type.CACHED_STRING_NB));
-        stringsOnDisk = new HashMap< Integer, StringOnDiskMeta>();
-        stringsToDelete = new HashMap< Integer, StringOnDiskMeta>();
+        stringsOnDisk = new HashMap< Integer, StringMeta>();
+        stringsToDelete = new HashMap< Integer, StringMeta>();
     }
 
-//    public static StringOnDiskManager getInstance() {
-//        return manager;
-//    }
-
-    public static StringOnDiskManager create() {
+    /**
+     * Create storage manager usign default parameters
+     * 
+     * @return 
+     */
+    public final static StringManager create() {
         return create(null);
     }
 
-    public static StringOnDiskManager create(Parameters params) {
-        manager = new StringOnDiskManager(params);
-        return manager;
+    /**
+     * Create storage manager using specified parameters
+     * 
+     * @param params
+     * @return 
+     */
+    public final static StringManager create(Parameters params) {
+        return new StringManager(params);
     }
 
     /**
@@ -66,20 +61,19 @@ public final class StringOnDiskManager implements IOperation {
      * @param literal
      * @return
      */
-    //refactor, change paramters to Node
     @Override
-    public synchronized boolean write(int id, String literal) {
-        StringOnDiskMeta meta = delegate.write(id, literal);
+    public final synchronized boolean write(int id, String literal) {
+        StringMeta meta = delegate.write(id, literal);
         this.stringsOnDisk.put(id, meta);
         return true;
     }
 
     @Override
-    public String read(int id) {
+    public final String read(int id) {
         if (this.cache.containsKey(id)) {
             return this.cache.get(id);
         } else {
-            StringOnDiskMeta meta = this.stringsOnDisk.get(id);
+            StringMeta meta = this.stringsOnDisk.get(id);
             String literal = delegate.read(meta);
             this.cache.put(id, literal);
             return delegate.read(meta);
@@ -87,7 +81,7 @@ public final class StringOnDiskManager implements IOperation {
     }
 
     @Override
-    public synchronized void delete(int nid) {
+    public final synchronized void delete(int nid) {
         if (this.stringsOnDisk.containsKey(nid)) {
             //1. Add the literal to ToDelete list temporarily 
             this.stringsToDelete.put(nid, this.stringsOnDisk.get(nid));
@@ -97,27 +91,23 @@ public final class StringOnDiskManager implements IOperation {
 
             //3. check if the size of ToDelete is exceed the default size
             //perform batch delete
-            //the condition can be changed
-            //or using a seperated thread to monitor and execute the deletion
-            //to be refined
             if (this.stringsToDelete.size() == this.params.get(type.THRESHOLD_TO_DELETE_NB)) {
-                //todo
-                //clear cache
                 delegate.delete(stringsToDelete, stringsOnDisk);
+                stringsToDelete.clear();
             }
         }
     }
 
     @Override
     public boolean check(String str) {
-        return str == null ? false : str.length() > this.params.get(type.MAX_LIT_LEN);
+        return (str == null) ? false : str.length() > this.params.get(type.MAX_LIT_LEN);
     }
 
     public int getLiteralsOnDiskSize() {
         return this.stringsOnDisk.size();
     }
 
-    public StringOnDiskMeta getLiteralsOnDiskMeta(int id) {
+    public StringMeta getLiteralsOnDiskMeta(int id) {
         return this.stringsOnDisk.get(id);
     }
 
@@ -139,7 +129,7 @@ public final class StringOnDiskManager implements IOperation {
 
     @Override
     public int getStorageType() {
-        return IOperation.STORAGE_FILE;
+        return IStore.STORAGE_FILE;
     }
 
     @Override
@@ -151,27 +141,4 @@ public final class StringOnDiskManager implements IOperation {
     public void enable(boolean enable) {
         this.enabled = enable;
     }
-
-    /**
-     * Load meta data from xml file to RAM
-     * @param meta
-     */
-    @Override
-    public void load(String meta) {
-        //to be extended
-    }
-
-    /**
-     * Save the meta data and file information to file, for reusing next time
-     * @param dir
-     */
-    @Override
-    public void export(String dir) {
-        //meta.rdf
-        //data 
-        // - file1.txt
-        // - file2.txt
-        //...
-    }
-
 }

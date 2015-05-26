@@ -1,4 +1,4 @@
-package fr.inria.acacia.corese.persistent.api;
+package fr.inria.acacia.corese.storage.api;
 
 /**
  *
@@ -7,9 +7,9 @@ package fr.inria.acacia.corese.persistent.api;
  * @author Fuqi Song, WImmics Inria I3S
  * @date 13 janv. 2015
  */
-public interface IOperation {
+public interface IStore {
 
-    public final static int STORAGE_RAM = 10;
+    //public final static int STORAGE_RAM = 10;
     public final static int STORAGE_DB = 20;
     public final static int STORAGE_FILE = 30;
 
@@ -75,8 +75,6 @@ public interface IOperation {
      * Clean up, ex, close connections
      */
     public void clean();
+  
     
-    public void load(String meta);
-    
-    public void export(String dir);
 }

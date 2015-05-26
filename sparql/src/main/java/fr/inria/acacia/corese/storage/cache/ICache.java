@@ -1,4 +1,4 @@
-package fr.inria.acacia.corese.persistent.cache;
+package fr.inria.acacia.corese.storage.cache;
 
 /**
  * Interface for implementing cache ICache.java

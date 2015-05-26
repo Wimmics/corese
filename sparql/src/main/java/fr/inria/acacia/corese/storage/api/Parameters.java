@@ -1,14 +1,14 @@
-package fr.inria.acacia.corese.persistent.api;
+package fr.inria.acacia.corese.storage.api;
 
-import static fr.inria.acacia.corese.persistent.ondisk.Constants.GB;
-import static fr.inria.acacia.corese.persistent.ondisk.Constants.MB;
+import static fr.inria.acacia.corese.storage.fs.Constants.GB;
+import static fr.inria.acacia.corese.storage.fs.Constants.MB;
 import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Parameters for initlizing/running the persistent manager
+ * Parameters for initlizing/running the storage manager
  * 
- * Parameter.java
+ * Parameters.java
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 févr. 2015
@@ -32,6 +32,9 @@ public class Parameters {
         init();
     }
 
+    /**
+     * Initlize the default values
+     */
     private void init() {
         this.add(type.BUF_SIZE, 4 * MB);
         this.add(type.MAX_LIT_LEN, 100);
@@ -41,10 +44,20 @@ public class Parameters {
         this.add(type.CONNECTED_FH_NB, 6);
     }
 
+    /**
+     * Create a new isntance of parameters
+     * @return 
+     */
     public static Parameters create() {
         return new Parameters();
     }
 
+    /**
+     * Add parameters
+     * 
+     * @param key
+     * @param value 
+     */
     public void add(type key, int value) {
 
         if (key == type.MAX_FILE_SIZE && value > GB) {
@@ -55,13 +68,19 @@ public class Parameters {
             value = 2;
         }
 
-        if (key == type.MAX_LIT_LEN && value < 64) {
-            value = 64;
+        if (key == type.MAX_LIT_LEN && value < 32) {
+            value = 32;
         }
 
         paras.put(key, value);
     }
 
+    /**
+     * Get value of a given parameter type
+     * 
+     * @param key
+     * @return 
+     */
     public int get(type key) {
         if (paras.containsKey(key)) {
             return paras.get(key);

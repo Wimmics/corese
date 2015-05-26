@@ -1,16 +1,16 @@
-package fr.inria.acacia.corese.persistent.ondisk;
+package fr.inria.acacia.corese.storage.fs;
 
-import fr.inria.acacia.corese.persistent.api.Parameters;
-import fr.inria.acacia.corese.persistent.api.Parameters.type;
-import fr.inria.acacia.corese.persistent.cache.LRUCache;
+import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.acacia.corese.storage.api.Parameters.type;
+import fr.inria.acacia.corese.storage.cache.LRUCache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
  * Manager all the files and file handlers, including a poop of handlers for
- * quick access to disk file 
- * 
+ * quick access to disk file
+ *
  * FileHandlerCache.java
  *
  * @author Fuqi Song, Wimmics Inria I3S

@@ -1,10 +1,9 @@
-package fr.inria.acacia.corese.persistent.ondisk;
+package fr.inria.acacia.corese.storage.fs;
 
-import fr.inria.acacia.corese.persistent.api.Parameters;
-import fr.inria.acacia.corese.persistent.api.Parameters.type;
-import static fr.inria.acacia.corese.persistent.ondisk.Constants.BEGIN;
+import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.acacia.corese.storage.api.Parameters.type;
+import static fr.inria.acacia.corese.storage.fs.Constants.BEGIN;
 import java.io.IOException;
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.charset.Charset;
@@ -31,7 +30,13 @@ public class StringManagerDelegate {
         fhManager = new FileHandlersManager(this.params);
     }
 
-    public String read(StringOnDiskMeta meta) {
+    /**
+     * Reading string from file using given meta info
+     * 
+     * @param meta
+     * @return 
+     */
+    public String read(StringMeta meta) {
         if (meta == null) {
             return null;
         }
@@ -47,11 +52,18 @@ public class StringManagerDelegate {
             return new String(literalBf.array(), Charset.forName(Constants.ENCODING));
         } catch (IOException ex) {
             Logger.getLogger(StringManagerDelegate.class.getName()).log(Level.SEVERE, "Read " + meta + " error!", ex);
+            return null;
         }
-        return null;
     }
 
-    public StringOnDiskMeta write(int id, String literal) {
+    /**
+     * Write a string with id to file
+     * 
+     * @param id
+     * @param literal
+     * @return 
+     */
+    public StringMeta write(int id, String literal) {
 
         FileHandler fhWirte = fhManager.get();
         byte[] bytesLiteral = literal.getBytes(Charset.forName(Constants.ENCODING));
@@ -87,26 +99,32 @@ public class StringManagerDelegate {
             buffer.put(bytesLiteral);
         }
 
-        StringOnDiskMeta meta = new StringOnDiskMeta(id, fhWirte.getFid(), (int) offset, literal.length());
+        StringMeta meta = new StringMeta(id, fhWirte.getFid(), (int) offset, literal.length());
         return meta;
     }
 
-    //copy the literals to new files
-    public synchronized void delete(Map<Integer, StringOnDiskMeta> toDelete, Map<Integer, StringOnDiskMeta> literalsOnDisk) {
+    /**
+     * Delete strings from files
+     * 
+     * @param toDelete strings to be deleted
+     * @param stringsOnDisk all the strings stored on disk
+     */
+    public synchronized void delete(Map<Integer, StringMeta> toDelete, Map<Integer, StringMeta> stringsOnDisk) {
         StringManagerDelegate newManager = new StringManagerDelegate(this.params);
-        Iterator<Entry<Integer, StringOnDiskMeta>> it = literalsOnDisk.entrySet().iterator();
+        Iterator<Entry<Integer, StringMeta>> it = stringsOnDisk.entrySet().iterator();
         while (it.hasNext()) {
-            Entry<Integer, StringOnDiskMeta> en = it.next();
+            Entry<Integer, StringMeta> en = it.next();
             int id = en.getKey();
-            StringOnDiskMeta meta = en.getValue();
+            StringMeta meta = en.getValue();
             if (!toDelete.containsKey(id)) {
                 String lit = this.read(meta);
-                StringOnDiskMeta meta2 = newManager.write(id, lit);
-                literalsOnDisk.replace(id, meta2);
+                if (stringsOnDisk.containsKey(id)) {
+                    stringsOnDisk.put(id, newManager.write(id, lit));
+                }
             }
         }
         System.out.println("[Delete on disk]: " + toDelete.size() + " records are deleted!");
-        toDelete.clear();
+        
         this.clean();
         this.fhManager = newManager.fhManager;
     }
@@ -121,11 +139,5 @@ public class StringManagerDelegate {
     @Override
     public String toString() {
         return fhManager.toString();
-    }
-
-    public void load() {
-        //initialize the file handlers from files on disk
-        //only if the strings are persistent on disk
-        //not used for now
     }
 }

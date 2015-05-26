@@ -1,10 +1,10 @@
-package fr.inria.acacia.corese.persistent.ondisk;
+package fr.inria.acacia.corese.storage.fs;
 
-import fr.inria.acacia.corese.persistent.api.Parameters;
-import fr.inria.acacia.corese.persistent.api.Parameters.type;
-import static fr.inria.acacia.corese.persistent.ondisk.Constants.BEGIN;
-import static fr.inria.acacia.corese.persistent.ondisk.Constants.EXT_TXT;
-import static fr.inria.acacia.corese.persistent.ondisk.Constants.FILE_NAME;
+import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.acacia.corese.storage.api.Parameters.type;
+import static fr.inria.acacia.corese.storage.fs.Constants.BEGIN;
+import static fr.inria.acacia.corese.storage.fs.Constants.EXT_TXT;
+import static fr.inria.acacia.corese.storage.fs.Constants.FILE_NAME;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 /**
  * Handler for manipulating disk file, channel, buffer, etc..
- * 
+ *
  * FileHandler.java
  *
  * @author Fuqi Song, Wimmics Inria I3S
@@ -31,10 +31,17 @@ public class FileHandler {
 
     private int fid;
     private String fname;
-    private long fsize ;
-    
+    private long fsize;
+
     private Parameters params;
 
+    /**
+     * Constructor 
+     * 
+     * @param fid file id
+     * @param file file path
+     * @param params parameters
+     */
     public FileHandler(int fid, String file, Parameters params) {
         try {
             this.fid = fid;
@@ -87,8 +94,6 @@ public class FileHandler {
     public int getFid() {
         return fid;
     }
-
-
 
     /**
      * Allocate a new buffer using the default buffer_size

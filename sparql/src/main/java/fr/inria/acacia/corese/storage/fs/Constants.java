@@ -1,9 +1,7 @@
-package fr.inria.acacia.corese.persistent.ondisk;
+package fr.inria.acacia.corese.storage.fs;
 
 /**
  * Constants
- *
- * Parameters.java
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 janv. 2015 new
@@ -18,9 +16,4 @@ public class Constants {
     public final static String EXT_TXT = ".txt";
     public final static String ENCODING = "UTF-8";
     public final static String CHANNEL_MODE = "rw";
-    
-    //if save the strings to file and persistent
-    //false: when system exit, all files and infor will be deleted
-    //true: files will be kept after exiting the system
-    protected static boolean PER_PERSISTENT = false;
 }

@@ -1,35 +1,33 @@
-package fr.inria.acacia.corese.persistent.ondisk;
+package fr.inria.acacia.corese.storage.fs;
 
 /**
  * Store meta infor of string stored in file
  *
- * Meta.java
+ * StringMeta.java
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 janv. 2015
  */
-public class StringOnDiskMeta {
+public class StringMeta {
 
-    //node id
-    private int nid;
-    //file id
-    private int fid;
+    private int id; // string id
+    private int fid; // file id
     private int offset;
     private int length;
 
-    public StringOnDiskMeta(int nid, int fid, int offset, int length) {
-        this.nid = nid;
+    public StringMeta(int id, int fid, int offset, int length) {
+        this.id = id;
         this.fid = fid;
         this.offset = offset;
         this.length = length;
     }
 
-    public int getNid() {
-        return nid;
+    public int getId() {
+        return id;
     }
 
-    public void setNid(int nid) {
-        this.nid = nid;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getFid() {
@@ -58,6 +56,6 @@ public class StringOnDiskMeta {
 
     @Override
     public String toString() {
-        return "String " + "[" + nid + ", " + fid + ", " + offset + ", " + length + ']';
+        return "String " + "[" + id + ", " + fid + ", " + offset + ", " + length + ']';
     }
 }

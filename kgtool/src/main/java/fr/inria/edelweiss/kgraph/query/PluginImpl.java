@@ -68,6 +68,7 @@ public class PluginImpl extends ProxyImpl {
     TreeNode cache;
     
     ExtendGraph ext;
+    private int index = 0;
    
 
     PluginImpl(Matcher m) {
@@ -140,6 +141,9 @@ public class PluginImpl extends ProxyImpl {
                 
             case STL_NUMBER:
                 return getValue(1 + env.count());
+                
+            case STL_INDEX:
+                return index(exp, env, p);
                 
             case APPLY_TEMPLATES_ALL:
             case APPLY_TEMPLATES:  
@@ -397,6 +401,9 @@ public class PluginImpl extends ProxyImpl {
             case STL_SET:
                 return set(exp, env, p, dt1, dt2);
                 
+            case STL_VGET:
+                return vget(exp, env, p, dt1, dt2);    
+                
            case STL_VISIT:
                 return visit(exp, env, p, dt1, dt2, null);
                 
@@ -465,6 +472,9 @@ public class PluginImpl extends ProxyImpl {
                 
             case STL_VISIT:
                 return visit(exp, env, p, dt1, dt2, dt3);
+                
+            case STL_VSET:
+                return vset(exp, env, p, dt1, dt2, dt3);        
 
         }
 
@@ -919,11 +929,25 @@ public class PluginImpl extends ProxyImpl {
         boolean b =  dt.equals(dt2);
         return getValue(b);
     }
+     
+     public IDatatype index(Expr exp, Environment env, Producer p){
+         return getValue(index++);
+     }
     
     public Object set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Transformer t = getTransformer(env, p); 
         t.set(dt1.getLabel(), dt2);
         return TRUE;
+    }
+    
+     public IDatatype vset(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
+        Transformer t = getTransformer(env, p); 
+        return t.vset(dt1, dt2, dt3);
+    }
+     
+      public IDatatype vget(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        Transformer t = getTransformer(env, p); 
+        return t.vget(dt1, dt2);       
     }
     
      public Object visited(Expr exp, Environment env, Producer p) {

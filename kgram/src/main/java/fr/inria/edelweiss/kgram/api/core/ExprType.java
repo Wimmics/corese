@@ -211,6 +211,9 @@ public interface ExprType {
  	public static int STL_VISIT                 = 265;
  	public static int STL_VISITED               = 266;
  	public static int STL_FUTURE                = 267;
+ 	public static int STL_INDEX                 = 268;
+ 	public static int STL_VSET                  = 269;
+ 	public static int STL_VGET                  = 270;
 
 	public static int ISSKOLEM 	= 300;
 	public static int SKOLEM 	= 301;

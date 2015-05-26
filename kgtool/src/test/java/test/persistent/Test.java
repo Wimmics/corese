@@ -1,6 +1,6 @@
 package test.persistent;
 
-import fr.inria.acacia.corese.storage.api.IStore;
+import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.fs.StringManager;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,7 +18,7 @@ import org.apache.commons.lang.RandomStringUtils;
  */
 public class Test {
 
-    private IStore manager;
+    private IStorage manager;
     private Map<Integer, String> literalsAll = new HashMap<Integer, String>();
     private int min, max;
     private int index = 1;

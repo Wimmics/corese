@@ -44,10 +44,9 @@ public class Processor {
         map = new HashMap();
         map.put("owl",      QUERY + "owl.rq");
         map.put("owlrl",    QUERY + "owlrl.rq");
-        map.put("sparql",   QUERY + "spintc.rq");
-        
-        map.put("turtle",   QUERY + "turtle.rq");
-//        map.put("sparql",   QUERY + "sparql.rq");
+        map.put("sparqltc", QUERY + "spintc.rq");        
+        map.put("sparql",   QUERY + "sparql.rq");        
+        map.put("mix",      QUERY + "mix.rq");
     }
         
     @POST
@@ -72,7 +71,7 @@ public class Processor {
             if (! url.isAbsolute()){
                 url = base.resolve(uri);
             }
-            if (serv.equals("sparql") || serv.equals("spin")){
+            if (serv.startsWith("sparql") || serv.equals("spin") || serv.equals("mix")){
                 g = loadSPARQL(url.toString());
             }
             else {

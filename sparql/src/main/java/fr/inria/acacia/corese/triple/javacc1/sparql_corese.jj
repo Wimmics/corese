@@ -616,19 +616,11 @@ void Template(Exp stack) :
        <RBRACKET>
       ) ? 
 
-  
+   
 	<LBRACE>
 	
 		( 		  
-                 (	exp = PrimaryExpression(stack)
-
-                  |
-
-                        exp = box(stack)
-			
-		  | 
-                        exp = group(stack)
-                 )
+                 exp = texp(stack)
 
                 { astq.addTemplate(exp); }
 		  
@@ -640,10 +632,23 @@ void Template(Exp stack) :
                 ) ?
 		
 	
-	<RBRACE>
-	
-	
+	<RBRACE>	
 }
+
+Expression texp (Exp stack) : { Expression exp; }
+{
+( 
+                        exp =  XML(stack)  
+                  |
+                	exp = PrimaryExpression(stack)
+                  |                       
+                        exp = box(stack)
+	          | 
+                        exp = group(stack)
+                 )
+{ return exp; }
+}
+
 
 Expression group(Exp stack) : 
 {  Expression box, exp, sep; ExpressionList list; }
@@ -654,9 +659,7 @@ Expression group(Exp stack) :
 		  		    
 	<LBRACE>  
                   ( 
-                    ( exp = PrimaryExpression(stack) 
-                    | exp = box(stack)
-                    )
+                    exp = texp(stack)
                     { list.add(exp); }
 		  ) * 
 		  			  
@@ -682,12 +685,8 @@ Expression box(Exp stack) :
       ( t = <BOX> | t = <IBOX> | t = <SBOX> )     { list = new ExpressionList(); }
 
       <LBRACE>  
-            ( 
-            (
-                  exp = PrimaryExpression(stack) 
-                | exp = group(stack)
-                | exp = box(stack)
-            )
+            (            
+            exp = texp(stack)            
             { list.add(exp); }
             ) *
       <RBRACE>
@@ -698,6 +697,44 @@ Expression box(Exp stack) :
       }
 }
 
+Expression XML(Exp stack) : 
+{  Expression box, exp, val, sep; ExpressionList list, attr; Token t; Constant uri, str;
+    ArrayList<ExpressionList> lattr = null;
+}
+{
+
+   <AT> uri = IRIrefConst()      { list = new ExpressionList(); }
+
+    (        
+        (<LPAREN> { lattr = new  ArrayList(); }
+            (
+                (<LPAREN> 
+                    str = RDFLiteral() val = PrimaryExpression(stack)
+                    { attr = new  ExpressionList(); attr.add(str); attr.add(val); 
+                      lattr.add(attr);
+                    }
+                 <RPAREN>) + 
+              |
+                str = RDFLiteral() val = PrimaryExpression(stack)
+                    { attr = new  ExpressionList(); attr.add(str); attr.add(val); 
+                      lattr.add(attr);
+                    }
+            )      
+        <RPAREN>)
+    )?
+
+      <LBRACE>  
+            ( 
+            exp = texp(stack)
+            { list.add(exp); }
+            ) *
+      <RBRACE>
+
+      { 
+        box = astq.createXML(uri, lattr, list); 
+        return box;
+      }
+}
 
 // ********************** END PP Template ******************************
 

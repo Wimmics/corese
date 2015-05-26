@@ -1,6 +1,6 @@
 package fr.inria.acacia.corese.storage.util;
 
-import fr.inria.acacia.corese.storage.api.IStore;
+import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.fs.StringManager;
 
@@ -19,9 +19,9 @@ public class StorageFactory {
      * @param params
      * @return
      */
-    public static IStore create(int type, Parameters params) {
+    public static IStorage create(int type, Parameters params) {
         switch (type) {
-            case IStore.STORAGE_FILE:
+            case IStorage.STORAGE_FILE:
                 return StringManager.create(params);
             default:
                 return StringManager.create();
@@ -34,7 +34,7 @@ public class StorageFactory {
      * @param type
      * @return 
      */
-    public static IStore create(int type) {
+    public static IStorage create(int type) {
         return create(type, null);
     }
 }

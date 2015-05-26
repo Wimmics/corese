@@ -1,7 +1,7 @@
 package fr.inria.acacia.corese.storage.fs;
 
 import fr.inria.acacia.corese.storage.cache.LRUCache;
-import fr.inria.acacia.corese.storage.api.IStore;
+import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.api.Parameters.type;
 import fr.inria.acacia.corese.storage.cache.ICache;
@@ -15,7 +15,7 @@ import java.util.Map;
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 janv. 2015 new
  */
-public final class StringManager implements IStore {
+public final class StringManager implements IStorage {
 
     private boolean enabled = true;
     private Map<Integer, StringMeta> stringsOnDisk = null;
@@ -129,7 +129,7 @@ public final class StringManager implements IStore {
 
     @Override
     public int getStorageType() {
-        return IStore.STORAGE_FILE;
+        return IStorage.STORAGE_FILE;
     }
 
     @Override

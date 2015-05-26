@@ -2,7 +2,7 @@ package fr.inria.acacia.corese.cg.datatype;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import fr.inria.acacia.corese.storage.api.IStore;
+import fr.inria.acacia.corese.storage.api.IStorage;
 
 /**
  * <p>Title: Corese</p>
@@ -39,7 +39,7 @@ public interface ICoresePolymorphDatatype {
 	
 	void setValue(String str);
         
-        void setValue(String str, int id, IStore pmgr);
+        void setValue(String str, int id, IStorage pmgr);
 	
 	void setValue(IDatatype dt);
 

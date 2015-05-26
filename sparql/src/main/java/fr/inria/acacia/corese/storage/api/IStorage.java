@@ -7,7 +7,7 @@ package fr.inria.acacia.corese.storage.api;
  * @author Fuqi Song, WImmics Inria I3S
  * @date 13 janv. 2015
  */
-public interface IStore {
+public interface IStorage {
 
     //public final static int STORAGE_RAM = 10;
     public final static int STORAGE_DB = 20;

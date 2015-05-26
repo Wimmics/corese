@@ -134,7 +134,9 @@ public class Processor {
 	static final String STL_ISSTART             = STL + "isStart"; 
 	static final String STL_SET                 = STL + "set"; 
 	static final String STL_GET                 = STL + "get"; 
-	static final String STL_VISIT               = STL + "visit"; 
+	static final String STL_VSET                = STL + "vset"; 
+	static final String STL_VGET                = STL + "vget"; 
+        static final String STL_VISIT               = STL + "visit"; 
 	static final String STL_VISITED             = STL + "visited"; 
 	static final String STL_BOOLEAN             = STL + "boolean"; 
         
@@ -144,6 +146,7 @@ public class Processor {
 	public static final String AGGAND           = STL + "agg_and";
 	public static final String STL_AND          = STL + "and";
 	public static final String STL_NUMBER       = STL + "number";
+	public static final String STL_INDEX        = STL + "index";
 	public static final String STL_FUTURE       = STL + "future";
         
 	public static final String FUN_NUMBER       = NSManager.STL_PREF + ":"  + "_n_";
@@ -152,6 +155,7 @@ public class Processor {
 	public static final String FUN_INDENT       = NSManager.STL_PREF + ":" + "indent"; 
 	public static final String FUN_CONCAT       = NSManager.STL_PREF + ":" + "concat"; 
 	public static final String FUN_GROUPCONCAT  = NSManager.STL_PREF + ":" + "group_concat"; 
+	public static final String FUN_TURTLE       = NSManager.STL_PREF + ":" + "turtle"; 
 
 	       
 	static final String QNAME 	= KGRAM + "qname"; 
@@ -523,12 +527,15 @@ public class Processor {
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
+		defoper(STL_INDEX,              ExprType.STL_INDEX);
 		defoper(STL_FUTURE,             ExprType.STL_FUTURE);
 		defoper(STL_LOAD,               ExprType.STL_LOAD);
 		defoper(STL_IMPORT,             ExprType.STL_IMPORT);
                 defoper(STL_ISSTART,            ExprType.STL_ISSTART);
                 defoper(STL_SET,                ExprType.STL_SET);
                 defoper(STL_GET,                ExprType.STL_GET);
+                defoper(STL_VSET,               ExprType.STL_VSET);
+                defoper(STL_VGET,               ExprType.STL_VGET);
                 defoper(STL_VISIT,              ExprType.STL_VISIT);
                 defoper(STL_VISITED,            ExprType.STL_VISITED);
                 defoper(STL_BOOLEAN,            ExprType.STL_BOOLEAN);

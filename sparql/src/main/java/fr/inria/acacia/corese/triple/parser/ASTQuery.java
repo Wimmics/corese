@@ -228,6 +228,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         
         private static String FUN_TEMPLATE_AGG      = Processor.FUN_GROUPCONCAT ;
         private static String FUN_TEMPLATE_CONCAT   = Processor.FUN_CONCAT ; 
+        private static String FUN_TURTLE            = Processor.FUN_TURTLE ; 
         
  	private static final String FUN_PROCESS = Processor.FUN_PROCESS;
         private static final String FUN_NL      = Processor.FUN_NL;
@@ -2785,6 +2786,34 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         el.add(0, t1);
         el.add(t2);
         return createFunction(createQName(FUN_TEMPLATE_CONCAT), el);
+    }
+    
+    public Term createXML(Constant cst, ArrayList<ExpressionList> lattr, ExpressionList el){
+        Term nl  = createFunction(createQName(FUN_NL));       
+        ExpressionList arg = new  ExpressionList();    
+        if (lattr == null){
+           arg.add(Constant.create("<" + cst.getName() + ">")); 
+        }
+        else {
+            arg.add(0, Constant.create("<" + cst.getName() + " "));
+            Constant eq = Constant.create("=");
+            Constant quote = Constant.create("'");
+            for (ExpressionList att : lattr){
+                arg.add(att.get(0));
+                arg.add(eq);
+                arg.add(quote);
+                arg.add(att.get(1));
+                arg.add(quote);
+            }
+            arg.add(Constant.create(">"));
+        }
+        arg.add(nl);
+        for (Expression ee : el){
+            arg.add(ee);
+        }
+        arg.add(nl);
+        arg.add(Constant.create("</" + cst.getName() + ">"));
+        return createFunction(createQName(FUN_TEMPLATE_CONCAT), arg);
     }
     
    /**

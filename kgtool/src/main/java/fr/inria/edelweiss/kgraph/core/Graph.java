@@ -28,9 +28,9 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.acacia.corese.persistent.api.IOperation;
-import fr.inria.acacia.corese.persistent.api.Parameters;
-import fr.inria.acacia.corese.persistent.api.PersistentFactory;
+import fr.inria.acacia.corese.storage.api.IStore;
+import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -147,7 +147,7 @@ public class Graph implements Graphable {
 
     private boolean hasList = false;
 
-    private IOperation persistentMgr;
+    private IStore storageMgr;
 
     static {
         setCompareIndex(true);
@@ -1914,8 +1914,9 @@ public class Graph implements Graphable {
     void indexNode(IDatatype dt, Node node) {
         index(dt, node);
 
-        if (persistentable(dt)) {
-            dt.setValue(dt.getLabel(), node.getIndex(), persistentMgr);
+        // save values to other medias other than RAM
+        if (storable(dt)) {
+            dt.setValue(dt.getLabel(), node.getIndex(), storageMgr);
         }
     }
 
@@ -1926,16 +1927,19 @@ public class Graph implements Graphable {
     }
 
     //check if store dt to file
-    boolean persistentable(IDatatype dt) {
+    boolean storable(IDatatype dt) {
 
-        boolean r = (persistentMgr != null) && persistentMgr.enabled() && (dt != null);
+        // check storage manager
+        boolean r = (storageMgr != null) && storageMgr.enabled() && (dt != null);
         if (!r) {
             return false;
         }
 
+        // check data type
         r &= DatatypeMap.persistentable(dt);
 
-        r &= persistentMgr.check(dt.getLabel());
+        // check string length
+        r &= storageMgr.check(dt.getLabel());
 
         return r;
     }
@@ -1945,17 +1949,17 @@ public class Graph implements Graphable {
     // Parameters params = Parameters.create();
     // params.add(Parameters.type.MAX_LIT_LEN, 128);
     // g.setPersistent(IOperation.STORAGE_FILE, params);
-    public void setPersistent(int type, Parameters params) {
-        persistentMgr = PersistentFactory.create(type, params);
-        persistentMgr.enable(true);
+    public void setStorage(int type, Parameters params) {
+        storageMgr = StorageFactory.create(type, params);
+        storageMgr.enable(true);
     }
 
-    public void setPersistent(int type) {
-        this.setPersistent(type, null);
+    public void setStorage(int type) {
+        this.setStorage(type, null);
     }
 
-    public IOperation getPersistent(){
-        return this.persistentMgr;
+    public IStore getStorageMgr(){
+        return this.storageMgr;
     }
     
     public Node getNode(int i) {
@@ -2348,8 +2352,8 @@ public class Graph implements Graphable {
         isUpdate = false;
         isDelete = false;
         size = 0;
-        if (persistentMgr != null) {
-            persistentMgr.clean();
+        if (storageMgr != null) {
+            storageMgr.clean();
         }
     }
 

@@ -2,7 +2,7 @@ package fr.inria.acacia.corese.cg.datatype;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import fr.inria.acacia.corese.persistent.api.IOperation;
+import fr.inria.acacia.corese.storage.api.IStore;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,8 +20,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
   static int code=STRING;
   private static Logger logger = Logger.getLogger(CoreseStringLiteral.class);
   
-  private int storageMode = IOperation.STORAGE_RAM;
-  private IOperation manager ;
+  private IStore manager ;
   private int id;
         
   public CoreseStringLiteral() {}
@@ -115,7 +114,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
   }
   
         @Override
-        public void setValue(String str, int nid, IOperation mgr){
+        public void setValue(String str, int nid, IStore mgr){
             if(str == null || str.isEmpty()) return;
             if(mgr == null){
                 this.setValue(str);
@@ -124,15 +123,13 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
             
             this.manager = mgr;
             this.id = nid;
-            
-            this.storageMode = manager.getStorageType();
             this.manager.write(this.id, str);
             this.value = "";
         }
 
         @Override
         public String getLabel(){
-            if(storageMode == IOperation.STORAGE_RAM || manager == null){
+            if(manager == null){
                	return value;
             }else{
                 String s = manager.read(this.id);

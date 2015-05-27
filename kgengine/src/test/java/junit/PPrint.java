@@ -69,6 +69,7 @@ public class PPrint {
                 translate(root + "template/spinhtml/template",  lib + "spinhtml.rul");
 		translate(root + "template/sql/template",   lib + "sql.rul");
 		translate(root + "template/owl/template",   lib + "owl.rul");
+		translate(root + "template/rdfxml",lib + "rdfxml.rul");
 		translate(root + "template/turtle/template",lib + "turtle.rul");
 		translate(root + "template/hash/template",  lib + "hash.rul");
 		translate(root + "template/hash2/template", lib + "hash2.rul");
@@ -90,10 +91,11 @@ public class PPrint {
                 
  		translate(root + "template/spintc/main",     lib + "spintc.rul");
  		translate(root + "template/spintc/template", lib + "spintcbody.rul");
+                               
+		translate(root + "template/turtlehtml/template", lib + "turtlehtml.rul");
+		translate(root + "template/turtlehtml/main", lib + "hturtle.rul");
                 
-                
-		translate(root + "template/turtlehtml/template",lib + "turtlehtml.rul");
-		translate(root + "template/turtlehtml/main",lib + "hturtle.rul");
+		translate(root + "template/mix", lib + "mix.rul");
                
                 
 		translate(root + "template/navlab",       lib + "navlab.rul");		

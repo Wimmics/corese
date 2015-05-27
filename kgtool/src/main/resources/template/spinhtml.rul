@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 30 16:03:39 CEST 2015
+Tue May 26 09:53:25 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -41,18 +41,47 @@ order by xsd:integer(substr(?p, 1 + strlen(sp:arg)))
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template st:start {
-
-  st:call-template-with(st:sparql, st:head)
-  st:call-template-with(st:sparql, st:banner)
-
-  "<h3>SPARQL</h3>"
-
+template st:sparql {
+   
   "\n<pre>\n"
 
   st:call-template(st:main)
   
   "\n</pre>\n"
+  
+}
+where {
+ 
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template st:start {
+
+  st:call-template-with(st:sparql, st:head)
+  st:call-template-with(st:sparql, st:banner)
+  st:call-template(st:next)
+
+  "<h3>SPARQL</h3>"
+  
+   st:call-template(st:button)
+   
+   st:call-template(st:sparql)
+    
+   st:call-template(st:button)
    st:call-template-with(st:sparql, st:tail)
 
 }
@@ -119,6 +148,19 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:button {
+
+  """<button type='button'  onClick='next(+1)'>next</button>"""
+  """<button type='button'  onClick='next(-1)'>prev</button>"""
+}
+where {}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # SPARQL-based RDF AST Pretty-printer
 # Olivier Corby, Wimmics Inria I3S, 2013
@@ -156,8 +198,9 @@ template st:profile(?in) {
     st:define(st:process(?in) =  
 	if (isBlank(?in), 
 	  if (st:visited(?in), 
-	    concat("<span class='fail'>", st:apply-templates(?in), "</span>"),
-	    st:apply-templates(?in)), 
+	    concat("<span class='fail'>",            st:apply-templates(?in), "</span>"),
+	    concat("<span id='id", st:vset(?in, st:id, st:index()), "'>", st:apply-templates(?in), "</span>")),
+#	    st:apply-templates(?in)), 
 	  if (strstarts(st:turtle(?in), "<"), 
 	    replace(st:turtle(?in), "<", "&lt;"),
 	    st:turtle(?in)))) 
@@ -165,6 +208,40 @@ template st:profile(?in) {
 }
 where {
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:next {
+ 
+  """<script>
+  var index = 0;
+  var fst = true;
+  
+  function next(n) {
+    if (fst){
+      document.getElementById("id" + index.toString()).className = "tag";
+      fst = false;
+    }
+    else {
+      document.getElementById("id" + index.toString()).className = "std";
+      index += n;
+      if (index < 0){
+        index = 0;
+        fst = true;
+      }
+      else {
+	document.getElementById("id" + index.toString()).className = "tag";
+      }
+    }
+  }
+  </script>"""
+  
+}
+where {}
 ]]>
 </body>
 </rule>

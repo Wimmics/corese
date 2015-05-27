@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 30 16:03:39 CEST 2015
+Tue May 26 09:53:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -82,7 +82,7 @@ where {
 #
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:main {
-  
+    
   if (?b, 
     st:call-template(st:result),
     st:apply-templates-with(st:turtlehtml))

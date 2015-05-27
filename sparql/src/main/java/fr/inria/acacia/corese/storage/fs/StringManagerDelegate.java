@@ -99,7 +99,8 @@ public class StringManagerDelegate {
             buffer.put(bytesLiteral);
         }
 
-        StringMeta meta = new StringMeta(id, fhWirte.getFid(), (int) offset, literal.length());
+        //StringMeta meta = new StringMeta(id, fhWirte.getFid(), (int) offset, literal.length());
+        StringMeta meta = new StringMeta(id, fhWirte.getFid(), (int) offset, bytesLiteral.length);
         return meta;
     }
 

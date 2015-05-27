@@ -21,7 +21,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
 
 public class TestKgram extends TestSuite
 {
-  static boolean displayResult = !true;
+  static boolean displayResult = true;
   
   static Graph qGraph;
   static NSManager nsm;
@@ -67,15 +67,15 @@ public class TestKgram extends TestSuite
     		 //displayResult =  true;
     		  for (int i = 0; i < 1; i++) {
                      // QueryProcess.setJoin(true);
-                      
+                   
                       
   suite.addTest(new CoreseTest2(true, "testQuery", corese,
-   "select  where { rdfs:domain rdfs:domain ?x} " +
-   "", 1));
+   "select ?y where { ?x rdf:type c:Person  ?x c:SomeRelation ?y " +
+        "filter(datatype(?y) = xsd:string)   filter(contains(?y,  'x')) }"
+          + "order by ?y" +
+   "", 19));
   
- suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select * where {?x ?p ?y optional{?y rdf:type ?class}" +
-        " filter (! bound(?class) && ! isLiteral(?y))}", 2));
+ 
 
 
                   }
@@ -2958,6 +2958,7 @@ query = "select   distinct ?t1 ?t2     where {"+
       suite.addTest(new CoreseTest2(true, "testQuery", corese,
       "select  where {?x c:isMemberOf ?org ?x rdf:type ?c } group by ?org", 13));
 
+      //TODO 1
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
            "select  distinct  ?n where {" +
            "?x c:FirstName ?n   ?y c:FirstName ?n  filter( ?x != ?y )} limit 200", 127));

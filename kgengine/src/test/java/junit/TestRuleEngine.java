@@ -110,6 +110,7 @@ public class TestRuleEngine {
                 + "graph ?pr { [] sp:predicate ?q }"
                 + "} order by ?q";
         
+    
         map = exec.query(qqq);
         
         assertEquals(19, map.size());
@@ -130,7 +131,7 @@ public class TestRuleEngine {
         
         map = exec.query(q5);
         
-        assertEquals(157, map.size());
+        assertEquals(159, map.size());
         
         String q6 = "select ?r  "
                 + "where { "
@@ -149,8 +150,25 @@ public class TestRuleEngine {
         assertEquals(4, map.size());
      }
         
-        
-        
+   
+         @Test 
+    public void testOWLRL2() throws LoadException, EngineException {
+        GraphStore g = GraphStore.create();
+        Load ld = Load.create(g);
+        ld.loadWE(data + "template/owl/data/primer.owl");
+        RuleEngine re = RuleEngine.create(g);
+        re.setProfile(RuleEngine.OWL_RL_LITE);
+        //re.process();
+        g.addEngine(re);
+        String q = "select * "
+                + "from kg:rule "
+                + "where { ?x ?p ?y }";
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+
+        assertEquals(371, map.size());
+    }
+
         @Test
         
         public void testRuleOptimization() throws LoadException, EngineException { 

@@ -15,8 +15,11 @@ import org.xml.sax.SAXException;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.storage.api.IStorage;
+import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.NSDatatypeMap;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -70,9 +73,10 @@ public class TestQuery1 {
     static String root = TestQuery1.class.getClassLoader().getResource("data").getPath() + "/";
     static String text = TestQuery1.class.getClassLoader().getResource("text").getPath() + "/";
     
-    private String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
-    private String FOAF_PREF = "prefix foaf: <http://xmlns.com/foaf/0.1/>\n";
-    private String SQL_PREF = "prefix sql: <http://ns.inria.fr/ast/sql#>\n";
+    private static final String FOAF = "http://xmlns.com/foaf/0.1/";
+    private static final String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
+    private static final String FOAF_PREF = "prefix foaf: <http://xmlns.com/foaf/0.1/>\n";
+    private static final String SQL_PREF = "prefix sql: <http://ns.inria.fr/ast/sql#>\n";
     
     static Graph graph;
 
@@ -87,7 +91,7 @@ public class TestQuery1 {
             Graph.setCompareIndex(true);
         }
         QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
-        QueryProcess.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
+       //QueryProcess.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
 
         graph = Graph.create(true);
         //graph.setOptimize(true);
@@ -117,6 +121,222 @@ public class TestQuery1 {
         ld.load(data + "comma/model.rdf");
         ld.load(data + "comma/data");
         return graph;
+    }
+    
+    
+    
+     @Test
+    public void myastpp() throws LoadException, EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String init = "insert data {"
+                + "<John> foaf:knows <Jim>, <Jack> "
+                + "graph st:test "
+                + "{"
+                + "<John> rdfs:label 'John' "
+                + ""
+                + "}"       
+                + "}";
+                                     
+        exec.query(init);
+        
+        Graph g = GraphStore.create();
+        QueryProcess exec2 = QueryProcess.create(g);
+        
+         String init2 = "insert data {"
+                + "<Jim>  foaf:knows <Jack>, <James> "
+                 + "<Jack> foaf:knows <Jesse>"
+                 + "<John> rdfs:label 'toto'"  
+                 
+                + "}";
+                                     
+        exec2.query(init2);
+        
+        graph.setNamedGraph(NSManager.STL + "sys", g);
+        
+        
+        String q = "select  * "
+                + "where {"
+                + "?x foaf:knows ?y "
+                + "graph st:sys {"
+                + "?y foaf:knows ?z, ?t "
+                + "filter  exists { ?u rdfs:label 'toto' }"
+                + "filter not exists { ?u rdfs:label 'tata' }"
+                + "}"
+                + "graph st:test { "
+                + "?x rdfs:label ?n "
+                + "filter exists { ?a rdfs:label 'John' }"
+                + "filter not exists { ?u rdfs:label 'tata' }"
+                + "}"
+                + "}";       
+        Mappings map = exec.query(q);
+                
+        assertEquals(5, map.size());
+
+    }
+     
+      @Test
+    public void myastpp2() throws LoadException, EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String init = "insert data {"
+                + "<John> foaf:knows <Jim>, <Jack> "
+                + "graph st:test "
+                + "{"
+                + "<John> rdfs:label 'John' "
+                + ""
+                + "}"       
+                + "}";
+                                     
+        exec.query(init);
+        
+        Graph g = GraphStore.create();
+        QueryProcess exec2 = QueryProcess.create(g);
+        
+         String init2 = "insert data {"
+                + "<Jim>  foaf:knows <Jack>, <James> "
+                 + "<Jack> foaf:knows <Jesse>"
+                 + "<John> rdfs:label 'toto'"  
+                 
+                + "}";
+                                     
+        exec2.query(init2);
+        
+        graph.setNamedGraph(NSManager.STL + "sys", g);
+        
+        
+        String q = "template {"
+                + "str(?res)"
+                + "}"
+                + "where {"
+                + "graph st:sys {"
+                + "bind (st:atw(st:turtle) as ?res)"
+                + "}"
+                + "}";       
+        Mappings map = exec.query(q);
+          System.out.println(map.getTemplateStringResult());
+        assertEquals(152, map.getTemplateStringResult().length());
+        
+
+    }
+      
+      
+       @Test
+    public void myastpp3() throws LoadException, EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String init = "insert data {"
+                + "<John> foaf:knows <Jim>, <Jack> "
+                + "graph st:test "
+                + "{"
+                + "<John> rdfs:label 'John' "
+                + ""
+                + "}"       
+                + "}";
+                                     
+        exec.query(init);
+        
+        Graph g = GraphStore.create();
+        QueryProcess exec2 = QueryProcess.create(g);
+        
+         String init2 = "insert data {"
+                + "<Jim>  foaf:knows <Jack>, <James> "
+                 + "<Jack> foaf:knows <Jesse>"
+                 + "<John> rdfs:label 'toto'"  
+                 
+                + "}";
+                                     
+        exec2.query(init2);
+        
+        graph.setNamedGraph(NSManager.STL + "sys", g);
+        
+        
+        String q = "template {"
+                + "str(?res)"
+                + "}"
+                + "where {"
+                + "graph st:sys {"
+                + "bind (st:atw('" + data + "template/test') as ?res)"
+                + "}"
+                + "}";       
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        assertEquals(map.getTemplateStringResult().length(), 0);
+        
+
+    } 
+      
+    Graph createGraph(){
+        Graph g = Graph.create();
+        Parameters p = Parameters.create();
+        p.add(Parameters.type.MAX_LIT_LEN, 2);
+        g.setStorage(IStorage.STORAGE_FILE, p);
+        return g;
+    }
+    
+    @Test
+    public void testgraph() throws EngineException{
+        Graph gs = createGraph();
+        
+        Node g = gs.addGraph(FOAF + "gg");
+        Node s = gs.addResource(FOAF + "John");
+        Node p = gs.addProperty(FOAF + "name");
+        Node o = gs.addLiteral("John");
+        
+        Node b = gs.addBlank();
+        Node q = gs.addProperty(FOAF + "knows");
+        Node l = gs.addLiteral("Jack");
+        
+        Node gg = gs.createNode(DatatypeMap.newResource(FOAF, "gg"));
+        Node ss = gs.createNode(DatatypeMap.newResource(FOAF, "Jim"));
+        Node pp = gs.createNode(DatatypeMap.newResource(FOAF, "age"));       
+        Node oo = gs.createNode(DatatypeMap.newInstance(10));
+        
+        IDatatype g2 = DatatypeMap.newResource(FOAF, "gg");
+        IDatatype s2 = DatatypeMap.newResource(FOAF, "James");
+        IDatatype p2 = DatatypeMap.newResource(FOAF, "age");       
+        IDatatype o2 = DatatypeMap.newInstance(10);
+        
+                
+        gs.addEdge(g, s, p, o);
+        gs.addEdge(g, s, q, b);
+        gs.addEdge(g, b, p, l);
+        gs.add(gg, ss, pp, oo);
+        gs.add(g2, s2, p2, o2);
+             
+        QueryProcess exec = QueryProcess.create(gs);
+        
+        String str = "select * where  { ?x ?p ?y ?y ?q ?z }";
+        
+        Mappings m1 = exec.query(str);
+        assertEquals(1, m1.size());
+        
+        String q2 = FOAF_PREF + 
+                "select * where {"
+                + "?x foaf:age ?y"
+                + "}";
+        
+       Mappings m2 = exec.query(q2);
+       assertEquals(2, m2.size()); 
+       
+       
+       String q3 = FOAF_PREF + 
+                "select * where {"
+                + "?x foaf:pp* ?y"
+                + "}";
+        
+       Mappings m3 = exec.query(q3);
+        System.out.println(m3);
+       assertEquals(7, m3.size());  
+       
+        System.out.println(NSDatatypeMap.createQName("kg:name").getLabel());
+        NSDatatypeMap.defPrefix("ex", "http://example.org/");
+        System.out.println(NSDatatypeMap.createQName("ex:John"));
+        System.out.println(NSDatatypeMap.createQName("foaf:name").getLabel());
+        
     }
     
     
@@ -265,9 +485,9 @@ public class TestQuery1 {
    @Test
     public void testExists() throws EngineException {
       
-      Graph g1 = Graph.create();
+      Graph g1 = createGraph();
       QueryProcess exec = QueryProcess.create(g1);
-        Graph g2 = Graph.create();
+        Graph g2 = createGraph();
       QueryProcess exec2 = QueryProcess.create(g2);
       String init1 = "insert data { "
               + "<John> rdfs:label 'John' "
@@ -320,7 +540,7 @@ public class TestQuery1 {
      @Test
     public void testQQS() throws EngineException {
       
-      Graph g = Graph.create();
+      Graph g = createGraph();
       QueryProcess exec = QueryProcess.create(g);
 
       String init = "insert data { "
@@ -352,30 +572,29 @@ public class TestQuery1 {
     @Test
        public void testGTT() throws LoadException, EngineException {
 
-            Graph g = Graph.create();
+            Graph g = createGraph();
             Load ld = Load.create(g);
             ld.load(RDF.RDF, Load.TURTLE_FORMAT);
             ld.load(RDFS.RDFS, Load.TURTLE_FORMAT);
             
             Transformer t = Transformer.create(g, Transformer.TURTLE, RDF.RDF);
             String str = t.transform();
-            //System.out.println(str);
-            assertEquals(3864, str.length());
+            assertEquals(3821, str.length());
             
             t = Transformer.create(g, Transformer.TURTLE, RDFS.RDFS);
             str = t.transform();
             //System.out.println(str);
-            assertEquals(3207, str.length());
+            assertEquals(3164, str.length());
             
              t = Transformer.create(g, Transformer.TURTLE);
             str = t.transform();
             //System.out.println(str);
-            assertEquals(6983, str.length());
+            assertEquals(6940, str.length());
        } 
     
     @Test
        public void testGT() throws LoadException, EngineException {
-            Graph g = Graph.create();
+            Graph g = createGraph();
             Load ld = Load.create(g);
             ld.load(RDF.RDF, Load.TURTLE_FORMAT);
             ld.load(RDFS.RDFS, Load.TURTLE_FORMAT);
@@ -388,17 +607,17 @@ public class TestQuery1 {
             Mappings map = exec.query(t1);
             String str = map.getTemplateStringResult(); 
             //System.out.println(str);
-            assertEquals(3864, str.length());
+            assertEquals(3821, str.length());
             
             map = exec.query(t2);
             str = map.getTemplateStringResult(); 
             //System.out.println(str);
-            assertEquals(3207, str.length());
+            assertEquals(3164, str.length());
             
             map = exec.query(t3);
             str = map.getTemplateStringResult(); 
             //System.out.println(str);
-            assertEquals(6983, str.length());
+            assertEquals(6940, str.length());
        } 
     
     
@@ -422,7 +641,7 @@ public class TestQuery1 {
     
     @Test
  public void testGCC() throws EngineException{
-      Graph g = Graph.create();
+      Graph g = createGraph();
       QueryProcess exec = QueryProcess.create(g);
         
       String init = "insert data {"
@@ -450,7 +669,7 @@ public class TestQuery1 {
       assertEquals(true, dt1.getDatatypeURI().equals(NSManager.XSD+"string"));
       
       IDatatype dt2 = (IDatatype) map.get(2).getValue("?g");
-      assertEquals(true, dt2.getLang().equals("fr"));
+      assertEquals(true, dt2.getLang()!=null && dt2.getLang().equals("fr"));
 
   }
     
@@ -463,14 +682,14 @@ public class TestQuery1 {
             
             Transformer pp = Transformer.create(g, Transformer.TRIG);
             String str = pp.transform();
-            assertEquals(10039, str.length());
+            assertEquals(9867, str.length());
 
             
        } 
     
     @Test
     public void testPPOWL() throws EngineException, LoadException {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         Load ld = Load.create(g);
         //System.out.println("Load");
         ld.load(data + "template/owl/data/primer.owl"); 
@@ -491,13 +710,13 @@ public class TestQuery1 {
 
          map = exec.query(t2);
          
-         assertEquals(6327, map.getTemplateResult().getLabel().length());
+         assertEquals(6284, map.getTemplateResult().getLabel().length());
         
     }
     
     @Test
     public void testPPSPIN() throws EngineException, LoadException {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         Load ld = Load.create(g);
         //System.out.println("Load");
         ld.load(data + "template/spin/data/"); 
@@ -509,7 +728,7 @@ public class TestQuery1 {
                    
          
          Mappings map = exec.query(t1);
-         assertEquals(2516, map.getTemplateResult().getLabel().length());       
+         assertEquals(2096, map.getTemplateResult().getLabel().length());       
         
     }
     
@@ -517,7 +736,7 @@ public class TestQuery1 {
     
      @Test
     public void testMove1() throws EngineException {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         String init =
@@ -582,7 +801,7 @@ public class TestQuery1 {
 
         
 
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         try {
@@ -602,7 +821,7 @@ public class TestQuery1 {
     public void testSDK() throws EngineException{
         QueryLoad ql = QueryLoad.create();
         String q = ql.read(data + "sdk/sdkst.rq");       
-        Graph g = Graph.create();
+        Graph g = createGraph();
         Load ld = Load.create(g);
         ld.load(data + "sdk/sdk.rdf");
         QueryProcess exec = QueryProcess.create(g);
@@ -631,7 +850,7 @@ public class TestQuery1 {
       @Test
     public void testLoadJSONLD() {
 
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.load(data + "jsonld");
@@ -690,7 +909,7 @@ public class TestQuery1 {
      @Test
     public void testDescr() {
 
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
                     
         String q =
@@ -717,7 +936,7 @@ public class TestQuery1 {
      @Test
     public void testRDFa() {
 
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.load(data + "rdfa");
@@ -933,7 +1152,7 @@ public class TestQuery1 {
         String init = FOAF_PREF 
                 + "insert data { <John> foaf:knows <Jim>, <James> }";
         
-        Graph g = Graph.create();
+        Graph g = createGraph();
         g.setTuple(true);
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
@@ -964,7 +1183,7 @@ public class TestQuery1 {
     
     @Test
      public void testTurtle() throws EngineException {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         String init =
                 "prefix foaf:    <http://xmlns.com/foaf/0.1/> "+
@@ -1005,7 +1224,7 @@ public class TestQuery1 {
     
      @Test
      public void testQV() {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         Load ld = Load.create(g);
         QueryProcess exec = QueryProcess.create(g);
         
@@ -1043,7 +1262,7 @@ public class TestQuery1 {
     
     
      public void testSpinQueryGraph() {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         Load ld = Load.create(g);
         QueryLoad ql = QueryLoad.create();
         String q = ql.read(data + "work/test.rq");
@@ -1057,7 +1276,7 @@ public class TestQuery1 {
             ////System.out.println(sp.toSpin(q));
             Graph qg = sp.toSpinGraph(q);
             
-            Graph tg = Graph.create();
+            Graph tg = createGraph();
             sp2.toSpinGraph(t, tg);
             sp2.toSpinGraph(q, tg);
 
@@ -1094,7 +1313,7 @@ public class TestQuery1 {
     
     @Test
     public void testQM() {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryManager man = QueryManager.create(g);
         QueryProcess exec = QueryProcess.create(g);
         String init = "prefix foaf:    <http://xmlns.com/foaf/0.1/> "+ 
@@ -1177,7 +1396,7 @@ public class TestQuery1 {
    @Test
      public void testDistType() {
         Graph g1 = Graph.create(true);
-        Graph g2 = Graph.create();
+        Graph g2 = createGraph();
 
         QueryProcess e1 = QueryProcess.create(g1);
         e1.add(g2);
@@ -1373,7 +1592,7 @@ public class TestQuery1 {
                 + "}"
                 + "values ?a { 21 21.0}";
 
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         exec.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
 
@@ -1418,7 +1637,7 @@ public class TestQuery1 {
                 + "filter(?x < ?y) "
                 + "}";
 
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         try {
@@ -1434,9 +1653,9 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    //@Test
     public void testMath() {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         Load ld = Load.create(g);
 
         try {
@@ -1469,7 +1688,7 @@ public class TestQuery1 {
 
     //@Test
     public void testPPrint() {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         Load ld = Load.create(g);
 
         ld.load(root + "pprint/data/");
@@ -1494,7 +1713,7 @@ public class TestQuery1 {
         str = nsm.toString() + "\n" + str;
 
         InputStream io = new ByteArrayInputStream(str.getBytes());
-        Graph gg = Graph.create();
+        Graph gg = createGraph();
         Load ll = Load.create(gg);
         try {
             ll.load(io, "test.ttl");
@@ -1510,7 +1729,7 @@ public class TestQuery1 {
     @Test
     public void testGC() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -2426,7 +2645,7 @@ public class TestQuery1 {
     @Test
     public void test33() {
         // select (group_concat(distinct ?x, ?y) as ?str)
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         String update = "insert data {"
@@ -2454,7 +2673,7 @@ public class TestQuery1 {
     @Test
     public void test34() {
         // select (group_concat(distinct ?x, ?y) as ?str)
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         String update = "insert data {"
@@ -2483,7 +2702,7 @@ public class TestQuery1 {
     @Test
     public void test35() {
         // select (group_concat(distinct ?x, ?y) as ?str)
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         String update = "insert data {"
@@ -2512,7 +2731,7 @@ public class TestQuery1 {
     @Test
     public void test36() {
         // select (group_concat(distinct ?x, ?y) as ?str)
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         String update = "insert data {"
@@ -2578,7 +2797,7 @@ public class TestQuery1 {
 
     @Test
     public void test38() {
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init = "insert data {"
@@ -2609,7 +2828,7 @@ public class TestQuery1 {
 
     @Test
     public void test39() {
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -2978,7 +3197,7 @@ public class TestQuery1 {
     @Test
     public void test47() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3022,7 +3241,7 @@ public class TestQuery1 {
     @Test
     public void test49() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3076,7 +3295,7 @@ public class TestQuery1 {
     @Test
     public void test50() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3110,7 +3329,7 @@ public class TestQuery1 {
     @Test
     public void test51() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3143,7 +3362,7 @@ public class TestQuery1 {
     @Test
     public void test52() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3203,7 +3422,7 @@ public class TestQuery1 {
                 + "graph ?g {?s <name> ?o} "
                 + "?s <age> ?a"
                 + "}";
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
 
         Node g = graph.addGraph("test");
         Node s = graph.addResource("URIJohn");
@@ -3300,7 +3519,7 @@ public class TestQuery1 {
 
     @Test
     public void test56() {
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
         //exec.setOptimize(true);
 
@@ -3329,7 +3548,7 @@ public class TestQuery1 {
 
     @Test
     public void test57() {
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess.definePrefix("e", "htp://example.org/");
         QueryProcess exec = QueryProcess.create(graph);
 
@@ -3389,7 +3608,7 @@ public class TestQuery1 {
     @Test
     public void test58() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init = "insert data {"
@@ -3419,7 +3638,7 @@ public class TestQuery1 {
     @Test
     public void test59() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init = "insert data {"
@@ -3462,7 +3681,7 @@ public class TestQuery1 {
     @Test
     public void test62() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3494,7 +3713,7 @@ public class TestQuery1 {
     @Test
     public void test63() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3581,7 +3800,7 @@ public class TestQuery1 {
 
     @Test
     public void test65() {
-        Graph g = Graph.create();
+        Graph g = createGraph();
 
         Load ld = Load.create(g);
 
@@ -3664,7 +3883,7 @@ public class TestQuery1 {
     @Test
     public void testQueryGraph() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3703,7 +3922,7 @@ public class TestQuery1 {
 
             assertEquals("Results", 4, map.size());
 
-            Graph g2 = Graph.create();
+            Graph g2 = createGraph();
             QueryProcess exec2 = QueryProcess.create(g2);
             exec2.query(init2);
 
@@ -3726,7 +3945,7 @@ public class TestQuery1 {
     @Test
     public void testOption() {
 
-        Graph graph = Graph.create();
+        Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
 
         String init =
@@ -3767,7 +3986,7 @@ public class TestQuery1 {
 
     @Test
     public void testWF() {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         QueryEngine qe = QueryEngine.create(g);
@@ -3813,7 +4032,7 @@ public class TestQuery1 {
 
     @Test
     public void testCompile() {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
 
         String query =

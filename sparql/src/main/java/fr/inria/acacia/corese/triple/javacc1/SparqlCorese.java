@@ -1336,11 +1336,11 @@
   }
 
   final public Expression XML(Exp stack) throws ParseException {
-   Expression box, exp, val, sep; ExpressionList list, attr; Token t; Constant uri, str;
+   Expression box, exp, val, sep; ExpressionList list, attr; Token t; Constant uri = null, str;
     ArrayList<ExpressionList> lattr = null;
     jj_consume_token(AT);
     uri = IRIrefConst();
-                                   list = new ExpressionList();
+  list = new ExpressionList();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LPAREN:
       jj_consume_token(LPAREN);
@@ -7215,11 +7215,6 @@
     return false;
   }
 
-  final private boolean jj_3R_97() {
-    if (jj_scan_token(WHERE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_70() {
     if (jj_scan_token(LPAREN)) return true;
     Token xsp;
@@ -7233,13 +7228,18 @@
     return false;
   }
 
-  final private boolean jj_3R_96() {
-    if (jj_scan_token(DATA)) return true;
+  final private boolean jj_3R_97() {
+    if (jj_scan_token(WHERE)) return true;
     return false;
   }
 
   final private boolean jj_3R_68() {
     if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_96() {
+    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -7279,6 +7279,11 @@
     return false;
   }
 
+  final private boolean jj_3R_67() {
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_72() {
     if (jj_scan_token(DELETE)) return true;
     Token xsp;
@@ -7287,11 +7292,6 @@
     jj_scanpos = xsp;
     if (jj_3R_97()) return true;
     }
-    return false;
-  }
-
-  final private boolean jj_3R_67() {
-    if (jj_scan_token(INTEGER)) return true;
     return false;
   }
 
@@ -7333,12 +7333,6 @@
     return false;
   }
 
-  final private boolean jj_3R_71() {
-    if (jj_scan_token(INSERT)) return true;
-    if (jj_scan_token(DATA)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_85() {
     if (jj_3R_73()) return true;
     if (jj_3R_70()) return true;
@@ -7347,6 +7341,12 @@
 
   final private boolean jj_3R_265() {
     if (jj_3R_73()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_71() {
+    if (jj_scan_token(INSERT)) return true;
+    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -7360,22 +7360,22 @@
     return false;
   }
 
-  final private boolean jj_3R_48() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_71()) {
-    jj_scanpos = xsp;
-    if (jj_3R_72()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_264() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_265()) {
     jj_scanpos = xsp;
     if (jj_3R_266()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_48() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_71()) {
+    jj_scanpos = xsp;
+    if (jj_3R_72()) return true;
     }
     return false;
   }
@@ -7405,11 +7405,6 @@
     return false;
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_48()) return true;
-    return false;
-  }
-
   final private boolean jj_3_4() {
     if (jj_3R_52()) return true;
     return false;
@@ -7417,6 +7412,11 @@
 
   final private boolean jj_3_3() {
     if (jj_3R_51()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_48()) return true;
     return false;
   }
 

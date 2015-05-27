@@ -698,12 +698,15 @@ Expression box(Exp stack) :
 }
 
 Expression XML(Exp stack) : 
-{  Expression box, exp, val, sep; ExpressionList list, attr; Token t; Constant uri, str;
+{  Expression box, exp, val, sep; ExpressionList list, attr; Token t; Constant uri = null, str;
     ArrayList<ExpressionList> lattr = null;
 }
 {
 
-   <AT> uri = IRIrefConst()      { list = new ExpressionList(); }
+   <AT> uri = IRIrefConst()      
+ //  <AT> (t = <SIMPLE_STRING> | t = <QNAME>)  {uri = astq.createConstant(t.image);}
+
+{ list = new ExpressionList(); }
 
     (        
         (<LPAREN> { lattr = new  ArrayList(); }

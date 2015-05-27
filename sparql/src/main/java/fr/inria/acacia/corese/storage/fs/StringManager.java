@@ -72,11 +72,13 @@ public final class StringManager implements IStorage {
     public final String read(int id) {
         if (this.cache.containsKey(id)) {
             return this.cache.get(id);
-        } else {
+        } else if(this.stringsOnDisk.containsKey(id)){
             StringMeta meta = this.stringsOnDisk.get(id);
             String literal = delegate.read(meta);
             this.cache.put(id, literal);
             return delegate.read(meta);
+        }else{
+            return null;
         }
     }
 
@@ -118,6 +120,8 @@ public final class StringManager implements IStorage {
 
     @Override
     public void clean() {
+        stringsToDelete.clear();
+        stringsOnDisk.clear();
         cache.clear();
         delegate.clean();
     }

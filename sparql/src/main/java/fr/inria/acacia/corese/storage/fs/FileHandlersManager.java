@@ -53,6 +53,7 @@ public class FileHandlersManager extends LRUCache<Integer, FileHandler> {
             v.close();
         }
         super.clear();
+        createNewFile();//create a file handler for writing
     }
 
     @Override

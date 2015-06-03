@@ -60,6 +60,8 @@ public interface Proxy {
 	
 	// apply sum(?x) over env mappings
 	Object aggregate(Expr exp, Environment env, Producer p, Node qNode);
+        
+        Expr decode(Expr exp, Environment env, Producer p);
 
 	// type operators <=:
 	void setPlugin(Proxy p);

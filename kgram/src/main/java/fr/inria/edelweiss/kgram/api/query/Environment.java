@@ -7,6 +7,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.path.Path;
@@ -141,4 +142,6 @@ public interface Environment {
         Node[] getNodes();
 	
         Node[] getQueryNodes();
+        
+        Mappings getMappings();
 }

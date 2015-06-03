@@ -43,8 +43,8 @@ public class ProxyImpl implements Proxy, ExprType {
 
     private static final String URN_UUID = "urn:uuid:";
     private static Logger logger = Logger.getLogger(ProxyImpl.class);
-    protected static IDatatype TRUE = DatatypeMap.TRUE;
-    protected static IDatatype FALSE = DatatypeMap.FALSE;
+    public static IDatatype TRUE = DatatypeMap.TRUE;
+    public static IDatatype FALSE = DatatypeMap.FALSE;
     static final String UTF8 = "UTF-8";
     public static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String RDFTYPE = RDFNS + "type";
@@ -918,6 +918,7 @@ public class ProxyImpl implements Proxy, ExprType {
      * sum(?x)
      */
     public Object aggregate(Expr exp, Environment env, Producer p, Node qNode) {
+        exp = decode(exp, env, p);
         Walker walk = new Walker(exp, qNode, this, env, p);
 
         // apply the aggregate on current group Mapping, 
@@ -925,6 +926,14 @@ public class ProxyImpl implements Proxy, ExprType {
 
         Object res = walk.getResult();
         return res;
+    }
+    
+    public Expr decode (Expr exp, Environment env, Producer p){
+        switch (exp.oper()){
+            case STL_AGGREGATE:
+                return plugin.decode(exp, env, p);
+        }
+        return exp;       
     }
 
     Processor getProcessor(Expr exp) {

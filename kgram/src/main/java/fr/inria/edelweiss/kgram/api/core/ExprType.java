@@ -214,7 +214,8 @@ public interface ExprType {
  	public static int STL_INDEX                 = 268;
  	public static int STL_VSET                  = 269;
  	public static int STL_VGET                  = 270;
-
+ 	public static int STL_PROCESS_URI           = 271;
+              
 	public static int ISSKOLEM 	= 300;
 	public static int SKOLEM 	= 301;
 

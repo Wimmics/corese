@@ -953,6 +953,10 @@ public class Memory implements Environment {
 		if (group != null) return group;
 		else return results;
 	}
+        
+        public Mappings getMappings(){
+            return current();
+        }
 	
 	
 	public int pathLength(Node qNode){

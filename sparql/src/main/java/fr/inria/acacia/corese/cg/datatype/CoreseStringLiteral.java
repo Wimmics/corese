@@ -121,9 +121,9 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
                 return;
             }
             
-            this.manager = mgr;
+            this.setManager(mgr);
             this.id = nid;
-            this.manager.write(this.id, str);
+            manager.write(this.id, str);
             this.value = "";
         }
 
@@ -140,4 +140,18 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
                 return s;
             }
 	}
+
+    /**
+     * @return the manager
+     */
+    public IStorage getManager() {
+        return manager;
+    }
+
+    /**
+     * @param manager the manager to set
+     */
+    public void setManager(IStorage manager) {
+        this.manager = manager;
+    }
 }

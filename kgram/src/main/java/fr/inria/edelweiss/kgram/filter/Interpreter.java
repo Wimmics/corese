@@ -304,6 +304,7 @@ public class Interpreter implements Evaluator, ExprType {
             case GROUPCONCAT:
             case STL_GROUPCONCAT:
             case AGGAND:
+            case STL_AGGREGATE:
                 return aggregate(exp, env, p);
 
             case SYSTEM:

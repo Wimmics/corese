@@ -14,12 +14,12 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_AGGREGATE;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_DEFAULT;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_PROCESS;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_IMPORT;
@@ -183,8 +183,9 @@ public class Loader {
             
             Filter fp = qprofile.getFilter(STL_PROCESS);
             Filter fd = qprofile.getFilter(STL_DEFAULT);
+            Filter fa = qprofile.getFilter(STL_AGGREGATE);
             
-            if (fp != null || fd != null) {
+            if (fp != null || fd != null || fa != null) {
                 // set the definition of st:process() in the templates
                 for (Query t : qe.getTemplates()) {
                     t.setTemplateProfile(qprofile);
@@ -307,6 +308,12 @@ public class Loader {
                 // set st:define st:process operation               
                 q.setFilter(STL_PROCESS, exp.getFilter());
                 break;
+                
+             case ExprType.STL_AGGREGATE:
+                // ee = st:uri()
+                // set st:define st:process operation               
+                q.setFilter(STL_AGGREGATE, exp.getFilter());
+                break;    
                 
             case ExprType.STL_DEFAULT:
                 q.setFilter(STL_DEFAULT, ee.getFilter());                

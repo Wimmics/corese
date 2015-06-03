@@ -59,6 +59,7 @@ public class Transformer  {
     public static final String SPIN         = STL + "spin";
     public static final String TOSPIN       = STL + "tospin";
     public static final String OWL          = STL + "owl";
+    public static final String OWLRL        = STL + "owlrl";   
     public static final String TURTLE       = STL + "turtle";
     public static final String RDFXML       = STL + "rdfxml";
     public static final String TRIG         = STL + "trig";
@@ -72,10 +73,11 @@ public class Transformer  {
     public static final String STL_PROFILE  = STL + "profile";
     public static final String STL_START    = STL + "start";
     public static final String STL_TRACE    = STL + "trace";
-    public static final String STL_DEFAULT  = STL + "default";   
-    private static final String STL_TURTLE  = STL + "turtle";   
+    public static final String STL_DEFAULT  = Processor.STL_DEFAULT;   
+    //private static final String STL_TURTLE  = STL + "turtle";   
     public static final String STL_IMPORT   = STL + "import";   
-    public static final String STL_PROCESS  = STL + "process";   
+    public static final String STL_PROCESS  = Processor.STL_PROCESS;   
+    public static final String STL_AGGREGATE  = Processor.STL_AGGREGATE;   
     public static final String STL_TRANSFORM = Context.STL_TRANSFORM;
     // default
     public static final String PPRINTER = TURTLE;
@@ -121,7 +123,9 @@ public class Transformer  {
     private boolean isOptimize = isOptimizeDefault;
     
     // st:process() of template variable, may be overloaded
-    private int process = ExprType.TURTLE;
+    private int process   = ExprType.TURTLE;
+    private int aggregate = ExprType.STL_GROUPCONCAT;
+    private int defAggregate = ExprType.STL_GROUPCONCAT;
     // st:default() process of template variable, may be overloaded
     // used when all templates fail
     // default is: return RDF term as is (effect is like xsd:string)
@@ -493,6 +497,10 @@ public class Transformer  {
     
     public int getProcess(){
         return process;
+    }
+    
+     public int getAggregate(){
+        return aggregate;
     }
     
     public Expr getProcessExp(){
@@ -895,7 +903,12 @@ public class Transformer  {
      * st:apply-all-templates(?x ; separator = sep)
      */
     IDatatype result(List<IDatatype> result, String sep) {
-        return stringResult(result, sep);
+        if (defAggregate == ExprType.AGGAND){
+            return booleanResult(result);
+        }
+        else {
+             return stringResult(result, sep);
+        }
     }
         
         
@@ -947,6 +960,7 @@ public class Transformer  {
         if (isError){
             return DatatypeMap.FALSE;
         }
+               
         return (and) ? DatatypeMap.TRUE  :DatatypeMap.FALSE;
     }
     
@@ -986,6 +1000,7 @@ public class Transformer  {
      * Default display when all templates fail
      */
     IDatatype display(IDatatype dt, Query q) {
+        //exec.getEvaluator().eval
         if (q != null) {
             Expr exp = q.getProfile(STL_DEFAULT);
             if (exp != null) {
@@ -1095,6 +1110,14 @@ public class Transformer  {
        }
        load.profile(qe, qe);
        setHasDefault(qe.getTemplate(STL_DEFAULT) != null);
+       
+       Query profile = qe.getTemplate(STL_PROFILE);
+       if (profile != null){
+           Expr exp = profile.getProfile(STL_AGGREGATE);
+           if (exp != null){
+               defAggregate = exp.getExp(1).oper();
+           }                  
+       }
        qe.sort();
    }
    

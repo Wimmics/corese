@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue May 26 09:53:25 CEST 2015
+Thu Jun 04 08:43:49 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -38,14 +38,14 @@ where {
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template st:html {
-  st:call-template-with(st:sparql, st:head)
-  st:call-template-with(st:sparql, st:banner)
+  st:call-template-with(st:server, st:head)
+  
   "<h3>OWL Functional Syntax</h3>"
   "<pre>"
   st:call-template(st:start)
   "</pre>"
   
-  st:call-template-with(st:sparql, st:tail)
+  st:call-template-with(st:server, st:tail)
 }
 where {
      bind(st:set(st:html, true) as ?ctx) 

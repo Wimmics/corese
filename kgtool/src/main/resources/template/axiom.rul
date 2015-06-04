@@ -2,10 +2,24 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue May 26 09:53:26 CEST 2015
+Thu Jun 04 08:43:49 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+  st:define (st:aggregate(?x) = st:agg_and(?x))
+
+}
+where {
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[

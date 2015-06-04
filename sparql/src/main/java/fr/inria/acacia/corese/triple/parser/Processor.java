@@ -98,8 +98,10 @@ public class Processor {
 	static final String EVAL 		= KGRAM + "eval";
         static final String PROLOG 		= KGRAM + "prolog";
 
-	static final String STL_DEFAULT             = STL + "default"; 
-	static final String STL_PROCESS             = STL + "process"; 
+	public static final String STL_AGGREGATE    = STL + "aggregate"; 
+	public static final String STL_DEFAULT      = STL + "default"; 
+	public static final String STL_PROCESS      = STL + "process"; 
+	public static final String STL_PROCESS_URI  = STL + "processURI"; 
         static final String FOCUS_NODE              = STL + "getFocusNode";
         
         static final String APPLY_TEMPLATES         = STL + "apply-templates";
@@ -143,7 +145,7 @@ public class Processor {
 	public static final String STL_GROUPCONCAT  = STL + "group_concat"; 
 	public static final String STL_CONCAT       = STL + "concat"; 
 	public static final String STL_NL           = STL + "nl"; 
-	public static final String AGGAND           = STL + "agg_and";
+	public static final String STL_AGGAND       = STL + "agg_and";
 	public static final String STL_AND          = STL + "and";
 	public static final String STL_NUMBER       = STL + "number";
 	public static final String STL_INDEX        = STL + "index";
@@ -152,9 +154,11 @@ public class Processor {
 	public static final String FUN_NUMBER       = NSManager.STL_PREF + ":"  + "_n_";
 	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
         public static final String FUN_PROCESS      = NSManager.STL_PREF + ":" + "process"; 
+        public static final String FUN_PROCESS_URI  = NSManager.STL_PREF + ":" + "processURI"; 
 	public static final String FUN_INDENT       = NSManager.STL_PREF + ":" + "indent"; 
 	public static final String FUN_CONCAT       = NSManager.STL_PREF + ":" + "concat"; 
 	public static final String FUN_GROUPCONCAT  = NSManager.STL_PREF + ":" + "group_concat"; 
+	public static final String FUN_AGGREGATE    = NSManager.STL_PREF + ":" + "aggregate"; 
 	public static final String FUN_TURTLE       = NSManager.STL_PREF + ":" + "turtle"; 
 
 	       
@@ -238,7 +242,8 @@ public class Processor {
 	
 	
         public static final String[] aggregate = 
-	{AVG, COUNT, SUM, MIN, MAX, GROUPCONCAT, STL_GROUPCONCAT, SAMPLE, AGGAND};
+	{AVG, COUNT, SUM, MIN, MAX, SAMPLE, 
+         GROUPCONCAT, STL_GROUPCONCAT, STL_AGGAND, STL_AGGREGATE};
 	
 	Term term;
 	List<Expr> lExp;
@@ -441,7 +446,7 @@ public class Processor {
 		defoper(COALESCE, 	ExprType.COALESCE);
 		defoper(IF, 		ExprType.IF);
 		defoper(GROUPCONCAT,    ExprType.GROUPCONCAT);
-		defoper(AGGAND,         ExprType.AGGAND);
+		defoper(STL_AGGAND,         ExprType.AGGAND);
 		defoper(STL_AND,        ExprType.STL_AND);
 		defoper(SAMPLE, 	ExprType.SAMPLE);
 		defoper(LIST, 		ExprType.LIST);
@@ -516,6 +521,7 @@ public class Processor {
 		defoper(APPLY_ALL_TEMPLATES_WITH,ExprType.APPLY_TEMPLATES_WITH_ALL);
                 
                 defoper(STL_PROCESS,            ExprType.STL_PROCESS);
+                defoper(STL_PROCESS_URI,        ExprType.STL_PROCESS_URI);
 		defoper(STL_TURTLE,             ExprType.TURTLE);
                 defoper(STL_URI,                ExprType.PPURI);
                 defoper(STL_PROLOG,             ExprType.PROLOG);
@@ -550,7 +556,8 @@ public class Processor {
 		defoper(STL_DEFINE,     ExprType.STL_DEFINE);
                 defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
-                defoper(STL_GROUPCONCAT,     ExprType.STL_GROUPCONCAT);
+                defoper(STL_GROUPCONCAT, ExprType.STL_GROUPCONCAT);
+                defoper(STL_AGGREGATE,   ExprType.STL_AGGREGATE);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

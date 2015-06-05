@@ -1,0 +1,26 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+   ?label "(" 
+      st:call-template(sql:comma, ?args)
+   ")"
+}
+where {
+	?in a ?function ;
+	    sql:args ?args
+}
+values (?function ?label) {
+	(sql:Min   "MIN")
+	(sql:Max   "MAX")
+	(sql:Avg   "AVG")
+	(sql:Last  "LAST")
+	(sql:First "FIRST")
+	(sql:Count "COUNT")
+	(sql:Sum   "SUM")
+	(sql:len   "LEN")
+	(sql:Upper "UPPER")
+	(sql:Lower "LOWER")
+}
+
+
+

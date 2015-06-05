@@ -1,0 +1,9 @@
+template {
+  if (bound(?t), "DataHasValue", "ObjectHasValue") 
+  "(" ?y " " ?v ")"  
+}
+where {
+  ?in owl:hasValue ?v ;
+    owl:onProperty ?y .
+    optional { ?y a owl:DatatypeProperty, ?t }
+}

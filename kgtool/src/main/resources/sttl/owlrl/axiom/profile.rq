@@ -1,0 +1,7 @@
+template st:profile {
+
+  st:define (st:aggregate(?x) = st:agg_and(?x))
+
+}
+where {
+}

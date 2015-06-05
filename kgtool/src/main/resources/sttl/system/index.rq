@@ -1,0 +1,22 @@
+template st:index {
+"""
+<h3>Index """ ?i """</h3> 
+<table>
+<tr><th></th><th>Property</th><th>Cardinality</th></tr>
+"""
+
+  group { 
+    "<tr><th>" st:number() "</th><td>" 
+    st:call-template(st:esc, ?p) 
+    "</td><td>" ?v "</td></tr>\n" 
+  }
+  
+"</table>"
+}
+where {
+  graph eng:describe {
+    ?id a kg:Index ; kg:index ?i ;
+    kg:item [ rdf:predicate ?p ; rdf:value ?v ]
+  }
+}
+group by ?i

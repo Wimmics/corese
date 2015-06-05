@@ -1,0 +1,12 @@
+template st:content2(?t, ?p) {
+
+  str(?t) "<br/>"    group distinct { "<a href='" str(?d) "'>" str(?d) "</a>" ; separator="<br/>"} "<br/>"
+ 
+}
+where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    ?ds a st:Dataset
+    ?ds ?p [ st:uri ?d ]
+  }
+}

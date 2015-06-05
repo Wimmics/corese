@@ -1,0 +1,17 @@
+#
+# SPARQL SPIN Transformation
+# RDF Graph is a SPIN Graph
+# Transformation generates SPIN and SPARQL
+# Olivier Corby - Wimmics Inria I3S - 2014
+#
+template st:start {
+
+  st:call-template-with(st:server, st:head)
+  
+  st:call-template(st:page)
+  
+  st:call-template-with(st:server, st:tail)
+
+}
+where {
+}

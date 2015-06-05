@@ -1,0 +1,15 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+prefix tt: </user/corby/home/AData/template/turtlehtml/>
+template {
+    st:apply-templates-with(tt:template)
+}
+where {
+     filter(st:visit(st:start, st:trace))      
+     filter(st:visit(st:trace, st:default, false))
+     filter(st:visit(st:trace, st:fail, true))
+          
+     bind (st:apply-templates-with(orl:main)
+     as ?res)    
+}
+
+

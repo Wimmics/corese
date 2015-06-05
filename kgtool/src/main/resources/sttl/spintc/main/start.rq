@@ -1,0 +1,13 @@
+#
+#
+# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
+#
+prefix tc: </user/corby/home/AData/template/spintc/>
+
+template st:start {
+  st:boolean(st:apply-templates-with-all(st:spintcbody))
+}
+where {
+}
+
+

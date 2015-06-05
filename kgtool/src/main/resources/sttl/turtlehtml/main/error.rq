@@ -1,0 +1,17 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:error {
+  if (bound(?c), concat(?c, " errors"), "") 
+}
+where {
+
+  select (count(*) as ?c)
+  where {
+    bind(kg:unnest(st:visited()) as ?x)
+  }
+  having (?c > 0)
+  
+}
+

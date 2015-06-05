@@ -1,0 +1,15 @@
+#
+#  Get an optional icon from the dataset and display it
+#
+template st:show(?x) {
+    "<img width='35' src='"  str(?l)   "' />" 
+#    st:call-template(st:show2, ?x)
+}
+where {
+  bind (st:get(st:dataset) as ?g)
+  graph ?g { 
+    { ?x st:icon ?l }  
+    union { ?x a ?t . ?t st:icon ?l }  
+  }
+}
+limit 1

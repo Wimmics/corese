@@ -1,0 +1,25 @@
+#
+# share with filter: triple bind values
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc 
+}
+where {
+    
+    ?q sp:resultVariables ?sel    
+    ?sel rdf:rest*/rdf:first ?v
+    ?v sp:varName ?n
+
+    bind ( 
+      exists { ?q sp:where/(! sp:void)+ ?b
+      filter (st:call-template(st:bound, ?b, ?n)) }
+    as ?bound) 
+    
+    bind (
+      if (exists { ?v sp:expression ?e }, ! ?bound, ?bound)
+    as ?suc)
+    
+    filter (st:visit(st:fail, ?v, ?suc))
+}

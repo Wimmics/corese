@@ -1,0 +1,14 @@
+template {
+  ?suc
+}
+where {
+  ?in owl:oneOf ?z 
+  
+  bind (    
+   not exists {      
+	?z rdf:rest*/rdf:first ?individual 
+	filter (! isURI(?individual))
+    }
+    as ?suc)
+    
+}

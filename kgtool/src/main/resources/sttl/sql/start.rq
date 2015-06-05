@@ -1,0 +1,13 @@
+#
+# SQL Pretty Printer
+# Wimmics Inria I3S 2013
+#
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template st:start {
+  ?in
+  ; separator = "\n\n"
+}
+where {
+  ?in a sql:Query
+}

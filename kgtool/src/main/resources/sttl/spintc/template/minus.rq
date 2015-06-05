@@ -1,0 +1,26 @@
+#
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+   
+   ?minus a sp:Minus 
+   ?exp (sp:where|sp:elements)/rdf:rest*/rdf:first ?minus
+   
+   ?minus (! sp:void)*/(sp:subject|sp:predicate|sp:object) ?v
+   ?v sp:varName ?n
+   
+   bind( exists { 
+      ?exp (sp:where|sp:elements)/rdf:rest* ?r 
+      ?r rdf:first ?e
+      filter (?e != ?minus)
+      filter exists { ?r rdf:rest*/rdf:first ?minus }
+      bind (st:call-template(st:bound, ?e, ?n) as ?suc)
+    } 
+    as ?suc)
+    
+   filter(st:visit(st:fail, ?minus, ?suc))
+}

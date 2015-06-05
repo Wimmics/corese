@@ -1,0 +1,15 @@
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+
+template st:descresource(?r) {
+
+  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
+  "<th class='left'>" str(?p) "</th><td>" 
+  
+   st:call-template(st:triple, ?r, ?p, ?v)  
+  
+  "</td></tr>"  
+}
+where { 
+    ?r ?p ?v
+}

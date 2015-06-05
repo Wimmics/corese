@@ -1,0 +1,27 @@
+template st:next {
+ 
+  """<script>
+  var index = 0;
+  var fst = true;
+  
+  function next(n) {
+    if (fst){
+      document.getElementById("id" + index.toString()).className = "tag";
+      fst = false;
+    }
+    else {
+      document.getElementById("id" + index.toString()).className = "std";
+      index += n;
+      if (index < 0){
+        index = 0;
+        fst = true;
+      }
+      else {
+	document.getElementById("id" + index.toString()).className = "tag";
+      }
+    }
+  }
+  </script>"""
+  
+}
+where {}

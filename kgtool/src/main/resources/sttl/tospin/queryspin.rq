@@ -1,0 +1,16 @@
+template st:queryspin(?q) {
+  """
+  <h3>SPIN Query</h3>
+  <form method='post' action='/spin/tosparql'>
+    <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
+    
+    <textarea cols='60' rows='15' name='query'>"""str(?q)
+    
+  """</textarea>
+    <br/>
+    <input type='submit' value='Submit'/>
+  </form>
+  """
+}
+where {
+}

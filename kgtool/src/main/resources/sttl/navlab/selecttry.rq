@@ -1,0 +1,16 @@
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+template st:selecttry {
+
+  if (bound(?t), 
+    st:call-template(st:select),
+    st:call-template(st:default))
+  
+}
+where {
+  optional { ?x a ?t }
+}
+limit 1

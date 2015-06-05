@@ -1,0 +1,20 @@
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc 
+}
+where {
+    
+    ?q sp:resultVariables ?sel    
+    ?sel rdf:rest*/rdf:first ?v
+    ?v sp:expression ?e 
+    ?v sp:varName ?n
+    ?sel rdf:rest*/rdf:first ?w
+    ?w sp:varName ?n
+    filter (?v != ?w)
+
+    bind (false as ?suc)
+    
+    filter(st:visit(st:fail, ?v, ?suc))
+      
+}

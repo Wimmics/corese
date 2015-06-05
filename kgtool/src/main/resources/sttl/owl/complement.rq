@@ -1,0 +1,10 @@
+template {
+  xsd:string(?l) "(" ?y ")"  
+}
+where {
+  ?in ?p ?y
+}
+values (?p ?l){
+(owl:complementOf 	  "ObjectComplementOf")
+(owl:datatypeComplementOf "DataComplementOf")
+}

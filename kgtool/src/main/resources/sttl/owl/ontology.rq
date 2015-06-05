@@ -1,0 +1,21 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template st:ontology {
+
+  "Ontology(" ?in "\n\n"
+
+    st:call-template(st:import, ?in)
+    
+    st:call-template(st:body)
+    #, ?in)
+    
+  "\n)\n"
+}
+where {
+
+  ?in a owl:Ontology   
+      
+}
+

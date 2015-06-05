@@ -1,0 +1,24 @@
+#
+# Generate Century Index
+# Hypertext link may trigger Corese server 
+# Answer using SPARQL Template Transformation
+#
+prefix cn: <http://cdn.fr/schema/>
+
+template cn:elem(?title) {
+
+    "<td><a href=\""  st:call-template(cn:dynlink, ?century) "\">" 
+    
+    "<div" ?class ">" ?date "</div>"
+    
+    "</a></td><td>&nbsp;&nbsp;</td>"
+ 
+}
+where {
+  
+  ?century cn:start ?min ; cn:finish ?max ; rdfs:label ?date
+  
+  bind (if (?date = ?title, " class='bold'", "") as ?class)
+     
+}
+order by ?min

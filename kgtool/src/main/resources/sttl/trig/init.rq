@@ -1,0 +1,14 @@
+#
+# defaut processing of a variable 
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:profile(?in) {
+
+    st:define(st:process(?in) = st:turtle(?in))
+      
+    st:define(st:default(?in) = st:turtle(?in))
+    
+}
+where {
+}

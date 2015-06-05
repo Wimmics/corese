@@ -1,0 +1,11 @@
+template (?x, ?p, ?y) {
+   "<" st:turtle(?p, true) " rdf:datatype='" datatype(?y) "'>" 
+   str(?y) 
+   "</" st:turtle(?p, true) ">"
+}
+where {
+   ?x ?p ?y
+   filter (isLiteral(?y) 
+   && datatype(?y) != rdf:langString
+   && datatype(?y) != xsd:string)
+}

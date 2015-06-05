@@ -1,0 +1,12 @@
+template st:property(?r, ?p) {
+
+  if (isLiteral(?n), str(?n),
+    st:call-template(st:display, ?n, coalesce(?ln, ?n)))
+  
+}
+where { 
+
+  ?r ?p ?n  
+  optional { ?n rdfs:label ?ln }
+
+}

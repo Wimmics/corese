@@ -1,0 +1,7 @@
+template {
+  "ObjectInverseOf(" ?y ")"  
+}
+where {
+  ?in owl:inverseOf ?y
+  filter(isBlank(?in))
+}

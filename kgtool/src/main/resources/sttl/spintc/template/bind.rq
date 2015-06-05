@@ -1,0 +1,25 @@
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  
+  ?a rdf:rest+ ?b
+  ?b rdf:first ?f
+  
+  ?f a sp:Bind ; sp:variable ?v
+  ?v sp:varName ?n
+   
+  bind (
+    not exists { 
+	     ?a rdf:rest* ?c 
+	     ?c rdf:rest* ?b
+	     filter (?b != ?c)
+	     ?c rdf:first ?d
+	     filter st:call-template(st:bound, ?d, ?n) 
+	     }
+    as ?suc)
+  
+   filter (st:visit(st:fail, ?f, ?suc))
+}

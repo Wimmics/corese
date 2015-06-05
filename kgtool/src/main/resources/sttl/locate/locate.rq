@@ -1,0 +1,36 @@
+#
+# Geolocate resource on a map given lat et long
+#
+prefix o:    <http://dbpedia.org/ontology/>
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+
+template st:locate {
+  """
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  <script>
+  function initialize() {
+       var pos = new google.maps.LatLng("""      
+      str(?lat) "," str(?lon)     
+      """);
+        
+    var mapOptions = {zoom: 7, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};
+            
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);  
+       
+   """
+
+  st:call-template(st:locateall)
+  
+  st:call-template(st:closelocate)
+}
+where {
+  bind(coalesce(st:get(st:uri), r:Nice) as ?uri)
+  
+  service <http://fr.dbpedia.org/sparql> {
+    ?uri p:longitude ?lon ; 
+         p:latitude  ?lat
+  }
+ 
+}
+pragma { kg:service kg:slice 10 }

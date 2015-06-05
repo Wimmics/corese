@@ -1,0 +1,22 @@
+#
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  
+   ?q (sp:where|sp:resultVariables)/(! sp:void)+ ?f
+   ?f ?p ?v
+   ?v sp:varName ?n
+   filter(strstarts(?p, sp:arg))
+   
+   bind ( 
+    exists { ?q sp:where/(! sp:void)+ ?b
+      filter (st:call-template(st:bound, ?b, ?n)) }
+   as ?suc)
+   
+   filter(st:visit(st:fail, ?v, ?suc))
+   
+}

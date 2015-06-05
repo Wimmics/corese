@@ -1,0 +1,19 @@
+#
+# List that contains a literal rendered with rdf:first/rdf:rest
+# otherwise as a Collection
+#
+template st:listchoice(?in, ?p, ?y) {
+
+    st:call-template(?temp, ?in, ?p, ?y)
+    
+}
+where {
+   ?in ?p ?y
+   
+   bind (
+      if (exists { ?y rdf:rest*/rdf:first ?z filter isLiteral(?z) },
+	st:listtriple, st:collection)
+   as ?temp)
+      
+}
+

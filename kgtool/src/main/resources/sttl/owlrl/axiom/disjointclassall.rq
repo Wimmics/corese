@@ -1,0 +1,21 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc  
+}
+where {
+  ?in owl:AllDisjointClasses ?z
+  
+   bind (
+    not exists { 
+      ?z rdf:rest*/rdf:first ?e      
+      filter(! st:call-template-with(st:subexp, st:subClassExpression, ?e))
+    }
+    as ?suc
+  )
+  
+  filter(st:visit(st:disjointClass, ?in, ?suc))
+
+}
+
+

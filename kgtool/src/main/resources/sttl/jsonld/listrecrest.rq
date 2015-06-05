@@ -1,0 +1,12 @@
+template st:listrecrest(?y) {  
+   
+   "<rdf:rest>" 
+    box {
+      st:call-template(st:listrec, ?y)
+      }
+   "</rdf:rest>" 
+   
+}
+where {
+  
+}

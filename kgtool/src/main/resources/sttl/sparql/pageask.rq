@@ -1,0 +1,13 @@
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:pageask {
+"""
+  <h3>Result</h3>
+  <p>
+  """      
+  ?b  
+  "</p>"
+}
+where {
+  ?r rs:boolean ?b
+}

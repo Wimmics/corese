@@ -1,0 +1,9 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  ?name 
+}
+where {
+  ?in a sql:As ;
+     sql:args ?name
+}

@@ -1,0 +1,9 @@
+template st:property {
+
+   st:call-template(st:triple, ?in, ?p, ?y)
+
+}
+where {
+   ?in ?p ?y   
+}
+order by ?p ?y

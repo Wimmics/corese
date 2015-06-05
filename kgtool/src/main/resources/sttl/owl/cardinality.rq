@@ -1,0 +1,14 @@
+template {
+  if (bound(?t), xsd:string(?ld), xsd:string(?lo)) 
+    "(" st:turtle(?n) " " ?p ")"  
+}
+where {
+  ?in ?q ?n ;
+    owl:onProperty ?p 
+    optional { ?p a ?t . filter(?t = owl:DatatypeProperty) }
+}
+values (?q ?lo ?ld) {
+  (owl:cardinality 	"ObjectExactCardinality" "DataExactCardinality")
+  (owl:maxCardinality 	"ObjectMaxCardinality"   "DataMaxCardinality")
+  (owl:minCardinality 	"ObjectMinCardinality"   "DataMinCardinality")
+}

@@ -1,0 +1,9 @@
+template st:head {
+
+  st:call-template(st:header)
+  st:call-template(st:banner)
+  
+}
+where {
+
+}

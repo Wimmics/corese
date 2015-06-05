@@ -1,0 +1,37 @@
+prefix cn: <http://cdn.fr/schema/>
+template cn:icon {
+
+"<table class='center'><tr>\n"
+
+  group {
+    "<td>" 
+      "<a href='" ?i "'><img width='100' src='" ?i "' /></a>" 
+    "</td>"
+  }
+  
+"</tr></table>\n"
+
+}
+where { }
+values ?i {
+
+
+
+<http://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG>
+
+<http://3.bp.blogspot.com/-glPooGU-Bds/VB3I6Tx7i2I/AAAAAAAAD4E/M-zPk22sl0w/s1600/P1080231.JPG>
+
+<http://2.bp.blogspot.com/-Ff-vEDJ_wt0/UhDrGOTRTWI/AAAAAAAADXI/COMur2r2RFA/s1600/P1050690.JPG>
+
+#<http://upload.wikimedia.org/wikipedia/commons/9/97/Arms_of_the_Prince_of_Piedmont.svg>
+
+#<http://1.bp.blogspot.com/-xfvkf3qpAVk/Ur6oUGkaQpI/AAAAAAAADfI/j1nPxHUle2o/s320/20130720_142348.jpg> 
+
+<http://4.bp.blogspot.com/--IQOU9yw56c/U-NJ_DmGbeI/AAAAAAAADuo/bbA84x01Lrc/s320/P1070402.JPG>
+
+<http://4.bp.blogspot.com/-1ZjNtZQxXDo/U-NJq9ek6FI/AAAAAAAADug/t9fXCId1rQc/s1600/P1070386.JPG>
+
+<http://2.bp.blogspot.com/-NHZ8BEAsovs/U-NI58kXiBI/AAAAAAAADuI/JejEaJq9pM0/s1600/P1070323.JPG>
+
+
+}

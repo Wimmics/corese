@@ -1,0 +1,19 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template sp:arg {
+  ?arg ; separator = ", " 
+}
+where {
+  ?in ?p ?arg
+    filter(strstarts(?p, sp:arg) || ?p = sp:expression)
+}
+# order by ?p
+order by xsd:integer(substr(?p, 1 + strlen(sp:arg)))
+
+
+
+

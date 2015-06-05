@@ -1,0 +1,33 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template {
+  st:number()
+  " " 
+  st:apply-templates-with(st:turtle, ?node)
+  
+  ; separator = "\n\n"
+}
+where {
+     filter(st:visit(st:start, st:trace)) 
+     
+     filter(st:visit(st:trace, st:sub,   !true))
+     filter(st:visit(st:trace, st:super, !true))
+     filter(st:visit(st:trace, st:equiv, !true))
+     
+     
+     
+     filter(st:visit(st:trace, st:silent, true))
+     
+
+?x owl:equivalentClass ?y
+
+     bind (st:apply-templates-with(orl:axiom, ?x)
+     as ?res)
+
+     bind(kg:unnest(st:visited()) as ?node)
+     
+}
+
+
+
+

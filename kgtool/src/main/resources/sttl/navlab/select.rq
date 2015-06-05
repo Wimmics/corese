@@ -1,0 +1,18 @@
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+template st:select {
+
+  st:apply-templates(?x)
+  
+}
+where {
+  { ?x a foaf:Person } 
+  union { ?x a o:Place }
+  union { ?x a o:Resource }
+  
+ filter(?x = coalesce(st:get(st:uri), ?x))
+}
+limit 1

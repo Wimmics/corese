@@ -1,0 +1,13 @@
+#
+# Timeline SPARQL Template - Olivier Corby - 2014
+#
+prefix cn: <http://cdn.fr/schema/>
+
+template st:start {
+   
+   st:call-template(st:substart, (coalesce(st:get(st:uri), cn:XIV)))   
+        
+}
+where {
+}  
+

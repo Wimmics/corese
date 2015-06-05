@@ -1,0 +1,9 @@
+
+template st:spin {
+  
+  "@prefix sp: <http://spinrdf.org/sp#> .\n\n"
+  st:apply-templates-with(st:turtle)
+  
+}
+where {
+}

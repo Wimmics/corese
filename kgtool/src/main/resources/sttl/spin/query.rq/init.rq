@@ -1,0 +1,16 @@
+#
+# defaut processing of a variable is 
+# st:turtle on URI and Literal
+# st:apply-templates on Blank
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:profile(?in) {
+
+    st:define(st:process(?in) =          
+	  if (isBlank(?in), st:apply-templates(?in), st:turtle(?in))
+    )
+	
+}
+where {
+}

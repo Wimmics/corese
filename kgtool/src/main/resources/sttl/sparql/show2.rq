@@ -1,0 +1,13 @@
+#
+#  Get an optional icon from the dataset and display it
+#
+template st:show2(?x) {
+    st:call-template(st:display, ?y) 
+}
+where {
+  bind (st:get(st:dataset) as ?g)
+  graph ?g { 
+     ?x rdfs:seeAlso ?y   
+  }
+}
+limit 1

@@ -1,0 +1,7 @@
+template {
+    "Declaration(NamedIndividual(" ?in  "))"   
+}
+where {
+  ?in a owl:NamedIndividual
+}
+

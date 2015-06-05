@@ -1,0 +1,21 @@
+template {
+    if (bound(?t), "DatatypeDefinition", "EquivalentClasses")
+    "("  
+      if (?iu, 
+	st:call-template(st:interunion, ?in),
+	?in)
+	
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
+    ")" 
+}
+where {
+  ?in owl:equivalentClass  ?y 
+  
+  bind (exists { ?in owl:intersectionOf|owl:unionOf ?z } 
+  as ?iu)
+  
+  optional { ?y a ?t filter(?t = rdfs:Datatype) }
+}

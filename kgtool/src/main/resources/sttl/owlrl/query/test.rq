@@ -1,0 +1,27 @@
+select *
+where {
+     filter(st:visit(st:start, st:trace)) 
+     
+     filter(st:visit(st:trace, st:sub,   !true))
+     filter(st:visit(st:trace, st:super, !true))
+     filter(st:visit(st:trace, st:equiv, !true))
+     
+     filter(st:visit(st:trace, st:subClass, 	true))
+     filter(st:visit(st:trace, st:equivClass, 	true))
+     filter(st:visit(st:trace, st:disjointClass,	true))
+     filter(st:visit(st:trace, st:individual, 	true))
+     filter(st:visit(st:trace, st:domain, 	true))
+     filter(st:visit(st:trace, st:key, 		true))
+     filter(st:visit(st:trace, st:fail, 		true))
+     
+     filter(st:visit(st:trace, st:transform, st:turtle))
+    # filter(st:visit(st:trace, st:silent, true))
+     
+     bind (st:apply-templates-with("/user/corby/home/AData/template/owlrl/main")
+     as ?res)
+
+ #    bind(kg:unnest(st:visited()) as ?node)
+     
+}
+
+

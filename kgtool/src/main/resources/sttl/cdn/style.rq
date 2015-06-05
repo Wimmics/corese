@@ -1,0 +1,17 @@
+prefix cn: <http://cdn.fr/schema/>
+template cn:style(?in) {
+  if (?d <= 1000, "s09",
+  if (?d <= 1100, "s10",
+  if (?d <= 1200, "s11",
+  if (?d <= 1300, "s12",
+  if (?d <= 1400, "s13",
+  if (?d <= 1500, "s14",
+  if (?d <= 1600, "s15",
+  if (?d <= 1700, "s16",
+  if (?d <= 1800, "s17",
+  if (?d <= 1900, "s18", "s19"))))))))))
+}
+where {
+    bind(?in as ?d)
+}
+	

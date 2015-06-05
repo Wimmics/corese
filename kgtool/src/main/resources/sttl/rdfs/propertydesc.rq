@@ -1,0 +1,28 @@
+#
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
+#
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+template st:propertydesc {
+"<p>"
+  "<span class='color'>Property </span>" "<span class='bold'>"   strafter(?in, ?uri) "</span>" "<br/>"
+  "<span class='color'>subPropertyOf</span>: " 	group distinct { strafter(?s, ?uri) } "<br/>"
+  "<span class='color'>domain</span>: " 	group distinct { strafter(?d, ?uri) } "<br/>"
+  "<span class='color'>range</span>: " 		group distinct { strafter(?r, ?uri) } "<br/>"
+
+  "<span class='color'>label</span>: "     	group distinct { str(?l) ; separator="; "} "<br/>"
+  "<span class='color'>comment</span>: "  	group distinct { str(?c) ; separator="<br/>"} 
+  "</p>"
+}
+where {
+  bind (coalesce(st:get(st:uri), "") as ?uri)
+  ?in a rdf:Property
+  filter( strstarts(?in, ?uri) )
+  optional { ?in rdfs:subProperty ?s }
+  optional { ?in rdfs:domain      ?d }
+  optional { ?in rdfs:range       ?r }
+  optional { ?in rdfs:label       ?l }
+  optional { ?in rdfs:comment     ?c }  
+}

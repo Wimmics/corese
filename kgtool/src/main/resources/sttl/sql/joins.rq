@@ -1,0 +1,17 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+  ?arg1 "\n" ?label ?arg2 "\n" ?arg3 
+}
+where {
+	?in a ?join ;
+	sql:args (?arg1 ?arg2 ?arg3)
+}
+values (?join ?label) {
+	(sql:InnerJoin "INNER JOIN ")
+	(sql:FullJoin "FULL OUTER JOIN ")
+	(sql:LeftJoin "LEFT JOIN ")
+	(sql:RightJoin "RIGHT JOIN ")
+}
+
+

@@ -1,0 +1,10 @@
+template {
+
+  st:call-template(st:display, ?res, ?l, ?t)
+
+}
+where {
+  bind (st:get(st:result)    as ?res)
+  bind (st:get(st:load)      as ?l)
+  bind (st:get(st:transform) as ?t)
+}

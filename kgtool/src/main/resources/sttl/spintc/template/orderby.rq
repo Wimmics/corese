@@ -1,0 +1,13 @@
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  ?q (sp:orderBy|sp:groupBy)/rdf:rest*/rdf:first/(!sp:void)* ?v 
+  ?v sp:varName ?n
+  
+  bind (st:call-template(st:bound, ?q, ?n) as ?suc)
+  
+  filter (st:visit(st:fail, ?v, ?suc))
+}

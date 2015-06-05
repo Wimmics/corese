@@ -1,0 +1,10 @@
+prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+   st:turtle(?value)
+}
+where {
+  ?in a sql:Constant 
+  { ?in sql:label ?value } union
+  { ?in sql:value ?value } 
+}

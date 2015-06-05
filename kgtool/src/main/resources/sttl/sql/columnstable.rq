@@ -1,0 +1,14 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+    "(\n" 
+      st:call-template(sql:semicolon, ?columnstable) 
+    "\n)"
+}
+where {    
+     	?in a sql:ColumnsTable ;
+	     sql:args ?columnstable     
+}
+
+
+

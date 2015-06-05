@@ -1,0 +1,35 @@
+#
+# ?n is the st:name of a query
+# get definition of query in context graph
+# display query and eventually result of query
+# st:get(st:query) is user query
+# ?q is tutorial query
+#
+template st:display(?n) {
+
+"<h3>" str(?l) "</h3>"
+"<p>"  
+  str(?c) 
+  if (bound(?r), 
+    concat("<br/><a href='", str(?r), "'>(", str(?r), ")</a>"), "")
+"</p>"
+
+   st:call-template(st:form, ?n,
+     coalesce(st:get(st:query), str(?q)), str(?q), coalesce(?s, st:null))
+   
+   st:call-template(st:result)
+      
+}
+where {
+  # named graph that contains definition of queries
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    ?qt st:name    ?n ;
+      rdfs:label   ?l ;
+      rdfs:comment ?c ;
+      st:query     ?q
+      optional { ?qt st:reference ?r }
+      optional { ?qt st:solution  ?s }
+      filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
+  }
+}

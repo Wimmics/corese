@@ -1,0 +1,14 @@
+#
+# Display result of query
+# RDF graph is a result graph
+#
+
+template st:result {
+
+   st:call-template-with(st:sparql, st:result, st:get(st:service), st:sparql)
+    
+}
+where {
+  bind (st:get(st:query) as ?query)
+  filter bound(?query)
+}

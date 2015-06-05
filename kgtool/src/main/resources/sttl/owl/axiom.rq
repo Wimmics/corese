@@ -1,0 +1,27 @@
+#
+# To Be Completed
+#
+template {
+
+  if (?p = rdfs:subClassOf, "SubClassOf",  
+  if (?p = owl:equivalentClass, "ObjectEquivalentClasses",
+    ?p))
+ 
+   "(Annotation(" 
+      ?q  " "  st:uriLiteral(?c)
+      ")\n"
+      
+      ?s " " st:uriLiteral(?t)
+   ")"
+}
+where {
+  ?in owl:annotatedSource   ?s ;
+      owl:annotatedProperty ?p ;
+      owl:annotatedTarget   ?t ;
+      ?q ?c
+      filter(?q not in (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
+}
+
+
+
+

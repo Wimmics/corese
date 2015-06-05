@@ -1,0 +1,22 @@
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+template {
+    "DisjointClasses("  
+     if (bound(?z),
+# special case: use a named template
+	st:call-template(st:interunion, ?in),
+	?in) 
+      " "  ?y  
+    ")" 
+}
+where {
+  ?in owl:disjointWith ?y 
+  optional { 
+    { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
+  }
+}
+#pragma { st:template st:priority 2 }

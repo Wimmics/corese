@@ -1,0 +1,16 @@
+template st:resource(?in) {
+
+"<rdf:Description " ?att "='" str(?name) "'>" 
+
+   box {
+     st:call-template(st:property, ?in)
+   }
+
+"</rdf:Description>" 
+
+}
+where {
+   bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
+   bind ( if (isBlank(?in), ?in, ?in) as ?name)
+}
+

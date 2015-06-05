@@ -1,0 +1,18 @@
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+    if (isLiteral(?v), "DataPropertyAssertion", "ObjectPropertyAssertion") 
+    "("
+	?p " " ?in " " ?v
+    ")"
+}
+where {
+  ?in ?p ?v 
+  filter(
+    ! strstarts(?p, owl:) &&
+    ! strstarts(?p, rdf:) && 
+    ! strstarts(?p, rdfs:) 
+  )
+  filter not exists { ?in a owl:Axiom }
+}

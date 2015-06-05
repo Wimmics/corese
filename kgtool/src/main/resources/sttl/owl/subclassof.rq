@@ -1,0 +1,21 @@
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+template {
+    "SubClassOf(" 
+      ?in
+      
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
+    ")" 
+}
+where {
+  ?in rdfs:subClassOf ?y 
+  filter not exists { ?in owl:intersectionOf | owl:unionOf ?z } 
+
+}

@@ -1,0 +1,11 @@
+template st:subClassExpression(?x) {
+  ?suc
+}
+where {
+    bind (
+      if (isURI(?x), ?x != owl:Thing, 
+         st:apply-templates-all(?x))
+    as ?suc)
+    
+#  filter(st:visit(st:sub, ?x, ?suc))
+}

@@ -1,0 +1,35 @@
+#
+# Timeline SPARQL Template - Olivier Corby - 2014
+#
+prefix cn: <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template  cn:table(?min, ?max) {
+
+  "<tr class='" st:call-template(cn:style, ?d) "'>"
+
+  "<th class='date'>" st:call-template(cn:wikidate, ?d)  "</th>"
+
+  "<td>" st:call-template(cn:date, ?d, cn:fr) "</td>"
+  
+#  "<td>" st:call-template(cn:date, ?d, cn:emp) "</td>"  
+
+#  "<td>" st:call-template(cn:date, ?d, cn:mds) "</td>"
+
+  "<td>" st:call-template(cn:date, ?d, cn:emp)
+         st:call-template(cn:date, ?d, cn:context) "</td>"
+
+  "<td>" st:call-template(cn:date, ?d, cn:mds)
+         st:call-template(cn:date, ?d, cn:cdn) "</td>"
+
+  "</tr>\n"
+
+}
+where {
+  {select distinct ?d  where {
+    values ?p { cn:date cn:begin } 
+    ?uri ?p ?d 
+  }}
+  filter(?min <= ?d && ?d <= ?max)
+}
+order by asc(?d)

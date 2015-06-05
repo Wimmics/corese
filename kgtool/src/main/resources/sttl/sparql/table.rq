@@ -1,0 +1,20 @@
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template st:table {
+
+ "<tr class='s" 
+   if (kg:even(st:number()), 1, 0)
+ "'>"
+ 
+  "<th>"  st:number() "</th>"
+  
+    st:apply-templates(?s)
+ 
+ "</tr>"
+ 
+}
+where {
+  ?x rs:solution ?s 
+  ?s rs:index ?i
+  
+}
+order by ?i

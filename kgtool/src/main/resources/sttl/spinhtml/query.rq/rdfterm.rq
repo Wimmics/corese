@@ -1,0 +1,10 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+template st:default {
+  st:turtle(?in)
+}
+where {
+  bind(st:getFocusNode() as ?in)
+}

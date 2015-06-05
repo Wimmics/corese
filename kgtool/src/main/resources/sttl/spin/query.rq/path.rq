@@ -1,0 +1,21 @@
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+template {
+  ?x " " ?p " "
+  if (bound(?v), concat(":: ", ?v, " "), "")
+   ?y " ."
+}
+where {
+?in a sp:TriplePath ;
+    sp:subject  ?x ; 
+    sp:path ?p ; 
+    sp:object   ?y 
+    optional { ?in sp:pathVariable ?v }
+}
+
+
+

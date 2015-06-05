@@ -1,0 +1,24 @@
+prefix cn: <http://cdn.fr/schema/>
+template cn:list {
+  """
+  <table class='center'>
+  <tr>
+  <td><a href='?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia'>Carte</a></td>
+
+  <td><a href='?name="""st:get(st:server) """/data/query/cdnplace.rq&transform=st:sparql%23core&profile=st:dbpedia'>Lieu</a></td>
+
+  <td><a href='?name="""st:get(st:server) """/data/query/cdnperson.rq&transform=st:sparql%23core&profile=st:dbpedia'>Personne</a></td>
+  
+  <td><a href='?name="""st:get(st:server) """/data/query/cdnfr.rq&transform=st:sparql%23core&profile=st:dbpedia'>France</a></td>  
+  
+  <td><a href='?name="""st:get(st:server) """/data/query/cdneds.rq&transform=st:sparql%23core&profile=st:dbpedia'>Savoie</a></td>  
+  
+  <td><a href='?name="""st:get(st:server) """/data/query/cdnmisc.rq&transform=st:sparql%23core&profile=st:dbpedia'>Autre</a></td>  
+  
+  </tr>
+  </table>
+  """
+}
+where {
+
+}

@@ -1,0 +1,23 @@
+#
+# Check if there is an unauthorized OWL property for subClassExpression ?in
+# return false in this case, otherwise template fails (return nothing)
+#
+template {
+  false
+}
+where {
+    ?in ?p ?y
+    
+    bind (
+      ?p in (
+        owl:intersectionOf, owl:unionOf, owl:oneOf,
+	owl:onProperty, owl:hasValue, owl:someValuesFrom,
+	rdf:type,
+	# these two axioms have subClassExpression arguments:
+	rdfs:subClassOf, owl:disjointWith, owl:hasKey)
+      as ?suc)
+      	
+      filter (st:visit(st:fail, ?in, ?suc))
+      filter (! ?suc)
+}
+limit 1

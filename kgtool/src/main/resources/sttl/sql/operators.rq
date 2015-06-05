@@ -1,0 +1,33 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#>
+@prefix math: <http://example.org/mathgram#> 
+
+template  {
+  ?arg1 ?label ?arg2
+}
+where {
+	?in a ?ope ;
+	  sql:args (?arg1 ?arg2)
+}
+values (?ope ?label) {
+	(math:Mult  " * ")
+	(math:Add   " + ")
+	(math:Sub   " - ")
+	(math:Div   " / ")
+	(sql:Equals   " = ")
+	(sql:NotEquals   " <> ")
+	(sql:GreaterThan   " > ")
+	(sql:LessThan   " < ")
+	(sql:GreaterEquals   " >= ")
+	(sql:LessEquals   " <= ")
+	(sql:Between " BETWEEN ")
+	(sql:NotBetween " NOT BETWEEN ")
+	(sql:Like " LIKE ")
+	(sql:NotLike " NOT LIKE ")
+	(sql:Union "\nUNION\n")
+	(sql:UnionAll "\nUNION ALL\n")
+}
+
+
+
+
+

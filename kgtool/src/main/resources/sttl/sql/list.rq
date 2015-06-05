@@ -1,0 +1,8 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  ?e
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}

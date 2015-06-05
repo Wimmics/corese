@@ -1,0 +1,19 @@
+template st:head {
+
+"<rdf:RDF"
+  box {
+    "xmlns:rdf='"  str(rdf:) "'"  st:nl()
+    "xmlns:rdfs='" str(rdfs:) "'" st:nl()
+    "xmlns:owl='"  str(owl:) "'"  st:nl()
+    "xmlns:xsd='"  str(xsd:) "'"  st:nl() 
+    
+    st:call-template(st:prefix)
+    
+  }
+">"
+"\n\n"
+
+}
+where {
+
+}

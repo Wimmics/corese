@@ -1,0 +1,15 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+?label ?args
+}
+where {
+	?in a ?create ;
+	sql:args ?args
+}
+values (?create ?label) {
+	(sql:CreateTable 	"CREATE TABLE ")
+	(sql:CreateDatabase 	"CREATE DATABASE ")
+	(sql:CreateIndex 	"CREATE INDEX ")
+	(sql:CreateIndexUnique 	"CREATE UNIQUE INDEX ")
+}

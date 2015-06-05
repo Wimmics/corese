@@ -1,0 +1,23 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc
+}
+where {
+  ?in owl:equivalentClass ?y
+  
+  filter (
+    isURI(?in) ||
+    not exists { ?x ?p ?in }
+  )
+ 
+  bind (
+    st:call-template-with(st:equivexp, st:equivClassExpression, ?in) &&
+    st:call-template-with(st:equivexp, st:equivClassExpression, ?y)  
+  as ?suc)
+  
+  filter(st:visit(st:equivClass, ?in, ?suc))
+
+}
+
+

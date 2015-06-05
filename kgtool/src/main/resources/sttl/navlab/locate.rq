@@ -1,0 +1,30 @@
+#
+# Geolocate resource on a map given lat et long
+#
+
+template st:locate(?r, ?lat, ?lon) {
+  """
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  <script>
+  function initialize() {
+    var pos = new google.maps.LatLng("""      
+      str(?lat) "," str(?lon)     
+      """);
+      
+    var mapOptions = {zoom: 7, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};
+            
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    
+    google.maps.event.addListener(map, 'click', function( event ){
+      alert( "Latitude: "+event.latLng.lat()+" "+", longitude: "+event.latLng.lng() ); 
+    });"""
+    
+    st:call-template(st:locateall, ?r)
+
+    "var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });"
+     
+  st:call-template(st:closelocate)
+}
+where {
+  
+}

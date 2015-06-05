@@ -1,0 +1,19 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc  
+}
+where {
+  ?in rdfs:domain|rdfs:range ?y
+      
+  bind (
+    isURI(?y) ||
+    st:call-template-with(st:superexp, st:superClassExpression, ?y)  
+  as ?suc)
+  
+  filter(st:visit(st:domain, ?in, ?suc))
+
+    
+}
+
+

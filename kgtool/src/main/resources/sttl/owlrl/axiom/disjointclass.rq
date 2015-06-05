@@ -1,0 +1,24 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template  {
+  ?suc 
+}
+where {
+  ?in owl:disjointWith ?y
+  
+  filter (
+    isURI(?in) ||
+    not exists { ?x ?p ?in }
+  )
+   
+  bind (
+    st:call-template-with(st:subexp, st:subClassExpression, ?in) && 
+    st:call-template-with(st:subexp, st:subClassExpression, ?y)  
+  as ?suc)
+  
+  filter(st:visit(st:disjointClass, ?in, ?suc))
+
+
+}
+
+

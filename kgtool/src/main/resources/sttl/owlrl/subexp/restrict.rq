@@ -1,0 +1,18 @@
+template {
+  ?suc
+}
+where {
+   ?in a owl:Restriction ;
+	owl:onProperty ?p 
+	
+   bind (
+     exists {
+	{ ?in owl:hasValue ?v }
+	union
+	{ ?in owl:someValuesFrom ?e
+	  filter (?e = owl:Thing ||
+	    st:call-template(st:subClassExpression, ?e)) }
+      }
+      as ?suc)     
+}
+	    

@@ -1,0 +1,25 @@
+prefix cn: <http://cdn.fr/schema/>
+prefix o:  <http://dbpedia.org/ontology/>
+
+template cn:href(?r, ?u, ?t, ?i) {
+
+  if (?img, "<div style='text-align:center'>", "")
+  
+  if (?img, 
+    concat(st:call-template(cn:img, ?i), "<br/>"), 
+    "")
+    
+   if (isURI(?r) && ?isp, 
+	st:call-template(st:navlab, ?r, ?t),
+	st:call-template(cn:hlink, ?u, ?t))
+
+  if (?img, "</div>", "")
+}
+where {
+
+  bind ( exists { ?r a ?tt . filter (?tt in (foaf:Person, o:Place)) 
+  } as ?isp )
+  
+  bind(bound(?i) && isURI(?i) as ?img)
+  
+}

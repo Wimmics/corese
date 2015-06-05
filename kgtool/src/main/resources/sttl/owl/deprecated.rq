@@ -1,0 +1,9 @@
+template {
+   "AnnotationAssertion(owl:deprecated " ?in " "true 
+   ")"  
+}
+where {
+  { ?in a owl:DeprecatedClass } union 
+  { ?in a owl:DeprecatedProperty }  
+
+}

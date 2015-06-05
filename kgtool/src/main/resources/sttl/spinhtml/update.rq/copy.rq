@@ -1,0 +1,26 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template  {
+  st:prolog() 
+  str(?l) " " 
+  if (bound(?s), "silent ", "")
+  if (?f = sp:default, "default", concat("graph ", ?f)) " to "
+  if (?t = sp:default, "default", ?t)
+}
+where {
+  ?in a ?tt 
+  
+  values (?tt ?l) { 
+     (sp:Move "move") (sp:Add "add") (sp:Copy "copy")
+  }
+  
+  ?in sp:from ?f 
+  ?in sp:to ?t 
+  
+  optional { ?in sp:silent ?s }
+
+}

@@ -1,0 +1,15 @@
+prefix cn:   <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+
+template cn:geticon {
+   ?ic
+}
+where {
+
+  service <http://fr.dbpedia.org/sparql> {
+    ?in o:thumbnail ?ic
+    #       ?in foaf:depiction ?ic
+  }
+    
+}

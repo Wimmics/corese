@@ -1,0 +1,14 @@
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc 
+}
+where {
+    
+    ?q sp:fromNamed ?l
+    
+    bind ( exists { ?q sp:where/(! sp:void)/rdf:type sp:NamedGraph } as ?suc)
+    
+    filter(st:visit(st:fail, ?l, ?suc))
+          
+}

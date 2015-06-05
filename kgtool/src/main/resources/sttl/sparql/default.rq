@@ -1,0 +1,9 @@
+#
+# Trap select * where {} solution as there is no variable (see solution.rq)
+#
+template st:default {
+
+}
+where {
+
+}

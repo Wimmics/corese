@@ -1,0 +1,10 @@
+template {
+   "AnnotationAssertion(" 
+      st:uri(rdfs:comment) " " 
+      ?in " " st:turtle(?l)
+   ")"
+}
+where {
+  ?in rdfs:comment ?l 
+  filter(not exists { ?in a owl:Axiom })
+}

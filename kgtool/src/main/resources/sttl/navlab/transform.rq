@@ -1,0 +1,12 @@
+
+template st:transform {
+     
+      coalesce(
+	concat("&profile=",   st:get(st:profile)), 
+	concat("&transform=", st:get(st:transform)), 
+	"")   
+      
+}
+where {
+ 
+}

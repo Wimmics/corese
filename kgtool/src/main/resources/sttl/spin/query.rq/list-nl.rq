@@ -1,0 +1,16 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template sp:listnl {
+  ?exp  
+}
+where {
+  ?in rdf:rest*/rdf:first ?exp
+}
+
+
+
+

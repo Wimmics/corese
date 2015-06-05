@@ -1,0 +1,15 @@
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+template st:default {
+"<a href=\"" 
+    str(?uri) 
+  "\">"  
+    str(?uri) 
+  "</a>"
+}
+where {
+    bind(st:get(st:uri) as ?uri)
+}

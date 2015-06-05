@@ -1,0 +1,13 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+  ?label ?args
+}
+where {
+	?in a ?delete ;
+	sql:args ?args
+}
+values (?delete ?label) {
+	(sql:Delete 	"DELETE ")
+	(sql:Deletestar "DELETE * FROM ")
+}

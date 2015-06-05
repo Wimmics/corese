@@ -1,0 +1,14 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+"ALTER TABLE " ?arg1 ?label "\n" ?arg2
+}
+where {
+	?in a ?alter ;
+	sql:args (?arg1 ?arg2)
+}
+values (?alter ?label) {
+	(sql:AlterTableAdd "ADD ")
+	(sql:AlterTableDrop "DROP COLUMN ")
+	(sql:AlterTableAlter "ALTER COLUMN ")
+}

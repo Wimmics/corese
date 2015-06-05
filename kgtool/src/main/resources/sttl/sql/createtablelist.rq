@@ -1,0 +1,9 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template sql:semicolon {
+  ?e
+  ; separator = ",\n"
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}

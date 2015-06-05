@@ -1,0 +1,20 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+?label ?args
+}
+where {
+	?in a ?clause ;
+	sql:args ?args
+}
+values (?clause ?label) {
+	(sql:Where 	"WHERE ")
+	(sql:Update 	"UPDATE ")
+	(sql:Set 	"SET ")
+	(sql:On 	"ON ")
+	(sql:Into 	"INTO ")
+	(sql:Insert 	"INSERT INTO ")
+	(sql:Having 	"HAVING ")
+}
+
+

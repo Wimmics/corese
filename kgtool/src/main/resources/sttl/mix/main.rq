@@ -1,0 +1,29 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:main {
+
+st:call-template(st:next)
+st:call-template(st:button)
+
+"""
+<table> 
+<tr> 
+  <td valign='top'>  <pre>"""  st:call-template-with(st:spinhtml, st:main) "</pre>"
+  st:call-template(st:button)
+  """</td>
+  <td valign='top'>  <pre>"""  st:call-template-with(st:hturtle, st:main)  """</pre></td>
+</tr>
+</table>
+
+"""
+st:call-template(st:button)
+
+}
+where {
+
+   filter(st:visit(st:start, st:trace))
+
+}
+

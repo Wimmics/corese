@@ -1,0 +1,12 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+	?arg1 " IN (" ?arg2 ")"
+}
+where {
+  ?in a sql:In ;
+     sql:args (?arg1 ?arg2)
+}
+
+
+

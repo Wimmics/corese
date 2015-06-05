@@ -1,0 +1,9 @@
+template st:content {
+  
+  st:call-template(st:content2, "Data:",   st:data)
+  st:call-template(st:content2, "Schema:", st:schema)
+  st:call-template(st:content2, "Query:",  st:context)
+}
+where {
+
+}

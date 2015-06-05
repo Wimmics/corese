@@ -1,0 +1,22 @@
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+template {
+  "(" ?p ")" 
+  if (bound(?min) && ?min = 1, "+", 
+  if (bound(?max) && ?max = -1, "?", "*"))
+}
+where {
+  ?in a sp:ModPath ;
+    sp:subPath ?p 
+  optional { ?in sp:modMin ?min }
+  optional { ?in sp:modMax ?max }
+}
+
+
+
+
+

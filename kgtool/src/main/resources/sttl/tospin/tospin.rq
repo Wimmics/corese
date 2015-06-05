@@ -1,0 +1,10 @@
+template st:tospin {
+  
+  st:call-template(st:query, coalesce(st:get(st:query), ""))
+  
+  st:call-template(st:queryspin, st:call-template(st:spin))
+  
+}
+where {
+
+}

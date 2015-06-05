@@ -1,0 +1,15 @@
+template {
+  "DatatypeRestriction(" ?dt " " 
+      group  { 
+	?p " " 
+	if (isURI(?v), st:turtle(?v), st:apply-templates(?v))
+      }
+  ")"  
+}
+where {
+  ?in a rdfs:Datatype ;
+    owl:onDatatype ?dt ;
+    owl:withRestrictions [
+      rdf:rest*/rdf:first [ ?p ?v ]
+    ]
+}

@@ -1,0 +1,18 @@
+template st:display(?res, ?l, ?t) {
+
+  st:call-template-with(st:server, st:head)
+ 
+  "<div><span class='color'>Load: </span>"      str(?l) "</div>" 
+  "<div><span class='color'>Transform: </span>" str(?t) "</div>" 
+  """<h4>Result</h4>
+  <p><textarea cols='80' rows='40' >"""
+  
+  str(?res)
+
+  "</textarea></p>"
+  
+  st:call-template-with(st:server, st:tail)
+}
+where {
+ 
+}

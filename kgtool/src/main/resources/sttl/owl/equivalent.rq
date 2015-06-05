@@ -1,0 +1,13 @@
+template {
+    xsd:string(?l) "("  ?in " "  ?p ")"   
+}
+where {
+  ?in owl:equivalentProperty ?p 
+  optional { ?in a ?t }
+  optional  { ?p a ?t }
+  filter (?t = ?tt)
+}
+values (?tt ?l) {
+  (owl:ObjectProperty   "EquivalentObjectProperties")
+  (owl:DatatypeProperty "EquivalentDataProperties")
+}

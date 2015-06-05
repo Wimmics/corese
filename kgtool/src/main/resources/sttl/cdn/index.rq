@@ -1,0 +1,38 @@
+#
+# Generate Century Index
+# Hypertext link may trigger Corese server 
+# Answer using SPARQL Template Transformation
+#
+prefix cn: <http://cdn.fr/schema/>
+
+template cn:index(?title) {
+
+"<table class='center'><tr>"
+
+  if (bound(?before), 
+    concat("<td><a href='", st:call-template(cn:dynlink, ?before), "'>Avant</a></td><td>&nbsp;&nbsp;</td>"), 
+    "")
+    
+  st:call-template(cn:elem, ?title)
+  
+  if (bound(?after), 
+    concat("<td><a href='", st:call-template(cn:dynlink, ?after), "'>Après</a></td>"), 
+    "")  
+    
+"</tr></table>"
+
+
+st:call-template(cn:list)   
+
+}
+where {
+  
+  ?century rdfs:label ?title ; 
+    cn:start ?min 
+       
+  bind (?min - 100 as ?be)
+  bind (?min + 100 as ?af)
+  
+  optional { ?before cn:start ?be }
+  optional { ?after  cn:start ?af }
+}

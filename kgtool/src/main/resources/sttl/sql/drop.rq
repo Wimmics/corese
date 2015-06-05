@@ -1,0 +1,15 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+  ?label ?arg
+}
+where {
+	?in a ?drop ;
+	sql:args ?arg
+}
+values (?drop ?label) {
+	(sql:DropIndex 		"DROP INDEX ")
+	(sql:DropTable 		"DROP TABLE ")
+	(sql:DropDatabase 	"DROP DATABASE ")
+	(sql:TruncateTable  	"TRUNCATE TABLE ")
+}

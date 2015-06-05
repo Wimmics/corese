@@ -1,0 +1,35 @@
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+
+template st:descperson(?r) {
+
+  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
+  "<th class='left'>" str(?title) "</th><td>" 
+  
+  if (?href, 
+    st:call-template(st:href, ?r, ?p),
+    st:call-template(st:property, ?r, ?p))  
+  
+  "</td></tr>"  
+}
+where { 
+
+  values (?p ?title) {
+#    (p:fonction 	"Fonction")
+#    (o:title 		"Titre")
+    (o:predecessor 	"Prédécesseur")
+    (o:successor 	"Successeur")
+    (o:father 		"Père")
+    (o:mother 		"Mère")
+    (o:spouse 		"Conjoints")
+    (o:child 		"Enfants")
+    (o:residence 	"Résidence")
+    (rdfs:comment 	"Résumé")
+    (o:wikiPageRedirects "Voir aussi")
+    (o:wikipedia	"Wikipedia")
+    (o:dbpedia		"DBpedia")
+  }
+  
+  bind (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
+
+}

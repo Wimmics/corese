@@ -1,0 +1,21 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:type {
+  group {
+         "a " if (?refer, st:turtle(?c), ?c)           
+          ; separator = concat(" ;", st:nl()) 
+  }
+  if (?rest, concat(" ;", st:nl()), "")
+}
+where {
+  ?in rdf:type ?c 
+  
+    bind(
+    exists { ?in ?q ?v . filter (?q != rdf:type) }
+    as ?rest)
+    
+    bind(isBlank(?c) && exists { ?x ?q ?c . filter(?in != ?x) }
+    as ?refer)
+}

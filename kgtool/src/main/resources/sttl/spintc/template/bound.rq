@@ -1,0 +1,28 @@
+#
+# TODO: subquery select var bind only var
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template st:bound(?b, ?n) {
+  ?suc
+}
+where {
+     
+   bind (
+   (exists { ?b (sp:subject|sp:predicate|sp:object)/sp:varName ?n } ||
+    exists { ?b a sp:Bind   ; sp:variable/sp:varName ?n } ||
+    exists { ?b a sp:Values ; sp:variables/rdf:rest*/rdf:first/sp:varName ?n } ||
+    exists { 
+      ?b a sp:Select 
+      { ?b sp:resultVariables/rdf:rest*/rdf:first/sp:varName ?n }
+      union 
+      { ?b sp:star true ; sp:where/(! sp:void)* ?bb
+        filter (st:call-template(st:bound, ?bb, ?n))
+      }
+      }) 
+    &&
+    not exists { ?m a sp:Minus . ?m (!sp:void)* ?b }
+   as ?suc)
+   
+   
+}

@@ -1,0 +1,21 @@
+prefix cn:   <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+
+template cn:test(?p) {
+   "<p>" str(?p) "</p>"
+   
+}
+where {
+
+  service <http://fr.dbpedia.org/sparql> {
+    select * where {
+      ?p a ?t
+    } limit 1
+  }
+  
+ 
+}
+pragma {kg:query kg:detail true}

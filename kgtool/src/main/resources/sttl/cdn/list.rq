@@ -1,0 +1,16 @@
+prefix cn: <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template {
+    if (bound(?lnk), 
+      st:call-template(cn:href, ?lnk, ?c), 
+      ?c)
+}
+where {
+
+  ?in rdf:rest*/rdf:first ?elem
+  
+  { ?elem rdfs:label ?c ; cn:link ?lnk }
+  union 
+  { ?elem rdfs:comment ?c }
+}

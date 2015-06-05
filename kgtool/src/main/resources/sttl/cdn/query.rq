@@ -1,0 +1,20 @@
+template st:query {
+  """
+  <h3>Query</h3>
+  <form method='post' action='"""
+  
+  st:get(st:service)
+  
+  """'>
+    <textarea cols='60' rows='10' name='query'>"""
+
+    st:get(st:query)
+    
+  """</textarea>
+    <br/>
+    <input type='submit' value='Submit'/>
+  </form>
+  """
+}
+where {
+}

@@ -1,0 +1,17 @@
+#
+# Geolocate resource on a map given lat et long
+#
+
+template st:closelocate {
+  """}
+
+  google.maps.event.addDomListener(window, 'load', initialize);
+
+  </script>
+      
+  <p id="map-canvas"></p>
+  """
+}
+where {
+  
+}

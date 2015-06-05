@@ -1,0 +1,25 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template {
+  ?suc  
+}
+where {
+
+  ?in rdfs:subClassOf ?y
+  
+  filter (
+    isURI(?in) ||
+    not exists { ?x ?p ?in }
+  )
+  
+  bind (
+    st:call-template-with(st:subexp,   st:subClassExpression, ?in) &&
+    st:call-template-with(st:superexp, st:superClassExpression, ?y)  
+  as ?suc)
+  
+  filter(st:visit(st:subClass, ?in, ?suc))
+
+        
+}
+
+

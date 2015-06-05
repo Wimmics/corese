@@ -1,0 +1,15 @@
+#
+# defaut processing of a variable is st:apply-templates 
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:profile(?in) {
+
+    st:define(st:process(?in) = 
+      if (isBlank(?in), st:apply-templates(?in), st:turtle(?in)))
+      
+    st:define(st:default(?in) = st:turtle(?in))
+    
+}
+where {
+}

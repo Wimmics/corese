@@ -1,0 +1,12 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  "VALUES (" st:call-template(sql:comma, ?values)  ")"
+}
+where {
+  ?in a sql:Values ;
+     sql:args ?values
+}
+
+
+

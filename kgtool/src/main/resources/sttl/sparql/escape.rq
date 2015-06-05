@@ -1,0 +1,16 @@
+template st:esc(?x) {
+
+  str(?tt)
+    
+}
+where {
+
+   bind(st:turtle(?x) as ?t)
+   
+   bind (replace(?t, "<", "&lt;") as ?tt)
+   
+   bind(
+    if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) 
+    as ?d) 
+    
+}

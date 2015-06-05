@@ -1,0 +1,14 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+    st:call-template(sql:line, ?body)
+    if (! bound(?x), ";", "")
+}
+where { 
+  ?in a sql:Query ;
+      sql:args ?body
+  optional { ?x ?q ?in }
+}
+
+
+

@@ -1,0 +1,32 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template {
+  ?suc
+}
+where {   
+      ?in a owl:Restriction ;
+	  owl:onProperty ?p
+
+	{ ?in owl:allValuesFrom ?e	  
+	  bind (st:call-template(st:superClassExpression, ?e) as ?suc)
+	}
+	union	
+	{ ?in owl:hasValue ?v 	  
+	  bind (true as ?suc) }
+	union	
+	{ ?in owl:maxCardinality ?v	  
+	  bind (?v in (0, 1) as ?suc) 
+          filter(st:visit(st:fail, ?in, ?suc))
+	}
+	union	
+	{ ?in owl:maxQualifiedCardinality ?v ;
+	  owl:onClass ?f 	  
+	  bind (
+	    ?v in (0, 1)  && 
+	    (?f = owl:Thing ||
+	    st:call-template-with(st:subexp, st:subClassExpression, ?f)) 
+	  as ?suc )
+          filter(st:visit(st:fail, ?in, ?suc))
+	 }  
+
+}

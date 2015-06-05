@@ -1,0 +1,9 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  st:call-template(sql:and,?args)
+}
+where {
+  ?in a sql:And ;
+     sql:args ?args
+}

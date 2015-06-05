@@ -1,0 +1,21 @@
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+
+template  st:href(?r, ?p) {
+
+ "<a href=\"" 
+    str(?v) 
+  "\">"  
+    str(?v) 
+  "</a>"
+
+}
+
+where {
+   ?r ?p ?v 
+}
+ 

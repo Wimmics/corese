@@ -1,0 +1,18 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:dataset {
+
+  st:call-template(st:open)
+  
+  str(?res)
+    
+  st:call-template(st:close)
+}
+where {
+  graph eng:dataset {
+     bind (st:apply-templates-with(st:turtlehtml) as ?res)
+  }
+}
+

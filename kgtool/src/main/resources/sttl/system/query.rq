@@ -1,0 +1,12 @@
+template st:query {
+
+ "<pre>"
+  str(?d)
+ "</pre>"
+
+}
+where {
+  graph eng:queries {
+    bind (st:atw(st:spin) as ?d)
+  }
+}

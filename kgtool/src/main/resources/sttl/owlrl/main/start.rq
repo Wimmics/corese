@@ -1,0 +1,19 @@
+#
+# Check OWL RL conformance using STTL
+# axiom:    OWL class and property axioms
+# subexp:   subClassExpression
+# superexp: superClassExpression
+# equivexp: equivClassExpression
+# http://www.w3.org/TR/owl2-profiles/#OWL_2_RL
+#
+# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
+#
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template st:start {
+  st:apply-templates-with-all(st:axiom)
+}
+where {
+}
+
+

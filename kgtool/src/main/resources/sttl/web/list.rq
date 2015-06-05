@@ -1,0 +1,22 @@
+#
+# Generate query names list from context graph
+#
+template st:list(?t) {
+
+  "<option value='" ?q "'" 
+    if (?q = ?t, "selected='true'", "")
+  ">" 
+  str(?i) ". " str(?title) 
+  "</option>" 
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    [] a st:Query ;
+      st:index ?i ;
+      st:name ?q ;
+      rdfs:label ?title
+  }
+}
+order by ?i

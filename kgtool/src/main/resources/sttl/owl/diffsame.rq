@@ -1,0 +1,11 @@
+template {
+   xsd:string(?l)
+   "("  ?in " " ?y ")"
+}
+where {
+   ?in ?p ?y 
+}
+values (?p ?l) {
+  (owl:differentFrom "DifferentIndividuals")
+  (owl:sameAs "SameIndividual")
+}

@@ -1,0 +1,11 @@
+template st:display(?x) {
+  if (! bound(?profile), 
+    st:call-template(st:esc, ?x),
+    if (?profile = st:std, 
+      st:call-template(st:linkesc, ?x),
+      st:call-template(st:linkprofile, ?x)))
+          
+}
+where {
+      bind (st:get(st:profile) as ?profile)
+}

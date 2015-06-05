@@ -1,0 +1,18 @@
+template st:tail {
+  
+  """ 
+  <h3>Dataset</h3>
+  """
+  
+  st:call-template(st:content) 
+  
+  """ 
+  <p> <hr/> </p>
+  """
+  
+  
+
+}
+where {
+
+}

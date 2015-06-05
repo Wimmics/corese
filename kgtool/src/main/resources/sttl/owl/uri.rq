@@ -1,0 +1,26 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template   {
+
+  st:apply-all-templates(?in ; separator = "\n") 
+   
+   ; separator = "\n\n"
+    
+}
+where {
+
+select distinct ?in where {
+  ?in ?p ?y
+  filter(isURI(?in))
+  # OWL vocabulary must not be pretty printed
+  filter (! strstarts(?in, owl:) 
+       && ! strstarts(?in, rdf:) 
+       && ! strstarts(?in, rdfs:)
+       && ! strstarts(?in, xsd:)
+       )
+  }     
+}
+pragma { st:template st:priority 1 }
+

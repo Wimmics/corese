@@ -1,0 +1,12 @@
+template st:linkesc(?x) {
+
+  if (isURI(?x), 
+    st:call-template(st:link, ?x, ?e),
+    str(?e))
+    
+}
+where {
+
+  bind (st:call-template(st:esc, ?x) as ?e)
+    
+}

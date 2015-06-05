@@ -1,0 +1,11 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template sql:and {
+  ?e
+  ; separator = " AND "
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+
+

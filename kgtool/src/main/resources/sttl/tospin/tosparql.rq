@@ -1,0 +1,10 @@
+template st:tosparql {
+  
+  st:call-template(st:query, st:call-template(st:sparql))
+  
+  st:call-template(st:queryspin, coalesce(st:get(st:query), ""))
+  
+}
+where {
+
+}

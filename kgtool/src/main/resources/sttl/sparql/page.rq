@@ -1,0 +1,14 @@
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:page {
+   
+  st:call-template(?page)
+      
+}
+where {
+  bind (
+    if (exists { ?x a rs:ResultSet }, 
+      if (exists { ?x rs:boolean ?b }, st:pageask, st:pageselect),
+      st:pagecons) 
+    as ?page)
+}

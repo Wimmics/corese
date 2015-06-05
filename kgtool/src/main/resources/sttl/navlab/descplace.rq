@@ -1,0 +1,38 @@
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+
+template st:descplace(?r) {
+
+  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
+  "<th class='left'>" str(?title) "</th><td>" 
+  
+  if (?href, 
+    st:call-template(st:href, ?r, ?p),
+    st:call-template(st:property, ?r, ?p))  
+  
+  "</td></tr>"  
+}
+where { 
+
+  values (?p ?title) {
+    (rdfs:comment 	"Résumé")
+    (p:nord		"Nord")
+    (p:nordEst		"Nord Est")
+    (p:est		"Est")
+    (p:sudEst		"Sud Est")
+    (p:sud		"Sud")
+    (p:sudOuest		"Sud Ouest")
+    (p:ouest		"Ouest")
+    (p:nordOuest	"Nord Ouest")
+    (p:latitude		"Latitude")
+    (p:longitude	"Longitude")
+    
+    (o:wikipedia	"Wikipedia")
+    (o:dbpedia		"DBpedia")
+  }
+  
+  bind   (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
+  filter (if (?p in (o:wikipedia, o:dbpedia), strstarts(?r, r:), true))
+
+}

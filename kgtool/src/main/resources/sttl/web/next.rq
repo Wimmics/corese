@@ -1,0 +1,17 @@
+template st:next(?t) {
+
+  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
+  "<button type='button'>Next</button>"
+  "</a>"  
+    
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i + 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
+}

@@ -1,0 +1,9 @@
+prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+   xsd:string(?name) 
+}
+where {
+  ?in a sql:Table ;
+     sql:label ?name
+}

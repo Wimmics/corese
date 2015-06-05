@@ -1,0 +1,8 @@
+template st:head {
+   
+  "<h2 class='center'>SPARQL Tutorial</h2>"
+  
+}
+where {
+
+}

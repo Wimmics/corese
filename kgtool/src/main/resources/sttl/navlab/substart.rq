@@ -1,0 +1,16 @@
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+template st:substart(?x) {
+
+  st:call-template(st:head, st:head)
+
+  st:apply-templates(?x)
+   
+  st:call-template(st:tail, st:tail)
+  
+}
+where { 
+}

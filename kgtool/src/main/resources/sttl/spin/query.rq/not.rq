@@ -1,0 +1,17 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  "! (" ?f ")"
+}
+where {
+  ?in a sp:not  ;
+      sp:arg1 ?f 
+}
+
+
+
+

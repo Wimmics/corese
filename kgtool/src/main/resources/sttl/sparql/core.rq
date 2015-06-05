@@ -1,0 +1,20 @@
+#
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
+#
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+
+template st:core {
+
+  st:call-template-with(st:server, st:header)
+    
+  st:call-template(st:page)
+    
+  st:call-template-with(st:server, st:tail)
+
+}
+where {
+  
+}

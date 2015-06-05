@@ -1,0 +1,23 @@
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+
+template  st:display(?r, ?l) {
+
+ "<a href=\"" 
+    st:call-template(st:link, ?r) 
+  "\">"  
+    str(coalesce(?l, ?pr)) 
+  "</a>"
+
+}
+
+where {
+   bind (
+   if (strstarts(?r, r:), concat(w:, (substr(?r, strlen(r:) + 1))), ?r) 
+   as ?pr)   
+}
+ 

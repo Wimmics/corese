@@ -1,0 +1,14 @@
+template {
+    "Declaration(" xsd:string(?l) "(" 
+    ?in  
+    "))"   
+}
+where {
+  ?in a ?t
+  filter(isURI(?in))
+}
+values (?t ?l) {
+  (owl:ObjectProperty "ObjectProperty")
+  (owl:DatatypeProperty "DataProperty")
+  (owl:AnnotationProperty "AnnotationProperty")
+}

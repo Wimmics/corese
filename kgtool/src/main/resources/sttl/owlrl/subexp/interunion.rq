@@ -1,0 +1,13 @@
+template {
+  ?suc
+}
+where {
+  ?in owl:intersectionOf|owl:unionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
+  
+  bind (
+    st:call-template(st:subClassExpression, ?e)
+    as ?suc
+  )
+  
+}

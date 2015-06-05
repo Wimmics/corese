@@ -1,0 +1,20 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  "{" 
+    group { ?exp  ; separator = "\n" }
+  "}"
+}
+where {
+  ?in rdf:rest*/rdf:first ?exp
+}
+# default list is behind all other list templates
+# after listoption
+pragma {st:template st:priority 1001}
+
+
+

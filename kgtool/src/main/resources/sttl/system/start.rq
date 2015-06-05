@@ -1,0 +1,12 @@
+template st:start {
+
+  st:call-template-with(st:server, st:head)
+  
+  st:call-template(st:index)
+  
+  st:call-template-with(st:server, st:tail)
+
+}
+where {
+
+}

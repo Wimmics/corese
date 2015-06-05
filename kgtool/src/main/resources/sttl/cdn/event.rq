@@ -1,0 +1,33 @@
+prefix cn:   <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:   <http://fr.wikipedia.org/wiki/>
+prefix r:   <http://fr.dbpedia.org/resource/>
+
+template {
+  if (bound(?link), 
+    st:call-template(cn:href, ?in, ?link, ?ctx, ?ic), 
+    ?ctx)
+  " " ?c " " ?l
+  
+}
+where {
+
+  ?in cn:date ?d ; rdfs:label ?ctx .  
+  optional { ?in cn:link ?lnk }
+  optional { ?in rdfs:comment ?c }
+  optional { ?in cn:list ?l }
+  optional { ?in st:icon ?ii }
+  
+  bind (
+    if (bound(?ii), ?ii,
+    if (isURI(?in), st:call-template(cn:geticon, ?in), "")) 
+    as ?ic)
+    
+  bind (
+    if (isURI(?in) && strstarts(?in, r:), 
+      concat(w:, (substr(?in, strlen(r:) + 1))),
+      ?lnk) 
+    as ?link)
+      
+}

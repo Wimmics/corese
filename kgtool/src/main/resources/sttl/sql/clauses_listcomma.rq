@@ -1,0 +1,16 @@
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+  ?label st:call-template(sql:comma, ?args)
+}
+where {
+	?in a ?clause ;
+	sql:args ?args
+}
+values (?clause ?label) {
+	(sql:From 	"FROM ")
+	(sql:GroupBy 	"GROUP BY ")
+	(sql:OrderBy 	"ORDER BY ")
+	(sql:ListOfValues "")
+}
+

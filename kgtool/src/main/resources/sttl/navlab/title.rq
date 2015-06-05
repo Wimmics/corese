@@ -1,0 +1,22 @@
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+template st:title(?r, ?l, ?i) {
+ 
+  "<div style='text-align:center'>" 
+  
+  "<p>"
+  "<h3>"  str(?l) "</h3>"
+  "</p>"  
+  
+  "<a href=\"" coalesce(str(?i), "")  "\">"    
+  "<img width='100' alt=\"" str(?l) "\" src=\"" coalesce(str(?i), "") "\" />"
+  "</a>"
+ 
+  "</div>"
+
+}
+where {
+}

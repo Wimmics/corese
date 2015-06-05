@@ -1,0 +1,13 @@
+prefix orl: </user/corby/home/AData/template/owlrl/>
+
+template {
+  ?suc
+}
+where {
+  ?in owl:complementOf ?z 
+  
+  bind (
+    st:call-template-with(st:subexp, st:subClassExpression, ?z)
+  as ?suc)
+  
+}

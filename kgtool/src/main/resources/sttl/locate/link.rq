@@ -1,0 +1,16 @@
+#
+# Hypertext link trigger Corese server 
+# Answer using SPARQL Template Transformation
+# st:get(st:profile) URI of the transformation, stored by Transformer
+#
+
+template st:link(?x) {
+
+      st:get(st:service) 
+      "?uri=" encode_for_uri(?x)          
+      "&profile=st:dbpedia"
+      
+}
+where {
+ 
+}

@@ -1,0 +1,9 @@
+template {
+  true
+}
+where {
+   ?in a owl:Restriction ;
+	owl:onProperty ?p ;
+	owl:hasValue ?v 	        
+}
+	    

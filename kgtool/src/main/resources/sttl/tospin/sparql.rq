@@ -1,0 +1,8 @@
+
+template st:sparql {
+  
+  st:apply-templates-with(st:spin)
+  
+}
+where {
+}

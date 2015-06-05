@@ -1,0 +1,8 @@
+prefix cn: <http://cdn.fr/schema/>
+template cn:img(?i) {
+  "<img width='75' src=\"" ?i "\"/>" 
+}
+where {
+#  bind(?u as ?uri)
+#  bind(?t as ?text)
+}

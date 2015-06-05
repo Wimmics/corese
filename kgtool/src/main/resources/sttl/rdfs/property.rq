@@ -1,0 +1,17 @@
+#
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
+#
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+
+template st:property {
+
+ st:call-template(st:propertydesc, ?x) 
+
+}
+where {
+ ?x a rdf:Property
+}
+order by ?x

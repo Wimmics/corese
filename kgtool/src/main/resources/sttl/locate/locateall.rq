@@ -1,0 +1,28 @@
+#
+# Geolocate  resources on a map (except resource given lat et long)
+#
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+template st:locateall {
+
+  "var pos" st:number()  " = new google.maps.LatLng("      
+      str(?lat) "," str(?lon) ");"
+                  
+  "var marker" st:number() "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
+  
+  "google.maps.event.addListener(marker" st:number() 
+  ", 'click', function () {window.location.href = \"" 
+  st:call-template(st:link, ?in) 
+  "\";});"
+  
+}
+where {
+  ?in a o:Place .
+  service <http://fr.dbpedia.org/sparql> {
+    ?in  p:longitude  ?lon ; 
+      p:latitude  ?lat
+  }
+}
+pragma { kg:service kg:slice 50 }

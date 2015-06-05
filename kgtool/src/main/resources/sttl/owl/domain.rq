@@ -1,0 +1,8 @@
+template {
+    if (bound(?t), "DataPropertyDomain", "ObjectPropertyDomain")
+    "(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:domain ?d 
+  optional { ?in a ?t . filter(?t = owl:DatatypeProperty) }
+}

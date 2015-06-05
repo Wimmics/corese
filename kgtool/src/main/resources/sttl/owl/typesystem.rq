@@ -1,0 +1,11 @@
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {}
+where {
+  ?in a ?t
+  filter (strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:))
+}
+pragma { st:template st:priority 1000 }

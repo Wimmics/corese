@@ -226,11 +226,12 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 		= Processor.IF;
         
-        private static String FUN_TEMPLATE_AGG      = Processor.FUN_GROUPCONCAT ;
+        private static String FUN_TEMPLATE_AGG      = Processor.FUN_AGGREGATE ; //Processor.FUN_GROUPCONCAT ;
         private static String FUN_TEMPLATE_CONCAT   = Processor.FUN_CONCAT ; 
         private static String FUN_TURTLE            = Processor.FUN_TURTLE ; 
         
  	private static final String FUN_PROCESS = Processor.FUN_PROCESS;
+ 	private static final String FUN_PROCESS_URI = Processor.FUN_PROCESS_URI;
         private static final String FUN_NL      = Processor.FUN_NL;
         private static final String FUN_INDENT  = Processor.FUN_INDENT;
         
@@ -2998,10 +2999,18 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
                 }
 		return t;
 	}
+        
+        Term compile(Constant cst){		
+		Term t = createFunction(createQName(FUN_PROCESS_URI), cst);               
+		return t;
+	}
 	
 	/**
 	 * 
-	 * additional group_concat(?out)
+	 * additional aggregate(?out)
+         * default is st:group_concat
+         * it may be redefined in template st:profile
+         * using st:define(st:aggregate(?x) = st:agg_and(?x))
 	 */
 	Term createTemplateGroup(){
 		Variable var = Variable.create(OUT);

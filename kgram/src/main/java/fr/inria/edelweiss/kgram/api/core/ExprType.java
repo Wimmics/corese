@@ -1,6 +1,10 @@
 package fr.inria.edelweiss.kgram.api.core;
 
 public interface ExprType {
+    
+        public static int UNBOUND = -1;
+        public static int LOCAL   = -2;
+        
 	
 	public static int UNDEF = -1;
 
@@ -100,7 +104,8 @@ public interface ExprType {
 	public static int STRUUID 	 = 81;
 	public static int XSDSTRING 	 = 82;
 
-
+	public static int LET           = 90;
+	public static int LAMBDA        = 91;
 
 	
 	// term

@@ -20,7 +20,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgram.tool.Message;
-
+import fr.inria.edelweiss.kgram.filter.Extension;
 
 /**
  * Compiler of SPARQL AST to KGRAM Exp Query
@@ -178,8 +178,19 @@ public class Transformer implements ExpType {
 		template(q, ast);
 				
 		q = transform(q, ast);
+                
+                error(ast);
 		return q;
 	}
+        
+        void error(ASTQuery ast){
+            if (ast.isTemplate()){
+                return;
+            }
+            for (Expression exp : ast.getUndefined().values()){
+                ast.addError("Undefined expression: ", exp);
+            }
+        }
         
         /**
          * select * 
@@ -259,7 +270,7 @@ public class Transformer implements ExpType {
                         for (Variable var : ast.getArgList()){
                             Node node = compiler.createNode(var);
                             q.defArg(node);
-                        }
+                        }                                             
 		}
 	}
 	
@@ -318,9 +329,27 @@ public class Transformer implements ExpType {
 				v.visit(q);
 			}	
 		}
-
+                
+                define(q, ast);
+                
 		return q;
 	}
+        
+        /**
+         * defined functions
+         * use case: transformation profile
+         * PRAGMA: expressions have declared local variables (see ASTQuery Processor)
+         */
+       void define(Query q, ASTQuery ast) {
+            if (ast.getDefine() == null) {
+                return;
+            }
+            Extension ext = new Extension();
+            for (Expression exp : ast.getDefine().values()) {
+                ext.define(exp);               
+            }
+            q.setExtension(ext);
+        }
         
         
        void construct(Query q, ASTQuery ast) {
@@ -840,6 +869,13 @@ public class Transformer implements ExpType {
 	 * @param f
 	 */
 	void checkFilterVariables(Query query, Filter f, List<Exp> select, List<Node> lNodes){
+            switch (f.getExp().oper()){
+                // do not create Node for local variables
+                case ExprType.STL_DEFINE:
+                case ExprType.LET:
+                    return;
+            }
+            
 		List<String> lVar = f.getVariables();
 		for (String name : lVar){
 			Node node = getProperAndSubSelectNode(query, name);

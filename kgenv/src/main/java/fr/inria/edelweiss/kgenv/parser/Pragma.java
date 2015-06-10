@@ -8,10 +8,13 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -128,7 +131,13 @@ public class Pragma  {
 			if (query != null && query.isDebug()) Message.log(Message.PRAGMA, pragma);
 			
 			if (pragma.isTriple()){
-				triple(g, pragma.getTriple(), exp);
+                            Triple t = pragma.getTriple();
+                            if (t.isExp()){
+                                
+                            }
+                            else {
+                                triple(g, t, exp);
+                            }
 			}
 			else if (pragma.isGraph()){
 				Source gp = (Source) pragma;
@@ -168,7 +177,13 @@ public class Pragma  {
 			if (ast.isDebug()) Message.log(Message.PRAGMA, pragma);
 
 			if (pragma.isTriple()){
-				compile(g, pragma.getTriple(), exp);
+                            Triple t = pragma.getTriple();
+                            if (t.isExp()){
+                                compile(t.getExp());
+                            }
+                            else {
+                                compile(g, t, exp);
+                            }
 			}
 			else if (pragma.isGraph()){
 				Source gp = (Source) pragma;
@@ -176,6 +191,10 @@ public class Pragma  {
 			}
 		}
 	}
+        
+        public void compile(Expression exp){
+           exp.compile(ast);
+        }
 	
 	
 	public void compile(Atom g, Triple t, fr.inria.acacia.corese.triple.parser.Exp pragma){

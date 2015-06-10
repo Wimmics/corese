@@ -7,6 +7,7 @@ import java.util.Map;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -71,6 +72,7 @@ public class Memory implements Environment {
 	boolean hasEvent = false;
 
 	int nbEdge = 0, nbNode = 0;
+        private Bind bind;
 	
 	
 	
@@ -899,16 +901,24 @@ public class Memory implements Environment {
 				return i;
 			}
 		}
-		return -1;
+		return ExprType.UNBOUND;
 	}
 	
 	public Node getNode(Expr var){
 		int index = var.getIndex();
-		if (index == -1){
+                switch (index){
+                    
+                    case ExprType.LOCAL:
+                        return get(var);
+                        
+                    case ExprType.UNBOUND:
 			index = getIndex(var.getLabel());
 			var.setIndex(index);
-			if (index == -1) return null;
-		} 
+			if (index == ExprType.UNBOUND){
+                            return null;
+                        }
+                        
+		}                 
 		return getNode(index);
 	}
 	
@@ -1003,5 +1013,43 @@ public class Memory implements Environment {
 	boolean isFake() {
 		return isFake;
 	}
+
+    @Override
+    public void set(Expr var, Node value) {
+        if (bind == null){
+            bind = new Bind();
+        }
+        bind.set(var, value);
+    }
+    
+     public void set(List<Expr> lvar, Object[] value) {
+        if (bind == null){
+            bind = new Bind();
+        }
+        bind.set(lvar, value);
+    }
+
+    @Override
+    public Node get(Expr var) {
+        if (bind == null) {
+            bind = new Bind();
+        }
+        return bind.get(var);
+    }
+
+    @Override
+    public void unset(Expr var) {
+        if (bind == null) {
+            bind = new Bind();
+        }
+        bind.unset(var);
+    }
+    
+     public void unset(List<Expr> lvar) {
+        if (bind == null){
+            bind = new Bind();
+        }
+        bind.unset(lvar);
+    }
 
 }

@@ -59,6 +59,7 @@ public class Mapping
 	Map bnode;
 	
 	boolean read = false;
+    private Bind bind;
 	
 	Mapping(){
 		this.qEdges = emptyEdge;;
@@ -657,9 +658,13 @@ public class Mapping
 	}
 	
 	public Node getNode(Expr var){
-		int i = getIndex(var.getLabel());
-		if (i == -1) return null;
-		return nodes[i];
+            switch (var.getIndex()){
+                case ExprType.LOCAL: 
+                    return get(var);
+            }
+            int i = getIndex(var.getLabel());
+            if (i == -1) return null;                  
+            return nodes[i];
 	}
 
 	@Override
@@ -819,6 +824,43 @@ public class Mapping
 			eval.eval(f, map, p);
 		}
 	}
-		
+
+   @Override
+    public void set(Expr var, Node value) {
+        if (bind == null){
+            bind = new Bind();
+        }
+        bind.set(var, value);
+    }
+   
+      public void set(List<Expr> lvar, Object[] value) {
+        if (bind == null){
+            bind = new Bind();
+        }
+        bind.set(lvar, value);
+    }
+
+    @Override
+    public Node get(Expr var) {
+        if (bind == null) {
+            bind = new Bind();
+        }
+        return bind.get(var);
+    }
+
+    @Override
+    public void unset(Expr var) {
+        if (bind == null) {
+            bind = new Bind();
+        }
+        bind.unset(var);
+    }
+    
+     public void unset(List<Expr> lvar) {
+        if (bind == null){
+            bind = new Bind();
+        }
+        bind.unset(lvar);
+    }
 	
 }

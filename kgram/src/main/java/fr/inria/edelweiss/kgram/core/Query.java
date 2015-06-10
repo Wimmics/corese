@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.filter.Compile;
+import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.tool.Message;
 
 /**
@@ -102,6 +103,7 @@ public class Query extends Exp implements Graphable {
     Hashtable<Edge, Query> table;
     // Extended queries for additional group by
     List<Query> queries;
+    private Extension extension;
 
     private boolean isCompiled = false;
     private boolean hasFunctional = false;
@@ -2339,7 +2341,31 @@ public class Query extends Exp implements Graphable {
     public boolean isExtension() {
         return isExtension;
     }
+
+    /**
+     * @return the extention
+     */
+    public Extension getExtension() {
+        return extension;
+    }
+
+    /**
+     * @param extention the extention to set
+     */
+    public void setExtension(Extension ext) {
+        this.extension = ext;
+    }
     
-	
+    public void addExtension(Extension ext){
+        if (ext == null){
+            return;
+        }
+        if (extension == null){
+            extension = ext;
+        }
+        else {
+            extension.add(ext);
+        }
+    }
 	
 }

@@ -56,6 +56,8 @@ public interface Expr {
 	int getIndex();
 
 	void setIndex(int index);
+        
+        void local(Expr var);
 
 	
 }

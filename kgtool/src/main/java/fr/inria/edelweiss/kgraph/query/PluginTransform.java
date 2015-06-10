@@ -16,6 +16,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
@@ -101,8 +102,8 @@ public class PluginTransform implements ExprType {
             case PROLOG:
                 return prolog(dt, env, p);
 
-            case STL_PROCESS:
-                return process(exp, env, p, dt); 
+//            case STL_PROCESS:
+//                return eval(exp, env, p, dt); 
                 
             case STL_FUTURE:
                 return dt;
@@ -149,7 +150,7 @@ public class PluginTransform implements ExprType {
 
             case VISITED:
                 return visited(dt, env, p);
-
+                        
 
         }
         return null;
@@ -201,7 +202,8 @@ public class PluginTransform implements ExprType {
                 return visit(exp, env, p, dt1, dt2, null);
                 
             case STL_GET:
-                return get(exp, env, p, dt1, dt2);    
+                return get(exp, env, p, dt1, dt2);   
+                 
     
         }
             return null;
@@ -210,6 +212,12 @@ public class PluginTransform implements ExprType {
     
     
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
+        
+        switch (exp.oper()){
+            
+           case STL_PROCESS:
+                return processDef(exp, env, p, args);     
+        }
 
         IDatatype dt1 =  (IDatatype) args[0];
         IDatatype dt2 =  (IDatatype) args[1];
@@ -255,8 +263,8 @@ public class PluginTransform implements ExprType {
                 return visit(exp, env, p, dt1, dt2, dt3);
                 
             case STL_VSET:
-                return vset(exp, env, p, dt1, dt2, dt3);        
-
+                return vset(exp, env, p, dt1, dt2, dt3); 
+                           
         }
 
         return null;
@@ -443,14 +451,24 @@ public class PluginTransform implements ExprType {
      * Transformer what is default behavior set st:process() to it's default
      * behavior the default behavior is st:turtle
      */
-    public Object process(Expr exp, Environment env, Producer p, IDatatype dt) {
-        Query q = env.getQuery();
+    public Object processDef(Expr exp, Environment env, Producer p, Object[] args) {
+        Extension ext = env.getQuery().getExtension();
+        if (ext != null && ext.isDefined(exp)) {
+            return plugin.getEvaluator().eval(exp, env, p, ext, args);
+        }
+
         Transformer pp = getTransformer(env, p);
-        Expr def = q.getProfile(Transformer.STL_PROCESS);
         int oper = pp.getProcess();
-        return process(exp, env, p, dt, def, oper);
+
+        // overload current st:process() oper code to default behaviour oper code
+        // future executions of this st:process() will directly execute target default behavior
+        exp.setOper(oper);
+        Object res = plugin.function(exp, env, p, (IDatatype) args[0]);
+        return res;
+
     }
-    
+  
+ 
     /**
      * exp = st:aggregate(?out)
      * Overload exp with actual transformer aggregate
@@ -460,12 +478,17 @@ public class PluginTransform implements ExprType {
      */
      Expr decode(Expr exp, Environment env, Producer p){
         Query q = env.getQuery();
+        Extension ext = q.getExtension();
         Transformer t = getTransformer(env, p);
         
         switch (exp.oper()){
              case STL_AGGREGATE:
                  // possibly defined in template st:profile
-                 Expr def = q.getProfile(Transformer.STL_AGGREGATE);
+                 Expr def = null;
+                 if (ext != null){
+                     def = ext.get(exp);
+                     //q.getProfile(Transformer.STL_AGGREGATE);
+                 }
                  // default aggregate
                  int oper = t.getAggregate();
                  exp = decode(exp, def, oper);
@@ -487,26 +510,7 @@ public class PluginTransform implements ExprType {
          return exp;        
      }
     
-    /**
-     * rewrite st:process(?x) as st:turtle(?x) or as if (isBlank(?x),
-     * st:apply-templates(?x), st:turtle(?x))
-     */
-    public Object process(Expr exp, Environment env, Producer p, IDatatype dt, Expr def, int oper) {
-        if (def == null) {
-            // overload current st:process() oper code to default behaviour oper code
-            // future executions of this st:process() will directly execute target default behavior
-            exp.setOper(oper);
-            Object res = plugin.function(exp, env, p, dt);
-            return res;
-        } else {
-            // rewrite st:process(?x) as self(exp(?x))
-            Expr ee = rewrite(exp, def, (ASTQuery) env.getQuery().getAST());
-            exp.setOper(SELF);
-            exp.setExp(0, ee);
-            return plugin.getEvaluator().eval(ee, env, p);
-        }
-    }
-
+  
     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt) {
         return get(exp, env, p, dt.getLabel());
     }

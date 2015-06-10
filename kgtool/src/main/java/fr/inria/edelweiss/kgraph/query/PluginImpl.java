@@ -269,19 +269,18 @@ public class PluginImpl extends ProxyImpl {
     }
 
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
-
-        IDatatype dt1 =  (IDatatype) args[0];
-        IDatatype dt2 =  (IDatatype) args[1];
-        IDatatype dt3 =  (IDatatype) args[2];
-
+       
         switch (exp.oper()) {
-
+            
             case SETP:
+                
+                IDatatype dt1 =  (IDatatype) args[0];
+                IDatatype dt2 =  (IDatatype) args[1];
+                IDatatype dt3 =  (IDatatype) args[2];
                 return setProperty(dt1, dt2.intValue(), dt3);
 
             default: 
-                return pt.eval(exp, env, p, args);
-
+                return pt.eval(exp, env, p, args);  
         }
 
     }

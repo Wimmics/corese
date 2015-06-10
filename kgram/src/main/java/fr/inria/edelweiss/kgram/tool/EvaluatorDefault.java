@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.ResultListener;
+import fr.inria.edelweiss.kgram.filter.Extension;
 
 public class EvaluatorDefault implements Evaluator {
 
@@ -85,6 +86,11 @@ public class EvaluatorDefault implements Evaluator {
 
     @Override
     public void finish(Environment env) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object eval(Expr f, Environment e, Producer p, Extension ext, Object[] values) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -8,6 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.ResultListener;
+import fr.inria.edelweiss.kgram.filter.Extension;
 
 /**
  * Interface for the connector that evaluates filters
@@ -53,6 +54,9 @@ public interface Evaluator {
 	
 	Object eval(Expr f, Environment e, Producer p);
         
+        Object eval(Expr f, Environment e, Producer p, Extension ext, Object[] values);
+        
+                       
         // cast Java object into IDatatype
         Node cast(Object obj, Environment e, Producer p);
 

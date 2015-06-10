@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.path.Path;
+import java.util.List;
 
 /**
  * Interface of the binding environment provided by KGRAM
@@ -144,4 +145,16 @@ public interface Environment {
         Node[] getQueryNodes();
         
         Mappings getMappings();
+        
+        // DRAFT local variable
+        void set(Expr var, Node value);
+        
+        void set(List<Expr> var, Object[] value);
+       
+        Node get(Expr var);
+        
+        void unset(Expr var);
+        
+        void unset(List<Expr> var);
+
 }

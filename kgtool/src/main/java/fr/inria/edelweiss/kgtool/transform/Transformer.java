@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
@@ -1001,16 +1002,18 @@ public class Transformer  {
      */
     IDatatype display(IDatatype dt, Query q) {
         //exec.getEvaluator().eval
+        int ope = defaut;
         if (q != null) {
-            Expr exp = q.getProfile(STL_DEFAULT);
-            if (exp != null) {
-                // st:profile st:default
-                return display(dt, exp.oper());
-            } else if (q.getProfile() != null) {
-                return profile(dt, q.getProfile());
-            }
+           // Expr exp = q.getProfile(STL_DEFAULT);
+            Extension ext = q.getExtension();
+            if (ext != null){
+                Expr exp = ext.get(STL_DEFAULT);
+                if (exp != null){
+                    ope = exp.getExp(1).oper();               
+                }
+            } 
         }
-        return display(dt, defaut);
+        return display(dt, ope);
     }
 
     /**
@@ -1112,8 +1115,8 @@ public class Transformer  {
        setHasDefault(qe.getTemplate(STL_DEFAULT) != null);
        
        Query profile = qe.getTemplate(STL_PROFILE);
-       if (profile != null){
-           Expr exp = profile.getProfile(STL_AGGREGATE);
+       if (profile != null && profile.getExtension() != null){
+           Expr exp = profile.getExtension().get(STL_AGGREGATE);
            if (exp != null){
                defAggregate = exp.getExp(1).oper();
            }                  

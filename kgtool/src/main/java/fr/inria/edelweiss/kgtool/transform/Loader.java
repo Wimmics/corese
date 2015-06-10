@@ -10,7 +10,6 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -19,9 +18,6 @@ import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_AGGREGATE;
-import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_DEFAULT;
-import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_PROCESS;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_IMPORT;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_PROFILE;
 import java.io.IOException;
@@ -172,29 +168,22 @@ public class Loader {
     void profile(QueryEngine tqe, QueryEngine qe) {
         Query qprofile = qe.getTemplate(STL_PROFILE);
         if (qprofile != null) {
-            // st:process, st:default, st:import, st:level
+            // st:import, st:level
             // draft: profile may load st:import
             // st:import skip its st:start, st:default
             // when they exist in this qe
             // st:profile of import is skipped           
             // TODO: level()
             profile(qprofile);
-            qprofile.setTemplateProfile(qprofile);
             
-            Filter fp = qprofile.getFilter(STL_PROCESS);
-            Filter fd = qprofile.getFilter(STL_DEFAULT);
-            Filter fa = qprofile.getFilter(STL_AGGREGATE);
-            
-            if (fp != null || fd != null || fa != null) {
-                // set the definition of st:process() in the templates
-                for (Query t : qe.getTemplates()) {
-                    t.setTemplateProfile(qprofile);
-                }
-                for (Query t : qe.getNamedTemplates()) {
-                    t.setTemplateProfile(qprofile);
-                }                
+            // share function definitions in  templates
+            for (Query t : qe.getTemplates()) {             
+                t.addExtension(qprofile.getExtension());
             }
-            
+            for (Query t : qe.getNamedTemplates()) {             
+                t.addExtension(qprofile.getExtension());
+            }           
+                       
             Expr imp = qprofile.getProfile(STL_IMPORT);
             if (imp != null) {
                 String uri = imp.getExp(0).getLabel();
@@ -255,6 +244,7 @@ public class Loader {
     
  
     void init(Query q, List<Exp> select) {
+        //q.setExtension(new Extension());
         for (Exp exp : select) {
             if (exp.getFilter() != null) {
                 initExp(q, exp.getFilter().getExp());
@@ -265,12 +255,12 @@ public class Loader {
     void initExp(Query q, Expr exp) {
         switch (exp.oper()) {
             
-            case ExprType.STL_DEFINE:
-                if (exp.getExpList().size() == 1
-                        && exp.getExp(0).getExpList().size() == 2) {
-                    init(q, exp);
-                }
-                break;
+//            case ExprType.STL_DEFINE:
+//                if (exp.getExpList().size() == 1
+//                        && exp.getExp(0).getExpList().size() == 2) {
+//                    init(q, exp);
+//                }
+//                break;
                 
             case ExprType.STL_IMPORT:
                 if (exp.getExpList().size() >= 1){
@@ -290,7 +280,7 @@ public class Loader {
     /**
      * st:define(st:process(?in) = st:uri(?in))
      * st:define(st:default(?in) = st:turtle(?in))
-     * 
+     * @deprecated
      */
     void init(Query q, Expr exp) {
         //System.out.println("PP: " + exp);
@@ -299,32 +289,16 @@ public class Loader {
             logger.error("Incorrect profile expression: " + exp);
             return ;        
         }
-        Expr ee = exp.getExp(1);
-
-        switch (exp.getExp(0).oper()) {
-
-            case ExprType.STL_PROCESS:
-                // ee = st:uri()
-                // set st:define st:process operation               
-                q.setFilter(STL_PROCESS, exp.getFilter());
-                break;
-                
-             case ExprType.STL_AGGREGATE:
-                // ee = st:uri()
-                // set st:define st:process operation               
-                q.setFilter(STL_AGGREGATE, exp.getFilter());
-                break;    
-                
-            case ExprType.STL_DEFAULT:
-                q.setFilter(STL_DEFAULT, ee.getFilter());                
-                break;
-                
+        Expr ee  = exp.getExp(1);
+        Expr fun = exp.getExp(0);
+        
+        switch (fun.oper()) {
+                                     
             case ExprType.LEVEL:
                 IDatatype dt = (IDatatype) ee.getValue();
                 trans.setLevelMax(dt.intValue());                
                 break;
                 
-
         }
     }
     
@@ -332,7 +306,8 @@ public class Loader {
         if (exp.getExp(0).oper() == ExprType.LEVEL){
             return exp.getExp(1).type() == ExprType.CONSTANT;
         }
-        return (exp.getExp(1).type() == ExprType.FUNCTION && exp.getExp(1).oper() != ExprType.UNDEF); 
+        return true ; //(exp.getExp(1).type() == ExprType.FUNCTION);
+                //&& exp.getExp(1).oper() != ExprType.UNDEF); 
     }
 
     

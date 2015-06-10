@@ -56,6 +56,7 @@ public class Processor {
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
 
+	private static final String LET = "let";
 
 	private static final String PLENGTH = "pathLength";
 	private static final String KGPLENGTH = KGRAM + "pathLength";
@@ -128,6 +129,7 @@ public class Processor {
 	static final String STL_PROLOG              = STL + "prolog"; 
 	static final String STL_LEVEL               = STL + "level"; 
         static final String STL_DEFINE              = STL + "define";
+        static final String DEFINE                  = "define";
         static final String STL_PREFIX              = STL + "prefix";
  	static final String STL_INDENT              = STL + "indent";
  	static final String STL_SELF                = STL + "self";
@@ -247,7 +249,7 @@ public class Processor {
 	
 	Term term;
 	List<Expr> lExp;
-	int type, oper;
+	//int type = ExprType.UNDEF, oper;
 	Pattern pat;
 	Matcher match;
 	XPathFun xfun;
@@ -328,60 +330,124 @@ public class Processor {
 	
 	
 	public int type(){
-		return type;
+		return term.type();
+	}
+        
+        public int oper(){
+		return term.oper();
 	}
         
         void setOper(int n){
-            oper = n;
+            term.setOper(n);
+        }
+        
+        void setType(int n){
+            term.setType(n);
         }
 	
-	public void compile(ASTQuery ast){
+	public void type(ASTQuery ast){
 		if (table == null){
 			deftable();
 		}
-		if (term.isFunction()){
-			type = ExprType.FUNCTION;
-			oper = getOper();
-			switch(oper){
-				case ExprType.IN: 	compileInList(); break;
-				case ExprType.HASH:     compileHash(); break;
-				case ExprType.URI: 	compileURI(ast); break;
-				case ExprType.CAST:     compileCast(); break;
-				case ExprType.REGEX:    compileRegex(); break;
-				case ExprType.STRREPLACE: compileReplace(); break;
-				case ExprType.XPATH:    compileXPath(ast); break;
-				case ExprType.SQL:      compileSQL(ast); break;
-				case ExprType.EXTERNAL: compileExternal(ast); break;
-			}
+                if (type() != ExprType.UNDEF){
+                    // already done
+                }
+                else if (term.isFunction()){
+			setType(ExprType.FUNCTION);
+			setOper(getOper());
+                        subtype(ast);
 		}
 		else if (term.isAnd()){
-			type = ExprType.BOOLEAN;
-			oper = ExprType.AND;
+			setType(ExprType.BOOLEAN);
+			setOper(ExprType.AND);
 		}
 		else if (term.isOr()){
-			type = ExprType.BOOLEAN;
-			oper = ExprType.OR;
+			setType(ExprType.BOOLEAN);
+			setOper(ExprType.OR);
 		}
 		else if (term.isNot()){
-			type = ExprType.BOOLEAN;
-			oper = ExprType.NOT;
+			setType(ExprType.BOOLEAN);
+			setOper(ExprType.NOT);
 		}
 		else {
-			type = ExprType.TERM;
-			oper = getOper();
+			setType(ExprType.TERM);
+			setOper(getOper());
 		}
 		
-		if (oper == ExprType.UNDEF){
+		if (oper() == ExprType.UNDEF){
 			if (term.isPathExp()){
 				// Property Path Exp
 			}
 			else {
-				ast.addError("Undefined expression: ", term);
+                            ast.undefined(term);
 			}
 		}
-		setArguments();
-		check(ast);
+		
 	}
+        
+        /**
+         * detect define function 
+         */
+       void subtype(ASTQuery ast) {
+
+        switch (term.oper()) {
+
+            case ExprType.STL_DEFINE:
+                // st:define(st:process(?x) = exp(?x))
+                // def = st:process(?x)
+                Expression def = term.getArg(0);
+                ast.define(def);
+                term.local();
+                break;
+                
+               case ExprType.LET:
+                   // let (?x = ?y, exp(?x))
+                   Expression let  = term.getArg(0);
+                   Expression body = term.getArg(1);
+                   Expression var  = let.getArg(0);
+                   body.local(var);
+                   break;
+           }
+        }
+        
+        
+        void compile(ASTQuery ast) {
+        if (term.isFunction()) {
+            switch (oper()) {
+                case ExprType.IN:
+                    compileInList();
+                    break;
+                case ExprType.HASH:
+                    compileHash();
+                    break;
+                case ExprType.URI:
+                    compileURI(ast);
+                    break;
+                case ExprType.CAST:
+                    compileCast();
+                    break;
+                case ExprType.REGEX:
+                    compileRegex();
+                    break;
+                case ExprType.STRREPLACE:
+                    compileReplace();
+                    break;
+                case ExprType.XPATH:
+                    compileXPath(ast);
+                    break;
+                case ExprType.SQL:
+                    compileSQL(ast);
+                    break;
+                case ExprType.EXTERNAL:
+                    compileExternal(ast);
+                    break;
+            }
+        }
+        
+        setArguments();		
+        check(ast);
+    }
+        
 	
 	// TODO: error message
 	void check(ASTQuery ast){
@@ -452,6 +518,7 @@ public class Processor {
 		defoper(LIST, 		ExprType.LIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
 		defoper(SKOLEM,         ExprType.SKOLEM);
+		defoper(LET,            ExprType.LET);
 
 		
 		defoper(REGEX, 		ExprType.REGEX);
@@ -553,6 +620,7 @@ public class Processor {
 		defoper(STL_XSDLITERAL, ExprType.XSDLITERAL);
 		defoper(VISITED,        ExprType.VISITED);
 		defoper(PROLOG,         ExprType.PROLOG);
+		defoper(DEFINE,         ExprType.STL_DEFINE);
 		defoper(STL_DEFINE,     ExprType.STL_DEFINE);
                 defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
@@ -705,11 +773,7 @@ public class Processor {
 		// ?x in (a b)
 		
 	}
-	
-	
-	public int oper(){
-		return oper;
-	}
+
 	
 	/**
 	 * term = regex(?x,  ".*toto",  ["i"])

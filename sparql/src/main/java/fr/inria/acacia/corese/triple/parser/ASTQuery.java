@@ -201,7 +201,8 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	
 	Hashtable<String, Expression> selectFunctions = new Hashtable<String, Expression>();
 	HashMap<String, Variable> varTemplate = new HashMap<String, Variable>();
-
+        private HashMap <String, Expression> define;
+        private HashMap <String, Expression> undefined;
 	ExprTable selectExp   = new ExprTable();
 	ExprTable regexExpr   = new ExprTable();
 
@@ -311,6 +312,34 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         return isFunctional;
     }
 
+    /**
+     * @return the define
+     */
+    public HashMap <String, Expression> getDefine() {
+        return define;
+    }
+
+    /**
+     * @param define the define to set
+     */
+    public void setDefine(HashMap <String, Expression> define) {
+        this.define = define;
+    }
+
+    /**
+     * @return the undefined
+     */
+    public HashMap <String, Expression> getUndefined() {
+        return undefined;
+    }
+
+    /**
+     * @param undefined the undefined to set
+     */
+    public void setUndefined(HashMap <String, Expression> undefined) {
+        this.undefined = undefined;
+    }
+
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
 	/**
@@ -318,7 +347,9 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	 */
 	private ASTQuery() {
             dataset = Dataset.create();
-    }
+            define = new HashMap();
+            undefined = new HashMap();
+        }
 	
 	ASTQuery(String query) {
 		this();
@@ -525,6 +556,22 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	public void addError(String error, Object obj) {
 		getGlobalAST().setError(error + obj);
 	}
+        
+        void undefined(Expression t){
+            if (! getGlobalAST().getDefine().containsKey(t.getLabel())){
+                getGlobalAST().getUndefined().put(t.getLabel(), t);
+            }
+        }
+        
+        /**
+         * 
+         * def = st:foo(?x) = st:bar(?x)
+         */
+        void define(Expression def){
+            Expression t = def.getArg(0);
+            getGlobalAST().getDefine().put(t.getLabel(), def);
+            getGlobalAST().getUndefined().remove(t.getLabel());
+        }
 	
 	public List<String> getErrors(){
 		return getGlobalAST().errors();

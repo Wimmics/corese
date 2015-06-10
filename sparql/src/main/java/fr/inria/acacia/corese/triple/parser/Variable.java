@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Vector;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 
@@ -22,7 +23,7 @@ public class Variable extends Atom {
 	private boolean isBlankNode = false;
 	private boolean isPath = false; // use case ?x $path ?y
 	private boolean isVisited = false;
-	private int index = -1;
+	private int index = ExprType.UNBOUND;
 	List<Variable> lVar;
 	// var as IDatatype for comparing variables in KGRAM
 	IDatatype dt;
@@ -212,11 +213,25 @@ public class Variable extends Atom {
 
         public Variable copy(Variable o, Variable n){
             if (this.equals(o)){
-                return create(n.getName());
+                Variable var = create(n.getName());
+                return var;
             }
             else {
                 return this;
             }
         }
+        
+        void visit(ExpressionVisitor v){
+            v.visit(this);
+        }
+        
+       public boolean isLocal(){
+            return index == ExprType.LOCAL;
+        }
+       
+       public void localize(){
+           index = ExprType.LOCAL;
+       }
+ 
 	
 }

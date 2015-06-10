@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.cg.datatype.RDF;
+import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -420,6 +421,10 @@ public class Constant extends Atom {
 		cst.setLongName(getLongName());
 		return cst;
 	}
+        
+         void visit(ExpressionVisitor v){
+            v.visit(this);
+        }
 	
 	public Expression transform(boolean isReverse){
 		Constant cst = this;

@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -69,7 +70,8 @@ public class Term extends Expression {
 	boolean isSystem = false;
 	boolean isDistinct = false;
 	boolean isShort = false;
-	String  modality;
+	String  modality;       
+        int type = ExprType.UNDEF, oper = ExprType.UNDEF;
 	
 	public Term() {
 	}
@@ -789,12 +791,7 @@ public class Term extends Expression {
 	public void setOper(String str){
 		setName(str);
 	}
-        
-         public void setOper(int n){
-            if (proc != null){
-                proc.setOper(n);
-            }
-        }
+            
 	
 	
 	/**
@@ -901,12 +898,16 @@ public class Term extends Expression {
 		if (proc != null){
                     return this;
                 }
+                
+		proc = new Processor(this);
+		proc.type(ast);                
 		
+                int i = 0;
 		for (Expression exp : getArgs()){
 			exp.compile(ast);
 		}
 		
-		proc = new Processor(this);
+//		proc = new Processor(this);
 		proc.compile(ast);
                 
                 if (getArg() != null){
@@ -928,12 +929,23 @@ public class Term extends Expression {
 	
 	
 	public int type(){
-		return proc.type();
+		return type;
 	}
+        
+        /**
+     * @param type the type to set
+     */
+        public void setType(int type) {
+            this.type = type;
+        }
 	
 	public int oper(){
-		return proc.oper();
+		return oper;
 	}
+        
+        public void setOper(int n){
+            oper = n;
+        }
 
 	public Processor getProcessor() {
 		// TODO Auto-generated method stub
@@ -958,5 +970,14 @@ public class Term extends Expression {
             }
             return f;
     }
+        
+    void visit(ExpressionVisitor v){
+         v.visit(this);
+         for (Expression e : getArgs()) {
+              e.visit(v);
+          }  
+    }   
+
+    
 
 }

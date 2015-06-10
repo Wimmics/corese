@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
+import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -31,7 +32,7 @@ implements Regex, Filter, Expr {
 	public static final int BOUND = 4;
 	
 	static ArrayList<Expr> empty = new ArrayList<Expr>();
-	int type = -1, min = -1, max = -1, retype = Regex.UNDEF;
+	int min = -1, max = -1, retype = Regex.UNDEF;
 	
 	boolean isQName = false;
 	boolean isEget = false;
@@ -488,7 +489,7 @@ implements Regex, Filter, Expr {
 
 	
 	public int type() {
-		return type;
+		return ExprType.UNDEF;
 	}
 	
 	public int retype() {
@@ -582,6 +583,52 @@ implements Regex, Filter, Expr {
         public Expression copy(Variable o, Variable n){
             return this;
         }
+        
+        void visit(ExpressionVisitor v){
+            
+        }
+        
+        /**
+         * Declare variable v as local in this exp
+         */
+        public void localize(final Variable var){
+            visit(new ExpressionVisitor() {
+                             
+                @Override
+                public void visit(Term t) {
+                }
+
+                @Override
+                public void visit(Variable v) {
+                    if (v.equals(var)){
+                        v.localize();
+                    }
+                }
+
+                @Override
+                public void visit(Constant c) {
+                }
+            });
+        }
+        
+        public void local(Expr exp){
+            if (exp.isVariable()){
+                Variable var = (Variable) exp;
+                var.localize();
+                localize(var);
+            }
+        }
+        
+        /**
+         * this = define(f(x) = g(x))
+         */
+       public void local() {
+            Expression def = getArg(0).getArg(0);
+            for (Expression arg : def.getArgs()) {
+                Variable var = arg.getVariable();
+                local(var);
+            }
+       }
         
 	
 }

@@ -270,4 +270,9 @@ public class Pattern implements ExprType, Expr {
     
      public void addExp(int i, Expr e) {
     }
+
+    @Override
+    public void local(Expr var) {
+        
+    }
 }

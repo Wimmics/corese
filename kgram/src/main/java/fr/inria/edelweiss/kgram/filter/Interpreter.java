@@ -253,6 +253,7 @@ public class Interpreter implements Evaluator, ExprType {
 
             case SKIP:
             case GROUPBY:
+            case STL_DEFINE:
                 return TRUE;
 
             case BOUND:
@@ -270,6 +271,9 @@ public class Interpreter implements Evaluator, ExprType {
                     }
                 }
                 return null;
+                
+            case LET:
+                return let(exp, env, p);
 
             case EXIST:
                 return exist(exp, env, p);
@@ -320,11 +324,13 @@ public class Interpreter implements Evaluator, ExprType {
 
             case STL_AND:
             case EXTERNAL:
+            case UNDEF:
+            case STL_PROCESS:
                 // variable number of args: need array
                 break;
 
 
-            default:
+            default:                
                 switch (exp.getExpList().size()) {
 
                     case 0:
@@ -355,9 +361,20 @@ public class Interpreter implements Evaluator, ExprType {
         if (args == null) {
             return null;
         }
-        Object res = proxy.eval(exp, env, p, args);
-        return res;
-
+        
+        switch(exp.oper()){
+            
+            case UNDEF:
+                Extension ext = env.getQuery().getExtension();
+                if (ext == null){
+                    return null;
+                }
+                return eval(exp, env, p, ext, args);
+                
+            default:
+                return proxy.eval(exp, env, p, args);
+        }
+       
     }
 
     /**
@@ -540,4 +557,36 @@ public class Interpreter implements Evaluator, ExprType {
     public void finish(Environment env) {
         proxy.finish(producer, env);
     }
+
+    /**
+     * let (?x = ?y, exp) 
+     * TODO: optimize local()
+     */
+    private Object let(Expr exp, Environment env, Producer p) {
+        Expr let  = exp.getExp(0);
+        Expr ee   = exp.getExp(1);
+        Expr var  = let.getExp(0);
+        Node val  = eval(let.getExp(1).getFilter(), env, p);
+        env.set(var, val);
+        Object res = eval(ee, env, p);
+        env.unset(var);
+        return res;
+    }
+    
+    /**
+     * Extension manage extension functions
+     * Their parameters are tagged as local variables, managed in a specific stack
+     */
+    public Object eval(Expr exp, Environment env, Producer p, Extension ext, Object[] values){
+        Expr def = ext.get(exp, values);
+        if (def == null){
+            return null;
+        }
+        Expr fun = def.getExp(0);
+        env.set(fun.getExpList(), values);        
+        Object res = eval(def.getExp(1), env, p);        
+        env.unset(fun.getExpList());        
+        return res;
+    }
+    
 }

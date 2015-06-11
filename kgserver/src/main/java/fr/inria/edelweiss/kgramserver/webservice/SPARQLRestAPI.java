@@ -53,6 +53,8 @@ public class SPARQLRestAPI {
     static TripleStore store = new TripleStore(false, false);
     // set true to prevent update/load
     static boolean isProtected = false;
+    // true when Ajax
+    static boolean isAjax = !true;
     private static Profile mprofile;
   
     

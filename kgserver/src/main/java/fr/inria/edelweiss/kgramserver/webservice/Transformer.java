@@ -5,12 +5,10 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import java.util.List;
@@ -220,7 +218,15 @@ public class Transformer {
             ctx.setLang(par.getLang());
         }
          ctx.setServer(Profile.SERVER);
+         complete(ctx);
         return ctx;
+    }
+    
+    Context complete(Context c){
+        if (SPARQLRestAPI.isAjax){
+            c.setProtocol(Context.STL_AJAX);
+        }
+        return c;
     }
 
     private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris) {

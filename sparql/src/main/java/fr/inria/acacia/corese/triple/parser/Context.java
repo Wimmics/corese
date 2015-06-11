@@ -25,6 +25,8 @@ public class Context {
     public static final String STL_PROFILE = STL + "profile";
     public static final String STL_TRANSFORM = STL + "transform";
     public static final String STL_URI = STL + "uri";
+    public static final String STL_PROTOCOL = STL + "protocol";
+    public static final String STL_AJAX = STL + "ajax";
     public static final String STL_CONTEXT = STL + "context";
     public static final String STL_DATASET = STL + "dataset";
     public static final String STL_LANG = STL + "lang";
@@ -83,6 +85,10 @@ public class Context {
 
     public String getURI() {
         return stringValue(STL_URI);
+    }
+    
+    public Context setProtocol(String str){
+        return setURI(STL_PROTOCOL, str);
     }
 
     public Context setQuery(String str) {

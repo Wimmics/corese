@@ -2,16 +2,187 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jun 04 16:38:13 CEST 2015
+Thu Jun 11 14:26:48 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
 <rule>
 <body>
 <![CDATA[
+#
+# SPARQL Tutorial
+# st:get(st:uri) is the name of a query to execute (st:minus)
+# It is used 1) to select a query and 2) to display the result of the query
+# RDF graph is either RDF dataset or Query Result
+# Query definitions are stored in st:context named graph 
+#
+template st:start {
+
+  st:call-template-with(st:server, st:head)
+
+  st:call-template(st:head)
+    
+  st:call-template(st:select, ?uri)
+  
+  st:call-template(st:display, ?uri)
+   
+  st:call-template(st:tail)
+
+  st:call-template-with(st:server, st:tail)
+}
+where {
+
+  bind (coalesce(st:get(st:uri), st:intro) as ?uri)
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:content2(?t, ?p) {
+
+  str(?t) "<br/>"    group distinct { "<a href='" str(?d) "'>" str(?d) "</a>" ; separator="<br/>"} "<br/>"
+ 
+}
+where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    ?ds a st:Dataset
+    ?ds ?p [ st:uri ?d ]
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:content {
+  
+  st:call-template(st:content2, "Data:",   st:data)
+  st:call-template(st:content2, "Schema:", st:schema)
+  st:call-template(st:content2, "Query:",  st:context)
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:tail {
+  
+  """ 
+  <h3>Dataset</h3>
+  """
+  
+  st:call-template(st:content) 
+  
+  """ 
+  <p> <hr/> </p>
+  """
+  
+  
+
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+  define (st:protocol(?uri) =
+    if (st:get(st:protocol, st:ajax), 
+      concat("javascript:trans(\"", str(?uri), "\")"), 
+      str(?uri))
+  )
+  
+  define (st:protocol2(?uri, ?arg) =
+      concat("javascript:trans(\"", str(?uri), "\", ", str(?arg), ");") 
+  )
+  
+  define (st:link(?uri) =
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      "&profile=", st:get(st:profile))
+  )
+  
+  define (st:plink(?uri) =
+    st:protocol(st:link(?uri))
+  )
+  
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:next(?t) {
+
+  "<a  href='" st:plink(?n) "'>"
+  "<button type='button'>Next</button>"
+  "</a>"  
+    
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i + 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Display result of query
+# RDF graph is a result graph
+#
+
+template st:result {
+
+   st:call-template-with(st:sparql, st:result, st:get(st:service), st:sparql)
+    
+}
+where {
+  bind (st:get(st:query) as ?query)
+  filter bound(?query)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:prev(?t) {
 
-  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
+  "<a  href='" st:plink(?n) "'>"
   "<button type='button'>Previous</button>"
   "</a>"  
     
@@ -44,13 +215,26 @@ template st:form(?n, ?q, ?t, ?s) {
         function show(name){
             document.getElementById('query').value = document.getElementById(name).value;
         }
+        
+        function submit(){"""
+        
+        if (st:get(st:protocol, st:ajax),
+            
+            st:protocol2(st:get(st:service), 
+            concat('{', 'uri: "', ?n, '", profile: "', st:get(st:profile), 
+             '", ', "query: document.getElementById('query').value", '}')),
+             
+            """document.getElementById("form").submit();""")
+ 
+             
+        """}
    </script>
        
-   <form method='post'  action='' >   
-   <input type='hidden' id='tmp' value='"""str(?t)"""' />
-   <input type='hidden' id='sol' value='"""str(?s)"""' />
-   <input type='hidden' name='uri' value='""" ?n """'/>
-   <input type='hidden' name='profile' value='""" st:get(st:profile) """'/> 
+   <form method='post' id='form' action='""" st:get(st:service) """' >   
+   <input type='hidden' id='tmp' 	value='"""str(?t)"""' />
+   <input type='hidden' id='sol' 	value='"""str(?s)"""' />
+   <input type='hidden' name='uri' 	value='""" ?n """'/>
+   <input type='hidden' name='profile'  value='""" st:get(st:profile) """'/> 
    """
    
    if (?s = st:null, "", 
@@ -59,7 +243,7 @@ template st:form(?n, ?q, ?t, ?s) {
    """)
    
    """
-   <input type='submit' value='Submit' />
+   <input type='button' onclick='submit()' value='Submit' />
    <br/>
    <textarea cols='60' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
    </form>
@@ -67,58 +251,6 @@ template st:form(?n, ?q, ?t, ?s) {
 }
 where {
 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:content2(?t, ?p) {
-
-  str(?t) "<br/>"    group distinct { "<a href='" str(?d) "'>" str(?d) "</a>" ; separator="<br/>"} "<br/>"
- 
-}
-where {
-  bind (st:get(st:context) as ?g)
-  graph ?g {
-    ?ds a st:Dataset
-    ?ds ?p [ st:uri ?d ]
-  }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL Tutorial
-# st:get(st:uri) is the name of a query to execute (st:minus)
-# It is used 1) to select a query and 2) to display the result of the query
-# RDF graph is either RDF dataset or Query Result
-# Query definitions are stored in st:context named graph 
-#
-template st:start {
-
-  st:call-template-with(st:server, st:head)
-
-  st:call-template(st:head)
-    
-  st:call-template(st:select, ?uri)
-  
-  st:call-template(st:display, ?uri)
-   
-  st:call-template(st:tail)
-
-  st:call-template-with(st:server, st:tail)
-}
-where {
-
-  bind (coalesce(st:get(st:uri), st:intro) as ?uri)
-  
 }
 ]]>
 </body>
@@ -159,22 +291,6 @@ template st:select(?t) {
 
 }
 where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:content {
-  
-  st:call-template(st:content2, "Data:",   st:data)
-  st:call-template(st:content2, "Schema:", st:schema)
-  st:call-template(st:content2, "Query:",  st:context)
-}
-where {
-
 }
 ]]>
 </body>
@@ -254,55 +370,6 @@ order by ?i
 <rule>
 <body>
 <![CDATA[
-template st:tail {
-  
-  """ 
-  <h3>Dataset</h3>
-  """
-  
-  st:call-template(st:content) 
-  
-  """ 
-  <p> <hr/> </p>
-  """
-  
-  
-
-}
-where {
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:next(?t) {
-
-  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
-  "<button type='button'>Next</button>"
-  "</a>"  
-    
-}
-where {
-  bind (st:get(st:context) as ?g)
-  
-  graph ?g {
-    ?q1 st:name ?t ; st:index ?i
-    bind (?i + 1 as ?j)
-    ?q2 st:index ?j ;
-	st:name ?n 
-  }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:head {
    
   "<h2 class='center'>SPARQL Tutorial</h2>"
@@ -310,27 +377,6 @@ template st:head {
 }
 where {
 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Display result of query
-# RDF graph is a result graph
-#
-
-template st:result {
-
-   st:call-template-with(st:sparql, st:result, st:get(st:service), st:sparql)
-    
-}
-where {
-  bind (st:get(st:query) as ?query)
-  filter bound(?query)
 }
 ]]>
 </body>

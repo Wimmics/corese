@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jun 04 16:38:13 CEST 2015
+Thu Jun 11 14:26:48 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -137,6 +137,38 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:profile {
+
+  define (st:protocol(?uri) =
+    if (st:get(st:protocol, st:ajax), 
+      concat("javascript:trans(\"", str(?uri), "\")"), 
+      str(?uri))
+  )
+  
+  define (st:link(?uri) =
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      coalesce(
+	concat("&profile=",   st:get(st:profile)), 
+	concat("&transform=", st:get(st:transform)), 
+	""))
+  )
+  
+  define (st:plink(?uri) =
+    st:protocol(st:link(?uri))
+  )
+  
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
@@ -152,29 +184,6 @@ template st:page {
   
 }
 where {
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Hypertext link trigger Corese server 
-# Answer using SPARQL Template Transformation
-# st:get(st:profile) URI of the transformation, stored by Transformer
-#
-
-template st:link(?x) {
-
-      st:get(st:service) 
-      "?uri=" encode_for_uri(?x)          
-      st:call-template(st:transform)
-      
-}
-where {
- 
 }
 ]]>
 </body>
@@ -207,12 +216,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-prefix p:    <http://fr.dbpedia.org/property/>
-
+#
+# Link to external web site (eg Wikipedia)
+#
 
 template  st:href(?r, ?p) {
 
@@ -360,6 +366,9 @@ limit 1
 <rule>
 <body>
 <![CDATA[
+#
+# Link to server
+#
 prefix foaf: <http://xmlns.com/foaf/0.1/>
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
@@ -369,9 +378,7 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template  st:display(?r, ?l) {
 
- "<a href=\"" 
-    st:call-template(st:link, ?r) 
-  "\">"  
+ "<a href='"  st:plink(?r)  "'>"  
     str(coalesce(?l, ?pr)) 
   "</a>"
 
@@ -435,25 +442,6 @@ limit 1
 <rule>
 <body>
 <![CDATA[
-
-template st:transform {
-     
-      coalesce(
-	concat("&profile=",   st:get(st:profile)), 
-	concat("&transform=", st:get(st:transform)), 
-	"")   
-      
-}
-where {
- 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
@@ -497,7 +485,7 @@ template st:locateall(?r) {
   
   "google.maps.event.addListener(marker" st:number() 
   ", 'click', function () {window.location.href = \"" 
-  st:call-template(st:link, ?in) 
+  st:plink(?in) 
   "\";});"
   
 }

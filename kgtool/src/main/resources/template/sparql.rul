@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jun 04 16:38:13 CEST 2015
+Thu Jun 11 14:26:48 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -101,7 +101,7 @@ where {
 <body>
 <![CDATA[
 template st:link(?uri, ?title) {
-   "<a href=\""  str(?uri) "\">" str(?title) "</a>"
+   "<a href='"  str(?uri) "'>" str(?title) "</a>"
 }
 where {
 }
@@ -159,6 +159,9 @@ order by ?i
 <rule>
 <body>
 <![CDATA[
+#
+# Generate link for URI
+#
 template st:display(?x) {
   if (! bound(?profile), 
     st:call-template(st:esc, ?x),
@@ -217,7 +220,10 @@ template st:linkprofile(?x) {
 
   if (isURI(?x), 
     st:call-template(st:link, 
-      coalesce(st:call-template(st:transform, ?x), encode_for_uri(?x)),
+      coalesce(
+	#st:call-template(st:transform, ?x), 
+	st:plink(?x),
+	encode_for_uri(?x)),
       ?e),
     str(?e))
     
@@ -225,21 +231,6 @@ template st:linkprofile(?x) {
 where {
 
   bind (st:call-template(st:esc, ?x) as ?e)
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:transform(?x) {
-
-    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" st:get(st:profile)
-    
-}
-where {
 
 }
 ]]>
@@ -259,6 +250,21 @@ template st:pageselect {
     
 }
 where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:transform(?x) {
+
+    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" st:get(st:profile)
+    
+}
+where {
+
 }
 ]]>
 </body>
@@ -364,6 +370,35 @@ template st:opencons {
   
 }
 where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+  define (st:protocol(?uri) =
+    if (st:get(st:protocol, st:ajax), 
+      concat("javascript:trans(\"", str(?uri), "\")"), 
+      str(?uri))
+  )
+  
+  define (st:link(?uri) =
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      "&profile=", st:get(st:profile))
+  )
+  
+  define (st:plink(?uri) =
+    st:protocol(st:link(?uri))
+  )
+  
+}
+where {
+
 }
 ]]>
 </body>

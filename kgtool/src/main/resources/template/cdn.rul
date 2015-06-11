@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jun 04 16:38:13 CEST 2015
+Thu Jun 11 14:26:48 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -213,9 +213,9 @@ prefix cn: <http://cdn.fr/schema/>
 
 template st:navlab(?u, ?t) { 
   
-  "<a href=\"" 
-  st:get(st:service) "?uri=" str(?u) "&profile=st:dbpedia"
-  "\">" ?t "</a>"
+  "<a href='" 
+  st:protocol(concat(st:get(st:service), "?uri=", str(?u), "&profile=st:dbpedia"))
+  "'>" ?t "</a>"
 
 }
 where {
@@ -314,11 +314,39 @@ where {
 <body>
 <![CDATA[
 template st:profile {
-  st:define(st:process(?x) =
-    if (isLiteral(?x), xsd:string(?x), st:apply-templates(?x)))
+
+  define (st:process(?x) =
+    if (isLiteral(?x), xsd:string(?x), st:apply-templates(?x))
+  )
     
-  st:define(st:default(?x) = 
-    xsd:string(?x))
+  define (st:default(?x) = 
+    xsd:string(?x)
+  )
+    
+   define (st:protocol(?uri) =
+    if (st:get(st:protocol, st:ajax), 
+      concat("javascript:trans(\"", str(?uri), "\")"), 
+      str(?uri))
+  )  
+     
+   define (st:link(?uri) =
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      coalesce(
+	concat("&profile=",   st:get(st:profile)), 
+	concat("&transform=", st:get(st:transform)), 
+	""))
+  )
+  
+  define (st:misc(?name) = 
+    st:protocol(
+      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&transform=st:sparql%23core&profile=st:dbpedia"))
+  )
+  
+  define (st:plink(?uri) =
+      st:protocol(st:link(?uri))
+  ) 
+ 
   
 }
 where {}
@@ -469,32 +497,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Hypertext link trigger Corese server 
-# Answer using SPARQL Template Transformation
-# st:get(st:transform) URI of the transformation, stored by Transformer
-#
-prefix cn: <http://cdn.fr/schema/>
-
-template cn:dynlink(?date) {
-
-      st:get(st:service) 
-      "?uri=" ?date
-      coalesce(
-	concat("&profile=", st:get(st:profile)),
-	concat("&transform=", st:get(st:transform)), 
-	"")
-}
-where {
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix cn: <http://cdn.fr/schema/>
 
 template cn:hlink(?u, ?t) { 
@@ -534,17 +536,19 @@ template cn:list {
   """
   <table class='center'>
   <tr>
-  <td><a href='?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia'>Carte</a></td>
+  <td><a href='""" 
+  st:protocol(concat(st:get(st:service), "?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia")) 
+  """'>Carte</a></td>
 
-  <td><a href='?name="""st:get(st:server) """/data/query/cdnplace.rq&transform=st:sparql%23core&profile=st:dbpedia'>Lieu</a></td>
+  <td><a href='""" st:misc("/data/query/cdnplace.rq") """'>Lieu</a></td>
 
-  <td><a href='?name="""st:get(st:server) """/data/query/cdnperson.rq&transform=st:sparql%23core&profile=st:dbpedia'>Personne</a></td>
+  <td><a href='""" st:misc("/data/query/cdnperson.rq") """'>Personne</a></td>
   
-  <td><a href='?name="""st:get(st:server) """/data/query/cdnfr.rq&transform=st:sparql%23core&profile=st:dbpedia'>France</a></td>  
+  <td><a href='""" st:misc("/data/query/cdnfr.rq") """'>France</a></td>  
   
-  <td><a href='?name="""st:get(st:server) """/data/query/cdneds.rq&transform=st:sparql%23core&profile=st:dbpedia'>Savoie</a></td>  
+  <td><a href='""" st:misc("/data/query/cdneds.rq") """'>Savoie</a></td>  
   
-  <td><a href='?name="""st:get(st:server) """/data/query/cdnmisc.rq&transform=st:sparql%23core&profile=st:dbpedia'>Autre</a></td>  
+  <td><a href='""" st:misc("/data/query/cdnmisc.rq") """'>Autre</a></td>  
   
   </tr>
   </table>
@@ -620,7 +624,7 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:elem(?title) {
 
-    "<td><a href=\""  st:call-template(cn:dynlink, ?century) "\">" 
+    "<td><a href='"  st:plink(?century) "'>" 
     
     "<div" ?class ">" ?date "</div>"
     
@@ -654,13 +658,13 @@ template cn:index(?title) {
 "<table class='center'><tr>"
 
   if (bound(?before), 
-    concat("<td><a href='", st:call-template(cn:dynlink, ?before), "'>Avant</a></td><td>&nbsp;&nbsp;</td>"), 
+    concat("<td><a href='", st:plink(?before), "'>Avant</a></td><td>&nbsp;&nbsp;</td>"), 
     "")
     
   st:call-template(cn:elem, ?title)
   
   if (bound(?after), 
-    concat("<td><a href='", st:call-template(cn:dynlink, ?after), "'>Après</a></td>"), 
+    concat("<td><a href='", st:plink(?after), "'>Après</a></td>"), 
     "")  
     
 "</tr></table>"

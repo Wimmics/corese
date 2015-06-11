@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jun 04 16:38:13 CEST 2015
+Thu Jun 11 14:26:48 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -180,16 +180,38 @@ template st:profile(?in) {
 
     st:define(st:process(?in) = 
       if (isBlank(?in), 
-        concat("<span id='", 
+          st:blank(?in),
+          let (?t = st:turtle(?in),
+	    if (strstarts(?t, "<"), replace(?t, "<", "&lt;"), ?t))	
+    ))
+    
+    st:define(
+      st:blank(?in) =
+        concat("<span id='", st:id(?in), "'>", 
+          st:apply-templates(?in), 
+          "</span>")
+     )
+     
+     st:define (
+        st:id(?in) =
+         coalesce(
+	    concat("it", st:vget(?in, st:id)), 
+	    concat("ab", st:index()))
+     )
+      
+    st:define(st:default(?in) = st:turtle(?in))
+    
+    st:define(st:process2(?in) = 
+      if (isBlank(?in), 
+          concat("<span id='", 
 	  coalesce(
 	    concat("it", st:vget(?in, st:id)), 
 	    concat("ab", st:index())), 
 	  "'>", 
-          st:apply-templates(?in), "</span>"), 
-	if (strstarts(st:turtle(?in), "<"), replace(st:turtle(?in), "<", "&lt;"), 		st:turtle(?in))	
+          st:apply-templates(?in), "</span>"),          
+	    if (strstarts(st:turtle(?in), "<"), replace(st:turtle(?in), "<", "&lt;"), st:turtle(?in))	
     ))
-      
-    st:define(st:default(?in) = st:turtle(?in))
+    
 
 }
 where {

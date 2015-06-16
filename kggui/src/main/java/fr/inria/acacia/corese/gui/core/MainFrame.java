@@ -72,7 +72,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-05-01";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-06-06";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -121,7 +121,7 @@ public class MainFrame extends JFrame implements ActionListener {
             iserviceCorese, iserviceDBpedia, 
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, irdfxml, itrig, ispin, iowl, itypecheck, 
-            ientailment, irule, isystem, iprovenance, iindex;
+            ientailment, irule, isystem, iprovenance, iindex, ifunction, ical;
     
     HashMap<Object, String> itable;
     
@@ -163,6 +163,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String defaultDeleteInsertQuery = "deleteinsert.rq";        
     private static final String defaultEntailmentQuery = "entailment.rq";
     private static final String defaultRuleQuery = "rule.rq";
+    private static final String defaultFunQuery = "function.rq";
        
     private static final String defaultTemplateQuery = "turtle.rq";    
     private static final String defaultRDFXMLQuery = "rdfxml.rq";    
@@ -452,6 +453,8 @@ public class MainFrame extends JFrame implements ActionListener {
         idescribe   = defItem("Describe", defaultDescribeQuery);
         iserviceCorese    = defItem("Service Corese", defaultServiceCoreseQuery);
         iserviceDBpedia    = defItem("Service DBpedia", defaultServiceDBpediaQuery);
+        ifunction   = defItem("Function", defaultFunQuery);
+        ical   = defItem("Calendar", "cal.rq");
         
         iinsert     = defItem("Insert", defaultInsertQuery);
         iinsertdata = defItem("Insert Data", defaultInsertDataQuery);
@@ -573,7 +576,8 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iask);
         queryMenu.add(idescribe);
         queryMenu.add(iserviceCorese);
-        queryMenu.add(iserviceDBpedia);
+        queryMenu.add(ifunction);
+        queryMenu.add(ical);
         
         queryMenu.add(idelete);
         queryMenu.add(iinsert);

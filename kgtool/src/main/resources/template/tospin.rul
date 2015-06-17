@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 17 15:08:43 CEST 2015
+Wed Jun 17 18:27:55 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -27,10 +27,17 @@ where {
 template st:query(?q) {
   """
   <h3>SPARQL Query</h3>
-  <form method='post' action='/spin/tospin'>
+  <form method='post' action='""" 
+  
+  if (st:get(st:protocol, st:ajax),           
+       st:protocol2("/spin/tospin", 
+          concat("{query: document.getElementById(\"query\").value, transform: \"", st:get(st:transform), "\"}")),
+       "/spin/tospin" )    
+
+  """'>
     <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
     
-    <textarea cols='60' rows='15' name='query'>"""str(?q)
+    <textarea cols='60' rows='15' id='query' name='query'>"""str(?q)
     
   """</textarea>
     <br/>
@@ -65,10 +72,17 @@ where {
 template st:queryspin(?q) {
   """
   <h3>SPIN Query</h3>
-  <form method='post' action='/spin/tosparql'>
+  <form method='post' action='""" 
+  
+  if (st:get(st:protocol, st:ajax),           
+       st:protocol2("/spin/tosparql", 
+          concat("{query: document.getElementById(\"query2\").value, transform: \"", st:get(st:transform), "\"}")),
+       "/spin/tosparql" )    
+  
+  """'>
     <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
     
-    <textarea cols='60' rows='15' name='query'>"""str(?q)
+    <textarea cols='60' rows='15' id='query2' name='query'>"""str(?q)
     
   """</textarea>
     <br/>
@@ -101,6 +115,39 @@ template st:start {
 
 }
 where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+  define (st:protocol(?uri) =
+    if (st:get(st:protocol, st:ajax), 
+      concat("javascript:trans(\"", str(?uri), "\")"), 
+      str(?uri))
+  )
+  
+  define (st:protocol2(?uri, ?arg) =
+      concat("javascript:trans(\"", str(?uri), "\", ", str(?arg), ");") 
+  )
+  
+  define (st:link(?uri) =
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      "&profile=", st:get(st:profile))
+  )
+  
+  define (st:plink(?uri) =
+    st:protocol(st:link(?uri))
+  )
+  
+}
+where {
+
 }
 ]]>
 </body>

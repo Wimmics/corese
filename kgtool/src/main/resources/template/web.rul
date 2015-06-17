@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jun 16 15:33:31 CEST 2015
+Wed Jun 17 15:08:43 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -111,7 +111,7 @@ template st:profile {
   )
   
   define (st:protocol2(?uri, ?arg) =
-      concat("trans(\"", str(?uri), "\", ", str(?arg), ");") 
+      concat("javascript:trans(\"", str(?uri), "\", ", str(?arg), ");") 
   )
   
   define (st:link(?uri) =
@@ -214,23 +214,20 @@ template st:form(?n, ?q, ?t, ?s) {
    <script type="text/javascript">           
         function show(name){
             document.getElementById('query').value = document.getElementById(name).value;
-        }
-        
-        function submit(){"""
-        
-        if (st:get(st:protocol, st:ajax),
-            
-            st:protocol2(st:get(st:service), 
-            concat('{', 'uri: "', ?n, '", profile: "', st:get(st:profile), 
-             '", ', "query: document.getElementById('query').value", '}')),
-             
-            """document.getElementById("form").submit();""")
- 
-             
-        """}
+        }                
    </script>
        
-   <form method='post' id='form' action='""" st:get(st:service) """' >   
+   <form method='post' id='form' action='""" 
+   
+   if (st:get(st:protocol, st:ajax),
+            
+            st:protocol2(st:get(st:service), 
+            concat('{uri: "', ?n, '", profile: "', st:get(st:profile), 
+             '", ', "query: document.getElementById('query').value}")),
+             
+            st:get(st:service))
+            
+   """' >   
    <input type='hidden' id='tmp' 	value='"""str(?t)"""' />
    <input type='hidden' id='sol' 	value='"""str(?s)"""' />
    <input type='hidden' name='uri' 	value='""" ?n """'/>
@@ -243,7 +240,7 @@ template st:form(?n, ?q, ?t, ?s) {
    """)
    
    """
-   <input type='button' onclick='submit()' value='Submit' />
+   <input type='submit' value='Submit' />
    <br/>
    <textarea cols='60' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
    </form>
@@ -269,8 +266,17 @@ template st:select(?t) {
 """
 <h3>Select a query</h3>
 
-"""   
-"""<form method='get' action=''>
+<form method='get' action='"""  
+
+
+ if (st:get(st:protocol, st:ajax),
+            
+       st:protocol2(st:get(st:service), 
+          concat("{uri: document.getElementById('uri').value, profile: \"", st:get(st:profile), "\"}")),
+
+       st:get(st:service))    
+
+"""'>
 
   <input type='hidden' name='profile' value='""" st:get(st:profile) """' />
 """

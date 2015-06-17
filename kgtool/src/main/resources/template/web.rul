@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 17 15:08:43 CEST 2015
+Wed Jun 17 15:27:55 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -223,7 +223,7 @@ template st:form(?n, ?q, ?t, ?s) {
             
             st:protocol2(st:get(st:service), 
             concat('{uri: "', ?n, '", profile: "', st:get(st:profile), 
-             '", ', "query: document.getElementById('query').value}")),
+             '", ', "query: document.getElementById(\"query\").value}")),
              
             st:get(st:service))
             
@@ -272,7 +272,7 @@ template st:select(?t) {
  if (st:get(st:protocol, st:ajax),
             
        st:protocol2(st:get(st:service), 
-          concat("{uri: document.getElementById('uri').value, profile: \"", st:get(st:profile), "\"}")),
+          concat("{uri: document.getElementById(\"uri\").value, profile: \"", st:get(st:profile), "\"}")),
 
        st:get(st:service))    
 

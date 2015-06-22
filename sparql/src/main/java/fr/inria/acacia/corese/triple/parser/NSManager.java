@@ -46,6 +46,7 @@ public class NSManager {
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
 
     public static final String STL        = ExpType.STL;
+    public static final String EXT        = ExpType.EXT;
     public static final String KGRAM      = ExpType.KGRAM;
     public static final String KPREF      = ExpType.KPREF;
     // extended named graph: eng:describe eng:queries
@@ -60,6 +61,7 @@ public class NSManager {
     private static final String SPIN_PREF = "sp";
     private static final String FOAF_PREF = "foaf";
     public static final String  STL_PREF = "st";
+    public static final String  EXT_PREF = "xt";
     /**
      * prefix seed (ns1, ns2,...)
      */
@@ -185,6 +187,7 @@ public class NSManager {
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);
+        def.put(EXT, EXT_PREF);
     }
 
     // add default namespaces

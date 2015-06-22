@@ -9,7 +9,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 public class CoreseArray extends CoreseBlankNode {
 	private IDatatype[] array;
 	private static int count = 0;
-	private static final String SEED = RDF.BLANKSEED;
+	private static final String SEED = RDF.BLANKSEED+"_l";
 	
 	public CoreseArray(String value) {
 		super(value);
@@ -25,11 +25,8 @@ public class CoreseArray extends CoreseBlankNode {
 	}
 	
 	public static CoreseArray create(List<IDatatype> vec) {
-		IDatatype[] adt = new IDatatype[vec.size()];
-		int i = 0;
-		for (IDatatype dt : vec){
-			adt[i++] = dt;
-		}
+		IDatatype[] adt = new IDatatype[vec.size()];		
+                vec.toArray(adt);
 		return new CoreseArray(adt);
 	}
 	

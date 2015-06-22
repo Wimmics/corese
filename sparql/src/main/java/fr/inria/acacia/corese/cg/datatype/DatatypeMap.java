@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
+import java.util.List;
 
 /**
  * <p>Title: Corese</p>
@@ -42,6 +44,8 @@ public class DatatypeMap implements Cst, RDF {
 	static long COUNT = 0; 	
 	public static CoreseBoolean TRUE  = CoreseBoolean.TRUE;
 	public static CoreseBoolean FALSE = CoreseBoolean.FALSE;
+        
+        static final String LIST  = ExpType.EXT + "List";
 
 
 	private class Mapping {
@@ -417,6 +421,16 @@ public class DatatypeMap implements Cst, RDF {
         public static IDatatype createUndef(String label, String datatype){
             IDatatype dt = new CoreseUndefLiteral(label);
             dt.setDatatype(datatype);                  
+            return dt;
+        }
+        
+        public static IDatatype createList(IDatatype[] ldt){
+            IDatatype dt = new CoreseArray(ldt);
+            return dt;
+        }
+        
+         public static IDatatype createList(List<IDatatype> ldt){
+            IDatatype dt =  CoreseArray.create(ldt);
             return dt;
         }
 	

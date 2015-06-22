@@ -6,6 +6,7 @@ package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -29,6 +30,7 @@ public class Context {
     public static final String STL_AJAX = STL + "ajax";
     public static final String STL_CONTEXT = STL + "context";
     public static final String STL_DATASET = STL + "dataset";
+    public static final String STL_EXPORT = STL + "export";   
     public static final String STL_LANG = STL + "lang";
     public static final String STL_PARAM = STL + "param";
     HashMap<String, IDatatype> table;
@@ -46,6 +48,16 @@ public class Context {
             sb.append(NL);
         }
         return sb.toString();
+    }
+    
+    public Collection<String> keys(){
+        return table.keySet();
+    }
+    
+    public void copy(Context c){
+        for (String str : c.keys()){
+            set(str, c.get(str));
+        }
     }
 
     public Context set(String name, IDatatype value) {

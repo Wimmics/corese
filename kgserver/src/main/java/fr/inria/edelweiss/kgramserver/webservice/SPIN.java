@@ -51,6 +51,7 @@ public class SPIN {
             g = sp.toSpinGraph(query);
 
             Context c = new Context().setTransform(Transformer.TOSPIN).setQuery(query).setService(TOSPIN_SERVICE);
+            complete(c);
             HTMLFormat ft = HTMLFormat.create(g, c);
 
             return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();
@@ -59,6 +60,13 @@ public class SPIN {
             java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
+    }
+    
+     Context complete(Context c){
+        if (SPARQLRestAPI.isAjax){
+            c.setProtocol(Context.STL_AJAX);
+        }
+        return c;
     }
 
     @POST

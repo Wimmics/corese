@@ -243,7 +243,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         // functions whose variable are compiled as (coalesce(st:process(?x), "")
         private static String[] PPRINT_META = {GROUPCONCAT, CONCAT, FUN_TEMPLATE_CONCAT, COALESCE, IF};
 
-	private Constant empty;
+	private Constant empty, pack;
 
 	private boolean renameBlankNode = true;
 
@@ -571,6 +571,18 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
             Expression t = def.getArg(0);
             getGlobalAST().getDefine().put(t.getLabel(), def);
             getGlobalAST().getUndefined().remove(t.getLabel());
+        }
+        
+        void defPackage(Constant c){
+            getGlobalAST().setPackage(c);
+        }
+        
+        void setPackage(Constant c){
+            pack = c;
+        }
+        
+        public Constant getPackage(){
+            return pack;
         }
 	
 	public List<String> getErrors(){

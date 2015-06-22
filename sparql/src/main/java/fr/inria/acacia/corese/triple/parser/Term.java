@@ -53,7 +53,7 @@ public class Term extends Expression {
 	static final String SCORE = "score";
 	static final String SBOUND = "bound";
 	static final String EXIST = "exists";
-	static final String LIST = "list";
+	static final String LIST = "inList";
 	static final String SERVICE = "service";
 
 
@@ -736,7 +736,7 @@ public class Term extends Expression {
 		return (str.equals(Processor.UNNEST) || 
                 str.equals(Processor.KGUNNEST) || 		
                 str.equals(Processor.SQL) || 
-		str.equals(Processor.XPATH) ||
+		str.equals(XPATH) ||
 		//str.equals(Processor.SPARQL) ||
 		str.equals(Processor.EXTERN)) ;
 	}
@@ -866,6 +866,15 @@ public class Term extends Expression {
 	public Expression getArg(){
 		return exp;
 	}
+        
+        
+        public Expr getDefine(){
+            return proc.getDefine();
+        }
+        
+        public void setDefine(Expr exp){
+            proc.setDefine(exp);
+        }
 	
 	public void setArg(Expression e){
 		exp = e;
@@ -917,7 +926,7 @@ public class Term extends Expression {
 		return this;
 		
 	}
-
+        
 	
 	public void compile(){
 		compile(null);

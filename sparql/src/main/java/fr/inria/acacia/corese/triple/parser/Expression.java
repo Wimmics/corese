@@ -629,6 +629,15 @@ implements Regex, Filter, Expr {
                 local(var);
             }
        }
+       
+ 
+    public Expr getDefine() {
+        return null;
+    }
+
+ 
+    public void setDefine(Expr define) {
         
+    }
 	
 }

@@ -26,12 +26,16 @@ public class Processor {
 	private static Logger logger = Logger.getLogger(Processor.class);
 
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
+        static final String EXT = ExpType.EXT;
         static final String KGRAM = ExpType.KGRAM;
         static final String KPREF = ExpType.KPREF+":";
         static final String STL   = ExpType.STL;
-	public static final String BOUND = "bound";
-	public static final String COUNT = "count";
-	public static final String LIST  = "list";
+	public static final String BOUND    = "bound";
+	public static final String COUNT    = "count";
+	public static final String INLIST   = Term.LIST;
+	public static final String LIST     = EXT+"list";
+	public static final String IOTA     = EXT+"iota";
+        
 	public static final String IN  	 = "in";
 
 	private static final String MIN = "min";
@@ -56,7 +60,13 @@ public class Processor {
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
 
-	private static final String LET = "let";
+	private static final String LET     = "let";
+	private static final String MAP     = "map";
+	private static final String MAPLIST = "maplist";
+	private static final String APPLY   = "apply";
+        
+        private static final String XTSUM   = EXT + "sum";
+        private static final String XTPROD  = EXT + "prod";
 
 	private static final String PLENGTH = "pathLength";
 	private static final String KGPLENGTH = KGRAM + "pathLength";
@@ -73,7 +83,7 @@ public class Processor {
 	private static final String DEBUG = "trace";
 
 	static final String EXTERN 	= "extern";
-	public static final String XPATH= "xpath";
+	public static final String XPATH= Term.XPATH;
 	static final String SQL 	= "sql";
 	static final String KGXPATH     = KGRAM + "xpath";
 	static final String KGSQL 	= KGRAM + "sql";
@@ -131,6 +141,7 @@ public class Processor {
         static final String STL_DEFINE              = STL + "define";
         static final String DEFINE                  = "define";
         static final String STL_PREFIX              = STL + "prefix";
+        static final String PACKAGE                 = "package";
  	static final String STL_INDENT              = STL + "indent";
  	static final String STL_SELF                = STL + "self";
  	static final String STL_LOAD                = STL + "load";
@@ -249,7 +260,8 @@ public class Processor {
 	
 	Term term;
 	List<Expr> lExp;
-	//int type = ExprType.UNDEF, oper;
+        // function definition for UNDEF function call
+	private Expr define;
 	Pattern pat;
 	Matcher match;
 	XPathFun xfun;
@@ -400,6 +412,10 @@ public class Processor {
                 term.local();
                 break;
                 
+            case ExprType.PACKAGE:
+                ast.defPackage(term.getArg(0).getConstant());
+                break;
+                
                case ExprType.LET:
                    // let (?x = ?y, exp(?x))
                    Expression let  = term.getArg(0);
@@ -515,11 +531,19 @@ public class Processor {
 		defoper(STL_AGGAND,         ExprType.AGGAND);
 		defoper(STL_AND,        ExprType.STL_AND);
 		defoper(SAMPLE, 	ExprType.SAMPLE);
-		defoper(LIST, 		ExprType.LIST);
+		defoper(INLIST, 		ExprType.INLIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
 		defoper(SKOLEM,         ExprType.SKOLEM);
 		defoper(LET,            ExprType.LET);
-
+		defoper(LIST,           ExprType.LIST);
+		defoper(IOTA,           ExprType.IOTA);
+		defoper(MAP,            ExprType.MAP);
+		defoper(MAPLIST,        ExprType.MAPLIST);
+		defoper(APPLY,          ExprType.APPLY);
+                
+		defoper(XTSUM,          ExprType.XTSUM);
+		defoper(XTPROD,         ExprType.XTPROD);
+                
 		
 		defoper(REGEX, 		ExprType.REGEX);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
@@ -620,8 +644,9 @@ public class Processor {
 		defoper(STL_XSDLITERAL, ExprType.XSDLITERAL);
 		defoper(VISITED,        ExprType.VISITED);
 		defoper(PROLOG,         ExprType.PROLOG);
-		defoper(DEFINE,         ExprType.STL_DEFINE);
+		defoper(PACKAGE,        ExprType.PACKAGE);
 		defoper(STL_DEFINE,     ExprType.STL_DEFINE);
+		defoper(DEFINE,         ExprType.STL_DEFINE);
                 defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
                 defoper(STL_GROUPCONCAT, ExprType.STL_GROUPCONCAT);
@@ -991,6 +1016,20 @@ public class Processor {
 		}
 		return null;
 	}
+
+    /**
+     * @return the define
+     */
+    public Expr getDefine() {
+        return define;
+    }
+
+    /**
+     * @param define the define to set
+     */
+    public void setDefine(Expr define) {
+        this.define = define;
+    }
 
 
 }

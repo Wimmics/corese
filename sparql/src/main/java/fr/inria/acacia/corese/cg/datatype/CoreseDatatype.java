@@ -561,6 +561,7 @@ public class CoreseDatatype
 				else if (this.sameTerm(d2)) return 0;
 				else return GREATER;
 			}
+                    break;
 		
 		case UNDEF:
 			

@@ -39,7 +39,7 @@ public class Bind {
 	Expr getValue(Expr exp){
 		return table.get(exp);
 	}
-	
+        	
 	void setValue(Expr qe, Expr te){
 		if (qe instanceof Pattern){
 			table.put(qe, te);

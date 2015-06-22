@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Stack;
 import fr.inria.edelweiss.kgram.event.ResultListener;
+import java.util.HashMap;
 
 /**
  * A generic filter Evaluator Values are Java Object Target processing is
@@ -37,8 +38,10 @@ public class Interpreter implements Evaluator, ExprType {
     Eval kgram;
     Object TRUE, FALSE;
     ResultListener listener;
+    static HashMap<String, Extension> extensions ;
     int mode = KGRAM_MODE;
     boolean hasListener = false;
+    public static int count = 0;
 
     public Interpreter(Proxy p) {
         proxy = p;
@@ -46,7 +49,7 @@ public class Interpreter implements Evaluator, ExprType {
             p.setEvaluator(this);
         }
         TRUE = proxy.getValue(true);
-        FALSE = proxy.getValue(false);
+        FALSE = proxy.getValue(false);        
     }
 
     public void setProducer(Producer p) {
@@ -254,6 +257,7 @@ public class Interpreter implements Evaluator, ExprType {
             case SKIP:
             case GROUPBY:
             case STL_DEFINE:
+            case PACKAGE:
                 return TRUE;
 
             case BOUND:
@@ -326,8 +330,19 @@ public class Interpreter implements Evaluator, ExprType {
             case EXTERNAL:
             case UNDEF:
             case STL_PROCESS:
-                // variable number of args: need array
+            case LIST:
+            case IOTA:           
                 break;
+                
+            case MAP:
+            case MAPLIST:
+            case APPLY:
+                // map(xt:fun(?x), ?list)
+                Object res = eval(exp.getExp(1), env, p);
+                if (res == null) {
+                    return null;
+                }
+                return proxy.function(exp, env, p, res);
 
 
             default:                
@@ -365,17 +380,15 @@ public class Interpreter implements Evaluator, ExprType {
         switch(exp.oper()){
             
             case UNDEF:
-                Extension ext = env.getQuery().getExtension();
-                if (ext == null){
-                    return null;
-                }
-                return eval(exp, env, p, ext, args);
+                return extension(exp, env, p, args);
                 
             default:
                 return proxy.eval(exp, env, p, args);
         }
        
     }
+    
+  
 
     /**
      * use case: exp: max(?count) iterate all values of ?count to get the max
@@ -567,8 +580,15 @@ public class Interpreter implements Evaluator, ExprType {
         Expr ee   = exp.getExp(1);
         Expr var  = let.getExp(0);
         Node val  = eval(let.getExp(1).getFilter(), env, p);
+        if (val == null){
+            return null;
+        }
+        return let(ee, env, p, var, val);
+    }
+    
+     private Object let(Expr exp, Environment env, Producer p, Expr var, Node val) {     
         env.set(var, val);
-        Object res = eval(ee, env, p);
+        Object res = eval(exp, env, p);
         env.unset(var);
         return res;
     }
@@ -576,17 +596,82 @@ public class Interpreter implements Evaluator, ExprType {
     /**
      * Extension manage extension functions
      * Their parameters are tagged as local variables, managed in a specific stack
-     */
-    public Object eval(Expr exp, Environment env, Producer p, Extension ext, Object[] values){
-        Expr def = ext.get(exp, values);
+     */    
+    public Object extension(Expr exp, Environment env, Producer p, Object[] values){ 
+        Expr def = getDefine(exp, env, values);
         if (def == null){
             return null;
         }
+        return eval(exp, env, p, def, values);
+    }
+        
+    public Object eval(Expr exp, Environment env, Producer p, Expr def, Object[] values){   
+        //count++;
         Expr fun = def.getExp(0);
         env.set(fun.getExpList(), values);        
         Object res = eval(def.getExp(1), env, p);        
         env.unset(fun.getExpList());        
         return res;
     }
+    
+      public Object eval(Expr exp, Environment env, Producer p, Extension ext, Object[] values){
+        Expr def = ext.get(exp, values);
+        if (def == null){
+            return null;
+        }
+        return eval(exp, env, p, def, values);
+     }
+    
+ 
+    public static void setExtension(Extension ext) {
+        if (extensions == null){
+            extensions = new HashMap<String, Extension>();
+        }
+        extensions.put(ext.getName(), ext);
+    }
+    
+    public static HashMap<String, Extension> getExtension(){
+        return extensions;
+    }
+    
+    public static boolean isDefined(Expr exp){
+        if (extensions == null){
+            return false;
+        }
+        for (Extension ext : extensions.values()){
+            if (ext.isDefined(exp)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    Expr getDefine(Expr exp, Environment env, Object[] values){
+        Expr ee = exp.getDefine();
+        if (ee != null){
+            return ee;
+        }
+        Extension ext = env.getExtension();
+        if (ext != null){           
+            Expr def = ext.get(exp);
+            if (def != null){
+                exp.setDefine(def);
+                return def;
+            }
+        }
+        if (extensions == null){
+            return null;
+        }
+        for (Extension e : extensions.values()){
+            Expr def = e.get(exp);
+            if (def != null){
+                exp.setDefine(def);
+                return def;
+            }
+        }
+        return null;
+    }
+
+    
     
 }

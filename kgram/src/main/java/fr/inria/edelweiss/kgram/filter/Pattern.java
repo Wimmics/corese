@@ -275,4 +275,14 @@ public class Pattern implements ExprType, Expr {
     public void local(Expr var) {
         
     }
+
+    @Override
+    public Expr getDefine() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setDefine(Expr exp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

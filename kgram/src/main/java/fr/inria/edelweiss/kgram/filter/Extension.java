@@ -15,9 +15,16 @@ public class Extension {
 
     static final String NL = System.getProperty("line.separator");
     HashMap<String, Expr> map;
+    private String name;
+    private Object pack;
 
     public Extension() {
         map = new HashMap();
+    }
+    
+    public Extension(String n){
+        this();
+        name = n;
     }
 
     /**
@@ -64,11 +71,44 @@ public class Extension {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        if (getName() != null){
+            sb.append("extension: ");
+            sb.append(getName()); 
+            sb.append(NL);
+        }
         for (Expr exp : map.values()) {
             sb.append(exp);
             sb.append(NL);
             sb.append(NL);
         }
         return sb.toString();
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the pack
+     */
+    public Object getPackage() {
+        return pack;
+    }
+
+    /**
+     * @param pack the pack to set
+     */
+    public void setPackage(Object pack) {
+        this.pack = pack;
     }
 }

@@ -761,6 +761,8 @@ public class ProxyImpl implements Proxy, ExprType {
                         sb = new StringBuilder();
                     }
                     list.add(ee);
+                    // Do not touch to j++ (see below int k = j;)   
+                    j++;
                     continue;
                 }
                 dt = (IDatatype) eval.eval(ee, env, p);

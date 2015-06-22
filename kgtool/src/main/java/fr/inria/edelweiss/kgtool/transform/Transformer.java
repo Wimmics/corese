@@ -1343,9 +1343,15 @@ public class Transformer  {
    */
     public void complete(Transformer ct) {
         if (ct != null) {
-            IDatatype dt = ct.get(Context.STL_DATASET);
-            if (dt != null){
-                set(Context.STL_DATASET, dt);
+            IDatatype export = ct.get(Context.STL_EXPORT);
+            if (export != null && export.booleanValue()){
+                getContext().copy(ct.getContext());
+            }
+            else {
+                IDatatype dt = ct.get(Context.STL_DATASET);
+                if (dt != null){
+                    set(Context.STL_DATASET, dt);
+                }
             }
             if (ct.getVisitor() != null){
                 setVisitor(ct.getVisitor());

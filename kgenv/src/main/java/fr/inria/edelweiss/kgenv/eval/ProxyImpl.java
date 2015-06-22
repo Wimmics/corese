@@ -307,6 +307,15 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case DISPLAY:
                return display(exp, dt, null);
+                
+            case MAP:
+                return map(exp, env, p, dt);
+                
+            case MAPLIST:
+                return mapList(exp, env, p, dt);
+                
+            case APPLY:
+                return apply(exp, env, p, dt);
 
             default:
                 if (plugin != null) {
@@ -459,7 +468,18 @@ public class ProxyImpl implements Proxy, ExprType {
                 return TRUE;
                            
             case STL_AND:
-                return and(args);
+                return and(args); 
+                
+            case XTSUM:
+                return sum(args);
+                
+            case XTPROD:
+                return prod(args);
+                
+            case CONCAT:
+            case STL_CONCAT:
+                return concat(exp, env, p, args);
+            
         }
 
 
@@ -692,12 +712,26 @@ public class ProxyImpl implements Proxy, ExprType {
      * literals with same lang return literal@lang all strings return string
      * else return literal error if not literal or string
      */
-    IDatatype concat(Expr exp, Environment env, Producer p) {
+      IDatatype concat(Expr exp, Environment env, Producer p) {
+            return concat(exp, env, p, null);
+      }
+
+    /**
+     * std usage: lval is null, evaluate exp
+     * lval = list of values in this use case:
+     * apply(concat(), maplist(st:fun(?x) , xt:list(...)))
+     * 
+     */
+    IDatatype concat(Expr exp, Environment env, Producer p, Object[] lval) {
         String str = "";
         String lang = null;
 
-        if (exp.arity() == 0) {
+        if (exp.arity() == 0 && lval == null) {
             return EMPTY;
+        }
+        int length = 0;
+        if (lval != null){
+            length = lval.length;
         }
         
         // when template st:concat()
@@ -709,28 +743,32 @@ public class ProxyImpl implements Proxy, ExprType {
         StringBuilder sb = new StringBuilder();
         ArrayList<Object> list = null;
         boolean ok = true, hasLang = false, isString = true;
-
+        IDatatype dt = null;
         int i = 0;
         List<Expr> argList = exp.getExpList();
-        for (int j = 0; j < argList.size(); ) {
-            
-            // Do not touch to j++ (see below int k = j;) 
-            Expr ee = argList.get(j++);
-           
-            if (isFuture && isFuture(ee)){
-                // create a future
-                if (list == null){
-                    list = new ArrayList<Object>();                  
-                }
-                if (sb.length()>0){
-                        list.add(result(sb, isString, (ok && lang != null)?lang:null));
+        for (int j = 0; j < ((length > 0) ? length : argList.size()); ) {
+
+            if (lval == null) {
+                Expr ee = argList.get(j);
+
+                if (isFuture && isFuture(ee)) {
+                    // create a future
+                    if (list == null) {
+                        list = new ArrayList<Object>();
+                    }
+                    if (sb.length() > 0) {
+                        list.add(result(sb, isString, (ok && lang != null) ? lang : null));
                         sb = new StringBuilder();
+                    }
+                    list.add(ee);
+                    continue;
                 }
-                list.add(ee);
-                continue;
+                dt = (IDatatype) eval.eval(ee, env, p);
+            } else {
+                dt = (IDatatype) lval[j];
             }
-            
-            IDatatype dt = (IDatatype) eval.eval(ee, env, p);
+            // Do not touch to j++ (see below int k = j;)             
+            j++;
             
             if (dt == null){
                 return null;
@@ -794,8 +832,8 @@ public class ProxyImpl implements Proxy, ExprType {
                 list.add(result(sb, isString, (ok && lang != null)?lang:null));
             }  
             Expr e = plugin.createFunction(Processor.CONCAT, list, env);
-            IDatatype dt = DatatypeMap.createFuture(e);
-            return dt;
+            IDatatype res = DatatypeMap.createFuture(e);
+            return res;
         }
         
         return result(sb, isString, (ok && lang != null)?lang:null);
@@ -1156,4 +1194,77 @@ public class ProxyImpl implements Proxy, ExprType {
      public void finish(Producer p, Environment env) {
         plugin.finish(p, env);
     }
+
+     /**
+      * map(xt:fun(?x), ?list)      
+      */
+    private Object map(Expr exp, Environment env, Producer p, IDatatype dt) {
+        if (dt.getValues() == null){
+            return dt;
+        }
+        for (IDatatype val : dt.getValues()){
+            Object res = let(exp.getExp(0), env, p, val);
+            if (res == null){
+                return null;
+            }
+        }
+        return dt;
+    }
+    
+    private Object mapList(Expr exp, Environment env, Producer p, IDatatype dt) {
+        if (dt.getValues() == null){
+            return dt;
+        }
+        IDatatype[] res = new IDatatype[dt.size()];
+        int i = 0;
+        for (IDatatype val : dt.getValues()){
+            IDatatype tmp = (IDatatype) let(exp.getExp(0), env, p, val);
+            if (tmp == null){
+                return null;
+            }
+            res[i++] = tmp;
+        }
+        return DatatypeMap.createList(res);
+    }
+    
+    /**
+     * apply(xt:fun(?x), ?list)     
+     */
+    private Object apply(Expr exp, Environment env, Producer p, IDatatype dt) {
+        if (dt.getValues() == null){
+            return dt;
+        }
+        
+        return eval(exp.getExp(0), env, p, dt.getValues());
+               
+    }
+    
+     /**
+     * exp = xt:fun(?x)
+     */
+    private Object let(Expr exp, Environment env, Producer p, IDatatype val) {
+        Expr var  = exp.getExp(0);  
+        exp.local(var);
+        env.set(var, val);
+        Object res = eval.eval(exp, env, p);
+        env.unset(var);
+        return res;
+    }
+    
+    private Object sum(Object[] args){
+        double d = 0;        
+        for (Object obj : args){
+            d += ((IDatatype) obj).doubleValue();
+        }
+        return DatatypeMap.newInstance(d);
+    }
+    
+     private Object prod(Object[] args){
+        double d = 0;        
+        for (Object obj : args){
+            d *= ((IDatatype) obj).doubleValue();
+        }
+        return DatatypeMap.newInstance(d);        
+    }
+    
 }

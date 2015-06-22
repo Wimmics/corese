@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
@@ -278,6 +279,12 @@ public class PluginImpl extends ProxyImpl {
                 IDatatype dt2 =  (IDatatype) args[1];
                 IDatatype dt3 =  (IDatatype) args[2];
                 return setProperty(dt1, dt2.intValue(), dt3);
+                
+            case LIST:
+                return list(args);
+                
+            case IOTA:
+                return iota(args);
 
             default: 
                 return pt.eval(exp, env, p, args);  
@@ -285,7 +292,33 @@ public class PluginImpl extends ProxyImpl {
 
     }
     
+    IDatatype iota(Object[] args){
+        int start = ((IDatatype) args[0]).intValue();
+        int end =   ((IDatatype) args[1]).intValue();
+        int step = 1;
+        if (args.length == 3){
+            step = ((IDatatype) args[2]).intValue();
+        }
+        int length = (end - start + step) / step;
+        IDatatype[] ldt = new IDatatype[length];
+        
+        for (int i=0; i<length; i++){
+            ldt[i] = DatatypeMap.newInstance(start);
+            start += step;
+        }
+        IDatatype dt = DatatypeMap.createList(ldt);
+        return dt;
+    }
     
+    
+    IDatatype list(Object[] args){
+        IDatatype[] ldt = new IDatatype[args.length];
+        for (int i=0; i<ldt.length; i++){
+            ldt[i] = (IDatatype) args[i];
+        }
+        IDatatype dt = DatatypeMap.createList(ldt);
+        return dt;
+    }
     
 
     IDatatype similarity(Graph g, IDatatype dt1, IDatatype dt2) {

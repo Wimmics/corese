@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.filter.Extension;
+import fr.inria.edelweiss.kgram.filter.Interpreter;
 
 /**
  * Compiler of SPARQL AST to KGRAM Exp Query
@@ -182,16 +183,7 @@ public class Transformer implements ExpType {
                 error(ast);
 		return q;
 	}
-        
-        void error(ASTQuery ast){
-            if (ast.isTemplate()){
-                return;
-            }
-            for (Expression exp : ast.getUndefined().values()){
-                ast.addError("Undefined expression: ", exp);
-            }
-        }
-        
+                     
         /**
          * select * 
          * from eng:describe 
@@ -341,14 +333,31 @@ public class Transformer implements ExpType {
          * PRAGMA: expressions have declared local variables (see ASTQuery Processor)
          */
        void define(Query q, ASTQuery ast) {
-            if (ast.getDefine() == null) {
+            if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
                 return;
             }
             Extension ext = new Extension();
+            if (ast.getPackage()!=null){
+                ext.setName(ast.getPackage().getLabel());
+                ext.setPackage(ast.getPackage().getDatatypeValue());
+                Interpreter.setExtension(ext);
+            }
             for (Expression exp : ast.getDefine().values()) {
                 ext.define(exp);               
             }
             q.setExtension(ext);
+        }
+       
+        void error(ASTQuery ast){
+            if (ast.isTemplate()){
+                // TODO: because template st:profile may not have been read yet ...
+                return;
+            }
+            for (Expression exp : ast.getUndefined().values()){
+                if (! Interpreter.isDefined(exp)){
+                    ast.addError("undefined expression: " + exp);
+                }
+            }
         }
         
         
@@ -871,9 +880,10 @@ public class Transformer implements ExpType {
 	void checkFilterVariables(Query query, Filter f, List<Exp> select, List<Node> lNodes){
             switch (f.getExp().oper()){
                 // do not create Node for local variables
+                case ExprType.PACKAGE:
                 case ExprType.STL_DEFINE:
                 case ExprType.LET:
-                    return;
+                    //return;
             }
             
 		List<String> lVar = f.getVariables();

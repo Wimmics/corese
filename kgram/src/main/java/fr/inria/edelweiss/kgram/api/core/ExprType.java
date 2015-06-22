@@ -30,7 +30,7 @@ public interface ExprType {
 	public static int BOUND = 14;
 	public static int COUNT = 15;
 	// ?x in (1, 2)
-	public static int LIST = 16;
+	public static int INLIST = 16;
 
 	public static int ISNUMERIC = 19;
 	public static int MIN = 20;
@@ -104,7 +104,6 @@ public interface ExprType {
 	public static int STRUUID 	 = 81;
 	public static int XSDSTRING 	 = 82;
 
-	public static int LET           = 90;
 	public static int LAMBDA        = 91;
 
 	
@@ -229,5 +228,16 @@ public interface ExprType {
 	public static int EVEN          = 304;
 	public static int ODD           = 305;
 	public static int READ          = 306;
+        public static int PACKAGE       = 307;
+        
+        public static int IOTA          = 308;
+        public static int LIST          = 309;
+        public static int MAP           = 310;
+        public static int MAPLIST       = 311;
+        public static int APPLY         = 312;
+	public static int LET           = 313;
+        
+        public static int XTSUM         = 400;
+        public static int XTPROD        = 401;
 
 }

@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
+import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
 import java.util.List;
 
@@ -156,5 +157,7 @@ public interface Environment {
         void unset(Expr var);
         
         void unset(List<Expr> var);
+        
+        Extension getExtension();
 
 }

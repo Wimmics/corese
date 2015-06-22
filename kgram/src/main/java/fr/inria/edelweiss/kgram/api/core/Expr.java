@@ -58,6 +58,9 @@ public interface Expr {
 	void setIndex(int index);
         
         void local(Expr var);
-
+        
+        Expr getDefine();
+        
+        void setDefine(Expr exp);
 	
 }

@@ -12,6 +12,7 @@ public interface ExpType {
         public static final String SKOLEM_MARKER = "/.well-known/genid/";
         public static final String SKOLEM = "http://ns.inria.fr" + SKOLEM_MARKER ;
 	public static final String STL    = "http://ns.inria.fr/sparql-template/";
+	public static final String EXT    = "http://ns.inria.fr/sparql-extension/";
 
 	public static final String KPREF = "kg";
 

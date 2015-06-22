@@ -29,7 +29,7 @@ public class Bind {
         valList.add(val);
     }
 
-    public Node get(Expr var) {
+    public Node get(Expr var) {       
         for (int i = varList.size() - 1; i >= 0; i--) {
             if (varList.get(i).equals(var)) {
                 return valList.get(i);
@@ -37,19 +37,22 @@ public class Bind {
         }
         return null;
     }
+    
+    public List<Expr> getVariables(){
+        return varList;
+    }
+    
+    public int size(){
+        return varList.size();
+    }
+    
+    public Node get2(Expr var){
+        return valList.get(valList.size()-1);
+    }
 
     public void unset(Expr var) {
-        if (varList.isEmpty()) {
-            logger.error("Empty variable stack");
-        } 
-//        else if (!varList.get(varList.size() - 1).equals(var)) {
-//            logger.error("Stack error: " + var);
-//            logger.error(varList);
-//        } 
-        else {
             varList.remove(varList.size() - 1);
             valList.remove(valList.size() - 1);
-        }
     }
 
     public void set(List<Expr> lvar, Object[] value) {

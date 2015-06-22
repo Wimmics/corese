@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
+import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
 
@@ -824,6 +825,10 @@ public class Mapping
 			eval.eval(f, map, p);
 		}
 	}
+        
+    public Extension getExtension(){
+            return query.getOuterQuery().getExtension();
+        }     
 
    @Override
     public void set(Expr var, Node value) {

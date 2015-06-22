@@ -1267,10 +1267,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                         lBind.add(bind);
                     } else {
                         // filter has BIND
-                        // TODO: when there is a UNION, variables of BIND may not be all bound (cf Julien)
+                        // TODO: when there is a UNION, variables of BIND may not be all bound 
                         // so we cannot bind here
-//						add(i, bind);
-//						i++;
+			//add(i, bind);
+			//i++;
                     }
                 }
             }

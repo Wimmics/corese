@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
+import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
 
 /**
@@ -221,6 +222,26 @@ public class Memory implements Environment {
 		}
 		return str;
 	}
+        
+        /**
+         * Copy this Bind local variable stack into mem as std memory   
+         * Use case: define (xt:foo(?x) = exists { ?x ex:pp ?y }) 
+         * TODO: 
+         * MUST only consider  bindings of current function call
+         * (not all bindings in the stack)
+         */
+        Memory copyBind(Memory mem){
+            for (Expr var : bind.getVariables()){
+                Node qn = getQueryNode(var.getLabel());
+                if (qn == null){
+                    System.out.println("Mem: undefined query node: " + var);
+                }
+                else {
+                    mem.push(qn, bind.get(var));
+                }
+            }
+            return mem;            
+        }
 	
 	/**
 	 * Pragma : mem is a fresh new Memory, init() has been done
@@ -228,7 +249,10 @@ public class Memory implements Environment {
 	 */
 	Memory copyInto(Query sub, Memory mem){
 		int n = 0;
-		if (sub == null){
+                if (bind != null && bind.size() > 0){
+                    copyBind(mem);
+                }
+                else if (sub == null){
 			// bind all nodes
 			// use case: inpath copy the memory
 			for (Node qNode : qNodes){
@@ -1013,6 +1037,10 @@ public class Memory implements Environment {
 	boolean isFake() {
 		return isFake;
 	}
+        
+        public Extension getExtension(){
+            return query.getOuterQuery().getExtension();
+        }
 
     @Override
     public void set(Expr var, Node value) {

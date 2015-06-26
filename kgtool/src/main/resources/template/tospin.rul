@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 17 18:27:55 CEST 2015
+Fri Jun 26 09:48:08 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -27,21 +27,19 @@ where {
 template st:query(?q) {
   """
   <h3>SPARQL Query</h3>
-  <form method='post' action='""" 
+  <form method='post' id='spin' action='/spin/tospin'>
   
-  if (st:get(st:protocol, st:ajax),           
-       st:protocol2("/spin/tospin", 
-          concat("{query: document.getElementById(\"query\").value, transform: \"", st:get(st:transform), "\"}")),
-       "/spin/tospin" )    
-
-  """'>
     <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
     
     <textarea cols='60' rows='15' id='query' name='query'>"""str(?q)
     
   """</textarea>
-    <br/>
-    <input type='submit' value='Submit'/>
+    <br/>"""
+    
+    st:call-template-with(st:server, st:submit, "spin", "submit", 
+      coalesce(st:get(st:protocol), st:std) )
+    
+  """  
   </form>
   """
 }
@@ -72,21 +70,19 @@ where {
 template st:queryspin(?q) {
   """
   <h3>SPIN Query</h3>
-  <form method='post' action='""" 
+  <form method='post' id='sparql' action='/spin/tosparql'>
   
-  if (st:get(st:protocol, st:ajax),           
-       st:protocol2("/spin/tosparql", 
-          concat("{query: document.getElementById(\"query2\").value, transform: \"", st:get(st:transform), "\"}")),
-       "/spin/tosparql" )    
-  
-  """'>
     <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
     
     <textarea cols='60' rows='15' id='query2' name='query'>"""str(?q)
     
   """</textarea>
-    <br/>
-    <input type='submit' value='Submit'/>
+    <br/>"""
+    
+    st:call-template-with(st:server, st:submit, "sparql", "submit", 
+       coalesce(st:get(st:protocol), st:std))
+    
+  """  
   </form>
   """
 }

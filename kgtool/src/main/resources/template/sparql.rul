@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 17 15:08:43 CEST 2015
+Fri Jun 26 09:48:08 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -291,11 +291,7 @@ where {
 template st:query(?q) {
   """
   <h3>Query</h3>
-  <form method='post' action='"""
-    
-  st:get(st:service)
-  
-  """'>
+  <form method='post' id='sparql' action='"""  st:get(st:service)  """'>
   
    <select name="profile">"""
    
@@ -313,7 +309,11 @@ template st:query(?q) {
     
   """</textarea>
     <br/>
-    <input type='submit' value='Submit'/>
+  """  
+    st:call-template-with(st:server, st:submit, "sparql", "Submit",
+       coalesce(st:get(st:protocol), st:std))
+    
+  """  
   </form>
   """
 }

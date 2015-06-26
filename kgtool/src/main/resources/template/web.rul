@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 17 18:43:12 CEST 2015
+Fri Jun 26 09:48:08 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -217,17 +217,7 @@ template st:form(?n, ?q, ?t, ?s) {
         }                
    </script>
        
-   <form method='post' id='form' action='""" 
-   
-   if (st:get(st:protocol, st:ajax),
-            
-            st:protocol2(st:get(st:service), 
-            concat('{uri: "', ?n, '", profile: "', st:get(st:profile), 
-             '", ', "query: document.getElementById(\"query\").value}")),
-             
-            st:get(st:service))
-            
-   """' >   
+   <form method='post'  id='form' action='""" st:get(st:service) """' >   
    <input type='hidden' id='tmp' 	value='"""str(?t)"""' />
    <input type='hidden' id='sol' 	value='"""str(?s)"""' />
    <input type='hidden' name='uri' 	value='""" ?n """'/>
@@ -239,8 +229,9 @@ template st:form(?n, ?q, ?t, ?s) {
       <input type='button' onclick="show('tmp')" value='Template' /> 
    """)
    
+   st:call-template-with(st:server, st:submit, "form", "submit", 			coalesce(st:get(st:protocol), st:std))
+   
    """
-   <input type='submit' value='Submit' />
    <br/>
    <textarea cols='60' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
    </form>
@@ -266,24 +257,20 @@ template st:select(?t) {
 """
 <h3>Select a query</h3>
 
-<form method='get' action='"""  
-
-
- if (st:get(st:protocol, st:ajax),
-            
-       st:protocol2(st:get(st:service), 
-          concat("{uri: document.getElementById(\"uri\").value, profile: \"", st:get(st:profile), "\"}")),
-
-       st:get(st:service))    
-
-"""'>
+<form method='get' id ='select' action='""" st:get(st:service) """'>
 
   <input type='hidden' name='profile' value='""" st:get(st:profile) """' />
 """
 
   st:call-template(st:prev, ?t)
 
-  "<select id='uri' name='uri' onChange='submit()'>"
+  "<select id='uri' name='uri' onChange='" 
+  
+  if (st:get(st:protocol, st:ajax), 
+    "trans(this.select); return false;",
+    "submit();")
+  
+  "'>"
   
     st:call-template(st:list, ?t)  
     

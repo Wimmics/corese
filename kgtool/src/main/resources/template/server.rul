@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 17 15:08:42 CEST 2015
+Fri Jun 26 09:48:08 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -44,6 +44,28 @@ now()
 </html>
 """
 
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:submit(?id, ?title, ?proto) {
+ 
+    "<input type='submit' value='" str(?title) "'" 
+    
+    if (?proto = st:ajax,
+    
+    concat(" class='btn btn-warning' onClick='trans(this.", 
+	str(?id), "); return false;'/>"),
+    
+    "/>")
+        
 }
 where {
 

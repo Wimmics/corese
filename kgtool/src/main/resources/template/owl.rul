@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 17 15:08:43 CEST 2015
+Fri Jun 26 09:48:08 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -188,7 +188,6 @@ template st:interunion {
     xsd:string(if (bound(?t), ?ld, ?lo))
     "(" 
       ibox {
-	if (?p = owl:disjointUnionOf, ?in, "") " "
 	?x  
       }
     ")" 
@@ -198,9 +197,10 @@ where {
   optional { ?in a ?t  filter(?t = rdfs:Datatype) }
  }
 values (?p ?lo ?ld) {
-  (owl:unionOf         "ObjectUnionOf" "DataUnionOf")
-  (owl:disjointUnionOf "DisjointUnion" "DisjointUnion")
-  (owl:intersectionOf  "ObjectIntersectionOf" "DataIntersectionOf")
+  (owl:unionOf         "ObjectUnionOf" 		"DataUnionOf")
+  (owl:intersectionOf  "ObjectIntersectionOf" 	"DataIntersectionOf")
+  (owl:complementOf 	"ObjectComplementOf" 	"DataComplementOf")
+  (owl:datatypeComplementOf "DataComplementOf" 	"DataComplementOf")
 }
 ]]>
 </body>
@@ -259,7 +259,11 @@ template {
 where {
   ?in owl:equivalentClass  ?y 
   
-  bind (exists { ?in owl:intersectionOf|owl:unionOf ?z } 
+  bind (
+   exists { 
+     ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+   } 
   as ?iu)
   
   optional { ?y a ?t filter(?t = rdfs:Datatype) }
@@ -333,6 +337,9 @@ template {
 }
 where {
   ?in ?p ?y
+  filter not exists { 
+    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
+   }
 }
 values (?p ?l){
 (owl:complementOf 	  "ObjectComplementOf")
@@ -385,7 +392,10 @@ template {
 }
 where {
   ?in rdfs:subClassOf ?y 
-  filter not exists { ?in owl:intersectionOf | owl:unionOf ?z } 
+  filter not exists { 
+    ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+  } 
 
 }
 ]]>
@@ -487,20 +497,21 @@ where {
 #
 template {
    "DisjointUnion("  
-     if (bound(?z),
-# special case: use a named template
+     if (?iu,
 	st:call-template(st:interunion, ?in),
 	?in) 
       " "  ?y  
     ")" 
 }
 where {
-  ?in owl:disjointUnion ?y 
-  optional { 
-    { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
-  }
+  ?in owl:disjointUnionOf ?y 
+  bind (
+   exists { 
+     ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+   } 
+  as ?iu)
 }
-#pragma { st:template st:priority 2 }
 ]]>
 </body>
 </rule>
@@ -686,7 +697,6 @@ where {
 template {
     xsd:string(if (bound(?t), ?ld, ?lo))
     "(" 
-     if (?p = owl:disjointUnionOf, ?in, "") " "
      ?y  
      ")" 
 }
@@ -696,15 +706,13 @@ where {
   # in case there is also subClassof, 
   # this unionOf will be pprinted
   filter not exists { 
-    { ?in rdfs:subClassOf ?z } union
-    { ?in owl:equivalentClass ?z } 
+    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
    }
  
   optional { ?in a ?t filter(?t = rdfs:Datatype) }
 }
 values (?p ?lo ?ld) {
   (owl:unionOf         "ObjectUnionOf" "DataUnionOf")
-  (owl:disjointUnionOf "DisjointUnion" "DisjointUnion")
 }
 ]]>
 </body>
@@ -829,11 +837,9 @@ where {
   
   # in case there is also subClassof, 
   # a named template is used: interunion.rq
-  optional {
-    { ?in rdfs:subClassOf ?z } union 
-    { ?in owl:equivalentClass ?z }
-  }
-  filter (! bound(?z))
+  filter not exists { 
+    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
+   }
 
   optional { ?in a ?t  filter(?t = rdfs:Datatype) }
 }
@@ -958,7 +964,7 @@ where {
 #
 template   {
 
-  st:apply-all-templates(?in ; separator = "\n") 
+  st:apply-templates-all(?in ; separator = "\n") 
    
    ; separator = "\n\n"
     
@@ -1020,7 +1026,10 @@ template {
 }
 where {
   ?in rdfs:subClassOf ?y 
-  filter exists { ?in owl:intersectionOf | owl:unionOf ?z } 
+  filter  exists { 
+    ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+  } 
 }
 ]]>
 </body>

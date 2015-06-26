@@ -1,0 +1,205 @@
+         <!-- Site description-->
+         <div class="jumbotron" >
+            <div class="container">
+               <div><h1 style='vertical-align:bottom;'><img src="/img/logo/corese.png" alt="Corese" height="140" align="top">  Web Server</h1></div>
+               <p> <a href='http://wimmics.inria.fr/corese' target="_blank">Corese</a> is a Semantic Web Factory implementing 
+                  RDF, RDFS, SPARQL and Inference Rules.           
+                  This site presents demos of Semantic Web servers and Linked Data Navigators designed with
+                  <a href='http://ns.inria.fr/sparql-template' target="_blank">SPARQL Template Transformation Language</a>.
+               </p>
+            </div>
+         </div>
+         <!-- Siste description end-->
+         
+			<!-- LD boowser-->     
+         <div class="container">
+            <h1>Linked data browsers</h1>
+            <div class="row">
+               <!-- one example: france kings-->
+               <div class="col-md-2">
+                  <div class="panel panel-primary">
+                     <div class="panel-heading"></div>
+                     <div class="panel-body" align="center">
+                     <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Louis_XIV_de_France&profile=st:dbpedia');" >
+                        <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Louis_XIV_of_France.jpg/200px-Louis_XIV_of_France.jpg" alt="France kings" height="150">
+								<strong>Louis XIV de France</strong>
+								(1638 - 1715 )   
+						  </a>              
+                     </div>
+                  </div>
+               </div>
+               <!-- one example end-->
+               
+              <!-- one example: Auguste-->
+               <div class="col-md-2">
+                  <div class="panel panel-primary">
+                     <div class="panel-heading"></div>
+                     <div class="panel-body" align="center">
+                     <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Auguste&profile=st:dbpedia');" >
+                        <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Statue-Augustus.jpg/200px-Statue-Augustus.jpg" alt="Auguste" height="160">
+								<strong>Auguste (dbpeida fr)</strong>
+								<br>
+						  </a>              
+                     </div>
+                  </div>
+               </div>
+               <!-- one example end-->                         
+                              
+               <!-- one example: Auguste (EN)-->
+               <div class="col-md-2">
+                  <div class="panel panel-primary">
+                     <div class="panel-heading"></div>
+                     <div class="panel-body" align="center">
+                     <a href="javascript:trans('/template?uri=http://dbpedia.org/resource/Auguste&profile=st:personen');" >
+                        <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Statue-Augustus.jpg/200px-Statue-Augustus.jpg" alt="Auguste (DBPedia en)" height="160">
+								<strong>Auguste (dbpedia)</strong>
+						  </a>              
+                     </div>
+                  </div>
+               </div>
+               <!-- one example end-->     
+               
+ 					<!-- one example: Emmanuel-Philibert de Savoie -->
+               <div class="col-md-2">
+                  <div class="panel panel-primary">
+                     <div class="panel-heading"></div>
+                     <div class="panel-body" align="center">
+                     <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)&profile=st:dbpedia');" >
+                        <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Alessandro_farnese_pantoja_(detail).jpg/200px-Alessandro_farnese_pantoja_(detail).jpg" alt="Emmanuel-Philibert de Savoie" height="90">
+								<strong>Emmanuel-Philibert de Savoie </strong>
+								<p>(1528-1580)</p>   
+								<br>
+						  </a>              
+                     </div>
+                  </div>
+               </div>
+               <!-- one example end-->         
+                            
+                 <!-- one example place Nice-->
+               <div class="col-md-2">
+                  <div class="panel panel-primary">
+                     <div class="panel-heading"></div>
+                     <div class="panel-body" align="center">
+                     <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia');" >
+                        <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Port_Of_Nice,_C%C3%B4te_d'Azur.jpg/200px-Port_Of_Nice,_C%C3%B4te_d'Azur.jpg" alt="Nice" height="80">
+								<strong>Places</strong>
+								<p> (Nice)</p>
+								<br><br><br>
+						  </a>              
+                     </div>
+                  </div>
+               </div>
+               <!-- one example end-->
+               
+                <!-- one example-->
+               <div class="col-md-2">
+                  <div class="panel panel-primary">
+                     <div class="panel-heading"></div>
+                     <div class="panel-body" align="center">
+                     <a href="javascript:trans('/tutorial/cdn');" >
+                        <img src="http://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG" alt="France kings" height="80">
+								<strong>History</strong>
+								<p>(XIVe Siècle)</p>
+								<br><br><br>
+						  </a>              
+                     </div>
+                  </div>
+               </div>
+               <!-- one example end-->               
+               
+            </div>
+         </div>
+ 
+         
+			<!-- LD boowser end>    
+         
+         <!-- Services begin-->
+         <div class="container">
+            <h1>Online services</h1>
+            <div class="row">
+               <!-- Services: sparql query-->
+               <div class="col-md-4">
+                  <div class="panel panel-success">
+                     <div class="panel-heading">
+                        <h3 class="panel-title">SPARQL Query</h3>
+                     </div>
+                     <div class="panel-body">
+                         <form method='POST' action='/template' id='sparqlQueryForm'>
+                            <select class="col-lg-6 control-label" name="tmp" id='select' onChange="document.getElementById('serv').action = document.getElementById('select').value;">
+                              <option value="/template">Server</option>
+                              <option value="/tutorial/rdf">Tutorial RDF</option>
+                              <option value="/tutorial/cdn">Tutorial CDN</option>
+                           </select>
+                           <br/>
+                           <textarea  class="form-control custom-control"  rows='8' name='query'>
+  select * where {
+    ?x ?p ?y
+  }
+  </textarea>
+                           <br/>
+                           <!--input type='button' value='Query' class="btn btn-success"  onclick="javascript:trans($('#template').val(), {profile:'st:sparql', query:$('#query').val()});"-->
+                            <input type='hidden' name='profile' value='st:sparql' />
+                           <input type='submit' value='Query' class="btn btn-success"  onclick="trans(this.form); return false;">
+                         </form>
+                     </div>
+                  </div>
+               </div>
+               <!--Services: DBPeida Query-->
+               <div class="col-md-4 ">
+                  <div class="panel panel-warning">
+                     <div class="panel-heading">
+                        <h3 class="panel-title">DBpedia Query</h3>
+                     </div>
+                      
+                      <div class="panel-body">                     
+                     <!--form method='get' action="javascript:trans('/template', {'profile':$('#profile').val(), 'query': $('#query-dbp').val()})"-->
+                     <form method="POST" action="/template" id='dbpediaQueryForm'>
+                           <select class="col-lg-6 control-label" name="profile">
+                              <option value="st:std">STD</option>
+                              <option value="st:sparql">LDP</option>
+                           </select>
+                           <br/>
+                           <textarea class="form-control custom-control"  rows='8' id='query-dbp' name='query'>
+ select * where {
+   service <http://fr.dbpedia.org/sparql> {
+     <http://fr.dbpedia.org/resource/Antibes> ?p ?y
+   }
+ }
+ limit 10
+ offset 10
+  </textarea>
+                           <br>
+                           <input type='submit' value='Query' class="btn btn-warning" onClick="trans(this.form);return false;">
+                       </form>
+                     </div>
+
+                  </div>
+               </div>
+               <!--Services: transformation self-services-->
+               <div class="col-md-4">
+                  <div class="panel panel-info">
+                     <div class="panel-heading">
+                        <h3 class="panel-title">Self Service</h3>
+                     </div>
+                     <div class="panel-body">
+                         <form method='POST' action='/process/test' id='selfServiceForm'>
+                           <label for='uri'>RDF graph URI: </label>
+                           <input type='text' id='uri' name='uri' value = 'http://corese.inria.fr/data/tutorial/human1.rdf' class="form-control custom-control" /><br/>
+                           <label for='sel'>Format: </label><br>
+                           <select name='transform' class="col-lg-6 control-label" id='sel'>
+                              <option>st:turtle</option>
+                              <option>st:rdfxml</option>
+                              <option>st:owl</option>
+                              <option>st:spin</option>
+                           </select>
+                           <br/><br>
+                           <!--input type='button' value='Transform' class="btn btn-info" onclick="javascript:trans('/process/test',{transform:$('#transform').val(), uri:$('#uri').val()});"-->
+                           <input type='submit' value='Query' class="btn btn-info" onClick="trans(this.form); return false;">
+                         </form>
+                        <br><br><br>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <!-- Services end-->

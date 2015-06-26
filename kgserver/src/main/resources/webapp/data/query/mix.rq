@@ -1,5 +1,5 @@
 template {
-    st:apply-templates-with("/home/corby/AData/template/mix")
+    st:apply-templates-with(st:mix)
 }
 where {
 

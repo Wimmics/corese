@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.Load;
@@ -11,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -51,6 +54,7 @@ public class Processor {
         
     @POST
     @Produces("text/html")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response typecheckPost(
             @FormParam("uri") String uri,
             @FormParam("transform") String trans,
@@ -58,6 +62,16 @@ public class Processor {
         return typecheck(uri, trans, serv);
     }
 
+    @POST
+    @Produces("text/html")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response typecheckPost_MD(
+            @FormDataParam("uri") String uri,
+            @FormDataParam("transform") String trans,
+            @PathParam("serv") String serv) {
+        return typecheck(uri, trans, serv);
+    }
+    
     @GET
     @Produces("text/html")
     public Response typecheck(

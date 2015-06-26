@@ -4,20 +4,25 @@
  */
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import static fr.inria.edelweiss.kgramserver.webservice.Utility.toStringList;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import java.util.List;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
@@ -60,6 +65,7 @@ public class Transformer {
 
     // Template generate HTML
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces("text/html")
     public Response queryPOSTHTML(
             @FormParam("profile") String profile, // query + transform
@@ -77,6 +83,25 @@ public class Transformer {
         return template(getTripleStore(), par);
     }
 
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces("text/html")
+    public Response queryPOSTHTML_MD(
+            @FormDataParam("profile") String profile, // query + transform
+            @FormDataParam("uri") String resource, // query + transform
+            @FormDataParam("query") String query, // SPARQL query
+            @FormDataParam("name") String name, // SPARQL query name (in webapp/query)
+            @FormDataParam("value") String value, // values clause that may complement query           
+            @FormDataParam("transform") String transform, // Transformation URI to post process result
+            @FormDataParam("default-graph-uri") List<FormDataBodyPart> from,
+            @FormDataParam("named-graph-uri") List<FormDataBodyPart> named) {
+        
+        Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
+        par.setValue(value);
+        par.setDataset(toStringList(from), toStringList(named));
+        return template(getTripleStore(), par);
+    }
+    
     @GET
     @Produces("text/html")
     public Response queryGETHTML(
@@ -88,7 +113,7 @@ public class Transformer {
             @QueryParam("transform") String transform, // Transformation URI to post process result
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
-        
+
         Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
         par.setValue(value);
         par.setDataset(namedGraphUris, namedGraphUris);

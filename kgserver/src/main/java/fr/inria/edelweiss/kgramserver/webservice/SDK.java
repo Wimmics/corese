@@ -1,14 +1,19 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.print.attribute.standard.Media;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /*
@@ -50,5 +55,13 @@ public class SDK {
          return new Transformer().template(st, par);
     }
     
-
+    @POST
+    @Produces("text/html")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response sdkPostMD(
+            @FormDataParam("query") String query, // SPARQL query
+            @FormDataParam("name")  String name,  // SPARQL query name (in webapp/query or path or URL)
+            @FormDataParam("value") String value){ // values clause that may complement query          
+         return this.sdk(query, name, value);
+    }
 }

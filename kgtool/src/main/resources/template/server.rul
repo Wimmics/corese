@@ -2,10 +2,26 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 26 13:59:25 CEST 2015
+Fri Jun 26 16:07:59 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:bstyle(?proto) { 
+    
+    if (?proto = st:ajax,    
+      "class='btn btn-warning'", "") 
+        
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -61,7 +77,7 @@ template st:submit(?id, ?title, ?proto) {
     
     if (?proto = st:ajax,
     
-    concat(" class='btn btn-warning' onClick='trans(this.form); return false;' />"),
+    concat(" ", st:call-template(st:bstyle, ?proto), " onClick='trans(this.form); return false;' />"),
     
     "/>")
         

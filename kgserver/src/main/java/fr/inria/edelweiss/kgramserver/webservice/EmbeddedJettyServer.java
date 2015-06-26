@@ -62,6 +62,9 @@ public class EmbeddedJettyServer {
     private static boolean enableSsl = false;
     private static int portSsl = 8443;
     private static String keystore, password;
+    
+    public static URI resourceURI;
+    public final static String HOME_PAGE = SPARQLRestAPI.isAjax? "demo_new.html" : "demo.html";
 
     public static void main(String args[]) throws Exception {
 
@@ -168,7 +171,7 @@ public class EmbeddedJettyServer {
             logger.info("----------------------------------------------");
 
             ResourceHandler resource_handler = new ResourceHandler();
-            resource_handler.setWelcomeFiles(new String[]{"demo.html", "index.html"});
+            resource_handler.setWelcomeFiles(new String[]{HOME_PAGE, "index.html"});
 //            resource_handler.setResourceBase("/Users/gaignard/Documents/Dev/svn-kgram/Dev/trunk/kgserver/src/main/resources/webapp");
             resource_handler.setResourceBase(webappUri.getRawPath());
             ContextHandler staticContextHandler = new ContextHandler();
@@ -251,6 +254,7 @@ public class EmbeddedJettyServer {
                 localDir.copyFrom(dir_jar, new AllFileSelector());
             }
         }
-        return localDir.getURL().toURI();
+        resourceURI = localDir.getURL().toURI();
+        return resourceURI;
     }
 }

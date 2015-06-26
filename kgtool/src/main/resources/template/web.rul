@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 26 13:59:25 CEST 2015
+Fri Jun 26 16:07:59 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -124,6 +124,10 @@ template st:profile {
     st:protocol(st:link(?uri))
   )
   
+  define (st:proto() =
+    coalesce(st:get(st:protocol), st:std)
+  )
+  
 }
 where {
 
@@ -138,7 +142,8 @@ where {
 template st:next(?t) {
 
   "<a  href='" st:plink(?n) "'>"
-  "<button type='button'>Next</button>"
+  "<button type='button'"  st:call-template-with(st:server, st:bstyle, st:proto())
+  ">Next</button>"
   "</a>"  
     
 }
@@ -183,7 +188,8 @@ where {
 template st:prev(?t) {
 
   "<a  href='" st:plink(?n) "'>"
-  "<button type='button'>Previous</button>"
+  "<button type='button'"  st:call-template-with(st:server, st:bstyle, st:proto())       
+  ">Previous</button>"
   "</a>"  
     
 }
@@ -224,12 +230,9 @@ template st:form(?n, ?q, ?t, ?s) {
    <input type='hidden' name='profile'  value='""" st:get(st:profile) """'/> 
    """
    
-   if (?s = st:null, "", 
-   """<input type='button' onclick="show('sol')" value='Solution' />
-      <input type='button' onclick="show('tmp')" value='Template' /> 
-   """)
+   if (?s = st:null, "", st:call-template(st:nav))
    
-   st:call-template-with(st:server, st:submit, "form", "submit", 			coalesce(st:get(st:protocol), st:std))
+   st:call-template-with(st:server, st:submit, "form", "submit", st:proto())
    
    """
    <br/>
@@ -238,7 +241,6 @@ template st:form(?n, ?q, ?t, ?s) {
   """
 }
 where {
-
 }
 ]]>
 </body>
@@ -285,6 +287,23 @@ template st:select(?t) {
 }
 where {
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:nav {
+ 
+ "<input type='button' " st:call-template-with(st:server, st:bstyle, st:proto()) """ 
+      onclick="show('sol')" value='Solution' />
+      
+  <input type='button' """ st:call-template-with(st:server, st:bstyle, st:proto()) """ 
+      onclick="show('tmp')" value='Template' /> """
+   
+ }
+where {}
 ]]>
 </body>
 </rule>

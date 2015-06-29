@@ -73,7 +73,7 @@ window.onload = function () {
 
 //go back/forward, reload page
 window.onpopstate = function (event) {
-    changeURL = false;
+    changeURL = false;//when go back/forward, don't change history manutually
     loadContent();
 };
 
@@ -86,6 +86,7 @@ function loadContent() {
     //1 home page
     if (location.pathname === '/demo_new.html' || location.pathname.trim() === '/') {
         $(content).load("/html/content.html");
+        changeURL = true;
         return;
     }
 
@@ -109,8 +110,3 @@ $(document).ajaxComplete(function (event, request, settings) {
         callback();
     }
 });
-
-
-function showMap(){
-    
-}

@@ -41,7 +41,7 @@ public class RDFFormat {
 	static final String XMLNS 		= "xmlns";
 	static final String DESCRIPTION = "rdf:Description";
 	static final String ID 			= " rdf:about='";
-	static final String NODEID 		= " rdf:NodeID='";
+	static final String NODEID 		= " rdf:nodeID='";
 	static final String RESOURCE 	= " rdf:resource='";
 	static final String LANG 		= " xml:lang='";
 	static final String DATATYPE 	= " rdf:datatype='";

@@ -1348,10 +1348,8 @@ public class Transformer  {
                 getContext().copy(ct.getContext());
             }
             else {
-                IDatatype dt = ct.get(Context.STL_DATASET);
-                if (dt != null){
-                    set(Context.STL_DATASET, dt);
-                }
+                // dataset, protocol
+                getContext().export(ct.getContext());
             }
             if (ct.getVisitor() != null){
                 setVisitor(ct.getVisitor());

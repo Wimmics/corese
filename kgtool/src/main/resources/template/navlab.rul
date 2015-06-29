@@ -199,11 +199,11 @@ where {
 template st:closelocate {
   """}
 
-  google.maps.event.addDomListener(window, 'load', initialize);
+  //google.maps.event.addDomListener(window, 'load', initialize);
 
   </script>
       
-  <p id="map-canvas"></p>
+  <p id="map-canvas" style="height:800px"></p>
   """
 }
 where {
@@ -267,7 +267,7 @@ template st:locate(?r, ?lat, ?lon) {
   """
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
   <script>
-  function initialize() {
+  function callback() {
     var pos = new google.maps.LatLng("""      
       str(?lat) "," str(?lon)     
       """);

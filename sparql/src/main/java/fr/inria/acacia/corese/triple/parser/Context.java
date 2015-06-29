@@ -34,9 +34,16 @@ public class Context {
     public static final String STL_LANG = STL + "lang";
     public static final String STL_PARAM = STL + "param";
     HashMap<String, IDatatype> table;
+    static  HashMap<String, Boolean> export;
+   
+   static {
+       export = new HashMap();
+       export.put(STL_DATASET, true);
+       export.put(STL_PROTOCOL, true);
+   }
 
     public Context() {
-        table = new HashMap();
+        table = new HashMap();       
     }
 
     public String toString() {
@@ -59,6 +66,15 @@ public class Context {
             set(str, c.get(str));
         }
     }
+    
+     public void export(Context c){
+        for (String str : export.keySet()){
+            if (export.get(str) && c.get(str) != null){
+                set(str, c.get(str));
+            }
+        }
+    }
+     
 
     public Context set(String name, IDatatype value) {
         table.put(name, value);

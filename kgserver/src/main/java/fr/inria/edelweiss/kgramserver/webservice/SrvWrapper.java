@@ -29,9 +29,10 @@ public class SrvWrapper {
 
     private static final String headerAccept = "Access-Control-Allow-Origin";
     static final String CONTENT_HTML = "<div class=\"content\" id=\"contentOfSite\">";
+    private static final String pathRegex="/{path:template|spin/tospin|spin/tosparql|sdk|tutorial/.*|process/.*}";
 
     @GET
-    @Path("/{path:template|spin/tospin|spin/tosparql|sdk|tutorial/.*|process/.*}")
+    @Path(pathRegex)
     @Produces("text/html")
     public Response transformGet(
             @PathParam("path") String path,
@@ -54,7 +55,7 @@ public class SrvWrapper {
             rs = new SPIN().toSPARQL(query);
         } else if (path.equalsIgnoreCase("sdk")) {
             rs = new SDK().sdk(query, name, value);
-        } else if (path.startsWith("tutorial") || path.startsWith("process")) {
+        } else if (path.startsWith("tutorial")) {
             rs = new Tutorial().get(getService(path), profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
             rs = new Processor().typecheck(resource, transform, getService(path));
@@ -67,7 +68,7 @@ public class SrvWrapper {
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("/{path:template|spin/tospin|spin/tosparql|sdk|tutorial/.*|process/.*}")
+    @Path(pathRegex)
     @Produces("text/html")
     public Response transformPost(
             @PathParam("path") String path,
@@ -103,7 +104,7 @@ public class SrvWrapper {
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Path("/{path:template|spin/tospin|spin/tosparql|sdk|tutorial/.*|process/.*}")
+    @Path(pathRegex)
     @Produces("text/html")
     public Response transformPostMD(
             @PathParam("path") String path,

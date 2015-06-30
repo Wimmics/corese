@@ -16,7 +16,7 @@ function trans(obj) {
 //get generated html from server by sending ajax 'GET' request
 function transGET(url) {
     //console.log('url:'+url+', encoded:'+url.replace('#', '%23'));
-    url= url.replace('#', '%23');
+    url = url.replace('#', '%23');
     $.ajax({
         type: 'GET',
         url: url,

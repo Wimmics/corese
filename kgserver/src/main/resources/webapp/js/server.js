@@ -24,8 +24,8 @@ function transGET(url) {
         success: function (response) {
             success(response, url);
         },
-        error: function (response) {
-            $(content).html(response);
+        error: function (response, status, error) {
+            error(response, error);
         }
     });
 }
@@ -49,12 +49,15 @@ function transPOST(form) {
         success: function (response) {
             success(response, url);
         },
-        error: function (response) {
-            $(content).html(response);
+        error: function (response, status, err) {
+            error(response, err);
         }
     });
 }
 
+function error(response, err){
+     $(content).html('<div class="container"><h2>'+err+' (500)</h2><br>'+response.responseText+ '</div>');
+}
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
     //1 load the content 

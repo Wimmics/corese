@@ -56,7 +56,7 @@ function transPOST(form) {
 
 //return 500 error
 function error(response, err, url){
-     $(content).html('<div class="container"><h2>'+err+' ('+response.statusCode()+')</h2><br>'+response.responseText+ '</div>');
+     $(content).html('<div class="container"><h2>'+err+' (error code: '+response.status+')</h2><br>'+response.responseText+ '</div>');
      updateUrl(url);
 }
 

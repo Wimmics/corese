@@ -15,8 +15,7 @@ function trans(obj) {
 
 //get generated html from server by sending ajax 'GET' request
 function transGET(url) {
-    //console.log('url:'+url+', encoded:'+url.replace('#', '%23'));
-    url = url.replace('#', '%23');
+    url = url.replace('#', '%23');//encode '#'
     $.ajax({
         type: 'GET',
         url: url,
@@ -50,20 +49,25 @@ function transPOST(form) {
             success(response, url);
         },
         error: function (response, status, err) {
-            error(response, err);
+            error(response, err, url);
         }
     });
 }
 
-function error(response, err){
-     $(content).html('<div class="container"><h2>'+err+' (500)</h2><br>'+response.responseText+ '</div>');
+//return 500 error
+function error(response, err, url){
+     $(content).html('<div class="container"><h2>'+err+' ('+response.statusCode()+')</h2><br>'+response.responseText+ '</div>');
+     updateUrl(url);
 }
+
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
-    //1 load the content 
-    $(content).html('<div class="container">' + response + '</div>');
+    $(content).html('<div class="container">' + response + '</div>');//1 load the content 
+    updateUrl(url); //2 change the url displayed in broswer url bar
+}
 
-    //2 change the url displayed in broswer url bar
+// store the browsering history and change the url in the browser url bar
+function updateUrl(url){
     if (changeURL && url.trim() !== '') {
         url = location.protocol + "//" + location.host + "/srv" + url;
         window.history.pushState('', '', url);
@@ -88,7 +92,7 @@ function loadContent() {
     $('#navgator').load("/html/navigator.html");
     $('#footerOfSite').load("/html/footer.html");
     
-    //1 home page
+    //1 load home page content
     if (location.pathname === '/demo_new.html' || location.pathname.trim() === '/') {
         $(content).load("/html/content.html");
         changeURL = true;

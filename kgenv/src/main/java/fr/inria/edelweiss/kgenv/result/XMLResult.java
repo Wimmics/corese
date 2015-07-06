@@ -91,6 +91,7 @@ public class XMLResult {
 		
 		MyHandler handler = new MyHandler(maps);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
+                factory.setNamespaceAware(true);
 		SAXParser parser = factory.newSAXParser();
 		InputStreamReader r = new InputStreamReader(stream, "UTF-8");
 		parser.parse(new InputSource(r), handler);    
@@ -103,8 +104,8 @@ public class XMLResult {
 		table = new HashMap<String, Integer> ();
 		table.put("result", 	RESULT );
 		table.put("binding", 	BINDING );
-		table.put("uri", 		URI );
-		table.put("bnode", 		BNODE );
+		table.put("uri", 	URI );
+		table.put("bnode", 	BNODE );
 		table.put("literal", 	LITERAL );
 		table.put("boolean", 	BOOLEAN );
 	}
@@ -183,7 +184,7 @@ public class XMLResult {
 	    // called for each binding
 	    void clear(){
 			isURI     = false;
-	    	isLiteral = false;
+                        isLiteral = false;
 			isBlank   = false;
 			text 	  = null;
 			datatype  = null;
@@ -206,7 +207,7 @@ public class XMLResult {
 	    	
 	    	isContent = false;
 	    	
-	    	switch (type(qualifiedName)){
+	    	switch (type(simpleName)){
 	    	
 	    	case RESULT:
 	    		//map =  Mapping.create();
@@ -272,7 +273,7 @@ public class XMLResult {
 	    			maps.add(Mapping.create());
 	    		}
 	    	}
-	    	else switch(type(qualifiedName)){
+	    	else switch(type(simpleName)){
 	    	
 	    		case RESULT:
 	    			Mapping map = Mapping.create(lvar, lval);

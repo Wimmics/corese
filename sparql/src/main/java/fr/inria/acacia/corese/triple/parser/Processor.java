@@ -65,8 +65,14 @@ public class Processor {
 	private static final String MAPLIST = "maplist";
 	private static final String APPLY   = "apply";
         
-        private static final String XTSUM   = EXT + "sum";
-        private static final String XTPROD  = EXT + "prod";
+        private static final String XT_SUM   = EXT + "sum";
+        private static final String XT_PROD  = EXT + "prod";
+        private static final String XT_GRAPH    = EXT + "graph";
+        private static final String XT_SUBJECT  = EXT + "subject";
+        private static final String XT_PROPERTY = EXT + "property";
+        private static final String XT_OBJECT   = EXT + "object";
+        private static final String XT_VALUE   = EXT + "value";
+        private static final String XT_INDEX   = EXT + "index";
 
 	private static final String PLENGTH = "pathLength";
 	private static final String KGPLENGTH = KGRAM + "pathLength";
@@ -149,6 +155,7 @@ public class Processor {
 	static final String STL_ISSTART             = STL + "isStart"; 
 	static final String STL_SET                 = STL + "set"; 
 	static final String STL_GET                 = STL + "get"; 
+	static final String STL_EXPORT              = STL + "export"; 
 	static final String STL_VSET                = STL + "vset"; 
 	static final String STL_VGET                = STL + "vget"; 
         static final String STL_VISIT               = STL + "visit"; 
@@ -541,9 +548,14 @@ public class Processor {
 		defoper(MAPLIST,        ExprType.MAPLIST);
 		defoper(APPLY,          ExprType.APPLY);
                 
-		defoper(XTSUM,          ExprType.XTSUM);
-		defoper(XTPROD,         ExprType.XTPROD);
-                
+		defoper(XT_SUM,          ExprType.XT_SUM);
+		defoper(XT_PROD,         ExprType.XT_PROD);
+		defoper(XT_GRAPH,        ExprType.XT_GRAPH);
+		defoper(XT_SUBJECT,      ExprType.XT_SUBJECT);
+		defoper(XT_PROPERTY,     ExprType.XT_PROPERTY);
+		defoper(XT_OBJECT,       ExprType.XT_OBJECT);
+		defoper(XT_VALUE,        ExprType.XT_VALUE);                
+		defoper(XT_INDEX,        ExprType.XT_INDEX);
 		
 		defoper(REGEX, 		ExprType.REGEX);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
@@ -631,6 +643,7 @@ public class Processor {
                 defoper(STL_ISSTART,            ExprType.STL_ISSTART);
                 defoper(STL_SET,                ExprType.STL_SET);
                 defoper(STL_GET,                ExprType.STL_GET);
+                defoper(STL_EXPORT,             ExprType.STL_EXPORT);
                 defoper(STL_VSET,               ExprType.STL_VSET);
                 defoper(STL_VGET,               ExprType.STL_VGET);
                 defoper(STL_VISIT,              ExprType.STL_VISIT);

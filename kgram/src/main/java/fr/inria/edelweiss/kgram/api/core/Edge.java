@@ -72,7 +72,7 @@ public interface Edge  {
 	 * @return
 	 */
 	Node getEdgeVariable();
-
-		
+        
+        Node getNode();
 	
 }

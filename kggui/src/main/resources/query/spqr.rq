@@ -4,6 +4,8 @@
 #
 prefix cal: <http://ns.inria.fr/sparql-extension/spqr/>
 select 
+?val 
+(cal:spqr(?val) as ?spqr)
 
 (package(xt:spqr, 
 
@@ -59,9 +61,7 @@ define (cal:spqr(?n) =
 
 )
 as ?p)
-
-(map (kg:display(?n), maplist(cal:spqr(?n), xt:iota(1, 100))) as ?test)
-
 where {
+    bind (kg:unnest(xt:iota(1, 100)) as ?val)
 
 }

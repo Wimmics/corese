@@ -46,6 +46,8 @@ import java.util.Iterator;
 public class Eval implements ExpType, Plugin {
 
     private static Logger logger = Logger.getLogger(Eval.class);
+    private static final String CANDIDATE   = EXT + "candidate";
+    private static final String RESULT      = EXT + "result";
     static final int STOP = -2;
     public static int count = 0;
     ResultListener listener;
@@ -91,6 +93,7 @@ public class Eval implements ExpType, Plugin {
     private boolean isPathType = false;
     boolean storeResult = true;
     private int nbResult;
+    private boolean hasCandidate = false, hasResult = false;
     
 
     //Edge previous;
@@ -552,6 +555,9 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             results.setEventManager(manager);
         }
+        hasCandidate = (getExpression(CANDIDATE) != null);
+        hasResult    = (getExpression(RESULT) != null);
+        
         // save current results in case of sub query
         //save = memory.getResults();
         // set new results in case of sub query (for aggregates)
@@ -2047,6 +2053,7 @@ public class Eval implements ExpType, Plugin {
                 if (hasListener &&  ! listener.listen(qEdge, ent)){
                     continue;
                 }
+                
                 boolean trace = false;
                 Edge edge = ent.getEdge();
                 graph = ent.getGraph();
@@ -2071,6 +2078,10 @@ public class Eval implements ExpType, Plugin {
                 previous = edge;
 
                 boolean bmatch = match(qEdge, edge, gNode, graph, env);
+                
+                if (hasCandidate){
+                    candidate(qEdge, ent, p.getValue(bmatch));
+                }
 
                 if (bmatch) {
                     bmatch = push(qEdge, ent, gNode, graph, n);
@@ -2122,6 +2133,45 @@ public class Eval implements ExpType, Plugin {
         }
 
         return backtrack;
+    }
+    
+    void candidate(Edge q, Entity ent, Object match) {
+        Expr exp = getExpression(CANDIDATE);
+        if (exp != null) {
+            evaluator.eval(exp, memory, producer, 
+                    toArray(q.getNode().getValue(), ent.getNode().getValue(), match));
+        }
+    }
+    
+    Expr getExpression(String name){
+        if (query.getExtension() != null){
+            Expr exp = query.getExtension().get(name);
+            if (exp != null){
+                return exp.getExp(0);
+            }
+        }
+        return null;
+    }
+    
+    Object[] toArray(Object o1, Object o2, Object o3){
+        Object[] res = new Object[3];
+        res[0] = o1;
+        res[1] = o2;       
+        res[2] = o3;       
+        return res;
+    }
+
+    Object[] toArray(Object o1, Object o2){
+        Object[] res = new Object[2];
+        res[0] = o1;
+        res[1] = o2;       
+        return res;
+    }
+    
+    Object[] toArray(Object o1){
+        Object[] res = new Object[1];
+        res[0] = o1;
+        return res;
     }
 
     private int node(Node gNode, Exp exp, Stack stack, int n) {
@@ -2535,6 +2585,9 @@ public class Eval implements ExpType, Plugin {
             if (hasEvent) {
                 //send(Event.RESULT, query, ans);
                 send(Event.RESULT, ans);
+            }
+            if (hasResult){                
+                evaluator.eval(getExpression(RESULT), memory, p, toArray(p.getNode(ans)));
             }
         }            
     }

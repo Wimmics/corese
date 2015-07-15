@@ -72,7 +72,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-06-06";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-07-14";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -121,7 +121,7 @@ public class MainFrame extends JFrame implements ActionListener {
             iserviceCorese, iserviceDBpedia, 
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, irdfxml, itrig, ispin, iowl, itypecheck, 
-            ientailment, irule, isystem, iprovenance, iindex, ifunction, ical;
+            ientailment, irule, isystem, iprovenance, iindex, ifunction, ical, ispqr;
     
     HashMap<Object, String> itable;
     
@@ -454,7 +454,8 @@ public class MainFrame extends JFrame implements ActionListener {
         iserviceCorese    = defItem("Service Corese", defaultServiceCoreseQuery);
         iserviceDBpedia    = defItem("Service DBpedia", defaultServiceDBpediaQuery);
         ifunction   = defItem("Function", defaultFunQuery);
-        ical   = defItem("Calendar", "cal.rq");
+        ical    = defItem("Calendar", "cal.rq");
+        ispqr   = defItem("SPQR", "spqr.rq");
         
         iinsert     = defItem("Insert", defaultInsertQuery);
         iinsertdata = defItem("Insert Data", defaultInsertDataQuery);
@@ -578,6 +579,7 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iserviceCorese);
         queryMenu.add(ifunction);
         queryMenu.add(ical);
+        queryMenu.add(ispqr);
         
         queryMenu.add(idelete);
         queryMenu.add(iinsert);

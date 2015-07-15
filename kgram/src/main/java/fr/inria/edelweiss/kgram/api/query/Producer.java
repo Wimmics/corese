@@ -161,7 +161,10 @@ public interface Producer {
 	 * @param value a target value from the filter language
 	 */
 	Node getNode(Object value);
-	
+        
+        // cast java value into IDatatype value
+        Object getValue(Object value);
+        	
 	/**
 	 * use case: filter (?x = ?y)  filter(?x = 'cst')
 	 * is it possible to bind ?x to the argument to optimize query processing ?

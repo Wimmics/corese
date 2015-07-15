@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -47,6 +48,8 @@ public class PluginImpl extends ProxyImpl {
     static String DEF_PPRINTER = Transformer.PPRINTER;
     public static boolean readWriteAuthorized = true;
     private static final String NL = System.getProperty("line.separator");
+    static final String alpha = "abcdefghijklmnoprstuvwxyz";
+    static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
    
     
     String PPRINTER = DEF_PPRINTER;
@@ -209,6 +212,14 @@ public class PluginImpl extends ProxyImpl {
              case QUERY:
                 return ext.query(p, exp, env, dt); 
                  
+             case XT_GRAPH:
+             case XT_SUBJECT:
+             case XT_PROPERTY:
+             case XT_OBJECT:
+             case XT_INDEX:
+                 return access(exp, env, p, dt);
+                 
+                 
              default:
                  return pt.function(exp, env, p, dt);
            
@@ -258,7 +269,8 @@ public class PluginImpl extends ProxyImpl {
              case WRITE:                
                 return write(dt1, dt2);   
                 
-           
+             case XT_VALUE:
+                 return access(exp, env, p, dt1, dt2);
                 
             case STORE:
                 return ext.store(p, env, dt1, dt2);
@@ -284,12 +296,20 @@ public class PluginImpl extends ProxyImpl {
                 return list(args);
                 
             case IOTA:
-                return iota(args);
+                return iotag(args);
 
             default: 
                 return pt.eval(exp, env, p, args);  
         }
 
+    }
+    
+    IDatatype iotag(Object[] args){
+        IDatatype dt = ((IDatatype) args[0]);
+        if (dt.isNumber()){
+            return iota(args);
+        }
+        return iotas(args);
     }
     
     IDatatype iota(Object[] args){
@@ -304,6 +324,37 @@ public class PluginImpl extends ProxyImpl {
         
         for (int i=0; i<length; i++){
             ldt[i] = DatatypeMap.newInstance(start);
+            start += step;
+        }
+        IDatatype dt = DatatypeMap.createList(ldt);
+        return dt;
+    }
+    
+    IDatatype iotas(Object[] args){
+        String fst = ((IDatatype) args[0]).stringValue();
+        String snd = ((IDatatype) args[1]).stringValue();
+        int step = 1;
+        if (args.length == 3){
+            step = ((IDatatype) args[2]).intValue();
+        }               
+        String str = alpha;
+        int start = str.indexOf(fst);
+        int end   = str.indexOf(snd);
+        if (start == -1){
+            str = ALPHA;
+            start = str.indexOf(fst);
+            end   = str.indexOf(snd);
+        }
+        if (start == -1 || end == -1){
+            return null;
+        }
+       
+        
+        int length = (end - start + step) / step;
+        IDatatype[] ldt = new IDatatype[length];
+        
+        for (int i=0; i<length; i++){
+            ldt[i] = DatatypeMap.newInstance(str.substring(start, start+1));
             start += step;
         }
         IDatatype dt = DatatypeMap.createList(ldt);
@@ -523,6 +574,50 @@ public class PluginImpl extends ProxyImpl {
     public PluginTransform getPluginTransform () {
         return pt;
     }
+
+    private Object access(Expr exp, Environment env, Producer p, IDatatype dt) {
+        Object obj = dt.getObject();
+        if (obj == null || ! (obj instanceof Entity)){
+            return null;
+        }
+        Entity ent = (Entity) obj;        
+        switch (exp.oper()){
+            case XT_GRAPH:
+                return ent.getGraph().getValue();
+                
+            case XT_SUBJECT:
+                return ent.getNode(0).getValue();
+                
+            case XT_OBJECT:
+                return ent.getNode(1).getValue();
+                
+            case XT_PROPERTY:
+                return ent.getEdge().getEdgeNode().getValue();
+                
+            case XT_INDEX:
+                return getValue(ent.getEdge().getIndex());
+        }
+        return null;
+    }
+    
+    private Object access(Expr exp, Environment env, Producer p, IDatatype dtmap, IDatatype dtvar) {
+        Object obj = dtmap.getObject();
+        if (obj == null || ! (obj instanceof Mapping)){
+            return null;
+        }
+        Mapping map = (Mapping) obj;  
+        
+        switch (exp.oper()){
+            case XT_VALUE:
+                Node n = map.getNode(dtvar.getLabel());
+                if (n != null){
+                    return n.getValue();
+                }
+        }
+        
+        return null;
+    }
+
     
   
     class Table extends Hashtable<Integer, PTable> {

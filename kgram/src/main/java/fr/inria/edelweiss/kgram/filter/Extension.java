@@ -1,11 +1,11 @@
 package fr.inria.edelweiss.kgram.filter;
 
 import fr.inria.edelweiss.kgram.api.core.Expr;
-import java.util.Collection;
 import java.util.HashMap;
 
 /**
- * Manage extension functions Expr exp must have executed exp.local() do tag
+ * Manage extension functions 
+ * Expr exp must have executed exp.local() to tag
  * local variables
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
@@ -14,17 +14,39 @@ import java.util.HashMap;
 public class Extension {
 
     static final String NL = System.getProperty("line.separator");
-    HashMap<String, Expr> map;
+    //FunMap map;
+    FunMap[] maps;
     private String name;
     private Object pack;
+    
+    class FunMap extends HashMap<String, Expr> {}
 
     public Extension() {
-        map = new HashMap();
+        //map = new FunMap();
+        maps = new FunMap[11];
+        for (int i=0; i<maps.length; i++){
+            maps[i] = new FunMap();
+        }
     }
     
     public Extension(String n){
         this();
         name = n;
+    }
+    
+    FunMap getMap(Expr exp){
+        return getMap(exp.arity());
+    }
+    
+    FunMap getMap(int n){
+         if (n >= maps.length){
+            return null;
+        }
+        return maps[n];
+    }
+    
+    FunMap[] getMaps(){
+        return maps;
     }
 
     /**
@@ -33,23 +55,21 @@ public class Extension {
      */
     public void define(Expr exp) {
         Expr fun = exp.getExp(0);
-        map.put(fun.getLabel(), exp);
-    }
-    
-    public Collection<Expr> values(){
-        return map.values();
+        getMap(fun).put(fun.getLabel(), exp);
     }
     
     public void add(Extension ext){
-        for (Expr e : ext.values()){
-            if (! isDefined(e.getExp(0))){
-                define(e);
+        for (FunMap m : ext.getMaps()){
+            for (Expr e : m.values()){
+                if (! isDefined(e.getExp(0))){
+                    define(e);
+                }
             }
         }
     }
 
     public boolean isDefined(Expr exp) {
-        return map.containsKey(exp.getLabel());
+        return getMap(exp).containsKey(exp.getLabel());
     }
 
     /**
@@ -57,18 +77,32 @@ public class Extension {
      * fun
      */
     public Expr get(Expr exp, Object[] values) {
-        return map.get(exp.getLabel());
+        return getMap(exp).get(exp.getLabel());
     }
 
     public Expr get(Expr exp) {
-        return map.get(exp.getLabel());
+        Expr def = getMap(exp).get(exp.getLabel());
+        return def;
     }
     
     public Expr get(String label) {
-        return map.get(label);
+        for (int i = 0; i<maps.length; i++){
+            Expr exp = get(label, i);
+            if (exp != null){
+                return exp;
+            }
+        }
+        return null;
     }
     
-
+    public Expr get(String label, int n) {
+        FunMap m = getMap(n);
+        if (m == null){
+            return null;
+        }
+        return m.get(label);
+    }
+    
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (getName() != null){
@@ -76,10 +110,12 @@ public class Extension {
             sb.append(getName()); 
             sb.append(NL);
         }
-        for (Expr exp : map.values()) {
-            sb.append(exp);
-            sb.append(NL);
-            sb.append(NL);
+        for (FunMap m : getMaps()){
+            for (Expr exp : m.values()) {
+                sb.append(exp);
+                sb.append(NL);
+                sb.append(NL);
+            }
         }
         return sb.toString();
     }

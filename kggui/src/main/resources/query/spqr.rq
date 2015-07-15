@@ -1,0 +1,67 @@
+#
+# Compute the romain notation of a number
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+prefix cal: <http://ns.inria.fr/sparql-extension/spqr/>
+select 
+
+(package(xt:spqr, 
+
+define (cal:div(?a, ?b) = xsd:integer(floor(?a / ?b)))  ,
+define (cal:mod(?a, ?b) = xsd:integer(?a - (?b * cal:div(?a, ?b)))),
+
+define (cal:rep(?s, ?n) =
+  if (?n = 0, "",
+  if (?n = 1, ?s,
+  concat(?s, cal:rep(?s, ?n - 1))))
+),
+
+define (cal:r1(?n) =
+    cal:num(?n, "I", "V", "X")
+),
+
+define (cal:r10(?n) =
+  cal:num(?n, "X", "L", "C")
+),
+
+define (cal:r100(?n) =
+  cal:num(?n, "C", "D", "M")
+),
+
+define (cal:r1000(?n) =
+  cal:rep("M", ?n)
+),
+
+define (cal:num(?n, ?u, ?f, ?t) =
+  if (?n <= 3, cal:rep(?u, ?n),  
+  if (?n = 4, concat(?u, ?f),
+  if (?n < 9, concat(?f, cal:rep(?u, ?n - 5)), 
+  if (?n = 9, concat(?u, ?t), ""))))
+),
+
+define (cal:spqr(?n) =
+  if (?n < 10, cal:r1(?n),
+  if (?n < 100, 
+    let (?d = cal:div(?n, 10), 
+    let (?u = cal:mod(?n, 10), 
+    concat(cal:r10(?d), cal:r1(?u)))),
+  if (?n < 1000,
+    let (?c = cal:div(?n, 100),
+    let (?r = cal:mod(?n, 100),
+    concat(cal:r100(?c), cal:spqr(?r)))),
+  if (?n < 10000,
+    let (?c = cal:div(?n, 1000),
+    let (?r = cal:mod(?n, 1000),
+    concat(cal:r1000(?c), cal:spqr(?r)))),    
+    
+    ?n))))
+) 
+
+)
+as ?p)
+
+(map (kg:display(?n), maplist(cal:spqr(?n), xt:iota(1, 100))) as ?test)
+
+where {
+
+}

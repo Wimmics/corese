@@ -342,8 +342,10 @@ public class Transformer implements ExpType {
                 ext.setPackage(ast.getPackage().getDatatypeValue());
                 Interpreter.setExtension(ext);
             }
-            for (Expression exp : ast.getDefine().values()) {
-                ext.define(exp);               
+            for (fr.inria.acacia.corese.triple.parser.Extension.FunMap m : ast.getDefine().getMaps()){
+                for (Expression exp : m.values()) {
+                    ext.define(exp);               
+                }
             }
             q.setExtension(ext);
         }

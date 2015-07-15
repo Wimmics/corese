@@ -377,18 +377,19 @@ public class Interpreter implements Evaluator, ExprType {
             return null;
         }
         
-        switch(exp.oper()){
-            
+        return eval(exp, env, p, args);
+    }
+    
+    public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
+        switch (exp.oper()) {
+
             case UNDEF:
                 return extension(exp, env, p, args);
-                
+
             default:
                 return proxy.eval(exp, env, p, args);
         }
-       
     }
-    
-  
 
     /**
      * use case: exp: max(?count) iterate all values of ?count to get the max

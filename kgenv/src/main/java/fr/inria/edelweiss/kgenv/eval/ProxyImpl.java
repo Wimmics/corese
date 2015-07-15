@@ -59,8 +59,6 @@ public class ProxyImpl implements Proxy, ExprType {
     boolean SPARQLCompliant = false;
     protected IDatatype EMPTY = DatatypeMap.newStringBuilder("");
     
-    IDatatype[] intCache;
-    private static final int INTMAX = 100;
 
     public ProxyImpl() {
         sql = new SQLFun();
@@ -327,8 +325,11 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     IDatatype display(Expr exp, IDatatype dt, IDatatype arg) {
-        if (arg == null){
-            System.out.println(exp + " = " + dt);
+        if (dt.getObject() != null) {
+            System.out.println(exp.getExp(0) + " = " + dt.getObject());
+        }
+        else  if (arg == null){
+            System.out.println(exp.getExp(0) + " = " + dt);
         }
         else {
             if (! arg.equals(FALSE)){
@@ -336,10 +337,7 @@ public class ProxyImpl implements Proxy, ExprType {
             }
             System.out.println(dt.stringValue());
             System.out.println();
-        }
-        if (dt.getObject() != null) {
-            System.out.println(exp + " = " + dt.getObject());
-        }
+        }       
         return TRUE;
     }
 
@@ -470,10 +468,10 @@ public class ProxyImpl implements Proxy, ExprType {
             case STL_AND:
                 return and(args); 
                 
-            case XTSUM:
+            case XT_SUM:
                 return sum(args);
                 
-            case XTPROD:
+            case XT_PROD:
                 return prod(args);
                 
             case CONCAT:
@@ -1023,23 +1021,11 @@ public class ProxyImpl implements Proxy, ExprType {
     }
 
     @Override
-    public IDatatype getValue(int value) {
-        if (value >= 0 && value < INTMAX){
-            return getValueCache(value);
-        }
+    public IDatatype getValue(int value) {       
         return DatatypeMap.newInstance(value);
     }
     
-    public IDatatype getValueCache(int value) {
-        if (intCache == null) {
-            intCache = new IDatatype[INTMAX];
-        }
-        if (intCache[value] == null) {
-            intCache[value] = DatatypeMap.newInstance(value);
-        }
-        return intCache[value];
-    }
-
+  
     public IDatatype getValue(long value) {
         return DatatypeMap.newInstance(value);
     }

@@ -201,7 +201,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	
 	Hashtable<String, Expression> selectFunctions = new Hashtable<String, Expression>();
 	HashMap<String, Variable> varTemplate = new HashMap<String, Variable>();
-        private HashMap <String, Expression> define;
+        private Extension define;
         private HashMap <String, Expression> undefined;
 	ExprTable selectExp   = new ExprTable();
 	ExprTable regexExpr   = new ExprTable();
@@ -315,14 +315,14 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     /**
      * @return the define
      */
-    public HashMap <String, Expression> getDefine() {
+    public Extension getDefine() {
         return define;
     }
 
     /**
      * @param define the define to set
      */
-    public void setDefine(HashMap <String, Expression> define) {
+    public void setDefine(Extension define) {
         this.define = define;
     }
 
@@ -347,7 +347,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	 */
 	private ASTQuery() {
             dataset = Dataset.create();
-            define = new HashMap();
+            define = new Extension();
             undefined = new HashMap();
         }
 	
@@ -558,7 +558,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	}
         
         void undefined(Expression t){
-            if (! getGlobalAST().getDefine().containsKey(t.getLabel())){
+            if (! getGlobalAST().getDefine().isDefined(t)){
                 getGlobalAST().getUndefined().put(t.getLabel(), t);
             }
         }
@@ -569,7 +569,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
          */
         void define(Expression def){
             Expression t = def.getArg(0);
-            getGlobalAST().getDefine().put(t.getLabel(), def);
+            getGlobalAST().getDefine().define(def);
             getGlobalAST().getUndefined().remove(t.getLabel());
         }
         

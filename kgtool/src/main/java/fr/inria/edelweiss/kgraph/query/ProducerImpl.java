@@ -677,15 +677,26 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
 
     /**
+     *   Cast Java value into IDatatype 
+     */
+    public IDatatype getValue(Object value){
+        IDatatype dt = DatatypeMap.cast(value);
+        if (dt == null){
+            dt = DatatypeMap.createObject("tmp", value);
+        }
+        return dt;
+    }
+    
+    /**
      * Return a Node given a value (IDatatype value) Use case: select/bind (exp
      * as node) return the Node in the graph or return the IDatatype value as is
      * (to speed up)
      *
      */
-    synchronized public Node getNode(Object value) {
+      synchronized public Node getNode(Object value) {
         // TODO Auto-generated method stub
         if (!(value instanceof IDatatype)) {
-            return null;
+            return DatatypeMap.createObject("tmp", value);
         }
         IDatatype dt = (IDatatype) value;
         if (selfValue || dt.isFuture()) {

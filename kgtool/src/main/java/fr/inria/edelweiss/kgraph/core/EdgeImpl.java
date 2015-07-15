@@ -188,7 +188,7 @@ public class EdgeImpl extends EdgeTop
     @Override
     public Node getNode() {
         // TODO Auto-generated method stub
-        return null;
+        return DatatypeMap.createObject(this.toString(), this);
     }
 
     @Override

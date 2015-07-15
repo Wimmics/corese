@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgenv.parser;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.ArrayList;
 
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -15,7 +16,7 @@ public class EdgeImpl implements Edge, Entity {
 
 	public static String TOP = RDFS.RootPropertyURI;
 	ArrayList<Node> nodes;
-	Node edgeNode, edgeVariable;
+	Node edgeNode, edgeVariable, mySelf;
 	String label;
 	Triple triple;
 	int index = -1;
@@ -182,7 +183,10 @@ public class EdgeImpl implements Edge, Entity {
 	}
 
 	public Node getNode() {
-		return null;
+            if (mySelf == null){
+                mySelf = DatatypeMap.createObject(this.toString(), this);
+            }
+            return mySelf;
 	}
 
     @Override

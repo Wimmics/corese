@@ -1,13 +1,22 @@
 #
 # Compute the romain notation of a number
+# Compute the digital notation of a romain number
 # Olivier Corby - Wimmics Inria I3S - 2015
 #
 prefix cal: <http://ns.inria.fr/sparql-extension/spqr/>
 select 
-?val 
-(cal:spqr(?val) as ?spqr)
+
+(99 as ?n)
+(cal:romain(?n) as ?r)
+(cal:digit(?r)  as ?d)
+
 
 (package(xt:spqr, 
+
+define (cal:romain(?n) = cal:spqr(?n)),
+define (cal:digit(?r)  = cal:parse(?r)),
+
+
 
 define (cal:div(?a, ?b) = xsd:integer(floor(?a / ?b)))  ,
 define (cal:mod(?a, ?b) = xsd:integer(?a - (?b * cal:div(?a, ?b)))),
@@ -44,9 +53,9 @@ define (cal:num(?n, ?u, ?f, ?t) =
 define (cal:spqr(?n) =
   if (?n < 10, cal:r1(?n),
   if (?n < 100, 
-    let (?d = cal:div(?n, 10), 
-    let (?u = cal:mod(?n, 10), 
-    concat(cal:r10(?d), cal:r1(?u)))),
+    let (?c = cal:div(?n, 10), 
+    let (?r = cal:mod(?n, 10), 
+    concat(cal:r10(?c), cal:spqr(?r)))),
   if (?n < 1000,
     let (?c = cal:div(?n, 100),
     let (?r = cal:mod(?n, 100),
@@ -54,14 +63,42 @@ define (cal:spqr(?n) =
   if (?n < 10000,
     let (?c = cal:div(?n, 1000),
     let (?r = cal:mod(?n, 1000),
-    concat(cal:r1000(?c), cal:spqr(?r)))),    
-    
+    concat(cal:r1000(?c), cal:spqr(?r)))),       
     ?n))))
-) 
+),
+
+# parse romain number
+
+define (cal:parse(?s) =
+  if (strlen(?s) = 0, 0,
+    let (?f = substr(?s, 1, 1),
+      if (?f = "I", cal:step(?s, "I", "V", "X", 1, 5, 10),
+      if (?f = "V", 5 + cal:parse(substr(?s, 2)),
+      if (?f = "X", cal:step(?s, "X", "L", "C", 10, 50, 100),
+      if (?f = "L", 50 + cal:parse(substr(?s, 2)),
+      if (?f = "C", cal:step(?s, "C", "D", "M", 100, 500, 1000),
+      if (?f = "D", 500   + cal:parse(substr(?s, 2)),
+      if (?f = "M", 1000  + cal:parse(substr(?s, 2)),
+      0)))))))))
+	      
+),
+
+define (cal:step(?s, ?su, ?sc, ?sd, ?u, ?c, ?d) =
+  if (strlen(?s) = 1, ?u,
+    let (?r = substr(?s, 2, 1),
+      if (?r = ?sc,   ?c - ?u + cal:parse(substr(?s, 3)),
+	if (?r = ?sd, ?d - ?u + cal:parse(substr(?s, 3)),
+	  ?u + cal:parse(substr(?s, 2))))))
+)
+
+
+
 
 )
 as ?p)
+
+
+
 where {
-    bind (kg:unnest(xt:iota(1, 100)) as ?val)
 
 }

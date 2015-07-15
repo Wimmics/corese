@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 26 13:59:25 CEST 2015
+Tue Jul 14 14:30:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -54,10 +54,11 @@ template cn:content(?c) {
     <table class='center'>
     <tr class='head'> 
     <th>Date</th> 
-    <th>Souverain France</th> '''
-#    <th>Empereur Germanique</th> 
-#    <th>Souverain Savoie</th> 
-    '''<th>Contexte</th> 
+    <th>'''
+    if (?max <= 500, "Antiquité", "")
+    '''</th> 
+    <th>France</th> 
+    <th>Contexte</th> 
     <th>Savoie, Piémont, Comté de Nice</th> 
     </tr>
     '''
@@ -214,7 +215,7 @@ prefix cn: <http://cdn.fr/schema/>
 template st:navlab(?u, ?t) { 
   
   "<a href='" 
-  st:protocol(concat(st:get(st:service), "?uri=", str(?u), "&profile=st:dbpedia"))
+  st:protocol(concat(st:get(st:service), "?uri=", replace(str(?u), "'", "%27"), "&profile=st:dbpedia"))
   "'>" ?t "</a>"
 
 }
@@ -397,12 +398,10 @@ template  cn:table(?min, ?max) {
 
   "<th class='date'>" st:call-template(cn:wikidate, ?d)  "</th>"
 
+  "<td>" st:call-template(cn:date, ?d, cn:rome) "</td>"
+
   "<td>" st:call-template(cn:date, ?d, cn:fr) "</td>"
   
-#  "<td>" st:call-template(cn:date, ?d, cn:emp) "</td>"  
-
-#  "<td>" st:call-template(cn:date, ?d, cn:mds) "</td>"
-
   "<td>" st:call-template(cn:date, ?d, cn:emp)
          st:call-template(cn:date, ?d, cn:context) "</td>"
 

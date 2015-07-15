@@ -1,0 +1,239 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Tue Jul 14 14:30:26 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:default(?in) {
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# defaut processing of a variable is 
+# st:turtle on URI 
+# st:apply-templates on Blank and Literal
+# Literals are displayed by st:xsdLiteral  (literalvalue.rq)
+# otherwise must use st:turtle explicitely (e.g. cardinality.rq)
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+
+template st:profile(?in) {
+
+    define (st:process(?in) =  
+      if (isURI(?in), st:protect(?in),	
+	st:apply-templates-with(st:owlexp, ?in))
+    ) 
+  
+  define (st:protect(?in) =
+    let (?t = st:turtle(?in),
+      if (st:get(st:html, true) && 
+	    strstarts(?t, "<"), 
+	    replace(?t, "<", "&lt;"), 
+	    ?t))
+  )
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    xsd:string(?l) "("  ?in " "  ?p ")"   
+}
+where {
+  ?in owl:propertyDisjointWith ?p 
+  optional { ?in a ?t }
+  optional  { ?p a ?t }
+  filter (?t = ?tt)
+}
+values (?tt ?l) {
+  (owl:ObjectProperty   "DisjointObjectProperties")
+  (owl:DatatypeProperty "DisjointDataProperties")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    str(?label)  "(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:range ?d 
+  bind (
+    if (exists { {?in a owl:DatatypeProperty} union {?d a rdfs:Datatype} },   "DataPropertyRange",
+    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyRange",
+    "ObjectPropertyRange"))
+    as ?label)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "InverseObjectProperties("  ?in " " ?y ")"  
+}
+where {
+  ?in owl:inverseOf ?y
+  filter(isURI(?in))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?t), "FunctionalDataProperty", "FunctionalObjectProperty")
+    "(" ?in  ")"   
+}
+where {
+  ?in a owl:FunctionalProperty 
+  optional { ?in a ?t filter(?t = owl:DatatypeProperty) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   xsd:string(?label) "(" ?in " " ?p ")"
+}
+where {
+  ?in rdfs:subPropertyOf ?p 
+  
+  bind (
+  if (exists {{?in a owl:DatatypeProperty} union {?p a owl:DatatypeProperty}}, 
+  "SubDataPropertyOf",
+  if (exists {{?in a owl:AnnotationProperty} union {?p a owl:AnnotationProperty}},
+  "SubAnnotationPropertyOf",
+  "SubObjectPropertyOf"))
+  as ?label)
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    xsd:string(?l) 
+    "ObjectProperty(" ?in  ")" 
+}
+where {
+  ?in a ?t
+}
+values (?t ?l) {
+  (owl:TransitiveProperty 	"Transitive")
+  (owl:SymmetricProperty 	"Symmetric")
+  (owl:AsymmetricProperty 	"Asymmetric")
+  (owl:ReflexiveProperty 	"Reflexive")
+  (owl:IrreflexiveProperty 	"Irreflexive")
+  (owl:InverseFunctionalProperty "InverseFunctional")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (?dp, "DisjointDataProperties", "DisjointObjectProperties") 
+    "("  ?l ")"   
+}
+where {
+  ?in a owl:AllDisjointProperties ;
+    owl:members ?l 
+    
+    bind( 
+    exists {
+      ?l rdf:rest*/rdf:first ?p 
+      ?p a owl:DatatypeProperty
+    } 
+    as ?dp)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    str(?label)  "(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:domain ?d 
+  bind (
+    if (exists { ?in a owl:DatatypeProperty },   "DataPropertyDomain",
+    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyDomain",
+    "ObjectPropertyDomain"))
+    as ?label)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+      "SubObjectPropertyOf(ObjectPropertyChain(" ?l ") " ?in ")"
+}
+where {
+  ?in owl:propertyChainAxiom ?l 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    xsd:string(?l) "("  ?in " "  ?p ")"   
+}
+where {
+  ?in owl:equivalentProperty ?p 
+  optional { ?in a ?t }
+  optional { ?p a ?t }
+  filter (?t = ?tt)
+}
+values (?tt ?l) {
+  (owl:ObjectProperty   "EquivalentObjectProperties")
+  (owl:DatatypeProperty "EquivalentDataProperties")
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

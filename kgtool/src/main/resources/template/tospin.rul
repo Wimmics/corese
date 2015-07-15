@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 26 13:59:25 CEST 2015
+Tue Jul 14 14:30:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -36,8 +36,10 @@ template st:query(?q) {
   """</textarea>
     <br/>"""
     
-    st:call-template-with(st:server, st:submit, "spin", "submit", 
-      coalesce(st:get(st:protocol), st:std) )
+#    st:call-template-with(st:server, st:submit, "spin", "submit", coalesce(st:get(st:protocol), st:std) )
+    
+   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
+
     
   """  
   </form>
@@ -79,8 +81,10 @@ template st:queryspin(?q) {
   """</textarea>
     <br/>"""
     
-    st:call-template-with(st:server, st:submit, "sparql", "submit", 
-       coalesce(st:get(st:protocol), st:std))
+    # st:call-template-with(st:server, st:submit, "sparql", "submit", coalesce(st:get(st:protocol), st:std))
+       
+   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
+   
     
   """  
   </form>

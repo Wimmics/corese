@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Jun 29 14:50:34 CEST 2015
+Tue Jul 14 14:30:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -24,6 +24,19 @@ template st:substart(?x) {
   
 }
 where { 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:insert(?uri) {
+    "<a href='"  st:pplink(?uri, st:dbpediacopy) "'><button type='button'>Insert</button></a>" 
+}
+where {
+
 }
 ]]>
 </body>
@@ -152,8 +165,14 @@ template st:profile {
 	concat("&profile=",   st:get(st:profile)), 
 	concat("&transform=", st:get(st:transform)), 
 	""))
-  )
+  ) 
   
+  define (st:pplink(?uri, ?profile) =
+     st:protocol(concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      concat("&profile=",   ?profile)))
+  )
+   
   define (st:plink(?uri) =
     st:protocol(st:link(?uri))
   )
@@ -463,6 +482,8 @@ template st:title(?r, ?l, ?i) {
   "<a href=\"" coalesce(str(?i), "")  "\">"    
   "<img width='100' alt=\"" str(?l) "\" src=\"" coalesce(str(?i), "") "\" />"
   "</a>"
+  
+ st:call-template(st:insert, ?r)
  
   "</div>"
 

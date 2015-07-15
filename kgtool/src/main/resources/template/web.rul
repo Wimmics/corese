@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 26 16:07:59 CEST 2015
+Tue Jul 14 14:30:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -142,7 +142,7 @@ where {
 template st:next(?t) {
 
   "<a  href='" st:plink(?n) "'>"
-  "<button type='button'"  st:call-template-with(st:server, st:bstyle, st:proto())
+  "<button type='button'"  st:call-template-with(st:server, st:bstyle)
   ">Next</button>"
   "</a>"  
     
@@ -188,7 +188,7 @@ where {
 template st:prev(?t) {
 
   "<a  href='" st:plink(?n) "'>"
-  "<button type='button'"  st:call-template-with(st:server, st:bstyle, st:proto())       
+  "<button type='button'"  st:call-template-with(st:server, st:bstyle)       
   ">Previous</button>"
   "</a>"  
     
@@ -232,7 +232,9 @@ template st:form(?n, ?q, ?t, ?s) {
    
    if (?s = st:null, "", st:call-template(st:nav))
    
-   st:call-template-with(st:server, st:submit, "form", "submit", st:proto())
+#   st:call-template-with(st:server, st:submit, "form", "submit", st:proto())
+   
+   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
    
    """
    <br/>
@@ -296,10 +298,10 @@ where {
 <![CDATA[
 template st:nav {
  
- "<input type='button' " st:call-template-with(st:server, st:bstyle, st:proto()) """ 
+ "<input type='button' " st:call-template-with(st:server, st:bstyle) """ 
       onclick="show('sol')" value='Solution' />
       
-  <input type='button' """ st:call-template-with(st:server, st:bstyle, st:proto()) """ 
+  <input type='button' """ st:call-template-with(st:server, st:bstyle) """ 
       onclick="show('tmp')" value='Template' /> """
    
  }

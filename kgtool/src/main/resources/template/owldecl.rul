@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Tue Jul 14 14:30:26 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:default(?in) { 
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# defaut processing of a variable is 
+# st:turtle on URI 
+# st:apply-templates on Blank and Literal
+# Literals are displayed by st:xsdLiteral  (literalvalue.rq)
+# otherwise must use st:turtle explicitely (e.g. cardinality.rq)
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+
+template st:profile(?in) {
+
+    define (st:process(?in) =  
+      if (isURI(?in), st:protect(?in),	
+	st:apply-templates-with(st:owlexp, ?in))
+    ) 
+  
+  define (st:protect(?in) =
+    let (?t = st:turtle(?in),
+      if (st:get(st:html, true) && 
+	    strstarts(?t, "<"), 
+	    replace(?t, "<", "&lt;"), 
+	    ?t))
+  )
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "Declaration("
+    
+    st:call-template-with(st:owlclass, st:annotate, ?in, rdf:type, owl:Class)
+    
+    "Class(" ?in  "))"  
+}
+where {
+  ?in a owl:Class 
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+     "Declaration(Datatype(" ?in  "))"  
+}
+where {
+  ?in owl:equivalentClass ?y .
+  ?y a rdfs:Datatype
+  filter not exists { ?in a rdfs:Datatype }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+     "Declaration(Datatype(" ?in  "))"  
+}
+where {
+  ?in a rdfs:Datatype
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "Declaration(" xsd:string(?l) "(" 
+    ?in  
+    "))"   
+}
+where {
+select ?in ?t ?l where {
+  ?in a ?t
+  values (?t ?l) {
+    (owl:ObjectProperty 	"ObjectProperty")
+    (owl:DatatypeProperty 	"DataProperty")
+    (owl:AnnotationProperty 	"AnnotationProperty")
+    (owl:TransitiveProperty  	"ObjectProperty")
+    (owl:SymmetricProperty  	"ObjectProperty")
+    (owl:InverseFunctionalProperty  	"ObjectProperty")
+  }
+}
+limit 1
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "Declaration(NamedIndividual(" ?in  "))"   
+}
+where {
+  ?in a owl:NamedIndividual
+}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

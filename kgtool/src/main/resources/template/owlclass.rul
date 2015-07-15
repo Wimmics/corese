@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Tue Jul 14 14:30:26 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:annotate(?s, ?p, ?o) {
+       
+    "Annotation(" ?q  " "  ?c ")" "\n"
+    ; separator = ""
+  
+}
+where {
+  
+  ?a owl:annotatedSource   ?s ;
+     owl:annotatedProperty ?p ;
+     owl:annotatedTarget   ?o ;
+     a owl:Axiom ;
+     ?q ?c 
+    
+    filter (?q not in 
+      (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
+   
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:default(?in) { 
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# defaut processing of a variable is 
+# st:turtle on URI 
+# st:apply-templates on Blank and Literal
+# Literals are displayed by st:xsdLiteral  (literalvalue.rq)
+# otherwise must use st:turtle explicitely (e.g. cardinality.rq)
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:profile(?in) {
+
+    define (st:process(?in) =  
+      if (isURI(?in), st:protect(?in),	
+	st:apply-templates-with(st:owlexp, ?in))
+    ) 
+  
+  define (st:protect(?in) =
+    let (?t = st:turtle(?in),
+      if (st:get(st:html, true) && 
+	    strstarts(?t, "<"), 
+	    replace(?t, "<", "&lt;"), 
+	    ?t))
+  )
+  
+  define (xt:annotate(?s, ?p, ?o) =
+    let (?x = st:call-template(st:annotate, ?s, ?p, ?o),
+      if (?x = "", ?x, concat("\n", ?x)))
+  )
+  
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+
+template {
+    "DisjointClasses("  ?l ")"   
+}
+where {
+  ?in a owl:AllDisjointClasses ;
+    owl:members ?l
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+
+template {
+    if (bound(?t), "DatatypeDefinition", "EquivalentClasses")
+    "("  
+    
+    xt:annotate(?in, owl:equivalentClass, ?y)
+    
+      ?in	
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
+    ")" 
+}
+where {
+  ?in owl:equivalentClass  ?y 
+    
+  optional { ?y a ?t filter(?t = rdfs:Datatype) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "SubClassOf(" 
+       
+       xt:annotate(?in, rdfs:subClassOf, ?y)
+
+    ?in
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
+    ")" 
+}
+where {
+  ?in rdfs:subClassOf ?y
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+
+template {
+   "DisjointUnion("  
+     	?in " " box { group { ?e ; separator = "\n" } }
+    ")" 
+}
+where {
+  ?in owl:disjointUnionOf ?y 
+  ?y rdf:rest*/rdf:first ?e
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+
+template {
+    "DisjointClasses("
+    
+    xt:annotate(?in, owl:disjointWith, ?y)
+    
+     	?in " "  ?y  
+    ")" 
+}
+where {
+  ?in owl:disjointWith ?y 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "HasKey(" ?in  
+  box {
+    "(" group distinct { ?op } ")" st:nl()
+    "(" group distinct { ?dp } ")"
+   }
+   ")"
+}
+where {
+  ?in owl:hasKey ?l
+  
+  optional { 
+    ?l rdf:rest*/rdf:first ?op
+    ?op a owl:ObjectProperty }
+    
+  optional { 
+    ?l rdf:rest*/rdf:first ?dp
+    ?dp a owl:DatatypeProperty }
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

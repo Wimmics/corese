@@ -34,16 +34,18 @@ public class Context {
     public static final String STL_LANG = STL + "lang";
     public static final String STL_PARAM = STL + "param";
     HashMap<String, IDatatype> table;
-    static  HashMap<String, Boolean> export;
+    static  HashMap<String, Boolean> sexport;
+    HashMap<String, Boolean> export;
    
    static {
-       export = new HashMap();
-       export.put(STL_DATASET, true);
-       export.put(STL_PROTOCOL, true);
+       sexport = new HashMap();
+       sexport.put(STL_DATASET, true);
+       sexport.put(STL_PROTOCOL, true);
    }
 
     public Context() {
-        table = new HashMap();       
+        table = new HashMap();
+        export = new HashMap();
     }
 
     public String toString() {
@@ -63,21 +65,52 @@ public class Context {
     
     public void copy(Context c){
         for (String str : c.keys()){
-            set(str, c.get(str));
-        }
-    }
-    
-     public void export(Context c){
-        for (String str : export.keySet()){
-            if (export.get(str) && c.get(str) != null){
+            if (c.export(str)){
+               export(str, c.get(str)); 
+            }
+            else {
                 set(str, c.get(str));
             }
         }
     }
+    
+    boolean export(String str){
+        return export.get(str) && get(str) != null;
+    }
+    
+    // this include source
+     public void include(Context source){
+        sinclude(source);
+        source.export(this);
+    }
+     
+    // this include source, static property
+      public void sinclude(Context source){
+        for (String str : sexport.keySet()){
+            if (sexport.get(str) && source.get(str) != null){
+                set(str, source.get(str));
+            }
+        }       
+    }
+     
+     // export this to target, dynamic property
+     void export(Context target){
+       for (String str : export.keySet()){
+            if (export(str)){
+                target.export(str, get(str));
+            }
+        }
+     }
      
 
     public Context set(String name, IDatatype value) {
         table.put(name, value);
+        return this;
+    }
+    
+    public Context export(String name, IDatatype value) {
+        table.put(name, value);
+        export.put(name, true);
         return this;
     }
 

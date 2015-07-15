@@ -149,4 +149,9 @@ public class ProducerDefault implements Producer {
     public Node getGraphNode() {
         return graphNode;
     }
+
+    @Override
+    public Object getValue(Object value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

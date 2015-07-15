@@ -94,4 +94,9 @@ public class EvaluatorDefault implements Evaluator {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Object eval(Expr f, Environment e, Producer p, Object[] values) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

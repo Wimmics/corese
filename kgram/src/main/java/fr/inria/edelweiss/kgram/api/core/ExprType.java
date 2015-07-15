@@ -219,6 +219,7 @@ public interface ExprType {
  	public static int STL_VSET                  = 269;
  	public static int STL_VGET                  = 270;
  	public static int STL_PROCESS_URI           = 271;
+ 	public static int STL_EXPORT                = 272;
               
 	public static int ISSKOLEM 	= 300;
 	public static int SKOLEM 	= 301;
@@ -237,7 +238,15 @@ public interface ExprType {
         public static int APPLY         = 312;
 	public static int LET           = 313;
         
-        public static int XTSUM         = 400;
-        public static int XTPROD        = 401;
+        public static int XT_SUM         = 400;
+        public static int XT_PROD        = 401;
+        
+        public static int XT_GRAPH       = 402;
+        public static int XT_SUBJECT     = 403;
+        public static int XT_OBJECT      = 404;
+        public static int XT_PROPERTY    = 405;
+        public static int XT_VALUE       = 406;
+        public static int XT_INDEX       = 407;
+        
 
 }

@@ -1307,6 +1307,10 @@ public class Transformer  {
         getContext().set(name, dt2);
     }
     
+    public void export(String name, IDatatype dt2){
+        getContext().export(name, dt2);
+    }
+    
     /**
      * @return the context
      */
@@ -1339,21 +1343,37 @@ public class Transformer  {
     
     
    /**
-   * this new Transformer  inherit information from current transformer (if any)
+   * this new Transformer  inherit information from query and current transformer (if any)
    */
-    public void complete(Transformer ct) {
+    public void complete(Query q, Transformer ct) {             
         if (ct != null) {
+            setNSM(ct.getNSM());
+            
             IDatatype export = ct.get(Context.STL_EXPORT);
             if (export != null && export.booleanValue()){
                 getContext().copy(ct.getContext());
             }
             else {
                 // dataset, protocol
-                getContext().export(ct.getContext());
+                getContext().include(ct.getContext());
             }
             if (ct.getVisitor() != null){
                 setVisitor(ct.getVisitor());
             }
+        }
+        
+        // query prefix overload ct transformer prefix
+        // because query call this new transformer
+        ASTQuery ast = (ASTQuery) q.getAST();
+        complete(ast.getNSM());
+    }
+    
+    /**
+     * Inherit prefix from Query
+     */
+    void complete(NSManager nsm){
+        if (nsm.isUserDefine()){
+             this.nsm.complete(nsm);
         }
     }
 

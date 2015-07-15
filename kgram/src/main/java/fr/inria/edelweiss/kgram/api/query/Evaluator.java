@@ -54,6 +54,8 @@ public interface Evaluator {
 	
 	Object eval(Expr f, Environment e, Producer p);
         
+        Object eval(Expr f, Environment e, Producer p, Object[] values);
+        
         Object eval(Expr f, Environment e, Producer p, Extension ext, Object[] values);
         
                        

@@ -192,7 +192,8 @@ public class PluginTransform implements ExprType {
               case TURTLE:
                 return turtle(dt1, dt2, env, p);     
                 
-            case STL_SET:
+            case STL_SET:                
+            case STL_EXPORT:
                 return set(exp, env, p, dt1, dt2);
                 
             case STL_VGET:
@@ -329,9 +330,9 @@ public class PluginTransform implements ExprType {
                     // get current transformer if any to get its NSManager 
                     t = (Transformer) q.getTransformer();
                 }
-                if (t != null && t.getNSM().isUserDefine()) {
-                    gt.setNSM(t.getNSM());
-                }
+//                if (t != null && t.getNSM().isUserDefine()) {
+//                    gt.setNSM(t.getNSM());
+//                }
 
                 t = gt;
             } catch (LoadException ex) {
@@ -364,10 +365,10 @@ public class PluginTransform implements ExprType {
 
     void complete(Query q, Transformer t, IDatatype uri) {
         // set after init
-        t.init((ASTQuery) q.getAST());
+        //t.init((ASTQuery) q.getAST());
         // TODO: uri vs transform ???
         t.set(Transformer.STL_TRANSFORM, uri);
-        t.complete((Transformer) q.getTransformer());
+        t.complete(q, (Transformer) q.getTransformer());
     }
 
     /**
@@ -536,7 +537,12 @@ public class PluginTransform implements ExprType {
 
     public Object set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Transformer t = getTransformer(env, p);
-        t.set(dt1.getLabel(), dt2);
+        if (exp.oper() == STL_SET){
+          t.set(dt1.getLabel(), dt2);
+        }
+        else {
+           t.export(dt1.getLabel(), dt2); 
+        }
         return TRUE;
     }
 

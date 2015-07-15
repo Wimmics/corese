@@ -133,6 +133,17 @@ public class NSManager {
         }
         return nsm;
     }
+    
+    /**
+     * Import nsm definitions     
+     */
+    public NSManager complete(NSManager nsm){
+       setBase(nsm.getBase());
+       for (String p : nsm.getPrefixSet()) {
+            definePrefix(p, nsm.getNamespace(p));
+       }
+       return this;
+    }
 
     public void init() {
         initDefault();
@@ -584,7 +595,7 @@ public class NSManager {
         }
     }
 
-    ;
+    
 	
 	
 	public static String namespace(String type) {  //retourne le namespace d'un type

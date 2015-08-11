@@ -2,6 +2,7 @@ package fr.inria.acacia.corese.api;
 
 import fr.inria.acacia.corese.cg.datatype.ICoresePolymorphDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -17,7 +18,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  * @author Olivier Corby & Olivier Savoie & Virginie Bottollier
  */
 public interface IDatatype
-        extends ICoresePolymorphDatatype, Node, Entity {
+        extends ICoresePolymorphDatatype, Node, Entity, DatatypeValue {
 
     static final int LITERAL = 0;
     static final int STRING = 1;
@@ -249,17 +250,17 @@ public interface IDatatype
      */
     boolean isNumber();
 
-    double doubleValue();
-
-    float floatValue();
-
-    long longValue();
-
-    int intValue();
-    
-    String stringValue();
-    
-    boolean booleanValue();
+//    double doubleValue();
+//
+//    float floatValue();
+//
+//    long longValue();
+//
+//    int intValue();
+//    
+//    String stringValue();
+//    
+//    boolean booleanValue();
 
     /**
      * ************************************************

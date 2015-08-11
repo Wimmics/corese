@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.tool;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,6 +153,11 @@ public class ProducerDefault implements Producer {
 
     @Override
     public Object getValue(Object value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DatatypeValue getDatatypeValue(Object value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.tool;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -205,6 +206,11 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     @Override
     public Object getValue(Object value) {
         return producer.getValue(value);
+    }
+
+    @Override
+    public DatatypeValue getDatatypeValue(Object value) {
+        return producer.getDatatypeValue(value);
     }
 
 }

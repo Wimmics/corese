@@ -423,13 +423,24 @@ public class Processor {
                 ast.defPackage(term.getArg(0).getConstant());
                 break;
                 
-               case ExprType.LET:
+            case ExprType.LET:
                    // let (?x = ?y, exp(?x))
                    Expression let  = term.getArg(0);
                    Expression body = term.getArg(1);
                    Expression var  = let.getArg(0);
                    body.local(var);
                    break;
+                
+            case ExprType.MAP:
+            case ExprType.MAPLIST:
+                // map(xt:fun(?x), ?list)
+                // var ?x is local because it is interpreted as:
+                // (for dt : ?list) {let (?x = dt, xt:fun(?x))}
+                Expression fun = term.getArg(0);
+                if (fun.isTerm()){
+                    fun.local();
+                }
+                break;
            }
         }
         

@@ -8,6 +8,7 @@ import java.util.List;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgenv.eval.SQLResult;
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -685,6 +686,19 @@ public class ProducerImpl implements Producer, IProducerQP {
             dt = DatatypeMap.createObject("tmp", value);
         }
         return dt;
+    }
+    
+    // cast IDatatype or Java value into DatatypeValue
+    public DatatypeValue getDatatypeValue(Object value){
+        if (value == null){
+            return null;
+        }
+        else if (value instanceof IDatatype){
+            return (IDatatype) value;
+        }
+        else {
+            return getValue(value);
+        }
     }
     
     /**

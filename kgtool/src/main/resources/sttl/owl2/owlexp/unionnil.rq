@@ -1,0 +1,6 @@
+template {
+    owl:Nothing
+}
+where {
+  ?in owl:unionOf ()
+}

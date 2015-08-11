@@ -1,0 +1,15 @@
+template {
+    xsd:string(?l) 
+    "ObjectProperty(" ?in  ")" 
+}
+where {
+  ?in a ?t
+}
+values (?t ?l) {
+  (owl:TransitiveProperty 	"Transitive")
+  (owl:SymmetricProperty 	"Symmetric")
+  (owl:AsymmetricProperty 	"Asymmetric")
+  (owl:ReflexiveProperty 	"Reflexive")
+  (owl:IrreflexiveProperty 	"Irreflexive")
+  (owl:InverseFunctionalProperty "InverseFunctional")
+}

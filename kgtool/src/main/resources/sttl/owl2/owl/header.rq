@@ -1,0 +1,12 @@
+template st:header {
+"""#
+# Generated using OWL 2 to Functional Syntax STTL Transformation
+# Olivier Corby - Wimmics - Inria, I3S, UNS, CNRS
+# """ now() 
+
+"""
+#
+"""
+}
+where {
+}

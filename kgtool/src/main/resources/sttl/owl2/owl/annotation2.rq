@@ -1,0 +1,24 @@
+template st:annotation2 {     
+   "Annotation(\n" 
+   
+      group { "Annotation(" ?q  " "  ?c ")\n" }
+      
+      ?p " " ?t 
+   
+   ")\n"
+}
+where {
+  ?a owl:annotatedSource ?in ;
+      a owl:Annotation ;
+      owl:annotatedProperty ?p ;      
+      owl:annotatedTarget   ?t ;
+      ?q ?c
+      
+      filter(?q not in (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
+      
+  ?in ?p ?t
+    
+}
+
+
+

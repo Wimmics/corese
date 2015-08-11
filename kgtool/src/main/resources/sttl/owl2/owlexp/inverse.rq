@@ -1,0 +1,6 @@
+template {
+    "ObjectInverseOf(" ?y ")"  
+}
+where {
+  ?in owl:inverseOf ?y 
+}

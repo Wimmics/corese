@@ -1,0 +1,16 @@
+template {
+  xsd:string(?l)
+  "(" 
+    st:turtle(?n) " " ?p " "  ?c 
+  ")"  
+}
+where {
+  ?in owl:onDataRange ?c ;
+    owl:onProperty ?p ;
+    ?q  ?n 
+}
+values (?q ?l) {
+  (owl:maxQualifiedCardinality  "DataMaxCardinality")
+  (owl:minQualifiedCardinality  "DataMinCardinality")
+  (owl:qualifiedCardinality     "DataExactCardinality")
+}

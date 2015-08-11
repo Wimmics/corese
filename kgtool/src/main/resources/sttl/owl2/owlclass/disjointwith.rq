@@ -1,0 +1,12 @@
+
+template {
+    "DisjointClasses("
+    
+    xt:annotate(?in, owl:disjointWith, ?y)
+    
+     	?in " "  ?y  
+    ")" 
+}
+where {
+  ?in owl:disjointWith ?y 
+}

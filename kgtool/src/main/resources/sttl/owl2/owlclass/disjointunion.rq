@@ -1,0 +1,16 @@
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+
+template {
+   "DisjointUnion("  
+     	?in " " box { group { ?e ; separator = "\n" } }
+    ")" 
+}
+where {
+  ?in owl:disjointUnionOf ?y 
+  ?y rdf:rest*/rdf:first ?e
+}

@@ -1,0 +1,8 @@
+template {
+  if (isBlank(?e), st:nl(), "")
+  ?e 
+  ; separator = " "
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}

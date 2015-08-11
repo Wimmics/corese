@@ -1,0 +1,27 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# st:apply-all-templates run all templates on each value 
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+
+template  st:declare  {
+
+  xt:nl(st:apply-templates-with-all(st:owldecl, ?t), 1)
+  ; separator = ""
+  
+    
+}
+where {
+
+  {select distinct ?t where {
+     ?t rdf:type|owl:equivalentClass ?y 
+    filter (isURI(?t))
+    
+    # OWL vocabulary must not be pretty printed
+    filter (! xt:system(?t))       
+    filter not exists { ?t a owl:Ontology }
+        
+  }
+  order by ?t}
+}
+

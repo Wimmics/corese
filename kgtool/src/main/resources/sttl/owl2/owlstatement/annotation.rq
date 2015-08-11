@@ -1,0 +1,14 @@
+template {
+   "AnnotationAssertion(" 
+   
+    xt:bnl(st:call-template(st:annotate, ?in, ?p, ?l))
+    
+      ?p " " 
+      ?in " " st:turtle(?l)
+   ")"
+}
+where {
+  ?in ?p ?l 
+  filter not exists { ?in a owl:Axiom }  
+}
+values ?p { rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith }

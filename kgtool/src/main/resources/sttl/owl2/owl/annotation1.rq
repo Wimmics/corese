@@ -1,0 +1,19 @@
+template st:annotation1 {
+   "Annotation(" 
+      ?p " " ?t
+   ")\n"
+   ; separator = ""
+}
+where {
+  ?in ?p ?t
+  filter not exists {
+   ?a a owl:Annotation ;
+      owl:annotatedSource   ?in ;
+      owl:annotatedProperty ?p ;     
+      owl:annotatedTarget   ?t 
+  }
+}
+values ?p { 
+  owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith 
+  rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy 
+}

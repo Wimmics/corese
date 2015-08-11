@@ -1,0 +1,8 @@
+template {
+     "Declaration(Datatype(" ?in  "))"  
+}
+where {
+  ?in owl:equivalentClass ?y .
+  ?y a rdfs:Datatype
+  filter not exists { ?in a rdfs:Datatype }
+}

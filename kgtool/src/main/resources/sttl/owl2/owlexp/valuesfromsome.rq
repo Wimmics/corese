@@ -1,0 +1,14 @@
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+  if (bound(?t1) || bound(?t2), "DataSomeValuesFrom", "ObjectSomeValuesFrom")  
+  "(" ?p " " ?z ")"  
+}
+where {
+  ?in owl:someValuesFrom ?z ;
+  owl:onProperty ?p .
+    optional { ?z a ?t1 filter(?t1 = rdfs:Datatype) }
+    optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
+}
+

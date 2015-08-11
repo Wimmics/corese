@@ -1,0 +1,13 @@
+template {
+    if (bound(?t), "DataIntersectionOf", "ObjectIntersectionOf") 
+    "(" 
+	ibox {
+	  ?y  
+	}
+    ")" 
+}
+where {
+  ?in owl:intersectionOf ?y 
+  filter (?y != rdf:nil)
+  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
+}

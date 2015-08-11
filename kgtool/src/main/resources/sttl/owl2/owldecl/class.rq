@@ -1,0 +1,11 @@
+template {
+    "Declaration("
+    
+    st:call-template-with(st:owlclass, st:annotate, ?in, rdf:type, owl:Class)
+    
+    "Class(" ?in  "))"  
+}
+where {
+  ?in a owl:Class 
+}
+

@@ -1,0 +1,15 @@
+template {
+   xsd:string(?label) "(" ?in " " ?p ")"
+}
+where {
+  ?in rdfs:subPropertyOf ?p 
+  
+  bind (
+  if (exists {{?in a owl:DatatypeProperty} union {?p a owl:DatatypeProperty}}, 
+  "SubDataPropertyOf",
+  if (exists {{?in a owl:AnnotationProperty} union {?p a owl:AnnotationProperty}},
+  "SubAnnotationPropertyOf",
+  "SubObjectPropertyOf"))
+  as ?label)
+  
+}

@@ -1,0 +1,14 @@
+template  st:body  {
+
+  st:call-template(st:declare)  st:nl()
+  st:call-template(st:class)    st:nl()
+  st:call-template(st:property) st:nl()
+  st:call-template(st:statement)
+  
+}
+where {
+
+ 
+        
+}
+

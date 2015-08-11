@@ -1,0 +1,11 @@
+template {
+    str(?label)  "(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:domain ?d 
+  bind (
+    if (exists { ?in a owl:DatatypeProperty },   "DataPropertyDomain",
+    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyDomain",
+    "ObjectPropertyDomain"))
+    as ?label)
+}

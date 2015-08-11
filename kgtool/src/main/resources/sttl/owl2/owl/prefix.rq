@@ -1,0 +1,6 @@
+template st:prefix {
+  "Prefix(" str(?p) ": = <" str(?n) ">)" "\n"
+}
+where {
+  bind (kg:unnest(st:prefix()) as (?p, ?n))
+}

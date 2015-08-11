@@ -1,0 +1,18 @@
+template st:annotate(?s, ?p, ?o) {
+       
+    "Annotation(" ?q  " "  ?c ")" "\n"
+    ; separator = ""
+  
+}
+where {
+  
+  ?a owl:annotatedSource   ?s ;
+     owl:annotatedProperty ?p ;
+     owl:annotatedTarget   ?o ;
+     a owl:Axiom ;
+     ?q ?c 
+    
+    filter (?q not in 
+      (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
+   
+}

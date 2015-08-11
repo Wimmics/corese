@@ -1,0 +1,13 @@
+template {
+    if (bound(?t), "DataUnionOf", "ObjectUnionOf") 
+    "(" 
+	ibox {
+	  ?y  
+	}
+    ")" 
+}
+where {
+  ?in owl:unionOf ?y 
+  filter (?y != rdf:nil)
+  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
+}

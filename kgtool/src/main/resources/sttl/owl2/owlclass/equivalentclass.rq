@@ -1,0 +1,19 @@
+
+template {
+    if (bound(?t), "DatatypeDefinition", "EquivalentClasses")
+    "("  
+    
+    xt:annotate(?in, owl:equivalentClass, ?y)
+    
+      ?in	
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
+    ")" 
+}
+where {
+  ?in owl:equivalentClass  ?y 
+    
+  optional { ?y a ?t filter(?t = rdfs:Datatype) }
+}

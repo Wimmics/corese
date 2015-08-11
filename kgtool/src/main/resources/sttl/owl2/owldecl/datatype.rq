@@ -1,0 +1,6 @@
+template {
+     "Declaration(Datatype(" ?in  "))"  
+}
+where {
+  ?in a rdfs:Datatype
+}

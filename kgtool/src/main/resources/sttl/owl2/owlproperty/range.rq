@@ -1,0 +1,11 @@
+template {
+    str(?label)  "(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:range ?d 
+  bind (
+    if (exists { {?in a owl:DatatypeProperty} union {?d a rdfs:Datatype} },   "DataPropertyRange",
+    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyRange",
+    "ObjectPropertyRange"))
+    as ?label)
+}

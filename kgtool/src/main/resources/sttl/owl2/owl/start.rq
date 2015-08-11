@@ -1,0 +1,18 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013-2015
+#
+template st:start {
+
+  st:call-template(st:prefix)
+  st:call-template(?start)
+  
+}
+where {
+
+  bind (
+    if (exists { ?in a owl:Ontology }, st:ontology, st:body) 
+  as ?start)  
+      
+}
+

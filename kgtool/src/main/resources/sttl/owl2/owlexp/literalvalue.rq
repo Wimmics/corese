@@ -1,0 +1,11 @@
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+  st:xsdLiteral(?in)
+}
+where {
+  bind(st:getFocusNode() as ?in)
+  filter(isLiteral(?in))
+}
+pragma { st:template st:priority 1000 }

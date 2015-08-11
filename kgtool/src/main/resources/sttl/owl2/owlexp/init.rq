@@ -1,0 +1,27 @@
+#
+# defaut processing of a variable is 
+# st:turtle on URI 
+# st:apply-templates on Blank and Literal
+# Literals are displayed by st:xsdLiteral  (literalvalue.rq)
+# otherwise must use st:turtle explicitely (e.g. cardinality.rq)
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+
+template st:profile(?in) {
+
+    define (st:process(?in) =  
+      if (isURI(?in), st:protect(?in),	
+	st:apply-templates(?in))
+    ) 
+  
+  define (st:protect(?in) =
+    let (?t = st:turtle(?in),
+      if (st:get(st:html, true) && 
+	    strstarts(?t, "<"), 
+	    replace(?t, "<", "&lt;"), 
+	    ?t))
+  )
+}
+where {
+}

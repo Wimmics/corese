@@ -1,0 +1,15 @@
+template {
+    "SubClassOf(" 
+       
+       xt:annotate(?in, rdfs:subClassOf, ?y)
+
+    ?in
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
+    ")" 
+}
+where {
+  ?in rdfs:subClassOf ?y
+}

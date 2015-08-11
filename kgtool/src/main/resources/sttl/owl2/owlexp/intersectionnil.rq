@@ -1,0 +1,6 @@
+template {
+    owl:Thing
+}
+where {
+  ?in owl:intersectionOf ()
+}

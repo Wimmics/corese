@@ -1,0 +1,19 @@
+template {
+  "HasKey(" ?in  
+  box {
+    "(" group distinct { ?op } ")" st:nl()
+    "(" group distinct { ?dp } ")"
+   }
+   ")"
+}
+where {
+  ?in owl:hasKey ?l
+  
+  optional { 
+    ?l rdf:rest*/rdf:first ?op
+    ?op a owl:ObjectProperty }
+    
+  optional { 
+    ?l rdf:rest*/rdf:first ?dp
+    ?dp a owl:DatatypeProperty }
+}

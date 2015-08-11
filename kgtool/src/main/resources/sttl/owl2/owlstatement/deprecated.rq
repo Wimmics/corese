@@ -1,0 +1,9 @@
+template {
+   "AnnotationAssertion(owl:deprecated " ?in " " st:xsdLiteral(true) 
+   ")"  
+}
+where {
+  { ?in a owl:DeprecatedClass } union 
+  { ?in a owl:DeprecatedProperty }  
+
+}

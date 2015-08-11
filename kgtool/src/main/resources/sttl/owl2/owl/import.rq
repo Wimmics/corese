@@ -1,0 +1,17 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template st:import {
+
+   "Import(" ?i  ")\n"
+   ; separator = ""
+   
+}
+where {
+
+  ?in a owl:Ontology ; 
+    owl:imports ?i 
+      
+}
+

@@ -1,0 +1,8 @@
+template {
+    if (bound(?t), "FunctionalDataProperty", "FunctionalObjectProperty")
+    "(" ?in  ")"   
+}
+where {
+  ?in a owl:FunctionalProperty 
+  optional { ?in a ?t filter(?t = owl:DatatypeProperty) }
+}

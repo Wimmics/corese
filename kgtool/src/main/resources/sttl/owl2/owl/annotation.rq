@@ -1,0 +1,9 @@
+template st:annotation(?in) {
+
+   st:call-template(st:annotation1, ?in)
+   st:call-template(st:annotation2, ?in)
+   
+}
+where {
+  
+}

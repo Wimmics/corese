@@ -1,0 +1,19 @@
+template {
+    "Declaration(" xsd:string(?l) "(" 
+    ?in  
+    "))"   
+}
+where {
+select ?in ?t ?l where {
+  ?in a ?t
+  values (?t ?l) {
+    (owl:ObjectProperty 	"ObjectProperty")
+    (owl:DatatypeProperty 	"DataProperty")
+    (owl:AnnotationProperty 	"AnnotationProperty")
+    (owl:TransitiveProperty  	"ObjectProperty")
+    (owl:SymmetricProperty  	"ObjectProperty")
+    (owl:InverseFunctionalProperty  	"ObjectProperty")
+  }
+}
+limit 1
+}

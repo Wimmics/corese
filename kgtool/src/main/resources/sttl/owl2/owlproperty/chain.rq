@@ -1,0 +1,6 @@
+template {
+      "SubObjectPropertyOf(ObjectPropertyChain(" ?l ") " ?in ")"
+}
+where {
+  ?in owl:propertyChainAxiom ?l 
+}

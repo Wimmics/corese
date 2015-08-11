@@ -195,20 +195,31 @@ public class Variable extends Atom {
 		return getDatatypeValue();
 	}
 	
-	public IDatatype getDatatypeValue(){
+	public IDatatype getDatatypeValue2(){
 		if (dt == null){
 			dt = Constant.create(name).getDatatypeValue();
 		}
 		return dt;
 	}
 	
-	public Constant getConstant(){
+	public Constant getConstant2(){
 		if (isBlankNode()){
 			return Constant.createBlank(getLabel());
 		}
 		else {
 			return Constant.create(getLabel());
 		}
+	}
+        
+        public IDatatype getDatatypeValue(){
+		if (dt == null){
+			dt = getConstant().getDatatypeValue();
+		}
+		return dt;
+	}
+	
+	public Constant getConstant(){
+            return Constant.createBlank(getLabel());
 	}
 
         public Variable copy(Variable o, Variable n){

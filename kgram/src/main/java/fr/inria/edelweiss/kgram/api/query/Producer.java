@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.api.query;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -164,6 +165,9 @@ public interface Producer {
         
         // cast java value into IDatatype value
         Object getValue(Object value);
+        
+        // DatatypeValue from IDatatype or from Java value
+        DatatypeValue getDatatypeValue(Object value);
         	
 	/**
 	 * use case: filter (?x = ?y)  filter(?x = 'cst')

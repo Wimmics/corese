@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.core;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class Eval implements ExpType, Plugin {
     private static Logger logger = Logger.getLogger(Eval.class);
     private static final String CANDIDATE   = EXT + "candidate";
     private static final String RESULT      = EXT + "result";
+    
     static final int STOP = -2;
     public static int count = 0;
     ResultListener listener;
@@ -156,7 +158,7 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             send(Event.END, q, maps);
         }
-
+        
         return maps;
     }
 
@@ -647,7 +649,10 @@ public class Eval implements ExpType, Plugin {
 
     private int solution(Producer p, int n) {
         int backtrack = n - 1;
-        store(p);       
+        int status = store(p);     
+        if (status == STOP){
+            return STOP;
+        }
         if (results.size() >= limit) {
             clean();
 //			if (hasEvent){
@@ -2080,7 +2085,8 @@ public class Eval implements ExpType, Plugin {
                 boolean bmatch = match(qEdge, edge, gNode, graph, env);
                 
                 if (hasCandidate){
-                    candidate(qEdge, ent, p.getValue(bmatch));
+                    DatatypeValue val = candidate(qEdge, ent, p.getValue(bmatch));
+                    bmatch = val.booleanValue();
                 }
 
                 if (bmatch) {
@@ -2135,12 +2141,15 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
     
-    void candidate(Edge q, Entity ent, Object match) {
+    DatatypeValue candidate(Edge q, Entity ent, Object match) {
         Expr exp = getExpression(CANDIDATE);
         if (exp != null) {
-            evaluator.eval(exp, memory, producer, 
+            Object obj = evaluator.eval(exp, memory, producer, 
                     toArray(q.getNode().getValue(), ent.getNode().getValue(), match));
+            DatatypeValue val = producer.getDatatypeValue(obj);
+            return val;
         }
+        return null;
     }
     
     Expr getExpression(String name){
@@ -2571,7 +2580,7 @@ public class Eval implements ExpType, Plugin {
     /**
      * Store a new result
      */
-    private void store(Producer p) {
+    private int store(Producer p) {
         boolean store = true;
         if (listener != null) {
             store = listener.process(memory);
@@ -2587,9 +2596,10 @@ public class Eval implements ExpType, Plugin {
                 send(Event.RESULT, ans);
             }
             if (hasResult){                
-                evaluator.eval(getExpression(RESULT), memory, p, toArray(p.getNode(ans)));
+                Object res = evaluator.eval(getExpression(RESULT), memory, p, toArray(p.getNode(ans)));
             }
-        }            
+        }  
+        return -1;
     }
 
     void submit(Mapping map) {

@@ -589,7 +589,8 @@ implements Regex, Filter, Expr {
         }
         
         /**
-         * Declare variable v as local in this exp
+         * Declare variable var as local in this exp
+         * if var is null, declare all variables as local
          */
         public void localize(final Variable var){
             visit(new ExpressionVisitor() {
@@ -600,7 +601,7 @@ implements Regex, Filter, Expr {
 
                 @Override
                 public void visit(Variable v) {
-                    if (v.equals(var)){
+                    if (var == null || v.equals(var)){
                         v.localize();
                     }
                 }
@@ -623,6 +624,10 @@ implements Regex, Filter, Expr {
          * this = define(f(x) = g(x))
          */
        public void local() {
+           localize(null);
+       } 
+        
+       public void local2() {
             Expression def = getArg(0).getArg(0);
             for (Expression arg : def.getArgs()) {
                 Variable var = arg.getVariable();

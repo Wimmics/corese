@@ -247,16 +247,16 @@ public class Compile implements ExprType {
     void in(Exp exp) {
         Filter ff = exp.getFilter();
         Expr expr = ff.getExp();
-        List<String> lvar = ff.getVariables();
-        if (lvar.isEmpty()){
+        List<String> lvar = ff.getVariables();       
+        Expr var = expr.getExp(0);
+        if (! var.isVariable()){
             return;
         }
-        List<Expr> ls = expr.getExpList();
-        List<Expr> values = ls.get(1).getExpList();
+        List<Expr> values = expr.getExp(1).getExpList();
         List<Expr> list = new ArrayList<Expr>();
         //all has to be constants
         for (Expr e : values) {
-            if (e.isVariable()) {
+            if (e.type() != CONSTANT) {
                 return;
             }
             list.add(e);

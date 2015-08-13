@@ -5,137 +5,153 @@
 prefix c: <http://ns.inria.fr/sdk/>
 template {
  """
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link href="/style.css" rel="stylesheet" type="text/css" />
-<title>Sudoku</title>
-</head>
-<body>
+
 <h3>SPARQL Sudoku Solver</h3>
 
 <form id='example' method='get' action='/sdk'>
+<div class="form-group has-success">
 
-   <button type="submit" name="submit" onclick="submitform();">Submit</button>
+<table style="table table-striped table-hover">
+  <tr>
+    <td><input size='1' type='text' id='a1' value='""" ?a1 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='a2' value='""" ?a2 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='a3' value='""" ?a3 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='a4' value='""" ?a4 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='a5' value='""" ?a5 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='a6' value='""" ?a6 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='a7' value='""" ?a7 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='a8' value='""" ?a8 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='a9' value='""" ?a9 """' class="form-control"/></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='b1' value='""" ?b1 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='b2' value='""" ?b2 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='b3' value='""" ?b3 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='b4' value='""" ?b4 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='b5' value='""" ?b5 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='b6' value='""" ?b6 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='b7' value='""" ?b7 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='b8' value='""" ?b8 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='b9' value='""" ?b9 """' class="form-control"/></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='c1' value='""" ?c1 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='c2' value='""" ?c2 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='c3' value='""" ?c3 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='c4' value='""" ?c4 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='c5' value='""" ?c5 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='c6' value='""" ?c6 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='c7' value='""" ?c7 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='c8' value='""" ?c8 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='c9' value='""" ?c9 """' class="form-control"/></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='d1' value='""" ?d1 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='d2' value='""" ?d2 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='d3' value='""" ?d3 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='d4' value='""" ?d4 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='d5' value='""" ?d5 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='d6' value='""" ?d6 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='d7' value='""" ?d7 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='d8' value='""" ?d8 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='d9' value='""" ?d9 """' class="form-control" style='border-color:red'/></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='e1' value='""" ?e1 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='e2' value='""" ?e2 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='e3' value='""" ?e3 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='e4' value='""" ?e4 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='e5' value='""" ?e5 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='e6' value='""" ?e6 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='e7' value='""" ?e7 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='e8' value='""" ?e8 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='e9' value='""" ?e9 """' class="form-control" style='border-color:red'/></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='f1' value='""" ?f1 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='f2' value='""" ?f2 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='f3' value='""" ?f3 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='f4' value='""" ?f4 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='f5' value='""" ?f5 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='f6' value='""" ?f6 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='f7' value='""" ?f7 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='f8' value='""" ?f8 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='f9' value='""" ?f9 """' class="form-control" style='border-color:red'/></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='g1' value='""" ?g1 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='g2' value='""" ?g2 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='g3' value='""" ?g3 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='g4' value='""" ?g4 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='g5' value='""" ?g5 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='g6' value='""" ?g6 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='g7' value='""" ?g7 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='g8' value='""" ?g8 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='g9' value='""" ?g9 """' class="form-control"/></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='h1' value='""" ?h1 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='h2' value='""" ?h2 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='h3' value='""" ?h3 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='h4' value='""" ?h4 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='h5' value='""" ?h5 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='h6' value='""" ?h6 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='h7' value='""" ?h7 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='h8' value='""" ?h8 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='h9' value='""" ?h9 """' class="form-control"/></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='i1' value='""" ?i1 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='i2' value='""" ?i2 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='i3' value='""" ?i3 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='i4' value='""" ?i4 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='i5' value='""" ?i5 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='i6' value='""" ?i6 """' class="form-control" style='border-color:red'/></td>
+    <td><input size='1' type='text' id='i7' value='""" ?i7 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='i8' value='""" ?i8 """' class="form-control"/></td>
+    <td><input size='1' type='text' id='i9' value='""" ?i9 """' class="form-control"/></td>
+  </tr>
+  </table>
+</div>
+   <button type="submit" name="submit" onclick="submitform(); trans(this.form); return false;" class="btn btn-info">Submit</button>
 
   <input id='value' name='value' type='hidden' value=''  />
-  <button id='reset' type='button' name='reset' onclick='clean();'>Reset</button>
-
-<table>
-  <tr>
-    <td><input size='1' type='text' id='a1' value='""" ?a1 """' /></td>
-    <td><input size='1' type='text' id='a2' value='""" ?a2 """' /></td>
-    <td><input size='1' type='text' id='a3' value='""" ?a3 """' /></td>
-    <td><input size='1' type='text' id='a4' value='""" ?a4 """' /></td>
-    <td><input size='1' type='text' id='a5' value='""" ?a5 """' /></td>
-    <td><input size='1' type='text' id='a6' value='""" ?a6 """' /></td>
-    <td><input size='1' type='text' id='a7' value='""" ?a7 """' /></td>
-    <td><input size='1' type='text' id='a8' value='""" ?a8 """' /></td>
-    <td><input size='1' type='text' id='a9' value='""" ?a9 """' /></td>
-  </tr>
-  
-  <tr>
-    <td><input size='1' type='text' id='b1' value='""" ?b1 """' /></td>
-    <td><input size='1' type='text' id='b2' value='""" ?b2 """' /></td>
-    <td><input size='1' type='text' id='b3' value='""" ?b3 """' /></td>
-    <td><input size='1' type='text' id='b4' value='""" ?b4 """' /></td>
-    <td><input size='1' type='text' id='b5' value='""" ?b5 """' /></td>
-    <td><input size='1' type='text' id='b6' value='""" ?b6 """' /></td>
-    <td><input size='1' type='text' id='b7' value='""" ?b7 """' /></td>
-    <td><input size='1' type='text' id='b8' value='""" ?b8 """' /></td>
-    <td><input size='1' type='text' id='b9' value='""" ?b9 """' /></td>
-  </tr>
-  
-  <tr>
-    <td><input size='1' type='text' id='c1' value='""" ?c1 """' /></td>
-    <td><input size='1' type='text' id='c2' value='""" ?c2 """' /></td>
-    <td><input size='1' type='text' id='c3' value='""" ?c3 """' /></td>
-    <td><input size='1' type='text' id='c4' value='""" ?c4 """' /></td>
-    <td><input size='1' type='text' id='c5' value='""" ?c5 """' /></td>
-    <td><input size='1' type='text' id='c6' value='""" ?c6 """' /></td>
-    <td><input size='1' type='text' id='c7' value='""" ?c7 """' /></td>
-    <td><input size='1' type='text' id='c8' value='""" ?c8 """' /></td>
-    <td><input size='1' type='text' id='c9' value='""" ?c9 """' /></td>
-  </tr>
-  
-  <tr>
-    <td><input size='1' type='text' id='d1' value='""" ?d1 """' /></td>
-    <td><input size='1' type='text' id='d2' value='""" ?d2 """' /></td>
-    <td><input size='1' type='text' id='d3' value='""" ?d3 """' /></td>
-    <td><input size='1' type='text' id='d4' value='""" ?d4 """' /></td>
-    <td><input size='1' type='text' id='d5' value='""" ?d5 """' /></td>
-    <td><input size='1' type='text' id='d6' value='""" ?d6 """' /></td>
-    <td><input size='1' type='text' id='d7' value='""" ?d7 """' /></td>
-    <td><input size='1' type='text' id='d8' value='""" ?d8 """' /></td>
-    <td><input size='1' type='text' id='d9' value='""" ?d9 """' /></td>
-  </tr>
-  
-  <tr>
-    <td><input size='1' type='text' id='e1' value='""" ?e1 """' /></td>
-    <td><input size='1' type='text' id='e2' value='""" ?e2 """' /></td>
-    <td><input size='1' type='text' id='e3' value='""" ?e3 """' /></td>
-    <td><input size='1' type='text' id='e4' value='""" ?e4 """' /></td>
-    <td><input size='1' type='text' id='e5' value='""" ?e5 """' /></td>
-    <td><input size='1' type='text' id='e6' value='""" ?e6 """' /></td>
-    <td><input size='1' type='text' id='e7' value='""" ?e7 """' /></td>
-    <td><input size='1' type='text' id='e8' value='""" ?e8 """' /></td>
-    <td><input size='1' type='text' id='e9' value='""" ?e9 """' /></td>
-  </tr>
-  
-  <tr>
-    <td><input size='1' type='text' id='f1' value='""" ?f1 """' /></td>
-    <td><input size='1' type='text' id='f2' value='""" ?f2 """' /></td>
-    <td><input size='1' type='text' id='f3' value='""" ?f3 """' /></td>
-    <td><input size='1' type='text' id='f4' value='""" ?f4 """' /></td>
-    <td><input size='1' type='text' id='f5' value='""" ?f5 """' /></td>
-    <td><input size='1' type='text' id='f6' value='""" ?f6 """' /></td>
-    <td><input size='1' type='text' id='f7' value='""" ?f7 """' /></td>
-    <td><input size='1' type='text' id='f8' value='""" ?f8 """' /></td>
-    <td><input size='1' type='text' id='f9' value='""" ?f9 """' /></td>
-  </tr>
-  
-  <tr>
-    <td><input size='1' type='text' id='g1' value='""" ?g1 """' /></td>
-    <td><input size='1' type='text' id='g2' value='""" ?g2 """' /></td>
-    <td><input size='1' type='text' id='g3' value='""" ?g3 """' /></td>
-    <td><input size='1' type='text' id='g4' value='""" ?g4 """' /></td>
-    <td><input size='1' type='text' id='g5' value='""" ?g5 """' /></td>
-    <td><input size='1' type='text' id='g6' value='""" ?g6 """' /></td>
-    <td><input size='1' type='text' id='g7' value='""" ?g7 """' /></td>
-    <td><input size='1' type='text' id='g8' value='""" ?g8 """' /></td>
-    <td><input size='1' type='text' id='g9' value='""" ?g9 """' /></td>
-  </tr>
-  
-  <tr>
-    <td><input size='1' type='text' id='h1' value='""" ?h1 """' /></td>
-    <td><input size='1' type='text' id='h2' value='""" ?h2 """' /></td>
-    <td><input size='1' type='text' id='h3' value='""" ?h3 """' /></td>
-    <td><input size='1' type='text' id='h4' value='""" ?h4 """' /></td>
-    <td><input size='1' type='text' id='h5' value='""" ?h5 """' /></td>
-    <td><input size='1' type='text' id='h6' value='""" ?h6 """' /></td>
-    <td><input size='1' type='text' id='h7' value='""" ?h7 """' /></td>
-    <td><input size='1' type='text' id='h8' value='""" ?h8 """' /></td>
-    <td><input size='1' type='text' id='h9' value='""" ?h9 """' /></td>
-  </tr>
-  
-  <tr>
-    <td><input size='1' type='text' id='i1' value='""" ?i1 """' /></td>
-    <td><input size='1' type='text' id='i2' value='""" ?i2 """' /></td>
-    <td><input size='1' type='text' id='i3' value='""" ?i3 """' /></td>
-    <td><input size='1' type='text' id='i4' value='""" ?i4 """' /></td>
-    <td><input size='1' type='text' id='i5' value='""" ?i5 """' /></td>
-    <td><input size='1' type='text' id='i6' value='""" ?i6 """' /></td>
-    <td><input size='1' type='text' id='i7' value='""" ?i7 """' /></td>
-    <td><input size='1' type='text' id='i8' value='""" ?i8 """' /></td>
-    <td><input size='1' type='text' id='i9' value='""" ?i9 """' /></td>
-  </tr>
-  </table>   
+  <button id='reset' type='button' name='reset' onclick='clean();' class="btn btn-warning">Reset</button>
+   
 </form>
 
 <script type="text/javascript">
 
 function submitform() { 
   document.getElementById("value").value = values();     
+}
+
+function check(){
+  var names = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+  var regex = /^[1-9]?$/;
+
+  for (i=0; i<names.length; i++){
+      for (j=1; j<=names.length; j++){
+	name = names[i] + j.toString();
+        document.getElementById(name).value
+	var ok = regex.test(document.getElementById(name).value.trim());
+        if(!ok) {
+            
+            alert('Only numbers 1 - 9 are allowed, cell ['+(i+1) +',' + j +'] is not ok.');
+            document.getElementById(name).select();
+            return false;
+        }
+      }
+  }
+  return true;
 }
 
 function values(){
@@ -179,8 +195,7 @@ using <a href='http://ns.inria.fr/sparql-template'>SPARQL Template Transformatio
 now()
 """
 </p> 
-</body>
-</html>
+
 """
   
 }

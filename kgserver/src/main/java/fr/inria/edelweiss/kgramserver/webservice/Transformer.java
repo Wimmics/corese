@@ -205,13 +205,14 @@ public class Transformer {
     }
 
     String error(String err, String q){
-        String mes = "<html><head><link href=\"/style.css\" rel=\"stylesheet\" type=\"text/css\" /></head>"
-                + "<body><h3>Error</h3>";
+        String mes = "";
+        //mes += "<html><head><link href=\"/style.css\" rel=\"stylesheet\" type=\"text/css\" /></head><body>";
+        mes +="<h3>Error</h3>";
         mes += "<pre>" + clean(err) + "</pre>";
         if (q != null){
             mes += "<pre>" + clean(q) + "</pre>";
         }
-        mes += "</body></html>";
+        //mes += "</body></html>";
         return mes;
     }
 

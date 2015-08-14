@@ -1,4 +1,4 @@
-var content = "#contentOfSite";
+var content = "contentOfSite";
 var changeURL = true;
 var srv = "/srv";
 
@@ -56,13 +56,13 @@ function transPOST(form) {
 
 //return 500 error
 function error(response, err, url){
-     $(content).html('<div class="container"><h2>'+err+' (error code: '+response.status+')</h2><br>'+response.responseText+ '</div>');
+     document.getElementById(content).innerHTML ='<div class="container"><h2>'+err+' (error code: '+response.status+')</h2><br>'+response.responseText+ '</div>';
      updateUrl(url);
 }
 
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
-    $(content).html('<div class="container">' + response + '</div>');//1 load the content 
+    document.getElementById(content).innerHTML = '<div class="container">' + response + '</div>';
     updateUrl(url); //2 change the url displayed in broswer url bar
 }
 
@@ -94,7 +94,7 @@ function loadContent() {
     
     //1 load home page content
     if (location.pathname === '/demo_new.html' || location.pathname.trim() === '/') {
-        $(content).load("/html/content.html");
+        $("#"+content).load("/html/content.html");
         changeURL = true;
         return;
     }

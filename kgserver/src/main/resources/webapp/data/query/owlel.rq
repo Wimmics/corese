@@ -6,6 +6,6 @@ where {
      filter (st:visit(st:trace, st:default, false))
      filter (st:visit(st:trace, st:fail, true))
           
-     bind (st:apply-templates-with(st:owlrl)
+     bind (st:apply-templates-with(st:owleltc)
      as ?res)    
 }

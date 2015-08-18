@@ -52,7 +52,8 @@ public class ProviderImpl implements Provider {
 
 	private static Logger logger = Logger.getLogger(ProviderImpl.class);
 	
-	static final String LOCALHOST = "http://localhost:8080/kgram/";
+	static final String LOCALHOST = "http://localhost:8080/sparql";
+	static final String DBPEDIA   = "http://fr.dbpedia.org/sparql";
 
 	HashMap<String, QueryProcess> table;
 	Hashtable<String, Double> version;
@@ -68,6 +69,7 @@ public class ProviderImpl implements Provider {
 	public static ProviderImpl create(){
 		ProviderImpl p = new ProviderImpl();
 		p.set(LOCALHOST, 1.1);
+		//p.set(DBPEDIA, 1.1);
 		return p;
 	}
 	
@@ -153,8 +155,11 @@ public class ProviderImpl implements Provider {
 		compiler.prepare(q);
 		
 		int slice = compiler.slice(q);
+                
+                ASTQuery ast = (ASTQuery) q.getAST();
 
-                if (lmap == null || slice == 0){
+                if (lmap == null || slice == 0 || ast.getValues() != null){
+                    // if query has its own values {}, do not slice
 			return send(compiler, serv, q, lmap, env, 0, 0);
 		}
 		else if (lmap.size() > slice ){
@@ -185,7 +190,7 @@ public class ProviderImpl implements Provider {
 	 * Send query to sparql endpoint using a POST HTTP query
 	 */		 	
 	Mappings send(CompileService compiler, Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
-		Query g = q.getOuterQuery();
+            Query g = q.getOuterQuery();
 		int timeout = 0;
 		Integer time = (Integer) g.getPragma(Pragma.TIMEOUT);
 		if (time != null){

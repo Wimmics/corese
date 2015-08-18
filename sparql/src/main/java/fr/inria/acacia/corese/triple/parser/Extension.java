@@ -2,6 +2,7 @@ package fr.inria.acacia.corese.triple.parser;
 
 
 import java.util.HashMap;
+import org.apache.log4j.Logger;
 
 /**
  * Manage extension functions 
@@ -12,6 +13,7 @@ import java.util.HashMap;
  *
  */
 public class Extension {
+    private static Logger logger = Logger.getLogger(Extension.class);	
 
     static final String NL = System.getProperty("line.separator");
     //FunMap map;
@@ -64,7 +66,12 @@ public class Extension {
      */
     public void define(Expression exp) {
         Expression fun = exp.getArg(0);
-        getMap(fun).put(fun.getLabel(), exp);
+        FunMap fm = getMap(fun);
+        if (fm == null){
+            logger.error("To many args: " + exp);
+            return;
+        }
+        fm.put(fun.getLabel(), exp);
     }
     
     public void add(Extension ext){

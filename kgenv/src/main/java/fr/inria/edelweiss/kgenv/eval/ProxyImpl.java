@@ -183,7 +183,7 @@ public class ProxyImpl implements Proxy, ExprType {
                  
             case NUMBER:
                 return getValue(env.count());
-
+                           
             case RANDOM:
                 return getValue(Math.random());
 
@@ -314,6 +314,9 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case APPLY:
                 return apply(exp, env, p, dt);
+                
+            case SLICE:
+                return slice(env, dt);    
 
             default:
                 if (plugin != null) {
@@ -704,6 +707,11 @@ public class ProxyImpl implements Proxy, ExprType {
             return getValue(str);
         }
         return DatatypeMap.createLiteral(str);
+    }
+    
+    IDatatype slice (Environment env, IDatatype dt){
+        env.getQuery().setSlice(dt.intValue());
+        return TRUE;
     }
 
     /**

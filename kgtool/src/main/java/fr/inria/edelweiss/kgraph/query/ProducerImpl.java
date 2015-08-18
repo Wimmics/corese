@@ -17,9 +17,11 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.ALL;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.NA;
@@ -152,19 +154,23 @@ public class ProducerImpl implements Producer, IProducerQP {
                 return edge.getNode(i);
         }
     }
-
-    Node getValue(Node qNode, Environment env) {
-        Node node = env.getNode(qNode);
+    
+    /**
+     * Possibly get a Node with a different number datatype than required
+     * for D entailment
+     */
+    Node getValue(Node qNode, Node node, Environment env) {        
         if (node == null) {
             if (qNode.isConstant()) {
-                node = graph.getNode(qNode);
+                node = graph.getExtNode(qNode);                
             }
         } else if (isExtern(node, env)) {
-            node = graph.getNode(node);
+            node = graph.getExtNode(node);
         }
         return node;
     }
     
+    // eg BIND(node as ?x)
     boolean isExtern(Node node, Environment env){
         return node.getIndex() == -1
                 || mode == EXTENSION
@@ -238,27 +244,32 @@ public class ProducerImpl implements Producer, IProducerQP {
                             // RDFS entailment on ?x rdf:type c:Engineer
                             // no dichotomy on c:Engineer to get subsumption
                         } else {
-                            node = getValue(qNode, env);
+                            Node val = env.getNode(qNode);
+                            node = getValue(qNode, val, env);
+                          
                             if (node == null) {
-                                if (qNode.isConstant()) {
+                                if (qNode.isConstant() || val != null) {
                                     // search a constant that is not in the graph: fail
                                     return empty;
                                 }
-                            } else if (q.isMatchBlank() && node.isBlank()) {
-                                // blank node may deserve a recursive match, we may not join
-                                // use case: OWL blank match
-                                if (isFuzzy(edge, i)) {
-                                    // fuzzy match: skip join on node
-                                    node = null;
-                                } else {
-                                    // real join 
-                                    n = i;
-                                    break;
-                                }
-                            } else {
+                            } 
+//                            else if (q.isMatchBlank() && node.isBlank()) {
+//                                // blank node may deserve a recursive match, we may not join
+//                                // use case: OWL blank match
+//                                if (isFuzzy(edge, i)) {
+//                                    // fuzzy match: skip join on node
+//                                    node = null;
+//                                } else {
+//                                    // real join 
+//                                    n = i;
+//                                    break;
+//                                }
+//                            } 
+                            else {
                                 n = i;
                                 if (i == 0 && !isType(edge, env)) {
-                                    node2 = getValue(edge.getNode(1), env);
+                                    Node val2 = env.getNode(edge.getNode(1));
+                                    node2 = getValue(edge.getNode(1), val2, env);
                                 }
                                 break;
                             }
@@ -299,6 +310,25 @@ public class ProducerImpl implements Producer, IProducerQP {
 
         return it;
     }
+    
+    
+    @Override
+    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
+        if (env instanceof Memory){
+            Memory mem = (Memory) env;
+            System.out.println("P:");
+            System.out.println(env.getQuery().getAST());
+            Eval eval = mem.getEval();          
+            exp.setType(Exp.AND);
+            Mappings map = eval.subEval(this, gNode, gNode, exp, null);
+            exp.setType(Exp.BGP);
+            return map;
+        }
+        else {
+            return Mappings.create(query);
+        }
+    }
+
 
     /**
      *
@@ -1047,5 +1077,5 @@ public class ProducerImpl implements Producer, IProducerQP {
     public void setQuery(Query query) {
         this.query = query;
     }
-
+    
 }

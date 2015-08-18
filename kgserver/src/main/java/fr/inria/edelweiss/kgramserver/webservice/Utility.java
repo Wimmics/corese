@@ -1,10 +1,11 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+//import java.nio.charset.StandardCharsets;
+//import java.nio.file.Files;
+//import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +40,14 @@ public class Utility {
      * @return
      * @throws IOException 
      */
+//    public static StringBuilder readFile(String path) throws IOException {
+//        byte[] encoded = Files.readAllBytes(Paths.get(path));
+//        return new StringBuilder(new String(encoded, StandardCharsets.UTF_8));
+//    }
+    
     public static StringBuilder readFile(String path) throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new StringBuilder(new String(encoded, StandardCharsets.UTF_8));
+        QueryLoad ql = QueryLoad.create();
+        String str = ql.read(path);
+        return new StringBuilder(str);
     }
 }

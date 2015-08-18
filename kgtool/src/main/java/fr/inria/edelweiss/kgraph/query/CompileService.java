@@ -32,13 +32,6 @@ public class CompileService {
 	 * Generate bindings for the service, if any
 	 */
 	public void compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
-		ASTQuery ast = (ASTQuery) q.getAST();
-
-		if (ast.getValues() != null){
-			// subquery has its own bindings, skip compile
-			return;
-		}
-                
 		if (lmap == null){
 			if (provider.isSparql0(serv)){
 				filter(q, env);
@@ -119,8 +112,8 @@ public class CompileService {
 		}
 		
 		values.setVariables(lvar);
-				
-		for (int j = start; j < lmap.size() && j < limit; j++){
+                
+                for (int j = start; j < lmap.size() && j < limit; j++){
 			
 			Mapping map = lmap.get(j);			
 			boolean ok = false;
@@ -144,8 +137,8 @@ public class CompileService {
 				values.addValues(lval);
 			}
 		}
-		
-		if (values.getValues().size()>0){
+
+                if (values.getValues().size()>0){
 			ast.setValues(values);
 		}
 

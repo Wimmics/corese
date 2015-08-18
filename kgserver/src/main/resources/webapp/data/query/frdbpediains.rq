@@ -12,22 +12,32 @@ prefix p:    <http://fr.dbpedia.org/property/>
 prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
 insert  {
-  ?r a ?class 
-  ?r rdfs:label ?label ; rdfs:comment ?com
+  ?r a ?class .
+  ?r rdfs:label ?label ; rdfs:comment ?com .
   ?r o:wikipedia ?pr ; o:dbpedia ?r
   
-  ?r ?qq ?s  ?s rdfs:label ?ls ?qq rdfs:label ?lq
-  ?r ?pp ?vv
-  ?r p:latitude ?lat ; p:longitude ?lon
+  ?r ?qq ?ts . ?ts rdfs:label ?ls . ?qq rdfs:label ?lq .
+  ?r ?pp ?vv .
+  
+  ?r p:latitude ?lat ; p:longitude ?lon .
+  
+  
 }
 where {
+
+bind (st:get(st:uri) as ?r)
 
 service <http://fr.dbpedia.org/sparql> {
 
   ?r rdfs:label ?label . filter(lang(?label) = 'fr')    
   optional {  ?r rdfs:comment ?com . filter(lang(?com) = 'fr') }
  
-  optional { ?r ?pp ?vv . filter(?pp = p:naissance || ?pp = p:décès || ?pp = o:thumbnail) }
+  optional { ?r ?pp ?vv . 
+    filter(((?pp = p:dateDeNaissance || ?pp = p:dateDeDécès) && isLiteral(?vv)) 
+         || ?pp = o:thumbnail  
+#        || ?pp = o:activeYearsEndYear || ?pp = o:activeYearsStartYear
+        ) 
+  }
   
   optional { ?r ?plat ?lat filter(?plat = p:latitude  || ?plat = geo:lat)
              ?r ?plon ?lon filter(?plon = p:longitude || ?plon = geo:long) }
@@ -48,15 +58,23 @@ service <http://fr.dbpedia.org/sparql> {
     
     || ?q = o:wikiPageRedirects
     ) 
+
+    optional { 
+        ?s o:wikiPageRedirects ?rs        
+    }
+    
+   
     
     filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'fr') 
     
     ?q rdfs:label ?lq 
-    filter(lang(?lq) = 'fr' || lang(?lq) = 'en')
+    filter(langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))         
 
   }
 	     
 }
+
+bind (coalesce(?rs, ?s) as ?ts)
 
 bind (if (?q = p:successeur,   o:successor,
       if (?q = p:prédécesseur, o:predecessor,
@@ -67,7 +85,7 @@ bind (if (?q = p:successeur,   o:successor,
       
 bind (if (bound(?lat), o:Place, foaf:Person) as ?class)     
       
-bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr)   
-      
+bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr) 
+
   
 }

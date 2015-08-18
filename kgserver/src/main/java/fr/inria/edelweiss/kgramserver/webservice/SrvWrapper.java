@@ -58,7 +58,7 @@ public class SrvWrapper {
         } else if (path.startsWith("tutorial")) {
             rs = new Tutorial().get(getService(path), profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
-            rs = new Processor().typecheck(resource, transform, getService(path));
+            rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
         } else {
             rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*").entity("Can not get right service solver.").build();
         }
@@ -94,7 +94,7 @@ public class SrvWrapper {
         } else if (path.startsWith("tutorial")) {
             rs = new Tutorial().post(getService(path), profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
-            rs = new Processor().typecheckPost(resource, transform, getService(path));
+            rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
         } else {
             rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*").entity("Can not get right service solver.").build();
         }
@@ -130,7 +130,7 @@ public class SrvWrapper {
         } else if (path.startsWith("tutorial")) {
             rs = new Tutorial().postMD(getService(path), profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
-            rs = new Processor().typecheckPost_MD(resource, transform, getService(path));
+            rs = new Processor().typecheckPost_MD(resource, "std", transform, query, getService(path));
         } else {
             rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*").entity("Can not get right service solver.").build();
         }

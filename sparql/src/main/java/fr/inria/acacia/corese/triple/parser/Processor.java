@@ -219,6 +219,7 @@ public class Processor {
 	static final String PROCESS  = KGRAM + "process";
 	static final String ENV  	 = KGRAM + "env";
 	public static final String PATHNODE = KGRAM + "pathNode";
+	static final String SLICE       = KGRAM + "slice";
 
 	static final String EXIST 	= Term.EXIST;
 	static final String STRLEN 	= "strlen";
@@ -412,8 +413,8 @@ public class Processor {
         switch (term.oper()) {
 
             case ExprType.STL_DEFINE:
-                // st:define(st:process(?x) = exp(?x))
-                // def = st:process(?x)
+                // this = st:define(st:process(?x) = exp(?x))
+                // def  = st:process(?x) = exp(?x)
                 Expression def = term.getArg(0);
                 ast.define(def);
                 term.local();
@@ -698,6 +699,7 @@ public class Processor {
 		defoper(EXTCONT, ExprType.EXTCONT);
 		defoper(PROCESS, ExprType.PROCESS);
 		defoper(ENV, 	 ExprType.ENV);
+		defoper(SLICE, 	 ExprType.SLICE);
 
 		defoper(STRLEN, ExprType.STRLEN);
 		defoper(SUBSTR, ExprType.SUBSTR);

@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 
@@ -89,6 +90,11 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		}
 		return meta;
 	}
+        
+         @Override
+    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 	
 	MetaIterator<Entity> add(MetaIterator<Entity> meta, Iterable<Entity> it){
 		MetaIterator<Entity> m = new MetaIterator<Entity>(it);

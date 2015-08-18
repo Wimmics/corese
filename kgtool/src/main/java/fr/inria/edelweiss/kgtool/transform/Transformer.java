@@ -1346,26 +1346,37 @@ public class Transformer  {
    * this new Transformer  inherit information from query and current transformer (if any)
    */
     public void complete(Query q, Transformer ct) {             
-        if (ct != null) {
-            setNSM(ct.getNSM());
-            
-            IDatatype export = ct.get(Context.STL_EXPORT);
-            if (export != null && export.booleanValue()){
-                getContext().copy(ct.getContext());
+        if (ct == null) {
+            ASTQuery ast = (ASTQuery) q.getAST();
+            Context ctx = ast.getContext();          
+            if (ctx != null){
+                // inherit query context
+                setContext(ctx);
             }
-            else {
-                // dataset, protocol
-                getContext().include(ct.getContext());
-            }
+        }
+        else {
+            setNSM(ct.getNSM());            
+            complete(ct.getContext());
             if (ct.getVisitor() != null){
                 setVisitor(ct.getVisitor());
             }
         }
         
+        
         // query prefix overload ct transformer prefix
         // because query call this new transformer
         ASTQuery ast = (ASTQuery) q.getAST();
         complete(ast.getNSM());
+    }
+    
+    void complete(Context ctx) {
+        IDatatype export = ctx.get(Context.STL_EXPORT);
+        if (export != null && export.booleanValue()) {
+            getContext().copy(ctx);
+        } else {
+            // dataset, protocol
+            getContext().include(ctx);
+        }
     }
     
     /**

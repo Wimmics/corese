@@ -783,6 +783,10 @@ public class Eval implements ExpType, Plugin {
                     stack = stack.and(exp, n);
                     backtrack = eval(p, gNode, stack, n);
                     break;
+                    
+                case BGP:
+                    backtrack = bgp(p, gNode, exp, stack, n);
+                    break;
 
                 case SERVICE:
                     //stack = stack.and(exp.rest(), n);
@@ -868,17 +872,6 @@ public class Eval implements ExpType, Plugin {
                 case JOIN:
 
                     backtrack = join(p, gNode, exp, stack, n);
-                    break;
-
-
-                case NOT:
-                    /**
-                     * compiled as: WATCH EXP BACKJUMP true means if reach
-                     * BACKJUMP, WATCH must backtrack after negation fail
-                     *
-                     */
-                    stack = stack.watch(exp.first(), WATCH, BACKJUMP, true, n);
-                    backtrack = eval(p, gNode, stack, n);
                     break;
 
 
@@ -1196,7 +1189,7 @@ public class Eval implements ExpType, Plugin {
      * Eval exp alone in a fresh new Memory Node gNode : actual graph node Node
      * node : exp graph node
      */
-     private Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main) {
+     public Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main) {
            return subEval(p, gNode, node, exp, main, null);
      }
     
@@ -1206,7 +1199,7 @@ public class Eval implements ExpType, Plugin {
         Eval eval = copy(mem, p, evaluator);
         graphNode(gNode, node, mem);
         bind(mem, exp, main, m);
-       if (main.type() == Exp.JOIN) {
+       if (main != null && main.type() == Exp.JOIN) {
             service(exp, mem);
         }
        Mappings lMap = eval.subEval(query, node, Stack.create(exp), 0);
@@ -1217,7 +1210,8 @@ public class Eval implements ExpType, Plugin {
         if (m != null){
             mem.push(m, -1);
         }
-       if ((main.isOptional() || main.isJoin()) && exp.getNodeList() != null){
+       if (main == null){}
+       else if ((main.isOptional() || main.isJoin()) && exp.getNodeList() != null){
            // A optional B
             // bind variables of A from environment
             for (Node qnode : exp.getNodeList()){
@@ -1233,19 +1227,20 @@ public class Eval implements ExpType, Plugin {
      * JOIN(service ?s {}, exp) if ?s is bound, bind it for subeval ...
      */
     void service(Exp exp, Memory mem) {
-        if (exp.type() == Exp.SERVICE){
+        if (exp.type() == SERVICE){
            bindService(exp, mem);
         }
         else for (Exp ee : exp.getExpList()) {
             
             switch (ee.type()){
                 
-                case Exp.SERVICE:
+                case SERVICE:
                     bindService(ee, mem);
                     break;
                     
-                case Exp.AND:
-                case Exp.JOIN:
+                case AND:
+                case BGP:
+                case JOIN:
                     service(ee, mem);
                     break;
             }
@@ -1630,6 +1625,26 @@ public class Eval implements ExpType, Plugin {
         Eval eval = copy(mem, producer, evaluator);
         Mappings lMap = eval.subEval(query, null, Stack.create(exp), 0);
         return lMap;
+    }
+    
+    private int bgp(Producer p, Node gNode, Exp exp, Stack stack, int n){
+        int backtrack   = n - 1;
+        List<Node> from = query.getFrom(gNode);
+        Mappings map    = p.getMappings(gNode, from, exp, memory);
+        
+        for (Mapping m : map){
+            m.fixQueryNodes(query);
+            boolean b = memory.push(m, n, false);
+            if (b){
+                int back = eval(p, gNode, stack, n+1);
+                memory.pop(m);
+                if (back < backtrack){
+                    return back;
+                }
+            }
+        }
+        
+        return backtrack;
     }
 
     private int service(Producer p, Node gNode, Exp exp, Stack stack, int n) {

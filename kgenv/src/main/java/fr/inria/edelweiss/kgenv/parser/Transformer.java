@@ -265,8 +265,8 @@ public class Transformer implements ExpType {
                         }                                             
 		}
 	}
-	
 
+        
 	/**
 	 * Also used by QueryGraph to compile RDF Graph as a Query
 	 */
@@ -1184,36 +1184,6 @@ public class Transformer implements ExpType {
 			compileGraph(ast, exp, query);
 			break;
 
-		case NOT:
-			exp = Exp.create(NOT, exp);
-			break;
-
-		case FORALL:
-			Exp first = Exp.create(AND);
-			Forall fa = (Forall) query;
-
-			for (fr.inria.acacia.corese.triple.parser.Exp ee : fa.getFirst().getBody()){
-				Exp tmp = compile(ee, opt);
-				first.add(tmp);
-			}
-
-			exp = Exp.create(FORALL, first, exp);
-			break;	
-
-		case IF:
-			IfThenElse ee = (IfThenElse) query;
-			Exp e1 = compile(ee.getIf(), opt);
-			Exp e2 = compile(ee.getThen(), opt);
-			Exp e3 = null;
-			if (ee.getElse()!=null){
-				e3 = compile(ee.getElse(), opt);
-			}
-			exp.add(e1);
-			exp.add(e2);
-			if (e3 !=null){
-				exp.add(e3);
-			}
-			break;
 		}
 		
 		return exp;
@@ -1447,22 +1417,13 @@ public class Transformer implements ExpType {
 		} 
                 else if (query.isBind()){
 			return BIND;
-		} 		
-                else if (query.isExist()){
-			return EXIST;
-		} 
-		else if (query.isForall()){
-			return FORALL;
-		} 
-		else if (query.isIfThenElse()){
-			return IF;
-		} 
-		else if (query.isNegation()){
-			return NOT;
-		} 
+		} 		               
 		else if (query.isValues()){
 			return VALUES;
 		} 
+//                else if (query.isBGP()){
+//                    return BGP;
+//                }
 		else if (query.isAnd()){
 			return AND;
 		} 
@@ -1471,8 +1432,6 @@ public class Transformer implements ExpType {
 
 	int cpType(int type){
 		switch (type){
-		case FORALL:
-		case NOT: return AND;
 		default: return  type;
 		}
 	}

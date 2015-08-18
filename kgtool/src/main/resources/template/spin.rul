@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jul 14 14:30:26 CEST 2015
+Mon Aug 17 10:46:01 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -172,7 +172,7 @@ where {
 #
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
-template st:profile(?in) {
+template st:profile {
 
     define(st:process(?in) = 
         if (st:get(st:mode, st:html), st:html(?in), st:std(?in))
@@ -193,11 +193,23 @@ template st:profile(?in) {
 		st:apply-templates(?in), "</span>"))
     )
     
-    define (st:protect(?in) =
+    define (st:protect2(?in) =
       let (?t = st:turtle(?in),
 	if (strstarts(?t, "<"), 
 	    replace(?t, "<", "&lt;"),
 	    ?t))
+    )
+    
+    define (st:protect(?in) =
+	xt:protect(st:turtle(?in))
+    )
+    
+    define (xt:protect(?s) =
+        replace(replace(?s, "&", "&amp;"), "<", "&lt;")
+    )
+    
+    define (xt:pprotect(?s) =
+        if (st:get(st:mode, st:html), xt:protect(?s), ?s)
     )
     
     define (st:kw(?x) =
@@ -1025,7 +1037,7 @@ where {
 prefix sp:<http://spinrdf.org/sp#> .
 
 template  {
-  ?q 
+  "{" ?q  "}" 
 }
 where {
   ?in a sp:SubQuery ;
@@ -1442,7 +1454,7 @@ optional { ?in sp:offset ?o }
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "(" ?f " " xsd:string(?lab) " " ?r ")"
+  "(" ?f " " xt:pprotect(?lab) " " ?r ")"
 }
 where {
   ?in a ?ope  ;

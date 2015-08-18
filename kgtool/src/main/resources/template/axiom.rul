@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jul 14 14:30:26 CEST 2015
+Mon Aug 17 10:46:01 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -23,7 +23,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix orl: </user/corby/home/AData/template/owlrl/>
 
 template  {
   ?suc  
@@ -51,8 +50,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix orl: </user/corby/home/AData/template/owlrl/>
-
 template {
   ?suc  
 }
@@ -60,12 +57,8 @@ where {
 
   ?in rdfs:subClassOf ?y
   
-  filter (
-    isURI(?in) ||
-    not exists { ?x ?p ?in }
-  )
-  
   bind (
+    ( isURI(?in) || not exists { ?x ?p ?in } ) &&
     st:call-template-with(st:subexp,   st:subClassExpression, ?in) &&
     st:call-template-with(st:superexp, st:superClassExpression, ?y)  
   as ?suc)
@@ -83,7 +76,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix orl: </user/corby/home/AData/template/owlrl/>
 
 template  {
   ?suc
@@ -113,7 +105,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix orl: </user/corby/home/AData/template/owlrl/>
 
 template  {
   ?suc 
@@ -158,7 +149,6 @@ where {
   filter(st:visit(st:fail, ?in, false))
  
 }
-limit 1
 
 
 ]]>
@@ -168,7 +158,55 @@ limit 1
 <rule>
 <body>
 <![CDATA[
-prefix orl: </user/corby/home/AData/template/owlrl/>
+# the following datatypes must not be used in OWL 2 RL:
+# owl:real, owl:rational
+
+template {
+  ?suc
+}
+where {
+  
+  bind ( 
+    not exists { 
+      ?in ?p ?y 
+      filter (datatype(?y) IN (owl:real, owl:rational))
+    }
+  as ?suc)
+
+  filter (st:visit(st:datatypelit, st:datatype, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+  # OWL 2 RL does not support the predefined properties :
+  # owl:topObjectProperty, owl:bottomObjectProperty,
+  # owl:topDataProperty, and owl:bottomDataProperty
+
+template {
+
+  ?suc
+}
+where {
+
+  bind ( not exists { {?x ?p ?y} union {?y ?p ?x} union { ?a ?x ?b } } as ?suc)
+  
+  filter(st:visit(st:properties, ?x, ?suc))
+}
+values ?x { 
+  owl:topObjectProperty owl:bottomObjectProperty 
+  owl:topDataProperty   owl:bottomDataProperty 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 
 template  {
   ?suc  
@@ -194,7 +232,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix orl: </user/corby/home/AData/template/owlrl/>
 
 template  {
   ?suc  
@@ -219,7 +256,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix orl: </user/corby/home/AData/template/owlrl/>
 
 template {
   ?suc  

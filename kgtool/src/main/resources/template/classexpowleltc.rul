@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Mon Aug 17 10:46:01 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+  st:define (st:aggregate(?x) = st:agg_and(?x))
+
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:classExpression(?x) {
+	?suc
+}
+where {
+	bind(
+		if (isURI(?x), true,
+			st:apply-templates-all(?x)
+		)
+	as ?suc)
+	
+	#filter(st:visit(st:classexp, ?x, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in a owl:Restriction ;
+	  owl:onProperty ?p
+		
+	bind(exists {
+		{ ?in owl:someValuesFrom ?e 
+		  filter (st:call-template(st:classExpression, ?e))}
+		union { ?in owl:hasValue ?e }
+		union { ?in owl:hasSelf ?e }
+	} as ?suc)
+	
+	#filter(st:visit(st:restrictClass, ?in, ?suc))
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if there is an unauthorized OWL property for classExpression ?in
+# return false in this case, otherwise the template fails (return nothing)
+#
+template {
+	false
+}
+where {
+	?in ?p ?y
+	
+	bind (
+		?p in (
+			owl:intersectionOf, owl:oneOf,
+			owl:someValuesFrom, owl:onProperty,
+			owl:hasValue, owl:hasSelf, rdf:type,
+			
+			# these axioms have classExpression argument
+			owl:equivalentClass, rdfs:subClassOf,
+			owl:disjointWith, owl:hasKey, owl:onClass
+		)
+	as ?suc)
+			
+	filter (st:visit(st:fail, ?in, ?suc))
+	filter(! ?suc)
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+# enumerations involving more than one individual (ObjectOneOf and DataOneOf)
+
+template {
+	?suc
+}	
+where {
+	select ?suc where {
+		{
+			# count the number of individuals into our oneOf
+			select ?in (count(?individual) as ?nbInd) {
+				?in owl:oneOf ?z
+				?z rdf:rest*/rdf:first ?individual
+			} group by ?in
+		}
+		# a single individual or a single literal
+		bind((?nbInd = 1) as ?suc)
+		filter(st:visit(st:one, ?in, ?suc))
+	}
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+  ?in owl:intersectionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
+  
+  bind (
+    st:call-template(st:classExpression, ?e)
+    as ?suc
+  )
+  
+ #filter(st:visit(st:interClass, ?in, ?suc))
+
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

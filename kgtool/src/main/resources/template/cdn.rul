@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jul 14 14:30:26 CEST 2015
+Mon Aug 17 10:46:01 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -130,21 +130,6 @@ where {
 <body>
 <![CDATA[
 prefix cn: <http://cdn.fr/schema/>
-template cn:img(?i) {
-  "<img width='75' src=\"" ?i "\"/>" 
-}
-where {
-#  bind(?u as ?uri)
-#  bind(?t as ?text)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn: <http://cdn.fr/schema/>
 template cn:icon {
 
 "<table class='center'><tr>\n"
@@ -180,6 +165,21 @@ values ?i {
 <http://2.bp.blogspot.com/-NHZ8BEAsovs/U-NI58kXiBI/AAAAAAAADuI/JejEaJq9pM0/s1600/P1070323.JPG>
 
 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cn: <http://cdn.fr/schema/>
+template cn:img(?i) {
+  "<img width='75' src=\"" ?i "\"/>" 
+}
+where {
+#  bind(?u as ?uri)
+#  bind(?t as ?text)
 }
 ]]>
 </body>

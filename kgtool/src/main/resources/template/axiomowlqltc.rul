@@ -1,0 +1,406 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Mon Aug 17 10:46:01 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+  st:define (st:aggregate(?x) = st:agg_and(?x))
+
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in owl:AllDisjointClasses ?z
+	
+	bind (
+		not exists {
+			?z rdf:rest*/rdf:first ?e
+			filter(! st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?e))
+		}
+	as ?suc)
+	
+	filter(st:visit(st:disjointClass, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in rdfs:subClassOf ?y
+	
+	filter (
+		isURI(?in) ||
+		not exists { ?x ?p ?in }
+	)
+	
+	bind (
+		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?in) &&
+		st:call-template-with(st:superexpowlqltc, st:superClassExpression, ?y)
+	as ?suc)
+	
+	filter(st:visit(st:subClass, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+# the following datatypes must not be used in OWL 2 QL:
+# xsd:double, xsd:float, xsd:nonPositiveInteger,
+# xsd:positiveInteger, xsd:negativeInteger,
+# xsd:long, xsd:int, xsd:short, xsd:byte,
+# xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
+# xsd:unsignedByte, xsd:language, xsd:boolean.
+
+template {
+	?suc
+}
+where {
+	{ ?in rdfs:range ?y }
+	union { ?in a owl:Restriction;
+			?p ?y }
+	bind (
+		# datatypes not allowed
+		?y NOT IN (
+			xsd:double, xsd:float, xsd:nonPositiveInteger, xsd:positiveInteger,
+			xsd:negativeInteger, xsd:long, xsd:int, xsd:short, xsd:byte,
+			xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort, xsd:unsignedByte,
+			xsd:language, xsd:boolean
+		)
+	as ?suc)
+	
+	filter(isURI(?y) && ! ?suc)
+	filter(st:visit(st:datatypeRes, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in owl:equivalentClass ?y
+	
+	filter (
+		isURI(?in) ||
+		not exists { ?x ?p ?in }
+	)
+	
+	bind (
+		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?in) &&
+		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?y)
+	as ?suc)
+	
+	filter(st:visit(st:equivClass, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in owl:disjointWith ?y
+	
+	filter (
+		isURI(?in) ||
+		not exists { ?x ?p ?in }
+	)
+	
+	bind (
+		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?in) &&
+		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?y)
+	as ?suc)
+	
+	filter(st:visit(st:disjointClass, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Forbidden in OWL 2 QL
+# 
+#
+# The following constructs are not supported in OWL 2 QL:
+
+# existential quantification to a class expression or a data range (ObjectSomeValuesFrom and DataSomeValuesFrom) in the subclass position
+# self-restriction (ObjectHasSelf)
+# existential quantification to an individual or a literal (ObjectHasValue, DataHasValue)
+# enumeration of individuals and literals (ObjectOneOf, DataOneOf)
+# universal quantification to a class expression or a data range (ObjectAllValuesFrom, DataAllValuesFrom)
+# cardinality restrictions (ObjectMaxCardinality, ObjectMinCardinality, ObjectExactCardinality, DataMaxCardinality, DataMinCardinality, DataExactCardinality)
+# disjunction (ObjectUnionOf, DisjointUnion, and DataUnionOf)
+# property inclusions (SubObjectPropertyOf) involving property chains
+# functional and inverse-functional properties (FunctionalObjectProperty, InverseFunctionalObjectProperty, and FunctionalDataProperty)
+# transitive properties (TransitiveObjectProperty)
+# keys (HasKey)
+# individual equality assertions and negative property assertions
+
+template {
+	false
+}
+where {
+	#disjunction
+	{ ?in owl:disjointUnionOf ?y }
+	union { ?in owl:unionOf ?u }
+	
+	union { ?in owl:hasValue ?value }
+	union { ?in owl:hasSelf ?self }
+
+	# oneOf
+	union { ?in owl:oneOf ?one }
+	
+	#cardinality restrictions
+	union { ?in owl:maxCardinality ?maxCard }
+	union { ?in owl:minCardinality ?minCard }
+	union { ?in owl:exactCardinality ?eCard }
+	
+	union { ?in a owl:FunctionalProperty }
+	union { ?in a owl:InverseFunctionalProperty }
+	union { ?in a owl:TransitiveProperty }
+	
+	# negative property assertions
+	union { ?in a owl:NegativePropertyAssertion }
+	# individual equality assertion
+	union { ?in owl:sameAs ?s }
+	union { ?in owl:hasKey ?k }
+	
+	union { ?in owl:AllValuesFrom  ?allValues }
+	
+	filter(st:visit(st:fail, ?in, false))
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+# the following datatypes must not be used in OWL 2 QL:
+# xsd:double, xsd:float, xsd:nonPositiveInteger,
+# xsd:positiveInteger, xsd:negativeInteger,
+# xsd:long, xsd:int, xsd:short, xsd:byte,
+# xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
+# xsd:unsignedByte, xsd:language, xsd:boolean.
+
+template {
+	?suc
+}
+where {
+	?in ?p ?y
+	
+	bind (
+		# datatypes not allowed
+		datatype(?y) NOT IN (
+			xsd:double, xsd:float, xsd:nonPositiveInteger, xsd:positiveInteger,
+			xsd:negativeInteger, xsd:long, xsd:int, xsd:short, xsd:byte,
+			xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort, xsd:unsignedByte,
+			xsd:language, xsd:boolean
+		)
+	as ?suc)
+	
+	filter(isLiteral(?y) && ! ?suc)
+	filter(st:visit(st:datatypeLit, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+# OWL 2 QL does not support anonymous individuals
+
+template {
+	?suc
+}
+where {
+ { ?in rdf:type ?x
+   FILTER(
+      	STRSTARTS(STR(?x), str(owl:NamedIndividual)) ||
+   		STRSTARTS(STR(?x), str(owl:Nothing)) ||
+   		# filter owl, xsd, rdfs, rdf
+   		!(
+   			STRSTARTS(STR(?x), str(owl:)) ||
+   			STRSTARTS(STR(?x), str(xsd:)) ||
+			STRSTARTS(STR(?x), str(rdfs:)) ||
+			STRSTARTS(STR(?x), str(rdf:)) ||
+			isBlank(?x)
+  	    )
+   )
+   
+   bind(!isBlank(?in) as ?suc)
+   filter(! ?suc)
+   filter(st:visit(st:anonymous, ?in, ?suc))
+ }
+ 
+ union {
+ 		  ?in ?p ?x
+ 	  	  FILTER(
+ 	         !(
+ 	         	STRSTARTS(STR(?p), str(owl:)) ||
+  	      		STRSTARTS(STR(?p), str(xsd:)) ||
+ 				STRSTARTS(STR(?p), str(rdfs:)) ||
+ 				STRSTARTS(STR(?p), str(rdf:))
+ 		  ))
+ 		  bind(!isBlank(?in) as ?sucin)
+ 		  bind(!isBlank(?x) as ?sucx)
+ 		  filter((?sucin && ?sucx) = false)
+ 		  
+ 		  filter(st:visit(st:anonymous, ?in, ?sucin))
+ 		  filter(st:visit(st:anonymous, ?in, ?sucx))
+  	    }
+ 	   
+ union {	
+ 			# owl:differentIndividuals
+ 			{ ?in a owl:AllDifferent
+ 			  VALUES ?p { owl:distinctMembers owl:members }
+ 			  ?in ?p ?y
+ 			  ?y rdf:rest*/rdf:first ?x }
+ 			
+      		union { ?in owl:targetIndividual ?x }
+      		union { ?in owl:sourceIndividual ?x }
+      		
+      		# annotation
+      		union { ?in owl:annotatedSource ?x }
+      		union { ?in owl:annotatedTarget ?x }
+      		
+      		union { ?in owl:hasValue ?x }
+      		
+      		# if blank node return false
+      		bind(!isBlank(?x) as ?suc)
+      		filter(! ?suc)
+      		filter(st:visit(st:anonymous, ?in, ?suc))
+ }
+ 
+ union {
+ 	 		# owl:differentIndividuals
+ 			{ ?in owl:differentFrom ?x }
+ 			
+ 		    bind(!isBlank(?in) as ?sucin)
+ 		    bind(!isBlank(?x) as ?sucx)
+ 		    filter((?sucin && ?sucx) = false)
+ 		    
+ 		    filter(st:visit(st:anonymous, ?in, ?sucin))
+ 		  	filter(st:visit(st:anonymous, ?in, ?sucx))
+ }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+# ObjectPropertyAxiom
+# property inclusions (SubObjectPropertyOf) involving property chains not supported in OWL 2 QL
+
+template {
+	?suc
+}
+where {
+	{
+		?in rdfs:subPropertyOf ?y
+	
+		bind (!exists {
+			?in owl:propertyChain ?z
+		} as ?suc)
+	}
+	union {
+		?in a owl:ObjectProperty
+		
+		bind (!exists {
+			?in owl:propertyChainAxiom ?z
+			} as ?suc)
+	}
+	
+	filter(st:visit(st:propertyChain, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+# OWL 2 QL restricts the class expressions in object property domain and range axioms to superClassExpression
+
+template {
+	?suc
+}
+where {
+	?in rdfs:domain|rdfs:range ?y
+	
+	bind (
+		isURI(?y) ||
+		st:call-template-with(st:superexpowlqltc,st:superClassExpression, ?y)
+	as ?suc)
+	
+	filter(st:visit(st:domain, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in a owl:NamedIndividual, ?t
+	
+	filter (
+		isURI(?in) ||
+		not exists { ?x ?p ?in }
+	)
+	
+	bind (isURI(?t) ||
+		(?t = owl:Class)
+	as ?suc)
+	filter(st:visit(st:individual, ?in, ?suc))
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

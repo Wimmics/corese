@@ -2,10 +2,23 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jul 14 14:30:26 CEST 2015
+Mon Aug 17 10:46:01 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:insert(?uri) {
+    "<a href='"  st:pplink(?uri, st:dbpediacopy) "'><button type='button'>Insert</button></a>" 
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -32,19 +45,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:insert(?uri) {
-    "<a href='"  st:pplink(?uri, st:dbpediacopy) "'><button type='button'>Insert</button></a>" 
-}
-where {
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
 
@@ -62,8 +62,8 @@ template st:descperson(?r) {
 where { 
 
   values (?p ?title) {
-#    (p:fonction 	"Fonction")
-#    (o:title 		"Titre")
+    (p:dateDeNaissance 	"Naissance")
+    (p:dateDeDécès 	"Décès")
     (o:predecessor 	"Prédécesseur")
     (o:successor 	"Successeur")
     (o:father 		"Père")
@@ -78,6 +78,8 @@ where {
   }
   
   bind (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
+  
+  filter ( ?href || exists { ?r ?p ?v } )
 
 }
 ]]>
@@ -102,6 +104,19 @@ template st:start {
 where {
 
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:icon(?label, ?ic) {
+
+  "<img width='250' alt=\"" str(?label) "\" src=\"" str(?ic) "\" />"
+
+}
+where {}
 ]]>
 </body>
 </rule>
@@ -141,7 +156,7 @@ where {
 
   ?r ?p ?n  
   optional { ?n rdfs:label ?ln }
-
+  
 }
 ]]>
 </body>
@@ -292,23 +307,23 @@ template st:locate(?r, ?lat, ?lon) {
 """
   <script>
   function callback() {
-    var pos = new google.maps.LatLng("""      
-      str(?lat) "," str(?lon)     
-      """);
+    var pos = new google.maps.LatLng("""  str(?lat) "," str(?lon) ");"
       
+    """  
     var mapOptions = {zoom: 7, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};
             
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     
     google.maps.event.addListener(map, 'click', function( event ){
       alert( "Latitude: "+event.latLng.lat()+" "+", longitude: "+event.latLng.lng() ); 
-    });"""
+    });
+    
+    var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });
+    """
     
     st:call-template(st:locateall, ?r)
-
-    "var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });"
-     
-  st:call-template(st:closelocate)
+    
+    st:call-template(st:closelocate)
 }
 where {
   
@@ -356,6 +371,7 @@ where {
   
   bind   (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
   filter (if (?p in (o:wikipedia, o:dbpedia), strstarts(?r, r:), true))
+  filter ( ?href || exists { ?r ?p ?v } )
 
 }
 ]]>
@@ -446,6 +462,58 @@ where {
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+template st:frame(?label, ?ic, ?body) {
+
+  """
+  <div style='text-align:center'>   
+  <h2>"""  str(?label) """</h2> 
+  </div>
+  """
+  
+  """
+  <p>
+  <table>
+  <tr style="vertical-align:top">
+  <td>
+  """
+  
+  if (?ic = "", "", 
+    st:call-template(st:icon, ?label, ?ic)  )
+ 
+  """
+  </td><td>&nbsp;<td/><td>
+  <table>
+  """  
+  
+  str(?body)
+  
+  """
+  </table>
+  </td>
+  </tr>
+  </table>
+  </p>
+  """
+
+
+}
+where {
+
+
+    
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:  <http://fr.dbpedia.org/property/>
 
 template st:selecttry {
@@ -475,16 +543,15 @@ template st:title(?r, ?l, ?i) {
  
   "<div style='text-align:center'>" 
   
-  "<p>"
-  "<h3>"  str(?l) "</h3>"
-  "</p>"  
+  "<h2>"  str(?l) "</h2>"
   
-  "<a href=\"" coalesce(str(?i), "")  "\">"    
-  "<img width='100' alt=\"" str(?l) "\" src=\"" coalesce(str(?i), "") "\" />"
-  "</a>"
+ """<p>"""
+    coalesce(str(?b), "")
+    if (bound(?b) && bound(?d), " -- " , "")
+    coalesce(str(?d), "")
+  """</p>
+  """
   
- st:call-template(st:insert, ?r)
- 
   "</div>"
 
 }
@@ -504,15 +571,13 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template st:locateall(?r) {
 
-  "var pos" st:number()  " = new google.maps.LatLng("      
-      str(?lat) "," str(?lon) ");"
+  "var pos" st:number() " = new google.maps.LatLng(" str(?lat) "," str(?lon) ");"
                   
-  "var marker" st:number() "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
+  "var marker" st:number() 
+  "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
   
   "google.maps.event.addListener(marker" st:number() 
-  ", 'click', function () {window.location.href = \"" 
-  st:plink(?in) 
-  "\";});"
+  ", 'click', function () {window.location.href = '"   st:plink(?in)   "';});"
   
 }
 where {
@@ -537,40 +602,19 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template {
 
-  st:call-template(st:title, ?r, ?label, (coalesce(?ic, "")))
-  
-  """
-  <p style='text-align:center'>"""
-    coalesce(str(?b), "")
-    if (bound(?b) && bound(?d), " -- " , "")
-    coalesce(str(?d), "")
-  """</p>
-  """
-  
-  
-  """<table>
-  """  
-  
-  st:call-template(st:descperson, ?r)
-  
-  """</table>
-  """
+st:call-template(st:frame, ?label, coalesce(?ic, ""), 
+   st:call-template(st:descperson, ?in))
+ 
 }
 where {
 
   ?in a foaf:Person
   minus { ?in a o:Resource }
-  
-  bind (?in as ?r)
-  
-  ?r rdfs:label ?label 
+    
+  ?in rdfs:label ?label 
         
-  optional { ?r p:naissance ?b . ?r p:décès ?d }
-
-  optional { ?r o:thumbnail  ?ic  }
+  optional { ?in o:thumbnail  ?ic  }
   
-  bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr)   
-
   
 }
 ]]>
@@ -587,25 +631,19 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template {
 
-  st:call-template(st:title, ?r, ?label, (coalesce(?ic, "")))
-    
-  """<table>
-  """  
-  
-  st:call-template(st:descresource, ?r)
-  
-  """</table>
-  """
+  st:call-template(st:frame, ?label, coalesce(?ic, ""), 
+     st:call-template(st:descresource, ?in))
+
+
 }
 where {
 
   ?in a o:Resource
-  
-  bind (?in as ?r)
-  
-  ?r rdfs:label ?label filter(lang(?label) = 'fr')
+    
+  ?in rdfs:label ?label 
+  filter(lang(?label) = 'fr')
         
-  optional { ?r o:thumbnail  ?ic  }
+  optional { ?in o:thumbnail  ?ic  }
     
 }
 ]]>
@@ -622,17 +660,9 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template {
 
-  st:call-template(st:title, ?r, ?label, (coalesce(?ic, "")))
-  
-  
-  """<table>
-  """  
-  
-  st:call-template(st:descplace, ?r)
-    
-  """</table>
-  """
-  
+  st:call-template(st:frame, ?label, coalesce(?ic, ""), 
+     st:call-template(st:descplace, ?in))
+   
   st:call-template(st:locate, ?in, ?lat, ?lon)
 
 }
@@ -640,15 +670,11 @@ where {
 
   ?in a o:Place
   minus { ?in a o:Resource }
-  
-  bind (?in as ?r)
-  
-  ?r rdfs:label ?label 
+    
+  ?in rdfs:label ?label 
   	      
-  optional { ?r o:thumbnail  ?ic  }
+  optional { ?in o:thumbnail  ?ic  }
   
-  bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr)   
-
   optional {
     ?in p:longitude ?lon ;
 	p:latitude  ?lat

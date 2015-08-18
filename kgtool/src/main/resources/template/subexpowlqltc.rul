@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Mon Aug 17 10:46:01 CEST 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+  st:define (st:aggregate(?x) = st:agg_and(?x))
+
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:subClassExpression(?x) {
+	?suc
+}
+where {
+	bind(
+		if (isURI(?x), true,
+			st:apply-templates-all(?x)
+		)
+	as ?suc)
+	
+	filter(st:visit(st:sub, ?x, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in a owl:Restriction ;
+	 owl:onProperty ?p
+	 
+	 bind(
+	 	exists {
+	 		{
+	 		  ?in owl:someValuesFrom ?z
+	 		  filter (?z = owl:Thing)
+	 		}
+	 	}
+	 as ?suc)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if there is an unauthorized OWL property for subClassExpression ?in
+# return false in this case, otherwise the template fails (return nothing)
+#
+template {
+	false
+}
+where {
+	?in ?p ?y
+	
+	bind (
+		?p in (
+			rdfs:subClassOf, owl:someValuesFrom, owl:onProperty, 
+			rdf:type, owl:equivalentClass, owl:disjointWith
+		)
+	as ?suc)
+			
+	filter (st:visit(st:fail, ?in, ?suc))
+	filter(! ?suc)
+}
+limit 1
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

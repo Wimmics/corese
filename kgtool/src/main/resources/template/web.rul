@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jul 14 14:30:26 CEST 2015
+Mon Aug 17 10:46:01 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -102,6 +102,31 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:next(?t) {
+
+  "<a  href='" st:plink(?n) "'>"
+  "<button type='button'"  st:call-template-with(st:server, st:bstyle)
+  ">Next</button>"
+  "</a>"  
+    
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i + 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:profile {
 
   define (st:protocol(?uri) =
@@ -131,31 +156,6 @@ template st:profile {
 }
 where {
 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:next(?t) {
-
-  "<a  href='" st:plink(?n) "'>"
-  "<button type='button'"  st:call-template-with(st:server, st:bstyle)
-  ">Next</button>"
-  "</a>"  
-    
-}
-where {
-  bind (st:get(st:context) as ?g)
-  
-  graph ?g {
-    ?q1 st:name ?t ; st:index ?i
-    bind (?i + 1 as ?j)
-    ?q2 st:index ?j ;
-	st:name ?n 
-  }
 }
 ]]>
 </body>

@@ -9,19 +9,21 @@ Mon Aug 17 10:46:01 CEST 2015
 <rule>
 <body>
 <![CDATA[
-#
-#
-# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
-#
-prefix tc: </user/corby/home/AData/template/spintc/>
 
-template st:start {
-  st:boolean(st:apply-templates-with-all(st:spintcbody))
+template {
+	?suc
 }
 where {
+	# search all the triples how contains the predicate ?p
+	VALUES ?p { owl:unionOf owl:intersectionOf owl:complementOf owl:oneOf }
+	?in ?p ?z
+	
+	bind (
+		st:call-template-with(st:classexpconformityowltc, st:checkConformity, ?in)
+	as ?suc)
+	
+	filter(st:visit(st:axiomclassexp, ?in, ?suc))
 }
-
-
 ]]>
 </body>
 </rule>

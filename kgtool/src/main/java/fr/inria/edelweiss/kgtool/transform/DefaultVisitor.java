@@ -183,7 +183,7 @@ public class DefaultVisitor implements TemplateVisitor {
         return toSB().toString();
     }
     
-    public Collection<IDatatype> visited(){       
+    public Collection<IDatatype> visited(){  
         return list;
     }
     

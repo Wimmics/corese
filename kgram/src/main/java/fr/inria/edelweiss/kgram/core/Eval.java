@@ -1638,7 +1638,7 @@ public class Eval implements ExpType, Plugin {
             if (b){
                 int back = eval(p, gNode, stack, n+1);
                 memory.pop(m);
-                if (back < backtrack){
+                if (back < n){
                     return back;
                 }
             }

@@ -311,7 +311,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 
 	boolean accept(Node node){
-		return distinct.accept(node);
+		return (distinct == null) ? true : distinct.accept(node);
 	}
 
 	boolean accept(Mapping r){

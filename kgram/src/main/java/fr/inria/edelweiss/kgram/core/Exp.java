@@ -411,6 +411,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     public boolean isEdge() {
         return type == EDGE;
     }
+    
+    public boolean isBGPAnd(){
+        return type == AND || type == BGP;
+    }
 
     public boolean isOption() {
         return type == OPTION;
@@ -700,6 +704,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                 break;
 
             case AND:
+            case BGP:
             case GRAPH:
 
                 for (int i = 0; i < size(); i++) {

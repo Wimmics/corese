@@ -128,7 +128,7 @@ public class QuerySorter implements ExpType {
                     // identify remarkable filters such as ?x = <uri>
                     // create OPT_BIND(?x = <uri>) store it in FILTER 
                     List<Exp> lBind = findBindings(exp);
-                    if (exp.type() == AND) {
+                    if (exp.isBGPAnd()) {
                         // sort edges wrt connection
                         // take OPT_BIND(var = exp) into account
                         // TODO: graph ?g does not take into account OPT_BIND ?g = uri
@@ -174,7 +174,7 @@ public class QuerySorter implements ExpType {
 
                 for (Exp e : exp) {
                     compile(e, lVar, option);
-                    if (exp.type() == AND) {
+                    if (exp.isBGPAnd()) {
                         e.addBind(lVar);
                     }
                 }

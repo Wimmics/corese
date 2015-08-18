@@ -1,4 +1,4 @@
-var content = "contentOfSite";
+var content = "#contentOfSite";
 var changeURL = true;
 var srv = "/srv";
 
@@ -56,16 +56,27 @@ function transPOST(form) {
 
 //return 500 error
 function error(response, err, url){
-     document.getElementById(content).innerHTML ='<div class="container"><h2>'+err+' (error code: '+response.status+')</h2><br>'+response.responseText+ '</div>';
+     var text = '<div class="container"><h2>'+err+' (error code: '+response.status+')</h2><br>'+response.responseText+ '</div>';
+     //document.getElementById(content).innerHTML =text;
+     $(content).html(text);
      updateUrl(url);
 }
 
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
-    document.getElementById(content).innerHTML = '<div class="container">' + response + '</div>';
+    var text = '<div class="container">' + response + '</div>';
+    //document.getElementById(content).innerHTML = text;
+    $(content).html(text);
     updateUrl(url); //2 change the url displayed in broswer url bar
+    correct();
 }
 
+function correct(){
+    var ta = $('[name=query]');
+    if(ta.val() === undefined || ta === null) return;
+    
+    ta.val(ta.val().replace('></http:>', '/>'));
+}
 // store the browsering history and change the url in the browser url bar
 function updateUrl(url){
     if (changeURL && url.trim() !== '') {
@@ -94,7 +105,7 @@ function loadContent() {
     
     //1 load home page content
     if (location.pathname === '/demo_new.html' || location.pathname.trim() === '/') {
-        $("#"+content).load("/html/content.html");
+        $(content).load("/html/content.html");
         changeURL = true;
         return;
     }

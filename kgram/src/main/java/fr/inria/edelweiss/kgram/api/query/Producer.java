@@ -7,6 +7,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 
@@ -76,6 +77,9 @@ public interface Producer {
 	 * @return Candidate edge iterator
 	 */
 	Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge,  Environment env);
+        
+        Mappings getMappings(Node gNode, List<Node> from, Exp exp,  Environment env);
+
 	
 	
 	/**

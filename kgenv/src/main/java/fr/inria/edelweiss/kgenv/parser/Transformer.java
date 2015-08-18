@@ -38,6 +38,7 @@ import fr.inria.edelweiss.kgram.filter.Interpreter;
 public class Transformer implements ExpType {	
 	private static Logger logger = Logger.getLogger(Transformer.class);
 
+	public static  boolean ISBGP = false;
 	public static final String ROOT = "?_kgram_";
 	public static final String THIS = "?this";
         private static final String EXTENSION     = Processor.KGEXTENSION;
@@ -1421,9 +1422,9 @@ public class Transformer implements ExpType {
 		else if (query.isValues()){
 			return VALUES;
 		} 
-//                else if (query.isBGP()){
-//                    return BGP;
-//                }
+                else if (ISBGP && query.isBGP()){
+                    return BGP;
+                }
 		else if (query.isAnd()){
 			return AND;
 		} 

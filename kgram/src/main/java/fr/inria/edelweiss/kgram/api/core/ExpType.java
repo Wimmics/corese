@@ -25,7 +25,7 @@ public interface ExpType {
 	static final int FILTER = 6; 
 	static final int NODE 	= 7; 
 	
-	static final int NOT 		= 8; 
+	static final int BGP 		= 8; 
 	static final int WATCH 		= 9; 
 	static final int CONTINUE 	= 10; 
 	static final int BACKJUMP 	= 11; 
@@ -58,7 +58,7 @@ public interface ExpType {
 	
 	static final String[] TITLE = {
 		"EMPTY", "AND", "UNION", "GRAPH", "OPTION", "EDGE", "FILTER", "NODE", 
-		"NOT", "WATCH", "CONTINUE", "BACKJUMP", "EXTERN", "QUERY", "FORALL", "EXIST",
+		"BGP", "WATCH", "CONTINUE", "BACKJUMP", "EXTERN", "QUERY", "FORALL", "EXIST",
 		"GRAPHNODE", "OPTIONAL", "SCAN", "IF", "PATH", "XPATH", "ACCEPT", "BIND", 
 		"EVAL", "SCOPE", "TEST", "NEXT", "MINUS", "POP", "SERVICE", "RESTORE", "JOIN", "VALUES", 
                 "OPT_BIND"

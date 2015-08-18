@@ -72,10 +72,11 @@ function success(response, url) {
 }
 
 function correct(){
-    var ta = $('[name=query]');
-    if(ta.val() === undefined || ta === null) return;
-    
-    ta.val(ta.val().replace('></http:>', '/>'));
+    $('textarea[name=query').each(
+            function(){
+                $(this).val($(this).val().replace('></http:>', '/>'));
+            }
+            );
 }
 // store the browsering history and change the url in the browser url bar
 function updateUrl(url){

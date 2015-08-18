@@ -248,5 +248,7 @@ public interface ExprType {
         public static int XT_VALUE       = 406;
         public static int XT_INDEX       = 407;
         
+        public static int SLICE       = 450;
+        
 
 }

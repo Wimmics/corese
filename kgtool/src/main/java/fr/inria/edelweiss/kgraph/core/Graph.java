@@ -99,8 +99,11 @@ public class Graph implements Graphable {
     Hashtable<String, Entity> individual;
     // label -> Node
     Hashtable<String, Entity> blank;
-    SortedMap<IDatatype, Entity> literal,
-            // table where same number with different datatype coincide
+    SortedMap<IDatatype, Entity> 
+            // same number with different datatype do not coincide:
+            literal,
+            // table where same number with different datatype coincide:
+            // contain only numbers
             sliteral;
     // key -> Node
     Map<String, Entity> vliteral;
@@ -1231,6 +1234,18 @@ public class Graph implements Graphable {
             return getResourceNode(dt, create, add);
         }
     }
+    
+    // May return Node with different datatype for number
+    public Node getExtNode(Node node) {
+        IDatatype dt = (IDatatype) node.getValue();
+         if (dt.isNumber()) {
+            return getExtLiteralNode(dt);
+        }
+         else {
+             return getNode(node);
+         }
+    }
+
 
     public Node getResourceNode(IDatatype dt, boolean create, boolean add) {
         String key = getKey(dt);
@@ -1486,6 +1501,11 @@ public class Graph implements Graphable {
 
     public Node getLiteralNode(IDatatype dt) {
         return getLiteralNode(getKey(dt), dt);
+    }
+                 
+    // return number with possibly different datatype that match dt
+    public Node getExtLiteralNode(IDatatype dt) {
+        return (Node) sliteral.get(dt);    
     }
 
     public Node getLiteralNode(String key, IDatatype dt) {

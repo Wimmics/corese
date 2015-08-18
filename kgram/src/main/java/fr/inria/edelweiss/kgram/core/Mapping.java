@@ -525,6 +525,16 @@ public class Mapping
             }
 	}
         
+        public void fixQueryNodes(Query q){
+            for (int i = 0; i < qNodes.length; i++){
+                Node node = qNodes[i];
+                Node qnode = q.getOuterNodeSelf(node);
+                qNodes[i] = qnode;
+            }
+            qEdges = emptyEdge;
+            edges = emptyEntity;
+        }
+        
                	
 	public void addNode(Node qNode, Node node){
 		Node[] q = new Node[qNodes.length+1];

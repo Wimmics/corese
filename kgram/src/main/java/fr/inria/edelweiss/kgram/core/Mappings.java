@@ -276,6 +276,12 @@ implements Comparator<Mapping> , Iterable<Mapping>
                 map.setNodes(nodes);
             }
         }
+        
+        public void fixQueryNodes(Query q){
+            for (Mapping m : this){
+                m.fixQueryNodes(q);
+            }
+        }
 
 	/**
 	 * select distinct 

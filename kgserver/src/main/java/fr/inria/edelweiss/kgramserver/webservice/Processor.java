@@ -33,6 +33,7 @@ public class Processor {
 
     private static final String headerAccept = "Access-Control-Allow-Origin";
     public static final String SERVICE  = "/typecheck";
+    public static final String GRAPHIC  = "graphic";
     public static final String QUERY  = Profile.QUERY;
     
     static HashMap<String, String> map;
@@ -47,6 +48,9 @@ public class Processor {
         map = new HashMap();
         map.put("owl",      QUERY + "owl.rq");
         map.put("owlrl",    QUERY + "owlrl.rq");
+        map.put("owlql",    QUERY + "owlql.rq");
+        map.put("owlel",    QUERY + "owlel.rq");
+        map.put("owltc",    QUERY + "owltc.rq");
         map.put("sparqltc", QUERY + "spintc.rq");        
         map.put("sparql",   QUERY + "sparql.rq");        
         map.put("mix",      QUERY + "mix.rq");
@@ -57,9 +61,11 @@ public class Processor {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response typecheckPost(
             @FormParam("uri") String uri,
+            @FormParam("entailment") String entail,
             @FormParam("transform") String trans,
+            @FormParam("query") String query,
             @PathParam("serv") String serv) {
-        return typecheck(uri, trans, serv);
+        return typecheck(uri,  entail, trans, query, serv);
     }
 
     @POST
@@ -67,39 +73,47 @@ public class Processor {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response typecheckPost_MD(
             @FormDataParam("uri") String uri,
+            @FormDataParam("entailment") String entail,            
             @FormDataParam("transform") String trans,
+            @FormDataParam("query") String query,
             @PathParam("serv") String serv) {
-        return typecheck(uri, trans, serv);
+        return typecheck(uri, entail, trans, query, serv);
     }
     
     @GET
     @Produces("text/html")
     public Response typecheck(
             @QueryParam("uri") String uri,
+            @QueryParam("entailment") String entail,            
             @QueryParam("transform") String trans,
+            @QueryParam("query") String query,
             @PathParam("serv") String serv) {
-        GraphStore g;
         
-        try {            
-            URI url = new URI(uri);
-            if (! url.isAbsolute()){
-                url = base.resolve(uri);
+        boolean rdfs = entail != null && entail.equals("rdfs");
+        GraphStore g = GraphStore.create(rdfs);
+        
+        String[] lstr = uri.split(";");
+        for (String s : lstr) {
+            try {
+                URI url = new URI(s);
+                if (!url.isAbsolute()) {
+                    url = base.resolve(s);
+                }
+                if (serv.startsWith("sparql") || serv.equals("spin") || serv.equals("mix")) {
+                    g = loadSPARQL(url.toString());
+                } else {
+                    load(url.toString(), g);
+                }
+            } catch (LoadException ex) {
+                Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+                return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
+            } catch (EngineException ex) {
+                Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+                return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+                return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
             }
-            if (serv.startsWith("sparql") || serv.equals("spin") || serv.equals("mix")){
-                g = loadSPARQL(url.toString());
-            }
-            else {
-               g = load(url.toString()); 
-            }                       
-        }  catch (LoadException ex) {
-            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
-            return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
-        } catch (EngineException ex) {
-            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
-            return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
-       } catch (URISyntaxException ex) {
-            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
-            return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
         }
         
          String temp = null;
@@ -109,10 +123,13 @@ public class Processor {
                 temp = QUERY+"turtle.rq";
             }
          }
-        
-         Param par = new Param("/process", null, trans, null, temp, null);
+
+         Param par = new Param("/process", null, trans, null, temp, query);
          par.setLoad(uri);
-         if (trans != null){
+         if (serv.equals(GRAPHIC)){
+             
+         }
+         else if (trans != null){
              par.setProtect(true);
          }
          return new Transformer().template(new TripleStore(g), par);
@@ -134,10 +151,9 @@ public class Processor {
    }
     
 
-    GraphStore load(String uri) throws LoadException {
-        GraphStore g = GraphStore.create();
+    GraphStore load(String uri, GraphStore g) throws LoadException {
         Load ld = Load.create(g);
-        ld.setLimit(100000);       
+        //ld.setLimit(100000);       
         ld.loadWE(uri);
         return g;
     }

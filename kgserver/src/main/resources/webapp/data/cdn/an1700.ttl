@@ -16,7 +16,8 @@ st:icon <http://upload.wikimedia.org/wikipedia/commons/6/69/Détails_d%27un_plan
 [] cn:date 1713 ; rdfs:label "Victor-Amédée II roi de Sicile" ;
 cn:link w:Histoire_de_la_Sicile_piémontaise .
 
-[] cn:date 1713 ; rdfs:label "Barcelonette annexé par la France" .
+[] cn:date 1713 ; rdfs:label "Barcelonette annexé par la France." ;
+rdfs:comment "Escartons coté Piémont annexés par Turin".
 
 
 [] cn:date 1720 ; rdfs:label "Victor-Amédée II roi de Sardaigne" ;

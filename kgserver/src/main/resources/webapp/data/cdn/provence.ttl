@@ -176,6 +176,11 @@ st:icon <http://upload.wikimedia.org/wikipedia/commons/5/5b/Robert1b.jpg>  .
 cn:date 1309  ; rdfs:label "Papauté d'Avignon"  .
 
 
+r:République_des_Escartons 
+rdfs:label "Escartons de Briançon" ;
+cn:date 1343 .
+
+
 r:Jeanne_Ire_de_Naples cn:date 1343 ; a foaf:Person ;
 rdfs:label "Jeanne Ire" ; 
 st:icon <http://upload.wikimedia.org/wikipedia/commons/f/fd/Jeanne_I%C3%A8re_de_Naples%2C_dite_la_Reine_Jeanne%2C_comtesse_de_Provence.jpg>;

@@ -5,6 +5,11 @@
 
 <> cn:topic cn:context
 
+r:Jésus_de_Nazareth a foaf:Person ;
+cn:date -5 ;
+st:icon <https://upload.wikimedia.org/wikipedia/commons/3/33/Anastasis_Pio_Christiano_Inv31525.jpg> ;
+rdfs:label "Jésus de Nazareth" .
+
 r:Abbaye_de_Lérins a o:Place ;
 cn:date 410 ;
 rdfs:label "Abbaye de Lérins" ;
@@ -19,10 +24,7 @@ cn:date 453 ;
 rdfs:label "Attila" ;
 rdfs:comment "395-453" .
 
-r:Romulus_Augustule a foaf:Person ;
-cn:date 476 ;
-rdfs:label "Romulus Augustule" ;
-rdfs:comment "Fin de l'Empire Romain d'Occident" .
+
 
 <http://fr.dbpedia.org/resource/Bataille_de_Tolbiac_(496)> a o:Place ;
 cn:date 496 ;
@@ -147,6 +149,10 @@ cn:date 1244 ;
 rdfs:label "Château de Monségur" ;
 rdfs:comment "Prise du château, 200 cathares brulés vifs" . 
 
+r:Duguesclin a foaf:Person ;
+cn:date 1320 ;
+rdfs:label "Bertrand Du Guesclin" ;
+rdfs:comment "1320-1380" .
 
 r:Peste_noire cn:date 1348 ;
 rdfs:label "Peste noire" ;

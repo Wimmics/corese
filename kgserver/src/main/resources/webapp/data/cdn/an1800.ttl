@@ -5,6 +5,11 @@
 
 <> cn:topic cn:cdn
 
+r:Giuseppe_Garibaldi a foaf:Person ;
+cn:date 1807 ;
+rdfs:label "Garibaldi" ;
+rdfs:comment "1807-1882".
+
 r:Royaume_de_Sardaigne cn:date 1814 ; 
 rdfs:label "Restauration Sarde" ;
 rdfs:comment "Retour du Comté de Nice et de la Savoie au royaume de Piémont-Sardaigne" ;

@@ -54,7 +54,7 @@ public class SPARQLRestAPI {
     // set true to prevent update/load
     static boolean isProtected = false;
     // true when Ajax
-    static boolean isAjax = !true;
+    static boolean isAjax = true;
     private static Profile mprofile;
   
     

@@ -38,6 +38,7 @@ public class Query extends Exp implements Graphable {
 
     public static final int STD_PROFILE = -1;
     public static final int COUNT_PROFILE = 1;
+    public static final int DEFAULT_SLICE = 20;
 
 	
     private static Logger logger = Logger.getLogger(Exp.class);
@@ -51,7 +52,7 @@ public class Query extends Exp implements Graphable {
 
     int limit = Integer.MAX_VALUE, offset = 0,
             // if slice > 0 : service gets mappings from previous pattern by slices
-            slice = 0;
+            slice = 20;
 
     private int number = 0;
     boolean distinct = false;

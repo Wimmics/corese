@@ -72,7 +72,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-07-14";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-08-15";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -577,6 +577,7 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iask);
         queryMenu.add(idescribe);
         queryMenu.add(iserviceCorese);
+        queryMenu.add(iserviceDBpedia);
         queryMenu.add(ifunction);
         queryMenu.add(ical);
         queryMenu.add(ispqr);

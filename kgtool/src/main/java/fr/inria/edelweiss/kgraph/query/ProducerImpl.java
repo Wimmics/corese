@@ -316,11 +316,15 @@ public class ProducerImpl implements Producer, IProducerQP {
     public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
         if (env instanceof Memory){
             Memory mem = (Memory) env;
-            System.out.println("P:");
-            System.out.println(env.getQuery().getAST());
+            if (env.getQuery().isDebug()){
+                System.out.println("BGP:\n" + env.getQuery().getAST());
+            }
             Eval eval = mem.getEval();          
             exp.setType(Exp.AND);
             Mappings map = eval.subEval(this, gNode, gNode, exp, null);
+            if (env.getQuery().isDebug()){
+                System.out.println("BGP:\n" + map);
+            }
             exp.setType(Exp.BGP);
             return map;
         }

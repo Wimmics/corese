@@ -85,7 +85,7 @@ public class QuerySolver  {
 	
 	boolean isSequence = false;
 	
-	int slice = 0;
+	int slice = Query.DEFAULT_SLICE;
         private int mode = DEFAULT_MODE;
 	
 	// set default base for SPARQL Query

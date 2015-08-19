@@ -55,31 +55,38 @@ function transPOST(form) {
 }
 
 //return 500 error
-function error(response, err, url){
-     var text = '<div class="container"><h2>'+err+' (error code: '+response.status+')</h2><br>'+response.responseText+ '</div>';
-     //document.getElementById(content).innerHTML =text;
-     $(content).html(text);
-     updateUrl(url);
+function error(response, err, url) {
+    var text = '<div class="container"><h2>' + err + ' (error code: ' + response.status + ')</h2><br>' + response.responseText + '</div>';
+    $(content).html(text);
+    updateUrl(url);
 }
 
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
     var text = '<div class="container">' + response + '</div>';
-    //document.getElementById(content).innerHTML = text;
     $(content).html(text);
     updateUrl(url); //2 change the url displayed in broswer url bar
     correct();
 }
 
-function correct(){
-    $('textarea[name=query').each(
-            function(){
-                $(this).val($(this).val().replace('></http:>', '/>'));
+//jquery.html() method auto close the htmls tags, even for the text value of <textarea>, which causes errors
+//this method change back the autoclosed tags using regex
+function correct() {
+    $(content + ' textarea').each(
+            function () {
+                //match pattern<???xxxxxx></???>
+                var regex = /<.+\b[^>]*(><\/.+>)/gi;
+                var found, newText = $(this).text();
+                //find match ></???>
+                while ((found = regex.exec($(this).text())) !== null) {
+                    newText = newText.replace(found[1], '/>');
+                }
+                $(this).text(newText);
             }
-            );
+    );
 }
 // store the browsering history and change the url in the browser url bar
-function updateUrl(url){
+function updateUrl(url) {
     if (changeURL && url.trim() !== '') {
         url = location.protocol + "//" + location.host + "/srv" + url;
         window.history.pushState('', '', url);
@@ -103,7 +110,7 @@ function loadContent() {
     //0. load header and footer of page
     $('#navgator').load("/html/navigator.html");
     $('#footerOfSite').load("/html/footer.html");
-    
+
     //1 load home page content
     if (location.pathname === '/demo_new.html' || location.pathname.trim() === '/') {
         $(content).load("/html/content.html");

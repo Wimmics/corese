@@ -52,9 +52,12 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.JFrame;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -83,6 +86,8 @@ public final class MyJPanelQuery extends JPanel {
     private JScrollPane scrollPaneTreeResult;
     private JScrollPane scrollPaneXMLResult;
     private JScrollPane scrollPaneValidation;
+    private JScrollPane scrollPaneTable;
+    private JTable tableResults;
     //Conteneur d'onglets de résultats et les onglets
     private JTabbedPane tabbedPaneResults;
     private JTextArea textAreaXMLResult;
@@ -134,6 +139,8 @@ public final class MyJPanelQuery extends JPanel {
         tabbedPaneResults = new JTabbedPane();
         scrollPaneTreeResult = new JScrollPane();
         scrollPaneXMLResult = new JScrollPane();
+        scrollPaneTable = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tableResults = new JTable(new DefaultTableModel());
         textAreaXMLResult = new JTextArea();
         scrollPaneValidation = new JScrollPane();
         textPaneValidation = new JTextPane();
@@ -277,6 +284,9 @@ public final class MyJPanelQuery extends JPanel {
         textAreaXMLResult.setText(resultXML.toString());
         scrollPaneXMLResult.setViewportView(textAreaXMLResult);
         tabbedPaneResults.addTab("XML", scrollPaneXMLResult);
+
+        scrollPaneTable.getViewport().add(tableResults);
+        tabbedPaneResults.addTab("Table", scrollPaneTable);
 
         // Messages de la validation
         textPaneValidation.setEditable(false);
@@ -422,7 +432,7 @@ public final class MyJPanelQuery extends JPanel {
     private String getLabel(NSManager nsm, fr.inria.edelweiss.kgram.api.core.Node n) {
         IDatatype dt = (IDatatype) n.getValue();
         if (dt.isURI()){
-           return nsm.toPrefix(n.getLabel());
+            return nsm.toPrefix(n.getLabel());
         }
         else {
             return n.getLabel();
@@ -451,7 +461,36 @@ public final class MyJPanelQuery extends JPanel {
         Mappings map = qr.getMappings();
         display(map, coreseFrame);
     }
-        
+
+    void fillTable(Mappings map) {
+        List<fr.inria.edelweiss.kgram.api.core.Node> vars = map.getQuery().getSelect();
+        DefaultTableModel model = new DefaultTableModel();
+
+        for (fr.inria.edelweiss.kgram.api.core.Node var : vars) {
+            String columnName = var.getLabel();
+            //System.out.println(sv);
+            String[] colmunData = new String[map.size()];
+
+            for (int j = 0; j < map.size(); j++) {
+                Mapping m = map.get(j);
+                if (m.getMappings() != null) {
+                    List<fr.inria.edelweiss.kgram.api.core.Node> list = m.getNodes(columnName, true);
+                    String values = "";
+                    for (fr.inria.edelweiss.kgram.api.core.Node node : list) {
+                        values += node.getLabel() + "; ";
+                    }
+                    colmunData[j] = values;
+                } else {
+                    fr.inria.edelweiss.kgram.api.core.Node value = m.getNode(columnName);
+                    colmunData[j] = value.getLabel();
+                }
+            }
+            model.addColumn(columnName, colmunData);
+        }
+       
+        this.tableResults.setModel(model);
+    }
+
     void display(Mappings map, MainFrame coreseFrame) {
 
         Query q = map.getQuery();
@@ -460,6 +499,7 @@ public final class MyJPanelQuery extends JPanel {
 
         resultXML = toString(map);
         textAreaXMLResult.setText(resultXML.toString());
+        this.fillTable(map);
 
         // On affiche la version en arbre du résultat dans l'onglet Tree
         // crée un arbre de racine "root"
@@ -469,13 +509,13 @@ public final class MyJPanelQuery extends JPanel {
         treeResult.setShowsRootHandles(true);
 
         display(root, map);
-       
+
         TreePath myPath = treeResult.getPathForRow(0);
         treeResult.expandPath(myPath);
         scrollPaneTreeResult.setViewportView(treeResult);
 
         //pointe sur le résultat XML
-        tabbedPaneResults.setSelectedIndex(1);
+        tabbedPaneResults.setSelectedIndex(2);
 
         if (q.isConstruct()) {
             displayGraph((Graph) map.getGraph(), ast.getNSM());
@@ -500,11 +540,11 @@ public final class MyJPanelQuery extends JPanel {
                 displayGraph(g, nsm);
             } catch (LoadException ex) {
                 java.util.logging.Logger.getLogger(MyJPanelQuery.class.getName()).log(Level.SEVERE, null, ex);
-            } 
+            }
         }
     }
 
-    void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm) {      
+    void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm) {
         graph = create(g, nsm);
         graph.addAttribute("ui.stylesheet", stylesheet);
         graph.addAttribute("ui.antialias");
@@ -517,7 +557,7 @@ public final class MyJPanelQuery extends JPanel {
 
         Viewer sgv = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_SWING_THREAD);
         sgv.enableAutoLayout(lLayout);
-        View sgr = sgv.addDefaultView(false);       
+        View sgr = sgv.addDefaultView(false);
         //View 	sgr = sgv.addView("test", GraphRenderer renderer) 
         sgr.getCamera().setAutoFitView(true);
 
@@ -542,26 +582,26 @@ public final class MyJPanelQuery extends JPanel {
         tabbedPaneResults.setSelectedIndex(0);
 
     }
-    
+
     
     
     MultiGraph create(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm){
-    //            graph.addNode(temp).addAttribute("ui.style", "fill-color:white;");
-    //                gsub.addAttribute("ui.style", "fill-color:lightblue;size-mode:dyn-size;shape:rounded-box;");
-    //                    ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
+        //            graph.addNode(temp).addAttribute("ui.style", "fill-color:white;");
+        //                gsub.addAttribute("ui.style", "fill-color:lightblue;size-mode:dyn-size;shape:rounded-box;");
+        //                    ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
         int num = 0;
-        String sujetUri, predicat, objetUri;         
+        String sujetUri, predicat, objetUri;
 
         String sujet;
         String objet;
 
         MultiGraph graph = new MultiGraph(g.getName(), false, true);
-        
+
         for (Entity ent : g.getEdges()) {
             fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
             fr.inria.edelweiss.kgram.api.core.Node n1 = edge.getNode(0);
             fr.inria.edelweiss.kgram.api.core.Node n2 = edge.getNode(1);
-            
+
             sujetUri = n1.getLabel();
             objetUri = n2.getLabel();
 
@@ -574,7 +614,7 @@ public final class MyJPanelQuery extends JPanel {
             if (gsub == null) {
                 gsub = graph.addNode(sujetUri);
                 gsub.addAttribute("label", sujet);
-                if (n1.isBlank()) {                   
+                if (n1.isBlank()) {
                     gsub.setAttribute("ui.class", "Blank");
                 }
             }
@@ -603,10 +643,10 @@ public final class MyJPanelQuery extends JPanel {
                 ee.addAttribute("label", predicat);
             }
         }
-        
+
         return graph;
     }
-    
+
 
     private boolean isStyle(fr.inria.edelweiss.kgram.api.core.Edge edge) {
         return edge.getLabel().equals(KGSTYLE);
@@ -632,7 +672,7 @@ public final class MyJPanelQuery extends JPanel {
             i++;
         }
     }
-   
+
     private ActionListener createListener(final MainFrame coreseFrame, final boolean isTrace) {
 
         return new ActionListener() {
@@ -676,7 +716,6 @@ public final class MyJPanelQuery extends JPanel {
                         for (int i = 0; i < coreseFrame.getListJMenuItems().size(); i++) {
                             coreseFrame.getListJMenuItems().get(i).setEnabled(true);
                         }
-
 
                     }
 

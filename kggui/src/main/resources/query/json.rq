@@ -1,0 +1,5 @@
+template {
+  st:apply-templates-with(st:json) 
+} 
+where {
+}

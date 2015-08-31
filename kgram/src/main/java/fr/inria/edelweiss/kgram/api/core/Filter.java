@@ -17,6 +17,7 @@ public interface Filter {
 	 * @return
 	 */
 	List<String> getVariables();
+	List<String> getVariables(boolean excludeLocal);
 	
 	/**
 	 * Evaluable expression processed by KGRAM generic Interpreter

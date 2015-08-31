@@ -573,18 +573,11 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
             getGlobalAST().getUndefined().remove(t.getLabel());
         }
         
-        void defPackage(Constant c){
-            getGlobalAST().setPackage(c);
-        }
-        
-        void setPackage(Constant c){
-            pack = c;
-        }
-        
-        public Constant getPackage(){
-            return pack;
-        }
-	
+//        void defPackage(Constant c){
+//            getGlobalAST().getDefine().setPackage(c);
+//            getGlobalAST().getDefine().setName(c.getLabel());
+//        }
+              
 	public List<String> getErrors(){
 		return getGlobalAST().errors();
 	}

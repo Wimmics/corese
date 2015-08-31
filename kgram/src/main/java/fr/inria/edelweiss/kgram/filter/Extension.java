@@ -105,11 +105,8 @@ public class Extension {
     
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (getName() != null){
-            sb.append("extension: ");
-            sb.append(getName()); 
-            sb.append(NL);
-        }
+        sb.append("extension: ");
+        sb.append(NL);
         for (FunMap m : getMaps()){
             for (Expr exp : m.values()) {
                 sb.append(exp);

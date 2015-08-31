@@ -5,12 +5,18 @@
 
 st:dbpedia a st:Profile ;
   st:query     <query/frdbpedia.rq> ;
-  st:variable  "?r" ;
+  st:transform st:navlab .
+
+st:dbpediasparql a st:Profile ;
+  st:query     <query/frdbpedia.rq> ;
+  st:transform st:sparql .
+
+st:dbpediatest a st:Profile ;
+  st:query     <query/frdbpediatest.rq> ;
   st:transform st:navlab .
 
 st:dbpediacopy a st:Profile ;
   st:query     <query/frdbpediains.rq> ;
-  st:variable  "?r" ;
   st:transform st:navlab .
 
 st:dbpediaall a st:Profile ;
@@ -111,8 +117,9 @@ st:cdn a st:Server ;
     st:service "cdn" ;
     st:transform st:cdn ;
     st:data 
-#    [ st:uri <file:///home/corby/AData/cdn/paca/borne.ttl> ],
-    [ st:uri <cdn/aa_siecle.ttl> ], [ st:uri <cdn/fr.ttl> ], [ st:uri <cdn/franc.ttl> ],
+    [ st:uri <cdn/aa_siecle.ttl> ], [ st:uri <cdn/fr.ttl> ], 
+    [ st:uri <cdn/spqr.ttl> ], 
+    [ st:uri <cdn/franc.ttl> ],
     [ st:uri <cdn/eds.ttl> ], 
     [ st:uri <cdn/emp.ttl> ],    [ st:uri <cdn/provence.ttl> ], [ st:uri <cdn/icon.rdf> ], 
     [ st:uri <cdn/icon.ttl> ],   [ st:uri <cdn/context.ttl> ],  

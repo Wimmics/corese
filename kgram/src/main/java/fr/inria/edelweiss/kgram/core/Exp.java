@@ -1218,6 +1218,10 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
      * compute the variable list use case: filter(exists {?x ?p ?y}) no minus
      */
     public void getVariables(List<String> list) {
+         getVariables(list, false);
+    }
+    
+    public void getVariables(List<String> list, boolean excludeLocal) {
         List<Node> lNode = getNodes();
         for (Node node : lNode) {
             String name = node.getLabel();
@@ -1226,14 +1230,14 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
             }
         }
         // go into filters if any
-        getFilterVar(list);
+        getFilterVar(list, excludeLocal);
     }
 
-    public void getFilterVar(List<String> list) {
+    public void getFilterVar(List<String> list, boolean excludeLocal) {
         switch (type) {
 
             case FILTER:
-                List<String> lVar = getFilter().getVariables();
+                List<String> lVar = getFilter().getVariables(excludeLocal);
                 for (String var : lVar) {
                     if (!list.contains(var)) {
                         list.add(var);
@@ -1243,7 +1247,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 
             default:
                 for (Exp exp : getExpList()) {
-                    exp.getFilterVar(list);
+                    exp.getFilterVar(list, excludeLocal);
                 }
 
         }

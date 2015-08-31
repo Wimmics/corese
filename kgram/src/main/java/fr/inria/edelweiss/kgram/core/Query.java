@@ -1404,7 +1404,7 @@ public class Query extends Exp implements Graphable {
                 // use case: filter(exists {?x ?p ?y})
                 boolean hasExist = index(query, exp.getFilter());
 
-                List<String> lVar = exp.getFilter().getVariables();
+                List<String> lVar = exp.getFilter().getVariables(true);
                 for (String var : lVar) {
                     Node qNode = query.getProperAndSubSelectNode(var);
                     if (qNode != null) {

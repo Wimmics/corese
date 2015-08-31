@@ -219,6 +219,9 @@ public class PluginImpl extends ProxyImpl {
              case XT_INDEX:
                  return access(exp, env, p, dt);
                  
+             case REVERSE:
+                 return reverse(dt);
+                 
                  
              default:
                  return pt.function(exp, env, p, dt);
@@ -313,8 +316,17 @@ public class PluginImpl extends ProxyImpl {
     }
     
     IDatatype iota(Object[] args){
-        int start = ((IDatatype) args[0]).intValue();
-        int end =   ((IDatatype) args[1]).intValue();
+        int start = 1;
+        int end = 1;
+        
+        if (args.length > 1){
+            start = ((IDatatype) args[0]).intValue();
+            end =   ((IDatatype) args[1]).intValue();
+        }
+        else {
+            end =   ((IDatatype) args[0]).intValue();
+        }
+        
         int step = 1;
         if (args.length == 3){
             step = ((IDatatype) args[2]).intValue();
@@ -369,6 +381,20 @@ public class PluginImpl extends ProxyImpl {
         }
         IDatatype dt = DatatypeMap.createList(ldt);
         return dt;
+    }
+    
+    IDatatype reverse(IDatatype dt){
+        if ( ! dt.isArray()){
+            return dt;
+        }
+        IDatatype[] value = dt.getValues();
+        IDatatype[] res   = new IDatatype[value.length];
+        int n = value.length - 1;
+        for (int i = 0; i<value.length; i++){
+            res[i] = value[n - i];
+        }
+        
+        return DatatypeMap.createList(res);
     }
     
 

@@ -25,6 +25,7 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.util.Extension;
 
 
 /**
@@ -39,7 +40,7 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
  *
  */
 public class QueryProcess extends QuerySolver {
-	
+
 	//sort query edges taking cardinality into account
 	static boolean isSort = false;
         Manager manager;
@@ -48,11 +49,14 @@ public class QueryProcess extends QuerySolver {
 	// Producer may perform match locally
 	boolean isMatch = false;
         
-        static { setJoin(false); }
+        static { 
+            setJoin(false);
+            new Extension().process();
+        }
 		
 	public QueryProcess (){
 	}
-	
+              	
         /**
          * Generate JOIN(A, B) if A and B do not share a variable (in triples)
          */

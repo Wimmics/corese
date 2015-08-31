@@ -172,13 +172,15 @@ public class Variable extends Atom {
 		return ExprType.VARIABLE;
 	}
 	
-	public void getVariables(List<String> list) {
-		// TODO Auto-generated method stub
-		if (! list.contains(getName())){
-			list.add(getName());
+
+        public void getVariables(List<String> list, boolean excludeLocal) {
+                // TODO Auto-generated method stub
+		if (! list.contains(getName()) 
+                        && !(excludeLocal && isLocal())){
+                        list.add(getName());                                    
 		}
-	}
-	
+        }
+        
 	public int getIndex() {
 		return index ;
 	}
@@ -242,6 +244,10 @@ public class Variable extends Atom {
        
        public void localize(){
            index = ExprType.LOCAL;
+       }
+       
+       void undef(){
+          index = ExprType.UNDEF; 
        }
  
 	

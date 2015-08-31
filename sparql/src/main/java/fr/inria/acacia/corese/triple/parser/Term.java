@@ -67,7 +67,7 @@ public class Term extends Expression {
 	boolean isFunction = false,
 	isCount = false,
 	isPlus = false;
-	boolean isSystem = false;
+	private boolean isExport = false;
 	boolean isDistinct = false;
 	boolean isShort = false;
 	String  modality;       
@@ -841,14 +841,25 @@ public class Term extends Expression {
 	 */
 	
 	// Filter
-	public void getVariables(List<String> list) {
+	public void getVariables(List<String> list, boolean excludeLocal) {
 		for (Expression ee : getArgs()){
-			ee.getVariables(list);
+			ee.getVariables(list, excludeLocal);
 		}
 		if (oper() == ExprType.EXIST){
-			getPattern().getVariables(list);
+			getPattern().getVariables(list, excludeLocal);
 		}
 	}
+        
+        // this = xt:fun(?x, ?y)
+        List<Variable> getFunVariables(){
+            ArrayList<Variable> list = new ArrayList<Variable>();
+            for (Expression exp : getArgs()){
+                if (exp.isVariable()){
+                    list.add(exp.getVariable());
+                }
+            }
+            return list;
+        }
 	
 	
 	public Expr getExp(int i){
@@ -885,7 +896,9 @@ public class Term extends Expression {
 	}
 	
 	public ExpPattern getPattern(){
-		if (proc == null) return null;
+		if (proc == null){
+                    return null;
+                }
 		return proc.getPattern();
 	}
 	
@@ -987,6 +1000,22 @@ public class Term extends Expression {
           }  
     }   
 
-    
+    /**
+     * @return the isExport
+     */
+    public boolean isExport() {
+        return isExport;
+    }
+
+    /**
+     * @param isExport the isExport to set
+     */
+    public void setExport(boolean isExport) {
+        this.isExport = isExport;
+    }
+
+    public Term getTerm(){
+        return this;
+    }
 
 }

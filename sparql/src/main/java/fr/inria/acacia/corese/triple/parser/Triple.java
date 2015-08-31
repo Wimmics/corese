@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -886,6 +887,14 @@ public class Triple extends Exp {
 	
 	public boolean contains(Atom at){
 		return subject.equals(at) || object.equals(at) || predicate.equals(at) || variable.equals(at);
-	}
+	}    
+        
+        @Override
+        void visit(ExpressionVisitor v){
+            v.visit(this);
+            if (isExp()){
+                getFilter().visit(v);
+            }
+        }
 	
 }

@@ -482,7 +482,9 @@ public final class MyJPanelQuery extends JPanel {
                     colmunData[j] = values;
                 } else {
                     fr.inria.edelweiss.kgram.api.core.Node value = m.getNode(columnName);
-                    colmunData[j] = value.getLabel();
+                    if (value != null){
+                        colmunData[j] = value.getLabel();
+                    }
                 }
             }
             model.addColumn(columnName, colmunData);

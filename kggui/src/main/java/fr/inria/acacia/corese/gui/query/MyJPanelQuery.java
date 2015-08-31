@@ -139,7 +139,7 @@ public final class MyJPanelQuery extends JPanel {
         tabbedPaneResults = new JTabbedPane();
         scrollPaneTreeResult = new JScrollPane();
         scrollPaneXMLResult = new JScrollPane();
-        scrollPaneTable = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneTable = new JScrollPane();
         tableResults = new JTable(new DefaultTableModel());
         textAreaXMLResult = new JTextArea();
         scrollPaneValidation = new JScrollPane();
@@ -285,7 +285,10 @@ public final class MyJPanelQuery extends JPanel {
         scrollPaneXMLResult.setViewportView(textAreaXMLResult);
         tabbedPaneResults.addTab("XML", scrollPaneXMLResult);
 
-        scrollPaneTable.getViewport().add(tableResults);
+        //results in table
+        tableResults.setPreferredScrollableViewportSize(tableResults.getPreferredSize());
+        tableResults.setFillsViewportHeight(true);
+        scrollPaneTable.setViewportView(tableResults);
         tabbedPaneResults.addTab("Table", scrollPaneTable);
 
         // Messages de la validation

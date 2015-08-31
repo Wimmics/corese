@@ -1,0 +1,36 @@
+template {
+
+package (
+
+define (xt:turtle() = 
+    st:apply-templates-with(st:turtle)
+),
+
+define (xt:turtle(?x) = 
+    st:apply-templates-with(st:turtle, ?x)
+),
+
+define (xt:rdfxml() = 
+    st:apply-templates-with(st:rdfxml)
+),
+
+
+define (xt:owl() = 
+    st:apply-templates-with(st:owl)
+),
+
+define (xt:owl(?x) = 
+    st:apply-templates-with(st:owl, ?x)
+),
+
+define (xt:spin() = 
+    st:apply-templates-with(st:spin)
+),
+
+define (xt:spin(?x) = 
+    st:apply-templates-with(st:spin, ?x)
+)
+
+)
+}
+where {}

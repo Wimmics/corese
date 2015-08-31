@@ -2,11 +2,9 @@ package fr.inria.edelweiss.kgram.api.core;
 
 public interface ExprType {
     
-        public static int UNBOUND = -1;
-        public static int LOCAL   = -2;
-        
-	
-	public static int UNDEF = -1;
+	public static int UNDEF   = -1;
+        public static int UNBOUND = -2;
+        public static int LOCAL   = -3;	
 
 	// abstract type
 	public static int ANY 	= 1;
@@ -237,6 +235,7 @@ public interface ExprType {
         public static int MAPLIST       = 311;
         public static int APPLY         = 312;
 	public static int LET           = 313;
+	public static int REVERSE       = 314;
         
         public static int XT_SUM         = 400;
         public static int XT_PROD        = 401;

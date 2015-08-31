@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Aug 17 10:46:01 CEST 2015
+Wed Aug 26 11:01:23 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -50,14 +50,9 @@ prefix o:    <http://dbpedia.org/ontology/>
 
 template st:descperson(?r) {
 
-  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
-  "<th class='left'>" str(?title) "</th><td>" 
-  
-  if (?href, 
-    st:call-template(st:href, ?r, ?p),
-    st:call-template(st:property, ?r, ?p))  
-  
-  "</td></tr>"  
+st:call-template(st:desctriple, 
+  st:number(), ?r, ?p, ?title, if (?href, st:href, st:property))
+
 }
 where { 
 
@@ -227,32 +222,6 @@ where {
 <body>
 <![CDATA[
 #
-# Geolocate resource on a map given lat et long
-#
-
-template st:closelocate {
-  "}"
-
-    if (st:get(st:protocol, st:ajax), "",
-        "google.maps.event.addDomListener(window, 'load', callback);")
-
-"""
-  </script>
-      
-  <p id="map-canvas" style="height:800px"></p>
-  """
-}
-where {
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # Link to external web site (eg Wikipedia)
 #
 
@@ -314,16 +283,26 @@ template st:locate(?r, ?lat, ?lon) {
             
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     
-    google.maps.event.addListener(map, 'click', function( event ){
-      alert( "Latitude: "+event.latLng.lat()+" "+", longitude: "+event.latLng.lng() ); 
+    google.maps.event.addListener(map, 'click', 
+    function( event ){
+      alert( "p:latitude: " + event.latLng.lat() + " " + "; p:longitude: " + event.latLng.lng() ); 
     });
     
     var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });
-    """
+"""
     
     st:call-template(st:locateall, ?r)
     
-    st:call-template(st:closelocate)
+"}"
+
+    if (st:get(st:protocol, st:ajax), "",
+        "google.maps.event.addDomListener(window, 'load', callback);")
+
+"""
+  </script>
+      
+  <p id="map-canvas" style="height:800px"></p>
+  """
 }
 where {
   
@@ -341,14 +320,9 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 
 template st:descplace(?r) {
 
-  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
-  "<th class='left'>" str(?title) "</th><td>" 
-  
-  if (?href, 
-    st:call-template(st:href, ?r, ?p),
-    st:call-template(st:property, ?r, ?p))  
-  
-  "</td></tr>"  
+st:call-template(st:desctriple, 
+  st:number(), ?r, ?p, ?title, if (?href, st:href, st:property))
+
 }
 where { 
 
@@ -464,23 +438,20 @@ prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 
-template st:frame(?label, ?ic, ?body) {
+template st:frame(?label, ?icon, ?body) {
 
   """
   <div style='text-align:center'>   
   <h2>"""  str(?label) """</h2> 
   </div>
-  """
-  
-  """
   <p>
   <table>
-  <tr style="vertical-align:top">
+  <tr style='vertical-align:top'>
   <td>
   """
   
-  if (?ic = "", "", 
-    st:call-template(st:icon, ?label, ?ic)  )
+  if (?icon = "", "", 
+    st:call-template(st:icon, ?label, ?icon)  )
  
   """
   </td><td>&nbsp;<td/><td>
@@ -504,6 +475,24 @@ where {
 
     
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
+
+"<tr class='s" if (kg:even(?n), 0, 1) "'>"
+  "<th class='left'>" str(?title) "</th><td>" 
+  
+   st:call-template(?temp, ?r, ?p)
+   
+"</td></tr>" 
+  
+}
+where {} 
 ]]>
 </body>
 </rule>

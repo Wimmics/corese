@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Aug 17 10:46:01 CEST 2015
+Wed Aug 26 11:01:23 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -12,28 +12,28 @@ Mon Aug 17 10:46:01 CEST 2015
 
 template  st:statement  {
 
-  xt:nl(st:apply-templates-with-all(st:owlstatement, ?t), 2)
+  xt:nl(st:apply-templates-with-all(st:owlstatement, ?in), 2)
   ; separator = ""
   
 }
 where {
 
-  {select distinct ?t where {
-     ?t ?p ?y 
+  select distinct ?in where {
+     ?in ?p ?y 
      
      filter (?p not in 
      (rdfs:subClassOf, owl:equivalentClass)
      )
      
     filter (
-      (isURI(?t)   && not exists { ?t a owl:Ontology }) ||
-      (isBlank(?t) && not exists { ?x ?q ?t } )
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
     )
   # OWL vocabulary must not be pretty printed
-    filter (! xt:system(?t))
+    filter (! xt:system(?in))
 
   }
-  order by ?t}
+  order by ?in
         
 }
 
@@ -136,23 +136,23 @@ where {
 <![CDATA[
 template  st:class  {
 
-  xt:nl(st:apply-templates-with-all(st:owlclass, ?t), 2)
+  xt:nl(st:apply-templates-with-all(st:owlclass, ?in), 2)
   ; separator = ""
 }
 where {
 
-  {select distinct ?t where {
+  select distinct ?in where {
     values ?p { rdf:type  owl:disjointWith owl:equivalentClass  rdfs:subClassOf owl:hasKey owl:disjointUnionOf}
-     ?t ?p ?y 
+     ?in ?p ?y 
     filter (
-      (isURI(?t)   && not exists { ?t a owl:Ontology }) ||
-      (isBlank(?t) && not exists { ?x ?q ?t } )
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
     )
   # OWL vocabulary must not be pretty printed
-      filter (! xt:system(?t))
+      filter (! xt:system(?in))
         
   }
-  order by ?t}
+  order by ?in
         
 }
 
@@ -171,23 +171,23 @@ where {
 
 template  st:declare  {
 
-  xt:nl(st:apply-templates-with-all(st:owldecl, ?t), 1)
+  xt:nl(st:apply-templates-with-all(st:owldecl, ?in), 1)
   ; separator = ""
   
     
 }
 where {
 
-  {select distinct ?t where {
-     ?t rdf:type|owl:equivalentClass ?y 
-    filter (isURI(?t))
+  select distinct ?in where {
+     ?in rdf:type|owl:equivalentClass ?y 
+    filter (isURI(?in))
     
     # OWL vocabulary must not be pretty printed
-    filter (! xt:system(?t))       
-    filter not exists { ?t a owl:Ontology }
+    filter (! xt:system(?in))       
+    filter not exists { ?in a owl:Ontology }
         
   }
-  order by ?t}
+  order by ?in
 }
 
 ]]>
@@ -226,25 +226,25 @@ values ?p {
 
 template  st:property  {
 
-    xt:nl(st:apply-templates-with-all(st:owlproperty, ?t), 2)
+    xt:nl(st:apply-templates-with-all(st:owlproperty, ?in), 2)
     ; separator = ""
    
 }
 where {
 
-  {select distinct ?t where {
+  select distinct ?in where {
   values ?p { rdf:type owl:propertyChainAxiom owl:propertyDisjointWith owl:inverseOf rdfs:domain rdfs:range rdfs:subPropertyOf owl:equivalentProperty}
-     ?t ?p ?y 
+     ?in ?p ?y 
     filter (
-      (isURI(?t)   && not exists { ?t a owl:Ontology }) ||
-      (isBlank(?t) && not exists { ?x ?q ?t } )
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
     )
   # OWL vocabulary must not be pretty printed
-    filter (! xt:system(?t))
+    filter (! xt:system(?in))
 
         
   }
-  order by ?t}
+  order by ?in
         
 }
 
@@ -259,32 +259,38 @@ where {
 # defaut processing of a variable is 
 # st:turtle on URI 
 # st:apply-templates on Blank and Literal
-# Literals are displayed by st:xsdLiteral  (literalvalue.rq)
-# otherwise must use st:turtle explicitely (e.g. cardinality.rq)
-#
+# Functions in package are exported and can be reused in subtransformations
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
+prefix owlfs: <http://ns.inria.fr/sparql-template/owlfs/>
+
 template st:profile(?in) {
 
     define (st:process(?in) =  
-      if (isURI(?in), st:protect(?in),	
+      if (isURI(?in), owlfs:pretty(?in),	
 	st:apply-templates(?in))
     ) 
+    
+# export to sub transformations (export to Interpreter)    
+package(
+
+    define (owlfs:pretty(?in) =
+      let (?t = st:turtle(?in),
+	if (st:get(st:html, true), 
+	      owlfs:protect(?t), ?t))
+    ),
   
- define (st:protect(?in) =
-    let (?t = st:turtle(?in),
-      if (st:get(st:html, true), 
-	    xt:protect(?t), 
-	    ?t))
-  )
-  
-   define (xt:protect(?s) =
+   define (owlfs:protect(?s) =
         replace(replace(?s, "&", "&amp;"), "<", "&lt;")
+    ),
+    
+    # used by sub transformations, with st:owlexp
+    define (owlfs:process(?in) =
+      if (isURI(?in), owlfs:pretty(?in),	
+	st:apply-templates-with(st:owlexp, ?in))
     )
-  
-  define (xt:turtle(?t) = 
-    st:apply-templates-with(st:turtle, ?t)
-  )
+)
+    
   
   define (xt:nl(?x, ?n) =
     if (?x = "", ?x, 
@@ -416,6 +422,28 @@ template st:prefix {
 where {
   bind (kg:unnest(st:prefix()) as (?p, ?n))
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template   {
+
+  st:call-template(st:prefix)
+  st:call-template(st:declare, ?in)  st:nl()
+  st:call-template(st:class, ?in)    st:nl()
+  st:call-template(st:property, ?in) st:nl()
+  st:call-template(st:statement, ?in)
+  
+}
+where {
+     select ?in where {
+      ?in ?p ?t
+     } limit 1
+}
+
 ]]>
 </body>
 </rule>

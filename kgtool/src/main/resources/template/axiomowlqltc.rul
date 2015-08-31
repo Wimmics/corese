@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Aug 17 10:46:01 CEST 2015
+Wed Aug 26 11:01:23 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -255,8 +255,8 @@ template {
 where {
  { ?in rdf:type ?x
    FILTER(
-      	STRSTARTS(STR(?x), str(owl:NamedIndividual)) ||
-   		STRSTARTS(STR(?x), str(owl:Nothing)) ||
+      	?x = owl:NamedIndividual ||
+   	?x = owl:Nothing ||
    		# filter owl, xsd, rdfs, rdf
    		!(
    			STRSTARTS(STR(?x), str(owl:)) ||
@@ -331,28 +331,15 @@ where {
 <body>
 <![CDATA[
 # ObjectPropertyAxiom
-# property inclusions (SubObjectPropertyOf) involving property chains not supported in OWL 2 QL
+# [property inclusions (SubObjectPropertyOf) involving] property chains not supported in OWL 2 QL
 
 template {
-	?suc
+	false
 }
 where {
-	{
-		?in rdfs:subPropertyOf ?y
+	?in owl:propertyChainAxiom ?z
 	
-		bind (!exists {
-			?in owl:propertyChain ?z
-		} as ?suc)
-	}
-	union {
-		?in a owl:ObjectProperty
-		
-		bind (!exists {
-			?in owl:propertyChainAxiom ?z
-			} as ?suc)
-	}
-	
-	filter(st:visit(st:propertyChain, ?in, ?suc))
+	filter(st:visit(st:propertyChain, ?in, ?false))
 }
 ]]>
 </body>

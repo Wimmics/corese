@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Aug 17 10:46:01 CEST 2015
+Wed Aug 26 11:01:22 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -223,24 +223,24 @@ template st:form(?n, ?q, ?t, ?s) {
         }                
    </script>
        
-   <form method='post'  id='form' action='""" st:get(st:service) """' >   
+   <form method='post'  id='form' 	action='"""st:get(st:service)"""' >   
    <input type='hidden' id='tmp' 	value='"""str(?t)"""' />
    <input type='hidden' id='sol' 	value='"""str(?s)"""' />
-   <input type='hidden' name='uri' 	value='""" ?n """'/>
-   <input type='hidden' name='profile'  value='""" st:get(st:profile) """'/> 
+   <input type='hidden' name='uri' 	value='"""?n"""'/>
+   <input type='hidden' name='profile'  value='"""st:get(st:profile)"""'/> 
    """
    
    if (?s = st:null, "", st:call-template(st:nav))
-   
-#   st:call-template-with(st:server, st:submit, "form", "submit", st:proto())
-   
-   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
+      
+   "<input type='submit' value='submit' "  
+     st:call-template-with(st:server, st:submit)  
+   "/>"
    
    """
    <br/>
    <textarea cols='60' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
    </form>
-  """
+   """
 }
 where {
 }
@@ -268,7 +268,8 @@ template st:select(?t) {
 
   st:call-template(st:prev, ?t)
 
-  "<select id='uri' name='uri' onChange='" 
+  "<select " st:call-template-with(st:server, st:sstyle)   
+    " id='uri' name='uri' onChange='" 
   
   if (st:get(st:protocol, st:ajax), 
     "trans(this.form); return false;",

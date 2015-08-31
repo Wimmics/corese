@@ -39,9 +39,14 @@ public class Interpreter implements Evaluator, ExprType {
     Object TRUE, FALSE;
     ResultListener listener;
     static HashMap<String, Extension> extensions ;
+    static Extension extension;
     int mode = KGRAM_MODE;
     boolean hasListener = false;
     public static int count = 0;
+    
+    static {
+        extension = new Extension();
+    }
 
     public Interpreter(Proxy p) {
         proxy = p;
@@ -623,28 +628,9 @@ public class Interpreter implements Evaluator, ExprType {
         return eval(exp, env, p, def, values);
      }
     
- 
-    public static void setExtension(Extension ext) {
-        if (extensions == null){
-            extensions = new HashMap<String, Extension>();
-        }
-        extensions.put(ext.getName(), ext);
-    }
     
-    public static HashMap<String, Extension> getExtension(){
-        return extensions;
-    }
-    
-    public static boolean isDefined(Expr exp){
-        if (extensions == null){
-            return false;
-        }
-        for (Extension ext : extensions.values()){
-            if (ext.isDefined(exp)){
-                return true;
-            }
-        }
-        return false;
+    public static boolean isDefined(Expr exp){       
+        return extension.isDefined(exp);
     }
     
     Expr getDefine(Expr exp, Environment env, Object[] values){
@@ -660,19 +646,22 @@ public class Interpreter implements Evaluator, ExprType {
                 return def;
             }
         }
-        if (extensions == null){
-            return null;
+       
+        Expr def = extension.get(exp);
+        if (def != null) {
+            exp.setDefine(def);
+            return def;
         }
-        for (Extension e : extensions.values()){
-            Expr def = e.get(exp);
-            if (def != null){
-                exp.setDefine(def);
-                return def;
-            }
-        }
+
         return null;
     }
 
+    public static void define(Expr exp){
+        extension.define(exp);
+    }
     
+    public static Extension getExtension(){
+        return extension;
+    }
     
 }

@@ -35,6 +35,7 @@ public class Processor {
 	public static final String INLIST   = Term.LIST;
 	public static final String LIST     = EXT+"list";
 	public static final String IOTA     = EXT+"iota";
+	public static final String REVERSE  = EXT+"reverse";
         
 	public static final String IN  	 = "in";
 
@@ -413,15 +414,22 @@ public class Processor {
         switch (term.oper()) {
 
             case ExprType.STL_DEFINE:
-                // this = st:define(st:process(?x) = exp(?x))
+                // this = define(st:process(?x) = exp(?x))
                 // def  = st:process(?x) = exp(?x)
                 Expression def = term.getArg(0);
                 ast.define(def);
-                term.local();
+                def.local();
                 break;
                 
             case ExprType.PACKAGE:
-                ast.defPackage(term.getArg(0).getConstant());
+                // package(ex:test, define(xt:foo() = 12))
+                //ast.defPackage(term.getArg(0).getConstant());
+                for (Expression exp : term.getArgs()){
+                    if (exp.isTerm() && ! exp.getArgs().isEmpty()){
+                        Expression fun = exp.getArg(0);
+                        fun.setExport(true);
+                    }
+                }
                 break;
                 
             case ExprType.LET:
@@ -439,7 +447,7 @@ public class Processor {
                 // (for dt : ?list) {let (?x = dt, xt:fun(?x))}
                 Expression fun = term.getArg(0);
                 if (fun.isTerm()){
-                    fun.local();
+                    fun.funcallLocal();
                 }
                 break;
            }
@@ -556,6 +564,7 @@ public class Processor {
 		defoper(LET,            ExprType.LET);
 		defoper(LIST,           ExprType.LIST);
 		defoper(IOTA,           ExprType.IOTA);
+		defoper(REVERSE,        ExprType.REVERSE);
 		defoper(MAP,            ExprType.MAP);
 		defoper(MAPLIST,        ExprType.MAPLIST);
 		defoper(APPLY,          ExprType.APPLY);

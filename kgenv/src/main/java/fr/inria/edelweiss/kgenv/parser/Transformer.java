@@ -338,17 +338,15 @@ public class Transformer implements ExpType {
                 return;
             }
             Extension ext = new Extension();
-            if (ast.getPackage()!=null){
-                ext.setName(ast.getPackage().getLabel());
-                ext.setPackage(ast.getPackage().getDatatypeValue());
-                Interpreter.setExtension(ext);
-            }
+            q.setExtension(ext);
             for (fr.inria.acacia.corese.triple.parser.Extension.FunMap m : ast.getDefine().getMaps()){
                 for (Expression exp : m.values()) {
-                    ext.define(exp);               
+                    ext.define(exp); 
+                     if (exp.isExport()){
+                        Interpreter.define(exp);
+                    }
                 }
             }
-            q.setExtension(ext);
         }
        
         void error(ASTQuery ast){

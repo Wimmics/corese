@@ -120,7 +120,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem iselect, igraph, iconstruct, iask, idescribe, 
             iserviceCorese, iserviceDBpedia, 
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, irdfxml, itrig, ispin, iowl, itypecheck, 
+            iturtle, irdfxml, ijson, itrig, ispin, iowl, itypecheck, 
             ientailment, irule, isystem, iprovenance, iindex, ifunction, ical, ispqr;
     
     HashMap<Object, String> itable;
@@ -455,7 +455,6 @@ public class MainFrame extends JFrame implements ActionListener {
         iserviceDBpedia    = defItem("Service DBpedia", defaultServiceDBpediaQuery);
         ifunction   = defItem("Function", defaultFunQuery);
         ical    = defItem("Calendar", "cal.rq");
-        ispqr   = defItem("SPQR", "spqr.rq");
         
         iinsert     = defItem("Insert", defaultInsertQuery);
         iinsertdata = defItem("Insert Data", defaultInsertDataQuery);
@@ -470,6 +469,7 @@ public class MainFrame extends JFrame implements ActionListener {
         
         iturtle = defItem("Turtle", defaultTemplateQuery); 
         irdfxml = defItem("RDF/XML", defaultRDFXMLQuery); 
+        ijson = defItem("JSON", "json.rq"); 
         itrig   = defItem("Trig", defaultTrigQuery); 
         ispin   = defItem("SPIN", defaultSPINQuery); 
         iowl    = defItem("OWL", defaultOWLQuery); 
@@ -580,7 +580,6 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iserviceDBpedia);
         queryMenu.add(ifunction);
         queryMenu.add(ical);
-        queryMenu.add(ispqr);
         
         queryMenu.add(idelete);
         queryMenu.add(iinsert);
@@ -595,6 +594,7 @@ public class MainFrame extends JFrame implements ActionListener {
        
         templateMenu.add(iturtle);
         templateMenu.add(irdfxml);
+        templateMenu.add(ijson);
         templateMenu.add(itrig);
         templateMenu.add(iowl);
         templateMenu.add(ispin);
@@ -945,11 +945,11 @@ public class MainFrame extends JFrame implements ActionListener {
                 // Récupérer le nom du fichier qu’il a spécifié
                 String myFile = filechoose.getSelectedFile().toString();
 
-                if (! myFile.endsWith(TXT) 
-                 && ! myFile.endsWith(RDF) 
-                 && ! myFile.endsWith(XML)) {
-                    myFile = myFile + TXT;
-                }
+//                if (! myFile.endsWith(TXT) 
+//                 && ! myFile.endsWith(RDF) 
+//                 && ! myFile.endsWith(XML)) {
+//                    myFile = myFile + TXT;
+//                }
                 try {
                     // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
                     FileWriter lu = new FileWriter(myFile);

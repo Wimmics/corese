@@ -1,0 +1,106 @@
+#
+# Compute the romain notation of a number
+# Compute the digital notation of a romain number
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+prefix spqr: <http://ns.inria.fr/sparql-extension/spqr/>
+select 
+
+(99 as ?n)
+(spqr:romain(?n) as ?r)
+(spqr:digit(?r)  as ?d)
+
+
+(package(xt:spqr, 
+define (xt:romain(?n) = spqr:spqr(?n)),
+define (xt:digit(?r)  = spqr:parse(?r)),
+
+define (spqr:romain(?n) = spqr:spqr(?n)),
+define (spqr:digit(?r)  = spqr:parse(?r)),
+
+
+
+define (spqr:div(?a, ?b) = xsd:integer(floor(?a / ?b)))  ,
+define (spqr:mod(?a, ?b) = xsd:integer(?a - (?b * spqr:div(?a, ?b)))),
+
+define (spqr:rep(?s, ?n) =
+  if (?n = 0, "",
+  if (?n = 1, ?s,
+  concat(?s, spqr:rep(?s, ?n - 1))))
+),
+
+define (spqr:r1(?n) =
+    spqr:num(?n, "I", "V", "X")
+),
+
+define (spqr:r10(?n) =
+  spqr:num(?n, "X", "L", "C")
+),
+
+define (spqr:r100(?n) =
+  spqr:num(?n, "C", "D", "M")
+),
+
+define (spqr:r1000(?n) =
+  spqr:rep("M", ?n)
+),
+
+define (spqr:num(?n, ?u, ?f, ?t) =
+  if (?n <= 3, spqr:rep(?u, ?n),  
+  if (?n = 4, concat(?u, ?f),
+  if (?n < 9, concat(?f, spqr:rep(?u, ?n - 5)), 
+  if (?n = 9, concat(?u, ?t), ""))))
+),
+
+define (spqr:spqr(?n) =
+  if (?n < 10, spqr:r1(?n),
+  if (?n < 100, 
+    let (?c = spqr:div(?n, 10), 
+    let (?r = spqr:mod(?n, 10), 
+    concat(spqr:r10(?c), spqr:spqr(?r)))),
+  if (?n < 1000,
+    let (?c = spqr:div(?n, 100),
+    let (?r = spqr:mod(?n, 100),
+    concat(spqr:r100(?c), spqr:spqr(?r)))),
+  if (?n < 10000,
+    let (?c = spqr:div(?n, 1000),
+    let (?r = spqr:mod(?n, 1000),
+    concat(spqr:r1000(?c), spqr:spqr(?r)))),       
+    ?n))))
+),
+
+# parse romain number
+
+define (spqr:parse(?s) =
+  if (strlen(?s) = 0, 0,
+    let (?f = substr(?s, 1, 1),
+      if (?f = "I", spqr:step(?s, "I", "V", "X", 1, 5, 10),
+      if (?f = "V", 5 + spqr:parse(substr(?s, 2)),
+      if (?f = "X", spqr:step(?s, "X", "L", "C", 10, 50, 100),
+      if (?f = "L", 50 + spqr:parse(substr(?s, 2)),
+      if (?f = "C", spqr:step(?s, "C", "D", "M", 100, 500, 1000),
+      if (?f = "D", 500   + spqr:parse(substr(?s, 2)),
+      if (?f = "M", 1000  + spqr:parse(substr(?s, 2)),
+      0)))))))))
+	      
+),
+
+define (spqr:step(?s, ?su, ?sc, ?sd, ?u, ?c, ?d) =
+  if (strlen(?s) = 1, ?u,
+    let (?r = substr(?s, 2, 1),
+      if (?r = ?sc,   ?c - ?u + spqr:parse(substr(?s, 3)),
+	if (?r = ?sd, ?d - ?u + spqr:parse(substr(?s, 3)),
+	  ?u + spqr:parse(substr(?s, 2))))))
+)
+
+
+
+
+)
+as ?p)
+
+
+
+where {
+
+}

@@ -19,7 +19,7 @@ public class Extension {
     //FunMap map;
     FunMap[] maps;
     private String name;
-    private Object pack;
+    private Constant pack;
     
     public class FunMap extends HashMap<String, Expression> {}
 
@@ -121,11 +121,8 @@ public class Extension {
     
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (getName() != null){
-            sb.append("extension: ");
-            sb.append(getName()); 
-            sb.append(NL);
-        }
+        sb.append("extension: ");
+        sb.append(NL);
         for (FunMap m : getMaps()){
             for (Expression exp : m.values()) {
                 sb.append(exp);
@@ -153,14 +150,14 @@ public class Extension {
     /**
      * @return the pack
      */
-    public Object getPackage() {
+    public Constant getPackage() {
         return pack;
     }
 
     /**
      * @param pack the pack to set
      */
-    public void setPackage(Object pack) {
+    public void setPackage(Constant pack) {
         this.pack = pack;
     }
 }

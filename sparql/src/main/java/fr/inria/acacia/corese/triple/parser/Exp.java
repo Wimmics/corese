@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
+import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import java.util.Iterator;
 
@@ -368,6 +369,16 @@ public abstract class Exp extends Statement implements Iterable<Exp> {
 	public void accept(ASTVisitor visitor) {
 		visitor.visit(this);
 	}
+        
+        /**
+         * Searching filters (localize())
+         */
+        void visit(ExpressionVisitor v){
+            v.visit(this);
+            for (Exp exp : getBody()){
+                exp.visit(v);
+            }
+        }
         
 	
 }

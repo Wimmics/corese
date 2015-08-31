@@ -112,6 +112,13 @@ implements Regex, Filter, Expr {
 	public void setSystem(boolean b){
 		isSystem = b;
 	}
+        
+        public boolean isExport(){
+		return false;
+	}
+	
+	public void setExport(boolean b){
+	}
 	
 	public boolean isArray(){
 		return false;
@@ -337,6 +344,10 @@ implements Regex, Filter, Expr {
 	public boolean isBound(){
 		return false;
 	}
+        
+        public Term getTerm(){
+            return null;
+        }
 	
 	public Variable getVariable(){
 		return null;
@@ -418,14 +429,17 @@ implements Regex, Filter, Expr {
 	}
 
 	
-	public List<String> getVariables() {
-		
-		List<String> list = new ArrayList<String>();
-		getVariables(list);
-		return list;
+	public List<String> getVariables() {		
+            return getVariables(false);
 	}
+        
+      public List<String> getVariables(boolean excludeLocal) {
+        List<String> list = new ArrayList<String>();
+        getVariables(list, excludeLocal);
+        return list;
+      }
 	
-	public void getVariables(List<String> list) {
+	public void getVariables(List<String> list, boolean excludeLocal) {
 	}
 
 	
@@ -589,20 +603,59 @@ implements Regex, Filter, Expr {
         }
         
         /**
-         * Declare variable var as local in this exp
-         * if var is null, declare all variables as local
+         * Declare variables in list as local variables in this exp
+         * if list is null, declare all variables as local
+         * use case:
+         * define (f(x) = x * x)
+         * let (x = y, x * x)
+         * maplist(f(x), list) 
          */
-        public void localize(final Variable var){
+        public void localize(final List<Variable> list, final boolean let){
             visit(new ExpressionVisitor() {
-                             
+                
+                boolean exist = false;
+                
+                 @Override                
+                 public void visit(Exp exp){
+                    // do nothing as we track filter
+                    // Triple visit() tracks filter
+                 }
+                                                             
                 @Override
                 public void visit(Term t) {
+                    if (t.getExist() != null){
+                        // exp = exists { BGP .filter(f) }
+                        Exp exp = t.getExist();
+                        boolean save = exist;
+                        exist = true;
+                        exp.visit(this);
+                        exist = save;
+                    }
                 }
 
                 @Override
                 public void visit(Variable v) {
-                    if (var == null || v.equals(var)){
-                        v.localize();
+                    if (v.isLocal()){
+                        // ok
+                    }
+                    else if (list == null){ 
+                       v.localize();
+                    }
+                    else {
+                        boolean ok = false;
+                        for (Variable var : list){
+                            if (v.equals(var)){
+                                v.localize();
+                                ok = true;
+                                break;
+                            }
+                        }
+                        if (! ok && ! exist && ! let){
+                            // in exists {} a variable that is not local may be 
+                            // bound by the BGP, hence it is not UNDEF, it is UNBOUND
+                            // in let, we know nothing about other variables
+                            v.undef();
+                        }
                     }
                 }
 
@@ -612,30 +665,35 @@ implements Regex, Filter, Expr {
             });
         }
         
+        // use case: let (?x = e1, e2)
+        // ?x is local, exp = ?x
+        @Override
         public void local(Expr exp){
             if (exp.isVariable()){
                 Variable var = (Variable) exp;
                 var.localize();
-                localize(var);
+                ArrayList<Variable> list = new ArrayList();
+                list.add(var);
+                localize(list, true);
             }
         }
         
         /**
-         * this = define(f(x) = g(x))
+         * this is a function definition:
+         * f(x) = body
+         * this is the argument of define(f(x) = body) without the define 
+         * set the arguments as local variables in the definition and in the body
          */
        public void local() {
-           localize(null);
-       } 
-        
-       public void local2() {
-            Expression def = getArg(0).getArg(0);
-            for (Expression arg : def.getArgs()) {
-                Variable var = arg.getVariable();
-                local(var);
-            }
+           Term fun  = getArg(0).getTerm();
+           List<Variable> list = fun.getFunVariables();           
+           localize(list, false);
        }
        
- 
+       public void funcallLocal() {
+           localize(null, false);
+       } 
+     
     public Expr getDefine() {
         return null;
     }

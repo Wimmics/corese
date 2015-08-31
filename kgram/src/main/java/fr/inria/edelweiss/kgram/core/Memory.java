@@ -234,12 +234,13 @@ public class Memory implements Environment {
             for (Expr var : bind.getVariables()){
                 Node qn = getQueryNode(var.getLabel());
                 if (qn == null){
-                    System.out.println("Mem: undefined query node: " + var);
+                    // System.out.println("Mem: undefined query node: " + var);
                 }
                 else {
                     mem.push(qn, bind.get(var));
                 }
             }
+            mem.setBind(bind);
             return mem;            
         }
 	
@@ -883,13 +884,17 @@ public class Memory implements Environment {
 	 */
 	public Node getNode(Node node){
 		int n = node.getIndex();
-		if (n == -1) return null;
+		if (n == -1){
+                    return null;
+                }
 		return nodes[n];
 	}
 	
 	public Node getNode(String name){
 		int index = getIndex(name);
-		if (index == -1) return null;
+		if (index == ExprType.UNBOUND){
+                    return null;
+                }
 		return getNode(index);
 	}
 	
@@ -934,6 +939,9 @@ public class Memory implements Environment {
                     
                     case ExprType.LOCAL:
                         return get(var);
+                        
+                    case ExprType.UNDEF:
+                        return null;
                         
                     case ExprType.UNBOUND:
 			index = getIndex(var.getLabel());
@@ -1079,5 +1087,9 @@ public class Memory implements Environment {
         }
         bind.unset(lvar);
     }
+     
+     void setBind(Bind b){
+         bind = b;
+     }
 
 }

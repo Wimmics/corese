@@ -111,9 +111,9 @@ public class CoreseDatatype
 	
 	String protect(String label){
 		String str = Constant.addEscapes(label);
-		if (str.contains("\"") || str.contains("'")){
-			return "\"\"\"" + str + "\"\"\"";
-		}
+//		if (str.contains("\"") || str.contains("'")){
+//			return "\"\"\"" + str + "\"\"\"";
+//		}
 		return "\"" + str + "\"";
 	}
 	

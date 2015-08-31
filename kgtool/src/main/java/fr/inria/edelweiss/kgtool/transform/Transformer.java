@@ -63,6 +63,7 @@ public class Transformer  {
     public static final String OWLRL        = STL + "owlrl";   
     public static final String TURTLE       = STL + "turtle";
     public static final String RDFXML       = STL + "rdfxml";
+    public static final String JSON         = STL + "json";
     public static final String TRIG         = STL + "trig";
     public static final String TABLE        = STL + "table";
     public static final String HTML         = STL + "html";

@@ -271,7 +271,7 @@ public class Pattern implements ExprType, Expr {
      public void addExp(int i, Expr e) {
     }
 
-    @Override
+    
     public void local(Expr var) {
         
     }
@@ -283,6 +283,16 @@ public class Pattern implements ExprType, Expr {
 
     @Override
     public void setDefine(Expr exp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int subtype() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int place() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -669,7 +669,7 @@ public class Mapping
 	}
 	
 	public Node getNode(Expr var){
-            switch (var.getIndex()){
+            switch (var.subtype()){
                 case ExprType.LOCAL: 
                     return get(var);
             }
@@ -838,21 +838,29 @@ public class Mapping
         
     public Extension getExtension(){
             return query.getOuterQuery().getExtension();
-        }     
+        }   
+    
+    public Bind getBind(){
+        return bind;
+    }
+    
+    boolean hasBind(){
+        return bind != null && bind.size()>0;
+    }
 
    @Override
-    public void set(Expr var, Node value) {
+    public void set(Expr exp, Expr var, Node value) {
         if (bind == null){
             bind = new Bind();
         }
-        bind.set(var, value);
+        bind.set(exp, var, value);
     }
    
-      public void set(List<Expr> lvar, Object[] value) {
+      public void set(Expr exp, List<Expr> lvar, Object[] value) {
         if (bind == null){
             bind = new Bind();
         }
-        bind.set(lvar, value);
+        bind.set(exp, lvar, value);
     }
 
     @Override
@@ -864,18 +872,18 @@ public class Mapping
     }
 
     @Override
-    public void unset(Expr var) {
+    public void unset(Expr exp, Expr var) {
         if (bind == null) {
             bind = new Bind();
         }
-        bind.unset(var);
+        bind.unset(exp, var);
     }
     
-     public void unset(List<Expr> lvar) {
+     public void unset(Expr exp, List<Expr> lvar) {
         if (bind == null){
             bind = new Bind();
         }
-        bind.unset(lvar);
+        bind.unset(exp, lvar);
     }
 	
 }

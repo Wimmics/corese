@@ -109,8 +109,9 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	boolean debug = false, isCheck = false;
     boolean nosort = false, 
     // load from and from named documents before processing
-    isLoad = false, 
-    isCorrect = true;
+    isLoad = false;
+    private boolean isFail = false;
+    boolean isCorrect = true;
     /** booleans useful for the sparql pretty printer */
     boolean where = false;
     boolean merge = false;
@@ -340,6 +341,20 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         this.undefined = undefined;
     }
 
+    /**
+     * @return the isFail
+     */
+    public boolean isFail() {
+        return isFail;
+    }
+
+    /**
+     * @param isFail the isFail to set
+     */
+    public void setFail(boolean isFail) {
+        this.isFail = isFail;
+    }
+
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
 	/**
@@ -545,6 +560,10 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 		vinfo.add(info);
 	}
 
+        public void addFail(boolean b) {
+	   getGlobalAST().setFail(b);
+	}	
+        
 	/**
 	 *
 	 * @param error

@@ -627,57 +627,6 @@ implements Regex, Filter, Expr {
             
         }
         
-        /**
-         * Declare variables in list as local variables in this exp
-         * if list is null, declare all variables as local
-         * use case:
-         * define (f(x) = x * x)
-         * let (x = y, x * x)
-         * maplist(f(x), list) 
-         */
-        public void localize(List<Variable> list,  boolean let){
-            visit(new ExpressionVisitorLocal(list, let));
-        }
-        
-        /**
-        * let (?x = e1, e2)
-        * set ?x as local in body, exp = ?x
-        * */
-        
-        public void letLocal(){
-            Expression def  = getArg(0);
-            Expression body = getArg(1);
-            Expression exp  = def.getArg(0);
-            
-            if (exp.isVariable()){
-                Variable var = (Variable) exp;
-                var.localize();
-                ArrayList<Variable> list = new ArrayList();
-                list.add(var);
-                body.localize(list, true);
-            }
-        }
-        
-        /**
-         * this is a function definition:
-         * f(x) = body
-         * this is the argument of define(f(x) = body) without the define 
-         * set the arguments as local variables in the definition and in the body
-         */
-       public void local() {
-           Term fun  = getArg(0).getTerm();
-           List<Variable> list = fun.getFunVariables();           
-           localize(list, false);
-       }
-       
-       /**
-        * maplist (xt:fun(?x), ?list)
-        * this = xt:fun(?x)
-        */
-       public void funcallLocal() {
-           localize(null, false);
-       } 
-     
     public Expr getDefine() {
         return null;
     }

@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
  */
 public class Bind {
 
+    static final String NL = System.getProperty("line.separator");
     Node value;
     ArrayList<Expr> varList;
     ArrayList<Node> valList;
@@ -24,12 +25,21 @@ public class Bind {
         valList = new ArrayList();
     }
 
-    public void set(Expr var, Node val) {
-        varList.add(var);
-        valList.add(val);
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = varList.size() - 1; i >= 0; i--) {
+            sb.append(varList.get(i) + " = " + valList.get(i) + NL);
+        }
+        return sb.toString();
+    }
+    
+    public int size() {
+        return varList.size();
     }
 
-    public Node get(Expr var) {       
+    public Node get(Expr var) {
+//        System.out.println("B: " + var + " " + var.getIndex());
+//        System.out.println(this);
         for (int i = varList.size() - 1; i >= 0; i--) {
             if (varList.get(i).equals(var)) {
                 return valList.get(i);
@@ -37,34 +47,41 @@ public class Bind {
         }
         return null;
     }
-    
-    public List<Expr> getVariables(){
-        return varList;
-    }
-    
-    public int size(){
-        return varList.size();
-    }
-    
-    public Node get2(Expr var){
-        return valList.get(valList.size()-1);
+
+
+    public void set(Expr exp, Expr var, Node val) {
+        set(var, val);
     }
 
-    public void unset(Expr var) {
-            varList.remove(varList.size() - 1);
-            valList.remove(valList.size() - 1);
-    }
-
-    public void set(List<Expr> lvar, Object[] value) {
+    public void set(Expr exp, List<Expr> lvar, Object[] value) {
         int i = 0;
         for (Expr var : lvar) {
             set(var, (Node) value[i++]);
         }
     }
 
-    public void unset(List<Expr> lvar) {
+    public void unset(Expr exp, Expr var) {
+        unset(var);
+    }
+
+    public void unset(Expr exp, List<Expr> lvar) {
         for (int j = lvar.size() - 1; j >= 0; j--) {
             unset(lvar.get(j));
         }
     }
+
+    private void set(Expr var, Node val) {
+        varList.add(var);
+        valList.add(val);
+    }
+
+    private void unset(Expr var) {
+        varList.remove(varList.size() - 1);
+        valList.remove(valList.size() - 1);
+    }
+    
+    
+     public List<Expr> getVariables() {
+        return varList;
+    } 
 }

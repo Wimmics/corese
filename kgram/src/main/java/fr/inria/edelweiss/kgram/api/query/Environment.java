@@ -148,15 +148,15 @@ public interface Environment {
         Mappings getMappings();
         
         // DRAFT local variable
-        void set(Expr var, Node value);
+        void set(Expr exp, Expr var, Node value);
         
-        void set(List<Expr> var, Object[] value);
+        void set(Expr exp, List<Expr> var, Object[] value);
        
         Node get(Expr var);
         
-        void unset(Expr var);
+        void unset(Expr exp, Expr var);
         
-        void unset(List<Expr> var);
+        void unset(Expr exp, List<Expr> var);
         
         Extension getExtension();
 

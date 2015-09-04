@@ -32,6 +32,8 @@ public interface Expr {
 	Object getValue();
 	
 	int type();
+        
+        int subtype();
 
 	int oper();
         
@@ -52,13 +54,13 @@ public interface Expr {
 	boolean isDistinct();
 
 	int arity();
+        
+        int place();
 
 	int getIndex();
 
 	void setIndex(int index);
-        
-        void local(Expr var);
-        
+                
         Expr getDefine();
         
         void setDefine(Expr exp);

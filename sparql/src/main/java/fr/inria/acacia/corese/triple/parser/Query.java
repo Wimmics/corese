@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
+
 public class Query extends Exp {
 	
 	ASTQuery ast;
@@ -64,6 +66,13 @@ public class Query extends Exp {
 				
 		return b;
 	}
+        
+       void visit(ExpressionVisitor v) {
+          // the Visitor determines whether it visists the subquery or not
+           // because some may and other may not
+           // e.g. Local variable visitor does not recursively visit subquery
+          v.visit(this);
+       }
 
 
 }

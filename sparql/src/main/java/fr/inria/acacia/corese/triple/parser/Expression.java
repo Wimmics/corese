@@ -60,7 +60,28 @@ implements Regex, Filter, Expr {
 		return null;
 	}
 	
+        /**
+         * Every filter/select/bind exp is compiled
+         */
 	public Expression compile(ASTQuery ast){
+            prepare(ast);
+            local(ast);
+            return this;
+	}
+        
+        /**
+         * Declare local variables, assign index
+         * arg of function define(f(?x) = exp) 
+         * arg of let(?x = exp)
+         * arg of map(xt:fun(?x), exp)
+         * @param ast 
+         */
+        void local(ASTQuery ast){
+            ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast);
+            visit(vis);
+        }
+        
+        Expression prepare(ASTQuery ast){
 		return this;
 	}
 	
@@ -447,6 +468,10 @@ implements Regex, Filter, Expr {
 		
 		return 0;
 	}
+        
+        public int place(){
+            return -1;
+        }
 
 	
 	public String getLabel() {
@@ -610,71 +635,26 @@ implements Regex, Filter, Expr {
          * let (x = y, x * x)
          * maplist(f(x), list) 
          */
-        public void localize(final List<Variable> list, final boolean let){
-            visit(new ExpressionVisitor() {
-                
-                boolean exist = false;
-                
-                 @Override                
-                 public void visit(Exp exp){
-                    // do nothing as we track filter
-                    // Triple visit() tracks filter
-                 }
-                                                             
-                @Override
-                public void visit(Term t) {
-                    if (t.getExist() != null){
-                        // exp = exists { BGP .filter(f) }
-                        Exp exp = t.getExist();
-                        boolean save = exist;
-                        exist = true;
-                        exp.visit(this);
-                        exist = save;
-                    }
-                }
-
-                @Override
-                public void visit(Variable v) {
-                    if (v.isLocal()){
-                        // ok
-                    }
-                    else if (list == null){ 
-                       v.localize();
-                    }
-                    else {
-                        boolean ok = false;
-                        for (Variable var : list){
-                            if (v.equals(var)){
-                                v.localize();
-                                ok = true;
-                                break;
-                            }
-                        }
-                        if (! ok && ! exist && ! let){
-                            // in exists {} a variable that is not local may be 
-                            // bound by the BGP, hence it is not UNDEF, it is UNBOUND
-                            // in let, we know nothing about other variables
-                            v.undef();
-                        }
-                    }
-                }
-
-                @Override
-                public void visit(Constant c) {
-                }
-            });
+        public void localize(List<Variable> list,  boolean let){
+            visit(new ExpressionVisitorLocal(list, let));
         }
         
-        // use case: let (?x = e1, e2)
-        // ?x is local, exp = ?x
-        @Override
-        public void local(Expr exp){
+        /**
+        * let (?x = e1, e2)
+        * set ?x as local in body, exp = ?x
+        * */
+        
+        public void letLocal(){
+            Expression def  = getArg(0);
+            Expression body = getArg(1);
+            Expression exp  = def.getArg(0);
+            
             if (exp.isVariable()){
                 Variable var = (Variable) exp;
                 var.localize();
                 ArrayList<Variable> list = new ArrayList();
                 list.add(var);
-                localize(list, true);
+                body.localize(list, true);
             }
         }
         
@@ -690,6 +670,10 @@ implements Regex, Filter, Expr {
            localize(list, false);
        }
        
+       /**
+        * maplist (xt:fun(?x), ?list)
+        * this = xt:fun(?x)
+        */
        public void funcallLocal() {
            localize(null, false);
        } 
@@ -701,6 +685,11 @@ implements Regex, Filter, Expr {
  
     public void setDefine(Expr define) {
         
+    }
+
+    @Override
+    public int subtype() {
+        return ExprType.UNDEF;
     }
 	
 }

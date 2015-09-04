@@ -72,6 +72,7 @@ public class Term extends Expression {
 	boolean isShort = false;
 	String  modality;       
         int type = ExprType.UNDEF, oper = ExprType.UNDEF;
+        private int place = -1;
 	
 	public Term() {
 	}
@@ -916,7 +917,7 @@ public class Term extends Expression {
 	
 	// Exp
 	
-	public Expression compile(ASTQuery ast){
+	public Expression prepare(ASTQuery ast){
 		if (proc != null){
                     return this;
                 }
@@ -926,25 +927,20 @@ public class Term extends Expression {
 		
                 int i = 0;
 		for (Expression exp : getArgs()){
-			exp.compile(ast);
+			exp.prepare(ast);
 		}
 		
-//		proc = new Processor(this);
-		proc.compile(ast);
+		proc.prepare(ast);
                 
                 if (getArg() != null){
-                    getArg().compile(ast);
+                    getArg().prepare(ast);
                 }
                 
 		return this;
 		
 	}
         
-	
-	public void compile(){
-		compile(null);
-	}
-	
+
 	public int arity(){
 		return proc.arity();
 	}
@@ -995,9 +991,6 @@ public class Term extends Expression {
         
     void visit(ExpressionVisitor v){
          v.visit(this);
-         for (Expression e : getArgs()) {
-              e.visit(v);
-          }  
     }   
 
     /**
@@ -1016,6 +1009,20 @@ public class Term extends Expression {
 
     public Term getTerm(){
         return this;
+    }
+
+    /**
+     * @return the place
+     */
+    public int place() {
+        return place;
+    }
+
+    /**
+     * @param place the place to set
+     */
+    public void setPlace(int place) {
+        this.place = place;
     }
 
 }

@@ -376,7 +376,6 @@ public class Processor {
                 else if (term.isFunction()){
 			setType(ExprType.FUNCTION);
 			setOper(getOper());
-                        subtype(ast);
 		}
 		else if (term.isAnd()){
 			setType(ExprType.BOOLEAN);
@@ -405,56 +404,8 @@ public class Processor {
 		}
 		
 	}
-        
-        /**
-         * detect define function 
-         */
-       void subtype(ASTQuery ast) {
-
-        switch (term.oper()) {
-
-            case ExprType.STL_DEFINE:
-                // this = define(st:process(?x) = exp(?x))
-                // def  = st:process(?x) = exp(?x)
-                Expression def = term.getArg(0);
-                ast.define(def);
-                def.local();
-                break;
-                
-            case ExprType.PACKAGE:
-                // package(ex:test, define(xt:foo() = 12))
-                //ast.defPackage(term.getArg(0).getConstant());
-                for (Expression exp : term.getArgs()){
-                    if (exp.isTerm() && ! exp.getArgs().isEmpty()){
-                        Expression fun = exp.getArg(0);
-                        fun.setExport(true);
-                    }
-                }
-                break;
-                
-            case ExprType.LET:
-                   // let (?x = ?y, exp(?x))
-                   Expression let  = term.getArg(0);
-                   Expression body = term.getArg(1);
-                   Expression var  = let.getArg(0);
-                   body.local(var);
-                   break;
-                
-            case ExprType.MAP:
-            case ExprType.MAPLIST:
-                // map(xt:fun(?x), ?list)
-                // var ?x is local because it is interpreted as:
-                // (for dt : ?list) {let (?x = dt, xt:fun(?x))}
-                Expression fun = term.getArg(0);
-                if (fun.isTerm()){
-                    fun.funcallLocal();
-                }
-                break;
-           }
-        }
-        
-        
-        void compile(ASTQuery ast) {
+                            
+        void prepare(ASTQuery ast) {
         if (term.isFunction()) {
             switch (oper()) {
                 case ExprType.IN:

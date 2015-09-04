@@ -24,6 +24,8 @@ public class Variable extends Atom {
 	private boolean isPath = false; // use case ?x $path ?y
 	private boolean isVisited = false;
 	private int index = ExprType.UNBOUND;
+        private int type  = ExprType.GLOBAL;
+        
 	List<Variable> lVar;
 	// var as IDatatype for comparing variables in KGRAM
 	IDatatype dt;
@@ -239,16 +241,33 @@ public class Variable extends Atom {
         }
         
        public boolean isLocal(){
-            return index == ExprType.LOCAL;
+            //return index == ExprType.LOCAL;
+            return type == ExprType.LOCAL;
         }
        
        public void localize(){
-           index = ExprType.LOCAL;
+          // index = ExprType.LOCAL;
+           setType(ExprType.LOCAL);
        }
        
        void undef(){
-          index = ExprType.UNDEF; 
+          //index = ExprType.UNDEF; 
+          setType(ExprType.UNDEF);
        }
+
+    /**
+     * @return the type
+     */
+    public int subtype() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(int type) {
+        this.type = type;
+    }
  
 	
 }

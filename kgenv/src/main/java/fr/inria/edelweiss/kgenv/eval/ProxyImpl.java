@@ -1240,10 +1240,9 @@ public class ProxyImpl implements Proxy, ExprType {
      */
     private Object let(Expr exp, Environment env, Producer p, IDatatype val) {
         Expr var  = exp.getExp(0);  
-        exp.local(var);
-        env.set(var, val);
+        env.set(exp, var, val);
         Object res = eval.eval(exp, env, p);
-        env.unset(var);
+        env.unset(exp, var);
         return res;
     }
     

@@ -181,7 +181,7 @@ public class Transformer implements ExpType {
 				
 		q = transform(q, ast);
                 
-                error(ast);
+                error(q, ast);
 		return q;
 	}
                      
@@ -349,7 +349,10 @@ public class Transformer implements ExpType {
             }
         }
        
-        void error(ASTQuery ast){
+        void error(Query q, ASTQuery ast){
+            if (ast.isFail()){
+                q.setFail(true);
+            }
             if (ast.isTemplate()){
                 // TODO: because template st:profile may not have been read yet ...
                 return;

@@ -222,45 +222,54 @@ public class Memory implements Environment {
 		}
 		return str;
 	}
+              
         
         /**
-         * Copy this Bind local variable stack into mem as std memory   
+         * Copy this Bind local variable stack into this memory   
          * Use case: define (xt:foo(?x) = exists { ?x ex:pp ?y }) 
          * TODO: 
          * MUST only consider  bindings of current function call
          * (not all bindings in the stack)
-         */
-        Memory copyBind(Memory mem){
+         */        
+        void copy(Bind bind){
             for (Expr var : bind.getVariables()){
                 Node qn = getQueryNode(var.getLabel());
                 if (qn == null){
                     // System.out.println("Mem: undefined query node: " + var);
                 }
                 else {
-                    mem.push(qn, bind.get(var));
+                    //System.out.println("M: " + qn + " " + bind.get(var));
+                    push(qn, bind.get(var));
                 }
             }
-            mem.setBind(bind);
-            return mem;            
+            setBind(bind);
         }
 	
 	/**
-	 * Pragma : mem is a fresh new Memory, init() has been done
-	 * Can bind all nodes or bind only subquery select nodes (2 different semantics)
+	 * mem is a fresh new Memory, init() has been done
+         * Copy this memory into mem
+         * Use case: exists {} , sub query
+	 * Can bind all Memory nodes or bind only subquery select nodes (2 different semantics)
+         * TODO: let ( .., exists {}), MUST push BGP solution and then push Bind
+         * 
 	 */
 	Memory copyInto(Query sub, Memory mem){
 		int n = 0;
-                if (bind != null && bind.size() > 0){
-                    copyBind(mem);
+                if (sub == null){
+                    // exists {}
+                    if (bind != null && bind.size() > 0){
+                        mem.copy(bind);
+                    }
+                    else {
+                            // bind all nodes
+                            // use case: inpath copy the memory
+                            for (Node qNode : qNodes){
+                                    copyInto(qNode, qNode, mem, n);
+                                    n++;
+                            }
+                    }
                 }
-                else if (sub == null){
-			// bind all nodes
-			// use case: inpath copy the memory
-			for (Node qNode : qNodes){
-				copyInto(qNode, qNode, mem, n);
-				n++;
-			}
-		}
+                // subquery
 		else if (eval.getMode() == Evaluator.SPARQL_MODE &&
 				 ! sub.isBind()){
 			// SPARQL does not bind args
@@ -286,6 +295,20 @@ public class Memory implements Environment {
 		}
 		return mem;
 	}
+        
+        /**
+         * Use case: exists {} in aggregate
+         * Copy Mapping into this fresh Memory 
+         * similar to copyInto above
+         */
+      void copy(Mapping map) {
+            if (map.hasBind()) {
+                copy(map.getBind());
+            } else {
+                push(map, -1);
+            }
+     }
+        
 	
 	/**
 	 * outNode is query Node in this Memory
@@ -934,16 +957,15 @@ public class Memory implements Environment {
 	}
 	
 	public Node getNode(Expr var){
-		int index = var.getIndex();
-                switch (index){
-                    
+		int index = var.getIndex();               
+                switch (var.subtype()){                   
                     case ExprType.LOCAL:
                         return get(var);
                         
                     case ExprType.UNDEF:
                         return null;
                         
-                    case ExprType.UNBOUND:
+                    case ExprType.GLOBAL:
 			index = getIndex(var.getLabel());
 			var.setIndex(index);
 			if (index == ExprType.UNBOUND){
@@ -1051,18 +1073,19 @@ public class Memory implements Environment {
         }
 
     @Override
-    public void set(Expr var, Node value) {
+    public void set(Expr exp, Expr var, Node value) {
         if (bind == null){
             bind = new Bind();
         }
-        bind.set(var, value);
+        bind.set(exp, var, value);
     }
     
-     public void set(List<Expr> lvar, Object[] value) {
+    @Override
+     public void set(Expr exp, List<Expr> lvar, Object[] value) {
         if (bind == null){
             bind = new Bind();
         }
-        bind.set(lvar, value);
+        bind.set(exp, lvar, value);
     }
 
     @Override
@@ -1074,18 +1097,18 @@ public class Memory implements Environment {
     }
 
     @Override
-    public void unset(Expr var) {
+    public void unset(Expr exp, Expr var) {
         if (bind == null) {
             bind = new Bind();
         }
-        bind.unset(var);
+        bind.unset(exp, var);
     }
     
-     public void unset(List<Expr> lvar) {
+     public void unset(Expr exp, List<Expr> lvar) {
         if (bind == null){
             bind = new Bind();
         }
-        bind.unset(lvar);
+        bind.unset(exp, lvar);
     }
      
      void setBind(Bind b){

@@ -458,18 +458,24 @@ public class Eval implements ExpType, Plugin {
             mem.start();
             memory.copyInto(null, mem);
         } else {
-            //mem = copyMemory(memory, query, null);
             mem = copyMemory(memory, memory.getQuery(), null);
             exp.setObject(mem);
         }
         return mem;
     }
     
-    // TODO: optimize by storing mem
+    /**
+     * use case: exists {} in aggregate
+     * select (count(if (exists { BGP }, ?x, ?y)) as ?c)
+     * Env is a Mapping
+     * Copy Mapping into fresh Memory in order to evaluate exists {} in Memory
+     * TODO: optimize by storing mem
+     * 
+     **/
     public Memory getMemory(Mapping map, Exp exp) {
         Memory mem = new Memory(match, evaluator);
         mem.init(query);
-        mem.push(map, -1);
+        mem.copy(map);
         return mem;
     }
 

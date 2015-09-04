@@ -291,7 +291,7 @@ public class Constant extends Atom {
 		return dt;
 	}
 	
-	public Expression compile(ASTQuery ast){
+	public Expression prepare(ASTQuery ast){
 		getDatatypeValue();
 		return this;
 	}

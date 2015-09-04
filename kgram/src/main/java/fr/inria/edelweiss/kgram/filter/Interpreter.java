@@ -501,7 +501,7 @@ public class Interpreter implements Evaluator, ExprType {
         Exp pat = q.getPattern(exp);
         Node gNode = env.getGraphNode();
         Memory memory = null;
-
+        
         if (env instanceof Memory) {
             memory = kgram.getMemory((Memory) env, pat);
         } 
@@ -589,13 +589,13 @@ public class Interpreter implements Evaluator, ExprType {
         if (val == null){
             return null;
         }
-        return let(ee, env, p, var, val);
+        return let(ee, env, p, exp, var, val);
     }
     
-     private Object let(Expr exp, Environment env, Producer p, Expr var, Node val) {     
-        env.set(var, val);
+     private Object let(Expr exp, Environment env, Producer p, Expr let, Expr var, Node val) {     
+        env.set(let, var, val);
         Object res = eval(exp, env, p);
-        env.unset(var);
+        env.unset(let, var);
         return res;
     }
     
@@ -611,15 +611,21 @@ public class Interpreter implements Evaluator, ExprType {
         return eval(exp, env, p, def, values);
     }
         
+    /**
+     * Extension function call  
+     */
     public Object eval(Expr exp, Environment env, Producer p, Expr def, Object[] values){   
         //count++;
         Expr fun = def.getExp(0);
-        env.set(fun.getExpList(), values);        
+        env.set(def, fun.getExpList(), values);        
         Object res = eval(def.getExp(1), env, p);        
-        env.unset(fun.getExpList());        
+        env.unset(def, fun.getExpList());        
         return res;
     }
     
+    /**
+     * Use case: st:process() overloaded by an extension function   
+     */
       public Object eval(Expr exp, Environment env, Producer p, Extension ext, Object[] values){
         Expr def = ext.get(exp, values);
         if (def == null){

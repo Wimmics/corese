@@ -5,6 +5,7 @@ public interface ExprType {
 	public static int UNDEF   = -1;
         public static int UNBOUND = -2;
         public static int LOCAL   = -3;	
+        public static int GLOBAL  = -4;	
 
 	// abstract type
 	public static int ANY 	= 1;

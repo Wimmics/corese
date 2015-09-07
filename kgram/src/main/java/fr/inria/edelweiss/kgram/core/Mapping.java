@@ -845,7 +845,7 @@ public class Mapping
     }
     
     boolean hasBind(){
-        return bind != null && bind.size()>0;
+        return bind != null && bind.hasBind();
     }
 
    @Override

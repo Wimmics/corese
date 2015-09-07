@@ -257,7 +257,7 @@ public class Memory implements Environment {
 		int n = 0;
                 if (sub == null){
                     // exists {}
-                    if (bind != null && bind.size() > 0){
+                    if (bind != null && bind.hasBind()){
                         mem.copy(bind);
                     }
                     else {

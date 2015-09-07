@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgram.core;
 
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +19,17 @@ public class Bind {
     Node value;
     ArrayList<Expr> varList;
     ArrayList<Node> valList;
+    // level of the stack before function call
+    // every funcall add a level
+    // let add no level
+    ArrayList<Integer> level;
+    
     private static Logger logger = Logger.getLogger(Bind.class);
 
     Bind() {
         varList = new ArrayList();
         valList = new ArrayList();
+        level   = new ArrayList();
     }
 
     public String toString() {
@@ -35,6 +42,14 @@ public class Bind {
     
     public int size() {
         return varList.size();
+    }
+    
+    /**
+     * A function (possibly with no arg) or a let has been called
+     * @return 
+     */
+    public boolean hasBind(){
+        return varList.size() > 0 || level.size()>0;
     }
 
     public Node get(Expr var) {
@@ -54,6 +69,11 @@ public class Bind {
     }
 
     public void set(Expr exp, List<Expr> lvar, Object[] value) {
+        if (exp.oper() == ExprType.EQ){
+            // xt:fun(?x) = exp
+            // funcall
+            level.add(varList.size());           
+        }
         int i = 0;
         for (Expr var : lvar) {
             set(var, (Node) value[i++]);
@@ -65,6 +85,11 @@ public class Bind {
     }
 
     public void unset(Expr exp, List<Expr> lvar) {
+        if (exp.oper() == ExprType.EQ){
+            // xt:fun(?x) = exp
+            // funcall
+            level.remove(level.size()-1);
+        }
         for (int j = lvar.size() - 1; j >= 0; j--) {
             unset(lvar.get(j));
         }
@@ -82,6 +107,28 @@ public class Bind {
     
     
      public List<Expr> getVariables() {
-        return varList;
-    } 
+         if (level.size() > 0){
+             // funcall: return variables of this funcall (including let var)
+             return getVar();
+         }
+         else {
+             // let variables
+             return varList;
+         }
+    }
+     
+     /**
+      * Funcall has bound variables from level to top of stack
+      * Return these variables (may be empty if function has no arg)
+      * @return 
+      */
+     List<Expr> getVar(){
+         int start = level.get(level.size()-1);
+         int top   = varList.size();
+         ArrayList<Expr> list = new ArrayList();
+         for (int i = start; i<top; i++){
+             list.add(varList.get(i));
+         }
+         return list;
+     }
 }

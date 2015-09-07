@@ -167,7 +167,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             Expression exp  = def.getArg(1);        
 
             if (isLocal(var)){
-                ast.addError("Variable already declared: " + var);
+                ast.addError("Variable already defined: " + var);
                 ast.addFail(true);
             }
             else {

@@ -209,11 +209,12 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                     Variable var = arg.getVariable();
                     localize(var);
                     remove(var);
+                    t.getArg(1).visit(this);
                     return;
                 }
             }
         }
-        ast.setError("Uncorrect map: " + t);
+        ast.setError("Incorrect Map: " + t);
         ast.setFail(true);
     }
     

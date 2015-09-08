@@ -66,6 +66,12 @@ public class Processor {
 	private static final String MAPLIST = "maplist";
 	private static final String APPLY   = "apply";
         
+        private static final String XT_SELF = EXT + "self";
+        private static final String XT_FIRST = EXT + "first";
+        private static final String XT_REST = EXT + "rest";
+        private static final String XT_CONS = EXT + "cons";        
+        private static final String XT_CONCAT = EXT + "concat";
+        private static final String XT_COUNT = EXT + "count";
         private static final String XT_SUM   = EXT + "sum";
         private static final String XT_PROD  = EXT + "prod";
         private static final String XT_GRAPH    = EXT + "graph";
@@ -160,7 +166,8 @@ public class Processor {
 	static final String STL_VSET                = STL + "vset"; 
 	static final String STL_VGET                = STL + "vget"; 
         static final String STL_VISIT               = STL + "visit"; 
-	static final String STL_VISITED             = STL + "visited"; 
+	static final String STL_ERRORS              = STL + "errors";
+	static final String STL_VISITED             = STL + "visited";        
 	static final String STL_BOOLEAN             = STL + "boolean"; 
         
 	public static final String STL_GROUPCONCAT  = STL + "group_concat"; 
@@ -376,6 +383,7 @@ public class Processor {
                 else if (term.isFunction()){
 			setType(ExprType.FUNCTION);
 			setOper(getOper());
+                        preprocess(ast);
 		}
 		else if (term.isAnd()){
 			setType(ExprType.BOOLEAN);
@@ -435,6 +443,7 @@ public class Processor {
                 case ExprType.EXTERNAL:
                     compileExternal(ast);
                     break;
+               
             }
         }
         
@@ -520,6 +529,13 @@ public class Processor {
 		defoper(MAPLIST,        ExprType.MAPLIST);
 		defoper(APPLY,          ExprType.APPLY);
                 
+		defoper(XT_CONCAT,      ExprType.XT_CONCAT);
+		defoper(XT_CONS,        ExprType.XT_CONS);
+		defoper(XT_FIRST,       ExprType.XT_FIRST);
+		defoper(XT_REST,        ExprType.XT_REST);
+		defoper(XT_SELF,        ExprType.SELF);
+                
+		defoper(XT_COUNT,        ExprType.XT_COUNT);
 		defoper(XT_SUM,          ExprType.XT_SUM);
 		defoper(XT_PROD,         ExprType.XT_PROD);
 		defoper(XT_GRAPH,        ExprType.XT_GRAPH);
@@ -620,6 +636,7 @@ public class Processor {
                 defoper(STL_VGET,               ExprType.STL_VGET);
                 defoper(STL_VISIT,              ExprType.STL_VISIT);
                 defoper(STL_VISITED,            ExprType.STL_VISITED);
+                defoper(STL_ERRORS,             ExprType.STL_ERRORS);
                 defoper(STL_BOOLEAN,            ExprType.STL_BOOLEAN);
 
 		defoper(LEVEL,          ExprType.LEVEL);
@@ -760,6 +777,46 @@ public class Processor {
 		lExp.add(dt);
 		lExp.add(type);
 	}
+        
+        void preprocess(ASTQuery ast){
+            switch (term.oper()){
+                
+                case ExprType.MAP:
+                case ExprType.MAPLIST:
+                case ExprType.APPLY:
+                    processMap(ast);
+                    break;
+                    
+            }
+        }
+        
+        /**
+         * map(xt:fun, ?list)
+         * -> 
+         * map(xt:fun(?x), ?list)
+         * @param ast 
+         */
+        void processMap(ASTQuery ast){
+            if (term.getArgs().size() == 2){
+                Expression fst = term.getArg(0);
+                
+                if (fst.isConstant()){
+                    Term fun = ast.createFunction(fst.getConstant());
+                    if (term.oper() != ExprType.APPLY){
+                        Variable var = ASTQuery.createVariable("?_map_var");
+                        fun.add(var);
+                    }
+                    term.setArg(0, fun);
+                }
+            }
+        }
+        
+        
+        Term cstToFun(ASTQuery ast, Constant cst) {
+            Variable var = ASTQuery.createVariable("_map_");
+            Term fun = ast.createFunction(cst, var);
+            return fun;
+        }
 	
 	/**
 	 * sha256(?x) ->

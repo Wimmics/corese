@@ -219,6 +219,8 @@ public interface ExprType {
  	public static int STL_VGET                  = 270;
  	public static int STL_PROCESS_URI           = 271;
  	public static int STL_EXPORT                = 272;
+ 	public static int STL_ERRORS                = 273;
+        
               
 	public static int ISSKOLEM 	= 300;
 	public static int SKOLEM 	= 301;
@@ -240,13 +242,19 @@ public interface ExprType {
         
         public static int XT_SUM         = 400;
         public static int XT_PROD        = 401;
+        public static int XT_CONCAT      = 402;
+        public static int XT_COUNT       = 403;
+        public static int XT_CONS        = 404;
+        public static int XT_FIRST       = 405;
+        public static int XT_REST        = 406;
         
-        public static int XT_GRAPH       = 402;
-        public static int XT_SUBJECT     = 403;
-        public static int XT_OBJECT      = 404;
-        public static int XT_PROPERTY    = 405;
-        public static int XT_VALUE       = 406;
-        public static int XT_INDEX       = 407;
+        
+        public static int XT_GRAPH       = 410;
+        public static int XT_SUBJECT     = 411;
+        public static int XT_OBJECT      = 412;
+        public static int XT_PROPERTY    = 413;
+        public static int XT_VALUE       = 414;
+        public static int XT_INDEX       = 415;
         
         public static int SLICE       = 450;
         

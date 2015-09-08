@@ -116,6 +116,9 @@ public class PluginTransform implements ExprType {
 
             case STL_VISITED:
                 return visited(exp, env, p, dt);
+                
+            case STL_ERRORS:
+                return errors(exp, env, p, dt);
 
             case STL_VISIT:
                 return visit(exp, env, p, null, dt, null);
@@ -566,6 +569,13 @@ public class PluginTransform implements ExprType {
         Transformer t = getTransformer(env, p);
         boolean b = t.visited(dt);
         return plugin.getValue(b);
+    }
+    
+    public Object errors(Expr exp, Environment env, Producer p, IDatatype dt) {
+        Transformer t = getTransformer(env, p);  
+        t.getVisitor();
+        
+        return dt;
     }
 
     // Visitor design pattern

@@ -218,11 +218,7 @@ public class PluginImpl extends ProxyImpl {
              case XT_OBJECT:
              case XT_INDEX:
                  return access(exp, env, p, dt);
-                 
-             case REVERSE:
-                 return reverse(dt);
-                 
-                 
+                        
              default:
                  return pt.function(exp, env, p, dt);
            
@@ -294,10 +290,7 @@ public class PluginImpl extends ProxyImpl {
                 IDatatype dt2 =  (IDatatype) args[1];
                 IDatatype dt3 =  (IDatatype) args[2];
                 return setProperty(dt1, dt2.intValue(), dt3);
-                
-            case LIST:
-                return list(args);
-                
+                                        
             case IOTA:
                 return iotag(args);
 
@@ -373,31 +366,6 @@ public class PluginImpl extends ProxyImpl {
         return dt;
     }
     
-    
-    IDatatype list(Object[] args){
-        IDatatype[] ldt = new IDatatype[args.length];
-        for (int i=0; i<ldt.length; i++){
-            ldt[i] = (IDatatype) args[i];
-        }
-        IDatatype dt = DatatypeMap.createList(ldt);
-        return dt;
-    }
-    
-    IDatatype reverse(IDatatype dt){
-        if ( ! dt.isArray()){
-            return dt;
-        }
-        IDatatype[] value = dt.getValues();
-        IDatatype[] res   = new IDatatype[value.length];
-        int n = value.length - 1;
-        for (int i = 0; i<value.length; i++){
-            res[i] = value[n - i];
-        }
-        
-        return DatatypeMap.createList(res);
-    }
-    
-
     IDatatype similarity(Graph g, IDatatype dt1, IDatatype dt2) {
 
         Node n1 = g.getNode(dt1.getLabel());

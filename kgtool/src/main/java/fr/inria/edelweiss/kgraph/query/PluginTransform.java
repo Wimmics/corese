@@ -546,7 +546,7 @@ public class PluginTransform implements ExprType {
         else {
            t.export(dt1.getLabel(), dt2); 
         }
-        return TRUE;
+        return dt2;
     }
 
     public IDatatype vset(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {

@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -316,8 +317,20 @@ public class ProxyImpl implements Proxy, ExprType {
                 return apply(exp, env, p, dt);
                 
             case SLICE:
-                return slice(env, dt);    
-
+                return slice(env, dt);  
+                
+            case XT_COUNT:
+                return DatatypeMap.count(dt);
+                
+            case XT_FIRST:
+                return DatatypeMap.first(dt);
+                
+            case XT_REST:
+                return DatatypeMap.rest(dt);
+                               
+            case XT_REVERSE:
+                 return DatatypeMap.reverse(dt);
+                                     
             default:
                 if (plugin != null) {
                     return plugin.function(exp, env, p, o1);
@@ -429,6 +442,15 @@ public class ProxyImpl implements Proxy, ExprType {
                 boolean bb = StringHelper.containsWordIgnoreCaseAndAccent(dt.getLabel(), dt1.getLabel());
                 return (bb) ? TRUE : FALSE;
             }
+                
+            case XT_CONS:
+                return DatatypeMap.cons(dt, dt1);
+                
+            case XT_APPEND:
+                return DatatypeMap.append(dt, dt1);
+                
+            case XT_GET:
+                return DatatypeMap.get(dt, dt1);
 
             default:
                 if (plugin != null) {
@@ -477,8 +499,12 @@ public class ProxyImpl implements Proxy, ExprType {
             case XT_PROD:
                 return prod(args);
                 
+            case LIST:
+                return DatatypeMap.list(args);                
+                
             case CONCAT:
             case STL_CONCAT:
+            case XT_CONCAT:
                 return concat(exp, env, p, args);
             
         }
@@ -1235,6 +1261,9 @@ public class ProxyImpl implements Proxy, ExprType {
                
     }
     
+    
+    
+    
      /**
      * exp = xt:fun(?x)
      */
@@ -1246,7 +1275,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return res;
     }
     
-    private Object sum(Object[] args){
+    private IDatatype sum(Object[] args){
         double d = 0;        
         for (Object obj : args){
             d += ((IDatatype) obj).doubleValue();
@@ -1254,12 +1283,12 @@ public class ProxyImpl implements Proxy, ExprType {
         return DatatypeMap.newInstance(d);
     }
     
-     private Object prod(Object[] args){
-        double d = 0;        
+     private IDatatype prod(Object[] args){
+        double d = 1;        
         for (Object obj : args){
             d *= ((IDatatype) obj).doubleValue();
         }
         return DatatypeMap.newInstance(d);        
     }
-    
+     
 }

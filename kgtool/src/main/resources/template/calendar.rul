@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Sep 17 14:55:37 CEST 2015
+Thu Sep 17 15:14:22 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -83,14 +83,18 @@ template st:start {
 
   st:call-template(st:main, ?year)
   
-  st:call-template(st:content, ?year)
+  if (?content, st:call-template(st:content, ?year), "")
   
   st:call-template(st:tail)
 
 }
 where {
+  bind (st:get(st:profile) as ?prof) 
+  bind (st:set(st:content, bound(?prof)) as ?content)
+  
   bind (st:get(st:uri) as ?uri)
-  bind (st:set(st:year, xsd:integer(substr(?uri, strlen(st:) + 2))) as ?year)
+  bind (xsd:integer(substr(?uri, strlen(st:) + 2)) as ?tmp)
+  bind (st:set(st:year, coalesce(?tmp, year(now()))) as ?year)
 }
 
 ]]>
@@ -235,7 +239,8 @@ where {
     bind (unnest(xt:iota(?days)) as ?n)
     bind (cal:date(?y, ?m, ?n) as ?date)
     bind (xt:day(?date) as ?day) 
-    bind (exists { ?x ?p ?dd 
+    bind (st:get(st:content) &&
+      exists { ?x ?p ?dd 
       filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
       filter (year(?dd) = year(?date) 
       && month(?dd) = month(?date) 

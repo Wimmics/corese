@@ -828,7 +828,11 @@ public class ProducerImpl implements Producer, IProducerQP {
             IDatatype dt = (IDatatype) object;
             if (dt.getObject() != null) {
                 return map(nodes, dt.getObject());
-            } else {
+            }
+            else if (dt.isArray()){
+                return map(nodes, dt.getValues());
+            }
+            else {
                 return map(nodes, dt);
             }
         } else if (object instanceof SQLResult) {
@@ -845,6 +849,15 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
     
     Mappings map(List<Node> lNodes, Collection<IDatatype> list) {
+        Mappings map = new Mappings();
+        for (IDatatype dt : list){
+            Mapping m =  Mapping.create(lNodes.get(0), dt);
+            map.add(m);
+        }
+        return map;
+    }
+    
+    Mappings map(List<Node> lNodes, IDatatype[] list) {
         Mappings map = new Mappings();
         for (IDatatype dt : list){
             Mapping m =  Mapping.create(lNodes.get(0), dt);

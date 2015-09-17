@@ -1,0 +1,65 @@
+#
+# Compute the day of a date of next week
+# Olivier Corby - Wimmics, Inria, I3S - 2015
+#
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+select 
+(now() as ?now)
+
+(xt:today() as ?today)
+(xt:tomorrow() as ?tomorrow)
+(xt:yesterday() as ?yesterday)
+
+(cal:next(xt:today()) as ?today2)
+(cal:next(xt:tomorrow()) as ?tomorrow2)
+(cal:next(xt:yesterday()) as ?yesterday2)
+
+(cal:next(xt:today(), 1) as ?today3)
+(cal:next(xt:tomorrow(), 1) as ?tomorrow3)
+(cal:next(xt:yesterday(), 1) as ?yesterday3)
+
+
+where {
+
+bind (
+
+package(
+
+define (xt:today() = 
+  xt:day(now())),
+  
+define (xt:tomorrow() = 
+  xt:day(cal:add(now(), 1))),  
+
+define (xt:yesterday() = 
+  xt:day(cal:add(now(), -1))),    
+  
+define (cal:next(?day) =
+  cal:shift(now(), ?day, 0)),
+  
+# shift = 0 : this week or next week
+# shift = 1 : next week 
+define (cal:next(?day, ?shift) =
+  cal:shift(now(), ?day, ?shift)),
+
+define (cal:shift(?date, ?day, ?shift) =
+  let (
+    ?first = cal:day(?date), 
+    ?from  = cal:num(?first), 
+    ?to    = cal:num(?day),
+    if (?from < ?to,
+      let (?diff = ?to - ?from,
+	cal:add(?date, ?diff + 7 * ?shift)),
+      let (?diff = ?from - ?to,
+	cal:add(?date, if (?shift = 0, 1, ?shift) * 7 - ?diff))))),
+	
+define (cal:add(?date, ?n) =
+  cal:date (year(?date), month(?date), day(?date) + ?n)),
+  
+define (cal:date(?y, ?m, ?d) =
+  xsd:date(concat(?y, "-", ?m, "-", ?d)))
+    
+
+) as ?def)
+
+}

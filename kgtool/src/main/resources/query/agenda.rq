@@ -1,0 +1,28 @@
+#
+# Generate the calendar of the year
+# Olivier Corby - Wimmics, Inria, I3S - 2015
+#
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+template {
+    "\n" cal:month(?m) "\n"
+    "Mo Tu We Th Fr Sa Su \n"
+    group {
+        if (?n = 1, xt:space(cal:num(?day) - 1), "")
+        if (?n < 10, " ", "") ?n " "
+        if (?day = "Sunday", "\n", "")
+        ; separator = ""
+    }
+    ; separator = "\n"                   
+}
+where {
+    bind (unnest(xt:iota(12)) as ?m)
+    bind (unnest(xt:iota(cal:days(?y, ?m))) as ?n)
+    bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?date)
+    bind (xt:day(?date) as ?day)
+    bind (define(xt:space(?n) = 
+      if (?n = 0, "", concat("   " , xt:space(?n - 1)))) 
+    as ?sp)
+}
+group by ?m
+order by ?m
+values ?y { 2015 }

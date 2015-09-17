@@ -67,7 +67,8 @@ public class MyCellRenderer extends JPanel implements ListCellRenderer{
 		path=value.toString();
 		extension = extension(value.toString());
 		
-		if(extension.equals("rdfs") || extension.equals("owl") ){
+                if (extension == null){}
+                else if(extension.equals("rdfs") || extension.equals("owl") ){
     		foreground = Color.blue;
   			background=Color.white;	
 		}

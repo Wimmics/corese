@@ -70,4 +70,22 @@ pre {
     border-color: #5C4DC4;
     color: #00428C;
     background-color: #E4E5E7;
-}         
+}  
+
+.pre {
+    font-size: 120%;
+    font-weight: bold;
+    line-height: 120%;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    border-style: solid;
+    border-left-width: thin;
+    border-top-width: thin;
+    border-right-width: thin;
+    border-bottom-width: thin;
+    border-color: #5C4DC4;
+    color: #00428C;
+    background-color: #E4E5E7;
+}     

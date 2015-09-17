@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
@@ -18,6 +19,7 @@ import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 
 public class CompileService {
 	
@@ -32,22 +34,49 @@ public class CompileService {
 	 * Generate bindings for the service, if any
 	 */
 	public void compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
+            Query out = q.getOuterQuery();
 		if (lmap == null){
-			if (provider.isSparql0(serv)){
-				filter(q, env);
-			}
-			else {
-				bindings(q, env);
-			}
+                    if (isValues(out)) {
+                        bindings(q, env);
+                    } else if (isFilter(out) || provider.isSparql0(serv)) {
+                        filter(q, env);
+                    } else {
+                        bindings(q, env);
+                    }
 		}
-		else if (provider.isSparql0(serv)){
+		else if (isValues(out)){
+                    bindings(q, lmap, start, limit);
+                }
+                else if (isFilter(out) || provider.isSparql0(serv)){
 			filter(q, lmap, start, limit);
 		}
 		else {
 			bindings(q, lmap, start, limit);
-		}
-		
+		}		
 	}
+        
+      String getBind(Query q) {
+        Transformer t = (Transformer) q.getTransformer();
+        if (t != null) {
+            Context c = t.getContext();
+            IDatatype dt = c.get(Context.STL_BIND);
+            if (dt != null){
+                return dt.getLabel();
+            }
+        }
+        return null;
+        }
+        
+        
+       boolean isValues(Query q) {
+           String str = getBind(q);
+           return str != null && str.equals(Context.STL_VALUES);
+        }
+       
+       boolean isFilter(Query q) {
+           String str = getBind(q);
+           return str != null && str.equals(Context.STL_FILTER);
+        }
 	
 	public void prepare(Query q){
 		Query g 	 = q.getGlobalQuery();
@@ -89,11 +118,24 @@ public class CompileService {
 				lval.add(cst);
 			}
 		}
+                
+               if (ast.getSaveBody() == null) {
+                ast.setSaveBody(ast.getBody());
+            }
+            BasicGraphPattern body = BasicGraphPattern.create();
+            if (lvar.size() > 0) {
+                Values values = Values.create(lvar, lval);
+                body.add(values);
+            }
+            for (Exp e : ast.getSaveBody()) {
+                body.add(e);
+            }
+            ast.setBody(body);
 		
-		if (lvar.size()>0){
-			Values values = Values.create(lvar, lval);
-			ast.setValues(values);
-		}
+//		if (lvar.size()>0){
+//			Values values = Values.create(lvar, lval);
+//			ast.setValues(values);
+//		}
 	}
 	
 	/**
@@ -137,10 +179,22 @@ public class CompileService {
 				values.addValues(lval);
 			}
 		}
+                
+            if (ast.getSaveBody() == null) {
+                ast.setSaveBody(ast.getBody());
+            }
+            BasicGraphPattern body = BasicGraphPattern.create();
+            if (values.getValues().size() > 0) {
+                body.add(values);
+            }
+            for (Exp e : ast.getSaveBody()) {
+                body.add(e);
+            }
+            ast.setBody(body);
 
-                if (values.getValues().size()>0){
-			ast.setValues(values);
-		}
+//                if (values.getValues().size()>0){
+//			ast.setValues(values);
+//		}
 
 	}
 	
@@ -214,25 +268,27 @@ public class CompileService {
 				lt.add(t);
 			}
 		}
-				
+		
+                if (ast.getSaveBody() == null){
+                    ast.setSaveBody(ast.getBody());						
+                 }
+                
+                BasicGraphPattern body = BasicGraphPattern.create();
+                for (Exp e : ast.getSaveBody()){                            
+                     body.add(e);
+                }
+                        
 		if (lt.size()>0){
 			Term f = lt.get(0);
 			for (int i = 1; i<lt.size(); i++){
 				f = Term.create(Term.SEAND, f, lt.get(i));
-			}
-			
-			if (ast.getSaveBody() == null){
-				ast.setSaveBody(ast.getBody());
-			}
-			BasicGraphPattern body = BasicGraphPattern.create();
-                        for (Exp e : ast.getSaveBody()){                            
-                            body.add(e);
-                        }
+			}						
 			//body.add(ast.getSaveBody());
 			body.add(Triple.create(f));
-			ast.setBody(body);
 		}
-		
+                
+		ast.setBody(body);
+
 	}
 	
 	/**
@@ -293,7 +349,10 @@ public class CompileService {
 		}
 		
 		BasicGraphPattern body = BasicGraphPattern.create();
-		body.add(ast.getSaveBody());
+		//body.add(ast.getSaveBody());
+                for (Exp e : ast.getSaveBody()){                            
+                            body.add(e);
+                }
 		if (filter != null) {
 			body.add(Triple.create(filter));
 		}

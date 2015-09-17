@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,6 +46,7 @@ public class DatatypeMap implements Cst, RDF {
     static long COUNT = 0;
     public static CoreseBoolean TRUE = CoreseBoolean.TRUE;
     public static CoreseBoolean FALSE = CoreseBoolean.FALSE;
+    static IDatatype EMPTY_LIST = createList(new IDatatype[0]);
     static final String LIST = ExpType.EXT + "List";
     private static final int INTMAX = 100;
     static  IDatatype[] intCache;
@@ -450,6 +452,10 @@ public class DatatypeMap implements Cst, RDF {
         IDatatype dt = new CoreseArray(ldt);
         return dt;
     }
+    
+     public static IDatatype createList() {
+       return EMPTY_LIST;
+    }
 
     public static IDatatype createList(List<IDatatype> ldt) {
         IDatatype dt = CoreseArray.create(ldt);
@@ -650,5 +656,106 @@ public class DatatypeMap implements Cst, RDF {
                 || dt instanceof CoreseUndefLiteral
                 || dt instanceof CoreseXMLLiteral
                 || dt instanceof CoreseString);
+    }
+    
+    /******************************/
+    
+     public static IDatatype count(IDatatype dt){
+        if (! dt.isArray()){
+              return null;
+          }        
+         return newInstance(dt.size());
+     }
+     
+      public static IDatatype first(IDatatype dt){
+         IDatatype[] val = dt.getValues();
+         if (val == null || val.length>0){
+             return null;
+         }
+         return val[0];
+     }
+      
+      public static IDatatype rest(IDatatype dt){
+         if (! dt.isArray()){
+              return null;
+          }        
+         IDatatype[] val = dt.getValues();
+       
+         if (val.length > 1){
+             IDatatype[] res = new IDatatype[val.length-1];
+             for (int i = 0; i<res.length; ){
+                 res[i] = val[++i];
+             }
+             return createList(res);
+         }
+         else {
+             return createList();
+         }
+     }
+      
+     public static IDatatype cons(IDatatype fst, IDatatype rst){
+          if (! rst.isArray()){
+              return null;
+          }
+          IDatatype[] val = rst.getValues();
+          IDatatype[] res = new IDatatype[val.length+1];
+          res[0] = fst;
+          for (int i = 0; i<val.length; i++){
+                 res[i+1] = val[i];
+             }
+          return createList(res);
+      }
+      
+      public static IDatatype append(IDatatype dt1, IDatatype dt2){
+          if (! dt1.isArray() || ! dt2.isArray()){
+              return null;
+          }
+          IDatatype[] a1 = dt1.getValues();
+          IDatatype[] a2 = dt2.getValues();
+          int n = a1.length + a2.length;
+          IDatatype[] res = Arrays.copyOf(a1, n);
+          int j = 0;
+          for (int i = a1.length; i<n; i++){
+              res[i] = a2[j++];
+          }
+          return createList(res);
+      }
+
+      
+      public static IDatatype get(IDatatype list, IDatatype n){
+          if (! list.isArray()){
+              return null;
+          }
+          IDatatype[] arr = list.getValues();
+          if (n.intValue() >= arr.length){
+              return null;
+          }
+          return arr[n.intValue()];
+      }
+      
+     public static IDatatype list(Object[] args){
+         if (args.length == 0){
+             return createList();
+         }
+        IDatatype[] ldt = new IDatatype[args.length];
+        for (int i=0; i<ldt.length; i++){
+            ldt[i] = (IDatatype) args[i];
+        }
+        IDatatype dt = createList(ldt);
+        return dt;
+    }
+    
+    public static IDatatype reverse(IDatatype dt){
+        if ( ! dt.isArray()){
+            return dt;
+        }
+        IDatatype[] value = dt.getValues();
+        IDatatype[] res   = new IDatatype[value.length];
+        int n = value.length - 1;
+        for (int i = 0; i<value.length; i++){
+            res[i] = value[n - i];
+        }
+        
+        return createList(res);
     }
 }

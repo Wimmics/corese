@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:34 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -15,6 +15,7 @@ template st:insert(?uri) {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -38,6 +39,7 @@ template st:substart(?x) {
 }
 where { 
 }
+
 ]]>
 </body>
 </rule>
@@ -77,6 +79,7 @@ where {
   filter ( ?href || exists { ?r ?p ?v } )
 
 }
+
 ]]>
 </body>
 </rule>
@@ -99,6 +102,7 @@ template st:start {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -112,6 +116,7 @@ template st:icon(?label, ?ic) {
 
 }
 where {}
+
 ]]>
 </body>
 </rule>
@@ -134,6 +139,7 @@ template st:descresource(?r) {
 where { 
     ?r ?p ?v
 }
+
 ]]>
 </body>
 </rule>
@@ -153,6 +159,7 @@ where {
   optional { ?n rdfs:label ?ln }
   
 }
+
 ]]>
 </body>
 </rule>
@@ -191,6 +198,7 @@ template st:profile {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -214,6 +222,7 @@ template st:page {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -239,6 +248,7 @@ where {
    ?r ?p ?v 
 }
  
+
 ]]>
 </body>
 </rule>
@@ -257,6 +267,39 @@ where {
   ?r ?p ?n
   optional { ?n rdfs:label ?ln }
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+
+template st:locate {
+
+  st:call-template(st:map, ?in, ?lat, ?lon)
+  
+}
+where {
+  ?in a o:Place 
+  {select * where { 
+  # let o:place first because limit 1
+    { ?in o:place [ 
+	p:longitude ?lon ;
+	p:latitude  ?lat]   
+    } 
+    union
+    {?in p:longitude ?lon ;
+	 p:latitude  ?lat }     
+  } limit 1}
+}
+
 ]]>
 </body>
 </rule>
@@ -268,7 +311,7 @@ where {
 # Geolocate resource on a map given lat et long
 #
 
-template st:locate(?r, ?lat, ?lon) {
+template st:map(?r, ?lat, ?lon) {
 
   if (st:get(st:protocol, st:ajax), "", 
   """<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>""")
@@ -307,6 +350,7 @@ template st:locate(?r, ?lat, ?lon) {
 where {
   
 }
+
 ]]>
 </body>
 </rule>
@@ -348,6 +392,7 @@ where {
   filter ( ?href || exists { ?r ?p ?v } )
 
 }
+
 ]]>
 </body>
 </rule>
@@ -373,6 +418,7 @@ where {
  filter(?x = coalesce(st:get(st:uri), ?x))
 }
 limit 1
+
 ]]>
 </body>
 </rule>
@@ -404,6 +450,7 @@ where {
    as ?pr)   
 }
  
+
 ]]>
 </body>
 </rule>
@@ -426,6 +473,7 @@ template st:default {
 where {
     bind(st:get(st:uri) as ?uri)
 }
+
 ]]>
 </body>
 </rule>
@@ -475,6 +523,7 @@ where {
 
     
 }
+
 ]]>
 </body>
 </rule>
@@ -493,6 +542,7 @@ template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
   
 }
 where {} 
+
 ]]>
 </body>
 </rule>
@@ -516,6 +566,40 @@ where {
   optional { ?x a ?t }
 }
 limit 1
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate  resources on a map (except resource given lat et long)
+#
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+template st:locateall(?r) {
+
+  "var pos" st:number() " = new google.maps.LatLng(" str(?lat) "," str(?lon) ");"
+                  
+  "var marker" st:number() 
+  "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
+  
+  "google.maps.event.addListener(marker" st:number() 
+  ", 'click', function () {window.location.href = '"   st:plink(?in)   "';});"
+  
+}
+where {
+
+   bind (st:get(st:dataset) as ?g)
+   graph ?g {
+    ?in p:longitude ?lon ; p:latitude ?lat
+    filter(?in != ?r)
+    }
+    
+}
+
 ]]>
 </body>
 </rule>
@@ -546,37 +630,7 @@ template st:title(?r, ?l, ?i) {
 }
 where {
 }
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate  resources on a map (except resource given lat et long)
-#
-prefix p:    <http://fr.dbpedia.org/property/>
-
-template st:locateall(?r) {
-
-  "var pos" st:number() " = new google.maps.LatLng(" str(?lat) "," str(?lon) ");"
-                  
-  "var marker" st:number() 
-  "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
-  
-  "google.maps.event.addListener(marker" st:number() 
-  ", 'click', function () {window.location.href = '"   st:plink(?in)   "';});"
-  
-}
-where {
-
-  bind (st:get(st:dataset) as ?g)
-  graph ?g {
-    ?in p:longitude ?lon ; p:latitude ?lat
-    filter(?in != ?r)
-    }
-}
 ]]>
 </body>
 </rule>
@@ -606,6 +660,7 @@ where {
   
   
 }
+
 ]]>
 </body>
 </rule>
@@ -635,6 +690,7 @@ where {
   optional { ?in o:thumbnail  ?ic  }
     
 }
+
 ]]>
 </body>
 </rule>
@@ -652,7 +708,7 @@ template {
   st:call-template(st:frame, ?label, coalesce(?ic, ""), 
      st:call-template(st:descplace, ?in))
    
-  st:call-template(st:locate, ?in, ?lat, ?lon)
+  st:call-template(st:locate, ?in)
 
 }
 where {
@@ -663,12 +719,9 @@ where {
   ?in rdfs:label ?label 
   	      
   optional { ?in o:thumbnail  ?ic  }
-  
-  optional {
-    ?in p:longitude ?lon ;
-	p:latitude  ?lat
-  }
+    
 }
+
 ]]>
 </body>
 </rule>

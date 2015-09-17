@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:34 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -21,6 +21,7 @@ where {
 	
 	filter(st:visit(st:super, ?x, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -35,6 +36,7 @@ template st:profile {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -52,6 +54,7 @@ where {
 		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?z)
 	as ?suc)
 }
+
 ]]>
 </body>
 </rule>
@@ -73,6 +76,7 @@ where {
       
      filter(st:visit(st:fail, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -102,6 +106,7 @@ where {
 		filter(! ?suc)
 }
 limit 1
+
 ]]>
 </body>
 </rule>
@@ -121,6 +126,7 @@ where {
 		as ?suc
 	)
 }
+
 ]]>
 </body>
 </rule>

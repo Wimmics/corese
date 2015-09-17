@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:22 CEST 2015
+Wed Sep 16 14:51:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -28,6 +28,7 @@ order by xsd:integer(substr(?p, 1 + strlen(sp:arg)))
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -48,6 +49,7 @@ template st:start {
 }
 where {
 }
+
 
 
 
@@ -85,6 +87,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -104,6 +107,7 @@ template sp:from {
 where {
   ?in sp:from/rdf:rest*/rdf:first ?f
 }
+
 
 
 
@@ -133,6 +137,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -154,6 +159,7 @@ where {
   ?in rdf:rest*/rdf:first ?exp
   bind ( exists { ?exp sp:expression ?e } as ?b )
 }
+
 
 
 
@@ -233,6 +239,7 @@ template st:profile {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -255,6 +262,7 @@ where {
 }
 # order by ?p
 order by xsd:integer(substr(?p, 1 + strlen(sp:arg)))
+
 
 
 
@@ -283,6 +291,7 @@ where {
   ?in a sp:Construct ; 
      sp:templates ?temp 
 }
+
 
 
 
@@ -319,6 +328,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -338,6 +348,7 @@ template sp:values {
 where {
   ?in sp:values ?b
 }
+
 
 
 
@@ -365,6 +376,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -384,6 +396,7 @@ template sp:using {
 where {
   ?in sp:using/rdf:rest*/rdf:first ?f
 }
+
 
 
 
@@ -410,6 +423,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -427,6 +441,7 @@ template st:default {
 where {
   bind(st:getFocusNode() as ?in)
 }
+
 ]]>
 </body>
 </rule>
@@ -446,6 +461,7 @@ template sp:usingNamed {
 where {
   ?in sp:usingNamed/rdf:rest*/rdf:first ?f
 }
+
 
 
 
@@ -472,6 +488,7 @@ where {
   ?in a sp:InsertData ;
       sp:data ?d
 }
+
 ]]>
 </body>
 </rule>
@@ -499,6 +516,7 @@ where {
   optional { ?in sp:graphIRI ?g }
 
 }
+
 ]]>
 </body>
 </rule>
@@ -522,6 +540,7 @@ where {
   ?in a sp:DeleteData ;
       sp:data ?d
 }
+
 ]]>
 </body>
 </rule>
@@ -556,6 +575,7 @@ where {
   optional { ?in sp:named ?n }
 
 }
+
 ]]>
 </body>
 </rule>
@@ -577,6 +597,7 @@ where {
   ?in a sp:SPARQLUpdate ;
   sp:updates/rdf:rest*/rdf:first ?u
 }
+
 ]]>
 </body>
 </rule>
@@ -610,6 +631,7 @@ where {
   optional { ?in sp:silent ?s }
 
 }
+
 ]]>
 </body>
 </rule>
@@ -636,6 +658,7 @@ where {
   optional { ?in sp:with ?g }
 
 }
+
 ]]>
 </body>
 </rule>
@@ -665,6 +688,7 @@ where {
   optional { ?in sp:silent ?s }
 
 }
+
 ]]>
 </body>
 </rule>
@@ -702,6 +726,7 @@ where {
   optional { ?in sp:insertPattern ?i }
 
 }
+
 ]]>
 </body>
 </rule>
@@ -730,6 +755,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -750,6 +776,7 @@ where {
   ?in sp:varName ?var ;
       sp:expression ?e
 }
+
 
 
 
@@ -782,6 +809,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -805,6 +833,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -824,6 +853,7 @@ template {
 where {
   ?in a sp:Undef  
 }
+
 
 
 
@@ -856,6 +886,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -876,6 +907,7 @@ where {
   ?in sp:varName ?var 
   filter(not exists { ?in sp:expression ?e })
 }
+
 
 
 
@@ -904,6 +936,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -926,6 +959,7 @@ where {
   ?in sp:varList/rdf:rest*/rdf:first ?var ;
       sp:expression ?e
 }
+
 
 
 
@@ -955,6 +989,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -978,6 +1013,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -997,6 +1033,7 @@ template {
 where {
   ?q sp:having ?in
 }
+
 
 
 
@@ -1023,6 +1060,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1044,6 +1082,7 @@ where {
     sp:query ?q 
   
 }
+
 
 
 
@@ -1075,6 +1114,7 @@ where {
   sp:resultNodes ?list ;
   sp:where ?w 
 }
+
 
 
 
@@ -1132,6 +1172,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1162,6 +1203,7 @@ values (?t ?l) {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1184,6 +1226,7 @@ where {
   sp:resultNodes ?list
   minus { ?in sp:where ?w }
 }
+
 
 
 
@@ -1211,6 +1254,7 @@ where {
 # default list is behind all other list templates
 # after listoption
 pragma {st:template st:priority 1001}
+
 
 
 
@@ -1243,6 +1287,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1265,6 +1310,7 @@ where {
       sp:expression ?e ;
       sp:variable ?v
 }
+
 
 
 
@@ -1294,6 +1340,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1314,6 +1361,7 @@ template {
 where {
   ?q sp:groupBy ?in
 }
+
 
 
 
@@ -1346,6 +1394,7 @@ values (?t ?l) {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1371,6 +1420,7 @@ pragma {st:template st:priority 1000}
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1391,6 +1441,7 @@ where {
   ?q sp:where ?in
   filter(?in != rdf:nil)
 }
+
 
 
 
@@ -1440,6 +1491,7 @@ optional { ?in sp:offset ?o }
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1481,6 +1533,7 @@ values (?ope ?lab) {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1508,6 +1561,7 @@ pragma {st:template st:priority 1000}
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1531,6 +1585,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1551,6 +1606,7 @@ where {
   ?in a sp:not  ;
       sp:arg1 ?f 
 }
+
 
 
 
@@ -1583,6 +1639,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1609,6 +1666,7 @@ where {
     sp:graphNameNode ?g ;
     sp:elements  ?b
 }
+
 
 
 
@@ -1639,6 +1697,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1663,6 +1722,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1683,6 +1743,7 @@ where {
   ?x sp:values ?in
   ?in rdf:rest*/rdf:first ?val
 }
+
 
 
 
@@ -1715,6 +1776,7 @@ where {
 
 
 
+
 ]]>
 </body>
 </rule>
@@ -1736,6 +1798,7 @@ where {
     sp:path1 ?p1 ;
     sp:path2 ?p2 
 }
+
 
 
 
@@ -1800,6 +1863,7 @@ where {
   optional { ?in sp:limit  ?l }
   optional { ?in sp:offset ?o }
 }
+
 
 
 

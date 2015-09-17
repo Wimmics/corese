@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -27,6 +27,7 @@ where {
       (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
    
 }
+
 ]]>
 </body>
 </rule>
@@ -38,6 +39,7 @@ template st:default(?in) {
 }
 where {
 }
+
 
 ]]>
 </body>
@@ -69,6 +71,7 @@ template st:profile(?in) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -84,6 +87,7 @@ where {
   ?in a owl:AllDisjointClasses ;
     owl:members ?l
 }
+
 ]]>
 </body>
 </rule>
@@ -110,6 +114,7 @@ where {
     
   optional { ?y a ?t filter(?t = rdfs:Datatype) }
 }
+
 ]]>
 </body>
 </rule>
@@ -132,6 +137,7 @@ template {
 where {
   ?in rdfs:subClassOf ?y
 }
+
 ]]>
 </body>
 </rule>
@@ -155,6 +161,7 @@ where {
   ?in owl:disjointUnionOf ?y 
   ?y rdf:rest*/rdf:first ?e
 }
+
 ]]>
 </body>
 </rule>
@@ -174,6 +181,7 @@ template {
 where {
   ?in owl:disjointWith ?y 
 }
+
 ]]>
 </body>
 </rule>
@@ -200,6 +208,7 @@ where {
     ?l rdf:rest*/rdf:first ?dp
     ?dp a owl:DatatypeProperty }
 }
+
 ]]>
 </body>
 </rule>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -13,6 +13,7 @@ template st:default(?in) {
 }
 where {
 }
+
 
 ]]>
 </body>
@@ -39,6 +40,7 @@ template st:profile(?in) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -57,6 +59,7 @@ where {
   ?in a owl:Class 
 }
 
+
 ]]>
 </body>
 </rule>
@@ -72,6 +75,7 @@ where {
   ?y a rdfs:Datatype
   filter not exists { ?in a rdfs:Datatype }
 }
+
 ]]>
 </body>
 </rule>
@@ -85,6 +89,7 @@ template {
 where {
   ?in a rdfs:Datatype
 }
+
 ]]>
 </body>
 </rule>
@@ -111,6 +116,7 @@ select ?in ?t ?l where {
 }
 limit 1
 }
+
 ]]>
 </body>
 </rule>
@@ -124,6 +130,7 @@ template {
 where {
   ?in a owl:NamedIndividual
 }
+
 
 ]]>
 </body>

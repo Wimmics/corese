@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -13,6 +13,7 @@ template st:default(?in) {
 }
 where {
 }
+
 
 ]]>
 </body>
@@ -39,6 +40,7 @@ template st:profile(?in) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -59,6 +61,7 @@ values (?tt ?l) {
   (owl:ObjectProperty   "DisjointObjectProperties")
   (owl:DatatypeProperty "DisjointDataProperties")
 }
+
 ]]>
 </body>
 </rule>
@@ -77,6 +80,7 @@ where {
     "ObjectPropertyRange"))
     as ?label)
 }
+
 ]]>
 </body>
 </rule>
@@ -91,6 +95,7 @@ where {
   ?in owl:inverseOf ?y
   filter(isURI(?in))
 }
+
 ]]>
 </body>
 </rule>
@@ -106,6 +111,7 @@ where {
   ?in a owl:FunctionalProperty 
   optional { ?in a ?t filter(?t = owl:DatatypeProperty) }
 }
+
 ]]>
 </body>
 </rule>
@@ -128,6 +134,7 @@ where {
   as ?label)
   
 }
+
 ]]>
 </body>
 </rule>
@@ -150,6 +157,7 @@ values (?t ?l) {
   (owl:IrreflexiveProperty 	"Irreflexive")
   (owl:InverseFunctionalProperty "InverseFunctional")
 }
+
 ]]>
 </body>
 </rule>
@@ -172,6 +180,7 @@ where {
     } 
     as ?dp)
 }
+
 ]]>
 </body>
 </rule>
@@ -190,6 +199,7 @@ where {
     "ObjectPropertyDomain"))
     as ?label)
 }
+
 ]]>
 </body>
 </rule>
@@ -203,6 +213,7 @@ template {
 where {
   ?in owl:propertyChainAxiom ?l 
 }
+
 ]]>
 </body>
 </rule>
@@ -223,6 +234,7 @@ values (?tt ?l) {
   (owl:ObjectProperty   "EquivalentObjectProperties")
   (owl:DatatypeProperty "EquivalentDataProperties")
 }
+
 ]]>
 </body>
 </rule>

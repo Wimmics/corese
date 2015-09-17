@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:22 CEST 2015
+Wed Sep 16 14:51:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -31,6 +31,7 @@ template st:sparql {
 where {
   
 }
+
 ]]>
 </body>
 </rule>
@@ -53,6 +54,7 @@ template st:start {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -70,6 +72,7 @@ where {
   ?x rs:resultVariable ?v
 }
 order by ?v
+
 ]]>
 </body>
 </rule>
@@ -93,6 +96,7 @@ where {
     bind (st:apply-templates-with(st:sparql) as ?res)
   }
 }
+
 ]]>
 </body>
 </rule>
@@ -105,6 +109,7 @@ template st:link(?uri, ?title) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -125,6 +130,7 @@ where {
   bind (st:set(st:service, coalesce(?service, "/template")) as ?s)
   bind (st:set(st:profile, coalesce(?profile, st:sparql)) as ?p)
 }
+
 ]]>
 </body>
 </rule>
@@ -152,6 +158,7 @@ where {
   
 }
 order by ?i
+
 ]]>
 </body>
 </rule>
@@ -173,6 +180,7 @@ template st:display(?x) {
 where {
       bind (st:get(st:profile) as ?profile)
 }
+
 ]]>
 </body>
 </rule>
@@ -189,6 +197,7 @@ template st:default {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -209,6 +218,7 @@ template st:pageask {
 where {
   ?r rs:boolean ?b
 }
+
 ]]>
 </body>
 </rule>
@@ -233,6 +243,7 @@ where {
   bind (st:call-template(st:esc, ?x) as ?e)
 
 }
+
 ]]>
 </body>
 </rule>
@@ -251,6 +262,7 @@ template st:pageselect {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -266,6 +278,7 @@ template st:transform(?x) {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -281,6 +294,7 @@ template st:close {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -323,6 +337,7 @@ where {
   bind (st:get(st:profile) as ?prof)
 
 }
+
 ]]>
 </body>
 </rule>
@@ -353,6 +368,7 @@ template st:graph {
 where {  
   
 }
+
 ]]>
 </body>
 </rule>
@@ -373,6 +389,7 @@ template st:opencons {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -402,6 +419,7 @@ template st:profile {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -425,6 +443,7 @@ template st:decl {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -446,6 +465,7 @@ where {
       st:pagecons) 
     as ?page)
 }
+
 ]]>
 </body>
 </rule>
@@ -464,6 +484,7 @@ template st:pagecons {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -487,6 +508,7 @@ where {
     as ?d) 
     
 }
+
 ]]>
 </body>
 </rule>
@@ -509,6 +531,7 @@ where {
   }
 }
 limit 1
+
 ]]>
 </body>
 </rule>
@@ -537,6 +560,7 @@ where {
     }
 }
 order by ?x 
+
 ]]>
 </body>
 </rule>
@@ -560,6 +584,7 @@ template st:open {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -587,6 +612,7 @@ template st:core {
 where {
   
 }
+
 ]]>
 </body>
 </rule>
@@ -613,6 +639,7 @@ where {
   filter (if (bound(?uri), ?uri in (?x, ?p, ?y), true))
 }
 order by ?x ?p ?y
+
 ]]>
 </body>
 </rule>
@@ -633,6 +660,7 @@ where {
   }
 }
 limit 1
+
 ]]>
 </body>
 </rule>
@@ -652,6 +680,7 @@ where {
   bind (st:call-template(st:esc, ?x) as ?e)
     
 }
+
 ]]>
 </body>
 </rule>
@@ -680,6 +709,7 @@ where {
   filter (if (bound(?uri), ?uri in (?x, ?p, ?y), true))
 }
 order by ?x ?p ?y
+
 ]]>
 </body>
 </rule>
@@ -705,6 +735,7 @@ where {
   
 }
 order by ?var
+
 ]]>
 </body>
 </rule>

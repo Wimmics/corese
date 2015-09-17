@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:22 CEST 2015
+Wed Sep 16 14:51:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -26,6 +26,7 @@ template st:start {
 where {
    bind(st:call-template(st:main) as ?body )
 }
+
 ]]>
 </body>
 </rule>
@@ -54,6 +55,7 @@ template st:main {
 where {
   
 }
+
 ]]>
 </body>
 </rule>
@@ -70,6 +72,7 @@ template st:type(?in) {
 where {
     filter exists { ?in rdf:type ?y } 
 }
+
 ]]>
 </body>
 </rule>
@@ -85,6 +88,7 @@ template st:tail {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -108,6 +112,7 @@ where {
   }
 }
 order by ?p 
+
 ]]>
 </body>
 </rule>
@@ -143,6 +148,7 @@ where {
    order by ?in}
    
 }
+
 ]]>
 </body>
 </rule>
@@ -172,6 +178,7 @@ st:nl()
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -212,6 +219,7 @@ where {
   ?x ?p ?y  
 }
 order by ?y
+
 ]]>
 </body>
 </rule>
@@ -231,6 +239,7 @@ template st:prefix {
 where {
   bind (unnest(st:prefix()) as (?p, ?n))
 }
+
 ]]>
 </body>
 </rule>
@@ -257,6 +266,7 @@ where {
   bind (st:getFocusNode() as ?in)
   
 }
+
 
 ]]>
 </body>

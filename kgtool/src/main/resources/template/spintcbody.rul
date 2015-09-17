@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:34 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -37,6 +37,7 @@ where {
    
    
 }
+
 ]]>
 </body>
 </rule>
@@ -64,6 +65,7 @@ where {
     filter(st:visit(st:fail, ?v, ?suc))
       
 }
+
 ]]>
 </body>
 </rule>
@@ -93,6 +95,7 @@ where {
    filter(st:visit(st:fail, ?v, ?suc))
    
 }
+
 ]]>
 </body>
 </rule>
@@ -113,6 +116,7 @@ where {
   
   filter (st:visit(st:fail, ?v, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -145,6 +149,7 @@ where {
   
    filter (st:visit(st:fail, ?f, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -178,6 +183,7 @@ where {
     
    filter(st:visit(st:fail, ?minus, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -199,6 +205,7 @@ where {
     filter(st:visit(st:fail, ?l, ?suc))
           
 }
+
 ]]>
 </body>
 </rule>
@@ -231,6 +238,7 @@ where {
     
     filter (st:visit(st:fail, ?v, ?suc))
 }
+
 ]]>
 </body>
 </rule>

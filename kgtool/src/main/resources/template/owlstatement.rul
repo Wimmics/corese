@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:34 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -27,6 +27,7 @@ where {
       (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
    
 }
+
 ]]>
 </body>
 </rule>
@@ -38,6 +39,7 @@ template st:default(?in) {
 }
 where {
 }
+
 
 ]]>
 </body>
@@ -68,6 +70,7 @@ template st:profile(?in) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -94,6 +97,7 @@ where {
   filter not exists { ?in a owl:Axiom }
   filter not exists { ?in a owl:Annotation }
 }
+
 ]]>
 </body>
 </rule>
@@ -110,6 +114,7 @@ where {
   { ?in a owl:DeprecatedProperty }  
 
 }
+
 ]]>
 </body>
 </rule>
@@ -131,6 +136,7 @@ where {
   filter not exists { ?in a owl:Axiom }  
 }
 values ?p { rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith }
+
 ]]>
 </body>
 </rule>
@@ -149,6 +155,7 @@ values (?p ?l) {
   (owl:differentFrom "DifferentIndividuals")
   (owl:sameAs "SameIndividual")
 }
+
 ]]>
 </body>
 </rule>
@@ -164,6 +171,7 @@ template {
 where {
   ?in rdf:rest*/rdf:first ?e
 }
+
 ]]>
 </body>
 </rule>
@@ -183,6 +191,7 @@ where {
      || strstarts(?t, rdf:) 
      || strstarts(?t, rdfs:)) )
 }
+
 ]]>
 </body>
 </rule>
@@ -199,6 +208,7 @@ where {
   ?in a owl:allDifferent   
   ?in owl:members | owl:distinctMembers ?l 
 }
+
 ]]>
 </body>
 </rule>
@@ -222,6 +232,7 @@ values (?q ?l) {
   (owl:targetIndividual "NegativeObjectPropertyAssertion")
   (owl:targetValue      "NegativeDataPropertyAssertion")
 }
+
 ]]>
 </body>
 </rule>

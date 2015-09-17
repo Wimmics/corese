@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:22 CEST 2015
+Wed Sep 16 14:51:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -35,6 +35,7 @@ where {
   bind (coalesce(st:get(st:uri), st:intro) as ?uri)
   
 }
+
 ]]>
 </body>
 </rule>
@@ -54,6 +55,7 @@ where {
     ?ds ?p [ st:uri ?d ]
   }
 }
+
 ]]>
 </body>
 </rule>
@@ -70,6 +72,7 @@ template st:content {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -95,6 +98,7 @@ template st:tail {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -120,6 +124,7 @@ where {
 	st:name ?n 
   }
 }
+
 ]]>
 </body>
 </rule>
@@ -157,6 +162,7 @@ template st:profile {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -178,6 +184,7 @@ where {
   bind (st:get(st:query) as ?query)
   filter bound(?query)
 }
+
 ]]>
 </body>
 </rule>
@@ -203,6 +210,7 @@ where {
 	st:name ?n 
   }
 }
+
 ]]>
 </body>
 </rule>
@@ -244,6 +252,7 @@ template st:form(?n, ?q, ?t, ?s) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -290,6 +299,7 @@ template st:select(?t) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -307,6 +317,7 @@ template st:nav {
    
  }
 where {}
+
 ]]>
 </body>
 </rule>
@@ -349,6 +360,7 @@ where {
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
   }
 }
+
 ]]>
 </body>
 </rule>
@@ -378,6 +390,7 @@ where {
   }
 }
 order by ?i
+
 ]]>
 </body>
 </rule>
@@ -393,6 +406,7 @@ template st:head {
 where {
 
 }
+
 ]]>
 </body>
 </rule>

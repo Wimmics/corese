@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:34 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -16,6 +16,7 @@ template st:profile {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -38,6 +39,7 @@ where {
 	
 	filter(st:visit(st:disjointClass, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -63,6 +65,7 @@ where {
 	
 	filter(st:visit(st:subClass, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -99,6 +102,7 @@ where {
 	filter(isURI(?y) && ! ?suc)
 	filter(st:visit(st:datatypeRes, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -124,6 +128,7 @@ where {
 	
 	filter(st:visit(st:equivClass, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -149,6 +154,7 @@ where {
 	
 	filter(st:visit(st:disjointClass, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -203,6 +209,7 @@ where {
 	filter(st:visit(st:fail, ?in, false))
 }
 limit 1
+
 ]]>
 </body>
 </rule>
@@ -237,6 +244,7 @@ where {
 	filter(isLiteral(?y) && ! ?suc)
 	filter(st:visit(st:datatypeLit, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -325,6 +333,7 @@ where {
  		  	filter(st:visit(st:anonymous, ?in, ?sucx))
  }
 }
+
 ]]>
 </body>
 </rule>
@@ -345,6 +354,7 @@ where {
 	
 	filter(st:visit(st:domain, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -364,6 +374,7 @@ where {
    
    filter(st:visit(st:key, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>
@@ -387,6 +398,7 @@ where {
 	as ?suc)
 	filter(st:visit(st:individual, ?in, ?suc))
 }
+
 ]]>
 </body>
 </rule>

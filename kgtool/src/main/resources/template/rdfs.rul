@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:22 CEST 2015
+Wed Sep 16 14:51:33 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -34,6 +34,7 @@ where {
 
 
 }
+
 ]]>
 </body>
 </rule>
@@ -63,6 +64,7 @@ where {
   optional { ?in rdfs:label      ?l }
   optional { ?in rdfs:comment    ?c }  
 }
+
 ]]>
 </body>
 </rule>
@@ -87,6 +89,7 @@ where {
  ?x a rdfs:Class
 }
 order by ?x
+
 ]]>
 </body>
 </rule>
@@ -111,6 +114,7 @@ where {
  ?x a rdf:Property
 }
 order by ?x
+
 ]]>
 </body>
 </rule>
@@ -138,6 +142,7 @@ where {
   bind(st:get(st:uri) as ?uri)
   
 }
+
 ]]>
 </body>
 </rule>
@@ -173,6 +178,7 @@ where {
   optional { ?in rdfs:label       ?l }
   optional { ?in rdfs:comment     ?c }  
 }
+
 ]]>
 </body>
 </rule>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:34 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -22,6 +22,7 @@ template st:close {
 where {
 
 }
+
 
 ]]>
 </body>
@@ -46,6 +47,7 @@ where {
   
 }
 
+
 ]]>
 </body>
 </rule>
@@ -69,6 +71,7 @@ where {
 
 }
 
+
 ]]>
 </body>
 </rule>
@@ -91,6 +94,7 @@ template st:main {
 where {
    bind (exists { ?rs a rs:ResultSet } as ?b)
 }
+
 
 ]]>
 </body>
@@ -118,6 +122,7 @@ where {
 
 }
 
+
 ]]>
 </body>
 </rule>
@@ -141,6 +146,7 @@ where {
   having (?c > 0)
   
 }
+
 
 ]]>
 </body>
@@ -166,6 +172,7 @@ where {
      bind (st:apply-templates-with(st:turtlehtml) as ?res)
   }
 }
+
 
 ]]>
 </body>
@@ -195,6 +202,7 @@ where {
   
 }
 order by ?i ?var
+
 ]]>
 </body>
 </rule>

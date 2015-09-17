@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Aug 26 11:01:23 CEST 2015
+Wed Sep 16 14:51:34 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -26,6 +26,7 @@ template st:substart(?cent) {
 }
 where {
 }  
+
 
 ]]>
 </body>
@@ -75,6 +76,7 @@ template cn:content(?c) {
 where {
   ?c cn:start ?min ; cn:finish ?max ; rdfs:label ?title
 }
+
 ]]>
 </body>
 </rule>
@@ -102,6 +104,7 @@ template st:query {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -121,6 +124,7 @@ template st:start {
 }
 where {
 }  
+
 
 ]]>
 </body>
@@ -166,6 +170,7 @@ values ?i {
 
 
 }
+
 ]]>
 </body>
 </rule>
@@ -181,6 +186,7 @@ where {
 #  bind(?u as ?uri)
 #  bind(?t as ?text)
 }
+
 ]]>
 </body>
 </rule>
@@ -203,6 +209,7 @@ template st:servlet {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -221,6 +228,7 @@ template st:navlab(?u, ?t) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -275,6 +283,7 @@ template cn:head {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -307,6 +316,7 @@ where {
   bind(bound(?i) && isURI(?i) as ?img)
   
 }
+
 ]]>
 </body>
 </rule>
@@ -351,6 +361,7 @@ template st:profile {
   
 }
 where {}
+
 ]]>
 </body>
 </rule>
@@ -379,6 +390,7 @@ where {
  
 }
 pragma {kg:query kg:detail true}
+
 ]]>
 </body>
 </rule>
@@ -419,6 +431,7 @@ where {
   filter(?min <= ?d && ?d <= ?max)
 }
 order by asc(?d)
+
 ]]>
 </body>
 </rule>
@@ -445,6 +458,7 @@ where {
  
 }
 
+
 ]]>
 </body>
 </rule>
@@ -465,6 +479,7 @@ template cn:tail {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -489,6 +504,7 @@ where {
     bind(?in as ?d)
 }
 	
+
 ]]>
 </body>
 </rule>
@@ -505,6 +521,7 @@ template cn:hlink(?u, ?t) {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -523,6 +540,7 @@ template  cn:wikidate(?d) {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -556,6 +574,7 @@ template cn:list {
 where {
 
 }
+
 ]]>
 </body>
 </rule>
@@ -585,6 +604,7 @@ template cn:sign {
 }
 where {
 }
+
 ]]>
 </body>
 </rule>
@@ -607,6 +627,7 @@ where {
   }
     
 }
+
 ]]>
 </body>
 </rule>
@@ -638,6 +659,7 @@ where {
      
 }
 order by ?min
+
 ]]>
 </body>
 </rule>
@@ -683,6 +705,7 @@ where {
   optional { ?before cn:start ?be }
   optional { ?after  cn:start ?af }
 }
+
 ]]>
 </body>
 </rule>
@@ -723,6 +746,7 @@ where {
     as ?link)
       
 }
+
 ]]>
 </body>
 </rule>
@@ -760,6 +784,7 @@ where {
       ?lnk) 
     as ?link)  
 }
+
 ]]>
 </body>
 </rule>
@@ -783,6 +808,7 @@ where {
   union 
   { ?elem rdfs:comment ?c }
 }
+
 ]]>
 </body>
 </rule>

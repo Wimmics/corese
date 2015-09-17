@@ -184,7 +184,8 @@ public class Transformer {
         Context c = t.getContext();
         c.set(RESULT, ft.toString());
         c.set(LOAD, (p.getLoad() == null) ? "" : p.getLoad());
-        c.setTransform((p.getTransform()== null) ? "" : p.getTransform());        
+        c.setTransform((p.getTransform()== null) ? "" : p.getTransform());  
+        complete(c);
         IDatatype res = t.process();
         return res.stringValue();
     }

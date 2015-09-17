@@ -47,20 +47,20 @@ import org.apache.log4j.WriterAppender;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
-//import fr.inria.acacia.corese.gui.event.MyLoadListener;
-//import fr.inria.acacia.corese.gui.event.MyQueryListener;
 import fr.inria.acacia.corese.gui.query.Buffer;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Fenêtre principale, avec le conteneur d'onglets et le menu
@@ -72,7 +72,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-08-15";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-09-22";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -89,6 +89,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem loadPipe;
     private JMenuItem loadRule;
     private JMenuItem loadStyle;
+    private JMenuItem cpTransform;   
     private JMenuItem saveQuery;
     private JMenuItem saveResult;
     private JMenuItem loadAndRunRule;
@@ -432,8 +433,8 @@ public class MainFrame extends JFrame implements ActionListener {
         loadQuery = new JMenuItem("Load Query");
         loadQuery.addActionListener(this);
 
-        loadPipe = new JMenuItem("Load Pipeline");
-        loadPipe.addActionListener(this);
+        cpTransform = new JMenuItem("Compile Transformation");
+        cpTransform.addActionListener(this);
 
         loadStyle = new JMenuItem("Load Style");
         loadStyle.addActionListener(this);
@@ -565,7 +566,7 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(loadRule);
         fileMenu.add(loadRDF);
         fileMenu.add(loadQuery);
-        fileMenu.add(loadPipe);
+        fileMenu.add(cpTransform);
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
         fileMenu.add(loadAndRunRule);
@@ -891,15 +892,17 @@ public class MainFrame extends JFrame implements ActionListener {
         } //Appelle la fonction pour le chargement d'un fichier query
         else if (e.getSource() == loadQuery) {
             loadQuery();
-        } else if (e.getSource() == loadPipe) {
-            loadPipe();
-        } //Appelle la fonction pour le chargement d'un fichier rule
+        } 
         else if (e.getSource() == loadRule) {
             loadRule();
         } //Appelle la fonction pour le chargement d'un fichier RDF
         else if (e.getSource() == loadRDF) {
             loadRDF();
-        } //sauvegarde la requête dans un fichier texte (.txt)
+        } 
+        else if (e.getSource() == cpTransform){
+            compile();
+        }
+        //sauvegarde la requête dans un fichier texte (.txt)
         else if (e.getSource() == saveQuery) {
 
             // Créer un JFileChooser
@@ -936,35 +939,7 @@ public class MainFrame extends JFrame implements ActionListener {
             defaultStylesheet = style;
         } //Sauvegarde le résultat sous forme XML dans un fichier texte
         else if (e.getSource() == saveResult) {
-            JFileChooser filechoose = new JFileChooser();
-            // Le bouton pour valider l’enregistrement portera la mention enregistrer
-            String approve = "Save";
-            int resultatEnregistrer = filechoose.showDialog(filechoose, approve); // Pour afficher le JFileChooser…
-            // Si l’utilisateur clique sur le bouton enregistrer
-            if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
-                // Récupérer le nom du fichier qu’il a spécifié
-                String myFile = filechoose.getSelectedFile().toString();
-
-//                if (! myFile.endsWith(TXT) 
-//                 && ! myFile.endsWith(RDF) 
-//                 && ! myFile.endsWith(XML)) {
-//                    myFile = myFile + TXT;
-//                }
-                try {
-                    // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
-                    FileWriter lu = new FileWriter(myFile);
-                    // Mettre le flux en tampon (en cache)
-                    BufferedWriter out = new BufferedWriter(lu);
-                    // Mettre dans le flux le contenu de la zone de texte
-                    out.write(current.getTextAreaXMLResult().getText());
-                    // Fermer le flux 
-                    out.close();
-
-                } catch (IOException er) {
-                    er.printStackTrace();
-                }
-                
-            }
+           save(current.getTextAreaXMLResult().getText());
         } // Charge et exécute une règle directement
         else if (e.getSource() == loadAndRunRule) {
             l_path = null;
@@ -1098,6 +1073,32 @@ public class MainFrame extends JFrame implements ActionListener {
             execPlus(query);
         }                
     } 
+    
+    
+    void save(String str) {
+        JFileChooser filechoose = new JFileChooser(l_path_courant);
+        // Le bouton pour valider l’enregistrement portera la mention enregistrer
+        String approve = "Save";
+        int resultatEnregistrer = filechoose.showDialog(filechoose, approve); // Pour afficher le JFileChooser…
+        // Si l’utilisateur clique sur le bouton enregistrer
+        if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
+            // Récupérer le nom du fichier qu’il a spécifié
+            String myFile = filechoose.getSelectedFile().toString();
+            try {
+                // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
+                FileWriter lu = new FileWriter(myFile);
+                // Mettre le flux en tampon (en cache)
+                BufferedWriter out = new BufferedWriter(lu);
+                // Mettre dans le flux le contenu de la zone de texte
+                out.write(str);
+                // Fermer le flux 
+                out.close();
+
+            } catch (IOException er) {
+                er.printStackTrace();
+            }
+        }
+    }
     
     void runRules(boolean opt){
         if (opt){
@@ -1238,7 +1239,7 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     public void loadRDFs() {
-        Filter FilterRDFS = new Filter(new String[]{"rdfs", "owl", "ttl"}, "les fichiers RDFS/OWL (*.rdfs,*.owl,*.ttl)");
+        Filter FilterRDFS = new Filter(new String[]{"rdfs", "owl", "ttl"}, "RDFS/OWL files (*.rdfs,*.owl,*.ttl)");
         load(FilterRDFS);
     }
 
@@ -1270,6 +1271,46 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
     
+    /**
+     * Compile a transformation
+     * @param filter 
+     */
+     public void compile() {
+        l_path = null;
+        JFileChooser fileChooser = new JFileChooser(l_path_courant);
+        fileChooser.setMultiSelectionEnabled(true);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        int returnValue = fileChooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File l_Files[] = fileChooser.getSelectedFiles();
+
+            DefaultListModel model = getOngletListener().getModel();
+            for (File f : l_Files) {
+                l_path = f.getAbsolutePath();
+                l_path_courant = f.getParent();
+                if (l_path != null) {                  
+                    appendMsg("Compile " + l_path + "\n");
+                    compile(l_path);
+                }
+            }
+        }
+    }
+    
+     void compile(String path){
+         TemplatePrinter p = TemplatePrinter.create(path);
+        try {
+            StringBuilder sb = p.process();
+            if (current != null){
+                current.getTextAreaXMLResult().setText(sb.toString());
+            }
+            save(sb.toString());
+
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     }
     
     void controler(int event){
         switch (event){

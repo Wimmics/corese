@@ -10,6 +10,9 @@ st:dbpedia a st:Profile ;
   st:transform  st:navlab .
   
 st:calendar a st:Profile ;
+  st:transform st:calendar .
+
+st:calendar1 a st:Profile ;
   #st:query     <file:///home/corby/ADataServer/query/dbpediadate.rq> ;
   #st:transform "/home/corby/AData/sttl/calendar" .
   st:query     <query/dbpediadate.rq> ;

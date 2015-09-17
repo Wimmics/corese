@@ -157,14 +157,16 @@ public class ProviderImpl implements Provider {
 		int slice = compiler.slice(q);
                 
                 ASTQuery ast = (ASTQuery) q.getAST();
-
-                if (lmap == null || slice == 0 || ast.getValues() != null){
+                boolean hasValues = ast.getValues() != null;
+                Mappings res = null;
+                
+                if (lmap == null || slice == 0 || hasValues){
                     // if query has its own values {}, do not slice
 			return send(compiler, serv, q, lmap, env, 0, 0);
 		}
 		else if (lmap.size() > slice ){
 			int size = 0;
-			Mappings res = null;
+			
 			
 			while (size < lmap.size()){
 				Mappings map =  send(compiler, serv, q, lmap, env, size, size + slice); 
@@ -176,11 +178,16 @@ public class ProviderImpl implements Provider {
 					res.add(map);
 				}
 			}
-			return res;
+			//return res;
 		}
 		else {
-			return send(compiler, serv, q, lmap, env, 0, lmap.size());
+			res = send(compiler, serv, q, lmap, env, 0, lmap.size());
 		}
+                
+                if (! hasValues){
+                    ast.setValues(null);
+                }
+                return  res;
 	}
 	
 	

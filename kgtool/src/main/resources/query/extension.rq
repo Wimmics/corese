@@ -14,6 +14,13 @@ define (xt:rdfxml() =
     st:apply-templates-with(st:rdfxml)
 ),
 
+define (xt:json() = 
+    st:apply-templates-with(st:json)
+),
+
+define (xt:json(?x) = 
+    st:apply-templates-with(st:json, ?x)
+),
 
 define (xt:owl() = 
     st:apply-templates-with(st:owl)

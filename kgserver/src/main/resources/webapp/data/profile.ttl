@@ -4,9 +4,29 @@
 
 
 st:dbpedia a st:Profile ;
-  st:query     <query/frdbpedia.rq> ;
-  st:transform st:navlab .
+  st:query  <query/frdbpedia.rq> ;   
+  #<file:///home/corby/ADataServer/query/frdbpediatest.rq> ;
+  #st:transform "/home/corby/AData/sttl/navlab" .
+  st:transform  st:navlab .
+  
+st:calendar a st:Profile ;
+  #st:query     <file:///home/corby/ADataServer/query/dbpediadate.rq> ;
+  #st:transform "/home/corby/AData/sttl/calendar" .
+  st:query     <query/dbpediadate.rq> ;
+  st:transform st:calendar .
 
+st:calendar2 a st:Profile ;
+  st:query     <query/dbpediadate2.rq> ;
+  st:transform st:calendar .
+  
+st:calendar3 a st:Profile ;
+  st:query     <query/dbpediadate3.rq> ;
+  st:transform st:calendar .  
+
+st:calendar4 a st:Profile ;
+  st:query     <file:///home/corby/ADataServer/query/dbpediadate4.rq> ;
+  st:transform "/home/corby/AData/sttl/calendar" .
+  
 st:dbpediasparql a st:Profile ;
   st:query     <query/frdbpedia.rq> ;
   st:transform st:sparql .
@@ -24,10 +44,9 @@ st:dbpediaall a st:Profile ;
   st:variable  "?r" ;
   st:transform st:navlab .
 
-
 st:navlab a st:Profile ;
-  st:variable "?r" ;  
-  st:transform st:navlab .
+  st:variable "?r" ; 
+  st:transform st:navlab .  
 
 st:web a st:Profile ;
    st:transform st:web .

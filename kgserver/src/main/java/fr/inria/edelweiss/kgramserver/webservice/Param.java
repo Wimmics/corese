@@ -21,6 +21,7 @@ public class Param {
     private List<String> from;
     private List<String>  named;
     private boolean protect = false;
+    private boolean isUserQuery = false;
     
     Param(String s, String p, String t, String u, String n, String q){
         service = s;
@@ -210,6 +211,20 @@ public class Param {
      */
     public void setLoad(String load) {
         this.load = load;
+    }
+
+    /**
+     * @return the isUserQuery
+     */
+    public boolean isUserQuery() {
+        return isUserQuery;
+    }
+
+    /**
+     * @param isUserQuery the isUserQuery to set
+     */
+    public void setUserQuery(boolean isUserQuery) {
+        this.isUserQuery = isUserQuery;
     }
 
 }

@@ -571,13 +571,20 @@ public class SPARQLRestAPI {
         }
         
     private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris, Context c) {
+        if (isProtected){
+            if (c == null){
+                c = new Context();
+            }
+            c.setUserQuery(true);
+        }
         if (c != null ||
                 ((defaultGraphUris != null) && (!defaultGraphUris.isEmpty())) || 
                 ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
             Dataset ds = Dataset.instance(defaultGraphUris, namedGraphUris);
             ds.setContext(c);
             return ds;
-        } else {
+        } 
+        else {
             return null;
         }
     }

@@ -109,10 +109,15 @@ public class Profile {
                 }
             }
         }
-
-        if (query == null && name != null) {
+       
+        if (query == null){ 
+            if (name != null){
             // load query definition
-            query = loadQuery(name);
+                query = loadQuery(name);
+            }
+        }
+        else if (isProtected) {
+            par.setUserQuery(true);
         }
 
         if (value != null && query != null) {

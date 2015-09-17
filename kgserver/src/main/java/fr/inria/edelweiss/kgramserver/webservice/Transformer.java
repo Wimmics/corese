@@ -120,9 +120,7 @@ public class Transformer {
         return template(getTripleStore(), par);
     }
 
-    public Response template(TripleStore store, Param par) {
-
-        
+    public Response template(TripleStore store, Param par) {        
         Context ctx = null;
         try {
 
@@ -244,7 +242,8 @@ public class Transformer {
             ctx.setLang(par.getLang());
         }
          ctx.setServer(Profile.SERVER);
-         complete(ctx);
+         complete(ctx);         
+         ctx.setUserQuery(par.isUserQuery());
         return ctx;
     }
     

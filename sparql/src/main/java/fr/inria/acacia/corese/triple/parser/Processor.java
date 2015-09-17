@@ -35,7 +35,8 @@ public class Processor {
 	public static final String INLIST   = Term.LIST;
 	public static final String LIST     = EXT+"list";
 	public static final String IOTA     = EXT+"iota";
-	public static final String REVERSE  = EXT+"reverse";
+	public static final String XT_REVERSE  = EXT+"reverse";
+	public static final String XT_APPEND  = EXT+"append";
         
 	public static final String IN  	 = "in";
 
@@ -69,6 +70,8 @@ public class Processor {
         private static final String XT_SELF = EXT + "self";
         private static final String XT_FIRST = EXT + "first";
         private static final String XT_REST = EXT + "rest";
+        private static final String XT_GET = EXT + "get";
+        private static final String XT_SET = EXT + "set";
         private static final String XT_CONS = EXT + "cons";        
         private static final String XT_CONCAT = EXT + "concat";
         private static final String XT_COUNT = EXT + "count";
@@ -153,6 +156,8 @@ public class Processor {
 	static final String STL_LEVEL               = STL + "level"; 
         static final String STL_DEFINE              = STL + "define";
         static final String DEFINE                  = "define";
+        static final String LAMBDA                  = "lambda";
+        
         static final String STL_PREFIX              = STL + "prefix";
         static final String PACKAGE                 = "package";
  	static final String STL_INDENT              = STL + "indent";
@@ -524,7 +529,8 @@ public class Processor {
 		defoper(LET,            ExprType.LET);
 		defoper(LIST,           ExprType.LIST);
 		defoper(IOTA,           ExprType.IOTA);
-		defoper(REVERSE,        ExprType.REVERSE);
+		defoper(XT_REVERSE,        ExprType.XT_REVERSE);
+		defoper(XT_APPEND,      ExprType.XT_APPEND);
 		defoper(MAP,            ExprType.MAP);
 		defoper(MAPLIST,        ExprType.MAPLIST);
 		defoper(APPLY,          ExprType.APPLY);
@@ -534,6 +540,8 @@ public class Processor {
 		defoper(XT_FIRST,       ExprType.XT_FIRST);
 		defoper(XT_REST,        ExprType.XT_REST);
 		defoper(XT_SELF,        ExprType.SELF);
+		defoper(XT_GET,         ExprType.XT_GET);
+		defoper(XT_SET,         ExprType.SET);
                 
 		defoper(XT_COUNT,        ExprType.XT_COUNT);
 		defoper(XT_SUM,          ExprType.XT_SUM);
@@ -649,6 +657,7 @@ public class Processor {
 		defoper(PACKAGE,        ExprType.PACKAGE);
 		defoper(STL_DEFINE,     ExprType.STL_DEFINE);
 		defoper(DEFINE,         ExprType.STL_DEFINE);
+		defoper(LAMBDA,         ExprType.LAMBDA);
                 defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
                 defoper(STL_GROUPCONCAT, ExprType.STL_GROUPCONCAT);
@@ -787,6 +796,32 @@ public class Processor {
                     processMap(ast);
                     break;
                     
+                case ExprType.LET:
+                    processLet(ast);
+                    break;
+                    
+            }
+        }
+        
+        /**
+         * let (?x = exp, ?y = exp, exp)
+         * ->
+         * let (?x = exp, let (?y = exp, exp))
+         * @param ast 
+         */
+        void processLet(ASTQuery ast){
+            if (term.getArgs().size() > 2){
+                Term let = Term.function(LET, term.getArg(1));
+                
+                for (int i = 2; i < term.getArgs().size(); i++){
+                    let.add(term.getArg(i));
+                }
+                
+                ArrayList<Expression> list = new ArrayList<Expression>();
+                list.add(term.getArg(0));
+                list.add(let);
+                term.setArgs(list);
+                processLet(ast);
             }
         }
         

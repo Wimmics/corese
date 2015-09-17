@@ -33,9 +33,15 @@ public class Context {
     public static final String STL_EXPORT = STL + "export";   
     public static final String STL_LANG = STL + "lang";
     public static final String STL_PARAM = STL + "param";
+    public static final String STL_VALUES = STL + "values";
+    public static final String STL_FILTER = STL + "filter";
+    public static final String STL_BIND = STL + "bind";
+    
     HashMap<String, IDatatype> table;
     static  HashMap<String, Boolean> sexport;
     HashMap<String, Boolean> export;
+    
+    private boolean userQuery = false;
    
    static {
        sexport = new HashMap();
@@ -212,5 +218,19 @@ public class Context {
             return null;
         }
         return dt.getLabel();
+    }
+
+    /**
+     * @return the userQuery
+     */
+    public boolean isUserQuery() {
+        return userQuery;
+    }
+
+    /**
+     * @param userQuery the userQuery to set
+     */
+    public void setUserQuery(boolean userQuery) {
+        this.userQuery = userQuery;
     }
 }

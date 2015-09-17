@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Sep 16 14:51:34 CEST 2015
+Thu Sep 17 14:55:37 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -83,7 +83,7 @@ template st:start {
 
   st:call-template(st:main, ?year)
   
-  st:call-template(st:content)
+  st:call-template(st:content, ?year)
   
   st:call-template(st:tail)
 
@@ -236,7 +236,11 @@ where {
     bind (cal:date(?y, ?m, ?n) as ?date)
     bind (xt:day(?date) as ?day) 
     bind (exists { ?x ?p ?dd 
-      filter(month(?dd) = month(?date) && day(?dd) = day(?date)) } as ?b)
+      filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
+      filter (year(?dd) = year(?date) 
+      && month(?dd) = month(?date) 
+      && day(?dd) = day(?date)) } 
+    as ?b)
 }
 
 ]]>
@@ -247,7 +251,7 @@ where {
 <body>
 <![CDATA[
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
-template st:content {
+template st:content(?year) {
 
   "<a name=" str(?dd) "/>"
   "<h4>" str(?dd) "</h4>"  
@@ -257,7 +261,7 @@ template st:content {
     "<a href='" 
     #str(?x) 
     st:protocol(concat(st:get(st:service), "?profile=st:dbpedia&uri=", encode_for_uri(?x)))
-    "'>" str(?x) "</a>"
+    "'>" str(?x) "</a>"  
     
     ; separator = "<br/>"
   }
@@ -265,11 +269,13 @@ template st:content {
   "</p>"
 }
 where { 
-  select distinct ?x ?dd ?date
+  {select distinct ?x ?dd ?date 
   where {
-    ?x ?p ?date
+    ?x ?p ?date 
+    filter (datatype(?date) in (xsd:date, xsd:dateTime)) 
     bind (cal:date(year(?date), month(?date), day(?date)) as ?dd)
-  }
+  }}
+  filter (year(?date) = ?year)
 }
 group by ?date
 order by ?date 

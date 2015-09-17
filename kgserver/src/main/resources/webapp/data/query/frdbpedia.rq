@@ -11,7 +11,7 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
-construct debug  {
+construct   {
   ?r a ?class .
   ?r rdfs:label ?label ; rdfs:comment ?com .
   ?r o:wikipedia ?pr ; o:dbpedia ?r

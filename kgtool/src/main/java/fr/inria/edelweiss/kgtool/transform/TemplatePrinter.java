@@ -20,38 +20,63 @@ public class TemplatePrinter {
 	
 	String from, to;
 	FileWriter fw;
+        StringBuilder sb;
 	static final String NL 			= System.getProperty("line.separator");
 	
+        TemplatePrinter(){
+             sb = new StringBuilder();            
+        }
+        
+        TemplatePrinter(String from){
+            this();
+            this.from = from;
+	}
+        
 	TemplatePrinter(String from, String to){
-		this.from = from;
-		this.to = to;
+            this();
+            this.from = from;
+            this.to = to;
 	}
 	
 	public static TemplatePrinter create(String from, String to){
 		return new TemplatePrinter(from, to);
 	}
 	
-	
-	public void process() throws IOException, LoadException{
+	public static TemplatePrinter create(String from){
+		return new TemplatePrinter(from);
+	}
+	public StringBuilder process() throws IOException, LoadException {
 		Graph g = Graph.create();
 		Load ld = Load.create(g);
 		ld.loadWE(from);
-		fw = new FileWriter(to);
 		QueryEngine qe = ld.getQueryEngine();
-		header();
-		
-		for (Query q : qe.getNamedTemplates()){
-			process((ASTQuery) q.getAST());
-		}
-		for (Query q : qe.getQueries()){
-			process((ASTQuery) q.getAST());
-		}
-		
-		trailer();
-		
-		fw.flush();
-		fw.close();
+                if (qe == null){
+                    throw new LoadException(new IOException("No templates"));
+                }
+                else {
+                    header();
+
+                    for (Query q : qe.getNamedTemplates()){
+                            process((ASTQuery) q.getAST());
+                    }
+                    for (Query q : qe.getQueries()){
+                            process((ASTQuery) q.getAST());
+                    }		
+                    trailer();
+                    result();
+                }
+                
+                return sb;
 	}
+        
+        void result() throws IOException{
+            if (to != null){
+                fw = new FileWriter(to);
+                fw.write(sb.toString());
+                fw.flush();
+		fw.close();            
+            }
+        }
 	
 	void header() throws IOException{
 		write("<?xml version='1.0' encoding='UTF-8'?>");
@@ -72,7 +97,7 @@ public class TemplatePrinter {
 		write("<rule>");
 		write("<body>");
 		write("<![CDATA[");
-		fw.write(ast.getText());
+		write(ast.getText());
 		write("]]>");
 		write("</body>");
 		write("</rule>");
@@ -80,7 +105,8 @@ public class TemplatePrinter {
 	}
 	
 	void write(String str) throws IOException{
-		fw.write(str + NL);
+		sb.append(str);
+                sb.append(NL);
 	}
 
 }

@@ -1,6 +1,6 @@
 prefix o: <http://dbpedia.org/ontology/>
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
-construct debug { 
+construct  { 
   ?x ?p ?date 
 } 
 where {

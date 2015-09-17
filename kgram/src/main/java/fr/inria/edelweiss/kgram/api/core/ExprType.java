@@ -103,8 +103,6 @@ public interface ExprType {
 	public static int STRUUID 	 = 81;
 	public static int XSDSTRING 	 = 82;
 
-	public static int LAMBDA        = 91;
-
 	
 	// term
 	public static int TEQ 	= 101;
@@ -238,7 +236,7 @@ public interface ExprType {
         public static int MAPLIST       = 311;
         public static int APPLY         = 312;
 	public static int LET           = 313;
-	public static int REVERSE       = 314;
+	public static int LAMBDA        = 314;
         
         public static int XT_SUM         = 400;
         public static int XT_PROD        = 401;
@@ -247,15 +245,18 @@ public interface ExprType {
         public static int XT_CONS        = 404;
         public static int XT_FIRST       = 405;
         public static int XT_REST        = 406;
+        public static int XT_GET         = 407;        
+        public static int XT_SET         = 408;
+	public static int XT_REVERSE     = 409;       
+	public static int XT_APPEND      = 410;       
         
-        
-        public static int XT_GRAPH       = 410;
         public static int XT_SUBJECT     = 411;
         public static int XT_OBJECT      = 412;
         public static int XT_PROPERTY    = 413;
         public static int XT_VALUE       = 414;
         public static int XT_INDEX       = 415;
-        
+        public static int XT_GRAPH       = 416;
+       
         public static int SLICE       = 450;
         
 

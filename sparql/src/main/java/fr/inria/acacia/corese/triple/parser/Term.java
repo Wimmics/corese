@@ -766,6 +766,10 @@ public class Term extends Expression {
 	public  int getArity(){
 		return args.size();
 	}
+        
+        void setArgs(ArrayList<Expression> list){
+            args = list;
+        }
 	
 	public ArrayList<Expression> getArgs(){
 		return args;

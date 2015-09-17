@@ -337,6 +337,10 @@ public class Transformer implements ExpType {
             if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
                 return;
             }
+            if (ast.getContext() != null && ast.getContext().isUserQuery()){
+                System.out.println("Compiler: extension function not available in server mode" );
+                return;
+            }
             Extension ext = new Extension();
             q.setExtension(ext);
             for (fr.inria.acacia.corese.triple.parser.Extension.FunMap m : ast.getDefine().getMaps()){

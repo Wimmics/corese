@@ -461,7 +461,7 @@ public class DatatypeMap implements Cst, RDF {
         IDatatype dt = CoreseArray.create(ldt);
         return dt;
     }
-
+    
     /**
      * obj is an Expr to be evaluated later such as concat(str, st:number(),
      * str) use case: template with st:number()

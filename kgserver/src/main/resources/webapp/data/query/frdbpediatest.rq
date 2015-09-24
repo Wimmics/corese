@@ -11,7 +11,7 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
-construct   {
+construct debug  {
   ?r a ?class .
   ?r rdfs:label ?label ; rdfs:comment ?com .
   ?r o:wikipedia ?pr ; o:dbpedia ?r
@@ -20,7 +20,6 @@ construct   {
   ?r ?pp ?vv .
   
   ?r p:latitude ?lat ; p:longitude ?lon . 
-  ?r o:place [ p:latitude ?plat ; p:longitude ?plon ] .
   
 }
 where {
@@ -28,7 +27,7 @@ bind (st:set(st:bind, st:values) as ?tmp)
 bind (st:get(st:uri) as ?r)
 
 service <http://fr.dbpedia.org/sparql> {
-  
+
   ?r rdfs:label ?label . filter(langMatches(lang(?label), 'fr'))    
   optional {  ?r rdfs:comment ?com . filter(langMatches(lang(?com) , 'fr')) }
  
@@ -38,13 +37,8 @@ service <http://fr.dbpedia.org/sparql> {
     filter (?pp = o:thumbnail || isLiteral(?vv))    
   }
   
-  optional { ?r p:latitude|geo:lat   ?lat 
+  optional { ?r p:latitude|geo:lat ?lat 
              ?r p:longitude|geo:long ?lon  }
-  optional {
-      ?r o:place ?pl
-      ?pl p:latitude|geo:lat   ?plat 
-      ?pl p:longitude|geo:long ?plon
-  }
   optional {
   ?r o:spouse |o:child
     |p:mère   |o:mother
@@ -61,8 +55,7 @@ service <http://fr.dbpedia.org/sparql> {
     
     ?r ?q ?s 
     
-     filter isURI(?s) . ?s rdfs:label ?ls . 
-     filter(langMatches(lang(?ls), 'fr')) 
+     filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'fr') 
     
     ?q rdfs:label ?lq 
     filter(langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))    
@@ -84,7 +77,7 @@ bind (if (?q = p:successeur,   o:successor,
       ?q)))) 
       as ?qq)
       
-bind (if (bound(?lat) || bound(?plat), o:Place, foaf:Person) as ?class)     
+bind (if (bound(?lat), o:Place, foaf:Person) as ?class)     
       
 bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr) 
 

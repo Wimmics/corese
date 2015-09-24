@@ -3,5 +3,5 @@ select * where {
    optional { ?p st:query    ?q }
    optional { ?p st:variable ?v }
    optional { ?p st:server   ?s }
-   optional { ?p st:lang     ?l }
+   optional { ?p st:param    ?c}
 }

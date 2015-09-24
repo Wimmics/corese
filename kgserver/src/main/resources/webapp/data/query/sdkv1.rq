@@ -1,0 +1,452 @@
+#
+# Sudoku Problem Solving with a SPARQL Query on a RDF Graph
+# Olivier Corby - INRIA I3S 2011-2014
+#
+prefix c: <http://ns.inria.fr/sdk/>
+template {
+ """
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="/style.css" rel="stylesheet" type="text/css" />
+<title>Sudoku</title>
+</head>
+<body>
+<h3>SPARQL Sudoku Solver</h3>
+
+<form id='example' method='get' action='/sdk'>
+
+   <button type="submit" name="submit" onclick="submitform();">Submit</button>
+
+  <input id='value' name='value' type='hidden' value=''  />
+  <button id='reset' type='button' name='reset' onclick='clean();'>Reset</button>
+
+<table>
+  <tr>
+    <td><input size='1' type='text' id='a1' value='""" ?a1 """' /></td>
+    <td><input size='1' type='text' id='a2' value='""" ?a2 """' /></td>
+    <td><input size='1' type='text' id='a3' value='""" ?a3 """' /></td>
+    <td><input size='1' type='text' id='a4' value='""" ?a4 """' /></td>
+    <td><input size='1' type='text' id='a5' value='""" ?a5 """' /></td>
+    <td><input size='1' type='text' id='a6' value='""" ?a6 """' /></td>
+    <td><input size='1' type='text' id='a7' value='""" ?a7 """' /></td>
+    <td><input size='1' type='text' id='a8' value='""" ?a8 """' /></td>
+    <td><input size='1' type='text' id='a9' value='""" ?a9 """' /></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='b1' value='""" ?b1 """' /></td>
+    <td><input size='1' type='text' id='b2' value='""" ?b2 """' /></td>
+    <td><input size='1' type='text' id='b3' value='""" ?b3 """' /></td>
+    <td><input size='1' type='text' id='b4' value='""" ?b4 """' /></td>
+    <td><input size='1' type='text' id='b5' value='""" ?b5 """' /></td>
+    <td><input size='1' type='text' id='b6' value='""" ?b6 """' /></td>
+    <td><input size='1' type='text' id='b7' value='""" ?b7 """' /></td>
+    <td><input size='1' type='text' id='b8' value='""" ?b8 """' /></td>
+    <td><input size='1' type='text' id='b9' value='""" ?b9 """' /></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='c1' value='""" ?c1 """' /></td>
+    <td><input size='1' type='text' id='c2' value='""" ?c2 """' /></td>
+    <td><input size='1' type='text' id='c3' value='""" ?c3 """' /></td>
+    <td><input size='1' type='text' id='c4' value='""" ?c4 """' /></td>
+    <td><input size='1' type='text' id='c5' value='""" ?c5 """' /></td>
+    <td><input size='1' type='text' id='c6' value='""" ?c6 """' /></td>
+    <td><input size='1' type='text' id='c7' value='""" ?c7 """' /></td>
+    <td><input size='1' type='text' id='c8' value='""" ?c8 """' /></td>
+    <td><input size='1' type='text' id='c9' value='""" ?c9 """' /></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='d1' value='""" ?d1 """' /></td>
+    <td><input size='1' type='text' id='d2' value='""" ?d2 """' /></td>
+    <td><input size='1' type='text' id='d3' value='""" ?d3 """' /></td>
+    <td><input size='1' type='text' id='d4' value='""" ?d4 """' /></td>
+    <td><input size='1' type='text' id='d5' value='""" ?d5 """' /></td>
+    <td><input size='1' type='text' id='d6' value='""" ?d6 """' /></td>
+    <td><input size='1' type='text' id='d7' value='""" ?d7 """' /></td>
+    <td><input size='1' type='text' id='d8' value='""" ?d8 """' /></td>
+    <td><input size='1' type='text' id='d9' value='""" ?d9 """' /></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='e1' value='""" ?e1 """' /></td>
+    <td><input size='1' type='text' id='e2' value='""" ?e2 """' /></td>
+    <td><input size='1' type='text' id='e3' value='""" ?e3 """' /></td>
+    <td><input size='1' type='text' id='e4' value='""" ?e4 """' /></td>
+    <td><input size='1' type='text' id='e5' value='""" ?e5 """' /></td>
+    <td><input size='1' type='text' id='e6' value='""" ?e6 """' /></td>
+    <td><input size='1' type='text' id='e7' value='""" ?e7 """' /></td>
+    <td><input size='1' type='text' id='e8' value='""" ?e8 """' /></td>
+    <td><input size='1' type='text' id='e9' value='""" ?e9 """' /></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='f1' value='""" ?f1 """' /></td>
+    <td><input size='1' type='text' id='f2' value='""" ?f2 """' /></td>
+    <td><input size='1' type='text' id='f3' value='""" ?f3 """' /></td>
+    <td><input size='1' type='text' id='f4' value='""" ?f4 """' /></td>
+    <td><input size='1' type='text' id='f5' value='""" ?f5 """' /></td>
+    <td><input size='1' type='text' id='f6' value='""" ?f6 """' /></td>
+    <td><input size='1' type='text' id='f7' value='""" ?f7 """' /></td>
+    <td><input size='1' type='text' id='f8' value='""" ?f8 """' /></td>
+    <td><input size='1' type='text' id='f9' value='""" ?f9 """' /></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='g1' value='""" ?g1 """' /></td>
+    <td><input size='1' type='text' id='g2' value='""" ?g2 """' /></td>
+    <td><input size='1' type='text' id='g3' value='""" ?g3 """' /></td>
+    <td><input size='1' type='text' id='g4' value='""" ?g4 """' /></td>
+    <td><input size='1' type='text' id='g5' value='""" ?g5 """' /></td>
+    <td><input size='1' type='text' id='g6' value='""" ?g6 """' /></td>
+    <td><input size='1' type='text' id='g7' value='""" ?g7 """' /></td>
+    <td><input size='1' type='text' id='g8' value='""" ?g8 """' /></td>
+    <td><input size='1' type='text' id='g9' value='""" ?g9 """' /></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='h1' value='""" ?h1 """' /></td>
+    <td><input size='1' type='text' id='h2' value='""" ?h2 """' /></td>
+    <td><input size='1' type='text' id='h3' value='""" ?h3 """' /></td>
+    <td><input size='1' type='text' id='h4' value='""" ?h4 """' /></td>
+    <td><input size='1' type='text' id='h5' value='""" ?h5 """' /></td>
+    <td><input size='1' type='text' id='h6' value='""" ?h6 """' /></td>
+    <td><input size='1' type='text' id='h7' value='""" ?h7 """' /></td>
+    <td><input size='1' type='text' id='h8' value='""" ?h8 """' /></td>
+    <td><input size='1' type='text' id='h9' value='""" ?h9 """' /></td>
+  </tr>
+  
+  <tr>
+    <td><input size='1' type='text' id='i1' value='""" ?i1 """' /></td>
+    <td><input size='1' type='text' id='i2' value='""" ?i2 """' /></td>
+    <td><input size='1' type='text' id='i3' value='""" ?i3 """' /></td>
+    <td><input size='1' type='text' id='i4' value='""" ?i4 """' /></td>
+    <td><input size='1' type='text' id='i5' value='""" ?i5 """' /></td>
+    <td><input size='1' type='text' id='i6' value='""" ?i6 """' /></td>
+    <td><input size='1' type='text' id='i7' value='""" ?i7 """' /></td>
+    <td><input size='1' type='text' id='i8' value='""" ?i8 """' /></td>
+    <td><input size='1' type='text' id='i9' value='""" ?i9 """' /></td>
+  </tr>
+  </table>   
+</form>
+
+<script type="text/javascript">
+
+function submitform() { 
+  document.getElementById("value").value = values();     
+}
+
+function values(){
+  names = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+  vars = "";
+  vals = "";
+  for (i=0; i<names.length; i++){
+      for (j=1; j<=names.length; j++){
+	name = names[i] + j.toString();
+	if (document.getElementById(name).value != ""){
+	  vars += "?" + name + " ";
+	  vals += document.getElementById(name).value + " ";
+	}      
+      }
+  }
+  
+  res = "values (" + vars + "){(" + vals + ")}" ;
+  
+  return res;
+ 
+}
+
+function clean(){
+  names = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+  for (i=0; i<names.length; i++){
+      for (j=1; j<=names.length; j++){
+        name = names[i] + j.toString();
+	document.getElementById(name).value = "";
+      }
+  }
+}
+
+</script>
+
+
+<p>
+Generated by <a href='http://wimmics.inria.fr/corese'>Corese</a> server 
+using <a href='http://ns.inria.fr/sparql-template'>SPARQL Template Transformation</a>.
+<br/>
+"""
+now()
+"""
+</p> 
+</body>
+</html>
+"""
+  
+}
+where {
+
+?s c:cell 
+ ?a1 , ?a2 , ?a3 , ?a4 , ?a5 , ?a6 , ?a7 , ?a8 , ?a9 ,
+ ?b1 , ?b2 , ?b3 , ?b4 , ?b5 , ?b6 , ?b7 , ?b8 , ?b9 ,
+ ?c1 , ?c2 , ?c3 , ?c4 , ?c5 , ?c6 , ?c7 , ?c8 , ?c9 ,
+ ?d1 , ?d2 , ?d3 , ?d4 , ?d5 , ?d6 , ?d7 , ?d8 , ?d9 ,
+ ?e1 , ?e2 , ?e3 , ?e4 , ?e5 , ?e6 , ?e7 , ?e8 , ?e9 ,
+ ?f1 , ?f2 , ?f3 , ?f4 , ?f5 , ?f6 , ?f7 , ?f8 , ?f9 ,
+ ?g1 , ?g2 , ?g3 , ?g4 , ?g5 , ?g6 , ?g7 , ?g8 , ?g9 ,
+ ?h1 , ?h2 , ?h3 , ?h4 , ?h5 , ?h6 , ?h7 , ?h8 , ?h9 ,
+ ?i1 , ?i2 , ?i3 , ?i4 , ?i5 , ?i6 , ?i7 , ?i8 , ?i9 .
+
+filter (?a1 != ?a2 && ?a1 != ?a3 && ?a1 != ?a4 && ?a1 != ?a5 && ?a1 != ?a6 && ?a1 != ?a7 && ?a1 != ?a8 && ?a1 != ?a9)
+filter (?a2 != ?a3 && ?a2 != ?a4 && ?a2 != ?a5 && ?a2 != ?a6 && ?a2 != ?a7 && ?a2 != ?a8 && ?a2 != ?a9)
+filter (?a3 != ?a4 && ?a3 != ?a5 && ?a3 != ?a6 && ?a3 != ?a7 && ?a3 != ?a8 && ?a3 != ?a9)
+filter (?a4 != ?a5 && ?a4 != ?a6 && ?a4 != ?a7 && ?a4 != ?a8 && ?a4 != ?a9)
+filter (?a5 != ?a6 && ?a5 != ?a7 && ?a5 != ?a8 && ?a5 != ?a9)
+filter (?a6 != ?a7 && ?a6 != ?a8 && ?a6 != ?a9)
+filter (?a7 != ?a8 && ?a7 != ?a9)
+filter (?a8 != ?a9)
+
+filter (?a1 != ?b1 && ?a1 != ?c1 && ?a1 != ?d1 && ?a1 != ?e1 && ?a1 != ?f1 && ?a1 != ?g1 && ?a1 != ?h1 && ?a1 != ?i1)
+filter (?b1 != ?c1 && ?b1 != ?d1 && ?b1 != ?e1 && ?b1 != ?f1 && ?b1 != ?g1 && ?b1 != ?h1 && ?b1 != ?i1)
+filter (?c1 != ?d1 && ?c1 != ?e1 && ?c1 != ?f1 && ?c1 != ?g1 && ?c1 != ?h1 && ?c1 != ?i1)
+filter (?d1 != ?e1 && ?d1 != ?f1 && ?d1 != ?g1 && ?d1 != ?h1 && ?d1 != ?i1)
+filter (?e1 != ?f1 && ?e1 != ?g1 && ?e1 != ?h1 && ?e1 != ?i1)
+filter (?f1 != ?g1 && ?f1 != ?h1 && ?f1 != ?i1)
+filter (?g1 != ?h1 && ?g1 != ?i1)
+filter (?h1 != ?i1)
+
+filter (?b1 != ?b2 && ?b1 != ?b3 && ?b1 != ?b4 && ?b1 != ?b5 && ?b1 != ?b6 && ?b1 != ?b7 && ?b1 != ?b8 && ?b1 != ?b9)
+filter (?b2 != ?b3 && ?b2 != ?b4 && ?b2 != ?b5 && ?b2 != ?b6 && ?b2 != ?b7 && ?b2 != ?b8 && ?b2 != ?b9)
+filter (?b3 != ?b4 && ?b3 != ?b5 && ?b3 != ?b6 && ?b3 != ?b7 && ?b3 != ?b8 && ?b3 != ?b9)
+filter (?b4 != ?b5 && ?b4 != ?b6 && ?b4 != ?b7 && ?b4 != ?b8 && ?b4 != ?b9)
+filter (?b5 != ?b6 && ?b5 != ?b7 && ?b5 != ?b8 && ?b5 != ?b9)
+filter (?b6 != ?b7 && ?b6 != ?b8 && ?b6 != ?b9)
+filter (?b7 != ?b8 && ?b7 != ?b9)
+filter (?b8 != ?b9)
+
+filter (?a2 != ?b2 && ?a2 != ?c2 && ?a2 != ?d2 && ?a2 != ?e2 && ?a2 != ?f2 && ?a2 != ?g2 && ?a2 != ?h2 && ?a2 != ?i2)
+filter (?b2 != ?c2 && ?b2 != ?d2 && ?b2 != ?e2 && ?b2 != ?f2 && ?b2 != ?g2 && ?b2 != ?h2 && ?b2 != ?i2)
+filter (?c2 != ?d2 && ?c2 != ?e2 && ?c2 != ?f2 && ?c2 != ?g2 && ?c2 != ?h2 && ?c2 != ?i2)
+filter (?d2 != ?e2 && ?d2 != ?f2 && ?d2 != ?g2 && ?d2 != ?h2 && ?d2 != ?i2)
+filter (?e2 != ?f2 && ?e2 != ?g2 && ?e2 != ?h2 && ?e2 != ?i2)
+filter (?f2 != ?g2 && ?f2 != ?h2 && ?f2 != ?i2)
+filter (?g2 != ?h2 && ?g2 != ?i2)
+filter (?h2 != ?i2)
+
+filter (?c1 != ?c2 && ?c1 != ?c3 && ?c1 != ?c4 && ?c1 != ?c5 && ?c1 != ?c6 && ?c1 != ?c7 && ?c1 != ?c8 && ?c1 != ?c9)
+filter (?c2 != ?c3 && ?c2 != ?c4 && ?c2 != ?c5 && ?c2 != ?c6 && ?c2 != ?c7 && ?c2 != ?c8 && ?c2 != ?c9)
+filter (?c3 != ?c4 && ?c3 != ?c5 && ?c3 != ?c6 && ?c3 != ?c7 && ?c3 != ?c8 && ?c3 != ?c9)
+filter (?c4 != ?c5 && ?c4 != ?c6 && ?c4 != ?c7 && ?c4 != ?c8 && ?c4 != ?c9)
+filter (?c5 != ?c6 && ?c5 != ?c7 && ?c5 != ?c8 && ?c5 != ?c9)
+filter (?c6 != ?c7 && ?c6 != ?c8 && ?c6 != ?c9)
+filter (?c7 != ?c8 && ?c7 != ?c9)
+filter (?c8 != ?c9)
+
+filter (?a3 != ?b3 && ?a3 != ?c3 && ?a3 != ?d3 && ?a3 != ?e3 && ?a3 != ?f3 && ?a3 != ?g3 && ?a3 != ?h3 && ?a3 != ?i3)
+filter (?b3 != ?c3 && ?b3 != ?d3 && ?b3 != ?e3 && ?b3 != ?f3 && ?b3 != ?g3 && ?b3 != ?h3 && ?b3 != ?i3)
+filter (?c3 != ?d3 && ?c3 != ?e3 && ?c3 != ?f3 && ?c3 != ?g3 && ?c3 != ?h3 && ?c3 != ?i3)
+filter (?d3 != ?e3 && ?d3 != ?f3 && ?d3 != ?g3 && ?d3 != ?h3 && ?d3 != ?i3)
+filter (?e3 != ?f3 && ?e3 != ?g3 && ?e3 != ?h3 && ?e3 != ?i3)
+filter (?f3 != ?g3 && ?f3 != ?h3 && ?f3 != ?i3)
+filter (?g3 != ?h3 && ?g3 != ?i3)
+filter (?h3 != ?i3)
+
+filter (?d1 != ?d2 && ?d1 != ?d3 && ?d1 != ?d4 && ?d1 != ?d5 && ?d1 != ?d6 && ?d1 != ?d7 && ?d1 != ?d8 && ?d1 != ?d9)
+filter (?d2 != ?d3 && ?d2 != ?d4 && ?d2 != ?d5 && ?d2 != ?d6 && ?d2 != ?d7 && ?d2 != ?d8 && ?d2 != ?d9)
+filter (?d3 != ?d4 && ?d3 != ?d5 && ?d3 != ?d6 && ?d3 != ?d7 && ?d3 != ?d8 && ?d3 != ?d9)
+filter (?d4 != ?d5 && ?d4 != ?d6 && ?d4 != ?d7 && ?d4 != ?d8 && ?d4 != ?d9)
+filter (?d5 != ?d6 && ?d5 != ?d7 && ?d5 != ?d8 && ?d5 != ?d9)
+filter (?d6 != ?d7 && ?d6 != ?d8 && ?d6 != ?d9)
+filter (?d7 != ?d8 && ?d7 != ?d9)
+filter (?d8 != ?d9)
+
+filter (?a4 != ?b4 && ?a4 != ?c4 && ?a4 != ?d4 && ?a4 != ?e4 && ?a4 != ?f4 && ?a4 != ?g4 && ?a4 != ?h4 && ?a4 != ?i4)
+filter (?b4 != ?c4 && ?b4 != ?d4 && ?b4 != ?e4 && ?b4 != ?f4 && ?b4 != ?g4 && ?b4 != ?h4 && ?b4 != ?i4)
+filter (?c4 != ?d4 && ?c4 != ?e4 && ?c4 != ?f4 && ?c4 != ?g4 && ?c4 != ?h4 && ?c4 != ?i4)
+filter (?d4 != ?e4 && ?d4 != ?f4 && ?d4 != ?g4 && ?d4 != ?h4 && ?d4 != ?i4)
+filter (?e4 != ?f4 && ?e4 != ?g4 && ?e4 != ?h4 && ?e4 != ?i4)
+filter (?f4 != ?g4 && ?f4 != ?h4 && ?f4 != ?i4)
+filter (?g4 != ?h4 && ?g4 != ?i4)
+filter (?h4 != ?i4)
+
+filter (?e1 != ?e2 && ?e1 != ?e3 && ?e1 != ?e4 && ?e1 != ?e5 && ?e1 != ?e6 && ?e1 != ?e7 && ?e1 != ?e8 && ?e1 != ?e9)
+filter (?e2 != ?e3 && ?e2 != ?e4 && ?e2 != ?e5 && ?e2 != ?e6 && ?e2 != ?e7 && ?e2 != ?e8 && ?e2 != ?e9)
+filter (?e3 != ?e4 && ?e3 != ?e5 && ?e3 != ?e6 && ?e3 != ?e7 && ?e3 != ?e8 && ?e3 != ?e9)
+filter (?e4 != ?e5 && ?e4 != ?e6 && ?e4 != ?e7 && ?e4 != ?e8 && ?e4 != ?e9)
+filter (?e5 != ?e6 && ?e5 != ?e7 && ?e5 != ?e8 && ?e5 != ?e9)
+filter (?e6 != ?e7 && ?e6 != ?e8 && ?e6 != ?e9)
+filter (?e7 != ?e8 && ?e7 != ?e9)
+filter (?e8 != ?e9)
+
+filter (?a5 != ?b5 && ?a5 != ?c5 && ?a5 != ?d5 && ?a5 != ?e5 && ?a5 != ?f5 && ?a5 != ?g5 && ?a5 != ?h5 && ?a5 != ?i5)
+filter (?b5 != ?c5 && ?b5 != ?d5 && ?b5 != ?e5 && ?b5 != ?f5 && ?b5 != ?g5 && ?b5 != ?h5 && ?b5 != ?i5)
+filter (?c5 != ?d5 && ?c5 != ?e5 && ?c5 != ?f5 && ?c5 != ?g5 && ?c5 != ?h5 && ?c5 != ?i5)
+filter (?d5 != ?e5 && ?d5 != ?f5 && ?d5 != ?g5 && ?d5 != ?h5 && ?d5 != ?i5)
+filter (?e5 != ?f5 && ?e5 != ?g5 && ?e5 != ?h5 && ?e5 != ?i5)
+filter (?f5 != ?g5 && ?f5 != ?h5 && ?f5 != ?i5)
+filter (?g5 != ?h5 && ?g5 != ?i5)
+filter (?h5 != ?i5)
+
+filter (?f1 != ?f2 && ?f1 != ?f3 && ?f1 != ?f4 && ?f1 != ?f5 && ?f1 != ?f6 && ?f1 != ?f7 && ?f1 != ?f8 && ?f1 != ?f9)
+filter (?f2 != ?f3 && ?f2 != ?f4 && ?f2 != ?f5 && ?f2 != ?f6 && ?f2 != ?f7 && ?f2 != ?f8 && ?f2 != ?f9)
+filter (?f3 != ?f4 && ?f3 != ?f5 && ?f3 != ?f6 && ?f3 != ?f7 && ?f3 != ?f8 && ?f3 != ?f9)
+filter (?f4 != ?f5 && ?f4 != ?f6 && ?f4 != ?f7 && ?f4 != ?f8 && ?f4 != ?f9)
+filter (?f5 != ?f6 && ?f5 != ?f7 && ?f5 != ?f8 && ?f5 != ?f9)
+filter (?f6 != ?f7 && ?f6 != ?f8 && ?f6 != ?f9)
+filter (?f7 != ?f8 && ?f7 != ?f9)
+filter (?f8 != ?f9)
+
+filter (?a6 != ?b6 && ?a6 != ?c6 && ?a6 != ?d6 && ?a6 != ?e6 && ?a6 != ?f6 && ?a6 != ?g6 && ?a6 != ?h6 && ?a6 != ?i6)
+filter (?b6 != ?c6 && ?b6 != ?d6 && ?b6 != ?e6 && ?b6 != ?f6 && ?b6 != ?g6 && ?b6 != ?h6 && ?b6 != ?i6)
+filter (?c6 != ?d6 && ?c6 != ?e6 && ?c6 != ?f6 && ?c6 != ?g6 && ?c6 != ?h6 && ?c6 != ?i6)
+filter (?d6 != ?e6 && ?d6 != ?f6 && ?d6 != ?g6 && ?d6 != ?h6 && ?d6 != ?i6)
+filter (?e6 != ?f6 && ?e6 != ?g6 && ?e6 != ?h6 && ?e6 != ?i6)
+filter (?f6 != ?g6 && ?f6 != ?h6 && ?f6 != ?i6)
+filter (?g6 != ?h6 && ?g6 != ?i6)
+filter (?h6 != ?i6)
+
+filter (?g1 != ?g2 && ?g1 != ?g3 && ?g1 != ?g4 && ?g1 != ?g5 && ?g1 != ?g6 && ?g1 != ?g7 && ?g1 != ?g8 && ?g1 != ?g9)
+filter (?g2 != ?g3 && ?g2 != ?g4 && ?g2 != ?g5 && ?g2 != ?g6 && ?g2 != ?g7 && ?g2 != ?g8 && ?g2 != ?g9)
+filter (?g3 != ?g4 && ?g3 != ?g5 && ?g3 != ?g6 && ?g3 != ?g7 && ?g3 != ?g8 && ?g3 != ?g9)
+filter (?g4 != ?g5 && ?g4 != ?g6 && ?g4 != ?g7 && ?g4 != ?g8 && ?g4 != ?g9)
+filter (?g5 != ?g6 && ?g5 != ?g7 && ?g5 != ?g8 && ?g5 != ?g9)
+filter (?g6 != ?g7 && ?g6 != ?g8 && ?g6 != ?g9)
+filter (?g7 != ?g8 && ?g7 != ?g9)
+filter (?g8 != ?g9)
+
+filter (?a7 != ?b7 && ?a7 != ?c7 && ?a7 != ?d7 && ?a7 != ?e7 && ?a7 != ?f7 && ?a7 != ?g7 && ?a7 != ?h7 && ?a7 != ?i7)
+filter (?b7 != ?c7 && ?b7 != ?d7 && ?b7 != ?e7 && ?b7 != ?f7 && ?b7 != ?g7 && ?b7 != ?h7 && ?b7 != ?i7)
+filter (?c7 != ?d7 && ?c7 != ?e7 && ?c7 != ?f7 && ?c7 != ?g7 && ?c7 != ?h7 && ?c7 != ?i7)
+filter (?d7 != ?e7 && ?d7 != ?f7 && ?d7 != ?g7 && ?d7 != ?h7 && ?d7 != ?i7)
+filter (?e7 != ?f7 && ?e7 != ?g7 && ?e7 != ?h7 && ?e7 != ?i7)
+filter (?f7 != ?g7 && ?f7 != ?h7 && ?f7 != ?i7)
+filter (?g7 != ?h7 && ?g7 != ?i7)
+filter (?h7 != ?i7)
+
+filter (?h1 != ?h2 && ?h1 != ?h3 && ?h1 != ?h4 && ?h1 != ?h5 && ?h1 != ?h6 && ?h1 != ?h7 && ?h1 != ?h8 && ?h1 != ?h9)
+filter (?h2 != ?h3 && ?h2 != ?h4 && ?h2 != ?h5 && ?h2 != ?h6 && ?h2 != ?h7 && ?h2 != ?h8 && ?h2 != ?h9)
+filter (?h3 != ?h4 && ?h3 != ?h5 && ?h3 != ?h6 && ?h3 != ?h7 && ?h3 != ?h8 && ?h3 != ?h9)
+filter (?h4 != ?h5 && ?h4 != ?h6 && ?h4 != ?h7 && ?h4 != ?h8 && ?h4 != ?h9)
+filter (?h5 != ?h6 && ?h5 != ?h7 && ?h5 != ?h8 && ?h5 != ?h9)
+filter (?h6 != ?h7 && ?h6 != ?h8 && ?h6 != ?h9)
+filter (?h7 != ?h8 && ?h7 != ?h9)
+filter (?h8 != ?h9)
+
+filter (?a8 != ?b8 && ?a8 != ?c8 && ?a8 != ?d8 && ?a8 != ?e8 && ?a8 != ?f8 && ?a8 != ?g8 && ?a8 != ?h8 && ?a8 != ?i8)
+filter (?b8 != ?c8 && ?b8 != ?d8 && ?b8 != ?e8 && ?b8 != ?f8 && ?b8 != ?g8 && ?b8 != ?h8 && ?b8 != ?i8)
+filter (?c8 != ?d8 && ?c8 != ?e8 && ?c8 != ?f8 && ?c8 != ?g8 && ?c8 != ?h8 && ?c8 != ?i8)
+filter (?d8 != ?e8 && ?d8 != ?f8 && ?d8 != ?g8 && ?d8 != ?h8 && ?d8 != ?i8)
+filter (?e8 != ?f8 && ?e8 != ?g8 && ?e8 != ?h8 && ?e8 != ?i8)
+filter (?f8 != ?g8 && ?f8 != ?h8 && ?f8 != ?i8)
+filter (?g8 != ?h8 && ?g8 != ?i8)
+filter (?h8 != ?i8)
+
+filter (?i1 != ?i2 && ?i1 != ?i3 && ?i1 != ?i4 && ?i1 != ?i5 && ?i1 != ?i6 && ?i1 != ?i7 && ?i1 != ?i8 && ?i1 != ?i9)
+filter (?i2 != ?i3 && ?i2 != ?i4 && ?i2 != ?i5 && ?i2 != ?i6 && ?i2 != ?i7 && ?i2 != ?i8 && ?i2 != ?i9)
+filter (?i3 != ?i4 && ?i3 != ?i5 && ?i3 != ?i6 && ?i3 != ?i7 && ?i3 != ?i8 && ?i3 != ?i9)
+filter (?i4 != ?i5 && ?i4 != ?i6 && ?i4 != ?i7 && ?i4 != ?i8 && ?i4 != ?i9)
+filter (?i5 != ?i6 && ?i5 != ?i7 && ?i5 != ?i8 && ?i5 != ?i9)
+filter (?i6 != ?i7 && ?i6 != ?i8 && ?i6 != ?i9)
+filter (?i7 != ?i8 && ?i7 != ?i9)
+filter (?i8 != ?i9)
+
+filter (?a9 != ?b9 && ?a9 != ?c9 && ?a9 != ?d9 && ?a9 != ?e9 && ?a9 != ?f9 && ?a9 != ?g9 && ?a9 != ?h9 && ?a9 != ?i9)
+filter (?b9 != ?c9 && ?b9 != ?d9 && ?b9 != ?e9 && ?b9 != ?f9 && ?b9 != ?g9 && ?b9 != ?h9 && ?b9 != ?i9)
+filter (?c9 != ?d9 && ?c9 != ?e9 && ?c9 != ?f9 && ?c9 != ?g9 && ?c9 != ?h9 && ?c9 != ?i9)
+filter (?d9 != ?e9 && ?d9 != ?f9 && ?d9 != ?g9 && ?d9 != ?h9 && ?d9 != ?i9)
+filter (?e9 != ?f9 && ?e9 != ?g9 && ?e9 != ?h9 && ?e9 != ?i9)
+filter (?f9 != ?g9 && ?f9 != ?h9 && ?f9 != ?i9)
+filter (?g9 != ?h9 && ?g9 != ?i9)
+filter (?h9 != ?i9)
+
+filter (?a1 != ?b2  &&  ?a1 != ?b3)
+filter (?a1 != ?c2  &&  ?a1 != ?c3)
+filter (?a2 != ?b1  &&  ?a2 != ?b3)
+filter (?a2 != ?c1  &&  ?a2 != ?c3)
+filter (?a3 != ?b1  &&  ?a3 != ?b2)
+filter (?a3 != ?c1  &&  ?a3 != ?c2)
+filter (?b1 != ?c2  &&  ?b1 != ?c3)
+filter (?b2 != ?c1  &&  ?b2 != ?c3)
+filter (?b3 != ?c1  &&  ?b3 != ?c2)
+
+filter (?d1 != ?e2  &&  ?d1 != ?e3)
+filter (?d1 != ?f2  &&  ?d1 != ?f3)
+filter (?d2 != ?e1  &&  ?d2 != ?e3)
+filter (?d2 != ?f1  &&  ?d2 != ?f3)
+filter (?d3 != ?e1  &&  ?d3 != ?e2)
+filter (?d3 != ?f1  &&  ?d3 != ?f2)
+filter (?e1 != ?f2  &&  ?e1 != ?f3)
+filter (?e2 != ?f1  &&  ?e2 != ?f3)
+filter (?e3 != ?f1  &&  ?e3 != ?f2)
+
+filter (?g1 != ?h2  &&  ?g1 != ?h3)
+filter (?g1 != ?i2  &&  ?g1 != ?i3)
+filter (?g2 != ?h1  &&  ?g2 != ?h3)
+filter (?g2 != ?i1  &&  ?g2 != ?i3)
+filter (?g3 != ?h1  &&  ?g3 != ?h2)
+filter (?g3 != ?i1  &&  ?g3 != ?i2)
+filter (?h1 != ?i2  &&  ?h1 != ?i3)
+filter (?h2 != ?i1  &&  ?h2 != ?i3)
+filter (?h3 != ?i1  &&  ?h3 != ?i2)
+
+filter (?a4 != ?b5  &&  ?a4 != ?b6)
+filter (?a4 != ?c5  &&  ?a4 != ?c6)
+filter (?a5 != ?b4  &&  ?a5 != ?b6)
+filter (?a5 != ?c4  &&  ?a5 != ?c6)
+filter (?a6 != ?b4  &&  ?a6 != ?b5)
+filter (?a6 != ?c4  &&  ?a6 != ?c5)
+filter (?b4 != ?c5  &&  ?b4 != ?c6)
+filter (?b5 != ?c4  &&  ?b5 != ?c6)
+filter (?b6 != ?c4  &&  ?b6 != ?c5)
+
+filter (?d4 != ?e5  &&  ?d4 != ?e6)
+filter (?d4 != ?f5  &&  ?d4 != ?f6)
+filter (?d5 != ?e4  &&  ?d5 != ?e6)
+filter (?d5 != ?f4  &&  ?d5 != ?f6)
+filter (?d6 != ?e4  &&  ?d6 != ?e5)
+filter (?d6 != ?f4  &&  ?d6 != ?f5)
+filter (?e4 != ?f5  &&  ?e4 != ?f6)
+filter (?e5 != ?f4  &&  ?e5 != ?f6)
+filter (?e6 != ?f4  &&  ?e6 != ?f5)
+
+filter (?g4 != ?h5  &&  ?g4 != ?h6)
+filter (?g4 != ?i5  &&  ?g4 != ?i6)
+filter (?g5 != ?h4  &&  ?g5 != ?h6)
+filter (?g5 != ?i4  &&  ?g5 != ?i6)
+filter (?g6 != ?h4  &&  ?g6 != ?h5)
+filter (?g6 != ?i4  &&  ?g6 != ?i5)
+filter (?h4 != ?i5  &&  ?h4 != ?i6)
+filter (?h5 != ?i4  &&  ?h5 != ?i6)
+filter (?h6 != ?i4  &&  ?h6 != ?i5)
+
+filter (?a7 != ?b8  &&  ?a7 != ?b9)
+filter (?a7 != ?c8  &&  ?a7 != ?c9)
+filter (?a8 != ?b7  &&  ?a8 != ?b9)
+filter (?a8 != ?c7  &&  ?a8 != ?c9)
+filter (?a9 != ?b7  &&  ?a9 != ?b8)
+filter (?a9 != ?c7  &&  ?a9 != ?c8)
+filter (?b7 != ?c8  &&  ?b7 != ?c9)
+filter (?b8 != ?c7  &&  ?b8 != ?c9)
+filter (?b9 != ?c7  &&  ?b9 != ?c8)
+
+filter (?d7 != ?e8  &&  ?d7 != ?e9)
+filter (?d7 != ?f8  &&  ?d7 != ?f9)
+filter (?d8 != ?e7  &&  ?d8 != ?e9)
+filter (?d8 != ?f7  &&  ?d8 != ?f9)
+filter (?d9 != ?e7  &&  ?d9 != ?e8)
+filter (?d9 != ?f7  &&  ?d9 != ?f8)
+filter (?e7 != ?f8  &&  ?e7 != ?f9)
+filter (?e8 != ?f7  &&  ?e8 != ?f9)
+filter (?e9 != ?f7  &&  ?e9 != ?f8)
+
+filter (?g7 != ?h8  &&  ?g7 != ?h9)
+filter (?g7 != ?i8  &&  ?g7 != ?i9)
+filter (?g8 != ?h7  &&  ?g8 != ?h9)
+filter (?g8 != ?i7  &&  ?g8 != ?i9)
+filter (?g9 != ?h7  &&  ?g9 != ?h8)
+filter (?g9 != ?i7  &&  ?g9 != ?i8)
+filter (?h7 != ?i8  &&  ?h7 != ?i9)
+filter (?h8 != ?i7  &&  ?h8 != ?i9)
+filter (?h9 != ?i7  &&  ?h9 != ?i8)
+}
+limit 1

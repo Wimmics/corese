@@ -29,8 +29,8 @@ bind (st:get(st:uri) as ?r)
 
 service <http://fr.dbpedia.org/sparql> {
   
-  ?r rdfs:label ?label . filter(langMatches(lang(?label), 'fr'))    
-  optional {  ?r rdfs:comment ?com . filter(langMatches(lang(?com) , 'fr')) }
+  ?r rdfs:label ?label . filter (langMatches(lang(?label), 'en'))    
+  optional {  ?r rdfs:comment ?com . filter (langMatches(lang(?com) , 'en')) }
  
   optional { 
     ?r p:dateDeNaissance |  p:dateDeDécès | o:thumbnail  ?vv
@@ -62,10 +62,10 @@ service <http://fr.dbpedia.org/sparql> {
     ?r ?q ?s 
     
      filter isURI(?s) . ?s rdfs:label ?ls . 
-     filter(langMatches(lang(?ls), 'fr')) 
+     filter (langMatches(lang(?ls), 'en') ) 
     
     ?q rdfs:label ?lq 
-    filter(langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))    
+    filter (langMatches(lang(?lq), "en") || langMatches(lang(?lq), "fr"))    
 
     optional { 
         ?s o:wikiPageRedirects ?rs        

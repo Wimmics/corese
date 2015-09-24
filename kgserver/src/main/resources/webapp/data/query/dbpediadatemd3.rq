@@ -1,0 +1,36 @@
+#
+# uri =  st:dyyyy-mm-dd
+# day = dd ; month = mm
+# query dbpedia for events occurring this day of month
+#
+prefix o:   <http://dbpedia.org/ontology/>
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+construct { 
+  ?x o:deathDate ?death 
+  ?x o:bornDate  ?born
+  ; rdfs:label ?l
+} 
+where {
+  bind (st:set(st:bind, st:values) as ?test)
+
+  bind (substr(st:get(st:uri), strlen(st:) + 2) as ?str)
+  bind (coalesce(xsd:date(?str), "2000-02-29"^^xsd:date) as ?param)
+  bind (month(?param) as ?month)
+  bind (day(?param)   as ?day)
+
+  service <http://fr.dbpedia.org/sparql/> { 
+    select ?x  ?d1 ?d2 ?month ?day ?l where {  
+          ?x o:birthDate ?d1  
+          ?x o:deathDate ?d2  
+          filter (datatype(?d1) = xsd:date)         
+          filter (month(?d1) = ?month && day(?d1) = ?day) 
+	  filter (datatype(?d2) = xsd:date)         
+          filter (month(?d2) = ?month && day(?d2) = ?day)           
+          ?x rdfs:label ?l
+          filter langMatches(lang(?l), "fr")
+    } 
+  }
+  
+  bind (cal:date(year(?d1), month(?d1), day(?d1)) as ?born)
+  bind (cal:date(year(?d2), month(?d2), day(?d2)) as ?death)
+}

@@ -1,7 +1,10 @@
-prefix o:   <http://dbpedia.org/ontology/>
+prefix o: <http://dbpedia.org/ontology/>
+prefix p: <http://fr.dbpedia.org/property/>
+prefix r: <http://fr.dbpedia.org/resource/>
+prefix dc:  <http://purl.org/dc/terms/>
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
-construct  { 
-  ?x o:deathDate ?date ; rdfs:label ?l
+construct debug { 
+  ?x ?p ?date ; rdfs:label ?l
 } 
 where {
   bind (st:set(st:bind, st:values) as ?test)
@@ -9,14 +12,18 @@ where {
   bind (st:get(st:uri) as ?uri)
   bind (st:set(st:year, xsd:integer(substr(?uri, strlen(st:) + 2))) as ?y)
 
-  bind (xsd:date(concat(?y, "-", 1, "-", 1,   "+02:00")) as ?start)
+  bind (xsd:date(concat(?y, "-", 1, "-", 1,   "+02:00"))   as ?start)
   bind (xsd:date(concat(?y, "-", 12, "-", 31, "+02:00")) as ?end)
 
   service <http://fr.dbpedia.org/sparql/> { 
-    select ?x ?d ?start ?end ?l where {  
-          ?x o:deathDate ?d  
+    select ?x ?p ?d ?start ?end ?l where {  
+    
+          ?x a o:MilitaryConflict 
+          ?x ?p ?d ; rdfs:label ?l 
+          
+          #filter (?p in (o:startDate, o:endDate, p:date))
           filter (datatype(?d) = xsd:date)         
-          filter (?d >= ?start && ?d <= ?end) 
+          filter(?d >= ?start && ?d <= ?end) 
           ?x rdfs:label ?l
           filter langMatches(lang(?l), "fr")
     } 
@@ -24,3 +31,4 @@ where {
   
   bind (cal:date(year(?d), month(?d), day(?d)) as ?date)
 }
+ 

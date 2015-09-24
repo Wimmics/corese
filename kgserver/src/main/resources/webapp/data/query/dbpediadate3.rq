@@ -2,7 +2,8 @@ prefix o: <http://dbpedia.org/ontology/>
 prefix p: <http://fr.dbpedia.org/property/>
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 construct  { 
-  ?x ?p ?date 
+  ?x ?p ?date ;
+    rdfs:label ?l
 } 
 where {
   bind (st:set(st:bind, st:values) as ?test)
@@ -10,15 +11,17 @@ where {
   bind (st:get(st:uri) as ?uri)
   bind (st:set(st:year, xsd:integer(substr(?uri, strlen(st:) + 2))) as ?y)
 
-  bind (xsd:date(concat(?y, "-", 1, "-", 1,   "+02:00"))   as ?start)
+  bind (xsd:date(concat(?y, "-", 1, "-", 1,   "+02:00")) as ?start)
   bind (xsd:date(concat(?y, "-", 12, "-", 31, "+02:00")) as ?end)
 
   service <http://fr.dbpedia.org/sparql/> { 
-    select ?x ?p ?d ?start ?end where {  
-          ?x ?p ?d ; rdfs:label ?l
+    select ?x ?p ?d ?start ?end ?l where {  
+          ?x ?p ?d 
           filter (?p in (o:startDate, o:endDate))
           filter(?d >= ?start && ?d <= ?end)      
-          filter (datatype(?d) = xsd:date)         
+          filter (datatype(?d) = xsd:date)
+          ?x rdfs:label ?l
+          filter langMatches(lang(?l), "fr")
     } 
   }
   

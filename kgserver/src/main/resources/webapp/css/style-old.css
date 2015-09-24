@@ -1,28 +1,4 @@
-/*
-body {
-    font-family: Arial, sans-serif;
-    margin-right: 80px;
-    margin-left: 80px;
-}
 
-.bold { font-weight: bold }
-.left { text-align: left }
-
-p { text-align: justify }
-
-#map-canvas {
-    height: 100%;
-    margin: 30px;
-    padding: 30px       
-}
-
-.center { 
-    margin-left: auto;
-    margin-right: auto; 
-}
-
-h1,h2,h3,h4 { color: #00428C }
-*/
 .s0 { background:lightgrey }
 .s1 { background:lightblue }
 
@@ -31,6 +7,10 @@ h1,h2,h3,h4 { color: #00428C }
 
 .color { color: #00428C ; 
          font-weight: bold }
+
+.bold {
+    font-weight: bold
+  }
 
 .fail {
     color:red;
@@ -70,22 +50,76 @@ pre {
     border-color: #5C4DC4;
     color: #00428C;
     background-color: #E4E5E7;
-}  
+} 
 
-.pre {
-    font-size: 120%;
-    font-weight: bold;
-    line-height: 120%;
-    padding-top: 0.2em;
-    padding-bottom: 0.2em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
+.shrink * {
+    font-size: 15%;
+}
+
+.large * {
+    font-size: 110%;
+}
+
+.border {   border-color: #5C4DC4;
     border-style: solid;
     border-left-width: thin;
     border-top-width: thin;
     border-right-width: thin;
     border-bottom-width: thin;
-    border-color: #5C4DC4;
-    color: #00428C;
+}
+
+.right {text-align:right;}
+
+.center {text-align:center;}
+
+.top {vertical-align:top}
+
+.year { text-align:center }
+
+.year span {
+    font-size:70%
+}
+
+.century {
+  text-align:center; 
+}
+
+.day    {text-align:right;}
+
+.month {  
     background-color: #E4E5E7;
-}     
+} 
+
+.calendar tr {
+    vertical-align:top
+}
+
+.banner {
+    width:100%
+}
+
+.select {
+    display:inline-block; 
+    width:200px
+}
+
+#map-canvas {
+  height: 60% 
+}
+
+
+ .head { 
+    background-color: lightgrey ;
+    text-align: center
+  }
+  
+  .margin { 
+    margin-left: auto;
+    margin-right: auto; 
+  }
+  
+  .hcentury {  
+    width: 100%;
+    background-color: #E4E5E7;
+} 
+  

@@ -38,6 +38,7 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.api.ValueResolver;
 import fr.inria.edelweiss.kgraph.logic.*;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -1148,7 +1149,7 @@ public class Graph implements Graphable {
     public int nbLiterals() {
         return literal.size();
     }
-
+    
     void setSize(int n) {
         size = n;
     }
@@ -1689,6 +1690,15 @@ public class Graph implements Graphable {
         List<Node> list = new ArrayList<Node>();
         list(node, list);
         return list;
+    }
+    
+    public List<IDatatype> getDatatypeList(Node node) {
+        List<Node> list = getList(node);
+        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>();
+        for (Node n : list) {
+            ldt.add((IDatatype) n.getValue());
+        }
+        return ldt;
     }
 
     /**

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Sep 17 15:14:22 CEST 2015
+Thu Sep 24 10:20:20 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -10,7 +10,8 @@ Thu Sep 17 15:14:22 CEST 2015
 <body>
 <![CDATA[
 template st:enum(?year, ?f, ?l) {
-"<tr style='vertical-align:top'>"
+"<tr>"
+
 group {
   "<td>"
 
@@ -19,6 +20,7 @@ group {
   "</td>"
   "<td>&nbsp;&nbsp;</td>"
 }
+
 "</tr>\n"
 }
 where {
@@ -33,67 +35,17 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
-template st:month(?y, ?m) {
-
-    "<h3 style='text-align:center'>" cal:month(?m) "</h3>"
-    
-    "<pre>"
-    "Mo Tu We Th Fr Sa Su \n"
-    
-    group {
-    
-        if (?n = 1, xt:space(?first - 1), "")
-        xt:pretty(?n) 
-        #st:call-template(st:date, ?date) " " 
-        if (?jour = "Sunday", "\n", "")
-        
-        ; separator = ""
-    }
-    
-    if (?first + ?days - 1 < 35 , "\n ", "")
-    # additional space when last day is sunday (because \n alone fails)
-    if (?first + ?days - 1 = 35 && ?last = 7, " ", "")
-    
-    "</pre>"
-     
-    ; separator = "\n"                   
-}
-where {
-    bind (cal:days(?y, ?m) as ?days)
-    bind (cal:num(xt:day(xsd:date(concat(?y, "-", ?m, "-", 1)))) 
-    as ?first)
-    bind (cal:num(xt:day(xsd:date(concat(?y, "-", ?m, "-", ?days)))) 
-    as ?last)
-    bind (unnest(xt:iota(?days)) as ?n)
-    bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?date)
-    bind (xt:day(?date) as ?jour)  
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:start {
 
-  st:call-template(st:head, ?year)
-
   st:call-template(st:main, ?year)
-  
-  if (?content, st:call-template(st:content, ?year), "")
-  
+    
   st:call-template(st:tail)
-
+  
 }
 where {
-  bind (st:get(st:profile) as ?prof) 
-  bind (st:set(st:content, bound(?prof)) as ?content)
   
   bind (st:get(st:uri) as ?uri)
-  bind (xsd:integer(substr(?uri, strlen(st:) + 2)) as ?tmp)
+  bind (xsd:integer(substr(?uri, strlen(st:) + 2))   as ?tmp)
   bind (st:set(st:year, coalesce(?tmp, year(now()))) as ?year)
 }
 
@@ -104,13 +56,40 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:main(?year) {
+template st:calendar(?year) {
 
-"<p style='text-align:center;'><table>" 
+"<table class='calendar'>"
+st:call-template(st:enum, ?year, 1, 3)  
+st:call-template(st:enum, ?year, 4, 6)  
+st:call-template(st:enum, ?year, 7, 9)   
+st:call-template(st:enum, ?year, 10, 12) 
+"</table>"  
 
-    st:call-template(st:calendar, ?year)
+}
+where {
+
     
-"</table></p>"
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Display a day in the calendar of a month
+# May be a link or a number
+# Calling context may have set st:content and st:date 
+# (cf st:content/st:query )
+#
+template st:date(?date) {
+
+  coalesce(
+    st:call-template-with(st:get(st:content), st:get(st:date), ?date), 
+    day(?date))
+  
 }
 where {
   
@@ -158,103 +137,6 @@ values ?y { 2015 }
 <rule>
 <body>
 <![CDATA[
-prefix o: <http://dbpedia.org/ontology/>
-template st:date(?date) {
-   ?c
-}
-where {
-   select ?date (count(*) as ?c)  where {
-      ?x ?p ?date  
- }
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:calendar(?year) {
-
-st:call-template(st:enum, ?year, 1, 3)  
-st:call-template(st:enum, ?year, 4, 6)  
-st:call-template(st:enum, ?year, 7, 9)   
-st:call-template(st:enum, ?year, 10, 12) 
-  
-}
-where {
-
-    
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
-template st:monthtab(?y, ?m) {
-
-    "<h3 style='text-align:center'>" cal:month(?m) "</h3>"
-    
-    "<table class='pre'>"
-    "<tr>" st:call-template(st:title)
-    "</tr>"
-
-    "<tr>"
-    
-    group {
-    
-        if (?n = 1, xt:td(?first - 1), "")
-        
-        "<td style='text-align:right'>" 
-         
-        if (?b, concat("<a href='#", str(?date), "'>"), "") 
-        ?n 
-        if (?b, "</a>", "")
-        
-        "</td>"
-        
-        #st:call-template(st:date, ?date) " " 
-        
-        if (?day = "Sunday", "</tr>\n<tr>", "")
-        
-        ; separator = ""
-    }
-    
-    "</tr>"
-    
-    if (?first + ?days - 1 <= 35 , "<tr><td>&nbsp;</td></tr>", "")
-    
-    "</table>"
-     
-}
-where {
-    bind (cal:days(?y, ?m) as ?days)
-    bind (cal:num(xt:day(cal:date(?y, ?m, 1))) as ?first)
-    bind (unnest(xt:iota(?days)) as ?n)
-    bind (cal:date(?y, ?m, ?n) as ?date)
-    bind (xt:day(?date) as ?day) 
-    bind (st:get(st:content) &&
-      exists { ?x ?p ?dd 
-      filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
-      filter (year(?dd) = year(?date) 
-      && month(?dd) = month(?date) 
-      && day(?dd) = day(?date)) } 
-    as ?b)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:content(?year) {
 
@@ -263,10 +145,9 @@ template st:content(?year) {
   "<p>"
   
   group {
-    "<a href='" 
-    #str(?x) 
-    st:protocol(concat(st:get(st:service), "?profile=st:dbpedia&uri=", encode_for_uri(?x)))
-    "'>" str(?x) "</a>"  
+    "<a href='" st:protocol(concat(st:get(st:service), 	"?profile=st:dbpedia&uri=", encode_for_uri(?x)))  "'>" 
+    str(?title)   
+    "</a>"  
     
     ; separator = "<br/>"
   }
@@ -274,13 +155,15 @@ template st:content(?year) {
   "</p>"
 }
 where { 
-  {select distinct ?x ?dd ?date 
+  {select distinct ?x ?date 
   where {
     ?x ?p ?date 
-    filter (datatype(?date) in (xsd:date, xsd:dateTime)) 
-    bind (cal:date(year(?date), month(?date), day(?date)) as ?dd)
+    filter (datatype(?date) in (xsd:date, xsd:dateTime))     
   }}
   filter (year(?date) = ?year)
+  bind (cal:date(year(?date), month(?date), day(?date)) as ?dd)
+  ?x rdfs:label ?l 
+  bind (if (bound(?l), ?l, ?x) as ?title)
 }
 group by ?date
 order by ?date 
@@ -295,21 +178,21 @@ order by ?date
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:profile {
 
-      define(xt:space(?n) = 
+    define(xt:space(?n) = 
          if (?n = 0, "", concat("   " , xt:space(?n - 1)))
       )
       
-       define(xt:td(?n) = 
+    define(xt:td(?n) = 
          if (?n = 0, "", concat("<td/>" , xt:td(?n - 1)))
       ) 
       
-       define (st:protocol(?uri) =
-    if (st:get(st:protocol, st:ajax), 
+    define (st:protocol(?uri) =
+      if (st:get(st:protocol, st:ajax), 
       concat("javascript:trans(\"", str(?uri), "\")"), 
       str(?uri))
-  )
+    )
   
-  define (st:link(?uri) =
+   define (st:link(?uri) =
      concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
       coalesce(
@@ -344,17 +227,201 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:link(?date) {
+
+  "<a href='#" str(?date) "'>"  day(?date)  "</a>"
+  
+}
+where {
+   
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+template st:month(?y, ?m) {
+
+    "<h3 class='center'>" cal:month(?m) "</h3>"
+    
+    "<pre>"
+    "Mo Tu We Th Fr Sa Su \n"
+    
+    group {
+    
+        if (?n = 1, xt:space(?first - 1), "")
+        xt:pretty(?n) 
+        #st:call-template(st:date, ?date) " " 
+        if (?jour = "Sunday", "\n", "")
+        
+        ; separator = ""
+    }
+    
+    if (?first + ?days - 1 < 35 , "\n ", "")
+    # additional space when last day is sunday (because \n alone fails)
+    if (?first + ?days - 1 = 35 && ?last = 7, " ", "")
+    
+    "</pre>"
+     
+    ; separator = "\n"                   
+}
+where {
+    bind (cal:days(?y, ?m) as ?days)
+    bind (cal:num(xt:day(xsd:date(concat(?y, "-", ?m, "-", 1)))) 
+    as ?first)
+    bind (cal:num(xt:day(xsd:date(concat(?y, "-", ?m, "-", ?days)))) 
+    as ?last)
+    bind (unnest(xt:iota(?days)) as ?n)
+    bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?date)
+    bind (xt:day(?date) as ?jour)  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:main(?year) {
+
+   st:call-template(st:head, ?year)
+
+  "<p class='center'>"
+
+   st:call-template(st:calendar, ?year)
+    
+  "</p>"
+
+}
+where {
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+template st:monthtab(?y, ?m) {
+
+    "<h3 class='center'>" cal:month(?m) "</h3>"
+    
+    "<table class='month'>"
+    "<tr>" st:call-template(st:title)
+    "</tr>"
+
+    "<tr>"
+    
+    xt:td(?first - 1)
+   
+    group {
+            
+        "<td class='day'>" 
+         
+        st:call-template(st:date, ?date)
+        
+        "</td>"
+                        
+        if (?day = "Sunday", "</tr>\n<tr>", "")
+                
+        ; separator = ""
+    }
+    
+    "</tr>"
+    
+    if (?first + ?days - 1 <= 35 , "<tr><td>&nbsp;</td></tr>", "")
+    
+    "</table>"
+     
+}
+where {
+    bind (cal:days(?y, ?m)       as ?days)
+    bind (cal:num(xt:day(cal:date(?y, ?m, 1))) as ?first)
+    bind (unnest(xt:iota(?days)) as ?n)
+    bind (cal:date(?y, ?m, ?n)   as ?date)
+    bind (xt:day(?date)          as ?day)        
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:epoch {
+
+  st:call-template(st:era, ?fst, ?rst)
+
+}
+where {
+  bind (unnest(xt:iota(1, 10)) as ?n)
+  bind (?start + ((?n - 1) * 10) as ?fst)
+  bind (?start + (?n * 10) - 1 as ?rst)
+}
+values ?start { 1901 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:test {
+
+  "<table>"
+  "<tr>"
+
+  group {
+    "<td>" str(?label)
+      st:call-template(st:main, ?year)
+    "</td>"  
+  }
+  
+  "</tr>"
+  "</table>"
+    
+  st:call-template(st:tail)
+}
+where {
+  # profile.ttl graph
+  bind (st:get(st:definition) as ?g)
+  
+  # access to the profile.ttl graph
+  graph ?g {
+    st:calendartest st:param [
+       st:list/rdf:rest*/rdf:first (?label ?year)
+    ]
+  }    
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:head(?year) {
 
-"<h1 style='text-align:center'>"
+"<h1 class='year'>"
 
 "<a href='" st:plink(concat(?uri,  (?year - 1))) "'>"  
-"<span style='font-size:80%'>" (?year - 1)  "</span>"   "</a>"
+"<span>" (?year - 1)  "</span>"   "</a>"
 
 "  -  " str(?year)  "  -  "
 
 "<a href='" st:plink(concat(?uri,  (?year + 1))) "'>"  
-"<span style='font-size:80%'>"  (?year + 1) "</span>"    "</a>"
+"<span>"  (?year + 1) "</span>"    "</a>"
 
 
 "</h1>"
@@ -373,8 +440,38 @@ bind ("http://ns.inria.fr/sparql-template/y" as ?uri)
 <rule>
 <body>
 <![CDATA[
+template st:era(?fst, ?rst) {
+
+"<table>"
+  "<tr>"
+  
+  group {
+    "<td>"  
+      "<span class='shrink'>"
+	"<h3 class='center'>" ?year "</h3>"
+	"<div class='border'>"
+	st:call-template(st:calendar, ?year)  
+      "</div></span>"
+    "</td>"
+  }
+  
+  "</tr>"
+"</table>"  
+
+}
+where {
+  bind (unnest(xt:iota(?fst, ?rst)) as ?year)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:title {
-  "<td style='text-align:right'> &nbsp; " str(?t) "</td>"
+  "<th class='right'> &nbsp; " str(?t) "</th>"
   ; separator = ""
 }
 where {

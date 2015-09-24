@@ -354,6 +354,11 @@ st:icon <http://upload.wikimedia.org/wikipedia/commons/3/34/France_1800.png>  .
 [] cn:date 1793 ;
 rdfs:label "Exécution de Louis XVI".
 
+<http://fr.dbpedia.org/resource/Abolition_de_l'esclavage> cn:date 1794 ;
+rdfs:label "Abolition de l'esclavage" .
+#st:icon 
+#<http://commons.wikimedia.org/wiki/File:D%C3%A9cret_d%27abolition_de_l%27esclavage_du_16_pluvi%C3%B4se_an_II.png#/media/File:D%C3%A9cret_d%27abolition_de_l%27esclavage_du_16_pluvi%C3%B4se_an_II.png>.
+
 
 <http://fr.dbpedia.org/resource/Coup_d'État_du_18_brumaire> cn:date 1799  ; 
 rdfs:label "Coup d'Etat du 18 Brumaire" .

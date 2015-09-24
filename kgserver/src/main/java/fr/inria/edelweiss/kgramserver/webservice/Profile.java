@@ -1,7 +1,12 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -17,6 +22,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +45,7 @@ public class Profile {
       
     HashMap<String,  Service> map, servers; 
     NSManager nsm;
+    IDatatype profile;
 
     boolean isProtected = false;
 
@@ -98,14 +105,14 @@ public class Profile {
                 if (transform == null) {
                     // transform parameter overload profile transform
                     transform = s.getTransform();
-                }
+                }               
                 if (uri != null) {
                     // resource given as a binding value to the query
                     // generate values clause if profile specify variable
                     value = getValues(s.getVariable(), uri);
-                }
-                if (s.getLang() != null) {
-                    par.setLang(s.getLang());
+                }                     
+                if (s.getParam() != null){
+                    par.setContext(s.getParam().copy());
                 }
             }
         }
@@ -126,9 +133,8 @@ public class Profile {
         }
 
         par.setTransform(transform);
-        par.setUri(uri);
         par.setName(name);
-        par.setQuery(query);
+        par.setQuery(query);       
         return par;
 
     }
@@ -158,6 +164,16 @@ public class Profile {
     void initServer(String name) {
         init(DATA + name);
     }
+    
+    void setProfile(Graph g){
+        if (profile == null){
+            profile = DatatypeMap.createObject(Context.STL_SERVER_PROFILE, g);
+        }
+    }
+    
+    IDatatype getProfile(){
+        return profile;
+    }
 
     /**
      *
@@ -166,6 +182,7 @@ public class Profile {
     void init(String path) {
         try {
             Graph g = load(path);
+            setProfile(g);
             process(g);
         } catch (IOException ex) {
             Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
@@ -219,17 +236,17 @@ public class Profile {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
         for (Mapping m : map) {
-            init(m);
+            init(g, m);
         }
     }
 
-    void init(Mapping m) {
-        Node prof = m.getNode("?p");
-        Node query = m.getNode("?q");
-        Node var = m.getNode("?v");
-        Node trans = m.getNode("?t");
-        Node serv = m.getNode("?s");
-        Node lang = m.getNode("?l");
+    void init(Graph g, Mapping m) {
+        Node prof   = m.getNode("?p");
+        Node query  = m.getNode("?q");
+        Node var    = m.getNode("?v");
+        Node trans  = m.getNode("?t");
+        Node serv   = m.getNode("?s");
+        Node ctx    = m.getNode("?c");
 
         Service s = new Service(prof.getLabel());
 
@@ -244,13 +261,72 @@ public class Profile {
         }
         if (serv != null) {
             s.setServer(serv.getLabel());
+        }      
+        if (ctx != null){
+            Context c = context(g, ctx);
+            s.setParam(c);
         }
-        if (lang != null) {
-            s.setLang(lang.getLabel());
-        }
-
         map.put(prof.getLabel(), s);
     }
+    
+    /**
+     * st:context [ st:param value ; st:title value ]
+     * Create a Context, assign it to Service
+     * Will be passed to transformation
+     * @param ctx 
+     */
+    Context context(Graph g, Node ctx){
+        Context c = context(new Context(), g, ctx);
+        return c;
+    }
+        
+    Context context(Context c, Graph g, Node ctx) {
+        importer(c, g, ctx);
+
+        for (Entity ent : g.getEdgeList(ctx)) {
+            if (!ent.getEdge().getLabel().equals(Context.STL_IMPORT)) {
+                Node object = ent.getNode(1);
+
+                if (object.isBlank()) {
+                    IDatatype list = list(g, object);
+                    if (list != null) {
+                        c.set(ent.getEdge().getLabel(), list);
+                        continue;
+                    }
+                }
+                c.set(ent.getEdge().getLabel(), (IDatatype) object.getValue());
+            }
+        }
+        return c;
+    }
+    
+     /** 
+      *       
+      * TODO: prevent loop 
+      * n =  [ st:import st:cal ]
+      * st:cal st:param [ ... ] 
+      * 
+      */
+     void importer(Context c, Graph g, Node n){
+         Edge imp = g.getEdge(Context.STL_IMPORT, n, 0);        
+          if (imp != null){
+                Edge par = g.getEdge(Context.STL_PARAM, imp.getNode(1), 0);
+                if (par != null){
+                    context(c, g, par.getNode(1));
+                }
+            }
+     }
+        
+    
+    IDatatype list(Graph g, Node object) {
+        List<IDatatype> list = g.getDatatypeList(object);
+        if (! list.isEmpty()) {           
+            IDatatype dt = DatatypeMap.createList(list);
+            return dt;
+        }
+        return null;
+    }
+    
 
     void initLoad(Graph g) throws IOException, EngineException {
         String str = read(QUERY + "profileLoad.rq");

@@ -1,5 +1,7 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,8 @@ public class Service {
     private String variable;
     private String server;
     private String lang;
+    
+    private Context ctx;
     
     private String[] load;
     private List<Doc> data;
@@ -156,6 +160,20 @@ public class Service {
      */
     public void setService(String service) {
         this.service = service;
+    }
+   
+    /**
+     * @return the ctx
+     */
+    public Context getParam() {
+        return ctx;
+    }
+
+    /**
+     * @param ctx the ctx to set
+     */
+    public void setParam(Context ctx) {
+        this.ctx = ctx;
     }
 
     class Doc {

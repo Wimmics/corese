@@ -1,6 +1,8 @@
 
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.triple.parser.Context;
 import java.util.List;
 
 /**
@@ -16,12 +18,14 @@ public class Param {
     private String name;
     private String query;
     private String value;
-    private String lang;
     private String load;
+    
+    private IDatatype title;
     private List<String> from;
     private List<String>  named;
     private boolean protect = false;
     private boolean isUserQuery = false;
+    private Context context;
     
     Param(String s, String p, String t, String u, String n, String q){
         service = s;
@@ -145,20 +149,6 @@ public class Param {
     }
 
     /**
-     * @return the lang
-     */
-    public String getLang() {
-        return lang;
-    }
-
-    /**
-     * @param lang the lang to set
-     */
-    public void setLang(String lang) {
-        this.lang = lang;
-    }
-
-    /**
      * @return the from
      */
     public List<String> getFrom() {
@@ -225,6 +215,20 @@ public class Param {
      */
     public void setUserQuery(boolean isUserQuery) {
         this.isUserQuery = isUserQuery;
+    }
+
+    /**
+     * @return the context
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
     }
 
 }

@@ -7,6 +7,7 @@ package fr.inria.edelweiss.kgramserver.webservice;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
@@ -126,6 +127,7 @@ public class Transformer {
 
             par = mprofile.complete(par);
             ctx = create(par);
+            ctx.setServerProfile(mprofile.getProfile());
                        
             if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {
                 // check profile, transform and query
@@ -220,7 +222,10 @@ public class Transformer {
    }
 
     Context create(Param par) {
-        Context ctx = new Context();
+        Context ctx= par.getContext();
+        if (ctx == null){
+            ctx = new Context();
+        }
         if (par.getProfile() != null) {
             ctx.setProfile(nsm.toNamespace(par.getProfile()));
         }
@@ -238,10 +243,7 @@ public class Transformer {
         }
         if (par.getService() != null){
             ctx.setService(par.getService());
-        }
-         if (par.getLang() != null){
-            ctx.setLang(par.getLang());
-        }
+        }      
          ctx.setServer(Profile.SERVER);
          complete(ctx);         
          ctx.setUserQuery(par.isUserQuery());

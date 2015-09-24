@@ -19,23 +19,26 @@ public class Context {
 
     public static final String NL = System.getProperty("line.separator");
     public static final String STL = NSManager.STL;
-    public static final String STL_QUERY = STL + "query";
-    public static final String STL_NAME = STL + "name"; // query path name
-    public static final String STL_SERVICE = STL + "service";
-    public static final String STL_SERVER = STL + "server";
-    public static final String STL_PROFILE = STL + "profile";
+    public static final String STL_QUERY    = STL + "query";
+    public static final String STL_NAME     = STL + "name"; // query path name
+    public static final String STL_SERVICE  = STL + "service";
+    public static final String STL_SERVER   = STL + "server";
+    public static final String STL_PROFILE  = STL + "profile";
+    public static final String STL_SERVER_PROFILE = STL + "definition"; // profile.tll graph
     public static final String STL_TRANSFORM = STL + "transform";
-    public static final String STL_URI = STL + "uri";
+    public static final String STL_URI      = STL + "uri";
     public static final String STL_PROTOCOL = STL + "protocol";
-    public static final String STL_AJAX = STL + "ajax";
-    public static final String STL_CONTEXT = STL + "context";
-    public static final String STL_DATASET = STL + "dataset";
-    public static final String STL_EXPORT = STL + "export";   
-    public static final String STL_LANG = STL + "lang";
-    public static final String STL_PARAM = STL + "param";
-    public static final String STL_VALUES = STL + "values";
-    public static final String STL_FILTER = STL + "filter";
-    public static final String STL_BIND = STL + "bind";
+    public static final String STL_AJAX     = STL + "ajax";
+    public static final String STL_CONTEXT  = STL + "context";
+    public static final String STL_DATASET  = STL + "dataset";
+    public static final String STL_EXPORT   = STL + "export";   
+    public static final String STL_IMPORT   = STL + "import";   
+    public static final String STL_PARAM    = STL + "param";   
+    public static final String STL_LANG     = STL + "lang";
+    public static final String STL_TITLE    = STL + "title";
+    public static final String STL_VALUES   = STL + "values";
+    public static final String STL_FILTER   = STL + "filter";
+    public static final String STL_BIND     = STL + "bind";
     
     HashMap<String, IDatatype> table;
     static  HashMap<String, Boolean> sexport;
@@ -69,6 +72,12 @@ public class Context {
         return table.keySet();
     }
     
+    public Context copy(){
+        Context c = new Context();
+        c.copy(this);
+        return c;
+    }
+    
     public void copy(Context c){
         for (String str : c.keys()){
             if (c.export(str)){
@@ -80,8 +89,8 @@ public class Context {
         }
     }
     
-    boolean export(String str){
-        return export.get(str) && get(str) != null;
+    boolean export(String str){        
+        return export.get(str) != null && export.get(str) && get(str) != null;
     }
     
     // this include source
@@ -191,8 +200,12 @@ public class Context {
         return setURI(STL_SERVER, str);
     }
 
-    public Context setParam(String str) {
-        return setURI(STL_PARAM, str);
+    public Context setTitle(String str) {
+        return setURI(STL_TITLE, str);
+    }
+    
+    public Context setTitle(IDatatype dt) {
+        return set(STL_TITLE, dt);
     }
     
     public String getService() {
@@ -233,4 +246,9 @@ public class Context {
     public void setUserQuery(boolean userQuery) {
         this.userQuery = userQuery;
     }
+
+    public void setServerProfile(IDatatype obj) {
+        set(STL_SERVER_PROFILE, obj);
+    }
+    
 }

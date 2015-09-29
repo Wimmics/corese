@@ -1247,9 +1247,7 @@ void GroupClause(): { Variable var; Expression exp; Exp stack;}
   	{ astq.setGroup(exp, var); }
   ) + 
   	
-  	|
-  	
-  <ANY> { astq.setConnex(true); }
+ // 	| <ANY> { astq.setConnex(true); }
   )
 }
 
@@ -2683,7 +2681,7 @@ TOKEN [IGNORE_CASE] :
 | < OFFSET: "offset" >
 | < ORDER: "order" >
 | < BY: "by" >
-| < ANY: "any" >
+//| < ANY: "any" >
 | < RELAX: "relax" >
 
 | < ASC: "asc" >

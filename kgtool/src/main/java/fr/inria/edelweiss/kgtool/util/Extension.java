@@ -16,7 +16,8 @@ import java.util.logging.Logger;
  */
 public class Extension {
     
-    private static final String[] NAMES = { "extension.rq", "calendar.rq", "calendar2.rq", "spqr.rq" };
+    private static final String[] NAMES = 
+    { "system.rq", "extension.rq", "calendar.rq", "calendar2.rq", "spqr.rq" };
     
     public void process(){
         for (String name : NAMES){

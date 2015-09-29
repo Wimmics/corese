@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
 import java.util.Collection;
@@ -458,7 +459,7 @@ public class PluginTransform implements ExprType {
     public Object processDef(Expr exp, Environment env, Producer p, Object[] args) {
         Extension ext = env.getQuery().getExtension();
         if (ext != null && ext.isDefined(exp)) {
-            return plugin.getEvaluator().eval(exp, env, p, ext, args);
+            return plugin.getEvaluator().eval(exp, env, p, args, ext);
         }
 
         Transformer pp = getTransformer(env, p);
@@ -571,11 +572,9 @@ public class PluginTransform implements ExprType {
         return plugin.getValue(b);
     }
     
-    public Object errors(Expr exp, Environment env, Producer p, IDatatype dt) {
-        Transformer t = getTransformer(env, p);  
-        t.getVisitor();
-        
-        return dt;
+     public IDatatype errors(Expr exp, Environment env, Producer p, IDatatype dt) {
+        Transformer t = getTransformer(env, p);
+	return DatatypeMap.createList(t.getVisitor().getErrors(dt));
     }
 
     // Visitor design pattern

@@ -8,7 +8,7 @@ public interface ExprType {
         public static int GLOBAL  = -4;	
 
 	// abstract type
-	public static int ANY 	= 1;
+	public static int JOKER = 1;
 	public static int ALTER	= 2;
 	
 	// type
@@ -133,6 +133,7 @@ public interface ExprType {
 	public static int CONT 	= 121; // ~
 	public static int START = 122; // ^
 	public static int IN 	= 123; 
+	public static int POWER = 124; 
 	
 	
 	// extension
@@ -237,6 +238,10 @@ public interface ExprType {
         public static int APPLY         = 312;
 	public static int LET           = 313;
 	public static int LAMBDA        = 314;
+	public static int ERROR         = 315;
+	public static int EVERY         = 316;
+	public static int ANY           = 317;
+	public static int MAPSELECT     = 318;
         
         public static int XT_SUM         = 400;
         public static int XT_PROD        = 401;

@@ -85,6 +85,11 @@ public class Extension {
         return def;
     }
     
+    public Expr get(Expr exp, String name) {
+        Expr def = getMap(exp).get(name);
+        return def;
+    }
+    
     public Expr get(String label) {
         for (int i = 0; i<maps.length; i++){
             Expr exp = get(label, i);

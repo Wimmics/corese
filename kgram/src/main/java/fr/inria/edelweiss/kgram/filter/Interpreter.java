@@ -255,6 +255,9 @@ public class Interpreter implements Evaluator, ExprType {
     Object function(Expr exp, Environment env, Producer p) {
 
         switch (exp.oper()) {
+            
+            case ERROR:
+                return null;
 
             case ENV:
                 return env;
@@ -341,14 +344,17 @@ public class Interpreter implements Evaluator, ExprType {
                 
             case MAP:
             case MAPLIST:
+            case MAPSELECT:
+            case EVERY:
+            case ANY:
             case APPLY:
-                // map(xt:fun(?x), ?list)
-                Object res = eval(exp.getExp(1), env, p);
-                if (res == null) {
+                // map(xt:fun(?a, ?b), ?x, ?list)
+                
+                Object[] args = evalArguments(exp, env, p, 1);
+                if (args == null) {
                     return null;
                 }
-                return proxy.function(exp, env, p, res);
-
+                return proxy.eval(exp, env, p, args);
 
             default:                
                 switch (exp.getExpList().size()) {
@@ -377,7 +383,7 @@ public class Interpreter implements Evaluator, ExprType {
 
         }
 
-        Object[] args = evalArguments(exp, env, p);
+        Object[] args = evalArguments(exp, env, p, 0);
         if (args == null) {
             return null;
         }
@@ -425,10 +431,11 @@ public class Interpreter implements Evaluator, ExprType {
 
     }
 
-    Object[] evalArguments(Expr exp, Environment env, Producer p) {
-        Object[] args = new Object[exp.arity()];
+    Object[] evalArguments(Expr exp, Environment env, Producer p, int start) {
+        Object[] args = new Object[exp.arity() - start];
         int i = 0;
-        for (Expr arg : exp.getExpList()) {
+        for (int j = start; j<exp.arity(); j++) {
+            Expr arg = exp.getExp(j);
             Object o = eval(arg, env, p);
             if (o == null) {
                 return null;
@@ -456,7 +463,7 @@ public class Interpreter implements Evaluator, ExprType {
             return null;
         }
 
-        Object res = proxy.eval(exp, env, p, o1, o2);
+        Object res = proxy.term(exp, env, p, o1, o2);
         return res;
     }
 
@@ -474,7 +481,7 @@ public class Interpreter implements Evaluator, ExprType {
             if (o2 == null) {
                 error = true;
             } else {
-                Object res = proxy.eval(exp, env, p, o1, o2);
+                Object res = proxy.term(exp, env, p, o1, o2);
                 if (res == null) {
                     error = true;
                 } else if (proxy.isTrue(res)) {
@@ -604,17 +611,30 @@ public class Interpreter implements Evaluator, ExprType {
      * Their parameters are tagged as local variables, managed in a specific stack
      */    
     public Object extension(Expr exp, Environment env, Producer p, Object[] values){ 
-        Expr def = getDefine(exp, env, values);
+        Expr def = getDefine(exp, env);
         if (def == null){
             return null;
         }
-        return eval(exp, env, p, def, values);
+        return eval(exp, env, p, values, def);
+    }
+    
+    /**
+     * name is the name of a proxy function that overloads the function of exp
+     * use case: overload operator for extended datatypes
+     * name = http://example.org/datatype/equal
+     */
+     public Object eval(Expr exp, Environment env, Producer p, Object[] values, String name){ 
+        Expr def = getDefine(exp, env, name);
+        if (def == null){
+            return null;
+        }
+        return eval(exp, env, p, values, def);
     }
         
     /**
      * Extension function call  
      */
-    public Object eval(Expr exp, Environment env, Producer p, Expr def, Object[] values){   
+    public Object eval(Expr exp, Environment env, Producer p, Object[] values, Expr def){   
         //count++;
         Expr fun = def.getExp(0);
         env.set(def, fun.getExpList(), values);        
@@ -623,15 +643,19 @@ public class Interpreter implements Evaluator, ExprType {
         return res;
     }
     
+    public int compare(Environment env, Producer p, Node n1, Node n2){
+        return proxy.compare(env, p, n1, n2);
+    }
+    
     /**
      * Use case: st:process() overloaded by an extension function   
      */
-      public Object eval(Expr exp, Environment env, Producer p, Extension ext, Object[] values){
+      public Object eval(Expr exp, Environment env, Producer p, Object[] values, Extension ext ){
         Expr def = ext.get(exp, values);
         if (def == null){
             return null;
         }
-        return eval(exp, env, p, def, values);
+        return eval(exp, env, p, values, def);
      }
     
     
@@ -639,15 +663,15 @@ public class Interpreter implements Evaluator, ExprType {
         return extension.isDefined(exp);
     }
     
-    Expr getDefine(Expr exp, Environment env, Object[] values){
+    public Expr getDefine(Expr exp, Environment env) {
         Expr ee = exp.getDefine();
-        if (ee != null){
+        if (ee != null) {
             return ee;
         }
         Extension ext = env.getExtension();
-        if (ext != null){           
+        if (ext != null) {          
             Expr def = ext.get(exp);
-            if (def != null){
+            if (def != null) {
                 exp.setDefine(def);
                 return def;
             }
@@ -661,7 +685,29 @@ public class Interpreter implements Evaluator, ExprType {
 
         return null;
     }
-
+    
+     public Expr getDefine(Expr exp, Environment env, String name) {        
+        Extension ext = env.getExtension();
+        if (ext != null) {
+           Expr ee = ext.get(exp, name);
+           if (ee != null){
+               return ee;
+           }
+        }
+        return extension.get(exp, name);
+    }
+     
+     public Expr getDefine(Environment env, String name, int n){
+        Extension ext = env.getExtension();
+        if (ext != null) {
+           Expr ee = ext.get(name, n);
+           if (ee != null){
+               return ee;
+           }
+        }
+        return extension.get(name, n);               
+     }
+       
     public static void define(Expr exp){
         extension.define(exp);
     }

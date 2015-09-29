@@ -152,21 +152,21 @@ public class Checker implements ExprType {
 	
 	Pattern eqeq(){
 		// EXP = EXP
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return term(EQ, exp, exp);
 
 	}
 	
 	Pattern notNeq(){
 		// ! (EXP != EXP)
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return not(term(NEQ, exp, exp));
 		
 	}
 	
 	Pattern le(){
 		// EXP <= EXP
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return term(LE, exp, exp);
 		
 	}
@@ -174,38 +174,38 @@ public class Checker implements ExprType {
 	
 	Pattern patOrNotPat(){
 		// EXP || ! EXP
-		Pattern exp  = pat(ANY);
+		Pattern exp  = pat(JOKER);
 		return or(exp, not(exp));
 		
 	}
 	
 	Pattern notPatAndNotPat(){
 		// ! (EXP && ! EXP)
-		Pattern exp  = pat(ANY);
+		Pattern exp  = pat(JOKER);
 		return not(and(exp, not(exp)));
 		
 	}
 	
 	Pattern eqOrNeq(){
 		//EXP1 = EXP2 || EXP1 != EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return or(term(EQ, e1, e2), term(NEQ, e1, e2));
 		
 	}
 
 	Pattern leOrGe(){
 		// EXP1 >= EXP2 || EXP1 <= EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return or(term(LE, e1, e2), term(GE, e1, e2));
 		
 	}
 	
 	Pattern ltOrGe(){
 		// EXP1 < EXP2 || EXP1 >= EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return or(term(LT, e1, e2), term(GE, e1, e2));
 		
 	}
@@ -252,28 +252,28 @@ public class Checker implements ExprType {
 	// always false
 	Pattern neqSelf(){
 		// EXP != EXP
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return term(NE, exp, exp);
 		
 	}
 	
 	Pattern ltSelf(){
 		// EXP < EXP
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return term(LT, exp, exp);
 		
 	}
 	
 	Pattern notEqSelf(){
 		// !(EXP = EXP)
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return not(term(EQ, exp, exp));
 		
 	}
 	
 	Pattern notGeSelf(){
 		// !(EXP >= EXP)
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return not(term(GE, exp, exp));
 		
 	}
@@ -282,14 +282,14 @@ public class Checker implements ExprType {
 	
 	Pattern patNotPat(){
 		// EXP && ! EXP
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return and(exp, not(exp));
 	}
 	
 	
 	Pattern notOr(){
 		// ! (EXP || ! EXP)
-		Pattern exp = pat(ANY);
+		Pattern exp = pat(JOKER);
 		return not(or(exp, not(exp)));
 	}
 
@@ -299,8 +299,8 @@ public class Checker implements ExprType {
 	//  ?x = xpath() && ?x != xpath()
 	Pattern eqNeq(){
 		// EXP1 = EXP2 && EXP1 != EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		Pattern and = and(term(EQ, e1, e2), term(NE, e1, e2));
 		return and;
 	}
@@ -308,37 +308,37 @@ public class Checker implements ExprType {
 	
 	Pattern eqGt(){
 		// EXP1 = EXP2 && EXP1 > EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(EQ, e1, e2), term(GT, e1, e2));
 	}
 	
 	Pattern ltGt(){
 		// EXP1 > EXP2 && EXP1 < EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(GT, e1, e2), term(LT, e1, e2));
 	}
 	
 
 	Pattern gtNotGe(){
 		// EXP1 > EXP2 && ! (EXP1 >= EXP2)
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(GT, e1, e2), not(term(GE, e1, e2)));
 	}
 
 	Pattern eqNotGe(){
 		// EXP1 = EXP2 && ! (EXP1 >= EXP2)
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(EQ, e1, e2), not(term(GE, e1, e2)));
 	}
 	
 	// PRAGMA: not for simple variable
 	Pattern variable(String name){
 		Pattern var = Pattern.variable(name);
-		Pattern pat = pat(ANY, ANY, var);
+		Pattern pat = pat(JOKER, JOKER, var);
 		pat.setRec(true);
 		return pat;
 	}
@@ -383,32 +383,32 @@ public class Checker implements ExprType {
 	
 	Pattern leLt(){
 		// EXP1 <= EXP2 && EXP1 < EXP2 -> EXP1 = EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(LE, e1, e2), term(LT, e1, e2));
 		
 	}
 	
 	Pattern leEq(){
 		// EXP1 <= EXP2 && EXP1 = EXP2 -> EXP1 = EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(LE, e1, e2), term(EQ, e1, e2));
 		
 	}
 	
 	Pattern leNe(){
 		// EXP1 <= EXP2 && EXP1 != EXP2 -> EXP1 < EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(LE, e1, e2), term(NE, e1, e2));
 		
 	}
 	
 	Pattern leGe(){
 		// EXP1 <= EXP2 && EXP1 >= EXP2 -> EXP1 = EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(LE, e1, e2), term(GE, e1, e2));
 		
 	}
@@ -417,16 +417,16 @@ public class Checker implements ExprType {
 	
 	Pattern leNotGe(){
 		// EXP1 <= EXP2 && !(EXP1 >= EXP2) -> EXP1 < EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(LE, e1, e2), not(term(GE, e1, e2)));
 		
 	}
 	
 	Pattern ltNotGt(){
 		// EXP1 < EXP2 && !(EXP1 > EXP2) -> EXP1 < EXP2
-		Pattern e1 = pat(ANY);
-		Pattern e2 = pat(ANY);
+		Pattern e1 = pat(JOKER);
+		Pattern e2 = pat(JOKER);
 		return and(term(LT, e1, e2), not(term(GT, e1, e2)));
 		
 	}
@@ -435,14 +435,14 @@ public class Checker implements ExprType {
 	
 	Pattern notNot(){
 		// ! ! EXP
-		Pattern pat = not(not(pat(ANY)));
+		Pattern pat = not(not(pat(JOKER)));
 		return pat;
 	}
 	
 	Pattern notOrNot(){
 		// ! (! EXP1 || ! EXP2) -> EXP1 && EXP2
-		Pattern e1 = not(pat(ANY));
-		Pattern e2 = not(pat(ANY));
+		Pattern e1 = not(pat(JOKER));
+		Pattern e2 = not(pat(JOKER));
 		Pattern pat = not(or(e1, e2));
 		return pat;
 	}
@@ -451,19 +451,19 @@ public class Checker implements ExprType {
 	Pattern patBoolPat(){
 		// EXP && EXP
 		// EXP || EXP
-		Pattern exp = pat(ANY);
-		return pat(BOOL, ANY, exp, exp);
+		Pattern exp = pat(JOKER);
+		return pat(BOOL, JOKER, exp, exp);
 		
 	}
 	
 	Pattern neqNotEq(){
 		// EXP1 != EXP2 && ! (EXP1 = EXP2)
 		// EXP1 != EXP2 || ! (EXP1 = EXP2)
-		Pattern p1 = pat(ANY);
-		Pattern p2 = pat(ANY);
+		Pattern p1 = pat(JOKER);
+		Pattern p2 = pat(JOKER);
 		Pattern pp1 = term(NE, p1, p2);
 		Pattern pp2 = not(term(EQ, p1, p2));
-		return pat(BOOL, ANY, pp1, pp2);
+		return pat(BOOL, JOKER, pp1, pp2);
 		
 	}
 	
@@ -471,22 +471,22 @@ public class Checker implements ExprType {
 	Pattern ltNotGe(){
 		// EXP1 < EXP2 && ! (EXP1 >= EXP2)
 		// EXP1 < EXP2 || ! (EXP1 >= EXP2)
-		Pattern p1 = pat(ANY);
-		Pattern p2 = pat(ANY);
+		Pattern p1 = pat(JOKER);
+		Pattern p2 = pat(JOKER);
 		Pattern pp1 = term(LT, p1, p2);
 		Pattern pp2 = not(term(GE, p1, p2));
-		return pat(BOOL, ANY, pp1, pp2);
+		return pat(BOOL, JOKER, pp1, pp2);
 		
 	}
 
 	Pattern leNotGt(){
 		// EXP1 <= EXP2 && ! (EXP1 > EXP2)
 		// EXP1 <= EXP2 || ! (EXP1 > EXP2)
-		Pattern p1 = pat(ANY);
-		Pattern p2 = pat(ANY);
+		Pattern p1 = pat(JOKER);
+		Pattern p2 = pat(JOKER);
 		Pattern pp1 = term(LE, p1, p2);
 		Pattern pp2 = not(term(GT, p1, p2));
-		return pat(BOOL, ANY, pp1, pp2);
+		return pat(BOOL, JOKER, pp1, pp2);
 		
 	}
 
@@ -534,10 +534,10 @@ public class Checker implements ExprType {
 	 * Called on path regex 
 	 */
 	void test(Expr path){
-		Pattern p1 = pat(ANY);
-		Pattern p2 = pat(ANY);
+		Pattern p1 = pat(JOKER);
+		Pattern p2 = pat(JOKER);
 
-		Pattern or =  fun(ANY, or(p1, p2));
+		Pattern or =  fun(JOKER, or(p1, p2));
 		Pattern seq = fun(MULT, term(DIV, p1, p2));
 
 		boolean b = matcher.match(or, path);

@@ -25,13 +25,13 @@ public class Pattern implements ExprType, Expr {
 	Expr exp;
 
 	Pattern(){
-		type = ANY;
-		oper = ANY;
+		type = JOKER;
+		oper = JOKER;
 	}
 
 	Pattern(int t){
 		type = t;
-		oper = ANY;
+		oper = JOKER;
 		args = new ArrayList<Expr>();
 		}
 	

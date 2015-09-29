@@ -82,7 +82,7 @@ public class Matcher implements ExprType {
 			return matchVarConst(qe, te, bind);
 						
 		case FUNCTION:
-		case ANY:
+		case JOKER:
 			return matchBoolFunAny(qe, te, bind);			
 		
 		case BOOLEAN:
@@ -259,7 +259,7 @@ public class Matcher implements ExprType {
 	}
 		
 	boolean symmetric(Expr qe){
-		if (qe.type() == BOOLEAN && qe.oper() == ANY) return true;
+		if (qe.type() == BOOLEAN && qe.oper() == JOKER) return true;
 		int t = qe.oper();
 		return t == EQ || t == NE || t == PLUS || t == MULT || t == AND || t == OR;
 	}
@@ -282,7 +282,7 @@ public class Matcher implements ExprType {
 	 * will permute arguments as needed
 	 */
 	boolean match(int qt, int tt){
-		if (qt == ANY) return true;
+		if (qt == JOKER) return true;
 		if (isGL(qt)) return isGL(tt);
 		if (qt == EQNE) return tt == EQ || tt == NE;
 		return qt == tt;
@@ -290,7 +290,7 @@ public class Matcher implements ExprType {
 	
 	boolean matchType(Expr qe, Expr te){
 		if (qe.oper() == EXIST || te.oper() == EXIST) return false;
-		if (qe.type() == ANY) return true;
+		if (qe.type() == JOKER) return true;
 		switch (qe.type()){
 			case VARIABLE:
 			case CONSTANT: return match(qe.type(), te.type());

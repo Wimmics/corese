@@ -41,10 +41,10 @@ public interface Proxy {
 	
 	Object getValue(String value);
 
-
+	int compare(Environment env, Producer p, Node o1, Node o2);
 
 	// terms = <=
-	Object eval(Expr exp, Environment env, Producer p, Object o1, Object o2);
+	Object term(Expr exp, Environment env, Producer p, Object o1, Object o2);
 
 	// functions isURI regex
 	Object eval(Expr exp, Environment env, Producer p, Object[] args);

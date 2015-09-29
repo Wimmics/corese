@@ -51,6 +51,7 @@ public class Processor {
         map.put("owlql",    QUERY + "owlql.rq");
         map.put("owlel",    QUERY + "owlel.rq");
         map.put("owltc",    QUERY + "owltc.rq");
+        map.put("owlall",   QUERY + "owltc2.rq");
         map.put("sparqltc", QUERY + "spintc.rq");        
         map.put("sparql",   QUERY + "sparql.rq");        
         map.put("mix",      QUERY + "mix.rq");

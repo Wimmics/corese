@@ -91,7 +91,7 @@ public class SPARQLRestAPI {
         init();
         if (ld){
             //loadProfileData();
-           Manager.init(store);
+           Manager.getManager().init(store);
         }
         store.init(isProtected);
         mprofile.setProtect(isProtected);

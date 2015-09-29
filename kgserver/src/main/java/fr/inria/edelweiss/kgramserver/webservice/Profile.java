@@ -5,8 +5,6 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -17,12 +15,12 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.transform.ContextBuilder;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -263,71 +261,12 @@ public class Profile {
             s.setServer(serv.getLabel());
         }      
         if (ctx != null){
-            Context c = context(g, ctx);
+            Context c = new ContextBuilder(g).process(ctx);
             s.setParam(c);
         }
         map.put(prof.getLabel(), s);
     }
-    
-    /**
-     * st:context [ st:param value ; st:title value ]
-     * Create a Context, assign it to Service
-     * Will be passed to transformation
-     * @param ctx 
-     */
-    Context context(Graph g, Node ctx){
-        Context c = context(new Context(), g, ctx);
-        return c;
-    }
-        
-    Context context(Context c, Graph g, Node ctx) {
-        importer(c, g, ctx);
-
-        for (Entity ent : g.getEdgeList(ctx)) {
-            if (!ent.getEdge().getLabel().equals(Context.STL_IMPORT)) {
-                Node object = ent.getNode(1);
-
-                if (object.isBlank()) {
-                    IDatatype list = list(g, object);
-                    if (list != null) {
-                        c.set(ent.getEdge().getLabel(), list);
-                        continue;
-                    }
-                }
-                c.set(ent.getEdge().getLabel(), (IDatatype) object.getValue());
-            }
-        }
-        return c;
-    }
-    
-     /** 
-      *       
-      * TODO: prevent loop 
-      * n =  [ st:import st:cal ]
-      * st:cal st:param [ ... ] 
-      * 
-      */
-     void importer(Context c, Graph g, Node n){
-         Edge imp = g.getEdge(Context.STL_IMPORT, n, 0);        
-          if (imp != null){
-                Edge par = g.getEdge(Context.STL_PARAM, imp.getNode(1), 0);
-                if (par != null){
-                    context(c, g, par.getNode(1));
-                }
-            }
-     }
-        
-    
-    IDatatype list(Graph g, Node object) {
-        List<IDatatype> list = g.getDatatypeList(object);
-        if (! list.isEmpty()) {           
-            IDatatype dt = DatatypeMap.createList(list);
-            return dt;
-        }
-        return null;
-    }
-    
-
+      
     void initLoad(Graph g) throws IOException, EngineException {
         String str = read(QUERY + "profileLoad.rq");
         QueryProcess exec = QueryProcess.create(g);

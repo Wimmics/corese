@@ -31,16 +31,21 @@ public class Tutorial {
     static Manager man;
 
     static {
-        man = new Manager();
+        //man = new Manager();
+        Manager.getManager().init();
     }
 
    
    TripleStore getTripleStore(String serv){
-       TripleStore ts = man.getTripleStoreByService(serv);       
+       TripleStore ts = getManager().getTripleStoreByService(serv);       
        if (ts == null){
            return Transformer.getTripleStore();
        }
        return ts;
+   }
+   
+   Manager getManager(){
+       return Manager.getManager();
    }
 
     @POST
@@ -90,7 +95,7 @@ public class Tutorial {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri")  List<String> namedGraphUris) {
         // Dataset URI of the service
-        String uri = man.getURI(serv);
+        String uri = getManager().getURI(serv);
         Param par = new Param(SERVICE + serv, getProfile(uri, profile, transform), transform, resource, name, query);
         par.setValue(value);
         par.setDataset(namedGraphUris, namedGraphUris);

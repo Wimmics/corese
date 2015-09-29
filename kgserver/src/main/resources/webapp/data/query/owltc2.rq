@@ -1,0 +1,11 @@
+template {
+    st:apply-templates-with(st:hturtle)
+}
+where {
+  filter st:visit(st:start, st:trace)      
+             
+  bind (st:apply-templates-with(st:owltc)   as ?t1)    
+  bind (st:apply-templates-with(st:owlrl)   as ?t2)    
+  bind (st:apply-templates-with(st:owlqltc) as ?t3)    
+  bind (st:apply-templates-with(st:owleltc) as ?t4)    
+}

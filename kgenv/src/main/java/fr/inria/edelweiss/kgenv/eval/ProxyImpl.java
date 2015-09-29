@@ -540,6 +540,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case MAP:
             case MAPLIST:
+            case MAPMERGE:
             case MAPSELECT:
                 return map(exp, env, p, args);
                 
@@ -1309,7 +1310,10 @@ public class ProxyImpl implements Proxy, ExprType {
       */
     private IDatatype map(Expr exp, Environment env, Producer p, Object[] args) {
         boolean maplist   = exp.oper() == MAPLIST; 
+        boolean mapmerge  = exp.oper() == MAPMERGE; 
         boolean mapselect = exp.oper() == MAPSELECT;
+        boolean hasList   = maplist || mapmerge;
+        
         IDatatype list = null;        
         IDatatype[] param = toIDatatype(args);       
         for (IDatatype dt : param){          
@@ -1322,9 +1326,10 @@ public class ProxyImpl implements Proxy, ExprType {
             return null;
         }
         IDatatype[] value = new IDatatype[param.length];
-        IDatatype[] res = (maplist) ? new IDatatype[list.size()] : null;
+        IDatatype[] res = (hasList) ? new IDatatype[list.size()] : null;
         ArrayList<IDatatype> sub = (mapselect) ? new ArrayList<IDatatype>() : null;
-               
+        int size = 0; 
+        
         for (int i = 0; i<list.size(); i++){ 
             IDatatype elem = null;
             
@@ -1346,19 +1351,39 @@ public class ProxyImpl implements Proxy, ExprType {
             if (val == null){
                 return null;
             }
-            else {
-                if (maplist) {
-                    res[i] = val;
+            else if (hasList) {
+                if (val.isList()){
+                    size += val.size();
                 }
-                else if (mapselect && val.booleanValue()){
+                else {
+                    size += 1;
+                }
+               res[i] = val;
+            }
+            else if (mapselect && val.booleanValue()){
                     // select elem whose predicate is true
                     // mapselect (xt:prime, xt:iota(1, 100))
                     sub.add(elem);
-                }
             }
+            
         }
         
-        if (maplist){
+        if (mapmerge){
+            int i = 0;
+            IDatatype[] merge = new IDatatype[size];
+            for (IDatatype dt : res){
+                if (dt.isList()){
+                    for (IDatatype v : dt.getValues()){
+                        merge[i++] = v;
+                    }
+                }
+                else {
+                    merge[i++] = dt;
+                }
+            }
+            return DatatypeMap.createList(merge);
+        }
+        else if (maplist){
             return DatatypeMap.createList(res); 
         }
         else if (mapselect){

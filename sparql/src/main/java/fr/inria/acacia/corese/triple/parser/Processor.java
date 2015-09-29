@@ -65,6 +65,7 @@ public class Processor {
 	private static final String LET     = "let";
 	private static final String MAP     = "map";
 	private static final String MAPLIST = "maplist";
+	private static final String MAPMERGE = "mapmerge";
 	private static final String MAPSELECT = "mapselect";
 	private static final String APPLY   = "apply";
         
@@ -543,6 +544,7 @@ public class Processor {
 		defoper(APPLY,          ExprType.APPLY);
 		defoper(MAP,            ExprType.MAP);
 		defoper(MAPLIST,        ExprType.MAPLIST);
+		defoper(MAPMERGE,       ExprType.MAPMERGE);
 		defoper(MAPSELECT,      ExprType.MAPSELECT);
 		defoper(ANY,            ExprType.ANY);
 		defoper(EVERY,          ExprType.EVERY);
@@ -808,6 +810,7 @@ public class Processor {
                 
                 case ExprType.MAP:
                 case ExprType.MAPLIST:
+                case ExprType.MAPMERGE:
                 case ExprType.MAPSELECT:
                 case ExprType.EVERY:
                 case ExprType.ANY:

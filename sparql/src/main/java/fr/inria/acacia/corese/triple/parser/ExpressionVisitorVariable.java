@@ -79,6 +79,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                                            
             case ExprType.MAP:
             case ExprType.MAPLIST:                
+            case ExprType.MAPMERGE:                
             case ExprType.MAPSELECT:                
             case ExprType.EVERY:                
             case ExprType.ANY:                

@@ -1,0 +1,18 @@
+select 
+where {
+bind (export(
+
+function (xt:div(?a, ?b) = xsd:integer(floor(?a / ?b)))  ,
+
+function (xt:mod(?a, ?b) = xsd:integer(?a - (?b * xt:div(?a, ?b))))  ,
+
+function (xt:compare(?x, ?y) =
+  if (?x < ?y, -1, 
+  if (?x = ?y, 0, 1))),
+
+function (kg:compare(?x, ?y) =
+  if (?x < ?y, -1, 
+  if (?x = ?y, 0, 1)))
+
+) as ?def)
+}

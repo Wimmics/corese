@@ -65,6 +65,7 @@ public class Processor {
 	private static final String LET     = "let";
 	private static final String MAP     = "map";
 	private static final String MAPLIST = "maplist";
+	private static final String MAPSELECT = "mapselect";
 	private static final String APPLY   = "apply";
         
         private static final String XT_SELF = EXT + "self";
@@ -156,10 +157,15 @@ public class Processor {
 	static final String STL_LEVEL               = STL + "level"; 
         static final String STL_DEFINE              = STL + "define";
         static final String DEFINE                  = "define";
-        static final String LAMBDA                  = "lambda";
-        
-        static final String STL_PREFIX              = STL + "prefix";
+        static final String FUNCTION                = "function";
         static final String PACKAGE                 = "package";
+        static final String EXPORT                  = "export";
+        static final String LAMBDA                  = "lambda";
+        static final String ERROR                   = "error";
+        static final String ANY                     = "any";
+        static final String EVERY                   = "every";
+      
+        static final String STL_PREFIX              = STL + "prefix";
  	static final String STL_INDENT              = STL + "indent";
  	static final String STL_SELF                = STL + "self";
  	static final String STL_LOAD                = STL + "load";
@@ -255,7 +261,9 @@ public class Processor {
 	static final String ABS 	= "abs"; 
 	static final String CEILING = "ceil"; 
 	static final String FLOOR 	= "floor"; 
-	static final String ROUND 	= "round"; 
+	static final String ROUND 	= "round";
+	static final String POWER 	= "power";
+        
 
 	static final String NOW 	= "now"; 
 	static final String YEAR 	= "year"; 
@@ -520,20 +528,24 @@ public class Processor {
 		defoper(COALESCE, 	ExprType.COALESCE);
 		defoper(IF, 		ExprType.IF);
 		defoper(GROUPCONCAT,    ExprType.GROUPCONCAT);
-		defoper(STL_AGGAND,         ExprType.AGGAND);
+		defoper(STL_AGGAND,     ExprType.AGGAND);
 		defoper(STL_AND,        ExprType.STL_AND);
 		defoper(SAMPLE, 	ExprType.SAMPLE);
-		defoper(INLIST, 		ExprType.INLIST);
+		defoper(INLIST,         ExprType.INLIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
 		defoper(SKOLEM,         ExprType.SKOLEM);
 		defoper(LET,            ExprType.LET);
 		defoper(LIST,           ExprType.LIST);
 		defoper(IOTA,           ExprType.IOTA);
-		defoper(XT_REVERSE,        ExprType.XT_REVERSE);
+		defoper(XT_REVERSE,     ExprType.XT_REVERSE);
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
+                
+		defoper(APPLY,          ExprType.APPLY);
 		defoper(MAP,            ExprType.MAP);
 		defoper(MAPLIST,        ExprType.MAPLIST);
-		defoper(APPLY,          ExprType.APPLY);
+		defoper(MAPSELECT,      ExprType.MAPSELECT);
+		defoper(ANY,            ExprType.ANY);
+		defoper(EVERY,          ExprType.EVERY);
                 
 		defoper(XT_CONCAT,      ExprType.XT_CONCAT);
 		defoper(XT_CONS,        ExprType.XT_CONS);
@@ -655,9 +667,12 @@ public class Processor {
 		defoper(VISITED,        ExprType.VISITED);
 		defoper(PROLOG,         ExprType.PROLOG);
 		defoper(PACKAGE,        ExprType.PACKAGE);
+		defoper(EXPORT,         ExprType.PACKAGE);
 		defoper(STL_DEFINE,     ExprType.STL_DEFINE);
 		defoper(DEFINE,         ExprType.STL_DEFINE);
+		defoper(FUNCTION,       ExprType.STL_DEFINE);
 		defoper(LAMBDA,         ExprType.LAMBDA);
+		defoper(ERROR,          ExprType.ERROR);
                 defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
                 defoper(STL_GROUPCONCAT, ExprType.STL_GROUPCONCAT);
@@ -704,6 +719,7 @@ public class Processor {
 		defoper(STRUUID, ExprType.STRUUID);
 
 		
+		defoper(POWER,  ExprType.POWER);
 		defoper(RANDOM, ExprType.RANDOM);
 		defoper(ABS, 	ExprType.ABS);
 		defoper(FLOOR, 	ExprType.FLOOR);
@@ -792,9 +808,15 @@ public class Processor {
                 
                 case ExprType.MAP:
                 case ExprType.MAPLIST:
-                case ExprType.APPLY:
+                case ExprType.MAPSELECT:
+                case ExprType.EVERY:
+                case ExprType.ANY:
                     processMap(ast);
                     break;
+                    
+                case ExprType.APPLY:
+                    processApply(ast);
+                    break;    
                     
                 case ExprType.LET:
                     processLet(ast);
@@ -832,15 +854,28 @@ public class Processor {
          * @param ast 
          */
         void processMap(ASTQuery ast){
-            if (term.getArgs().size() == 2){
+            if (term.getArgs().size() >= 2){
                 Expression fst = term.getArg(0);
                 
                 if (fst.isConstant()){
                     Term fun = ast.createFunction(fst.getConstant());
                     if (term.oper() != ExprType.APPLY){
-                        Variable var = ASTQuery.createVariable("?_map_var");
-                        fun.add(var);
+                        for (int i = 1; i<term.getArgs().size(); i++){
+                            Variable var = ASTQuery.createVariable("?_map_var" + i);
+                            fun.add(var);
+                        }
                     }
+                    term.setArg(0, fun);
+                }
+            }
+        }
+        
+         void processApply(ASTQuery ast){
+            if (term.getArgs().size() >= 2){
+                Expression fst = term.getArg(0);
+                
+                if (fst.isConstant()){
+                    Term fun = ast.createFunction(fst.getConstant());                    
                     term.setArg(0, fun);
                 }
             }

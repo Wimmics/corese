@@ -30,7 +30,6 @@ import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
@@ -318,6 +317,9 @@ public class PluginImpl extends ProxyImpl {
         }
         else {
             end =   ((IDatatype) args[0]).intValue();
+        }
+        if (end < start){
+            return DatatypeMap.createList();
         }
         
         int step = 1;

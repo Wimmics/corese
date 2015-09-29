@@ -56,9 +56,16 @@ public interface Evaluator {
         
         Object eval(Expr f, Environment e, Producer p, Object[] values);
         
-        Object eval(Expr f, Environment e, Producer p, Extension ext, Object[] values);
+        Object eval(Expr f, Environment e, Producer p, Object[] values, String name);
+
+        Object eval(Expr f, Environment e, Producer p, Object[] values, Extension ext);
         
-                       
+        Object eval(Expr f, Environment e, Producer p, Object[] values, Expr ee);
+                               
+        Expr getDefine(Environment env, String name, int n);
+        
+        int compare(Environment env, Producer p, Node n1, Node n2);
+
         // cast Java object into IDatatype
         Node cast(Object obj, Environment e, Producer p);
 
@@ -93,4 +100,5 @@ public interface Evaluator {
         
         void start(Environment env);
         void finish(Environment env);
+        
 }

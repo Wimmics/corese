@@ -26,4 +26,6 @@ public interface TemplateVisitor {
 
     public IDatatype visitedGraph();
     
+    Collection<IDatatype> getErrors(IDatatype dt);
+    
 }

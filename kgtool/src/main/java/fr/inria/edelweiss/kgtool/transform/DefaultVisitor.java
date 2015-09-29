@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Transformer Visitor to be used in a transformation
@@ -39,6 +40,7 @@ public class DefaultVisitor implements TemplateVisitor {
     Graph graph, visitedGraph;
     IDatatype visitedNode;
     HashMap <String, Boolean> map;
+    HashMap <IDatatype, List<IDatatype>> errors;
     ArrayList<IDatatype> list;
     private HashMap<IDatatype, IDatatype> distinct, value;
     
@@ -59,16 +61,19 @@ public class DefaultVisitor implements TemplateVisitor {
         distinct = new HashMap();
         value    = new HashMap();
         list     = new ArrayList();
+        errors   = new HashMap<IDatatype, List<IDatatype>>();
         visitedGraph = Graph.create();
         visitedNode = DatatypeMap.createObject("graph", visitedGraph);
     }
-       
+    
+    /*
     public void visit(IDatatype name, IDatatype obj, IDatatype arg) {
        visit(name.getLabel(), obj, arg);
     }
+    //*/
     
-    void visit(String name, IDatatype obj, IDatatype arg){
-        if (name.equals(TRACE) || name.equals(START)){
+    public void visit(IDatatype name, IDatatype obj, IDatatype arg){
+        if (name.getLabel().equals(TRACE) || name.getLabel().equals(START)){
             define(name, obj.getLabel(), arg);
         }
         else {
@@ -79,7 +84,7 @@ public class DefaultVisitor implements TemplateVisitor {
     /**
      * st:visit(st:trace, st:subexp, true)
      */
-    void define(String name, String obj, IDatatype arg){
+    void define(IDatatype name, String obj, IDatatype arg){
         if (arg == null){
             return;
         }
@@ -107,7 +112,7 @@ public class DefaultVisitor implements TemplateVisitor {
         }
     }
  
-    void process(String name, IDatatype obj, IDatatype arg) {
+    void process(IDatatype name, IDatatype obj, IDatatype arg) {
        if (accept(name) && accept(arg)){
             store(name, obj);
             if (! silent){
@@ -116,7 +121,7 @@ public class DefaultVisitor implements TemplateVisitor {
         }
     }
     
-    void trace(String name, IDatatype obj) {
+    void trace(IDatatype name, IDatatype obj) {
         Transformer t = Transformer.create(graph, getTransform());
         IDatatype dt = t.process(obj);
         System.out.println(name);
@@ -143,17 +148,36 @@ public class DefaultVisitor implements TemplateVisitor {
     
  
     
-    void store(String name, IDatatype obj){
+    void store(IDatatype name, IDatatype obj){
+    	storeErrors(name, obj);
         if (isDistinct){
             if (! distinct.containsKey(obj)){
                 list.add(obj);
                 distinct.put(obj, obj);
+                
                 //storeGraph(name, obj);
             }
         }
         else {
             list.add(obj);
         }
+    }
+    
+    void storeErrors(IDatatype name, IDatatype obj){
+    	if(errors.get(obj) == null) {
+    		errors.put(obj, new ArrayList<IDatatype>());
+    		errors.get(obj).add(name);
+    	} else {
+    		int arr_size = errors.get(obj).size();
+	    	for(int i=0; i<arr_size;i++) {
+	    		//if name is already present
+	    		if(errors.get(obj).get(i).getLabel().equals(name.getLabel()) == true) break;
+	    		//else if name not found adds it
+	    		else if(i+1 == arr_size) {
+	    			errors.get(obj).add(name);
+	    		}
+	        }
+    	}
     }
     
     void storeGraph(String name, IDatatype obj){
@@ -217,7 +241,7 @@ public class DefaultVisitor implements TemplateVisitor {
     public String getTransform() {
         return transform;
     }
-
+    
     /**
      * @param transform the transform to set
      */
@@ -261,5 +285,14 @@ public class DefaultVisitor implements TemplateVisitor {
     public IDatatype get(IDatatype obj, IDatatype prop) {
           return value.get(obj);
     }
-
+    
+    /**
+     * @return the errors of a node as an array
+     */
+    public Collection<IDatatype> getErrors(IDatatype dt){
+    	if(errors.get(dt) != null){
+    		return errors.get(dt);
+    	}
+    	else return new ArrayList<IDatatype>();
+    }
 }

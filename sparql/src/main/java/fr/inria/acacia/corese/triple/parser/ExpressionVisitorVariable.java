@@ -79,6 +79,9 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                                            
             case ExprType.MAP:
             case ExprType.MAPLIST:                
+            case ExprType.MAPSELECT:                
+            case ExprType.EVERY:                
+            case ExprType.ANY:                
                 map(t);
                 break;
                
@@ -201,17 +204,20 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     */
     void map(Term t) {
         if (trace) System.out.println("Vis Map: " + t);
-        if (t.getArgs().size() == 2){
+        if (t.getArgs().size() >= 2){
             Expression fun = t.getArg(0);
-            if (fun.isFunction() && fun.getArgs().size() == 1) {
-                Expression arg = fun.getArg(0);
-                if (arg.isVariable()){
-                    Variable var = arg.getVariable();
-                    localize(var);
-                    remove(var);
-                    t.getArg(1).visit(this);
-                    return;
+            if (fun.isFunction()) {
+                for (Expression arg : fun.getArgs()){  
+                    if (arg.isVariable()){
+                        Variable var = arg.getVariable();
+                        localize(var);
+                        remove(var);
+                    }
                 }
+                for (int i = 1; i<t.getArgs().size(); i++){
+                    t.getArg(i).visit(this);
+                }
+                return;
             }
         }
         ast.setError("Incorrect Map: " + t);

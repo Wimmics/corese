@@ -6,6 +6,7 @@ import java.util.Map;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Bind;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -29,6 +30,8 @@ public interface Environment {
 	 * @return
 	 */
 	Query getQuery();
+        
+        Bind getBind();
 	
 	/**
 	 * 

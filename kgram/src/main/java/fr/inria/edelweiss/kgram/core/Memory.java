@@ -957,7 +957,7 @@ public class Memory implements Environment {
 	}
 	
 	public Node getNode(Expr var){
-		int index = var.getIndex();               
+		int index = var.getIndex(); 
                 switch (var.subtype()){                   
                     case ExprType.LOCAL:
                         return get(var);
@@ -1113,6 +1113,10 @@ public class Memory implements Environment {
      
      void setBind(Bind b){
          bind = b;
+     }
+     
+     public Bind getBind(){
+         return bind;
      }
 
 }

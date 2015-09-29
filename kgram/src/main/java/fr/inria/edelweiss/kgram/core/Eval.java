@@ -574,7 +574,11 @@ public class Eval implements ExpType, Plugin {
     }
 
     private void complete() {
-        results.complete();
+        results.complete(this);
+    }
+    
+    int compare(Node n1, Node n2){         
+         return evaluator.compare(memory, producer, n1, n2);
     }
 
     private void aggregate() {
@@ -1348,7 +1352,7 @@ public class Eval implements ExpType, Plugin {
 
         exp.rest().setMappings(map1);
         Mappings map2 = subEval(p, gNode, gNode, exp.rest(), exp);
-
+        
         if (map2.size() == 0){
             return backtrack;
         }
@@ -1388,7 +1392,7 @@ public class Eval implements ExpType, Plugin {
                     // sort map2 Mappings according to value of ?y
                     // in order to perform dichotomy with ?x = ?y
                     // ?x in map1, ?y in map2
-                    map2.sort(qn2);
+                    map2.sort(this, qn2);
                 }
             }
         }
@@ -1469,8 +1473,8 @@ public class Eval implements ExpType, Plugin {
              // sort map2 on q
              // enumerate map1
              // retreive the index of value of q in map2 by dichotomy
-             map2.sort(q);
-
+             map2.sort(this, q);
+             
              for (Mapping m1 : map1) {
 
                  // value of q in map1
@@ -1510,7 +1514,7 @@ public class Eval implements ExpType, Plugin {
                          }
 
                          // second try : n2 != null
-                         int nn = map2.find(n1, q);                        
+                         int nn = map2.find(n1, q);  
 
                          if (nn >= 0 && nn < map2.size()) {
 
@@ -1674,18 +1678,18 @@ public class Eval implements ExpType, Plugin {
             for (Mapping map : lMap) {
                 // push each Mapping in memory and continue
                 complete(query, map);
-
+                
                 // draft test:
                 //submit(map);
 
                 // remove comment:
                 if (env.push(map, n, false)) {
-                    backtrack = eval(gNode, stack, n + 1);
+                   backtrack = eval(gNode, stack, n + 1);
                     env.pop(map, false);
                     if (backtrack < n) {
                         return backtrack;
                     }
-                }
+                }               
             }
         } else {
             Query q = exp.rest().getQuery();

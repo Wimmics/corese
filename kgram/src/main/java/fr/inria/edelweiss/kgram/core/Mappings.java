@@ -51,6 +51,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	Group group, distinct;
 	Node fake;
 	Object object;
+        Eval eval;
 	private Object graph;
 	private int nbsolutions = 0;
 
@@ -341,7 +342,12 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		else return n1.same(n2);
 	}
 
-
+        void sort(Eval eval){
+            this.eval = eval;
+            Collections.sort(list, this);
+            this.eval = null;
+	}
+        
 	void sort(){
 		Collections.sort(list, this);
 	}
@@ -350,12 +356,14 @@ implements Comparator<Mapping> , Iterable<Mapping>
          * 
          * Sort according to node
          */
-        void sort(Node node){
+        void sort(Eval eval, Node node){ 
+            this.eval = eval;
             sortWithDesc = false;
             for (Mapping m : this){
                 m.setOrderBy(m.getNode(node));
             }
             sort();
+            this.eval = null;
         }
         
         int find(Node node, Node qnode){
@@ -398,6 +406,12 @@ implements Comparator<Mapping> , Iterable<Mapping>
         return res;
     }
         
+      int comparator(Node n1, Node n2){
+          if (eval != null){
+              return eval.compare(n1, n2);
+          }
+          return n1.compare(n2);
+      }
 
 	public int compare(Mapping r1, Mapping r2) {
 		Node[] order1 = r1.getOrderBy();
@@ -409,7 +423,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		for (int i = 0; i < order1.length && i < order2.length && res == 0; i++) {
 
 			if (order1[i] != null && order2[i] != null) { // sort ?x
-				res = order1[i].compare(order2[i]);
+				res = comparator(order1[i], order2[i]);
 			}
 			//      unbound 
 			else if (order1[i] == null) { // unbound var
@@ -462,9 +476,9 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	 *  order by
 	 *  offset
 	 */
-	void complete(){
+	void complete(Eval eval){
 		if (query.getOrderBy().size()>0){
-			sort();
+			sort(eval);
 		}
 		if (query.getOffset() > 0){
 			// skip offset

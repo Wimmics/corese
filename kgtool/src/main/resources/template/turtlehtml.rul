@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Sep 24 10:20:19 CEST 2015
+Tue Sep 29 09:48:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -118,6 +118,55 @@ order by ?x
 <rule>
 <body>
 <![CDATA[
+template st:ibox(?in) {
+
+  ibox {      
+	st:call-template(st:type, ?in)	  
+	st:call-template(st:value, ?in)	
+   }
+}
+where {
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:pperrorsp(?in) {
+			"""<span class="errors">"""
+		    st:call-template-with(st:pperror, st:start, ?in)
+		    """</span>"""
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:pperror(?in) {
+	"""<span class='fail'>"""
+		st:call-template(st:ibox, ?in)
+	"</span>"
+}
+where {
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
@@ -183,30 +232,19 @@ where {
 #
 template st:profile(?in) {
 
-    define (st:process(?in) = 
+    st:define(st:process(?in) = 
       if (isBlank(?in), 
-          st:blank(?in),
-          xt:protect(st:turtle(?in)))	
-    )
-    
-    define (xt:protect(?s) =
-        replace(replace(?s, "&", "&amp;"), "<", "&lt;")
-    )
-    
-    define (st:blank(?in) =
-        concat("<span id='", st:id(?in), "'>", 
-        st:apply-templates(?in),            
-        "</span>")
-     )
-     
-     define (st:id(?in) =
-         coalesce(
+        concat("<span id='", 
+	  coalesce(
 	    concat("it", st:vget(?in, st:id)), 
-	    concat("ab", st:index()))
-     )
+	    concat("ab", st:index())), 
+	  "'>", 
+          st:apply-templates(?in), "</span>"), 
+	if (strstarts(st:turtle(?in), "<"), replace(st:turtle(?in), "<", "&lt;"), 		st:turtle(?in))	
+    ))
       
-    define (st:default(?in) = st:turtle(?in))
-       
+    st:define(st:default(?in) = st:turtle(?in))
+
 }
 where {
 }
@@ -276,22 +314,24 @@ order by ?x
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
-  if (?refer, concat(st:turtle(?in), " "), "[")
+  if (?refer, concat(st:turtle(?in), " "), "[")     
   
-  if (st:visited(?in), "<span class='fail'>", "")
+  #if display fail tag
+  if (st:visited(?in), st:call-template(st:pperror, ?in),
+  	# else not visited
+  	st:call-template(st:ibox, ?in)
+  )
   
-  ibox {      
-	st:call-template(st:type, ?in)	  
-	st:call-template(st:value, ?in)	
-   } 
-      
-   if (st:visited(?in), "</span>", "")      
-      
   if (?refer, " .", 
   if (?nested, "]", "] ."))
+  
+  # pretty printer of errors
+  if (st:visited(?in),
+	st:call-template(st:pperrorsp, ?in),
+  "")
 }
 where {
-  ?in ?p ?y   
+  ?in ?p ?y
   filter (isBlank(?in))
   filter not exists { ?in rdf:first ?e }
   

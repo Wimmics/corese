@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Sep 24 10:20:20 CEST 2015
+Tue Sep 29 09:48:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -214,6 +214,10 @@ template st:profile {
   define (xt:pretty(?n) = 
     if (?n < 10, concat(" ", ?n), ?n) 
   )
+  
+  define (xt:display(?y) =
+    if (st:get(st:date, st:romain), xt:romain(?y), ?y)
+  )
                   
 }
 where {
@@ -411,17 +415,36 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:spqr {
+
+  st:call-template(st:start)
+  
+}
+where {
+  
+  bind (st:export(st:content, st:calendar) as ?c)
+  bind (st:set(st:date,    st:romain)   as ?d)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:head(?year) {
 
 "<h1 class='year'>"
 
 "<a href='" st:plink(concat(?uri,  (?year - 1))) "'>"  
-"<span>" (?year - 1)  "</span>"   "</a>"
+"<span>" xt:display(?year - 1)  "</span>"   "</a>"
 
-"  -  " str(?year)  "  -  "
+"  -  " xt:display(?year)  "  -  "
 
 "<a href='" st:plink(concat(?uri,  (?year + 1))) "'>"  
-"<span>"  (?year + 1) "</span>"    "</a>"
+"<span>"  xt:display(?year + 1) "</span>"    "</a>"
 
 
 "</h1>"
@@ -461,6 +484,28 @@ template st:era(?fst, ?rst) {
 }
 where {
   bind (unnest(xt:iota(?fst, ?rst)) as ?year)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Display a day in the calendar of a month
+# May be a link or a number
+# Calling context may have set st:content and st:date 
+# (cf st:content/st:query )
+#
+template st:romain(?date) {
+  
+    xt:romain(day(?date))
+  
+}
+where {
+  
 }
 
 ]]>

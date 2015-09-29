@@ -2,16 +2,18 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Sep 24 10:20:20 CEST 2015
+Tue Sep 29 09:48:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
 <rule>
 <body>
 <![CDATA[
-template st:profile {
+template st:profile(?x) {
 
   st:define (st:aggregate(?x) = st:agg_and(?x))
+  
+  st:define (st:err(?x) = URI(concat(st:, "owlel/", str(?x))))
 
 }
 where {
@@ -37,7 +39,7 @@ where {
 		}
 	as ?suc)
 	
-	filter(st:visit(st:disjointClass, ?in, ?suc))
+	filter(st:visit(st:err("disjointClass"), ?in, ?suc))
 }
 
 ]]>
@@ -63,7 +65,7 @@ where {
 		st:call-template-with(st:classexpowleltc, st:classExpression, ?y)
 	as ?suc)
 	
-	filter(st:visit(st:subClass, ?in, ?suc))
+	filter(st:visit(st:err("subClass"), ?in, ?suc))
 }
 
 ]]>
@@ -100,7 +102,7 @@ where {
 	as ?suc)
 	
 	filter(isURI(?y) && ! ?suc)
-	filter(st:visit(st:datatypeRes, ?in, ?suc))
+	filter(st:visit(st:err("datatypeRes"), ?in, ?suc))
 }
 
 ]]>
@@ -126,7 +128,7 @@ where {
 		st:call-template-with(st:classexpowleltc, st:classExpression, ?y)
 	as ?suc)
 	
-	filter(st:visit(st:equivClass, ?in, ?suc))
+	filter(st:visit(st:err("equivClass"), ?in, ?suc))
 }
 
 ]]>
@@ -152,7 +154,7 @@ where {
 		st:call-template-with(st:classexpowleltc, st:classExpression, ?y)
 	as ?suc)
 	
-	filter(st:visit(st:disjointClass, ?in, ?suc))
+	filter(st:visit(st:err("disjointClass"), ?in, ?suc))
 }
 
 ]]>
@@ -206,7 +208,7 @@ where {
 	union { ?in a owl:SymmetricProperty }
 	union { ?in a owl:AsymmetricProperty }
 	
-	filter(st:visit(st:fail, ?in, false))
+	filter(st:visit(st:err("fail"), ?in, false))
 }
 limit 1
 
@@ -228,21 +230,23 @@ template {
 	?suc
 }
 where {
-	?in ?p ?y
 	
 	bind (
 		# datatypes not allowed
-		datatype(?y) NOT IN (
-			xsd:double, xsd:float, xsd:nonPositiveInteger,
-			xsd:positiveInteger, xsd:negativeInteger,
-			xsd:long, xsd:int, xsd:short, xsd:byte,
-			xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
-			xsd:unsignedByte, xsd:language, xsd:boolean
-		)
+		not exists {
+			?in ?p ?y
+			
+			filter(datatype(?y) IN (xsd:double, xsd:float, xsd:nonPositiveInteger,
+				xsd:positiveInteger, xsd:negativeInteger,
+				xsd:long, xsd:int, xsd:short, xsd:byte,
+				xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
+				xsd:unsignedByte, xsd:language, xsd:boolean
+			))
+		}
 	as ?suc)
 
 	filter(isLiteral(?y) && ! ?suc)
-	filter(st:visit(st:datatypeLit, ?in, ?suc))
+	filter(st:visit(st:err("datatypeLit"), ?in, ?suc))
 }
 
 ]]>
@@ -261,37 +265,35 @@ where {
  { ?in rdf:type ?x
    FILTER(
       	?x = owl:NamedIndividual ||
-   	?x = owl:Nothing ||
    		# filter owl, xsd, rdfs, rdf
    		!(
-   			STRSTARTS(STR(?x), str(owl:)) ||
-   			STRSTARTS(STR(?x), str(xsd:)) ||
-			STRSTARTS(STR(?x), str(rdfs:)) ||
-			STRSTARTS(STR(?x), str(rdf:)) ||
+   			STRSTARTS(?x, owl:) ||
+   			STRSTARTS(?x, xsd:) ||
+			STRSTARTS(?x, rdfs:) ||
+			STRSTARTS(?x, rdf:) ||
 			isBlank(?x)
   	    )
    )
    
    bind(!isBlank(?in) as ?suc)
    filter(! ?suc)
-   filter(st:visit(st:anonymous, ?in, ?suc))
+   filter(st:visit(st:err("anonymous"), ?in, ?suc))
  }
  
  union {
  		  ?in ?p ?x
  	  	  FILTER(
  	         !(
- 	         	STRSTARTS(STR(?p), str(owl:)) ||
-  	      		STRSTARTS(STR(?p), str(xsd:)) ||
- 				STRSTARTS(STR(?p), str(rdfs:)) ||
- 				STRSTARTS(STR(?p), str(rdf:))
+ 	         	STRSTARTS(?p, owl:) ||
+ 				STRSTARTS(?p, rdfs:) ||
+ 				STRSTARTS(?p, rdf:)
  		  ))
+ 		  filter((!isBlank(?in) && !isBlank(?x)) = false)
  		  bind(!isBlank(?in) as ?sucin)
  		  bind(!isBlank(?x) as ?sucx)
- 		  filter((?sucin && ?sucx) = false)
  		  
- 		  filter(st:visit(st:anonymous, ?in, ?sucin))
- 		  filter(st:visit(st:anonymous, ?in, ?sucx))
+ 		  filter(st:visit(st:err("anonymous"), ?in, ?sucin))
+ 		  filter(st:visit(st:err("anonymous"), ?in, ?sucx))
   	    }
  	   
  union {	
@@ -316,7 +318,7 @@ where {
       		# if blank node return false
       		bind(!isBlank(?x) as ?suc)
       		filter(! ?suc)
-      		filter(st:visit(st:anonymous, ?in, ?suc))
+      		filter(st:visit(st:err("anonymous"), ?in, ?suc))
  }
  
  union {
@@ -325,12 +327,12 @@ where {
  			# owl:sameIndividual
  			union { ?in owl:sameAs ?x }
  			
+ 		    filter((!isBlank(?in) && !isBlank(?x)) = false)
  			bind(!isBlank(?in) as ?sucin)
  			bind(!isBlank(?x) as ?sucx)
- 			filter((?sucin && ?sucx) = false)
  			
- 		 	filter(st:visit(st:anonymous, ?in, ?sucin))
- 		  	filter(st:visit(st:anonymous, ?in, ?sucx))
+ 		 	filter(st:visit(st:err("anonymous"), ?in, ?sucin))
+ 		  	filter(st:visit(st:err("anonymous"), ?in, ?sucx))
  }
 }
 
@@ -352,7 +354,7 @@ where {
 		st:call-template-with(st:classexpowleltc,st:classExpression, ?y)
 	as ?suc)
 	
-	filter(st:visit(st:domain, ?in, ?suc))
+	filter(st:visit(st:err("domain"), ?in, ?suc))
 }
 
 ]]>
@@ -372,7 +374,7 @@ where {
      st:call-template-with(st:classexpowleltc, st:classExpression, ?in)
    as ?suc)
    
-   filter(st:visit(st:key, ?in, ?suc))
+   filter(st:visit(st:err("key"), ?in, ?suc))
 }
 
 ]]>
@@ -396,7 +398,7 @@ where {
 	bind (isURI(?t) ||
 		(?t = owl:Class)
 	as ?suc)
-	filter(st:visit(st:individual, ?in, ?suc))
+	filter(st:visit(st:err("individual"), ?in, ?suc))
 }
 
 ]]>

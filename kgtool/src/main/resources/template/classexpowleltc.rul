@@ -2,17 +2,18 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Sep 24 10:20:20 CEST 2015
+Tue Sep 29 09:48:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
 <rule>
 <body>
 <![CDATA[
-template st:profile {
+template st:profile(?x) {
 
   st:define (st:aggregate(?x) = st:agg_and(?x))
-
+  
+  st:define (st:err(?x) = URI(concat(st:, "owlel/", str(?x))))
 }
 where {
 }
@@ -34,7 +35,7 @@ where {
 		)
 	as ?suc)
 	
-	#filter(st:visit(st:classexp, ?x, ?suc))
+	# filter(st:visit(st:classexp, ?x, ?suc))
 }
 
 ]]>
@@ -57,9 +58,6 @@ where {
 		union { ?in owl:hasValue ?e }
 		union { ?in owl:hasSelf ?e }
 	} as ?suc)
-	
-	#filter(st:visit(st:restrictClass, ?in, ?suc))
-
 }
 
 ]]>
@@ -73,6 +71,7 @@ where {
 # Check if there is an unauthorized OWL property for classExpression ?in
 # return false in this case, otherwise the template fails (return nothing)
 #
+
 template {
 	false
 }
@@ -91,7 +90,7 @@ where {
 		)
 	as ?suc)
 			
-	filter (st:visit(st:fail, ?in, ?suc))
+	filter (st:visit(st:err("fail"), ?in, ?suc))
 	filter(! ?suc)
 }
 limit 1
@@ -119,7 +118,7 @@ where {
 		}
 		# a single individual or a single literal
 		bind((?nbInd = 1) as ?suc)
-		filter(st:visit(st:one, ?in, ?suc))
+		filter(st:visit(st:err("one"), ?in, ?suc))
 	}
 }
 
@@ -142,8 +141,6 @@ where {
     as ?suc
   )
   
- #filter(st:visit(st:interClass, ?in, ?suc))
-
 }
 
 ]]>

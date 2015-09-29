@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Sep 24 10:20:19 CEST 2015
+Tue Sep 29 09:48:26 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -12,7 +12,8 @@ Thu Sep 24 10:20:19 CEST 2015
 template st:profile {
 
   st:define (st:aggregate(?x) = st:agg_and(?x))
-
+  
+  st:define (st:err(?x) = URI(concat(st:, "owlrl/", str(?x))))
 }
 where {
 }
@@ -24,7 +25,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-
 template  {
   ?suc  
 }
@@ -39,7 +39,7 @@ where {
     as ?suc
   )
   
-  filter(st:visit(st:disjointClass, ?in, ?suc))
+  filter(st:visit(st:err("disjointClass"), ?in, ?suc))
 
 }
 
@@ -59,15 +59,18 @@ where {
 
   ?in rdfs:subClassOf ?y
   
+  filter (
+    isURI(?in) ||
+    not exists { ?x ?p ?in }
+  )
+  
   bind (
-    ( isURI(?in) || not exists { ?x ?p ?in } ) &&
     st:call-template-with(st:subexp,   st:subClassExpression, ?in) &&
     st:call-template-with(st:superexp, st:superClassExpression, ?y)  
   as ?suc)
   
-  filter(st:visit(st:subClass, ?in, ?suc))
+  filter(st:visit(st:err("subClass"), ?in, ?suc))
 
-        
 }
 
 
@@ -79,7 +82,34 @@ where {
 <rule>
 <body>
 <![CDATA[
+# the following datatypes must not be used in OWL 2 RL:
+# owl:real, owl:rational
 
+template {
+	?suc
+}
+where {
+	{ ?in rdfs:range ?y }
+	union { ?in a owl:Restriction;
+			?p ?y }
+	bind (
+		#datatypes not allowed
+		?y NOT IN (
+			owl:real, owl:rational
+		)
+	as ?suc)
+
+	filter(isURI(?y) && ! ?suc)
+	filter(st:visit(st:err("datatypeRes"), ?in, ?suc))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template  {
   ?suc
 }
@@ -96,7 +126,7 @@ where {
     st:call-template-with(st:equivexp, st:equivClassExpression, ?y)  
   as ?suc)
   
-  filter(st:visit(st:equivClass, ?in, ?suc))
+  filter(st:visit(st:err("equivClass"), ?in, ?suc))
 
 }
 
@@ -109,7 +139,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-
 template  {
   ?suc 
 }
@@ -126,9 +155,8 @@ where {
     st:call-template-with(st:subexp, st:subClassExpression, ?y)  
   as ?suc)
   
-  filter(st:visit(st:disjointClass, ?in, ?suc))
-
-
+  filter(st:visit(st:err("disjointClass"), ?in, ?suc))
+  
 }
 
 
@@ -151,9 +179,10 @@ where {
   { ?in owl:disjointUnionOf ?y }
   union { ?in a owl:ReflexiveProperty }
   
-  filter(st:visit(st:fail, ?in, false))
+  filter(st:visit(st:err("fail"), ?in, false))
  
 }
+limit 1
 
 
 
@@ -179,7 +208,7 @@ where {
     }
   as ?suc)
 
-  filter (st:visit(st:datatypelit, st:datatype, ?suc))
+  filter (st:visit(st:err("datatypelit"), st:datatype, ?suc))
 }
 
 ]]>
@@ -201,7 +230,7 @@ where {
 
   bind ( not exists { {?x ?p ?y} union {?y ?p ?x} union { ?a ?x ?b } } as ?suc)
   
-  filter(st:visit(st:properties, ?x, ?suc))
+  filter(st:visit(st:err("properties"), ?x, ?suc))
 }
 values ?x { 
   owl:topObjectProperty owl:bottomObjectProperty 
@@ -215,7 +244,6 @@ values ?x {
 <rule>
 <body>
 <![CDATA[
-
 template  {
   ?suc  
 }
@@ -227,9 +255,8 @@ where {
     st:call-template-with(st:superexp, st:superClassExpression, ?y)  
   as ?suc)
   
-  filter(st:visit(st:domain, ?in, ?suc))
+  filter(st:visit(st:err("domain"), ?in, ?suc))
 
-    
 }
 
 
@@ -241,7 +268,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-
 template  {
   ?suc  
 }
@@ -252,9 +278,8 @@ where {
      st:call-template-with(st:subexp, st:subClassExpression, ?in)
    as ?suc)
    
-   filter(st:visit(st:key, ?in, ?suc))
- 
-    
+   filter(st:visit(st:err("key"), ?in, ?suc))
+   
 }
 
 
@@ -266,7 +291,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-
 template {
   ?suc  
 }
@@ -282,7 +306,7 @@ where {
    st:call-template-with(st:superexp, st:superClassExpression, ?t) 
  as ?suc)
  
- filter(st:visit(st:individual, ?in, ?suc))
+ filter(st:visit(st:err("individual"), ?in, ?suc))
 
       
 }

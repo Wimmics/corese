@@ -47,7 +47,8 @@ public interface IDatatype
     public static final String QUERY    = KGRAM + "Query";
     public static final String GRAPH    = KGRAM + "Graph";
     public static final String MAPPINGS = KGRAM + "Mappings";
-
+    public static final String LIST     = ExpType.DT + "list";
+    
     /**
      * @return true if we have a blanknode
      */
@@ -58,6 +59,8 @@ public interface IDatatype
     boolean isXMLLiteral();
 
     boolean isArray();
+    
+    boolean isList();
 
     IDatatype[] getValues();
 

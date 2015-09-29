@@ -1,35 +1,101 @@
 #
 # SWS profile: a construct query and a HTML transformation
+# st:param specify parameters passed to transformation 
+# accessible using st:get(st:lang)
 #
 
 
 st:dbpedia a st:Profile ;
-  st:query  <query/frdbpedia.rq> ;   
-  #<file:///home/corby/ADataServer/query/frdbpediatest.rq> ;
-  #st:transform "/home/corby/AData/sttl/navlab" .
+  st:query  <query/frdbpedia.rq> ;
   st:transform  st:navlab .
   
+st:dbpediaen a st:Profile ;
+  st:query  <query/frdbpediaen.rq> ;
+  st:transform  st:navlab ;
+  st:param [
+    st:lang "en" ;
+  ] .
+  
 st:calendar a st:Profile ;
-  st:transform st:calendar .
-
+  st:transform st:calendar ;
+  st:param [
+    st:debug true ;
+  ] .
+  
+  
+st:calendartest a st:Profile ;
+  st:transform <http://ns.inria.fr/sparql-template/calendar#test> ;
+  st:param [
+    st:debug true ;
+    st:list (("OC" 1959) ("FC" 1964)) ;
+  ] .
+  
+  
 st:calendar1 a st:Profile ;
-  #st:query     <file:///home/corby/ADataServer/query/dbpediadate.rq> ;
-  #st:transform "/home/corby/AData/sttl/calendar" .
-  st:query     <query/dbpediadate.rq> ;
-  st:transform st:calendar .
+  st:query     <query/dbpediadate.rq> ;  
+  st:transform st:content ;
+   st:param [
+    st:uri   st:y2000 ;
+    st:title "Born calendar";
+  ] .
 
 st:calendar2 a st:Profile ;
   st:query     <query/dbpediadate2.rq> ;
-  st:transform st:calendar .
+  st:transform st:content ;
+  st:param [
+    st:uri    st:y2000 ;
+    st:title "Decease calendar";
+  ] .
   
 st:calendar3 a st:Profile ;
   st:query     <query/dbpediadate3.rq> ;
-  st:transform st:calendar .  
+  st:transform st:content ;  
+  st:param [
+    st:uri    st:y1944 ;
+    st:title "Event calendar";
+  ] .
 
+@prefix ct: <http://ns.inria.fr/sparql-template/content#>
+
+# calendar to query dbpedia for event given month-day for any year
+# show answer of such query
+st:gcalendar a st:Profile ;
+  st:query     <query/dbpediadatemd.rq> ;
+  st:transform ct:query ;  
+  st:param [
+    st:import st:cal ;
+    st:title "Born calendar";
+  ] .
+  
+# additional shared param
+st:cal 
+  st:param [
+    st:uri    st:d2000-02-29 ;
+].
+  
+  
+st:gcalendar2 a st:Profile ;
+  st:query     <query/dbpediadatemd2.rq> ;
+  st:transform ct:query ;  
+  st:param [
+    st:import st:cal ;
+    st:title "Decease calendar";
+  ] .
+  
+st:gcalendar3 a st:Profile ;
+  st:query  <query/dbpediadatemd3.rq> ;
+  st:transform ct:query ; 
+   st:param [
+    st:import st:cal ;
+    st:title "Born & Decease calendar";
+  ] .
+  
+  
 st:calendar4 a st:Profile ;
   st:query     <file:///home/corby/ADataServer/query/dbpediadate4.rq> ;
-  st:transform "/home/corby/AData/sttl/calendar" .
-  
+  st:transform "/home/corby/AData/sttl/content" .
+   
+
 st:dbpediasparql a st:Profile ;
   st:query     <query/frdbpedia.rq> ;
   st:transform st:sparql .
@@ -48,14 +114,13 @@ st:dbpediaall a st:Profile ;
   st:transform st:navlab .
 
 st:navlab a st:Profile ;
-  st:variable "?r" ; 
   st:transform st:navlab .  
 
 st:web a st:Profile ;
    st:transform st:web .
 
 st:weben a st:Profile ;
-   st:lang 'en' ;
+   st:param [ st:lang 'en' ];
    st:transform st:web .
 
    # LDP on local dataset
@@ -75,12 +140,10 @@ st:rdfs a st:Profile ;
     
 st:local a st:Profile ;
   st:query     <query/local.rq> ;
-  st:variable  "?r" ;
   st:transform st:navlab .
 
 st:personen a st:Profile ;
   st:query     <query/dbpedia.rq> ;
-  st:variable  "?r" ;
   st:transform st:navlab .  
 
 st:bound a st:Profile ;
@@ -126,7 +189,7 @@ st:tutorial1 a st:Server ;
 st:tutorial2 a st:Server ;
   st:service "rdfs" ;
   st:transform st:web ;
-  st:lang "en" ;
+  st:param [ st:lang "en" ] ;
   st:data     
     [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
     [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
@@ -134,10 +197,18 @@ st:tutorial2 a st:Server ;
   st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
 
+  
+@prefix cn: <http://cdn.fr/schema/>
+  
 # /tutorial/cdn
 st:cdn a st:Server ;
     st:service "cdn" ;
     st:transform st:cdn ;
+    
+    st:param [
+      st:import st:history
+    ] ;
+    
     st:data 
     [ st:uri <cdn/aa_siecle.ttl> ], [ st:uri <cdn/fr.ttl> ], 
     [ st:uri <cdn/spqr.ttl> ], 
@@ -149,6 +220,29 @@ st:cdn a st:Server ;
     [ st:uri <cdn/an1200.ttl> ], [ st:uri <cdn/an1300.ttl> ], [ st:uri  <cdn/an1400.ttl> ], 
     [ st:uri <cdn/an1500.ttl> ], [ st:uri <cdn/an1600.ttl> ], [ st:uri <cdn/an1700.ttl> ], 
     [ st:uri <cdn/an1800.ttl> ], [ st:uri <cdn/an1900.ttl> ], [ st:uri <cdn/pos.ttl> ].
+    
+    
+ st:history a st:Profile ;
+    st:transform st:cdn ;        
+    st:param [
+      st:text ( "France" "Contexte" "Savoie, Piémont" "Comté de Nice");
+      st:topic ( (cn:fr) (cn:emp cn:context) (cn:mds) (cn:cdn)) ;      
+      st:uri cn:XVIII ;
+      st:min 400 ;
+      st:max 3000 ;
+    ] .
+    
+    
+ st:antiquity a st:Profile ;
+    st:transform st:cdn ;    
+    st:param [      
+      st:text ( "Antiquité"  "France" "Contexte" );
+      st:topic ( (cn:rome) (cn:fr) (cn:emp cn:context) ) ;      
+      st:uri cn:I ;
+      st:min -700 ;
+      st:max 500 ;
+    ] .
+          
 
 st:owlrl a st:Server ;
     st:service "owlrl" ;

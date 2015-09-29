@@ -12,7 +12,7 @@ import java.util.List;
 public class ProxyDefault implements Proxy, ExprType {
 
 	@Override
-	public Object eval(Expr exp, Environment env, Producer p, Object o1, Object o2) {
+	public Object term(Expr exp, Environment env, Producer p, Object o1, Object o2) {
 		// TODO Auto-generated method stub
 		switch(exp.oper()){
 		case EQ: return o1 == o2;
@@ -160,6 +160,11 @@ public class ProxyDefault implements Proxy, ExprType {
 
     @Override
     public Expr decode(Expr exp, Environment env, Producer p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int compare(Environment env, Producer p, Node o1, Node o2) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -90,12 +90,32 @@ public class EvaluatorDefault implements Evaluator {
     }
 
     @Override
-    public Object eval(Expr f, Environment e, Producer p, Extension ext, Object[] values) {
+    public Object eval(Expr f, Environment e, Producer p, Object[] values, Extension ext) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Object eval(Expr f, Environment e, Producer p, Object[] values) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object eval(Expr f, Environment e, Producer p, Object[] values, String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object eval(Expr f, Environment e, Producer p, Object[] values, Expr ee) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Expr getDefine(Environment env, String name, int n) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int compare(Environment env, Producer p, Node n1, Node n2) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -242,6 +242,7 @@ public interface ExprType {
 	public static int EVERY         = 316;
 	public static int ANY           = 317;
 	public static int MAPSELECT     = 318;
+	public static int MAPMERGE      = 319;
         
         public static int XT_SUM         = 400;
         public static int XT_PROD        = 401;

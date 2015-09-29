@@ -123,3 +123,18 @@ pre {
     background-color: #E4E5E7;
 } 
   
+.errors {
+    border:solid;
+	color:#000000;
+	background-color:#ffec8b;
+	display:table-cell;
+}
+
+.owlrl {
+}
+
+.owlel {
+}
+
+.owlql {
+}

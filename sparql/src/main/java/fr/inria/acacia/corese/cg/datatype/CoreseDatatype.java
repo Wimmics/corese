@@ -321,6 +321,10 @@ public class CoreseDatatype
 	public boolean isArray(){
 		return false;
 	}
+        
+        public boolean isList(){
+            return false;
+        }
 	
 	public CoreseArray getArray(){
 		return null;

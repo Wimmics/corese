@@ -311,7 +311,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         return it;
     }
     
-    
+       
     @Override
     public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
         if (env instanceof Memory){
@@ -829,7 +829,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             if (dt.getObject() != null) {
                 return map(nodes, dt.getObject());
             }
-            else if (dt.isArray()){
+            else if (dt.isList() || dt.isArray()){
                 return map(nodes, dt.getValues());
             }
             else {

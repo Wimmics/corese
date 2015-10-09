@@ -769,6 +769,17 @@ public class Triple extends Exp {
 			return variable;
 		else return predicate;
 	}
+        
+        public void setPredicate(Atom at){
+            if (at.isVariable()){
+                setProperty(Constant.createResource(getRootPropertyQN()));
+                setVariable(at.getVariable());
+            }
+            else {
+                setVariable((Variable)null);
+                setProperty(at.getConstant());
+            }
+        }
 	
 	public Variable getVariable(){
 		return variable;

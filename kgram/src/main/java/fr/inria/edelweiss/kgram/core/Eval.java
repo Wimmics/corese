@@ -47,8 +47,12 @@ import java.util.Iterator;
 public class Eval implements ExpType, Plugin {
 
     private static Logger logger = Logger.getLogger(Eval.class);
-    private static final String CANDIDATE   = EXT + "candidate";
-    private static final String RESULT      = EXT + "result";
+    private static final String PREF = EXT;
+    private static final String FUN_CANDIDATE   = PREF + "candidate";
+    private static final String FUN_SERVICE     = PREF + "service";
+    private static final String FUN_MINUS       = PREF + "minus";
+    private static final String FUN_OPTIONAL    = PREF + "optional";
+    private static final String FUN_RESULT      = PREF + "result";
     
     static final int STOP = -2;
     public static int count = 0;
@@ -95,7 +99,12 @@ public class Eval implements ExpType, Plugin {
     private boolean isPathType = false;
     boolean storeResult = true;
     private int nbResult;
-    private boolean hasCandidate = false, hasResult = false;
+    private boolean 
+            hasService = false,
+            hasCandidate = false,
+            hasOptional,
+            hasMinus,
+            hasResult = false;
     
 
     //Edge previous;
@@ -562,15 +571,21 @@ public class Eval implements ExpType, Plugin {
         }
         if (hasEvent) {
             results.setEventManager(manager);
-        }
-        hasCandidate = (getExpression(CANDIDATE) != null);
-        hasResult    = (getExpression(RESULT) != null);
-        
+        }      
+        startExtFun();
         // save current results in case of sub query
         //save = memory.getResults();
         // set new results in case of sub query (for aggregates)
         memory.setEval(this);
         memory.setResults(results);
+    }
+    
+    void startExtFun(){
+        hasCandidate = (getExpression(FUN_CANDIDATE) != null);
+        hasService   = (getExpression(FUN_SERVICE) != null);
+        hasOptional  = (getExpression(FUN_OPTIONAL) != null);
+        hasMinus     = (getExpression(FUN_MINUS) != null);
+        hasResult    = (getExpression(FUN_RESULT) != null);
     }
 
     private void complete() {
@@ -1311,6 +1326,10 @@ public class Eval implements ExpType, Plugin {
         }
         Mappings lMap1 = subEval(p, gNode, node1, exp.first(), exp);
         Mappings lMap2 = subEval(p, gNode, node2, exp.rest(), exp);
+        
+        if (hasMinus){
+            
+        }
 
         for (Mapping map : lMap1) {
             boolean ok = true;
@@ -1675,6 +1694,11 @@ public class Eval implements ExpType, Plugin {
         if (provider != null) {
             // service delegated to provider
             Mappings lMap = provider.service(node, exp.rest(), exp.getMappings(), env);
+            
+            if (hasService){
+                callService(node, exp, lMap);
+            }
+            
             for (Mapping map : lMap) {
                 // push each Mapping in memory and continue
                 complete(query, map);
@@ -2167,7 +2191,7 @@ public class Eval implements ExpType, Plugin {
     }
     
     DatatypeValue candidate(Edge q, Entity ent, Object match) {
-        Expr exp = getExpression(CANDIDATE);
+        Expr exp = getExpression(FUN_CANDIDATE);
         if (exp != null) {
             Object obj = evaluator.eval(exp, memory, producer, 
                     toArray(q.getNode().getValue(), ent.getNode().getValue(), match));
@@ -2175,6 +2199,13 @@ public class Eval implements ExpType, Plugin {
             return val;
         }
         return null;
+    }
+    
+    void callService (Node node, Exp serv, Mappings m){
+        Expr exp = getExpression(FUN_SERVICE);
+        if (exp != null) {
+            evaluator.eval(exp, memory, producer, toArray(node.getValue(), producer.getNode(serv), producer.getNode(m)));
+        }
     }
     
     Expr getExpression(String name){
@@ -2188,7 +2219,7 @@ public class Eval implements ExpType, Plugin {
     }
     
     Object[] toArray(Object o1, Object o2, Object o3){
-        Object[] res = new Object[3];
+        Object[] res = evaluator.getProxy().createParam(3); //new Object[3];
         res[0] = o1;
         res[1] = o2;       
         res[2] = o3;       
@@ -2196,14 +2227,14 @@ public class Eval implements ExpType, Plugin {
     }
 
     Object[] toArray(Object o1, Object o2){
-        Object[] res = new Object[2];
+        Object[] res = evaluator.getProxy().createParam(2);
         res[0] = o1;
         res[1] = o2;       
         return res;
     }
     
     Object[] toArray(Object o1){
-        Object[] res = new Object[1];
+        Object[] res = evaluator.getProxy().createParam(1);;
         res[0] = o1;
         return res;
     }
@@ -2621,7 +2652,7 @@ public class Eval implements ExpType, Plugin {
                 send(Event.RESULT, ans);
             }
             if (hasResult){                
-                Object res = evaluator.eval(getExpression(RESULT), memory, p, toArray(p.getNode(ans)));
+                Object res = evaluator.eval(getExpression(FUN_RESULT), memory, p, toArray(p.getNode(ans)));
             }
         }  
         return -1;

@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.filter.Extension;
+import fr.inria.edelweiss.kgram.filter.Proxy;
 
 public class EvaluatorDefault implements Evaluator {
 
@@ -116,6 +117,11 @@ public class EvaluatorDefault implements Evaluator {
 
     @Override
     public int compare(Environment env, Producer p, Node n1, Node n2) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Proxy getProxy() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

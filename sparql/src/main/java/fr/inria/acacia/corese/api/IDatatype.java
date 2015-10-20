@@ -48,6 +48,7 @@ public interface IDatatype
     public static final String GRAPH    = KGRAM + "Graph";
     public static final String MAPPINGS = KGRAM + "Mappings";
     public static final String LIST     = ExpType.DT + "list";
+    public static final String SYSTEM   = ExpType.DT + "system";
     
     /**
      * @return true if we have a blanknode

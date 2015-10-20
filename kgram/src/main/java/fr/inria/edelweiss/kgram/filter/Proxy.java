@@ -9,6 +9,10 @@ import java.util.List;
 
 public interface Proxy {
     
+        // create an array of target IDatatype[]
+        // facilitate cast in Proxy and Plugin
+        Object[] createParam(int n);
+    
         void start(Producer p, Environment env);
 	
         void finish(Producer p, Environment env);

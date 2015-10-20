@@ -6,9 +6,9 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.filter.Extension;
+import fr.inria.edelweiss.kgram.filter.Proxy;
 
 /**
  * Interface for the connector that evaluates filters
@@ -24,7 +24,7 @@ public interface Evaluator {
         public static final int CACHE_MODE = 101;
         public static final int NO_CACHE_MODE = 102;
 
-
+        Proxy getProxy();
 	
 	void setMode(int mode);
 	

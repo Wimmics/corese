@@ -37,6 +37,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -830,7 +831,7 @@ public class ProducerImpl implements Producer, IProducerQP {
                 return map(nodes, dt.getObject());
             }
             else if (dt.isList() || dt.isArray()){
-                return map(nodes, dt.getValues());
+                return mapList(nodes, dt.getValues());
             }
             else {
                 return map(nodes, dt);
@@ -852,6 +853,24 @@ public class ProducerImpl implements Producer, IProducerQP {
         Mappings map = new Mappings();
         for (IDatatype dt : list){
             Mapping m =  Mapping.create(lNodes.get(0), dt);
+            map.add(m);
+        }
+        return map;
+    }
+    
+    Mappings mapList(List<Node> lNodes, IDatatype[] list) {
+        Node[] qNodes = new Node[lNodes.size()];
+        lNodes.toArray(qNodes);
+        Mappings map = new Mappings();
+        Mapping m;
+        for (IDatatype dt : list){
+            if (dt.isList()){               
+                 m = Mapping.create(qNodes, dt.getValues());
+            }
+            else {
+                 m =  Mapping.create(lNodes.get(0), dt);
+            }
+           
             map.add(m);
         }
         return map;

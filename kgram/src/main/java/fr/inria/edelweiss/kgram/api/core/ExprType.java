@@ -205,8 +205,8 @@ public interface ExprType {
 	public static int APPLY_TEMPLATES_WITH_NOGRAPH= 258;        
 	public static int CALL_TEMPLATE             = 259;
 	public static int CALL_TEMPLATE_WITH        = 260;
+	public static int STL_TEMPLATE              = 261;
         
- 	public static int STL_ISSTART               = 261;
  	public static int STL_SET                   = 262;
  	public static int STL_GET                   = 263;
  	public static int STL_BOOLEAN               = 264;
@@ -219,6 +219,8 @@ public interface ExprType {
  	public static int STL_PROCESS_URI           = 271;
  	public static int STL_EXPORT                = 272;
  	public static int STL_ERRORS                = 273;
+ 	public static int STL_ISSTART               = 274;
+ 	public static int AGGLIST                   = 275;
         
               
 	public static int ISSKOLEM 	= 300;
@@ -239,8 +241,8 @@ public interface ExprType {
 	public static int LET           = 313;
 	public static int LAMBDA        = 314;
 	public static int ERROR         = 315;
-	public static int EVERY         = 316;
-	public static int ANY           = 317;
+	public static int MAPEVERY      = 316;
+	public static int MAPANY        = 317;
 	public static int MAPSELECT     = 318;
 	public static int MAPMERGE      = 319;
         

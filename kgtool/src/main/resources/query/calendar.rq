@@ -9,29 +9,32 @@ select
 
 (cal:jour(now()) as ?fr)
 
-(package(cal:calendar,
-define (xt:day(?d)  = cal:day(?d)) ,
+where  { }
 
-define (xt:jour(?d) = cal:jour(?d)),
+export {
+function xt:day(?d)  { cal:day(?d)}
 
-define (cal:day(?d)  = cal:en(cal:find(?d))) ,
+function xt:jour(?d) { cal:jour(?d) }
 
-define (cal:jour(?d) = cal:fr(cal:find(?d))),
+function cal:day(?d)  { cal:en(cal:find(?d))}
 
-define (cal:div(?a, ?b) = xsd:integer(floor(?a / ?b)))  ,
+function cal:jour(?d) { cal:fr(cal:find(?d)) }
 
-define (cal:mod(?a, ?b) = xsd:integer(?a - (?b * cal:div(?a, ?b))))  ,
+function cal:div(?a, ?b) { xsd:integer(floor(?a / ?b))}
 
-define (cal:bisextile(?y) =
+function cal:mod(?a, ?b) { xsd:integer(?a - (?b * cal:div(?a, ?b)))}
+
+function cal:bisextile(?y) {
     ((cal:mod(?y, 4) = 0) &&
-      ((cal:mod(?y, 100) != 0) || (cal:mod(?y, 400) = 0))))  ,
+      ((cal:mod(?y, 100) != 0) || (cal:mod(?y, 400) = 0)))
+}
       
-define (cal:ab(?y) = cal:div(?y, 100))  ,
-define (cal:cd(?y) = cal:mod(?y, 100))  ,
-define (cal:k(?y)  = cal:div(cal:cd(?y), 4)) ,
-define (cal:q(?y)  = cal:div(cal:ab(?y), 4)) ,
+function cal:ab(?y) { cal:div(?y, 100)}
+function cal:cd(?y) { cal:mod(?y, 100)}
+function cal:k(?y)  { cal:div(cal:cd(?y), 4)}
+function cal:q(?y)  { cal:div(cal:ab(?y), 4)}
 
-define (cal:monthday(?m, ?y) =
+function cal:monthday(?m, ?y) {
   if (?m <= 2,
     if (cal:bisextile(?y),
       if (?m = 1, 3, 6),
@@ -41,63 +44,57 @@ define (cal:monthday(?m, ?y) =
       if (?m in (9, 12), 2,
 	if (?m in (4, 7), 3,
 	  if (?m in (10), 4,
-	    if (?m in (5), 5, 6))))))))  ,
+	    if (?m in (5), 5, 6)))))))
+}
 	    
-define (cal:get(?y, ?m, ?d) =
+function cal:get(?y, ?m, ?d) {
   let (?n = cal:k(?y) + cal:q(?y) + cal:cd(?y) +
-        cal:monthday(?m, ?y) + ?d + 2 + 5 * cal:ab(?y),
-    cal:mod(?n, 7)))  ,
+        cal:monthday(?m, ?y) + ?d + 2 + 5 * cal:ab(?y))
+    {
+      cal:mod(?n, 7)
+    }
+}
     
-define (cal:find(?d) =
-  cal:get(year(?d), month(?d), day(?d)))  ,
+function cal:find(?d) {
+  cal:get(year(?d), month(?d), day(?d))
+}
   
-define (cal:en(?n) =
+function cal:en(?n) {
   if (?n = 0, "Sunday",
   if (?n = 1, "Monday",
   if (?n = 2, "Tuesday",
   if (?n = 3, "Wednesday",
   if (?n = 4, "Thursday",
   if (?n = 5, "Friday",
-  if (?n = 6, "Saturday", "Unknown"))))))))  ,
+  if (?n = 6, "Saturday", "Unknown")))))))
+}
   
-define (cal:fr(?n) =
+function cal:fr(?n) {
   if (?n = 0, "Dimanche",
   if (?n = 1, "Lundi",
   if (?n = 2, "Mardi",
   if (?n = 3, "Mercredi",
   if (?n = 4, "Jeudi",
   if (?n = 5, "Vendredi",
-  if (?n = 6, "Samedi", "Inconnu"))))))))  ,
+  if (?n = 6, "Samedi", "Inconnu")))))))
+}
 
-define (cal:num(?day) =
-if (?day in( "Lundi", "Monday"), 1,
-if (?day in( "Mardi", "Tuesday"), 2,
-if (?day in( "Mercredi", "Wednesday"), 3,
-if (?day in( "Jeudi", "Thursday"), 4,
-if (?day in( "Vendredi", "Friday"), 5,
-if (?day in( "Samedi", "Saturday"), 6,
-if (?day in( "Dimanche", "Sunday"), 7, 0)))))))) ,
+function cal:num(?day) {
+    if (?day in( "Lundi", "Monday"), 1,
+    if (?day in( "Mardi", "Tuesday"), 2,
+    if (?day in( "Mercredi", "Wednesday"), 3,
+    if (?day in( "Jeudi", "Thursday"), 4,
+    if (?day in( "Vendredi", "Friday"), 5,
+    if (?day in( "Samedi", "Saturday"), 6,
+    if (?day in( "Dimanche", "Sunday"), 7, 0)))))))
+}
 
-define (cal:days(?y, ?m) =
-let (?list = xt:list(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31), 
-if (?m != 2, xt:get(?list, ?m - 1),
-if (cal:bisextile(?y), 29, 28)))) ,
-
-define (cal:mois(?m) =
-let (?list = xt:list(
-"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", 
-"Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"), 
-xt:get(?list, ?m - 1))) ,
-
-define (cal:month(?m) =
-let (?list = xt:list(
-"January", "February", "March", "April", "May", "June", 
-"July", "August", "September", "October", "November", "December"), 
-xt:get(?list, ?m - 1)))
+function cal:days(?y, ?m) {
+    let (?list = xt:list(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)){ 
+        if (?m != 2, xt:get(?list, ?m - 1),
+            if (cal:bisextile(?y), 29, 28))
+    }
+}
 
 
-
-) as ?def)
-
-
-where  {}
+}

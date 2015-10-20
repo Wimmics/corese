@@ -19,9 +19,10 @@ where {
     bind (unnest(xt:iota(cal:days(?y, ?m))) as ?n)
     bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?date)
     bind (xt:day(?date) as ?day)
-    bind (define(xt:space(?n) = 
-      if (?n = 0, "", concat("   " , xt:space(?n - 1)))) 
-    as ?sp)
+
+    function xt:space(?n) { 
+      if (?n = 0, "", concat("   " , xt:space(?n - 1)))
+    }
 }
 group by ?m
 order by ?m

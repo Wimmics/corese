@@ -1,18 +1,28 @@
 select 
 where {
-bind (export(
+export {
 
-function (xt:div(?a, ?b) = xsd:integer(floor(?a / ?b)))  ,
+function xt:div(?a, ?b) {  xsd:integer(floor(?a / ?b)) }
 
-function (xt:mod(?a, ?b) = xsd:integer(?a - (?b * xt:div(?a, ?b))))  ,
+function xt:mod(?a, ?b) {  xsd:integer(?a - (?b * xt:div(?a, ?b))) }
 
-function (xt:compare(?x, ?y) =
+function xt:compare(?x, ?y) { 
   if (?x < ?y, -1, 
-  if (?x = ?y, 0, 1))),
+  if (?x = ?y, 0, 1)) }
 
-function (kg:compare(?x, ?y) =
+function kg:compare(?x, ?y) { 
   if (?x < ?y, -1, 
-  if (?x = ?y, 0, 1)))
+  if (?x = ?y, 0, 1)) }
 
-) as ?def)
+function xt:prime(?x) { 
+    if (?x = 1, false,
+    if (?x = 2, true, 
+    ! mapany (xt:divisible, ?x, xt:cons(2, xt:iota(3, power(?x, 0.5), 2)))))
+ }
+                             
+function xt:divisible(?x, ?n) { 
+   (xt:mod(?x, ?n) = 0)
+}
+
+}
 }

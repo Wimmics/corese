@@ -64,5 +64,9 @@ public interface Expr {
         Expr getDefine();
         
         void setDefine(Expr exp);
+        
+        Expr getFunDefine();
+        
+        Expr getFunBody();
 	
 }

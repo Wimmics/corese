@@ -63,6 +63,9 @@ public class QuerySorter implements ExpType {
         if (q.getHaving() != null) {
             compile(q.getHaving().getFilter());
         }
+        for (Filter f : q.getFunList()){
+            compile(f);
+        }
     }
 
     /**
@@ -240,7 +243,7 @@ public class QuerySorter implements ExpType {
      * Compile pattern of exists {} if any
      */
     void compile(Expr exp, VString lVar, boolean opt) {
-        if (exp.oper() == ExprType.EXIST) {
+        if (exp.oper() == ExprType.EXIST) {           
             compile(query.getPattern(exp), lVar, opt);
         } else {
             for (Expr ee : exp.getExpList()) {

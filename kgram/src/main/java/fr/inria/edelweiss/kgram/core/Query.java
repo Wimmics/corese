@@ -73,7 +73,7 @@ public class Query extends Exp implements Graphable {
     private List<Node> constructNodes;
     List<Node> relaxEdges;
     List<Exp> selectExp, selectWithExp, orderBy, groupBy;
-    List<Filter> failure, pathFilter;
+    List<Filter> failure, pathFilter, funList;
     List<String> errors, info;
     Exp having, construct, delete;
 	// gNode is a local graph node when subquery has no ?g in its select 
@@ -172,6 +172,7 @@ public class Query extends Exp implements Graphable {
 		groupBy 	= new ArrayList<Exp>();
 		failure 	= new ArrayList<Filter>();
 		pathFilter 	= new ArrayList<Filter>();
+		funList 	= new ArrayList<Filter>();
 
 		compiler 	= new Compile(this);
 		table 		= new Hashtable<Edge, Query>();
@@ -451,6 +452,14 @@ public class Query extends Exp implements Graphable {
      */
     List<Filter> getPathFilter() {
         return pathFilter;
+    }
+    
+    public void defineFunction(Filter f){
+        funList.add(f);
+    }
+    
+    List<Filter> getFunList(){
+        return funList;
     }
 
     /**
@@ -1118,6 +1127,10 @@ public class Query extends Exp implements Graphable {
         if (getHaving() != null) {
             index(this, getHaving().getFilter());
         }
+        
+        for (Filter f :getFunList()){
+            index(this, f);
+        }
 
         for (Node node : getBindingNodes()) {
             index(node);
@@ -1263,6 +1276,10 @@ public class Query extends Exp implements Graphable {
 
         for (Filter ff : getPathFilter()) {
             collectExist(ff.getExp());
+        }
+        
+        for (Filter f : getFunList()){
+             collectExist(f.getExp());
         }
     }
 

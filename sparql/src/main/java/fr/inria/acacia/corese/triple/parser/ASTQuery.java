@@ -1031,6 +1031,36 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     	term.setCName(name);
     	return term;
     }
+    
+    /**
+     * function name(el) { exp }
+     * ->
+     * function (name(el) = exp)
+     */
+     public  Term defineFunction(Constant name, ExpressionList el, Expression exp) {
+    	Term fun  = createFunction(name, el);
+        Term body = createTerm(SEQ, fun, exp);
+    	Term def  = createFunction(Constant.create(Processor.FUNCTION), body);
+        define.defineFunction(def);
+    	return def;
+    }
+     
+     public Term ifThenElse(Expression ei, Expression et, Expression ee){
+         Term exp = createFunction(Processor.IF, ei);
+         exp.add(et);
+         exp.add(ee);
+         return exp;
+     }
+     
+     public Term let(ExpressionList el, Expression body){
+         Term exp = createFunction(Processor.LET, el);
+         exp.add(body);
+         return exp;
+     }
+     
+     public void exportFunction(Expression def){
+         def.getArg(0).setExport(true);
+     }
        
     public  Term createFunction(Constant name, Expression exp) {
     	Term term =  createFunction(name.getName(), exp);
@@ -2182,6 +2212,11 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     		sb.append(SPACE);
     		getPragma().toString(sb);
     	}
+        
+        for (Expression fun : define.getFunList()){
+            fun.toString(sb);
+            sb.append(NL);
+        }
     }
 
     

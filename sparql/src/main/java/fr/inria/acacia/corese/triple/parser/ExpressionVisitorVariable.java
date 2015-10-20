@@ -73,7 +73,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                 let(t);
                 break;
                 
-            case ExprType.STL_DEFINE:
+            case ExprType.FUNCTION:
                 define(t);
                 break;
                                            
@@ -81,8 +81,9 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             case ExprType.MAPLIST:                
             case ExprType.MAPMERGE:                
             case ExprType.MAPSELECT:                
-            case ExprType.EVERY:                
-            case ExprType.ANY:                
+            case ExprType.MAPEVERY:                
+            case ExprType.MAPANY:                
+            case ExprType.APPLY:                
                 map(t);
                 break;
                

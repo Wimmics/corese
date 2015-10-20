@@ -1,7 +1,9 @@
 package fr.inria.acacia.corese.triple.parser;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,6 +22,7 @@ public class Extension {
     FunMap[] maps;
     private String name;
     private Constant pack;
+    ArrayList<Expression> funList;
     
     public class FunMap extends HashMap<String, Expression> {}
 
@@ -29,6 +32,7 @@ public class Extension {
         for (int i=0; i<maps.length; i++){
             maps[i] = new FunMap();
         }
+        funList = new ArrayList();
     }
     
     public Extension(String n){
@@ -58,6 +62,18 @@ public class Extension {
             }
         }
         return true;
+    }
+    
+    /**
+     * exp = function (ex:name(?x) = exp )
+     * @param exp 
+     */
+    void defineFunction(Expression exp){
+        funList.add(exp);
+    }
+    
+    public List<Expression> getFunList(){
+        return funList;
     }
 
     /**

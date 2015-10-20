@@ -199,6 +199,8 @@ public class NSManager {
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);
         def.put(EXT, EXT_PREF);
+        def.put(ExpType.UXT, "us");
+        def.put(ExpType.DT, "dt");
     }
 
     // add default namespaces

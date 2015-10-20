@@ -627,18 +627,31 @@ implements Regex, Filter, Expr {
             
         }
         
+        @Override
     public Expr getDefine() {
         return null;
     }
 
  
+        @Override
     public void setDefine(Expr define) {
         
     }
+    
+          @Override
+    public Expression getFunDefine(){
+        return null;
+    }
+    
+        @Override
+    public Expression getFunBody(){
+        return null;
+    }
+	
 
     @Override
     public int subtype() {
         return ExprType.UNDEF;
     }
-	
+     
 }

@@ -22,6 +22,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
  */
 
 public class Term extends Expression {
+        private static final String NL = System.getProperty("line.separator");
 	static final String RE_CHECK = "check";
 	static final String RE_PARA = "||";
 	public static final String RE_ALT = "|";
@@ -250,7 +251,9 @@ public class Term extends Expression {
 		if (getName() == null) {
 			return sb;
 		} 
-		
+		if (getName().equals(Processor.FUNCTION)){
+                    return funString(sb);
+                }
 		if (getName().equals(EXIST)){
 			return getExist().toString(sb);
 		}
@@ -315,7 +318,32 @@ public class Term extends Expression {
 	}
 
 
-	
+        /**
+         * this = function(xt:fun(?x) = exp)       
+         */
+    public StringBuffer funString(StringBuffer sb) {         
+        sb.append(Processor.FUNCTION);
+        sb.append(" ");
+        getFunDefine().toString(sb);
+        sb.append(" {");
+        sb.append(NL);
+        sb.append("  ");
+        getFunBody().toString(sb);
+        sb.append(NL);
+        sb.append("}");
+        return sb;
+    }
+    
+     /**
+         * this = function(xt:fun(?x) = exp)       
+         */
+    public Expression getFunDefine(){
+        return getArg(0).getArg(0);
+    }
+    
+    public Expression getFunBody(){
+        return getArg(0).getArg(1);
+    }
 	
 	static boolean isNegation(String name) {
 		return (name.equals(STNOT) || name.equals(SENOT));

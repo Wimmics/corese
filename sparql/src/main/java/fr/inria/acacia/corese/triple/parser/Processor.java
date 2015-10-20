@@ -62,7 +62,7 @@ public class Processor {
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
 
-	private static final String LET     = "let";
+	public static final String LET     = "let";
 	private static final String MAP     = "map";
 	private static final String MAPLIST = "maplist";
 	private static final String MAPMERGE = "mapmerge";
@@ -77,6 +77,7 @@ public class Processor {
         private static final String XT_CONS = EXT + "cons";        
         private static final String XT_CONCAT = EXT + "concat";
         private static final String XT_COUNT = EXT + "count";
+        private static final String XT_SIZE = EXT + "size";
         private static final String XT_SUM   = EXT + "sum";
         private static final String XT_PROD  = EXT + "prod";
         private static final String XT_GRAPH    = EXT + "graph";
@@ -147,6 +148,7 @@ public class Processor {
         static final String APPLY_ALL_TEMPLATES     = STL + "apply-all-templates";
         static final String APPLY_ALL_TEMPLATES_WITH= STL + "apply-all-templates-with";
         
+        static final String STL_TEMPLATE            = STL + "template";
         static final String CALL_TEMPLATE           = STL + "call-template";
         static final String CALL_TEMPLATE_WITH      = STL + "call-template-with";
         static final String CTW                     = STL + "ctw";
@@ -163,8 +165,8 @@ public class Processor {
         static final String EXPORT                  = "export";
         static final String LAMBDA                  = "lambda";
         static final String ERROR                   = "error";
-        static final String ANY                     = "any";
-        static final String EVERY                   = "every";
+        static final String MAPANY                  = "mapany";
+        static final String MAPEVERY                = "mapevery";
       
         static final String STL_PREFIX              = STL + "prefix";
  	static final String STL_INDENT              = STL + "indent";
@@ -186,6 +188,7 @@ public class Processor {
 	public static final String STL_CONCAT       = STL + "concat"; 
 	public static final String STL_NL           = STL + "nl"; 
 	public static final String STL_AGGAND       = STL + "agg_and";
+	public static final String STL_AGGLIST      = STL + "agg_list";
 	public static final String STL_AND          = STL + "and";
 	public static final String STL_NUMBER       = STL + "number";
 	public static final String STL_INDEX        = STL + "index";
@@ -283,10 +286,33 @@ public class Processor {
 	static final String SHA384 	= "sha384";
 	static final String SHA512 	= "sha512";
 	
-	
+        static final String KG_POWER 	= KGRAM + "power";
+        static final String KG_PLUS 	= KGRAM + "plus";
+        static final String KG_MINUS 	= KGRAM + "minus";
+        static final String KG_MULT 	= KGRAM + "mult";
+        static final String KG_DIV 	= KGRAM + "div";
+        static final String KG_CONCAT 	= KGRAM + "concat";
+        static final String KG_APPEND 	= KGRAM + "append";
+        static final String KG_AND 	= KGRAM + "and";
+        static final String KG_OR 	= KGRAM + "or";
+        static final String KG_NOT 	= KGRAM + "not";
+        static final String KG_EQUAL 	= KGRAM + "equal";
+        static final String KG_DIFF 	= KGRAM + "diff";
+       
+	static final String XT_POWER 	= EXT + "power";
+        static final String XT_PLUS 	= EXT + "plus";
+        static final String XT_MINUS 	= EXT + "minus";
+        static final String XT_MULT 	= EXT + "mult";
+        static final String XT_DIV 	= EXT + "div";
+        static final String XT_AND 	= EXT + "and";
+        static final String XT_OR 	= EXT + "or";
+        static final String XT_NOT 	= EXT + "not";
+        static final String XT_EQUAL 	= EXT + "equal";
+        static final String XT_DIFF 	= EXT + "diff";
+        
         public static final String[] aggregate = 
 	{AVG, COUNT, SUM, MIN, MAX, SAMPLE, 
-         GROUPCONCAT, STL_GROUPCONCAT, STL_AGGAND, STL_AGGREGATE};
+         GROUPCONCAT, STL_GROUPCONCAT, STL_AGGAND, STL_AGGLIST, STL_AGGREGATE};
 	
 	Term term;
 	List<Expr> lExp;
@@ -530,6 +556,7 @@ public class Processor {
 		defoper(IF, 		ExprType.IF);
 		defoper(GROUPCONCAT,    ExprType.GROUPCONCAT);
 		defoper(STL_AGGAND,     ExprType.AGGAND);
+		defoper(STL_AGGLIST,    ExprType.AGGLIST);
 		defoper(STL_AND,        ExprType.STL_AND);
 		defoper(SAMPLE, 	ExprType.SAMPLE);
 		defoper(INLIST,         ExprType.INLIST);
@@ -546,8 +573,8 @@ public class Processor {
 		defoper(MAPLIST,        ExprType.MAPLIST);
 		defoper(MAPMERGE,       ExprType.MAPMERGE);
 		defoper(MAPSELECT,      ExprType.MAPSELECT);
-		defoper(ANY,            ExprType.ANY);
-		defoper(EVERY,          ExprType.EVERY);
+		defoper(MAPANY,            ExprType.MAPANY);
+		defoper(MAPEVERY,          ExprType.MAPEVERY);
                 
 		defoper(XT_CONCAT,      ExprType.XT_CONCAT);
 		defoper(XT_CONS,        ExprType.XT_CONS);
@@ -555,9 +582,10 @@ public class Processor {
 		defoper(XT_REST,        ExprType.XT_REST);
 		defoper(XT_SELF,        ExprType.SELF);
 		defoper(XT_GET,         ExprType.XT_GET);
-		defoper(XT_SET,         ExprType.SET);
+		defoper(XT_SET,         ExprType.XT_SET);
                 
 		defoper(XT_COUNT,        ExprType.XT_COUNT);
+		defoper(XT_SIZE,         ExprType.XT_COUNT);
 		defoper(XT_SUM,          ExprType.XT_SUM);
 		defoper(XT_PROD,         ExprType.XT_PROD);
 		defoper(XT_GRAPH,        ExprType.XT_GRAPH);
@@ -627,6 +655,7 @@ public class Processor {
 		defoper(APPLY_TEMPLATES_WITH_NOGRAPH, ExprType.APPLY_TEMPLATES_WITH_NOGRAPH);
 		defoper(CALL_TEMPLATE,              ExprType.CALL_TEMPLATE);
 		defoper(CALL_TEMPLATE_WITH,         ExprType.CALL_TEMPLATE_WITH);
+		defoper(STL_TEMPLATE,               ExprType.STL_TEMPLATE);
 		defoper(CTW,                        ExprType.CALL_TEMPLATE_WITH);
                 
                 // 3 deprecated:
@@ -670,9 +699,9 @@ public class Processor {
 		defoper(PROLOG,         ExprType.PROLOG);
 		defoper(PACKAGE,        ExprType.PACKAGE);
 		defoper(EXPORT,         ExprType.PACKAGE);
-		defoper(STL_DEFINE,     ExprType.STL_DEFINE);
-		defoper(DEFINE,         ExprType.STL_DEFINE);
-		defoper(FUNCTION,       ExprType.STL_DEFINE);
+		defoper(STL_DEFINE,     ExprType.FUNCTION);
+		defoper(FUNCTION,       ExprType.FUNCTION);
+		defoper(DEFINE,         ExprType.STL_DEFINE);                
 		defoper(LAMBDA,         ExprType.LAMBDA);
 		defoper(ERROR,          ExprType.ERROR);
                 defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
@@ -696,6 +725,30 @@ public class Processor {
 		defoper(NUMBER,  ExprType.NUMBER);
 		defoper(EVEN,  ExprType.EVEN);
 		defoper(ODD,   ExprType.ODD);
+                
+                defoper(KG_POWER,  ExprType.POWER);
+                defoper(KG_PLUS,   ExprType.PLUS);
+                defoper(KG_MULT,   ExprType.MULT);
+                defoper(KG_MINUS,  ExprType.MINUS);
+                defoper(KG_DIV,    ExprType.DIV);
+                defoper(KG_CONCAT, ExprType.CONCAT);
+                defoper(KG_APPEND, ExprType.XT_APPEND);
+                defoper(KG_AND,    ExprType.AND);
+                defoper(KG_OR,     ExprType.OR);
+                defoper(KG_NOT,    ExprType.NOT);
+                defoper(KG_EQUAL,  ExprType.EQ);
+                defoper(KG_DIFF,   ExprType.NEQ);
+                
+//                defoper(XT_POWER,  ExprType.POWER);
+//                defoper(XT_PLUS,   ExprType.PLUS);
+//                defoper(XT_MULT,   ExprType.MULT);
+//                defoper(XT_MINUS,  ExprType.MINUS);
+//                defoper(XT_DIV,    ExprType.DIV);
+//                defoper(XT_AND,    ExprType.AND);
+//                defoper(XT_OR,     ExprType.OR);
+//                defoper(XT_NOT,    ExprType.NOT);
+//                defoper(XT_EQUAL,  ExprType.EQ);
+//                defoper(XT_DIFF,   ExprType.NEQ);  
                 
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);
@@ -812,15 +865,12 @@ public class Processor {
                 case ExprType.MAPLIST:
                 case ExprType.MAPMERGE:
                 case ExprType.MAPSELECT:
-                case ExprType.EVERY:
-                case ExprType.ANY:
+                case ExprType.MAPEVERY:
+                case ExprType.MAPANY:
+                case ExprType.APPLY:
                     processMap(ast);
                     break;
-                    
-                case ExprType.APPLY:
-                    processApply(ast);
-                    break;    
-                    
+                                                      
                 case ExprType.LET:
                     processLet(ast);
                     break;
@@ -856,35 +906,24 @@ public class Processor {
          * map(xt:fun(?x), ?list)
          * @param ast 
          */
-        void processMap(ASTQuery ast){
-            if (term.getArgs().size() >= 2){
-                Expression fst = term.getArg(0);
-                
-                if (fst.isConstant()){
-                    Term fun = ast.createFunction(fst.getConstant());
-                    if (term.oper() != ExprType.APPLY){
-                        for (int i = 1; i<term.getArgs().size(); i++){
-                            Variable var = ASTQuery.createVariable("?_map_var" + i);
-                            fun.add(var);
-                        }
-                    }
-                    term.setArg(0, fun);
+       void processMap(ASTQuery ast) {
+        if (term.getArgs().size() >= 2) {
+            Expression fst = term.getArg(0);
+
+            if (fst.isConstant()) {
+                Term fun = ast.createFunction(fst.getConstant());
+                int max = (term.oper() == ExprType.APPLY) ? 2 : term.getArgs().size() -1;
+                // create 2 variables for apply(kg:plus, ?list) for ?a + ?b
+                for (int i = 0; i < max; i++) {
+                    Variable var = ASTQuery.createVariable("?_map_var" + i);
+                    fun.add(var);
                 }
+                term.setArg(0, fun);
             }
         }
-        
-         void processApply(ASTQuery ast){
-            if (term.getArgs().size() >= 2){
-                Expression fst = term.getArg(0);
-                
-                if (fst.isConstant()){
-                    Term fun = ast.createFunction(fst.getConstant());                    
-                    term.setArg(0, fun);
-                }
-            }
-        }
-        
-        
+    }
+
+                     
         Term cstToFun(ASTQuery ast, Constant cst) {
             Variable var = ASTQuery.createVariable("_map_");
             Term fun = ast.createFunction(cst, var);

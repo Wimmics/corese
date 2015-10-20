@@ -1,0 +1,24 @@
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+select *  where {
+
+bind (xt:firstOfMonth(?y, ?m, ?d) as ?ans)
+
+
+function xt:firstOfMonth(?y, ?m, ?d) {
+    let (
+        ?first = cal:date(?y, ?m, 1),
+        ?day = xt:day(?first),
+        ?fst = cal:num(?day),
+        ?snd = cal:num(?d)){
+
+        if (?fst = ?snd, ?first,
+        if (?fst < ?snd, cal:date(?y, ?m, 1 + (?snd - ?fst)),
+        cal:date(?y, ?m, 1 + 7 - (?fst - ?snd))))
+    }
+}
+
+
+}
+values (?y ?m ?d) {
+(2015 10 "Friday")
+}

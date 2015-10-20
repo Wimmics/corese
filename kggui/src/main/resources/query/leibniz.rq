@@ -1,0 +1,18 @@
+prefix ex: <http://example.org/math/>
+select (4 * ex:leibniz(?n) as ?pi)
+where  {
+
+
+function ex:leibniz(?n) {
+    let (
+        ?x = apply(kg:plus, maplist(ex:inv, xt:iota(1, ?n, 4))),
+        ?y = apply(kg:plus, maplist(ex:inv, xt:iota(3, ?n, 4)))){
+       ?x - ?y
+    }
+}
+
+function ex:inv(?n) { 1 / ?n }
+
+
+}
+values ?n { 1000000 }

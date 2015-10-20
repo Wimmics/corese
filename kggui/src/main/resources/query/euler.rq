@@ -1,0 +1,23 @@
+prefix ex: <http://example.org/math>
+select                                 
+ (ex:sigma(?n) as ?e) ?n
+  
+where {
+
+function xt:fac(?n) { 
+  if (?n = 0, 1, ?n *  xt:fac(?n - 1))
+}
+
+function ex:fun(?n) {
+ 1 / xt:fac(?n)
+}
+
+function ex:sigma(?n) {
+   apply (kg:plus, maplist (ex:fun, xt:iota(0, ?n)))
+}
+
+
+
+bind (unnest(xt:iota(12)) as ?n)
+}
+order by desc(?n)

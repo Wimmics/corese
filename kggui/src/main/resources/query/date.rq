@@ -1,0 +1,7 @@
+select 
+  (xt:jour(?day) as ?dd) ?day
+where {
+  bind ("2015-01-" as ?d)
+  bind (unnest(xt:iota(365)) as ?j)
+  bind (xsd:date(concat(?d, ?j)) as ?day)
+}

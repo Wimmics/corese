@@ -1,0 +1,17 @@
+#
+# Find Friday 13rd prime years 20th Century
+#
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+select ?day  where {
+
+bind (unnest(mapmerge(xt:span, mapselect(xt:prime, xt:iota(1901, 2000)))) as ?day)
+               
+function xt:span(?y) {
+    mapselect (xt:check, "Friday", maplist(cal:date, ?y, xt:iota(1, 12), 13))
+}
+
+function xt:check(?d, ?x) {
+ xt:day(?x) = ?d
+}
+                 
+}

@@ -1,0 +1,33 @@
+#
+# https://fr.wikipedia.org/wiki/Pi#Suites_r.C3.A9cursives
+#
+prefix ex: <http://example.org/math>
+select (ex:pi(?n) as ?pi) ?n
+where {
+
+
+function ex:a(?n) { 
+ if (?n = 0, 1, (ex:a(?n - 1) + ex:b(?n - 1)) / 2)
+}
+
+function ex:b (?n) {
+  if (?n = 0, power(1/2, 1/2),
+    power(ex:a(?n - 1) * ex:b(?n - 1), 1/2))
+}
+
+function ex:c(?n) {
+  if (?n = 0, 1/4,
+    ex:c(?n - 1) - power(2, ?n - 1) * 
+      power((ex:a(?n - 1) - ex:b(?n - 1)) / 2, 2))
+}
+
+function ex:pi(?n) {
+  (power(ex:a(?n) + ex:b(?n), 2) / (4 * ex:c(?n)))
+}
+
+
+
+bind (unnest(xt:iota(5)) as ?n)
+
+}
+order by desc(?n)

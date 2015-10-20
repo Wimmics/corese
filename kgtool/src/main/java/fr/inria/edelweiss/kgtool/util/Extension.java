@@ -6,8 +6,8 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
+
 
 /**
  *
@@ -15,7 +15,8 @@ import java.util.logging.Logger;
  *
  */
 public class Extension {
-    
+  	private static final Logger logger = Logger.getLogger(Extension.class);
+  
     private static final String[] NAMES = 
     { "system.rq", "extension.rq", "calendar.rq", "calendar2.rq", "spqr.rq" };
     
@@ -37,10 +38,11 @@ public class Extension {
             try {
                 exec.compile(str);
             } catch (EngineException ex) {
-                Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(name);
+                logger.error(ex);
             }
         } catch (IOException ex) {
-            Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex);
         }
 
     }

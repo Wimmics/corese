@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:26 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -189,14 +189,18 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:profile(?in) {
-
-    st:define(st:process(?in) = 
-      if (isBlank(?in), st:apply-templates(?in), st:turtle(?in)))
-      
-    st:define(st:default(?in) = st:turtle(?in))
-    
+  
 }
 where {
+
+ function st:process(?in) {
+      if (isBlank(?in), st:apply-templates(?in), st:turtle(?in))
+ }
+      
+ function st:default(?in) {
+    st:turtle(?in)
+ }
+ 
 }
 
 ]]>

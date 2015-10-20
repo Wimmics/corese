@@ -9,16 +9,11 @@ Tue Oct 20 11:49:54 CEST 2015
 <rule>
 <body>
 <![CDATA[
-#
-# Check OWL conformance using STTL
-# axiom:    OWL class and property axioms
-# classexp: classExpression
-# http://www.w3.org/TR/owl2-syntax/
-
-template st:start {
-  st:apply-templates-with-all(st:axiomowltc)
+template st:list(?l) {
+  ?e
 }
 where {
+  ?l rdf:rest*/rdf:first ?e
 }
 
 ]]>
@@ -28,13 +23,13 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:profile {  
+template st:profile {}
+where {}
 
+function st:aggregate(?x) {
+  st:agg_list(?x)
 }
-where {
 
-function st:aggregate(?x) { st:agg_and(?x) }
-}
 
 ]]>
 </body>

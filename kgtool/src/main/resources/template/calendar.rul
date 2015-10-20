@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:26 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -122,9 +122,10 @@ where {
     bind (unnest(xt:iota(cal:days(?y, ?m))) as ?n)
     bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?day)
     bind (xt:day(?day) as ?jour)
-    bind (define(xt:space(?n) = 
-      if (?n = 0, "", concat("   " , xt:space(?n - 1)))) 
-    as ?sp)
+    
+    function xt:space(?n) {
+      if (?n = 0, "", concat("   " , xt:space(?n - 1))) 
+    }
 }
 group by ?m
 order by ?m
@@ -177,50 +178,51 @@ order by ?date
 <![CDATA[
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:profile {
+                    
+}
+where {
 
-    define(xt:space(?n) = 
+  function xt:space(?n) { 
          if (?n = 0, "", concat("   " , xt:space(?n - 1)))
-      )
+       }
       
-    define(xt:td(?n) = 
+    function xt:td(?n) { 
          if (?n = 0, "", concat("<td/>" , xt:td(?n - 1)))
-      ) 
+     } 
       
-    define (st:protocol(?uri) =
+    function st:protocol(?uri) {
       if (st:get(st:protocol, st:ajax), 
-      concat("javascript:trans(\"", str(?uri), "\")"), 
-      str(?uri))
-    )
+	concat("javascript:trans(\"", str(?uri), "\")"), 
+	str(?uri))
+    }
   
-   define (st:link(?uri) =
+   function st:link(?uri) {
      concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
       coalesce(
 	concat("&profile=",   st:get(st:profile)), 
 	concat("&transform=", st:get(st:transform)), 
 	""))
-  ) 
+  }
   
-  define (st:pplink(?uri, ?profile) =
+  function st:pplink(?uri, ?profile) {
      st:protocol(concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
       concat("&profile=",   ?profile)))
-  )
+  }
    
-  define (st:plink(?uri) =
+  function st:plink(?uri) {
     st:protocol(st:link(?uri))
-  )
+  }
   
-  define (xt:pretty(?n) = 
+  function xt:pretty(?n) { 
     if (?n < 10, concat(" ", ?n), ?n) 
-  )
+  }
   
-  define (xt:display(?y) =
+  function xt:display(?y) {
     if (st:get(st:date, st:romain), xt:romain(?y), ?y)
-  )
-                  
-}
-where {
+  }
+
 }
     
 

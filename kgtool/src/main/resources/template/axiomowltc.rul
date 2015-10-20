@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:27 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -11,11 +11,13 @@ Tue Sep 29 09:48:27 CEST 2015
 <![CDATA[
 template st:profile {
 
-  st:define (st:aggregate(?x) = st:agg_and(?x))
-  
-  st:define (st:err(?x) = URI(concat(st:, "owltc/", str(?x))))
 }
 where {
+
+ function st:aggregate(?x) { st:agg_and(?x) }
+  
+  function st:err(?x) { URI(concat(st:, "owltc/", str(?x))) }
+  
 }
 
 ]]>

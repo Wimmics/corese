@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:27 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -10,12 +10,18 @@ Tue Sep 29 09:48:27 CEST 2015
 <body>
 <![CDATA[
 template st:profile {
-
-  st:define (st:aggregate(?x) = st:agg_and(?x))
   
-  st:define (st:err(?x) = URI(concat(st:, "owlql/", str(?x))))
 }
 where {
+
+  function st:aggregate(?x) { st:agg_and(?x) }
+  
+  function st:err(?x) { URI(concat(st:, "owlql/", str(?x))) }
+
+  function st:alreadyVisited(?x, ?tag, ?suc) {
+    if (st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
+  }
+
 }
 
 ]]>
@@ -38,7 +44,7 @@ where {
 		}
 	as ?suc)
 	
-	filter(st:visit(st:err("disjointClass"), ?in, ?suc))
+	filter(st:alreadyVisited(?in, "disjointClass", ?suc))
 }
 
 ]]>
@@ -64,7 +70,7 @@ where {
 		st:call-template-with(st:superexpowlqltc, st:superClassExpression, ?y)
 	as ?suc)
 	
-	filter(st:visit(st:err("subClass"), ?in, ?suc))
+	filter(st:alreadyVisited(?in, "subClass", ?suc))
 }
 
 ]]>
@@ -125,7 +131,7 @@ where {
 		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?y)
 	as ?suc)
 	
-	filter(st:visit(st:err("equivClass"), ?in, ?suc))
+	filter(st:alreadyVisited(?in, "equivClass", ?suc))
 }
 
 ]]>
@@ -151,7 +157,7 @@ where {
 		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?y)
 	as ?suc)
 	
-	filter(st:visit(st:err("disjointClass"), ?in, ?suc))
+	filter(st:alreadyVisited(?in, "disjointClass", ?suc))
 }
 
 ]]>
@@ -211,7 +217,7 @@ where {
 	
 	union { ?in owl:AllValuesFrom  ?allValues }
 	
-	filter(st:visit(st:err("fail"), ?in, false))
+	filter(st:alreadyVisited(?in, "fail", false))
 }
 limit 1
 
@@ -374,7 +380,7 @@ where {
 		st:call-template-with(st:superexpowlqltc,st:superClassExpression, ?y)
 	as ?suc)
 	
-	filter(st:visit(st:err("domain"), ?in, ?suc))
+	filter(st:alreadyVisited(?in, "domain", ?suc))
 }
 
 ]]>

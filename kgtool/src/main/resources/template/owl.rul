@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:26 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -274,47 +274,49 @@ where {
 prefix owlfs: <http://ns.inria.fr/sparql-template/owlfs/>
 
 template st:profile(?in) {
+   
+}
+where {
 
-    define (st:process(?in) =  
+ function st:process(?in) {  
       if (isURI(?in), owlfs:pretty(?in),	
 	st:apply-templates(?in))
-    ) 
+    }
     
 # export to sub transformations (export to Interpreter)    
-package(
+export {
 
-    define (owlfs:pretty(?in) =
-      let (?t = st:turtle(?in),
+    function owlfs:pretty(?in) {
+      let (?t = st:turtle(?in)){
 	if (st:get(st:html, true), 
-	      owlfs:protect(?t), ?t))
-    ),
+	      owlfs:protect(?t), ?t)
+      }
+    }
   
-   define (owlfs:protect(?s) =
+   function owlfs:protect(?s) {
         replace(replace(?s, "&", "&amp;"), "<", "&lt;")
-    ),
+    }
     
     # used by sub transformations, with st:owlexp
-    define (owlfs:process(?in) =
+    function owlfs:process(?in) {
       if (isURI(?in), owlfs:pretty(?in),	
 	st:apply-templates-with(st:owlexp, ?in))
-    )
-)
+    }
+}
     
   
-  define (xt:nl(?x, ?n) =
+  function xt:nl(?x, ?n) {
     if (?x = "", ?x, 
       concat(?x, if (?n = 1, "\n", "\n\n")))
-  )
+ }
   
-  define (xt:system(?t) =
+  function xt:system(?t) {
           (strstarts(?t, owl:) 
        ||  strstarts(?t, rdf:) 
        ||  strstarts(?t, rdfs:)
        ||  strstarts(?t, xsd:))
-  )
-  
-}
-where {
+  }
+
 }
 
 ]]>

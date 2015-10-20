@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:26 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -11,7 +11,7 @@ Tue Sep 29 09:48:26 CEST 2015
 <![CDATA[
 template st:allRL(?tag) {
 
-	"<span class=owlrl>OWL RL error: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+	"<span class=owlrl>OWL RL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
 
 }
 where {
@@ -29,7 +29,17 @@ where {
 	("fail" "Statement not supported" "Feature_Overview_3")
 	("properties" "Property not supported" "Entities_3")
 	("subClass" "Class Expression not supported with rdfs:subClassOf" "Class_Expressions_3")
-	("equiv" "Class Expression not supported with owl:equivalentClass" "Class_Expressions_3")
+	
+	### equiv Class Expression ###
+	("failEquiv" "Statement not supported in an Equivalent Class Expression" "Class_Expressions_3")
+	("equiv" "Class Expression not supported with owl:equivalentClass or owl:intersectionOf" "Class_Expressions_3")
+		
+	### sub Class Expression ###
+	("failSub" "Statement not supported in a Sub Class Expression" "Class_Expressions_3")
+	("sub" "Not a valid Sub Class Expression" "Class_Expressions_3")
+	
+	### super Class Expression ###
+	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_3")
 	("super" "Not a valid Super Class Expression" "Class_Expressions_3")
 }
 
@@ -56,7 +66,6 @@ where {
 <body>
 <![CDATA[
 template st:start(?in) {
-
   st:call-template(?uri, ?desc)    
   
 }
@@ -97,7 +106,7 @@ where {
 <![CDATA[
 template st:axiomClassExp(?tag) {
 
-	"<span class=owl>OWL error: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
 
 }
 where {
@@ -147,11 +156,17 @@ where {
 <![CDATA[
 template st:profile {
 
-	st:define(st:linkPro(?x) = URI(concat("http://www.w3.org/TR/owl2-profiles/#", str(?x))))
-	
-	st:define(st:linkOWL(?x) = URI(concat("http://www.w3.org/TR/owl2-syntax/#", str(?x))))
 }
 where {
+
+function st:linkPro(?x) { 
+  URI(concat("http://www.w3.org/TR/owl2-profiles/#", str(?x)))
+}
+	
+function st:linkOWL(?x) { 
+  URI(concat("http://www.w3.org/TR/owl2-syntax/#", str(?x)))
+}
+
 }
 
 ]]>
@@ -163,7 +178,7 @@ where {
 <![CDATA[
 template st:oneEL(?tag) {
 
-	"<span class=owlel>OWL EL error: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+	"<span class=owlel>OWL EL: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
 
 }
 where {
@@ -185,7 +200,7 @@ where {
 <![CDATA[
 template st:allQL(?tag) {
 
-	"<span class=owlql>OWL QL error: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+	"<span class=owlql>OWL QL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
 	
 }
 where {
@@ -205,9 +220,12 @@ where {
 	("subClass" "Class Expression not supported with rdfs:subClassOf" "Class_Expressions_2")
 	
 	### sub Class Expression ###
+	("sub" "Not a valid Sub Class Expression" "Class_Expressions_2")
+	("failSub" "Statement not supported in a Sub Class Expression" "Class_Expressions_2")
 	
 	### super Class Expression ###
-	("super" "Not a valid Super Class Expression" "Class_Expressions_2")
+	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_2")
+	("super" "Not a valid Sub Class Expression" "Class_Expressions_2")
 }
 
 ]]>
@@ -219,7 +237,7 @@ where {
 <![CDATA[
 template st:allEL(?tag) {
 
-	"<span class=owlel>OWL EL error: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
 
 }
 where {
@@ -237,6 +255,10 @@ where {
 	("anonymous" "Anonymous individuals are not supported" "Entities")
 	("key" "Class Expression not supported as subject of owl:hasKey" "OWL_2_EL_2")
 	("subClass" "Class Expression not supported with rdfs:subClassOf" "Class_Expressions")
+
+	### classExp ###
+	("failClassExp" "Statement not supported in a Class Expression" "Class_Expressions")
+	("classExp" "Not a valid Class Expression" "Class_Expressions")
 }
 
 ]]>

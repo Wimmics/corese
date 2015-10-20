@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:26 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -180,64 +180,68 @@ where {
 #
 template st:profile {
 
-    define(st:process(?in) = 
+   
+}
+where {
+
+ function st:process(?in) { 
         if (st:get(st:mode, st:html), st:html(?in), st:std(?in))
-    )
+    }
     
-    define (st:html(?in) =  
+    function st:html(?in) {  
 	  if (isBlank(?in), st:blank(?in), st:protect(?in))
-    )
+    }
     
-    define (st:std(?in) =          
+    function st:std(?in) {          
 	  if (isBlank(?in), st:apply-templates(?in), st:turtle(?in))
-    )
+    }
     
-    define (st:blank(?in)=
+    function st:blank(?in){
       if (st:visited(?in), 
 	      concat("<span class='fail'>", st:apply-templates(?in), "</span>"),
 	      concat("<span id='id", st:vset(?in, st:id, st:index()), "'>", 
 		st:apply-templates(?in), "</span>"))
-    )
+    }
     
-    define (st:protect2(?in) =
-      let (?t = st:turtle(?in),
+    function st:protect2(?in) {
+      let (?t = st:turtle(?in)){
 	if (strstarts(?t, "<"), 
 	    replace(?t, "<", "&lt;"),
-	    ?t))
-    )
+	    ?t)
+      }
+    }
     
-    define (st:protect(?in) =
+    function st:protect(?in) {
 	xt:protect(st:turtle(?in))
-    )
+    }
     
-    define (xt:protect(?s) =
+    function xt:protect(?s) {
         replace(replace(?s, "&", "&amp;"), "<", "&lt;")
-    )
+    }
     
-    define (xt:pprotect(?s) =
+    function xt:pprotect(?s) {
         if (st:get(st:mode, st:html), xt:protect(?s), ?s)
-    )
+    }
     
-    define (st:kw(?x) =
+    function st:kw(?x) {
        if (st:get(st:mode, st:html), st:htmlkw(?x), st:stdkw(?x))
-    )
+    }
     
-    define (st:htmlkw(?x) =
+    function st:htmlkw(?x) {
        concat("<span class='kw'>", str(?x), "</span>")
-    )
+    }
 
-    define (st:stdkw(?x) =
+    function st:stdkw(?x) {
        str(?x)
-    )	
+    }	
     
-    define (st:namespace() =
-      let (?p = st:prolog(),
+    function st:namespace() {
+      let (?p = st:prolog()){
 	if (st:get(st:mode, st:html), 
 	  replace(?p, "<", "&lt;"), 
-	  ?p))
-    )
-}
-where {
+	  ?p)
+      }
+    }
 }
 
 ]]>

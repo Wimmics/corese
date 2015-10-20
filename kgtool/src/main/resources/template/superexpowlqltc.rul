@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:27 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -19,7 +19,7 @@ where {
 		)
 	as ?suc)
 	
-	filter(st:visit(st:err("super"), ?x, ?suc))
+	filter(st:alreadyVisited(?x, "super", ?suc))
 }
 
 ]]>
@@ -31,11 +31,17 @@ where {
 <![CDATA[
 template st:profile {
 
-  st:define (st:aggregate(?x) = st:agg_and(?x))
-  
-  st:define (st:err(?x) = URI(concat(st:, "owlql/", str(?x))))
 }
 where {
+
+ function st:aggregate(?x) { st:agg_and(?x) }
+  
+  function st:err(?x) { URI(concat(st:, "owlql/", str(?x))) }
+  
+  function st:alreadyVisited(?x, ?tag, ?suc) {
+    if (st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
+  }
+
 }
 
 ]]>
@@ -75,7 +81,7 @@ where {
 	  		}
      as ?suc )
       
-     filter(st:visit(st:err("fail"), ?in, ?suc))
+     filter(st:visit(st:err("failSuper"), ?in, ?suc))
 }
 
 ]]>
@@ -103,8 +109,8 @@ where {
 		)
 	as ?suc)
 		
-		filter (st:visit(st:err("fail"), ?in, ?suc))
-		filter(! ?suc)
+	filter (st:visit(st:err("failSuper"), ?in, ?suc))
+	filter(! ?suc)
 }
 limit 1
 

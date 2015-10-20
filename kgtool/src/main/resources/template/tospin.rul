@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Sep 29 09:48:26 CEST 2015
+Tue Oct 20 11:49:54 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -129,29 +129,30 @@ where {
 <body>
 <![CDATA[
 template st:profile {
+    
+}
+where {
 
-  define (st:protocol(?uri) =
+function st:protocol(?uri) {
     if (st:get(st:protocol, st:ajax), 
       concat("javascript:trans(\"", str(?uri), "\")"), 
       str(?uri))
-  )
+  }
   
-  define (st:protocol2(?uri, ?arg) =
+  function st:protocol2(?uri, ?arg) {
       concat("javascript:trans(\"", str(?uri), "\", ", str(?arg), ");") 
-  )
+  }
   
-  define (st:link(?uri) =
+  function st:link(?uri) {
      concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
       "&profile=", st:get(st:profile))
-  )
+  }
   
-  define (st:plink(?uri) =
+  function st:plink(?uri) {
     st:protocol(st:link(?uri))
-  )
-  
-}
-where {
+  }
+
 
 }
 

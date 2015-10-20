@@ -154,10 +154,11 @@ public class Loader {
     
     // remove #
     String clean(String uri){
-        if (uri.contains("#")){
-            return uri.substring(0, uri.indexOf("#"));
-        }
-        return uri;
+        return trans.getURI(uri);
+//        if (uri.contains("#")){
+//            return uri.substring(0, uri.indexOf("#"));
+//        }
+//        return uri;
     }
     
      /**

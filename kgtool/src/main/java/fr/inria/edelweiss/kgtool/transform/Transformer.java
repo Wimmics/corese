@@ -398,13 +398,47 @@ public class Transformer  {
      * fragment #core means start transformation with st:core
      * otherwise st:start
      */
-    void setStarter(String p){
-        if (p != null && p.contains("#")){
-            String name = p.substring(1 + p.indexOf("#"));
-            setStart(STL + name);
-        }  
+    void setStarter(String uri){   
+        String name = getName(uri);
+        if (name != null){
+             setStart(STL + name);
+        }
+//        if (uri != null && uri.contains("#")){
+//            String name = uri.substring(1 + uri.indexOf("#"));
+//            setStart(STL + name);
+//        }  
     }
-
+    
+    /**
+     * uri#name
+     * @return name
+     */    
+    static String getName(String uri){
+        if (uri != null && uri.contains("#")){
+            return uri.substring(1 + uri.indexOf("#"));            
+        } 
+        return null;
+    }
+    
+    public static String getStartName(String uri){
+        String name = getName(uri);
+        if (name == null){
+            return null;
+        }
+        return STL + name; 
+    }
+    
+    /**
+     * uri#name
+     * @return uri
+     */
+    public static String getURI(String uri) {
+        if (uri != null && uri.contains("#")) {
+            return uri.substring(0, uri.indexOf("#"));
+        }
+        return uri;
+    }
+    
     private void tune(QueryProcess exec) {
         // do not use Thread in Property Path
         // compute all path nodes and put them in a list
@@ -642,7 +676,7 @@ public class Transformer  {
      * context of evaluation: it is an extension function of a SPARQL query
      * select (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
-    public IDatatype process(Object[] args, IDatatype dt1, IDatatype dt2, String temp,
+    public IDatatype process(IDatatype[] args, IDatatype dt1, IDatatype dt2, String temp,
             boolean allTemplates, String sep, Expr exp, Query q) {      
         if (dt1 == null) {
             return EMPTY;
@@ -799,7 +833,7 @@ public class Transformer  {
      * ldt = [name, v1, ... vn]
      * otherwise ldt = null
      */
-    Mapping getMapping(Object[] ldt, IDatatype dt1, IDatatype dt2, Query q) {
+    Mapping getMapping(IDatatype[] ldt, IDatatype dt1, IDatatype dt2, Query q) {
         if (ldt != null && q != null && ! q.getArgList().isEmpty()){
             return getMapping(ldt, q.getArgList());
         }
@@ -819,14 +853,14 @@ public class Transformer  {
      * ldt = [name, v1, ... vn]
      * first arg is the name of the template, skip it here
      */
-    Mapping getMapping(Object[] ldt, List<Node> args){
+    Mapping getMapping(IDatatype[] ldt, List<Node> args){
         int size = Math.min(ldt.length, args.size());
         Node[] qn = new Node[size];
         Node[] tn = new Node[size];
         for (int i = 0; i<size; i++){
             // i+1 because we skip name = ldt[0]
            qn[i] = NodeImpl.createVariable(args.get(i).getLabel());
-           tn[i] = getNode((IDatatype) ldt[i]);
+           tn[i] = getNode(ldt[i]);
         }
         return Mapping.create(qn, tn);
     }

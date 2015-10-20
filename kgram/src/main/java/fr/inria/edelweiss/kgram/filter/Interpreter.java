@@ -43,6 +43,7 @@ public class Interpreter implements Evaluator, ExprType {
     int mode = KGRAM_MODE;
     boolean hasListener = false;
     public static int count = 0;
+    Object ERROR_VALUE = null;
     
     static {
         extension = new Extension();
@@ -79,7 +80,7 @@ public class Interpreter implements Evaluator, ExprType {
     public Node eval(Filter f, Environment env, Producer p) {
         Expr exp = f.getExp();
         Object value = eval(exp, env, p);
-        if (value == null) {
+        if (value == ERROR_VALUE) {
             return null;
         }
         return producer.getNode(value);
@@ -92,7 +93,7 @@ public class Interpreter implements Evaluator, ExprType {
 
             default:
                 Object value = eval(exp, env);
-                if (value == null) {
+                if (value == ERROR_VALUE) {
                     return null;
                 }
                 List<Node> lNode = producer.toNodeList(value);
@@ -114,7 +115,7 @@ public class Interpreter implements Evaluator, ExprType {
 
             default:
                 Object res = eval(exp, env);
-                if (res == null) {
+                if (res == ERROR_VALUE) {
                     return new Mappings();
                 }
                 return producer.map(nodes, res);
@@ -128,7 +129,7 @@ public class Interpreter implements Evaluator, ExprType {
     public boolean test(Filter f, Environment env, Producer p) {
         Expr exp = f.getExp();
         Object value = eval(exp, env, p);
-        if (value == null) {
+        if (value == ERROR_VALUE) {
             return false;
         }
         return proxy.isTrue(value);
@@ -203,10 +204,7 @@ public class Interpreter implements Evaluator, ExprType {
 
     private Object not(Expr exp, Environment env, Producer p) {
         Object o = eval(exp.getExp(0), env, p);
-        if (o == null) {
-            return null;
-        }
-        if (!proxy.isTrueAble(o)) {
+        if (o == ERROR_VALUE || !proxy.isTrueAble(o)) {
             return null;
         }
         if (proxy.isTrue(o)) {
@@ -220,34 +218,33 @@ public class Interpreter implements Evaluator, ExprType {
         boolean error = false;
         for (Expr arg : exp.getExpList()) {
             Object o = eval(arg, env, p);
-            if (o != null) {
-                if (!proxy.isTrueAble(o)) {
+            if (o == ERROR_VALUE || !proxy.isTrueAble(o)) {
                     error = true;
-                } else if (proxy.isTrue(o)) {
+            } 
+            else if (proxy.isTrue(o)) {
                     return TRUE;
-                }
-            } else {
-                error = true;
-            }
+            }           
         }
         if (error) {
             return null;
         }
         return FALSE;
     }
+    
 
     private Object and(Expr exp, Environment env, Producer p) {
+        boolean error = false;
         for (Expr arg : exp.getExpList()) {
             Object o = eval(arg, env, p);
-            if (o == null) {
-                return null;
+            if (o == ERROR_VALUE || !proxy.isTrueAble(o)) {
+                error = true;
             }
-            if (!proxy.isTrueAble(o)) {
-                return null;
-            }
-            if (!proxy.isTrue(o)) {
+            else if (! proxy.isTrue(o)) {
                 return FALSE;
             }
+        }
+        if (error){
+            return null;
         }
         return TRUE;
     }
@@ -266,6 +263,7 @@ public class Interpreter implements Evaluator, ExprType {
             case GROUPBY:
             case STL_DEFINE:
             case PACKAGE:
+            case FUNCTION:
                 return TRUE;
 
             case BOUND:
@@ -320,6 +318,7 @@ public class Interpreter implements Evaluator, ExprType {
             case GROUPCONCAT:
             case STL_GROUPCONCAT:
             case AGGAND:
+            case AGGLIST:
             case STL_AGGREGATE:
                 return aggregate(exp, env, p);
 
@@ -346,13 +345,13 @@ public class Interpreter implements Evaluator, ExprType {
             case MAPLIST:
             case MAPMERGE:
             case MAPSELECT:
-            case EVERY:
-            case ANY:
+            case MAPEVERY:
+            case MAPANY:
             case APPLY:
                 // map(xt:fun(?a, ?b), ?x, ?list)
                 
                 Object[] args = evalArguments(exp, env, p, 1);
-                if (args == null) {
+                if (args == ERROR_VALUE) {
                     return null;
                 }
                 return proxy.eval(exp, env, p, args);
@@ -365,18 +364,18 @@ public class Interpreter implements Evaluator, ExprType {
 
                     case 1:
                         Object val = eval(exp.getExp(0), env, p);
-                        if (val == null) {
+                        if (val == ERROR_VALUE) {
                             return null;
                         }
                         return proxy.function(exp, env, p, val);
 
                     case 2:
                         Object value1 = eval(exp.getExp(0), env, p);
-                        if (value1 == null) {
+                        if (value1 == ERROR_VALUE) {
                             return null;
                         }
                         Object value2 = eval(exp.getExp(1), env, p);
-                        if (value2 == null) {
+                        if (value2 == ERROR_VALUE) {
                             return null;
                         }
                         return proxy.function(exp, env, p, value1, value2);
@@ -385,7 +384,7 @@ public class Interpreter implements Evaluator, ExprType {
         }
 
         Object[] args = evalArguments(exp, env, p, 0);
-        if (args == null) {
+        if (args == ERROR_VALUE) {
             return null;
         }
         
@@ -433,12 +432,12 @@ public class Interpreter implements Evaluator, ExprType {
     }
 
     Object[] evalArguments(Expr exp, Environment env, Producer p, int start) {
-        Object[] args = new Object[exp.arity() - start];
+        Object[] args = proxy.createParam(exp.arity() - start);
         int i = 0;
         for (int j = start; j<exp.arity(); j++) {
             Expr arg = exp.getExp(j);
             Object o = eval(arg, env, p);
-            if (o == null) {
+            if (o == ERROR_VALUE) {
                 return null;
             }
             args[i++] = o;
@@ -455,12 +454,12 @@ public class Interpreter implements Evaluator, ExprType {
         }
 
         Object o1 = eval(exp.getExp(0), env, p);
-        if (o1 == null) {
+        if (o1 == ERROR_VALUE) {
             return null;
         }
 
         Object o2 = eval(exp.getExp(1), env, p);
-        if (o2 == null) {
+        if (o2 == ERROR_VALUE) {
             return null;
         }
 
@@ -470,7 +469,7 @@ public class Interpreter implements Evaluator, ExprType {
 
     Object in(Expr exp, Environment env, Producer p) {
         Object o1 = eval(exp.getExp(0), env, p);
-        if (o1 == null) {
+        if (o1 == ERROR_VALUE) {
             return null;
         }
 
@@ -479,11 +478,11 @@ public class Interpreter implements Evaluator, ExprType {
 
         for (Expr arg : list.getExpList()) {
             Object o2 = eval(arg, env, p);
-            if (o2 == null) {
+            if (o2 == ERROR_VALUE) {
                 error = true;
             } else {
                 Object res = proxy.term(exp, env, p, o1, o2);
-                if (res == null) {
+                if (res == ERROR_VALUE) {
                     error = true;
                 } else if (proxy.isTrue(res)) {
                     return res;
@@ -537,7 +536,7 @@ public class Interpreter implements Evaluator, ExprType {
     Object ifthenelse(Expr exp, Environment env, Producer p) {
         Object test = eval(exp.getExp(0), env, p);
         Object value = null;
-        if (test == null) {
+        if (test == ERROR_VALUE) {
             return null;
         }
         if (proxy.isTrue(test)) {
@@ -594,7 +593,7 @@ public class Interpreter implements Evaluator, ExprType {
         Expr ee   = exp.getExp(1);
         Expr var  = let.getExp(0);
         Node val  = eval(let.getExp(1).getFilter(), env, p);
-        if (val == null){
+        if (val == ERROR_VALUE){
             return null;
         }
         return let(ee, env, p, exp, var, val);

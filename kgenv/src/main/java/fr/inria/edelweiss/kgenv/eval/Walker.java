@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -18,6 +19,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.filter.Proxy;
+import java.util.ArrayList;
 
 /**
  * Interpreter that perfom aggregate over current group list of Mapping The eval
@@ -46,6 +48,7 @@ class Walker extends Interpreter {
     private String lang;
     private boolean ok = true;
     private boolean isString = true;
+    ArrayList<IDatatype> list;
 
     Walker(Expr exp, Node qNode, Proxy p, Environment env, Producer prod) {
         super(p);
@@ -98,6 +101,9 @@ class Walker extends Interpreter {
             group.setDistinct(true);
             tree = new TreeData();
         }
+        if (exp.oper() == STL_AGGREGATE || exp.oper() == AGGLIST){
+            list = new ArrayList();
+        }
     }
 
     Object getResult() {
@@ -141,9 +147,11 @@ class Walker extends Interpreter {
                 return result(sb, isString, (ok && lang != null)?lang:null);
                // return DatatypeMap.newStringBuilder(sb);
 
-            case AGGAND:
-                
+            case AGGAND:               
                 return DatatypeMap.newInstance(and);
+                
+            case AGGLIST:                
+                return DatatypeMap.createList(list);
 
         }
 
@@ -304,7 +312,14 @@ class Walker extends Interpreter {
                     }
 
                     break;
-
+                    
+                case AGGLIST:
+                    if (dt == null) {
+                        isError = true;
+                    } else {
+                        list.add(dt);
+                    }
+                    break;
 
             }
         }

@@ -282,20 +282,23 @@ Exp Query() : { Exp stack; }
   Prolog()
   
   ( 
-  	  stack = SelectQuery()
-  	| stack = ConstructQuery() 
-  	| stack = DescribeQuery() 
-  	| stack = AskQuery() 
-  	| UpdateQuery() 
+  	  stack = SelectQuery()    (Defun(stack)) ?
+  	| stack = ConstructQuery() (Defun(stack)) ?
+  	| stack = DescribeQuery()  (Defun(stack)) ?
+  	| stack = AskQuery()       (Defun(stack)) ? 
+  	| UpdateQuery()            (Defun(stack)) ? 
   	
-  	| stack = TemplateQuery()	
-  	   
-  	
+  	| stack = TemplateQuery()  (Defun(stack)) ?
+        | Defun(stack)     
+  	     	
   ) ?
   
   { return stack; }
 }
 
+void Defun(Exp stack) : {} {
+    ( Function(stack) | Export(stack) ) +   
+}
 
 Exp LoadPattern() : {Exp stack;}
 {
@@ -1323,7 +1326,7 @@ Exp GroupGraphPattern() : {Exp stack;}
 {
   { stack = BasicGraphPattern.create(); }
   <LBRACE>  
-    (   
+    (    
   	  SubQuery(stack) |
   	  GraphPattern(stack) 
   	)
@@ -1336,7 +1339,9 @@ void GraphPattern (Exp stack) : {}
 {
 (
 	(
-	TriplesSameSubject(stack) 
+          Function(stack) 
+        | Export(stack)
+	| TriplesSameSubject(stack) 
 	|
 	Constraint(stack) 
 	|
@@ -1393,9 +1398,6 @@ void GraphPatternNotTriples(Exp stack) : {ASTQuery ast; Values values;}
  	| ServicePattern(stack)
  	| ScoreGraphPattern(stack)
  	| ScopeGraphPattern(stack)
- 	| NegationGraphPattern(stack)
- 	| ForallGraphPattern(stack)
- 	| IfThenElse(stack)
  	| ExistGraphPattern(stack)
 // 	| <LBRACE> SubQuery(stack) <RBRACE>
  	| Bind(stack) 
@@ -1465,15 +1467,6 @@ void MinusGraphPattern(Exp stack) : { Exp e; }
   	}
 }
 
-void NegationGraphPattern(Exp stack) : { Exp e; }
-{ 
-	 <NOT> 
-  	e = GroupGraphPattern()
-  	{ 
-  		e= Negation.create(e);
-  		stack.add(e); 		
-  	}
-}
 
 void ExistGraphPattern(Exp stack) : { Exp e; }
 { 
@@ -1495,36 +1488,7 @@ void ScopeGraphPattern(Exp stack) : { Exp e; }
   	}
 }
 
-void IfThenElse(Exp stack) : { Exp e; Exp e1; Exp e2; Exp e3;}
-{ 
-	 <IF> 
-  	e1 = GroupGraphPattern()
-  	
-  	<THEN>
-  	e2 = GroupGraphPattern()
-  	
-  	{e3 = null;}
-  	
-  	(<ELSE>
-  		e3 = GroupGraphPattern()
-  	)?		
-  	  	
-  	  {e = IfThenElse.create(e1, e2, e3); stack.add(e);}
-  	
-}
 
-
-void ForallGraphPattern(Exp stack) : { Exp e; Exp e1; Exp e2; }
-{ 
-	 <FORALL> 
-  	e1 = GroupGraphPattern()
-  	e2 = GroupGraphPattern()
-  	
-  	{ 
-  		e = Forall.create(e1, e2);
-  		stack.add(e); 		
-  	}
-}
 
 void GraphGraphPattern(Exp stack) : 
 	{ Atom src; Exp e; Source st; 
@@ -2364,16 +2328,44 @@ Term RegexExpression(Exp stack): { Term term; Token t; Expression expression1, e
 Term FunctionCorese(Exp stack): { Token t; Term term; ExpressionList v; Constant cst; }
 {	
 	// distance namespace isMulti sqrt depth cardinality isuri occurence
-  (
-	( t = <SIMPLE_STRING> | t = <DISTANCE> | t = <SCORE> | t = <COUNT> | t = <XPATH>
-	// | t = <DISTINCT> 
-	)
+  ((
+	( t = <SIMPLE_STRING> | t = <DISTANCE> | t = <SCORE> | t = <COUNT> | t = <XPATH> )
 	v = ArgList(stack)
 	{ 
 		term = astq.createFunction(t.image, v); 
 	}
   )
+  | term = IfThenElse(stack)
+  | term = Let(stack)
+  )
+
   { return term; }
+}
+
+
+Term IfThenElse (Exp stack) : {Term t; Expression test, e1, e2;}
+{
+    <IF> <LPAREN> test = Expression(stack)
+
+    (
+    ( <COMMA> e1 = Expression(stack) <COMMA> e2 = Expression(stack) <RPAREN> ) |
+    (<RPAREN>
+     <LBRACE> e1 = Expression(stack) <RBRACE>
+     <ELSE> 
+     <LBRACE> e2 = Expression(stack) <RBRACE>)
+    )
+    { t = astq.ifThenElse(test, e1, e2); 
+      return t;}
+}
+
+
+Term Let (Exp stack) : {Term t; Expression exp ; ExpressionList arg;}
+{
+    <LET> arg = ArgList(stack)   
+    <LBRACE> exp = Expression(stack) <RBRACE>
+    
+    { t = astq.let(arg, exp); 
+      return t;}
 }
 
 
@@ -2386,10 +2378,18 @@ Term FunctionCall(Exp stack) : { Term term1;   ExpressionList v; Constant cst;}
   }
   { return term1; }
 }
+
 // The case of "q:name()" or just "q:name"
 // by expanding out FunctionCall()
 
-Expression IRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term term; Expression expression;  Constant cst;}
+Expression IRIrefOrFunction(Exp stack) : {Expression exp;}
+{
+     exp = StdIRIrefOrFunction(stack) 
+       
+    { return exp;}
+}
+
+Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term term; Expression expression;  Constant cst;}
 {
   cst = IRIrefConst() {expression = cst;}
   ( LOOKAHEAD(2)
@@ -2400,6 +2400,26 @@ Expression IRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term ter
     } 
   )?
   { return expression; } 
+}
+
+Term Function(Exp stack) : { Term term;   ExpressionList v; Constant cst; Expression exp;}
+{
+  <FUNCTION> cst = IRIrefConst()
+  v = ArgList(stack)
+    <LBRACE> exp = Expression(stack) <RBRACE> 
+
+  { 
+  	term = astq.defineFunction(cst, v, exp ); 
+  }
+  { return term; }
+}
+
+void Export(Exp stack) : { Term term; }
+{
+    <EXPORT> 
+    <LBRACE> 
+        ( term = Function(stack) { astq.exportFunction(term); } ) +
+    <RBRACE>
 }
 
 
@@ -2704,8 +2724,8 @@ TOKEN [IGNORE_CASE] :
 | < MINUSP: "minus" >
 | < NOT: "not">
 | < SCOPE: "scope">
-| < FORALL: "forall">
-| < IF: "iff">
+| < LET: "let">
+| < IF: "if">
 | < THEN: "then">
 | < ELSE: "else">
 | < EXIST: "exists">
@@ -2801,6 +2821,8 @@ TOKEN [IGNORE_CASE] :
 | <NOSORT: "nosort">
 | <TUPLE: "tuple">
 | <XPATH: "xpath">
+| <FUNCTION: "function">
+| <EXPORT: "export">
 }
 
 TOKEN [IGNORE_CASE] :

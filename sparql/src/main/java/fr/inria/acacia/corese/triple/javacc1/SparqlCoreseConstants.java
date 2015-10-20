@@ -58,7 +58,7 @@ public interface SparqlCoreseConstants {
   int MINUSP = 57;
   int NOT = 58;
   int SCOPE = 59;
-  int FORALL = 60;
+  int LET = 60;
   int IF = 61;
   int THEN = 62;
   int ELSE = 63;
@@ -136,68 +136,70 @@ public interface SparqlCoreseConstants {
   int NOSORT = 135;
   int TUPLE = 136;
   int XPATH = 137;
-  int IN = 138;
-  int EQ2 = 139;
-  int NE2 = 140;
-  int BEGIN_WITH = 141;
-  int STRICT_SPEC = 142;
-  int SPEC = 143;
-  int SAME = 144;
-  int GENERALISATION = 145;
-  int STRICT_GENERALISATION = 146;
-  int EQ_LANG = 147;
-  int SIMPLE_STRING = 148;
-  int INTEGER = 149;
-  int DECIMAL = 150;
-  int DOUBLE = 151;
-  int EXPONENT = 152;
-  int QUOTE_3D = 153;
-  int QUOTE_3S = 154;
-  int ECHAR = 155;
-  int STRING_LITERAL1 = 156;
-  int STRING_LITERAL2 = 157;
-  int STRING_LITERAL_LONG1 = 158;
-  int STRING_LITERAL_LONG2 = 159;
-  int DIGITS = 160;
-  int HEX = 161;
-  int LPAREN = 162;
-  int RPAREN = 163;
-  int LBRACE = 164;
-  int RBRACE = 165;
-  int LBRACKET = 166;
-  int RBRACKET = 167;
-  int ANON = 168;
-  int SEMICOLON = 169;
-  int COMMA = 170;
-  int DOT = 171;
-  int EQ = 172;
-  int NE = 173;
-  int GT = 174;
-  int LT = 175;
-  int LE = 176;
-  int GE = 177;
-  int BANG = 178;
-  int TILDE = 179;
-  int COLON = 180;
-  int SC_OR = 181;
-  int SC_AND = 182;
-  int PLUS = 183;
-  int MINUS = 184;
-  int STAR = 185;
-  int SLASH = 186;
-  int QM = 187;
-  int BAR = 188;
-  int DATATYPE = 189;
-  int AT = 190;
-  int NCCHAR1p = 191;
-  int NCCHAR1 = 192;
-  int NCCHAR = 193;
-  int NCNAME_PREFIX = 194;
-  int NCNAME = 195;
-  int BLANKNAME = 196;
-  int VARNAME = 197;
-  int LOCAL_ESC = 198;
-  int PERCENT = 199;
+  int FUNCTION = 138;
+  int EXPORT = 139;
+  int IN = 140;
+  int EQ2 = 141;
+  int NE2 = 142;
+  int BEGIN_WITH = 143;
+  int STRICT_SPEC = 144;
+  int SPEC = 145;
+  int SAME = 146;
+  int GENERALISATION = 147;
+  int STRICT_GENERALISATION = 148;
+  int EQ_LANG = 149;
+  int SIMPLE_STRING = 150;
+  int INTEGER = 151;
+  int DECIMAL = 152;
+  int DOUBLE = 153;
+  int EXPONENT = 154;
+  int QUOTE_3D = 155;
+  int QUOTE_3S = 156;
+  int ECHAR = 157;
+  int STRING_LITERAL1 = 158;
+  int STRING_LITERAL2 = 159;
+  int STRING_LITERAL_LONG1 = 160;
+  int STRING_LITERAL_LONG2 = 161;
+  int DIGITS = 162;
+  int HEX = 163;
+  int LPAREN = 164;
+  int RPAREN = 165;
+  int LBRACE = 166;
+  int RBRACE = 167;
+  int LBRACKET = 168;
+  int RBRACKET = 169;
+  int ANON = 170;
+  int SEMICOLON = 171;
+  int COMMA = 172;
+  int DOT = 173;
+  int EQ = 174;
+  int NE = 175;
+  int GT = 176;
+  int LT = 177;
+  int LE = 178;
+  int GE = 179;
+  int BANG = 180;
+  int TILDE = 181;
+  int COLON = 182;
+  int SC_OR = 183;
+  int SC_AND = 184;
+  int PLUS = 185;
+  int MINUS = 186;
+  int STAR = 187;
+  int SLASH = 188;
+  int QM = 189;
+  int BAR = 190;
+  int DATATYPE = 191;
+  int AT = 192;
+  int NCCHAR1p = 193;
+  int NCCHAR1 = 194;
+  int NCCHAR = 195;
+  int NCNAME_PREFIX = 196;
+  int NCNAME = 197;
+  int BLANKNAME = 198;
+  int VARNAME = 199;
+  int LOCAL_ESC = 200;
+  int PERCENT = 201;
 
   int DEFAULT = 0;
 
@@ -262,8 +264,8 @@ public interface SparqlCoreseConstants {
     "\"minus\"",
     "\"not\"",
     "\"scope\"",
-    "\"forall\"",
-    "\"iff\"",
+    "\"let\"",
+    "\"if\"",
     "\"then\"",
     "\"else\"",
     "\"exists\"",
@@ -340,6 +342,8 @@ public interface SparqlCoreseConstants {
     "\"nosort\"",
     "\"tuple\"",
     "\"xpath\"",
+    "\"function\"",
+    "\"export\"",
     "\"in\"",
     "\"==\"",
     "\"!==\"",

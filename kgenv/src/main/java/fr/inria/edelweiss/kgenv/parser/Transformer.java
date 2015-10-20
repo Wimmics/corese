@@ -353,6 +353,19 @@ public class Transformer implements ExpType {
             }
         }
        
+       void compileFunction(ASTQuery ast) {
+            for (Expression fun : ast.getDefine().getFunList()) {
+                fun.compile(ast);
+            }
+       }
+       
+       void compileFunction(Query q, ASTQuery ast) {
+           for (Expression fun : ast.getDefine().getFunList()) {
+                compileExist(fun, false);
+                q.defineFunction(fun);
+            }
+       }
+       
         void error(Query q, ASTQuery ast){
             if (ast.isFail()){
                 q.setFail(true);
@@ -383,9 +396,11 @@ public class Transformer implements ExpType {
 	/**
 	 * Generate a new compiler for each (sub) query in order to get fresh new nodes
 	 */
-	Query compile(ASTQuery ast){		
+	Query compile(ASTQuery ast){  
+                compileFunction(ast);
 		Exp ee = compile(ast.getExtBody(), false);
 		Query q = Query.create(ee);
+                compileFunction(q, ast);
 		q.setAST(ast);
                 q.setHasFunctional(ast.hasFunctional());
 		// use same compiler
@@ -890,6 +905,7 @@ public class Transformer implements ExpType {
                 // do not create Node for local variables
                 case ExprType.PACKAGE:
                 case ExprType.STL_DEFINE:
+                case ExprType.FUNCTION:                    
                 case ExprType.LET:
                     //return;
             }

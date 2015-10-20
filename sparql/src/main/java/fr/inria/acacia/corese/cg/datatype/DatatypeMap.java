@@ -31,8 +31,12 @@ public class DatatypeMap implements Cst, RDF {
      * logger from log4j
      */
     private static Logger logger = Logger.getLogger(DatatypeMap.class);
-    public static IDatatype ZERO = newInstance(0);
-    public static IDatatype MINUSONE = newInstance(-1);
+    public static final IDatatype ZERO = newInstance(0);
+    public static final IDatatype ONE = newInstance(1);
+    public static final IDatatype MINUSONE = newInstance(-1);
+    public static final IDatatype ERROR   = CoreseUndefLiteral.ERROR;
+    public static final IDatatype UNBOUND = CoreseUndefLiteral.UNBOUND;
+    
     private static Hashtable<String, Mapping> ht;
     static DatatypeMap dm = DatatypeMap.create();
     // if true, number values are equal by = but not match same sparql variable 
@@ -47,7 +51,8 @@ public class DatatypeMap implements Cst, RDF {
     static long COUNT = 0;
     public static CoreseBoolean TRUE = CoreseBoolean.TRUE;
     public static CoreseBoolean FALSE = CoreseBoolean.FALSE;
-    static IDatatype EMPTY_LIST = createList(new IDatatype[0]);
+    public static final IDatatype EMPTY_LIST = createList(new IDatatype[0]);
+    public static final IDatatype EMPTY_STRING = newInstance("");
     static final String LIST = ExpType.EXT + "List";
     private static final int INTMAX = 100;
     static  IDatatype[] intCache;
@@ -741,6 +746,19 @@ public class DatatypeMap implements Cst, RDF {
           }
           return arr[n.intValue()];
       }
+      
+     public static IDatatype set(IDatatype list, IDatatype n, IDatatype val) {
+         if (! list.isList()){
+              return null;
+          }
+          IDatatype[] arr = list.getValues();
+          if (n.intValue() >= arr.length){
+              return null;
+          }
+          arr[n.intValue()] = val;
+         return val;
+     }
+
       
      public static IDatatype list(Object[] args){
          if (args.length == 0){

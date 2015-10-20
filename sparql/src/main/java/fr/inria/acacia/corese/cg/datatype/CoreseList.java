@@ -5,8 +5,6 @@ import java.util.List;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CoreseList extends CoreseUndefLiteral {
 

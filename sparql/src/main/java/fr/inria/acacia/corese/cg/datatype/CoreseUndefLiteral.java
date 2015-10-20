@@ -24,9 +24,20 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     CoreseURI datatype=null ;
     private Object object;
     private boolean isFuture = false;
+    static final CoreseUndefLiteral ERROR, UNBOUND;
+    
+    static {
+        ERROR   = new CoreseUndefLiteral("Error",   IDatatype.SYSTEM);
+        UNBOUND = new CoreseUndefLiteral("Unbound", IDatatype.SYSTEM);
+    }
 
   public CoreseUndefLiteral(String value) {
       super(value);
+  }
+  
+   public CoreseUndefLiteral(String value, String dt) {
+      super(value);
+      setDatatype(dt);
   }
   
   public CoreseUndefLiteral() {

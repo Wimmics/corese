@@ -19,7 +19,6 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
 import java.util.Collection;
@@ -129,6 +128,7 @@ public class PluginTransform implements ExprType {
                 return transform(dt, null, null, null, exp, env, p);
 
             case CALL_TEMPLATE:
+            case STL_TEMPLATE:
                 return transform(null, dt, null, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
@@ -184,6 +184,7 @@ public class PluginTransform implements ExprType {
                return transform(dt2, null, dt1, null, exp, env, p);
 
             case CALL_TEMPLATE:
+            case STL_TEMPLATE:
                 // dt1: template name
                 // dt2: focus
                 return transform(dt2, null, null, dt1, exp, env, p);
@@ -217,31 +218,32 @@ public class PluginTransform implements ExprType {
     
     
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
-        
+        IDatatype[] param = (IDatatype[]) args;
         switch (exp.oper()){
             
            case STL_PROCESS:
-                return processDef(exp, env, p, args);     
+                return processDef(exp, env, p, param);     
         }
 
-        IDatatype dt1 =  (IDatatype) args[0];
-        IDatatype dt2 =  (IDatatype) args[1];
-        IDatatype dt3 =  (IDatatype) args[2];
+        IDatatype dt1 =  param[0];
+        IDatatype dt2 =  param[1];
+        IDatatype dt3 =  param[2];
 
         switch (exp.oper()) {
 
          
             case CALL_TEMPLATE:
+            case STL_TEMPLATE:
                 // dt1: template name
                 // dt2: focus
                 // dt3: arg
-                return transform(getArgs(args, 1), dt2, dt3, null, dt1, null, exp, env, p);
+                return transform(getArgs(param, 1), dt2, dt3, null, dt1, null, exp, env, p);
 
             case CALL_TEMPLATE_WITH:
                 // dt1: transformation
                 // dt2: template name
                 // dt3: focus
-                return transform(getArgs(args, 2), dt3, null, dt1, dt2, null, exp, env, p);
+                return transform(getArgs(param, 2), dt3, null, dt1, dt2, null, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
             case APPLY_TEMPLATES_WITH_ALL:
@@ -249,20 +251,20 @@ public class PluginTransform implements ExprType {
                 // dt2: focus
                 // dt3: arg
                 
-               return transform(getArgs(args, 1), dt2, dt3, dt1, null, null, exp, env, p);
+               return transform(getArgs(param, 1), dt2, dt3, dt1, null, null, exp, env, p);
                 
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
                 // dt1: focus
                 // dt2: arg
-                return transform(getArgs(args, 0), dt1, dt2, null, null, null, exp, env, p);  
+                return transform(getArgs(param, 0), dt1, dt2, null, null, null, exp, env, p);  
                 
             case APPLY_TEMPLATES_WITH_GRAPH:
             case APPLY_TEMPLATES_WITH_NOGRAPH:
                 // dt1: transformation 
                 // dt2: graph 
                 // dt3; focus
-                return transform(getArgs(args, 2), dt3, null, dt1, null, dt2, exp, env, p);
+                return transform(getArgs(param, 2), dt3, null, dt1, null, dt2, exp, env, p);
                 
             case STL_VISIT:
                 return visit(exp, env, p, dt1, dt2, dt3);
@@ -278,7 +280,7 @@ public class PluginTransform implements ExprType {
     
     
     
-    Object[] getArgs(Object[] obj, int n){
+    IDatatype[] getArgs(IDatatype[] obj, int n){
         return Arrays.copyOfRange(obj, n, obj.length);
     }
     
@@ -293,23 +295,25 @@ public class PluginTransform implements ExprType {
     }
 
     Transformer getTransformer(Environment env, Producer p) {
-        return getTransformer(null, env, p, (IDatatype) null, null);
+        return getTransformer(null, env, p, (IDatatype) null, (IDatatype) null, null);
     }
 
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype trans) {
-        return getTransformer(exp, env, prod, trans, null);
-    }
+//    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype trans) {
+//        return getTransformer(exp, env, prod, trans, null);
+//    }
 
     /**
      * uri: transformation URI 
-     * name: named graph 
+     * gname: named graph 
      * If uri == null, get current transformer
      * TODO: cache for named graph
      */
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, String name) {
+    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, String gname) {
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
-        String transform = getLabel(uri);
+        String transform = getTrans(uri, temp);
+        
+        // @deprecated:
         if (transform == null && q.hasPragma(Pragma.TEMPLATE)) {
             transform = (String) q.getPragma(Pragma.TEMPLATE);
         }
@@ -320,24 +324,20 @@ public class PluginTransform implements ExprType {
             transform = t.getTransformation();
         }
 
-        if (name != null) {
+        if (gname != null) {
             // transform named graph
             try {
                 boolean with = (exp == null) ? true
                         : exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
                         || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
 
-                Transformer gt = Transformer.create((Graph) prod.getGraph(), transform, name, with);
+                Transformer gt = Transformer.create((Graph) prod.getGraph(), transform, gname, with);
                 complete(q, gt, uri);
 
-                if (t == null) {
-                    // get current transformer if any to get its NSManager 
-                    t = (Transformer) q.getTransformer();
-                }
-//                if (t != null && t.getNSM().isUserDefine()) {
-//                    gt.setNSM(t.getNSM());
+//                if (t == null) {
+//                    // get current transformer if any to get its NSManager 
+//                    t = (Transformer) q.getTransformer();
 //                }
-
                 t = gt;
             } catch (LoadException ex) {
                 logger.error(ex);
@@ -359,13 +359,7 @@ public class PluginTransform implements ExprType {
 
         return t;
     }
-
-    String getLabel(IDatatype dt) {
-        if (dt == null) {
-            return null;
-        }
-        return dt.getLabel();
-    }
+    
 
     void complete(Query q, Transformer t, IDatatype uri) {
         // set after init
@@ -416,13 +410,46 @@ public class PluginTransform implements ExprType {
         boolean b = p.isStart();
         return plugin.getValue(b);
     }
+    
+    String getLabel(IDatatype dt) {
+        if (dt == null) {
+            return null;
+        }
+        return dt.getLabel();
+    }
+    
+    String getTransform(IDatatype trans, IDatatype temp){
+        if (trans == null && temp == null){
+             return null;
+        }       
+        IDatatype dt = (trans != null) ? trans : temp;
+        return Transformer.getURI(dt.getLabel());            
+    }
+    
+    String getTemplate(IDatatype trans, IDatatype temp){
+        if (temp != null){
+            return getLabel(temp);
+        }
+        if (trans != null){
+            return Transformer.getStartName(trans.getLabel());
+        }
+        return null;
+    }
+    
+    String getTrans(IDatatype trans, IDatatype temp){
+       return getLabel(trans);    
+    }
+    
+    String getTemp(IDatatype trans, IDatatype temp){
+        return getLabel(temp);
+    }
 
     /**
      * Without focus node
      */
     IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, trans, getLabel(name));
-        return p.process(getLabel(temp),
+        Transformer p = getTransformer(exp, env, prod, trans, temp, getLabel(name));
+        return p.process(getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
                 exp.getModality());
@@ -440,11 +467,11 @@ public class PluginTransform implements ExprType {
      * temp:  name of a named template, may be null
      * name:  named graph
      */    
-    IDatatype transform(Object[] args, IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, IDatatype name,
+    IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, IDatatype name,
             Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, trans, getLabel(name));
+        Transformer p = getTransformer(exp, env, prod, trans, temp, getLabel(name));
         IDatatype dt = p.process(args, focus, arg,
-                getLabel(temp),
+                getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
                 exp.getModality(), exp, env.getQuery());
@@ -456,7 +483,7 @@ public class PluginTransform implements ExprType {
      * Transformer what is default behavior set st:process() to it's default
      * behavior the default behavior is st:turtle
      */
-    public Object processDef(Expr exp, Environment env, Producer p, Object[] args) {
+    public Object processDef(Expr exp, Environment env, Producer p, IDatatype[] args) {
         Extension ext = env.getQuery().getExtension();
         if (ext != null && ext.isDefined(exp)) {
             return plugin.getEvaluator().eval(exp, env, p, args, ext);
@@ -468,7 +495,7 @@ public class PluginTransform implements ExprType {
         // overload current st:process() oper code to default behaviour oper code
         // future executions of this st:process() will directly execute target default behavior
         exp.setOper(oper);
-        Object res = plugin.function(exp, env, p, (IDatatype) args[0]);
+        Object res = plugin.function(exp, env, p,  args[0]);
         return res;
 
     }

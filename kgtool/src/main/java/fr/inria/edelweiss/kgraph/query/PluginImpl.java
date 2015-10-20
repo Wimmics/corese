@@ -280,43 +280,44 @@ public class PluginImpl extends ProxyImpl {
     }
 
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
+       IDatatype[] param = (IDatatype[]) args;
        
         switch (exp.oper()) {
             
             case SETP:
                 
-                IDatatype dt1 =  (IDatatype) args[0];
-                IDatatype dt2 =  (IDatatype) args[1];
-                IDatatype dt3 =  (IDatatype) args[2];
+                IDatatype dt1 =  param[0];
+                IDatatype dt2 =  param[1];
+                IDatatype dt3 =  param[2];
                 return setProperty(dt1, dt2.intValue(), dt3);
                                         
             case IOTA:
-                return iotag(args);
+                return iotag(param);
 
             default: 
-                return pt.eval(exp, env, p, args);  
+                return pt.eval(exp, env, p, param);  
         }
 
     }
     
-    IDatatype iotag(Object[] args){
-        IDatatype dt = ((IDatatype) args[0]);
+    IDatatype iotag(IDatatype[] args){
+        IDatatype dt = args[0];
         if (dt.isNumber()){
             return iota(args);
         }
         return iotas(args);
     }
     
-    IDatatype iota(Object[] args){
+    IDatatype iota(IDatatype[] args){
         int start = 1;
         int end = 1;
         
         if (args.length > 1){
-            start = ((IDatatype) args[0]).intValue();
-            end =   ((IDatatype) args[1]).intValue();
+            start = args[0].intValue();
+            end =   args[1].intValue();
         }
         else {
-            end =   ((IDatatype) args[0]).intValue();
+            end =    args[0].intValue();
         }
         if (end < start){
             return DatatypeMap.createList();
@@ -324,7 +325,7 @@ public class PluginImpl extends ProxyImpl {
         
         int step = 1;
         if (args.length == 3){
-            step = ((IDatatype) args[2]).intValue();
+            step = args[2].intValue();
         }
         int length = (end - start + step) / step;
         IDatatype[] ldt = new IDatatype[length];
@@ -337,12 +338,12 @@ public class PluginImpl extends ProxyImpl {
         return dt;
     }
     
-    IDatatype iotas(Object[] args){
-        String fst = ((IDatatype) args[0]).stringValue();
-        String snd = ((IDatatype) args[1]).stringValue();
+    IDatatype iotas(IDatatype[] args){
+        String fst =  args[0].stringValue();
+        String snd = args[1].stringValue();
         int step = 1;
         if (args.length == 3){
-            step = ((IDatatype) args[2]).intValue();
+            step =  args[2].intValue();
         }               
         String str = alpha;
         int start = str.indexOf(fst);

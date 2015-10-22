@@ -98,27 +98,23 @@ public class FileHandler {
     /**
      * Allocate a new buffer using the default buffer_size
      *
-     * @return
      */
-    public MappedByteBuffer allocalteBuffer() {
-        return this.allocalteBuffer(this.params.get(type.BUF_SIZE));
+    public void allocalteBuffer() {
+        this.allocalteBuffer(this.params.get(type.BUF_SIZE));
     }
 
     /**
      * Allocate a new buffer using given buffer_size
      *
      * @param buf
-     * @return
      */
-    public MappedByteBuffer allocalteBuffer(int buf) {
+    public void allocalteBuffer(int buf) {
         try {
             this.buffer = this.fileChannel.map(FileChannel.MapMode.READ_WRITE, fileChannel.size(), buf);
             this.bufferOffset += buffer.capacity();
-            return this.buffer;
         } catch (IOException ex) {
             Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, "Allocalte buffer error <" + fname + ">!", ex);
         }
-        return null;
     }
 
     /**

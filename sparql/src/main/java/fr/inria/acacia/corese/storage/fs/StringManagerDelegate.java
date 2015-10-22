@@ -32,9 +32,9 @@ public class StringManagerDelegate {
 
     /**
      * Reading string from file using given meta info
-     * 
+     *
      * @param meta
-     * @return 
+     * @return
      */
     public String read(StringMeta meta) {
         if (meta == null) {
@@ -58,10 +58,10 @@ public class StringManagerDelegate {
 
     /**
      * Write a string with id to file
-     * 
+     *
      * @param id
      * @param literal
-     * @return 
+     * @return
      */
     public StringMeta write(int id, String literal) {
 
@@ -73,30 +73,33 @@ public class StringManagerDelegate {
             fhWirte = fhManager.createNewFile();
         }
 
-        MappedByteBuffer buffer = fhWirte.getBuffer();
+        //MappedByteBuffer buffer = fhWirte.getBuffer();
         long offset = fhWirte.position();
 
         int buf_size = params.get(type.BUF_SIZE);
-        int remainingInBuffer = buf_size - buffer.position();
+        int remainingInBuffer = buf_size - fhWirte.getBuffer().position();
         //** buffer is insuffcient 
         if (remainingInBuffer < bytesLiteral.length) {
             //put the first part of string [0, length - buf_size) to file
-            buffer.put(Arrays.copyOfRange(bytesLiteral, BEGIN, remainingInBuffer));
+            fhWirte.getBuffer().put(Arrays.copyOfRange(bytesLiteral, BEGIN, remainingInBuffer));
 
             int remainingLiteral = bytesLiteral.length - remainingInBuffer;
             //if the rest of literal is smaller than the buffer
             if (remainingLiteral <= buf_size) {
-                buffer = fhWirte.allocalteBuffer();
+                fhWirte.allocalteBuffer();
+                fhWirte.getBuffer().put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
             } else {
                 //bigger than the buffer, create temporarity a bigger buffer than can put all strings once
-                int tmp_buf_size = ((int) (remainingLiteral / buf_size) + 1) * buf_size;
-                buffer = fhWirte.allocalteBuffer(tmp_buf_size);
+                //int tmp_buf_size = ((int) (remainingLiteral / buf_size) + 1) * buf_size;
+                fhWirte.allocalteBuffer(remainingLiteral);
+                fhWirte.getBuffer().put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
+                fhWirte.allocalteBuffer();
             }
             ////put the second part of string [length - buf_size, end) to file
-            buffer.put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
+            //buffer.put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
 
         } else {//put the whole string to buffer -->> to file
-            buffer.put(bytesLiteral);
+            fhWirte.getBuffer().put(bytesLiteral);
         }
 
         //StringMeta meta = new StringMeta(id, fhWirte.getFid(), (int) offset, literal.length());
@@ -106,7 +109,7 @@ public class StringManagerDelegate {
 
     /**
      * Delete strings from files
-     * 
+     *
      * @param toDelete strings to be deleted
      * @param stringsOnDisk all the strings stored on disk
      */
@@ -125,7 +128,7 @@ public class StringManagerDelegate {
             }
         }
         Logger.getLogger(StringManagerDelegate.class.getName()).log(Level.INFO, "{0} records are deleted!", toDelete.size());
-        
+
         this.clean();
         this.fhManager = newManager.fhManager;
     }

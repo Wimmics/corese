@@ -504,7 +504,6 @@ public final class MyJPanelQuery extends JPanel {
 
         resultXML = toString(map);
         textAreaXMLResult.setText(resultXML.toString());
-        this.fillTable(map);
 
         // On affiche la version en arbre du résultat dans l'onglet Tree
         // crée un arbre de racine "root"
@@ -519,8 +518,13 @@ public final class MyJPanelQuery extends JPanel {
         treeResult.expandPath(myPath);
         scrollPaneTreeResult.setViewportView(treeResult);
 
-        //pointe sur le résultat XML
-        tabbedPaneResults.setSelectedIndex(2);
+        //afficher les resultats dans une tableau sauf pour les templates
+        if(q.isTemplate()){
+            tabbedPaneResults.setSelectedIndex(1);
+        }else{
+            this.fillTable(map);
+            tabbedPaneResults.setSelectedIndex(2);
+        }
 
         if (q.isConstruct()) {
             displayGraph((Graph) map.getGraph(), ast.getNSM());

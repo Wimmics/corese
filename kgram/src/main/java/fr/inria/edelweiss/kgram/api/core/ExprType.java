@@ -221,6 +221,7 @@ public interface ExprType {
  	public static int STL_ERRORS                = 273;
  	public static int STL_ISSTART               = 274;
  	public static int AGGLIST                   = 275;
+ 	public static int AGGREGATE                 = 276;
         
               
 	public static int ISSKOLEM 	= 300;
@@ -245,6 +246,10 @@ public interface ExprType {
 	public static int MAPANY        = 317;
 	public static int MAPSELECT     = 318;
 	public static int MAPMERGE      = 319;
+ 	public static int MAPFIND       = 320;
+	public static int FOR           = 322;
+        
+	public static int XT_SORT       = 330;
         
         public static int XT_SUM         = 400;
         public static int XT_PROD        = 401;
@@ -264,6 +269,9 @@ public interface ExprType {
         public static int XT_VALUE       = 414;
         public static int XT_INDEX       = 415;
         public static int XT_GRAPH       = 416;
+        public static int XT_REJECT      = 417;
+        public static int XT_VARIABLES   = 418;
+        public static int XT_VALUES      = 419;
        
         public static int SLICE       = 450;
         

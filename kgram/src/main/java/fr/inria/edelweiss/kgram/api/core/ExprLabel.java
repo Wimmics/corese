@@ -18,7 +18,7 @@ public interface ExprLabel {
     public static final String PLUS  = "plus";
     public static final String MINUS = "minus";
     public static final String MULT  = "mult";
-    public static final String DIV   = "div";
+    public static final String DIV   = "divis";
     
     public static final String COMPARE   = ExpType.KGRAM + "compare";
            

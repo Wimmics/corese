@@ -3,6 +3,7 @@ package fr.inria.acacia.corese.cg.datatype;
 import fr.inria.acacia.corese.api.IDatatype;
 
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.edelweiss.kgram.api.core.Loopable;
 
 /**
  * <p>Title: Corese</p>
@@ -36,6 +37,14 @@ public class CoreseXMLLiteral extends CoreseStringLiteral {
     
     public Object getObject(){
     	return object;
+    }
+    
+    public boolean isLoop(){
+        return object != null && object instanceof Loopable;
+    }
+    
+    public Iterable getLoop(){
+        return ((Loopable) object).getLoop();
     }
     
     public  int getCode(){

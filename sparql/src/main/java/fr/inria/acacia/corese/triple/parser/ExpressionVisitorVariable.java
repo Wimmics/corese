@@ -73,6 +73,10 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                 let(t);
                 break;
                 
+            case ExprType.FOR:
+                loop(t);
+                break;
+                
             case ExprType.FUNCTION:
                 define(t);
                 break;
@@ -86,8 +90,11 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             case ExprType.APPLY:                
                 map(t);
                 break;
-               
                 
+            case ExprType.AGGREGATE:
+                aggregate(t);
+                break;
+                               
             case ExprType.PACKAGE:
                 export(t); 
                 // continue
@@ -196,7 +203,30 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
     
-    
+    // for (?x in exp){ exp }
+    void loop(Term t) {
+        Variable var = t.getArg(0).getVariable();
+        Expression exp = t.getArg(1);
+        Expression body = t.getArg(2);
+
+        if (isLocal(var)) {
+            ast.addError("Variable already defined: " + var);
+            ast.addFail(true);
+        } else {
+            exp.visit(this);
+            localize(var);
+            list.add(var);
+            clet++;
+            body.visit(this);
+            clet--;
+            list.remove(list.size() - 1);
+            remove(var);
+            if (!define && clet == 0) {
+                // top level let
+                t.setPlace(count);
+            }
+        }
+    }
     
     
     /**
@@ -224,6 +254,20 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
         ast.setError("Incorrect Map: " + t);
         ast.setFail(true);
+    }
+    
+    /**
+     * aggregate(?x, xt:mediane(?list))
+     * @param t 
+     */
+    void aggregate(Term t){
+        if (t.getArgs().size() == 2){
+            Expression fun = t.getArg(1);
+            Expression arg = fun.getArg(0);
+            Variable var = arg.getVariable();
+            localize(var);
+            remove(var);
+        }
     }
     
    

@@ -23,6 +23,8 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
@@ -30,6 +32,7 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -279,6 +282,9 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case STRUUID:
                 return struuid();
+                
+            case FOR:
+                return loop(exp, env, p);
 
             default:
                 if (plugin != null) {
@@ -388,7 +394,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return slice(env, dt);  
                 
             case XT_COUNT:
-                return DatatypeMap.count(dt);
+                return count(dt);
                 
             case XT_FIRST:
                 return DatatypeMap.first(dt);
@@ -398,7 +404,14 @@ public class ProxyImpl implements Proxy, ExprType {
                                
             case XT_REVERSE:
                  return DatatypeMap.reverse(dt);
-                                     
+                
+            case XT_SORT:
+                return DatatypeMap.sort(dt);
+                
+            case XT_REJECT:
+                return reject(env, dt);      
+                    
+                                                               
             default:
                 if (plugin != null) {
                     return plugin.function(exp, env, p, o1);
@@ -534,8 +547,8 @@ public class ProxyImpl implements Proxy, ExprType {
                 return DatatypeMap.append(dt1, dt2);
                 
             case XT_GET:
-                return DatatypeMap.get(dt1, dt2);
-
+                return get(dt1, dt2);
+                
             default:
                 if (plugin != null) {
                     return plugin.function(exp, env, p, o1, o2);
@@ -562,7 +575,7 @@ public class ProxyImpl implements Proxy, ExprType {
             case MAPMERGE:
             case MAPSELECT:
                 return map(exp, env, p, param);
-                
+                               
             case APPLY:
                 return apply(exp, env, p, val);
 
@@ -866,7 +879,7 @@ public class ProxyImpl implements Proxy, ExprType {
         // st:number() is not evaluated now
         // it will be evaluated by template group_concat aggregate
         // return future(concat(str, st:number(), str))
-        boolean isFuture = exp.oper() == STL_CONCAT;
+        boolean isSTLConcat = exp.oper() == STL_CONCAT;
 
         StringBuilder sb = new StringBuilder();
         ArrayList<Object> list = null;
@@ -879,13 +892,13 @@ public class ProxyImpl implements Proxy, ExprType {
             if (lval == null) {
                 Expr ee = argList.get(j);
 
-                if (isFuture && isFuture(ee)) {
+                if (isSTLConcat && isFuture(ee)) {
                     // create a future
                     if (list == null) {
                         list = new ArrayList<Object>();
                     }
                     if (sb.length() > 0) {
-                        list.add(result(sb, isString, (ok && lang != null) ? lang : null));
+                        list.add(result(env, sb, isString, (ok && lang != null) ? lang : null, isSTLConcat));
                         sb = new StringBuilder();
                     }
                     list.add(ee);
@@ -904,7 +917,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return null;
             }
 
-            if (isFuture && dt.isFuture()){
+            if (isSTLConcat && dt.isFuture()){
                 // result of ee is a Future
                 // use case: ee = box { e1 st:number() e2 }
                 // ee = st:concat(e1, st:number(), e2) 
@@ -959,14 +972,14 @@ public class ProxyImpl implements Proxy, ExprType {
             // return ?out = future(concat(str, st:number(), str)
             // will be evaluated by template group_concat(?out) aggregate
             if (sb.length()>0){
-                list.add(result(sb, isString, (ok && lang != null)?lang:null));
+                list.add(result(env, sb, isString, (ok && lang != null)?lang:null, isSTLConcat));
             }  
             Expr e = plugin.createFunction(Processor.CONCAT, list, env);
             IDatatype res = DatatypeMap.createFuture(e);
             return res;
         }
         
-        return result(sb, isString, (ok && lang != null)?lang:null);
+        return result(env, sb, isString, (ok && lang != null)?lang:null, isSTLConcat);
     }
     
     boolean isFuture(Expr e){
@@ -989,11 +1002,19 @@ public class ProxyImpl implements Proxy, ExprType {
         return false;
     }
     
-    IDatatype result(StringBuilder sb, boolean isString, String lang){
+    /**
+     *     
+     */
+    IDatatype result(Environment env, StringBuilder sb, boolean isString, String lang, boolean isSTL){
         if (lang != null) {
             return DatatypeMap.createLiteral(sb.toString(), null, lang);
         } else if (isString) {
-            return DatatypeMap.newStringBuilder(sb);
+            if (isSTL){
+                return (IDatatype) plugin.getBufferedValue(sb, env);
+            }
+            else {
+                return DatatypeMap.newStringBuilder(sb);
+            }
         } else {
             return DatatypeMap.createLiteral(sb.toString());
         }
@@ -1091,7 +1112,7 @@ public class ProxyImpl implements Proxy, ExprType {
         // apply the aggregate on current group Mapping, 
         env.aggregate(walk, p, exp.getFilter());
 
-        Object res = walk.getResult();
+        Object res = walk.getResult(env, p);
         return res;
     }
     
@@ -1312,14 +1333,58 @@ public class ProxyImpl implements Proxy, ExprType {
         plugin.finish(p, env);
     }
 
+     /**
+      * for (var in list) { exp }
+      * loop = for(var, list, exp)
+      * @param exp
+      * @param env
+      * @param p
+      * @return 
+      */
+    IDatatype loop(Expr loop, Environment env, Producer p){
+        IDatatype list = (IDatatype) eval.eval(loop.getExp(1), env, p);
+        if (list == null){ 
+            return null;
+        }
+        if (list.isList()){
+            for (IDatatype dt : list.getValues()){           
+                IDatatype res = let(loop.getExp(2), loop.getExp(0), dt, env, p);
+                if (res == null){
+                    return null;
+                }
+            }
+        }
+        else { 
+            for (Object obj : getValues(list)){  
+                IDatatype res = let(loop.getExp(2), loop.getExp(0), (IDatatype) p.getValue(obj), env, p);               
+                if (res == null){
+                    return null;
+                }
+            }
+        }
+        return TRUE;
+    }
     
-  
+    
+     /**
+      * Loopable: Mappings Mapping Edge
+      * iterator for (var in exp){}
+      * */
+    public Iterable<Object> getValues(IDatatype dt) {
+        if (dt.isLoop()){
+            return dt.getLoop();
+        }
+        return new ArrayList<Object>(0);
+    }
+    
+      
      /**
       * map (xt:fun, ?x, ?l)
       * maplist (xt:fun, ?l1, ?l2)
       * maplist return list of results
       * mapselect return sublist of elements that match a boolean predicate
       * map return true
+      * map on List or Loopable (IDatatype that contains e.g. Mappings)
      * PRAGMA: lists must have same length
       * @return 
       */
@@ -1329,14 +1394,26 @@ public class ProxyImpl implements Proxy, ExprType {
         boolean mapselect = exp.oper() == MAPSELECT;
         boolean hasList   = maplist || mapmerge;
         
-        IDatatype list = null;        
-        for (IDatatype dt : param){          
+        IDatatype list = null;
+        IDatatype ldt = null;
+        Iterator loop = null ;
+        boolean isList = false;
+        
+        for (IDatatype dt : param){  
             if (dt.isList()){
+                isList = true;
                 list = dt;
                 break;
             }
-        }               
-        if (list == null){
+            else if (dt.isLoop()) {
+                hasList = false; // prevent maplist mapmerge
+               ldt = dt; 
+               loop = ldt.getLoop().iterator();
+               break;
+            }
+        } 
+        
+        if (list == null && ldt == null){
             return null;
         }
         IDatatype[] value = new IDatatype[param.length];
@@ -1344,7 +1421,7 @@ public class ProxyImpl implements Proxy, ExprType {
         ArrayList<IDatatype> sub = (mapselect) ? new ArrayList<IDatatype>() : null;
         int size = 0; 
         
-        for (int i = 0; i<list.size(); i++){ 
+        for (int i = 0;  (isList) ? i< list.size() : loop.hasNext(); i++){ 
             IDatatype elem = null;
             
             for (int j = 0; j<value.length; j++){
@@ -1355,12 +1432,23 @@ public class ProxyImpl implements Proxy, ExprType {
                         elem = value[j];
                     }
                 }
+                else if (dt.isLoop()){
+                    if (loop.hasNext()){
+                       value[j] = (IDatatype) p.getNode(loop.next());
+                       if (mapselect && elem == null){
+                         elem = value[j];
+                       }
+                    }
+                    else {
+                        return null;
+                    }
+                }
                 else {
                     value[j] = dt;
                 }
             }
             
-            IDatatype val = (IDatatype) let(exp.getExp(0), env, p, value);
+            IDatatype val =  let(exp.getExp(0), env, p, value);
             
             if (val == null){
                 return null;
@@ -1442,7 +1530,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 }
             }
             
-            IDatatype res = (IDatatype) let(exp.getExp(0), env, p, value);                   
+            IDatatype res =  let(exp.getExp(0), env, p, value);                   
             if (res == null){
                 error = true;                
             }
@@ -1497,7 +1585,7 @@ public class ProxyImpl implements Proxy, ExprType {
         
         for (int i = 1; i < list.length; i++) {            
             value[1] = list[i];
-            res = (IDatatype) let(exp.getExp(0), env, p, value);           
+            res =  let(exp.getExp(0), env, p, value);           
             if (res == null) {
                return error();
             }
@@ -1533,15 +1621,23 @@ public class ProxyImpl implements Proxy, ExprType {
      /**
      * exp = xt:fun(?x)
      */
-    private Object let(Expr exp, Environment env, Producer p, IDatatype val) {
-        Expr var  = exp.getExp(0);  
-        env.set(exp, var, val);
-        Object res = eval.eval(exp, env, p);
-        env.unset(exp, var);
-        return res;
+    public IDatatype let(Expr exp, Environment env, Producer p, Object val) {
+        return let(exp, exp.getExp(0), (IDatatype) val, env, p);
+//        Expr var  = exp.getExp(0);  
+//        env.set(exp, var, (IDatatype) val);
+//        Object res = eval.eval(exp, env, p);
+//        env.unset(exp, var);
+//        return (IDatatype) res;
     }
     
-    private Object let(Expr exp, Environment env, Producer p, IDatatype[] values) {
+    IDatatype let(Expr exp, Expr var, IDatatype value, Environment env, Producer p){
+        env.set(exp, var, value);
+        Object res = eval.eval(exp, env, p);
+        env.unset(exp, var);
+        return (IDatatype) res;
+    }
+    
+    private IDatatype let(Expr exp, Environment env, Producer p, IDatatype[] values) {
         int i = 0;
         for (Expr var : exp.getExpList()){        
             env.set(exp, var, values[i++]);
@@ -1550,7 +1646,7 @@ public class ProxyImpl implements Proxy, ExprType {
         for (Expr var : exp.getExpList()){        
             env.unset(exp, var);
         }        
-        return res;
+        return (IDatatype) res;
     }
       
      private IDatatype or(IDatatype dt1, IDatatype dt2) {
@@ -1602,5 +1698,75 @@ public class ProxyImpl implements Proxy, ExprType {
             return getValue(dt1.booleanValue() && dt2.booleanValue());
         }
     }
+
+    @Override
+    public Object getBufferedValue(StringBuilder sb, Environment env) {
+        return plugin.getBufferedValue(sb, env);
+    }
+    
+    IDatatype get(IDatatype dt1, IDatatype dt2){
+        if (dt1.isList()){
+            return DatatypeMap.get(dt1, dt2);
+        }
+        if (dt1.getObject() != null){
+            if (dt1.getObject() instanceof Entity){
+                return get((Entity) dt1.getObject(), dt2.intValue());
+            }
+            if (dt1.getObject() instanceof Mapping){
+                return get((Mapping) dt1.getObject(), dt2.getLabel() );
+            }
+        }
+        return null;
+    }
+    
+    // ?x ?p ?y ?g
+    IDatatype get(Entity ent, int n){
+        Edge edge = ent.getEdge();
+        switch (n){
+            case 0: return nodeValue(edge.getNode(0));
+            case 1: 
+                Node var = edge.getEdgeVariable();
+                return nodeValue((var == null) ? edge.getEdgeNode() : var);                  
+            case 2: return nodeValue(edge.getNode(1));
+            case 3: return nodeValue(ent.getGraph());
+        }
+        return null;
+    }
+    
+    IDatatype nodeValue(Node n){
+        return (IDatatype) n.getValue();
+    }
+    
+    IDatatype get(Mapping m, String var){
+        Node n = m.getNode(var);
+        if (n == null){
+            return null;
+        }
+        return nodeValue(n);
+    }
+    
+    IDatatype reject(Environment env, IDatatype dtm){
+        Object om = dtm.getObject();
+        if (om != null &&  om instanceof Mapping){
+            Mapping map = (Mapping) om;
+            env.getMappings().reject(map);
+        }
+        return TRUE;
+    }
+    
+    IDatatype count(IDatatype dt){
+        if (dt.isList()){
+            return DatatypeMap.count(dt);
+        }
+        Object obj = dt.getObject();
+        if (obj == null){
+            return null;
+        }
+        if (obj instanceof Mappings){
+            return getValue(((Mappings)obj).size());
+        }
+        return null;
+    }
+
     
 }

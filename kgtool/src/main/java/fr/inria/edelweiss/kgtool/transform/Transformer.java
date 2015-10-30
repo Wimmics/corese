@@ -949,6 +949,9 @@ public class Transformer  {
         
         
      IDatatype stringResult(List<IDatatype> result, String sep) {
+         if (result.size() == 1){
+             return result.get(0);
+         }
        StringBuilder sb = new StringBuilder();
         sep = getTab(sep);
         

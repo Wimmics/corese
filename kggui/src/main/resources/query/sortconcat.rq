@@ -1,0 +1,16 @@
+#
+# Custom Aggregate: group_concat with sort
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+select (aggregate(?v, us:sort_concat) as ?res)
+where {
+  ?x rdf:value/rdf:rest*/rdf:first ?v
+}
+
+function us:sort_concat(?list){
+  apply(us:concat, xt:sort(?list))
+}
+
+function us:concat(?x, ?y){
+  concat(?x, ' ', ?y)
+}

@@ -1,0 +1,32 @@
+#
+# Custom Aggregate: standard deviation, median
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+select 
+  (aggregate(?v, us:sigma)  as ?sig)
+  (aggregate(?v, us:median) as ?med)
+  (aggregate(?v, us:avg)    as ?avg)
+where {
+  bind (unnest(xt:iota(999)) as ?v)
+}
+
+function us:median(?list){
+  let (xt:sort(?list) as ?l){
+    xt:get(?l, xsd:integer((xt:size(?l) - 1) / 2))
+  }
+}
+
+function us:sigma(?list){
+  let (us:avg(?list) as ?avg,
+      (apply (kg:plus, maplist(us:sqdiff, ?list, ?avg))) as ?sum){
+    power(?sum / xt:size(?list), 0.5)
+  }
+}
+
+function us:avg(?list){
+  apply (kg:plus, ?list) / xt:size(?list) 
+}
+
+function us:sqdiff(?x, ?avg){
+  power(?x - ?avg, 2)
+}

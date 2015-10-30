@@ -6,10 +6,10 @@ bind (xt:firstOfMonth(?y, ?m, ?d) as ?ans)
 
 function xt:firstOfMonth(?y, ?m, ?d) {
     let (
-        ?first = cal:date(?y, ?m, 1),
-        ?day = xt:day(?first),
-        ?fst = cal:num(?day),
-        ?snd = cal:num(?d)){
+        cal:date(?y, ?m, 1) as ?first,
+        xt:day(?first) as ?day,
+        cal:num(?day) as ?fst,
+        cal:num(?d) as ?snd){
 
         if (?fst = ?snd, ?first,
         if (?fst < ?snd, cal:date(?y, ?m, 1 + (?snd - ?fst)),

@@ -16,7 +16,7 @@ function st:fac(?n) {
 }
 
 function st:date() { 
-    let (?d = now()){
+    let (now() as ?d){
      concat(day(?d), "/", month(?d), "/", year(?d))
     }
 }

@@ -84,12 +84,31 @@ public abstract class CoreseNumber extends CoreseDatatype {
 			case DOUBLE: return new CoreseDouble(doubleValue() + dt.doubleValue());
 			case FLOAT:  return new CoreseFloat(floatValue() + dt.floatValue());
 			case DECIMAL:return new CoreseDecimal(doubleValue() + dt.doubleValue());
-			case INTEGER:return DatatypeMap.newInstance(intValue() + dt.intValue());
+			case INTEGER:
+                            return sum(this, dt); 
+                            //return DatatypeMap.newInstance(intValue() + dt.intValue());
 			case LONG:   return new CoreseLong(intValue() + dt.longValue());
 			}
 		}
 		return null;
 	}
+        
+        
+        IDatatype sum(IDatatype dt1, IDatatype dt2){
+            long res = dt1.longValue() + dt2.longValue();
+            if (res <= Integer.MAX_VALUE){
+                return DatatypeMap.newInstance((int)res);
+            }
+            return new CoreseLong(res);
+        }
+        
+        IDatatype prod(IDatatype dt1, IDatatype dt2){
+            long res = dt1.longValue() * dt2.longValue();
+            if (res <= Integer.MAX_VALUE){
+                return DatatypeMap.newInstance((int)res);
+            }
+            return new CoreseLong(res);
+        }
 	
 	public IDatatype minus(IDatatype dt) {
 		switch (getCode()){
@@ -162,7 +181,8 @@ public abstract class CoreseNumber extends CoreseDatatype {
 			case DOUBLE: return new CoreseDouble(doubleValue() * dt.doubleValue());
 			case FLOAT:  return new CoreseFloat(floatValue() * dt.floatValue());
 			case DECIMAL:return new CoreseDecimal(doubleValue() * dt.doubleValue());
-			case INTEGER:return DatatypeMap.newInstance(intValue() * dt.intValue());
+			case INTEGER: return prod(this, dt);
+                            //return DatatypeMap.newInstance(intValue() * dt.intValue());
 			case LONG:   return new CoreseLong(intValue() * dt.longValue());
 			}
 		}

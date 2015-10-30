@@ -112,4 +112,9 @@ public class EdgeInv implements Edge, Entity {
         ent.setProvenance(obj);
     }
 
+    @Override
+    public Iterable getLoop() {
+        return ent.getLoop();
+    }
+
 }

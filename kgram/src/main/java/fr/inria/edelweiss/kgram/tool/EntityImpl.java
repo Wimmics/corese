@@ -67,4 +67,9 @@ public class EntityImpl implements Entity {
         
     }
 
+    @Override
+    public Iterable getLoop() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

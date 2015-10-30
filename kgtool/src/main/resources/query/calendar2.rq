@@ -42,16 +42,16 @@ function cal:next(?day, ?shift) {
 
 function cal:shift(?date, ?day, ?shift) { 
   let (
-    ?first = cal:day(?date), 
-    ?from  = cal:num(?first), 
-    ?to    = cal:num(?day)){
+    cal:day(?date)  as ?first, 
+    cal:num(?first) as ?from, 
+    cal:num(?day)   as ?to){
     if (?from < ?to){    
-	let (?diff = ?to - ?from){
+	let (?to - ?from as ?diff){
 	  cal:add(?date, ?diff + 7 * ?shift)
 	}
       }
       else {
-	let (?diff = ?from - ?to){
+	let (?from - ?to as ?diff){
 	  cal:add(?date, if (?shift = 0, 1, ?shift) * 7 - ?diff)
 	}
       }
@@ -78,17 +78,19 @@ function cal:nommois(?m) {  cal:mois(?m) }
 
 
 function cal:mois(?m) { 
-    let (?list = xt:list(
+    let (xt:list(
     "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", 
-    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre")){ 
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre")
+    as ?list){ 
       xt:get(?list, ?m - 1)
     }
 }
 
 function cal:month(?m) { 
-    let (?list = xt:list(
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December")){ 
+    let (xt:list(
+      "January", "February", "March", "April", "May", "June", 
+      "July", "August", "September", "October", "November", "December")
+    as ?list ){ 
     xt:get(?list, ?m - 1)
     }
 }

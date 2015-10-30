@@ -48,8 +48,9 @@ function cal:monthday(?m, ?y) {
 }
 	    
 function cal:get(?y, ?m, ?d) {
-  let (?n = cal:k(?y) + cal:q(?y) + cal:cd(?y) +
-        cal:monthday(?m, ?y) + ?d + 2 + 5 * cal:ab(?y))
+  let (cal:k(?y) + cal:q(?y) + cal:cd(?y) +
+        cal:monthday(?m, ?y) + ?d + 2 + 5 * cal:ab(?y)
+       as ?n)
     {
       cal:mod(?n, 7)
     }
@@ -90,7 +91,8 @@ function cal:num(?day) {
 }
 
 function cal:days(?y, ?m) {
-    let (?list = xt:list(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)){ 
+    let (xt:list(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31) 
+         as ?list){ 
         if (?m != 2, xt:get(?list, ?m - 1),
             if (cal:bisextile(?y), 29, 28))
     }

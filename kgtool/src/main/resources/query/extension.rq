@@ -42,7 +42,7 @@ function xt:spin(?x) {
 }
 
 function st:list(?t) { 
-    let (?l = st:call-template-with(st:list, st:list, ?t)){
+    let (st:call-template-with(st:list, st:list, ?t) as ?l){
         if (! isLiteral(?l) || datatype(?l) != dt:list){
             xt:list(?l) }
         else { ?l }

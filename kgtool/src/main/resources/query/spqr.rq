@@ -57,20 +57,20 @@ function spqr:num(?n, ?u, ?f, ?t) {
 function spqr:spqr(?n) { 
   if (?n < 10, spqr:r1(?n),
   if (?n < 100, 
-    let (?c = spqr:div(?n, 10), 
-         ?r = spqr:mod(?n, 10)){ 
+    let (spqr:div(?n, 10) as ?c, 
+         spqr:mod(?n, 10) as ?r){ 
       concat(spqr:r10(?c), spqr:spqr(?r))
     },
     
   if (?n < 1000,
-    let (?c = spqr:div(?n, 100),
-         ?r = spqr:mod(?n, 100)){
+    let (spqr:div(?n, 100) as ?c,
+         spqr:mod(?n, 100) as ?r){
       concat(spqr:r100(?c), spqr:spqr(?r))
     },
     
   if (?n < 10000,
-    let (?c = spqr:div(?n, 1000),
-         ?r = spqr:mod(?n, 1000)){
+    let (spqr:div(?n, 1000) as ?c,
+         spqr:mod(?n, 1000) as ?r){
       concat(spqr:r1000(?c), spqr:spqr(?r))
     },       
     ?n))))
@@ -80,7 +80,7 @@ function spqr:spqr(?n) {
 
 function spqr:parse(?s) { 
   if (strlen(?s) = 0, 0,
-    let (?f = substr(?s, 1, 1)){
+    let (substr(?s, 1, 1) as ?f){
       if (?f = "I", spqr:step(?s, "I", "V", "X", 1, 5, 10),
       if (?f = "V", 5 + spqr:parse(substr(?s, 2)),
       if (?f = "X", spqr:step(?s, "X", "L", "C", 10, 50, 100),
@@ -95,7 +95,7 @@ function spqr:parse(?s) {
 
 function spqr:step(?s, ?su, ?sc, ?sd, ?u, ?c, ?d) { 
   if (strlen(?s) = 1, ?u,
-    let (?r = substr(?s, 2, 1)){
+    let (substr(?s, 2, 1) as ?r){
       if (?r = ?sc,   ?c - ?u + spqr:parse(substr(?s, 3)),
 	if (?r = ?sd, ?d - ?u + spqr:parse(substr(?s, 3)),
 	  ?u + spqr:parse(substr(?s, 2))))

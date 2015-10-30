@@ -1,10 +1,13 @@
 package fr.inria.edelweiss.kgram.core;
 
+import static fr.inria.edelweiss.kgram.api.core.ExpType.BIND;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import static fr.inria.edelweiss.kgram.sorter.core.Const.plannable;
 import fr.inria.edelweiss.kgram.sorter.core.QPGraph;
 import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
 import fr.inria.edelweiss.kgram.sorter.core.ISort;
+import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import fr.inria.edelweiss.kgram.sorter.impl.qpv1.DepthFirstBestSearch;
 import fr.inria.edelweiss.kgram.sorter.impl.qpv1.HeuristicsBasedEstimation;
 import java.util.ArrayList;
@@ -67,9 +70,30 @@ public class SorterNew extends Sorter {
             }
 
             List l = is.sort(bpg);
+
+            //** For the following case where a graph has a bound value, put the BIND before 
+            //** the graph pattern (because normally we put BIND just after where its variable 
+            //** is used.
+            //** bind (<uri> as ?g)
+            //** graph ? {?x ?p ?y}
+            List<QPGNode> graphs = bpg.getAllNodes(GRAPH);
+            for (QPGNode graph : graphs) {
+                List<QPGNode> linkedNodes = bpg.getLinkedNodes(graph);
+                for (QPGNode bind : linkedNodes) {
+                    if (bind.getType() == BIND) {
+                        int iBind = l.indexOf(bind);
+                        int iGraph = l.indexOf(graph);
+                        if (iBind > iGraph) {
+                            l.remove(bind);
+                            l.add(iGraph, bind);
+                        }
+                    }
+                }
+            }
+
             message(" -- Sorting time:" + (System.currentTimeMillis() - stop1) + "ms");
             message(" -- Sorting [after] :" + exps+ "\n");
-
+            
             // ** 4 rewrite **
             is.rewrite(expression, l, startIndex);
         }
@@ -100,6 +124,10 @@ public class SorterNew extends Sorter {
                 }
 
                 aESG.add(ee);
+            }
+
+            if (ee.type() == GRAPH) {
+
             }
         }
 

@@ -133,42 +133,17 @@ public class QPGNode {
                     case VALUES:
                         return this.isShared(bpn2.exp.getNodeList(), bpn1.exp);
                     case BIND:
-                        return this.isShared(bpn2.exp.getFilter(), bpn1.exp);
+                        return this.isShared(bpn2.exp.getNode(), bpn1.exp);
                     default:;
                 }
-//            case FILTER:
-//                switch (type2) {
-//                    case EDGE:
-//                        return this.isShared(bpn1.exp.getFilter(), bpn2.exp.getEdge());
-//                    case GRAPH:
-//                        return this.isShared(bpn1.exp.getFilter(), bpn2.exp);
-//                    case BIND:
-//                        return this.isShared(bpn1.exp.getFilter(), bpn2.exp.getNode());
-//                    default: ;
-//                }
-//                break;
-//            case VALUES:
-//                switch (type2) {
-//                    case EDGE:
-//                        return this.isShared(bpn1.exp.getNodeList(), bpn2.exp.getEdge());
-//                    case GRAPH:
-//                        return this.isShared(bpn1.exp.getNodeList(), bpn2.exp);
-//                    case BIND:
-//                        return this.isShared(bpn1.exp.getNodeList(), bpn2.exp.getNode());
-//                    default:;
-//                }
             case BIND:
                 switch (type2) {
-//                    case EDGE:
-//                        return this.isShared(bpn1.exp.getFilter(), bpn2.exp.getEdge());
-//                    case GRAPH:
-//                        return this.isShared(bpn1.exp.getFilter(), bpn2.exp);
                     case FILTER:
                         return this.isShared(bpn2.exp.getFilter(), bpn1.exp.getNode());
                     case VALUES:
                         return this.isShared(bpn2.exp.getNodeList(), bpn1.exp.getNode());//td
                     case BIND:
-                        return this.isShared(bpn2.exp.getFilter(), bpn1.exp.getNode());
+                        return this.compare(bpn2.exp.getNode(), bpn1.exp.getNode());
                     default:;
                 }
             default:
@@ -221,6 +196,11 @@ public class QPGNode {
     //check between bind and values
     public List<String> isShared(List<Node> values, Node n) {
         return this.compare(values, n);
+    }
+
+    //check between graph and filter
+    public List<String> isShared(Node n, Exp graph) {
+        return this.compare(getVariablesInGraph(graph), n);
     }
 
     private List<Node> getVariablesInEdge(Edge e) {
@@ -307,6 +287,14 @@ public class QPGNode {
         List<Node> l1 = new ArrayList<Node>();
         l1.add(n);
         return this.compare(l1, l2);
+    }
+
+    private List<String> compare(Node n1, Node n2) {
+        List<String> l = new ArrayList<String>();
+        if (n1.same(n2)) {
+            l.add(n1.getLabel());
+        }
+        return l;
     }
 
     @Override

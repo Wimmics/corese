@@ -41,9 +41,10 @@ public interface Proxy {
 	Object getValue(double value);
 	
 	Object getValue(double value, String datatype);
-
 	
 	Object getValue(String value);
+        
+        Object getBufferedValue(StringBuilder sb, Environment env);
 
 	int compare(Environment env, Producer p, Node o1, Node o2);
 
@@ -52,6 +53,8 @@ public interface Proxy {
 
 	// functions isURI regex
 	Object eval(Expr exp, Environment env, Producer p, Object[] args);
+        
+        Object let(Expr exp, Environment env, Producer p, Object val);
         
         Object cast(Object obj, Environment env, Producer p);
 	

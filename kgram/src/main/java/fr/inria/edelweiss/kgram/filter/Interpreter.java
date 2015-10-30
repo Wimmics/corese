@@ -282,6 +282,9 @@ public class Interpreter implements Evaluator, ExprType {
                 }
                 return null;
                 
+            case FOR:
+                return proxy.function(exp, env, p);
+                
             case LET:
                 return let(exp, env, p);
 
@@ -320,6 +323,7 @@ public class Interpreter implements Evaluator, ExprType {
             case AGGAND:
             case AGGLIST:
             case STL_AGGREGATE:
+            case AGGREGATE:
                 return aggregate(exp, env, p);
 
             case SYSTEM:
@@ -355,7 +359,7 @@ public class Interpreter implements Evaluator, ExprType {
                     return null;
                 }
                 return proxy.eval(exp, env, p, args);
-
+                          
             default:                
                 switch (exp.getExpList().size()) {
 

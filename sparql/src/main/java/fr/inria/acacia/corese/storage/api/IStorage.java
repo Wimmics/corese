@@ -44,6 +44,7 @@ public interface IStorage {
      * @return
      */
     public boolean check(String str);
+    public boolean check(int length);
 
     /**
      * Get the status of manager

@@ -254,6 +254,13 @@ public class Term extends Expression {
 		if (getName().equals(Processor.FUNCTION)){
                     return funString(sb);
                 }
+                if (getName().equals(Processor.LET)){
+                    return funLet(sb);
+                }
+                if (getName().equals(Processor.FOR)){
+                    return funLoop(sb);
+                }
+                
 		if (getName().equals(EXIST)){
 			return getExist().toString(sb);
 		}
@@ -333,6 +340,40 @@ public class Term extends Expression {
         sb.append("}");
         return sb;
     }
+    
+      public StringBuffer funLet(StringBuffer sb) {         
+        sb.append(Processor.LET);
+        Expression def = getArg(0);
+        sb.append(" (");        
+        def.getArg(1).toString(sb);
+        sb.append(" as ");        
+        def.getArg(0).toString(sb);
+        sb.append(") {");
+        sb.append(NL);
+        sb.append("  ");
+        getArg(1).toString(sb);
+        sb.append(NL);
+        sb.append("}");
+        return sb;
+    }
+      
+      public StringBuffer funLoop(StringBuffer sb) {         
+        sb.append(Processor.FOR);
+        sb.append(" (");
+        getArg(0).toString(sb);
+        sb.append(" ");       
+        sb.append(Processor.IN);
+        sb.append(" ");       
+        getArg(1).toString(sb);
+        sb.append(")");
+        sb.append(" {");
+        sb.append(NL);
+        sb.append("  ");
+        getArg(2).toString(sb);
+        sb.append(NL);
+        sb.append("}");
+        return sb;
+    }  
     
      /**
          * this = function(xt:fun(?x) = exp)       
@@ -805,6 +846,10 @@ public class Term extends Expression {
 	
 	public void add(Expression exp) {
 		args.add(exp);
+	}
+        
+        public void add(int i, Expression exp) {
+		args.add(i, exp);
 	}
 	
 	public void setArg(int i, Expression exp){

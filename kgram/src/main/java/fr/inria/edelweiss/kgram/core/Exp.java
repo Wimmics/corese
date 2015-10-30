@@ -653,7 +653,7 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         return (Producer) object;
     }
 
-    public List<Object> getValues() {
+    public List<Object> getObjectValues() {
         if (object instanceof List) {
             return (List<Object>) object;
         } else {

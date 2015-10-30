@@ -785,4 +785,14 @@ public class DatatypeMap implements Cst, RDF {
         
         return createList(res);
     }
+    
+     public static IDatatype sort(IDatatype dt){
+        if ( ! dt.isList()){
+            return dt;
+        }
+        IDatatype[] value = dt.getValues();
+        Arrays.sort(value);
+        return dt;
+        
+     }
 }

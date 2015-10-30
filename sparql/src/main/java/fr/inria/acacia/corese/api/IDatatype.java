@@ -18,7 +18,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  * @author Olivier Corby & Olivier Savoie & Virginie Bottollier
  */
 public interface IDatatype
-        extends ICoresePolymorphDatatype, Node, Entity, DatatypeValue {
+        extends ICoresePolymorphDatatype, Node, Entity, DatatypeValue, Comparable {
 
     static final int LITERAL = 0;
     static final int STRING = 1;
@@ -62,8 +62,12 @@ public interface IDatatype
     boolean isArray();
     
     boolean isList();
+    
+    boolean isLoop();
 
     IDatatype[] getValues();
+    
+    Iterable getLoop();
 
     IDatatype get(int n);
 
@@ -248,6 +252,7 @@ public interface IDatatype
     String getID();
 
     StringBuilder getStringBuilder();
+    void setStringBuilder(StringBuilder s);
 
     /**
      * @return true if this instance class is a number

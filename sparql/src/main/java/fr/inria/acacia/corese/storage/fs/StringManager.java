@@ -102,7 +102,12 @@ public final class StringManager implements IStorage {
 
     @Override
     public boolean check(String str) {
-        return (str == null) ? false : str.length() > this.params.get(type.MAX_LIT_LEN);
+        return (str == null) ? false : check(str.length());
+    }
+    
+    @Override
+    public boolean check(int length) {
+        return length > this.params.get(type.MAX_LIT_LEN);
     }
 
     public int getLiteralsOnDiskSize() {

@@ -480,7 +480,10 @@ public final class MyJPanelQuery extends JPanel {
                     List<fr.inria.edelweiss.kgram.api.core.Node> list = m.getNodes(columnName, true);
                     String values = "";
                     for (fr.inria.edelweiss.kgram.api.core.Node node : list) {
-                        values += node.getLabel() + "; ";
+                        values += node.getLabel() ;
+                        if (list.size() > 1){
+                            values += " ; ";
+                        }
                     }
                     colmunData[j] = values;
                 } else {

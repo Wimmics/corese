@@ -1038,6 +1038,9 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
      * function (name(el) = exp)
      */
      public  Term defineFunction(Constant name, ExpressionList el, Expression exp) {
+        if (exp == null){
+            exp = Constant.create(true);
+        }
     	Term fun  = createFunction(name, el);
         Term body = createTerm(SEQ, fun, exp);
     	Term def  = createFunction(Constant.create(Processor.FUNCTION), body);
@@ -1048,15 +1051,37 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
      public Term ifThenElse(Expression ei, Expression et, Expression ee){
          Term exp = createFunction(Processor.IF, ei);
          exp.add(et);
+         if (ee == null){
+             ee = Constant.create(true);
+         }
          exp.add(ee);
          return exp;
      }
      
+     /**
+      * let (var = exp, body)
+      * @param el
+      * @param body
+      * @return 
+      */
      public Term let(ExpressionList el, Expression body){
          Term exp = createFunction(Processor.LET, el);
          exp.add(body);
          return exp;
      }
+           
+      public Term defLet(Variable var, Expression exp){
+          return Term.create("=", var, exp);
+      }
+      
+       public Term defLet(ExpressionList lvar, Expression exp){
+          Term t = createFunction(Processor.MATCH, lvar);
+          return Term.create("=", t, exp);
+      }
+       
+       public Term loop(Variable var, Expression exp, Expression body){
+           return Term.function(Processor.FOR, var, exp, body);
+       }
      
      public void exportFunction(Expression def){
          def.getArg(0).setExport(true);
@@ -1065,6 +1090,12 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     public  Term createFunction(Constant name, Expression exp) {
     	Term term =  createFunction(name.getName(), exp);
     	term.setCName(name);
+    	return term;
+    }
+    
+    public  Term createFunction(Constant name, Expression exp, Expression e2) {
+    	Term term =  createFunction(name, exp);
+        term.add(e2);    	
     	return term;
     }
     

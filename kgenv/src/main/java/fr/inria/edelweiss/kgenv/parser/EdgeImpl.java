@@ -73,6 +73,20 @@ public class EdgeImpl implements Edge, Entity {
 		}
 		return str;
 	}
+        
+        @Override
+     public Iterable<Object> getLoop() {
+        ArrayList<Object> list = new ArrayList();
+        list.add(getNode(0).getValue());      
+        list.add(getPredicateNode().getValue());
+        list.add(getNode(1).getValue());
+        return list;
+    }
+     
+     public Node getPredicateNode(){
+        Node var = getEdgeVariable();
+        return (var == null) ? getEdgeNode() : var;
+     }
 	
 	public Triple getTriple(){
 		if (triple == null) triple = triple();

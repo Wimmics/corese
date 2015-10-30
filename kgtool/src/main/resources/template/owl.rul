@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Oct 20 11:49:54 CEST 2015
+Sat Oct 24 17:45:06 CEST 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -14,7 +14,7 @@ template  st:statement  {
 
   xt:nl(st:apply-templates-with-all(st:owlstatement, ?in), 2)
   ; separator = ""
-  
+ 
 }
 where {
 
@@ -34,8 +34,9 @@ where {
 
   }
   order by ?in
-        
+     
 }
+
 
 
 ]]>
@@ -204,33 +205,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:annotation1 {
-   "Annotation(" 
-      ?p " " ?t
-   ")\n"
-   ; separator = ""
-}
-where {
-  ?in ?p ?t
-  filter not exists {
-   ?a a owl:Annotation ;
-      owl:annotatedSource   ?in ;
-      owl:annotatedProperty ?p ;     
-      owl:annotatedTarget   ?t 
-  }
-}
-values ?p { 
-  owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith 
-  rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy 
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 
 template  st:property  {
 
@@ -264,6 +238,33 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:annotation1 {
+   "Annotation(" 
+      ?p " " ?t
+   ")\n"
+   ; separator = ""
+}
+where {
+  ?in ?p ?t
+  filter not exists {
+   ?a a owl:Annotation ;
+      owl:annotatedSource   ?in ;
+      owl:annotatedProperty ?p ;     
+      owl:annotatedTarget   ?t 
+  }
+}
+values ?p { 
+  owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith 
+  rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy 
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # defaut processing of a variable is 
 # st:turtle on URI 
@@ -287,7 +288,7 @@ where {
 export {
 
     function owlfs:pretty(?in) {
-      let (?t = st:turtle(?in)){
+      let (st:turtle(?in) as ?t){
 	if (st:get(st:html, true), 
 	      owlfs:protect(?t), ?t)
       }
@@ -335,9 +336,7 @@ template  st:body  {
   
 }
 where {
-
- 
-        
+    
 }
 
 
@@ -392,6 +391,42 @@ template st:header {
 }
 where {
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+
+template  st:test  {
+
+  kg:display(count(*))
+ 
+}
+where {
+
+  select distinct ?in where {
+     ?in ?p ?y 
+     
+     filter (?p not in 
+     (rdfs:subClassOf, owl:equivalentClass)
+     )
+     
+    filter (
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
+    )
+  # OWL vocabulary must not be pretty printed
+    filter (! xt:system(?in))
+
+  }
+  order by ?in
+     
+}
+
+
 
 ]]>
 </body>

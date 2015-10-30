@@ -8,7 +8,6 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 class Walker extends Interpreter {
 
     static IDatatype ZERO = DatatypeMap.ZERO;
+    static final StringBuilder EMPTY = new StringBuilder(0);
     Expr exp;
     Node qNode, tNode;
     IDatatype dtres;
@@ -48,6 +48,7 @@ class Walker extends Interpreter {
     private String lang;
     private boolean ok = true;
     private boolean isString = true;
+    boolean test = false;
     ArrayList<IDatatype> list;
 
     Walker(Expr exp, Node qNode, Proxy p, Environment env, Producer prod) {
@@ -83,8 +84,10 @@ class Walker extends Interpreter {
                 }
             }
         }
-
+           
+        int size = env.getMappings().size();        
         sb = new StringBuilder();
+        
         if (exp.isDistinct()) {
             // use case: count(distinct ?name)
             List<Node> nodes;
@@ -101,12 +104,17 @@ class Walker extends Interpreter {
             group.setDistinct(true);
             tree = new TreeData();
         }
-        if (exp.oper() == STL_AGGREGATE || exp.oper() == AGGLIST){
-            list = new ArrayList();
+        
+        switch (exp.oper()){
+            case STL_AGGREGATE:
+            case AGGLIST:
+            case AGGREGATE:        
+                list = new ArrayList();
+                break;
         }
     }
 
-    Object getResult() {
+    Object getResult(Environment env, Producer p) {
         if (isError) {
             return null;
         }
@@ -143,15 +151,23 @@ class Walker extends Interpreter {
                 return proxy.getValue(num);
 
             case GROUPCONCAT:
-            case STL_GROUPCONCAT:
-                return result(sb, isString, (ok && lang != null)?lang:null);
-               // return DatatypeMap.newStringBuilder(sb);
+            case STL_GROUPCONCAT: 
+                
+               IDatatype res = result(sb, isString, (ok && lang != null)?lang:null);
+               return res;
 
             case AGGAND:               
                 return DatatypeMap.newInstance(and);
                 
             case AGGLIST:                
                 return DatatypeMap.createList(list);
+                
+            case AGGREGATE:
+                // aggregate(?x, xt:mediane) ->
+                // aggregate(?x, xt:mediane(?list))
+                IDatatype dt = DatatypeMap.createList(list);
+                IDatatype agg = (IDatatype) eval.getProxy().let(exp.getExp(1), env, p, dt);
+                return agg;
 
         }
 
@@ -217,19 +233,21 @@ class Walker extends Interpreter {
         Node node = null;
         IDatatype dt = null;
 
-        if (arg.isVariable()) {
-            // sum(?x)
-            // get value from Node Mapping
-            node = map.getTNode(qNode);
-            if (node == null) {
-                return null;
-            }
-            dt = (IDatatype) node.getValue();
-        } else {
-            // sum(?x + ?y)
-            // eval ?x + ?y
-            dt = (IDatatype) eval.eval(arg, map, p);
-        }
+//        if (arg.isVariable()) {
+//            // sum(?x)
+//            // get value from Node Mapping
+//            node = map.getTNode(qNode);
+//            if (node == null) {
+//                return null;
+//            }
+//            dt = (IDatatype) node.getValue();
+//        } else {
+//            // sum(?x + ?y)
+//            // eval ?x + ?y
+//            dt = (IDatatype) eval.eval(arg, map, p);
+//        }
+        
+        dt = (IDatatype) eval.eval(arg, map, p);
 
         if (dt != null) {
 
@@ -314,9 +332,10 @@ class Walker extends Interpreter {
                     break;
                     
                 case AGGLIST:
+                case AGGREGATE:
                     if (dt == null) {
                         isError = true;
-                    } else {
+                    } else if (accept(f, dt)) {
                         list.add(dt);
                     }
                     break;
@@ -370,8 +389,9 @@ class Walker extends Interpreter {
                     sb.append(sep);
                 }
                 
-                if (dt.getStringBuilder() != null) {
-                    sb.append(dt.getStringBuilder());
+                StringBuilder s = dt.getStringBuilder();
+                if (s != null) {                   
+                   sb.append(s);                  
                 } else {
                     sb.append(dt.getLabel());
                 }

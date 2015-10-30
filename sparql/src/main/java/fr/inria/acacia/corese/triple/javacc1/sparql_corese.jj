@@ -2216,7 +2216,7 @@ Expression RelationalExpression(Exp stack) : { Token t1; Expression expression1,
   ( 
     (   
         t1 = Soper() expression2 = NumericExpression(stack)
-      | t1 = Toper() expression2 = NumericExpression(stack)  
+//      | t1 = Toper() expression2 = NumericExpression(stack)  
       |  (<NOT> {not = true;} )? 
         t1 = <IN>    el = ArgList(stack) {expression2 = astq.createList(el);}
     ) 
@@ -2325,7 +2325,7 @@ Term RegexExpression(Exp stack): { Term term; Token t; Expression expression1, e
   { return term; }
 }
 
-Term FunctionCorese(Exp stack): { Token t; Term term; ExpressionList v; Constant cst; }
+Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; Constant cst; }
 {	
 	// distance namespace isMulti sqrt depth cardinality isuri occurence
   ((
@@ -2337,6 +2337,7 @@ Term FunctionCorese(Exp stack): { Token t; Term term; ExpressionList v; Constant
   )
   | term = IfThenElse(stack)
   | term = Let(stack)
+  | term = For(stack)
   )
 
   { return term; }
@@ -2348,26 +2349,60 @@ Term IfThenElse (Exp stack) : {Term t; Expression test, e1, e2;}
     <IF> <LPAREN> test = Expression(stack)
 
     (
-    ( <COMMA> e1 = Expression(stack) <COMMA> e2 = Expression(stack) <RPAREN> ) |
+    ( <COMMA> e1 = Expression(stack) <COMMA> e2 = Expression(stack) <RPAREN> ) 
+    |
     (<RPAREN>
      <LBRACE> e1 = Expression(stack) <RBRACE>
-     <ELSE> 
-     <LBRACE> e2 = Expression(stack) <RBRACE>)
+     { e2 = null ;}
+     (<ELSE> 
+     <LBRACE> e2 = Expression(stack) <RBRACE>) ?
+     ) 
     )
     { t = astq.ifThenElse(test, e1, e2); 
       return t;}
 }
 
 
-Term Let (Exp stack) : {Term t; Expression exp ; ExpressionList arg;}
+Term For (Exp stack) : {Term t; Expression exp, body ; Variable var; ExpressionList arg;}
 {
-    <LET> arg = ArgList(stack)   
-    <LBRACE> exp = Expression(stack) <RBRACE>
+    <FOR> <LPAREN> var = Var() <IN> exp = Expression(stack) <RPAREN>   
+    <LBRACE> body = Expression(stack) <RBRACE>
     
-    { t = astq.let(arg, exp); 
+    { t = astq.loop(var, exp, body); 
       return t;}
 }
 
+Term Let (Exp stack) : { Expression exp ; Expression arg; ExpressionList list;}
+{
+        <LET>
+        <LPAREN> { list = new ExpressionList(); }
+               arg = LetDef(stack) { list.add(arg); }
+               ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*
+        <RPAREN>
+        <LBRACE> exp = Expression(stack) <RBRACE>
+    
+      { return astq.let(list, exp); }
+}
+
+Expression LetDef(Exp stack) : { Variable var;   Expression exp ; ExpressionList el; }
+{
+ exp = Expression(stack) 			
+  <AS> 
+  ( var = Var() { return astq.defLet(var, exp);  }	
+    | 
+    	       
+    <LPAREN> { el = new ExpressionList();  }
+	var = Var()  
+	{ el.add(var); } 
+	( <COMMA> var = Var()   
+            { el.add(var); }
+	) *					
+    <RPAREN>	    					     
+  )
+
+   { return astq.defLet(el, exp);  }
+ 
+}
 
 Term FunctionCall(Exp stack) : { Term term1;   ExpressionList v; Constant cst;}
 {
@@ -2402,11 +2437,11 @@ Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term 
   { return expression; } 
 }
 
-Term Function(Exp stack) : { Term term;   ExpressionList v; Constant cst; Expression exp;}
+Term Function(Exp stack) : { Term term;   ExpressionList v; Constant cst; Expression exp = null;}
 {
   <FUNCTION> cst = IRIrefConst()
   v = ArgList(stack)
-    <LBRACE> exp = Expression(stack) <RBRACE> 
+    <LBRACE> (exp = Expression(stack))? <RBRACE> 
 
   { 
   	term = astq.defineFunction(cst, v, exp ); 
@@ -2725,6 +2760,7 @@ TOKEN [IGNORE_CASE] :
 | < NOT: "not">
 | < SCOPE: "scope">
 | < LET: "let">
+| < FOR: "for">
 | < IF: "if">
 | < THEN: "then">
 | < ELSE: "else">

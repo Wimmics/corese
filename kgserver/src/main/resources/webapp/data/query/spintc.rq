@@ -1,5 +1,3 @@
-prefix tc: </home/corby/AData/template/spintc/>
-prefix t:  </home/corby/AData/template/spinhtml/template/>
 template {
     st:apply-templates-with(st:spinhtml)
 }

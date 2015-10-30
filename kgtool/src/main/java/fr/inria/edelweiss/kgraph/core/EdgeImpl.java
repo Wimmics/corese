@@ -4,6 +4,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

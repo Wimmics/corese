@@ -38,7 +38,6 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.api.Tagger;
 import fr.inria.edelweiss.kgraph.api.ValueResolver;
 import fr.inria.edelweiss.kgraph.logic.*;
-import java.util.Collection;
 import java.util.Map;
 
 /**

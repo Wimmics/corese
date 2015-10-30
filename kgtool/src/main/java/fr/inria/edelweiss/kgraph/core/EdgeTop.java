@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.core;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import java.util.ArrayList;
 
 /**
  *
@@ -29,6 +30,16 @@ public abstract class EdgeTop implements Entity {
          public void setProvenance(Object o){
              
          }
+         
+        @Override
+       public Iterable<Object> getLoop() {
+            ArrayList<Object> list = new ArrayList();
+            list.add(getGraph().getValue());
+            list.add(getNode(0).getValue());
+            list.add(getEdge().getEdgeNode().getValue());
+            list.add(getNode(1).getValue());
+            return list;
+      }
 
 
 }

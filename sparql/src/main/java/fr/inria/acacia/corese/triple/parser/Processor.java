@@ -36,7 +36,8 @@ public class Processor {
 	public static final String LIST     = EXT+"list";
 	public static final String IOTA     = EXT+"iota";
 	public static final String XT_REVERSE  = EXT+"reverse";
-	public static final String XT_APPEND  = EXT+"append";
+	public static final String XT_APPEND   = EXT+"append";
+	public static final String XT_SORT     = EXT+"sort";
         
 	public static final String IN  	 = "in";
 
@@ -63,29 +64,31 @@ public class Processor {
 	private static final String SAMPLE = "sample";
 
 	public static final String LET     = "let";
+        static final String FOR             = "for";
 	private static final String MAP     = "map";
 	private static final String MAPLIST = "maplist";
 	private static final String MAPMERGE = "mapmerge";
 	private static final String MAPSELECT = "mapselect";
 	private static final String APPLY   = "apply";
         
-        private static final String XT_SELF = EXT + "self";
-        private static final String XT_FIRST = EXT + "first";
-        private static final String XT_REST = EXT + "rest";
-        private static final String XT_GET = EXT + "get";
-        private static final String XT_SET = EXT + "set";
-        private static final String XT_CONS = EXT + "cons";        
-        private static final String XT_CONCAT = EXT + "concat";
-        private static final String XT_COUNT = EXT + "count";
-        private static final String XT_SIZE = EXT + "size";
-        private static final String XT_SUM   = EXT + "sum";
-        private static final String XT_PROD  = EXT + "prod";
+        private static final String XT_SELF     = EXT + "self";
+        private static final String XT_FIRST    = EXT + "first";
+        private static final String XT_REST     = EXT + "rest";
+        private static final String XT_GET      = EXT + "get";
+        private static final String XT_SET      = EXT + "set";
+        private static final String XT_CONS     = EXT + "cons";        
+        private static final String XT_CONCAT   = EXT + "concat";
+        private static final String XT_COUNT    = EXT + "count";
+        private static final String XT_SIZE     = EXT + "size";      
         private static final String XT_GRAPH    = EXT + "graph";
         private static final String XT_SUBJECT  = EXT + "subject";
         private static final String XT_PROPERTY = EXT + "property";
         private static final String XT_OBJECT   = EXT + "object";
-        private static final String XT_VALUE   = EXT + "value";
-        private static final String XT_INDEX   = EXT + "index";
+        private static final String XT_VALUE    = EXT + "value";
+        private static final String XT_INDEX    = EXT + "index";
+        private static final String XT_REJECT   = EXT + "reject";
+        private static final String XT_VARIABLES = EXT + "variables";
+        
 
 	private static final String PLENGTH = "pathLength";
 	private static final String KGPLENGTH = KGRAM + "pathLength";
@@ -128,6 +131,7 @@ public class Processor {
 	static final String EVAL 		= KGRAM + "eval";
         static final String PROLOG 		= KGRAM + "prolog";
 
+	public static final String AGGREGATE    = "aggregate"; 
 	public static final String STL_AGGREGATE    = STL + "aggregate"; 
 	public static final String STL_DEFAULT      = STL + "default"; 
 	public static final String STL_PROCESS      = STL + "process"; 
@@ -303,7 +307,7 @@ public class Processor {
         static final String XT_PLUS 	= EXT + "plus";
         static final String XT_MINUS 	= EXT + "minus";
         static final String XT_MULT 	= EXT + "mult";
-        static final String XT_DIV 	= EXT + "div";
+        static final String XT_DIV 	= EXT + "divis";
         static final String XT_AND 	= EXT + "and";
         static final String XT_OR 	= EXT + "or";
         static final String XT_NOT 	= EXT + "not";
@@ -312,7 +316,7 @@ public class Processor {
         
         public static final String[] aggregate = 
 	{AVG, COUNT, SUM, MIN, MAX, SAMPLE, 
-         GROUPCONCAT, STL_GROUPCONCAT, STL_AGGAND, STL_AGGLIST, STL_AGGREGATE};
+         GROUPCONCAT, STL_GROUPCONCAT, STL_AGGAND, STL_AGGLIST, STL_AGGREGATE, AGGREGATE};
 	
 	Term term;
 	List<Expr> lExp;
@@ -567,9 +571,11 @@ public class Processor {
 		defoper(IOTA,           ExprType.IOTA);
 		defoper(XT_REVERSE,     ExprType.XT_REVERSE);
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
+		defoper(XT_SORT,        ExprType.XT_SORT);
                 
 		defoper(APPLY,          ExprType.APPLY);
 		defoper(MAP,            ExprType.MAP);
+		defoper(FOR,            ExprType.FOR);
 		defoper(MAPLIST,        ExprType.MAPLIST);
 		defoper(MAPMERGE,       ExprType.MAPMERGE);
 		defoper(MAPSELECT,      ExprType.MAPSELECT);
@@ -583,18 +589,18 @@ public class Processor {
 		defoper(XT_SELF,        ExprType.SELF);
 		defoper(XT_GET,         ExprType.XT_GET);
 		defoper(XT_SET,         ExprType.XT_SET);
-                
+ 		defoper(XT_REJECT,      ExprType.XT_REJECT);
+               
 		defoper(XT_COUNT,        ExprType.XT_COUNT);
-		defoper(XT_SIZE,         ExprType.XT_COUNT);
-		defoper(XT_SUM,          ExprType.XT_SUM);
-		defoper(XT_PROD,         ExprType.XT_PROD);
+		defoper(XT_SIZE,         ExprType.XT_COUNT);		
 		defoper(XT_GRAPH,        ExprType.XT_GRAPH);
 		defoper(XT_SUBJECT,      ExprType.XT_SUBJECT);
 		defoper(XT_PROPERTY,     ExprType.XT_PROPERTY);
 		defoper(XT_OBJECT,       ExprType.XT_OBJECT);
 		defoper(XT_VALUE,        ExprType.XT_VALUE);                
 		defoper(XT_INDEX,        ExprType.XT_INDEX);
-		
+		defoper(XT_VARIABLES,    ExprType.XT_VARIABLES);
+                
 		defoper(REGEX, 		ExprType.REGEX);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
 		defoper(STR, 		ExprType.STR);
@@ -708,6 +714,7 @@ public class Processor {
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
                 defoper(STL_GROUPCONCAT, ExprType.STL_GROUPCONCAT);
                 defoper(STL_AGGREGATE,   ExprType.STL_AGGREGATE);
+                defoper(AGGREGATE,       ExprType.AGGREGATE);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);
@@ -739,16 +746,16 @@ public class Processor {
                 defoper(KG_EQUAL,  ExprType.EQ);
                 defoper(KG_DIFF,   ExprType.NEQ);
                 
-//                defoper(XT_POWER,  ExprType.POWER);
-//                defoper(XT_PLUS,   ExprType.PLUS);
-//                defoper(XT_MULT,   ExprType.MULT);
-//                defoper(XT_MINUS,  ExprType.MINUS);
-//                defoper(XT_DIV,    ExprType.DIV);
-//                defoper(XT_AND,    ExprType.AND);
-//                defoper(XT_OR,     ExprType.OR);
-//                defoper(XT_NOT,    ExprType.NOT);
-//                defoper(XT_EQUAL,  ExprType.EQ);
-//                defoper(XT_DIFF,   ExprType.NEQ);  
+                defoper(XT_POWER,  ExprType.POWER);
+                defoper(XT_PLUS,   ExprType.PLUS);
+                defoper(XT_MULT,   ExprType.MULT);
+                defoper(XT_MINUS,  ExprType.MINUS);
+                defoper(XT_DIV,    ExprType.DIV);
+                defoper(XT_AND,    ExprType.AND);
+                defoper(XT_OR,     ExprType.OR);
+                defoper(XT_NOT,    ExprType.NOT);
+                defoper(XT_EQUAL,  ExprType.EQ);
+                defoper(XT_DIFF,   ExprType.NEQ);  
                 
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);
@@ -870,10 +877,15 @@ public class Processor {
                 case ExprType.APPLY:
                     processMap(ast);
                     break;
+                    
+                case ExprType.AGGREGATE:
+                    processAggregate(ast);
+                    break;
                                                       
                 case ExprType.LET:
                     processLet(ast);
                     break;
+                                   
                     
             }
         }
@@ -885,6 +897,11 @@ public class Processor {
          * @param ast 
          */
         void processLet(ASTQuery ast){
+            processMatch(ast);
+            processLetSimple(ast);            
+        }
+        
+        void processLetSimple(ASTQuery ast){
             if (term.getArgs().size() > 2){
                 Term let = Term.function(LET, term.getArg(1));
                 
@@ -896,9 +913,53 @@ public class Processor {
                 list.add(term.getArg(0));
                 list.add(let);
                 term.setArgs(list);
-                processLet(ast);
+                processLetSimple(ast);
             }
         }
+        
+        /**
+         * let (match(?x, ?p, ?y) = ?l) {}
+         * ::=
+         * let (?x = xt:get(?l, 0), ?p = xt:get(?l, 1), ?y = xt:get(?l, 2)) {} 
+         * @param ast 
+         */
+        void processMatch(ASTQuery ast){
+            boolean again = false;
+            
+            for (int i = 0; i<term.getArgs().size() - 1; i++){
+
+                 Expression match = term.getArg(i).getArg(0);
+                 Expression list  = term.getArg(i).getArg(1);
+                 
+                 if (match.isFunction() && match.getLabel().equals(Processor.MATCH)){
+                     ArrayList<Expression> l = new ArrayList();
+                     int j = 0;
+                     
+                     for (Expression arg : match.getArgs()){
+                         Term fun = ast.createFunction(ast.createQName("xt:get"), list, Constant.create(j++));
+                         Term t   = Term.create("=", arg.getVariable(), fun);
+                         l.add(t);
+                     }
+                                                              
+                     // replace match() = ?l at index i
+                     term.setArg(i, l.get(0));
+                     
+                     // add other exp just after i
+                     for (int k = 1; k<l.size(); k++){
+                        term.add(i+k, l.get(k)); 
+                     }
+
+                     // recurse as there may be other match 
+                     again = true;
+                     break;
+                 }
+            }
+            
+            if (again){
+               processMatch(ast); 
+            }
+        }
+        
         
         /**
          * map(xt:fun, ?list)
@@ -906,13 +967,13 @@ public class Processor {
          * map(xt:fun(?x), ?list)
          * @param ast 
          */
-       void processMap(ASTQuery ast) {
+      void processMap(ASTQuery ast) {
         if (term.getArgs().size() >= 2) {
             Expression fst = term.getArg(0);
 
             if (fst.isConstant()) {
                 Term fun = ast.createFunction(fst.getConstant());
-                int max = (term.oper() == ExprType.APPLY) ? 2 : term.getArgs().size() -1;
+                int max = (term.oper() == ExprType.APPLY) ? 2 : term.getArgs().size() - 1;
                 // create 2 variables for apply(kg:plus, ?list) for ?a + ?b
                 for (int i = 0; i < max; i++) {
                     Variable var = ASTQuery.createVariable("?_map_var" + i);
@@ -922,6 +983,19 @@ public class Processor {
             }
         }
     }
+      
+      // aggregate(?x, xt:mediane)
+      void processAggregate(ASTQuery ast) {
+        if (term.getArgs().size() == 2) {
+            Expression rst = term.getArg(1);
+            if (rst.isConstant()) {
+                Term fun = ast.createFunction(rst.getConstant());
+                Variable var = ASTQuery.createVariable("?_agg_var");
+                fun.add(var);
+                term.setArg(1, fun);
+            }
+        }
+    } 
 
                      
         Term cstToFun(ASTQuery ast, Constant cst) {

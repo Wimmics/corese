@@ -53,6 +53,8 @@ public class Eval implements ExpType, Plugin {
     private static final String FUN_MINUS       = PREF + "minus";
     private static final String FUN_OPTIONAL    = PREF + "optional";
     private static final String FUN_RESULT      = PREF + "result";
+    private static final String FUN_SOLUTION    = PREF + "solution";
+    private static final String FUN_START       = PREF + "start";
     
     static final int STOP = -2;
     public static int count = 0;
@@ -104,7 +106,9 @@ public class Eval implements ExpType, Plugin {
             hasCandidate = false,
             hasOptional,
             hasMinus,
-            hasResult = false;
+            hasResult = false,
+            hasStart = false,
+            hasSolution = false;
     
 
     //Edge previous;
@@ -154,21 +158,27 @@ public class Eval implements ExpType, Plugin {
      * shares the memory with outer eval
      */
     public Mappings query(Query q) {
-        return eval(null, q, null);
+        return query(q, null);
     }
 
-    public Mappings query(Query q, Mapping map) {
+    public Mappings query(Query q, Mapping m) {
         if (hasEvent) {
             send(Event.BEGIN, q);
-        }
-
-        Mappings maps = eval(null, q, map);
+        }       
+    
+        Mappings map = eval(null, q, m);
 
         if (hasEvent) {
-            send(Event.END, q, maps);
+            send(Event.END, q, map);
+        }
+        if (hasSolution){
+           memory.setResults(map);
+           Object res = evaluator.eval(getExpression(FUN_SOLUTION), memory, producer, 
+                   toArray(producer.getNode(q), producer.getNode(map)));
+           map.complete();
         }
         
-        return maps;
+        return map;
     }
 
     Mappings eval(Query q) {
@@ -177,6 +187,10 @@ public class Eval implements ExpType, Plugin {
 
     private Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
+        if (hasStart && ! q.isSubQuery()){         
+           Object res = evaluator.eval(getExpression(q, FUN_START), memory, producer,
+                  toArray(producer.getNode(q), producer.getNode(q.getAST())));          
+        }
 
         if (q.isCheck()) {
             // Draft
@@ -586,6 +600,8 @@ public class Eval implements ExpType, Plugin {
         hasOptional  = (getExpression(FUN_OPTIONAL) != null);
         hasMinus     = (getExpression(FUN_MINUS) != null);
         hasResult    = (getExpression(FUN_RESULT) != null);
+        hasSolution  = (getExpression(FUN_SOLUTION) != null);
+        hasStart     = (getExpression(FUN_START) != null);
     }
 
     private void complete() {
@@ -1171,7 +1187,7 @@ public class Eval implements ExpType, Plugin {
 
         if (exp.getNodeList() == null) {
             // Constant are not yet transformed into Node
-            for (Object value : exp.getValues()) {
+            for (Object value : exp.getObjectValues()) {
                 // get constant Node
                 Expr cst = (Expr) value;
                 Node node = prod.getNode(cst.getValue());                
@@ -2135,7 +2151,9 @@ public class Eval implements ExpType, Plugin {
                 
                 if (hasCandidate){
                     DatatypeValue val = candidate(qEdge, ent, p.getValue(bmatch));
-                    bmatch = val.booleanValue();
+                    if (val != null){
+                       bmatch = val.booleanValue();
+                    }
                 }
 
                 if (bmatch) {
@@ -2209,8 +2227,12 @@ public class Eval implements ExpType, Plugin {
     }
     
     Expr getExpression(String name){
-        if (query.getExtension() != null){
-            Expr exp = query.getExtension().get(name);
+        return getExpression(query, name);
+    }
+    
+    Expr getExpression(Query q, String name){
+        if (q.getExtension() != null){
+            Expr exp = q.getExtension().get(name);
             if (exp != null){
                 return exp.getExp(0);
             }
@@ -2652,7 +2674,7 @@ public class Eval implements ExpType, Plugin {
                 send(Event.RESULT, ans);
             }
             if (hasResult){                
-                Object res = evaluator.eval(getExpression(FUN_RESULT), memory, p, toArray(p.getNode(ans)));
+                Object res = evaluator.eval(getExpression(FUN_RESULT), memory, p, toArray(p.getNode(query), p.getNode(ans)));
             }
         }  
         return -1;

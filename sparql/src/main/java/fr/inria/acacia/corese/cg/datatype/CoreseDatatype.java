@@ -325,6 +325,10 @@ public class CoreseDatatype
         public boolean isList(){
             return false;
         }
+        
+        public boolean isLoop(){
+            return false;
+        }
 	
 	public CoreseArray getArray(){
 		return null;
@@ -333,6 +337,10 @@ public class CoreseDatatype
 	public IDatatype[] getValues(){
 		return null;
 	}
+        
+        public Iterable getLoop(){
+            return null;
+        }
 	
 	public IDatatype get(int n){
 		return null;
@@ -452,7 +460,10 @@ public class CoreseDatatype
 	public StringBuilder getStringBuilder(){
 		return null;
 	}
-	
+        
+        public void setStringBuilder(StringBuilder s){
+	}
+       	
 	public boolean isNumber() {
 		return false;
 	}
@@ -509,7 +520,13 @@ public class CoreseDatatype
 	 * literals are sorted with their lang if any
 	 * TODO : the primary order (Lit URI BN) is inverse of SPARQL !!!
 	 */
+        @Override
+        public int compareTo(Object d2){
+            return compareTo((IDatatype) d2);
+        }
+
 	
+        @Override
 	public int compareTo(IDatatype d2){
 		int code = getCode(), other = d2.getCode();
 		boolean b = false;

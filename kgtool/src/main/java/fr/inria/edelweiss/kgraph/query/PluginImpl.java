@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.storage.api.IStorage;
+import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
@@ -49,7 +51,7 @@ public class PluginImpl extends ProxyImpl {
     private static final String NL = System.getProperty("line.separator");
     static final String alpha = "abcdefghijklmnoprstuvwxyz";
     static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-   
+    static int nbBufferedValue = 0;
     
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
@@ -63,7 +65,8 @@ public class PluginImpl extends ProxyImpl {
     
     ExtendGraph ext;
     private PluginTransform pt;
-   
+    private IStorage storageMgr;
+
 
     PluginImpl(Matcher m) {
         if (table == null) {
@@ -217,7 +220,7 @@ public class PluginImpl extends ProxyImpl {
              case XT_OBJECT:
              case XT_INDEX:
                  return access(exp, env, p, dt);
-                        
+                                         
              default:
                  return pt.function(exp, env, p, dt);
            
@@ -815,6 +818,30 @@ public class PluginImpl extends ProxyImpl {
         }
     }
     
+     /**
+      * STTL create intermediate string result (cf Proxy STL_CONCAT) 
+      * Save string value to disk using Fuqi StrManager
+      * Each STTL Transformation would have its own StrManager
+      * Managed in the Context to be shared between subtransformation (cf OWL2)
+      */
+    @Override
+    public IDatatype getBufferedValue(StringBuilder sb, Environment env){
+        if (storageMgr == null){
+            createManager();
+        }
+        if (storageMgr.check(sb.length())){
+            IDatatype dt = getValue(sb.toString());
+            dt.setValue(dt.getLabel(), nbBufferedValue++, storageMgr);
+            return dt;
+        }
+        else {
+            return DatatypeMap.newStringBuilder(sb);
+        }               
+    }
     
+    void createManager(){
+        storageMgr = StorageFactory.create(IStorage.STORAGE_FILE, null);
+        storageMgr.enable(true);
+    }
     
 }

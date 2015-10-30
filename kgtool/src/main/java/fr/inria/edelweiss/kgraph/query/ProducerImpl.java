@@ -37,7 +37,6 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -717,12 +716,24 @@ public class ProducerImpl implements Producer, IProducerQP {
      *   Cast Java value into IDatatype 
      */
     public IDatatype getValue(Object value){
+        if (value instanceof IDatatype){
+            return (IDatatype) value;
+        }
+        if (value instanceof Node){
+            return nodeValue((Node) value);
+        }
         IDatatype dt = DatatypeMap.cast(value);
         if (dt == null){
             dt = DatatypeMap.createObject("tmp", value);
         }
         return dt;
     }
+    
+            
+    IDatatype nodeValue(Node n){
+        return (IDatatype) n.getValue();
+    }
+    
     
     // cast IDatatype or Java value into DatatypeValue
     public DatatypeValue getDatatypeValue(Object value){
@@ -907,6 +918,13 @@ public class ProducerImpl implements Producer, IProducerQP {
         }
         return lMap;
     }
+    
+//    public Iterable<Object> toList(Object obj){
+//        IDatatype dt = (IDatatype) obj;
+//        if (obj instanceof Mappings){
+//            return 
+//        }
+//    }
 
     @Override
     public List<Node> toNodeList(Object obj) {
@@ -1114,5 +1132,5 @@ public class ProducerImpl implements Producer, IProducerQP {
     public void setQuery(Query query) {
         this.query = query;
     }
-    
+
 }

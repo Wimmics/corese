@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
 import fr.inria.edelweiss.kgram.filter.Extension;
@@ -33,7 +34,7 @@ import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
 
 public class Mapping  
 	extends EnvironmentImpl 
-	implements Result, Environment
+	implements Result, Environment, Loopable
 {
         static final Edge[] emptyEdge   = new Edge[0];
         static final Entity[] emptyEntity = new Entity[0];
@@ -585,6 +586,15 @@ public class Mapping
 		}
 		return null;
 	}
+        
+        @Override
+       public Iterable getLoop() {
+            ArrayList<Object> list = new ArrayList();
+            for (Node n : getNodes()) {
+                list.add(n.getValue());
+            }
+            return list;
+       }
 	
 	public Node[] getQueryNodes(){
 		return qNodes;

@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
@@ -25,7 +26,7 @@ import fr.inria.edelweiss.kgram.event.EventManager;
  * @author Olivier Corby, Edelweiss, INRIA 2009
  */
 public class Mappings  
-implements Comparator<Mapping> , Iterable<Mapping>
+implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 {
 	private static final String NL = System.getProperty("line.separator");;
 	/**
@@ -45,7 +46,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	isListGroup = false;
         boolean sortWithDesc = true;
 	Query query;
-	List<Mapping>  list;
+	List<Mapping>  list, reject;
 	private List<Entity> insert;
 	private List<Entity> delete;
 	Group group, distinct;
@@ -96,6 +97,11 @@ implements Comparator<Mapping> , Iterable<Mapping>
 		lMap.init(q, subEval);
 		return lMap;
 	}
+        
+        @Override
+        public Iterable getLoop(){
+            return this;
+        }
 	
 	void init(Query q, boolean subEval){
 		isDistinct  = ! subEval && q.isDistinct();
@@ -131,6 +137,21 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	public void add(Mapping m){
 		list.add(m);
 	}
+        
+        public void reject(Mapping m){
+            if (reject == null){
+                reject = new ArrayList();
+            }
+            reject.add(m);
+        }
+        
+        void complete(){
+            if (reject != null){
+                for (Mapping m : reject){
+                    list.remove(m);
+                }
+            }
+        }
 	
 	List<Mapping> getList(){
 		return list;

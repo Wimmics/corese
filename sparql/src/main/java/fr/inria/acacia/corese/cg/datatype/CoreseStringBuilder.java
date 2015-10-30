@@ -23,5 +23,10 @@ public class CoreseStringBuilder extends CoreseString {
 	public StringBuilder getStringBuilder(){
 		return sb;
 	}
+        
+        public void setStringBuilder(StringBuilder s){
+            sb = s;
+	}
+        
 
 }

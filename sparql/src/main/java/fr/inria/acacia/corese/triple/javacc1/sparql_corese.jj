@@ -2344,29 +2344,31 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
 }
 
 
-Term IfThenElse (Exp stack) : {Term t; Expression test, e1, e2;}
+Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
 {
     <IF> <LPAREN> test = Expression(stack)
 
     (
-    ( <COMMA> e1 = Expression(stack) <COMMA> e2 = Expression(stack) <RPAREN> ) 
+     <COMMA> e1 = Expression(stack) <COMMA> e2 = Expression(stack) <RPAREN>  
     |
-    (<RPAREN>
-     <LBRACE> e1 = Expression(stack) <RBRACE>
-     { e2 = null ;}
+     <RPAREN>
+     <LBRACE> e1 = Expression(stack) <RBRACE>    
      (<ELSE> 
-     <LBRACE> e2 = Expression(stack) <RBRACE>) ?
-     ) 
+        (
+          <LBRACE> e2 = Expression(stack) <RBRACE>
+          |
+          e2 = IfThenElse (stack)
+        )
+     ) ?     
     )
-    { t = astq.ifThenElse(test, e1, e2); 
-      return t;}
+    { return astq.ifThenElse(test, e1, e2); }
 }
 
 
 Term For (Exp stack) : {Term t; Expression exp, body ; Variable var; ExpressionList arg;}
 {
     <FOR> <LPAREN> var = Var() <IN> exp = Expression(stack) <RPAREN>   
-    <LBRACE> body = Expression(stack) <RBRACE>
+    body = Body(stack)
     
     { t = astq.loop(var, exp, body); 
       return t;}
@@ -2379,7 +2381,7 @@ Term Let (Exp stack) : { Expression exp ; Expression arg; ExpressionList list;}
                arg = LetDef(stack) { list.add(arg); }
                ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*
         <RPAREN>
-        <LBRACE> exp = Expression(stack) <RBRACE>
+        exp = Body(stack)
     
       { return astq.let(list, exp); }
 }
@@ -2437,16 +2439,26 @@ Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term 
   { return expression; } 
 }
 
-Term Function(Exp stack) : { Term term;   ExpressionList v; Constant cst; Expression exp = null;}
+Term Function(Exp stack) : { Term term;   ExpressionList v; Constant cst; Expression body;}
 {
   <FUNCTION> cst = IRIrefConst()
   v = ArgList(stack)
-    <LBRACE> (exp = Expression(stack))? <RBRACE> 
+  body = Body(stack)
 
   { 
-  	term = astq.defineFunction(cst, v, exp ); 
+  	term = astq.defineFunction(cst, v, body ); 
   }
   { return term; }
+}
+
+Expression Body(Exp stack) : { ExpressionList body = new ExpressionList(); Expression exp = null;}
+{
+ <LBRACE> ( <RBRACE> |        
+        exp = Expression(stack) { body.add(exp); } 
+        ( <SEMICOLON> exp = Expression(stack) { body.add(exp); } ) *
+            <RBRACE>
+        ) 
+    { return astq.defineBody(body) ; }
 }
 
 void Export(Exp stack) : { Term term; }

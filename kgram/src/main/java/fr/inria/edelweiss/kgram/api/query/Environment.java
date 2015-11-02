@@ -150,7 +150,10 @@ public interface Environment {
         
         Mappings getMappings();
         
-        // DRAFT local variable
+        // bind : set(?x, ?x + 1)
+        void bind(Expr exp, Expr var, Node value);
+
+        // set: let (?x as ?y){}
         void set(Expr exp, Expr var, Node value);
         
         void set(Expr exp, List<Expr> var, Object[] value);
@@ -160,7 +163,7 @@ public interface Environment {
         void unset(Expr exp, Expr var);
         
         void unset(Expr exp, List<Expr> var);
-        
+                
         Extension getExtension();
 
 }

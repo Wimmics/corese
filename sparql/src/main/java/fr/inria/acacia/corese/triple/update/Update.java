@@ -2,13 +2,13 @@ package fr.inria.acacia.corese.triple.update;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Statement;
+import fr.inria.acacia.corese.triple.parser.TopExp;
 
 /**
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2011
  */
-public class Update  extends Statement {
+public class Update  extends TopExp {
 	
 	static final String[] NAME = 
 	{"load", "clear", "drop", "create", "add", "move", "copy", "prolog",

@@ -54,14 +54,14 @@ public class Extension {
      * exp: st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1))
      */
     public void define(Expr exp) {
-        Expr fun = exp.getExp(0);
+        Expr fun = exp.getFunction(); //exp.getExp(0);
         getMap(fun).put(fun.getLabel(), exp);
     }
     
     public void add(Extension ext){
         for (FunMap m : ext.getMaps()){
             for (Expr e : m.values()){
-                if (! isDefined(e.getExp(0))){
+                if (! isDefined(e.getFunction())){ //getExp(0))){
                     define(e);
                 }
             }

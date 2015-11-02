@@ -282,11 +282,17 @@ public class Interpreter implements Evaluator, ExprType {
                 }
                 return null;
                 
+            case SEQUENCE:
+                return sequence(exp, env, p);
+                
             case FOR:
                 return proxy.function(exp, env, p);
                 
             case LET:
                 return let(exp, env, p);
+                
+            case SET:
+                return set(exp, env, p);
 
             case EXIST:
                 return exist(exp, env, p);
@@ -587,20 +593,40 @@ public class Interpreter implements Evaluator, ExprType {
     public void finish(Environment env) {
         proxy.finish(producer, env);
     }
+    
+    private Object sequence(Expr exp, Environment env, Producer p) {
+        Object res = TRUE;
+        for (Expr e : exp.getExpList()){
+            res = eval(e, env, p);
+            if (res == ERROR_VALUE){
+                return ERROR_VALUE;
+            }
+        }
+        return res;
+    }
+
 
     /**
      * let (?x = ?y, exp) 
-     * TODO: optimize local()
      */
     private Object let(Expr exp, Environment env, Producer p) {
-        Expr let  = exp.getExp(0);
-        Expr ee   = exp.getExp(1);
-        Expr var  = let.getExp(0);
-        Node val  = eval(let.getExp(1).getFilter(), env, p);
+        Node val  = eval(exp.getDefinition().getFilter(), env, p); 
         if (val == ERROR_VALUE){
             return null;
         }
-        return let(ee, env, p, exp, var, val);
+        return let(exp.getBody(), env, p, exp, exp.getVariable(), val);
+    }
+    
+    /**
+     * set(?x, ?x + 1)   
+     */
+    private Object set(Expr exp, Environment env, Producer p) {
+        Node val  = eval(exp.getExp(1).getFilter(), env, p);
+        if (val == ERROR_VALUE){
+            return null;
+        }
+        env.bind(exp, exp.getExp(0), val);
+        return val;
     }
     
      private Object let(Expr exp, Environment env, Producer p, Expr let, Expr var, Node val) {     
@@ -640,9 +666,9 @@ public class Interpreter implements Evaluator, ExprType {
      */
     public Object eval(Expr exp, Environment env, Producer p, Object[] values, Expr def){   
         //count++;
-        Expr fun = def.getExp(0);
+        Expr fun = def.getFunction(); //getExp(0);
         env.set(def, fun.getExpList(), values);        
-        Object res = eval(def.getExp(1), env, p);        
+        Object res = eval(def.getBody(), env, p);        
         env.unset(def, fun.getExpList());        
         return res;
     }

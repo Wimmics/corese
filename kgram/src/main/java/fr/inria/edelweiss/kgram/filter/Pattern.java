@@ -297,12 +297,22 @@ public class Pattern implements ExprType, Expr {
     }
 
     @Override
-    public Expr getFunDefine() {
+    public Expr getFunction() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Expr getFunBody() {
+    public Expr getBody() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+        @Override
+    public Expr getVariable() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Expr getDefinition() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -199,6 +199,11 @@ public class EnvironmentImpl implements Environment {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public void bind(Expr exp, Expr var, Node value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 	
 
 }

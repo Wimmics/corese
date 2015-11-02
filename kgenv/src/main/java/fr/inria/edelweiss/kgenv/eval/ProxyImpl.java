@@ -148,17 +148,17 @@ public class ProxyImpl implements Proxy, ExprType {
           return args;
      }
      
+     // TODO: check ExprLabel.COMPARE
      public int compare(Environment env, Producer p, Node o1, Node o2) {
         IDatatype dt1 = (IDatatype) o1.getValue();
         IDatatype dt2 = (IDatatype) o2.getValue();
-        
         if (dt1.getCode() == IDatatype.UNDEF && dt2.getCode() == IDatatype.UNDEF){
             if (dt1.getDatatypeURI().equals(dt2.getDatatypeURI())){   
                 // get an extension function that implements the operator for
                 // the extended datatype
-                Expr exp = eval.getDefine(env, ExprLabel.COMPARE, 2); 
+                Expr exp = eval.getDefine(env, ExprLabel.COMPARE, 2);
                 if (exp != null){
-                     IDatatype res = (IDatatype) eval.eval(exp.getExp(0), env, p, array(dt1, dt2), exp);
+                     IDatatype res = (IDatatype) eval.eval(exp.getFunction(), env, p, array(dt1, dt2), exp);
                      if (res == null){
                          return 0;
                      }
@@ -1342,13 +1342,13 @@ public class ProxyImpl implements Proxy, ExprType {
       * @return 
       */
     IDatatype loop(Expr loop, Environment env, Producer p){
-        IDatatype list = (IDatatype) eval.eval(loop.getExp(1), env, p);
+        IDatatype list = (IDatatype) eval.eval(loop.getDefinition(), env, p);
         if (list == null){ 
             return null;
         }
         if (list.isList()){
             for (IDatatype dt : list.getValues()){           
-                IDatatype res = let(loop.getExp(2), loop.getExp(0), dt, env, p);
+                IDatatype res = let(loop.getBody(), loop.getVariable(), dt, env, p);
                 if (res == null){
                     return null;
                 }
@@ -1356,7 +1356,7 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         else { 
             for (Object obj : getValues(list)){  
-                IDatatype res = let(loop.getExp(2), loop.getExp(0), (IDatatype) p.getValue(obj), env, p);               
+                IDatatype res = let(loop.getBody(), loop.getVariable(), (IDatatype) p.getValue(obj), env, p);               
                 if (res == null){
                     return null;
                 }

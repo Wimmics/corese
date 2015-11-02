@@ -7,7 +7,6 @@ import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Term;
-import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -536,7 +535,7 @@ public class PluginTransform implements ExprType {
       */
      Expr decode(Expr exp, Expr def, int oper){
          if (def != null){
-             oper = def.getExp(1).oper();
+             oper = def.getBody().oper(); //getExp(1).oper();
          }
          exp.setOper(oper);
          return exp;        
@@ -625,16 +624,16 @@ public class PluginTransform implements ExprType {
      * def right exp and rename its variable (?x) as proc variable (?y) PRAGMA:
      * do no process exists {} in def
      */
-    Expr rewrite(Expr proc, Expr def, ASTQuery ast) {
-        Term tproc = (Term) proc;
-        Term tdef = (Term) def;
-        Variable v1 = tdef.getArg(0).getArg(0).getVariable(); // ?x
-        Variable v2 = tproc.getArg(0).getVariable(); // ?y
-        // replace ?x by ?y
-        Expression tt = tdef.getArg(1).copy(v1, v2);
-        tt.compile(ast);
-        return tt;
-    }
+//    Expr rewrite(Expr proc, Expr def, ASTQuery ast) {
+//        Term tproc = (Term) proc;
+//        Term tdef = (Term) def;
+//        Variable v1 = tdef.getArg(0).getArg(0).getVariable(); // ?x
+//        Variable v2 = tproc.getArg(0).getVariable(); // ?y
+//        // replace ?x by ?y
+//        Expression tt = tdef.getArg(1).copy(v1, v2);
+//        tt.compile(ast);
+//        return tt;
+//    }
     
     
      /**

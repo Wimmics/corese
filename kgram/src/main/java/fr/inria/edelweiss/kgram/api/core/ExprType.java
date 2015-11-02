@@ -148,8 +148,8 @@ public interface ExprType {
 	public static int DEPTH 	= 207;
 	public static int GRAPH 	= 208;
 	public static int NODE 		= 209;
-	public static int GET 		= 210;
-	public static int SET 		= 211;
+	public static int GET_OBJECT 	= 210;
+	public static int SET_OBJECT 	= 211;
 	public static int LOAD 		= 212;
 	public static int PATHNODE 	= 213;
 	public static int GROUPBY 	= 214;
@@ -248,6 +248,8 @@ public interface ExprType {
 	public static int MAPMERGE      = 319;
  	public static int MAPFIND       = 320;
 	public static int FOR           = 322;
+	public static int SET           = 323;
+	public static int SEQUENCE      = 324;
         
 	public static int XT_SORT       = 330;
         

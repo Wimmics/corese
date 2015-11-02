@@ -181,10 +181,10 @@ public class PluginImpl extends ProxyImpl {
             case ODD:
                 return odd(exp, dt);
 
-            case GET:
+            case GET_OBJECT:
                 return getObject(o);
 
-            case SET:
+            case SET_OBJECT:
                 return setObject(o, null);
 
             case QNAME:
@@ -240,7 +240,7 @@ public class PluginImpl extends ProxyImpl {
             case SETP:
                 return setProperty(dt1, dt2.intValue(), null);
 
-            case SET:
+            case SET_OBJECT:
                 return setObject(dt1, dt2);
 
                

@@ -136,25 +136,27 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     
     
     /**
-     * define(xt:fun(?x) = exp)
+     * function(xt:fun(?x) = exp)
      * create a new Visitor to have own local variables index
      */
     void define(Term t){
         if (trace) System.out.println("Vis Fun: " + t);
-        Term fun  = t.getArg(0).getTerm();
-        Term def  = fun.getArg(0).getTerm();
-        Expression body = fun.getArg(1);
+        Term def  = t.getFunction(); 
+        Expression body = t.getBody(); 
         
         List<Variable> list = def.getFunVariables(); 
         ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, list);
         body.visit(vis);
         
-        fun.setPlace(vis.count());
-        ast.define(fun);
+        t.setPlace(vis.count());
+        ast.define(t); //fun);
         if (trace) System.out.println("count: " + vis.count());
     }
     
-    
+    /**
+     * @deprecated
+     * 
+     */
     void export(Term t) {
         for (Expression exp : t.getArgs()) {
             if (exp.isTerm() && !exp.getArgs().isEmpty()) {
@@ -169,14 +171,9 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
      */
     void let(Term t){
         if (trace) System.out.println("Vis Let: " + t);
-        Expression def  = t.getArg(0);
-        Expression body = t.getArg(1);
-        if (def.isTerm() 
-                && def.getArgs().size() == 2 
-                && def.getArg(0).isVariable()){
-            
-            Variable var    = def.getArg(0).getVariable();
-            Expression exp  = def.getArg(1);        
+            Variable var    = t.getVariable();
+            Expression exp  = t.getDefinition();           
+            Expression body = t.getBody();       
 
             if (isLocal(var)){
                 ast.addError("Variable already defined: " + var);
@@ -195,19 +192,14 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                     // top level let
                     t.setPlace(count);
                 }
-            }
-        }
-        else {
-            ast.setError("Incorrect Let: " + t);
-            ast.setFail(true);
-        }
+            }        
     }
     
     // for (?x in exp){ exp }
     void loop(Term t) {
-        Variable var = t.getArg(0).getVariable();
-        Expression exp = t.getArg(1);
-        Expression body = t.getArg(2);
+        Variable var    = t.getVariable();
+        Expression exp  = t.getDefinition();
+        Expression body = t.getBody();
 
         if (isLocal(var)) {
             ast.addError("Variable already defined: " + var);

@@ -24,7 +24,7 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
  * @author Olivier Corby
  */
 
-public class Expression extends Statement 
+public class Expression extends TopExp 
 implements Regex, Filter, Expr {
 	public static final int STDFILTER = 0;
 	public static final int ENDFILTER = 1;
@@ -370,6 +370,7 @@ implements Regex, Filter, Expr {
             return null;
         }
 	
+        @Override
 	public Variable getVariable(){
 		return null;
 	}
@@ -639,14 +640,19 @@ implements Regex, Filter, Expr {
     }
     
           @Override
-    public Expression getFunDefine(){
+    public Term getFunction(){
         return null;
     }
     
         @Override
-    public Expression getFunBody(){
+    public Expression getBody(){
         return null;
     }
+        
+        @Override
+    public Expression getDefinition(){
+        return null;
+    } 
 	
 
     @Override

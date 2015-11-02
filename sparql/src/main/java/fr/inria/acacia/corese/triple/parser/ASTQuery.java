@@ -583,19 +583,15 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         }
         
         /**
-         * 
-         * def = st:foo(?x) = st:bar(?x)
+         * Used by VariableVisitor, called by Transformer
+         * def = function(st:foo(?x) = st:bar(?x))
          */
-        void define(Expression def){
-            Expression t = def.getArg(0);
+        void define(Expression fun){
+            Expression def = fun; //.getArg(0);
+            Expression t = def.getFunction(); //Arg(0);
             getGlobalAST().getDefine().define(def);
             getGlobalAST().getUndefined().remove(t.getLabel());
-        }
-        
-//        void defPackage(Constant c){
-//            getGlobalAST().getDefine().setPackage(c);
-//            getGlobalAST().getDefine().setName(c.getLabel());
-//        }
+        }       
               
 	public List<String> getErrors(){
 		return getGlobalAST().errors();
@@ -1038,15 +1034,27 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
      * function (name(el) = exp)
      */
      public  Term defineFunction(Constant name, ExpressionList el, Expression exp) {
-        if (exp == null){
-            exp = Constant.create(true);
-        }
     	Term fun  = createFunction(name, el);
-        Term body = createTerm(SEQ, fun, exp);
-    	Term def  = createFunction(Constant.create(Processor.FUNCTION), body);
+        //Term body = createTerm(SEQ, fun, exp);
+    	//Term def  = createFunction(Constant.create(Processor.FUNCTION), body);
+        Term def = new Function(fun, exp);
         define.defineFunction(def);
     	return def;
     }
+     
+    public Expression defineBody(ExpressionList lexp){
+         Expression exp;
+        if (lexp.size() == 0){
+            exp = Constant.create(true);
+        }
+        else if (lexp.size() == 1){
+            exp = lexp.get(0);
+        }
+        else {
+            exp = createFunction(Processor.SEQUENCE, lexp);
+        }
+        return exp;
+     }
      
      public Term ifThenElse(Expression ei, Expression et, Expression ee){
          Term exp = createFunction(Processor.IF, ei);
@@ -1065,9 +1073,14 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
       * @return 
       */
      public Term let(ExpressionList el, Expression body){
-         Term exp = createFunction(Processor.LET, el);
-         exp.add(body);
-         return exp;
+         return defineLet(el, body, 0);
+     }
+     
+     public Term defineLet(ExpressionList el, Expression body, int n){
+         if (n == el.size() -1){
+             return new Let(el.get(n), body);
+         }
+         return new Let(el.get(n), defineLet(el, body, n+1));
      }
            
       public Term defLet(Variable var, Expression exp){
@@ -1080,11 +1093,12 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
       }
        
        public Term loop(Variable var, Expression exp, Expression body){
-           return Term.function(Processor.FOR, var, exp, body);
+           return new ForLoop(var, exp, body);
        }
      
      public void exportFunction(Expression def){
          def.getArg(0).setExport(true);
+         def.setExport(true);
      }
        
     public  Term createFunction(Constant name, Expression exp) {

@@ -400,11 +400,13 @@ public class Constant extends Atom {
 	 * KGRAM
 	 */
 	
+        @Override
 	public int type(){
 		return ExprType.CONSTANT;
 	}
 	
-	public Object getValue(){
+        @Override
+	public IDatatype getValue(){
 		return dt;
 	}
 	

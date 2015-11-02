@@ -22,7 +22,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
  */
 
 public class Term extends Expression {
-        private static final String NL = System.getProperty("line.separator");
+        static final String NL = System.getProperty("line.separator");
 	static final String RE_CHECK = "check";
 	static final String RE_PARA = "||";
 	public static final String RE_ALT = "|";
@@ -251,16 +251,10 @@ public class Term extends Expression {
 		if (getName() == null) {
 			return sb;
 		} 
-		if (getName().equals(Processor.FUNCTION)){
-                    return funString(sb);
+		if (getName().equals(Processor.SEQUENCE)){
+                    return funSequence(sb);
                 }
-                if (getName().equals(Processor.LET)){
-                    return funLet(sb);
-                }
-                if (getName().equals(Processor.FOR)){
-                    return funLoop(sb);
-                }
-                
+                                              
 		if (getName().equals(EXIST)){
 			return getExist().toString(sb);
 		}
@@ -324,81 +318,33 @@ public class Term extends Expression {
 		return sb;
 	}
 
-
-        /**
-         * this = function(xt:fun(?x) = exp)       
-         */
-    public StringBuffer funString(StringBuffer sb) {         
-        sb.append(Processor.FUNCTION);
-        sb.append(" ");
-        getFunDefine().toString(sb);
-        sb.append(" {");
-        sb.append(NL);
-        sb.append("  ");
-        getFunBody().toString(sb);
-        sb.append(NL);
-        sb.append("}");
+    
+    StringBuffer funSequence(StringBuffer sb){
+        if (getArgs().size() >= 1){
+            getArg(0).toString(sb);
+        }
+        for (int i = 1; i<getArgs().size(); i++){
+            sb.append(";");
+            sb.append(NL);
+            getArg(i).toString(sb);
+        }
         return sb;
     }
     
-      public StringBuffer funLet(StringBuffer sb) {         
-        sb.append(Processor.LET);
-        Expression def = getArg(0);
-        sb.append(" (");        
-        def.getArg(1).toString(sb);
-        sb.append(" as ");        
-        def.getArg(0).toString(sb);
-        sb.append(") {");
-        sb.append(NL);
-        sb.append("  ");
-        getArg(1).toString(sb);
-        sb.append(NL);
-        sb.append("}");
-        return sb;
-    }
-      
-      public StringBuffer funLoop(StringBuffer sb) {         
-        sb.append(Processor.FOR);
-        sb.append(" (");
-        getArg(0).toString(sb);
-        sb.append(" ");       
-        sb.append(Processor.IN);
-        sb.append(" ");       
-        getArg(1).toString(sb);
-        sb.append(")");
-        sb.append(" {");
-        sb.append(NL);
-        sb.append("  ");
-        getArg(2).toString(sb);
-        sb.append(NL);
-        sb.append("}");
-        return sb;
-    }  
-    
-     /**
-         * this = function(xt:fun(?x) = exp)       
-         */
-    public Expression getFunDefine(){
-        return getArg(0).getArg(0);
-    }
-    
-    public Expression getFunBody(){
-        return getArg(0).getArg(1);
-    }
-	
+       	
 	static boolean isNegation(String name) {
 		return (name.equals(STNOT) || name.equals(SENOT));
 	}
 	
 	
-	public Variable getVariable(){
-		Variable var;
-		for (int i = 0; i < args.size(); i++) {
-			var = getArg(i).getVariable();
-			if (var != null) return var;
-		}
-		return null;
-	}
+//	public Variable getVariable(){
+//		Variable var;
+//		for (int i = 0; i < args.size(); i++) {
+//			var = getArg(i).getVariable();
+//			if (var != null) return var;
+//		}
+//		return null;
+//	}
 	
 	
 	Bind validate(Bind env){
@@ -725,6 +671,10 @@ public class Term extends Expression {
 	public boolean isFunction(){
 		return isFunction;
 	}
+        
+        void setFunction(boolean b){
+            isFunction = b;
+        }
 	
 	public boolean isFunction(String str){
 		return isFunction &&  getName().equals(str);

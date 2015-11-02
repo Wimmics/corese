@@ -78,10 +78,10 @@ public class Extension {
 
     /**
      *
-     * exp: st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1))
+     * exp: function(st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1)))
      */
     public void define(Expression exp) {
-        Expression fun = exp.getArg(0);
+        Expression fun = exp.getFunction(); //exp.getArg(0);
         FunMap fm = getMap(fun);
         if (fm == null){
             logger.error("To many args: " + exp);
@@ -93,7 +93,7 @@ public class Extension {
     public void add(Extension ext){
         for (FunMap m : ext.getMaps()){
             for (Expression e : m.values()){
-                if (! isDefined(e.getArg(0))){
+                if (! isDefined(e.getFunction())){
                     define(e);
                 }
             }

@@ -63,6 +63,8 @@ public class Processor {
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
 
+	public static final String SEQUENCE  = "sequence";
+	public static final String SET     = "set";
 	public static final String LET     = "let";
         static final String FOR             = "for";
 	private static final String MAP     = "map";
@@ -232,8 +234,8 @@ public class Processor {
 	static final String DEPTH    = KGRAM + "depth";
 	static final String GRAPH    = KGRAM + "graph";
 	static final String NODE     = KGRAM + "node";
-	static final String GET      = KGRAM + "getObject";
-	static final String SET      = KGRAM + "setObject";
+	static final String GET_OBJECT      = KGRAM + "getObject";
+	static final String SET_OBJECT      = KGRAM + "setObject";
 	static final String GETP     = KGRAM + "getProperty";
 	static final String SETP     = KGRAM + "setProperty";
 	static final String LOAD     = KGRAM + "load";
@@ -566,7 +568,9 @@ public class Processor {
 		defoper(INLIST,         ExprType.INLIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
 		defoper(SKOLEM,         ExprType.SKOLEM);
+		defoper(SEQUENCE,       ExprType.SEQUENCE);
 		defoper(LET,            ExprType.LET);
+		defoper(SET,            ExprType.SET);
 		defoper(LIST,           ExprType.LIST);
 		defoper(IOTA,           ExprType.IOTA);
 		defoper(XT_REVERSE,     ExprType.XT_REVERSE);
@@ -723,8 +727,8 @@ public class Processor {
 		defoper(DEPTH,   ExprType.DEPTH);
 		defoper(GRAPH,   ExprType.GRAPH);
 		defoper(NODE,    ExprType.NODE);
-		defoper(GET,     ExprType.GET);
-		defoper(SET,     ExprType.SET);
+		defoper(GET_OBJECT,     ExprType.GET_OBJECT);
+		defoper(SET_OBJECT,     ExprType.SET_OBJECT);
 		defoper(GETP,    ExprType.GETP);
 		defoper(SETP,    ExprType.SETP);
 		
@@ -898,24 +902,24 @@ public class Processor {
          */
         void processLet(ASTQuery ast){
             processMatch(ast);
-            processLetSimple(ast);            
+          //  processLetSimple(ast);            
         }
         
-        void processLetSimple(ASTQuery ast){
-            if (term.getArgs().size() > 2){
-                Term let = Term.function(LET, term.getArg(1));
-                
-                for (int i = 2; i < term.getArgs().size(); i++){
-                    let.add(term.getArg(i));
-                }
-                
-                ArrayList<Expression> list = new ArrayList<Expression>();
-                list.add(term.getArg(0));
-                list.add(let);
-                term.setArgs(list);
-                processLetSimple(ast);
-            }
-        }
+//        void processLetSimple(ASTQuery ast){
+//            if (term.getArgs().size() > 2){
+//                Term let = Term.function(LET, term.getArg(1));
+//                
+//                for (int i = 2; i < term.getArgs().size(); i++){
+//                    let.add(term.getArg(i));
+//                }
+//                
+//                ArrayList<Expression> list = new ArrayList<Expression>();
+//                list.add(term.getArg(0));
+//                list.add(let);
+//                term.setArgs(list);
+//                processLetSimple(ast);
+//            }
+//        }
         
         /**
          * let (match(?x, ?p, ?y) = ?l) {}
@@ -923,43 +927,64 @@ public class Processor {
          * let (?x = xt:get(?l, 0), ?p = xt:get(?l, 1), ?y = xt:get(?l, 2)) {} 
          * @param ast 
          */
-        void processMatch(ASTQuery ast){
-            boolean again = false;
-            
-            for (int i = 0; i<term.getArgs().size() - 1; i++){
+       void processMatch(ASTQuery ast) {
+            Expression match = term.getArg(0).getArg(0);
+            Expression list  = term.getDefinition();
 
-                 Expression match = term.getArg(i).getArg(0);
-                 Expression list  = term.getArg(i).getArg(1);
-                 
-                 if (match.isFunction() && match.getLabel().equals(Processor.MATCH)){
-                     ArrayList<Expression> l = new ArrayList();
-                     int j = 0;
-                     
-                     for (Expression arg : match.getArgs()){
-                         Term fun = ast.createFunction(ast.createQName("xt:get"), list, Constant.create(j++));
-                         Term t   = Term.create("=", arg.getVariable(), fun);
-                         l.add(t);
-                     }
-                                                              
-                     // replace match() = ?l at index i
-                     term.setArg(i, l.get(0));
-                     
-                     // add other exp just after i
-                     for (int k = 1; k<l.size(); k++){
-                        term.add(i+k, l.get(k)); 
-                     }
+            if (match.isFunction() && match.getLabel().equals(Processor.MATCH)) {
+                ExpressionList l = new ExpressionList();
+                int j = 0;
 
-                     // recurse as there may be other match 
-                     again = true;
-                     break;
-                 }
-            }
-            
-            if (again){
-               processMatch(ast); 
+                for (Expression arg : match.getArgs()) {
+                    Term fun = ast.createFunction(ast.createQName("xt:get"), list, Constant.create(j++));
+                    Term t   = ast.defLet(arg.getVariable(), fun);
+                    l.add(t);
+                }
+                
+                Term let = ast.defineLet(l, term.getBody(), 0);
+                term.setArgs(let.getArgs());          
             }
         }
         
+        
+//        void processMatch2(ASTQuery ast){
+//
+//            boolean again = false;
+//            
+//            for (int i = 0; i<term.getArgs().size() - 1; i++){
+//
+//                 Expression match = term.getArg(i).getArg(0);
+//                 Expression list  = term.getArg(i).getArg(1);
+//                 
+//                 if (match.isFunction() && match.getLabel().equals(Processor.MATCH)){
+//                     ArrayList<Expression> l = new ArrayList();
+//                     int j = 0;
+//                     
+//                     for (Expression arg : match.getArgs()){
+//                         Term fun = ast.createFunction(ast.createQName("xt:get"), list, Constant.create(j++));
+//                         Term t   = Term.create("=", arg.getVariable(), fun);
+//                         l.add(t);
+//                     }
+//                                                              
+//                     // replace match() = ?l at index i
+//                     term.setArg(i, l.get(0));
+//                     
+//                     // add other exp just after i
+//                     for (int k = 1; k<l.size(); k++){
+//                        term.add(i+k, l.get(k)); 
+//                     }
+//
+//                     // recurse as there may be other match 
+//                     again = true;
+//                     break;
+//                 }
+//            }
+//            
+//            if (again){
+//               processMatch(ast); 
+//            }
+//        }
+//        
         
         /**
          * map(xt:fun, ?list)

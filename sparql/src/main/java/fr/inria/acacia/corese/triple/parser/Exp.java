@@ -23,7 +23,7 @@ import java.util.Iterator;
  * @author Olivier Corby
  */
 
-public abstract class Exp extends Statement implements Iterable<Exp> {
+public abstract class Exp extends TopExp implements Iterable<Exp> {
 	
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(Exp.class); 

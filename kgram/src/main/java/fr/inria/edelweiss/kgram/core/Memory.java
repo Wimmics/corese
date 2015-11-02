@@ -81,6 +81,7 @@ public class Memory implements Environment {
 		match = m;
 		eval = e;
 		bnode = new HashMap();
+                bind = new Bind();
 	}
 	
 	void setResults(Mappings r){
@@ -1074,40 +1075,29 @@ public class Memory implements Environment {
 
     @Override
     public void set(Expr exp, Expr var, Node value) {
-        if (bind == null){
-            bind = new Bind();
-        }
         bind.set(exp, var, value);
+    }
+    
+    public void bind(Expr exp, Expr var, Node value){       
+        bind.bind(exp, var, value);
     }
     
     @Override
      public void set(Expr exp, List<Expr> lvar, Object[] value) {
-        if (bind == null){
-            bind = new Bind();
-        }
         bind.set(exp, lvar, value);
     }
 
     @Override
     public Node get(Expr var) {
-        if (bind == null) {
-            bind = new Bind();
-        }
         return bind.get(var);
     }
 
     @Override
     public void unset(Expr exp, Expr var) {
-        if (bind == null) {
-            bind = new Bind();
-        }
         bind.unset(exp, var);
     }
     
      public void unset(Expr exp, List<Expr> lvar) {
-        if (bind == null){
-            bind = new Bind();
-        }
         bind.unset(exp, lvar);
     }
      

@@ -858,6 +858,14 @@ public class Mapping
         return bind != null && bind.hasBind();
     }
 
+    @Override
+    public void bind(Expr exp, Expr var, Node value) {
+        if (bind == null) {
+            bind = new Bind();
+        }
+        bind.bind(exp, var, value);
+    }
+     
    @Override
     public void set(Expr exp, Expr var, Node value) {
         if (bind == null){

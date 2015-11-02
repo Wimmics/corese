@@ -2234,7 +2234,7 @@ public class Eval implements ExpType, Plugin {
         if (q.getExtension() != null){
             Expr exp = q.getExtension().get(name);
             if (exp != null){
-                return exp.getExp(0);
+                return exp.getFunction(); //getExp(0);
             }
         }
         return null;

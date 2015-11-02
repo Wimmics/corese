@@ -63,13 +63,23 @@ public class Bind {
         return null;
     }
 
-
+    /**
+     * TODO; scope of variable
+     */
+    public void bind(Expr exp, Expr var, Node val) {
+        for (int i = varList.size() - 1; i >= 0; i--) {
+            if (varList.get(i).equals(var)) {
+                valList.set(i, val);
+            }
+        }
+    }
+    
     public void set(Expr exp, Expr var, Node val) {
         set(var, val);
     }
 
     public void set(Expr exp, List<Expr> lvar, Object[] value) {
-        if (exp.oper() == ExprType.EQ){
+        if (exp.oper() == ExprType.FUNCTION || exp.oper() == ExprType.EQ){
             // xt:fun(?x) = exp
             // funcall
             level.add(varList.size());           
@@ -85,7 +95,7 @@ public class Bind {
     }
 
     public void unset(Expr exp, List<Expr> lvar) {
-        if (exp.oper() == ExprType.EQ){
+        if (exp.oper() == ExprType.FUNCTION ||exp.oper() == ExprType.EQ){
             // xt:fun(?x) = exp
             // funcall
             level.remove(level.size()-1);

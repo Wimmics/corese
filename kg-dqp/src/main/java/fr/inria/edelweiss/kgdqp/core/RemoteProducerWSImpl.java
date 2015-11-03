@@ -747,5 +747,5 @@ public class RemoteProducerWSImpl implements Producer {
     @Override
     public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    }  
 }

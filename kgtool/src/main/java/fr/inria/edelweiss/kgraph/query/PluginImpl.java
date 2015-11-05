@@ -16,6 +16,7 @@ import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
@@ -27,8 +28,10 @@ import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
+import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Distance;
+import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
@@ -131,6 +134,9 @@ public class PluginImpl extends ProxyImpl {
             case DESCRIBE:
                 return ext.describe(p, exp, env); 
                 
+             case XT_EDGE:
+                 return edge(exp, env, p, null, null, null);    
+                
             default: 
                 return pt.function(exp, env, p);
                 
@@ -220,6 +226,9 @@ public class PluginImpl extends ProxyImpl {
              case XT_OBJECT:
              case XT_INDEX:
                  return access(exp, env, p, dt);
+                 
+             case XT_EDGE:
+                 return edge(exp, env, p, null, dt, null);
                                          
              default:
                  return pt.function(exp, env, p, dt);
@@ -272,6 +281,9 @@ public class PluginImpl extends ProxyImpl {
                 
              case XT_VALUE:
                  return access(exp, env, p, dt1, dt2);
+                 
+              case XT_EDGE:
+                 return edge(exp, env, p, dt1, dt2, null);    
                 
             case STORE:
                 return ext.store(p, env, dt1, dt2);
@@ -296,6 +308,12 @@ public class PluginImpl extends ProxyImpl {
                                         
             case IOTA:
                 return iotag(param);
+                
+            case XT_EDGE:
+                return edge(exp, env, p, param[0], param[1], param[2]);
+                
+             case XT_TRIPLE:
+                return triple(exp, env, p, param[0], param[1], param[2]);    
 
             default: 
                 return pt.eval(exp, env, p, param);  
@@ -573,6 +591,36 @@ public class PluginImpl extends ProxyImpl {
      */
     public PluginTransform getPluginTransform () {
         return pt;
+    }
+    
+    /*
+     * Return Loopable with edges
+     */
+    private Object edge(Expr exp, Environment env, final Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
+       return DatatypeMap.createObject("tmp", getLoop(p, subj, pred, obj));        
+    }
+    
+    Loopable getLoop(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
+       Loopable loop = new Loopable(){
+           @Override
+           public Iterable getLoop() {
+               Graph g = getGraph(p);             
+               return g.getEdges(value(subj), value(pred), value(obj));
+           }          
+       };
+       return loop;
+    } 
+    
+    IDatatype value(IDatatype dt){
+        if (dt == null || dt.isBlank()){
+            return null;
+        }
+        return dt;
+    }
+    
+    IDatatype triple(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj){
+        EdgeImpl edge = EdgeImpl.create(DatatypeMap.newResource(Entailment.DEFAULT), subj, pred, obj);
+        return (IDatatype) edge.getNode().getValue();
     }
 
     private Object access(Expr exp, Environment env, Producer p, IDatatype dt) {

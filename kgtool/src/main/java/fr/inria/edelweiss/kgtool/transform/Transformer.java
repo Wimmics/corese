@@ -1047,7 +1047,7 @@ public class Transformer  {
             if (ext != null){
                 Expr exp = ext.get(STL_DEFAULT);
                 if (exp != null){
-                    ope = exp.getExp(1).oper();               
+                    ope = exp.getBody().oper(); //getExp(1).oper();               
                 }
             } 
         }
@@ -1156,7 +1156,7 @@ public class Transformer  {
        if (profile != null && profile.getExtension() != null){
            Expr exp = profile.getExtension().get(STL_AGGREGATE);
            if (exp != null){
-               defAggregate = exp.getExp(1).oper();
+               defAggregate = exp.getBody().oper(); //exp.getExp(1).oper();
            }                  
        }
        qe.sort();

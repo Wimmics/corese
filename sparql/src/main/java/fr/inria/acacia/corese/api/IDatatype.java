@@ -6,6 +6,7 @@ import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import java.util.List;
 
 /**
  * This is an interface for all Corese datatypes.<br />
@@ -65,7 +66,7 @@ public interface IDatatype
     
     boolean isLoop();
 
-    IDatatype[] getValues();
+    List<IDatatype> getValues();
     
     Iterable getLoop();
 

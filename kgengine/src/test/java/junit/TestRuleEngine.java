@@ -10,6 +10,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.inria.acacia.corese.exceptions.*;
+import fr.inria.acacia.corese.storage.api.IStorage;
+import fr.inria.acacia.corese.storage.api.Parameters;
 
 import fr.inria.edelweiss.engine.core.Engine;
 import fr.inria.edelweiss.engine.model.api.LBind;
@@ -42,13 +44,13 @@ public class TestRuleEngine {
 	static Engine rengine;
 	static RuleEngine fengine;
 
-	
+        	
 	@BeforeClass
 	public static void init() throws EngineException {	
 		//Graph.setCompareIndex(true);
 		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
 
-		graph = Graph.create(true);
+		graph = createGraph(true);
 		Load load = Load.create(graph);
 
 		load.load(data + "engine/ontology/test.rdfs");
@@ -75,6 +77,18 @@ public class TestRuleEngine {
 		rengine.load(data + "engine/rule/meta.brul");
 	}
 	
+     static  GraphStore createGraph() {
+          return createGraph(false);
+      }
+  
+        
+     static GraphStore createGraph(boolean b) {
+        GraphStore g = GraphStore.create(b);
+        Parameters p = Parameters.create();
+        p.add(Parameters.type.MAX_LIT_LEN, 2);
+        //g.setStorage(IStorage.STORAGE_FILE, p);
+        return g;
+    }
         
         
          @Test
@@ -93,7 +107,7 @@ public class TestRuleEngine {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
         
-        assertEquals(371, map.size());
+        assertEquals(611, map.size());
         
         String qq = "select distinct ?p ?pr "
                 + "from kg:rule "
@@ -101,7 +115,7 @@ public class TestRuleEngine {
         
         map = exec.query(qq);
         
-        assertEquals(30, map.size());
+        assertEquals(31, map.size());
         
         String qqq = "select distinct ?q  "
                 + "from kg:rule "
@@ -166,7 +180,7 @@ public class TestRuleEngine {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
 
-        assertEquals(371, map.size());
+        assertEquals(611, map.size());
     }
 
         @Test
@@ -227,7 +241,7 @@ public class TestRuleEngine {
           
        
      RuleEngine testRules() throws LoadException {
-        Graph g = Graph.create();
+        Graph g = createGraph();
         Load ld = Load.create(g);
         ld.loadWE(data + "comma/comma.rdfs");
         ld.loadWE(data + "comma/data");
@@ -347,7 +361,7 @@ public class TestRuleEngine {
 	@Test
 	public void test5(){
 
-		Graph g = Graph.create();
+		Graph g = createGraph();
 		Pipe pipe = Pipe.create(g);
 		pipe.load(root + "pipe/pipe.rdf");
 		pipe.process();
@@ -373,8 +387,8 @@ public class TestRuleEngine {
 	public void test6(){
 		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
 
-		Graph g1 = Graph.create(true);
-		Graph g2 = Graph.create(true);
+		Graph g1 = createGraph(true);
+		Graph g2 = createGraph(true);
 
 		Load load1 = Load.create(g1);
 		Load load2 = Load.create(g2);
@@ -437,7 +451,7 @@ public class TestRuleEngine {
 	
 	@Test
 	public void test7(){
-		Graph g1 = Graph.create(true);
+		Graph g1 = createGraph(true);
 		Load load1 = Load.create(g1);
 		load1.load(root + "sdk/sdk.rdf");
 		
@@ -461,7 +475,7 @@ public class TestRuleEngine {
 
 	@Test
 	public void test8(){
-		Graph g = Graph.create();
+		Graph g = createGraph();
 		QueryProcess exec = QueryProcess.create(g);
 		
 		QueryEngine qe = QueryEngine.create(g);

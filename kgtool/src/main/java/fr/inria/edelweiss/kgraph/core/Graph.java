@@ -1783,15 +1783,43 @@ public class Graph implements Graphable {
     public Iterable<Entity> getEdges(String p) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
-            return new ArrayList<Entity>();
+            return new ArrayList<Entity>(0);
         }
         return getEdges(predicate);
+    }
+    
+    public Iterable<Entity> getEdges(String p, Node n, int i) {
+        Node predicate = getPropertyNode(p);
+        if (predicate == null) {
+            return new ArrayList<Entity>(0);
+        }
+        return getEdges(predicate, n, i);
+    }
+    
+    public Iterable<Entity> getEdges(IDatatype s, IDatatype p, IDatatype o) {
+        Node ns = null, np, no = null;
+        if (p == null){
+            np = getTopProperty();
+        }
+        else {
+            np = getPropertyNode(p);
+        }
+        if (s != null){
+            ns = getNode(s);
+        }        
+        if (o != null){
+            no = getNode(o);
+        }
+        if (s == null && o != null){
+           return getEdges(np, no, null, 1); 
+        }
+        return getEdges(np, ns, no, 0);
     }
 
     public Iterable<Entity> getEdges(Node predicate) {
         Iterable<Entity> it = getEdges(predicate, null, 0);
         if (it == null) {
-            it = new ArrayList<Entity>();
+            it = new ArrayList<Entity>(0);
         }
         return it;
     }

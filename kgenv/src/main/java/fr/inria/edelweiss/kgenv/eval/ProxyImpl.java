@@ -1290,7 +1290,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
         boolean error = false;
 
-        if (dt2.isArray() || dt2.isList()) {
+        if (dt2.isList()) {
 
             for (IDatatype dt : dt2.getValues()) {
                 try {
@@ -1434,7 +1434,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 }
                 else if (dt.isLoop()){
                     if (loop.hasNext()){
-                       value[j] = (IDatatype) p.getNode(loop.next());
+                       value[j] = (IDatatype) p.getValue(loop.next());
                        if (mapselect && elem == null){
                          elem = value[j];
                        }
@@ -1558,14 +1558,14 @@ public class ProxyImpl implements Proxy, ExprType {
     /**
      * apply(kg:sum(?x), ?list)     
      */
-    private Object apply2(Expr exp, Environment env, Producer p, IDatatype dt) {
-        if (dt.getValues() == null){
-            return dt;
-        }
-        
-        return eval(exp.getExp(0), env, p, dt.getValues());
-               
-    }
+//    private Object apply2(Expr exp, Environment env, Producer p, IDatatype dt) {
+//        if (dt.getValues() == null){
+//            return dt;
+//        }
+//        
+//        return eval(exp.getExp(0), env, p, dt.getValues());
+//               
+//    }
     
     /**
      * apply(kg:plus, ?list)   
@@ -1575,16 +1575,16 @@ public class ProxyImpl implements Proxy, ExprType {
         if (! dt.isList()) {
             return null;
         }
-        IDatatype[] list = dt.getValues();
-        if (list.length == 0){
+        List<IDatatype> list = dt.getValues();
+        if (list.isEmpty()){
             return neutral(exp.getExp(0), dt);
         }
         IDatatype[] value = new IDatatype[2];
-        IDatatype res = list[0];
+        IDatatype res = list.get(0);
         value[0] = res;
         
-        for (int i = 1; i < list.length; i++) {            
-            value[1] = list[i];
+        for (int i = 1; i < list.size(); i++) {            
+            value[1] = list.get(i);
             res =  let(exp.getExp(0), env, p, value);           
             if (res == null) {
                return error();
@@ -1756,7 +1756,7 @@ public class ProxyImpl implements Proxy, ExprType {
     
     IDatatype count(IDatatype dt){
         if (dt.isList()){
-            return DatatypeMap.count(dt);
+            return DatatypeMap.size(dt);
         }
         Object obj = dt.getObject();
         if (obj == null){

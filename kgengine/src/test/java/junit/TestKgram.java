@@ -200,13 +200,7 @@ query =
 
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 18));
 
-query = 
-	"select * where {" +
-	"?x c:FirstName ?name " +
-	"filter(?name not in (?x, self(?x), 'Olivier', 'Bernard', ?name))" +
-	"}";
 
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 0));
 
 query =
 	"select distinct * where {" +
@@ -384,24 +378,10 @@ query = "select * where { " +
 
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
 
-query = "select * where { " +
-"graph ?g {" +
-	"not { ?x rdf:rest*/rdf:first ?y  } " +
-	"?x c:hasCreated ?doc " +
-	"}} limit 1";
-
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
 
 
-query = "select * where { " +
-"graph ?g {" +
-	"optional { ?x rdf:rest*/rdf:first ?y  } " +
-	"filter(! bound(?y))" +
-	"not { ?x rdf:rest ?y  } " +
-	"?x c:hasCreated ?doc " +
-	"}} limit 1";
 
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
+
 
 
 query = "select * where { graph ?g {} }";
@@ -412,9 +392,6 @@ query = "select distinct ?g where { graph ?g { optional{ {graph ?g {}} union {gr
 
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 870));
 
-query = "select distinct ?g where { graph ?g {  {not{graph ?g {}}} union {graph ?g {}}  } }";
-
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 870));
 
 
 
@@ -423,9 +400,7 @@ query = "select * where { graph ?g {} graph ?g {} }";
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 870));
 
 
-query = "select * where { graph ?g {not {graph ?g {}}} }";
 
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 0));
 
 
 
@@ -436,44 +411,14 @@ query = "select * " +
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
 
 
-query = "select * " +
-	"from named <" + DATA + "/comma/testrdf.rdf>" +
-		"where { " +
-		"graph ?g {" +
-	"not { ?x rdf:rest*/rdf:first ?y  } " +
-	"?x c:hasCreated ?doc " +
-	"}} ";
-
-//suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 0));
 
 
-query = "select * " +
-"from named <" + DATA + "/comma/model.rdf>" +
-"where { " +
-"graph ?g {" +
-"not { ?x rdf:rest*/rdf:first ?y  } " +
-"?x c:isMemberOf ?org " +
-"}} ";
-
-//suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 97));
 
 
-query = 
-	"select * where {" +
-	"?x c:isMemberOf ?org " +
-	"not {?x c:hasCreated ?doc}" +
-	"}" ;
-
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 43));
 
 
-query = 
-	"select * where {" +
-	"?x c:isMemberOf ?org " +
-	"not {?x c:isMemberOf ?ooo}" +
-	"}" ;
 
-suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 0));
+
 
 //query = 
 //	"select * where {" +
@@ -2627,8 +2572,8 @@ query = "select   distinct ?t1 ?t2     where {"+
 //           "prefix got: <http://www.inria.fr/acacia/corese/eval#>" +
 //           " select where { ?x c:isMemberOf got:org }  ", 26));
 
-        suite.addTest(new CoreseTest2(true, mod, "testQuery", corese,
-        " select where {?x c:isMemberOf  <http://www-sop.inria.fr/> } ", 20));
+//        suite.addTest(new CoreseTest2(true, mod, "testQuery", corese,
+//        " select where {?x c:isMemberOf  <http://www-sop.inria.fr/> } ", 20));
 
 //        suite.addTest(new CoreseTest2(true, mod, "testQuery", corese,
 //        "prefix get:  <http://www.inria.fr/acacia/comma#>" +
@@ -3306,9 +3251,7 @@ query = "select   distinct ?t1 ?t2     where {"+
         "?x c:FirstName \"\"\"Olivier\"\"\" " +
         "}", 1));
  
-        suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select * where { ?x rdf:type c:Engineer " + 
-        " filter(! (?x <=: c:Engineer)) }", 0));
+       
         
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select where {?a ?p ?x  filter(?x > '1'^^xsd:string && ?x < '2'^^xsd:string) } group by ?x", 71));

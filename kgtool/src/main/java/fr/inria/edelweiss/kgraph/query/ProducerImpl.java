@@ -38,6 +38,7 @@ import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Producer
@@ -48,11 +49,12 @@ import java.util.Collection;
 public class ProducerImpl implements Producer, IProducerQP {
 
     public static final int OWL_RL = 1;
+    private static final String PRODUCE = Eval.FUN_PRODUCE;
 
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
     static final String TOPREL = Graph.TOPREL;
-    List<Entity> empty = new ArrayList<Entity>();
+    List<Entity> empty = new ArrayList<Entity>(0);
     EdgeIterator ei;
     Graph graph,
             // cache for handling (fun() as var) created Nodes
@@ -196,7 +198,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
             Environment env) {
-
+        
         Node predicate = getPredicate(edge, env);
         if (predicate == null) {
             return empty;
@@ -310,7 +312,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 
         return it;
     }
-    
+        
        
     @Override
     public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
@@ -841,7 +843,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             if (dt.getObject() != null) {
                 return map(nodes, dt.getObject());
             }
-            else if (dt.isList() || dt.isArray()){
+            else if (dt.isList()){ // || dt.isArray()){
                 return mapList(nodes, dt.getValues());
             }
             else {
@@ -869,14 +871,14 @@ public class ProducerImpl implements Producer, IProducerQP {
         return map;
     }
     
-    Mappings mapList(List<Node> lNodes, IDatatype[] list) {
+    Mappings mapList(List<Node> lNodes, List<IDatatype> list) {
         Node[] qNodes = new Node[lNodes.size()];
         lNodes.toArray(qNodes);
         Mappings map = new Mappings();
         Mapping m;
         for (IDatatype dt : list){
             if (dt.isList()){               
-                 m = Mapping.create(qNodes, dt.getValues());
+                 m = Mapping.create(qNodes, dt.getValues().toArray(qNodes));
             }
             else {
                  m =  Mapping.create(lNodes.get(0), dt);
@@ -930,7 +932,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     public List<Node> toNodeList(Object obj) {
         IDatatype dt = (IDatatype) obj;
         List<Node> list = new ArrayList<Node>();
-        if (dt.isArray()) {
+        if (dt.isList()) {
             for (IDatatype dd : dt.getValues()) {
                 if (dd.isXMLLiteral() && dd.getLabel().startsWith("http://")) {
                     // try an URI

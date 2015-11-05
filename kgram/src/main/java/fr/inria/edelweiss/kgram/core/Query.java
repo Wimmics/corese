@@ -2375,6 +2375,16 @@ public class Query extends Exp implements Graphable, Loopable {
         this.extension = ext;
     }
     
+    public Expr getExpression(String name){
+        if (getExtension() != null){
+            Expr exp = getExtension().get(name);
+            if (exp != null){
+                return exp.getFunction(); 
+            }
+        }
+        return null;
+    }
+    
     public void addExtension(Extension ext){
         if (ext == null){
             return;

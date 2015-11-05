@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
+import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
@@ -55,6 +56,7 @@ public class Eval implements ExpType, Plugin {
     private static final String FUN_RESULT      = PREF + "result";
     private static final String FUN_SOLUTION    = PREF + "solution";
     private static final String FUN_START       = PREF + "start";
+    public  static final String FUN_PRODUCE     = PREF + "produce";
     
     static final int STOP = -2;
     public static int count = 0;
@@ -108,6 +110,7 @@ public class Eval implements ExpType, Plugin {
             hasMinus,
             hasResult = false,
             hasStart = false,
+            hasProduce = false,
             hasSolution = false;
     
 
@@ -535,7 +538,7 @@ public class Eval implements ExpType, Plugin {
     }
 
     // total init (for global query)
-    private void init(Query q) {
+   public void init(Query q) {
         if (memory == null) {
             // when subquery, memory is already assigned
             // assign stack index to EDGE and NODE
@@ -599,6 +602,7 @@ public class Eval implements ExpType, Plugin {
         hasService   = (getExpression(FUN_SERVICE) != null);
         hasOptional  = (getExpression(FUN_OPTIONAL) != null);
         hasMinus     = (getExpression(FUN_MINUS) != null);
+        hasProduce   = (getExpression(FUN_PRODUCE) != null);
         hasResult    = (getExpression(FUN_RESULT) != null);
         hasSolution  = (getExpression(FUN_SOLUTION) != null);
         hasStart     = (getExpression(FUN_START) != null);
@@ -2112,7 +2116,19 @@ public class Eval implements ExpType, Plugin {
                bNode = null; 
             }                    
         }
-        Iterable<Entity> entities = p.getEdges(gNode, list, qEdge, env);
+        
+        Iterable<Entity> entities;
+        if (hasProduce){
+            // draft
+            entities = produce(p, gNode, list, qEdge);
+            if (entities == null){
+                entities = p.getEdges(gNode, list, qEdge, env);
+            }
+        }
+        else {
+            entities = p.getEdges(gNode, list, qEdge, env);
+        }
+        
         Iterator<Entity> it = entities.iterator();               
 
         while (it.hasNext()) {
@@ -2208,6 +2224,22 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
     
+     Iterable<Entity> produce(Producer p, Node gNode, List<Node> from, Edge edge) {
+        Expr exp = getExpression(FUN_PRODUCE);
+        if (exp != null){           
+            Object res =  evaluator.eval(exp, memory, p, toArray(edge.getNode()));
+            if (res instanceof Loopable){
+                Iterable loop = ((Loopable)res).getLoop();
+                if (loop != null){
+                    Iterable<Entity> it = new IterableEntity(loop);
+                    return it;
+                }
+            }
+        }
+        return null;
+    }
+    
+    
     DatatypeValue candidate(Edge q, Entity ent, Object match) {
         Expr exp = getExpression(FUN_CANDIDATE);
         if (exp != null) {
@@ -2231,13 +2263,7 @@ public class Eval implements ExpType, Plugin {
     }
     
     Expr getExpression(Query q, String name){
-        if (q.getExtension() != null){
-            Expr exp = q.getExtension().get(name);
-            if (exp != null){
-                return exp.getFunction(); //getExp(0);
-            }
-        }
-        return null;
+        return q.getExpression(name);
     }
     
     Object[] toArray(Object o1, Object o2, Object o3){
@@ -2255,7 +2281,7 @@ public class Eval implements ExpType, Plugin {
         return res;
     }
     
-    Object[] toArray(Object o1){
+    public Object[] toArray(Object o1){
         Object[] res = evaluator.getProxy().createParam(1);;
         res[0] = o1;
         return res;

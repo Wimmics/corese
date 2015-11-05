@@ -1101,7 +1101,7 @@ public class Memory implements Environment {
         bind.unset(exp, lvar);
     }
      
-     void setBind(Bind b){
+     public void setBind(Bind b){
          bind = b;
      }
      

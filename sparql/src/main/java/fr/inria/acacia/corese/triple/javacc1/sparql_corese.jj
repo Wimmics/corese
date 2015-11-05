@@ -2352,10 +2352,12 @@ Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
      <COMMA> e1 = Expression(stack) <COMMA> e2 = Expression(stack) <RPAREN>  
     |
      <RPAREN>
-     <LBRACE> e1 = Expression(stack) <RBRACE>    
+//     <LBRACE> e1 = Expression(stack) <RBRACE>  
+       e1 = Body(stack)
      (<ELSE> 
         (
-          <LBRACE> e2 = Expression(stack) <RBRACE>
+//          <LBRACE> e2 = Expression(stack) <RBRACE>
+            e2 = Body(stack)
           |
           e2 = IfThenElse (stack)
         )

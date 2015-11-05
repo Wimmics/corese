@@ -17,9 +17,10 @@ import junit.textui.TestRunner;
 
 import fr.inria.acacia.corese.api.*;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.storage.api.IStorage;
+import fr.inria.acacia.corese.storage.api.Parameters;
 
 import fr.inria.acacia.corese.triple.javacc1.ParseException;
-import fr.inria.acacia.corese.triple.parser.Model;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.StatListener;
@@ -29,7 +30,6 @@ import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import org.junit.Ignore;
 
 @Ignore
@@ -53,7 +53,7 @@ public class CoreseTest2 extends TestCase {
 	boolean brelations = false; // test nb relations in result
 	String[] answer;
     String functionCalled = "";
-	Model model = null; // to test get:gui
+	//Model model = null; // to test get:gui
 	IResults gres;
 	boolean skip = false;
 	boolean printResult = !true; //CoreseTestSuiteParser1.displayResult;
@@ -106,10 +106,10 @@ public class CoreseTest2 extends TestCase {
 	 * @param query: String, the query to perform or the name of the file containing the query to perform
 	 * @param expected: int, the number of results expected
 	 */
-	public CoreseTest2(boolean qq, Model mod, String Name_, String corese, String query, int expected) {
-		this(qq, Name_, corese, query, expected);
-		model = mod;
-	}
+//	public CoreseTest2(boolean qq, Model mod, String Name_, String corese, String query, int expected) {
+//		this(qq, Name_, corese, query, expected);
+//		model = mod;
+//	}
 
 	/**
 	 *
@@ -338,18 +338,26 @@ public class CoreseTest2 extends TestCase {
 		return null;
 	}
 	
-	
+    void tune(Graph g) {
+
+        Parameters p = Parameters.create();
+        p.add(Parameters.type.MAX_LIT_LEN, 2);
+        g.setStorage(IStorage.STORAGE_FILE, p);
+
+    }
+    
 	void init(){
 		//String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
                 //String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
                 String data = CoreseTest2.class.getClassLoader().getResource("data").getPath() + "/";
 
 		graph = Graph.create(true);
+               // tune(graph);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
-                graph.setCompareIndex(true);
+                //graph.setCompareIndex(true);
 
 		Load load = Load.create(graph);
-		graph.setOptimize(true);
+		//graph.setOptimize(true);
 		
 		long t1 = new Date().getTime();
 		load.load(data + "kgraph/rdf.rdf",  RDF.RDF);

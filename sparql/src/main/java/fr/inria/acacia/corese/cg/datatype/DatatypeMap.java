@@ -8,8 +8,10 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -671,34 +673,38 @@ public class DatatypeMap implements Cst, RDF {
     
     /******************************/
     
-     public static IDatatype count(IDatatype dt){
+     public static IDatatype size(IDatatype dt){
         if (! dt.isList()){
               return null;
           }        
          return newInstance(dt.size());
      }
      
+     static List<IDatatype> getValues(IDatatype dt){
+         return dt.getValues();
+     }
+     
       public static IDatatype first(IDatatype dt){
           if (! dt.isList()){
               return null;
           }         
-         IDatatype[] val = dt.getValues();
-         if (val == null || val.length>0){
+         List<IDatatype> val = getValues(dt);
+         if (val == null || val.size()>0){
              return null;
          }
-         return val[0];
+         return val.get(0);
      }
       
       public static IDatatype rest(IDatatype dt){
          if (! dt.isList()){
               return null;
           }        
-         IDatatype[] val = dt.getValues();
+         List<IDatatype> val = getValues(dt);
        
-         if (val.length > 1){
-             IDatatype[] res = new IDatatype[val.length-1];
-             for (int i = 0; i<res.length; ){
-                 res[i] = val[++i];
+         if (val.size() > 1){
+             ArrayList<IDatatype> res = new ArrayList(val.size()-1);
+             for (int i = 1; i<=res.size(); i++){
+                 res.add(val.get(i));
              }
              return createList(res);
          }
@@ -711,11 +717,11 @@ public class DatatypeMap implements Cst, RDF {
           if (! rst.isList()){
               return null;
           }
-          IDatatype[] val = rst.getValues();
-          IDatatype[] res = new IDatatype[val.length+1];
-          res[0] = fst;
-          for (int i = 0; i<val.length; i++){
-                 res[i+1] = val[i];
+          List<IDatatype> val = getValues(rst);
+          ArrayList<IDatatype> res = new ArrayList(val.size()+1);
+          res.add(fst);
+          for (int i = 0; i<val.size(); i++){
+                 res.add(val.get(i));
              }
           return createList(res);
       }
@@ -724,14 +730,11 @@ public class DatatypeMap implements Cst, RDF {
           if (! dt1.isList() || ! dt2.isList()){
               return null;
           }
-          IDatatype[] a1 = dt1.getValues();
-          IDatatype[] a2 = dt2.getValues();
-          int n = a1.length + a2.length;
-          IDatatype[] res = Arrays.copyOf(a1, n);
-          int j = 0;
-          for (int i = a1.length; i<n; i++){
-              res[i] = a2[j++];
-          }
+          List<IDatatype> a1 = getValues(dt1);
+          List<IDatatype> a2 = getValues(dt2);
+          ArrayList<IDatatype> res = new ArrayList(a1.size() + a2.size());
+          res.addAll(a1);
+          res.addAll(a2);
           return createList(res);
       }
 
@@ -740,22 +743,22 @@ public class DatatypeMap implements Cst, RDF {
           if (! list.isList()){
               return null;
           }
-          IDatatype[] arr = list.getValues();
-          if (n.intValue() >= arr.length){
+          List<IDatatype> arr = getValues(list);
+          if (n.intValue() >= arr.size()){
               return null;
           }
-          return arr[n.intValue()];
+          return arr.get(n.intValue());
       }
       
      public static IDatatype set(IDatatype list, IDatatype n, IDatatype val) {
          if (! list.isList()){
               return null;
           }
-          IDatatype[] arr = list.getValues();
-          if (n.intValue() >= arr.length){
+          List<IDatatype> arr = getValues(list);
+          if (n.intValue() >= arr.size()){
               return null;
           }
-          arr[n.intValue()] = val;
+          arr.set(n.intValue(), val);
          return val;
      }
 
@@ -764,9 +767,9 @@ public class DatatypeMap implements Cst, RDF {
          if (args.length == 0){
              return createList();
          }
-        IDatatype[] ldt = new IDatatype[args.length];
-        for (int i=0; i<ldt.length; i++){
-            ldt[i] = (IDatatype) args[i];
+        ArrayList<IDatatype> ldt = new ArrayList(args.length);
+        for (int i=0; i<args.length; i++){
+            ldt.add((IDatatype) args[i]);
         }
         IDatatype dt = createList(ldt);
         return dt;
@@ -776,13 +779,12 @@ public class DatatypeMap implements Cst, RDF {
         if ( ! dt.isList()){
             return dt;
         }
-        IDatatype[] value = dt.getValues();
-        IDatatype[] res   = new IDatatype[value.length];
-        int n = value.length - 1;
-        for (int i = 0; i<value.length; i++){
-            res[i] = value[n - i];
-        }
-        
+        List<IDatatype> value = getValues(dt);
+        ArrayList<IDatatype> res   = new ArrayList<IDatatype>(value.size());
+        int n = value.size() - 1;
+        for (int i = 0; i<value.size(); i++){
+            res.add(value.get(n - i));
+        }        
         return createList(res);
     }
     
@@ -790,8 +792,8 @@ public class DatatypeMap implements Cst, RDF {
         if ( ! dt.isList()){
             return dt;
         }
-        IDatatype[] value = dt.getValues();
-        Arrays.sort(value);
+        List<IDatatype> value = getValues(dt);
+        Collections.sort(value);
         return dt;
         
      }

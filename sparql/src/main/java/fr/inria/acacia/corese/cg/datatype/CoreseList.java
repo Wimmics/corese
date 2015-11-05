@@ -4,11 +4,12 @@ import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class CoreseList extends CoreseUndefLiteral {
 
-    private IDatatype[] array;
+    private List<IDatatype> list;
     private static int count = 0;
     private static final String SEED = "_l_";
     private static final IDatatype dt = getGenericDatatype(IDatatype.LIST);
@@ -23,7 +24,7 @@ public class CoreseList extends CoreseUndefLiteral {
 
     public CoreseList(IDatatype[] dt) {
         super(SEED + count++);
-        array = dt;
+        list = Arrays.asList(dt);
     }
 
     public IDatatype getDatatype() {
@@ -54,7 +55,7 @@ public class CoreseList extends CoreseUndefLiteral {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("(");
-        for (IDatatype dt : array) {
+        for (IDatatype dt : list) {
             sb.append(dt);
             sb.append(" ");
         }
@@ -71,31 +72,41 @@ public class CoreseList extends CoreseUndefLiteral {
     }
 
     public void set(IDatatype[] dts) {
-        array = dts;
+        list = Arrays.asList(dts);
     }
 
     @Override
-    public IDatatype[] getValues() {
-        return array;
+    public List<IDatatype> getValues() {
+        return list;
+    }
+    
+    @Override
+    public Iterable<IDatatype> getLoop(){
+        return list;
+    }
+    
+    @Override
+    public boolean isLoop(){
+        return true;
     }
 
     @Override
     public IDatatype get(int n) {
-        return array[n];
+        return list.get(n);
     }
 
     @Override
     public int size() {
-        if (array == null) {
+        if (list == null) {
             return 0;
         } else {
-            return array.length;
+            return list.size();
         }
     }
 
     @Override
     public boolean isTrue() throws CoreseDatatypeException {
-        return array != null && array.length > 0;
+        return list != null && list.size() > 0;
     }
 
     @Override

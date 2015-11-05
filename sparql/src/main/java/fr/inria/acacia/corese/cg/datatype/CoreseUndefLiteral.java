@@ -1,6 +1,5 @@
 package fr.inria.acacia.corese.cg.datatype;
 
-import java.util.Hashtable;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;

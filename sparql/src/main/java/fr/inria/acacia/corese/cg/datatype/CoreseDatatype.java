@@ -13,6 +13,7 @@ import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import java.util.List;
 
 /**
  * <p>Title: Corese</p>
@@ -329,12 +330,8 @@ public class CoreseDatatype
         public boolean isLoop(){
             return false;
         }
-	
-	public CoreseArray getArray(){
-		return null;
-	}
-	
-	public IDatatype[] getValues(){
+		
+	public List<IDatatype> getValues(){
 		return null;
 	}
         

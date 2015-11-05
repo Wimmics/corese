@@ -24,7 +24,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.CoreseArray;
 import fr.inria.acacia.corese.cg.datatype.CoreseInteger;
 import fr.inria.acacia.corese.cg.datatype.CoreseString;
 import fr.inria.acacia.corese.cg.datatype.CoreseXMLLiteral;
@@ -231,7 +230,7 @@ public class XPathFun {
 			dt = dom2dt(node);
 			if (dt != null) vec.add(dt);		
 		}
-		CoreseArray adt =  CoreseArray.create(vec);
+		IDatatype adt =  DatatypeMap.createList(vec);
 		return adt;
 	}
 	

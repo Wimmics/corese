@@ -89,8 +89,10 @@ public class Processor {
         private static final String XT_VALUE    = EXT + "value";
         private static final String XT_INDEX    = EXT + "index";
         private static final String XT_REJECT   = EXT + "reject";
-        private static final String XT_VARIABLES = EXT + "variables";
-        
+        private static final String XT_VARIABLES= EXT + "variables";
+        private static final String XT_EDGE     = EXT + "edge";
+        private static final String XT_TRIPLE   = EXT + "triple";
+       
 
 	private static final String PLENGTH = "pathLength";
 	private static final String KGPLENGTH = KGRAM + "pathLength";
@@ -604,6 +606,8 @@ public class Processor {
 		defoper(XT_VALUE,        ExprType.XT_VALUE);                
 		defoper(XT_INDEX,        ExprType.XT_INDEX);
 		defoper(XT_VARIABLES,    ExprType.XT_VARIABLES);
+		defoper(XT_EDGE,         ExprType.XT_EDGE);
+		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
                 
 		defoper(REGEX, 		ExprType.REGEX);
 		defoper(DATATYPE, 	ExprType.DATATYPE);

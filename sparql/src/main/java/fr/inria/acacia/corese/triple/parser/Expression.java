@@ -177,6 +177,10 @@ implements Regex, Filter, Expr {
 	public boolean isFunction(){
 		return false;
 	}
+        
+        public boolean isFuncall(){
+		return false;
+	}
 	
 	public boolean isFunction(String str){
 		return false;

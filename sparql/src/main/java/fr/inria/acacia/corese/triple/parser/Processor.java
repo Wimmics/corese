@@ -52,6 +52,7 @@ public class Processor {
 	private static final String ISNUMERIC = "isNumeric";
 	private static final String LANG = "lang";
 	private static final String REGEX = "regex";
+        private static final String APPROXIMATE = "approximate";
 	public static  final String MATCH = "match";
 	private static final String LANGMATCH = "langMatches";
 	private static final String STRDT = "strdt";
@@ -610,6 +611,7 @@ public class Processor {
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
                 
 		defoper(REGEX, 		ExprType.REGEX);
+                defoper(APPROXIMATE,	ExprType.APPROXIMATE);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
 		defoper(STR, 		ExprType.STR);
 		defoper(XSDSTRING, 	ExprType.XSDSTRING);

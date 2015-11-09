@@ -259,6 +259,11 @@ public class Pattern implements ExprType, Expr {
 		// TODO Auto-generated method stub
 		return false;
 	}
+        
+        @Override
+        public boolean isFuncall(){
+            return false;
+        }
 
     @Override
     public void setOper(int n) {

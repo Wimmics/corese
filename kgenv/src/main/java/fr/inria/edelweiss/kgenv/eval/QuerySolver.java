@@ -99,6 +99,7 @@ public class QuerySolver  {
 	
 	static boolean test = true;
         private int planner = Query.STD_PLAN;
+    private boolean isUseBind;
 	
 	public QuerySolver (){
 	}
@@ -320,6 +321,7 @@ public class QuerySolver  {
             transformer.setNamespaces(NAMESPACES);
             transformer.setPragma(getPragma());
             transformer.setPlanProfile(getPlanProfile());
+            transformer.setUseBind(isUseBind());
         }
         
         public Query compileRule(String squery, Dataset ds) throws EngineException {
@@ -602,6 +604,20 @@ public class QuerySolver  {
      */
     public void setSynchronized(boolean isSynchronized) {
         this.isSynchronized = isSynchronized;
+    }
+
+    /**
+     * @return the isUseBind
+     */
+    public boolean isUseBind() {
+        return isUseBind;
+    }
+
+    /**
+     * @param isUseBind the isUseBind to set
+     */
+    public void setUseBind(boolean isUseBind) {
+        this.isUseBind = isUseBind;
     }
 	
 }

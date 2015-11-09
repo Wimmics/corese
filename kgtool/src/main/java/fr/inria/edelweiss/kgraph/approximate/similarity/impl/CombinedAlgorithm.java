@@ -30,7 +30,7 @@ public class CombinedAlgorithm extends BaseAlgorithm {
     @Override
     public double calculate(String s1, String s2) {
         if (algs.isEmpty()) {
-            return SIM_NC;
+            return NA;
         }
 
         double[] similarity = new double[algs.size()];

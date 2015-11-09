@@ -3,15 +3,14 @@ package fr.inria.edelweiss.kgraph.approximate.similarity.impl;
 import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
 
 /**
- * ClassHieararchy.java
+ * Class Hierarchy
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 oct. 2015
  */
-public class ClassHieararchy extends BaseAlgorithm{
+public class ClassHierarchy extends BaseAlgorithm{
 
-    public ClassHieararchy(AlgType type) {
-        super(type);
+    public ClassHierarchy() {
+        super(AlgType.ch);
     }
-
 }

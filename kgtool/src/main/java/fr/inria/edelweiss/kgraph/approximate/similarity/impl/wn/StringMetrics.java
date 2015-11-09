@@ -6,32 +6,34 @@ import edu.sussex.nlp.jws.LeacockAndChodorow;
 import edu.sussex.nlp.jws.Lin;
 import edu.sussex.nlp.jws.Resnik;
 import edu.sussex.nlp.jws.WuAndPalmer;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm.SIM_MIN;
-import fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.TextSimilarity.StringMetrics;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.TextSimilarity.StringMetrics.JiangAndConrath;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.TextSimilarity.StringMetrics.LeacockAndChodorow;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.TextSimilarity.StringMetrics.Lin;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.TextSimilarity.StringMetrics.Resnik;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.TextSimilarity.StringMetrics.WuAndPalmer;
+import static fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm.MIN;
 
 /**
- * LinModel.java
+ * String metrics using WordNet
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 22 oct. 2015
  */
-public class WordSimilarity  {
+public class StringMetrics {
 
-    private StringMetrics sm;
+    private Type type;
 
+    public enum Type {
+        LeacockAndChodorow,
+        WuAndPalmer,
+        Resnik,
+        Lin,
+        JiangAndConrath
+    };
+    
     private Lin lin;
     private WuAndPalmer wp;
     private JiangAndConrath jc;
     private LeacockAndChodorow lc;
     private Resnik res;
 
-    public WordSimilarity(StringMetrics sm, JWS jws) {
-        this.sm = sm;
+    public StringMetrics(Type sm, JWS jws) {
+        this.type = sm;
 
         switch (sm) {
             case Lin:
@@ -53,7 +55,7 @@ public class WordSimilarity  {
     }
 
     public double calculate(String w1, String w2, String pos) {
-        switch (sm) {
+        switch (type) {
             case Lin:
                 return this.lin.max(w1, w2, pos);
             case JiangAndConrath:
@@ -65,6 +67,6 @@ public class WordSimilarity  {
             case WuAndPalmer:
                 return this.wp.max(w1, w2, pos);
         }
-        return SIM_MIN;
+        return MIN;
     }
 }

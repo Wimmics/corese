@@ -1,23 +1,18 @@
 package fr.inria.edelweiss.kgraph.approximate.similarity.impl;
 
-import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
 import fr.inria.edelweiss.kgraph.approximate.similarity.Utils;
 
 /**
- * JaroWinkler.java
+ * Jaro–Winkler distance (Winkler, 1990) based on Jaro
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 oct. 2015
  */
 public class JaroWinkler extends Jaro {
 
-    public JaroWinkler(AlgType type) {
-        super(type);
-    }
-
     @Override
     public double calculate(String s1, String s2) {
-        double sim = SIM_MAX;
+        double sim = MAX;
         if (!s1.equalsIgnoreCase(s2)) {
             //jaro algorithm
             double jaroSim = super.calculate(s1, s2);

@@ -16,18 +16,18 @@ public class NGram extends BaseAlgorithm {
     private final static int NG = 2;//default
     private int n;
 
-    public NGram(AlgType type) {
-        this(type, NG);
+    public NGram() {
+        this(NG);
     }
 
-    public NGram(AlgType type, int n) {
-        super(type);
+    public NGram(int n) {
+        super(AlgType.ng);
         this.n = n;
     }
 
     @Override
     public double calculate(String s1, String s2) {
-        double sim = SIM_MAX;
+        double sim = MAX;
         if (!s1.equalsIgnoreCase(s2)) {
             Map<String, Integer> res1 = tokenize(s1, n);
             Map<String, Integer> res2 = tokenize(s2, n);

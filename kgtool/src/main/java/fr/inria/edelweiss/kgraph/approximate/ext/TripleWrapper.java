@@ -4,9 +4,9 @@ import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType;
-import static fr.inria.edelweiss.kgraph.approximate.ext.AstRewrite.O;
-import static fr.inria.edelweiss.kgraph.approximate.ext.AstRewrite.P;
-import static fr.inria.edelweiss.kgraph.approximate.ext.AstRewrite.S;
+import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.O;
+import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.P;
+import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.S;
 import java.util.ArrayList;
 import java.util.List;
 

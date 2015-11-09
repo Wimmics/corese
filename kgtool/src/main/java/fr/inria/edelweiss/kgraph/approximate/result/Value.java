@@ -5,24 +5,23 @@ import fr.inria.edelweiss.kgraph.approximate.aggregation.ApproximateStrategy;
 import fr.inria.edelweiss.kgraph.approximate.aggregation.Priority;
 
 /**
- * Result.java
+ * Value for storing the similarity
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 oct. 2015
  */
-public class Result {
+public class Value {
 
-    //private final IDatatype e1, e2;
     private final Node node;
     private double similarity = -1;
     private String algorithms = "";
 
-    public Result(Node node, String algorithms, double sim) {
+    public Value(Node node, String algorithms, double sim) {
         this(node, algorithms);
         this.similarity = sim;
     }
 
-        public Result(Node node, String algorithms) {
+        public Value(Node node, String algorithms) {
         this.node = node;
         this.algorithms = algorithms;
     }

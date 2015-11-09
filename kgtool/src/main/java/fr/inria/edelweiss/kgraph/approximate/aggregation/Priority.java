@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgraph.approximate.aggregation;
 
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.ApproximateStrategy.getAlgrithmList;
 import fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm;
+import fr.inria.edelweiss.kgraph.approximate.similarity.impl.BaseAlgorithm;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -60,7 +61,7 @@ public class Priority {
     public static double[] getWeightByAlgorithm(List<ISimAlgorithm> algs) {
         List<AlgType> types = new ArrayList<AlgType>();
         for (ISimAlgorithm alg : algs) {
-            types.add(alg.getType());
+            types.add(((BaseAlgorithm) alg).getType());
         }
 
         return getWeightByAlgorithmType(types);

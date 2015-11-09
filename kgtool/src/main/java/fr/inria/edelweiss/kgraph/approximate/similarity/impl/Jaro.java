@@ -3,15 +3,15 @@ package fr.inria.edelweiss.kgraph.approximate.similarity.impl;
 import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
 
 /**
- * Jaro.java
+ * Jaro distance metric (Jaro, 1989, 1995)
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 13 oct. 2015
  */
 public class Jaro extends BaseAlgorithm {
 
-    public Jaro(AlgType type) {
-        super(type);
+    public Jaro() {
+        super(AlgType.jw);
     }
 
     /**

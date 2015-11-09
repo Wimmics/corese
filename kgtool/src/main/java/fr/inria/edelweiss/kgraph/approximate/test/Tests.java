@@ -9,8 +9,8 @@ import fr.inria.edelweiss.kgraph.approximate.result.SimilarityResults;
 import fr.inria.edelweiss.kgraph.approximate.similarity.Utils;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.approximate.ext.AstRewrite;
-import static fr.inria.edelweiss.kgraph.approximate.ext.AstRewrite.MATCH;
+import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
+import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.MATCH;
 import java.util.Arrays;
 import java.util.List;
 
@@ -101,37 +101,11 @@ public class Tests {
                 + "filter approximate(?_var_1, 'John', 'ss-ng-jw') }";
 
         exec.query(init);
-        exec.setVisitor(new AstRewrite());
+        exec.setVisitor(new ASTRewriter());
         Mappings map = exec.query(q3);
 
-        finalize(map);
+        SimilarityResults.aggregate(map);
         //System.out.println("map\n" + map);
         System.out.println(SimilarityResults.getInstance().toString());
-    }
-
-    public static void finalize(Mappings mappings) {
-        StringBuilder sb = new StringBuilder("********** Mapping Similarity ************\n");
-        List<Node> select = mappings.getQuery().getSelect();
-        boolean isSelect = mappings.getQuery().getSelect() != null;
-        for (Mapping map : mappings) {
-            double sim = 1;
-            List<Node> nodes = isSelect ? select : Arrays.asList(map.getQueryNodes());
-
-            for (Node qNode : nodes) {
-                Node node = map.getNode(qNode);
-                if (node != null) {
-                    sb.append(qNode).append(" = ").append(node).append("; ");
-                    Double s = SimilarityResults.getInstance().getSimilarity(qNode.getLabel(), (IDatatype) node.getValue());
-                    if (s != null) {
-                        sim *= s;
-                    }
-                }
-            }
-
-            sb.append("sim = ").append(Utils.format(sim)).append("; ");
-            sb.append("\n");
-        }
-
-        System.out.println(sb);
     }
 }

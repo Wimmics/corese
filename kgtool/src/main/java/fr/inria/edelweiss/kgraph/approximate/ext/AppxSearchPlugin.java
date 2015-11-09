@@ -8,7 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgraph.approximate.result.Key;
-import fr.inria.edelweiss.kgraph.approximate.result.Result;
+import fr.inria.edelweiss.kgraph.approximate.result.Value;
 import fr.inria.edelweiss.kgraph.approximate.result.SimilarityResults;
 import fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm;
 import fr.inria.edelweiss.kgraph.approximate.similarity.SimAlgorithmFactory;
@@ -22,13 +22,14 @@ import fr.inria.edelweiss.kgraph.query.PluginImpl;
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 1 oct. 2015
  */
-public class PluginAppSearch implements ExprType {
+public class AppxSearchPlugin implements ExprType {
 
     static final IDatatype TRUE = PluginImpl.TRUE;
     static final IDatatype FALSE = PluginImpl.FALSE;
     private final PluginImpl plugin;
 
-    public PluginAppSearch(PluginImpl p) {
+    //private boolean isCalculateSimilarity = true;
+    public AppxSearchPlugin(PluginImpl p) {
         this.plugin = p;
     }
 
@@ -63,7 +64,7 @@ public class PluginAppSearch implements ExprType {
                 }
 
                 Key k = getKey(exp, args);
-                Result r = getResult(exp, args, algs);
+                Value r = getResult(exp, args, algs);
 
                 //check if already calculated, if yes, just retrieve the value
                 Double sim = SimilarityResults.getInstance().getSimilarity(k, r.getNode(), algs);
@@ -74,7 +75,7 @@ public class PluginAppSearch implements ExprType {
                     reCalculated = true;
                     //if equal, return 1
                     if (s1.equalsIgnoreCase(s2)) {
-                        sim = ISimAlgorithm.SIM_MAX;
+                        sim = ISimAlgorithm.MAX;
                     } else {
                         ISimAlgorithm alg = SimAlgorithmFactory.createCombined(algs);
                         sim = alg.calculate(s1, s2);
@@ -131,16 +132,16 @@ public class PluginAppSearch implements ExprType {
         return k;
     }
 
-    private Result getResult(Expr exp, Object[] args, String algs) {
+    private Value getResult(Expr exp, Object[] args, String algs) {
         Expr e0 = exp.getExp(0);
         Expr e1 = exp.getExp(1);
-        Result r;
+        Value r;
         if (e0.isVariable() && e1.isVariable()) {
             //filter app(?label1, ?label2, "alg", ?var, <uri>)
-            r = new Result((IDatatype) args[3], algs);
+            r = new Value((IDatatype) args[3], algs);
         } else {
             //filter app(?var, uri, "algs")
-            r = new Result((IDatatype) args[0], algs);
+            r = new Value((IDatatype) args[0], algs);
         }
         return r;
     }

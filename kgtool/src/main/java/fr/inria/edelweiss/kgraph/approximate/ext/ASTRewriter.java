@@ -43,7 +43,7 @@ import java.util.List;
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 5 oct. 2015
  */
-public class AstRewrite implements QueryVisitor {
+public class ASTRewriter implements QueryVisitor {
 
     final static int S = 1, P = 2, O = 3;
     private final static String VAR = "?_var_";

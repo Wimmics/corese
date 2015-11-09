@@ -6,6 +6,7 @@ import fr.inria.edelweiss.kgraph.approximate.similarity.impl.BaseAlgorithm;
 import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper.NOUN;
 import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper.OTHER;
 import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper.VERB;
+import fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.StringMetrics.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -19,33 +20,25 @@ public class TextSimilarity extends BaseAlgorithm {
 
     public static void main(String[] args) throws Exception {
         NLPHelper nlp = NLPHelper.createInstance();
-        TextSimilarity ts = new TextSimilarity(AlgType.wn, nlp);
+        TextSimilarity ts = new TextSimilarity(nlp);
         double d = ts.calculate("Dog likes vegetables, but it is an animal", "Humain likes meat, because they are animals");
         System.out.println(d);
 
         d = ts.calculate("John", "John");
         System.out.println(d);
     }
-    private WordSimilarity alg;
+    private StringMetrics alg;
     private NLPHelper nlp;
 
-    public enum StringMetrics {
 
-        LeacockAndChodorow,
-        WuAndPalmer,
-        Resnik,
-        Lin,
-        JiangAndConrath
-    };
-
-    public TextSimilarity(AlgType type, NLPHelper nlp) {
-        this(type, nlp, StringMetrics.valueOf(NLPHelper.STRING_METRIC));
+    public TextSimilarity(NLPHelper nlp) {
+        this(nlp, Type.valueOf(NLPHelper.STRING_METRIC));
     }
 
-    public TextSimilarity(AlgType type, NLPHelper nlp, StringMetrics sm) {
-        super(type);
+    public TextSimilarity(NLPHelper nlp, Type sm) {
+        super(AlgType.wn);
         this.nlp = nlp;
-        this.alg = new WordSimilarity(sm, nlp.getJws());
+        this.alg = new StringMetrics(sm, nlp.getJws());
     }
 
     @Override
@@ -98,7 +91,7 @@ public class TextSimilarity extends BaseAlgorithm {
     }
 
     private double calculateMax(String w1, List<String> ls, String pos) {
-        double simMax = SIM_MIN;
+        double simMax = MIN;
         String wMax = "";
         for (String w2 : ls) {
             double sim = pos.equals(OTHER) ? calculateLex(w1, w2) : alg.calculate(w1, w2, pos);
@@ -106,7 +99,7 @@ public class TextSimilarity extends BaseAlgorithm {
                 simMax = sim;
                 wMax = w2;
             }
-            if (simMax >= SIM_MAX) {
+            if (simMax >= MAX) {
                 break;
             }
         }
@@ -127,6 +120,6 @@ public class TextSimilarity extends BaseAlgorithm {
     }
 
     private double calculateLex(String s1, String s2) {
-        return s1.equalsIgnoreCase(s2) ? SIM_MAX : SIM_MIN;
+        return s1.equalsIgnoreCase(s2) ? MAX : MIN;
     }
 }

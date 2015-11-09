@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 /**
  * Generate instance of similarity measurement algorithm
  *
- * SimAlgorithmFactory.java
- *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 23 sept. 2015
  */
@@ -28,19 +26,25 @@ public class SimAlgorithmFactory {
         return alg == null ? null : create(alg);
     }
 
-    public static ISimAlgorithm create(AlgType alg) {
-        switch (alg) {
+    /**
+     * Create an instance of algorithm using the given type of algorithm
+     *
+     * @param type
+     * @return
+     */
+    public static ISimAlgorithm create(AlgType type) {
+        switch (type) {
 
             //**N-Gram
             case ng:
-                return new NGram(alg);
+                return new NGram();
             case eq:
-                return new Equality(alg);
+                return new Equality();
             case jw:
-                return new JaroWinkler(alg);
+                return new JaroWinkler();
             case wn:
                 try {
-                    return new TextSimilarity(alg, NLPHelper.createInstance());
+                    return new TextSimilarity(NLPHelper.createInstance());
                 } catch (Exception ex) {
                     Logger.getLogger(SimAlgorithmFactory.class.getName()).log(Level.WARNING, "Cannot initialize NLP helper!", ex);
                 }
@@ -52,8 +56,7 @@ public class SimAlgorithmFactory {
             //return new DomainRange(alg);
             //case mult:
             default:
-//                alg = AlgType.empty;
-//                return new BaseAlgorithm(alg);
+                //return new BaseAlgorithm(alg);
                 return null;
         }
     }

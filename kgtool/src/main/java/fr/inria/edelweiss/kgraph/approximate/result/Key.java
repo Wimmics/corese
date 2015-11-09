@@ -5,7 +5,7 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 
 /**
- * Key.java
+ * Key for storing final results of similarity
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 3 nov. 2015
@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 public class Key {
 
     private final Expr var;
-    private IDatatype uri = null;
+    private IDatatype uri;
 
     public Key(Expr var, IDatatype uri) {
         this(var);

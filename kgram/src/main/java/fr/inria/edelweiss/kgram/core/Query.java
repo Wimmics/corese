@@ -111,7 +111,10 @@ public class Query extends Exp implements Graphable, Loopable {
     private boolean isCompiled = false;
     private boolean hasFunctional = false;
 
-    boolean isDebug = false, isCheck = false,
+    boolean isDebug = false, isCheck = false;
+    private boolean isUseBind = true;
+
+    boolean 
             isAggregate = false, isFunctional = false, isRelax = false,
             isDistribute = false,
             isOptimize = false,
@@ -2416,6 +2419,21 @@ public class Query extends Exp implements Graphable, Loopable {
         }
         return list;
     }
+
+    /**
+     * @return the isUseBind
+     */
+    public boolean isUseBind() {
+        return isUseBind;
+    }
+
+    /**
+     * @param isUseBind the isUseBind to set
+     */
+    public void setUseBind(boolean isUseBind) {
+        this.isUseBind = isUseBind;
+    }
+
     
     public GenerateBGP getGenerateBGP() {
         return generateBGP;

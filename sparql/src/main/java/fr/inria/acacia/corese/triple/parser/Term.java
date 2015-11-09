@@ -672,6 +672,9 @@ public class Term extends Expression {
 		return isFunction;
 	}
         
+        public boolean isFuncall(){
+		return isFunction;
+	}        
         void setFunction(boolean b){
             isFunction = b;
         }

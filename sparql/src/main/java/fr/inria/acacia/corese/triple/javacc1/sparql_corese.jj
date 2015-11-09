@@ -2337,6 +2337,7 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
   )
   | term = IfThenElse(stack)
   | term = Let(stack)
+  | term = Set(stack)
   | term = For(stack)
   )
 
@@ -2388,23 +2389,34 @@ Term Let (Exp stack) : { Expression exp ; Expression arg; ExpressionList list;}
       { return astq.let(list, exp); }
 }
 
-Expression LetDef(Exp stack) : { Variable var;   Expression exp ; ExpressionList el; }
+Term Set (Exp stack) : { Expression exp ; Variable var;}
 {
- exp = Expression(stack) 			
-  <AS> 
-  ( var = Var() { return astq.defLet(var, exp);  }	
+        <SET>
+        <LPAREN> 
+            var = Var()
+            <EQ>
+            exp = Expression(stack)            
+        <RPAREN>
+           
+      { return astq.set(var, exp); }
+}
+
+
+Expression LetDef(Exp stack) : { Variable var = null;   Expression exp ; ExpressionList el = null; }
+{
+  
+  ( var = Var() 
     | 
     	       
     <LPAREN> { el = new ExpressionList();  }
-	var = Var()  
-	{ el.add(var); } 
-	( <COMMA> var = Var()   
-            { el.add(var); }
-	) *					
+	var = Var()  { el.add(var); } 
+	( <COMMA> var = Var()  { el.add(var); } ) *					
     <RPAREN>	    					     
   )
-
-   { return astq.defLet(el, exp);  }
+  <EQ>
+  exp = Expression(stack) 
+			
+   { return (el == null) ? astq.defLet(var, exp) : astq.defLet(el, exp);  }
  
 }
 
@@ -2774,6 +2786,7 @@ TOKEN [IGNORE_CASE] :
 | < NOT: "not">
 | < SCOPE: "scope">
 | < LET: "let">
+| < SET: "set">
 | < FOR: "for">
 | < IF: "if">
 | < THEN: "then">

@@ -1066,6 +1066,9 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
          return exp;
      }
      
+     public Term set(Variable var, Expression exp){
+         return Term.function(Processor.SET, var, exp);
+     }
      /**
       * let (var = exp, body)
       * @param el

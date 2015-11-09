@@ -35,10 +35,10 @@ public class Let extends Statement {
         sb.append(Processor.LET);
         Expression def = getArg(0);
         sb.append(" (");        
-        getDefinition().toString(sb);
-        sb.append(" as "); 
-        // may be match() after parsing ...
         getArg(0).getArg(0).toString(sb);
+        sb.append(" = "); 
+        // may be match() after parsing ...
+        getDefinition().toString(sb);
         sb.append(") {");
         sb.append(NL);
         sb.append("  ");

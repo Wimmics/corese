@@ -1,0 +1,45 @@
+#
+# Compute average on decile
+#
+select ?val where {
+  {select (aggregate(?n, us:decile) as ?agg)
+  where {
+    bind (unnest(maplist(us:random, xt:iota(10001))) as ?n)
+  }}
+
+  bind (unnest(?agg) as ?val)
+}
+
+function us:random(?n){
+  100 * rand()
+}
+
+function us:decile(?list){
+  us:split(?list, 10)
+}
+
+function us:split(?list, ?n){
+  xt:sort(?list) ;
+  let (?nb = xt:div(xt:size(?list), ?n)){
+    let (?sum = 0, ?i = 0, ?res = xt:list()){
+    
+      for (?val in ?list){
+      
+	if (?i = ?nb){
+	   let (?avg = ?sum / ?nb ){	  
+
+	       set (?res = xt:append(?res, xt:list(?avg))) ;
+	       set (?sum = 0);
+	       set (?i = 0)
+	   }
+	};
+	
+	set(?sum = ?sum + ?val);
+	set(?i = ?i + 1)
+	
+      };
+      
+      ?res
+    }
+  }   
+}

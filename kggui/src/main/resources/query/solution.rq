@@ -1,0 +1,16 @@
+#
+# xt:solution() may reject solution mapping according to some criteria
+#
+select * where {
+  bind (unnest(xt:iota(100)) as ?n)
+}
+
+function xt:solution(?q, ?ms) {
+  for (?m in ?ms){
+    for (?n in ?m){
+      if (! xt:prime(?n)){
+	xt:reject(?m)
+      }
+    }
+  }
+}

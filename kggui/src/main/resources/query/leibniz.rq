@@ -5,8 +5,8 @@ where  {
 
 function ex:leibniz(?n) {
     let (
-        apply(kg:plus, maplist(ex:inv, xt:iota(1, ?n, 4))) as ?x,
-        apply(kg:plus, maplist(ex:inv, xt:iota(3, ?n, 4))) as ?y){
+        ?x = apply(kg:plus, maplist(ex:inv, xt:iota(1, ?n, 4))),
+        ?y = apply(kg:plus, maplist(ex:inv, xt:iota(3, ?n, 4)))){
        ?x - ?y
     }
 }

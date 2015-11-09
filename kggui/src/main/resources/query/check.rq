@@ -1,0 +1,32 @@
+select * where {
+   ?x rdfs:label ?l
+}
+ 
+function xt:solution(?q, ?ms){
+  if (xt:size(?ms) = 0){  
+    us:check(?q)}  
+}
+     
+function us:check(?q){
+  for (?t in ?q){
+     let ((?s, ?p, ?o) = ?t){
+       if (! us:match(?s, ?p, ?o)){
+         kg:display(?t)
+       }
+     }  
+  }  
+}  
+
+function us:match(?s, ?p, ?o){  
+  if (isBlank(?s)){   
+    if (isBlank(?p)){   
+         if (isBlank(?o)){ exists {?x ?q ?y}} else { exists {?x ?q ?o}}
+    }  
+    else if (isBlank(?o)){ exists {?x ?p ?y}} else { exists {?x ?p ?o}}
+  }  
+
+  else if (isBlank(?p)){   
+       if (isBlank(?o)){ exists {?s ?q ?y}} else { exists {?s ?q ?o}}
+  }  
+  else if (isBlank(?o)){ exists {?s ?p ?y}} else { exists {?s ?p ?o}}  
+}

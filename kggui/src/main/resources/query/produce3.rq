@@ -1,0 +1,12 @@
+#
+# xt:produce() emulate Producer: create target edges
+#
+select (count(*) as ?c) where {
+  ?x rdf:value ?v
+  filter xt:prime(?v)
+}
+
+function xt:produce(?q) {
+  kg:display(?q) ;
+  maplist (xt:triple, bnode(), rdf:value, xt:iota(10000))
+}

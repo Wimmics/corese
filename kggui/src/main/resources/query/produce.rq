@@ -1,0 +1,15 @@
+#
+# xt:produce() emulate Producer: return query edge as target edge
+#
+select * where {
+  {?x foaf:name ?n ;
+  foaf:knows <James>
+  optional { ?x foaf:knows <Jack> }}
+  union { ?x foaf:name 'Jim' }
+  filter exists { ?x foaf:knows <Jack> }
+}
+
+function xt:produce(?q) {
+  kg:display(?q) ;
+  xt:list(?q)
+}

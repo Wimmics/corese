@@ -12,7 +12,7 @@ import java.util.*;
  * @version 1.0
  */
 
-class Param extends Hashtable implements Model {
+class Param extends Hashtable implements IModel {
 	
      public String getParameter(String var){
        Object res = get(var);

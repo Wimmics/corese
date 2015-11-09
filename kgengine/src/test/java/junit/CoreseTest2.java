@@ -53,7 +53,6 @@ public class CoreseTest2 extends TestCase {
 	boolean brelations = false; // test nb relations in result
 	String[] answer;
     String functionCalled = "";
-	//Model model = null; // to test get:gui
 	IResults gres;
 	boolean skip = false;
 	boolean printResult = !true; //CoreseTestSuiteParser1.displayResult;

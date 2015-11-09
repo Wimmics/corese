@@ -1408,11 +1408,6 @@ public class TestQuery1 {
        Mappings m3 = exec.query(q3);
         //System.out.println(m3);
        assertEquals(7, m3.size());  
-       
-        //System.out.println(NSDatatypeMap.createQName("kg:name").getLabel());
-        //NSDatatypeMap.defPrefix("ex", "http://example.org/");
-        //System.out.println(NSDatatypeMap.createQName("ex:John"));
-        //System.out.println(NSDatatypeMap.createQName("foaf:name").getLabel());
         
     }
     

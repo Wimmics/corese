@@ -17,6 +17,7 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
+import java.util.Map;
 
 /**
  * <p>Title: Corese</p>
@@ -267,7 +268,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         private String profile;
     private boolean isFunctional;
     
-     
+    private final Map<String, List<String>> approximateSearchOptions = new HashMap<String, List<String>>();
     /**
      * @return the defaultDataset
      */
@@ -3290,5 +3291,17 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 		visitor.visit(this);
 	}
         
-	
+	public void setApproximateSearchOptions(String key, String value){
+            if(this.approximateSearchOptions.containsKey(key)){
+                this.approximateSearchOptions.get(key).add(value);
+            }else{
+                List l = new ArrayList();
+                l.add(value);
+                this.approximateSearchOptions.put(key, l);
+            }
+        }
+        
+        public List<String> getApproximateSearchOptions(String key){
+            return this.approximateSearchOptions.get(key);
+        }
 }

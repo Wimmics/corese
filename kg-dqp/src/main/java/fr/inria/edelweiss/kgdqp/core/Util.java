@@ -30,7 +30,7 @@ public class Util {
     // recursive removal of EXISTS (because it is not sufficient to know in that an edge exists in a single source) 
     public static List<Filter> getApplicableFilter(Environment env, Edge edge) {
         // KGRAM exp for current edge
-        Exp exp = env.getExp();;
+        Exp exp = env.getExp();
         List<Filter> matchingFilters = new ArrayList<Filter>();
         for (Filter f : exp.getFilters()) {
             // filters attached to current edge

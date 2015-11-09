@@ -319,6 +319,7 @@ public class Transformer implements ExpType {
 
 		if (visit != null){
 			for (QueryVisitor v : visit){
+//                            if(planner == Query.QP_BGP)
 				v.visit(q);
 			}	
 		}
@@ -1092,7 +1093,7 @@ public class Transformer implements ExpType {
 			exp = Exp.create(cpType(type));
 
 			boolean hasBind = false;
-
+                        
 			for (fr.inria.acacia.corese.triple.parser.Exp ee : query.getBody()){
 
 				Exp tmp = compile(ee, opt, level+1);

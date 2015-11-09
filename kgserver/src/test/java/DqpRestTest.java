@@ -134,14 +134,16 @@ public class DqpRestTest {
         ///// Data upload
         ClientConfig config = new DefaultClientConfig();
         Client client1 = Client.create(config);
-        WebResource service1 = client1.resource(new URI("http://localhost:" + port1 + "/kgram"));
+//        WebResource service1 = client1.resource(new URI("http://localhost:" + port1 + "/kgram"));
+        WebResource service1 = client1.resource(new URI("http://localhost:" + port1 + "/"));
+
         System.out.println(service1.path("sparql").path("reset").post(String.class).toString());
         MultivaluedMap formData1 = new MultivaluedMapImpl();
         formData1.add("remote_path", "http://nyx.unice.fr/~gaignard/data/persondata.1.rdf");
         service1.path("sparql").path("load").post(formData1);
 
         Client client2 = Client.create(config);
-        WebResource service2 = client2.resource(new URI("http://localhost:" + port2 + "/kgram"));
+        WebResource service2 = client2.resource(new URI("http://localhost:" + port2 + "/"));
         System.out.println(service2.path("sparql").path("reset").post(String.class).toString());
         MultivaluedMap formData2 = new MultivaluedMapImpl();
         formData2.add("remote_path", "http://nyx.unice.fr/~gaignard/data/persondata.2.rdf");
@@ -174,8 +176,8 @@ public class DqpRestTest {
 
         Graph graph = Graph.create();
         QueryProcessDQP exec = QueryProcessDQP.create(graph);
-        exec.addRemote(new URL("http://localhost:" + port1 + "/kgram/sparql"), WSImplem.REST);
-        exec.addRemote(new URL("http://localhost:" + port2 + "/kgram/sparql"), WSImplem.REST);
+        exec.addRemote(new URL("http://localhost:" + port1 + "/sparql"), WSImplem.REST);
+        exec.addRemote(new URL("http://localhost:" + port2 + "/sparql"), WSImplem.REST);
 
         StopWatch sw = new StopWatch();
         sw.start();
@@ -198,9 +200,9 @@ public class DqpRestTest {
         WebResource serviceDQP = client1.resource(new URI("http://localhost:" + port2 + "/kgram/dqp"));
 
         MultivaluedMap formData1 = new MultivaluedMapImpl();
-        formData1.add("endpointUrl", "http://localhost:" + port1 + "/kgram/sparql");
+        formData1.add("endpointUrl", "http://localhost:" + port1 + "/sparql");
         MultivaluedMap formData2 = new MultivaluedMapImpl();
-        formData2.add("endpointUrl", "http://localhost:" + port2 + "/kgram/sparql");
+        formData2.add("endpointUrl", "http://localhost:" + port2 + "/sparql");
         serviceDQP.path("configureDatasources").post(formData1);
         serviceDQP.path("configureDatasources").post(formData2);
 
@@ -217,9 +219,9 @@ public class DqpRestTest {
         WebResource serviceDQP = client1.resource(new URI("http://localhost:" + port2 + "/kgram/dqp"));
 
         MultivaluedMap formData1 = new MultivaluedMapImpl();
-        formData1.add("endpointUrl", "http://localhost:" + port1 + "/kgram/sparql");
+        formData1.add("endpointUrl", "http://localhost:" + port1 + "/sparql");
         MultivaluedMap formData2 = new MultivaluedMapImpl();
-        formData2.add("endpointUrl", "http://localhost:" + port2 + "/kgram/sparql");
+        formData2.add("endpointUrl", "http://localhost:" + port2 + "/sparql");
         serviceDQP.path("configureDatasources").post(formData1);
         serviceDQP.path("configureDatasources").post(formData2);
 

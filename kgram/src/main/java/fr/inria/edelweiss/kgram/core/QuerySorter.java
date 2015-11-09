@@ -6,11 +6,8 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Exp.VExp;
 import fr.inria.edelweiss.kgram.filter.Compile;
-import java.time.Clock;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -145,7 +142,7 @@ public class QuerySorter implements ExpType {
                             case Query.QP_HEURISTICS_BASED:
                                 sort = new SorterNew();
                                 ((SorterNew) sort).sort(exp, lBind, prod, query.getPlanProfile());
-                                exp.setBind();
+                                setBind(query, exp);
                                 break;
                             case Query.QP_BGP:
                                 sortFilter(exp, lVar);
@@ -161,7 +158,7 @@ public class QuerySorter implements ExpType {
                             case Query.QP_DEFAULT:
                                 sort.sort(query, exp, lVar, lBind);
                                 sortFilter(exp, lVar);
-                                exp.setBind();
+                                setBind(query, exp);
                                 break;
 
                         }
@@ -222,6 +219,12 @@ public class QuerySorter implements ExpType {
         }
 
         return exp;
+    }
+    
+    void setBind(Query q, Exp exp){
+        if (q.isUseBind()){
+            exp.setBind();
+        }
     }
 
     // put the binding variables to concerned edge

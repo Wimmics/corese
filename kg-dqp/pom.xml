@@ -91,7 +91,13 @@
             <groupId>org.graphstream</groupId>
             <artifactId>gs-ui</artifactId>
         </dependency>-->
-        
+        <dependency>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>kgram</artifactId>
+            <version>3.1.4-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+
     </dependencies>
 
     <build>

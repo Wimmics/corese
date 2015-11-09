@@ -36,9 +36,10 @@ public class Pragma  {
 	public static final String MATCH 	= KG + "match";
 	public static final String PATH 	= KG + "path";
 	public static final String QUERY 	= KG + "query";
-	public static final String SERVICE  = KG + "service";
+	public static final String SERVICE      = KG + "service";
 	public static final String PRAGMA	= KG + "pragma";
 	public static final String GRAPH	= KG + "graph";
+        public static final String APPROXIMATE	= KG + "approximate";
 
 	// kgram
 	public static final String OPTIM 	= KG + "optimize";
@@ -82,7 +83,15 @@ public class Pragma  {
 
 	public static final String HELP 	= KG + "help";
 
-	
+	public static final String ALGORITHM            = KG + "algorithm";
+        public static final String PRIORITY_ALGORITHM	= KG + "priority_a";
+        public static final String STRATEGY             = KG + "strategy";
+        public static final String PRIORITY_STRATEGY	= KG + "priority_s";
+        public static final String WN_PATH      	= KG + "wn_path";
+        public static final String WN_VERSION   	= KG + "wn_ver";
+        public static final String POS_TAGGER   	= KG + "pos_tagger";
+        public static final String STRING_METRIC   	= KG + "string_metric";
+        public static final String THRESHOLD       	= KG + "threshold";
 
 	// match
 	static final String MODE 	= KG + "mode";
@@ -244,7 +253,9 @@ public class Pragma  {
                                         || property.equals(STL_PRIORITY)){					
 					ast.setPriority(odt.intValue());
 				}
-			}			
+			}else if(subject.endsWith(APPROXIMATE)){
+                                ast.setApproximateSearchOptions(property, object);
+                        }           		
 	}
 	
 	

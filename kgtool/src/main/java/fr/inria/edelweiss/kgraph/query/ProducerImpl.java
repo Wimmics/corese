@@ -38,7 +38,6 @@ import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Producer
@@ -481,7 +480,7 @@ public class ProducerImpl implements Producer, IProducerQP {
      */
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env,
             Regex exp, Node src, Node start, int index) {
-        
+
         if (start == null) {
             Node qNode = edge.getNode(index);
             if (qNode.isConstant()) {
@@ -492,7 +491,7 @@ public class ProducerImpl implements Producer, IProducerQP {
                 }
             }
         }
-        
+
         if (start != null && isExtern(start, env)){
             start = graph.getNode(start);
         }
@@ -855,13 +854,13 @@ public class ProducerImpl implements Producer, IProducerQP {
             return lMap;
         } else if (object instanceof Mappings) {
             return map(nodes, (Mappings) object);
-        }
+        } 
         else if (object instanceof Collection){
             return map(nodes, (Collection<IDatatype>)object);
         }
         return new Mappings();
     }
-    
+
     Mappings map(List<Node> lNodes, Collection<IDatatype> list) {
         Mappings map = new Mappings();
         for (IDatatype dt : list){
@@ -897,7 +896,6 @@ public class ProducerImpl implements Producer, IProducerQP {
         }
         return map;
     }
-
 
     Mappings map(List<Node> lNodes, Mappings map) {
         map.setNodes(lNodes);

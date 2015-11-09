@@ -16,6 +16,7 @@ import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprLabel;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -184,6 +185,14 @@ public class ProxyImpl implements Proxy, ExprType {
                 if (ee != null){
                    return  eval.eval(exp, env, p, array(dt1, dt2), ee);
                 }                
+            }
+        }
+
+        if (dt1.isBlank() && dt2.isBlank() && ! exp.isFuncall()) {
+            // exclude funcall kg:equal() to prevent a loop
+            Expr ee = eval.getDefine(env, label(exp, ExpType.BNODE), exp.arity());
+            if (ee != null) {
+                return eval.eval(exp, env, p, array(dt1, dt2), ee);
             }
         }
         

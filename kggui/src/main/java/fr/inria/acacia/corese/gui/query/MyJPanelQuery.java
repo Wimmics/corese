@@ -476,20 +476,25 @@ public final class MyJPanelQuery extends JPanel {
 
             for (int j = 0; j < map.size(); j++) {
                 Mapping m = map.get(j);
-                if (m.getMappings() != null) {
-                    List<fr.inria.edelweiss.kgram.api.core.Node> list = m.getNodes(columnName, true);
-                    String values = "";
-                    for (fr.inria.edelweiss.kgram.api.core.Node node : list) {
-                        values += node.getLabel() ;
-                        if (list.size() > 1){
-                            values += " ; ";
-                        }
-                    }
-                    colmunData[j] = values;
-                } else {
+//                if (m.getMappings() != null) {
+//                    List<fr.inria.edelweiss.kgram.api.core.Node> list = m.getNodes(columnName, true);
+//                    String values = "";
+//                    for (fr.inria.edelweiss.kgram.api.core.Node node : list) {
+//                        values += node.getLabel() ;
+//                        if (list.size() > 1){
+//                            values += " ; ";
+//                        }
+//                    }
+//                    colmunData[j] = values;
+//                } else 
+                {
                     fr.inria.edelweiss.kgram.api.core.Node value = m.getNode(columnName);
                     if (value != null){
-                        colmunData[j] = value.getLabel();
+                        IDatatype dt = (IDatatype) value.getValue();
+                        colmunData[j] = dt.getLabel();
+                        if (dt.isList()){
+                            colmunData[j] = dt.getValues().toString();
+                        }
                     }
                 }
             }

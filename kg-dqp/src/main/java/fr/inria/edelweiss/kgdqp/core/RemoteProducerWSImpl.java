@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgdqp.sparqlendpoint.SparqlEndpointInterface;
 import fr.inria.edelweiss.kgdqp.strategies.SourceSelectorWS;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizer;
 import fr.inria.edelweiss.kgdqp.strategies.RemoteQueryOptimizerFactory;
+import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
 import fr.inria.edelweiss.kgram.api.core.*;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -47,6 +48,8 @@ public class RemoteProducerWSImpl implements Producer {
     private final SparqlEndpointInterface rp;
     private final HashMap<String, Boolean> cacheIndex = new HashMap<String, Boolean>();
     private boolean provEnabled = false;
+    private final ArrayList<Exp> processedBGP = new ArrayList<Exp>();
+//    private Exp currentAnd;
 
     public RemoteProducerWSImpl(URL url, WSImplem implem, boolean provEnabled) {
         this.provEnabled = provEnabled;
@@ -206,15 +209,15 @@ public class RemoteProducerWSImpl implements Producer {
         try {
             StopWatch sw = new StopWatch();
             sw.start();
-                      
+
             if (SourceSelectorWS.ask(qEdge, this, env)) {
                 logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
                 String sparqlRes = rp.getEdges(rwSparql);
                 logger.debug(sparqlRes);
-                
-                if (env.getQuery() != null && env.getQuery().isDebug()){
+
+                if (env.getQuery() != null && env.getQuery().isDebug()) {
                     System.out.println("Query:\n" + rwSparql + "\n" + rp.getEndpoint());
-                    System.out.println("Result:\n" + sparqlRes);                   
+                    System.out.println("Result:\n" + sparqlRes);
                 }
 
 //                 count number of queries
@@ -310,7 +313,7 @@ public class RemoteProducerWSImpl implements Producer {
         if (env.getQuery().getAST() instanceof ASTQuery) {
             ASTQuery ast = (ASTQuery) env.getQuery().getAST();
             NSManager namespaceMgr = ast.getNSM();
-            for (String p : namespaceMgr.getPrefixes() ) {
+            for (String p : namespaceMgr.getPrefixes()) {
                 sparqlPrefixes += "PREFIX " + p + ": " + "<" + namespaceMgr.getNamespace(p) + ">\n";
             }
         }
@@ -342,7 +345,7 @@ public class RemoteProducerWSImpl implements Producer {
 
         Graph g = Graph.create();
         g.setTuple(true);
-        
+
         logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
 
         // count number of queries
@@ -418,7 +421,7 @@ public class RemoteProducerWSImpl implements Producer {
         if (env.getQuery().getAST() instanceof ASTQuery) {
             ASTQuery ast = (ASTQuery) env.getQuery().getAST();
             NSManager namespaceMgr = ast.getNSM();
-            for (String p : namespaceMgr.getPrefixes() ) {
+            for (String p : namespaceMgr.getPrefixes()) {
                 sparqlPrefixes += "PREFIX " + p + ": " + "<" + namespaceMgr.getNamespace(p) + ">\n";
             }
         }
@@ -500,9 +503,8 @@ public class RemoteProducerWSImpl implements Producer {
         // Remote query processing
         Graph g = Graph.create();
         g.setTuple(true);
-        
-//        logger.debug("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
 
+//        logger.debug("sending query \n" + sparql + "\n" + "to " + rp.getEndpoint());
         if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
             Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
             QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
@@ -728,7 +730,6 @@ public class RemoteProducerWSImpl implements Producer {
         return null;
     }
 
-  
     @Override
     public Query getQuery() {
         return null;
@@ -745,7 +746,162 @@ public class RemoteProducerWSImpl implements Producer {
     }
 
     @Override
-    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }  
+    public Mappings getMappings(Node gNode, List<Node> from, Exp bgp, Environment env) {
+
+        Mappings mappings = new Mappings();
+
+        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFullOptimizer();
+        String rwSparql = qo.getSparqlQueryBGP(gNode, from, bgp, env);
+
+        Graph g = Graph.create(false);
+        g.setTuple(true);
+        InputStream is = null;
+        try {
+            StopWatch sw = new StopWatch();
+            sw.start();
+//            logger.info("ASK FOR BGP "+SourceSelectorWS.ask(bgp, this, env));
+            if (SourceSelectorWS.ask(bgp, this, env)) {
+//                logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
+                String sparqlRes = rp.getEdges(rwSparql); //rename method getResults ???
+//                logger.info("Result: from "+ rp.getEndpoint() +"\n ---->  "+sparqlRes);
+
+//                
+//                XMLResult xmlresult = new XMLResult( new ProducerImpl(g));        
+//                mappings = xmlresult.parseString(sparqlRes);  //probleme de parsing string to mappings ???
+//                logger.info("XML => Mappings result: "+mappings.toString());
+                mappings = SPARQLResult.create(ProducerImpl.create(g)).parseString(sparqlRes);
+//                logger.info("SPARQL => Mappings result: "+mappings.toString());
+
+                if (mappings.size() != 0) {
+//                            logger.info("Mappings result: "+mappings.size());
+                    logger.debug(" results found \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
+                } else {
+//                             logger.info("Mappings result to 0: "+mappings.size());
+                    logger.debug(" no result \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
+                }
+                logger.debug(sparqlRes);
+
+                if (env.getQuery() != null && env.getQuery().isDebug()) {
+                    logger.info("Query:\n" + rwSparql + "\n" + rp.getEndpoint());
+                    logger.info("Result:\n" + sparqlRes);
+                }
+
+//                 count number of queries
+                if (QueryProcessDQP.queryCounter.containsKey(bgp.toString())) {
+                    Long n = QueryProcessDQP.queryCounter.get(bgp.toString());
+                    QueryProcessDQP.queryCounter.put(bgp.toString(), n + 1L);
+                } else {
+                    QueryProcessDQP.queryCounter.put(bgp.toString(), 1L);
+                }
+//                 count number of source access
+                String endpoint = rp.getEndpoint();
+                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
+                    Long n = QueryProcessDQP.sourceCounter.get(endpoint);
+                    QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
+                } else {
+                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
+                }
+
+                //To adapt for BGO
+//                if (sparqlRes != null) {
+//                    Load l = Load.create(g);
+//                    is = new ByteArrayInputStream(sparqlRes.getBytes());
+////                    l.load(is, ".ttl");
+//                    l.load(is);
+//                    logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
+//                    if (QueryProcessDQP.queryVolumeCounter.containsKey(bgp.toString())) {
+//                        Long n = QueryProcessDQP.queryVolumeCounter.get(bgp.toString());
+//                        QueryProcessDQP.queryVolumeCounter.put(bgp.toString(), n + (long) g.size());
+//                    } else {
+//                        QueryProcessDQP.queryVolumeCounter.put(bgp.toString(), (long) g.size());
+//                    }
+//                    if (QueryProcessDQP.sourceVolumeCounter.containsKey(endpoint)) {
+//                        Long n = QueryProcessDQP.sourceVolumeCounter.get(endpoint);
+//                        QueryProcessDQP.sourceVolumeCounter.put(endpoint, n + (long) g.size());
+//                    } else {
+//                        QueryProcessDQP.sourceVolumeCounter.put(endpoint, (long) g.size());
+//                    }
+//
+//                    if (this.isProvEnabled()) {
+//                        for(int i = 0; i<bgp.getExpList().size(); i++){
+//                        this.annotateResultsWithProv(g, bgp.getExpList().get(i).getEdge());
+//                      }
+//                    }
+//                }
+            } else {
+                logger.debug("negative ASK (" + bgp + ") -> pruning data source " + rp.getEndpoint());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return mappings;
+    }
+
+    public boolean checkEdge(Edge edge) {
+        boolean result = false;
+        if (edge instanceof EdgeImpl) {
+            EdgeImpl e = (EdgeImpl) edge;
+            result = this.getCacheIndex().get(e.getTriple().getPredicate().toSparql());
+        }
+        return result;
+    }
+
+    public boolean checkBGP(Exp bgp) {
+        boolean result = true;
+        for (int i = 0; i < bgp.getExpList().size() && result; i++) {
+            result = checkEdge(bgp.getExpList().get(i).getEdge());
+        }
+        if (result) {
+            processedBGP.add(bgp);
+        }
+        return result;
+    }
+
+    //draft
+    public boolean isAlreadyProcessed(Edge edge) {
+        EdgeImpl e = (EdgeImpl) edge;
+        if (e.isLastEdge()) {
+            if (compareCurrentANDProcessedBGP(edge)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return the processedBGP
+     */
+    public ArrayList<Exp> getProcessedBGP() {
+        return processedBGP;
+    }
+
+//    @Override
+//    public void currentAND(Exp and) {
+//        currentAnd = and;
+//    }
+
+    public boolean compareCurrentANDBGP(Exp bgp, Edge edge) {
+//        logger.info(bgp + " BGP vs AND  " + currentAnd  +"\n WHEN EDGE "+edge );
+//        boolean result = true;
+//        if (((bgp.getExpList().size() == currentAnd.getExpList().size()))) {
+//            for (int i = 0; i < bgp.getExpList().size() && result; i++) {
+//                result = result && bgp.getExpList().get(i).getEdge().equals(currentAnd.getExpList().get(i).getEdge());
+//            }
+//            return result;
+//        }
+//        logger.info("COMPARE " + result);
+        return false;
+    }
+
+    public boolean compareCurrentANDProcessedBGP(Edge edge) {
+        for (Exp e : processedBGP) {
+            if (compareCurrentANDBGP(e, edge)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

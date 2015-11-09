@@ -48,6 +48,8 @@ public interface Expr {
 	boolean isRecExist();
 
         boolean isVariable();
+        
+        boolean isFuncall();
 	
 	boolean isBound();
 	

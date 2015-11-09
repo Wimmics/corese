@@ -60,6 +60,7 @@ public class Transformer implements ExpType {
 	boolean fail = false,
 	isSPARQLCompliant = true,
 	isSPARQL1 = true;
+    private boolean isUseBind = true;
 	String namespaces, base;
         private Dataset dataset;
 	BasicGraphPattern pragma;
@@ -401,6 +402,7 @@ public class Transformer implements ExpType {
                 compileFunction(ast);
 		Exp ee = compile(ast.getExtBody(), false);
 		Query q = Query.create(ee);
+                q.setUseBind(isUseBind);
                 compileFunction(q, ast);
 		q.setAST(ast);
                 q.setHasFunctional(ast.hasFunctional());
@@ -1607,6 +1609,20 @@ public class Transformer implements ExpType {
      */
     public void setPlanProfile(int planner) {
         this.planner = planner;
+    }
+
+    /**
+     * @return the isUseBind
+     */
+    public boolean isUseBind() {
+        return isUseBind;
+    }
+
+    /**
+     * @param isUseBind the isUseBind to set
+     */
+    public void setUseBind(boolean isUseBind) {
+        this.isUseBind = isUseBind;
     }
 
 	

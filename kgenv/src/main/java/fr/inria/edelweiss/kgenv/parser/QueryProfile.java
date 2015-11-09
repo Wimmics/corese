@@ -12,7 +12,7 @@ import fr.inria.edelweiss.kgram.core.Query;
  *
  */
 public class QueryProfile {
-    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
     Query query;
     
     QueryProfile(Query q){

@@ -1,0 +1,21 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix geo:     <http://id.insee.fr/geo/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix igeo:    <http://rdf.insee.fr/def/geo#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix idemo:   <http://rdf.insee.fr/def/demo#> .
+
+
+<http://id.insee.fr/geo/region/94>
+      a       igeo:Region ;
+      igeo:codeINSEE "94" ;
+      igeo:codeRegion "94" ;
+      igeo:nom "Corse" ;
+      igeo:prefectureDeRegion
+              <http://id.insee.fr/geo/commune/2A004> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+      igeo:subdivisionDirecte
+              <http://id.insee.fr/geo/departement/2B> , <http://id.insee.fr/geo/departement/2A> ;
+      owl:sameAs <http://data.ign.fr/id/geofla/region/94> , <http://dbpedia.org/resource/Corsica> .

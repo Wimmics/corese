@@ -1,0 +1,71 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix geo:     <http://id.insee.fr/geo/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix igeo:    <http://rdf.insee.fr/def/geo#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+<http://id.insee.fr/geo/region/24>
+      a       igeo:Region ;
+      igeo:codeINSEE "24" ;
+      igeo:codeRegion "24" ;
+      igeo:nom "Centre" ;
+      igeo:prefectureDeRegion
+              <http://id.insee.fr/geo/commune/45234> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+      igeo:subdivisionDirecte
+              <http://id.insee.fr/geo/departement/36> , <http://id.insee.fr/geo/departement/18> , <http://id.insee.fr/geo/departement/37> , <http://id.insee.fr/geo/departement/28>;
+      owl:sameAs <http://dbpedia.org/resource/Centre_(French_region)> , <http://data.ign.fr/id/geofla/region/24> .
+
+<http://id.insee.fr/geo/departement/18>
+      a       igeo:Departement ;
+      igeo:codeDepartement
+              "18" ;
+      igeo:codeINSEE "18" ;
+      igeo:nom "Cher" ;
+      igeo:prefecture <http://id.insee.fr/geo/commune/18033> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/region/24> ;
+      igeo:subdivisionDirecte
+              <http://id.insee.fr/geo/arrondissement/183> , <http://id.insee.fr/geo/arrondissement/181> , <http://id.insee.fr/geo/arrondissement/182> ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/18> .
+
+<http://id.insee.fr/geo/departement/28>
+      a       igeo:Departement ;
+      igeo:codeDepartement
+              "28" ;
+      igeo:codeINSEE "28" ;
+      igeo:nom "Eure-et-Loir" ;
+      igeo:prefecture <http://id.insee.fr/geo/commune/28085> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/region/24> ;
+      igeo:subdivisionDirecte
+              <http://id.insee.fr/geo/arrondissement/283> , <http://id.insee.fr/geo/arrondissement/284> , <http://id.insee.fr/geo/arrondissement/282> , <http://id.insee.fr/geo/arrondissement/281> ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/28> .
+
+<http://id.insee.fr/geo/departement/36>
+      a       igeo:Departement ;
+      igeo:codeDepartement
+              "36" ;
+      igeo:codeINSEE "36" ;
+      igeo:nom "Indre" ;
+      igeo:prefecture <http://id.insee.fr/geo/commune/36044> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/region/24> ;
+      igeo:subdivisionDirecte
+              <http://id.insee.fr/geo/arrondissement/364> , <http://id.insee.fr/geo/arrondissement/363> , <http://id.insee.fr/geo/arrondissement/361> , <http://id.insee.fr/geo/arrondissement/362> ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/36> .
+
+<http://id.insee.fr/geo/departement/37>
+      a       igeo:Departement ;
+      igeo:codeDepartement
+              "37" ;
+      igeo:codeINSEE "37" ;
+      igeo:nom "Indre-et-Loire" ;
+      igeo:prefecture <http://id.insee.fr/geo/commune/37261> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/region/24> ;
+      igeo:subdivisionDirecte
+              <http://id.insee.fr/geo/arrondissement/372> , <http://id.insee.fr/geo/arrondissement/373> , <http://id.insee.fr/geo/arrondissement/371> ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/37> .
+
+
+<http://id.insee.fr/geo/departement/99>
+      igeo:nom "DISTRIBUTED" ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/99> .
+

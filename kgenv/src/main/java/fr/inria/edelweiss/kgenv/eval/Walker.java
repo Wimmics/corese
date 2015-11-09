@@ -163,11 +163,14 @@ class Walker extends Interpreter {
                 return DatatypeMap.createList(list);
                 
             case AGGREGATE:
+                // aggregate(?x) -> list of ?x
                 // aggregate(?x, xt:mediane) ->
                 // aggregate(?x, xt:mediane(?list))
                 IDatatype dt = DatatypeMap.createList(list);
-                IDatatype agg = (IDatatype) eval.getProxy().let(exp.getExp(1), env, p, dt);
-                return agg;
+                if (exp.arity() == 2){
+                    return (IDatatype) eval.getProxy().let(exp.getExp(1), env, p, dt);
+                }
+                return dt;
 
         }
 

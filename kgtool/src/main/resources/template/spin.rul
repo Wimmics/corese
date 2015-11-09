@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Oct 24 17:45:06 CEST 2015
+Sat Nov 07 17:06:11 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -204,7 +204,7 @@ where {
     }
     
     function st:protect2(?in) {
-      let (st:turtle(?in) as ?t){
+      let (?t = st:turtle(?in)){
 	if (strstarts(?t, "<"), 
 	    replace(?t, "<", "&lt;"),
 	    ?t)
@@ -236,7 +236,7 @@ where {
     }	
     
     function st:namespace() {
-      let (st:prolog() as ?p){
+      let (?p = st:prolog()){
 	if (st:get(st:mode, st:html), 
 	  replace(?p, "<", "&lt;"), 
 	  ?p)

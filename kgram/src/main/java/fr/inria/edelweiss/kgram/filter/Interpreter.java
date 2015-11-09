@@ -668,9 +668,28 @@ public class Interpreter implements Evaluator, ExprType {
         //count++;
         Expr fun = def.getFunction(); //getExp(0);
         env.set(def, fun.getExpList(), values);        
-        Object res = eval(def.getBody(), env, p);        
+        Object res = eval(def.getBody(), env, p); 
+        //Object res = funEval(def, env, p); 
         env.unset(def, fun.getExpList());        
         return res;
+    }
+    
+    /**
+     * Eval a function in new kgram with function's query
+     * use case: export function with exists {}
+     * @param exp function ex:name() {}
+     * @param env
+     * @param p
+     * @return 
+     */
+    Object funEval(Expr exp, Environment env, Producer p){
+        Interpreter in = new Interpreter(proxy);
+        in.setProducer(p);
+        Eval eval = Eval.create(p, in, kgram.getMatcher());
+        // below: replace by fun query
+        eval.init(env.getQuery());
+        eval.getMemory().setBind(env.getBind());
+        return eval.getEvaluator().eval(exp.getBody(), eval.getMemory(), p);
     }
     
     public int compare(Environment env, Producer p, Node n1, Node n2){

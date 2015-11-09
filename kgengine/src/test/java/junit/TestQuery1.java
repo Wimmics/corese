@@ -161,15 +161,15 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
 
         String q = "select (us:test() as ?t) where {}"
+                
                 + "function us:test(){"
-                + "let (0 as ?sum, "
+                + "let (?sum = 0){ "
                 + "for (?x in xt:iota(100)){"
                 + "if (xt:prime(?x)){"
-                + "set(?sum, ?sum + 1)"
-                + "}"
-                + "} as ?t)"
-                + "{"
-                + "?sum}"
+                + "set(?sum = ?sum + 1)"
+                + "}};"                             
+                + "?sum"
+                + "}"                
                 + "}";
 
         Mappings map = exec.query(q);
@@ -240,7 +240,7 @@ public class TestQuery1 {
                 + "}"
                 + ""
                 + "function us:mediane(?list){"
-                + "  let (xt:sort(?list) as ?l){"
+                + "  let (?l = xt:sort(?list)){"
                 + "    xt:get(?l, xsd:integer((xt:size(?l) - 1) / 2))"
                 + "  }"
                 + "}"
@@ -481,7 +481,7 @@ public class TestQuery1 {
                 + "function xt:test(?n) { "
                 + "if (?n = 1, "
                 + "xt:test(?n + 1),"
-                + "let (?n + 1 as ?m){ exists { ?x rdf:value ?m }}"
+                + "let (?m = ?n + 1){ exists { ?x rdf:value ?m }}"
                 + ") "
                 + "}"
                 
@@ -514,7 +514,7 @@ public class TestQuery1 {
                 + "where {"
                 + "?x rdf:value ?n "
                 + "filter exists { ?y rdf:value ?n "
-                + "filter (let (3 as ?z){ exists { ?t ?p ?z}}) } "               
+                + "filter (let (?z = 3){ exists { ?t ?p ?z}}) } "               
                 + "}"             
                 ; 
               
@@ -871,8 +871,8 @@ public class TestQuery1 {
                      + "}"
                      
                      + "function xt:candidate(?q, ?t, ?b) { "
-                     + "let (?q as (?qs, ?qp, ?qo) , "
-                     + "     ?t as (?ts, ?tp, ?to)) {"
+                     + "let ((?qs, ?qp, ?qo) = ?q, "
+                     + "     (?ts, ?tp, ?to) = ?t) {"
                      + "if (?qp = rdf:type && isURI(?qo), "
                      + "?b || exists { ?qo rdfs:subClassOf/(rdfs:subClassOf*|^rdfs:subClassOf) ?to } ,"
                      + "?b)"
@@ -1143,7 +1143,7 @@ public class TestQuery1 {
                  + "where {"
                  + "bind (5 as ?x)"
                  + "function st:fac(?x)  { if (?x = 1, 1, ?x * st:fac(?x - 1)) }"
-                 + "function st:test(?x) { let(?x * ?x as ?y){ ?y} }"
+                 + "function st:test(?x) { let(?y = ?x * ?x){ ?y} }"
                  + "}";
          
          String query2 = 
@@ -1151,7 +1151,7 @@ public class TestQuery1 {
                  + "(st:test(st:fac(?x)) as ?r)"
                  + "where {"
                  + "function st:fac(?x)   { if (?x = 1, 1, ?x * st:fac(?x - 1)) } "
-                 + "function st:test(?x) { let(?x * ?x as ?y){ ?y} } "                 
+                 + "function st:test(?x) { let(?y = ?x * ?x){ ?y} } "                 
                  + "bind (5 as ?x)}"
                  ;
         

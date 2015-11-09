@@ -153,6 +153,13 @@ public class ProducerDefault implements Producer {
     }
 
     @Override
+    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
+        //create a new Mappings: empty
+        Mappings maps = new Mappings();
+        return maps;
+    }
+
+    @Override
     public Object getValue(Object value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -162,8 +169,4 @@ public class ProducerDefault implements Producer {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

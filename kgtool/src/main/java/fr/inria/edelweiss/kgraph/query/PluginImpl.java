@@ -280,7 +280,7 @@ public class PluginImpl extends ProxyImpl {
                 return write(dt1, dt2);   
                 
              case XT_VALUE:
-                 return access(exp, env, p, dt1, dt2);
+                 return value(exp, env, p, dt1, dt2);
                  
               case XT_EDGE:
                  return edge(exp, env, p, dt1, dt2, null);    
@@ -648,22 +648,21 @@ public class PluginImpl extends ProxyImpl {
         return null;
     }
     
-    private Object access(Expr exp, Environment env, Producer p, IDatatype dtmap, IDatatype dtvar) {
-        Object obj = dtmap.getObject();
-        if (obj == null || ! (obj instanceof Mapping)){
-            return null;
-        }
-        Mapping map = (Mapping) obj;  
-        
-        switch (exp.oper()){
-            case XT_VALUE:
-                Node n = map.getNode(dtvar.getLabel());
-                if (n != null){
-                    return n.getValue();
-                }
-        }
-        
-        return null;
+    /**
+     * value of a property
+     */
+    private Object value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred) {
+       Graph g = getGraph(p);
+       Node ns = g.getNode(subj);
+       Node np = g.getPropertyNode(pred.getLabel());
+       if (ns == null || np == null){
+           return null;
+       }
+       Edge edge = g.getEdge(np, ns, 0);
+       if (edge == null){
+           return null;
+       }
+       return edge.getNode(1).getValue();
     }
 
     

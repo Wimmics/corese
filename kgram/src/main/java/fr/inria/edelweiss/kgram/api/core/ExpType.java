@@ -53,8 +53,8 @@ public interface ExpType {
 	static final int RESTORE 	= 31; 
 	static final int JOIN 		= 32; 
 	static final int VALUES 	= 33; 
-	static final int OPT_BIND 	= 34; 
-
+	static final int OPT_BIND 	= 34;
+        
 
 
 	

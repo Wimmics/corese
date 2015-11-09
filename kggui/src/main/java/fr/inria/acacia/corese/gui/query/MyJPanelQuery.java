@@ -181,13 +181,13 @@ public final class MyJPanelQuery extends JPanel {
                     areaException.setForeground(Color.red);
                     JOptionPane.showMessageDialog(null, areaException, "Error Syntax", JOptionPane.WARNING_MESSAGE);
                     excepCatch = true;
-                } catch (TokenMgrError e1) {
+                } /*catch (TokenMgrError e1) {
                     areaException.setText(e1.getMessage());
                     areaException.setEditable(false);
                     areaException.setForeground(Color.red);
                     JOptionPane.showMessageDialog(null, areaException, "Error Syntax", JOptionPane.WARNING_MESSAGE);
                     excepCatch = true;
-                }
+                }*/
                 if (!excepCatch) {
                     graph.addAttribute("ui.stylesheet", style);
                     textPaneStyleGraph.setText(style);

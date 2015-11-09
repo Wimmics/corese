@@ -90,11 +90,6 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		}
 		return meta;
 	}
-        
-         @Override
-    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 	
 	MetaIterator<Entity> add(MetaIterator<Entity> meta, Iterable<Entity> it){
 		MetaIterator<Entity> m = new MetaIterator<Entity>(it);
@@ -208,6 +203,16 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     public Node getGraphNode() {
         return producer.getGraphNode();
     }
+
+    @Override
+    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
+        Mappings meta = new Mappings();
+        for (Producer p : getProducerList()){
+                meta.add(p.getMappings(gNode, from, exp, env));
+        }
+        return meta;
+    }
+
 
     @Override
     public Object getValue(Object value) {

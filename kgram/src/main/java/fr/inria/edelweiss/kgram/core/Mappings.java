@@ -1164,7 +1164,6 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 		this.templateResult = templateResult;
 	}
 
-
 //
 //	public Solutions union(Solutions s){
 //		return union((Mappings) s);

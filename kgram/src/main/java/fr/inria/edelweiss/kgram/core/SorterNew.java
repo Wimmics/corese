@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * A new sorter for QP
+ * A new sorter for QPœ
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 5 juin 2014

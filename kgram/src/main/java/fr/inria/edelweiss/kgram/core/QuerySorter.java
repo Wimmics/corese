@@ -6,8 +6,11 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Exp.VExp;
 import fr.inria.edelweiss.kgram.filter.Compile;
+import java.time.Clock;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -63,7 +66,7 @@ public class QuerySorter implements ExpType {
         if (q.getHaving() != null) {
             compile(q.getHaving().getFilter());
         }
-        for (Filter f : q.getFunList()){
+        for (Filter f : q.getFunList()) {
             compile(f);
         }
     }
@@ -79,7 +82,6 @@ public class QuerySorter implements ExpType {
      */
     Exp compile(Exp exp, VString lVar, boolean option) {
         int type = exp.type();
-
         switch (type) {
 
             case EDGE:
@@ -102,6 +104,7 @@ public class QuerySorter implements ExpType {
             case QUERY:
                 // match query and subquery
                 Query q = exp.getQuery();
+//                System.out.println("LIST OF EDGES "+q.getQueryEdgeList());
                 modifier(q);
                 // lVar = select varList
                 if (!lVar.isEmpty()) {
@@ -141,15 +144,28 @@ public class QuerySorter implements ExpType {
                                 break;
                             case Query.QP_HEURISTICS_BASED:
                                 sort = new SorterNew();
-                                ((SorterNew)sort).sort(exp, lBind, prod, query.getPlanProfile());
+                                ((SorterNew) sort).sort(exp, lBind, prod, query.getPlanProfile());
                                 exp.setBind();
+                                break;
+                            case Query.QP_BGP:
+                                sortFilter(exp, lVar);
+                                exp.setBind();
+                                if ((!exp.isBGP()) && (!exp.isLock()) && exp.isEdgesOrFilter()) {
+                                    GenerateBGP tmp  = query.getGenerateBGP();
+                                    tmp.setExp(exp);
+                                    query.setGenerateBGP(tmp);
+                                    exp = query.getGenerateBGP().buildBGP();
+//                                    System.out.println("END BGP "+exp);
+                                }
                                 break;
                             case Query.QP_DEFAULT:
                                 sort.sort(query, exp, lVar, lBind);
                                 sortFilter(exp, lVar);
                                 exp.setBind();
                                 break;
+
                         }
+
                         service(exp);
                     }
                     // put filters where they are bound ASAP
@@ -175,10 +191,11 @@ public class QuerySorter implements ExpType {
                     lVar.add(gNode.getLabel());
                 }
 
-                for (Exp e : exp) {
-                    compile(e, lVar, option);
+                for (int i = 0; i < exp.size(); i++) {
+                    Exp e = compile(exp.args.get(i), lVar, option);
+                    exp.set(i, e);
                     if (exp.isBGPAnd()) {
-                        e.addBind(lVar);
+                        exp.args.get(i).addBind(lVar);
                     }
                 }
 
@@ -243,7 +260,7 @@ public class QuerySorter implements ExpType {
      * Compile pattern of exists {} if any
      */
     void compile(Expr exp, VString lVar, boolean opt) {
-        if (exp.oper() == ExprType.EXIST) {           
+        if (exp.oper() == ExprType.EXIST) {
             compile(query.getPattern(exp), lVar, opt);
         } else {
             for (Expr ee : exp.getExpList()) {
@@ -389,6 +406,7 @@ public class QuerySorter implements ExpType {
 
         if (nbs < 1 || (nbs == 1 && isService(exp.get(0)))) {
             // nothing to do
+//            System.out.println("Service nbs " + exp.toString());
             return;
         }
 
@@ -404,14 +422,17 @@ public class QuerySorter implements ExpType {
                 // find next service
                 and.add(exp.get(i));
                 exp.remove(i);
+//                System.out.println("Service while1 " + exp.toString());
             }
 
             // exp.get(i) is a service
             count++;
 
             if (and.size() == 0) {
+//                System.out.println("Service if " + exp.toString());
                 and.add(exp.get(i));
             } else {
+//                System.out.println("Service esle " + exp.toString());
                 Exp join = Exp.create(Exp.JOIN, and, exp.get(i));
                 and = Exp.create(Exp.AND);
                 and.add(join);
@@ -425,6 +446,7 @@ public class QuerySorter implements ExpType {
             // no more service
             and.add(exp.get(0));
             exp.remove(0);
+//            System.out.println("Service while2 " + exp.toString());
         }
 
         exp.add(and);

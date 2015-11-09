@@ -291,7 +291,6 @@ public class Mapping
 		}
 	}
 	
-	
 	public Path getPath(Node qNode){
 		return getPath(getIndex(qNode));
 	}
@@ -626,7 +625,7 @@ public class Mapping
 	 * if all shared variables have same value return true
 	 * if no shared variable return false
 	 */
-	boolean compatible(Mapping minus){
+	public boolean compatible(Mapping minus){
 		return compatible(minus, false);
 	}
 

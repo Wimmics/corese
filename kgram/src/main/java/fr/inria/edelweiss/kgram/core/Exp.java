@@ -35,7 +35,11 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
             isPath = false,
             isFree = false,
             isAggregate = false,
+            isBGP = false,
+            lock = false,
             isSilent = false;
+
+    
     private boolean isFunctional = false;
     VExp args;
     Edge edge;
@@ -56,7 +60,11 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
     Mappings map, templateMap;
     int min = -1, max = -1;
     private int level = -1;
-    private boolean isSystem = false;
+    private boolean isSystem = false;;
+
+    
+
+    
 
     /**
      * @return the bind
@@ -126,6 +134,16 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         this.level = level;
     }
 
+    public boolean isBGP() {
+        return type == BGP;
+    }
+
+
+    public boolean isBGPAnd(){
+        return type == AND || type == BGP;
+    }
+
+      
     class VExp extends ArrayList<Exp> {
     }
 
@@ -253,7 +271,9 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
                     first.add(ee);
                 }
             }
-
+            //BGP ???
+//            first.setBGP(true);
+//            e.setBGP(true);
             Exp exp = Exp.create(JOIN, first, e);
             getExpList().clear();
             args.add(exp);
@@ -412,10 +432,15 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
         return type == EDGE;
     }
     
-    public boolean isBGPAnd(){
-        return type == AND || type == BGP;
+    public boolean isEdgesOrFilter() {
+        boolean result = true;
+        for(Exp e : args){
+            if(!(e.isEdge() || e.isFilter()))
+                return false;
+        }
+        return ((result) && (args.size()>1));
     }
-
+    
     public boolean isOption() {
         return type == OPTION;
     }
@@ -1620,5 +1645,14 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
             }
         }
         return false;
+    }
+    
+    
+    public boolean isLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
     }
 }

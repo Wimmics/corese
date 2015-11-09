@@ -33,6 +33,7 @@ public class Query extends Exp implements Graphable, Loopable {
     public static final int QP_T0 = 0; //No QP settings
     public static final int QP_DEFAULT = 1; //Default Corese QP
     public static final int QP_HEURISTICS_BASED = 2;//Heuristics based QP
+    public static final int QP_BGP = 3;//BGP based QP
 
     //used to set the default query plan method 
     public static int STD_PLAN = QP_DEFAULT;
@@ -162,6 +163,12 @@ public class Query extends Exp implements Graphable, Loopable {
     private boolean isNumbering;
     private boolean isExtension = false;
 
+    
+    private GenerateBGP generateBGP;
+    private List<Edge> queryEdgeList;
+
+    
+    
 	
 	Query(){
         super(QUERY);
@@ -191,6 +198,8 @@ public class Query extends Exp implements Graphable, Loopable {
 		bindingNodes 		= new ArrayList<Node>();
 		relaxEdges 		= new ArrayList<Node>();
 		argList 		= new ArrayList<Node>();
+                queryEdgeList           = new ArrayList<Edge>();
+                generateBGP             = new GenerateBGP();
 
         querySorter = new QuerySorter(this);
 
@@ -2406,6 +2415,22 @@ public class Query extends Exp implements Graphable, Loopable {
             }
         }
         return list;
+    }
+    
+    public GenerateBGP getGenerateBGP() {
+        return generateBGP;
+    }
+    
+    public void setGenerateBGP(GenerateBGP generateBGP) {
+        this.generateBGP = generateBGP;
+    }
+
+    public List<Edge> getQueryEdgeList() {
+        return queryEdgeList;
+    }
+
+    public void setQueryEdgeList(List<Edge> queryEdgeList) {
+        this.queryEdgeList = queryEdgeList;
     }
 	
 }

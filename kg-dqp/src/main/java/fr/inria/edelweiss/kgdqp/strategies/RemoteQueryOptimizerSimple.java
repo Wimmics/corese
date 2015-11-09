@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -38,5 +39,10 @@ public class RemoteQueryOptimizerSimple implements RemoteQueryOptimizer {
         sparql += "construct  { "+sEdge+" } \n where { "+sEdge+" }";
 
         return sparql;
+    }
+
+    @Override
+    public String getSparqlQueryBGP(Node gNode, List<Node> from, Exp bgp, Environment env) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

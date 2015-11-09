@@ -9,7 +9,10 @@ import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.RemoteProducerWSImpl;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
+import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
+import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.GenerateBGP;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import java.util.ArrayList;
@@ -31,12 +34,32 @@ public class ServiceGrouper implements QueryVisitor {
     Logger logger = Logger.getLogger(ServiceGrouper.class);
     private QueryProcessDQP execDQP;
 
+    private HashMap<Triple, ArrayList<Producer>> indexEdgeProducers;
+
     public ServiceGrouper(QueryProcessDQP execDQP) {
+        this.indexEdgeProducers = new HashMap<Triple, ArrayList<Producer>>();
         this.execDQP = execDQP;
     }
 
     @Override
     public void visit(Query query) {
+        if (query.getPlanProfile() == Query.QP_BGP) {
+            logger.info("Building prediactes indices for ");
+
+            logger.info(query);
+        //list of edges for Query
+            //and indexes EDGE, Producers to build for Query
+            int i = 0;
+            for (fr.inria.edelweiss.kgram.core.Exp e : query.getExpList()) {
+                if (e.isBGPAnd()) {
+                    buildBGPIndex(query, e, i);
+                    i++;
+//                 logger.info("INDEX "+query.getGenerateBGP().getIndexEdgeProducers());
+//                 logger.info("LIST OF EDGES "+query.getQueryEdgeList());
+                }
+            }
+            logger.info("END of building!");
+        }
     }
 
     /**
@@ -108,6 +131,7 @@ public class ServiceGrouper implements QueryVisitor {
     public void buildIndex(Exp exp, HashMap<Triple, ArrayList<String>> indexEdgeSource, HashMap<String, ArrayList<Triple>> indexSourceEdge, ASTQuery ast, ArrayList<Triple> orderedTPs) {
 
         for (int i = 0; i < exp.size(); i++) {
+
             Exp subExp = exp.get(i);
             if (subExp.isOptional()) {
                 Option opt = (Option) subExp;
@@ -137,20 +161,34 @@ public class ServiceGrouper implements QueryVisitor {
                             }
 
                             Boolean ask = SourceSelectorWS.ask(triple.getPredicate().toSparql(), rp, ast);
-
                             if (ask) {
                                 if (indexEdgeSource.get(triple) == null) {
                                     ArrayList<String> urls = new ArrayList<String>();
                                     urls.add(url);
                                     indexEdgeSource.put(triple, urls);
+
+                                    ArrayList<Producer> producersbis = new ArrayList<Producer>();
+                                    producersbis.add(p);
+                                    indexEdgeProducers.put(triple, producersbis);
+
                                 } else {
                                     ArrayList<String> urls = indexEdgeSource.get(triple);
                                     urls.add(url);
                                     indexEdgeSource.put(triple, urls);
+
+                                    ArrayList<Producer> producersbis = indexEdgeProducers.get(triple);
+                                    producersbis.add(p);
+                                    indexEdgeProducers.put(triple, producersbis);
                                 }
                             }
                         }
                     }
+                }
+
+            } else {
+
+                if (subExp.isAnd()) {
+                    buildIndex(subExp, indexEdgeSource, indexSourceEdge, ast, orderedTPs);
                 }
             }
         }
@@ -188,7 +226,7 @@ public class ServiceGrouper implements QueryVisitor {
                 //TODO include optional elements into services ? 
                 Exp arg0 = opt.get(0);
                 Exp arg1 = opt.get(1);
-                 //recursion 1
+                //recursion 1
                 opt.set(0, rewriteQueryWithServices(arg0, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
                 //recursion 2
                 opt.set(1, rewriteQueryWithServices(arg1, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs));
@@ -536,6 +574,49 @@ public class ServiceGrouper implements QueryVisitor {
             for (Triple t : triples) {
                 System.out.println("\t->" + t.getPredicate());
             }
+        }
+    }
+
+    /**
+     *
+     * @param query
+     * @param exp
+     */
+    private void buildBGPIndex(Query query, fr.inria.edelweiss.kgram.core.Exp exp, int n) {
+
+        List<Edge> tmpEdges = query.getQueryEdgeList();
+        HashMap<Edge, ArrayList<Producer>> tmpEdgeProducers = query.getGenerateBGP().getIndexEdgeProducers();
+        int i = 0;
+        for (fr.inria.edelweiss.kgram.core.Exp e : exp) {
+            if (e.isEdge()) {
+                tmpEdges.add(e.getEdge());
+                EdgeImpl ee = (EdgeImpl) e.getEdge();
+                tmpEdgeProducers.put(e.getEdge(), indexEdgeProducers.get(ee.getTriple()));
+                i++;
+            } else {
+                if (e.type() == Query.SERVICE) {
+                    visit((Query) e.rest());
+                } else {
+                    if (e.isBGPAnd()) {
+                        buildBGPIndex(query, e, i);
+                    }
+                }
+            }
+        }
+
+        GenerateBGP gBGP = query.getGenerateBGP();
+        gBGP.setIndexEdgeProducers(tmpEdgeProducers);
+        query.setQueryEdgeList(tmpEdges);
+        query.setGenerateBGP(gBGP);
+
+        //draft for last EDGE of a set of EDGES in a AND
+        if (i > 0) {
+            fr.inria.edelweiss.kgram.core.Exp e = exp.get(i - 1);
+            EdgeImpl ee = (EdgeImpl) e.getEdge();
+            ee.setLastEdge(true);
+            e.setEdge(ee);
+            exp.set(i - 1, e);
+            query.set(n, exp);
         }
     }
 }

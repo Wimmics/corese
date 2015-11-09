@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgdqp.core.RemoteProducerWSImpl;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.SPARQLResult;
@@ -172,4 +173,15 @@ public class SourceSelectorWS {
         return sparql;
 
     }
+    
+    
+    public static boolean ask(Exp bgp, RemoteProducerWSImpl rp, Environment env) {
+        boolean result =true;
+        
+        for(int i = 0; i<bgp.getExpList().size() && result; i++){
+            result = ask(bgp.getExpList().get(i).getEdge(), rp, env) && result;
+        }
+        return result;
+    }
+    
 }

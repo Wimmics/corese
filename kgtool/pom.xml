@@ -12,7 +12,12 @@
         <version>3.1.4-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-
+    <repositories>
+        <repository>
+            <id>local-repo</id>
+            <url>file://${project.basedir}/src/main/resources/repo/</url>
+        </repository>
+    </repositories>
     <dependencies>
 
         <dependency>
@@ -120,18 +125,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>edu.mit</groupId>
-            <artifactId>jwi</artifactId>
-            <version>2.1.4</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/edu.mit.jwi_2.1.4.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>edu.sussex.nlp</groupId>
             <artifactId>jws</artifactId>
-            <version>beta.11</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/edu.sussex.nlp.jws.beta.11.jar</systemPath>
+            <version>11</version>
         </dependency>
         <dependency>
             <groupId>edu.stanford.nlp</groupId>

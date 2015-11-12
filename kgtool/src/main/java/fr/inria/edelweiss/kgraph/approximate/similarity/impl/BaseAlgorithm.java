@@ -29,7 +29,7 @@ public class BaseAlgorithm implements ISimAlgorithm {
 
     @Override
     public double calculate(String s1, String s2) {
-        Utils.show("Base-" + this.getType().name(), s1, s2, MIN);
+        Utils.msg("Base-" + this.getType().name(), s1, s2, MIN);
         return MIN;
     }
 }

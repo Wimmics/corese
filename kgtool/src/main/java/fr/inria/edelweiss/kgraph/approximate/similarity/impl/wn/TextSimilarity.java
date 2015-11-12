@@ -54,7 +54,7 @@ public class TextSimilarity extends BaseAlgorithm {
         double simReverse = this.calculate(segements2, segements1, poss);
 
         sim = (sim + simReverse) / 2.0d;
-        Utils.show("WN", text1, text2, sim);
+        Utils.msg("WN", text1, text2, sim);
         return sim;
     }
 

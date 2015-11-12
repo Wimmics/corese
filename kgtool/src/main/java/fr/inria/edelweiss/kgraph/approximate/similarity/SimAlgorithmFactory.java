@@ -3,7 +3,6 @@ package fr.inria.edelweiss.kgraph.approximate.similarity;
 import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
 import fr.inria.edelweiss.kgraph.approximate.aggregation.ApproximateStrategy;
 import fr.inria.edelweiss.kgraph.approximate.similarity.impl.CombinedAlgorithm;
-import fr.inria.edelweiss.kgraph.approximate.similarity.impl.Equality;
 import fr.inria.edelweiss.kgraph.approximate.similarity.impl.JaroWinkler;
 import fr.inria.edelweiss.kgraph.approximate.similarity.impl.NGram;
 import fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper;
@@ -38,8 +37,8 @@ public class SimAlgorithmFactory {
             //**N-Gram
             case ng:
                 return new NGram();
-            case eq:
-                return new Equality();
+            //case eq:
+            //    return new Equality();
             case jw:
                 return new JaroWinkler();
             case wn:
@@ -51,8 +50,8 @@ public class SimAlgorithmFactory {
                 return null;
             case ch:
             //integrate the old algorithm
-            // return new ClassHieararchy(alg);
-            case dr:
+            //return new ClassHieararchy(alg);
+            //case dr:
             //return new DomainRange(alg);
             //case mult:
             default:

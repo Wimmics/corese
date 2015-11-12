@@ -1,20 +1,15 @@
 package fr.inria.edelweiss.kgraph.approximate.aggregation;
 
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.ch;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.dr;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.eq;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.jw;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.ng;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.wn;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.CLASS_HIERARCHY;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_EQUALITY;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.LITERAL_LEX;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.LITERAL_SS;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.PROPERTY_DR;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.PROPERTY_EQUALITY;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_COMMENT;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_LABEL;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_NAME;
+import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -41,25 +36,23 @@ public class ApproximateStrategy {
     private static List<AlgType> algorithmList = null;
 
     //private static Priority priority = new Priority();
-
     static {
         //*** STRATEGY - ALGORITHMS
-        defaultStrategyMap.put(URI_NAME, Arrays.asList(new AlgType[]{ng, jw, wn}));//S P O
-        defaultStrategyMap.put(URI_EQUALITY, Arrays.asList(new AlgType[]{eq}));//S P O
+        defaultStrategyMap.put(URI, Arrays.asList(new AlgType[]{ng, jw, wn}));//S P O
+        //defaultStrategyMap.put(URI_EQUALITY, Arrays.asList(new AlgType[]{eq}));//S P O
 
         defaultStrategyMap.put(URI_LABEL, Arrays.asList(new AlgType[]{ng, jw, wn}));//S O
         defaultStrategyMap.put(URI_COMMENT, Arrays.asList(new AlgType[]{wn}));//S O
 
-        defaultStrategyMap.put(PROPERTY_DR, Arrays.asList(new AlgType[]{dr}));//P
-        defaultStrategyMap.put(PROPERTY_EQUALITY, Arrays.asList(new AlgType[]{eq}));//P
-
+        // defaultStrategyMap.put(PROPERTY_DR, Arrays.asList(new AlgType[]{dr}));//P
+        //defaultStrategyMap.put(PROPERTY_EQUALITY, Arrays.asList(new AlgType[]{eq}));//P
         defaultStrategyMap.put(CLASS_HIERARCHY, Arrays.asList(new AlgType[]{ch}));//A rdf:type B
 
         defaultStrategyMap.put(LITERAL_SS, Arrays.asList(new AlgType[]{wn}));//O@literal@xsd:string@en
         defaultStrategyMap.put(LITERAL_LEX, Arrays.asList(new AlgType[]{ng, jw}));//O@literal@xsd:string
         strategyMap = defaultStrategyMap;
 
-        mergableStrategy = Arrays.asList(new StrategyType[]{URI_NAME, CLASS_HIERARCHY, PROPERTY_DR, LITERAL_SS, LITERAL_LEX});
+        mergableStrategy = Arrays.asList(new StrategyType[]{URI, CLASS_HIERARCHY, LITERAL_SS, LITERAL_LEX});
     }
 
     public static void init(List<String> strategyOption, List<String> priorityStrategyOption,
@@ -124,7 +117,7 @@ public class ApproximateStrategy {
      * @return
      */
     public static List<AlgType> getAlgorithmTypes(StrategyType strategy) {
-        return strategyMap.get(strategy);
+        return strategyMap.containsKey(strategy) ? strategyMap.get(strategy) : new ArrayList<AlgType>();
     }
 
     public static String getAlgrithmString(StrategyType st) {

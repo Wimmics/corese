@@ -39,7 +39,7 @@ public class NGram extends BaseAlgorithm {
             sim = (double) c / (double) u;
         }
 
-        Utils.show("N-Gram3", s1, s2, sim);
+        Utils.msg("N-Gram3", s1, s2, sim);
         return sim;
     }
 

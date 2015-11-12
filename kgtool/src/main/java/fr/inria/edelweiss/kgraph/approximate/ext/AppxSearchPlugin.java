@@ -12,7 +12,9 @@ import fr.inria.edelweiss.kgraph.approximate.result.Value;
 import fr.inria.edelweiss.kgraph.approximate.result.SimilarityResults;
 import fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm;
 import fr.inria.edelweiss.kgraph.approximate.similarity.SimAlgorithmFactory;
+import fr.inria.edelweiss.kgraph.approximate.similarity.Utils;
 import static fr.inria.edelweiss.kgraph.approximate.similarity.Utils.format;
+import static fr.inria.edelweiss.kgraph.approximate.similarity.Utils.msg;
 import fr.inria.edelweiss.kgraph.approximate.similarity.impl.BaseAlgorithm;
 import fr.inria.edelweiss.kgraph.query.PluginImpl;
 
@@ -54,11 +56,36 @@ public class AppxSearchPlugin implements ExprType {
         switch (exp.oper()) {
             case APPROXIMATE:
 
-                String s1 = this.getString(args[0]);
-                String s2 = this.getString(args[1]);
-                String algs = this.getString(args[2]);
+                String s1, s2;
+                IDatatype dt1 = this.getIDatatype(args[0]);
+                IDatatype dt2 = this.getIDatatype(args[1]);
 
-                System.out.println("[Eval]:" + s1 + ",\t" + s2 + ",\t" + algs);
+                //IF the types are different, then return FALSE directly
+                if (dt1.getCode() != dt2.getCode()) {
+                    return FALSE;
+                } else if (dt1 instanceof CoreseURI) {
+
+                    String[] uri1 = Utils.split(dt1.getLabel());
+                    String[] uri2 = Utils.split(dt2.getLabel());
+
+                    if (!uri1[0].equalsIgnoreCase(uri2[0])) {
+                        return FALSE;
+                    } else {
+                        s1 = uri1[1];
+                        s2 = uri2[1];
+                    }
+                } else if (dt1 instanceof CoreseStringLiteral) {
+                    s1 = ((CoreseStringLiteral) dt1).getStringValue();
+                    s2 = ((CoreseStringLiteral) dt2).getStringValue();
+                } else {
+                    s1 = dt1.getLabel();
+                    s2 = dt2.getLabel();
+                }
+
+                //todo if types are URI
+                String algs = ((CoreseStringLiteral) args[2]).getStringValue();
+
+                msg("[Eval]:" + s1 + ",\t" + s2 + ",\t" + algs);
                 if (s1 == null || s2 == null) {
                     return FALSE;
                 }
@@ -68,11 +95,11 @@ public class AppxSearchPlugin implements ExprType {
 
                 //check if already calculated, if yes, just retrieve the value
                 Double sim = SimilarityResults.getInstance().getSimilarity(k, r.getNode(), algs);
-                boolean reCalculated = false;
+                boolean notExisted = false;
 
                 //otherwise, re-calculate
                 if (sim == null) {
-                    reCalculated = true;
+                    notExisted = true;
                     //if equal, return 1
                     if (s1.equalsIgnoreCase(s2)) {
                         sim = ISimAlgorithm.MAX;
@@ -82,29 +109,26 @@ public class AppxSearchPlugin implements ExprType {
                     }
                 }
 
-                boolean b = sim > BaseAlgorithm.THRESHOLD;
-                System.out.println("\t [Similarity]: " + format(sim) + ", " + b + "\n");
+                boolean filtered = sim > BaseAlgorithm.THRESHOLD;
+                msg("\t [Similarity]: " + format(sim) + ", " + filtered + "\n");
 
-                if (b && reCalculated) {
+                //if:   filter (approximate) returns true & the value is re-calculated, 
+                //then: set the value of similarity & add the result to results set
+                if (filtered && notExisted) {
                     r.setSimilarity(sim);
                     SimilarityResults.getInstance().add(k, r);
                 }
 
-                return b ? TRUE : FALSE;
+                //IF:   filter (approximate) returns false & the value is existing
+                //THEN: removes this record from result set
+                if (!filtered && !notExisted) {
+                    //SimilarityResults.getInstance().remove(k, r.getNode());
+                }
+
+                return filtered ? TRUE : FALSE;
             default:
                 return null;
         }
-    }
-
-    private String getString(Object obj) {
-        //System.out.println("Eval :"+obj+", " + obj.getClass().getName());
-        if (obj instanceof CoreseURI) {
-            return ((CoreseURI) obj).getLabel();
-        } else if (obj instanceof CoreseStringLiteral) {
-            return ((CoreseStringLiteral) obj).getStringValue();
-        }
-
-        return null;
     }
 
     private IDatatype getIDatatype(Object obj) {
@@ -113,9 +137,9 @@ public class AppxSearchPlugin implements ExprType {
             return (CoreseURI) obj;
         } else if (obj instanceof CoreseStringLiteral) {
             return (CoreseStringLiteral) obj;
+        } else {
+            return (IDatatype) obj;
         }
-
-        return null;
     }
 
     private Key getKey(Expr exp, Object[] args) {

@@ -21,11 +21,11 @@ import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.CLA
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_EQUALITY;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.LITERAL_LEX;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.LITERAL_SS;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.PROPERTY_DR;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.PROPERTY_EQUALITY;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_COMMENT;
 import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_LABEL;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_NAME;
+import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI;
+import fr.inria.edelweiss.kgraph.approximate.result.SimilarityResults;
 import fr.inria.edelweiss.kgraph.approximate.similarity.impl.BaseAlgorithm;
 import fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper;
 import fr.inria.edelweiss.kgraph.logic.OWL;
@@ -36,9 +36,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
- * AST rewriting: according to different rules, modify the original SPARQL by adding
- * triple patterns/filters, etc
+ *
+ * AST rewriting: according to different rules, modify the original SPARQL by
+ * adding triple patterns/filters, etc
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 5 oct. 2015
@@ -47,8 +47,7 @@ public class ASTRewriter implements QueryVisitor {
 
     final static int S = 1, P = 2, O = 3;
     private final static String VAR = "?_var_";
-    public final static String MATCH = "approximate";
-
+    public final static String APPROXIMATE = "approximate";
     private int count = 0;
     private ASTQuery ast;
 
@@ -85,8 +84,6 @@ public class ASTRewriter implements QueryVisitor {
         }
 
         System.out.println("\n\n------ AFTER -----\n" + ast);
-
-        System.out.println("\n\n------ SIMILARITY MEASUREMENT -----\n" + ast);
     }
 
     @Override
@@ -118,13 +115,13 @@ public class ASTRewriter implements QueryVisitor {
         if (atom.isConstant() && !atom.isLiteral()) {
 
             //S P O
-            add(lst, URI_NAME);
+            add(lst, URI);
             add(lst, URI_EQUALITY);
 
             //P
             if (pos == P && !atom.getName().equalsIgnoreCase(RDF.TYPE)) { //propery does not have rdfs:label & rdfs:comment
                 add(lst, PROPERTY_EQUALITY);
-                add(lst, PROPERTY_DR);
+                //add(lst, PROPERTY_DR);
 
                 //S&O
             } else {//property owl:equivalentProperty
@@ -146,7 +143,9 @@ public class ASTRewriter implements QueryVisitor {
             add(lst, LITERAL_LEX);
 
             //@lang=en ??
-            add(lst, LITERAL_SS);
+            if (atom.getLang() == null || (atom.getLang() != null && atom.getLang().equalsIgnoreCase("en"))) {
+                add(lst, LITERAL_SS);
+            }
         }
 
         if (!lst.isEmpty()) {
@@ -183,9 +182,8 @@ public class ASTRewriter implements QueryVisitor {
                     //create two addional triple pattern {x eq y}
                     t1 = (ast.createTriple(var, Constant.create(label), tw.getAtom()));
                     t2 = (ast.createTriple(tw.getAtom(), Constant.create(label), var));
-                    
-                    //the filter can be omitted, because the similarity (equality =1)
 
+                    //the filter can be omitted, because the similarity (equality =1)
                     //create optional {t1, t2}
                     opt.add(BasicGraphPattern.create(t1, t2));
                     ast.getBody().add(opt);
@@ -193,16 +191,16 @@ public class ASTRewriter implements QueryVisitor {
                 case URI_LABEL:
                 case URI_COMMENT:
                     label = (st == URI_COMMENT) ? RDFS.COMMENT : RDFS.LABEL;
-                    Variable comment1 = variable();
-                    Variable comment2 = variable();
+                    Variable text1 = variable();
+                    Variable text2 = variable();
 
                     //create two addional triple pattern: {x rdfs:label y} or {x rdfs:comment y}
-                    t1 = ast.createTriple(var, Constant.create(label), comment1);
-                    t2 = ast.createTriple(tw.getAtom(), Constant.create(label), comment2);
+                    t1 = ast.createTriple(var, Constant.create(label), text1);
+                    t2 = ast.createTriple(tw.getAtom(), Constant.create(label), text2);
                     BasicGraphPattern bgp = BasicGraphPattern.create(t1, t2);
 
                     //create a filter
-                    Exp filter = filter(comment1, comment2, ApproximateStrategy.getAlgrithmString(st), var, tw.getAtom());
+                    Exp filter = filter(text1, text2, ApproximateStrategy.getAlgrithmString(st), var, tw.getAtom());
                     //optional {t1. t2. filter}
                     opt.add(BasicGraphPattern.create(bgp, filter));
                     ast.getBody().add(opt);
@@ -215,12 +213,12 @@ public class ASTRewriter implements QueryVisitor {
     }
 
     //add a filter with a specific function and parameters
-    private Triple filter(Variable var, Atom atom, String algs, Expression ... more) {
-        Term function = ast.createFunction(ast.createQName(MATCH));
+    private Triple filter(Variable var, Atom atom, String algs, Expression... more) {
+        Term function = ast.createFunction(ast.createQName(APPROXIMATE));
         function.add(var);
         function.add(atom);
         function.add(Constant.create(algs, qrdfsLiteral));
-        if(more!=null && more.length>0){
+        if (more != null && more.length > 0) {
             for (Expression para : more) {
                 function.add(para);
             }
@@ -279,6 +277,8 @@ public class ASTRewriter implements QueryVisitor {
     }
 
     private Variable variable() {
-        return new Variable(VAR + count++);
+        Variable v = new Variable(VAR + count++);
+        SimilarityResults.getInstance().addVariable(v);
+        return v;
     }
 }

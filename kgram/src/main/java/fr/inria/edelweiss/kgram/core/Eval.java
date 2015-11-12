@@ -4,7 +4,6 @@ import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -20,6 +19,7 @@ import fr.inria.edelweiss.kgram.api.query.Plugin;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.api.query.Results;
+import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventListener;
@@ -28,9 +28,7 @@ import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
-import java.util.AbstractList;
 import java.util.Iterator;
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
@@ -65,6 +63,7 @@ public class Eval implements ExpType, Plugin {
     public static int count = 0;
     ResultListener listener;
     EventManager manager;
+    private SPARQLEngine sparqlEngine;            
     boolean hasEvent = false;
     // Edge and Node producer
     Producer producer, saveProducer;
@@ -410,6 +409,7 @@ public class Eval implements ExpType, Plugin {
 
     public Eval copy(Memory m, Producer p, Evaluator e) {
         Eval ev = create(p, e, match);
+        ev.setSPARQLEngine(getSPARQLEngine());
         ev.setMemory(m);
         ev.set(provider);
         ev.setPathType(isPathType);
@@ -2495,30 +2495,6 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    private int ifthenelse(Node gNode, Exp exp, Stack stack, int n) {
-        int backtrack = n - 1;
-        Eval eva = copy();
-        Mappings lRes = eva.subEval(query, gNode, Stack.create(exp.first()), 0);
-
-        if (lRes.size() > 0) {
-            for (Mapping rr : lRes) {
-                if (memory.push(rr, n)) {
-                    backtrack = eval(gNode, stack.copy(exp.rest(), n), n);
-                    memory.pop(rr);
-                    if (backtrack < n - 1) {
-//						if (hasEvent){
-//							send(Event.FINISH, exp, gNode, stack);
-//						}
-                        return backtrack;
-                    }
-                }
-            }
-        } else if (exp.size() > 2) {
-            backtrack = eval(gNode, stack.copy(exp.last(), n), n);
-        }
-        return backtrack;
-    }
-
     /**
      * In case of backjump Some node must differ between previous and current A
      * node that is common to qEdge and qPast
@@ -2796,6 +2772,20 @@ public class Eval implements ExpType, Plugin {
      */
     public void setPathType(boolean isPathType) {
         this.isPathType = isPathType;
+    }
+
+    /**
+     * @return the sparqlEngine
+     */
+    public SPARQLEngine getSPARQLEngine() {
+        return sparqlEngine;
+    }
+
+    /**
+     * @param sparqlEngine the sparqlEngine to set
+     */
+    public void setSPARQLEngine(SPARQLEngine sparqlEngine) {
+        this.sparqlEngine = sparqlEngine;
     }
 
 }

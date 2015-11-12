@@ -1449,7 +1449,18 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 		return createTerm(ope, exp1, exp2);
 	}
 	
-   
+        /**
+         * exp is a subquery
+         * nest it in Term exists { exp }
+         * use case: for (?m in select where){}
+         */
+       public  Term toExist(Exp exp) {
+           Term t = createExist(exp, false);
+           // return all Mapping of subquery:
+           t.setSystem(true);
+           return t;
+       }
+
     public  Term createExist(Exp exp, boolean negation) {
     	Term term = Term.function(Term.EXIST);
     	term.setExist(Exist.create(exp));

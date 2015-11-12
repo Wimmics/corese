@@ -531,14 +531,30 @@ public class Interpreter implements Evaluator, ExprType {
         
         Eval eval = kgram.copy(memory, p, this);
         eval.setSubEval(true);
-        eval.setLimit(1);
-        Mappings lMap = eval.subEval(q, gNode, Stack.create(pat), 0);
-        boolean b = lMap.size() > 0;
-
-        if (b) {
-            return TRUE;
-        } else {
-            return FALSE;
+        if (! exp.isSystem()){
+            // std exists  return one Mapping
+            eval.setLimit(1);
+        }
+               
+        if (exp.isSystem()){
+            // system generated exists:
+            // for (?m in exists {select where}){}
+            Exp sub = pat.get(0).get(0);
+            if (sub.isQuery() && sub.getQuery().isConstruct()){
+                // for (?m in exists {construct where}){}
+                Mappings map = kgram.getSPARQLEngine().eval(sub.getQuery());
+                return proxy.getValue(true, map.getGraph());
+            }
+        }
+        
+        Mappings map = eval.subEval(q, gNode, Stack.create(pat), 0);
+        boolean b = map.size() > 0;
+        
+        if (exp.isSystem()){
+            return proxy.getValue(b, (b)?map:null);
+        }
+        else {
+            return proxy.getValue(b);
         }
     }
     
@@ -621,11 +637,11 @@ public class Interpreter implements Evaluator, ExprType {
      * set(?x, ?x + 1)   
      */
     private Object set(Expr exp, Environment env, Producer p) {
-        Node val  = eval(exp.getExp(1).getFilter(), env, p);
+        Object val  = eval(exp.getExp(1), env, p);
         if (val == ERROR_VALUE){
             return null;
         }
-        env.bind(exp, exp.getExp(0), val);
+        env.bind(exp, exp.getExp(0), (Node) val);
         return val;
     }
     
@@ -667,9 +683,16 @@ public class Interpreter implements Evaluator, ExprType {
     public Object eval(Expr exp, Environment env, Producer p, Object[] values, Expr def){   
         //count++;
         Expr fun = def.getFunction(); //getExp(0);
-        env.set(def, fun.getExpList(), values);        
-        Object res = eval(def.getBody(), env, p); 
-        //Object res = funEval(def, env, p); 
+        env.set(def, fun.getExpList(), values);
+        Object res;
+        if (def.isSystem() && env.getQuery() != def.getPattern()){
+            // function is export and has exists {}
+            // use function query
+            res = funEval(def, env, p); 
+        }
+        else {
+            res = eval(def.getBody(), env, p); 
+        }
         env.unset(def, fun.getExpList());        
         return res;
     }
@@ -678,18 +701,15 @@ public class Interpreter implements Evaluator, ExprType {
      * Eval a function in new kgram with function's query
      * use case: export function with exists {}
      * @param exp function ex:name() {}
-     * @param env
-     * @param p
-     * @return 
      */
     Object funEval(Expr exp, Environment env, Producer p){
         Interpreter in = new Interpreter(proxy);
         in.setProducer(p);
         Eval eval = Eval.create(p, in, kgram.getMatcher());
-        // below: replace by fun query
-        eval.init(env.getQuery());
+        eval.setSPARQLEngine(kgram.getSPARQLEngine());
+        eval.init((Query) exp.getPattern());
         eval.getMemory().setBind(env.getBind());
-        return eval.getEvaluator().eval(exp.getBody(), eval.getMemory(), p);
+        return in.eval(exp.getBody(), eval.getMemory(), p);
     }
     
     public int compare(Environment env, Producer p, Node n1, Node n2){

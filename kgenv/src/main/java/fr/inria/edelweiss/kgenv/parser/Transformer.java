@@ -350,6 +350,10 @@ public class Transformer implements ExpType {
                     ext.define(exp); 
                      if (exp.isExport()){
                         Interpreter.define(exp);
+                        if (exp.isSystem()){
+                            // export function with exists {} 
+                            exp.getTerm().setPattern(q);
+                        }
                     }
                 }
             }
@@ -414,7 +418,13 @@ public class Transformer implements ExpType {
 		
 	}
 	
-
+        /**
+         * Sunquery is a construct where        
+         */
+        Query constructQuery(ASTQuery ast){
+            Transformer t = Transformer.create();
+            return t.transform(ast);
+        }
 	
 	/**
 	 * subquery is compiled using a new compiler to get fresh new nodes
@@ -1064,7 +1074,12 @@ public class Transformer implements ExpType {
 			break;
 
 		case QUERY:
+                    if (query.getQuery().isConstruct()){
+                        exp = constructQuery(query.getQuery());
+                    }
+                    else {
 			exp = compileQuery(query.getQuery());
+                    }
 			break;
                     
                 case BIND:

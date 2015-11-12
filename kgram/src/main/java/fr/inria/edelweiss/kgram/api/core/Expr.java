@@ -15,6 +15,7 @@ public interface Expr {
 	
 	// Exp as Object for modularity
 	Object getPattern();
+        boolean isSystem();
 
 	String getLabel();
 	

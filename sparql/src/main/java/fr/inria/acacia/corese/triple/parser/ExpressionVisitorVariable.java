@@ -24,6 +24,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     List<Variable> list;
     HashMap<String, Integer> map;
     ASTQuery ast;
+    Term fun;
 
     ExpressionVisitorVariable() {
         map = new HashMap<String, Integer>();
@@ -37,11 +38,12 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         init();
     }
     
-    // define (f(?x) = exp)
-    ExpressionVisitorVariable(ASTQuery ast, List<Variable> list) {
+    // function f(?x) { exp }
+    ExpressionVisitorVariable(ASTQuery ast, Term fun) {
         this();
-        this.list = list;
+        this.list = fun.getFunction().getFunVariables();
         this.ast = ast;
+        this.fun = fun;
         define = true;
         init();
     }
@@ -95,9 +97,14 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                 aggregate(t);
                 break;
                                
-            case ExprType.PACKAGE:
-                export(t); 
+            case ExprType.EXIST:
+                if (fun != null && fun.isExport()){
+                    // special case: export function contain exists {}
+                    // will be evaluated with query that defines function
+                    fun.setSystem(true);
+                }
                 // continue
+                
                 
             default:
         
@@ -141,11 +148,9 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
      */
     void define(Term t){
         if (trace) System.out.println("Vis Fun: " + t);
-        Term def  = t.getFunction(); 
         Expression body = t.getBody(); 
         
-        List<Variable> list = def.getFunVariables(); 
-        ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, list);
+        ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, t);
         body.visit(vis);
         
         t.setPlace(vis.count());

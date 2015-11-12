@@ -355,6 +355,13 @@ public class DatatypeMap implements Cst, RDF {
         }
         return CoreseBoolean.FALSE;
     }
+    
+    public static IDatatype createInstance(boolean result) {
+        if (result) {
+            return new CoreseBoolean(true);
+        }
+        return new CoreseBoolean(false);
+    }
 
     public static IDatatype newResource(String result) {
         return new CoreseURI(result);

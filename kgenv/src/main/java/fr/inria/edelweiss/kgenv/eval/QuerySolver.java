@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
+import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -41,7 +42,7 @@ import fr.inria.edelweiss.kgram.tool.MetaProducer;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public class QuerySolver  {
+public class QuerySolver  implements SPARQLEngine {
 	private static Logger logger = Logger.getLogger(QuerySolver.class);
 	
 	public static final int STD_ENTAILMENT  = 0;
@@ -227,7 +228,10 @@ public class QuerySolver  {
 		return query(query, map);
 	}
 	
-	
+        @Override
+	public Mappings eval(Query query){
+            return query(query, null);
+        }
 	/**
 	 * Core QueryExec processor
 	 */
@@ -240,6 +244,7 @@ public class QuerySolver  {
 		}
 
 		Eval kgram = Eval.create(producer, evaluator, matcher);
+                kgram.setSPARQLEngine(this);
 		kgram.set(provider);
 
 		events(kgram);

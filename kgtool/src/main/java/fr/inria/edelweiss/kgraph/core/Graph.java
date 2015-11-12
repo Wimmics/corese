@@ -31,6 +31,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.util.StorageFactory;
+import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -48,7 +49,7 @@ import java.util.Map;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Graph implements Graphable {
+public class Graph implements Graphable, Loopable {
 
     private static Logger logger = Logger.getLogger(Graph.class);
     public static final String TOPREL
@@ -278,6 +279,11 @@ public class Graph implements Graphable {
     @Override
     public Object getGraph() {
         return this;
+    }
+    
+    @Override
+    public Iterable getLoop(){
+        return getEdges();
     }
 
     /**

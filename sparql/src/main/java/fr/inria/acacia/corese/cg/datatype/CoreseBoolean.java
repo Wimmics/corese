@@ -2,6 +2,7 @@ package fr.inria.acacia.corese.cg.datatype;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.edelweiss.kgram.api.core.Loopable;
 
 /**
  * <p>Title: Corese</p>
@@ -23,6 +24,7 @@ public class CoreseBoolean extends CoreseStringLiteral {
   public static final CoreseBoolean FALSE = new CoreseBoolean(false);
   static final CoreseURI datatype=new CoreseURI(RDF.xsdboolean);
   boolean bvalue=true;
+  private Object object;
 
   /**
    * Construct a Corese boolean
@@ -116,6 +118,30 @@ public class CoreseBoolean extends CoreseStringLiteral {
 	  }
 	  throw failure();
   }
+
+    /**
+     * @return the object
+     */
+  @Override
+    public Object getObject() {
+        return object;
+    }
+
+    /**
+     * @param object the object to set
+     */
+  @Override
+    public void setObject(Object object) {
+        this.object = object;
+    }
+  
+   public boolean isLoop(){
+        return object != null && object instanceof Loopable;
+    }
+    
+    public Iterable getLoop(){
+        return ((Loopable) object).getLoop();
+    }
   
 
 }

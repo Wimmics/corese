@@ -90,6 +90,11 @@ public class Constant extends Atom {
 		cst.setLongName(nsm.toNamespace(str));
 		return cst;
 	}
+        
+        public static Constant createString(String str){
+              return create(str, RDFS.qxsdString);      
+        }
+
 	
 	public static Constant create(int n){
 		return new Constant(Integer.toString(n), RDFS.xsdinteger);

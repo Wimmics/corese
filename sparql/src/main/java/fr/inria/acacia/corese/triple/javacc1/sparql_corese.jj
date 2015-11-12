@@ -1399,18 +1399,27 @@ void GraphPatternNotTriples(Exp stack) : {ASTQuery ast; Values values;}
  	| ScoreGraphPattern(stack)
  	| ScopeGraphPattern(stack)
  	| ExistGraphPattern(stack)
-// 	| <LBRACE> SubQuery(stack) <RBRACE>
  	| Bind(stack) 
  	| values = Values() { stack.add(values); }
 }
 
 void SubQuery(Exp stack) : {ASTQuery ast; Query q; Exp exp;}
 {
-// 	  <LBRACE> 
-		{ ast = astq; astq = gast.subCreate(); } 
- 	  	exp = SelectQuery() 
- 	  	{ astq.setBody(exp); q = Query.create(astq); stack.add(q); astq = ast; } 
-// 	  <RBRACE>
+ { ast = astq; astq = gast.subCreate(); } 
+ exp = SelectQuery() 
+ { astq.setBody(exp); q = Query.create(astq); stack.add(q); astq = ast; } 
+}
+
+Exp SubQueryExp() : { Exp exp; }{
+    { exp = BasicGraphPattern.create(); } SubQuery(exp)
+    { return exp; }
+}
+
+Exp SubConstruct() : {ASTQuery ast; Query q; Exp exp;}
+{
+ { ast = astq; astq = gast.subCreate(); } 
+ exp = ConstructQuery() 
+ { astq.setBody(exp); q = Query.create(astq); astq = ast; return q;} 
 }
 
 
@@ -2303,9 +2312,10 @@ Expression BuiltInCall(Exp stack) : { Expression expression1, expression2; Varia
 Term exists() : {Exp exp; Term term; boolean neg;}
 {
 	{neg = false;}
-	
-	(<NOT> {neg = true;})?
-	 <EXIST> exp = GroupGraphPattern()
+	       
+        ( <NOT> {neg = true;} ) ?  
+        <EXIST> exp = GroupGraphPattern()
+
 	{
 		term = astq.createExist(exp, neg);
 		return term;
@@ -2368,16 +2378,26 @@ Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
 }
 
 
-Term For (Exp stack) : {Term t; Expression exp, body ; Variable var; ExpressionList arg;}
+Term For (Exp stack) : 
+{Exp sub; Term t; Expression exp, body ; Variable var; ExpressionList arg; }
 {
-    <FOR> <LPAREN> var = Var() <IN> exp = Expression(stack) <RPAREN>   
+    <FOR> <LPAREN> var = Var() <IN> 
+    (
+        exp = Expression(stack) 
+        |
+        sub = SubQueryExp() { exp = astq.toExist(sub); }
+        |
+        sub = SubConstruct() { exp = astq.toExist(BasicGraphPattern.create(sub)); }
+    )
+    <RPAREN>   
     body = Body(stack)
     
     { t = astq.loop(var, exp, body); 
       return t;}
 }
 
-Term Let (Exp stack) : { Expression exp ; Expression arg; ExpressionList list;}
+Term Let (Exp stack) : 
+{ Expression exp ; Expression arg; ExpressionList list; }
 {
         <LET>
         <LPAREN> { list = new ExpressionList(); }
@@ -2402,7 +2422,8 @@ Term Set (Exp stack) : { Expression exp ; Variable var;}
 }
 
 
-Expression LetDef(Exp stack) : { Variable var = null;   Expression exp ; ExpressionList el = null; }
+Expression LetDef(Exp stack) : 
+{ Variable var = null;   Expression exp ; ExpressionList el = null; Exp sub;}
 {
   
   ( var = Var() 
@@ -2414,7 +2435,14 @@ Expression LetDef(Exp stack) : { Variable var = null;   Expression exp ; Express
     <RPAREN>	    					     
   )
   <EQ>
-  exp = Expression(stack) 
+  (  
+    exp = Expression(stack) 
+    |
+    sub = SubQueryExp() { exp = astq.toExist(sub); }
+    |
+    sub = SubConstruct() { exp = astq.toExist(BasicGraphPattern.create(sub)); }
+
+  )
 			
    { return (el == null) ? astq.defLet(var, exp) : astq.defLet(el, exp);  }
  

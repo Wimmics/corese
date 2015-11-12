@@ -274,10 +274,16 @@ public class QueryProcess extends QuerySolver {
 	 * W3C sparql protocol use this function
 	 */
 
-	
+        
+        @Override
 	public Mappings query(Query q) {
 		return qquery(q, null);
 	}
+        
+         @Override
+	public Mappings eval(Query query){
+            return qquery(query, null);
+        }
 
 	public Mappings qquery(Query q, Mapping map) {
 		try {

@@ -574,7 +574,7 @@ public class ProxyImpl implements Proxy, ExprType {
         IDatatype[] param =  (IDatatype[]) args;
         IDatatype val = (param.length>0) ?  param[0] : null;
         switch (exp.oper()) {
-                                    
+                                                
             case MAPANY:                
             case MAPEVERY:
                  return anyevery(exp, env, p, param);
@@ -616,7 +616,10 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_SET: 
                 return DatatypeMap.set(param[0], param[1], param[2]);
-                                           
+                
+            case XT_GEN_GET:
+                return gget(param[0], param[1], param[2]);
+                                               
             case LIST:
                 return DatatypeMap.list(param);                
                 
@@ -1178,6 +1181,17 @@ public class ProxyImpl implements Proxy, ExprType {
             return FALSE;
         }
     }
+    
+    @Override
+    public IDatatype getValue(Object val, Object obj){
+       if (val instanceof Boolean){
+           Boolean b = (Boolean) val;
+           IDatatype dt = DatatypeMap.createInstance(b);
+           dt.setObject(obj);
+           return dt;
+       }
+       return null;
+    }
 
     @Override
     public IDatatype getValue(int value) {       
@@ -1714,15 +1728,42 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     IDatatype get(IDatatype dt1, IDatatype dt2){
-        if (dt1.isList()){
-            return DatatypeMap.get(dt1, dt2);
+        return gget(dt1, dt2, dt2);
+    }
+//        if (dt1.isList()){
+//            return DatatypeMap.get(dt1, dt2);
+//        }
+//        if (dt1.getObject() != null){
+//            if (dt1.getObject() instanceof Entity){
+//                return get((Entity) dt1.getObject(), dt2.intValue());
+//            }
+//            if (dt1.getObject() instanceof Mapping){
+//                return get((Mapping) dt1.getObject(), dt2.getLabel() );
+//            }
+//        }
+//        return null;
+//    }
+    
+    /**
+     * Generic get with variable name and index
+     */
+    IDatatype gget(IDatatype dt, IDatatype var, IDatatype ind){
+        if (dt.isList()){
+            return DatatypeMap.get(dt, ind);
         }
-        if (dt1.getObject() != null){
-            if (dt1.getObject() instanceof Entity){
-                return get((Entity) dt1.getObject(), dt2.intValue());
+        if (dt.getObject() != null){
+            if (dt.getObject() instanceof Entity){
+                return get((Entity) dt.getObject(), ind.intValue());
             }
-            if (dt1.getObject() instanceof Mapping){
-                return get((Mapping) dt1.getObject(), dt2.getLabel() );
+            if (dt.getObject() instanceof Mappings){
+                Mappings map = (Mappings) dt.getObject();
+                if (map.size() == 0){
+                    return null;
+                }
+                return get(map.get(0), var.getLabel() );
+            }
+            if (dt.getObject() instanceof Mapping){
+                return get((Mapping) dt.getObject(), var.getLabel() );
             }
         }
         return null;

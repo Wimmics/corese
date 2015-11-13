@@ -322,6 +322,7 @@ public class Processor {
         static final String XT_NOT 	= EXT + "not";
         static final String XT_EQUAL 	= EXT + "equal";
         static final String XT_DIFF 	= EXT + "diff";
+        static final String XT_DISPLAY 	= EXT + "display";
         
         public static final String[] aggregate = 
 	{AVG, COUNT, SUM, MIN, MAX, SAMPLE, 
@@ -771,6 +772,7 @@ public class Processor {
                 defoper(XT_NOT,    ExprType.NOT);
                 defoper(XT_EQUAL,  ExprType.EQ);
                 defoper(XT_DIFF,   ExprType.NEQ);  
+                defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
                 
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);

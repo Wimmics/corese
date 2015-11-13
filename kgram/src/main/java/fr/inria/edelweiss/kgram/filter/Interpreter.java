@@ -766,6 +766,12 @@ public class Interpreter implements Evaluator, ExprType {
         return extension.get(exp, name);
     }
      
+    @Override
+    public Expr getDefine(String name) {        
+        return extension.get(name);    
+    }
+     
+    @Override
      public Expr getDefine(Environment env, String name, int n){
         Extension ext = env.getExtension();
         if (ext != null) {

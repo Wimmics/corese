@@ -5,7 +5,6 @@ import fr.inria.acacia.corese.storage.api.Parameters.type;
 import static fr.inria.acacia.corese.storage.fs.Constants.BEGIN;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -65,45 +64,63 @@ public class StringManagerDelegate {
      */
     public StringMeta write(int id, String literal) {
 
-        FileHandler fhWirte = fhManager.get();
+        FileHandler fhWrite = fhManager.get();
         byte[] bytesLiteral = literal.getBytes(Charset.forName(Constants.ENCODING));
 
         //if the current file space is not sufficient, create new file 
-        if (fhWirte == null || fhWirte.capacity() < bytesLiteral.length) {
-            fhWirte = fhManager.createNewFile();
+        if (fhWrite == null || fhWrite.capacity() < bytesLiteral.length) {
+            fhWrite = fhManager.createNewFile();
         }
 
         //MappedByteBuffer buffer = fhWirte.getBuffer();
-        long offset = fhWirte.position();
+        long offset = fhWrite.position();
 
         int buf_size = params.get(type.BUF_SIZE);
-        int remainingInBuffer = buf_size - fhWirte.getBuffer().position();
+        int remainingInBuffer = buf_size - fhWrite.getBuffer().position();
         //** buffer is insuffcient 
         if (remainingInBuffer < bytesLiteral.length) {
             //put the first part of string [0, length - buf_size) to file
-            fhWirte.getBuffer().put(Arrays.copyOfRange(bytesLiteral, BEGIN, remainingInBuffer));
+            fhWrite.getBuffer().put(Arrays.copyOfRange(bytesLiteral, BEGIN, remainingInBuffer));
 
             int remainingLiteral = bytesLiteral.length - remainingInBuffer;
             //if the rest of literal is smaller than the buffer
             if (remainingLiteral <= buf_size) {
-                fhWirte.allocalteBuffer();
-                fhWirte.getBuffer().put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
+                fhWrite.allocalteBuffer();
+                fhWrite.getBuffer().put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
             } else {
                 //bigger than the buffer, create temporarity a bigger buffer than can put all strings once
                 //int tmp_buf_size = ((int) (remainingLiteral / buf_size) + 1) * buf_size;
-                fhWirte.allocalteBuffer(remainingLiteral);
-                fhWirte.getBuffer().put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
-                fhWirte.allocalteBuffer();
+                fhWrite.allocalteBuffer(remainingLiteral);
+                fhWrite.getBuffer().put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
+                fhWrite.allocalteBuffer();
             }
             ////put the second part of string [length - buf_size, end) to file
             //buffer.put(Arrays.copyOfRange(bytesLiteral, remainingInBuffer, bytesLiteral.length));
 
         } else {//put the whole string to buffer -->> to file
-            fhWirte.getBuffer().put(bytesLiteral);
+            fhWrite.getBuffer().put(bytesLiteral);
         }
 
+        // *** alternative ** to be verified
+//        int stringToStore = bytesLiteral.length;
+//        int start = 0;
+//        while (stringToStore > 0) {
+//            int availableBuffer = buf_size - fhWrite.getBuffer().position();
+//
+//            if (availableBuffer > stringToStore) {
+//                fhWrite.getBuffer().put(Arrays.copyOfRange(bytesLiteral, start, start + stringToStore));
+//                stringToStore = 0;
+//            } else {
+//                fhWrite.getBuffer().put(Arrays.copyOfRange(bytesLiteral, start, start + availableBuffer));
+//                fhWrite.allocalteBuffer();
+//                stringToStore -= availableBuffer;
+//                start += availableBuffer;
+//            }
+//        }
+        //** end ***
+
         //StringMeta meta = new StringMeta(id, fhWirte.getFid(), (int) offset, literal.length());
-        StringMeta meta = new StringMeta(id, fhWirte.getFid(), (int) offset, bytesLiteral.length);
+        StringMeta meta = new StringMeta(id, fhWrite.getFid(), (int) offset, bytesLiteral.length);
         return meta;
     }
 

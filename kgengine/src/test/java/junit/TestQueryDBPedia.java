@@ -14,13 +14,45 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import static org.junit.Assert.assertEquals;
 
 public class TestQueryDBPedia {
 	
 	
+      @Test
+    public void testAG2() throws EngineException {
+
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        String init = "insert data {"
+                + "[] rdfs:label 'Auguste'@fr "
+                + "[] rdfs:label 'Auguste'@fr "
+                + "}";
+        
+        String q = "select   * "
+                + "(group_concat(?ll) as ?gc) "
+                + "where {"
+                + "?x rdfs:label ?l "
+                + "service <http://fr.dbpedia.org/sparql>{"
+                + "?y rdfs:label ?l "
+                + "}"
+                + "service <http://fr.dbpedia.org/sparql> {"
+                + "?y rdfs:label ?ll"
+                + "}"
+                + "}"
+                + "group by ?x";
+        
+        exec.query(init);
+        Mappings map = exec.query(q);
+       assertEquals(2, map.size());
+        
+        }
+        
+    
     @Test
 	public void testDBP() throws EngineException{			
 		Graph graph = Graph.create();	
@@ -50,7 +82,7 @@ public class TestQueryDBPedia {
 			"prefix p: <http://fr.dbpedia.org/property/>" + 
 			"select  * where {" +
 				"service <http://fr.dbpedia.org/sparql> {"+
-				"<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y .}" +
+				"<http://fr.dbpedia.org/resource/Auguste> p:successeur+ ?y .}" +
 			"}";
 		
 		
@@ -78,9 +110,9 @@ public class TestQueryDBPedia {
 						"prefix foaf: <http://xmlns.com/foaf/0.1/>" +
 						"prefix p: <http://fr.dbpedia.org/property/>"+
 
-			"insert {<http://fr.dbpedia.org/resource/Auguste> p:succ ?y}  where {" +
+			"insert {<http://fr.dbpedia.org/resource/Auguste> p:successeur ?y}  where {" +
 			"service <http://fr.dbpedia.org/sparql> {" +
-			"<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y " +
+			"<http://fr.dbpedia.org/resource/Auguste> p:successeur+ ?y " +
 			"}" +		"" +
 			"}" 
 			+
@@ -120,9 +152,9 @@ public class TestQueryDBPedia {
 			"prefix foaf: <http://xmlns.com/foaf/0.1/>" +
 			"prefix p: <http://fr.dbpedia.org/property/>"+
 
-			"insert {<http://fr.dbpedia.org/resource/Auguste> p:succ ?y}  where {" +
+			"insert {<http://fr.dbpedia.org/resource/Auguste> p:successeur ?y}  where {" +
 			"service <http://fr.dbpedia.org/sparql> {" +
-			"<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y " +
+			"<http://fr.dbpedia.org/resource/Auguste> p:successeur+ ?y " +
 			"}" +		"" +
 			"}";
 
@@ -156,9 +188,9 @@ public class TestQueryDBPedia {
 			"prefix foaf: <http://xmlns.com/foaf/0.1/>" +
 			"prefix p: <http://fr.dbpedia.org/property/>"+
 
-			"insert {<http://fr.dbpedia.org/resource/Auguste> p:succ ?y}  where {" +
+			"insert {<http://fr.dbpedia.org/resource/Auguste> p:successeur ?y}  where {" +
 			"service <http://fr.dbpedia.org/sparql> {" +
-			"<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y " +
+			"<http://fr.dbpedia.org/resource/Auguste> p:successeur+ ?y " +
 			"}" +		"" +
 			"}";
 

@@ -157,7 +157,7 @@ public class ASTRewriter implements QueryVisitor {
     //ex, kg:john, kg:Johnny
     //applicable to: subject, predicate and object
     public void rewrite(TripleWrapper tw) {
-        Variable var = variable();
+        Variable var = variable(true);
 
         //1. get strategies in group G1 and merge them in one filter
         List<StrategyType> merge = ApproximateStrategy.getMergableStrategies(tw.getStrategies());
@@ -191,8 +191,8 @@ public class ASTRewriter implements QueryVisitor {
                 case URI_LABEL:
                 case URI_COMMENT:
                     label = (st == URI_COMMENT) ? RDFS.COMMENT : RDFS.LABEL;
-                    Variable text1 = variable();
-                    Variable text2 = variable();
+                    Variable text1 = variable(false);
+                    Variable text2 = variable(false);
 
                     //create two addional triple pattern: {x rdfs:label y} or {x rdfs:comment y}
                     t1 = ast.createTriple(var, Constant.create(label), text1);
@@ -276,9 +276,11 @@ public class ASTRewriter implements QueryVisitor {
         }
     }
 
-    private Variable variable() {
+    private Variable variable(boolean added) {
         Variable v = new Variable(VAR + count++);
-        SimilarityResults.getInstance().addVariable(v);
+        if (added) {
+            SimilarityResults.getInstance().addVariable(v);
+        }
         return v;
     }
 }

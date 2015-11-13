@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.approximate.result;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.approximate.similarity.Utils;
@@ -114,12 +115,26 @@ public class SimilarityResults {
         return sb.toString();
     }
 
-    public Double aggregate(Mapping map) {
-        return aggregate(map, null, null);
+    public Double aggregate(Environment env, boolean isAllVariables) {
+        List<Variable> lv = this.getVariables(isAllVariables);
+        return aggregate(env, null, null, lv);
     }
 
-    public Double aggregate(Mapping map, List<Node> selectNodes, StringBuilder sb) {
-        if (this.vars.size() < 1) {
+    public Double aggregate(Environment env, Key k, Value r) {
+        List lv = this.getVariables(false);
+        if (lv.contains(k.getVar())) {
+            lv.remove(k.getVar());
+        }
+        
+        Double cb = (lv.isEmpty())? 1: aggregate(env, null, null, lv);
+        return (cb == Double.NaN) ? Double.NaN : cb * r.getSimilarity();
+    }
+
+    //
+    public Double aggregate(Environment env, List<Node> selectNodes, StringBuilder sb, List<Variable> lv) {
+        //List<Variable> lv = this.getVariables(isAllVariables);
+
+        if (lv.size() < 1) {
             return Double.NaN;
         }
 
@@ -129,24 +144,24 @@ public class SimilarityResults {
         if (selectNodes != null) {
             //get the query nodes
             for (Node qNode : selectNodes) {
-                Node node = map.getNode(qNode);
-                if (node == null) {
-                    return Double.NaN;
-                }
-                if (ssb != null) {
+                Node node = env.getNode(qNode);
+//                if (node == null) {
+//                    return Double.NaN;
+//                }
+                if (node != null&&ssb != null) {
                     ssb.append(qNode).append(" = ").append(node).append("; ");
                 }
             }
         }
 
         //calculate similarity
-        for (Variable var : this.vars) {
-            Node node = map.getNode(var);
+        for (Variable var : lv) {
+            Node node = env.getNode(var);
             if (node == null) {
                 return Double.NaN;
             }
 
-            Double s = SimilarityResults.getInstance().getSimilarity(var.getLabel(), (IDatatype) node.getValue());
+            Double s = this.getSimilarity(var.getLabel(), (IDatatype) node.getValue());
             if (s != null) {
                 sim *= s;
             } else {
@@ -170,7 +185,7 @@ public class SimilarityResults {
         boolean isSelect = mappings.getQuery().getSelect() != null;
         for (Mapping map : mappings) {
             List<Node> nodes = isSelect ? select : Arrays.asList(map.getQueryNodes());
-            aggregate(map, nodes, sb);
+            aggregate(map, nodes, sb, getVariables(true));
         }
 
         msg(sb.toString(), true);
@@ -180,7 +195,16 @@ public class SimilarityResults {
         this.vars.add(v);
     }
 
-    public List<Variable> getVariables() {
-        return this.vars;
+    public List<Variable> getVariables(boolean all) {
+        if (all) {
+            return this.vars;
+        } else {
+            List lv = new ArrayList<Variable>();
+            for (Key k : this.all.keySet()) {
+                lv.add(k.getVar());
+            }
+
+            return lv;
+        }
     }
 }

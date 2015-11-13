@@ -5,6 +5,7 @@ import fr.inria.acacia.corese.cg.datatype.CoreseStringLiteral;
 import fr.inria.acacia.corese.cg.datatype.CoreseURI;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgraph.approximate.result.Key;
@@ -56,10 +57,17 @@ public class AppxSearchPlugin implements ExprType {
         switch (exp.oper()) {
             case APPROXIMATE:
 
-                String s1, s2;
+                SimilarityResults sr = SimilarityResults.getInstance();
+                String s1,
+                 s2;
                 IDatatype dt1 = this.getIDatatype(args[0]);
                 IDatatype dt2 = this.getIDatatype(args[1]);
-
+//                System.out.println("\n");
+//                for (Node n : env.getNodes()) {
+//                    System.out.println(n);
+//                }
+                msg("[Eval ... ]:" + args[0] + ",\t" + args[1] + ",\t" + args[2]);
+                //1 get strings
                 //IF the types are different, then return FALSE directly
                 if (dt1.getCode() != dt2.getCode()) {
                     return FALSE;
@@ -82,10 +90,9 @@ public class AppxSearchPlugin implements ExprType {
                     s2 = dt2.getLabel();
                 }
 
-                //todo if types are URI
                 String algs = ((CoreseStringLiteral) args[2]).getStringValue();
 
-                msg("[Eval]:" + s1 + ",\t" + s2 + ",\t" + algs);
+                
                 if (s1 == null || s2 == null) {
                     return FALSE;
                 }
@@ -93,39 +100,49 @@ public class AppxSearchPlugin implements ExprType {
                 Key k = getKey(exp, args);
                 Value r = getResult(exp, args, algs);
 
-                //check if already calculated, if yes, just retrieve the value
-                Double sim = SimilarityResults.getInstance().getSimilarity(k, r.getNode(), algs);
-                boolean notExisted = false;
+                //2.1 get the similarity of this pair (?_var_x, <uri_x>) -> (args[0], args[1]) -> (s1, s2)
+                //2.1.1 check if already calculated, if yes, just retrieve the value
+                Double combinedSim,
+                 singleSim = sr.getSimilarity(k, r.getNode(), algs);
+               // Double combinedSim;
 
-                //otherwise, re-calculate
-                if (sim == null) {
-                    notExisted = true;
-                    //if equal, return 1
-                    if (s1.equalsIgnoreCase(s2)) {
-                        sim = ISimAlgorithm.MAX;
-                    } else {
+                boolean notExisted = (singleSim == null);
+
+                if (s1.equalsIgnoreCase(s2)) {
+                    singleSim = ISimAlgorithm.MAX;
+                    r.setSimilarity(singleSim);
+                    combinedSim = ISimAlgorithm.MAX;
+                } else {
+                    if (notExisted) { //2.1.2 otherwise, re-calculate
+                        //notExisted = true;
+                        //if equal, return 1
+                        //if (s1.equalsIgnoreCase(s2)) {
+                        //    sim = ISimAlgorithm.MAX;
+                        //} else {
                         ISimAlgorithm alg = SimAlgorithmFactory.createCombined(algs);
-                        sim = alg.calculate(s1, s2);
+                        singleSim = alg.calculate(s1, s2);
+                        //}
                     }
+                    r.setSimilarity(singleSim);
+                    combinedSim = sr.aggregate(env, k, r);
                 }
+                //r.setSimilarity(sim);
 
-                boolean filtered = sim > BaseAlgorithm.THRESHOLD;
-                msg("\t [Similarity]: " + format(sim) + ", " + filtered + "\n");
+                //2.2 get the similarity of all
+                //combinedSim = sr.aggregate(env, k, r);
+                //3 finalize
+                boolean filtered = combinedSim >= BaseAlgorithm.THRESHOLD;
+                msg("\t [Similarity]: c:" + format(r.getSimilarity()) + ", all:" + format(combinedSim) + ", " + filtered + "\n");
 
                 //if:   filter (approximate) returns true & the value is re-calculated, 
                 //then: set the value of similarity & add the result to results set
-                if (filtered && notExisted) {
-                    r.setSimilarity(sim);
-                    SimilarityResults.getInstance().add(k, r);
-                }
-
-                //IF:   filter (approximate) returns false & the value is existing
-                //THEN: removes this record from result set
-                if (!filtered && !notExisted) {
-                    //SimilarityResults.getInstance().remove(k, r.getNode());
+                //if (filtered && notExisted) {
+                if (notExisted) {
+                    sr.add(k, r);
                 }
 
                 return filtered ? TRUE : FALSE;
+
             default:
                 return null;
         }

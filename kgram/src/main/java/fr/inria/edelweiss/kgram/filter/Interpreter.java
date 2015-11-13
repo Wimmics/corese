@@ -531,23 +531,36 @@ public class Interpreter implements Evaluator, ExprType {
         
         Eval eval = kgram.copy(memory, p, this);
         eval.setSubEval(true);
-        if (! exp.isSystem()){
-            // std exists  return one Mapping
-            eval.setLimit(1);
-        }
-               
-        if (exp.isSystem()){
+                   
+        Mappings map = null;
+        
+        if (exp.isSystem()) {
             // system generated exists:
             // for (?m in exists {select where}){}
             Exp sub = pat.get(0).get(0);
-            if (sub.isQuery() && sub.getQuery().isConstruct()){
-                // for (?m in exists {construct where}){}
-                Mappings map = kgram.getSPARQLEngine().eval(sub.getQuery());
-                return proxy.getValue(true, map.getGraph());
+
+            if (sub.isQuery()) {
+                if (sub.getQuery().isConstruct()) {
+                    // for (?m in exists {construct where}){}
+                    Mappings m = kgram.getSPARQLEngine().eval(sub.getQuery());
+                    return proxy.getValue(true, m.getGraph());
+                } 
+                else {
+                    // select where
+                    map = eval.subEval(sub.getQuery(), gNode, Stack.create(sub), 0);
+                }
             }
+            else {
+                // never happen
+                map = eval.subEval(q, gNode, Stack.create(pat), 0);
+            }
+        } 
+        else {
+            // exists {}
+            eval.setLimit(1);
+            map = eval.subEval(q, gNode, Stack.create(pat), 0);
         }
         
-        Mappings map = eval.subEval(q, gNode, Stack.create(pat), 0);
         boolean b = map.size() > 0;
         
         if (exp.isSystem()){

@@ -259,11 +259,11 @@ public class Mapping
 		return bnode;
 	}
 	
-	Node[] getOrderBy(){
+	public Node[] getOrderBy(){
 		return oNodes;
 	}
 	
-	Node[] getGroupBy(){
+	public Node[] getGroupBy(){
 		return gNodes;
 	}
 	

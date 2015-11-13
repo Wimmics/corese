@@ -52,12 +52,13 @@ public class Eval implements ExpType, Plugin {
     private static final String PREF = EXT;
     private static final String FUN_CANDIDATE = PREF + "candidate";
     private static final String FUN_SERVICE = PREF + "service";
-    private static final String FUN_MINUS = PREF + "minus";
-    private static final String FUN_OPTIONAL = PREF + "optional";
-    private static final String FUN_RESULT = PREF + "result";
-    private static final String FUN_SOLUTION = PREF + "solution";
-    private static final String FUN_START = PREF + "start";
-    public static final String FUN_PRODUCE = PREF + "produce";
+    private static final String FUN_MINUS   = PREF + "minus";
+    private static final String FUN_OPTIONAL= PREF + "optional";
+    private static final String FUN_RESULT  = PREF + "result";
+    private static final String FUN_SOLUTION= PREF + "solution";
+    private static final String FUN_START   = PREF + "start";
+    private static final String FUN_MAIN    = PREF + "main";
+    public static final String FUN_PRODUCE  = PREF + "produce";
 
     static final int STOP = -2;
     public static int count = 0;
@@ -109,10 +110,11 @@ public class Eval implements ExpType, Plugin {
             hasCandidate = false,
             hasOptional,
             hasMinus,
-            hasResult = false,
-            hasStart = false,
-            hasProduce = false,
-            hasSolution = false;
+            hasResult   = false,
+            hasStart    = false,
+            hasProduce  = false,
+            hasSolution = false, 
+            hasMain     = false;
 
     //Edge previous;
     /**
@@ -194,26 +196,31 @@ public class Eval implements ExpType, Plugin {
             Object res = evaluator.eval(getExpression(q, FUN_START), memory, producer,
                     toArray(producer.getNode(q), producer.getNode(q.getAST())));
         }
-
-        if (q.isCheck()) {
-            // Draft
-            Checker check = Checker.create(this);
-            check.check(q);
+        
+        if (hasMain && q.isEmpty()){
+           results = funMain(q);
         }
+        else {
+            if (q.isCheck()) {
+                // Draft
+                Checker check = Checker.create(this);
+                check.check(q);
+            }
 
-        if (map != null) {
-            bind(map);
-        }
-        if (!q.isFail()) {
-            query(gNode, q);
+            if (map != null) {
+                bind(map);
+            }
+            if (!q.isFail()) {
+                query(gNode, q);
 
-            if (q.getQueryProfile() == Query.COUNT_PROFILE) {
-                countProfile();
-            } else {
-                aggregate();
-                // order by
-                complete();
-                template();
+                if (q.getQueryProfile() == Query.COUNT_PROFILE) {
+                    countProfile();
+                } else {
+                    aggregate();
+                    // order by
+                    complete();
+                    template();
+                }
             }
         }
 
@@ -222,6 +229,18 @@ public class Eval implements ExpType, Plugin {
         }
         evaluator.finish(memory);
         return results;
+    }
+    
+    /**
+     * Emulate function xt:main() {}
+     */
+    Mappings funMain(Query q) {
+        Object obj  = evaluator.eval(getExpression(q, FUN_MAIN), memory, producer);
+        Mapping m   = Mapping.create(q.getGraphNode(), producer.getNode(obj));
+        Mappings ms = Mappings.create(q);
+        ms.setSelect(q.getGraphNode());
+        ms.add(m);
+        return ms;
     }
 
     /**
@@ -594,14 +613,15 @@ public class Eval implements ExpType, Plugin {
     }
 
     void startExtFun() {
-        hasCandidate = (getExpression(FUN_CANDIDATE) != null);
-        hasService = (getExpression(FUN_SERVICE) != null);
+        hasCandidate= (getExpression(FUN_CANDIDATE) != null);
+        hasService  = (getExpression(FUN_SERVICE) != null);
         hasOptional = (getExpression(FUN_OPTIONAL) != null);
-        hasMinus = (getExpression(FUN_MINUS) != null);
-        hasProduce = (getExpression(FUN_PRODUCE) != null);
-        hasResult = (getExpression(FUN_RESULT) != null);
+        hasMinus    = (getExpression(FUN_MINUS) != null);
+        hasProduce  = (getExpression(FUN_PRODUCE) != null);
+        hasResult   = (getExpression(FUN_RESULT) != null);
         hasSolution = (getExpression(FUN_SOLUTION) != null);
-        hasStart = (getExpression(FUN_START) != null);
+        hasStart    = (getExpression(FUN_START) != null);
+        hasMain     = (getExpression(FUN_MAIN) != null);
     }
 
     private void complete() {

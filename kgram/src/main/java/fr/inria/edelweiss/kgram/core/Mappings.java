@@ -209,7 +209,6 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 		StringBuffer sb = new StringBuffer();
 		int i = 1;
 		boolean isSelect = select != null && ! all;
-		
 		for (Mapping map : this){
 			String str = ((i < 10) ? "0" : "") + i + " ";
 			sb.append(str);
@@ -278,6 +277,11 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 
 	void setSelect(List<Node> nodes){
 		select = nodes;
+	}
+        
+        public void setSelect(Node node){
+            select = new ArrayList<Node>(1);
+            select.add(node);
 	}
         
         /**

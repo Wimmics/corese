@@ -420,6 +420,16 @@ public class Query extends Exp implements Graphable, Loopable {
     boolean isSubQuery() {
         return query != null;
     }
+    
+    /**
+     * Select Query is empty and does nothing
+     */
+    boolean isEmpty(){
+        return isSelect()
+                && getSelectFun().isEmpty()
+                && getBody().size() == 0
+                && getMappings() == null;            
+    }
 
     boolean isCheckLoop() {
         return isCheckLoop;
@@ -723,6 +733,10 @@ public class Query extends Exp implements Graphable, Loopable {
 
     public void setDistribute(boolean b) {
         isDistribute = b;
+    }
+    
+    public boolean isSelect(){
+        return ! (isConstruct() || isUpdate() || isDelete());
     }
 
     public boolean isConstruct() {

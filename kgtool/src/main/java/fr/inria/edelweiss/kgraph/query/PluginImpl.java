@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
+import fr.inria.edelweiss.kgraph.approximate.ext.AppxSearchPlugin;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
@@ -68,6 +69,7 @@ public class PluginImpl extends ProxyImpl {
     ExtendGraph ext;
     private PluginTransform pt;
     private IStorage storageMgr;
+    private AppxSearchPlugin pas;
 
 
     PluginImpl(Matcher m) {
@@ -81,6 +83,7 @@ public class PluginImpl extends ProxyImpl {
         cache = new TreeNode();
         ext = new ExtendGraph(this);
         pt  = new PluginTransform(this);
+        pas = new AppxSearchPlugin(this);
     }
     
 
@@ -307,6 +310,10 @@ public class PluginImpl extends ProxyImpl {
                                         
             case IOTA:
                 return iotag(param);
+                
+            case APPROXIMATE:
+                return pas.eval(exp, env, p, args);
+                
                 
             case XT_EDGE:
                 return edge(exp, env, p, param[0], param[1], param[2]);

@@ -79,7 +79,7 @@ public class Exec extends Thread {
 		try {
 			IResults l_Results = exec.SPARQLQuery(query);
 			Date d2 = new Date();
-			//logger.info("** Results: " + l_Results.size()); // + " ; Time: " + d2.get);
+                        System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
 			return l_Results;
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block

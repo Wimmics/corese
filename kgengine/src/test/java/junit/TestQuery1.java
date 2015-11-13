@@ -1,6 +1,5 @@
 package junit;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -39,7 +38,6 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
-import fr.inria.edelweiss.kgtool.print.TemplateFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -48,7 +46,6 @@ import fr.inria.edelweiss.kgtool.print.JSONLDFormat;
 import fr.inria.edelweiss.kgtool.transform.Loader;
 import fr.inria.edelweiss.kgtool.util.GraphStoreInit;
 import fr.inria.edelweiss.kgtool.util.QueryManager;
-import fr.inria.edelweiss.kgtool.util.QueryGraphVisitorImpl;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.io.File;
 import java.util.logging.Level;
@@ -120,6 +117,150 @@ public class TestQuery1 {
         ld.load(data + "comma/data");
         return graph;
     }
+    
+    
+     @Test
+    public void testConstruct() throws EngineException {
+
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        
+        String init = "insert data {"
+                + "[] rdf:value 1, 2, 3 ."
+                + "[] rdfs:label 'a', 'b', 'c' ."
+                + "}";
+
+        String qe = "select * where {"
+                + "?x ?p ?y"
+                + "}"               
+                             
+                +"function xt:produce(?q){"
+                + "let (?g = construct where {?x rdfs:label ?y}){"
+                + "?g"
+                + "}}";     
+
+        exec.query(init);
+        Mappings map = exec.query(qe);
+        assertEquals(3, map.size());       
+    }
+    
+    
+    
+    @Test
+    public void testexistsexport() throws EngineException {
+
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        
+        String init = "insert data {"
+                + "[] rdf:value 1"
+                + "}";
+
+        String qe = "select where {}"
+                + "export {"
+                
+                + "function us:test(){"
+                + "if (exists {select * where {?x ?p ?y}}){"
+                + "let ((?x, ?y) = select * where {?x ?p ?y}){"
+                + "?y}"
+                + "}"
+                + "else {us:fun(false)}"
+                + "}"
+                
+                +"function us:fun(?x){"
+                + "?x}"
+                
+                + "}";
+
+        String q = "select (us:test() as ?t)"
+                + "where {}";
+
+        exec.compile(qe);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?t");
+        assertEquals(1, dt.intValue());
+    }
+    
+    @Test
+      public void testexists () throws EngineException{
+
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        
+        String i = "insert data {"
+                + "[] us:width 2 ; us:length 3"
+                + "[] us:width 3 ; us:length 4"
+                + "}";
+        
+        String q = "select * (us:surface(?x) as ?s) where {"
+                + "?x us:width ?w "
+                + "}"
+                
+                +"function us:surface(?x){"
+                + "let ((?l, ?w) = select * where { ?x us:length ?l ; us:width ?w }){"
+                + "?l * ?w"
+                + "}"
+                + "}"
+                ;
+        
+        String q2 = 
+                "select (us:test() as ?s) where {}"
+                
+                + "function us:test(){"
+                + "let (?sum = 0){"
+                + "for (?m in select * where { ?x us:width ?w }){"
+                + "let ((?w, ?x) = ?m){  "
+                + "set (?sum = ?sum + ?w)"
+                + "}}; ?sum"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?s");
+        assertEquals(6, dt.intValue());
+        
+        map = exec.query(q2);
+        dt = (IDatatype) map.getValue("?s");
+        assertEquals(5, dt.intValue());      
+    }
+    
+    @Test
+        public void testBnode() throws EngineException, LoadException, ParserConfigurationException, SAXException, IOException{
+             Graph g = Graph.create(); 
+             QueryProcess exec = QueryProcess.create(g);
+           
+             
+             String i =  "prefix ex: <http://example.org/>"
+                + "insert data {"
+                     + "[] ex:speed [ rdf:value 100 ; ex:unit 'km/h' ]"
+                     + "[] ex:speed [ rdf:value 90 ; ex:unit 'km/h' ]"
+                     + ""
+                     + ""
+                     + "}";
+             
+             String q =  
+                     "prefix bn: <http://ns.inria.fr/sparql-extension/bnode#>"
+                     + "prefix ex: <http://example.org/>"
+                     + "select  ?x ?z where {"
+                     + "?x ex:speed ?y "
+                     + "?z ex:speed ?t "
+                     + "filter (?x != ?z) "
+                     + "filter (?y <= ?t) "
+                     + "}"
+                     
+                      + "function bn:lessEqual(?x, ?y){"
+                     + "let (?v1 = xt:value(?x, rdf:value), ?v2 = xt:value(?y, rdf:value)){"
+                     + "?v1 <= ?v2}"
+                     + "} "
+                                      
+                     ;
+           
+            exec.query(i);           
+            Mappings map = exec.query(q);
+           assertEquals(1, map.size());
+        }
     
     
      @Test

@@ -294,6 +294,10 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case FOR:
                 return loop(exp, env, p);
+                
+            case XT_DISPLAY:
+                System.out.println();
+                return TRUE;
 
             default:
                 if (plugin != null) {
@@ -418,7 +422,11 @@ public class ProxyImpl implements Proxy, ExprType {
                 return DatatypeMap.sort(dt);
                 
             case XT_REJECT:
-                return reject(env, dt);      
+                return reject(env, dt); 
+                
+            case XT_DISPLAY:
+                System.out.println(dt);
+                return TRUE;
                     
                                                                
             default:
@@ -558,6 +566,10 @@ public class ProxyImpl implements Proxy, ExprType {
             case XT_GET:
                 return get(dt1, dt2);
                 
+            case XT_DISPLAY:
+                System.out.println(dt1 + " " + dt2);
+                return TRUE;    
+                
             default:
                 if (plugin != null) {
                     return plugin.function(exp, env, p, o1, o2);
@@ -627,6 +639,13 @@ public class ProxyImpl implements Proxy, ExprType {
             case STL_CONCAT:
             case XT_CONCAT:            
                 return concat(exp, env, p, param);
+                
+            case XT_DISPLAY:
+                for (IDatatype dt : param){
+                    System.out.print(dt + " ");
+                }
+                System.out.println();
+                return TRUE;       
             
         }
 

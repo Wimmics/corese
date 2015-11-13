@@ -204,9 +204,9 @@ public class CompileService {
 	 *  values () {()} syntax 
 	 */
 	StringBuffer strBindings(Query q, Mappings map){
-                if (group == null){
-                    group =  Group.instance(q.getSelectFun());
-                }
+//                if (group == null){
+//                    group =  Group.instance(q.getSelectFun());
+//                }
                 
 		String SPACE = " ";
 		StringBuffer sb = new StringBuffer();
@@ -221,9 +221,9 @@ public class CompileService {
 		
 		for (Mapping m : map){
                     
-                        if (! group.isDistinct(m)){
-                                continue;
-                        }
+//                        if (! group.isDistinct(m)){
+//                                continue;
+//                        }
                     
 			sb.append("(");
 			
@@ -296,21 +296,21 @@ public class CompileService {
 	 */
 	
         void filter(Query q, Mappings lmap, int start, int limit){
-
+            
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ArrayList<Term> lt;
 		Term filter = null;
-		if (group == null){
-                    group =  Group.instance(q.getSelectFun());
-                }
+//		if (group == null){
+//                    group =  Group.instance(q.getSelectFun());
+//                }
 		
 		for (int j = start; j < lmap.size() && j < limit; j++){
 			
 			Mapping map = lmap.get(j);
-                        
-			if (! group.isDistinct(map)){
-                            continue;
-			}
+                       
+//			if (! group.isDistinct(map)){
+//                            continue;
+//			}
 			
 			lt = new ArrayList<Term>();
 			

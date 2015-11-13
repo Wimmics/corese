@@ -1,0 +1,18 @@
+select * where {
+  ?x a us:Test
+  bind (us:surface(?x) as ?s)
+}
+
+function us:surface(?x) {
+  let ((?w, ?l) = select * where { ?x us:width ?w ; us:length ?l }){
+    ?w * ?l
+  }
+}
+
+function xt:produce(?q){
+    let ((?s, ?p, ?o) = ?q){
+      if (?p = rdf:type){ xt:list(xt:triple(us:obj, rdf:type, us:Test))}
+      else if (?p = us:width){ xt:list(xt:triple(us:obj, us:width, 2)) }
+      else { xt:list(xt:triple(us:obj, us:length, 3)) }
+    }
+  }

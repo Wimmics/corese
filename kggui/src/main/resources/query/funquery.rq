@@ -1,0 +1,14 @@
+#
+# Query in Function
+#
+select (us:test() as ?t) where {
+  
+}
+
+function us:test(){
+  for (?m in select * where {?x ?p ?y}){
+    let ((?x, ?p, ?y) = ?m){
+      kg:display(?x)
+    }
+  }
+}

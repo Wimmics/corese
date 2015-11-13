@@ -1,0 +1,12 @@
+#
+# Producer emulated by construct where
+#
+select * where {
+  ?x ?p ?y
+}
+
+function xt:produce(?q){
+  let (?g = construct { [] rdf:value 1, 2, 3 } where {}){
+    ?g
+  }
+}

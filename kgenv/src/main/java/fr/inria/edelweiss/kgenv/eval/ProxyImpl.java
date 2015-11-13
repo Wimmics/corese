@@ -425,7 +425,8 @@ public class ProxyImpl implements Proxy, ExprType {
                 return reject(env, dt); 
                 
             case XT_DISPLAY:
-                System.out.println(dt);
+                display(dt);
+                System.out.println();
                 return TRUE;
                     
                                                                
@@ -438,6 +439,15 @@ public class ProxyImpl implements Proxy, ExprType {
         return null;
     }
     
+    void display(IDatatype dt){        
+        if (dt.getObject() != null){
+            System.out.print(dt.getObject());
+        }
+        else {
+            System.out.print(dt);
+        }
+    }
+       
     IDatatype display(Expr exp, IDatatype dt, IDatatype arg) {
         if (dt.getObject() != null) {
             System.out.println(exp.getExp(0) + " = " + dt.getObject());
@@ -567,7 +577,10 @@ public class ProxyImpl implements Proxy, ExprType {
                 return get(dt1, dt2);
                 
             case XT_DISPLAY:
-                System.out.println(dt1 + " " + dt2);
+                display(dt1);
+                System.out.print(" ");
+                display(dt2);
+                System.out.println();
                 return TRUE;    
                 
             default:
@@ -642,7 +655,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_DISPLAY:
                 for (IDatatype dt : param){
-                    System.out.print(dt + " ");
+                    display(dt); System.out.println(" ");
                 }
                 System.out.println();
                 return TRUE;       

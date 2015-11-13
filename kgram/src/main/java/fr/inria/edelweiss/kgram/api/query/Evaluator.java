@@ -64,6 +64,8 @@ public interface Evaluator {
                                
         Expr getDefine(Environment env, String name, int n);
         
+        Expr getDefine(String name);
+        
         int compare(Environment env, Producer p, Node n1, Node n2);
 
         // cast Java object into IDatatype

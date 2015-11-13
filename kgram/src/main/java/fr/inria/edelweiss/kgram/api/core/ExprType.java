@@ -278,6 +278,7 @@ public interface ExprType {
         public static int XT_EDGE        = 420;
         public static int XT_TRIPLE      = 421;
         public static int XT_GEN_GET     = 422;
+        public static int XT_DISPLAY     = 423;
        
         public static int SLICE       = 450;
         

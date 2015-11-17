@@ -21,27 +21,24 @@
             <artifactId>kgengine</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-<!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>kgserver-stubs</artifactId>
+            <artifactId>kgtool</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>kgimport</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
+	<dependency>
+		<groupId>xml-apis</groupId>
+		<artifactId>xml-apis</artifactId>
+	</dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+        </dependency>    
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
         </dependency>    
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>kgendpoint</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -49,10 +46,6 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -65,32 +58,6 @@
             <scope>test</scope>
         </dependency>
         
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.18</version>
-        </dependency>
-<!--        <dependency>
-            <groupId>com.businessobjects</groupId>
-            <artifactId>datafederator-jdbc-connector</artifactId>
-            <version>1.0</version>
-        </dependency>-->
-
-        
-        <!--        <dependency>
-            <groupId>org.swinglabs</groupId>
-            <artifactId>swing-layout</artifactId>
-            <version>1.0.3</version>
-        </dependency>-->
-        
-        <!--        <dependency>
-            <groupId>org.graphstream</groupId>
-            <artifactId>gs-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.graphstream</groupId>
-            <artifactId>gs-ui</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgram</artifactId>

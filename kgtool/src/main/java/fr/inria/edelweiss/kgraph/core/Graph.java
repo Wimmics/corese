@@ -396,7 +396,7 @@ public class Graph implements Graphable, Loopable {
     }
 
     /**
-     * b = true for RDFS entailment
+     * @param b true for RDFS entailment
      */
     public static Graph create(boolean b) {
         Graph g = new Graph();

@@ -3,11 +3,12 @@
 #
 prefix cn: <http://cdn.fr/schema/>
 
-template cn:tail {
-   """
-   </body>
-   </html>
-   """
+template cn:tail(?c, ?title) {
+
+    "<p>"    
+    st:call-template(cn:index,  ?title)        
+    "</p>"
+    
 }
 where {
 }

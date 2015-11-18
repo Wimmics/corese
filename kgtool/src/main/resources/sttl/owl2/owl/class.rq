@@ -1,22 +1,22 @@
 template  st:class  {
 
-  xt:nl(st:apply-templates-with-all(st:owlclass, ?t), 2)
+  xt:nl(st:apply-templates-with-all(st:owlclass, ?in), 2)
   ; separator = ""
 }
 where {
 
-  {select distinct ?t where {
+  select distinct ?in where {
     values ?p { rdf:type  owl:disjointWith owl:equivalentClass  rdfs:subClassOf owl:hasKey owl:disjointUnionOf}
-     ?t ?p ?y 
+     ?in ?p ?y 
     filter (
-      (isURI(?t)   && not exists { ?t a owl:Ontology }) ||
-      (isBlank(?t) && not exists { ?x ?q ?t } )
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
     )
   # OWL vocabulary must not be pretty printed
-      filter (! xt:system(?t))
+      filter (! xt:system(?in))
         
   }
-  order by ?t}
+  order by ?in
         
 }
 

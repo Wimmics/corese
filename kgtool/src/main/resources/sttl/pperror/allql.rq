@@ -1,0 +1,29 @@
+template st:allQL(?tag) {
+
+	"<span class=owlql>OWL QL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+	
+}
+where {
+
+	bind(st:linkPro(?id) as ?href)
+
+} values (?tag ?mess ?id) {
+	### axiom ##
+	("datatypeLit" "Restriction on datatypes" "Entities_2")
+	("datatypeRes" "Restriction on datatypes" "Entities_2")
+	("fail" "Statement not supported" "Feature_Overview_2")
+	("disjointClass" "Class Expression not supported with a Disjoint Class" "Class_Expressions_2")
+	("domain" "Class Expression not supported as object of rdfs:domain or rdfs:range" "Class_Expressions_2")
+	("equivClass" "Class Expression not supported with owl:equivalentClass" "Axioms_2")
+	("anonymous" "Anonymous individuals are not supported" "Entities_2")
+	("propertyChain" "Property inclusions involving property chains not supported" "OWL_2_QL_2")
+	("subClass" "Class Expression not supported with rdfs:subClassOf" "Class_Expressions_2")
+	
+	### sub Class Expression ###
+	("sub" "Not a valid Sub Class Expression" "Class_Expressions_2")
+	("failSub" "Statement not supported in a Sub Class Expression" "Class_Expressions_2")
+	
+	### super Class Expression ###
+	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_2")
+	("super" "Not a valid Sub Class Expression" "Class_Expressions_2")
+}

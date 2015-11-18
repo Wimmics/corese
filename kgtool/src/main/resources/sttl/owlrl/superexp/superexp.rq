@@ -7,5 +7,6 @@ where {
          st:apply-templates-all(?x)) 
     as ?suc)
       
-  filter(st:visit(st:super, ?x, ?suc))
+   #filter(st:visit(st:err("super"), ?x, ?suc))
+   filter(st:alreadyVisited(?x, "super", ?suc))
 }

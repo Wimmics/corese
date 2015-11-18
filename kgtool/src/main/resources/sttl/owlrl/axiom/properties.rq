@@ -1,0 +1,18 @@
+  # OWL 2 RL does not support the predefined properties :
+  # owl:topObjectProperty, owl:bottomObjectProperty,
+  # owl:topDataProperty, and owl:bottomDataProperty
+
+template {
+
+  ?suc
+}
+where {
+
+  bind ( not exists { {?x ?p ?y} union {?y ?p ?x} union { ?a ?x ?b } } as ?suc)
+  
+  filter(st:visit(st:err("properties"), ?x, ?suc))
+}
+values ?x { 
+  owl:topObjectProperty owl:bottomObjectProperty 
+  owl:topDataProperty   owl:bottomDataProperty 
+}

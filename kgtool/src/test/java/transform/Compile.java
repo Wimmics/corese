@@ -14,11 +14,11 @@ import org.junit.Test;
  */
 public class Compile {
 
-    static String data =   "/home/corby/NetBeansProjects/kgram/trunk/kgtool/src/main/resources/sttl/";
+    static String data =   "/home/corby/NetBeansProjects/corese-github/kgtool/src/main/resources/sttl/";
     static String root = data;
-    static String srclib = "/home/corby/NetBeansProjects/kgram/trunk/kgtool/src/main/resources/template/";
+    static String srclib = "/home/corby/NetBeansProjects/corese-github/kgtool/src/main/resources/template/";
 
-    public void translate() {
+    public  void translate() {
         TemplatePrinter p =
                 TemplatePrinter.create(root + "spin/template", root + "pprint/lib/spin.rul");
         //TemplatePrinter.create(root + "spin/template", lib + "spin.rul");
@@ -31,18 +31,24 @@ public class Compile {
         }
     }
 
-    @Test
+    public static void main(String[] args){
+        new Compile().pplib();
+    }
+    
+    
     public void pplib() {
         String lib = srclib;
 
+        translate(root + "list", lib + "list.rul");
         translate(root + "system", lib + "system.rul");
         translate(root + "server", lib + "server.rul");
         translate(root + "spin", lib + "spin.rul");
         translate(root + "spinhtml", lib + "spinhtml.rul");
         translate(root + "sql", lib + "sql.rul");
-        translate(root + "owl", lib + "owl.rul");
         translate(root + "rdfxml", lib + "rdfxml.rul");
         translate(root + "turtle", lib + "turtle.rul");
+        translate(root + "json", lib + "json.rul");
+        translate(root + "jsonterm", lib + "jsonterm.rul");
 
         translate(root + "trig", lib + "trig.rul");
         translate(root + "sparql", lib + "sparql.rul");
@@ -57,6 +63,16 @@ public class Compile {
         translate(root + "owlrl/subexp", lib + "subexp.rul");
         translate(root + "owlrl/superexp", lib + "superexp.rul");
         translate(root + "owlrl/equivexp", lib + "equivexp.rul");
+        
+        translate(root + "owl", lib + "owl1.rul");
+        
+        translate(root + "owl2/owl",            lib + "owl.rul");
+        translate(root + "owl2/owldecl",        lib + "owldecl.rul");
+        translate(root + "owl2/owlclass",       lib + "owlclass.rul");
+        translate(root + "owl2/owlproperty",    lib + "owlproperty.rul");
+        translate(root + "owl2/owlstatement",   lib + "owlstatement.rul");
+        translate(root + "owl2/owlexp",         lib + "owlexp.rul");
+
 
         translate(root + "spintc/main", lib + "spintc.rul");
         translate(root + "spintc/template", lib + "spintcbody.rul");
@@ -69,7 +85,32 @@ public class Compile {
         translate(root + "navlab", lib + "navlab.rul");
 
         translate(root + "cdn", lib + "cdn.rul");
-      
+        translate(root + "calendar", lib + "calendar.rul");
+        translate(root + "calcontent", lib + "content.rul");
+       
+        
+        //******************************************
+        
+        translate(root + "pperror", lib + "pperror.rul");
+
+        translate(root + "owltc/main", lib + "owltc.rul");
+        translate(root + "owltc/axiomowltc", lib + "axiomowltc.rul");
+        translate(root + "owltc/classexpconformityowltc", lib + "classexpconformityowltc.rul");
+
+
+        translate(root + "owleltc/main", lib + "owleltc.rul");
+        translate(root + "owleltc/axiomowleltc", lib + "axiomowleltc.rul");
+        translate(root + "owleltc/classexpowleltc", lib + "classexpowleltc.rul");
+
+        translate(root + "owlqltc/main", lib + "owlqltc.rul");
+        translate(root + "owlqltc/axiomowlqltc", lib + "axiomowlqltc.rul");
+        translate(root + "owlqltc/subexpowlqltc", lib + "subexpowlqltc.rul");
+        translate(root + "owlqltc/superexpowlqltc", lib + "superexpowlqltc.rul");
+
+        translate(root + "owltc/main", lib + "owltc.rul");
+        translate(root + "owltc/axiomowltc", lib + "axiomowltc.rul");
+        translate(root + "owltc/classexpconformityowltc", lib + "classexpconformityowltc.rul");
+
     }
 
     void translate(String src, String tgt) {

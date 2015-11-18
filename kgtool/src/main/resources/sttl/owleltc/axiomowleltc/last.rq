@@ -1,0 +1,47 @@
+#
+# Forbidden in OWL 2 EL
+# 
+#
+# The following constructs are not supported in OWL 2EL:
+
+# universal quantification to a class expression (ObjectAllValuesFrom) or a data range (DataAllValuesFrom)
+# cardinality restrictions (ObjectMaxCardinality, ObjectMinCardinality, ObjectExactCardinality, DataMaxCardinality, DataMinCardinality, and DataExactCardinality)
+# disjunction (ObjectUnionOf, DisjointUnion, and DataUnionOf)
+# class negation (ObjectComplementOf)
+# enumerations involving more than one individual (ObjectOneOf and DataOneOf)
+# disjoint properties (DisjointObjectProperties and DisjointDataProperties)
+# irreflexive object properties (IrreflexiveObjectProperty)
+# inverse object properties (InverseObjectProperties)
+# functional and inverse-functional object properties (FunctionalObjectProperty and InverseFunctionalObjectProperty)
+# symmetric object properties (SymmetricObjectProperty)
+# asymmetric object properties (AsymmetricObjectProperty)
+
+template {
+	false
+}
+where {
+	#disjunction
+	{ ?in owl:disjointUnionOf ?y }
+	union { ?in owl:unionOf ?union }
+	#complement
+	union { ?in owl:complementOf ?neg }
+	
+	#cardinality restrictions
+	union { ?in owl:maxCardinality ?maxCard }
+	union { ?in owl:minCardinality ?minCard }
+	union { ?in owl:exactCardinality ?eCard }
+	
+	union { ?in owl:AllValuesFrom ?allValues }
+	
+	union { ?in a owl:IrreflexiveProperty }
+	union { ?in a owl:inverseOf }
+	
+	union { ?in a owl:FunctionalProperty }
+	union { ?in a owl:InverseFunctionalProperty }
+
+	union { ?in a owl:SymmetricProperty }
+	union { ?in a owl:AsymmetricProperty }
+	
+	filter(st:alreadyVisited(?in, "fail", false))
+}
+limit 1

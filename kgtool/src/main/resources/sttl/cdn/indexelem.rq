@@ -7,16 +7,22 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:elem(?title) {
 
-    "<td><a href=\""  st:call-template(cn:dynlink, ?century) "\">" 
+    "<td><a href='"  st:plink(?century) "'>" 
     
-    "<div" ?class ">" ?date "</div>"
+    "<span" ?class ">" ?date "</span>"
     
-    "</a></td><td>&nbsp;&nbsp;</td>"
+    "</a></td>"
+    "<td>&nbsp;&nbsp;</td>"
  
 }
 where {
-  
+
+  bind (coalesce(st:get(st:min), -1000) as ?fst)
+  bind (coalesce(st:get(st:max),  3000) as ?rst)
+    
   ?century cn:start ?min ; cn:finish ?max ; rdfs:label ?date
+  
+  filter (?min >= ?fst && ?max <= ?rst)
   
   bind (if (?date = ?title, " class='bold'", "") as ?class)
      

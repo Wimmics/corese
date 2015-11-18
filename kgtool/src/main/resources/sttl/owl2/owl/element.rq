@@ -1,0 +1,15 @@
+template   {
+
+  st:call-template(st:prefix)
+  st:call-template(st:declare, ?in)  st:nl()
+  st:call-template(st:class, ?in)    st:nl()
+  st:call-template(st:property, ?in) st:nl()
+  st:call-template(st:statement, ?in)
+  
+}
+where {
+     select ?in where {
+      ?in ?p ?t
+     } limit 1
+}
+

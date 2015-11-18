@@ -5,8 +5,8 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:call-template(sp:kw, "bind") " (" ?e " " 
-  st:call-template(sp:kw, "as") " " ?v ")"
+  st:kw("bind") " (" ?e " " 
+  st:kw("as") " " ?v ")"
 }
 where {
   ?in a sp:Bind  ;

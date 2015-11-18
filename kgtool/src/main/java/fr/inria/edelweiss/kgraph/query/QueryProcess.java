@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -153,7 +154,7 @@ public class QueryProcess extends QuerySolver {
 		qp.add(g2);
 		return qp;
 	}
-	
+                
 	public static void setSort(boolean b){
 		isSort = b;
 	}

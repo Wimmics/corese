@@ -5,8 +5,8 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:prolog() 
-  st:call-template(sp:kw, "ask") " {" 
+  st:namespace() 
+  st:kw("ask") " {" 
     box {
       st:call-template(sp:listnl, ?a) 
     }

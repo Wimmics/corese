@@ -1,0 +1,25 @@
+template st:allEL(?tag) {
+
+	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+
+}
+where {
+
+	bind(st:linkPro(?id) as ?href)
+	
+} values (?tag ?mess ?id) {
+	### axiom ###
+	("datatypeLit" "Restriction on datatypes" "Entities")
+	("datatypeRes" "Restriction on datatypes" "Entities")
+	("fail" "Statement not supported" "Feature_Overview")
+	("disjointClass" "Class Expression not supported with a Disjoint Class" "Class_Expressions")
+	("domain" "Class Expression not supported as object of rdfs:domain or rdfs:range" "OWL_2_EL_2")
+	("equivClass" "Class Expression not supported with owl:equivalentClass" "Class_Expressions")
+	("anonymous" "Anonymous individuals are not supported" "Entities")
+	("key" "Class Expression not supported as subject of owl:hasKey" "OWL_2_EL_2")
+	("subClass" "Class Expression not supported with rdfs:subClassOf" "Class_Expressions")
+
+	### classExp ###
+	("failClassExp" "Statement not supported in a Class Expression" "Class_Expressions")
+	("classExp" "Not a valid Class Expression" "Class_Expressions")
+}

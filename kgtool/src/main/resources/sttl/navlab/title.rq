@@ -5,16 +5,17 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template st:title(?r, ?l, ?i) {
  
-  "<div style='text-align:center'>" 
+  "<div class='center'>" 
   
-  "<p>"
-  "<h3>"  str(?l) "</h3>"
-  "</p>"  
+  "<h2>"  str(?l) "</h2>"
   
-  "<a href=\"" coalesce(str(?i), "")  "\">"    
-  "<img width='100' alt=\"" str(?l) "\" src=\"" coalesce(str(?i), "") "\" />"
-  "</a>"
- 
+ """<p>"""
+    coalesce(str(?b), "")
+    if (bound(?b) && bound(?d), " -- " , "")
+    coalesce(str(?d), "")
+  """</p>
+  """
+  
   "</div>"
 
 }

@@ -1,0 +1,22 @@
+#
+# Get list st:period from profile.ttl st:param
+#
+prefix cn: <http://cdn.fr/schema/>
+template cn:rowtitle(?c) {
+
+      "<th>"   
+	if (?label = "Antiquité", 
+	  if (?max <= 500, str(?label), "&nbsp;"),
+	  str(?label))
+      "</th>"
+   
+}  
+where {
+
+  ?c cn:start ?min ; cn:finish ?max
+   
+  bind (unnest(st:get(st:text)) as ?label)
+  
+}
+#values ?label {"Antiquité" "France" "Contexte" "Savoie, Piémont, Comté de Nice"}
+    

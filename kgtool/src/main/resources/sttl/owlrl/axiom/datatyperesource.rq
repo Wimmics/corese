@@ -1,0 +1,20 @@
+# the following datatypes must not be used in OWL 2 RL:
+# owl:real, owl:rational
+
+template {
+	?suc
+}
+where {
+	{ ?in rdfs:range ?y }
+	union { ?in a owl:Restriction;
+			?p ?y }
+	bind (
+		#datatypes not allowed
+		?y NOT IN (
+			owl:real, owl:rational
+		)
+	as ?suc)
+
+	filter(isURI(?y) && ! ?suc)
+	filter(st:visit(st:err("datatypeRes"), ?in, ?suc))
+}

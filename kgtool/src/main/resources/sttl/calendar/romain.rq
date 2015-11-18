@@ -1,0 +1,14 @@
+#
+# Display a day in the calendar of a month
+# May be a link or a number
+# Calling context may have set st:content and st:date 
+# (cf st:content/st:query )
+#
+template st:romain(?date) {
+  
+    xt:romain(day(?date))
+  
+}
+where {
+  
+}

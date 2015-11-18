@@ -1,0 +1,23 @@
+#
+# Display a calendar and a graph content
+# ?uri = st:y2000 | st:dyyyy-mm-dd
+#
+template st:main {
+
+  "<h2 class='center'>" st:get(st:title) "</h2>"
+
+  st:call-template-with(st:calendar, st:main, ?year)
+  
+  st:call-template(st:content, ?year)
+  
+}
+where {
+  bind (st:get(st:uri) as ?uri)
+  bind (substr(?uri, strlen(st:) + 2) as ?str)
+  bind (if (contains(?str, "-"), strbefore(?str, "-"), ?str) 
+  as ?tmp)
+  bind (coalesce(xsd:integer(?tmp), year(now())) as ?year)
+  
+  bind (st:export(st:service, st:get(st:service)) as ?serv)
+  bind (st:export(st:profile, st:get(st:profile)) as ?prof)
+}

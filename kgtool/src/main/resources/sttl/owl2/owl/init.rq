@@ -2,42 +2,53 @@
 # defaut processing of a variable is 
 # st:turtle on URI 
 # st:apply-templates on Blank and Literal
-# Literals are displayed by st:xsdLiteral  (literalvalue.rq)
-# otherwise must use st:turtle explicitely (e.g. cardinality.rq)
-#
+# Functions in package are exported and can be reused in subtransformations
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
-template st:profile(?in) {
+prefix owlfs: <http://ns.inria.fr/sparql-template/owlfs/>
 
-    define (st:process(?in) =  
-      if (isURI(?in), st:protect(?in),	
+template st:profile(?in) {
+   
+}
+where {
+
+ function st:process(?in) {  
+      if (isURI(?in), owlfs:pretty(?in),	
 	st:apply-templates(?in))
-    ) 
+    }
+    
+# export to sub transformations (export to Interpreter)    
+export {
+
+    function owlfs:pretty(?in) {
+      let (?t = st:turtle(?in)){
+	if (st:get(st:html, true), 
+	      owlfs:protect(?t), ?t)
+      }
+    }
   
-  define (st:protect(?in) =
-    let (?t = st:turtle(?in),
-      if (st:get(st:html, true) && 
-	    strstarts(?t, "<"), 
-	    replace(?t, "<", "&lt;"), 
-	    ?t))
-  )
+   function owlfs:protect(?s) {
+        replace(replace(?s, "&", "&amp;"), "<", "&lt;")
+    }
+    
+    # used by sub transformations, with st:owlexp
+    function owlfs:process(?in) {
+      if (isURI(?in), owlfs:pretty(?in),	
+	st:apply-templates-with(st:owlexp, ?in))
+    }
+}
+    
   
-  define (xt:turtle(?t) = 
-    st:apply-templates-with(st:turtle, ?t)
-  )
-  
-  define (xt:nl(?x, ?n) =
+  function xt:nl(?x, ?n) {
     if (?x = "", ?x, 
       concat(?x, if (?n = 1, "\n", "\n\n")))
-  )
+ }
   
-  define (xt:system(?t) =
+  function xt:system(?t) {
           (strstarts(?t, owl:) 
        ||  strstarts(?t, rdf:) 
        ||  strstarts(?t, rdfs:)
        ||  strstarts(?t, xsd:))
-  )
-  
-}
-where {
+  }
+
 }

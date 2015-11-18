@@ -1,0 +1,16 @@
+#
+# For each day of a calendar (see st:calendar/st:date)
+# generate href with query to dbpedia about event of this date
+# use year 2000 to have a bisextile year (to get January 29)
+#
+template st:dbpedia(?date) {
+
+  "<a href='"
+    st:plink(concat("st:d2000-", month(?date), "-", day(?date))) 
+  "'>" day(?date) 
+  "</a>"
+  
+}
+where {
+
+}

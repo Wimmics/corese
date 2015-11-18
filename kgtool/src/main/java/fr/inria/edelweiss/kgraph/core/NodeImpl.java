@@ -5,6 +5,8 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.core.PointerObject;
 
 /**
  * Node
@@ -12,7 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class NodeImpl implements Node, Entity {
+public class NodeImpl extends PointerObject implements Node, Entity {
 
     String key = INITKEY;
     public static boolean byIDatatype = false;
@@ -196,8 +198,4 @@ public class NodeImpl implements Node, Entity {
     public Iterable getLoop() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    /*****/
-
-    
 }

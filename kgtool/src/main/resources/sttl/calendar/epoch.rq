@@ -1,0 +1,11 @@
+template st:epoch {
+
+  st:call-template(st:era, ?fst, ?rst)
+
+}
+where {
+  bind (unnest(xt:iota(1, 10)) as ?n)
+  bind (?start + ((?n - 1) * 10) as ?fst)
+  bind (?start + (?n * 10) - 1 as ?rst)
+}
+values ?start { 1901 }

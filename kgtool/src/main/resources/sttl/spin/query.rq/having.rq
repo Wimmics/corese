@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:call-template(sp:kw, "having") " (" st:call-template(sp:list, ?in) ")\n"
+  st:kw( "having") " (" st:call-template(sp:list, ?in) ")\n"
 }
 where {
   ?q sp:having ?in

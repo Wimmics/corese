@@ -1,0 +1,33 @@
+template st:allRL(?tag) {
+
+	"<span class=owlrl>OWL RL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+
+}
+where {
+	
+	bind(st:linkPro(?id) as ?href)
+	
+} values (?tag ?mess ?id) {
+	### axiom ###
+	("datatypeLit" "Restriction on datatypes" "Entities_3")
+	("datatypeRes" "Restriction on datatypes" "Entities_3")
+	("disjointClass" "Class Expression not supported with a Disjoint Class" "Axioms_3")
+	("domain" "Class Expression not supported as object of rdfs:domain or rdfs:range" "Axioms_3")
+	("equivClass" "Class Expression not supported with owl:equivalentClass" "Class_Expressions_3")
+	("key" "Class Expression not supported as subject of owl:hasKey" "Axioms_3")
+	("fail" "Statement not supported" "Feature_Overview_3")
+	("properties" "Property not supported" "Entities_3")
+	("subClass" "Class Expression not supported with rdfs:subClassOf" "Class_Expressions_3")
+	
+	### equiv Class Expression ###
+	("failEquiv" "Statement not supported in an Equivalent Class Expression" "Class_Expressions_3")
+	("equiv" "Class Expression not supported with owl:equivalentClass or owl:intersectionOf" "Class_Expressions_3")
+		
+	### sub Class Expression ###
+	("failSub" "Statement not supported in a Sub Class Expression" "Class_Expressions_3")
+	("sub" "Not a valid Sub Class Expression" "Class_Expressions_3")
+	
+	### super Class Expression ###
+	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_3")
+	("super" "Not a valid Super Class Expression" "Class_Expressions_3")
+}

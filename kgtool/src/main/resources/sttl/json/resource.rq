@@ -1,0 +1,20 @@
+template {
+
+"{" 
+
+   box {
+     "\"@id\": \""  str(?in)  "\""
+     
+     st:call-template(st:type, ?in)
+     st:call-template(st:property, ?in)
+   }
+
+"}" 
+
+}
+where {
+  
+  bind (st:getFocusNode() as ?in)
+  
+}
+

@@ -5,7 +5,7 @@
 prefix sp:<http://spinrdf.org/sp#> .
 
 template  {
-  ?q 
+  "{" ?q  "}" 
 }
 where {
   ?in a sp:SubQuery ;

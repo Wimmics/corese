@@ -8,4 +8,5 @@ where {
     as ?suc)
     
 #  filter(st:visit(st:sub, ?x, ?suc))
+	filter(st:alreadyVisited(?x, "sub", ?suc))
 }

@@ -4,37 +4,13 @@
 prefix cn: <http://cdn.fr/schema/>
 template cn:content(?c) {
   
-    "<a name='" str(?title) "'></a>"
+    st:call-template(cn:head, ?c, ?title)
     
-    "<h2 style='text-align:center; color:blue'>" ?title "e Siècle</h2>"
-  
-    st:call-template(cn:icon, cn:icon)
-    
-    "<p>"
-    st:call-template(cn:index,  ?title)
-    "</p>"
-    
-    '''
-    <table class='center'>
-    <tr class='head'> 
-    <th>Date</th> 
-    <th>Souverain France</th> '''
-#    <th>Empereur Germanique</th> 
-#    <th>Souverain Savoie</th> 
-    '''<th>Contexte</th> 
-    <th>Savoie, Piémont, Comté de Nice</th> 
-    </tr>
-    '''
+    st:call-template(cn:body, ?c)
+   
+    st:call-template(cn:tail, ?c, ?title)
 
-    
-    st:call-template(cn:table, ?min, ?max)
-
-    "</table>"
-    
-    "<p>"    
-    st:call-template(cn:index,  ?title)        
-    "</p>"
 }
 where {
-  ?c cn:start ?min ; cn:finish ?max ; rdfs:label ?title
+  ?c rdfs:label ?title
 }

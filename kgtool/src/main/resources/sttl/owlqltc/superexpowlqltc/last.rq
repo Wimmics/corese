@@ -1,0 +1,22 @@
+#
+# Check if there is an unauthorized OWL property for superClassExpression ?in
+# return false in this case, otherwise template fails (return nothing)
+#
+template {
+	false
+}
+where {
+	?in ?p ?y
+	
+	bind (
+		?p in (
+			owl:intersectionOf, owl:complementOf,
+			owl:onProperty, owl:someValuesFrom, owl:onClass,
+			rdf:type
+		)
+	as ?suc)
+		
+	filter (st:visit(st:err("failSuper"), ?in, ?suc))
+	filter(! ?suc)
+}
+limit 1

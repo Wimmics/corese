@@ -1,0 +1,10 @@
+template st:nav {
+ 
+ "<input type='button' " st:call-template-with(st:server, st:bstyle) """ 
+      onclick="show('sol')" value='Solution' />
+      
+  <input type='button' """ st:call-template-with(st:server, st:bstyle) """ 
+      onclick="show('tmp')" value='Template' /> """
+   
+ }
+where {}

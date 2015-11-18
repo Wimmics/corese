@@ -1,8 +1,8 @@
 template st:head {
 
-  st:call-template(st:header)
-  st:call-template(st:banner)
-  
+  if (st:get(st:protocol, st:ajax), "",
+    st:call-template(st:dohead))
+    
 }
 where {
 

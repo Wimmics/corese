@@ -5,35 +5,19 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template {
 
-  st:call-template(st:title, ?r, ?label, (coalesce(?ic, "")))
-  
-  
-  """<table>
-  """  
-  
-  st:call-template(st:descplace, ?r)
-    
-  """</table>
-  """
-  
-  st:call-template(st:locate, ?in, ?lat, ?lon)
+  st:call-template(st:frame, ?label, coalesce(?ic, ""), 
+     st:call-template(st:descplace, ?in))
+   
+  st:call-template(st:locate, ?in)
 
 }
 where {
 
   ?in a o:Place
   minus { ?in a o:Resource }
-  
-  bind (?in as ?r)
-  
-  ?r rdfs:label ?label 
+    
+  ?in rdfs:label ?label 
   	      
-  optional { ?r o:thumbnail  ?ic  }
-  
-  bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr)   
-
-  optional {
-    ?in p:longitude ?lon ;
-	p:latitude  ?lat
-  }
+  optional { ?in o:thumbnail  ?ic  }
+    
 }

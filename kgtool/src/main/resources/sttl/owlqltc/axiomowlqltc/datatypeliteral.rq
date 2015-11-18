@@ -1,0 +1,29 @@
+# the following datatypes must not be used in OWL 2 QL:
+# xsd:double, xsd:float, xsd:nonPositiveInteger,
+# xsd:positiveInteger, xsd:negativeInteger,
+# xsd:long, xsd:int, xsd:short, xsd:byte,
+# xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
+# xsd:unsignedByte, xsd:language, xsd:boolean.
+
+template {
+	?suc
+}
+where {
+	
+	bind (
+		# datatypes not allowed
+		not exists {
+			?in ?p ?y
+			
+			filter(datatype(?y) IN (
+				xsd:double, xsd:float, xsd:nonPositiveInteger, xsd:positiveInteger,
+				xsd:negativeInteger, xsd:long, xsd:int, xsd:short, xsd:byte,
+				xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort, xsd:unsignedByte,
+				xsd:language, xsd:boolean
+			))
+		}
+	as ?suc)
+	
+	filter(isLiteral(?y) && ! ?suc)
+	filter(st:visit(st:err("datatypeLit"), ?in, ?suc))
+}

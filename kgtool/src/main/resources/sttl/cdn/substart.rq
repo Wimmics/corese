@@ -4,13 +4,13 @@
 prefix cn: <http://cdn.fr/schema/>
 template st:substart(?cent) {
 
-   st:call-template(cn:head, cn:head)
+  # st:call-template(cn:head, cn:head)
    
    st:call-template(cn:content, ?cent)   
         
    st:call-template(cn:sign, cn:sign)
    
-   st:call-template(cn:tail, cn:tail)
+ #  st:call-template(cn:tail, cn:tail)
 
 }
 where {

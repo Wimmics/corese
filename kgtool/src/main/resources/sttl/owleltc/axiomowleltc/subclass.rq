@@ -1,0 +1,18 @@
+template {
+	?suc
+}
+where {
+	?in rdfs:subClassOf ?y
+	
+	filter (
+		isURI(?in) ||
+		not exists { ?x ?p ?in }
+	)
+	
+	bind (
+		st:call-template-with(st:classexpowleltc, st:classExpression, ?in) &&
+		st:call-template-with(st:classexpowleltc, st:classExpression, ?y)
+	as ?suc)
+	
+	filter(st:alreadyVisited(?in, "subClass", ?suc))
+}

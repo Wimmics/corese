@@ -1,6 +1,0 @@
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template sp:kw(?x) {  
-    str(?x)
-}
-where {}

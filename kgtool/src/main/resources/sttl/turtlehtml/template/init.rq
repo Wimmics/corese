@@ -5,19 +5,23 @@
 #
 template st:profile(?in) {
 
-    st:define(st:process(?in) = 
-      if (isBlank(?in), 
-        concat("<span id='", 
-	  coalesce(
-	    concat("it", st:vget(?in, st:id)), 
-	    concat("ab", st:index())), 
-	  "'>", 
-          st:apply-templates(?in), "</span>"), 
-	if (strstarts(st:turtle(?in), "<"), replace(st:turtle(?in), "<", "&lt;"), 		st:turtle(?in))	
-    ))
-      
-    st:define(st:default(?in) = st:turtle(?in))
-
 }
 where {
+
+  function st:process(?in) { 
+	if (isBlank(?in), 
+	  concat("<span id='", 
+	    coalesce(
+	      concat("it", st:vget(?in, st:id)), 
+	      concat("ab", st:index())), 
+	    "'>", 
+	    st:apply-templates(?in), "</span>"), 
+	  if (strstarts(st:turtle(?in), "<"), replace(st:turtle(?in), "<", "&lt;"), 		st:turtle(?in))	
+      )
+  }
+      
+    function st:default(?in) {
+      st:turtle(?in)
+    }
+
 }

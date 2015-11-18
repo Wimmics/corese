@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:call-template(sp:kw, "order by") " " st:call-template(sp:list, ?in)
+  st:kw( "order by") " " st:call-template(sp:list, ?in)
   st:nl()
 }
 where {

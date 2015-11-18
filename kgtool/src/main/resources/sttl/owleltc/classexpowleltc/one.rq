@@ -1,0 +1,19 @@
+# enumerations involving more than one individual (ObjectOneOf and DataOneOf)
+
+template {
+	?suc
+}	
+where {
+	select ?suc where {
+		{
+			# count the number of individuals into our oneOf
+			select ?in (count(?individual) as ?nbInd) {
+				?in owl:oneOf ?z
+				?z rdf:rest*/rdf:first ?individual
+			} group by ?in
+		}
+		# a single individual or a single literal
+		bind((?nbInd = 1) as ?suc)
+		filter(st:visit(st:err("one"), ?in, ?suc))
+	}
+}

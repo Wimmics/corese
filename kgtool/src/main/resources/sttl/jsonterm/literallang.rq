@@ -1,0 +1,13 @@
+template  {
+
+  "{"
+    "\"@value\": \""       str(?in) "\", "
+    "\"@language\": \""    lang(?in) "\""
+  "}"
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (datatype(?in) = rdf:langString)
+  
+}

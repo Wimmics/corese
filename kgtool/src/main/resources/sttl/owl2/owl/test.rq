@@ -1,0 +1,28 @@
+
+template  st:test  {
+
+  kg:display(count(*))
+ 
+}
+where {
+
+  select distinct ?in where {
+     ?in ?p ?y 
+     
+     filter (?p not in 
+     (rdfs:subClassOf, owl:equivalentClass)
+     )
+     
+    filter (
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
+    )
+  # OWL vocabulary must not be pretty printed
+    filter (! xt:system(?in))
+
+  }
+  order by ?in
+     
+}
+
+

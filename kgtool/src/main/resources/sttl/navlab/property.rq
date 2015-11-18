@@ -8,5 +8,5 @@ where {
 
   ?r ?p ?n  
   optional { ?n rdfs:label ?ln }
-
+  
 }

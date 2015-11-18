@@ -1,0 +1,14 @@
+template st:oneEL(?tag) {
+
+	"<span class=owlel>OWL EL: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+
+}
+where {
+
+	bind(st:linkPro(?ida) as ?hrefa)
+	bind(st:linkPro(?idb) as ?hrefb)
+	
+} values (?tag ?messa ?ida ?messb ?idb) {
+	### classExp ###
+	("one" "individual" "Class_Expressions" "literal" "Data_Ranges")
+}

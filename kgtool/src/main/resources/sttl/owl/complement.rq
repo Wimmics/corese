@@ -3,6 +3,9 @@ template {
 }
 where {
   ?in ?p ?y
+  filter not exists { 
+    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
+   }
 }
 values (?p ?l){
 (owl:complementOf 	  "ObjectComplementOf")

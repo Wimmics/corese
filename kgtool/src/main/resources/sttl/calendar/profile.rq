@@ -1,0 +1,49 @@
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+template st:profile {
+                    
+}
+where {
+
+  function xt:space(?n) { 
+         if (?n = 0, "", concat("   " , xt:space(?n - 1)))
+       }
+      
+    function xt:td(?n) { 
+         if (?n = 0, "", concat("<td/>" , xt:td(?n - 1)))
+     } 
+      
+    function st:protocol(?uri) {
+      if (st:get(st:protocol, st:ajax), 
+	concat("javascript:trans(\"", str(?uri), "\")"), 
+	str(?uri))
+    }
+  
+   function st:link(?uri) {
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      coalesce(
+	concat("&profile=",   st:get(st:profile)), 
+	concat("&transform=", st:get(st:transform)), 
+	""))
+  }
+  
+  function st:pplink(?uri, ?profile) {
+     st:protocol(concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      concat("&profile=",   ?profile)))
+  }
+   
+  function st:plink(?uri) {
+    st:protocol(st:link(?uri))
+  }
+  
+  function xt:pretty(?n) { 
+    if (?n < 10, concat(" ", ?n), ?n) 
+  }
+  
+  function xt:display(?y) {
+    if (st:get(st:date, st:romain), xt:romain(?y), ?y)
+  }
+
+}
+    

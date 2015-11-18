@@ -1,0 +1,26 @@
+template st:checkConformity(?x) {
+	?suc
+}
+where {
+
+	bind(
+		#if not a list
+		exists {
+			?in ?p ?x
+		
+			filter(?p IN (
+				rdfs:subClassOf, owl:equivalentClass,
+				owl:disjointWith,
+					
+				owl:complementOf, rdfs:domain, rdfs:range,
+				owl:someValuesFrom, owl:allValuesFrom, rdf:type
+			))
+		#else if a list
+		} || exists {
+			?node rdf:rest*/rdf:first ?x
+			?in owl:intersectionOf|owl:unionOf|owl:AllDisjointClasses|owl:disjointUnionOf ?node
+		}
+		#else false
+	as ?suc)
+	
+}

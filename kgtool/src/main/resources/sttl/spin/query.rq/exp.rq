@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "(" ?f " " xsd:string(?lab) " " ?r ")"
+  "(" ?f " " xt:pprotect(?lab) " " ?r ")"
 }
 where {
   ?in a ?ope  ;

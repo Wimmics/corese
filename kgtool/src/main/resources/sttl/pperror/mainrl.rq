@@ -1,0 +1,6 @@
+template st:mainRL(?tag) {
+	st:call-template(st:allRL, ?tag)
+}
+where {
+	
+}

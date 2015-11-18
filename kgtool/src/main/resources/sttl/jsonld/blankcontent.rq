@@ -1,8 +1,0 @@
-template st:blank (?y) {
-
-   st:call-template(st:resource, ?y) 
-
-}
-where {
-   filter(st:visit(?y))
-}

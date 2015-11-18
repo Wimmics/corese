@@ -1,0 +1,15 @@
+template {
+	?suc
+}
+where {
+	?in owl:AllDisjointClasses ?z
+	
+	bind (
+		not exists {
+			?z rdf:rest*/rdf:first ?e
+			filter(! st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?e))
+		}
+	as ?suc)
+	
+	filter(st:alreadyVisited(?in, "disjointClass", ?suc))
+}

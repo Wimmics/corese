@@ -16,6 +16,9 @@ template {
 }
 where {
   ?in rdfs:subClassOf ?y 
-  filter not exists { ?in owl:intersectionOf | owl:unionOf ?z } 
+  filter not exists { 
+    ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+  } 
 
 }

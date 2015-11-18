@@ -8,15 +8,21 @@ template st:select(?t) {
 """
 <h3>Select a query</h3>
 
-"""   
-"""<form method='get' action=''>
+<form method='get' id ='select' action='""" st:get(st:service) """'>
 
   <input type='hidden' name='profile' value='""" st:get(st:profile) """' />
 """
 
   st:call-template(st:prev, ?t)
 
-  "<select name='uri' onChange='submit()'>"
+  "<select " st:call-template-with(st:server, st:sstyle)   
+    " id='uri' name='uri' onChange='" 
+  
+  if (st:get(st:protocol, st:ajax), 
+    "trans(this.form); return false;",
+    "submit();")
+  
+  "'>"
   
     st:call-template(st:list, ?t)  
     

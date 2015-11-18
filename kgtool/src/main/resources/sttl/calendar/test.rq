@@ -1,0 +1,27 @@
+template st:test {
+
+  "<table>"
+  "<tr>"
+
+  group {
+    "<td>" str(?label)
+      st:call-template(st:main, ?year)
+    "</td>"  
+  }
+  
+  "</tr>"
+  "</table>"
+    
+  st:call-template(st:tail)
+}
+where {
+  # profile.ttl graph
+  bind (st:get(st:definition) as ?g)
+  
+  # access to the profile.ttl graph
+  graph ?g {
+    st:calendartest st:param [
+       st:list/rdf:rest*/rdf:first (?label ?year)
+    ]
+  }    
+}

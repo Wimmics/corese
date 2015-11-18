@@ -1,9 +1,37 @@
 template st:profile {
-  st:define(st:process(?x) =
-    if (isLiteral(?x), xsd:string(?x), st:apply-templates(?x)))
-    
-  st:define(st:default(?x) = 
-    xsd:string(?x))
-  
+
 }
-where {}
+where {
+
+function st:process(?x) {
+    if (isLiteral(?x), xsd:string(?x), st:apply-templates(?x))
+  }
+    
+  function st:default(?x) { 
+    xsd:string(?x)
+  }
+    
+   function st:protocol(?uri) {
+    if (st:get(st:protocol, st:ajax), 
+      concat("javascript:trans(\"", str(?uri), "\")"), 
+      str(?uri))
+  }
+     
+   function st:link(?uri) {
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      coalesce(
+	concat("&profile=",   st:get(st:profile)), 
+	concat("&transform=", st:get(st:transform)), 
+	""))
+ }
+  
+  function st:misc(?name) { 
+    st:protocol(
+      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&transform=st:sparql%23core&profile=st:dbpedia"))
+  }
+  
+  function st:plink(?uri) {
+      st:protocol(st:link(?uri))
+  }
+}

@@ -17,7 +17,7 @@ where {
 	rdfs:subClassOf, owl:disjointWith, owl:hasKey)
       as ?suc)
       	
-      filter (st:visit(st:fail, ?in, ?suc))
+      filter (st:visit(st:err("failSub"), ?in, ?suc))
       filter (! ?suc)
 }
 limit 1

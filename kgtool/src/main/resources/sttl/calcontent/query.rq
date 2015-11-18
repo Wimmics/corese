@@ -1,0 +1,17 @@
+#
+# Display a calendar and a graph content
+# Specify named template (st:dbpedia) to be called by calendar
+#
+template st:query {
+  
+  st:call-template(st:main)
+  
+}
+where {
+  # export to st:calendar (see st:calendar/st:date)
+  bind (st:export(st:content, st:content) as ?c)
+  bind (st:export(st:date, st:dbpedia)    as ?d)
+  
+  bind (st:set(st:allyear, true) as ?a)
+  
+}

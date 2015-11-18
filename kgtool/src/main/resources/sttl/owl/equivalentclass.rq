@@ -14,7 +14,11 @@ template {
 where {
   ?in owl:equivalentClass  ?y 
   
-  bind (exists { ?in owl:intersectionOf|owl:unionOf ?z } 
+  bind (
+   exists { 
+     ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+   } 
   as ?iu)
   
   optional { ?y a ?t filter(?t = rdfs:Datatype) }

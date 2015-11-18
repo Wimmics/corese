@@ -5,8 +5,8 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:call-template(sp:kw, "service") " " 
-  if (bound(?b), concat(st:call-template(sp:kw, "silent"), " "), "")
+  st:kw( "service") " " 
+  if (bound(?b), concat(st:kw( "silent"), " "), "")
   ?g 
   ibox { st:nl() ?b } 
 }

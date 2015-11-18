@@ -6,7 +6,7 @@ prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
   st:prolog() 
-  st:call-template(sp:kw, "describe") " " st:call-template(sp:list, ?list)    
+  st:kw("describe") " " st:call-template(sp:list, ?list)    
   st:nl()
   "where {"
      box {

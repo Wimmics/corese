@@ -8,28 +8,27 @@ template st:form(?n, ?q, ?t, ?s) {
    <script type="text/javascript">           
         function show(name){
             document.getElementById('query').value = document.getElementById(name).value;
-        }
+        }                
    </script>
        
-   <form method='post'  action='' >   
-   <input type='hidden' id='tmp' value='"""str(?t)"""' />
-   <input type='hidden' id='sol' value='"""str(?s)"""' />
-   <input type='hidden' name='uri' value='""" ?n """'/>
-   <input type='hidden' name='profile' value='""" st:get(st:profile) """'/> 
+   <form method='post'  id='form' 	action='"""st:get(st:service)"""' >   
+   <input type='hidden' id='tmp' 	value='"""str(?t)"""' />
+   <input type='hidden' id='sol' 	value='"""str(?s)"""' />
+   <input type='hidden' name='uri' 	value='"""?n"""'/>
+   <input type='hidden' name='profile'  value='"""st:get(st:profile)"""'/> 
    """
    
-   if (?s = st:null, "", 
-   """<input type='button' onclick="show('sol')" value='Solution' />
-      <input type='button' onclick="show('tmp')" value='Template' /> 
-   """)
+   if (?s = st:null, "", st:call-template(st:nav))
+      
+   "<input type='submit' value='submit' "  
+     st:call-template-with(st:server, st:submit)  
+   "/>"
    
    """
-   <input type='submit' value='Submit' />
    <br/>
    <textarea cols='60' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
    </form>
-  """
+   """
 }
 where {
-
 }

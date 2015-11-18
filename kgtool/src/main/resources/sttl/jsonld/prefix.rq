@@ -1,8 +1,0 @@
-template st:prefix {
-
- '"' str(?p) '"' " : " '"' str(?n) '",'  st:nl()
-
-}
-where {
-  bind( kg:unnest(st:prefix()) as (?p, ?n))
-}

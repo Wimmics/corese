@@ -1,0 +1,23 @@
+#
+# Get list st:topic from profile.ttl st:param
+#
+prefix cn: <http://cdn.fr/schema/>
+template cn:row(?d) {
+
+  "<td>" 
+  group {
+       st:call-template(cn:date, ?d, ?topic)
+  }    
+  "</td>"
+
+}
+where {
+  bind (st:get(st:definition) as ?def)
+  bind (unnest(st:get(st:topic)) as ?e)
+  graph ?def {
+    ?e rdf:rest*/rdf:first ?topic
+  }
+  
+}
+group by ?e
+         

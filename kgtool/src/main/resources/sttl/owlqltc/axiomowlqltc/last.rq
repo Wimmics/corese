@@ -1,0 +1,53 @@
+#
+# Forbidden in OWL 2 QL
+# 
+#
+# The following constructs are not supported in OWL 2 QL:
+
+# existential quantification to a class expression or a data range (ObjectSomeValuesFrom and DataSomeValuesFrom) in the subclass position
+# self-restriction (ObjectHasSelf)
+# existential quantification to an individual or a literal (ObjectHasValue, DataHasValue)
+# enumeration of individuals and literals (ObjectOneOf, DataOneOf)
+# universal quantification to a class expression or a data range (ObjectAllValuesFrom, DataAllValuesFrom)
+# cardinality restrictions (ObjectMaxCardinality, ObjectMinCardinality, ObjectExactCardinality, DataMaxCardinality, DataMinCardinality, DataExactCardinality)
+# disjunction (ObjectUnionOf, DisjointUnion, and DataUnionOf)
+# property inclusions (SubObjectPropertyOf) involving property chains
+# functional and inverse-functional properties (FunctionalObjectProperty, InverseFunctionalObjectProperty, and FunctionalDataProperty)
+# transitive properties (TransitiveObjectProperty)
+# keys (HasKey)
+# individual equality assertions and negative property assertions
+
+template {
+	false
+}
+where {
+	#disjunction
+	{ ?in owl:disjointUnionOf ?y }
+	union { ?in owl:unionOf ?u }
+	
+	union { ?in owl:hasValue ?value }
+	union { ?in owl:hasSelf ?self }
+
+	# oneOf
+	union { ?in owl:oneOf ?one }
+	
+	#cardinality restrictions
+	union { ?in owl:maxCardinality ?maxCard }
+	union { ?in owl:minCardinality ?minCard }
+	union { ?in owl:exactCardinality ?eCard }
+	
+	union { ?in a owl:FunctionalProperty }
+	union { ?in a owl:InverseFunctionalProperty }
+	union { ?in a owl:TransitiveProperty }
+	
+	# negative property assertions
+	union { ?in a owl:NegativePropertyAssertion }
+	# individual equality assertion
+	union { ?in owl:sameAs ?s }
+	union { ?in owl:hasKey ?k }
+	
+	union { ?in owl:AllValuesFrom  ?allValues }
+	
+	filter(st:alreadyVisited(?in, "fail", false))
+}
+limit 1

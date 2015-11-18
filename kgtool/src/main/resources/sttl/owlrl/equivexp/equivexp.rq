@@ -6,6 +6,7 @@ where {
       if (isURI(?x), ?x != owl:Thing, 
          st:apply-templates-all(?x))
     as ?suc)
-    
-  filter(st:visit(st:equiv, ?x, ?suc))
+   
+  #filter (st:visit(st:err("equiv"), ?x, ?suc))
+  filter(st:alreadyVisited(?x, "equiv", ?suc))
 }

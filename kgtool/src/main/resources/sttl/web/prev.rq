@@ -1,7 +1,8 @@
 template st:prev(?t) {
 
-  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
-  "<button type='button'>Previous</button>"
+  "<a  href='" st:plink(?n) "'>"
+  "<button type='button'"  st:call-template-with(st:server, st:bstyle)       
+  ">Previous</button>"
   "</a>"  
     
 }

@@ -5,9 +5,9 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  if (! (exists {?x ?p ?in}), st:prolog(), "") 
-  st:call-template(sp:kw, "select") " " 
-  if (bound(?t), st:call-template(sp:kw,"distinct "), "")
+  if (! (exists {?x ?p ?in}), st:namespace(), "") 
+  st:kw("select") " " 
+  if (bound(?t), st:kw("distinct "), "")
   if (bound(?r), "reduced ", "")
   if (bound(?select), 
     st:call-template(sp:list, ?select), 
@@ -17,7 +17,7 @@ template {
   st:call-template(sp:from, ?in)
   st:call-template(sp:named, ?in)
   
-  st:call-template(sp:kw, "where") " {" 
+  st:kw("where") " {" 
       box { 
 	st:call-template(sp:listnl, ?where) 
       } 
@@ -30,9 +30,9 @@ template {
   ?having 
   
   if (bound(?l), 
-  concat(st:call-template(sp:kw, "limit"),  " ", ?l, st:nl()), "")  
+  concat(st:kw("limit"),  " ", ?l, st:nl()), "")  
   if (bound(?o), 
-  concat(st:call-template(sp:kw, "offset"), " ", ?o, st:nl()), "") 
+  concat(st:kw("offset"), " ", ?o, st:nl()), "") 
   
   st:call-template(sp:values, ?in)
 }

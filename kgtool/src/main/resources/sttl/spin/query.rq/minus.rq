@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-   st:call-template(sp:kw, "minus") " {" 
+   st:kw( "minus") " {" 
       box {
 	st:call-template(sp:listnl, ?e)
       }

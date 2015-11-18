@@ -1,0 +1,14 @@
+prefix db: <http://fr.dbpedia.org/resource/>
+
+function xt:main(){
+  maplist(us:service,
+    xt:list(db:Paris,db:Nice, db:Antibes, db:Grasse),
+    rdfs:label)
+}
+                
+function us:service(?x, ?p) {
+  let ((?l) = select ?x ?p ?l where {
+    service <http://fr.dbpedia.org/sparql> {
+      ?x ?p ?l}}){
+    ?l}
+}

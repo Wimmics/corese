@@ -113,8 +113,7 @@ public class Eval implements ExpType, Plugin {
             hasResult   = false,
             hasStart    = false,
             hasProduce  = false,
-            hasSolution = false, 
-            hasMain     = false;
+            hasSolution = false;
 
     //Edge previous;
     /**
@@ -178,7 +177,7 @@ public class Eval implements ExpType, Plugin {
         }
         if (hasSolution) {
             memory.setResults(map);
-            Object res = evaluator.eval(getExpression(FUN_SOLUTION), memory, producer,
+            Object res = eval(getExpression(FUN_SOLUTION), 
                     toArray(producer.getNode(q), producer.getNode(map)));
             map.complete();
         }
@@ -193,12 +192,8 @@ public class Eval implements ExpType, Plugin {
     private Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
         if (hasStart && !q.isSubQuery()) {
-            Object res = evaluator.eval(getExpression(q, FUN_START), memory, producer,
+            Object res = eval(getExpression(q, FUN_START), 
                     toArray(producer.getNode(q), producer.getNode(q.getAST())));
-        }
-        
-        if (hasMain && q.isEmpty()){
-           results = funMain(q);
         }
         else {
             if (q.isCheck()) {
@@ -621,7 +616,6 @@ public class Eval implements ExpType, Plugin {
         hasResult   = (getExpression(FUN_RESULT) != null);
         hasSolution = (getExpression(FUN_SOLUTION) != null);
         hasStart    = (getExpression(FUN_START) != null);
-        hasMain     = (getExpression(FUN_MAIN) != null);
     }
 
     private void complete() {
@@ -2213,7 +2207,7 @@ public class Eval implements ExpType, Plugin {
     DatatypeValue candidate(Edge q, Entity ent, Object match) {
         Expr exp = getExpression(FUN_CANDIDATE);
         if (exp != null) {
-            Object obj = evaluator.eval(exp, memory, producer,
+            Object obj = eval(exp, 
                     toArray(q.getNode().getValue(), ent.getNode().getValue(), match));
             DatatypeValue val = producer.getDatatypeValue(obj);
             return val;
@@ -2224,8 +2218,12 @@ public class Eval implements ExpType, Plugin {
     void callService(Node node, Exp serv, Mappings m) {
         Expr exp = getExpression(FUN_SERVICE);
         if (exp != null) {
-            evaluator.eval(exp, memory, producer, toArray(node.getValue(), producer.getNode(serv), producer.getNode(m)));
+            eval(exp, toArray(node.getValue(), producer.getNode(serv), producer.getNode(m)));
         }
+    }
+    
+   public Object eval(Expr exp, Object[] param){
+        return evaluator.eval(exp, memory, producer, param);
     }
 
     Expr getExpression(String name) {

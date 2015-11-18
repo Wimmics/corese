@@ -3,8 +3,10 @@ package fr.inria.edelweiss.kgram.tool;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.core.PointerObject;
 
-public class EntityImpl implements Entity {
+public class EntityImpl extends PointerObject implements Entity {
 	Edge edge;
 	Node node, graph;
 	
@@ -70,6 +72,13 @@ public class EntityImpl implements Entity {
     @Override
     public Iterable getLoop() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public int pointerType(){
+        if (edge != null){
+            return Pointerable.ENTITY;
+        }
+        return Pointerable.UNDEF;
     }
 
 }

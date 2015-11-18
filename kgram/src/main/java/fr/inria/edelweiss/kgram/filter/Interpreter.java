@@ -543,7 +543,8 @@ public class Interpreter implements Evaluator, ExprType {
                 if (sub.getQuery().isConstruct()) {
                     // for (?m in exists {construct where}){}
                     Mappings m = kgram.getSPARQLEngine().eval(sub.getQuery());
-                    return proxy.getValue(true, m.getGraph());
+                    return producer.getValue(m.getGraph());
+                    //return proxy.getValue(true, m.getGraph());
                 } 
                 else {
                     // select where
@@ -564,7 +565,8 @@ public class Interpreter implements Evaluator, ExprType {
         boolean b = map.size() > 0;
         
         if (exp.isSystem()){
-            return proxy.getValue(b, (b)?map:null);
+            return producer.getValue(map);
+            //return proxy.getValue(b, (b)?map:null);
         }
         else {
             return proxy.getValue(b);

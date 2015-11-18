@@ -14,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.core.Loopable;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
 import fr.inria.edelweiss.kgram.filter.Extension;
@@ -34,7 +35,7 @@ import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
 
 public class Mapping  
 	extends EnvironmentImpl 
-	implements Result, Environment, Loopable
+	implements Result, Environment, Loopable, Pointerable
 {
         static final Edge[] emptyEdge   = new Edge[0];
         static final Entity[] emptyEntity = new Entity[0];
@@ -185,6 +186,10 @@ public class Mapping
             }
             return lMap.count();
 	}
+        
+        public int size(){
+            return 1;
+        }
 	
 	/**
 	 * Project on select variables of query 
@@ -381,6 +386,9 @@ public class Mapping
 				str += qNodes[i] + " : " + lPath[i] + "\n";
 
 			}
+                        else if (e.getObject() != null){
+                            str += e.getObject() + "\n";
+                        }
 			i++;
 		}
 		
@@ -562,16 +570,32 @@ public class Mapping
 	public Node getQueryNode(int n){
 		return qNodes[n];
 	}
+        
+        public Object getNodeObject(String name){
+            Node node = getNode(name);
+            if (node == null){
+                return null;
+            }
+            return node.getObject();
+        }
 	
 	public Object getValue(String name){
 		Node n = getNode(name);
-		if (n == null) return null;
+		if (n == null){
+                    return null;
+                }
 		return n.getValue();
 	}
+        
+        public Object getValue(String var, int n){
+            return getValue(var);
+        }
 	
 	public Object getValue(Node qn){
 		Node n = getNode(qn);
-		if (n == null) return null;
+		if (n == null){
+                    return null;
+                }
 		return n.getValue();
 	}
 	
@@ -901,6 +925,21 @@ public class Mapping
             bind = new Bind();
         }
         bind.unset(exp, lvar);
+    }
+
+    @Override
+    public int pointerType() {
+        return MAPPING;
+    }
+
+    @Override
+    public Mapping getMapping() {
+        return this;
+    }
+
+    @Override
+    public Entity getEntity() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 	
 }

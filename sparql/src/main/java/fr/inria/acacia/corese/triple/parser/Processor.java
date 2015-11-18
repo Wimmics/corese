@@ -97,6 +97,7 @@ public class Processor {
         private static final String XT_VARIABLES= EXT + "variables";
         private static final String XT_EDGE     = EXT + "edge";
         private static final String XT_TRIPLE   = EXT + "triple";
+        static final String XT_MAIN     = EXT + "main";
        
 
 	private static final String PLENGTH = "pathLength";

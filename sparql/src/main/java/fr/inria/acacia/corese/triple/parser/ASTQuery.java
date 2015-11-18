@@ -53,6 +53,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	public static final String KGRAMVAR = "?_ast_";
 	public static final String SYSVAR = "?_cos_";
 	public static final String BNVAR = "?_bn_";
+        public static final String MAIN_VAR = "?_main_";
 	static final String NL 	= System.getProperty("line.separator");
 
 	static int nbt=0; // to generate an unique id for a triple if needed
@@ -1040,6 +1041,9 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     	//Term def  = createFunction(Constant.create(Processor.FUNCTION), body);
         Term def = new Function(fun, exp);
         define.defineFunction(def);
+        if (name.getLabel().equals(Processor.XT_MAIN)){
+            defSelect(new Variable(MAIN_VAR), createFunction(name));
+        }
     	return def;
     }
      

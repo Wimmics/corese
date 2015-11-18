@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgenv.eval;
 
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
+import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -243,9 +245,7 @@ public class QuerySolver  implements SPARQLEngine {
 			query.setDistribute(true);			
 		}
 
-		Eval kgram = Eval.create(producer, evaluator, matcher);
-                kgram.setSPARQLEngine(this);
-		kgram.set(provider);
+		Eval kgram = makeEval();
 
 		events(kgram);
 		
@@ -255,7 +255,44 @@ public class QuerySolver  implements SPARQLEngine {
 		
 		return lMap;
 	}
+        
+        Eval makeEval(){
+            Eval kgram = Eval.create(producer, evaluator, matcher);
+            kgram.setSPARQLEngine(this);
+            kgram.set(provider);
+            return kgram;
+        }
+       
+       /**
+         * 
+         * @return an Eval able to compute Expr function call
+         * @throws EngineException 
+         */
+        public Eval createEval() throws EngineException {
+            Eval kgram = makeEval();
+            Query q = compile("select where {}");
+            kgram.query(q);
+            return kgram;
+        }
 	
+        /**
+         * eval callback by name
+         * @param name
+         * @return
+         * @throws EngineException 
+         */
+        public IDatatype eval(String name) throws EngineException {
+            return eval(name, new IDatatype[0]);
+        }
+       
+	public IDatatype eval(String name, IDatatype[] param) throws EngineException{
+            Expr exp = evaluator.getDefine(name);
+            if (exp != null){
+                Eval eval = createEval();
+                return (IDatatype) eval.eval(exp.getFunction(), param);
+            }
+            return null;           
+        }
 	
 	void init(Query q){
                 q.setMatchBlank(isMatchBlank);

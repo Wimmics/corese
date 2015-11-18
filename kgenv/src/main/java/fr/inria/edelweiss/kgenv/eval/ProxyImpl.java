@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprLabel;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -1410,7 +1411,7 @@ public class ProxyImpl implements Proxy, ExprType {
             }
         }
         else { 
-            for (Object obj : getValues(list)){  
+            for (Object obj : getValues(list)){ 
                 IDatatype res = let(loop.getBody(), loop.getVariable(), (IDatatype) p.getValue(obj), env, p);               
                 if (res == null){
                     return null;
@@ -1762,19 +1763,6 @@ public class ProxyImpl implements Proxy, ExprType {
     IDatatype get(IDatatype dt1, IDatatype dt2){
         return gget(dt1, dt2, dt2);
     }
-//        if (dt1.isList()){
-//            return DatatypeMap.get(dt1, dt2);
-//        }
-//        if (dt1.getObject() != null){
-//            if (dt1.getObject() instanceof Entity){
-//                return get((Entity) dt1.getObject(), dt2.intValue());
-//            }
-//            if (dt1.getObject() instanceof Mapping){
-//                return get((Mapping) dt1.getObject(), dt2.getLabel() );
-//            }
-//        }
-//        return null;
-//    }
     
     /**
      * Generic get with variable name and index
@@ -1783,27 +1771,22 @@ public class ProxyImpl implements Proxy, ExprType {
         if (dt.isList()){
             return DatatypeMap.get(dt, ind);
         }
-        if (dt.getObject() != null){
-            if (dt.getObject() instanceof Entity){
-                return get((Entity) dt.getObject(), ind.intValue());
+        if (dt.isPointer()){
+            if (dt.pointerType() == Pointerable.ENTITY){
+                return get(dt.getPointerObject().getEntity(), ind.intValue());
             }
-            if (dt.getObject() instanceof Mappings){
-                Mappings map = (Mappings) dt.getObject();
-                if (map.size() == 0){
-                    return null;
-                }
-                return get(map.get(0), var.getLabel() );
-            }
-            if (dt.getObject() instanceof Mapping){
-                return get((Mapping) dt.getObject(), var.getLabel() );
-            }
-        }
+            return (IDatatype) dt.getPointerObject().getValue(var.getLabel(), ind.intValue());
+        }      
         return null;
     }
+       
     
     // ?x ?p ?y ?g
     IDatatype get(Entity ent, int n){
         Edge edge = ent.getEdge();
+        if (edge == null){
+            return null;
+        }
         switch (n){
             case 0: return nodeValue(edge.getNode(0));
             case 1: 
@@ -1818,20 +1801,11 @@ public class ProxyImpl implements Proxy, ExprType {
     IDatatype nodeValue(Node n){
         return (IDatatype) n.getValue();
     }
-    
-    IDatatype get(Mapping m, String var){
-        Node n = m.getNode(var);
-        if (n == null){
-            return null;
-        }
-        return nodeValue(n);
-    }
+     
     
     IDatatype reject(Environment env, IDatatype dtm){
-        Object om = dtm.getObject();
-        if (om != null &&  om instanceof Mapping){
-            Mapping map = (Mapping) om;
-            env.getMappings().reject(map);
+        if (dtm.pointerType() == Pointerable.MAPPING){
+            env.getMappings().reject(dtm.getPointerObject().getMapping()); 
         }
         return TRUE;
     }
@@ -1840,12 +1814,8 @@ public class ProxyImpl implements Proxy, ExprType {
         if (dt.isList()){
             return DatatypeMap.size(dt);
         }
-        Object obj = dt.getObject();
-        if (obj == null){
-            return null;
-        }
-        if (obj instanceof Mappings){
-            return getValue(((Mappings)obj).size());
+        if (dt.isPointer()){
+            return getValue(dt.getPointerObject().size());                    
         }
         return null;
     }

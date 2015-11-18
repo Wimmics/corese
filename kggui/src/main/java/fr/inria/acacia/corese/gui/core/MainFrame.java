@@ -60,7 +60,6 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
-import org.apache.commons.io.FileUtils;
 
 /**
  * Fenêtre principale, avec le conteneur d'onglets et le menu

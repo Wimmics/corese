@@ -122,6 +122,7 @@ public class Load
         DEFAULT_FORMAT = f;
     }
 
+    @Override
     public void init(Object o) {
         set((Graph) o);
     }
@@ -152,6 +153,7 @@ public class Load
         engine = eng;
     }
 
+    @Override
     public RuleEngine getRuleEngine() {
         return engine;
     }
@@ -239,6 +241,7 @@ public class Load
     }
 
     // UNDEF_FORMAT loaded as RDF/XML
+    @Override
     public int getFormat(String path) {
         return getFormat(path, UNDEF_FORMAT);
     }
@@ -301,6 +304,7 @@ public class Load
         return hasExtension(path, RDF_XML);
     }
 
+    @Override
     public boolean isRule(String path) {
         return hasExtension(path, RULES);
     }
@@ -310,10 +314,12 @@ public class Load
 
     }
 
+    @Override
     public void load(String path) {
         load(path, null);
     }
 
+    @Override
     public void loadWE(String path) throws LoadException {
         loadWE(path, null);
     }
@@ -322,6 +328,7 @@ public class Load
         loadWE(path, null, format);
     }
 
+    @Override
     public void load(String path, String src) {
         File file = new File(path);
         if (file.isDirectory()) {
@@ -349,6 +356,7 @@ public class Load
         }
     }
 
+    @Override
     public void loadWE(String path, String src) throws LoadException {
          loadWE(path, src, UNDEF_FORMAT);
      }
@@ -400,6 +408,7 @@ public class Load
         localLoad(path, base, source, getFormat(path));
     }
 
+    @Override
     public void load(String path, String base, String source, int format) throws LoadException {
         localLoad(path, base, source, getFormat(path, format));
     }
@@ -734,10 +743,12 @@ public class Load
         return false;
     }
 
+    @Override
     public void statement(AResource subj, AResource pred, ALiteral lit) {
         build.statement(subj, pred, lit);
     }
 
+    @Override
     public void statement(AResource subj, AResource pred, AResource obj) {
         build.statement(subj, pred, obj);
         if (pred.getURI().equals(IMPORTS)) {
@@ -779,6 +790,7 @@ public class Load
      * Process cos:graph statement TODO: generate different blanks in different
      * graphs
      */
+    @Override
     public void setSource(String s) {
         if (s == null) {
             //cur = src;
@@ -795,6 +807,7 @@ public class Load
 //		}
     }
 
+    @Override
     public String getSource() {
         return source;
     }
@@ -813,6 +826,8 @@ public class Load
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public void load(InputStream stream, String source) throws LoadException {
         load(stream, source, source);
     }

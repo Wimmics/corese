@@ -95,6 +95,12 @@
             <version>1.0</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>1.15</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

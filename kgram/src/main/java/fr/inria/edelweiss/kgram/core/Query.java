@@ -126,6 +126,7 @@ public class Query extends Exp implements Graphable, Loopable {
             isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
             // PathFinder list path instead of thread buffer: 50% faster but enumerate all path
             isListPath = false;
+    private boolean isFun = false;
     private boolean isPathType = false;
     // store the list of edges of the path
     private boolean isStorePath = true;
@@ -2463,6 +2464,20 @@ public class Query extends Exp implements Graphable, Loopable {
 
     public void setQueryEdgeList(List<Edge> queryEdgeList) {
         this.queryEdgeList = queryEdgeList;
+    }
+
+    /**
+     * @return the isFun
+     */
+    public boolean isFun() {
+        return isFun;
+    }
+
+    /**
+     * @param isFun the isFun to set
+     */
+    public void setFun(boolean isFun) {
+        this.isFun = isFun;
     }
 	
 }

@@ -127,9 +127,28 @@ public class QueryProcess extends QuerySolver {
             return manager;
         }
 
-
 	public static QueryProcess create(Graph g){
-		return create(g, false);
+            return create(g, false);
+	}
+        
+        /**
+         * Create an Eval initialized with a query q that contains
+         * function definitions
+         * This Eval can be used to call these functions:
+         * eval.eval(name, param)
+         * Use case: define callback functions.
+         * 
+         */
+        public static Eval createEval(Graph g, String q) throws EngineException{
+            QueryProcess exec = QueryProcess.create(g, false);
+            Eval eval = exec.createEval(q);
+            return eval;
+	}
+        
+        public static Eval createEval(Graph g, Query q) throws EngineException{
+            QueryProcess exec = QueryProcess.create(g, false);
+            Eval eval = exec.createEval(q);
+            return eval;
 	}
 	
 	/**

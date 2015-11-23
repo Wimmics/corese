@@ -251,6 +251,8 @@ public interface ExprType {
 	public static int FOR           = 322;
 	public static int SET           = 323;
 	public static int SEQUENCE      = 324;
+	public static int RETURN        = 325;
+	public static int EVAL          = 326;
         
 	public static int XT_SORT       = 330;
         
@@ -279,6 +281,7 @@ public interface ExprType {
         public static int XT_TRIPLE      = 421;
         public static int XT_GEN_GET     = 422;
         public static int XT_DISPLAY     = 423;
+        public static int XT_TUNE        = 424;
        
         public static int SLICE       = 450;
         

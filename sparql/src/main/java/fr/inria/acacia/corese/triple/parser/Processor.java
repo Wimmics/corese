@@ -65,7 +65,9 @@ public class Processor {
 	public static final String GROUPCONCAT = "group_concat";
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
-
+        
+	private static final String EVAL  = "eval";
+	private static final String RETURN  = "return";
 	public static final String SEQUENCE  = "sequence";
 	public static final String SET     = "set";
 	public static final String LET     = "let";
@@ -138,7 +140,7 @@ public class Processor {
 	static final String PPRINTALLWITH	= KGRAM + "pprintAllWith"; 
 	static final String TEMPLATE		= KGRAM + "template"; 
 	static final String TEMPLATEWITH	= KGRAM + "templateWith"; 
-	static final String EVAL 		= KGRAM + "eval";
+	static final String KG_EVAL 		= KGRAM + "eval";
         static final String PROLOG 		= KGRAM + "prolog";
 
 	public static final String AGGREGATE    = "aggregate"; 
@@ -324,6 +326,7 @@ public class Processor {
         static final String XT_EQUAL 	= EXT + "equal";
         static final String XT_DIFF 	= EXT + "diff";
         static final String XT_DISPLAY 	= EXT + "display";
+        static final String XT_TUNE 	= EXT + "tune";
         
         public static final String[] aggregate = 
 	{AVG, COUNT, SUM, MIN, MAX, SAMPLE, 
@@ -577,6 +580,7 @@ public class Processor {
 		defoper(INLIST,         ExprType.INLIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
 		defoper(SKOLEM,         ExprType.SKOLEM);
+		defoper(RETURN,         ExprType.RETURN);
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
 		defoper(LET,            ExprType.LET);
 		defoper(SET,            ExprType.SET);
@@ -586,6 +590,7 @@ public class Processor {
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
 		defoper(XT_SORT,        ExprType.XT_SORT);
                 
+		defoper(EVAL,           ExprType.EVAL);                
 		defoper(APPLY,          ExprType.APPLY);
 		defoper(MAP,            ExprType.MAP);
 		defoper(FOR,            ExprType.FOR);
@@ -658,7 +663,7 @@ public class Processor {
  		defoper(EXTENSION,      ExprType.EXTENSION);
                
 		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
-		defoper(EVAL, 		ExprType.APPLY_TEMPLATES);
+		defoper(KG_EVAL, 		ExprType.APPLY_TEMPLATES);
 		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);
 		defoper(PPRINTALL, 	ExprType.APPLY_TEMPLATES_ALL);
 		defoper(PPRINTALLWITH, 	ExprType.APPLY_TEMPLATES_WITH_ALL);
@@ -774,6 +779,7 @@ public class Processor {
                 defoper(XT_EQUAL,  ExprType.EQ);
                 defoper(XT_DIFF,   ExprType.NEQ);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
+                defoper(XT_TUNE,   ExprType.XT_TUNE);  
                 
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);

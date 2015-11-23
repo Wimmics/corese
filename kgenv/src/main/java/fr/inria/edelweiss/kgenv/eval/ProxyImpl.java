@@ -25,8 +25,7 @@ import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
@@ -76,7 +75,11 @@ public class ProxyImpl implements Proxy, ExprType {
     public Evaluator getEvaluator() {
         return eval;
     }
-
+    
+    public Eval getEval(){
+        return (Eval) getEvaluator().getEval();
+    }
+     
     public void setPlugin(Proxy p) {
         plugin = p;
         plugin.setEvaluator(eval);
@@ -406,6 +409,9 @@ public class ProxyImpl implements Proxy, ExprType {
                                         
             case SLICE:
                 return slice(env, dt);  
+                
+            case RETURN:
+                return DatatypeMap.result(dt);
                 
             case XT_COUNT:
                 return count(dt);

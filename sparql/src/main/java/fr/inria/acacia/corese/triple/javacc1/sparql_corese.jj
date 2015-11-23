@@ -2379,9 +2379,20 @@ Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
 
 
 Term For (Exp stack) : 
-{Exp sub; Term t; Expression exp, body ; Variable var; ExpressionList arg; }
+{Exp sub; Term t; Expression exp, body ; Variable var; ExpressionList arg, el = null; }
 {
-    <FOR> <LPAREN> var = Var() <IN> 
+    <FOR> <LPAREN> 
+
+        ( var = Var() 
+        | 
+
+            <LPAREN> { el = new ExpressionList();  }
+                var = Var()  { el.add(var); } 
+                ( <COMMA> var = Var()  { el.add(var); } ) *					
+            <RPAREN>	    					     
+        )
+
+        <IN> 
     (
         exp = Expression(stack) 
         |
@@ -2392,7 +2403,7 @@ Term For (Exp stack) :
     <RPAREN>   
     body = Body(stack)
     
-    { t = astq.loop(var, exp, body); 
+    { t = (el == null) ? astq.loop(var, exp, body) : astq.loop(el, exp, body); 
       return t;}
 }
 

@@ -97,6 +97,8 @@ public interface Evaluator {
         void setProducer(Producer p);
         
         void setKGRAM(Object o);
+        
+        Object getEval();
 
         void addResultListener(ResultListener rl);
         

@@ -67,6 +67,10 @@ public class Interpreter implements Evaluator, ExprType {
             kgram = (Eval) o;
         }
     }
+    
+    public Eval getEval(){
+        return kgram;
+    }
 
     public Proxy getProxy() {
         return proxy;
@@ -351,6 +355,9 @@ public class Interpreter implements Evaluator, ExprType {
             case IOTA:           
                 break;
                 
+            case EVAL:
+                return funcall(exp, env, p);
+                
             case MAP:
             case MAPLIST:
             case MAPMERGE:
@@ -406,7 +413,7 @@ public class Interpreter implements Evaluator, ExprType {
 
             case UNDEF:
                 return extension(exp, env, p, args);
-
+                
             default:
                 return proxy.eval(exp, env, p, args);
         }
@@ -540,6 +547,7 @@ public class Interpreter implements Evaluator, ExprType {
             Exp sub = pat.get(0).get(0);
 
             if (sub.isQuery()) {
+                sub.getQuery().setFun(true);
                 if (sub.getQuery().isConstruct()) {
                     // for (?m in exists {construct where}){}
                     Mappings m = kgram.getSPARQLEngine().eval(sub.getQuery());
@@ -677,6 +685,19 @@ public class Interpreter implements Evaluator, ExprType {
             return null;
         }
         return eval(exp, env, p, values, def);
+    }
+    
+     public Object funcall(Expr exp, Environment env, Producer p){
+        Object name = eval(exp.getExp(0), env, p); 
+        Object[] args = evalArguments(exp, env, p, 1);
+        if (name == ERROR_VALUE || args == null){
+            return ERROR_VALUE;
+        }
+        Expr def = getDefine(env, p.getDatatypeValue(name).stringValue(), args.length);
+        if (def == null){
+            return null;
+        }
+        return eval(exp, env, p, args, def);
     }
     
     /**

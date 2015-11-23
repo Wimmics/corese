@@ -262,38 +262,25 @@ public class QuerySolver  implements SPARQLEngine {
             kgram.set(provider);
             return kgram;
         }
-       
+        	     
        /**
          * 
-         * @return an Eval able to compute Expr function call
+         * @return an Eval able to execute callback functions
+         * str  contains function definitions
          * @throws EngineException 
          */
-        public Eval createEval() throws EngineException {
+        public Eval createEval(String str) throws EngineException {
+            Query q = compile(str);
+            return createEval(q);
+        }
+        
+         public Eval createEval(Query q) throws EngineException {
             Eval kgram = makeEval();
-            Query q = compile("select where {}");
             kgram.query(q);
             return kgram;
-        }
-	
-        /**
-         * eval callback by name
-         * @param name
-         * @return
-         * @throws EngineException 
-         */
-        public IDatatype eval(String name) throws EngineException {
-            return eval(name, new IDatatype[0]);
-        }
+         }
        
-	public IDatatype eval(String name, IDatatype[] param) throws EngineException{
-            Expr exp = evaluator.getDefine(name);
-            if (exp != null){
-                Eval eval = createEval();
-                return (IDatatype) eval.eval(exp.getFunction(), param);
-            }
-            return null;           
-        }
-	
+	     	
 	void init(Query q){
                 q.setMatchBlank(isMatchBlank);
 		q.setListGroup(isListGroup);

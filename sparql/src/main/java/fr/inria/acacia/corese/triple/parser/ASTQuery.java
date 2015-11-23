@@ -54,6 +54,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	public static final String SYSVAR = "?_cos_";
 	public static final String BNVAR = "?_bn_";
         public static final String MAIN_VAR = "?_main_";
+        static final String FOR_VAR = "?_for_";
 	static final String NL 	= System.getProperty("line.separator");
 
 	static int nbt=0; // to generate an unique id for a triple if needed
@@ -1084,11 +1085,15 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
          return defineLet(el, body, 0);
      }
      
+     Term let(Expression exp, Expression body){
+         return new Let(exp, body);
+     }
+     
      public Term defineLet(ExpressionList el, Expression body, int n){
          if (n == el.size() -1){
-             return new Let(el.get(n), body);
+             return let(el.get(n), body);
          }
-         return new Let(el.get(n), defineLet(el, body, n+1));
+         return let(el.get(n), defineLet(el, body, n+1));
      }
            
       public Term defLet(Variable var, Expression exp){
@@ -1103,6 +1108,19 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
        public Term loop(Variable var, Expression exp, Expression body){
            return new ForLoop(var, exp, body);
        }
+       
+       /**
+        * for ((?s, ?p, ?o) in exp){body}
+        * ->
+        * for (?var in exp){
+        * let ((?s, ?p, ?o) = ?var){body}}
+        * }
+        */
+        public Term loop(ExpressionList lvar, Expression exp, Expression body){
+            Variable var = new Variable(FOR_VAR + nbd++);
+            return loop (var, exp, let (defLet(lvar, var), body));
+       }
+       
      
      public void exportFunction(Expression def){
          def.getArg(0).setExport(true);

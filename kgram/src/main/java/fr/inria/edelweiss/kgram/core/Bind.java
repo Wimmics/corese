@@ -62,6 +62,15 @@ public class Bind {
         }
         return null;
     }
+    
+    public boolean isBound(String label){
+        for (int i = varList.size() - 1; i >= 0; i--) {
+            if (varList.get(i).getLabel().equals(label)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * TODO; scope of variable

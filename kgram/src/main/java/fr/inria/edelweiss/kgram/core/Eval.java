@@ -553,7 +553,7 @@ public class Eval implements ExpType, Plugin {
             // when subquery, memory is already assigned
             // assign stack index to EDGE and NODE
             q.complete(producer);//service while1 / Query
-            memory = new Memory(match, evaluator);
+            memory = new Memory(match, evaluator);           
             // create memory bind stack
             memory.init(q);
             if (hasEvent) {
@@ -2222,6 +2222,23 @@ public class Eval implements ExpType, Plugin {
         }
     }
     
+      /**
+         * eval callback by name
+         * Only with functions defined in the query 
+         * name is not an export function, but it can call export functions
+         * @param name
+         * @return
+         * @throws EngineException 
+         * */
+       
+	public Object eval(String name, Object[] param) {
+            Expr exp = getExpression(name);           
+            if (exp != null){              
+                return  eval(exp, param);
+            }
+            return null;           
+        }
+    
    public Object eval(Expr exp, Object[] param){
         return evaluator.eval(exp, memory, producer, param);
     }
@@ -2334,8 +2351,7 @@ public class Eval implements ExpType, Plugin {
             }
 
             lMap = ev.eval(subNode, subQuery, null);
-
-            if (!isBound(subQuery, env) && gNode == null) {
+            if (! subQuery.isFun() && !isBound(subQuery, env) && gNode == null) {
                 exp.setObject(lMap);
             }
         }
@@ -2604,6 +2620,9 @@ public class Eval implements ExpType, Plugin {
             // get outer node:
             Node outNode = qq.getOuterNodeSelf(subNode);
             if (outNode != null && env.isBound(outNode)) {
+                return true;
+            }
+            if (env.getBind() != null && env.getBind().isBound(subNode.getLabel())){
                 return true;
             }
         }

@@ -543,6 +543,12 @@ public class Graph implements Graphable, Loopable {
             listen.remove(gl);
         }
     }
+    
+    public void removeListener() {
+        if (listen != null) {
+            listen.clear();
+        }
+    }
 
     public List<GraphListener> getListeners() {
         return listen;

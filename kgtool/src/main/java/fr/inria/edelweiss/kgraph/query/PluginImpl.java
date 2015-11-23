@@ -16,6 +16,7 @@ import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -35,6 +36,7 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import fr.inria.edelweiss.kgtool.util.GraphListen;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
@@ -55,6 +57,9 @@ public class PluginImpl extends ProxyImpl {
     static final String alpha = "abcdefghijklmnoprstuvwxyz";
     static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     static int nbBufferedValue = 0;
+    static final String EXT = ExpType.EXT;
+    public static final String LISTEN = EXT+"listen";
+    public static final String SILENT = EXT+"silent";
     
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
@@ -231,6 +236,9 @@ public class PluginImpl extends ProxyImpl {
                  
              case XT_EDGE:
                  return edge(exp, env, p, null, dt, null);
+                 
+             case XT_TUNE:
+                 return tune(exp, env, p, dt);
                                          
              default:
                  return pt.function(exp, env, p, dt);
@@ -671,8 +679,18 @@ public class PluginImpl extends ProxyImpl {
        return edge.getNode(1).getValue();
     }
 
-    
-  
+    private Object tune(Expr exp, Environment env, Producer p, IDatatype dt) {
+        Graph g = getGraph(p);
+        if (dt.getLabel().equals(LISTEN)){           
+            g.addListener(new GraphListen(getEval()));
+        }
+        else if (dt.getLabel().equals(SILENT)){
+            g.removeListener();
+        }
+        return TRUE;
+     }
+
+ 
     class Table extends Hashtable<Integer, PTable> {
     }
 

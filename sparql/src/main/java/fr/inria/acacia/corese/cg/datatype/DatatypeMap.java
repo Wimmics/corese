@@ -450,7 +450,7 @@ public class DatatypeMap implements Cst, RDF {
         return createObject("tmp", obj);
     }
 
-    public static IDatatype createObject(String name, Object obj) {
+    public static IDatatype createObject(String name, Object obj) {        
         if (obj instanceof Pointerable){
             return new CoresePointer(name, (Pointerable) obj);
         }
@@ -687,6 +687,19 @@ public class DatatypeMap implements Cst, RDF {
     }
     
     /******************************/
+    
+    // DRAFT
+    public static IDatatype result(IDatatype dt){
+        return dt;
+    }
+    
+    public static boolean isResult(IDatatype dt){
+        return true;
+    }
+    
+    public static IDatatype getResult(IDatatype dt){
+        return dt;
+    }
     
      public static IDatatype size(IDatatype dt){
         if (! dt.isList()){

@@ -1415,6 +1415,19 @@ Exp SubQueryExp() : { Exp exp; }{
     { return exp; }
 }
 
+Exp ServiceExp() : {Exp exp, res; ASTQuery tmp; Query q;} {
+    { exp = BasicGraphPattern.create(); }
+    ServicePattern(exp)
+    { tmp = gast.subCreate();
+      tmp.setBody(exp);
+      tmp.setSelectAll(true);
+      q = Query.create(tmp);
+      res = BasicGraphPattern.create();
+      res.add(q);
+      return res;
+    }
+}
+
 Exp SubConstruct() : {ASTQuery ast; Query q; Exp exp;}
 {
  { ast = astq; astq = gast.subCreate(); } 
@@ -2396,15 +2409,26 @@ Term For (Exp stack) :
     (
         exp = Expression(stack) 
         |
-        sub = SubQueryExp() { exp = astq.toExist(sub); }
-        |
-        sub = SubConstruct() { exp = astq.toExist(BasicGraphPattern.create(sub)); }
+        exp = LetForExp()
     )
     <RPAREN>   
     body = Body(stack)
     
     { t = (el == null) ? astq.loop(var, exp, body) : astq.loop(el, exp, body); 
       return t;}
+}
+
+
+Expression LetForExp() : {Exp sub; Expression exp;}
+{
+(
+    sub = SubQueryExp() { exp = astq.toExist(sub); }
+    |
+    sub = ServiceExp()  { exp = astq.toExist(sub); }
+    |
+    sub = SubConstruct() { exp = astq.toExist(BasicGraphPattern.create(sub)); }
+)
+{ return exp; }
 }
 
 Term Let (Exp stack) : 
@@ -2449,10 +2473,7 @@ Expression LetDef(Exp stack) :
   (  
     exp = Expression(stack) 
     |
-    sub = SubQueryExp() { exp = astq.toExist(sub); }
-    |
-    sub = SubConstruct() { exp = astq.toExist(BasicGraphPattern.create(sub)); }
-
+    exp = LetForExp()
   )
 			
    { return (el == null) ? astq.defLet(var, exp) : astq.defLet(el, exp);  }

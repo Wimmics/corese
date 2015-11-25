@@ -1585,6 +1585,9 @@ public class Graph implements Graphable, Loopable {
 
     public Edge getEdge(String name, Node node, int index) {
         Node pred = getPropertyNode(name);
+        if (pred == null){
+            return null;
+        }
         return getEdge(pred, node, index);
     }
 

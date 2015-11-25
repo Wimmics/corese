@@ -30,18 +30,25 @@ public class TripleStore {
     // 
     TripleStore(boolean rdfs, boolean owl, boolean b) {
         graph = GraphStore.create(rdfs);
+        init(graph);
         exec  = QueryProcess.create(graph, b);
         this.owl = owl;
     }
     
     TripleStore(GraphStore g){
         graph = g;
+        init(g);
         exec = QueryProcess.create(g);
     }
     
     TripleStore(GraphStore g, boolean b){
         graph = g;
+        init(g);
         exec = QueryProcess.create(g, b);
+    }
+    
+    void init(GraphStore g){
+        //g.setSkolem(true);
     }
     
     public String toString(){

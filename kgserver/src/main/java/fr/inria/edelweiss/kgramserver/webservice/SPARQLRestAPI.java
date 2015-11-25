@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -52,7 +51,7 @@ public class SPARQLRestAPI {
     static String localProfile;
     static TripleStore store = new TripleStore(false, false);
     // set true to prevent update/load
-    static boolean isProtected = false;
+    static boolean isProtected = !true;
     // true when Ajax
     static boolean isAjax = true;
     private static Profile mprofile;
@@ -108,6 +107,7 @@ public class SPARQLRestAPI {
                 ! localProfile.startsWith("file://")){
                 localProfile = "file://" + localProfile;
             }
+            System.out.println("Load: " + localProfile);
             mprofile.init(localProfile);
         }
     }

@@ -124,10 +124,12 @@ public class EmbeddedJettyServer {
                 owlrl = true;
             }
             if (cmd.hasOption("l")) {
+                // deprecated load
                 dataPath = cmd.getOptionValue("l");
                 System.out.println("Server: " + dataPath);
             }
             if (cmd.hasOption("lp")) {
+                // load st:default server content into SPARQL endpoint
                 loadProfileData = true;
             }
             //Option for SSL connection
@@ -150,6 +152,7 @@ public class EmbeddedJettyServer {
                 }
             }
             if (cmd.hasOption("pp")) {
+                // user defined profile.ttl to define additional servers
                 localProfile = cmd.getOptionValue("pp");
                 System.out.println("Profile: " + localProfile);
             }  

@@ -258,7 +258,7 @@ public class Memory implements Environment {
 		int n = 0;
                 if (sub == null){
                     // exists {}
-                    if (bind != null && bind.hasBind()){
+                    if (hasBind()){
                         mem.copy(bind);
                     }
                     else {
@@ -1105,8 +1105,14 @@ public class Memory implements Environment {
          bind = b;
      }
      
+        @Override
      public Bind getBind(){
          return bind;
+     }
+     
+        @Override
+     public boolean hasBind(){
+         return bind != null && bind.hasBind();
      }
 
 }

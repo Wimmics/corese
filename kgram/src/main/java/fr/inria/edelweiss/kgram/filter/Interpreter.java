@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Bind;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -19,6 +20,7 @@ import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Stack;
 import fr.inria.edelweiss.kgram.event.ResultListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -549,13 +551,13 @@ public class Interpreter implements Evaluator, ExprType {
             if (sub.isQuery()) {
                 sub.getQuery().setFun(true);
                 if (sub.getQuery().isConstruct()) {
-                    // for (?m in exists {construct where}){}
-                    Mappings m = kgram.getSPARQLEngine().eval(sub.getQuery());
+                    // let (?g =  construct where)
+                    Mapping mm = getMapping(env, sub.getQuery());
+                    Mappings m = kgram.getSPARQLEngine().eval(sub.getQuery(), mm);
                     return producer.getValue(m.getGraph());
-                    //return proxy.getValue(true, m.getGraph());
                 } 
                 else {
-                    // select where
+                    // let (?m = select where)
                     map = eval.subEval(sub.getQuery(), gNode, Stack.create(sub), 0);
                 }
             }
@@ -574,11 +576,17 @@ public class Interpreter implements Evaluator, ExprType {
         
         if (exp.isSystem()){
             return producer.getValue(map);
-            //return proxy.getValue(b, (b)?map:null);
         }
         else {
             return proxy.getValue(b);
         }
+    }
+    
+    Mapping getMapping(Environment env, Query q){
+        if (env.hasBind()){
+             return env.getBind().getMapping(q);
+        }
+       return  null;
     }
     
 

@@ -32,6 +32,8 @@ public interface Environment {
 	Query getQuery();
         
         Bind getBind();
+        
+        boolean hasBind();
 	
 	/**
 	 * 

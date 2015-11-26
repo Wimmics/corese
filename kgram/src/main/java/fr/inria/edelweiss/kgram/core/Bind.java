@@ -150,4 +150,20 @@ public class Bind {
          }
          return list;
      }
+     
+     public Mapping getMapping(Query q) {
+        ArrayList<Node> lvar = new ArrayList();
+        ArrayList<Node> lval = new ArrayList();
+        for (Expr var : getVariables()) {
+            Node node = q.getProperAndSubSelectNode(var.getLabel());
+            if (node != null) {
+                lvar.add(node);
+                lval.add(get(var));
+            }
+        }
+        Mapping m = Mapping.create(lvar, lval);
+        return m;
+    }
+
+
 }

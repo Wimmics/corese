@@ -16,20 +16,20 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public class Bind {
-	private static Logger logger = Logger.getLogger(Bind.class);	
+public class MatchBind {
+	private static Logger logger = Logger.getLogger(MatchBind.class);	
 
 	Hashtable<Expr, Expr> table;
 	List<Expr> stack;
 	boolean success = true;
 	
-	Bind (){
+	MatchBind (){
 		table = new Hashtable<Expr, Expr>();
 		stack = new ArrayList<Expr>();
 	}
 	
-	static Bind create(){
-		return new Bind();
+	static MatchBind create(){
+		return new MatchBind();
 	}
 	
 	boolean hasValue(Expr exp){

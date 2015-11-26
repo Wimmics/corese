@@ -873,11 +873,13 @@ public class Mapping
             return query.getOuterQuery().getExtension();
         }   
     
+        @Override
     public Bind getBind(){
         return bind;
     }
     
-    boolean hasBind(){
+        @Override
+    public boolean hasBind(){
         return bind != null && bind.hasBind();
     }
 

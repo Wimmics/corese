@@ -304,6 +304,11 @@ public class QueryProcess extends QuerySolver {
 	public Mappings eval(Query query){
             return qquery(query, null);
         }
+         
+          @Override
+	public Mappings eval(Query query, Mapping m){
+            return qquery(query, m);
+        } 
 
 	public Mappings qquery(Query q, Mapping map) {
 		try {

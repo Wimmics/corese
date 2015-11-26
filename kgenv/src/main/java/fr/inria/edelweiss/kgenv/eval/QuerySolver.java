@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgenv.eval;
 
 
-import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,6 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
-import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -233,6 +231,11 @@ public class QuerySolver  implements SPARQLEngine {
         @Override
 	public Mappings eval(Query query){
             return query(query, null);
+        }
+        
+         @Override
+	public Mappings eval(Query query, Mapping m){
+            return query(query, m);
         }
 	/**
 	 * Core QueryExec processor

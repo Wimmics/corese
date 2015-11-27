@@ -35,7 +35,9 @@ public class CompileService {
 	 */
 	public void compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit){
             Query out = q.getOuterQuery();
-		if (lmap == null){
+		if (lmap == null || (lmap.size() == 1 && lmap.get(0).size() == 0)){
+                    // lmap may contain one empty Mapping
+                    // use env because it may have bindings
                     if (isValues(out)) {
                         bindings(q, env);
                     } else if (isFilter(out) || provider.isSparql0(serv)) {

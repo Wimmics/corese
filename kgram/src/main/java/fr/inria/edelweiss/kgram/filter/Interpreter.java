@@ -11,7 +11,6 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Bind;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -20,7 +19,6 @@ import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Stack;
 import fr.inria.edelweiss.kgram.event.ResultListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -688,7 +686,7 @@ public class Interpreter implements Evaluator, ExprType {
      * Their parameters are tagged as local variables, managed in a specific stack
      */    
     public Object extension(Expr exp, Environment env, Producer p, Object[] values){ 
-        Expr def = getDefine(exp, env);
+        Expr def = getDefine(exp, env);       
         if (def == null){
             return null;
         }
@@ -785,14 +783,14 @@ public class Interpreter implements Evaluator, ExprType {
         if (ext != null) {          
             Expr def = ext.get(exp);
             if (def != null) {
-                exp.setDefine(def);
+                //exp.setDefine(def);
                 return def;
             }
         }
        
         Expr def = extension.get(exp);
         if (def != null) {
-            exp.setDefine(def);
+            //exp.setDefine(def);
             return def;
         }
 

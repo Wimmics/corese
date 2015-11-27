@@ -2402,11 +2402,39 @@ public class Query extends Exp implements Graphable, Loopable {
         this.extension = ext;
     }
     
+    public boolean hasDefinition(){
+        return getExtension() != null || getGlobalQuery().getExtension() != null;
+    }
+    
     public Expr getExpression(String name){
+        return getExpression(name, false);
+    }
+    
+    public Expr getExpression(String name, boolean inherit){
+        Expr ee = getLocalExpression(name);
+        if (ee == null && inherit){
+            return getGlobalExpression(name);
+        }
+        return ee;
+    }
+
+    
+    public Expr getLocalExpression(String name){
         if (getExtension() != null){
             Expr exp = getExtension().get(name);
             if (exp != null){
                 return exp.getFunction(); 
+            }
+        }
+        return null;
+    }
+    
+    // subquery inherit from global query
+    public Expr getGlobalExpression(String name) {
+        if (getGlobalQuery() != this) {
+            Expr ee = getGlobalQuery().getLocalExpression(name);
+            if (ee != null) {
+                return ee;
             }
         }
         return null;

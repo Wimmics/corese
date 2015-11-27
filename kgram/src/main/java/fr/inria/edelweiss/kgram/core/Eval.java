@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
+import java.util.HashMap;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 
@@ -57,8 +58,7 @@ public class Eval implements ExpType, Plugin {
     private static final String FUN_RESULT  = PREF + "result";
     private static final String FUN_SOLUTION= PREF + "solution";
     private static final String FUN_START   = PREF + "start";
-    private static final String FUN_MAIN    = PREF + "main";
-    public static final String FUN_PRODUCE  = PREF + "produce";
+    private static final String FUN_PRODUCE = PREF + "produce";
 
     static final int STOP = -2;
     public static int count = 0;
@@ -87,6 +87,7 @@ public class Eval implements ExpType, Plugin {
             // initial results to be completed
             initialResults;
     List<Node> empty = new ArrayList<Node>(0);
+    HashMap<String, Boolean> local;
 
     int // count number of eval() calls
             nbEdge = 0, nbCall = 0,
@@ -130,6 +131,12 @@ public class Eval implements ExpType, Plugin {
         plugin = this;
         lPathFinder = new ArrayList<PathFinder>();
         e.setKGRAM(this);
+        initCallback();
+    }
+    
+    void initCallback(){
+        local = new HashMap();
+        local.put(FUN_PRODUCE, true);
     }
 
     public static Eval create(Producer p, Evaluator e, Matcher m) {
@@ -226,18 +233,6 @@ public class Eval implements ExpType, Plugin {
         return results;
     }
     
-    /**
-     * Emulate function xt:main() {}
-     */
-    Mappings funMain(Query q) {
-        Object obj  = evaluator.eval(getExpression(q, FUN_MAIN), memory, producer);
-        Mapping m   = Mapping.create(q.getGraphNode(), producer.getNode(obj));
-        Mappings ms = Mappings.create(q);
-        ms.setSelect(q.getGraphNode());
-        ms.add(m);
-        return ms;
-    }
-
     /**
      * We just counted number of results: nbResult Just build a Mapping
      */
@@ -600,14 +595,15 @@ public class Eval implements ExpType, Plugin {
             results.setEventManager(manager);
         }
         startExtFun();
-        // save current results in case of sub query
-        //save = memory.getResults();
         // set new results in case of sub query (for aggregates)
         memory.setEval(this);
         memory.setResults(results);
     }
 
     void startExtFun() {
+        if (! query.hasDefinition()){
+            return;
+        }
         hasCandidate= (getExpression(FUN_CANDIDATE) != null);
         hasService  = (getExpression(FUN_SERVICE) != null);
         hasOptional = (getExpression(FUN_OPTIONAL) != null);
@@ -2247,8 +2243,12 @@ public class Eval implements ExpType, Plugin {
         return getExpression(query, name);
     }
 
-    Expr getExpression(Query q, String name) {
-        return q.getExpression(name);
+    Expr getExpression(Query q, String name) {       
+        return q.getExpression(name, inherit(q, name));
+    }
+    
+    boolean inherit(Query q, String name){
+        return ! (q.isFun() && local.containsKey(name));
     }
 
     Object[] toArray(Object o1, Object o2, Object o3) {

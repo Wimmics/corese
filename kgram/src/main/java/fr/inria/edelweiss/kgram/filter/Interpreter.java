@@ -345,6 +345,7 @@ public class Interpreter implements Evaluator, ExprType {
 
             case CONCAT:
             case STL_CONCAT:
+            //case XT_CONCAT:
                 return proxy.function(exp, env, p);
 
             case STL_AND:
@@ -655,7 +656,8 @@ public class Interpreter implements Evaluator, ExprType {
      * let (?x = ?y, exp) 
      */
     private Object let(Expr exp, Environment env, Producer p) {
-        Node val  = eval(exp.getDefinition().getFilter(), env, p); 
+       // Node val  = eval(exp.getDefinition().getFilter(), env, p); 
+        Node val  = (Node) eval(exp.getDefinition(), env, p); 
         if (val == ERROR_VALUE){
             return null;
         }
@@ -674,10 +676,19 @@ public class Interpreter implements Evaluator, ExprType {
         return val;
     }
     
-     private Object let(Expr exp, Environment env, Producer p, Expr let, Expr var, Node val) {     
-        env.set(let, var, val);
+    /**
+     * PRAGMA: let ((?y) = select where)
+     * if ?y is not bound, let do not bind ?y 
+     */
+     private Object let(Expr exp, Environment env, Producer p, Expr let, Expr var, Node val) { 
+        boolean bound =  proxy.getConstantValue(val) != null;
+        if (bound){
+            env.set(let, var, val);
+        }
         Object res = eval(exp, env, p);
-        env.unset(let, var);
+        if (bound){
+            env.unset(let, var);
+        }
         return res;
     }
     

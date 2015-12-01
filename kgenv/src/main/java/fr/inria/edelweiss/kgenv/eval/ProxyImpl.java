@@ -47,8 +47,10 @@ public class ProxyImpl implements Proxy, ExprType {
 
     private static final String URN_UUID = "urn:uuid:";
     private static Logger logger = Logger.getLogger(ProxyImpl.class);
-    public static IDatatype TRUE = DatatypeMap.TRUE;
-    public static IDatatype FALSE = DatatypeMap.FALSE;
+    public static final IDatatype TRUE = DatatypeMap.TRUE;
+    public static final IDatatype FALSE = DatatypeMap.FALSE;
+    public static final IDatatype UNDEF = DatatypeMap.UNBOUND;
+    
     static final String UTF8 = "UTF-8";
     public static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String RDFTYPE = RDFNS + "type";
@@ -273,6 +275,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
              case CONCAT:
              case STL_CONCAT:
+             //case XT_CONCAT:
                 return concat(exp, env, p);
                  
             case NUMBER:
@@ -657,7 +660,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case CONCAT:
             case STL_CONCAT:
-            case XT_CONCAT:            
+            //case XT_CONCAT:            
                 return concat(exp, env, p, param);
                 
             case XT_DISPLAY:
@@ -912,6 +915,7 @@ public class ProxyImpl implements Proxy, ExprType {
      * std usage: lval is null, evaluate exp
      * lval = list of values in this use case:
      * apply(concat(), maplist(st:fun(?x) , xt:list(...)))
+     * TODO: lval is deprecated ?
      * 
      */
     IDatatype concat(Expr exp, Environment env, Producer p, IDatatype[] lval) {
@@ -1179,8 +1183,15 @@ public class ProxyImpl implements Proxy, ExprType {
         return ((Term) exp).getProcessor();
     }
 
-    // IDatatype KGRAM value to target proxy value 
+    /**
+     * return null if value is UNDEF 
+     * use case: ?y in not bound in let (?y) = select where  
+     * */
+    @Override
     public Object getConstantValue(Object value) {
+        if (value == UNDEF){
+            return null;
+        }
         return value;
     }
 
@@ -1781,7 +1792,13 @@ public class ProxyImpl implements Proxy, ExprType {
             if (dt.pointerType() == Pointerable.ENTITY){
                 return get(dt.getPointerObject().getEntity(), ind.intValue());
             }
-            return (IDatatype) dt.getPointerObject().getValue(var.getLabel(), ind.intValue());
+            IDatatype res = (IDatatype) dt.getPointerObject().getValue(var.getLabel(), ind.intValue());
+            if (res == null){
+                // let ((?x, ?y) = select * where { ... optional { ?x rdf:value ?y }}
+                // ?y may be unbound, return specific UNDEF value 
+                res = UNDEF;
+            }
+            return res;
         }      
         return null;
     }

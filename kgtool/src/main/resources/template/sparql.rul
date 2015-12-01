@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Nov 17 09:51:12 CET 2015
+Mon Nov 30 09:07:30 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -53,6 +53,7 @@ template st:start {
 
 }
 where {
+
 }
 
 ]]>
@@ -170,11 +171,19 @@ order by ?i
 # Generate link for URI
 #
 template st:display(?x) {
-  if (! bound(?profile), 
-    st:call-template(st:esc, ?x),
-    if (?profile = st:std, 
-      st:call-template(st:linkesc, ?x),
-      st:call-template(st:linkprofile, ?x)))
+
+  if (! bound(?profile)){ 
+    st:call-template(st:esc, ?x) 
+  }
+  else if (?profile = st:std){ 
+    st:call-template(st:linkesc, ?x) 
+  }
+  else if (st:lod(?x)){
+    st:call-template(st:linkesc, ?x)
+  }
+  else { 
+    st:call-template(st:linkprofile, ?x) 
+  }
           
 }
 where {
@@ -416,6 +425,10 @@ function st:protocol(?uri) {
   
   function st:plink(?uri) {
     st:protocol(st:link(?uri))
+  }
+  
+  function st:lod(?x){
+     coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
   }
 
 }

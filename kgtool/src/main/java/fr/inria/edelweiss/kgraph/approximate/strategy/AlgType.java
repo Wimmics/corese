@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Enueration of types of similarity measurement algorithms
+ * Enumeration of types of similarity measurement algorithms
  *
  * @author fsong
  */

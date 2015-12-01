@@ -53,8 +53,7 @@ class TripleWrapper {
                     triple.setSubject(var);
                     break;
                 case P:
-                    //triple.setProperty(null);
-                    triple.setPredicate(var);// todo
+                    triple.setPredicate(var);
                     break;
                 case O:
                     triple.setObject(var);

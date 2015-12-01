@@ -27,6 +27,10 @@ public class Utils {
         }
     }
 
+    /**
+     * Print a message
+     * @param msg 
+     */
     public static void msg(String msg) {
         if (SHOW_MSG) {
             System.out.println(msg);

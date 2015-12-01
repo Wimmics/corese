@@ -11,18 +11,28 @@ import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
  * @date 24 sept. 2015
  */
 public class BaseAlgorithm implements ISimAlgorithm {
-
-
     private final AlgType type;
 
+    /**
+     * Constructor with default type 'empty'
+     */
     BaseAlgorithm() {
         this(AlgType.empty);
     }
 
+    /**
+     * Constructor with given type
+     * @param type 
+     */
     public BaseAlgorithm(AlgType type) {
         this.type = type;
     }
 
+    /**
+     * Return type of algorithm
+     * 
+     * @return 
+     */
     public AlgType getType() {
         return this.type;
     }

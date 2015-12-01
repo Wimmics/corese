@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Segement.java
+ * Segement for storing the intermediate results of tagged words
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 26 oct. 2015

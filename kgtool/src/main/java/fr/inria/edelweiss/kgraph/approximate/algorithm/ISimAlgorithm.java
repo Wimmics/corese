@@ -1,7 +1,5 @@
 package fr.inria.edelweiss.kgraph.approximate.algorithm;
 
-import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
-
 /**
  * Interface for implementing the similarity measurement algorithms
  *
@@ -23,11 +21,4 @@ public interface ISimAlgorithm {
      * @return 
      */
     double calculate(String s1, String s2);
-
-    /**
-     * Return the type of the algorithm
-     * 
-     * @return 
-     */
-    //AlgType getType();
 }

@@ -91,7 +91,6 @@ public class SimAlgorithmFactory {
         }
 
         double[] weights = defWeights ? Priority.getDefaultWeights(algList.size()) : Priority.getWeightByAlgorithm(algList);
-        
         return new CombinedAlgorithm(algList, weights);
     }
 }

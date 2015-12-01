@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TextSimilarity.java
+ * Text Similarity
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 26 oct. 2015

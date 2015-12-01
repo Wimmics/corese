@@ -14,9 +14,7 @@ public class Equality extends BaseAlgorithm {
     public Equality() {
         super(eq);
     }
-    
-    
-    
+
     @Override
     public double calculate(String s1, String s2) {
         double sim = MAX;

@@ -32,6 +32,11 @@ public class NLPHelper {
     private NLPHelper() {
     }
 
+    /**
+     * Create an instance of NLP helper
+     * @return
+     * @throws Exception If WordNet and POS tagger are not setup
+     */
     public static NLPHelper createInstance() throws Exception {
         return createInstance(WN_PATH, WN_VER, POS_TAGGER);
     }
@@ -70,10 +75,19 @@ public class NLPHelper {
         return new NLPHelper();
     }
 
+    /**
+     * Return instance of JWS (string metrics library)
+     * @return 
+     */
     public JWS getJws() {
         return jws;
     }
 
+    /**
+     * Tag words
+     * @param text
+     * @return 
+     */
     public Map<String, Segement> tag(String text) {
         //String[]words = split(text);
         PTBTokenizer<Word> t = PTBTokenizer.newPTBTokenizer(new BufferedReader(new StringReader(text)));

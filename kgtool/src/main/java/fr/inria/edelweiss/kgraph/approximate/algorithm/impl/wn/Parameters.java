@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Parameters.java
+ * Parameters for NLP processing
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 16 nov. 2015

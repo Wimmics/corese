@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * StringMetric.java
+ * N-Gram similarity measurement algorithm
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 27 août 2015
@@ -39,7 +39,7 @@ public class NGram extends BaseAlgorithm {
             sim = (double) c / (double) u;
         }
 
-        Utils.msg("N-Gram3", s1, s2, sim);
+        Utils.msg("N-Gram"+NG, s1, s2, sim);
         return sim;
     }
 
@@ -56,16 +56,11 @@ public class NGram extends BaseAlgorithm {
     }
 
     private Map<String, Integer> tokenize(String c, int n) {
-        //List<result> t = new ArrayList<result>();
         Map<String, Integer> tokens = new HashMap<String, Integer>();
 
         String spacer = "";
-//        for (int i = 0; i < n - 1; i++) {
-//            // spacer = spacer + "%";
-//        }
         c = spacer + c + spacer;
 
-        //todo: verify the map if ok??
         for (int i = 0; i < c.length(); i++) {
             if (i <= (c.length() - n)) {
                 String t = c.substring(i, n + i).toLowerCase();

@@ -52,18 +52,11 @@ public class AppxSearchPlugin implements ExprType {
                 return null;
         }
     }
-    
-    //filter approximate(var1, var2, 'alg1-alg2-alg3', 0.2, true)
-    //args[0] = var 1
-    //args[1] = uri
-    //args[2] = alg list
-    //args[3] = threshold
-    //args[4] = false|true
 
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
         switch (exp.oper()) {
             case APPROXIMATE:
-                isMore = ((ASTQuery)env.getQuery().getAST()).isMore();
+                isMore = ((ASTQuery) env.getQuery().getAST()).isMore();
                 msg("[Eval appx ... ]: " + exp);
 
                 //0. check parameters
@@ -72,7 +65,7 @@ public class AppxSearchPlugin implements ExprType {
                     return FALSE;
                 }
 
-                //is pure function
+                //is approximate search
                 //TRUE: only calculate once, does not compute the value of similarity
                 //FALSE: need to compute the value of similarity
                 if (isMore) {
@@ -85,6 +78,7 @@ public class AppxSearchPlugin implements ExprType {
         }
     }
 
+    // Use approximate as a filter function
     private IDatatype match() {
         if (s1.equalsIgnoreCase(s2)) {
             return TRUE;
@@ -95,48 +89,46 @@ public class AppxSearchPlugin implements ExprType {
         return (sim > threshold) ? TRUE : FALSE;
     }
 
+    // Use 'approximate' as appx search and calculate similarity
     private IDatatype approximate(Environment env, Expr exp) {
-        //Key k = new Key(exp.getExp(0), dt2);
+        //0. initialize
         Expr var = exp.getExp(0);
-        //Value v = new Value(dt1, algs);
         ApproximateSearchEnv appxEnv = env.getAppxSearchEnv();
-        //2.1 get the similarity of this pair (?_var_x, <uri_x>) -> (args[0], args[1]) -> (s1, s2)
-        //2.1.1 check if already calculated, if yes, just retrieve the value
-        Double combinedSim,
-                singleSim = appxEnv.getSimilarity(var, dt1, algs);
-        // Double combinedSim;
+
+        Double combinedSim;
+        Double singleSim = appxEnv.getSimilarity(var, dt1, algs);//check appx env to see if already computed
 
         boolean notExisted = (singleSim == null);
 
+        //1 calculation to get current similarity and overall similarity
         if (s1.equalsIgnoreCase(s2)) {
             singleSim = ISimAlgorithm.MAX;
-            //v.setSimilarity(singleSim);
             combinedSim = ISimAlgorithm.MAX;
         } else {
             if (notExisted) { //2.1.2 otherwise, re-calculate
                 ISimAlgorithm alg = SimAlgorithmFactory.createCombined(algs, false);
                 singleSim = alg.calculate(s1, s2);
             }
-            //v.setSimilarity(singleSim);
             combinedSim = appxEnv.aggregate(env, var, singleSim);
         }
 
-        //2.2 get the similarity of all
-        //combinedSim = sr.aggregate(env, k, r);
         //3 finalize
         boolean filtered = combinedSim > threshold;
-        msg("\t [Similarity,\t "+dt1+",\t"+dt2+"]: c:" + format(singleSim) + ", all:" + format(combinedSim) + ", " + filtered);
+        msg("\t [Similarity,\t " + dt1 + ",\t" + dt2 + "]: c:" + format(singleSim) + ", all:" + format(combinedSim) + ", " + filtered);
 
-        //if:   filter (approximate) returns true & the value is re-calculated, 
-        //then: set the value of similarity & add the result to results set
         if (notExisted) {
             appxEnv.add(var, dt2, dt1, algs, singleSim);
         }
-        //msg("[Eval appx ... ]: " + env.getAppxSearchEnv());
         return filtered ? TRUE : FALSE;
     }
 
-    //get corresponding values
+    //Initlize arguments
+    //filter approximate(var1, var2, 'alg1-alg2-alg3', 0.2, true)
+    //args[0] = var 1
+    //args[1] = uri
+    //args[2] = alg list
+    //args[3] = threshold
+    //args[4] = false|true
     private boolean init(Object[] args) {
         if (args == null || args.length != 4) {
             return false;

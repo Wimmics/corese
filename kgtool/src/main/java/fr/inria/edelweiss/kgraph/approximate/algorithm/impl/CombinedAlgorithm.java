@@ -3,7 +3,6 @@ package fr.inria.edelweiss.kgraph.approximate.algorithm.impl;
 import fr.inria.edelweiss.kgraph.approximate.strategy.Priority;
 import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.ISimAlgorithm;
-import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
 import java.util.List;
 
 /**

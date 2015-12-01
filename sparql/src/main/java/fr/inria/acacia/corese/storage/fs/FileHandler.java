@@ -154,17 +154,18 @@ public class FileHandler {
             fileChannel.close();
             randomAccessFile.close();
             this.bufferOffset = BEGIN;
+            file.delete();
         } catch (IOException ex) {
             Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, "Close connection <" + fname + "> errors!", ex);
         }
     }
 
-    /**
-     * Delete the file from disk manually
-     *
-     */
-    public void delete() {
-        this.close();
-        file.delete();
-    }
+//    /**
+//     * Delete the file from disk manually
+//     *
+//     */
+//    public void delete() {
+//        this.close();
+//        file.delete();
+//    }
 }

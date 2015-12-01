@@ -103,6 +103,7 @@ public interface ExprType {
 	public static int STRUUID 	 = 81;
 	public static int XSDSTRING 	 = 82;
         public static int APPROXIMATE 	 = 83;
+        public static int APP_SIM 	 = 84;
 
 	
 	// term

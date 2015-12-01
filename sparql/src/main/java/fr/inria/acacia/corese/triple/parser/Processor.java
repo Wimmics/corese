@@ -56,6 +56,7 @@ public class Processor {
 	private static final String LANG = "lang";
 	private static final String REGEX = "regex";
         private static final String APPROXIMATE = "approximate";
+        private static final String APP_SIM = "sim";
 	public static  final String MATCH = "match";
 	private static final String LANGMATCH = "langMatches";
 	private static final String STRDT = "strdt";
@@ -634,6 +635,7 @@ public class Processor {
                 
 		defoper(REGEX, 		ExprType.REGEX);
                 defoper(APPROXIMATE,	ExprType.APPROXIMATE);
+                defoper(APP_SIM,	ExprType.APP_SIM);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
 		defoper(STR, 		ExprType.STR);
 		defoper(XSDSTRING, 	ExprType.XSDSTRING);

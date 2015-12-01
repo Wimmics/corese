@@ -193,7 +193,6 @@ public class EmbeddedJettyServer {
                 SslSocketConnector sslConnector = new SslSocketConnector();
                 sslConnector.setPort(portSsl);
                 sslConnector.setServer(server);
-                sslConnector.setServer(server);
                 sslConnector.setKeystore(webappUri.getRawPath() + "/keystore/" + keystore);
                 sslConnector.setKeyPassword(password);
                 sslConnector.setPassword(password);

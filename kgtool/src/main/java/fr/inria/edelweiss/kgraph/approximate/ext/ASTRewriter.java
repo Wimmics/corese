@@ -49,6 +49,11 @@ public class ASTRewriter implements QueryVisitor {
     private ASTQuery ast;
 
     @Override
+    public void visit(Query query) {
+        //throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    @Override
     public void visit(ASTQuery ast) {
         if (!ast.isMore()) {
             return;
@@ -67,7 +72,7 @@ public class ASTRewriter implements QueryVisitor {
                 continue;
             }
 
-            if (e2.isOptional()) {//ohter types to be added, minus, exist, etc ...
+            if (e2.isOptional()) {//todo: ohter types to be added, minus, exist, etc ...
                 for (Exp e21 : e2) {
                     visit(e21);
                 }
@@ -77,10 +82,14 @@ public class ASTRewriter implements QueryVisitor {
 
     private void process(Exp exp, Triple t) {
         //for(Exp exp: ast.gets)
-        System.out.println("------ BEFORE -----\n" + exp);
+        msg("------ BEFORE -----\n" + exp, true);
 
         //1 pre process, choose strategies for each atom
-        Map<Integer, TripleWrapper> map = this.process(t);
+        Map<Integer, TripleWrapper> map = new HashMap<Integer, TripleWrapper>();
+
+        process(t, t.getSubject(), S, map);
+        process(t, t.getPredicate(), P, map);
+        process(t, t.getObject(), O, map);
 
         msg("\n------ pre-process lsit-----");
         for (TripleWrapper value : map.values()) {
@@ -103,22 +112,7 @@ public class ASTRewriter implements QueryVisitor {
             exp.add(option);
         }
 
-        System.out.println("\n------ AFTER -----\n" + exp);
-    }
-
-    @Override
-    public void visit(Query query) {
-        //throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    private Map<Integer, TripleWrapper> process(Triple t) {
-        //List<TripleWrapper> ltw = new LinkedList<TripleWrapper>();
-        Map<Integer, TripleWrapper> map = new HashMap<Integer, TripleWrapper>();
-
-        process(t, t.getSubject(), S, map);
-        process(t, t.getPredicate(), P, map);
-        process(t, t.getObject(), O, map);
-        return map;
+        msg("\n------ AFTER -----\n" + exp, true);
     }
 
     //choose the Strategy for the URI and put them into a list
@@ -178,13 +172,13 @@ public class ASTRewriter implements QueryVisitor {
             return;
         }
 
-        Variable var = variable();
+        Variable var = new Variable(VAR + count++);
 
         //1. get strategies in group G1 and merge them in one filter
         List<StrategyType> merge = ApproximateStrategy.getMergableStrategies(tw.getStrategies());
         if (!merge.isEmpty()) {
             //2.2 generate filters with functions
-            filters.add(filter(var, tw.getAtom(), ApproximateStrategy.getAlgrithmString(merge)));
+            filters.add(createFilter(var, tw.getAtom(), ApproximateStrategy.getAlgrithmString(merge)));
         }
 
         //2. iterate other strategies
@@ -235,7 +229,7 @@ public class ASTRewriter implements QueryVisitor {
     }
 
     //add a filter with a specific function and parameters
-    private Triple filter(Variable var, Atom atom, String algs) {
+    private Triple createFilter(Variable var, Atom atom, String algs) {
         Term function = ast.createFunction(ast.createQName(APPROXIMATE));
         Term.function(APPROXIMATE);
         function.add(var);
@@ -254,10 +248,5 @@ public class ASTRewriter implements QueryVisitor {
         if (check(st)) {
             list.add(st);
         }
-    }
-
-    private Variable variable() {
-        Variable v = new Variable(VAR + count++);
-        return v;
     }
 }

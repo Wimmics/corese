@@ -49,7 +49,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     }
     
     void init(){
-        trace = ast.isDebug();
+        //trace = ast.isDebug();
         if (list != null){
             declare();
         }

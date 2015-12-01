@@ -65,29 +65,26 @@
         <url>https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>
     </scm>
 
-    <!--    <distributionManagement>
-        <repository>
-            <id>Nexus</id>
-            <name>I3S public Maven releases repository</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/i3s-public</url>
-        </repository>
-    </distributionManagement>-->
-
     <distributionManagement>
-        <repository>
-            <id>Nexus</id>
-            <name>Releases</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/i3s-public/</url>
-        </repository>
-        <snapshotRepository>
-            <id>Nexus</id>
-            <name>Snapshots</name>
-            <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
+<!--	    <repository>
+		    <id>i3s-releases</id>
+		    <name>I3S Maven Releases Repository</name>
+		    <url>http://nyx.unice.fr:9007/nexus/content/repositories/releases</url>
+	    </repository> -->
+	    <repository>
+		    <id>i3s-public</id>
+		    <name>Releases</name>
+		    <url>http://nyx.unice.fr:9007/nexus/content/repositories/i3s-public/</url>
+	    </repository>
+	    <snapshotRepository>
+		    <id>i3s-snapshots</id>
+		    <name>Snapshots</name>
+		    <url>http://nyx.unice.fr:9007/nexus/content/repositories/snapshots/</url>
+	    </snapshotRepository>
     </distributionManagement>
     
     <properties>
-        <!-- Sonar -->
+	    <!-- Sonar -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>

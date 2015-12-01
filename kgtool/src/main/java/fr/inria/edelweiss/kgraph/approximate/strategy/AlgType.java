@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.approximate.aggregation;
+package fr.inria.edelweiss.kgraph.approximate.strategy;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public enum AlgType {
 
     empty,//no algorithm implemented
-    ng, jw, ch, wn,
+    ng, jw, ch, wn, eq,
     // dr, eq,
     mult; //combiend algorithm //combiend algorithm 
 
@@ -21,6 +21,6 @@ public enum AlgType {
      * @return
      */
     public static List<AlgType> allValues() {
-        return Arrays.asList(new AlgType[]{ng, jw, ch, wn});
+        return Arrays.asList(new AlgType[]{ng, jw, ch, wn, eq});
     }
 }

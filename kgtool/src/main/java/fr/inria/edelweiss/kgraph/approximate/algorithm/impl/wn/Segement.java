@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn;
+package fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn;
 
 import java.util.ArrayList;
 import java.util.List;

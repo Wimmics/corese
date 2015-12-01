@@ -1,8 +1,8 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity.impl;
+package fr.inria.edelweiss.kgraph.approximate.algorithm.impl;
 
-import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
-import fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm;
-import fr.inria.edelweiss.kgraph.approximate.similarity.Utils;
+import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.ISimAlgorithm;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
 
 /**
  * Base Algorithm
@@ -12,10 +12,10 @@ import fr.inria.edelweiss.kgraph.approximate.similarity.Utils;
  */
 public class BaseAlgorithm implements ISimAlgorithm {
 
-    public static double THRESHOLD = 0.0;
+
     private final AlgType type;
 
-    public BaseAlgorithm() {
+    BaseAlgorithm() {
         this(AlgType.empty);
     }
 

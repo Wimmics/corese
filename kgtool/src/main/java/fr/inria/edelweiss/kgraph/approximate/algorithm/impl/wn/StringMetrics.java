@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn;
+package fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn;
 
 import edu.sussex.nlp.jws.JWS;
 import edu.sussex.nlp.jws.JiangAndConrath;
@@ -6,7 +6,7 @@ import edu.sussex.nlp.jws.LeacockAndChodorow;
 import edu.sussex.nlp.jws.Lin;
 import edu.sussex.nlp.jws.Resnik;
 import edu.sussex.nlp.jws.WuAndPalmer;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm.MIN;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.ISimAlgorithm.MIN;
 
 /**
  * String metrics using WordNet

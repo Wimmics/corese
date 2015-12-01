@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity;
+package fr.inria.edelweiss.kgraph.approximate.algorithm;
 
 import com.ibm.icu.text.DecimalFormat;
 

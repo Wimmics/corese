@@ -1,6 +1,6 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity.impl;
+package fr.inria.edelweiss.kgraph.approximate.algorithm.impl;
 
-import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
+import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
 
 /**
  * Class Hierarchy

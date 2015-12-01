@@ -143,7 +143,8 @@ public class PluginImpl extends ProxyImpl {
                 
              case XT_EDGE:
                  return edge(exp, env, p, null, null, null);    
-                
+             case APP_SIM:
+                 return pas.eval(exp, env, p);
             default: 
                 return pt.function(exp, env, p);
                 

@@ -1,6 +1,6 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity;
+package fr.inria.edelweiss.kgraph.approximate.algorithm;
 
-import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
+import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
 
 /**
  * Interface for implementing the similarity measurement algorithms

@@ -1,8 +1,9 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity.impl;
+package fr.inria.edelweiss.kgraph.approximate.algorithm.impl;
 
-import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
-import fr.inria.edelweiss.kgraph.approximate.aggregation.Priority;
-import fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm;
+import fr.inria.edelweiss.kgraph.approximate.strategy.Priority;
+import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.ISimAlgorithm;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
 import java.util.List;
 
 /**
@@ -22,9 +23,13 @@ public class CombinedAlgorithm extends BaseAlgorithm {
      * @param algs
      */
     public CombinedAlgorithm(List<ISimAlgorithm> algs) {
+        this(algs, null);
+    }
+
+    public CombinedAlgorithm(List<ISimAlgorithm> algs, double[] weights2) {
         super(AlgType.mult);
         this.algs = algs;
-        this.weights = Priority.getWeightByAlgorithm(algs);
+        this.weights = weights2;
     }
 
     @Override

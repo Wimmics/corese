@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn;
+package fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn;
 
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.ling.Word;
@@ -6,6 +6,9 @@ import edu.stanford.nlp.process.Morphology;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.sussex.nlp.jws.JWS;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.Parameters.POS_TAGGER;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.Parameters.WN_PATH;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.Parameters.WN_VER;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -22,11 +25,6 @@ public class NLPHelper {
     private static final NLPHelper helper = null;
     private static JWS jws = null;
     private static MaxentTagger tagger = null;
-
-    public static String WN_PATH = NLPHelper.class.getClassLoader().getResource("wordnet").getPath();
-    public static String WN_VER = "3.0";
-    public static String POS_TAGGER = NLPHelper.class.getClassLoader().getResource("tagger").getPath() + "/english-left3words-distsim.tagger";
-    public static String STRING_METRIC = "Lin";
     
     public static final String NOUN = "n", VERB = "v", OTHER = "T";
     public static final String[] skipped_words = {"be"};

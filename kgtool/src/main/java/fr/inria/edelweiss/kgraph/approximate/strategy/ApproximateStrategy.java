@@ -1,15 +1,18 @@
-package fr.inria.edelweiss.kgraph.approximate.aggregation;
+package fr.inria.edelweiss.kgraph.approximate.strategy;
 
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.ch;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.jw;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.ng;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType.wn;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.CLASS_HIERARCHY;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.LITERAL_LEX;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.LITERAL_SS;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_COMMENT;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_LABEL;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.edelweiss.kgenv.parser.Pragma;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.AlgType.ch;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.AlgType.eq;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.AlgType.jw;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.AlgType.ng;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.AlgType.wn;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.CLASS_HIERARCHY;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_LEX;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_SS;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.PROPERTY_EQUALITY;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_EQUALITY;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -39,13 +42,12 @@ public class ApproximateStrategy {
     static {
         //*** STRATEGY - ALGORITHMS
         defaultStrategyMap.put(URI, Arrays.asList(new AlgType[]{ng, jw, wn}));//S P O
-        //defaultStrategyMap.put(URI_EQUALITY, Arrays.asList(new AlgType[]{eq}));//S P O
+        defaultStrategyMap.put(URI_EQUALITY, Arrays.asList(new AlgType[]{eq}));//S P O
 
-        defaultStrategyMap.put(URI_LABEL, Arrays.asList(new AlgType[]{ng, jw, wn}));//S O
-        defaultStrategyMap.put(URI_COMMENT, Arrays.asList(new AlgType[]{wn}));//S O
-
+        //defaultStrategyMap.put(URI_LABEL, Arrays.asList(new AlgType[]{ng, jw, wn}));//S O
+        //defaultStrategyMap.put(URI_COMMENT, Arrays.asList(new AlgType[]{wn}));//S O
         // defaultStrategyMap.put(PROPERTY_DR, Arrays.asList(new AlgType[]{dr}));//P
-        //defaultStrategyMap.put(PROPERTY_EQUALITY, Arrays.asList(new AlgType[]{eq}));//P
+        defaultStrategyMap.put(PROPERTY_EQUALITY, Arrays.asList(new AlgType[]{eq}));//P
         defaultStrategyMap.put(CLASS_HIERARCHY, Arrays.asList(new AlgType[]{ch}));//A rdf:type B
 
         defaultStrategyMap.put(LITERAL_SS, Arrays.asList(new AlgType[]{wn}));//O@literal@xsd:string@en
@@ -55,22 +57,21 @@ public class ApproximateStrategy {
         mergableStrategy = Arrays.asList(new StrategyType[]{URI, CLASS_HIERARCHY, LITERAL_SS, LITERAL_LEX});
     }
 
-    public static void init(List<String> strategyOption, List<String> priorityStrategyOption,
-            List<String> algorithmOption, List<String> priorityAlgorithmOption) {
-        // ** option: strategies used **
-        strategyList = parse(strategyOption, StrategyType.class);//parse
+    public static void init(ASTQuery ast) {
+        //kg:strategy, option: strategies used
+        List<String> strategyOption = ast.getApproximateSearchOptions(Pragma.STRATEGY);
+        strategyList = parse(strategyOption, StrategyType.class);
 
-        // ** option: strategy priortiy **
-        List<Double> strategyPriorities = parse(priorityStrategyOption, Double.class);//parse
-        Priority.init(strategyPriorities, strategyList, StrategyType.class);//store to class priority
-
-        // ** option: algorithms used **
+        // kg:algorithm, option: algorithms to use
+        List<String> algorithmOption = ast.getApproximateSearchOptions(Pragma.ALGORITHM);
         algorithmList = parse(algorithmOption, AlgType.class);
 
-        // ** option: algorithm priortiy **
+        // kg:priority, option: algorithm priortiy **
+        List<String> priorityAlgorithmOption = ast.getApproximateSearchOptions(Pragma.PRIORITY_ALGORITHM);
         List<Double> algorithmPriorities = parse(priorityAlgorithmOption, Double.class);
-        Priority.init(algorithmPriorities, algorithmList, AlgType.class);
+        Priority.init(algorithmPriorities, algorithmList);
 
+        // filter algorithms according to the settings above
         filter(strategyList, algorithmList);
     }
 

@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.approximate.aggregation;
+package fr.inria.edelweiss.kgraph.approximate.strategy;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +12,8 @@ import java.util.List;
 public enum StrategyType {
 
     //URI
-    URI, URI_LABEL, URI_COMMENT,
+    URI, 
+    //URI_LABEL, URI_COMMENT,
     //PROPERTY_DR, 
     PROPERTY_EQUALITY, URI_EQUALITY,
     CLASS_HIERARCHY,

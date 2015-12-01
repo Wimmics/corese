@@ -1,8 +1,8 @@
-package fr.inria.edelweiss.kgraph.approximate.aggregation;
+package fr.inria.edelweiss.kgraph.approximate.strategy;
 
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.ApproximateStrategy.getAlgrithmList;
-import fr.inria.edelweiss.kgraph.approximate.similarity.ISimAlgorithm;
-import fr.inria.edelweiss.kgraph.approximate.similarity.impl.BaseAlgorithm;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.ApproximateStrategy.getAlgrithmList;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.ISimAlgorithm;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -18,19 +18,18 @@ import org.apache.log4j.Logger;
 public class Priority {
 
     private final static Logger logger = Logger.getLogger(Priority.class);
-    private static final Map<StrategyType, Double> strategyMap = new EnumMap<StrategyType, Double>(StrategyType.class);
+    // private static final Map<StrategyType, Double> strategyMap = new EnumMap<StrategyType, Double>(StrategyType.class);
     private static final Map<AlgType, Double> algorithmMap = new EnumMap<AlgType, Double>(AlgType.class);
 
-    public static void init(List<Double> values, List target, Class clazz) {
+    public static void init(List<Double> values, List<AlgType> target) {
         if (values != null && values.size() != target.size()) {
             logger.warn("Warning: size of 'kg:priority' does not correspond to the number of its target!");
             values = null;
         }
 
-        Map m = clazz.getName().equals(StrategyType.class.getName()) ? strategyMap : algorithmMap;
         for (int i = 0; i < target.size(); i++) {
             double value = (values == null) ? 1 : values.get(i);
-            m.put(target.get(i), value);
+            algorithmMap.put(target.get(i), value);
         }
     }
 
@@ -110,5 +109,17 @@ public class Priority {
             norm[i] = nums[i] / sum;
         }
         return norm;
+    }
+
+    public static double[] getDefaultWeights(int size) {
+        if (size < 1) {
+            return null;
+        }
+
+        double[] num = new double[size];
+        for (int i = 0; i < size; i++) {
+            num[i] = 1.0 / size;
+        }
+        return num;
     }
 }

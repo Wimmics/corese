@@ -1,7 +1,7 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity.impl;
+package fr.inria.edelweiss.kgraph.approximate.algorithm.impl;
 
-import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
-import fr.inria.edelweiss.kgraph.approximate.similarity.Utils;
+import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
 import java.util.HashMap;
 import java.util.Map;
 

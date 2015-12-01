@@ -1,12 +1,13 @@
-package fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn;
+package fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn;
 
-import fr.inria.edelweiss.kgraph.approximate.aggregation.AlgType;
-import fr.inria.edelweiss.kgraph.approximate.similarity.Utils;
-import fr.inria.edelweiss.kgraph.approximate.similarity.impl.BaseAlgorithm;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper.NOUN;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper.OTHER;
-import static fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper.VERB;
-import fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.StringMetrics.Type;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.Parameters.DEF_STRING_METRIC;
+import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper.NOUN;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper.OTHER;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper.VERB;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.StringMetrics.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -21,18 +22,19 @@ public class TextSimilarity extends BaseAlgorithm {
     public static void main(String[] args) throws Exception {
         NLPHelper nlp = NLPHelper.createInstance();
         TextSimilarity ts = new TextSimilarity(nlp);
-        double d = ts.calculate("Dog likes vegetables, but it is an animal", "Humain likes meat, because they are animals");
-        System.out.println(d);
+        String t1 = "Dog likes vegetables, but it is an animal";
+        String t2 = "Humain likes meat, because they are animals";
+        double d = ts.calculate(t1, t2);
+        System.out.println("\n\n"+t1 + "," + t2 + ": " + d);
 
-        d = ts.calculate("John", "John");
-        System.out.println(d);
+        //d = ts.calculate("John", "John");
+        //System.out.println(d);
     }
     private StringMetrics alg;
     private NLPHelper nlp;
 
-
     public TextSimilarity(NLPHelper nlp) {
-        this(nlp, Type.valueOf(NLPHelper.STRING_METRIC));
+        this(nlp, Type.valueOf(DEF_STRING_METRIC));
     }
 
     public TextSimilarity(NLPHelper nlp, Type sm) {

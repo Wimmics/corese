@@ -48,6 +48,7 @@ public class NSManager {
     public static final String STL        = ExpType.STL;
     public static final String EXT        = ExpType.EXT;
     public static final String KGRAM      = ExpType.KGRAM;
+    public static final String SPARQL     = ExpType.SPARQL;
     public static final String KPREF      = ExpType.KPREF;
     // extended named graph: eng:describe eng:queries
     public static final String KGEXT      = ExpType.KGRAM + "extension/";    
@@ -62,6 +63,8 @@ public class NSManager {
     private static final String FOAF_PREF = "foaf";
     public static final String  STL_PREF = "st";
     public static final String  EXT_PREF = "xt";
+    public static final String  SPARQL_PREF = "rq";
+    
     /**
      * prefix seed (ns1, ns2,...)
      */
@@ -201,6 +204,7 @@ public class NSManager {
         def.put(EXT, EXT_PREF);
         def.put(ExpType.UXT, "us");
         def.put(ExpType.DT, "dt");
+        def.put(SPARQL, SPARQL_PREF);
     }
 
     // add default namespaces

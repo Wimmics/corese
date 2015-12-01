@@ -256,7 +256,7 @@ public class Term extends Expression {
                 }
                                               
 		if (getName().equals(EXIST)){
-			return getExist().toString(sb);
+			return funExist(sb);
 		}
 		boolean isope = true;
 		int n = args.size();
@@ -318,7 +318,14 @@ public class Term extends Expression {
 		return sb;
 	}
 
-    
+    StringBuffer funExist(StringBuffer sb){
+        if (isSystem()){
+            Exp exp = getExist().get(0).get(0);
+            return exp.toString(sb);
+        }
+        return getExist().toString(sb);
+    }
+        
     StringBuffer funSequence(StringBuffer sb){
         if (getArgs().size() >= 1){
             getArg(0).toString(sb);

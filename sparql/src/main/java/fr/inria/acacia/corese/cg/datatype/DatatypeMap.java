@@ -10,7 +10,6 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -699,6 +698,10 @@ public class DatatypeMap implements Cst, RDF {
     
     public static IDatatype getResult(IDatatype dt){
         return dt;
+    }
+    
+    public static boolean isBound(IDatatype dt){
+        return dt != UNBOUND;
     }
     
      public static IDatatype size(IDatatype dt){

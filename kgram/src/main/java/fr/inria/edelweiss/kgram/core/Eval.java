@@ -1211,6 +1211,7 @@ public class Eval implements ExpType, Plugin {
     private Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mapping m) {
         Memory mem = new Memory(match, evaluator);
         mem.init(query);
+        mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
         Eval eval = copy(mem, p, evaluator);
         graphNode(gNode, node, mem);
         bind(mem, exp, main, m);

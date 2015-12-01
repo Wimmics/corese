@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
 import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
 
 /*
@@ -941,6 +942,11 @@ public class Mapping
 
     @Override
     public Entity getEntity() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ApproximateSearchEnv getAppxSearchEnv() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 	

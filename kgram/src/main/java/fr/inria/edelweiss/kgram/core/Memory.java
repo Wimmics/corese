@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
 
 /**
  * Node and Edge binding stacks for KGRAM evaluator
@@ -74,7 +75,7 @@ public class Memory implements Environment {
 
 	int nbEdge = 0, nbNode = 0;
         private Bind bind;
-	
+	private ApproximateSearchEnv appxSearchEnv;
 	
 	
 	public Memory(Matcher m, Evaluator e){
@@ -82,6 +83,7 @@ public class Memory implements Environment {
 		eval = e;
 		bnode = new HashMap();
                 bind = new Bind();
+                this.appxSearchEnv = new ApproximateSearchEnv();
 	}
 	
 	void setResults(Mappings r){
@@ -1115,4 +1117,12 @@ public class Memory implements Environment {
          return bind != null && bind.hasBind();
      }
 
+    @Override
+    public ApproximateSearchEnv getAppxSearchEnv() {
+        return this.appxSearchEnv;
+    }
+
+    public void setAppxSearchEnv(ApproximateSearchEnv appxEnv){
+        this.appxSearchEnv = appxEnv;
+    }
 }

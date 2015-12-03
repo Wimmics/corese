@@ -178,7 +178,7 @@ public class Test {
                 if (literalsAll.get(key).equals(literalsRead.get(key))) {
                     correct++;
                 } else {
-                    System.out.println("[Read Error]: "+((StringManager)manager).getLiteralsOnDiskMeta(key)+" ====");
+                   // System.out.println("[Read Error]: "+((StringManager)manager).getLiteralsOnDiskMeta(key)+" ====");
                     //System.out.println("=== orginal literal ===\n" + literalsAll.get(key));
                     //System.out.println("\n=== read literal ===\n" + literalsRead.get(key));
                 }

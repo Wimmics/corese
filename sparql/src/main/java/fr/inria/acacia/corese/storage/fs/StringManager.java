@@ -37,8 +37,8 @@ public final class StringManager implements IStorage {
 
     /**
      * Create storage manager usign default parameters
-     * 
-     * @return 
+     *
+     * @return
      */
     public final static StringManager create() {
         return create(null);
@@ -46,9 +46,9 @@ public final class StringManager implements IStorage {
 
     /**
      * Create storage manager using specified parameters
-     * 
+     *
      * @param params
-     * @return 
+     * @return
      */
     public final static StringManager create(Parameters params) {
         return new StringManager(params);
@@ -72,12 +72,14 @@ public final class StringManager implements IStorage {
     public final String read(int id) {
         if (this.cache.containsKey(id)) {
             return this.cache.get(id);
-        } else if(this.stringsOnDisk.containsKey(id)){
+        } else if (this.stringsOnDisk.containsKey(id)) {
             StringMeta meta = this.stringsOnDisk.get(id);
             String literal = delegate.read(meta);
-            this.cache.put(id, literal);
-            return delegate.read(meta);
-        }else{
+            if (literal != null) {
+                this.cache.put(id, literal);
+            }
+            return literal;
+        } else {
             return null;
         }
     }
@@ -104,19 +106,19 @@ public final class StringManager implements IStorage {
     public boolean check(String str) {
         return (str == null) ? false : check(str.length());
     }
-    
+
     @Override
     public boolean check(int length) {
         return length > this.params.get(type.MAX_LIT_LEN);
     }
 
-    public int getLiteralsOnDiskSize() {
-        return this.stringsOnDisk.size();
-    }
-
-    public StringMeta getLiteralsOnDiskMeta(int id) {
-        return this.stringsOnDisk.get(id);
-    }
+//    public int getLiteralsOnDiskSize() {
+//        return this.stringsOnDisk.size();
+//    }
+//
+//    public StringMeta getLiteralsOnDiskMeta(int id) {
+//        return this.stringsOnDisk.get(id);
+//    }
 
     @Override
     public void init() {

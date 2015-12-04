@@ -7,11 +7,12 @@ Corese is a Semantic Web Factory (triple store & SPARQL endpoint) implementing R
 * Licence: Open source software with Licence CeCILL-C (aka LGPL).
 * Main forge: https://github.com/Wimmics/corese
 * Old forge (deprecated): https://gforge.inria.fr/projects/kgram/
+
 # Compilation from source
 To download the source code:
 
-
     git clone https://github.com/Wimmics/corese.git
+
 or
 
     git clone git@github.com:Wimmics/corese.git

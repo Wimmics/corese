@@ -31,6 +31,9 @@ public class TestDQP {
     
 
     private Logger logger = Logger.getLogger(TestDQP.class);
+    
+    static final String host = "localhost";
+    
     String query = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
     "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
     "SELECT ?nom ?popTotale  WHERE { " +
@@ -58,8 +61,8 @@ public class TestDQP {
         sw.reset();
         sw.start();
 
-        ld.load("/home/macina/CodeKGRAM/kgram/Dev/trunk/kgtool/src/main/resources/demographie/cog-2012.ttl");
-        ld.load("/home/macina/CodeKGRAM/kgram/Dev/trunk/kgtool/src/main/resources/demographie/popleg-2010.ttl");
+        ld.load(TestDQP.class.getClassLoader().getResource("demographie").getPath()+"/cog-2012.ttl");
+        ld.load(TestDQP.class.getClassLoader().getResource("demographie").getPath()+"/popleg-2010.ttl");
 
         logger.info("Graph size: " + graph.size());
 
@@ -68,30 +71,47 @@ public class TestDQP {
 
         for (String q : queries) {
             logger.info("Querying with : \n" + q);
-//            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 10; i++) {
                 sw.reset();
                 sw.start();
                 Mappings results = exec.query(q);
                 logger.info(results.size() + " results: " + sw.getTime() + " ms");
-//            }
+            }
         }
     }
     
     public void testDQP() throws EngineException, MalformedURLException{
         Graph graph = Graph.create(false);
         ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();
-        QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, false);
+        QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
         execDQP.setGroupingEnabled(true);
-        execDQP.addRemote(new URL("http://localhost:8085/sparql"), WSImplem.REST);
-        execDQP.addRemote(new URL("http://localhost:8086/sparql"), WSImplem.REST);
-        execDQP.addRemote(new URL("http://localhost:8087/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://localhost:8088/sparql"), WSImplem.REST);
 
+
+//      ONE BGP
+        execDQP.addRemote(new URL("http://"+host+":8081/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8082/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8083/sparql"), WSImplem.REST);
+//        
+////        //join variables
+//        execDQP.addRemote(new URL("http://"+host+":8084/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8085/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8086/sparql"), WSImplem.REST);
+//        
+//        //partial BGP and AND
+//        execDQP.addRemote(new URL("http://"+host+":8087/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8088/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8089/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8090/sparql"), WSImplem.REST);
+
+        
+//        //demographic
+        execDQP.addRemote(new URL("http://"+host+":8091/sparql"), WSImplem.REST);
+        
         StopWatch sw = new StopWatch();
         sw.start();
         Mappings map = execDQP.query(query);
         logger.info(map.size() + " results in " + sw.getTime() + " ms");
-        logger.info("resutls: "+map.toString());
+        logger.info("\n"+map.toString());
         logger.info(Messages.countQueries);
         logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryCounter));
         logger.info(Messages.countTransferredResults);

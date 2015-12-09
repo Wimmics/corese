@@ -29,6 +29,7 @@ import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
 import java.util.Iterator;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
@@ -838,6 +839,9 @@ public class Eval implements ExpType, Plugin {
                     break;
 
                 case AND:
+                     if(exp.isLock()){
+                        memory.setCurrentAndLockExpression(exp);
+                     }
                         stack = stack.and(exp, n);
                         backtrack = eval(p, gNode, stack, n);
                     break;
@@ -1646,9 +1650,6 @@ public class Eval implements ExpType, Plugin {
     }
 
     private int bgp(Producer p, Node gNode, Exp exp, Stack stack, int n) {
-
-//        logger.info("BGP METHOD: " + exp.toString());
-
         int backtrack = n - 1;
         List<Node> from = query.getFrom(gNode);
 //        StopWatch sw = new StopWatch();
@@ -2105,7 +2106,6 @@ public class Eval implements ExpType, Plugin {
         while (it.hasNext()) {
 
             Entity ent = it.next();
-//            System.out.println("EDGES "+ent.getEdge().toString());
             if (ent != null) {
                 nbEdge++;
                 if (hasListener && !listener.listen(qEdge, ent)) {
@@ -2166,7 +2166,7 @@ public class Eval implements ExpType, Plugin {
                 }
             }
         }
-//            sw.stop();
+//        sw.stop();
 //        logger.info("\n\tGet EDGE in " + sw.getTime() + "ms.  \n\tFOR "+exp+"\n");
 
         //edgeToDiffer = null;

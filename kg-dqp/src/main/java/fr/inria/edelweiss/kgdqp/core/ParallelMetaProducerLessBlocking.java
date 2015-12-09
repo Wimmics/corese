@@ -1,18 +1,20 @@
 package fr.inria.edelweiss.kgdqp.core;
 
-import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -31,11 +33,14 @@ import org.apache.log4j.Logger;
  * available results.
  *
  * @author Alban Gaignard, alban.gaignard@i3s.unice.fr
- *
+ * @author Abdoul Macina, macina@i3s.unice.fr
  */
 public class ParallelMetaProducerLessBlocking extends MetaProducer {
 
     private final Logger logger = Logger.getLogger(ParallelMetaProducerLessBlocking.class);
+    private final HashMap<String, ArrayList<Producer>> bookKeeping = new HashMap<String, ArrayList<Producer>>();
+    private final ArrayList<Exp> processedBGP = new ArrayList<Exp>();
+    private ArrayList<Producer> sameProducers = new ArrayList<Producer>();
 
     protected ParallelMetaProducerLessBlocking() {
         super();
@@ -47,21 +52,72 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
 
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env) {
-        ExecutorService executorS = Executors.newCachedThreadPool();
-        CompletionService<Iterable<Entity>> completionS = new ExecutorCompletionService<Iterable<Entity>>(executorS);
+        ExecutorService executors = Executors.newCachedThreadPool();
+        CompletionService<Result> completions = new ExecutorCompletionService<Result>(executors);
 
-        MetaIterator<Entity> meta = null;
-        List<Future<Iterable<Entity>>> futures = new ArrayList<Future<Iterable<Entity>>>();
+        MetaIterator<Entity> meta = new MetaIterator<Entity>(new ArrayList<Entity>());
+        List<Future<Result>> futures = new ArrayList<Future<Result>>();
 
         logger.info("Searching for edge : " + edge.toString());
-        // iteration over 
-        for (Producer p : this.getProducers()) {
-            if (p instanceof RemoteProducerWSImpl) {
-                RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
-                if (rp.checkEdge(edge)) {
-                    CallableGetEdges getEdges = new CallableGetEdges(p, gNode, from, edge, env);
-                    futures.add(completionS.submit(getEdges));
+
+        Memory memory = (Memory) env;
+        //BGP mode
+        if (memory.getCurrentAndLockExpression() != null) {
+            boolean isLastEdge = env.getExp().equals(memory.getCurrentAndLockExpression().getExpList().get(memory.getCurrentAndLockExpression().getExpList().size() - 1));
+            //to handle previous AND already  processed by BGP
+            boolean edgesFromSameSources = false;
+            if (isLastEdge) {
+                edgesFromSameSources = sameSource(env);
+            }
+
+            for (Producer p : this.getProducers()) {
+                if (p instanceof RemoteProducerWSImpl) {
+                    RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
+
+                    //handling last edge
+                    if (!isLastEdge) {
+                        if (rp.checkEdge(edge)) {
+                            CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
+                            futures.add(completions.submit(getEdges));
+                        }
+                    } else {
+                        if (!isAlreadyProcessed(env)) {
+                            if (rp.checkEdge(edge)) {
+                                CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
+                                futures.add(completions.submit(getEdges));
+                            }
+                        } else {
+                            if (!edgesFromSameSources) {
+                                if (rp.checkEdge(edge)) {
+                                    CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
+                                    futures.add(completions.submit(getEdges));
+                                }
+                            } else {
+                                //sauf les cources qui ont des predicats sans variables de jointure entre eux.
+                                if (!sameProducers.contains(p)) {
+                                    if (rp.checkEdge(edge)) {
+                                        CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
+                                        futures.add(completions.submit(getEdges));
+                                    }
+                                }
+                            }
+
+                        }
+                    }
                 }
+            }
+            sameProducers.clear();
+        } //Edge mode
+        else {
+            for (Producer p : this.getProducers()) {
+                if (p instanceof RemoteProducerWSImpl) {
+                    RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
+                    if (rp.checkEdge(edge)) {
+                        CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
+                        futures.add(completions.submit(getEdges));
+                    }
+                }
+
             }
         }
 
@@ -69,44 +125,67 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
         sw.start();
 
         //retrieving results
-        for (Future<Iterable<Entity>> f : futures) {
+        for (Future<Result> future : futures) {
             try {
-                Iterable<Entity> resultFromProducer = completionS.take().get();
-                //detele duplicates
+                Result res = completions.take().get();
+                Iterable<Entity> resultFromProducer = res.getEntities();
+
+                //delete duplicates
                 Iterator<Entity> it = resultFromProducer.iterator();
-                boolean doubles = false;
+                ArrayList<Entity> cleanedResults = new ArrayList<Entity>();
+                boolean duplicated = false;
                 while (it.hasNext()) {
                     Entity ent = it.next();
                     if (ent != null) {
                         Edge ed = ent.getEdge();
                         if (meta != null) {
                             Iterator<Entity> itt = meta.iterator();
-                            while (itt.hasNext()) {
+                            while (itt.hasNext() && !duplicated) {
                                 Entity entt = itt.next();
                                 Edge edd = entt.getEdge();
                                 if (ed.getNode().equals(edd.getNode())) {
-//                                    logger.info(" DUPLICATES " + ed.getNode().toString());
-                                    doubles = true;
+                                    duplicated = true;
                                 }
                             }
 
                         }
+
+                        //save in book-keeping
+                        for (int i = 0; i < ent.nbNode(); i++) {
+                            if (bookKeeping.containsKey(ent.getNode(i).getValue().toString())) {
+                                ArrayList<Producer> p = bookKeeping.get(ent.getNode(i).getValue().toString());
+                                if (!p.contains(res.getProducer())) {
+                                    p.add(res.getProducer());
+                                }
+                                bookKeeping.put(ent.getNode(i).getValue().toString(), p);
+
+                            } else {
+                                ArrayList<Producer> p = new ArrayList<Producer>();
+                                p.add(res.getProducer());
+                                bookKeeping.put(ent.getNode(i).getValue().toString(), p);
+                            }
+                        }
+                        //delete the already obtained results to avoid redundancy in the final result
+                        if (!duplicated) {
+                            cleanedResults.add(ent);
+                        } else {
+                            duplicated = false;
+                        }
                     }
                 }
 
-                if (!doubles) {
-                    meta = add(meta, resultFromProducer);
-                }
+                meta = add(meta, cleanedResults);
+//                 meta = add(meta, resultFromProducer);
+
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             } catch (ExecutionException ex) {
                 ex.printStackTrace();
             }
         }
-        executorS.shutdown();
+        executors.shutdown();
         sw.stop();
-        logger.info("Global results retrieved in getEDGES " + sw.getTime() + "ms.");
-
+        logger.info("Global results retrieved in getEdges " + sw.getTime() + "ms.");
         return meta;
     }
 
@@ -123,20 +202,25 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
     @Override
     public Mappings getMappings(Node gNode, List<Node> from, Exp bgp, Environment env) {
         ExecutorService executors = Executors.newCachedThreadPool();
-        CompletionService<Mappings> completions = new ExecutorCompletionService<Mappings>(executors);
-        List<Future<Mappings>> futures = new ArrayList<Future<Mappings>>();
+        CompletionService<Result> completions = new ExecutorCompletionService<Result>(executors);
+        List<Future<Result>> futures = new ArrayList<Future<Result>>();
 
         Mappings results = new Mappings();
+        logger.info("Searching for BGP : " + bgp);
 
-        logger.info("Searching for BGP : " + bgp.toString());
         // sending BGP to relevant producers 
         for (Producer p : this.getProducers()) {
-            //Checking indexes
             if (p instanceof RemoteProducerWSImpl) {
                 RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
+                //Checking index
                 if (rp.checkBGP(bgp)) {
-                    CallableGetBasicGraphPattern getBGP = new CallableGetBasicGraphPattern(p, gNode, from, bgp, env);
+                    CallableResult getBGP = new CallableResult(p, gNode, from, bgp, env);
                     futures.add(completions.submit(getBGP));
+
+                    //save into processed BGP
+                    if (!processedBGP.contains(bgp)) {
+                        processedBGP.add(bgp);
+                    }
                 }
             }
         }
@@ -145,11 +229,14 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
         sw.start();
 
         //retrieving results
-        for (Future<Mappings> f : futures) {
+        for (Future<Result> future : futures) {
             try {
+                Result res = completions.take().get();
+                Mappings resFromProd = res.getMappings();
+
                 //delete duplicates
-                Mappings resFromProd = completions.take().get();
                 resFromProd = resFromProd.minus(results);
+
                 results.add(resFromProd);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
@@ -163,5 +250,71 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
         logger.info("Global results retrieved in getMappings " + sw.getTime() + "ms.");
 
         return results;
+    }
+
+    public boolean isAlreadyProcessed(Environment env) {
+        Memory memory = (Memory) env;
+        Exp and = memory.getCurrentAndLockExpression();
+        boolean isLastEdge = env.getExp().equals(and.getExpList().get(and.getExpList().size() - 1));
+        if (isLastEdge) {
+            if (compareCurrentANDProcessedBGP(env)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean compareCurrentANDBGP(Exp bgp, Environment env) {
+        Memory memory = (Memory) env;
+        Exp and = memory.getCurrentAndLockExpression();
+        boolean result = true;
+        if (((bgp.getExpList().size() == and.getExpList().size()))) {
+            for (int i = 0; i < bgp.getExpList().size() && result; i++) {
+                result = result && bgp.getExpList().get(i).getEdge().equals(and.getExpList().get(i).getEdge());
+            }
+            return result;
+        }
+        return false;
+    }
+
+    public boolean compareCurrentANDProcessedBGP(Environment env) {
+        for (Exp e : processedBGP) {
+            if (compareCurrentANDBGP(e, env)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean sameSource(Environment env) {
+        boolean result = true;
+        Memory memory = (Memory) env;
+        Node[] nodes = memory.getNodes();
+        ArrayList<Producer> tmp = new ArrayList<Producer>();
+        for (int i = 0; result && nodes[i] != null && nodes[i + 1] != null; i++) {
+            ArrayList<Producer> p1 = bookKeeping.get(nodes[i].getValue().toString());
+            ArrayList<Producer> p2 = bookKeeping.get(nodes[i + 1].getValue().toString());
+
+            if (tmp.isEmpty()) {
+                tmp = (ArrayList<Producer>) p1.clone();
+            }
+            tmp = intersection(tmp, p2);
+            result = !tmp.isEmpty();
+        }
+        if (!tmp.isEmpty()) {
+            sameProducers = tmp;
+        }
+        return result;
+    }
+
+    public ArrayList<Producer> intersection(ArrayList<Producer> previous, ArrayList<Producer> next) {
+        ArrayList<Producer> tmp = new ArrayList<Producer>();
+        for (Producer p : previous) {
+            if (next.contains(p)) {
+                tmp.add(p);
+            }
+        }
+        return tmp;
     }
 }

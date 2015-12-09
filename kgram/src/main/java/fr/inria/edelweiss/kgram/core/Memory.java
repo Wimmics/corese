@@ -75,6 +75,9 @@ public class Memory implements Environment {
 	int nbEdge = 0, nbNode = 0;
         private Bind bind;
 	
+        
+        //to avoid duplicates between BGP and AND
+        private Exp currentAndLockExpression;
 	
 	
 	public Memory(Matcher m, Evaluator e){
@@ -1108,5 +1111,13 @@ public class Memory implements Environment {
      public Bind getBind(){
          return bind;
      }
+
+    public Exp getCurrentAndLockExpression() {
+        return currentAndLockExpression;
+    }
+
+    public void setCurrentAndLockExpression(Exp currentAnd) {
+        this.currentAndLockExpression = currentAnd;
+    }
 
 }

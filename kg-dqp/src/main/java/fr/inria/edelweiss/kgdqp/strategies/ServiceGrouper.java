@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.GenerateBGP;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -24,10 +25,12 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
- * A class aimint at grouping, if possible, consecutive tripple into SPARQL
+ * A class aiming at grouping, if possible, consecutive tripple into SPARQL
  * SERVICE clauses.
  *
+ * 
  * @author Alban Gaignard <alban.gaignard@cnrs.fr>
+ * @author Abdoul Macina <macina@i3s.unice.fr>
  */
 public class ServiceGrouper implements QueryVisitor {
 
@@ -41,24 +44,23 @@ public class ServiceGrouper implements QueryVisitor {
         this.execDQP = execDQP;
     }
 
+    /**
+     * Entry point to navigate trough a query expression.
+     * 
+     * @param query 
+     */
     @Override
     public void visit(Query query) {
-        if (query.getPlanProfile() == Query.QP_BGP) {
-            logger.info("Building prediactes indices for ");
-
-            logger.info(query);
-        //list of edges for Query
-            //and indexes EDGE, Producers to build for Query
+        if (execDQP.getPlanProfile() == Query.QP_BGP) {
+            logger.info("Building predicates indices for "+query.getBody());
             int i = 0;
             for (fr.inria.edelweiss.kgram.core.Exp e : query.getExpList()) {
                 if (e.isBGPAnd()) {
-                    buildBGPIndex(query, e, i);
+                    buildGeneratedBGPIndices(query, e, i);
                     i++;
-//                 logger.info("INDEX "+query.getGenerateBGP().getIndexEdgeProducers());
-//                 logger.info("LIST OF EDGES "+query.getQueryEdgeList());
                 }
             }
-            logger.info("END of building!");
+            logger.info("END of building index!");
         }
     }
 
@@ -111,6 +113,7 @@ public class ServiceGrouper implements QueryVisitor {
         }
 
         rewriteQueryWithServices(body, globalFilters, indexSourceEdge, indexEdgeSource, orderedTPs);
+//        putEdgesInAnds(body);
         logger.info("Final rewritten query");
         logger.info(ast.toSparql());
     }
@@ -582,23 +585,35 @@ public class ServiceGrouper implements QueryVisitor {
      * @param query
      * @param exp
      */
-    private void buildBGPIndex(Query query, fr.inria.edelweiss.kgram.core.Exp exp, int n) {
+    private void buildGeneratedBGPIndices(Query query, fr.inria.edelweiss.kgram.core.Exp exp, int n) {
 
         List<Edge> tmpEdges = query.getQueryEdgeList();
         HashMap<Edge, ArrayList<Producer>> tmpEdgeProducers = query.getGenerateBGP().getIndexEdgeProducers();
+        HashMap<Edge, ArrayList<Node>> tmpEdgeVariables = query.getGenerateBGP().getIndexEdgeVariables();
         int i = 0;
+//        int j = 0;
         for (fr.inria.edelweiss.kgram.core.Exp e : exp) {
             if (e.isEdge()) {
+                
                 tmpEdges.add(e.getEdge());
                 EdgeImpl ee = (EdgeImpl) e.getEdge();
                 tmpEdgeProducers.put(e.getEdge(), indexEdgeProducers.get(ee.getTriple()));
+                
+                ArrayList<Node> tmpNodes = new ArrayList<Node>();
+                for (int l =0; l<ee.nbNode(); l++){
+                    if(e.getEdge().getNode(l).isVariable())
+//                        System.out.println("Node "+e.getEdge().getNode(l));
+                        tmpNodes.add(e.getEdge().getNode(l));
+                }
+                tmpEdgeVariables.put(e.getEdge(), tmpNodes);
                 i++;
             } else {
                 if (e.type() == Query.SERVICE) {
                     visit((Query) e.rest());
+//                    j++;
                 } else {
                     if (e.isBGPAnd()) {
-                        buildBGPIndex(query, e, i);
+                        buildGeneratedBGPIndices(query, e, i);
                     }
                 }
             }
@@ -606,17 +621,36 @@ public class ServiceGrouper implements QueryVisitor {
 
         GenerateBGP gBGP = query.getGenerateBGP();
         gBGP.setIndexEdgeProducers(tmpEdgeProducers);
+        gBGP.setIndexEdgeVariables(tmpEdgeVariables);
         query.setQueryEdgeList(tmpEdges);
         query.setGenerateBGP(gBGP);
-
-        //draft for last EDGE of a set of EDGES in a AND
-        if (i > 0) {
-            fr.inria.edelweiss.kgram.core.Exp e = exp.get(i - 1);
-            EdgeImpl ee = (EdgeImpl) e.getEdge();
-            ee.setLastEdge(true);
-            e.setEdge(ee);
-            exp.set(i - 1, e);
-            query.set(n, exp);
-        }
     }
+
+    //draft
+//    private void putEdgesInAnds(Exp body) {
+//
+//        BasicGraphPattern and = new BasicGraphPattern();
+//        boolean edge = false;
+//        int index =-1;
+//        for (int i = 0; i < body.size(); i++){
+//                System.out.println(" BODY "+body);
+//            if(body.get(i).isTriple()){
+//                
+//                System.out.println(" EDGE "+body.get(i));
+//                and.add(body.get(i));
+//                System.out.println(" AND "+and);
+//                if(index!=-1){
+//                    body.remove(index);
+//                    index =i-1;
+//                }
+//                else
+//                    index = i;
+//                    
+//                System.out.println(" BODY "+body);
+//            }
+//        }
+//        
+//        body.set(index, and);
+//        System.out.println(" RES "+body);
+//    }
 }

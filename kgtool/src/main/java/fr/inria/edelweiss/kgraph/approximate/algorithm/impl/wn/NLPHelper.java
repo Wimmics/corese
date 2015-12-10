@@ -41,7 +41,7 @@ public class NLPHelper {
         return createInstance(WN_PATH, WN_VER, POS_TAGGER);
     }
 
-    private static NLPHelper createInstance(String WNPath, String WNVersion, String taggerFile) throws Exception {
+    public static NLPHelper createInstance(String WNPath, String WNVersion, String taggerFile) throws Exception {
         if (helper != null) {
             return helper;
         }

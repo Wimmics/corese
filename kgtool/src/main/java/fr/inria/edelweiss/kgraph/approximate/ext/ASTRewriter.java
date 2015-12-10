@@ -45,7 +45,7 @@ public class ASTRewriter implements QueryVisitor {
     final static int S = 1, P = 2, O = 3;
     private final static String VAR = "?_var_";
     public final static String APPROXIMATE = "approximate";
-    private int count = 0;
+    private int countVar = 0;
     private ASTQuery ast;
 
     @Override
@@ -65,14 +65,17 @@ public class ASTRewriter implements QueryVisitor {
     }
 
     private void visit(Exp exp) {
+        List<Exp> exTemp = new ArrayList<Exp>();
+        exTemp.addAll(exp.getBody());
+        //int indexExp = 0;
+
         //1. iterate each query pattern in SPARQL
-        for (Exp e2 : exp) {
+        for (Exp e2 : exTemp) {
             if (e2.isTriple() && !e2.isFilter()) {
                 process(exp, e2.getTriple());
-                continue;
             }
 
-            if (e2.isOptional()) {//todo: ohter types to be added, minus, exist, etc ...
+            if (e2.isOptional() || e2.isMinus()) {//todo: ohter types to be added, minus, exist, etc ...
                 for (Exp e21 : e2) {
                     visit(e21);
                 }
@@ -172,7 +175,7 @@ public class ASTRewriter implements QueryVisitor {
             return;
         }
 
-        Variable var = new Variable(VAR + count++);
+        Variable var = new Variable(VAR + countVar++);
 
         //1. get strategies in group G1 and merge them in one filter
         List<StrategyType> merge = ApproximateStrategy.getMergableStrategies(tw.getStrategies());

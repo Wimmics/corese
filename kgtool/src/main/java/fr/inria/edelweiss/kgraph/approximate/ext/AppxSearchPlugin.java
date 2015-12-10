@@ -42,11 +42,10 @@ public class AppxSearchPlugin implements ExprType {
     public Object eval(Expr exp, Environment env, Producer p) {
         switch (exp.oper()) {
             case APP_SIM:
-                msg("[Eval sim ... ]: " + exp);
-
                 ApproximateSearchEnv appxEnv = env.getAppxSearchEnv();
                 double d = appxEnv.aggregate(env);
                 IDatatype sim = plugin.getValue(d);
+                msg("[Eval sim() ]: " + sim);
                 return sim;
             default:
                 return null;
@@ -156,9 +155,11 @@ public class AppxSearchPlugin implements ExprType {
         threshold = ((CoreseNumber) args[3]).doubleValue();
 
         if (dt1 instanceof CoreseURI) {
+        //todo
             String[] uri1 = Utils.split(dt1.getLabel());
             String[] uri2 = Utils.split(dt2.getLabel());
 
+            String prefix1 = uri1[0], prefix2 = uri2[0];
             //if (!uri1[0].equalsIgnoreCase(uri2[0])) {
             //return FALSE;
             //} else 
@@ -166,6 +167,8 @@ public class AppxSearchPlugin implements ExprType {
                 s1 = uri1[1];
                 s2 = uri2[1];
             }
+            //s1 = dt1.getLabel();
+            //s2 = dt2.getLabel();
         } else if (dt1 instanceof CoreseStringLiteral) {
             s1 = ((CoreseStringLiteral) dt1).getStringValue();
             s2 = ((CoreseStringLiteral) dt2).getStringValue();

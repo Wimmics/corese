@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class NGram extends BaseAlgorithm {
 
-    private final static int NG = 2;//default
+    private final static int NG = 3;//default
     private int n;
 
     public NGram() {

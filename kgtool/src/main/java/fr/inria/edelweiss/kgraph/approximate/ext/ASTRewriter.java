@@ -85,7 +85,7 @@ public class ASTRewriter implements QueryVisitor {
 
     private void process(Exp exp, Triple t) {
         //for(Exp exp: ast.gets)
-        msg("------ BEFORE -----\n" + exp, true);
+        msg("------ BEFORE -----\n" + exp, false);
 
         //1 pre process, choose strategies for each atom
         Map<Integer, TripleWrapper> map = new HashMap<Integer, TripleWrapper>();
@@ -115,7 +115,7 @@ public class ASTRewriter implements QueryVisitor {
             exp.add(option);
         }
 
-        msg("\n------ AFTER -----\n" + exp, true);
+        msg("\n------ AFTER -----\n" + exp, false);
     }
 
     //choose the Strategy for the URI and put them into a list

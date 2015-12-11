@@ -876,19 +876,27 @@ public class CoreseDatatype
 	/**
 	 * Every datatype has its own type safe equals
 	 */
+        @Override
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
 		throw failure();
 	}
         
 	
 	// Java equals (for list membership ...)
+        @Override
 	public boolean equals(Object obj) {
 		if (obj instanceof IDatatype) {
 			return sameTerm((IDatatype) obj);
 		}
 		return false;	
 	}
+
+    @Override
+    public int hashCode() {        
+        return super.hashCode();
+    }
 	
+        @Override
 	public boolean sameTerm(IDatatype iod) {
 		try {
 			return equalsWE(iod);
@@ -899,22 +907,27 @@ public class CoreseDatatype
 	}
 	
 	
+        @Override
 	public boolean semiEquals(IDatatype iod) {
 		return sameTerm(iod);
 	}
 	
+        @Override
 	public IDatatype plus(IDatatype iod) {
 		return null;
 	}
 	
+        @Override
 	public IDatatype minus(IDatatype iod) {
 		return null;
 	}
 	
+        @Override
 	public IDatatype mult(IDatatype iod) {
 		return null;
 	}
 	
+        @Override
 	public IDatatype div(IDatatype iod) {
 		return null;
 	}

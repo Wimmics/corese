@@ -60,6 +60,7 @@ public class PluginImpl extends ProxyImpl {
     static final String EXT = ExpType.EXT;
     public static final String LISTEN = EXT+"listen";
     public static final String SILENT = EXT+"silent";
+    public static final String DEBUG  = EXT+"debug";
     
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
@@ -73,7 +74,7 @@ public class PluginImpl extends ProxyImpl {
     
     ExtendGraph ext;
     private PluginTransform pt;
-    private IStorage storageMgr;
+    private static IStorage storageMgr;
     private AppxSearchPlugin pas;
 
 
@@ -294,7 +295,10 @@ public class PluginImpl extends ProxyImpl {
                  return value(exp, env, p, dt1, dt2);
                  
               case XT_EDGE:
-                 return edge(exp, env, p, dt1, dt2, null);    
+                 return edge(exp, env, p, dt1, dt2, null);  
+                  
+              case XT_TUNE:
+                 return tune(exp, env, p, dt1, dt2);     
                 
             case STORE:
                 return ext.store(p, env, dt1, dt2);
@@ -680,13 +684,32 @@ public class PluginImpl extends ProxyImpl {
        return edge.getNode(1).getValue();
     }
 
+    private Object tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        Graph g = getGraph(p);
+        if (dt1.getLabel().equals(LISTEN)){  
+            if (dt2.booleanValue()){
+                g.addListener(new GraphListen(getEval()));
+            }
+            else {
+                g.removeListener();
+            }
+        }
+        else if (dt1.getLabel().equals(DEBUG)){
+            getEvaluator().setDebug(dt2.booleanValue());
+        }
+        return TRUE;
+     }
+    
+    /**
+     * @deprecated
+     * */
     private Object tune(Expr exp, Environment env, Producer p, IDatatype dt) {
         Graph g = getGraph(p);
         if (dt.getLabel().equals(LISTEN)){           
-            g.addListener(new GraphListen(getEval()));
+            return tune(exp, env, p, dt, TRUE);
         }
         else if (dt.getLabel().equals(SILENT)){
-            g.removeListener();
+             return tune(exp, env, p, dt, FALSE);
         }
         return TRUE;
      }

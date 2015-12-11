@@ -31,6 +31,7 @@ public interface ExprType {
 	// ?x in (1, 2)
 	public static int INLIST = 16;
 
+	public static int CUSTOM = 18;
 	public static int ISNUMERIC = 19;
 	public static int MIN = 20;
 	public static int MAX = 21;

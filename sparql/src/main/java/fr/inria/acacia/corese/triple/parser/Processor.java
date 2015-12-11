@@ -29,9 +29,10 @@ public class Processor {
         static final String EXT      = NSManager.EXT;
         static final String EXT_PREF = NSManager.EXT_PREF + ":";
         static final String SPARQL   = NSManager.SPARQL;       
-        static final String KGRAM = NSManager.KGRAM;
-        static final String KPREF = NSManager.KPREF+":";
-        static final String STL   = NSManager.STL;
+        static final String KGRAM    = NSManager.KGRAM;
+        static final String KPREF    = NSManager.KPREF+":";
+        static final String STL      = NSManager.STL;
+        static final String CUSTOM   = NSManager.CUSTOM;
         
 	public static final String BOUND    = "bound";
 	public static final String COUNT    = "count";
@@ -101,7 +102,8 @@ public class Processor {
         private static final String XT_VARIABLES= EXT + "variables";
         private static final String XT_EDGE     = EXT + "edge";
         private static final String XT_TRIPLE   = EXT + "triple";
-        static final String XT_MAIN     = EXT + "main";
+        static public final String XT_MAIN     = EXT + "main";
+        static public final String FUN_XT_MAIN = EXT_PREF + "main";
        
 
 	private static final String PLENGTH = "pathLength";
@@ -364,7 +366,8 @@ public class Processor {
 	
 	public static Hashtable<String, Integer> table;
 	public static Hashtable<Integer, String> tname, toccur;
-
+    private String name;
+    
 	Processor(){            
         }
         
@@ -482,6 +485,7 @@ public class Processor {
 	}
                             
         void prepare(ASTQuery ast) {
+            name = term.getLabel();
         if (term.isFunction()) {
             switch (oper()) {
                 case ExprType.IN:
@@ -511,7 +515,9 @@ public class Processor {
                 case ExprType.EXTERNAL:
                     compileExternal(ast);
                     break;
-               
+                case ExprType.CUSTOM:
+                    compileCustom(ast);
+                    break;
             }
         }
         
@@ -879,6 +885,9 @@ public class Processor {
 				name.startsWith(RDFS.RDFPrefix) || name.startsWith(RDFS.RDF)){
 				n = ExprType.CAST;
 			}
+                        else if (name.startsWith(CUSTOM)){
+				n = ExprType.CUSTOM;
+			}
 			else if (name.startsWith(KeywordPP.CORESE_PREFIX)){
 				n = ExprType.EXTERNAL;
 			}
@@ -939,7 +948,7 @@ public class Processor {
                 case ExprType.LET:
                     processLet(ast);
                     break;
-                                   
+                                  
                     
             }
         }
@@ -1278,6 +1287,15 @@ public class Processor {
 		}
 		return null;
 	}
+        
+        void compileCustom(ASTQuery ast){
+            name = term.getLabel().substring(CUSTOM.length());
+        }
+        
+        // for custom extension function 
+        String getShortName(){
+            return name;
+        }
 
     /**
      * @return the define

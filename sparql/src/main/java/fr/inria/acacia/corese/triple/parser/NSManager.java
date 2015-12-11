@@ -49,6 +49,7 @@ public class NSManager {
     public static final String EXT        = ExpType.EXT;
     public static final String KGRAM      = ExpType.KGRAM;
     public static final String SPARQL     = ExpType.SPARQL;
+    public static final String CUSTOM     = ExpType.CUSTOM;
     public static final String KPREF      = ExpType.KPREF;
     // extended named graph: eng:describe eng:queries
     public static final String KGEXT      = ExpType.KGRAM + "extension/";    
@@ -204,6 +205,7 @@ public class NSManager {
         def.put(EXT, EXT_PREF);
         def.put(ExpType.UXT, "us");
         def.put(ExpType.DT, "dt");
+        def.put(CUSTOM, "cs");
         def.put(SPARQL, SPARQL_PREF);
     }
 

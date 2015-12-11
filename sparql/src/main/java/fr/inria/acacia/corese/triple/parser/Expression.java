@@ -97,6 +97,10 @@ implements Regex, Filter, Expr {
 	public Expression star(){
 		return Term.function(Term.STAR, this);
 	}
+        
+        public String getShortName(){
+            return name;
+        }
 	
 	public String getName(){
 		return name;
@@ -126,6 +130,7 @@ implements Regex, Filter, Expr {
 		name=str;
 	}
 	
+        @Override
 	public boolean isSystem(){
 		return isSystem;
 	}
@@ -134,13 +139,27 @@ implements Regex, Filter, Expr {
 		isSystem = b;
 	}
         
+        @Override
+        public boolean isTrace() {
+            return false;
+        }
+        
+        @Override
+        public boolean isDebug() {
+            return false;
+        }
+        
+        public boolean isTester(){
+            return false;
+        }
+        
         public boolean isExport(){
 		return false;
 	}
 	
 	public void setExport(boolean b){
 	}
-	
+        	
 	public boolean isArray(){
 		return false;
 	}

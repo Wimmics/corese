@@ -899,6 +899,9 @@ public class Term extends Expression {
             return list;
         }
 	
+        public String getShortName(){
+            return proc.getShortName();
+        }
 	
 	public Expr getExp(int i){
 		return proc.getExp(i);

@@ -42,6 +42,7 @@ public class Interpreter implements Evaluator, ExprType {
     static Extension extension;
     int mode = KGRAM_MODE;
     boolean hasListener = false;
+    boolean isDebug = false;
     public static int count = 0;
     Object ERROR_VALUE = null;
     
@@ -66,6 +67,10 @@ public class Interpreter implements Evaluator, ExprType {
         if (o instanceof Eval) {
             kgram = (Eval) o;
         }
+    }
+    
+    public void setDebug(boolean b){
+        isDebug = b;
     }
     
     public Eval getEval(){
@@ -350,6 +355,7 @@ public class Interpreter implements Evaluator, ExprType {
 
             case STL_AND:
             case EXTERNAL:
+            case CUSTOM:
             case UNDEF:
             case STL_PROCESS:
             case LIST:
@@ -737,6 +743,10 @@ public class Interpreter implements Evaluator, ExprType {
         //count++;
         Expr fun = def.getFunction(); //getExp(0);
         env.set(def, fun.getExpList(), values);
+        if (isDebug || def.isDebug()){
+            System.out.println(exp);
+            System.out.println(env.getBind());
+        }
         Object res;
         if (def.isSystem() && env.getQuery() != def.getPattern()){
             // function is export and has exists {}
@@ -746,7 +756,10 @@ public class Interpreter implements Evaluator, ExprType {
         else {
             res = eval(def.getBody(), env, p); 
         }
-        env.unset(def, fun.getExpList());        
+        env.unset(def, fun.getExpList()); 
+        if (isDebug || def.isDebug()){
+            System.out.println(exp + " : " + res);
+        }
         return res;
     }
     

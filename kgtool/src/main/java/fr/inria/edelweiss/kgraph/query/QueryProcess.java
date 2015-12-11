@@ -26,7 +26,18 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.load.SPARQLResult;
+import fr.inria.edelweiss.kgtool.load.Service;
 import fr.inria.edelweiss.kgtool.util.Extension;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -150,7 +161,7 @@ public class QueryProcess extends QuerySolver {
             Eval eval = exec.createEval(q);
             return eval;
 	}
-	
+        	
 	/**
 	 * isMatch = true: 
 	 * Each Producer perform local Matcher.match() on its own graph for subsumption
@@ -259,14 +270,7 @@ public class QueryProcess extends QuerySolver {
 	public Mappings query(String squery) throws EngineException{
 		return query(squery, null, null);
 	}
-
-	
-	
-//	public Mappings query(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
-//		Dataset ds = Dataset.create(defaut, named);
-//		return query(squery, map, ds);
-//	}	
-	
+		
 	/**
 	 * defaut and named specify a Dataset
 	 * if the query has no from/using (resp. named), kgram use defaut (resp. named) if it exist
@@ -435,6 +439,12 @@ public class QueryProcess extends QuerySolver {
 	Mappings query(Query q, Mapping m, Dataset ds) throws EngineException{
 		
 		pragma(q);
+                ASTQuery ast = getAST(q);
+                if (ast.hasService()){
+                    //@service <http://dbpedia.org/sparql>
+                    //select where {}
+                    return service(q, ast);
+                }
 		Mappings map;
 		
 		if (q.isUpdate() || q.isRule()){
@@ -527,7 +537,22 @@ public class QueryProcess extends QuerySolver {
 		}
 	}
 	
-	
+	/**
+         * Annotated query with a service
+         * send query to server
+         * @service <http://dbpedia.org/sparql>
+         * select where {}     
+         */
+        Mappings service(Query q, ASTQuery ast) throws EngineException  {
+            Service serv = new Service(ast.getService());
+            try {
+                return serv.query(q);
+            } catch (LoadException ex) {
+                throw new EngineException(ex);
+            }
+        }
+        
+    
 	
 	/**
 	 * Compute a construct where query considered as a (unique) rule

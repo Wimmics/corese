@@ -29,6 +29,8 @@ public interface Evaluator {
 	void setMode(int mode);
 	
 	int getMode();
+        
+        void setDebug(boolean b);
 
 	
 	/**

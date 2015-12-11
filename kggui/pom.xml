@@ -17,7 +17,12 @@
     <dependencies>            
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
-            <artifactId>kgengine</artifactId>
+            <artifactId>engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>kgenv</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

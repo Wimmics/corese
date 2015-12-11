@@ -1,0 +1,15 @@
+select * where {
+  ?x a ?t ; rdfs:label ?l
+}
+
+function xt:produce(?q){
+  let ((?s, ?p, ?o) = ?q){
+    let (?g = 
+      construct { ?x ?p ?y } 
+      where { service <http://fr.dbpedia.org/sparql> {
+	select * where { ?x ?p ?y ; rdfs:label ?l } limit 10
+      }}){
+      ?g
+    }
+  }
+}

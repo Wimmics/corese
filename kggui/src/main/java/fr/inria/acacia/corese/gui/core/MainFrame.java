@@ -28,7 +28,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -44,11 +43,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.WriterAppender;
 
-import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
 import fr.inria.acacia.corese.gui.query.Buffer;
-import fr.inria.edelweiss.kgengine.GraphEngine;
+import fr.inria.acacia.corese.gui.query.GraphEngine;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -71,7 +69,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-11-11";
+    private static final String TITLE = "Corese/KGRAM 3.1 - Wimmics INRIA I3S - 2015-12-24";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -1432,7 +1430,7 @@ public class MainFrame extends JFrame implements ActionListener {
         return ongletListener;
     }
 
-    public IEngine getMyCorese() {
+    public GraphEngine getMyCorese() {
         return myCorese;
     }
 
@@ -1443,7 +1441,7 @@ public class MainFrame extends JFrame implements ActionListener {
     
     void setMyCoreseNewInstance(boolean rdfs) {
         // Index the graph using int index instead of IDatatype values
-        Graph.setCompareIndex(true);
+        //Graph.setCompareIndex(true);
         myCorese = GraphEngine.create(rdfs);       
     }
     

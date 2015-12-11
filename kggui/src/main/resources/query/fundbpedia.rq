@@ -1,0 +1,14 @@
+prefix r: <http://fr.dbpedia.org/resource/>
+select (us:dbpedia(?x, rdfs:label) as ?t)
+where {
+  
+}
+values ?x {r:Auguste r:Tibère r:Caligula}
+
+function us:dbpedia(?x, ?p) {
+  let((?l) =
+    service <http://fr.dbpedia.org/sparql> {
+	?x ?p ?l
+      })
+  {?l}
+}

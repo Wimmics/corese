@@ -102,8 +102,12 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
         public Iterable getLoop(){
             return this;
         }
-	
-	void init(Query q, boolean subEval){
+        
+	public void init(Query q){
+            init(q, false);
+        }
+        
+	 void init(Query q, boolean subEval){
 		isDistinct  = ! subEval && q.isDistinct();
 		isListGroup = q.isListGroup();
 		setSelect(q.getSelect());

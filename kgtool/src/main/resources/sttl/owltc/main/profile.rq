@@ -1,7 +1,7 @@
 template st:profile {  
 
 }
-where {
+where {}
 
 function st:aggregate(?x) { st:agg_and(?x) }
-}
+

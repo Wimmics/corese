@@ -2,7 +2,7 @@ template {
 
 
 }
-where {
+where {}
 export { 
 
 function xt:turtle() {  
@@ -51,4 +51,3 @@ function st:list(?t) {
 
 }
 
-}

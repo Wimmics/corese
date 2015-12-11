@@ -7,7 +7,7 @@ template {
     "\n" cal:month(?m) "\n"
     "Mo Tu We Th Fr Sa Su \n"
     group {
-        if (?n = 1, xt:space(cal:num(?day) - 1), "")
+        if (?n = 1, us:space(cal:num(?day) - 1), "")
         if (?n < 10, " ", "") ?n " "
         if (?day = "Sunday", "\n", "")
         ; separator = ""
@@ -19,11 +19,11 @@ where {
     bind (unnest(xt:iota(cal:days(?y, ?m))) as ?n)
     bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?date)
     bind (xt:day(?date) as ?day)
-
-    function xt:space(?n) { 
-      if (?n = 0, "", concat("   " , xt:space(?n - 1)))
-    }
 }
 group by ?m
 order by ?m
 values ?y { 2015 }
+
+function us:space(?n) { 
+   if (?n = 0, "", concat("   " , us:space(?n - 1)))
+}

@@ -10,7 +10,7 @@
 template st:profile(?in) {
   
 }
-where {
+where {}
 
 function st:process(?in) {  
       if (isURI(?in), st:protect(?in),	
@@ -29,4 +29,3 @@ function st:protect(?in) {
     }
   }
 
-}

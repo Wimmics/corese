@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Nov 30 09:07:30 CET 2015
+Thu Dec 10 10:51:33 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -123,13 +123,15 @@ where {
     bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?day)
     bind (xt:day(?day) as ?jour)
     
-    function xt:space(?n) {
-      if (?n = 0, "", concat("   " , xt:space(?n - 1))) 
-    }
+    
 }
 group by ?m
 order by ?m
 values ?y { 2015 }
+
+function xt:space(?n) {
+      if (?n = 0, "", concat("   " , xt:space(?n - 1))) 
+    }
 
 ]]>
 </body>
@@ -180,7 +182,7 @@ prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:profile {
                     
 }
-where {
+where {}
 
   function xt:space(?n) { 
          if (?n = 0, "", concat("   " , xt:space(?n - 1)))
@@ -223,7 +225,7 @@ where {
     if (st:get(st:date, st:romain), xt:romain(?y), ?y)
   }
 
-}
+
     
 
 ]]>

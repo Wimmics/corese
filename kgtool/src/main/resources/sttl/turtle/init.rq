@@ -6,7 +6,7 @@
 template st:profile(?in) {
   
 }
-where {
+where {}
 
  function st:process(?in) {
       if (isBlank(?in), st:apply-templates(?in), st:turtle(?in))
@@ -16,4 +16,3 @@ where {
     st:turtle(?in)
  }
  
-}

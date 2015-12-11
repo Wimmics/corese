@@ -6,10 +6,9 @@
 template st:profile(?in) {    
     
 }
-where {
+where {}
 
 function st:process(?in) { st:turtle(?in) }
      
 function st:default(?in) { st:turtle(?in) }
 
-}

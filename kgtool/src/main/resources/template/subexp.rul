@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Nov 30 09:07:30 CET 2015
+Thu Dec 10 10:51:33 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -12,7 +12,7 @@ Mon Nov 30 09:07:30 CET 2015
 template st:profile {
  
 }
-where {
+where {}
 
   function st:aggregate(?x) { st:agg_and(?x) }
   
@@ -22,7 +22,7 @@ where {
     if (st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
   }
 
-}
+
 
 ]]>
 </body>

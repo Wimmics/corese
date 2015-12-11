@@ -1,10 +1,10 @@
 template st:profile {
 
 }
-where {
+where {}
 
  function st:aggregate(?x) { st:agg_and(?x) }
   
   function st:err(?x) { URI(concat(st:, "owltc/", str(?x))) }
   
-}
+

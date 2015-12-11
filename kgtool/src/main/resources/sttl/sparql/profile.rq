@@ -1,7 +1,7 @@
 template st:profile {
   
 }
-where {
+where {}
 
 function st:protocol(?uri) {
     if (st:get(st:protocol, st:ajax), 
@@ -18,5 +18,10 @@ function st:protocol(?uri) {
   function st:plink(?uri) {
     st:protocol(st:link(?uri))
   }
+  
+  # LOD URI hypertext link generated as is (see display.rq)
+  # set by profile.ttl : st:param [ st:lod (URI) ]
+  function st:lod(?x){
+     coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
+  }
 
-}

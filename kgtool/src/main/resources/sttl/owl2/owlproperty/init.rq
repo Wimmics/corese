@@ -13,6 +13,5 @@ template st:profile(?in) {
      
 }
 where {
-
-function st:process(?in) {  owlfs:process(?in) }
 }
+function st:process(?in) {  owlfs:process(?in) }

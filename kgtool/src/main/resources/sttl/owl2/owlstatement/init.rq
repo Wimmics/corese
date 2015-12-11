@@ -12,7 +12,7 @@ prefix owlfs: <http://ns.inria.fr/sparql-template/owlfs/>
 template st:profile(?in) {
     
 }
-where {
+where {}
 
 function st:process(?in) {  owlfs:process(?in) }
 
@@ -21,4 +21,3 @@ function st:process(?in) {  owlfs:process(?in) }
     if (?x = "", ?x, concat("\n", ?x))
   }
 
-}

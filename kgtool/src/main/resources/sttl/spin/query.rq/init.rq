@@ -10,6 +10,7 @@ template st:profile {
    
 }
 where {
+}
 
  function st:process(?in) { 
         if (st:get(st:mode, st:html), st:html(?in), st:std(?in))
@@ -69,4 +70,3 @@ where {
 	  ?p)
       }
     }
-}

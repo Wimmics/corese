@@ -61,6 +61,7 @@ public class Transformer implements ExpType {
 	isSPARQLCompliant = true,
 	isSPARQL1 = true;
     private boolean isUseBind = true;
+    private boolean isGenerateMain = true;
 	String namespaces, base;
         private Dataset dataset;
 	BasicGraphPattern pragma;
@@ -153,7 +154,9 @@ public class Transformer implements ExpType {
 		if (pragma != null){
 			p.compile(pragma);
 		}
-		
+                
+                generateMain();
+
                 if (ast.isDescribe()){
                     // need to collect select * before compiling 
                     ast.validate();
@@ -185,6 +188,21 @@ public class Transformer implements ExpType {
                 error(q, ast);
 		return q;
 	}
+        
+        /**
+         * function xt:main(){}
+         * ->
+         * select (xt:main() as ?main)
+         */
+        void generateMain() {
+            if (isGenerateMain) {
+                Expr exp = ast.getDefine().get(Processor.XT_MAIN, 0);
+                if (exp != null) {
+                    ast.defSelect(new Variable(ASTQuery.MAIN_VAR), 
+                            ast.createFunction(Processor.FUN_XT_MAIN));
+                }
+            }
+        }
                      
         /**
          * select * 
@@ -419,7 +437,7 @@ public class Transformer implements ExpType {
 	}
 	
         /**
-         * Sunquery is a construct where        
+         * Subquery is a construct where        
          */
         Query constructQuery(ASTQuery ast){
             Transformer t = Transformer.create();
@@ -1638,6 +1656,20 @@ public class Transformer implements ExpType {
      */
     public void setUseBind(boolean isUseBind) {
         this.isUseBind = isUseBind;
+    }
+
+    /**
+     * @return the isGenerateMain
+     */
+    public boolean isGenerateMain() {
+        return isGenerateMain;
+    }
+
+    /**
+     * @param isGenerateMain the isGenerateMain to set
+     */
+    public void setGenerateMain(boolean isGenerateMain) {
+        this.isGenerateMain = isGenerateMain;
     }
 
 	

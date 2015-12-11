@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.tool.Message;
+import java.util.Collection;
 
 /**
  * Proxy between KGRAM compiler and Corese compiler
@@ -138,6 +139,10 @@ public class CompilerKgram implements ExpType, Compiler {
 //		}
 		return new NodeImpl(at);
 	}
+        
+        public Collection<Node> getVariables(){
+            return varTable.values();
+        }
 	
 	public Edge compile(Triple tt) {
 		EdgeImpl edge = new EdgeImpl(tt);

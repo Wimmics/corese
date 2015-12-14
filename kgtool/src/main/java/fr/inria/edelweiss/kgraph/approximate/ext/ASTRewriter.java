@@ -22,9 +22,10 @@ import fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.CLASS_HIERARCHY;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_EQUALITY;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_LEX;
-import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_SS;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_WN;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.PROPERTY_EQUALITY;
-import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_LEX;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_WN;
 import fr.inria.edelweiss.kgraph.logic.OWL;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class ASTRewriter implements QueryVisitor {
     final static int S = 1, P = 2, O = 3;
     private final static String VAR = "?_var_";
     public final static String APPROXIMATE = "approximate";
-    private int count = 0;
+    private int countVar = 0;
     private ASTQuery ast;
 
     @Override
@@ -65,14 +66,16 @@ public class ASTRewriter implements QueryVisitor {
     }
 
     private void visit(Exp exp) {
+        List<Exp> exTemp = new ArrayList<Exp>();
+        exTemp.addAll(exp.getBody());
+
         //1. iterate each query pattern in SPARQL
-        for (Exp e2 : exp) {
+        for (Exp e2 : exTemp) {
             if (e2.isTriple() && !e2.isFilter()) {
                 process(exp, e2.getTriple());
-                continue;
             }
 
-            if (e2.isOptional()) {//todo: ohter types to be added, minus, exist, etc ...
+            if (e2.isOptional() || e2.isMinus()) {//todo: ohter types to be added, minus, exist, etc ...
                 for (Exp e21 : e2) {
                     visit(e21);
                 }
@@ -82,7 +85,7 @@ public class ASTRewriter implements QueryVisitor {
 
     private void process(Exp exp, Triple t) {
         //for(Exp exp: ast.gets)
-        msg("------ BEFORE -----\n" + exp, true);
+        msg("------ BEFORE -----\n" + exp, false);
 
         //1 pre process, choose strategies for each atom
         Map<Integer, TripleWrapper> map = new HashMap<Integer, TripleWrapper>();
@@ -112,7 +115,7 @@ public class ASTRewriter implements QueryVisitor {
             exp.add(option);
         }
 
-        msg("\n------ AFTER -----\n" + exp, true);
+        msg("\n------ AFTER -----\n" + exp, false);
     }
 
     //choose the Strategy for the URI and put them into a list
@@ -127,21 +130,15 @@ public class ASTRewriter implements QueryVisitor {
         if (atom.isConstant() && !atom.isLiteral()) {
 
             //S P O
-            add(lst, URI);
+            add(lst, URI_WN);
+            add(lst, URI_LEX);
             add(lst, URI_EQUALITY);
 
             //P
             if (pos == P && !atom.getName().equalsIgnoreCase(RDF.TYPE)) { //propery does not have rdfs:label & rdfs:comment
                 add(lst, PROPERTY_EQUALITY);
-                //add(lst, PROPERTY_DR);
-
                 //S&O
-            } else {//property owl:equivalentProperty
-
-                //add(lst, URI_LABEL);
-                //add(lst, URI_COMMENT);
-                //pattern A rdf:type B
-                //to test
+            } else {
                 if (pos == O && triple.getPredicate().getName().equalsIgnoreCase(RDF.TYPE)) {
                     add(lst, CLASS_HIERARCHY);
                 }
@@ -155,7 +152,7 @@ public class ASTRewriter implements QueryVisitor {
 
             //@lang=en ??
             if (atom.getLang() == null || (atom.getLang() != null && atom.getLang().equalsIgnoreCase("en"))) {
-                add(lst, LITERAL_SS);
+                add(lst, LITERAL_WN);
             }
         }
 
@@ -172,7 +169,7 @@ public class ASTRewriter implements QueryVisitor {
             return;
         }
 
-        Variable var = new Variable(VAR + count++);
+        Variable var = new Variable(VAR + countVar++);
 
         //1. get strategies in group G1 and merge them in one filter
         List<StrategyType> merge = ApproximateStrategy.getMergableStrategies(tw.getStrategies());
@@ -230,8 +227,7 @@ public class ASTRewriter implements QueryVisitor {
 
     //add a filter with a specific function and parameters
     private Triple createFilter(Variable var, Atom atom, String algs) {
-        Term function = ast.createFunction(ast.createQName(APPROXIMATE));
-        Term.function(APPROXIMATE);
+        Term function = Term.function(APPROXIMATE);
         function.add(var);
         function.add(atom);
         function.add(Constant.create(algs, qrdfsLiteral));

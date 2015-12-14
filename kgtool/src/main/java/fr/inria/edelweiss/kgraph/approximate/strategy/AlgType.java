@@ -11,9 +11,12 @@ import java.util.List;
 public enum AlgType {
 
     empty,//no algorithm implemented
-    ng, jw, ch, wn, eq,
-    // dr, eq,
-    mult; //combiend algorithm //combiend algorithm 
+    ng, //n-gram
+    jw, //jaro-winkler (edit distance)
+    ch, //class hierarchy (empty now)
+    wn, //wordnet
+    eq, //equality
+    mult; //combiend algorithm
 
     /**
      * Return the list of all types of single algorithms

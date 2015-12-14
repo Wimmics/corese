@@ -1,0 +1,18 @@
+select 
+  (us:send(<http://localhost:8080/sparql>, us:test, ?n) as ?res)
+where {
+bind (unnest(xt:iota(10)) as ?n)
+}
+
+function us:send(?serv, ?fun, ?x){
+  let ((?r) = 
+    select * where {
+      service ?serv {
+	select (eval(?fun, ?x) as ?r) where {}
+      }})
+  {?r}
+}
+
+function us:test(?x){
+  ?x + 1
+}

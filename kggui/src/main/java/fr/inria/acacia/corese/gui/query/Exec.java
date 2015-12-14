@@ -4,19 +4,13 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-//import fr.inria.acacia.corese.util.Time;
-import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.Event;
-import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.core.Graph;
-//import fr.inria.edelweiss.kgramenv.util.QueryExec;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.util.logging.Level;
@@ -60,7 +54,7 @@ public class Exec extends Thread {
 	 * run the thread in //
 	 */
 	public void run(){
-		IResults res;
+		Mappings res;
                 if (isValidate()){
                     res = validate();
                 }
@@ -72,12 +66,12 @@ public class Exec extends Thread {
 	}
 	
 	
-	IResults query(){
+	Mappings query(){
 		QueryExec exec =  QueryExec.create(frame.getMyCorese());
 		if (debug) debug(exec);
 		Date d1 = new Date();
 		try {
-			IResults l_Results = exec.SPARQLQuery(query);
+			Mappings l_Results = exec.SPARQLQuery(query);
 			Date d2 = new Date();
                         System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
 			return l_Results;
@@ -88,12 +82,12 @@ public class Exec extends Thread {
 		} 
 		return null;
 	}
-        
+         
         /**
          * Translate SPARQL query to SPIN graph
          * Apply spin typecheck transformation
          */
-        IResults validate(){
+        Mappings validate(){
             try {
                 SPINProcess sp = SPINProcess.create();
                 Graph qg = sp.toSpinGraph(query);
@@ -102,11 +96,11 @@ public class Exec extends Thread {
                 gg.setNamedGraph(qgraph, qg);
                 QueryProcess exec = QueryProcess.create(gg, true);
                 Mappings map = exec.query(qvalidate);
-                return QueryResults.create(map);                
+                return map;                
             } catch (EngineException ex) {
                 java.util.logging.Logger.getLogger(Exec.class.getName()).log(Level.SEVERE, null, ex);
             }
-            return QueryResults.create(new Mappings());
+            return new Mappings();
         }
 
 	

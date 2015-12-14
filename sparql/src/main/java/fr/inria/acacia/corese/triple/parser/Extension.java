@@ -70,12 +70,13 @@ public class Extension {
      */
     void defineFunction(Expression exp){
         funList.add(exp);
+        define(exp);
     }
     
     public List<Expression> getFunList(){
         return funList;
     }
-
+    
     /**
      *
      * exp: function(st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1)))

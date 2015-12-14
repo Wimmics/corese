@@ -1,0 +1,8 @@
+function xt:main(){
+  xt:tune(xt:listen)
+}
+
+function xt:end(?q, ?ast, ?ms){
+  xt:display(?ast);
+  xt:display(?ms)
+}

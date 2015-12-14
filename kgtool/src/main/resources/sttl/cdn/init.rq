@@ -1,7 +1,7 @@
 template st:profile {
 
 }
-where {
+where {}
 
 function st:process(?x) {
     if (isLiteral(?x), xsd:string(?x), st:apply-templates(?x))
@@ -34,4 +34,3 @@ function st:process(?x) {
   function st:plink(?uri) {
       st:protocol(st:link(?uri))
   }
-}

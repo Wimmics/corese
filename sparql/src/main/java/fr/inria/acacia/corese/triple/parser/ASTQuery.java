@@ -271,6 +271,9 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     private boolean isFunctional;
     
     private final Map<String, List<String>> approximateSearchOptions = new HashMap<String, List<String>>();
+    private String service;
+    
+    
     /**
      * @return the defaultDataset
      */
@@ -592,7 +595,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         void define(Expression fun){
             Expression def = fun; //.getArg(0);
             Expression t = def.getFunction(); //Arg(0);
-            getGlobalAST().getDefine().define(def);
+           // getGlobalAST().getDefine().define(def);
             getGlobalAST().getUndefined().remove(t.getLabel());
         }       
               
@@ -1034,19 +1037,21 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     /**
      * function name(el) { exp }
      * ->
-     * function (name(el) = exp)
+     * function (name(el), exp)
      */
-     public  Term defineFunction(Constant name, ExpressionList el, Expression exp) {
-    	Term fun  = createFunction(name, el);
-        //Term body = createTerm(SEQ, fun, exp);
-    	//Term def  = createFunction(Constant.create(Processor.FUNCTION), body);
-        Term def = new Function(fun, exp);
+     public  Function defineFunction(Constant name, ExpressionList el, Expression exp, Metadata annot) {
+    	Term fun = createFunction(name, el);
+        Function def = new Function(fun, exp);
+        annotate(def, annot);       
         define.defineFunction(def);
-        if (name.getLabel().equals(Processor.XT_MAIN)){
-            defSelect(new Variable(MAIN_VAR), createFunction(name));
-        }
     	return def;
     }
+      
+    public void annotate(Function t, Metadata la) {
+       t.annotate(la);
+    }
+    
+
      
     public Expression defineBody(ExpressionList lexp){
          Expression exp;
@@ -2450,6 +2455,18 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     public void defNamespace(String prefix, String ns){
     	defNSNamespace(prefix, ns);
     	defPPNamespace(prefix, ns);
+    }
+    
+    public void defService(String ns){
+        service = ns;
+    }
+    
+    public String getService(){
+        return service;
+    }
+    
+    public boolean hasService(){
+        return service != null;
     }
     
     public void defNSNamespace(String prefix, String ns){

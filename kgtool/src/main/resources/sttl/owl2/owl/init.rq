@@ -10,7 +10,7 @@ prefix owlfs: <http://ns.inria.fr/sparql-template/owlfs/>
 template st:profile(?in) {
    
 }
-where {
+where {}
 
  function st:process(?in) {  
       if (isURI(?in), owlfs:pretty(?in),	
@@ -51,4 +51,3 @@ export {
        ||  strstarts(?t, xsd:))
   }
 
-}

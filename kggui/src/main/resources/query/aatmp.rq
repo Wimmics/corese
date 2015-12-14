@@ -1,0 +1,38 @@
+#
+# Call method us:surface defined on us:Figure classes
+#
+select * (us:method(us:surface, ?x) as ?m) 
+where {
+  ?x a ?tt filter(?tt != xt:Method)
+}
+
+function us:surface(?x){
+  eval (us:method(us:surface, ?x), ?x)
+}
+
+function us:method(?m, ?x){ kg:display(?x) ;
+  for (?ms in
+    select * where { filter xt:display(?t)
+    ?x rdf:type ?t . 
+#    ?fun a xt:Method ; xt:name ?m ; xt:input(?t)
+})
+  { kg:display(?ms) }
+}
+
+function us:surfaceRectangle(?x){
+  let ((?w, ?l) = select * where { ?x us:width ?w ; us:length ?l }){
+    ?w * ?l
+  }
+}
+
+function us:surfaceTriangle(?x){
+  let ((?h, ?b) = select * where { ?x us:height ?h ; us:base ?b }){
+    (?h * ?b) / 2
+  }
+}
+
+function us:surfaceCircle(?x){
+  let ((?r) = select * where { ?x us:radius ?r }){
+     3.14159 * power(?r, 2) 
+  }
+}

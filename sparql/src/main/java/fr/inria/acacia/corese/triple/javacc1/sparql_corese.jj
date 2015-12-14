@@ -179,6 +179,11 @@ PARSER_BEGIN(SparqlCorese)
     	astq.defNamespace(p, ns);
     	astu.defNamespace(p, ns);
     }
+
+    void defService(String ns){
+    	astq.defService(ns);
+    	astu.defService(ns);
+    }
     
     void defBase(String s){
     	astq.defBase(s);
@@ -296,8 +301,12 @@ Exp Query() : { Exp stack; }
   { return stack; }
 }
 
-void Defun(Exp stack) : {} {
-    ( Function(stack) | Export(stack) ) +   
+void Defun(Exp stack) : { Metadata la = null;} {
+    (
+    ( la = Annotate() (Function(stack, la) | Package(stack, la))) 
+    //deprecated
+    | Export(stack)  
+    ) +   
 }
 
 Exp LoadPattern() : {Exp stack;}
@@ -328,7 +337,8 @@ Exp LoadPattern2() : {Exp stack;}
 void Prolog() : {}
 {
      
-	(  BaseDecl() | PrefixDecl() )*
+   (ServiceDecl())? 
+   (  BaseDecl() | PrefixDecl() )*
 }
 
 void BaseDecl() : { Token t; String s; Triple triple; }
@@ -336,6 +346,14 @@ void BaseDecl() : { Token t; String s; Triple triple; }
   (<BASE> | <ABASE>)   s = Q_IRI_ref() (<DOT>) ?
   {
 	defBase(s);
+  }
+}
+
+void ServiceDecl() : { Token t; String s; Triple triple; }
+{
+  (<SERVICE> | <ATSERVICE>)   s = Q_IRI_ref() (<DOT>) ?
+  {
+	defService(s);
   }
 }
 
@@ -1339,9 +1357,7 @@ void GraphPattern (Exp stack) : {}
 {
 (
 	(
-          Function(stack) 
-        | Export(stack)
-	| TriplesSameSubject(stack) 
+        TriplesSameSubject(stack) 
 	|
 	Constraint(stack) 
 	|
@@ -2513,16 +2529,29 @@ Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term 
   { return expression; } 
 }
 
-Term Function(Exp stack) : { Term term;   ExpressionList v; Constant cst; Expression body;}
+Function Function(Exp stack, Metadata la) : 
+{ Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
 {
   <FUNCTION> cst = IRIrefConst()
   v = ArgList(stack)
   body = Body(stack)
 
   { 
-  	term = astq.defineFunction(cst, v, body ); 
+  	term = astq.defineFunction(cst, v, body, la );        
   }
   { return term; }
+}
+
+Metadata Annotate() : {Token t; Metadata list = null;}
+{
+    (
+        (t = <ATEXPORT> | t = <ATPUBLIC> | t = <ATTRACE> | t = <ATDEBUG> | t = <ATTEST> )
+        { if (list == null) { list = new Metadata();}
+           list.add(t.image);
+        }
+    )*
+ 
+    { return list; }
 }
 
 Expression Body(Exp stack) : { ExpressionList body = new ExpressionList(); Expression exp = null;}
@@ -2535,11 +2564,22 @@ Expression Body(Exp stack) : { ExpressionList body = new ExpressionList(); Expre
     { return astq.defineBody(body) ; }
 }
 
+void Package(Exp stack, Metadata list) : { Function term; Metadata la; }
+{
+    (<PACKAGE>) ?       
+    <LBRACE> 
+        ( la = Annotate() term = Function(stack, la) 
+        { astq.annotate(term, list); } ) +
+    <RBRACE>
+}
+
+
+// @deprecated
 void Export(Exp stack) : { Term term; }
 {
     <EXPORT> 
     <LBRACE> 
-        ( term = Function(stack) { astq.exportFunction(term); } ) +
+        ( term = Function(stack, null) { astq.exportFunction(term); } ) +
     <RBRACE>
 }
 
@@ -2779,6 +2819,12 @@ TOKEN:
 | <APREFIX: "@prefix">
 | <ATLIST: "@list" >
 | <ATPATH: "@path" >
+| <ATEXPORT: "@export">
+| <ATPUBLIC: "@public">
+| <ATTRACE:  "@trace">
+| <ATDEBUG:  "@debug">
+| <ATTEST:   "@test">
+| <ATSERVICE:"@service">
 | <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	
 | <#A2Z: ["a"-"z","A"-"Z"]>
 | <#A2ZN: ["a"-"z","A"-"Z","0"-"9"]>
@@ -2946,6 +2992,7 @@ TOKEN [IGNORE_CASE] :
 | <XPATH: "xpath">
 | <FUNCTION: "function">
 | <EXPORT: "export">
+| <PACKAGE: "package">
 }
 
 TOKEN [IGNORE_CASE] :

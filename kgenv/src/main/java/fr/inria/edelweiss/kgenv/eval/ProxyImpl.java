@@ -55,6 +55,7 @@ public class ProxyImpl implements Proxy, ExprType {
     public static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String RDFTYPE = RDFNS + "type";
     Proxy plugin;
+    Custom custom;
     SQLFun sql;
     Evaluator eval;
     EvalListener el;
@@ -68,6 +69,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
     public ProxyImpl() {
         sql = new SQLFun();
+        custom = new Custom();
     }
 
     public void setEvaluator(Evaluator ev) {
@@ -628,6 +630,9 @@ public class ProxyImpl implements Proxy, ExprType {
                 // function://package.className
                 Processor proc = getProcessor(exp);
                 return proc.eval(param);
+                
+            case CUSTOM:
+                return custom.eval(exp, env, p, args);
 
             case KGRAM:
             case EXTERN:

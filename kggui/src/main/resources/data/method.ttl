@@ -1,0 +1,43 @@
+us:Circle    rdfs:subClassOf us:Figure 
+us:Rectangle rdfs:subClassOf us:Figure 
+us:Square    rdfs:subClassOf us:Rectangle 
+us:Pixel     rdfs:subClassOf us:Square 
+us:Triangle  rdfs:subClassOf us:Figure 
+
+us:cc a us:Circle ;
+us:radius 1.5 .
+
+us:rr a us:Rectangle ;
+us:width 2 ;
+us:length 3 .
+
+us:sq a us:Square ;
+us:side 2  .
+
+us:pp a us:Pixel ;
+us:side 1  .
+
+us:tt a us:Triangle ;
+us:height 2 ;
+us:base 3 .
+
+
+us:surfaceRectangle a xt:Method ;
+xt:name us:surface ;
+xt:input (us:Rectangle) ;
+xt:output xsd:double .
+
+us:surfaceSquare a xt:Method ;
+xt:name us:surface ;
+xt:input (us:Square) ;
+xt:output xsd:double .
+
+us:surfaceCircle a xt:Method ;
+xt:name us:surface ;
+xt:input (us:Circle) ;
+xt:output xsd:double .
+
+us:surfaceTriangle a xt:Method ;
+xt:name us:surface ;
+xt:input (us:Triangle) ;
+xt:output xsd:double .

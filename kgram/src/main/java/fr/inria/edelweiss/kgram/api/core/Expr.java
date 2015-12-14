@@ -16,8 +16,12 @@ public interface Expr {
 	// Exp as Object for modularity
 	Object getPattern();
         boolean isSystem();
+        boolean isTrace();
+        boolean isDebug();
+        boolean isTester();
 
 	String getLabel();
+        String getShortName();
 	
 	String getModality();
 

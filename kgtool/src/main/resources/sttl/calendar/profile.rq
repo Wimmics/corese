@@ -2,7 +2,7 @@ prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:profile {
                     
 }
-where {
+where {}
 
   function xt:space(?n) { 
          if (?n = 0, "", concat("   " , xt:space(?n - 1)))
@@ -41,9 +41,9 @@ where {
     if (?n < 10, concat(" ", ?n), ?n) 
   }
   
-  function xt:display(?y) {
+  function us:display(?y) {
     if (st:get(st:date, st:romain), xt:romain(?y), ?y)
   }
 
-}
+
     

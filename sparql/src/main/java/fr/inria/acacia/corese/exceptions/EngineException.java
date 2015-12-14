@@ -13,7 +13,7 @@ public class EngineException extends Exception {
 		super();
 	}
 	
-	protected EngineException(Exception e) {
+	public EngineException(Exception e) {
 		super(e);
 	}
 

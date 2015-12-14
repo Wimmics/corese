@@ -33,13 +33,10 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -52,8 +49,11 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JEditorPane;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
@@ -65,7 +65,6 @@ import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
 import org.graphstream.ui.layout.springbox.implementations.LinLog;
 import org.graphstream.ui.swingViewer.View;
 import org.graphstream.ui.swingViewer.Viewer;
-import org.graphstream.util.parser.TokenMgrError;
 
 /**
  * Onglet Query avec tout ce qu'il contient.
@@ -76,6 +75,9 @@ import org.graphstream.util.parser.TokenMgrError;
 public final class MyJPanelQuery extends JPanel {
 
     private static final long serialVersionUID = 1L;
+    static final String SERVICE = ""; //"@service <http://fr.dbpedia.org/sparql>";
+    static final String NL = System.getProperty("line.separator");
+
     //Boutton du panneau Query
     private JButton buttonRun, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
     private JButton buttonSearch;
@@ -101,6 +103,7 @@ public final class MyJPanelQuery extends JPanel {
     private String stylesheet = "";
     private CharSequence resultXML = "";
     private SparqlQueryEditor sparqlQueryEditor;
+    private JTextPane serviceEditor;
     private MainFrame mainFrame;
     private static final String KGSTYLE = ExpType.KGRAM + "style";
     private static final String KGGRAPH = Pragma.GRAPH;
@@ -121,7 +124,7 @@ public final class MyJPanelQuery extends JPanel {
     }
 
     private void initComponents() {
-
+      
         paneQuery = new JPanel(new BorderLayout());
         paneQuery.setName("paneQuery");
         setLayout(new BorderLayout(5, 5));
@@ -321,7 +324,16 @@ public final class MyJPanelQuery extends JPanel {
         hSeq2.addGap(30, 30, 30);
         hSeq2.addComponent(buttonRefreshStyle);
         hSeq2.addComponent(buttonDefaultStyle);
-        hParallel2.addGroup(hSeq2);
+        hParallel2.addGroup(hSeq2); 
+        
+        serviceEditor = new JTextPane();
+        serviceEditor.setText(SERVICE);
+        JPanel service = new JPanel(new BorderLayout());
+        service.setMaximumSize(new Dimension(400, 10));
+        service.add(serviceEditor);
+        service.setName("service");
+        hParallel2.addComponent(service, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+        
         hParallel2.addComponent(jp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
         hSeq1.addContainerGap();
         hSeq1.addGroup(hParallel2);
@@ -347,7 +359,10 @@ public final class MyJPanelQuery extends JPanel {
         vSeq1.addContainerGap();
         vSeq1.addGroup(vParallel2);
         vSeq1.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
+        
+        vSeq1.addComponent(service);
         vSeq1.addComponent(jp);
+        
         vSeq1.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
         vSeq1.addContainerGap();
         vParallel1.addGroup(vSeq1);
@@ -358,6 +373,10 @@ public final class MyJPanelQuery extends JPanel {
 
     public String getSparqlRequest() {
         return sparqlQueryEditor.getTextPaneQuery().getText();
+    }
+    
+     public String getSparqlService() {
+        return serviceEditor.getText();
     }
 
     public JTextPane getTextPaneQuery() {
@@ -454,17 +473,6 @@ public final class MyJPanelQuery extends JPanel {
         }
     }
 
-    public void display(IResults l_Results, MainFrame coreseFrame) {
-        if (l_Results == null || ! (l_Results instanceof QueryResults)) {
-            // go to XML for error message
-            tabbedPaneResults.setSelectedIndex(1);
-            return;
-        }
-        QueryResults qr = (QueryResults) l_Results;
-        Mappings map = qr.getMappings();
-        display(map, coreseFrame);
-    }
-
     void fillTable(Mappings map) {
         List<fr.inria.edelweiss.kgram.api.core.Node> vars = map.getQuery().getSelect();
         DefaultTableModel model = new DefaultTableModel();
@@ -505,7 +513,11 @@ public final class MyJPanelQuery extends JPanel {
     }
 
     void display(Mappings map, MainFrame coreseFrame) {
-
+        if (map == null) {
+                    // go to XML for error message
+                    tabbedPaneResults.setSelectedIndex(1);
+                    return;
+        }
         Query q = map.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
@@ -692,19 +704,22 @@ public final class MyJPanelQuery extends JPanel {
 
     private ActionListener createListener(final MainFrame coreseFrame, final boolean isTrace) {
 
-        return new ActionListener() {
+        return new ActionListener() {            
             public void actionPerformed(ActionEvent ev) {
                 textAreaXMLResult.setText("");
-                IResults l_Results = null;
+                Mappings l_Results = null;
                 scrollPaneTreeResult.setViewportView(new JPanel());
                 scrollPaneTreeResult.setRowHeaderView(new JPanel());
 
                 String l_message = new String("Parsing:\n");
-                IEngine engine = coreseFrame.getMyCorese();
+                GraphEngine engine = coreseFrame.getMyCorese();
 
                 try {
+                    String service = getSparqlService();
                     String query = sparqlQueryEditor.getTextPaneQuery().getText();
-
+                    if (! service.isEmpty()){
+                        query = service + NL + query;
+                    }
                     if (ev.getSource() == buttonToSPARQL) {
                         SPINProcess spin = SPINProcess.create();
                         String str = spin.toSparql(query);

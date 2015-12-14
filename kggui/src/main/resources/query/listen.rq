@@ -1,0 +1,27 @@
+#
+# Listen Corese activity
+#
+#@service <http://localhost:8080/sparql>
+function xt:main() {
+   xt:tune(xt:listen, true)
+}
+
+function xt:insert(?t){
+  xt:display(?t)
+}
+
+function xt:delete(?t){
+  xt:display(?t)
+}
+
+function xt:load(?p){
+  xt:display(?p)
+}
+
+function xt:begin(?q, ?ast){
+  xt:display(?ast)
+}
+
+function xt:end(?q, ?ast, ?ms){
+  xt:display(?ms)
+}

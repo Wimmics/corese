@@ -66,6 +66,10 @@ public class ASTUpdate {
 	public void defNamespace(String p, String ns){
 		prolog.defNamespace(p, ns);
 	}
+        
+        public void defService(String ns){
+            
+        }
 	
 	public void defBase(String s){
 		prolog.defBase(s);

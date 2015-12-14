@@ -5,7 +5,8 @@
 
 package fr.inria.acacia.corese.gui.core;
 
-import fr.inria.edelweiss.kgengine.GraphEngine;
+import fr.inria.acacia.corese.gui.query.GraphEngine;
+
 
 /**
  *

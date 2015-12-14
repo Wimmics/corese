@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgenv.eval;
 
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
@@ -44,6 +46,7 @@ import fr.inria.edelweiss.kgram.tool.MetaProducer;
  */
 public class QuerySolver  implements SPARQLEngine {
 	private static Logger logger = Logger.getLogger(QuerySolver.class);
+        public static final String MAIN_FUN = NSManager.EXT + "main";
 	
 	public static final int STD_ENTAILMENT  = 0;
 	public static final int RDF_ENTAILMENT  = 1;
@@ -71,6 +74,7 @@ public class QuerySolver  implements SPARQLEngine {
 	isDebug = false,
 	isOptimize = false,
 	isSPARQLCompliant = false;
+    private boolean isGenerateMain = true;
     private boolean isSynchronized = false;
     private boolean isPathType = false;
     private boolean isStorePath = true;
@@ -277,11 +281,23 @@ public class QuerySolver  implements SPARQLEngine {
             return createEval(q);
         }
         
-         public Eval createEval(Query q) throws EngineException {
+        public Eval createEval(Query q) throws EngineException {
             Eval kgram = makeEval();
             kgram.query(q);
             return kgram;
          }
+        
+        public IDatatype eval(String q) throws EngineException{
+            return eval(q, MAIN_FUN);
+        }
+        
+        public IDatatype eval(String q, String name) throws EngineException{
+            setGenerateMain(false);
+            Eval eval = createEval(q);
+            IDatatype dt = (IDatatype) eval.eval(name, new IDatatype[0]);
+            return dt;
+        }
+
        
 	     	
 	void init(Query q){
@@ -350,6 +366,7 @@ public class QuerySolver  implements SPARQLEngine {
         }
         
         void setParameter(Transformer transformer){
+            transformer.setGenerateMain(isGenerateMain);
             transformer.setNamespaces(NAMESPACES);
             transformer.setPragma(getPragma());
             transformer.setPlanProfile(getPlanProfile());
@@ -650,6 +667,20 @@ public class QuerySolver  implements SPARQLEngine {
      */
     public void setUseBind(boolean isUseBind) {
         this.isUseBind = isUseBind;
+    }
+
+    /**
+     * @return the isGenerateMain
+     */
+    public boolean isGenerateMain() {
+        return isGenerateMain;
+    }
+
+    /**
+     * @param isGenerateMain the isGenerateMain to set
+     */
+    public void setGenerateMain(boolean isGenerateMain) {
+        this.isGenerateMain = isGenerateMain;
     }
 	
 }

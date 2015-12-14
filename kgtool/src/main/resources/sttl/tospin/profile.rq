@@ -1,7 +1,7 @@
 template st:profile {
     
 }
-where {
+where {}
 
 function st:protocol(?uri) {
     if (st:get(st:protocol, st:ajax), 
@@ -24,4 +24,3 @@ function st:protocol(?uri) {
   }
 
 
-}

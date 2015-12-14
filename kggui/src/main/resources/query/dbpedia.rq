@@ -1,0 +1,32 @@
+#
+# Recursive query on top of DBpedia
+#
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+
+select (1 + kg:number() as ?n) ?suc where {
+  bind (unnest(us:search(r:Auguste, 1, 20)) as ?suc)
+}
+
+
+function us:search(?x, ?n, ?max){
+  let (?s = us:dbpedia(?x)){
+    if (?n = ?max) {xt:list(?s)}
+    else if (?s = xt:stop){xt:list()}
+    else {xt:cons(?s, us:search(?s, ?n + 1, ?max))}
+  }
+}
+
+function us:dbpedia(?x){
+  let (?ms = service <http://fr.dbpedia.org/sparql> {
+             ?x p:successeur  ?y})
+    {
+      if (xt:size(?ms) = 0){ xt:stop }
+	else {let ((?y) = ?ms) {?y}}
+    }
+}
+
+function xt:service(?u, ?q, ?ms){
+  xt:display(?ms)
+}

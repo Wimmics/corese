@@ -170,6 +170,7 @@ public class Query extends Exp implements Graphable, Loopable {
     
     private GenerateBGP generateBGP;
     private List<Edge> queryEdgeList;
+    private String service;
 
     
     
@@ -2093,6 +2094,14 @@ public class Query extends Exp implements Graphable, Loopable {
 
     boolean isService() {
         return isService;
+    }
+    
+    public void setService(String serv) {
+        this.service = serv;
+    }
+
+    public String getService() {
+        return service;
     }
 
     void setCompiled(boolean isCompiled) {

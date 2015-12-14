@@ -16,13 +16,13 @@ public class Tests {
 
     public static void main(String[] ars) throws EngineException {
         //init();
-        test(q_use_approximate_as_pure_function);
-        test2(q_with_optinoal);
-        test2(q_with_pragma);
-        test2(q_with_similarity);
+        //test(q_use_approximate_as_pure_function);
+        //test2(q_with_optinoal);
+        //test2(q_with_pragma);
+        //test2(q_with_similarity);
         test2(q_with_similarity_and_having);
-        test(q_without_more_but_with_sim);
-        test2(q_without_similarity);
+        //test(q_without_more_but_with_sim);
+        //test2(q_without_similarity);
     }
 
     static QueryProcess getExec() throws EngineException {
@@ -124,14 +124,14 @@ public class Tests {
             + "";
 
     static String q_with_similarity_and_having = Prefix
-            + "select more * (sim() as ?sim33)"
-            + "where {"
-            + "?person foaf:name \"John\" ."
+            + "select more * (sim() as ?sim33) "
+            + "where { "
+            + "?person foaf:name \"John\". "
             + "?person kg:listen 'my broken heart will go on' "
             + "} "
             + " order by desc(?sim33) "
             + " group by ?sim33 "
-            + " having (?sim33 > 0.3)"
+            //+ " having (?sim33 > 0.0) "
             + "";
 
     //use approximate() as pure filter function
@@ -139,6 +139,6 @@ public class Tests {
             + "select * "
             + "where {"
             + "?person foaf:name ?z ."
-            + "filter approximate(?person, kg:person, 'ng', 0.8, true)"
+            + "filter approximate(?person, kg:person, 'ng', 0.8)"
             + "} ";
 }

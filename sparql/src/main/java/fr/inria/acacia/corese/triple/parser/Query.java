@@ -25,7 +25,7 @@ public class Query extends Exp {
 	public ASTQuery getQuery(){
 		return ast;
 	}
-	
+        
 	public boolean isQuery(){
 		return true;
 	}

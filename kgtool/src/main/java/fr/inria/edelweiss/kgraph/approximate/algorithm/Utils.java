@@ -11,7 +11,7 @@ import com.ibm.icu.text.DecimalFormat;
 public class Utils {
 
     private final static String DEF_FORMAT = "##.####";
-    private final static boolean SHOW_MSG = !true;
+    private final static boolean SHOW_MSG = true;
 
     public static String format(double d, String format) {
         return new DecimalFormat(format).format(d);
@@ -21,15 +21,16 @@ public class Utils {
         return format(d, DEF_FORMAT);
     }
 
-    public static void msg(String alg, String s1, String s2, double sim) {
+    public static void msg(String alg, String s1, String s2, String parameter, double sim) {
         if (SHOW_MSG) {
-            System.out.println("\t [" + alg + "]: " + s1 + ", " + s2 + ", " + format(sim));
+            System.out.println("\t [" + alg + ", "+parameter+"]: " + s1 + ", " + s2 + ", " + format(sim));
         }
     }
 
     /**
      * Print a message
-     * @param msg 
+     *
+     * @param msg
      */
     public static void msg(String msg) {
         if (SHOW_MSG) {
@@ -56,5 +57,14 @@ public class Utils {
         String suffix = (index == -1) ? uri : uri.substring(index + 1);
         //msg("\t"+prefix + ":" + suffix);
         return new String[]{prefix, suffix};
+    }
+
+    /**
+     * Check if a string is null or empty
+     * @param s
+     * @return 
+     */
+    public static boolean empty(String s) {
+        return s == null || s.length() == 0;
     }
 }

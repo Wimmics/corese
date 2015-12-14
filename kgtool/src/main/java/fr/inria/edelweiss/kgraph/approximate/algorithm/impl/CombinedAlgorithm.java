@@ -32,14 +32,16 @@ public class CombinedAlgorithm extends BaseAlgorithm {
     }
 
     @Override
-    public double calculate(String s1, String s2) {
+    public double calculate(String s1, String s2, String parameter) {
         if (algs.isEmpty()) {
             return NA;
         }
 
+        //normally, the parameter needs to be processed beofre passing to each 
+        //specific algorithm
         double[] similarity = new double[algs.size()];
         for (int i = 0; i < this.algs.size(); i++) {
-            similarity[i] = this.algs.get(i).calculate(s1, s2);
+            similarity[i] = this.algs.get(i).calculate(s1, s2, parameter);
         }
 
         return Priority.sum(similarity, this.weights);

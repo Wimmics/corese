@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgraph.approximate.algorithm.SimAlgorithmFactory;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.Utils.format;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.Utils.msg;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
 import fr.inria.edelweiss.kgraph.query.PluginImpl;
 
 /**
@@ -33,6 +34,7 @@ public class AppxSearchPlugin implements ExprType {
     private String s1, s2, algs;
     private double threshold = 0;
     private boolean isMore = true;
+    private String parameter;
 
     //private boolean isCalculateSimilarity = true;
     public AppxSearchPlugin(PluginImpl p) {
@@ -83,7 +85,7 @@ public class AppxSearchPlugin implements ExprType {
             return TRUE;
         }
         ISimAlgorithm alg = SimAlgorithmFactory.createCombined(algs, true);
-        double sim = alg.calculate(s1, s2);
+        double sim = alg.calculate(s1, s2, parameter);
 
         return (sim > threshold) ? TRUE : FALSE;
     }
@@ -106,7 +108,7 @@ public class AppxSearchPlugin implements ExprType {
         } else {
             if (notExisted) { //2.1.2 otherwise, re-calculate
                 ISimAlgorithm alg = SimAlgorithmFactory.createCombined(algs, false);
-                singleSim = alg.calculate(s1, s2);
+                singleSim = alg.calculate(s1, s2, parameter);
             }
             combinedSim = appxEnv.aggregate(env, var, singleSim);
         }
@@ -129,6 +131,7 @@ public class AppxSearchPlugin implements ExprType {
     //args[3] = threshold
     //args[4] = false|true
     private boolean init(Object[] args) {
+        parameter = null;
         if (args == null || args.length != 4) {
             return false;
         }
@@ -155,20 +158,9 @@ public class AppxSearchPlugin implements ExprType {
         threshold = ((CoreseNumber) args[3]).doubleValue();
 
         if (dt1 instanceof CoreseURI) {
-        //todo
-            String[] uri1 = Utils.split(dt1.getLabel());
-            String[] uri2 = Utils.split(dt2.getLabel());
-
-            String prefix1 = uri1[0], prefix2 = uri2[0];
-            //if (!uri1[0].equalsIgnoreCase(uri2[0])) {
-            //return FALSE;
-            //} else 
-            {
-                s1 = uri1[1];
-                s2 = uri2[1];
-            }
-            //s1 = dt1.getLabel();
-            //s2 = dt2.getLabel();
+            s1 = dt1.getLabel();
+            s2 = dt2.getLabel();
+            parameter = BaseAlgorithm.OPTION_URI;
         } else if (dt1 instanceof CoreseStringLiteral) {
             s1 = ((CoreseStringLiteral) dt1).getStringValue();
             s2 = ((CoreseStringLiteral) dt2).getStringValue();

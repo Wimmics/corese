@@ -19,10 +19,15 @@ public class Jaro extends BaseAlgorithm {
      *
      * @param s1 the first input string
      * @param s2 the second input string
+     * @param parameter
      * @return a value between 0-1 of the similarity
      */
     @Override
-    public double calculate(final String s1, final String s2) {
+    public double calculate(String s1, String s2, String parameter) {
+        return calculate(s1, s2);
+    }
+
+    private double calculate(final String s1, final String s2) {
 
         //get half the length of the string rounded up - (this is the distance used for acceptable transpositions)
         final int halflen = ((Math.min(s1.length(), s2.length())) / 2) + ((Math.min(s1.length(), s2.length())) % 2);

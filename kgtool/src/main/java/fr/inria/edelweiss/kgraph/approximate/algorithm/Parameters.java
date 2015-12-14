@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn;
+package fr.inria.edelweiss.kgraph.approximate.algorithm;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
@@ -21,7 +21,7 @@ public class Parameters {
 
     public static String WN_VER = "3.0";
     public static String DEF_STRING_METRIC = "Lin";
-    public static double THRESHOLD = 0.0;
+    public static double THRESHOLD = 0.1;
 
     public static void init(ASTQuery ast) {
         //WordNet and POS tagger

@@ -26,7 +26,13 @@ public class NGram extends BaseAlgorithm {
     }
 
     @Override
-    public double calculate(String s1, String s2) {
+    public double calculate(String s1, String s2, String parameter) {
+        double sim = this.calculate(s1, s2);
+        Utils.msg("N-Gram" + NG, s1, s2, parameter, sim);
+        return sim;
+    }
+
+    private double calculate(String s1, String s2) {
         double sim = MAX;
         if (!s1.equalsIgnoreCase(s2)) {
             Map<String, Integer> res1 = tokenize(s1, n);
@@ -38,8 +44,6 @@ public class NGram extends BaseAlgorithm {
             //u = u > 0 ? u : 1;
             sim = (double) c / (double) u;
         }
-
-        Utils.msg("N-Gram"+NG, s1, s2, sim);
         return sim;
     }
 

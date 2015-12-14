@@ -20,5 +20,15 @@ public interface ISimAlgorithm {
      * @param s2
      * @return 
      */
-    double calculate(String s1, String s2);
+    //double calculate(String s1, String s2);
+    
+        /**
+     * Calculate the similarity between strings s1 and s2
+     * 
+     * @param s1
+     * @param s2
+     * @param parameters
+     * @return 
+     */
+    double calculate(String s1, String s2, String parameters);
 }

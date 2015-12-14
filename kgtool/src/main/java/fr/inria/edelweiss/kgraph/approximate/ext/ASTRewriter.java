@@ -22,9 +22,10 @@ import fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.CLASS_HIERARCHY;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_EQUALITY;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_LEX;
-import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_SS;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_WN;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.PROPERTY_EQUALITY;
-import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_LEX;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_WN;
 import fr.inria.edelweiss.kgraph.logic.OWL;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import java.util.ArrayList;
@@ -67,7 +68,6 @@ public class ASTRewriter implements QueryVisitor {
     private void visit(Exp exp) {
         List<Exp> exTemp = new ArrayList<Exp>();
         exTemp.addAll(exp.getBody());
-        //int indexExp = 0;
 
         //1. iterate each query pattern in SPARQL
         for (Exp e2 : exTemp) {
@@ -130,21 +130,15 @@ public class ASTRewriter implements QueryVisitor {
         if (atom.isConstant() && !atom.isLiteral()) {
 
             //S P O
-            add(lst, URI);
+            add(lst, URI_WN);
+            add(lst, URI_LEX);
             add(lst, URI_EQUALITY);
 
             //P
             if (pos == P && !atom.getName().equalsIgnoreCase(RDF.TYPE)) { //propery does not have rdfs:label & rdfs:comment
                 add(lst, PROPERTY_EQUALITY);
-                //add(lst, PROPERTY_DR);
-
                 //S&O
-            } else {//property owl:equivalentProperty
-
-                //add(lst, URI_LABEL);
-                //add(lst, URI_COMMENT);
-                //pattern A rdf:type B
-                //to test
+            } else {
                 if (pos == O && triple.getPredicate().getName().equalsIgnoreCase(RDF.TYPE)) {
                     add(lst, CLASS_HIERARCHY);
                 }
@@ -158,7 +152,7 @@ public class ASTRewriter implements QueryVisitor {
 
             //@lang=en ??
             if (atom.getLang() == null || (atom.getLang() != null && atom.getLang().equalsIgnoreCase("en"))) {
-                add(lst, LITERAL_SS);
+                add(lst, LITERAL_WN);
             }
         }
 
@@ -233,8 +227,7 @@ public class ASTRewriter implements QueryVisitor {
 
     //add a filter with a specific function and parameters
     private Triple createFilter(Variable var, Atom atom, String algs) {
-        Term function = ast.createFunction(ast.createQName(APPROXIMATE));
-        Term.function(APPROXIMATE);
+        Term function = Term.function(APPROXIMATE);
         function.add(var);
         function.add(atom);
         function.add(Constant.create(algs, qrdfsLiteral));

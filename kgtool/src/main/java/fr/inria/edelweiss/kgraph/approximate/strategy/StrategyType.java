@@ -11,13 +11,12 @@ import java.util.List;
  */
 public enum StrategyType {
 
-    //URI
-    URI, 
-    //URI_LABEL, URI_COMMENT,
-    //PROPERTY_DR, 
-    PROPERTY_EQUALITY, URI_EQUALITY,
+    URI_LEX, 
+    URI_WN,
+    URI_EQUALITY,
+    PROPERTY_EQUALITY, 
     CLASS_HIERARCHY,
-    LITERAL_SS, LITERAL_LEX; //literal
+    LITERAL_WN, LITERAL_LEX; //literal
 
     //1 URI: lexical level (ng-jw)
     //       semantic level (ssw-eq)

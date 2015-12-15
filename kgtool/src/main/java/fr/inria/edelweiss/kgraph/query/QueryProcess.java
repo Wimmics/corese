@@ -440,7 +440,7 @@ public class QueryProcess extends QuerySolver {
 		
 		pragma(q);
                 ASTQuery ast = getAST(q);
-                if (ast.hasService()){
+                if (q.getService()!=null){//ast.hasService()){
                     //@service <http://dbpedia.org/sparql>
                     //select where {}
                     return service(q, ast);
@@ -544,7 +544,7 @@ public class QueryProcess extends QuerySolver {
          * select where {}     
          */
         Mappings service(Query q, ASTQuery ast) throws EngineException  {
-            Service serv = new Service(ast.getService());
+            Service serv = new Service(q.getService());
             try {
                 return serv.query(q);
             } catch (LoadException ex) {

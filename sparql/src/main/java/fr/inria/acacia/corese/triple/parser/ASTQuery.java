@@ -2457,6 +2457,10 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     	defPPNamespace(prefix, ns);
     }
     
+    public void annotate(Metadata m){
+        
+    }
+    
     public void defService(String ns){
         service = ns;
     }

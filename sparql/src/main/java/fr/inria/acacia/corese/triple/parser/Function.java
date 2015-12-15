@@ -9,31 +9,13 @@ import java.util.HashMap;
  *
  */
 public class Function extends Statement {
-    
-    private static HashMap<String, Integer> annotation;
-    
-    static final int UNDEFINED  = -1;
-    static final int TEST   = 0;
-    static final int DEBUG  = 1;
-    static final int TRACE  = 2;
-    static final int PUBLIC = 3;
-    
     private boolean isDebug = false;
     private boolean isTest = false;
     private boolean isTrace = false;
     
-    static {
-        initAnnotate();
-    }
+    Metadata annot;
     
-    static void initAnnotate(){
-        annotation = new HashMap();
-        annotation.put("@debug", DEBUG);
-        annotation.put("@trace", TRACE);
-        annotation.put("@test",  TEST);
-        annotation.put("@export", PUBLIC);      
-        annotation.put("@public", PUBLIC);      
-    }
+   
 
     Function(Term fun, Expression body) {
         super(Processor.FUNCTION, fun, body);
@@ -60,39 +42,56 @@ public class Function extends Statement {
         return sb;
     }
     
-    int type(String a){
-        Integer i = annotation.get(a);
-        if (i == null){
-            i = UNDEFINED;
-        }
-        return i;
+    Metadata getMetadata(){
+        return annot;
     }
     
     void annotate(Metadata m){
         if (m == null){
             return;
         }
+        set(m);
         for (String s : m){
             annotate(s);
         }
     }
     
+    void set(Metadata m){
+        if (annot == null){
+            // function annotation
+            annot = m;
+        }
+        else {
+            // package annotation 
+            annot.add(m);
+        }
+    }
+    
+ 
+    
+    String getMetadata(String name){
+        if (annot == null){
+            return null;
+        }
+        return annot.get(name);
+    }
+    
     void annotate(String a) {
-        switch (type(a)) {
+        switch (annot.type(a)) {
 
-            case DEBUG:
+            case Metadata.DEBUG:
                 setDebug(true);
                 break;
 
-            case TRACE:
+            case Metadata.TRACE:
                setTrace(true);
                break;
 
-            case TEST:
+            case Metadata.TEST:
                 setTester(true);
                 break;
 
-            case PUBLIC:
+            case Metadata.PUBLIC:
                 setExport(true);
                 break;
         }

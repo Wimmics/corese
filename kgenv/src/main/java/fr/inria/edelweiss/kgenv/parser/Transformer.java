@@ -418,6 +418,7 @@ public class Transformer implements ExpType {
 
 	
 	/**
+         * For query and subquery
 	 * Generate a new compiler for each (sub) query in order to get fresh new nodes
 	 */
 	Query compile(ASTQuery ast){  
@@ -428,6 +429,7 @@ public class Transformer implements ExpType {
                 compileFunction(q, ast);
 		q.setAST(ast);
                 q.setHasFunctional(ast.hasFunctional());
+                q.setService(ast.getService());
 		// use same compiler
 		bindings(q, ast);
 		path(q, ast);

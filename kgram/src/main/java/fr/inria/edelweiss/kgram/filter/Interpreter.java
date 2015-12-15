@@ -554,16 +554,21 @@ public class Interpreter implements Evaluator, ExprType {
             Exp sub = pat.get(0).get(0);
 
             if (sub.isQuery()) {
-                sub.getQuery().setFun(true);
-                if (sub.getQuery().isConstruct()) {
+                Query qq = sub.getQuery();
+                qq.setFun(true);
+                if (qq.isConstruct()) {
                     // let (?g =  construct where)
-                    Mapping mm = getMapping(env, sub.getQuery());
-                    Mappings m = kgram.getSPARQLEngine().eval(sub.getQuery(), mm);
+                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq));                     
                     return producer.getValue(m.getGraph());
                 } 
+                if (qq.getService() != null){
+                    // @service <uri> let (?m = select where)
+                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq));                     
+                    return producer.getValue(m);
+                }
                 else {
                     // let (?m = select where)
-                    map = eval.subEval(sub.getQuery(), gNode, Stack.create(sub), 0);
+                    map = eval.subEval(qq, gNode, Stack.create(sub), 0);
                 }
             }
             else {

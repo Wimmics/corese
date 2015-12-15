@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.Parameters.DEF_STRING_METRIC;
 import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.Utils.empty;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper.NOUN;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper.OTHER;
@@ -35,7 +36,7 @@ public class TextSimilarity extends BaseAlgorithm {
     @Override
     public double calculate(String text1, String text2, String parameter) {
         //if the text to be matched is URI, only match their suffix
-        if (isValid(parameter) && OPTION_URI.equals(parameter)) {
+        if (!empty(parameter) && OPTION_URI.equals(parameter)) {
             String[] uri1 = Utils.split(text1);
             String[] uri2 = Utils.split(text2);
 

@@ -33,30 +33,11 @@ public class Priority {
         }
     }
 
-    //two group of algrithms
-    //ex:{"ng-ss-eq", "jw-ch"} -> {0.3, 0.7}
-    //normalize
-    public static double[] getWeightByAlgorithm(String alg1, String alg2) {
-        if (alg1.equalsIgnoreCase(alg2)) {
-            return new double[]{0.5, 0.5};
-        } else {
-            double w1 = sum(priority(getAlgrithmList(alg1)));
-            double w2 = sum(priority(getAlgrithmList(alg2)));
-
-            return normalize(new double[]{w1, w2});
-        }
-    }
-
     public static double[] getWeightByAlgorithmType(List<AlgType> types) {
         return normalize(priority(types));
     }
 
     //"ng-ss-ch-eq" -> [0.1, 0.2, 0.3, 0.4]
-    public static double[] getWeightByAlgorithmString(String alg) {
-        List<AlgType> types = getAlgrithmList(alg);
-        return getWeightByAlgorithmType(types);
-    }
-
     public static double[] getWeightByAlgorithm(List<ISimAlgorithm> algs) {
         List<AlgType> types = new ArrayList<AlgType>();
         for (ISimAlgorithm alg : algs) {

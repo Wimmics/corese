@@ -11,20 +11,23 @@ import java.util.List;
  */
 public enum StrategyType {
 
+    //URI
     URI_LEX, 
     URI_WN,
     URI_EQUALITY,
     PROPERTY_EQUALITY, 
+    
+    //class hierarchy
     CLASS_HIERARCHY,
-    LITERAL_WN, LITERAL_LEX; //literal
-
-    //1 URI: lexical level (ng-jw)
-    //       semantic level (ssw-eq)
-    //2 Property: dr, eq
-    //3 hierarchy: ch
-    //4 literals: lexical level(ng-jw)
-    //            semantic level (sst)
-    //***** strategy group ****
+    
+    //literal
+    LITERAL_WN, 
+    LITERAL_LEX; 
+    
+    /**
+     * Return all values
+     * @return 
+     */
     public static List<StrategyType> allValues() {
         return Arrays.asList(StrategyType.values());
     }

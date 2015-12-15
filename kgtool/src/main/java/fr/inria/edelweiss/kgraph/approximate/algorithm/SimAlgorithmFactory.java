@@ -36,7 +36,6 @@ public class SimAlgorithmFactory {
     public static ISimAlgorithm create(AlgType type) {
         switch (type) {
 
-            //**N-Gram
             case ng:
                 return new NGram();
             case eq:
@@ -53,11 +52,7 @@ public class SimAlgorithmFactory {
             case ch:
             //integrate the old algorithm
             //return new ClassHieararchy(alg);
-            //case dr:
-            //return new DomainRange(alg);
-            //case mult:
             default:
-                //return new BaseAlgorithm(alg);
                 return null;
         }
     }

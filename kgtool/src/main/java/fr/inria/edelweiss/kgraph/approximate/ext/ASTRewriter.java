@@ -14,7 +14,7 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgram.core.Query;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.Utils.msg;
-import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.Parameters;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.Parameters;
 import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.S;
 import fr.inria.edelweiss.kgraph.approximate.strategy.ApproximateStrategy;
 import static fr.inria.edelweiss.kgraph.approximate.strategy.ApproximateStrategy.check;

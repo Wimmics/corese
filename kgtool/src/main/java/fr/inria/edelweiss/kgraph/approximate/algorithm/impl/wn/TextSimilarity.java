@@ -1,8 +1,9 @@
 package fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn;
 
-import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.Parameters.DEF_STRING_METRIC;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.Parameters.DEF_STRING_METRIC;
 import fr.inria.edelweiss.kgraph.approximate.strategy.AlgType;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.Utils.empty;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper.NOUN;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper.OTHER;
@@ -19,17 +20,6 @@ import java.util.Map;
  */
 public class TextSimilarity extends BaseAlgorithm {
 
-    public static void main(String[] args) throws Exception {
-        NLPHelper nlp = NLPHelper.createInstance();
-        TextSimilarity ts = new TextSimilarity(nlp);
-        String t1 = "Dog likes vegetables, but it is an animal";
-        String t2 = "Humain likes meat, because they are animals";
-        double d = ts.calculate(t1, t2);
-        System.out.println("\n\n"+t1 + "," + t2 + ": " + d);
-
-        //d = ts.calculate("John", "John");
-        //System.out.println(d);
-    }
     private StringMetrics alg;
     private NLPHelper nlp;
 
@@ -44,6 +34,21 @@ public class TextSimilarity extends BaseAlgorithm {
     }
 
     @Override
+    public double calculate(String text1, String text2, String parameter) {
+        //if the text to be matched is URI, only match their suffix
+        if (!empty(parameter) && OPTION_URI.equals(parameter)) {
+            String[] uri1 = Utils.split(text1);
+            String[] uri2 = Utils.split(text2);
+
+            text1 = uri1[1];
+            text2 = uri2[1];
+        }
+
+        double sim = this.calculate(text1, text2);
+        Utils.msg("WN", text1, text2, parameter, sim);
+        return sim;
+    }
+
     public double calculate(String text1, String text2) {
         //pos -> segement
         Map<String, Segement> segements1 = nlp.tag(text1);//s1
@@ -51,12 +56,11 @@ public class TextSimilarity extends BaseAlgorithm {
 
         String[] poss = new String[]{NOUN, VERB, OTHER};
 
-        //Utils.show("WN Similarity:", "***", "***", 0);
         double sim = this.calculate(segements1, segements2, poss);
         double simReverse = this.calculate(segements2, segements1, poss);
 
         sim = (sim + simReverse) / 2.0d;
-        Utils.msg("WN", text1, text2, sim);
+
         return sim;
     }
 
@@ -94,12 +98,12 @@ public class TextSimilarity extends BaseAlgorithm {
 
     private double calculateMax(String w1, List<String> ls, String pos) {
         double simMax = MIN;
-        String wMax = "";
+        //String wMax = "";
         for (String w2 : ls) {
             double sim = pos.equals(OTHER) ? calculateLex(w1, w2) : alg.calculate(w1, w2, pos);
             if (sim > simMax) {
                 simMax = sim;
-                wMax = w2;
+                //wMax = w2;
             }
             if (simMax >= MAX) {
                 break;

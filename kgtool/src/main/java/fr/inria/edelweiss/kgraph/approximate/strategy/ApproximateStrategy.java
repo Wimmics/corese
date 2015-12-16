@@ -22,7 +22,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
- * Define the st ApproximateAlgs.java
+ * Define the strategies
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 5 oct. 2015
@@ -30,35 +30,39 @@ import org.apache.log4j.Logger;
 public class ApproximateStrategy {
 
     private final static Logger logger = Logger.getLogger(ApproximateStrategy.class);
-
     public final static String SEPERATOR = "-";
+    
+    //default strategy-algorithm map
     private final static Map<StrategyType, List<AlgType>> defaultStrategyMap = new EnumMap<StrategyType, List<AlgType>>(StrategyType.class);
+    //real strategy-algorithm map applied
     private static Map<StrategyType, List<AlgType>> strategyMap = new EnumMap<StrategyType, List<AlgType>>(StrategyType.class);
 
-    private final static List<StrategyType> mergableStrategy;
-    private static List<StrategyType> strategyList = null;
-    private static List<AlgType> algorithmList = null;
+    private final static List<StrategyType> mergableStrategy; //the strateiges that can be merged into filter
+    private static List<StrategyType> strategyList = null; //strategies to be applied
+    private static List<AlgType> algorithmList = null; //algorithm list to be applied
 
     //private static Priority priority = new Priority();
     static {
-        //*** STRATEGY - ALGORITHMS
+        //*** DEFAULT MAP STRATEGY - ALGORITHMS
         defaultStrategyMap.put(URI_LEX, Arrays.asList(new AlgType[]{ng, jw}));//S P O
         defaultStrategyMap.put(URI_WN, Arrays.asList(new AlgType[]{wn}));//S P O
         defaultStrategyMap.put(URI_EQUALITY, Arrays.asList(new AlgType[]{eq}));//S P O
 
-        //defaultStrategyMap.put(URI_LABEL, Arrays.asList(new AlgType[]{ng, jw, wn}));//S O
-        //defaultStrategyMap.put(URI_COMMENT, Arrays.asList(new AlgType[]{wn}));//S O
-        // defaultStrategyMap.put(PROPERTY_DR, Arrays.asList(new AlgType[]{dr}));//P
         defaultStrategyMap.put(PROPERTY_EQUALITY, Arrays.asList(new AlgType[]{eq}));//P
         defaultStrategyMap.put(CLASS_HIERARCHY, Arrays.asList(new AlgType[]{ch}));//A rdf:type B
 
         defaultStrategyMap.put(LITERAL_WN, Arrays.asList(new AlgType[]{wn}));//O@literal@xsd:string@en
         defaultStrategyMap.put(LITERAL_LEX, Arrays.asList(new AlgType[]{ng, jw}));//O@literal@xsd:string
+        
         strategyMap = defaultStrategyMap;
 
         mergableStrategy = Arrays.asList(new StrategyType[]{URI_LEX, URI_WN, CLASS_HIERARCHY, LITERAL_WN, LITERAL_LEX});
     }
 
+    /**
+     * Initialize the strategy and algorithms using Pragma from AST
+     * @param ast 
+     */
     public static void init(ASTQuery ast) {
         //kg:strategy, option: strategies used
         List<String> strategyOption = ast.getApproximateSearchOptions(Pragma.STRATEGY);
@@ -77,7 +81,9 @@ public class ApproximateStrategy {
         filter(strategyList, algorithmList);
     }
 
-    public static void filter(List<StrategyType> ls, List<AlgType> la) {
+    //setup the real strategy-algorithm to be applied, according to the default
+    //strategy-algorithm list and options from Pragma@AST
+    private static void filter(List<StrategyType> ls, List<AlgType> la) {
         strategyMap = new EnumMap<StrategyType, List<AlgType>>(StrategyType.class);
 
         for (StrategyType st : ls) {
@@ -123,10 +129,6 @@ public class ApproximateStrategy {
         return strategyMap.containsKey(strategy) ? strategyMap.get(strategy) : new ArrayList<AlgType>();
     }
 
-    public static String getAlgrithmString(StrategyType st) {
-        return getAlgrithmString(Arrays.asList(new StrategyType[]{st}));
-    }
-
     public static String getAlgrithmString(List<StrategyType> lst) {
 
         List<AlgType> types = new ArrayList<AlgType>();
@@ -145,6 +147,11 @@ public class ApproximateStrategy {
         return algs;
     }
 
+    /**
+     * Convert a string to a list of algorithm instance
+     * @param algs
+     * @return 
+     */
     public static List<AlgType> getAlgrithmList(String algs) {
         List<AlgType> list = new ArrayList<AlgType>();
 
@@ -163,6 +170,11 @@ public class ApproximateStrategy {
         return list;
     }
 
+    /**
+     * Convert a string name to an instance of algorithm
+     * @param alg
+     * @return 
+     */
     public static AlgType valueOf(String alg) {
         try {
             return AlgType.valueOf(alg);
@@ -214,16 +226,21 @@ public class ApproximateStrategy {
         return list;
     }
 
+    /**
+     * Check whether a given strategy is authroized to use
+     * @param strategy
+     * @return 
+     */
     public static boolean check(StrategyType strategy) {
         if (!strategyList.contains(strategy)) {
             return false;
         }
 
         for (AlgType at : getAlgorithmTypes(strategy)) {
-            if (algorithmList.contains(at)) {
-                return true;
+            if (!algorithmList.contains(at)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 }

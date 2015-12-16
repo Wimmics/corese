@@ -11,17 +11,17 @@ import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
 public class JaroWinkler extends Jaro {
 
     @Override
-    public double calculate(String s1, String s2) {
+    public double calculate(String s1, String s2, String parameter) {
         double sim = MAX;
         if (!s1.equalsIgnoreCase(s2)) {
             //jaro algorithm
-            double jaroSim = super.calculate(s1, s2);
+            double jaroSim = super.calculate(s1, s2, parameter);
 
             int prefix = getCommonPrefix(s1, s2);
             sim = jaroSim + prefix * (0.1 * (1.0 - jaroSim));
         }
 
-        Utils.msg("Jaro-Winkler", s1, s2, sim);
+        Utils.msg("Jaro-Winkler", s1, s2, parameter, sim);
         return sim;
     }
 

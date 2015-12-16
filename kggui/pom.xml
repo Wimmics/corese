@@ -44,7 +44,10 @@
             <groupId>org.graphstream</groupId>
             <artifactId>gs-core</artifactId>
         </dependency>
-                
+            <dependency>
+            <groupId>org.graphstream</groupId>
+            <artifactId>gs-ui</artifactId>
+        </dependency>    
         
         <dependency>
             <groupId>log4j</groupId>

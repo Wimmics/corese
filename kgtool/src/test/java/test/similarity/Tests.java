@@ -2,6 +2,7 @@ package test.similarity;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
 import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -20,12 +21,17 @@ public class Tests {
         //test2(q_with_optinoal);
         //test2(q_with_pragma);
         //test2(q_with_similarity);
-        test2(q_with_similarity_and_having);
+        //test2(q_with_similarity_and_having);
         //test(q_without_more_but_with_sim);
         //test2(q_without_similarity);
+        test(q_data2, data2);
     }
 
     static QueryProcess getExec() throws EngineException {
+        return getExec(data);
+    }
+
+    static QueryProcess getExec(String data) throws EngineException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         exec.query(data);
@@ -33,9 +39,9 @@ public class Tests {
         return exec;
     }
 
-    static void test2(String q ) throws EngineException {
+    static void test2(String q) throws EngineException {
         QueryProcess exec = getExec();
-        
+
         System.out.println("\n-- Query --\n" + q);
 
         Mappings map = exec.query(q);
@@ -47,12 +53,16 @@ public class Tests {
     }
 
     static void test(String q) throws EngineException {
-        QueryProcess exec = getExec();
+        test(q, data);
+    }
+
+    static void test(String q, String data) throws EngineException {
+        QueryProcess exec = getExec(data);
         exec.setVisitor(new ASTRewriter());
 
         Mappings map = exec.query(q);
         System.out.println("\n-- Query --\n" + q);
-        //System.out.println("-- appx search env --\n" + ApproximateSearchEnv.get(1));
+        System.out.println("-- appx search env --\n" + ApproximateSearchEnv.get(1));
         System.out.println("-- approximate mappings [" + map.size() + "] --\n" + map.toString());
     }
 
@@ -75,6 +85,24 @@ public class Tests {
             + "kg:person3 kg:listen 'I do not listen music' "
             + "kg:person2 kg:listen 'my heart is broken' "
             + "}";
+
+    static String data2 = "insert data {"
+            + "foaf:Person  rdfs:subClassOf foaf:Thing "
+            + "foaf:Man  rdfs:subClassOf foaf:Thing "
+            + "us:John a foaf:Person ; "
+            + "rdfs:label 'John' "
+            + "us:Jim rdfs:label 'Jim' "
+            + "us:Jan rdfs:label 'Jan' "
+            + "[] rdfs:label 'the cat is on the mat' "
+            + "}";
+
+    static String q_data2
+            = "select more  *"
+            + " (sim() as ?s) "
+            + "where {"
+            + "?x  a  us:Person "
+            + "}"
+            + "order by desc(?s)";
 
     static String options = "pragma { "
             + "kg:approximate kg:algorithm 'jw', 'ng'; "

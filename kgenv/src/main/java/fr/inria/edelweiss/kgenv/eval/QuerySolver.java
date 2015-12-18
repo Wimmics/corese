@@ -103,7 +103,7 @@ public class QuerySolver  implements SPARQLEngine {
 	static int count = 0;
 	
 	static boolean test = true;
-        private int planner = Query.QP_BGP;
+        private int planner = Query.QP_DEFAULT;
         private boolean isUseBind;
 	
 	public QuerySolver (){

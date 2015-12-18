@@ -21,10 +21,11 @@ public class Tests {
         //test2(q_with_optinoal);
         //test2(q_with_pragma);
         //test2(q_with_similarity);
-        //test2(q_with_similarity_and_having);
+        test2(q_with_similarity_and_having);
         //test(q_without_more_but_with_sim);
         //test2(q_without_similarity);
-        test(q_data2, data2);
+        //test(q_data2, data2);
+        //test(q_plein);
     }
 
     static QueryProcess getExec() throws EngineException {
@@ -62,7 +63,6 @@ public class Tests {
 
         Mappings map = exec.query(q);
         System.out.println("\n-- Query --\n" + q);
-        System.out.println("-- appx search env --\n" + ApproximateSearchEnv.get(1));
         System.out.println("-- approximate mappings [" + map.size() + "] --\n" + map.toString());
     }
 
@@ -100,14 +100,15 @@ public class Tests {
             = "select more  *"
             + " (sim() as ?s) "
             + "where {"
-            + "?x  a  us:Person "
+            + "?x a  us:Person "
             + "}"
-            + "order by desc(?s)";
+            + "order by desc(?s) "
+            + "pragma {kg:approximate kg:strategy 'URI_LEX', 'URI_EQUALITY', 'PROPERTY_EQUALITY', 'LITERAL_LEX'}";
 
     static String options = "pragma { "
             + "kg:approximate kg:algorithm 'jw', 'ng'; "
             + "               kg:priority_a '2', '2'; "
-            + "               kg:strategy  'URI', 'LITERAL_LEX'; "
+            + "               kg:strategy  'URI_LEX', 'URI_EQUALITY', 'PROPERTY_EQUALITY', LITERAL_LEX'; "
             + "               kg:wn_path '/Users/fsong/NetBeansProjects/kgram/kgtool/target/classes/wordnet'; "
             + "               kg:wn_ver '3.0'; "
             + "               kg:pos_tagger '/Users/fsong/NetBeansProjects/kgram/kgtool/target/classes/tagger/english-left3words-distsim.tagger'; "
@@ -169,4 +170,6 @@ public class Tests {
             + "?person foaf:name ?z ."
             + "filter approximate(?person, kg:person, 'ng', 0.8)"
             + "} ";
+
+    static String q_plein = "select more * where {?x kg:name 'John'}";
 }

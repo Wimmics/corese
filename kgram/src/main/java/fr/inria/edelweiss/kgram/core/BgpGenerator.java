@@ -224,13 +224,6 @@ public class BgpGenerator extends Sorter {
      */
     public boolean compareAllProducers() {
         boolean res = true;
-//        for (int i = 0; i + 1 < exp.getExpList().size() && res; i++) {
-//            if(exp.getExpList().get(i).isEdge()){
-//                Edge e1 = exp.getExpList().get(i).getEdge();
-//                Edge e2 = exp.getExpList().get(i + 1).getEdge();
-//                res = compare2Producers(indexEdgeProducers.get(e1), indexEdgeProducers.get(e2));
-//            }
-//        }
         //changed because due to sortFilter(exp, lVar) and setBind(query, exp) changes
         for (Exp e : exp.getExpList()) {
             if (e.isEdge()) {

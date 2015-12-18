@@ -8,38 +8,43 @@ package fr.inria.edelweiss.kgram.core;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.AND;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.BGP;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.JOIN;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.UNION;
+import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * Transform AND to
  *
  * @author Abdoul Macina <macina@i3s.unice.fr>
  */
-public class GenerateBGP extends Sorter {
+public class BgpGenerator extends Sorter {
 
-    private Logger logger = Logger.getLogger(GenerateBGP.class);
+    private Logger logger = Logger.getLogger(BgpGenerator.class);
 
     private Exp exp;
     private Exp newExp;
 
     private HashMap<Edge, ArrayList<Producer>> indexEdgeProducers;
     private HashMap<Edge, ArrayList<Node>> indexEdgeVariables;
+    private HashMap<Edge, ArrayList<Filter>> indexEdgeFilters;
     private List<Producer> producers;
     private List<Edge> joinedEdges;
     private List<Edge> isolatedEdges;
 
-    public GenerateBGP() {
+    private HashMap<Edge, Exp> edgeAndContext = new HashMap<Edge, Exp>();
+
+    public BgpGenerator() {
         this.producers = new ArrayList<Producer>();
         this.indexEdgeProducers = new HashMap<Edge, ArrayList<Producer>>();
         this.indexEdgeVariables = new HashMap<Edge, ArrayList<Node>>();
+        indexEdgeFilters = new HashMap<Edge, ArrayList<Filter>>();
         joinedEdges = new ArrayList<Edge>();
         isolatedEdges = new ArrayList<Edge>();
     }
@@ -54,7 +59,7 @@ public class GenerateBGP extends Sorter {
         boolean result = true;
         for (int i = 0; i < exp.getExpList().size() && result; i++) {
             Edge e = exp.getExpList().get(i).getEdge();
-            if (indexEdgeProducers.get(e).size() < 2) {
+            if (exp.getExpList().get(i).isEdge() && indexEdgeProducers.get(e).size() < 2) {
                 result = false;
             }
         }
@@ -71,7 +76,7 @@ public class GenerateBGP extends Sorter {
         boolean result = true;
         for (int i = 0; i < exp.getExpList().size() && result; i++) {
             Edge e = exp.getExpList().get(i).getEdge();
-            if ((indexEdgeProducers.get(e) != null) && (indexEdgeProducers.get(e).size() > 1)) {
+            if (exp.getExpList().get(i).isEdge() && (indexEdgeProducers.get(e) != null) && (indexEdgeProducers.get(e).size() > 1)) {
                 result = false;
             }
         }
@@ -95,8 +100,7 @@ public class GenerateBGP extends Sorter {
     }
 
     /**
-     * Handle the different cases we might have depending the distribution of
-     * data
+     * Handle the different cases we might have depending the data partitioning
      *
      * @return
      */
@@ -120,7 +124,7 @@ public class GenerateBGP extends Sorter {
                 //generate partial BGP for each source in which join is possible
                 if (possiblePerformJoins(edges)) {
                     String key = createUnionBGPANDLock(edges);
-                    if (i > 0) {
+                    if (i > 0 && join.size() != 0) {
                         if (!key.isEmpty()) {
                             join = new Exp(JOIN, join, newExp);
                         }
@@ -139,7 +143,19 @@ public class GenerateBGP extends Sorter {
             if (isolatedEdges.size() > 0) {
                 isolatedEdges.removeAll(joinedEdges);
                 for (Edge e : isolatedEdges) {
-                    join = new Exp(JOIN, join, Exp.create(BGP, e));
+                    //To do filters to add
+                    Exp tmpExp = Exp.create(EDGE, e);
+                    Exp tmp = Exp.create(BGP, tmpExp);
+                    //addfilters
+                    ArrayList<Filter> filters = indexEdgeFilters.get(e);
+                    if (filters != null) {
+                        for (Filter f : filters) {
+                            tmp.add(f);
+                            tmpExp.addFilter(f);
+                        }
+                    }
+                    join = new Exp(JOIN, join, tmp);
+
                 }
             }
             return join;
@@ -160,11 +176,24 @@ public class GenerateBGP extends Sorter {
         Exp bgp = new Exp(BGP);
         Exp andLock = new Exp(AND);
         for (Edge e : edges) {
+            Exp tmpExp = Exp.create(EDGE, e);
             if (!joinedEdges.contains(e)) {
-                bgp.add(e);
-                andLock.add(e);
+                bgp.add(tmpExp);
+                andLock.add(tmpExp);
                 key += e.getLabel();
                 joinedEdges.add(e);
+                edgeAndContext.putIfAbsent(e, andLock);
+
+                //addfilters
+                ArrayList<Filter> filters = indexEdgeFilters.get(e);
+                if (filters != null) {
+                    for (Filter f : filters) {
+                        //to be cleaned
+//                        bgp.add(f);
+//                        andLock.add(f);
+                        tmpExp.addFilter(f);
+                    }
+                }
 
                 //Update disjoined edges
                 if (isolatedEdges.contains(e)) {
@@ -195,10 +224,23 @@ public class GenerateBGP extends Sorter {
      */
     public boolean compareAllProducers() {
         boolean res = true;
-        for (int i = 0; i + 1 < exp.getExpList().size() && res; i++) {
-            Edge e1 = exp.getExpList().get(i).getEdge();
-            Edge e2 = exp.getExpList().get(i + 1).getEdge();
-            res = compare2Producers(indexEdgeProducers.get(e1), indexEdgeProducers.get(e2));
+//        for (int i = 0; i + 1 < exp.getExpList().size() && res; i++) {
+//            if(exp.getExpList().get(i).isEdge()){
+//                Edge e1 = exp.getExpList().get(i).getEdge();
+//                Edge e2 = exp.getExpList().get(i + 1).getEdge();
+//                res = compare2Producers(indexEdgeProducers.get(e1), indexEdgeProducers.get(e2));
+//            }
+//        }
+        //changed because due to sortFilter(exp, lVar) and setBind(query, exp) changes
+        for (Exp e : exp.getExpList()) {
+            if (e.isEdge()) {
+                for (Exp ee : exp.getExpList()) {
+                    if (ee.isEdge() && !ee.equals(e)) {
+                        res = compare2Producers(indexEdgeProducers.get(e.getEdge()), indexEdgeProducers.get(ee.getEdge()));
+                    }
+                    break;
+                }
+            }
         }
         return res;
     }
@@ -266,21 +308,23 @@ public class GenerateBGP extends Sorter {
         ArrayList<Edge> edges;
 
         for (int i = 0; i < exp.getExpList().size(); i++) {
-            Edge e = exp.getExpList().get(i).getEdge();
-            producersList = indexEdgeProducers.get(e);
+            if (exp.getExpList().get(i).isEdge()) {
+                Edge e = exp.getExpList().get(i).getEdge();
+                producersList = indexEdgeProducers.get(e);
 
-            for (Producer p : producersList) {
-                if (!producers.contains(p)) {
-                    producers.add(p);
-                }
-                if (indexProducerEdges.containsKey(p)) {
-                    edges = indexProducerEdges.get(p);
-                    edges.add(e);
-                    indexProducerEdges.put(p, edges);
-                } else {
-                    edges = new ArrayList<Edge>();
-                    edges.add(e);
-                    indexProducerEdges.put(p, edges);
+                for (Producer p : producersList) {
+                    if (!producers.contains(p)) {
+                        producers.add(p);
+                    }
+                    if (indexProducerEdges.containsKey(p)) {
+                        edges = indexProducerEdges.get(p);
+                        edges.add(e);
+                        indexProducerEdges.put(p, edges);
+                    } else {
+                        edges = new ArrayList<Edge>();
+                        edges.add(e);
+                        indexProducerEdges.put(p, edges);
+                    }
                 }
             }
         }
@@ -306,4 +350,21 @@ public class GenerateBGP extends Sorter {
     public void setIndexEdgeVariables(HashMap<Edge, ArrayList<Node>> indexEdgeVariables) {
         this.indexEdgeVariables = indexEdgeVariables;
     }
+
+    public HashMap<Edge, ArrayList<Filter>> getIndexEdgeFilters() {
+        return indexEdgeFilters;
+    }
+
+    public void setIndexEdgeFilters(HashMap<Edge, ArrayList<Filter>> indexEdgeFilters) {
+        this.indexEdgeFilters = indexEdgeFilters;
+    }
+
+    public HashMap<Edge, Exp> getEdgeAndContext() {
+        return edgeAndContext;
+    }
+
+    public void setEdgeAndContext(HashMap<Edge, Exp> edgeAndContext) {
+        this.edgeAndContext = edgeAndContext;
+    }
+
 }

@@ -219,40 +219,19 @@ public class RemoteProducerWSImpl implements Producer {
                     System.out.println("Result:\n" + sparqlRes);
                 }
 
-//                 count number of queries
-                if (QueryProcessDQP.queryCounter.containsKey(qEdge.toString())) {
-                    Long n = QueryProcessDQP.queryCounter.get(qEdge.toString());
-                    QueryProcessDQP.queryCounter.put(qEdge.toString(), n + 1L);
-                } else {
-                    QueryProcessDQP.queryCounter.put(qEdge.toString(), 1L);
-                }
-//                 count number of source access
-                String endpoint = rp.getEndpoint();
-                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
-                    Long n = QueryProcessDQP.sourceCounter.get(endpoint);
-                    QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
-                } else {
-                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
-                }
-                if (sparqlRes != null) {
+                boolean isNotEmpty = sparqlRes != null;
+                if (isNotEmpty) {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
 //                    l.load(is, ".ttl");
                     l.load(is);
                     logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
-                    if (QueryProcessDQP.queryVolumeCounter.containsKey(qEdge.toString())) {
-                        Long n = QueryProcessDQP.queryVolumeCounter.get(qEdge.toString());
-                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), n + (long) g.size());
-                    } else {
-                        QueryProcessDQP.queryVolumeCounter.put(qEdge.toString(), (long) g.size());
-                    }
-                    if (QueryProcessDQP.sourceVolumeCounter.containsKey(endpoint)) {
-                        Long n = QueryProcessDQP.sourceVolumeCounter.get(endpoint);
-                        QueryProcessDQP.sourceVolumeCounter.put(endpoint, n + (long) g.size());
-                    } else {
-                        QueryProcessDQP.sourceVolumeCounter.put(endpoint, (long) g.size());
-                    }
+                }
+                
 
+                QueryProcessDQP.updateCounters(qEdge.toString(), rp.getEndpoint(), isNotEmpty, new Long(g.size()));
+                
+                if(isNotEmpty){
                     if (this.isProvEnabled()) {
                         this.annotateResultsWithProv(g, qEdge);
                     }
@@ -761,9 +740,10 @@ public class RemoteProducerWSImpl implements Producer {
 //            logger.info("ASK FOR BGP "+SourceSelectorWS.ask(bgp, this, env));
             if (SourceSelectorWS.ask(bgp, this, env)) {
 //                logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
-                String sparqlRes = rp.query(rwSparql); 
+                String sparqlRes = rp.query(rwSparql);
 //                logger.info("Result: from "+ rp.getEndpoint() +"\n ---->  "+sparqlRes);
                 mappings = SPARQLResult.create(ProducerImpl.create(g)).parseString(sparqlRes);
+                SPARQLResult.create(g).parseString(sparqlRes);
 //                logger.info("SPARQL => Mappings result: \n"+mappings.toString());
 
                 if (mappings.size() != 0) {
@@ -777,44 +757,16 @@ public class RemoteProducerWSImpl implements Producer {
                     logger.info("Query:\n" + rwSparql + "\n" + rp.getEndpoint());
                     logger.info("Result:\n" + sparqlRes);
                 }
+                boolean isNotEmpty = sparqlRes != null;
+                QueryProcessDQP.updateCounters(bgp.toString(), rp.getEndpoint(), isNotEmpty, new Long(mappings.size()));
 
-//                 count number of queries
-                if (QueryProcessDQP.queryCounter.containsKey(bgp.toString())) {
-                    Long n = QueryProcessDQP.queryCounter.get(bgp.toString());
-                    QueryProcessDQP.queryCounter.put(bgp.toString(), n + 1L);
-                } else {
-                    QueryProcessDQP.queryCounter.put(bgp.toString(), 1L);
-                }
-//                 count number of source access
-                String endpoint = rp.getEndpoint();
-                if (QueryProcessDQP.sourceCounter.containsKey(endpoint)) {
-                    Long n = QueryProcessDQP.sourceCounter.get(endpoint);
-                    QueryProcessDQP.sourceCounter.put(endpoint, n + 1L);
-                } else {
-                    QueryProcessDQP.sourceCounter.put(endpoint, 1L);
-                }
-
-                //To adapt for BGP
-                if (sparqlRes != null) {
+                if (isNotEmpty) {
                     logger.debug("Results (cardinality " + mappings.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
-                    if (QueryProcessDQP.queryVolumeCounter.containsKey(bgp.toString())) {
-                        Long n = QueryProcessDQP.queryVolumeCounter.get(bgp.toString());
-                        QueryProcessDQP.queryVolumeCounter.put(bgp.toString(), n + mappings.size());
-                    } else {
-                        QueryProcessDQP.queryVolumeCounter.put(bgp.toString(), (long) mappings.size());
+                    if (this.isProvEnabled()) {
+                        for (int i = 0; i < bgp.getExpList().size(); i++) {
+                            this.annotateResultsWithProv(g, bgp.getExpList().get(i).getEdge());
+                        }
                     }
-                    if (QueryProcessDQP.sourceVolumeCounter.containsKey(endpoint)) {
-                        Long n = QueryProcessDQP.sourceVolumeCounter.get(endpoint);
-                        QueryProcessDQP.sourceVolumeCounter.put(endpoint, n + (long) mappings.size());
-                    } else {
-                        QueryProcessDQP.sourceVolumeCounter.put(endpoint, (long) mappings.size());
-                    }
-
-//                    if (this.isProvEnabled()) {
-//                        for(int i = 0; i<bgp.getExpList().size(); i++){
-//                        this.annotateResultsWithProv(g, bgp.getExpList().get(i).getEdge());
-//                      }
-//                    }
                 }
             } else {
                 logger.debug("negative ASK (" + bgp + ") -> pruning data source " + rp.getEndpoint());
@@ -830,7 +782,9 @@ public class RemoteProducerWSImpl implements Producer {
         boolean result = false;
         if (edge instanceof EdgeImpl) {
             EdgeImpl e = (EdgeImpl) edge;
+//            if(getCacheIndex().get(e.getTriple().getPredicate().toSparql())!=null){
             result = this.getCacheIndex().get(e.getTriple().getPredicate().toSparql());
+//            }
         }
         return result;
     }
@@ -838,7 +792,9 @@ public class RemoteProducerWSImpl implements Producer {
     public boolean checkBGP(Exp bgp) {
         boolean result = true;
         for (int i = 0; i < bgp.getExpList().size() && result; i++) {
+//            if(bgp.getExpList().get(i).isEdge()){
             result = checkEdge(bgp.getExpList().get(i).getEdge());
+//            }
         }
         return result;
     }

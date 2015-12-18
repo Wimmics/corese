@@ -62,9 +62,13 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
 
         Memory memory = (Memory) env;
         //BGP mode
-        if (memory.getCurrentAndLockExpression() != null) {
-            boolean isLastEdge = env.getExp().equals(memory.getCurrentAndLockExpression().getExpList().get(memory.getCurrentAndLockExpression().getExpList().size() - 1));
-            //to handle previous AND already  processed by BGP
+//        if (memory.getCurrentAndLockExpression() != null) {
+         if (env.getQuery().getEdgeAndContext().containsKey(edge)) {
+//            boolean isLastEdge = env.getExp().equals(memory.getCurrentAndLockExpression().getExpList().get(memory.getCurrentAndLockExpression().getExpList().size() - 1));
+             Exp currentAnd = env.getQuery().getEdgeAndContext().get(edge);
+             boolean isLastEdge = env.getExp().equals(currentAnd.getExpList().get(currentAnd.getExpList().size() - 1));
+
+             //to handle previous AND already  processed by BGP
             boolean edgesFromSameSources = false;
             if (isLastEdge) {
                 edgesFromSameSources = sameSource(env);
@@ -73,41 +77,25 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
             for (Producer p : this.getProducers()) {
                 if (p instanceof RemoteProducerWSImpl) {
                     RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
-
-                    //handling last edge
-                    if (!isLastEdge) {
-                        if (rp.checkEdge(edge)) {
+                    if (rp.checkEdge(edge)) {
+                        //Not yet the last edge of AND Lock, AND does not have <=> BGP, previous edges are not from the same source
+                        if ((!isLastEdge) || (!isAlreadyProcessed(env,currentAnd)) || (!edgesFromSameSources)) {
                             CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
                             futures.add(completions.submit(getEdges));
-                        }
-                    } else {
-                        if (!isAlreadyProcessed(env)) {
-                            if (rp.checkEdge(edge)) {
+                        } 
+                        else {
+                            //check if the current producer is in the list of sameProduers then no need to send this edge
+                            //bbecause already done by the equivalent BGP
+                            if (!sameProducers.contains(p)) {
                                 CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
                                 futures.add(completions.submit(getEdges));
                             }
-                        } else {
-                            if (!edgesFromSameSources) {
-                                if (rp.checkEdge(edge)) {
-                                    CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
-                                    futures.add(completions.submit(getEdges));
-                                }
-                            } else {
-                                //sauf les cources qui ont des predicats sans variables de jointure entre eux.
-                                if (!sameProducers.contains(p)) {
-                                    if (rp.checkEdge(edge)) {
-                                        CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
-                                        futures.add(completions.submit(getEdges));
-                                    }
-                                }
-                            }
-
                         }
                     }
                 }
             }
             sameProducers.clear();
-        } //Edge mode
+        } //Edges mode
         else {
             for (Producer p : this.getProducers()) {
                 if (p instanceof RemoteProducerWSImpl) {
@@ -165,6 +153,23 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
                                 bookKeeping.put(ent.getNode(i).getValue().toString(), p);
                             }
                         }
+                        
+                        //When the predicate is a variable add its values too
+                         if(edge.getEdgeVariable()!=null){
+                            if (bookKeeping.containsKey(ed.getEdgeNode().toString())) {
+                                ArrayList<Producer> p = bookKeeping.get(ed.getEdgeNode().toString());
+                                if (!p.contains(res.getProducer())) {
+                                    p.add(res.getProducer());
+                                }
+                                bookKeeping.put(ed.getEdgeNode().toString(), p);
+
+                            } else {
+                                ArrayList<Producer> p = new ArrayList<Producer>();
+                                p.add(res.getProducer());
+                                bookKeeping.put(ed.getEdgeNode().toString(), p);
+                            } 
+                         }
+                        
                         //delete the already obtained results to avoid redundancy in the final result
                         if (!duplicated) {
                             cleanedResults.add(ent);
@@ -252,41 +257,48 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
         return results;
     }
 
-    public boolean isAlreadyProcessed(Environment env) {
-        Memory memory = (Memory) env;
-        Exp and = memory.getCurrentAndLockExpression();
-        boolean isLastEdge = env.getExp().equals(and.getExpList().get(and.getExpList().size() - 1));
-        if (isLastEdge) {
-            if (compareCurrentANDProcessedBGP(env)) {
-                return true;
-            }
+    /**
+     * 
+     * 
+     * @param env
+     * @return 
+     */
+    public boolean isAlreadyProcessed(Environment env, Exp currentAnd) {
+//        Memory memory = (Memory) env;
+//        Exp and = memory.getCurrentAndLockExpression();
+        Exp and = currentAnd;
+        for (Exp e : processedBGP) {
+             if (compareCurrentANDBGP(e, and)) {
+                    return true;
+             }
         }
-
         return false;
     }
 
-    public boolean compareCurrentANDBGP(Exp bgp, Environment env) {
-        Memory memory = (Memory) env;
-        Exp and = memory.getCurrentAndLockExpression();
+    /**
+     * 
+     * @param bgp
+     * @param and
+     * @return 
+     */
+    public boolean compareCurrentANDBGP(Exp bgp, Exp and) {
         boolean result = true;
         if (((bgp.getExpList().size() == and.getExpList().size()))) {
             for (int i = 0; i < bgp.getExpList().size() && result; i++) {
-                result = result && bgp.getExpList().get(i).getEdge().equals(and.getExpList().get(i).getEdge());
+                if(bgp.getExpList().get(i).isEdge()){
+                    result = result && bgp.getExpList().get(i).getEdge().equals(and.getExpList().get(i).getEdge());
+                }
             }
             return result;
         }
         return false;
     }
 
-    public boolean compareCurrentANDProcessedBGP(Environment env) {
-        for (Exp e : processedBGP) {
-            if (compareCurrentANDBGP(e, env)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * 
+     * @param env
+     * @return 
+     */
     public boolean sameSource(Environment env) {
         boolean result = true;
         Memory memory = (Memory) env;
@@ -308,6 +320,12 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
         return result;
     }
 
+    /**
+     * 
+     * @param previous
+     * @param next
+     * @return 
+     */
     public ArrayList<Producer> intersection(ArrayList<Producer> previous, ArrayList<Producer> next) {
         ArrayList<Producer> tmp = new ArrayList<Producer>();
         for (Producer p : previous) {

@@ -39,7 +39,7 @@ public class Util {
                 continue;
             }
 
-            if (exp.bind(f)) {
+            if (exp.bind(f) && !matchingFilters.contains(f)) {
                 matchingFilters.add(f);
             }
         }

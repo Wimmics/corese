@@ -181,9 +181,6 @@ public class SPARQLRestAPI {
                 throw new Exception("No query");
             }
             Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
-                        System.out.println("Rest XML");
-//            System.out.println("Rest: " + map);
-//            System.out.println("Rest: " + map.size());
             return Response.status(200).header(headerAccept, "*").entity(
                     ResultFormat.create(map).toString()).build();
         } catch (Exception ex) {

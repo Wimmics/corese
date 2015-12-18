@@ -14,7 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.core.PointerObject;
 
-public class EdgeImpl extends  PointerObject implements Edge, Entity {
+public class EdgeImpl extends PointerObject implements Edge, Entity {
 
 	public static String TOP = RDFS.RootPropertyURI;
 	ArrayList<Node> nodes;

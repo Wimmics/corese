@@ -1,0 +1,9 @@
+template {
+
+  ?in
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (datatype(?in) = xsd:string)
+}

@@ -1,0 +1,12 @@
+template  {
+  ?suc  
+}
+where {
+  ?in owl:hasKey ?z
+  
+   bind (
+     st:call-template-with(st:classexpowleltc, st:classExpression, ?in)
+   as ?suc)
+   
+   filter(st:visit(st:err("key"), ?in, ?suc))
+}

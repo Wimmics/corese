@@ -9,19 +9,9 @@ template  cn:table(?min, ?max) {
   "<tr class='" st:call-template(cn:style, ?d) "'>"
 
   "<th class='date'>" st:call-template(cn:wikidate, ?d)  "</th>"
-
-  "<td>" st:call-template(cn:date, ?d, cn:fr) "</td>"
   
-#  "<td>" st:call-template(cn:date, ?d, cn:emp) "</td>"  
-
-#  "<td>" st:call-template(cn:date, ?d, cn:mds) "</td>"
-
-  "<td>" st:call-template(cn:date, ?d, cn:emp)
-         st:call-template(cn:date, ?d, cn:context) "</td>"
-
-  "<td>" st:call-template(cn:date, ?d, cn:mds)
-         st:call-template(cn:date, ?d, cn:cdn) "</td>"
-
+   st:call-template(cn:row, ?d)
+         
   "</tr>\n"
 
 }

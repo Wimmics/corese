@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import java.util.HashMap;
+
 /**
  * Function definition function xt:fun(x) { exp }
  *
@@ -7,6 +9,13 @@ package fr.inria.acacia.corese.triple.parser;
  *
  */
 public class Function extends Statement {
+    private boolean isDebug = false;
+    private boolean isTest = false;
+    private boolean isTrace = false;
+    
+    Metadata annot;
+    
+   
 
     Function(Term fun, Expression body) {
         super(Processor.FUNCTION, fun, body);
@@ -31,5 +40,102 @@ public class Function extends Statement {
         getBody().toString(sb);
         sb.append(" }");
         return sb;
+    }
+    
+    Metadata getMetadata(){
+        return annot;
+    }
+    
+    void annotate(Metadata m){
+        if (m == null){
+            return;
+        }
+        set(m);
+        for (String s : m){
+            annotate(s);
+        }
+    }
+    
+    void set(Metadata m){
+        if (annot == null){
+            // function annotation
+            annot = m;
+        }
+        else {
+            // package annotation 
+            annot.add(m);
+        }
+    }
+    
+ 
+    
+    String getMetadata(String name){
+        if (annot == null){
+            return null;
+        }
+        return annot.get(name);
+    }
+    
+    void annotate(String a) {
+        switch (annot.type(a)) {
+
+            case Metadata.DEBUG:
+                setDebug(true);
+                break;
+
+            case Metadata.TRACE:
+               setTrace(true);
+               break;
+
+            case Metadata.TEST:
+                setTester(true);
+                break;
+
+            case Metadata.PUBLIC:
+                setExport(true);
+                break;
+        }
+    }
+
+    /**
+     * @return the isDebug
+     */
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    /**
+     * @param isDebug the isDebug to set
+     */
+    public void setDebug(boolean isDebug) {
+        this.isDebug = isDebug;
+    }
+
+    /**
+     * @return the isTest
+     */
+    public boolean isTester() {
+        return isTest;
+    }
+
+    /**
+     * @param isTest the isTest to set
+     */
+    public void setTester(boolean isTest) {
+        this.isTest = isTest;
+    }
+
+    /**
+     * @return the isTrace
+     */
+    public boolean isTrace() {
+        return isTrace;
+    }
+
+    /**
+     * @param isTrace the isTrace to set
+     */
+    public void setTrace(boolean isTrace) {
+        this.isTrace = isTrace;
     }
 }

@@ -1,0 +1,75 @@
+# OWL 2 QL does not support anonymous individuals
+
+template {
+	?suc
+}
+where {
+ { ?in rdf:type ?x
+   FILTER(
+      	?x = owl:NamedIndividual ||
+   		# filter owl, xsd, rdfs, rdf
+   		!(
+   			STRSTARTS(?x, owl:) ||
+   			STRSTARTS(?x, xsd:) ||
+			STRSTARTS(?x, rdfs:) ||
+			STRSTARTS(?x, rdf:) ||
+			isBlank(?x)
+  	    )
+   )
+   
+   bind(!isBlank(?in) as ?suc)
+   filter(! ?suc)
+   filter(st:visit(st:err("anonymous"), ?in, ?suc))
+ }
+ 
+ union {
+ 		  ?in ?p ?x
+ 	  	  FILTER(
+ 	         !(
+ 	         	STRSTARTS(?p, owl:) ||
+ 				STRSTARTS(?p, rdfs:) ||
+ 				STRSTARTS(?p, rdf:)
+ 		  ))
+ 		  
+ 		  filter((!isBlank(?in) && !isBlank(?x)) = false)
+ 		  bind(!isBlank(?in) as ?sucin)
+ 		  bind(!isBlank(?x) as ?sucx)
+ 		  
+ 		  filter(st:visit(st:err("anonymous"), ?in, ?sucin))
+ 		  filter(st:visit(st:err("anonymous"), ?in, ?sucx))
+  	    }
+ 	   
+ union {	
+ 			# owl:differentIndividuals
+ 			{ ?in a owl:AllDifferent
+ 			  VALUES ?p { owl:distinctMembers owl:members }
+ 			  ?in ?p ?y
+ 			  ?y rdf:rest*/rdf:first ?x }
+ 			
+      		union { ?in owl:targetIndividual ?x }
+      		union { ?in owl:sourceIndividual ?x }
+      		
+      		# annotation
+      		union { ?in owl:annotatedSource ?x }
+      		union { ?in owl:annotatedTarget ?x }
+      		
+      		union { ?in owl:hasValue ?x }
+      		
+      		# if blank node return false
+      		bind(!isBlank(?x) as ?suc)
+      		filter(! ?suc)
+      		filter(st:visit(st:err("anonymous"), ?in, ?suc))
+ }
+ 
+ union {
+ 	 		# owl:differentIndividuals
+ 			{ ?in owl:differentFrom ?x }
+ 			
+ 		    filter((!isBlank(?in) && !isBlank(?x)) = false)
+ 		    bind(!isBlank(?in) as ?sucin)
+ 		    bind(!isBlank(?x) as ?sucx)
+ 		    
+ 		    filter(st:visit(st:err("anonymous"), ?in, ?sucin))
+ 		  	filter(st:visit(st:err("anonymous"), ?in, ?sucx))
+ }
+}

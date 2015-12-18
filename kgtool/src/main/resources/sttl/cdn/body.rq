@@ -1,0 +1,21 @@
+prefix cn: <http://cdn.fr/schema/>
+template cn:body(?c) {
+ 
+    """
+    <table class='margin hcentury'>
+    <tr class='head'> 
+    <th>Date</th>"""
+    
+    st:call-template(cn:rowtitle, ?c)
+    "</tr>"
+    
+    st:call-template(cn:table, ?min, ?max)
+
+    "</table>"
+    
+}  
+where {
+   ?c cn:start ?min ; cn:finish ?max 
+}
+
+    

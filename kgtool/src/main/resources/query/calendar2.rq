@@ -19,7 +19,7 @@ select
 (cal:next(xt:yesterday(), 1) as ?yesterday3)
 
 
-where {
+where {}
 
 export {
 
@@ -93,8 +93,5 @@ function cal:month(?m) {
     }
 }
 
-
-
 }
 
-}

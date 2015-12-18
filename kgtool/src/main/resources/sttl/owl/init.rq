@@ -8,13 +8,24 @@
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:profile(?in) {
-    st:define(st:process(?in) =  
-      if (isURI(?in), 
-	if (coalesce(st:get(st:html), false) && 
-	    strstarts(st:turtle(?in), "<"), 
-	    replace(st:turtle(?in), "<", "&lt;"), 
-	    st:turtle(?in)),	
-	st:apply-templates(?in)))    
+  
 }
-where {
-}
+where {}
+
+function st:process(?in) {  
+      if (isURI(?in), st:protect(?in),	
+	st:apply-templates(?in))
+    } 
+  
+function st:protect(?in) {
+    let (?t = st:turtle(?in)){
+      if (coalesce(st:get(st:html), false) && 
+	    strstarts(?t, "<")){ 
+	 replace(?t, "<", "&lt;")
+      }
+      else {
+	 ?t
+      }
+    }
+  }
+

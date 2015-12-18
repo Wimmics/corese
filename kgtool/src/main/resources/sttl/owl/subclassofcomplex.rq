@@ -17,5 +17,8 @@ template {
 }
 where {
   ?in rdfs:subClassOf ?y 
-  filter exists { ?in owl:intersectionOf | owl:unionOf ?z } 
+  filter  exists { 
+    ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+  } 
 }

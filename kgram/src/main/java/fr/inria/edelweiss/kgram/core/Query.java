@@ -126,6 +126,7 @@ public class Query extends Exp implements Graphable, Loopable {
             isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
             // PathFinder list path instead of thread buffer: 50% faster but enumerate all path
             isListPath = false;
+    private boolean isFun = false;
     private boolean isPathType = false;
     // store the list of edges of the path
     private boolean isStorePath = true;
@@ -169,6 +170,7 @@ public class Query extends Exp implements Graphable, Loopable {
     
     private GenerateBGP generateBGP;
     private List<Edge> queryEdgeList;
+    private String service;
 
     
     
@@ -2093,6 +2095,14 @@ public class Query extends Exp implements Graphable, Loopable {
     boolean isService() {
         return isService;
     }
+    
+    public void setService(String serv) {
+        this.service = serv;
+    }
+
+    public String getService() {
+        return service;
+    }
 
     void setCompiled(boolean isCompiled) {
         this.isCompiled = isCompiled;
@@ -2401,11 +2411,39 @@ public class Query extends Exp implements Graphable, Loopable {
         this.extension = ext;
     }
     
+    public boolean hasDefinition(){
+        return getExtension() != null || getGlobalQuery().getExtension() != null;
+    }
+    
     public Expr getExpression(String name){
+        return getExpression(name, false);
+    }
+    
+    public Expr getExpression(String name, boolean inherit){
+        Expr ee = getLocalExpression(name);
+        if (ee == null && inherit){
+            return getGlobalExpression(name);
+        }
+        return ee;
+    }
+
+    
+    public Expr getLocalExpression(String name){
         if (getExtension() != null){
             Expr exp = getExtension().get(name);
             if (exp != null){
                 return exp.getFunction(); 
+            }
+        }
+        return null;
+    }
+    
+    // subquery inherit from global query
+    public Expr getGlobalExpression(String name) {
+        if (getGlobalQuery() != this) {
+            Expr ee = getGlobalQuery().getLocalExpression(name);
+            if (ee != null) {
+                return ee;
             }
         }
         return null;
@@ -2463,6 +2501,20 @@ public class Query extends Exp implements Graphable, Loopable {
 
     public void setQueryEdgeList(List<Edge> queryEdgeList) {
         this.queryEdgeList = queryEdgeList;
+    }
+
+    /**
+     * @return the isFun
+     */
+    public boolean isFun() {
+        return isFun;
+    }
+
+    /**
+     * @param isFun the isFun to set
+     */
+    public void setFun(boolean isFun) {
+        this.isFun = isFun;
     }
 	
 }

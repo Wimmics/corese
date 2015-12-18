@@ -16,6 +16,7 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import org.apache.log4j.Logger;
 
 
@@ -83,24 +84,32 @@ public class QueryLoad {
     }
 
     public String read(String name) {
-        String query = "", str = "";
-        try {
-            Reader fr;
-            if (isURL(name)) {
-                URL url = new URL(name);
-                fr = new InputStreamReader(url.openStream());
-            } else {
-                fr = new FileReader(name);
-            }
-            
-            query = read(fr);
-
+        String query = "";
+        try {          
+            query = readWE(name);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (query == "") {
+            return null;
+        }
+        return query;
+    }
+    
+    public String readWE(String name) throws MalformedURLException, IOException {
+        String query = "", str = "";
+        Reader fr;
+        if (isURL(name)) {
+            URL url = new URL(name);
+            fr = new InputStreamReader(url.openStream());
+        } else {
+            fr = new FileReader(name);
+        }
+
+        query = read(fr);
         if (query == "") {
             return null;
         }

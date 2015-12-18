@@ -1,0 +1,14 @@
+template st:axiomClassExp(?tag) {
+
+	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+
+}
+where {
+
+	bind(st:linkOWL(?id) as ?href)
+	bind(st:linkOWL(?idb) as ?hrefb)
+	
+} values (?tag ?mess ?id ?messb ?idb) {
+	### axiom ###
+	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
+}

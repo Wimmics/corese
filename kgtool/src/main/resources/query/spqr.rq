@@ -10,7 +10,7 @@ select
 (spqr:romain(?n) as ?r)
 (spqr:digit(?r)  as ?d)
 
-where {
+where {}
 
 
 export {
@@ -102,10 +102,6 @@ function spqr:step(?s, ?su, ?sc, ?sd, ?u, ?c, ?d) {
     }
   )
 }
-
-
-}
-
 
 
 }

@@ -25,7 +25,7 @@ import fr.inria.edelweiss.kgram.event.EventManager;
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2009
  */
-public class Mappings  
+public class Mappings  extends PointerObject
 implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 {
 	private static final String NL = System.getProperty("line.separator");;
@@ -102,8 +102,12 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
         public Iterable getLoop(){
             return this;
         }
-	
-	void init(Query q, boolean subEval){
+        
+	public void init(Query q){
+            init(q, false);
+        }
+        
+	 void init(Query q, boolean subEval){
 		isDistinct  = ! subEval && q.isDistinct();
 		isListGroup = q.isListGroup();
 		setSelect(q.getSelect());
@@ -237,6 +241,11 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 			sb.append(qNode);
 			sb.append(" = ");
 			sb.append(node);
+                        if (node.getObject() != null && node.getObject() != this &&
+                                (node.getObject() instanceof Mappings || node.getObject() instanceof Mapping)){
+                            sb.append(" : ");
+                            sb.append(node.getObject().toString());
+                        }
 			sb.append("; ");
 		}
 	}
@@ -246,34 +255,55 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 	}
 	
 	public Object getValue(Node qNode){
-            if (size() == 0) return null;
+            if (size() == 0) {
+                return null;
+            }
             Mapping map = get(0);
             return map.getValue(qNode);
 	}
 	
 	public Node getNode(String var){
-		if (size() == 0) return null;
+		if (size() == 0) {
+                    return null;
+                }
 		Mapping map = get(0);
 		return map.getNode(var);
 	}
         
+        public Object getNodeObject(String var){
+            if (size() == 0) {
+                return null;
+            }
+            return get(0).getNodeObject(var);
+        }
+        
         public Node getNode(Node var){
-		if (size() == 0) return null;
+		if (size() == 0) {
+                    return null;
+                }
 		Mapping map = get(0);
 		return map.getNode(var);
 	}
         
         public Node getQueryNode(String var){
-		if (size() == 0) return null;
+		if (size() == 0){
+                    return null;
+                }
 		Mapping map = get(0);
 		return map.getQueryNode(var);
 	}
 	
 	public Object getValue(String var){
 		Node node = getNode(var);
-		if (node == null) return null;
+		if (node == null){
+                    return null;
+                }
 		return node.getValue();
 	}
+        
+        public Object getValue(String var, int n){
+            return getValue(var);
+        }
 
 	void setSelect(List<Node> nodes){
 		select = nodes;
@@ -1167,6 +1197,16 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 	private void setTemplateResult(Node templateResult) {
 		this.templateResult = templateResult;
 	}
+        
+        @Override
+        public int pointerType(){
+            return MAPPINGS;
+        }
+        
+        @Override
+        public Mappings getMappings(){
+            return this;
+        }
 
 //
 //	public Solutions union(Solutions s){

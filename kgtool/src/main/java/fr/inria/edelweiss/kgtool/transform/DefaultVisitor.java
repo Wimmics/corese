@@ -293,6 +293,6 @@ public class DefaultVisitor implements TemplateVisitor {
     	if(errors.get(dt) != null){
     		return errors.get(dt);
     	}
-    	else return new ArrayList<IDatatype>();
+    	else return new ArrayList<IDatatype>(0);
     }
 }

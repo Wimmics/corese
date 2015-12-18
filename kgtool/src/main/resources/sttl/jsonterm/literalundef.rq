@@ -1,0 +1,16 @@
+template  {
+
+  "{"
+    "\"@value\": \""   str(?in) "\", "
+    "\"@type\": \""    datatype(?in) "\""
+  "}"
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (
+    ! strstarts(datatype(?in), xsd:) &&
+    ! strstarts(datatype(?in), rdf:) 
+  )
+  
+}

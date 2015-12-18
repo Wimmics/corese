@@ -2,7 +2,10 @@ template st:linkprofile(?x) {
 
   if (isURI(?x), 
     st:call-template(st:link, 
-      coalesce(st:call-template(st:transform, ?x), encode_for_uri(?x)),
+      coalesce(
+	#st:call-template(st:transform, ?x), 
+	st:plink(?x),
+	encode_for_uri(?x)),
       ?e),
     str(?e))
     

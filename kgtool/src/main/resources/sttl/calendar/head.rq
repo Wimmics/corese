@@ -1,0 +1,21 @@
+template st:head(?year) {
+
+"<h1 class='year'>"
+
+"<a href='" st:plink(concat(?uri,  (?year - 1))) "'>"  
+"<span>" us:display(?year - 1)  "</span>"   "</a>"
+
+"  -  " us:display(?year)  "  -  "
+
+"<a href='" st:plink(concat(?uri,  (?year + 1))) "'>"  
+"<span>"  us:display(?year + 1) "</span>"    "</a>"
+
+
+"</h1>"
+   
+}
+where {
+
+bind ("http://ns.inria.fr/sparql-template/y" as ?uri)
+  
+}

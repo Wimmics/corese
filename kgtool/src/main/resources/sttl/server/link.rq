@@ -1,0 +1,10 @@
+#
+# Hyper text link to server
+# May return javascript:trans(?uri)
+#
+template st:link (?uri) {
+
+}
+where {
+
+}

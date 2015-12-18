@@ -3,6 +3,8 @@ package fr.inria.edelweiss.kgraph.core;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.core.PointerObject;
 import java.util.ArrayList;
 
 /**
@@ -10,7 +12,7 @@ import java.util.ArrayList;
  * @author Olivier Corby, Wimmics Inria I3S, 2014
  *
  */
-public abstract class EdgeTop implements Entity {
+public abstract class EdgeTop extends PointerObject implements Entity {
     
         public Entity copy() {
             return this;
@@ -40,6 +42,16 @@ public abstract class EdgeTop implements Entity {
             list.add(getNode(1).getValue());
             return list;
       }
+        
+        @Override
+        public int pointerType(){
+            return Pointerable.ENTITY;
+        }
+        
+        @Override
+        public Entity getEntity(){
+            return this;
+        }
 
 
 }

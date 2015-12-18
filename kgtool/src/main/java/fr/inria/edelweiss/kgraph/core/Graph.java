@@ -396,7 +396,7 @@ public class Graph implements Graphable, Loopable {
     }
 
     /**
-     * b = true for RDFS entailment
+     * @param b true for RDFS entailment
      */
     public static Graph create(boolean b) {
         Graph g = new Graph();
@@ -541,6 +541,12 @@ public class Graph implements Graphable, Loopable {
     public void removeListener(GraphListener gl) {
         if (listen != null) {
             listen.remove(gl);
+        }
+    }
+    
+    public void removeListener() {
+        if (listen != null) {
+            listen.clear();
         }
     }
 
@@ -1579,6 +1585,9 @@ public class Graph implements Graphable, Loopable {
 
     public Edge getEdge(String name, Node node, int index) {
         Node pred = getPropertyNode(name);
+        if (pred == null){
+            return null;
+        }
         return getEdge(pred, node, index);
     }
 

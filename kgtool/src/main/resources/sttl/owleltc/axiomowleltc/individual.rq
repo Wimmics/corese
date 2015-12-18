@@ -1,0 +1,16 @@
+template {
+	?suc
+}
+where {
+	?in a owl:NamedIndividual, ?t
+	
+	filter (
+		isURI(?in) ||
+		not exists { ?x ?p ?in }
+	)
+	
+	bind (isURI(?t) ||
+		(?t = owl:Class)
+	as ?suc)
+	filter(st:visit(st:err("individual"), ?in, ?suc))
+}

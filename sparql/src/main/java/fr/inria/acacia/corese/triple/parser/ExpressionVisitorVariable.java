@@ -24,7 +24,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     List<Variable> list;
     HashMap<String, Integer> map;
     ASTQuery ast;
-    Term fun;
+    Function fun;
 
     ExpressionVisitorVariable() {
         map = new HashMap<String, Integer>();
@@ -39,7 +39,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     }
     
     // function f(?x) { exp }
-    ExpressionVisitorVariable(ASTQuery ast, Term fun) {
+    ExpressionVisitorVariable(ASTQuery ast, Function fun) {
         this();
         this.list = fun.getFunction().getFunVariables();
         this.ast = ast;
@@ -49,7 +49,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     }
     
     void init(){
-        trace = ast.isDebug();
+        //trace = ast.isDebug();
         if (list != null){
             declare();
         }
@@ -80,7 +80,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                 break;
                 
             case ExprType.FUNCTION:
-                define(t);
+                define((Function) t);
                 break;
                                            
             case ExprType.MAP:
@@ -98,14 +98,9 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                 break;
                                
             case ExprType.EXIST:
-                if (fun != null && fun.isExport()){
-                    // special case: export function contain exists {}
-                    // will be evaluated with query that defines function
-                    fun.setSystem(true);
-                }
+               visitExist(t);
                 // continue
-                
-                
+                               
             default:
         
             for (Expression e : t.getArgs()) {
@@ -113,6 +108,31 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             }
         }
     }
+    
+    void visitExist(Term t) {
+        if (fun != null) {
+            // inside a function 
+
+            if (fun.isExport()) {
+                // special case: export function contain exists {}
+                // will be evaluated with query that defines function
+                fun.setSystem(true);
+            }
+
+            if (t.isSystem()) {
+                // let (?m = select where {}){}
+                String serv = fun.getMetadata(Metadata.SERVICE);
+                if (serv != null) {
+                    Exp e = t.getExist().getBody().get(0).get(0);
+                    if (e.isQuery()) {
+                        ASTQuery ast = e.getQuery();
+                        ast.defService(serv);
+                    }
+                }
+            }
+        }
+    }
+    
 
     @Override
     public void visit(Variable v) {
@@ -146,7 +166,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
      * function(xt:fun(?x) = exp)
      * create a new Visitor to have own local variables index
      */
-    void define(Term t){
+    void define(Function t){
         if (trace) System.out.println("Vis Fun: " + t);
         Expression body = t.getBody(); 
         

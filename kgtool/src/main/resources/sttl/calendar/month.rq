@@ -1,0 +1,36 @@
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+template st:month(?y, ?m) {
+
+    "<h3 class='center'>" cal:month(?m) "</h3>"
+    
+    "<pre>"
+    "Mo Tu We Th Fr Sa Su \n"
+    
+    group {
+    
+        if (?n = 1, xt:space(?first - 1), "")
+        xt:pretty(?n) 
+        #st:call-template(st:date, ?date) " " 
+        if (?jour = "Sunday", "\n", "")
+        
+        ; separator = ""
+    }
+    
+    if (?first + ?days - 1 < 35 , "\n ", "")
+    # additional space when last day is sunday (because \n alone fails)
+    if (?first + ?days - 1 = 35 && ?last = 7, " ", "")
+    
+    "</pre>"
+     
+    ; separator = "\n"                   
+}
+where {
+    bind (cal:days(?y, ?m) as ?days)
+    bind (cal:num(xt:day(xsd:date(concat(?y, "-", ?m, "-", 1)))) 
+    as ?first)
+    bind (cal:num(xt:day(xsd:date(concat(?y, "-", ?m, "-", ?days)))) 
+    as ?last)
+    bind (unnest(xt:iota(?days)) as ?n)
+    bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?date)
+    bind (xt:day(?date) as ?jour)  
+}

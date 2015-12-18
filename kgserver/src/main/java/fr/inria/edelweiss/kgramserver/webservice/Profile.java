@@ -155,8 +155,9 @@ public class Profile {
 
     void process(Graph g) throws IOException, EngineException {
         init(g);
+        // deprecated:
         initLoad(g);
-        initLoader(g);
+        initServer(g);
     }
 
     void initServer(String name) {
@@ -218,10 +219,6 @@ public class Profile {
         return read(path);
     }
 
-    Service getService(String name) {
-        return map.get(name);
-    }
-
     String getValues(String var, String resource) {
         if (var != null) {
             return "values " + var + " { <" + resource + "> }";
@@ -267,6 +264,13 @@ public class Profile {
         map.put(prof.getLabel(), s);
     }
       
+    /**
+     * 
+     * @param g
+     * @throws IOException
+     * @throws EngineException 
+     * @deprecated
+     */
     void initLoad(Graph g) throws IOException, EngineException {
         String str = read(QUERY + "profileLoad.rq");
         QueryProcess exec = QueryProcess.create(g);
@@ -276,6 +280,11 @@ public class Profile {
         }
     }
 
+    /**
+     * 
+     * @param m 
+     *@deprecated
+     */
     void initLoad(Mapping m) {
         Node profile = m.getNode("?p");
         Node load = m.getNode("?ld");
@@ -288,7 +297,13 @@ public class Profile {
         map.put(profile.getLabel(), s);
     }
 
-    void initLoader(Graph g) throws EngineException {
+    /**
+     * Initialize Server definitions: get RDF/S documents URI to be loaded (later)
+     * Create Server definitions (in addition to Service)
+     * @param g
+     * @throws EngineException 
+     */
+    void initServer(Graph g) throws EngineException {
         String str = "select * where {"
                 + "?s a st:Server "
                 + "values ?p { st:data st:schema st:context }"
@@ -312,15 +327,36 @@ public class Profile {
 
     }
 
+    /**
+     * Create Server if not exists
+     * @param name
+     * @return 
+     */
     Service findServer(String name) {
         Service s = getServer(name);
         if (s == null) {
             s = new Service(name);
             servers.put(name, s);
+            Service fst = getService(name);
+            if (fst != null){
+                // Service and Server share Context parameters
+                s.setParam(fst.getParam());
+            }
         }
         return s;
     }
     
+    /**
+     * 
+     * Service that defines a transformation
+     */
+    Service getService(String name) {
+        return map.get(name);
+    }
+    
+    /**
+     * Service that defines a Server 
+     */
     Service getServer(String name){
         return servers.get(name);
     }

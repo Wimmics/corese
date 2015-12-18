@@ -1,0 +1,12 @@
+template st:superClassExpression(?x) {
+	?suc
+}
+where {
+	bind(
+		if (isURI(?x), true,
+			st:apply-templates-all(?x)
+		)
+	as ?suc)
+	
+	filter(st:alreadyVisited(?x, "super", ?suc))
+}

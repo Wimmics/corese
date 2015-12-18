@@ -4,12 +4,15 @@
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:profile(?in) {
+  
+}
+where {}
 
-    st:define(st:process(?in) = 
-      if (isBlank(?in), st:apply-templates(?in), st:turtle(?in)))
+ function st:process(?in) {
+      if (isBlank(?in), st:apply-templates(?in), st:turtle(?in))
+ }
       
-    st:define(st:default(?in) = st:turtle(?in))
-    
-}
-where {
-}
+ function st:default(?in) {
+    st:turtle(?in)
+ }
+ 

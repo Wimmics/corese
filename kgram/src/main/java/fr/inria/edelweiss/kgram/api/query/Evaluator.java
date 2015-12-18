@@ -29,6 +29,8 @@ public interface Evaluator {
 	void setMode(int mode);
 	
 	int getMode();
+        
+        void setDebug(boolean b);
 
 	
 	/**
@@ -97,6 +99,8 @@ public interface Evaluator {
         void setProducer(Producer p);
         
         void setKGRAM(Object o);
+        
+        Object getEval();
 
         void addResultListener(ResultListener rl);
         

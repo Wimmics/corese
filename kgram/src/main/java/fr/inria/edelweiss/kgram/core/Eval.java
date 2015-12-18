@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
+import java.util.HashMap;
 import java.util.Iterator;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -58,8 +59,7 @@ public class Eval implements ExpType, Plugin {
     private static final String FUN_RESULT  = PREF + "result";
     private static final String FUN_SOLUTION= PREF + "solution";
     private static final String FUN_START   = PREF + "start";
-    private static final String FUN_MAIN    = PREF + "main";
-    public static final String FUN_PRODUCE  = PREF + "produce";
+    private static final String FUN_PRODUCE = PREF + "produce";
 
     static final int STOP = -2;
     public static int count = 0;
@@ -88,6 +88,7 @@ public class Eval implements ExpType, Plugin {
             // initial results to be completed
             initialResults;
     List<Node> empty = new ArrayList<Node>(0);
+    HashMap<String, Boolean> local;
 
     int // count number of eval() calls
             nbEdge = 0, nbCall = 0,
@@ -114,8 +115,7 @@ public class Eval implements ExpType, Plugin {
             hasResult   = false,
             hasStart    = false,
             hasProduce  = false,
-            hasSolution = false, 
-            hasMain     = false;
+            hasSolution = false;
 
     //Edge previous;
     /**
@@ -132,6 +132,12 @@ public class Eval implements ExpType, Plugin {
         plugin = this;
         lPathFinder = new ArrayList<PathFinder>();
         e.setKGRAM(this);
+        initCallback();
+    }
+    
+    void initCallback(){
+        local = new HashMap();
+        local.put(FUN_PRODUCE, true);
     }
 
     public static Eval create(Producer p, Evaluator e, Matcher m) {
@@ -179,7 +185,7 @@ public class Eval implements ExpType, Plugin {
         }
         if (hasSolution) {
             memory.setResults(map);
-            Object res = evaluator.eval(getExpression(FUN_SOLUTION), memory, producer,
+            Object res = eval(getExpression(FUN_SOLUTION), 
                     toArray(producer.getNode(q), producer.getNode(map)));
             map.complete();
         }
@@ -194,12 +200,8 @@ public class Eval implements ExpType, Plugin {
     private Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
         if (hasStart && !q.isSubQuery()) {
-            Object res = evaluator.eval(getExpression(q, FUN_START), memory, producer,
+            Object res = eval(getExpression(q, FUN_START), 
                     toArray(producer.getNode(q), producer.getNode(q.getAST())));
-        }
-        
-        if (hasMain && q.isEmpty()){
-           results = funMain(q);
         }
         else {
             if (q.isCheck()) {
@@ -232,18 +234,6 @@ public class Eval implements ExpType, Plugin {
         return results;
     }
     
-    /**
-     * Emulate function xt:main() {}
-     */
-    Mappings funMain(Query q) {
-        Object obj  = evaluator.eval(getExpression(q, FUN_MAIN), memory, producer);
-        Mapping m   = Mapping.create(q.getGraphNode(), producer.getNode(obj));
-        Mappings ms = Mappings.create(q);
-        ms.setSelect(q.getGraphNode());
-        ms.add(m);
-        return ms;
-    }
-
     /**
      * We just counted number of results: nbResult Just build a Mapping
      */
@@ -559,7 +549,7 @@ public class Eval implements ExpType, Plugin {
             // when subquery, memory is already assigned
             // assign stack index to EDGE and NODE
             q.complete(producer);//service while1 / Query
-            memory = new Memory(match, evaluator);
+            memory = new Memory(match, evaluator);           
             // create memory bind stack
             memory.init(q);
             if (hasEvent) {
@@ -606,14 +596,15 @@ public class Eval implements ExpType, Plugin {
             results.setEventManager(manager);
         }
         startExtFun();
-        // save current results in case of sub query
-        //save = memory.getResults();
         // set new results in case of sub query (for aggregates)
         memory.setEval(this);
         memory.setResults(results);
     }
 
     void startExtFun() {
+        if (! query.hasDefinition()){
+            return;
+        }
         hasCandidate= (getExpression(FUN_CANDIDATE) != null);
         hasService  = (getExpression(FUN_SERVICE) != null);
         hasOptional = (getExpression(FUN_OPTIONAL) != null);
@@ -622,7 +613,6 @@ public class Eval implements ExpType, Plugin {
         hasResult   = (getExpression(FUN_RESULT) != null);
         hasSolution = (getExpression(FUN_SOLUTION) != null);
         hasStart    = (getExpression(FUN_START) != null);
-        hasMain     = (getExpression(FUN_MAIN) != null);
     }
 
     private void complete() {
@@ -839,9 +829,6 @@ public class Eval implements ExpType, Plugin {
                     break;
 
                 case AND:
-                     if(exp.isLock()){
-                        memory.setCurrentAndLockExpression(exp);
-                     }
                         stack = stack.and(exp, n);
                         backtrack = eval(p, gNode, stack, n);
                     break;
@@ -1225,6 +1212,7 @@ public class Eval implements ExpType, Plugin {
     private Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mapping m) {
         Memory mem = new Memory(match, evaluator);
         mem.init(query);
+        mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
         Eval eval = copy(mem, p, evaluator);
         graphNode(gNode, node, mem);
         bind(mem, exp, main, m);
@@ -2213,7 +2201,7 @@ public class Eval implements ExpType, Plugin {
     DatatypeValue candidate(Edge q, Entity ent, Object match) {
         Expr exp = getExpression(FUN_CANDIDATE);
         if (exp != null) {
-            Object obj = evaluator.eval(exp, memory, producer,
+            Object obj = eval(exp, 
                     toArray(q.getNode().getValue(), ent.getNode().getValue(), match));
             DatatypeValue val = producer.getDatatypeValue(obj);
             return val;
@@ -2224,16 +2212,41 @@ public class Eval implements ExpType, Plugin {
     void callService(Node node, Exp serv, Mappings m) {
         Expr exp = getExpression(FUN_SERVICE);
         if (exp != null) {
-            evaluator.eval(exp, memory, producer, toArray(node.getValue(), producer.getNode(serv), producer.getNode(m)));
+            eval(exp, toArray(node.getValue(), producer.getNode(serv), producer.getNode(m)));
         }
+    }
+    
+      /**
+         * eval callback by name
+         * Only with functions defined in the query 
+         * name is not an export function, but it can call export functions
+         * @param name
+         * @return
+         * @throws EngineException 
+         * */
+       
+	public Object eval(String name, Object[] param) {
+            Expr exp = getExpression(name);           
+            if (exp != null){              
+                return  eval(exp, param);
+            }
+            return null;           
+        }
+    
+   public Object eval(Expr exp, Object[] param){
+        return evaluator.eval(exp, memory, producer, param);
     }
 
     Expr getExpression(String name) {
         return getExpression(query, name);
     }
 
-    Expr getExpression(Query q, String name) {
-        return q.getExpression(name);
+    Expr getExpression(Query q, String name) {       
+        return q.getExpression(name, inherit(q, name));
+    }
+    
+    boolean inherit(Query q, String name){
+        return ! (q.isFun() && local.containsKey(name));
     }
 
     Object[] toArray(Object o1, Object o2, Object o3) {
@@ -2336,8 +2349,7 @@ public class Eval implements ExpType, Plugin {
             }
 
             lMap = ev.eval(subNode, subQuery, null);
-
-            if (!isBound(subQuery, env) && gNode == null) {
+            if (! subQuery.isFun() && !isBound(subQuery, env) && gNode == null) {
                 exp.setObject(lMap);
             }
         }
@@ -2606,6 +2618,9 @@ public class Eval implements ExpType, Plugin {
             // get outer node:
             Node outNode = qq.getOuterNodeSelf(subNode);
             if (outNode != null && env.isBound(outNode)) {
+                return true;
+            }
+            if (env.getBind() != null && env.getBind().isBound(subNode.getLabel())){
                 return true;
             }
         }

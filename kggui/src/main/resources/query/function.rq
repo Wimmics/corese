@@ -5,7 +5,7 @@ select
     (st:fib(10) as ?fib)
     (st:fac(10) as ?fac)
     (st:date()  as ?date)
-where {
+where {}
 
 function st:fib(?n) { 
     if (?n <= 2, 1, st:fib(?n - 1) + st:fib(?n - 2))
@@ -21,4 +21,3 @@ function st:date() {
     }
 }
 
-}

@@ -1,3 +1,6 @@
+#
+# Link to server
+#
 prefix foaf: <http://xmlns.com/foaf/0.1/>
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
@@ -7,9 +10,7 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template  st:display(?r, ?l) {
 
- "<a href=\"" 
-    st:call-template(st:link, ?r) 
-  "\">"  
+ "<a href='"  st:plink(?r)  "'>"  
     str(coalesce(?l, ?pr)) 
   "</a>"
 

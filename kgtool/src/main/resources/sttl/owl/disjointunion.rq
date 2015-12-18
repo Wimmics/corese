@@ -6,17 +6,18 @@
 #
 template {
    "DisjointUnion("  
-     if (bound(?z),
-# special case: use a named template
+     if (?iu,
 	st:call-template(st:interunion, ?in),
 	?in) 
       " "  ?y  
     ")" 
 }
 where {
-  ?in owl:disjointUnion ?y 
-  optional { 
-    { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
-  }
+  ?in owl:disjointUnionOf ?y 
+  bind (
+   exists { 
+     ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+   } 
+  as ?iu)
 }
-#pragma { st:template st:priority 2 }

@@ -3,12 +3,12 @@
 #
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
-template st:profile(?in) {
-
-    st:define(st:process(?in) = st:turtle(?in))
-      
-    st:define(st:default(?in) = st:turtle(?in))
+template st:profile(?in) {    
     
 }
-where {
-}
+where {}
+
+function st:process(?in) { st:turtle(?in) }
+     
+function st:default(?in) { st:turtle(?in) }
+

@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template sp:from {
-   st:call-template(sp:kw, "from") " " ?f st:nl() ; separator = ""
+   st:kw("from") " " ?f st:nl() ; separator = ""
 }
 where {
   ?in sp:from/rdf:rest*/rdf:first ?f

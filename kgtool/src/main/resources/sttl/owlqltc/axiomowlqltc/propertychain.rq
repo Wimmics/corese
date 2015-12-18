@@ -1,0 +1,11 @@
+# ObjectPropertyAxiom
+# [property inclusions (SubObjectPropertyOf) involving] property chains not supported in OWL 2 QL
+
+template {
+	false
+}
+where {
+	?in owl:propertyChainAxiom ?z
+	
+	filter(st:visit(st:err("propertyChain"), ?in, false))
+}

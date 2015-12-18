@@ -1,0 +1,6 @@
+template st:list(?l) {
+  ?e
+}
+where {
+  ?l rdf:rest*/rdf:first ?e
+}

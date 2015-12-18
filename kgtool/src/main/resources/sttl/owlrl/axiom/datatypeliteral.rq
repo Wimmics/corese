@@ -1,0 +1,17 @@
+# the following datatypes must not be used in OWL 2 RL:
+# owl:real, owl:rational
+
+template {
+  ?suc
+}
+where {
+  
+  bind ( 
+    not exists { 
+      ?in ?p ?y 
+      filter (datatype(?y) IN (owl:real, owl:rational))
+    }
+  as ?suc)
+
+  filter (st:visit(st:err("datatypelit"), st:datatype, ?suc))
+}

@@ -42,6 +42,7 @@ public class Interpreter implements Evaluator, ExprType {
     static Extension extension;
     int mode = KGRAM_MODE;
     boolean hasListener = false;
+    boolean isDebug = false;
     public static int count = 0;
     Object ERROR_VALUE = null;
     
@@ -66,6 +67,14 @@ public class Interpreter implements Evaluator, ExprType {
         if (o instanceof Eval) {
             kgram = (Eval) o;
         }
+    }
+    
+    public void setDebug(boolean b){
+        isDebug = b;
+    }
+    
+    public Eval getEval(){
+        return kgram;
     }
 
     public Proxy getProxy() {
@@ -341,15 +350,20 @@ public class Interpreter implements Evaluator, ExprType {
 
             case CONCAT:
             case STL_CONCAT:
+            //case XT_CONCAT:
                 return proxy.function(exp, env, p);
 
             case STL_AND:
             case EXTERNAL:
+            case CUSTOM:
             case UNDEF:
             case STL_PROCESS:
             case LIST:
             case IOTA:           
                 break;
+                
+            case EVAL:
+                return funcall(exp, env, p);
                 
             case MAP:
             case MAPLIST:
@@ -406,7 +420,7 @@ public class Interpreter implements Evaluator, ExprType {
 
             case UNDEF:
                 return extension(exp, env, p, args);
-
+                
             default:
                 return proxy.eval(exp, env, p, args);
         }
@@ -540,14 +554,21 @@ public class Interpreter implements Evaluator, ExprType {
             Exp sub = pat.get(0).get(0);
 
             if (sub.isQuery()) {
-                if (sub.getQuery().isConstruct()) {
-                    // for (?m in exists {construct where}){}
-                    Mappings m = kgram.getSPARQLEngine().eval(sub.getQuery());
-                    return proxy.getValue(true, m.getGraph());
+                Query qq = sub.getQuery();
+                qq.setFun(true);
+                if (qq.isConstruct()) {
+                    // let (?g =  construct where)
+                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq));                     
+                    return producer.getValue(m.getGraph());
                 } 
+                if (qq.getService() != null){
+                    // @service <uri> let (?m = select where)
+                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq));                     
+                    return producer.getValue(m);
+                }
                 else {
-                    // select where
-                    map = eval.subEval(sub.getQuery(), gNode, Stack.create(sub), 0);
+                    // let (?m = select where)
+                    map = eval.subEval(qq, gNode, Stack.create(sub), 0);
                 }
             }
             else {
@@ -564,11 +585,18 @@ public class Interpreter implements Evaluator, ExprType {
         boolean b = map.size() > 0;
         
         if (exp.isSystem()){
-            return proxy.getValue(b, (b)?map:null);
+            return producer.getValue(map);
         }
         else {
             return proxy.getValue(b);
         }
+    }
+    
+    Mapping getMapping(Environment env, Query q){
+        if (env.hasBind()){
+             return env.getBind().getMapping(q);
+        }
+       return  null;
     }
     
 
@@ -639,7 +667,8 @@ public class Interpreter implements Evaluator, ExprType {
      * let (?x = ?y, exp) 
      */
     private Object let(Expr exp, Environment env, Producer p) {
-        Node val  = eval(exp.getDefinition().getFilter(), env, p); 
+       // Node val  = eval(exp.getDefinition().getFilter(), env, p); 
+        Node val  = (Node) eval(exp.getDefinition(), env, p); 
         if (val == ERROR_VALUE){
             return null;
         }
@@ -658,10 +687,19 @@ public class Interpreter implements Evaluator, ExprType {
         return val;
     }
     
-     private Object let(Expr exp, Environment env, Producer p, Expr let, Expr var, Node val) {     
-        env.set(let, var, val);
+    /**
+     * PRAGMA: let ((?y) = select where)
+     * if ?y is not bound, let do not bind ?y 
+     */
+     private Object let(Expr exp, Environment env, Producer p, Expr let, Expr var, Node val) { 
+        boolean bound =  proxy.getConstantValue(val) != null;
+        if (bound){
+            env.set(let, var, val);
+        }
         Object res = eval(exp, env, p);
-        env.unset(let, var);
+        if (bound){
+            env.unset(let, var);
+        }
         return res;
     }
     
@@ -670,11 +708,24 @@ public class Interpreter implements Evaluator, ExprType {
      * Their parameters are tagged as local variables, managed in a specific stack
      */    
     public Object extension(Expr exp, Environment env, Producer p, Object[] values){ 
-        Expr def = getDefine(exp, env);
+        Expr def = getDefine(exp, env);       
         if (def == null){
             return null;
         }
         return eval(exp, env, p, values, def);
+    }
+    
+     public Object funcall(Expr exp, Environment env, Producer p){
+        Object name = eval(exp.getExp(0), env, p); 
+        Object[] args = evalArguments(exp, env, p, 1);
+        if (name == ERROR_VALUE || args == null){
+            return ERROR_VALUE;
+        }
+        Expr def = getDefine(env, p.getDatatypeValue(name).stringValue(), args.length);
+        if (def == null){
+            return null;
+        }
+        return eval(exp, env, p, args, def);
     }
     
     /**
@@ -697,6 +748,10 @@ public class Interpreter implements Evaluator, ExprType {
         //count++;
         Expr fun = def.getFunction(); //getExp(0);
         env.set(def, fun.getExpList(), values);
+        if (isDebug || def.isDebug()){
+            System.out.println(exp);
+            System.out.println(env.getBind());
+        }
         Object res;
         if (def.isSystem() && env.getQuery() != def.getPattern()){
             // function is export and has exists {}
@@ -706,7 +761,10 @@ public class Interpreter implements Evaluator, ExprType {
         else {
             res = eval(def.getBody(), env, p); 
         }
-        env.unset(def, fun.getExpList());        
+        env.unset(def, fun.getExpList()); 
+        if (isDebug || def.isDebug()){
+            System.out.println(exp + " : " + res);
+        }
         return res;
     }
     
@@ -754,14 +812,14 @@ public class Interpreter implements Evaluator, ExprType {
         if (ext != null) {          
             Expr def = ext.get(exp);
             if (def != null) {
-                exp.setDefine(def);
+                //exp.setDefine(def);
                 return def;
             }
         }
        
         Expr def = extension.get(exp);
         if (def != null) {
-            exp.setDefine(def);
+            //exp.setDefine(def);
             return def;
         }
 

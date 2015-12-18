@@ -23,12 +23,17 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.CompilerFacKgram;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
+import java.util.Collection;
 
 /**
  * SPARQL XML Results Format Parser into Mappings
@@ -87,17 +92,33 @@ public class XMLResult {
 	 *  parse SPARQL XML Result as Mappings
 	 */
 	public Mappings parse(InputStream stream) throws ParserConfigurationException, SAXException, IOException{
-		Mappings maps = new Mappings();
+		Mappings map = new Mappings();
 		
-		MyHandler handler = new MyHandler(maps);
+		MyHandler handler = new MyHandler(map);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
                 factory.setNamespaceAware(true);
 		SAXParser parser = factory.newSAXParser();
 		InputStreamReader r = new InputStreamReader(stream, "UTF-8");
 		parser.parse(new InputSource(r), handler);    
-		
-		return maps;
+		complete(map);
+		return map;
 	}
+        
+        public Collection<Node> getVariables(){
+            return compiler.getVariables();
+        }
+        
+     void complete(Mappings map) {
+        ASTQuery ast = ASTQuery.create();
+        ast.setBody(BasicGraphPattern.create());
+        for (Node n : getVariables()) {
+            ast.setSelect(new Variable(n.getLabel()));
+        }
+        QuerySolver qs = QuerySolver.create();
+        Query q = qs.compile(ast);
+        map.setQuery(q);
+        map.init(q);
+    }
 	
 	public void init(){
 		compiler = new CompilerFacKgram().newInstance();

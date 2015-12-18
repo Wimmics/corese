@@ -1,14 +1,21 @@
 template st:query(?q) {
   """
   <h3>SPARQL Query</h3>
-  <form method='post' action='/spin/tospin'>
+  <form method='post' id='spin' action='/spin/tospin'>
+  
     <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
     
-    <textarea cols='60' rows='15' name='query'>"""str(?q)
+    <textarea cols='60' rows='15' id='query' name='query'>"""str(?q)
     
   """</textarea>
-    <br/>
-    <input type='submit' value='Submit'/>
+    <br/>"""
+    
+#    st:call-template-with(st:server, st:submit, "spin", "submit", coalesce(st:get(st:protocol), st:std) )
+    
+   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
+
+    
+  """  
   </form>
   """
 }

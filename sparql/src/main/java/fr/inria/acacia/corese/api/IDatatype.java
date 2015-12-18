@@ -6,6 +6,7 @@ import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import java.util.List;
 
 /**
@@ -49,6 +50,7 @@ public interface IDatatype
     public static final String GRAPH    = KGRAM + "Graph";
     public static final String MAPPINGS = KGRAM + "Mappings";
     public static final String LIST     = ExpType.DT + "list";
+    public static final String POINTER  = ExpType.DT + "pointer";
     public static final String SYSTEM   = ExpType.DT + "system";
     
     /**
@@ -80,6 +82,12 @@ public interface IDatatype
     boolean isLiteral();
     
     boolean isFuture();
+    
+    boolean isPointer();
+    
+    int pointerType();
+    
+    Pointerable getPointerObject();
 
     /**
      * Compare 2 datatypes

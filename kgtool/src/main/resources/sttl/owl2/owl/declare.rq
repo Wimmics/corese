@@ -6,22 +6,22 @@
 
 template  st:declare  {
 
-  xt:nl(st:apply-templates-with-all(st:owldecl, ?t), 1)
+  xt:nl(st:apply-templates-with-all(st:owldecl, ?in), 1)
   ; separator = ""
   
     
 }
 where {
 
-  {select distinct ?t where {
-     ?t rdf:type|owl:equivalentClass ?y 
-    filter (isURI(?t))
+  select distinct ?in where {
+     ?in rdf:type|owl:equivalentClass ?y 
+    filter (isURI(?in))
     
     # OWL vocabulary must not be pretty printed
-    filter (! xt:system(?t))       
-    filter not exists { ?t a owl:Ontology }
+    filter (! xt:system(?in))       
+    filter not exists { ?in a owl:Ontology }
         
   }
-  order by ?t}
+  order by ?in
 }
 

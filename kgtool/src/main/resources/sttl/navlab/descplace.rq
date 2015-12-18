@@ -4,35 +4,32 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 
 template st:descplace(?r) {
 
-  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
-  "<th class='left'>" str(?title) "</th><td>" 
-  
-  if (?href, 
-    st:call-template(st:href, ?r, ?p),
-    st:call-template(st:property, ?r, ?p))  
-  
-  "</td></tr>"  
+st:call-template(st:desctriple, 
+  st:number(), ?r, ?p, ?tt, if (?href, st:href, st:property))
+
 }
 where { 
 
-  values (?p ?title) {
-    (rdfs:comment 	"Résumé")
-    (p:nord		"Nord")
-    (p:nordEst		"Nord Est")
-    (p:est		"Est")
-    (p:sudEst		"Sud Est")
-    (p:sud		"Sud")
-    (p:sudOuest		"Sud Ouest")
-    (p:ouest		"Ouest")
-    (p:nordOuest	"Nord Ouest")
-    (p:latitude		"Latitude")
-    (p:longitude	"Longitude")
+  values (?p ?title ?titleen) {
+    (rdfs:comment 	"Résumé" 	"Abstract")
+    (p:nord		"Nord"		"North")
+    (p:nordEst		"Nord Est"	"North East")
+    (p:est		"Est"		"East")
+    (p:sudEst		"Sud Est"	"South East")
+    (p:sud		"Sud"		"South")
+    (p:sudOuest		"Sud Ouest"	"South West")
+    (p:ouest		"Ouest"		"West")
+    (p:nordOuest	"Nord Ouest"	"North West")
+    (p:latitude		"Latitude"	"Latitude")
+    (p:longitude	"Longitude"	"Longitude")
     
-    (o:wikipedia	"Wikipedia")
-    (o:dbpedia		"DBpedia")
+    (o:wikipedia	"Wikipedia"	"Wikipedia")
+    (o:dbpedia		"DBpedia"	"DBpedia")
   }
   
   bind   (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
   filter (if (?p in (o:wikipedia, o:dbpedia), strstarts(?r, r:), true))
+  filter ( ?href || exists { ?r ?p ?v } )
+  bind (if (st:get(st:lang, "en"), ?titleen, ?title) as ?tt)
 
 }

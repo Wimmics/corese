@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Nov 07 17:06:12 CET 2015
+Thu Dec 10 10:51:33 CET 2015
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -123,13 +123,15 @@ where {
     bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?day)
     bind (xt:day(?day) as ?jour)
     
-    function xt:space(?n) {
-      if (?n = 0, "", concat("   " , xt:space(?n - 1))) 
-    }
+    
 }
 group by ?m
 order by ?m
 values ?y { 2015 }
+
+function xt:space(?n) {
+      if (?n = 0, "", concat("   " , xt:space(?n - 1))) 
+    }
 
 ]]>
 </body>
@@ -180,7 +182,7 @@ prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:profile {
                     
 }
-where {
+where {}
 
   function xt:space(?n) { 
          if (?n = 0, "", concat("   " , xt:space(?n - 1)))
@@ -219,11 +221,11 @@ where {
     if (?n < 10, concat(" ", ?n), ?n) 
   }
   
-  function xt:display(?y) {
+  function us:display(?y) {
     if (st:get(st:date, st:romain), xt:romain(?y), ?y)
   }
 
-}
+
     
 
 ]]>
@@ -441,12 +443,12 @@ template st:head(?year) {
 "<h1 class='year'>"
 
 "<a href='" st:plink(concat(?uri,  (?year - 1))) "'>"  
-"<span>" xt:display(?year - 1)  "</span>"   "</a>"
+"<span>" us:display(?year - 1)  "</span>"   "</a>"
 
-"  -  " xt:display(?year)  "  -  "
+"  -  " us:display(?year)  "  -  "
 
 "<a href='" st:plink(concat(?uri,  (?year + 1))) "'>"  
-"<span>"  xt:display(?year + 1) "</span>"    "</a>"
+"<span>"  us:display(?year + 1) "</span>"    "</a>"
 
 
 "</h1>"

@@ -5,39 +5,18 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template {
 
-  st:call-template(st:title, ?r, ?label, (coalesce(?ic, "")))
-  
-  """
-  <p style='text-align:center'>"""
-    coalesce(str(?b), "")
-    if (bound(?b) && bound(?d), " -- " , "")
-    coalesce(str(?d), "")
-  """</p>
-  """
-  
-  
-  """<table>
-  """  
-  
-  st:call-template(st:descperson, ?r)
-  
-  """</table>
-  """
+st:call-template(st:frame, ?label, coalesce(?ic, ""), 
+   st:call-template(st:descperson, ?in))
+ 
 }
 where {
 
   ?in a foaf:Person
   minus { ?in a o:Resource }
-  
-  bind (?in as ?r)
-  
-  ?r rdfs:label ?label 
+    
+  ?in rdfs:label ?label 
         
-  optional { ?r p:naissance ?b . ?r p:décès ?d }
-
-  optional { ?r o:thumbnail  ?ic  }
+  optional { ?in o:thumbnail  ?ic  }
   
-  bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr)   
-
   
 }

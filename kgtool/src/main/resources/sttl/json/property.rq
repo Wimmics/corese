@@ -1,0 +1,16 @@
+template st:property(?in) {
+
+  "," st:nl()
+   st:call-template(st:propertyvalue, ?in, ?p)
+   
+   ; separator=""
+   
+}
+where {
+  select distinct ?in ?p 
+  where {
+    ?in ?p ?y 
+    filter (?p != rdf:type)
+  }
+}
+order by ?p 

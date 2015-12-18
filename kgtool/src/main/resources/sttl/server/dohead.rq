@@ -1,0 +1,9 @@
+template st:dohead {
+
+  st:call-template(st:header)
+  st:call-template(st:banner)
+  
+}
+where {
+
+}

@@ -1,0 +1,11 @@
+template {
+	?suc
+}
+where {
+	?in a owl:Restriction ;
+	 owl:onProperty ?p
+	 
+	 bind(
+	 	exists {?in owl:someValuesFrom owl:Thing}
+	 as ?suc)
+}

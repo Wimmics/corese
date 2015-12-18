@@ -18,25 +18,27 @@ import fr.inria.acacia.corese.cg.datatype.function.XPathFun;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.edelweiss.kgram.api.core.ExpPattern;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
+import java.util.HashMap;
 
 public class Processor {
 	private static Logger logger = Logger.getLogger(Processor.class);
 
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
-        static final String EXT = ExpType.EXT;
+        static final String EXT      = NSManager.EXT;
         static final String EXT_PREF = NSManager.EXT_PREF + ":";
+        static final String SPARQL   = NSManager.SPARQL;       
+        static final String KGRAM    = NSManager.KGRAM;
+        static final String KPREF    = NSManager.KPREF+":";
+        static final String STL      = NSManager.STL;
+        static final String CUSTOM   = NSManager.CUSTOM;
         
-        static final String KGRAM = ExpType.KGRAM;
-        static final String KPREF = ExpType.KPREF+":";
-        static final String STL   = ExpType.STL;
 	public static final String BOUND    = "bound";
 	public static final String COUNT    = "count";
 	public static final String INLIST   = Term.LIST;
-	public static final String LIST     = EXT+"list";
-	public static final String IOTA     = EXT+"iota";
+	public static final String XT_LIST     = EXT+"list";
+	public static final String XT_IOTA     = EXT+"iota";
 	public static final String XT_REVERSE  = EXT+"reverse";
 	public static final String XT_APPEND   = EXT+"append";
 	public static final String XT_SORT     = EXT+"sort";
@@ -55,6 +57,7 @@ public class Processor {
 	private static final String LANG = "lang";
 	private static final String REGEX = "regex";
         private static final String APPROXIMATE = "approximate";
+        private static final String APP_SIM = "sim";
 	public static  final String MATCH = "match";
 	private static final String LANGMATCH = "langMatches";
 	private static final String STRDT = "strdt";
@@ -65,7 +68,9 @@ public class Processor {
 	public static final String GROUPCONCAT = "group_concat";
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
-
+        
+	private static final String EVAL  = "eval";
+	private static final String RETURN  = "return";
 	public static final String SEQUENCE  = "sequence";
 	public static final String SET     = "set";
 	public static final String LET     = "let";
@@ -84,8 +89,8 @@ public class Processor {
         private static final String FUN_XT_GET  = EXT_PREF + "gget";
         private static final String XT_SET      = EXT + "set";
         private static final String XT_CONS     = EXT + "cons";        
-        private static final String XT_CONCAT   = EXT + "concat";
-        private static final String XT_COUNT    = EXT + "count";
+        //private static final String XT_CONCAT   = EXT + "concat";
+        // private static final String XT_COUNT    = EXT + "count";
         private static final String XT_SIZE     = EXT + "size";      
         private static final String XT_GRAPH    = EXT + "graph";
         private static final String XT_SUBJECT  = EXT + "subject";
@@ -97,6 +102,8 @@ public class Processor {
         private static final String XT_VARIABLES= EXT + "variables";
         private static final String XT_EDGE     = EXT + "edge";
         private static final String XT_TRIPLE   = EXT + "triple";
+        static public final String XT_MAIN     = EXT + "main";
+        static public final String FUN_XT_MAIN = EXT_PREF + "main";
        
 
 	private static final String PLENGTH = "pathLength";
@@ -137,7 +144,7 @@ public class Processor {
 	static final String PPRINTALLWITH	= KGRAM + "pprintAllWith"; 
 	static final String TEMPLATE		= KGRAM + "template"; 
 	static final String TEMPLATEWITH	= KGRAM + "templateWith"; 
-	static final String EVAL 		= KGRAM + "eval";
+	static final String KG_EVAL 		= KGRAM + "eval";
         static final String PROLOG 		= KGRAM + "prolog";
 
 	public static final String AGGREGATE    = "aggregate"; 
@@ -233,7 +240,7 @@ public class Processor {
 	static final String SYSTEM = "system";
 	static final String GROUPBY = "groupBy";
 
-	static final String SPARQL   = KGRAM + "sparql";
+	static final String KG_SPARQL= KGRAM + "sparql";
 	static final String SIMILAR  = KGRAM + "similarity";
 	static final String CSIMILAR = KGRAM + "cSimilarity";
 	static final String PSIMILAR = KGRAM + "pSimilarity";
@@ -323,10 +330,14 @@ public class Processor {
         static final String XT_EQUAL 	= EXT + "equal";
         static final String XT_DIFF 	= EXT + "diff";
         static final String XT_DISPLAY 	= EXT + "display";
+        static final String XT_TUNE 	= EXT + "tune";
         
         public static final String[] aggregate = 
 	{AVG, COUNT, SUM, MIN, MAX, SAMPLE, 
          GROUPCONCAT, STL_GROUPCONCAT, STL_AGGAND, STL_AGGLIST, STL_AGGREGATE, AGGREGATE};
+        
+        // do not generate xt:set for set
+        static final HashMap<String, Boolean> fixed; 
 	
 	Term term;
 	List<Expr> lExp;
@@ -346,12 +357,18 @@ public class Processor {
 		Pattern.DOTALL, Pattern.MULTILINE, Pattern.CASE_INSENSITIVE,
 		Pattern.COMMENTS};
 	static final String SFLAG[] = {"s", "m", "i", "x"};
+        
+        static {
+            fixed = new HashMap();
+            fixed.put(SET, true);
+        }
 	
 	
 	public static Hashtable<String, Integer> table;
 	public static Hashtable<Integer, String> tname, toccur;
-
-	Processor(){
+    private String name;
+    
+	Processor(){            
         }
         
 	Processor(Term t){
@@ -468,6 +485,7 @@ public class Processor {
 	}
                             
         void prepare(ASTQuery ast) {
+            name = term.getLabel();
         if (term.isFunction()) {
             switch (oper()) {
                 case ExprType.IN:
@@ -497,7 +515,9 @@ public class Processor {
                 case ExprType.EXTERNAL:
                     compileExternal(ast);
                     break;
-               
+                case ExprType.CUSTOM:
+                    compileCustom(ast);
+                    break;
             }
         }
         
@@ -576,25 +596,28 @@ public class Processor {
 		defoper(INLIST,         ExprType.INLIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
 		defoper(SKOLEM,         ExprType.SKOLEM);
+		defoper(RETURN,         ExprType.RETURN);
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
 		defoper(LET,            ExprType.LET);
 		defoper(SET,            ExprType.SET);
-		defoper(LIST,           ExprType.LIST);
-		defoper(IOTA,           ExprType.IOTA);
+		defoper(XT_LIST,        ExprType.LIST);
+		defoper(XT_IOTA,        ExprType.IOTA);
 		defoper(XT_REVERSE,     ExprType.XT_REVERSE);
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
 		defoper(XT_SORT,        ExprType.XT_SORT);
                 
+		defoper(EVAL,           ExprType.EVAL);                
 		defoper(APPLY,          ExprType.APPLY);
 		defoper(MAP,            ExprType.MAP);
 		defoper(FOR,            ExprType.FOR);
 		defoper(MAPLIST,        ExprType.MAPLIST);
 		defoper(MAPMERGE,       ExprType.MAPMERGE);
 		defoper(MAPSELECT,      ExprType.MAPSELECT);
-		defoper(MAPANY,            ExprType.MAPANY);
-		defoper(MAPEVERY,          ExprType.MAPEVERY);
+		defoper(MAPANY,         ExprType.MAPANY);
+		defoper(MAPEVERY,       ExprType.MAPEVERY);
                 
-		defoper(XT_CONCAT,      ExprType.XT_CONCAT);
+		//defoper(XT_CONCAT,      ExprType.XT_CONCAT);
+//		defoper(XT_CONCAT,      ExprType.CONCAT);
 		defoper(XT_CONS,        ExprType.XT_CONS);
 		defoper(XT_FIRST,       ExprType.XT_FIRST);
 		defoper(XT_REST,        ExprType.XT_REST);
@@ -604,7 +627,7 @@ public class Processor {
 		defoper(XT_SET,         ExprType.XT_SET);
  		defoper(XT_REJECT,      ExprType.XT_REJECT);
                
-		defoper(XT_COUNT,        ExprType.XT_COUNT);
+		//defoper(XT_COUNT,        ExprType.XT_COUNT);
 		defoper(XT_SIZE,         ExprType.XT_COUNT);		
 		defoper(XT_GRAPH,        ExprType.XT_GRAPH);
 		defoper(XT_SUBJECT,      ExprType.XT_SUBJECT);
@@ -618,6 +641,7 @@ public class Processor {
                 
 		defoper(REGEX, 		ExprType.REGEX);
                 defoper(APPROXIMATE,	ExprType.APPROXIMATE);
+                defoper(APP_SIM,	ExprType.APP_SIM);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
 		defoper(STR, 		ExprType.STR);
 		defoper(XSDSTRING, 	ExprType.XSDSTRING);
@@ -635,7 +659,7 @@ public class Processor {
 		defoper(KGXPATH, 	ExprType.XPATH);
 		defoper(SQL, 	ExprType.SQL);
 		defoper(KGSQL, 	ExprType.SQL);
-		defoper(SPARQL, ExprType.KGRAM);
+		defoper(KG_SPARQL, ExprType.KGRAM);
 		defoper(EXTERN, ExprType.EXTERN);
 		defoper(UNNEST, ExprType.UNNEST);
 		defoper(KGUNNEST, ExprType.UNNEST);
@@ -657,7 +681,7 @@ public class Processor {
  		defoper(EXTENSION,      ExprType.EXTENSION);
                
 		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
-		defoper(EVAL, 		ExprType.APPLY_TEMPLATES);
+		defoper(KG_EVAL, 		ExprType.APPLY_TEMPLATES);
 		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);
 		defoper(PPRINTALL, 	ExprType.APPLY_TEMPLATES_ALL);
 		defoper(PPRINTALLWITH, 	ExprType.APPLY_TEMPLATES_WITH_ALL);
@@ -749,20 +773,21 @@ public class Processor {
 		defoper(EVEN,  ExprType.EVEN);
 		defoper(ODD,   ExprType.ODD);
                 
-                defoper(KG_POWER,  ExprType.POWER);
-                defoper(KG_PLUS,   ExprType.PLUS);
-                defoper(KG_MULT,   ExprType.MULT);
-                defoper(KG_MINUS,  ExprType.MINUS);
-                defoper(KG_DIV,    ExprType.DIV);
-                defoper(KG_CONCAT, ExprType.CONCAT);
-                defoper(KG_APPEND, ExprType.XT_APPEND);
-                defoper(KG_AND,    ExprType.AND);
-                defoper(KG_OR,     ExprType.OR);
-                defoper(KG_NOT,    ExprType.NOT);
-                defoper(KG_EQUAL,  ExprType.EQ);
-                defoper(KG_DIFF,   ExprType.NEQ);
+//                defoper(KG_POWER,  ExprType.POWER);
+//                defoper(KG_PLUS,   ExprType.PLUS);
+//                defoper(KG_MULT,   ExprType.MULT);
+//                defoper(KG_MINUS,  ExprType.MINUS);
+//                defoper(KG_DIV,    ExprType.DIV);
+//                defoper(KG_CONCAT, ExprType.CONCAT);
+//                defoper(KG_APPEND, ExprType.XT_APPEND);
+//                defoper(KG_AND,    ExprType.AND);
+//                defoper(KG_OR,     ExprType.OR);
+//                defoper(KG_NOT,    ExprType.NOT);
+//                defoper(KG_EQUAL,  ExprType.EQ);
+//                defoper(KG_DIFF,   ExprType.NEQ);
                 
-                defoper(XT_POWER,  ExprType.POWER);
+                //defoper(XT_POWER,  ExprType.POWER);
+                
                 defoper(XT_PLUS,   ExprType.PLUS);
                 defoper(XT_MULT,   ExprType.MULT);
                 defoper(XT_MINUS,  ExprType.MINUS);
@@ -773,6 +798,7 @@ public class Processor {
                 defoper(XT_EQUAL,  ExprType.EQ);
                 defoper(XT_DIFF,   ExprType.NEQ);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
+                defoper(XT_TUNE,   ExprType.XT_TUNE);  
                 
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);
@@ -826,9 +852,26 @@ public class Processor {
 	}
 	
 	void defoper(String key, int value){
+                // isURI
 		table.put(key.toLowerCase(), value);
+                // rq:isURI
+                table.put(SPARQL + key.toLowerCase(), value);                
 		tname.put(value, key);
 	}
+        
+        boolean fixed(String name){
+            return  fixed.containsKey(name);
+        }
+        
+        public static void test(){
+            for (String name : table.keySet()){
+                if (! name.startsWith("http://")){
+                    if (table.containsKey(KGRAM + name)){
+                        System.out.println(name);
+                    }
+                }
+            }
+        }
 	       
 	
 	int getOper(){
@@ -841,6 +884,9 @@ public class Processor {
 			if (name.startsWith(RDFS.XSDPrefix) || name.startsWith(RDFS.XSD) || 
 				name.startsWith(RDFS.RDFPrefix) || name.startsWith(RDFS.RDF)){
 				n = ExprType.CAST;
+			}
+                        else if (name.startsWith(CUSTOM)){
+				n = ExprType.CUSTOM;
 			}
 			else if (name.startsWith(KeywordPP.CORESE_PREFIX)){
 				n = ExprType.EXTERNAL;
@@ -902,7 +948,7 @@ public class Processor {
                 case ExprType.LET:
                     processLet(ast);
                     break;
-                                   
+                                  
                     
             }
         }
@@ -1241,6 +1287,15 @@ public class Processor {
 		}
 		return null;
 	}
+        
+        void compileCustom(ASTQuery ast){
+            name = term.getLabel().substring(CUSTOM.length());
+        }
+        
+        // for custom extension function 
+        String getShortName(){
+            return name;
+        }
 
     /**
      * @return the define

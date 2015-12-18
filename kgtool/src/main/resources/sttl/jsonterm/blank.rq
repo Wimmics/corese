@@ -1,0 +1,14 @@
+template {
+
+  "{\"@id\": \""  str(?in)  "\"}"
+  
+}
+where {
+  ?x ?p ?in
+  filter isBlank(?in)
+  filter ( 
+    not exists { ?in rdf:rest ?r } ||
+	exists { ?y  rdf:first ?in }
+  )
+}
+limit 1

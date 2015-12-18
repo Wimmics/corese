@@ -1,0 +1,14 @@
+template {
+	?suc
+}
+where {
+	?in a owl:Restriction ;
+	  owl:onProperty ?p
+	
+	 bind ( exists { ?in owl:someValuesFrom ?e
+	  		  filter (isURI(?e)) 
+	  		}
+     as ?suc )
+      
+     filter(st:visit(st:err("failSuper"), ?in, ?suc))
+}

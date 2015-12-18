@@ -1,0 +1,11 @@
+template st:spqr {
+
+  st:call-template(st:start)
+  
+}
+where {
+  
+  bind (st:export(st:content, st:calendar) as ?c)
+  bind (st:set(st:date,    st:romain)   as ?d)
+  
+}

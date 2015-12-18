@@ -1,24 +1,27 @@
 prefix cn: <http://cdn.fr/schema/>
 template cn:list {
   """
-  <table class='center'>
+  <table class='margin'>
   <tr>
-  <td><a href='?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia'>Carte</a></td>
+  <td><a href='""" 
+  st:protocol(concat(st:get(st:service), "?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia")) 
+  "'>Carte</a></td><td>&nbsp;</td>"
 
-  <td><a href='?name="""st:get(st:server) """/data/query/cdnplace.rq&transform=st:sparql%23core&profile=st:dbpedia'>Lieu</a></td>
-
-  <td><a href='?name="""st:get(st:server) """/data/query/cdnperson.rq&transform=st:sparql%23core&profile=st:dbpedia'>Personne</a></td>
+  group {
+    "<td><a href='" st:misc(?query) "'>" str(?title) "</a></td><td>&nbsp;</td>"
+  }
   
-  <td><a href='?name="""st:get(st:server) """/data/query/cdnfr.rq&transform=st:sparql%23core&profile=st:dbpedia'>France</a></td>  
-  
-  <td><a href='?name="""st:get(st:server) """/data/query/cdneds.rq&transform=st:sparql%23core&profile=st:dbpedia'>Savoie</a></td>  
-  
-  <td><a href='?name="""st:get(st:server) """/data/query/cdnmisc.rq&transform=st:sparql%23core&profile=st:dbpedia'>Autre</a></td>  
-  
-  </tr>
+  """</tr>
   </table>
   """
 }
 where {
 
+}
+values (?query ?title){
+  ("/data/query/cdnplace.rq" 	"Lieu")
+  ("/data/query/cdnperson.rq" 	"Personne")
+  ("/data/query/cdnfr.rq" 	"France")
+  ("/data/query/cdneds.rq" 	"Savoie")
+  ("/data/query/cdnmisc.rq" 	"Autre")
 }

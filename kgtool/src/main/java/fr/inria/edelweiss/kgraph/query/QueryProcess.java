@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -25,7 +26,18 @@ import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.load.SPARQLResult;
+import fr.inria.edelweiss.kgtool.load.Service;
 import fr.inria.edelweiss.kgtool.util.Extension;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -126,11 +138,30 @@ public class QueryProcess extends QuerySolver {
             return manager;
         }
 
-
 	public static QueryProcess create(Graph g){
-		return create(g, false);
+            return create(g, false);
 	}
-	
+        
+        /**
+         * Create an Eval initialized with a query q that contains
+         * function definitions
+         * This Eval can be used to call these functions:
+         * eval.eval(name, param)
+         * Use case: define callback functions.
+         * 
+         */
+        public static Eval createEval(Graph g, String q) throws EngineException{
+            QueryProcess exec = QueryProcess.create(g, false);
+            Eval eval = exec.createEval(q);
+            return eval;
+	}
+        
+        public static Eval createEval(Graph g, Query q) throws EngineException{
+            QueryProcess exec = QueryProcess.create(g, false);
+            Eval eval = exec.createEval(q);
+            return eval;
+	}
+        	
 	/**
 	 * isMatch = true: 
 	 * Each Producer perform local Matcher.match() on its own graph for subsumption
@@ -153,7 +184,7 @@ public class QueryProcess extends QuerySolver {
 		qp.add(g2);
 		return qp;
 	}
-	
+                
 	public static void setSort(boolean b){
 		isSort = b;
 	}
@@ -239,14 +270,7 @@ public class QueryProcess extends QuerySolver {
 	public Mappings query(String squery) throws EngineException{
 		return query(squery, null, null);
 	}
-
-	
-	
-//	public Mappings query(String squery, Mapping map, List<String> defaut, List<String> named) throws EngineException{
-//		Dataset ds = Dataset.create(defaut, named);
-//		return query(squery, map, ds);
-//	}	
-	
+		
 	/**
 	 * defaut and named specify a Dataset
 	 * if the query has no from/using (resp. named), kgram use defaut (resp. named) if it exist
@@ -284,6 +308,11 @@ public class QueryProcess extends QuerySolver {
 	public Mappings eval(Query query){
             return qquery(query, null);
         }
+         
+          @Override
+	public Mappings eval(Query query, Mapping m){
+            return qquery(query, m);
+        } 
 
 	public Mappings qquery(Query q, Mapping map) {
 		try {
@@ -410,6 +439,12 @@ public class QueryProcess extends QuerySolver {
 	Mappings query(Query q, Mapping m, Dataset ds) throws EngineException{
 		
 		pragma(q);
+                ASTQuery ast = getAST(q);
+                if (q.getService()!=null){//ast.hasService()){
+                    //@service <http://dbpedia.org/sparql>
+                    //select where {}
+                    return service(q, ast);
+                }
 		Mappings map;
 		
 		if (q.isUpdate() || q.isRule()){
@@ -502,7 +537,22 @@ public class QueryProcess extends QuerySolver {
 		}
 	}
 	
-	
+	/**
+         * Annotated query with a service
+         * send query to server
+         * @service <http://dbpedia.org/sparql>
+         * select where {}     
+         */
+        Mappings service(Query q, ASTQuery ast) throws EngineException  {
+            Service serv = new Service(q.getService());
+            try {
+                return serv.query(q);
+            } catch (LoadException ex) {
+                throw new EngineException(ex);
+            }
+        }
+        
+    
 	
 	/**
 	 * Compute a construct where query considered as a (unique) rule

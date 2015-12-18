@@ -1,0 +1,32 @@
+template st:profile {
+
+ 
+}
+where {}
+
+ function st:protocol(?uri) {
+    if (st:get(st:protocol, st:ajax), 
+      concat("javascript:trans(\"", str(?uri), "\")"), 
+      str(?uri))
+  }
+  
+  function st:link(?uri) {
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      coalesce(
+	concat("&profile=",   st:get(st:profile)), 
+	concat("&transform=", st:get(st:transform)), 
+	""))
+  }
+  
+  function st:pplink(?uri, ?profile) {
+     st:protocol(concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      concat("&profile=",   ?profile)))
+  }
+   
+  function st:plink(?uri) {
+    st:protocol(st:link(?uri))
+  }
+  
+

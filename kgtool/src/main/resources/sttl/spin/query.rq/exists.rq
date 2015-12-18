@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:call-template(sp:kw, "exists") " {" st:call-template(sp:listnl, ?b) "}"
+  st:kw("exists") " {" st:call-template(sp:listnl, ?b) "}"
 }
 where {
   ?in a sp:Exists  ;

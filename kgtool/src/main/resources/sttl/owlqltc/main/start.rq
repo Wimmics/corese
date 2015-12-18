@@ -1,0 +1,13 @@
+#
+# Check OWL QL conformance using STTL
+# axiom:    OWL class and property axioms
+# subexp:   subClassExpression
+# superexp: superClassExpression
+# http://www.w3.org/TR/owl2-profiles/#OWL_2_QL
+
+template st:start {
+  st:apply-templates-with-all(st:axiomowlqltc)
+}
+where {
+}
+

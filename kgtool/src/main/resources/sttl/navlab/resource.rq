@@ -5,24 +5,18 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template {
 
-  st:call-template(st:title, ?r, ?label, (coalesce(?ic, "")))
-    
-  """<table>
-  """  
-  
-  st:call-template(st:descresource, ?r)
-  
-  """</table>
-  """
+  st:call-template(st:frame, ?label, coalesce(?ic, ""), 
+     st:call-template(st:descresource, ?in))
+
+
 }
 where {
 
   ?in a o:Resource
-  
-  bind (?in as ?r)
-  
-  ?r rdfs:label ?label filter(lang(?label) = 'fr')
+    
+  ?in rdfs:label ?label 
+  filter(lang(?label) = 'fr')
         
-  optional { ?r o:thumbnail  ?ic  }
+  optional { ?in o:thumbnail  ?ic  }
     
 }

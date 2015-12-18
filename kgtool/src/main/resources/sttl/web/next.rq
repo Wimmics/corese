@@ -1,7 +1,8 @@
 template st:next(?t) {
 
-  "<a  href='?profile=" st:get(st:profile) "&uri=" str(?n) "'>"
-  "<button type='button'>Next</button>"
+  "<a  href='" st:plink(?n) "'>"
+  "<button type='button'"  st:call-template-with(st:server, st:bstyle)
+  ">Next</button>"
   "</a>"  
     
 }

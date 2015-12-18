@@ -3,22 +3,24 @@
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
-  if (?refer, concat(st:turtle(?in), " "), "[")
+  if (?refer, concat(st:turtle(?in), " "), "[")     
   
-  if (st:visited(?in), "<span class='fail'>", "")
+  #if display fail tag
+  if (st:visited(?in), st:call-template(st:pperror, ?in),
+  	# else not visited
+  	st:call-template(st:ibox, ?in)
+  )
   
-  ibox {      
-	st:call-template(st:type, ?in)	  
-	st:call-template(st:value, ?in)	
-   } 
-      
-   if (st:visited(?in), "</span>", "")      
-      
   if (?refer, " .", 
   if (?nested, "]", "] ."))
+  
+  # pretty printer of errors
+  if (st:visited(?in),
+	st:call-template(st:pperrorsp, ?in),
+  "")
 }
 where {
-  ?in ?p ?y   
+  ?in ?p ?y
   filter (isBlank(?in))
   filter not exists { ?in rdf:first ?e }
   

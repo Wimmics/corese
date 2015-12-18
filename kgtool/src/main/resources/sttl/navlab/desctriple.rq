@@ -1,0 +1,11 @@
+template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
+
+"<tr class='s" if (kg:even(?n), 0, 1) "'>"
+  "<th class='left'>" str(?title) "</th><td>" 
+  
+   st:call-template(?temp, ?r, ?p)
+   
+"</td></tr>" 
+  
+}
+where {} 

@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:call-template(sp:kw, "filter") " (" ?exp ")"
+  st:kw("filter") " (" ?exp ")"
 }
 where {
 ?in a sp:Filter ;

@@ -1,0 +1,7 @@
+template st:title {
+  "<th class='right'> &nbsp; " str(?t) "</th>"
+  ; separator = ""
+}
+where {
+values ?t { "Mo" "Tu" "We" "Th" "Fr" "Sa" "Su" }
+}

@@ -1,5 +1,3 @@
-prefix orl: </user/corby/home/AData/template/owlrl/>
-
 template {
   ?suc  
 }
@@ -15,7 +13,7 @@ where {
    st:call-template-with(st:superexp, st:superClassExpression, ?t) 
  as ?suc)
  
- filter(st:visit(st:individual, ?in, ?suc))
+ filter(st:visit(st:err("individual"), ?in, ?suc))
 
       
 }

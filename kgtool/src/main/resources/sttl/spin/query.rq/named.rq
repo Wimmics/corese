@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template sp:named {
-   st:call-template(sp:kw, "from named")
+   st:kw( "from named")
    " " ?f st:nl() 
    
    ; separator = ""

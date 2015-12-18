@@ -48,7 +48,6 @@ import java.util.Collection;
 public class ProducerImpl implements Producer, IProducerQP {
 
     public static final int OWL_RL = 1;
-    private static final String PRODUCE = Eval.FUN_PRODUCE;
 
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;

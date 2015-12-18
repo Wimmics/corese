@@ -5,8 +5,8 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:prolog() 
-  st:call-template(sp:kw, "describe") " " st:call-template(sp:list, ?list)   
+  st:namespace() 
+  st:kw("describe") " " st:call-template(sp:list, ?list)   
 }
 where {
   ?in a sp:Describe ;

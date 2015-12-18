@@ -1,0 +1,10 @@
+template {
+	?suc
+}
+where {
+	?in owl:complementOf ?z
+	
+	bind (
+		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?z)
+	as ?suc)
+}

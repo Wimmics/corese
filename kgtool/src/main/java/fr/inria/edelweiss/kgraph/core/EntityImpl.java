@@ -3,8 +3,9 @@ package fr.inria.edelweiss.kgraph.core;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.PointerObject;
 
-public class EntityImpl implements Entity {
+public class EntityImpl extends PointerObject implements Entity {
 	Node graph, node;
 
 	EntityImpl(Node g, Node n){

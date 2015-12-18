@@ -18,11 +18,11 @@ public class Matcher implements ExprType {
 	
 	
 	public boolean match(Pattern qe, Expr te){
-		Bind bind =  Bind.create();
+		MatchBind bind =  MatchBind.create();
 		return match(qe, te, bind);
 	}
 
-	boolean match(Pattern qe, Expr te, Bind bind){
+	boolean match(Pattern qe, Expr te, MatchBind bind){
 		//System.out.println("** Matcher: " + qe + " " + te);
 		rec = qe.isRec();
 		matchConstant = qe.isMatchConstant();
@@ -45,7 +45,7 @@ public class Matcher implements ExprType {
 	 * Afterwards, Pattern variable must match same target variables in all EXPi
 	 * 
 	 */
-	boolean process(Expr qe, Expr te, Bind bind){
+	boolean process(Expr qe, Expr te, MatchBind bind){
 		
 		if (qe.type() == ALTER){
 			for (Expr ee : qe.getExpList()){
@@ -110,7 +110,7 @@ public class Matcher implements ExprType {
 	
 	
 	
-	boolean matchVarConst(Expr qe, Expr te, Bind bind){
+	boolean matchVarConst(Expr qe, Expr te, MatchBind bind){
 		switch (qe.type()){
 
 		case VARIABLE:
@@ -142,7 +142,7 @@ public class Matcher implements ExprType {
 	 *   OR(EXP) matches recursively OR(OR(EXP1, EXP2), EXP3)
 	 * FUNCTION ANY
 	 */
-	boolean matchBoolFunAny(Expr qe, Expr te, Bind bind) {
+	boolean matchBoolFunAny(Expr qe, Expr te, MatchBind bind) {
 		if (qe.arity() == 0){
 			// qe e.g. Pattern(ANY, ANY) with no args
 			// first time: bind the pattern
@@ -211,7 +211,7 @@ public class Matcher implements ExprType {
 	}
 	
 	
-	boolean matchTerm(Expr qe, Expr te, Bind bind) {
+	boolean matchTerm(Expr qe, Expr te, MatchBind bind) {
 		Expr fst = qe.getExp(0), snd = qe.getExp(1);
 		
 		if (isGL(qe.oper()) && qe.oper() != te.oper()) {

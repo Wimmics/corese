@@ -1,0 +1,6 @@
+template st:mainOWL(?tag) {
+	st:call-template(st:axiomClassExp, ?tag)
+}
+where {
+	
+}

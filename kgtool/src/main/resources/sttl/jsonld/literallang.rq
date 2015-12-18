@@ -1,9 +1,0 @@
-template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " xml:lang='" lang(?y) "'>" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
-}
-where {
-   ?x ?p ?y
-   filter (isLiteral(?y) && datatype(?y) = rdf:langString)
-}

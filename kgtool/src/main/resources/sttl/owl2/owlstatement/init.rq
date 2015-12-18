@@ -7,24 +7,17 @@
 #
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
+prefix owlfs: <http://ns.inria.fr/sparql-template/owlfs/>
 
 template st:profile(?in) {
+    
+}
+where {}
 
-    define (st:process(?in) =  
-      if (isURI(?in), st:protect(?in),	
-	st:apply-templates-with(st:owlexp, ?in))
-    ) 
+function st:process(?in) {  owlfs:process(?in) }
+
   
-  define (st:protect(?in) =
-    let (?t = st:turtle(?in),
-      if (st:get(st:html, true) && strstarts(?t, "<"), 
-	    replace(?t, "<", "&lt;"), 
-	    ?t))
-  )
-  
-  define (xt:bnl(?x) =
+  function xt:bnl(?x) {
     if (?x = "", ?x, concat("\n", ?x))
-  )
-}
-where {
-}
+  }
+

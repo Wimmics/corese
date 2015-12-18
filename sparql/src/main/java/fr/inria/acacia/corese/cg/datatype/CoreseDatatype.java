@@ -12,7 +12,11 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import java.util.List;
 
 /**
@@ -367,6 +371,7 @@ public class CoreseDatatype
 	public void setBlank(boolean b) {
 	}
 	
+        @Override
 	public boolean isLiteral() {
 		return true;
 	}
@@ -374,6 +379,20 @@ public class CoreseDatatype
         public boolean isFuture() {
 		return false;
 	}
+        
+        @Override
+        public boolean isPointer(){
+            return false;
+        }
+        
+        @Override
+        public Pointerable getPointerObject(){
+            return null;
+        }
+        
+        public int pointerType(){
+            return Pointerable.UNDEF;
+        }
 	
 	public boolean isDecimal(){
 		return false;
@@ -857,19 +876,27 @@ public class CoreseDatatype
 	/**
 	 * Every datatype has its own type safe equals
 	 */
+        @Override
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
 		throw failure();
 	}
         
 	
 	// Java equals (for list membership ...)
+        @Override
 	public boolean equals(Object obj) {
 		if (obj instanceof IDatatype) {
 			return sameTerm((IDatatype) obj);
 		}
 		return false;	
 	}
+
+    @Override
+    public int hashCode() {        
+        return super.hashCode();
+    }
 	
+        @Override
 	public boolean sameTerm(IDatatype iod) {
 		try {
 			return equalsWE(iod);
@@ -880,22 +907,27 @@ public class CoreseDatatype
 	}
 	
 	
+        @Override
 	public boolean semiEquals(IDatatype iod) {
 		return sameTerm(iod);
 	}
 	
+        @Override
 	public IDatatype plus(IDatatype iod) {
 		return null;
 	}
 	
+        @Override
 	public IDatatype minus(IDatatype iod) {
 		return null;
 	}
 	
+        @Override
 	public IDatatype mult(IDatatype iod) {
 		return null;
 	}
 	
+        @Override
 	public IDatatype div(IDatatype iod) {
 		return null;
 	}
@@ -1054,5 +1086,25 @@ public class CoreseDatatype
     
     public void setProvenance(Object obj){
         
+    }
+
+    @Override
+    public Mappings getMappings() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Mapping getMapping() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Entity getEntity() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object getValue(String var, int n) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     }

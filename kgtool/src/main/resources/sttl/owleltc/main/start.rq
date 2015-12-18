@@ -1,0 +1,11 @@
+#
+# Check OWL EL conformance using STTL
+# axiom:    OWL class and property axioms
+# classexp: classExpression
+# http://www.w3.org/TR/owl2-profiles/#OWL_2_EL
+
+template st:start {
+  st:apply-templates-with-all(st:axiomowleltc)
+}
+where {
+}

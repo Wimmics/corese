@@ -1,5 +1,3 @@
-prefix orl: </user/corby/home/AData/template/owlrl/>
-
 template  {
   ?suc
 }
@@ -16,7 +14,7 @@ where {
     st:call-template-with(st:equivexp, st:equivClassExpression, ?y)  
   as ?suc)
   
-  filter(st:visit(st:equivClass, ?in, ?suc))
+  filter(st:alreadyVisited(?in, "equivClass", ?suc))
 
 }
 

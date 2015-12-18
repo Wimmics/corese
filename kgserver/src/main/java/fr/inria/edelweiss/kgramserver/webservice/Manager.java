@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
@@ -23,6 +24,7 @@ public class Manager {
 
     static final String STCONTEXT = Context.STL_CONTEXT;
     private static String DEFAULT = NSManager.STL + "default";
+    static final String SKOLEM    = NSManager.STL + "skolem";
     
     static HashMap<String, TripleStore> 
             // by dataset URI; e.g. st:cdn
@@ -99,6 +101,12 @@ public class Manager {
     
       TripleStore createTripleStore(Profile p, Service s) throws LoadException {
         GraphStore g = GraphStore.create(s.isRDFSEntailment());
+        if (s.getParam() != null){
+            IDatatype dt = s.getParam().get(SKOLEM);
+            if (dt != null && dt.booleanValue()){
+                g.setSkolem(true);
+            }
+        }
         TripleStore store = new TripleStore(g, true);
         store.setOWL(s.isOWLEntailment());
         init(store, s);
@@ -202,7 +210,7 @@ public class Manager {
             Graph g = ts.getGraph().getNamedGraph(STCONTEXT);
             if (g != null) {
                 try {
-                    getProfile().initLoader(g);
+                    getProfile().initServer(g);
                 } catch (EngineException ex) {
                     Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
                 }

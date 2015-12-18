@@ -1,0 +1,42 @@
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+template st:frame(?label, ?icon, ?body) {
+
+  """
+  <div class='center'>   
+  <h2>"""  str(?label) """</h2> 
+  </div>
+  <p>
+  <table>
+  <tr class='top'>
+  <td>
+  """
+  
+  if (?icon = "", "", 
+    st:call-template(st:icon, ?label, ?icon)  )
+ 
+  """
+  </td><td>&nbsp;<td/><td>
+  <table>
+  """  
+  
+  str(?body)
+  
+  """
+  </table>
+  </td>
+  </tr>
+  </table>
+  </p>
+  """
+
+
+}
+where {
+
+
+    
+}

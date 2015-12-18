@@ -11,8 +11,10 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.core.PointerObject;
 
-public class EdgeImpl implements Edge, Entity {
+public class EdgeImpl extends PointerObject implements Edge, Entity {
 
 	public static String TOP = RDFS.RootPropertyURI;
 	ArrayList<Node> nodes;
@@ -211,6 +213,18 @@ public class EdgeImpl implements Edge, Entity {
     
     public void setProvenance(Object obj){
         
+    }
+
+
+
+    @Override
+    public int pointerType() {
+        return Pointerable.ENTITY;
+    }
+
+    @Override
+    public Entity getEntity() {
+        return this;
     }
 
 }

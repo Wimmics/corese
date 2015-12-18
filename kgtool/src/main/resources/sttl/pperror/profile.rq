@@ -1,0 +1,13 @@
+template st:profile {
+
+}
+where {}
+
+function st:linkPro(?x) { 
+  URI(concat("http://www.w3.org/TR/owl2-profiles/#", str(?x)))
+}
+	
+function st:linkOWL(?x) { 
+  URI(concat("http://www.w3.org/TR/owl2-syntax/#", str(?x)))
+}
+

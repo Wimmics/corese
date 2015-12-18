@@ -1,26 +1,25 @@
 #
 # Geolocate  resources on a map (except resource given lat et long)
 #
-prefix p:    <http://fr.dbpedia.org/property/>
-
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
 template st:locateall(?r) {
 
-  "var pos" st:number()  " = new google.maps.LatLng("      
-      str(?lat) "," str(?lon) ");"
+  "var pos" st:number() " = new google.maps.LatLng(" str(?lat) "," str(?lon) ");"
                   
-  "var marker" st:number() "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
+  "var marker" st:number() 
+  "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
   
   "google.maps.event.addListener(marker" st:number() 
-  ", 'click', function () {window.location.href = \"" 
-  st:call-template(st:link, ?in) 
-  "\";});"
+  ", 'click', function () {window.location.href = '"   st:plink(?in)   "';});"
   
 }
 where {
 
-  bind (st:get(st:dataset) as ?g)
-  graph ?g {
+   bind (st:get(st:dataset) as ?g)
+   graph ?g {
     ?in p:longitude ?lon ; p:latitude ?lat
     filter(?in != ?r)
     }
+    
 }

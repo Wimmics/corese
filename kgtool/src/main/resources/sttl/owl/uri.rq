@@ -4,7 +4,7 @@
 #
 template   {
 
-  st:apply-all-templates(?in ; separator = "\n") 
+  st:apply-templates-all(?in ; separator = "\n") 
    
    ; separator = "\n\n"
     

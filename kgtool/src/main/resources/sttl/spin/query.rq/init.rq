@@ -5,12 +5,68 @@
 #
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
-template st:profile(?in) {
+template st:profile {
 
-    st:define(st:process(?in) =          
-	  if (isBlank(?in), st:apply-templates(?in), st:turtle(?in))
-    )
-	
+   
 }
 where {
 }
+
+ function st:process(?in) { 
+        if (st:get(st:mode, st:html), st:html(?in), st:std(?in))
+    }
+    
+    function st:html(?in) {  
+	  if (isBlank(?in), st:blank(?in), st:protect(?in))
+    }
+    
+    function st:std(?in) {          
+	  if (isBlank(?in), st:apply-templates(?in), st:turtle(?in))
+    }
+    
+    function st:blank(?in){
+      if (st:visited(?in), 
+	      concat("<span class='fail'>", st:apply-templates(?in), "</span>"),
+	      concat("<span id='id", st:vset(?in, st:id, st:index()), "'>", 
+		st:apply-templates(?in), "</span>"))
+    }
+    
+    function st:protect2(?in) {
+      let (?t = st:turtle(?in)){
+	if (strstarts(?t, "<"), 
+	    replace(?t, "<", "&lt;"),
+	    ?t)
+      }
+    }
+    
+    function st:protect(?in) {
+	xt:protect(st:turtle(?in))
+    }
+    
+    function xt:protect(?s) {
+        replace(replace(?s, "&", "&amp;"), "<", "&lt;")
+    }
+    
+    function xt:pprotect(?s) {
+        if (st:get(st:mode, st:html), xt:protect(?s), ?s)
+    }
+    
+    function st:kw(?x) {
+       if (st:get(st:mode, st:html), st:htmlkw(?x), st:stdkw(?x))
+    }
+    
+    function st:htmlkw(?x) {
+       concat("<span class='kw'>", str(?x), "</span>")
+    }
+
+    function st:stdkw(?x) {
+       str(?x)
+    }	
+    
+    function st:namespace() {
+      let (?p = st:prolog()){
+	if (st:get(st:mode, st:html), 
+	  replace(?p, "<", "&lt;"), 
+	  ?p)
+      }
+    }

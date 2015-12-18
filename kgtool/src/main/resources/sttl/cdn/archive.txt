@@ -1,0 +1,6 @@
+values (?fst ?snd) {
+  (cn:rome UNDEF)
+  (cn:fr UNDEF)
+  (cn:emp cn:context)
+  (cn:mds cn:cdn)
+}

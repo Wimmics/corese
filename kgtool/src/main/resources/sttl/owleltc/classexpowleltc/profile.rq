@@ -1,0 +1,14 @@
+template st:profile(?x) {
+ 
+}
+where {}
+
+  function st:aggregate(?x) { st:agg_and(?x) }
+  
+  function st:err(?x) { URI(concat(st:, "owlel/", str(?x))) }
+  
+  function st:alreadyVisited(?x, ?tag, ?suc) {
+    if (st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
+  }
+
+

@@ -9,7 +9,7 @@ where {
   { ?in owl:disjointUnionOf ?y }
   union { ?in a owl:ReflexiveProperty }
   
-  filter(st:visit(st:fail, ?in, false))
+  filter(st:alreadyVisited(?in, "fail", false))
  
 }
 limit 1

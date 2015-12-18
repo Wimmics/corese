@@ -6,7 +6,6 @@ template st:interunion {
     xsd:string(if (bound(?t), ?ld, ?lo))
     "(" 
       ibox {
-	if (?p = owl:disjointUnionOf, ?in, "") " "
 	?x  
       }
     ")" 
@@ -16,7 +15,8 @@ where {
   optional { ?in a ?t  filter(?t = rdfs:Datatype) }
  }
 values (?p ?lo ?ld) {
-  (owl:unionOf         "ObjectUnionOf" "DataUnionOf")
-  (owl:disjointUnionOf "DisjointUnion" "DisjointUnion")
-  (owl:intersectionOf  "ObjectIntersectionOf" "DataIntersectionOf")
+  (owl:unionOf         "ObjectUnionOf" 		"DataUnionOf")
+  (owl:intersectionOf  "ObjectIntersectionOf" 	"DataIntersectionOf")
+  (owl:complementOf 	"ObjectComplementOf" 	"DataComplementOf")
+  (owl:datatypeComplementOf "DataComplementOf" 	"DataComplementOf")
 }

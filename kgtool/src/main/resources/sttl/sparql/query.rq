@@ -1,11 +1,7 @@
 template st:query(?q) {
   """
   <h3>Query</h3>
-  <form method='post' action='"""
-    
-  st:get(st:service)
-  
-  """'>
+  <form method='post' id='sparql' action='"""  st:get(st:service)  """'>
   
    <select name="profile">"""
    
@@ -23,7 +19,13 @@ template st:query(?q) {
     
   """</textarea>
     <br/>
-    <input type='submit' value='Submit'/>
+  """  
+   # st:call-template-with(st:server, st:submit, "sparql", "Submit", coalesce(st:get(st:protocol), st:std))
+       
+   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
+   
+    
+  """  
   </form>
   """
 }

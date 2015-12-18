@@ -3,7 +3,7 @@ prefix o:  <http://dbpedia.org/ontology/>
 
 template cn:href(?r, ?u, ?t, ?i) {
 
-  if (?img, "<div style='text-align:center'>", "")
+  if (?img, "<div class='margin'>", "")
   
   if (?img, 
     concat(st:call-template(cn:img, ?i), "<br/>"), 

@@ -6,9 +6,9 @@ prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
   st:prolog() 
-  st:call-template(sp:kw, "construct") " "   st:call-template(sp:construct, ?in)
+  st:kw("construct") " "   st:call-template(sp:construct, ?in)
   st:nl()
-  st:call-template(sp:kw, "where") " {" 
+  st:kw("where") " {" 
      box {
       st:call-template(sp:listnl, ?where)
      }
@@ -16,8 +16,8 @@ template {
   st:nl()
   ?group
   ?order
-  if (bound(?l), concat(st:call-template(sp:kw, "limit"),  " ", ?l, st:nl()), "")  
-  if (bound(?o), concat(st:call-template(sp:kw, "offset"), " ", ?o, st:nl()), "") 
+  if (bound(?l), concat(st:kw("limit"),  " ", ?l, st:nl()), "")  
+  if (bound(?o), concat(st:kw("offset"), " ", ?o, st:nl()), "") 
   ?having 
   
    st:call-template(sp:values, ?in)

@@ -1,0 +1,14 @@
+#
+# Display a calendar and a graph content
+#
+template st:start {
+  
+  st:call-template(st:main)
+  
+}
+where {
+  
+  # export to st:calendar (see st:calendar/st:date)
+  bind (st:export(st:content, st:content) as ?c)
+  bind (st:export(st:date, st:date)       as ?d)
+}

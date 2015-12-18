@@ -3,33 +3,32 @@ prefix o:    <http://dbpedia.org/ontology/>
 
 template st:descperson(?r) {
 
-  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
-  "<th class='left'>" str(?title) "</th><td>" 
-  
-  if (?href, 
-    st:call-template(st:href, ?r, ?p),
-    st:call-template(st:property, ?r, ?p))  
-  
-  "</td></tr>"  
+st:call-template(st:desctriple, 
+  st:number(), ?r, ?p, ?tt, if (?href, st:href, st:property))
+
 }
 where { 
 
-  values (?p ?title) {
-#    (p:fonction 	"Fonction")
-#    (o:title 		"Titre")
-    (o:predecessor 	"Prédécesseur")
-    (o:successor 	"Successeur")
-    (o:father 		"Père")
-    (o:mother 		"Mère")
-    (o:spouse 		"Conjoints")
-    (o:child 		"Enfants")
-    (o:residence 	"Résidence")
-    (rdfs:comment 	"Résumé")
-    (o:wikiPageRedirects "Voir aussi")
-    (o:wikipedia	"Wikipedia")
-    (o:dbpedia		"DBpedia")
+  values (?p ?title ?titleen) {
+    (p:dateDeNaissance 	"Naissance" 	"Birth")
+    (p:dateDeDécès 	"Décès"		"Death")
+    (o:predecessor 	"Prédécesseur"	"Predecessor")
+    (o:successor 	"Successeur"	"Successor")
+    (o:father 		"Père"		"Father")
+    (o:mother 		"Mère"		"Mother")
+    (o:spouse 		"Conjoints"	"Spouse")
+    (o:child 		"Enfants"	"Children")
+    (o:residence 	"Résidence"	"Residence")
+    (rdfs:comment 	"Résumé"	"Abstract")
+    (o:wikiPageRedirects "Voir aussi"	"See Also")
+    (o:wikipedia	"Wikipedia"	"Wikipedia")
+    (o:dbpedia		"DBpedia"	"DBpedia")
   }
   
   bind (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
+  
+  filter ( ?href || exists { ?r ?p ?v } )
+  
+  bind (if (st:get(st:lang, "en"), ?titleen, ?title) as ?tt)
 
 }

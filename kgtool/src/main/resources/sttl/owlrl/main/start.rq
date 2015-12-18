@@ -8,7 +8,6 @@
 #
 # Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
 #
-prefix orl: </user/corby/home/AData/template/owlrl/>
 
 template st:start {
   st:apply-templates-with-all(st:axiom)

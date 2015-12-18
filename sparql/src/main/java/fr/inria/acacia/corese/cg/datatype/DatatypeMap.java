@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -444,8 +444,15 @@ public class DatatypeMap implements Cst, RDF {
     public static IDatatype createObject(String name) {
         return createLiteral(name, XMLLITERAL, null);
     }
+    
+    public static IDatatype createObject(Object obj) {
+        return createObject("tmp", obj);
+    }
 
-    public static IDatatype createObject(String name, Object obj) {
+    public static IDatatype createObject(String name, Object obj) {        
+        if (obj instanceof Pointerable){
+            return new CoresePointer(name, (Pointerable) obj);
+        }
         IDatatype dt = createLiteral(name, XMLLITERAL, null);
         dt.setObject(obj);
         return dt;
@@ -679,6 +686,23 @@ public class DatatypeMap implements Cst, RDF {
     }
     
     /******************************/
+    
+    // DRAFT
+    public static IDatatype result(IDatatype dt){
+        return dt;
+    }
+    
+    public static boolean isResult(IDatatype dt){
+        return true;
+    }
+    
+    public static IDatatype getResult(IDatatype dt){
+        return dt;
+    }
+    
+    public static boolean isBound(IDatatype dt){
+        return dt != UNBOUND;
+    }
     
      public static IDatatype size(IDatatype dt){
         if (! dt.isList()){

@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
 import java.util.List;
 
 /**
@@ -32,6 +33,8 @@ public interface Environment {
 	Query getQuery();
         
         Bind getBind();
+        
+        boolean hasBind();
 	
 	/**
 	 * 
@@ -165,5 +168,7 @@ public interface Environment {
         void unset(Expr exp, List<Expr> var);
                 
         Extension getExtension();
+        
+        ApproximateSearchEnv getAppxSearchEnv();
 
 }

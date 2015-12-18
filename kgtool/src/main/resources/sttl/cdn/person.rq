@@ -7,10 +7,7 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 template {
     st:call-template(cn:href, 
       ?in, coalesce(?link, ?in), ?mds, ?ic)
-      
-#    st:call-template(cn:complete, ?in)
-#   st:call-template(cn:getdata, ?in, o:spouse, "Ep.")
-  
+        
     coalesce(str(?cc), "")
   
 }

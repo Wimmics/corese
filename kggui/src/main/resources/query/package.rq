@@ -1,0 +1,7 @@
+@public @debug package {
+
+function us:fun(){
+xt:display('Hello')
+}
+
+}

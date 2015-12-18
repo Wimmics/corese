@@ -1,39 +1,38 @@
 package fr.inria.edelweiss.kgraph.approximate.ext;
 
 import static fr.inria.acacia.corese.cg.datatype.RDF.qrdfsLiteral;
+import static fr.inria.acacia.corese.cg.datatype.RDF.xsddouble;
+import static fr.inria.acacia.corese.cg.datatype.RDF.xsdstring;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Option;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.approximate.aggregation.ApproximateStrategy;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.ApproximateStrategy.check;
-import fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.CLASS_HIERARCHY;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_EQUALITY;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.LITERAL_LEX;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.LITERAL_SS;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.PROPERTY_EQUALITY;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_COMMENT;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI_LABEL;
-import static fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType.URI;
-import fr.inria.edelweiss.kgraph.approximate.result.SimilarityResults;
-import fr.inria.edelweiss.kgraph.approximate.similarity.impl.BaseAlgorithm;
-import fr.inria.edelweiss.kgraph.approximate.similarity.impl.wn.NLPHelper;
+import static fr.inria.edelweiss.kgraph.approximate.algorithm.Utils.msg;
+import fr.inria.edelweiss.kgraph.approximate.algorithm.Parameters;
+import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.S;
+import fr.inria.edelweiss.kgraph.approximate.strategy.ApproximateStrategy;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.ApproximateStrategy.check;
+import fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.CLASS_HIERARCHY;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_EQUALITY;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_LEX;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.LITERAL_WN;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.PROPERTY_EQUALITY;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_LEX;
+import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_WN;
 import fr.inria.edelweiss.kgraph.logic.OWL;
 import fr.inria.edelweiss.kgraph.logic.RDF;
-import fr.inria.edelweiss.kgraph.logic.RDFS;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -48,8 +47,13 @@ public class ASTRewriter implements QueryVisitor {
     final static int S = 1, P = 2, O = 3;
     private final static String VAR = "?_var_";
     public final static String APPROXIMATE = "approximate";
-    private int count = 0;
+    private int countVar = 0;
     private ASTQuery ast;
+
+    @Override
+    public void visit(Query query) {
+        //throw new UnsupportedOperationException("Not supported yet."); 
+    }
 
     @Override
     public void visit(ASTQuery ast) {
@@ -58,53 +62,65 @@ public class ASTRewriter implements QueryVisitor {
         }
 
         this.ast = ast;
-        this.initOptions();
+        this.initOptions(ast);
+        visit(ast.getBody());
+    }
 
-        List<Triple> triplePatterns = new ArrayList<Triple>();
+    private void visit(Exp exp) {
+        List<Exp> exTemp = new ArrayList<Exp>();
+        exTemp.addAll(exp.getBody());
+
         //1. iterate each query pattern in SPARQL
-        for (Exp exp : ast.getBody().getBody()) {
-            if (exp.isTriple() && !exp.isFilter()) {
-                triplePatterns.add(exp.getTriple());
+        for (Exp e2 : exTemp) {
+            if (e2.isTriple() && !e2.isFilter()) {
+                process(exp, e2.getTriple());
+            }
+
+            if (e2.isOptional() || e2.isMinus()) {//todo: ohter types to be added, minus, exist, etc ...
+                for (Exp e21 : e2) {
+                    visit(e21);
+                }
             }
         }
+    }
 
-        System.out.println("------ BEFORE -----\n" + ast);
+    private void process(Exp exp, Triple t) {
+        //for(Exp exp: ast.gets)
+        msg("------ BEFORE -----\n" + exp, false);
 
         //1 pre process, choose strategies for each atom
-        List<TripleWrapper> ss = this.process(triplePatterns);
+        Map<Integer, TripleWrapper> map = new HashMap<Integer, TripleWrapper>();
 
-        System.out.println("\n\n------ pre-process lsit-----");
-        for (TripleWrapper s : ss) {
-            System.out.println(s);
+        process(t, t.getSubject(), S, map);
+        process(t, t.getPredicate(), P, map);
+        process(t, t.getObject(), O, map);
+
+        msg("\n------ pre-process lsit-----");
+        for (TripleWrapper value : map.values()) {
+            msg(value.toString());
         }
 
         //2 rewrite triples in AST
-        for (TripleWrapper s : ss) {
-            this.rewrite(s);
+        List<Triple> filters = new ArrayList<Triple>();
+        List<Option> options = new ArrayList<Option>();
+
+        this.rewrite(map.get(S), filters, options);
+        this.rewrite(map.get(P), filters, options);
+        this.rewrite(map.get(O), filters, options);
+
+        for (Triple filter : filters) {
+            exp.add(filter);
         }
 
-        System.out.println("\n\n------ AFTER -----\n" + ast);
-    }
-
-    @Override
-    public void visit(Query query) {
-        //throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    //generate the list of algorithms that are applicable
-    //take into account the user pre-defined algorithms
-    private List<TripleWrapper> process(List<Triple> triplePatterns) {
-        List<TripleWrapper> ltw = new LinkedList<TripleWrapper>();
-        for (Triple triple : triplePatterns) {
-            process(triple, triple.getSubject(), S, ltw);
-            process(triple, triple.getPredicate(), P, ltw);
-            process(triple, triple.getObject(), O, ltw);
+        for (Option option : options) {
+            exp.add(option);
         }
-        return ltw;
+
+        msg("\n------ AFTER -----\n" + exp, false);
     }
 
     //choose the Strategy for the URI and put them into a list
-    private void process(Triple triple, Atom atom, int pos, List<TripleWrapper> atoms) {
+    private void process(Triple triple, Atom atom, int pos, Map<Integer, TripleWrapper> map) {
         if (atom == null) {
             return;
         }
@@ -115,22 +131,15 @@ public class ASTRewriter implements QueryVisitor {
         if (atom.isConstant() && !atom.isLiteral()) {
 
             //S P O
-            add(lst, URI);
+            add(lst, URI_WN);
+            add(lst, URI_LEX);
             add(lst, URI_EQUALITY);
 
             //P
             if (pos == P && !atom.getName().equalsIgnoreCase(RDF.TYPE)) { //propery does not have rdfs:label & rdfs:comment
                 add(lst, PROPERTY_EQUALITY);
-                //add(lst, PROPERTY_DR);
-
                 //S&O
-            } else {//property owl:equivalentProperty
-
-                add(lst, URI_LABEL);
-                add(lst, URI_COMMENT);
-
-                //pattern A rdf:type B
-                //to test
+            } else {
                 if (pos == O && triple.getPredicate().getName().equalsIgnoreCase(RDF.TYPE)) {
                     add(lst, CLASS_HIERARCHY);
                 }
@@ -139,31 +148,36 @@ public class ASTRewriter implements QueryVisitor {
 
         //*** LITERAL ***
         //datatype == xsd:string
-        if (atom.isLiteral() && atom.getDatatype().equalsIgnoreCase("xsd:string")) {
+        //if (atom.isLiteral() && atom.getDatatype().equalsIgnoreCase("xsd:string")) {
+        if(atom.isLiteral() && atom.getDatatypeValue().getDatatypeURI().equals(xsdstring)){
             add(lst, LITERAL_LEX);
 
             //@lang=en ??
             if (atom.getLang() == null || (atom.getLang() != null && atom.getLang().equalsIgnoreCase("en"))) {
-                add(lst, LITERAL_SS);
+                add(lst, LITERAL_WN);
             }
         }
 
         if (!lst.isEmpty()) {
-            atoms.add(new TripleWrapper(triple, pos, lst));
+            map.put(pos, new TripleWrapper(triple, pos, lst));
         }
     }
 
     //approximate the name of URI
     //ex, kg:john, kg:Johnny
     //applicable to: subject, predicate and object
-    public void rewrite(TripleWrapper tw) {
-        Variable var = variable(true);
+    private void rewrite(TripleWrapper tw, List<Triple> filters, List<Option> options) {
+        if (tw == null) {
+            return;
+        }
+
+        Variable var = new Variable(VAR + countVar++);
 
         //1. get strategies in group G1 and merge them in one filter
         List<StrategyType> merge = ApproximateStrategy.getMergableStrategies(tw.getStrategies());
         if (!merge.isEmpty()) {
             //2.2 generate filters with functions
-            ast.getBody().add(filter(var, tw.getAtom(), ApproximateStrategy.getAlgrithmString(merge)));
+            filters.add(createFilter(var, tw.getAtom(), ApproximateStrategy.getAlgrithmString(merge)));
         }
 
         //2. iterate other strategies
@@ -174,7 +188,7 @@ public class ASTRewriter implements QueryVisitor {
 
             String label;
             Triple t1, t2;
-            Option opt = Option.create(BasicGraphPattern.create());
+            Option opt = new Option();
             switch (st) {
                 case PROPERTY_EQUALITY:
                 case URI_EQUALITY:
@@ -186,25 +200,26 @@ public class ASTRewriter implements QueryVisitor {
                     //the filter can be omitted, because the similarity (equality =1)
                     //create optional {t1, t2}
                     opt.add(BasicGraphPattern.create(t1, t2));
-                    ast.getBody().add(opt);
+                    options.add(opt);
                     break;
-                case URI_LABEL:
-                case URI_COMMENT:
-                    label = (st == URI_COMMENT) ? RDFS.COMMENT : RDFS.LABEL;
-                    Variable text1 = variable(false);
-                    Variable text2 = variable(false);
-
-                    //create two addional triple pattern: {x rdfs:label y} or {x rdfs:comment y}
-                    t1 = ast.createTriple(var, Constant.create(label), text1);
-                    t2 = ast.createTriple(tw.getAtom(), Constant.create(label), text2);
-                    BasicGraphPattern bgp = BasicGraphPattern.create(t1, t2);
-
-                    //create a filter
-                    Exp filter = filter(text1, text2, ApproximateStrategy.getAlgrithmString(st), var, tw.getAtom());
-                    //optional {t1. t2. filter}
-                    opt.add(BasicGraphPattern.create(bgp, filter));
-                    ast.getBody().add(opt);
-                    break;
+//                case URI_LABEL:
+//                case URI_COMMENT:
+//                    label = (st == URI_COMMENT) ? RDFS.COMMENT : RDFS.LABEL;
+//                    Variable text1 = variable(false);
+//                    Variable text2 = variable(false);
+//
+//                    //create two addional triple pattern: {x rdfs:label y} or {x rdfs:comment y}
+//                    t1 = ast.createTriple(var, Constant.create(label), text1);
+//                    t2 = ast.createTriple(tw.getAtom(), Constant.create(label), text2);
+//                    BasicGraphPattern bgp = BasicGraphPattern.create(t1, t2);
+//
+//                    //create a filter
+//                    bgp.add(Triple.create(ast.createOperator("!=", var, tw.getAtom())));
+//                    Exp filter = filter(text1, text2, ApproximateStrategy.getAlgrithmString(st), var, tw.getAtom());
+//                    bgp.add(filter);
+//                    opt.add(bgp);
+//                    ast.getBody().add(opt);
+//                    break;
             }
         }
 
@@ -213,74 +228,23 @@ public class ASTRewriter implements QueryVisitor {
     }
 
     //add a filter with a specific function and parameters
-    private Triple filter(Variable var, Atom atom, String algs, Expression... more) {
-        Term function = ast.createFunction(ast.createQName(APPROXIMATE));
+    private Triple createFilter(Variable var, Atom atom, String algs) {
+        Term function = Term.function(APPROXIMATE);
         function.add(var);
         function.add(atom);
         function.add(Constant.create(algs, qrdfsLiteral));
-        if (more != null && more.length > 0) {
-            for (Expression para : more) {
-                function.add(para);
-            }
-        }
+        function.add(Constant.create(Double.toString(Parameters.THRESHOLD), xsddouble));
         return Triple.create(function);
     }
 
-    private void initOptions() {
-        // ** option: strategies used **
-        List<String> strategyOption = ast.getApproximateSearchOptions(Pragma.STRATEGY);//get option kg:strategy from Pragma
-        // ** option: strategy priortiy **
-        List<String> priorityStrategyOption = ast.getApproximateSearchOptions(Pragma.PRIORITY_STRATEGY);//get priority kg:priority_s from pragma
-        // ** option: algorithms used **
-        List<String> algorithmOption = ast.getApproximateSearchOptions(Pragma.ALGORITHM);
-        // ** option: algorithm priortiy **
-        List<String> priorityAlgorithmOption = ast.getApproximateSearchOptions(Pragma.PRIORITY_ALGORITHM);
-
-        ApproximateStrategy.init(strategyOption, priorityStrategyOption, algorithmOption, priorityAlgorithmOption);
-
-        //WordNet and POS tagger
-        //WordNet dict path
-        List<String> wnp = ast.getApproximateSearchOptions(Pragma.WN_PATH);
-        if (wnp != null && !wnp.isEmpty()) {
-            NLPHelper.WN_PATH = wnp.get(0);
-        }
-
-        //wordnet version
-        List<String> wnv = ast.getApproximateSearchOptions(Pragma.WN_VERSION);
-        if (wnv != null && !wnv.isEmpty()) {
-            NLPHelper.WN_VER = wnv.get(0);
-        }
-
-        //pos tagger
-        List<String> pos = ast.getApproximateSearchOptions(Pragma.POS_TAGGER);
-        if (pos != null && !pos.isEmpty()) {
-            NLPHelper.POS_TAGGER = pos.get(0);
-        }
-
-        //String metric
-        List<String> metric = ast.getApproximateSearchOptions(Pragma.STRING_METRIC);
-        if (metric != null && !metric.isEmpty()) {
-            NLPHelper.STRING_METRIC = metric.get(0);
-        }
-
-        //String metric
-        List<String> threshold = ast.getApproximateSearchOptions(Pragma.THRESHOLD);
-        if (threshold != null && !threshold.isEmpty()) {
-            BaseAlgorithm.THRESHOLD = Double.valueOf(threshold.get(0));
-        }
+    private void initOptions(ASTQuery ast) {
+        ApproximateStrategy.init(ast);
+        Parameters.init(ast);
     }
 
     private void add(List<StrategyType> list, StrategyType st) {
         if (check(st)) {
             list.add(st);
         }
-    }
-
-    private Variable variable(boolean added) {
-        Variable v = new Variable(VAR + count++);
-        if (added) {
-            SimilarityResults.getInstance().addVariable(v);
-        }
-        return v;
     }
 }

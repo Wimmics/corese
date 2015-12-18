@@ -7,7 +7,7 @@ prefix sp:      <http://spinrdf.org/sp#> .
 template {
     
       ?e1
-      st:nl() st:call-template(sp:kw, "union") st:nl() 
+      st:nl() st:kw( "union") st:nl() 
       ?e2
        
 }

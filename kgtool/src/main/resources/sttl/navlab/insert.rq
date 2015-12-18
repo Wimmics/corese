@@ -1,0 +1,6 @@
+template st:insert(?uri) {
+    "<a href='"  st:pplink(?uri, st:dbpediacopy) "'><button type='button'>Insert</button></a>" 
+}
+where {
+
+}

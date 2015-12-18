@@ -1,0 +1,20 @@
+#
+# Display a day in the calendar of a month
+# May be a link or a number
+#
+template st:date(?date) {
+
+    if (?b, st:call-template(st:link, ?date), day(?date))
+  
+}
+where {
+
+bind (
+      exists { ?x ?p ?dd 
+	filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
+	filter (year(?dd) = year(?date) 
+	    && month(?dd) = month(?date) 
+	      && day(?dd) = day(?date)) } 
+    as ?b)
+   
+}

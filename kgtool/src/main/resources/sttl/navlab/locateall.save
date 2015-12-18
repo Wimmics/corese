@@ -1,0 +1,6 @@
+  bind (st:get(st:dataset) as ?g)
+   graph ?g {
+    ?in p:longitude ?lon ; p:latitude ?lat
+    filter(?in != ?r)
+    }
+    

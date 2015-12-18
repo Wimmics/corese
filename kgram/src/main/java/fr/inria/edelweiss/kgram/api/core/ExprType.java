@@ -31,6 +31,7 @@ public interface ExprType {
 	// ?x in (1, 2)
 	public static int INLIST = 16;
 
+	public static int CUSTOM = 18;
 	public static int ISNUMERIC = 19;
 	public static int MIN = 20;
 	public static int MAX = 21;
@@ -103,6 +104,7 @@ public interface ExprType {
 	public static int STRUUID 	 = 81;
 	public static int XSDSTRING 	 = 82;
         public static int APPROXIMATE 	 = 83;
+        public static int APP_SIM 	 = 84;
 
 	
 	// term
@@ -251,6 +253,8 @@ public interface ExprType {
 	public static int FOR           = 322;
 	public static int SET           = 323;
 	public static int SEQUENCE      = 324;
+	public static int RETURN        = 325;
+	public static int EVAL          = 326;
         
 	public static int XT_SORT       = 330;
         
@@ -279,6 +283,7 @@ public interface ExprType {
         public static int XT_TRIPLE      = 421;
         public static int XT_GEN_GET     = 422;
         public static int XT_DISPLAY     = 423;
+        public static int XT_TUNE        = 424;
        
         public static int SLICE       = 450;
         

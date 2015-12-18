@@ -1,28 +1,29 @@
 
 template  st:statement  {
 
-  xt:nl(st:apply-templates-with-all(st:owlstatement, ?t), 2)
+  xt:nl(st:apply-templates-with-all(st:owlstatement, ?in), 2)
   ; separator = ""
-  
+ 
 }
 where {
 
-  {select distinct ?t where {
-     ?t ?p ?y 
+  select distinct ?in where {
+     ?in ?p ?y 
      
      filter (?p not in 
      (rdfs:subClassOf, owl:equivalentClass)
      )
      
     filter (
-      (isURI(?t)   && not exists { ?t a owl:Ontology }) ||
-      (isBlank(?t) && not exists { ?x ?q ?t } )
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
     )
   # OWL vocabulary must not be pretty printed
-    filter (! xt:system(?t))
+    filter (! xt:system(?in))
 
   }
-  order by ?t}
-        
+  order by ?in
+     
 }
+
 

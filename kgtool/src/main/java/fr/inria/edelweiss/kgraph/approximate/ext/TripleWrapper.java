@@ -3,20 +3,20 @@ package fr.inria.edelweiss.kgraph.approximate.ext;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgraph.approximate.aggregation.StrategyType;
 import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.O;
 import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.P;
 import static fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter.S;
+import fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Triple pattern Wrapper
+ * TripleWrapper.java
  *
  * @author Fuqi Song, Wimmics Inria I3S
- * @date 8 oct. 2015
+ * @date 30 nov. 2015
  */
-public class TripleWrapper {
+class TripleWrapper {
 
     private final Triple triple;
     private final int position;
@@ -29,9 +29,7 @@ public class TripleWrapper {
     }
 
     public TripleWrapper(Triple triple, int position) {
-        this.triple = triple;
-        this.position = position;
-        this.strategy = new ArrayList<StrategyType>();
+        this(triple, position, new ArrayList<StrategyType>());
     }
 
     public Atom getAtom() {
@@ -53,8 +51,7 @@ public class TripleWrapper {
                 triple.setSubject(var);
                 break;
             case P:
-                //triple.setProperty(null);
-                triple.setPredicate(var);// todo
+                triple.setPredicate(var);
                 break;
             case O:
                 triple.setObject(var);

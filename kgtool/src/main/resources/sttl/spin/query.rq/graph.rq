@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:call-template(sp:kw, "graph") " " ?g " {" 
+  st:kw( "graph") " " ?g " {" 
   box {
     if (?b = rdf:nil, "", 
       st:call-template(sp:listnl, ?b))

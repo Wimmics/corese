@@ -1,0 +1,13 @@
+template st:start {
+
+  st:call-template(st:main, ?year)
+    
+  st:call-template(st:tail)
+  
+}
+where {
+  
+  bind (st:get(st:uri) as ?uri)
+  bind (xsd:integer(substr(?uri, strlen(st:) + 2))   as ?tmp)
+  bind (st:set(st:year, coalesce(?tmp, year(now()))) as ?year)
+}

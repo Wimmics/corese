@@ -2,46 +2,18 @@
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
-template cn:head {
-  '''<html>
-  <!-- Generated using RDF & SPARQL Template - Olivier Corby - ''' now() ''' --> 
-  <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<!-- <link rel='stylesheet'  href='cdn.css' /> -->
-<title>Histoire</title>
-<style type="text/css">
+template cn:head(?c, ?title) {
 
- body {
-    font-family: Arial, sans-serif;
-    }
-  .head { 
-    background-color: lavender ;
-    text-align: center
-  }
-  .center { 
-    margin-left: auto;
-    margin-right: auto; 
-  }
-  .bold {
-    font-weight: bold
-  }
-  .s09  { background-color: AliceBlue }
-  .s10  { background-color: lavender }
-  .s11  { background-color: AliceBlue }
-  .s12  { background-color: lavender }
-  .s13  { background-color: AliceBlue }
-  .s14  { background-color: lavender }
-  .s15  { background-color: AliceBlue }
-  .s16  { background-color: lavender }
-  .s17  { background-color: AliceBlue }
-  .s18  { background-color: lavender }
-  .s19  { background-color: AliceBlue }
-</style>
-
-  </head>
-  <body>
-  '''
+  "<a name='" str(?title) "'></a>"
+    
+    "<h2 class='century'>" ?title "e Siècle</h2>"
   
+    st:call-template(cn:icon, cn:icon)
+    
+    "<p>"
+    st:call-template(cn:index,  ?title)
+    "</p>"
+    
 }
 where {
 }

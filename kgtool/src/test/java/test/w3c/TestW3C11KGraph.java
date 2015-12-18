@@ -308,7 +308,7 @@ public class TestW3C11KGraph {
         test(root0 + "bind");
     }
 
-    @Test
+   // @Test
     public void process() {
         gok = 0;
         gko = 0;

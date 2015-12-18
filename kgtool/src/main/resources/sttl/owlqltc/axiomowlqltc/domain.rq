@@ -1,0 +1,15 @@
+# OWL 2 QL restricts the class expressions in object property domain and range axioms to superClassExpression
+
+template {
+	?suc
+}
+where {
+	?in rdfs:domain|rdfs:range ?y
+	
+	bind (
+		isURI(?y) ||
+		st:call-template-with(st:superexpowlqltc,st:superClassExpression, ?y)
+	as ?suc)
+	
+	filter(st:alreadyVisited(?in, "domain", ?suc))
+}

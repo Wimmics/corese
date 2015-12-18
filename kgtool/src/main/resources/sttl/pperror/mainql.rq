@@ -1,0 +1,6 @@
+template st:mainQL(?tag) {
+	st:call-template(st:allQL, ?tag)
+}
+where {
+
+}

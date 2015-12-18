@@ -15,8 +15,8 @@ where {
 	rdf:type
 	)
       as ?suc)
-      	
-      filter (st:visit(st:fail, ?in, ?suc))
+     
+      filter (st:visit(st:err("failEquiv"), ?in, ?suc))
       filter (! ?suc)
 }
 limit 1

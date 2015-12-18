@@ -62,6 +62,15 @@ public class Bind {
         }
         return null;
     }
+    
+    public boolean isBound(String label){
+        for (int i = varList.size() - 1; i >= 0; i--) {
+            if (varList.get(i).getLabel().equals(label)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * TODO; scope of variable
@@ -141,4 +150,20 @@ public class Bind {
          }
          return list;
      }
+     
+     public Mapping getMapping(Query q) {
+        ArrayList<Node> lvar = new ArrayList();
+        ArrayList<Node> lval = new ArrayList();
+        for (Expr var : getVariables()) {
+            Node node = q.getProperAndSubSelectNode(var.getLabel());
+            if (node != null) {
+                lvar.add(node);
+                lval.add(get(var));
+            }
+        }
+        Mapping m = Mapping.create(lvar, lval);
+        return m;
+    }
+
+
 }

@@ -11,11 +11,9 @@ where {
   
   # in case there is also subClassof, 
   # a named template is used: interunion.rq
-  optional {
-    { ?in rdfs:subClassOf ?z } union 
-    { ?in owl:equivalentClass ?z }
-  }
-  filter (! bound(?z))
+  filter not exists { 
+    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
+   }
 
   optional { ?in a ?t  filter(?t = rdfs:Datatype) }
 }

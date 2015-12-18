@@ -7,16 +7,16 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:index(?title) {
 
-"<table class='center'><tr>"
+"<table class='margin'><tr>"
 
   if (bound(?before), 
-    concat("<td><a href='", st:call-template(cn:dynlink, ?before), "'>Avant</a></td><td>&nbsp;&nbsp;</td>"), 
+    concat("<td><a href='", st:plink(?before), "'>Avant</a></td><td>&nbsp;&nbsp;</td>"), 
     "")
     
   st:call-template(cn:elem, ?title)
   
   if (bound(?after), 
-    concat("<td><a href='", st:call-template(cn:dynlink, ?after), "'>Après</a></td>"), 
+    concat("<td><a href='", st:plink(?after), "'>Après</a></td>"), 
     "")  
     
 "</tr></table>"
@@ -26,13 +26,15 @@ st:call-template(cn:list)
 
 }
 where {
-  
+
   ?century rdfs:label ?title ; 
     cn:start ?min 
        
-  bind (?min - 100 as ?be)
-  bind (?min + 100 as ?af)
+  bind (if (?min = 1, 0, ?min) - 100 as ?be)
+  bind (if (?min = -100, -99, ?min) + 100 as ?af)
+  bind (coalesce(st:get(st:min), -1000) as ?fst)
+  bind (coalesce(st:get(st:max),  3000) as ?rst)
   
-  optional { ?before cn:start ?be }
-  optional { ?after  cn:start ?af }
+  optional { ?before cn:start ?be filter (?be >= ?fst) }
+  optional { ?after  cn:start ?af filter (?af <= ?rst) }
 }

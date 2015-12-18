@@ -1,0 +1,27 @@
+#
+# Check if there is an unauthorized OWL property for classExpression ?in
+# return false in this case, otherwise the template fails (return nothing)
+#
+
+template {
+	false
+}
+where {
+	?in ?p ?y
+	
+	bind (
+		?p in (
+			owl:intersectionOf, owl:oneOf,
+			owl:someValuesFrom, owl:onProperty,
+			owl:hasValue, owl:hasSelf, rdf:type,
+			
+			# these axioms have classExpression argument
+			owl:equivalentClass, rdfs:subClassOf,
+			owl:disjointWith, owl:hasKey, owl:onClass
+		)
+	as ?suc)
+			
+	filter (st:visit(st:err("failClassExp"), ?in, ?suc))
+	filter(! ?suc)
+}
+limit 1

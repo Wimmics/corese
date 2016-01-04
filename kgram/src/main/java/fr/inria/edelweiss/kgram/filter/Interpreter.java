@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.filter;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -36,7 +37,7 @@ public class Interpreter implements Evaluator, ExprType {
     protected Proxy proxy;
     Producer producer;
     Eval kgram;
-    Object TRUE, FALSE;
+    DatatypeValue TRUE, FALSE;
     ResultListener listener;
     static HashMap<String, Extension> extensions ;
     static Extension extension;
@@ -55,8 +56,8 @@ public class Interpreter implements Evaluator, ExprType {
         if (p.getEvaluator() == null) {
             p.setEvaluator(this);
         }
-        TRUE = proxy.getValue(true);
-        FALSE = proxy.getValue(false);        
+        TRUE  = (DatatypeValue) proxy.getValue(true);
+        FALSE = (DatatypeValue) proxy.getValue(false);        
     }
 
     public void setProducer(Producer p) {
@@ -180,14 +181,14 @@ public class Interpreter implements Evaluator, ExprType {
         switch (exp.type()) {
 
             case CONSTANT:
-                return exp.getValue(); //return proxy.getConstantValue(exp.getValue());
+                return exp.getDatatypeValue(); 
 
             case VARIABLE:
                 Node node = env.getNode(exp);
                 if (node == null) {
                     return null;
                 }
-                return node.getValue();
+                return node.getDatatypeValue();
 
             case BOOLEAN:
                 return connector(exp, env, p);
@@ -199,7 +200,7 @@ public class Interpreter implements Evaluator, ExprType {
         return null;
     }
 
-    private Object connector(Expr exp, Environment env, Producer p) {
+    private DatatypeValue connector(Expr exp, Environment env, Producer p) {
         switch (exp.oper()) {
             case AND:
                 return and(exp, env, p);
@@ -211,7 +212,7 @@ public class Interpreter implements Evaluator, ExprType {
         return null;
     }
 
-    private Object not(Expr exp, Environment env, Producer p) {
+    private DatatypeValue not(Expr exp, Environment env, Producer p) {
         Object o = eval(exp.getExp(0), env, p);
         if (o == ERROR_VALUE || !proxy.isTrueAble(o)) {
             return null;
@@ -223,7 +224,7 @@ public class Interpreter implements Evaluator, ExprType {
         }
     }
 
-    private Object or(Expr exp, Environment env, Producer p) {
+    private DatatypeValue or(Expr exp, Environment env, Producer p) {
         boolean error = false;
         for (Expr arg : exp.getExpList()) {
             Object o = eval(arg, env, p);
@@ -241,7 +242,7 @@ public class Interpreter implements Evaluator, ExprType {
     }
     
 
-    private Object and(Expr exp, Environment env, Producer p) {
+    private DatatypeValue and(Expr exp, Environment env, Producer p) {
         boolean error = false;
         for (Expr arg : exp.getExpList()) {
             Object o = eval(arg, env, p);
@@ -362,7 +363,7 @@ public class Interpreter implements Evaluator, ExprType {
             case IOTA:           
                 break;
                 
-            case EVAL:
+            case FUNCALL:
                 return funcall(exp, env, p);
                 
             case MAP:
@@ -491,7 +492,7 @@ public class Interpreter implements Evaluator, ExprType {
         return res;
     }
 
-    Object in(Expr exp, Environment env, Producer p) {
+    DatatypeValue in(Expr exp, Environment env, Producer p) {
         Object o1 = eval(exp.getExp(0), env, p);
         if (o1 == ERROR_VALUE) {
             return null;
@@ -509,7 +510,7 @@ public class Interpreter implements Evaluator, ExprType {
                 if (res == ERROR_VALUE) {
                     error = true;
                 } else if (proxy.isTrue(res)) {
-                    return res;
+                    return TRUE;
                 }
             }
         }
@@ -716,17 +717,34 @@ public class Interpreter implements Evaluator, ExprType {
     }
     
      public Object funcall(Expr exp, Environment env, Producer p){
-        Object name = eval(exp.getExp(0), env, p); 
         Object[] args = evalArguments(exp, env, p, 1);
-        if (name == ERROR_VALUE || args == null){
+        if (args == null){
             return ERROR_VALUE;
         }
-        Expr def = getDefine(env, p.getDatatypeValue(name).stringValue(), args.length);
+        Expr def = getDefine(exp.getExp(0), env, p, args.length);
         if (def == null){
-            return null;
+            return ERROR_VALUE;
         }
         return eval(exp, env, p, args, def);
     }
+     
+     /**
+      * exp is an expression that evaluates to a function name URI
+      * evaluate exp
+      * return function definition corresponding to name with arity n.
+      */
+    @Override
+     public Expr getDefine(Expr exp, Environment env, Producer p, int n){
+         Object name = eval(exp, env, p);
+         if (name == ERROR_VALUE){
+            return null;
+        }
+        Expr def = getDefine(env, p.getDatatypeValue(name).stringValue(), n);
+        if (def == null){
+            return null;
+        } 
+        return def;
+     }
     
     /**
      * name is the name of a proxy function that overloads the function of exp
@@ -753,7 +771,8 @@ public class Interpreter implements Evaluator, ExprType {
             System.out.println(env.getBind());
         }
         Object res;
-        if (def.isSystem() && env.getQuery() != def.getPattern()){
+        // TODO: check also getGlobalQuery()
+        if (def.isSystem() && def.isPublic() && env.getQuery() != def.getPattern()){
             // function is export and has exists {}
             // use function query
             res = funEval(def, env, p); 
@@ -804,10 +823,10 @@ public class Interpreter implements Evaluator, ExprType {
     }
     
     public Expr getDefine(Expr exp, Environment env) {
-        Expr ee = exp.getDefine();
-        if (ee != null) {
-            return ee;
-        }
+//        Expr ee = exp.getDefine();
+//        if (ee != null) {
+//            return ee;
+//        }
         Extension ext = env.getExtension();
         if (ext != null) {          
             Expr def = ext.get(exp);
@@ -822,7 +841,7 @@ public class Interpreter implements Evaluator, ExprType {
             //exp.setDefine(def);
             return def;
         }
-
+ 
         return null;
     }
     

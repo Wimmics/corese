@@ -10,16 +10,23 @@ import java.util.Iterator;
  *
  */
 public class Metadata implements Iterable<String> {
-    public static final String SERVICE = "@service";
- 
+    static final String NL = System.getProperty("line.separator");
     static final int UNDEFINED  = -1;
+    
     static final int TEST   = 0;
     static final int DEBUG  = 1;
     static final int TRACE  = 2;
     static final int PUBLIC = 3;
+    public static final int IMPORT = 4;
+    
+    // Query
+    static final int RELAX   = 11;
+    static final int MORE    = 12;
+    static final int SERVICE = 13;
     
     private static HashMap<String, Integer> annotation;    
-    ArrayList<String> list;
+    private static HashMap<Integer, String> back; 
+    
     HashMap<String, String> map;
     
     
@@ -29,24 +36,54 @@ public class Metadata implements Iterable<String> {
     
     static void initAnnotate(){
         annotation = new HashMap();
-        annotation.put("@debug", DEBUG);
-        annotation.put("@trace", TRACE);
-        annotation.put("@test",  TEST);
-        annotation.put("@export", PUBLIC);      
-        annotation.put("@public", PUBLIC);      
+        back = new HashMap();
+        define("@debug",    DEBUG);
+        define("@trace",    TRACE);
+        define("@test",     TEST);
+        define("@export",   PUBLIC);      
+        define("@public",   PUBLIC);      
+        define("@more",     MORE);      
+        define("@relax",    RELAX);      
+        define("@service",  SERVICE);      
+        define("@import",   IMPORT);      
+    }
+    
+    static void define(String str, int type){
+        annotation.put(str, type);
+        back.put(type, str);
     }
     
     public Metadata(){
-        list = new ArrayList<String>();
         map = new HashMap<String, String>();
     }
     
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Metadata:");
+        sb.append(NL);
+        for (String m : this){
+            sb.append(m);
+            sb.append(" : ");
+            sb.append(get(m));
+            sb.append(NL);
+        }
+        return sb.toString();
+    }
+    
     public void add(String str){
-        list.add(str);
+        map.put(str, str);
     }
     
     public void add(String name, String str){
        map.put(name, str);
+    }
+    
+    public boolean hasMetadata(int type){
+        String str = back.get(type);
+        if (str == null){
+            return false;
+        }
+        return map.containsKey(str);
     }
     
     // add without overloading local
@@ -57,11 +94,7 @@ public class Metadata implements Iterable<String> {
             }
         }
     }
-    
-    public ArrayList<String> getList(){
-        return list;
-    }
-    
+       
     public HashMap<String, String> getMap(){
         return map;
     }
@@ -71,7 +104,7 @@ public class Metadata implements Iterable<String> {
     }
     
     public Iterator<String> iterator(){
-            return list.iterator();
+            return map.keySet().iterator();
     }
     
     int type(String a){

@@ -962,6 +962,7 @@ public class CoreseDatatype
 		return getiValue();
 	}
 	
+        @Override
 	public IDatatype getDatatypeValue() {
 		return this;
 	}

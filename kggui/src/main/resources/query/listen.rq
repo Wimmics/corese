@@ -1,7 +1,9 @@
 #
 # Listen Corese activity
 #
-#@service <http://localhost:8080/sparql>
+# @service <http://localhost:8080/sparql>
+select where {}
+
 function xt:main() {
    xt:tune(xt:listen, true)
 }

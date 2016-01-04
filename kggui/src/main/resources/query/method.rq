@@ -1,20 +1,22 @@
 #
-# Method us:surface defined on us:Figure classes
+# Method m:surface defined on us:Figure classes
+# Olivier Corby - Wimmics Inria I3S - 2015
 #
-select * (us:method(us:surface, ?x) as ?m) (us:surface(?x) as ?s)
+prefix m: <http://ns.inria.fr/sparql-extension/method#>
+select * (m:method(us:surface, ?x) as ?m) (m:surface(?x) as ?s)
 where {
   ?x a us:Figure
 }
 
-function us:surface(?x){
-  us:funcall(us:surface, ?x)
+function m:surface(?x){
+  m:funcall(us:surface, ?x)
 }
 
-function us:funcall(?m, ?x){
-  eval (us:method(?m, ?x), ?x)
+function m:funcall(?m, ?x){
+  funcall (m:method(?m, ?x), ?x)
 }
 
-function us:method(?m, ?x){
+function m:method(?m, ?x){
   let ((?fun) = 
     select * where { 
     ?x rdf:type/rdfs:subClassOf* ?t . 
@@ -22,25 +24,25 @@ function us:method(?m, ?x){
   { ?fun }
 }
 
-function us:surfaceRectangle(?x){
+function m:surfaceRectangle(?x){
   let ((?w, ?l) = select * where { ?x us:width ?w ; us:length ?l }){
     ?w * ?l
   }
 }
 
-function us:surfaceSquare(?x){
+function m:surfaceSquare(?x){
   let ((?l) = select * where { ?x  us:side ?l }){
     ?l * ?l
   }
 }
 
-function us:surfaceTriangle(?x){
+function m:surfaceTriangle(?x){
   let ((?h, ?b) = select * where { ?x us:height ?h ; us:base ?b }){
     (?h * ?b) / 2
   }
 }
 
-function us:surfaceCircle(?x){
+function m:surfaceCircle(?x){
   let ((?r) = select * where { ?x us:radius ?r }){
      3.14159 * power(?r, 2) 
   }

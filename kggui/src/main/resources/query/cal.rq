@@ -4,12 +4,11 @@
 #
 # Olivier Corby - Wimmics, Inria, I3S - 2015
 #
-prefix cal:  <http://ns.inria.fr/sparql-extension/calendar/>
 prefix spqr: <http://ns.inria.fr/sparql-extension/spqr/>
 select 
 
-(cal:jour(now()) as ?j)
-(cal:day("2001-01-01"^^xsd:date) as ?d)
+(xt:jour(now()) as ?j)
+(xt:day("2001-01-01"^^xsd:date) as ?d)
 (spqr:romain(1959) as ?s)
 (spqr:digit("CIX") as ?c)
 

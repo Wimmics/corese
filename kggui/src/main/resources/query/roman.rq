@@ -1,0 +1,31 @@
+#
+# Roman numbers custom datatype
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+
+prefix dt:   <http://ns.inria.fr/sparql-datatype/>
+prefix rm:   <http://ns.inria.fr/sparql-datatype/roman#>
+prefix spqr: <http://ns.inria.fr/sparql-extension/spqr/>
+
+select ?res ?val  (spqr:digit(?val) as ?dig) 
+where {                           
+  bind (  'II'^^dt:roman * 'X'^^dt:roman + 'V'^^dt:roman as ?res) 
+  bind (maplist(rm:roman,  xt:iota(7)) as ?list)
+  bind (apply (xt:plus, ?list) as ?val)
+}
+                  
+export {
+  function rm:equal(?x, ?y)        { (spqr:digit(?x) = spqr:digit(?y))} 
+  function rm:diff(?x, ?y)         { (spqr:digit(?x) != spqr:digit(?y))}
+  function rm:less(?x, ?y)         { (spqr:digit(?x) < spqr:digit(?y))}
+  function rm:lessEqual(?x, ?y)    { (spqr:digit(?x) <= spqr:digit(?y))}
+  function rm:greater(?x, ?y)      { (spqr:digit(?x) > spqr:digit(?y))}
+  function rm:greaterEqual(?x, ?y) { (spqr:digit(?x) >= spqr:digit(?y))} 
+  
+  function rm:plus(?x, ?y)  { rm:roman(spqr:digit(?x) + spqr:digit(?y))}
+  function rm:minus(?x, ?y) { rm:roman(spqr:digit(?x) - spqr:digit(?y))}
+  function rm:mult(?x, ?y)  { rm:roman(spqr:digit(?x) * spqr:digit(?y))}
+  function rm:divis(?x, ?y) { rm:roman(spqr:digit(?x) / spqr:digit(?y))} 
+  
+  function rm:roman(?x) { strdt(spqr:romain(?x), dt:roman) }
+ }

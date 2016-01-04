@@ -11,9 +11,11 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.*;
+import fr.inria.acacia.corese.triple.parser.ASTExtension.ASTFunMap;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.*;
+import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -21,7 +23,9 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.filter.Extension;
+import fr.inria.edelweiss.kgram.filter.Extension.FunMap;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
+import java.util.HashMap;
 
 /**
  * Compiler of SPARQL AST to KGRAM Exp Query
@@ -45,10 +49,12 @@ public class Transformer implements ExpType {
         private static final String EXT_NAMESPACE = NSManager.KGEXT;
         private static final String EXT_NAMESPACE_QUERY = NSManager.KGEXTCONS;
 
+        static HashMap<String, String> loaded;
 	int count = 0;
 
 	CompilerFactory fac;
 	Compiler compiler;
+        private SPARQLEngine sparql;
 	List<QueryVisitor> visit;
 	Sorter sort;
 	//Table table;
@@ -62,10 +68,16 @@ public class Transformer implements ExpType {
 	isSPARQL1 = true;
     private boolean isUseBind = true;
     private boolean isGenerateMain = true;
+    private boolean isLoadFunction = true;
 	String namespaces, base;
         private Dataset dataset;
 	BasicGraphPattern pragma;
         private int planner = Query.STD_PLAN;
+        
+        static {
+            loaded = new HashMap();
+            create().init();
+        }
 	
 	Transformer(){
 		table = new Hashtable<Edge, Query>();
@@ -87,6 +99,15 @@ public class Transformer implements ExpType {
 	public static Transformer create(){
 		return new Transformer();
 	}
+        
+        /**
+         * Predefined extension functions for SPARQL functions 
+         */
+        void init(){   
+            if (Processor.getAST() != null){
+                Query q = transform(Processor.getAST());
+            }
+        }
 	
 	public void set(Dataset ds){
 		if (ds!=null){
@@ -146,7 +167,7 @@ public class Transformer implements ExpType {
                 }
 		//new
 		compiler.setAST(ast);
-		
+		annotate(ast);
 		Pragma p = new Pragma(this, ast);
 		if (ast.getPragma() != null){
 			p.compile();
@@ -188,6 +209,10 @@ public class Transformer implements ExpType {
                 error(q, ast);
 		return q;
 	}
+        
+        void annotate(ASTQuery ast){
+            
+        }
         
         /**
          * function xt:main(){}
@@ -361,20 +386,10 @@ public class Transformer implements ExpType {
                 System.out.println("Compiler: extension function not available in server mode" );
                 return;
             }
+            
             Extension ext = new Extension();
             q.setExtension(ext);
-            for (fr.inria.acacia.corese.triple.parser.Extension.FunMap m : ast.getDefine().getMaps()){
-                for (Expression exp : m.values()) {
-                    ext.define(exp); 
-                     if (exp.isExport()){
-                        Interpreter.define(exp);
-                        if (exp.isSystem()){
-                            // export function with exists {} 
-                            exp.getTerm().setPattern(q);
-                        }
-                    }
-                }
-            }
+            define(ast.getDefine(), ext, q);          
         }
        
        void compileFunction(ASTQuery ast) {
@@ -398,13 +413,85 @@ public class Transformer implements ExpType {
                 // TODO: because template st:profile may not have been read yet ...
                 return;
             }
+            undefinedFunction(q, ast);
+        }
+        
+        void undefinedFunction(Query q, ASTQuery ast){
             for (Expression exp : ast.getUndefined().values()){
-                if (! Interpreter.isDefined(exp)){
-                    ast.addError("undefined expression: " + exp);
+                boolean b = Interpreter.isDefined(exp);
+                if (b){
+                    return;
                 }
+                else {
+                    b = (isLoadFunction || ast.hasMetadata(Metadata.IMPORT)) && importFunction(q, exp);
+                    if (! b){
+                        ast.addError("undefined expression: " + exp);
+                    }
+                }             
             }
         }
         
+        /**
+         */
+        boolean importFunction(Query q, Expression exp){
+            String path = NSManager.namespace(exp.getLabel());
+            if (loaded.containsKey(path)){
+                return true;
+            }
+            loaded.put(path, path);
+             if (q.isDebug()){
+                 System.out.println("Transformer: load " + exp.getLabel());
+             }
+             
+             Query imp = sparql.load(exp.getLabel());
+            
+             if (imp != null && imp.hasDefinition()){
+                 // loaded functions are exported in Interpreter  
+                 definePublic(imp.getExtension(), imp);
+                 return Interpreter.isDefined(exp);
+             }
+             return false;
+        }
+        
+        /**
+         * Define function into Extension
+         * Export into Interpreter
+         */
+        void define(ASTExtension aext, Extension ext, Query q){
+            for (ASTFunMap m : aext.getMaps()){
+                   for (Expression exp : m.values()) {
+                       ext.define(exp); 
+                       if (exp.isPublic()){
+                           definePublic(exp, q);
+                       }
+                   }
+             }
+        }
+        
+        // TODO: check isSystem() because it is exported
+        /**
+         * ext is loaded function definitions
+         * define them as public
+         * @param ext
+         * @param q 
+         */
+        void definePublic(Extension ext, Query q){
+            for (FunMap m : ext.getMaps()){
+                for (Expr exp : m.values()){
+                    Expression e = (Expression) exp;
+                    e.setPublic(true);
+                    definePublic(e, q);
+                }
+            }            
+        }
+        
+       void definePublic(Expression exp, Query q) {
+            Interpreter.define(exp);
+            if (exp.isSystem()) {               
+                // export function with exists {} 
+                exp.getTerm().setPattern(q);
+            }
+       }
         
        void construct(Query q, ASTQuery ast) {
             validate(ast.getInsert(), ast);
@@ -1674,6 +1761,32 @@ public class Transformer implements ExpType {
         this.isGenerateMain = isGenerateMain;
     }
 
-	
+    /**
+     * @return the sparql
+     */
+    public SPARQLEngine getSPARQLEngine() {
+        return sparql;
+    }
+
+    /**
+     * @param sparql the sparql to set
+     */
+    public void setSPARQLEngine(SPARQLEngine sparql) {
+        this.sparql = sparql;
+    }
+
+    /**
+     * @return the LoadFunction
+     */
+    public boolean isLoadFunction() {
+        return isLoadFunction;
+    }
+
+    /**
+     * @param LoadFunction the LoadFunction to set
+     */
+    public void setLoadFunction(boolean LoadFunction) {
+        this.isLoadFunction = LoadFunction;
+    }
 
 }

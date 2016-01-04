@@ -19,7 +19,7 @@ public class Extension {
     private String name;
     private Object pack;
     
-    class FunMap extends HashMap<String, Expr> {}
+    public class FunMap extends HashMap<String, Expr> {}
 
     public Extension() {
         //map = new FunMap();
@@ -45,7 +45,7 @@ public class Extension {
         return maps[n];
     }
     
-    FunMap[] getMaps(){
+    public FunMap[] getMaps(){
         return maps;
     }
 

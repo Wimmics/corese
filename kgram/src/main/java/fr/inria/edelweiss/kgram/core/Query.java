@@ -168,8 +168,11 @@ public class Query extends Exp implements Graphable, Loopable {
     private boolean isExtension = false;
 
     
-    private GenerateBGP generateBGP;
+    private BgpGenerator bgpGenerator;
     private List<Edge> queryEdgeList;
+
+    private HashMap<Edge, Exp> edgeAndContext;
+
     private String service;
 
     
@@ -204,7 +207,8 @@ public class Query extends Exp implements Graphable, Loopable {
 		relaxEdges 		= new ArrayList<Node>();
 		argList 		= new ArrayList<Node>();
                 queryEdgeList           = new ArrayList<Edge>();
-                generateBGP             = new GenerateBGP();
+                bgpGenerator             = new BgpGenerator();
+                edgeAndContext             =  new HashMap<Edge, Exp>();
 
         querySorter = new QuerySorter(this);
 
@@ -2493,12 +2497,13 @@ public class Query extends Exp implements Graphable, Loopable {
     }
 
     
-    public GenerateBGP getGenerateBGP() {
-        return generateBGP;
+    public BgpGenerator getBgpGenerator() {
+        return bgpGenerator;
     }
     
-    public void setGenerateBGP(GenerateBGP generateBGP) {
-        this.generateBGP = generateBGP;
+    public void setBgpGenerator(BgpGenerator bgpGenerator) {
+        this.bgpGenerator = bgpGenerator;
+        edgeAndContext = bgpGenerator.getEdgeAndContext();
     }
 
     public List<Edge> getQueryEdgeList() {
@@ -2521,6 +2526,14 @@ public class Query extends Exp implements Graphable, Loopable {
      */
     public void setFun(boolean isFun) {
         this.isFun = isFun;
+    }
+	
+    public HashMap<Edge, Exp> getEdgeAndContext() {
+        return edgeAndContext;
+}
+
+    public void setEdgeAndContext(HashMap<Edge, Exp> edgeAndContext) {
+        this.edgeAndContext = edgeAndContext;
     }
 	
 }

@@ -152,7 +152,7 @@ public class ASTRewriter implements QueryVisitor {
         if (atom.isLiteral() 
                // && atom.getDatatype().equalsIgnoreCase("xsd:string")
                 && atom.getDatatypeValue().getDatatypeURI().equals(xsdstring)
-                ) {
+                ) {       
             add(lst, LITERAL_LEX);
 
             //@lang=en ??

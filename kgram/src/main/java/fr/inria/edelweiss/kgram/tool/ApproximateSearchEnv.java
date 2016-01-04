@@ -21,17 +21,12 @@ public class ApproximateSearchEnv {
     private static int code = 0;
     private int id;
     private final Map<Key, Map<Node, Value>> all;
-    private static Map<Integer, ApproximateSearchEnv> map = new HashMap<Integer, ApproximateSearchEnv>();
     
     public ApproximateSearchEnv() {
         this.id = code++;
         this.all = new HashMap<Key, Map<Node, Value>>();
-        map.put(id, this);
     }
 
-    public static ApproximateSearchEnv get(Integer id){
-        return map.get(id);
-    }
     public void add(Expr var, Node uri, Node node, String alg, double sim) {
         Key key = new Key(var, uri);
 
@@ -158,9 +153,6 @@ public class ApproximateSearchEnv {
             this.var = var;
         }
 
-//        public Key(String var) {
-//            this.var = new Expr(var);
-//        }
         public Expr getVar() {
             return var;
         }
@@ -188,9 +180,6 @@ public class ApproximateSearchEnv {
                 return false;
             }
             //only that var is equal is ok
-//        if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
-//            return false;
-//        }
             return true;
         }
 

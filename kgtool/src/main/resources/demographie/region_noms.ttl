@@ -1,0 +1,30 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix geo:     <http://id.insee.fr/geo/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix igeo:    <http://rdf.insee.fr/def/geo#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+<http://id.insee.fr/geo/region/24>
+      a       igeo:Region ;
+      igeo:codeINSEE "24" ;
+      igeo:codeRegion "24" ;
+      owl:sameAs <http://dbpedia.org/resource/Centre_(French_region)> , <http://data.ign.fr/id/geofla/region/24> .
+
+<http://id.insee.fr/geo/departement/41>
+      igeo:nom "Loir-et-Cher" ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/41> .
+
+<http://id.insee.fr/geo/departement/45>
+      igeo:nom "Loiret" ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/45> .
+
+
+<http://id.insee.fr/geo/departement/18>
+      igeo:nom "Cher" ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/18> .
+
+<http://id.insee.fr/geo/departement/28>
+      igeo:nom "Eure-et-Loir" ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/28> .
+
+

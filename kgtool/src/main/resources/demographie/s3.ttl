@@ -1,0 +1,37 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix geo:     <http://id.insee.fr/geo/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix igeo:    <http://rdf.insee.fr/def/geo#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+
+
+<http://id.insee.fr/geo/departement/41>
+      a       igeo:Departement ;
+      igeo:codeDepartement
+              "41" ;
+      igeo:codeINSEE "41" ;
+      igeo:nom "Loir-et-Cher" ;
+      igeo:prefecture <http://id.insee.fr/geo/commune/41018> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/region/24> ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/41> .
+
+<http://id.insee.fr/geo/departement/45>
+      a       igeo:Departement ;
+      igeo:codeDepartement
+              "45" ;
+      igeo:codeINSEE "45" ;
+      igeo:nom "Loiret" ;
+      igeo:prefecture <http://id.insee.fr/geo/commune/45234> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/region/24> ;
+       owl:sameAs <http://data.ign.fr/id/geofla/departement/45> .
+      
+<http://id.insee.fr/geo/departement/99>
+      a       igeo:Departement ;
+      igeo:codeDepartement
+              "99" ;
+      igeo:codeINSEE "99" ;
+      igeo:prefecture <http://id.insee.fr/geo/commune/99234> ;
+      igeo:subdivisionDe <http://id.insee.fr/geo/region/24> ;
+      owl:sameAs <http://data.ign.fr/id/geofla/departement/99> .
+

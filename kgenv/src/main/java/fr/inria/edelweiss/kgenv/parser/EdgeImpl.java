@@ -22,8 +22,6 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
 	String label;
 	Triple triple;
 	int index = -1;
-        //draft
-        private boolean lastEdge = false;
     
 	
 	public EdgeImpl(){
@@ -217,16 +215,7 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
         
     }
 
-    
-    //draft
-    public void setLastEdge(boolean lastEdge) {
-        this.lastEdge = lastEdge;
-    }
 
-    //draft
-    public boolean isLastEdge() {
-        return lastEdge;
-    }
 
     @Override
     public int pointerType() {

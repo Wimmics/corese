@@ -145,15 +145,18 @@ public class QuerySorter implements ExpType {
                                 setBind(query, exp);
                                 break;
                             case Query.QP_BGP:
+                                sort.sort(query, exp, lVar, lBind);
                                 sortFilter(exp, lVar);
-                                exp.setBind();
+                                setBind(query, exp);  
                                 if ((!exp.isBGP()) && (!exp.isLock()) && exp.isEdgesOrFilter()) {
-                                    GenerateBGP tmp  = query.getGenerateBGP();
+//                                    System.out.println("\n\tAND   "+exp);
+                                    BgpGenerator tmp  = query.getBgpGenerator();
                                     tmp.setExp(exp);
-                                    query.setGenerateBGP(tmp);
-                                    exp = query.getGenerateBGP().buildBGP();
-//                                    System.out.println("END BGP "+exp);
+                                    query.setBgpGenerator(tmp);
+                                    exp = query.getBgpGenerator().buildBGP();
+//                                    System.out.println("\n\t BGP  "+exp);
                                 }
+                                
                                 break;
                             case Query.QP_DEFAULT:
                                 sort.sort(query, exp, lVar, lBind);

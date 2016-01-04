@@ -11,8 +11,10 @@ import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgram.api.core.Filter;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.GenerateBGP;
+import fr.inria.edelweiss.kgram.core.BgpGenerator;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import java.util.ArrayList;
@@ -24,10 +26,12 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
- * A class aimint at grouping, if possible, consecutive tripple into SPARQL
+ * A class aiming at grouping, if possible, consecutive tripple into SPARQL
  * SERVICE clauses.
  *
+ * 
  * @author Alban Gaignard <alban.gaignard@cnrs.fr>
+ * @author Abdoul Macina <macina@i3s.unice.fr>
  */
 public class ServiceGrouper implements QueryVisitor {
 
@@ -41,24 +45,24 @@ public class ServiceGrouper implements QueryVisitor {
         this.execDQP = execDQP;
     }
 
+    /**
+     * Entry point to navigate trough a Query expression.
+     * This visitor will build indexEdgeSources, indexEdgeVaribles and listEdges for a query
+     * 
+     * @param query 
+     */
     @Override
     public void visit(Query query) {
-        if (query.getPlanProfile() == Query.QP_BGP) {
-            logger.info("Building prediactes indices for ");
-
-            logger.info(query);
-        //list of edges for Query
-            //and indexes EDGE, Producers to build for Query
+        if (execDQP.getPlanProfile() == Query.QP_BGP) {
+            logger.info("Building predicates indices for "+query.getBody());
             int i = 0;
             for (fr.inria.edelweiss.kgram.core.Exp e : query.getExpList()) {
                 if (e.isBGPAnd()) {
-                    buildBGPIndex(query, e, i);
+                    buildGeneratedBGPIndices(query, e, i);
                     i++;
-//                 logger.info("INDEX "+query.getGenerateBGP().getIndexEdgeProducers());
-//                 logger.info("LIST OF EDGES "+query.getQueryEdgeList());
                 }
             }
-            logger.info("END of building!");
+            logger.info("END of building index!");
         }
     }
 
@@ -185,9 +189,10 @@ public class ServiceGrouper implements QueryVisitor {
                     }
                 }
 
-            } else {
-
-                if (subExp.isAnd()) {
+            } 
+            else {
+                //
+                if (subExp.isAnd() ||subExp.isQuery() ) {
                     buildIndex(subExp, indexEdgeSource, indexSourceEdge, ast, orderedTPs);
                 }
             }
@@ -582,41 +587,103 @@ public class ServiceGrouper implements QueryVisitor {
      * @param query
      * @param exp
      */
-    private void buildBGPIndex(Query query, fr.inria.edelweiss.kgram.core.Exp exp, int n) {
+    private void buildGeneratedBGPIndices(Query query, fr.inria.edelweiss.kgram.core.Exp exp, int n) {
 
         List<Edge> tmpEdges = query.getQueryEdgeList();
-        HashMap<Edge, ArrayList<Producer>> tmpEdgeProducers = query.getGenerateBGP().getIndexEdgeProducers();
+        HashMap<Edge, ArrayList<Producer>> tmpEdgeProducers = query.getBgpGenerator().getIndexEdgeProducers();
+        HashMap<Edge, ArrayList<Node>> tmpEdgeVariables = query.getBgpGenerator().getIndexEdgeVariables();
+        HashMap<Edge, ArrayList<Filter>> tmpEdgeFilters = query.getBgpGenerator().getIndexEdgeFilters();
+        
+        List<Filter> tmpFilters = new ArrayList<Filter>();
+        HashMap<Filter, List<String>> tmpFilterVariables =  new HashMap<Filter, List<String>>();
+        
         int i = 0;
         for (fr.inria.edelweiss.kgram.core.Exp e : exp) {
+            //get Filters
+            if(e.isFilter()){
+                tmpFilters.add(e.getFilter());
+                tmpFilterVariables.put(e.getFilter(), e.getFilter().getVariables());
+            }
+            
+            //process Edges
             if (e.isEdge()) {
-                tmpEdges.add(e.getEdge());
-                EdgeImpl ee = (EdgeImpl) e.getEdge();
-                tmpEdgeProducers.put(e.getEdge(), indexEdgeProducers.get(ee.getTriple()));
-                i++;
+                
+                    //build indexEdgeProducers
+                    tmpEdges.add(e.getEdge());
+                    EdgeImpl ee = (EdgeImpl) e.getEdge();
+                    tmpEdgeProducers.put(e.getEdge(), indexEdgeProducers.get(ee.getTriple()));
+
+                    //build indexEdgesVariables
+                    ArrayList<Node> tmpNodes = new ArrayList<Node>();
+                    for (int l=0; l<ee.nbNode(); l++){
+                        if(e.getEdge().getNode(l).isVariable()){
+                            tmpNodes.add(e.getEdge().getNode(l));
+                            
+                            //build indexEdgeFilters
+                            for(Filter f: tmpFilters){
+                                if(tmpFilterVariables.get(f).contains(e.getEdge().getNode(l).toString())){
+                                    if(tmpEdgeFilters.get(e.getEdge())!=null){
+                                        ArrayList<Filter> filters =  tmpEdgeFilters.get(e.getEdge());
+                                        filters.add(f);
+                                        tmpEdgeFilters.put(e.getEdge(), filters);
+                                    }
+                                    else {
+                                        ArrayList<Filter> filters =  new ArrayList<Filter>();
+                                        filters.add(f);
+                                        tmpEdgeFilters.put(e.getEdge(), filters);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    tmpEdgeVariables.put(e.getEdge(), tmpNodes);
+                    i++;
             } else {
+                //apply visit to subquery
                 if (e.type() == Query.SERVICE) {
                     visit((Query) e.rest());
-                } else {
-                    if (e.isBGPAnd()) {
-                        buildBGPIndex(query, e, i);
-                    }
+                }
+                //other expressions like UNION SELECT etc.
+                else {
+                        buildGeneratedBGPIndices(query, e, i);
                 }
             }
         }
 
-        GenerateBGP gBGP = query.getGenerateBGP();
+//        logger.info("EP "+tmpEdgeProducers);
+//        logger.info("EV "+tmpEdgeVariables);
+//        logger.info("EF "+tmpEdgeFilters);
+//        logger.info("E "+tmpEdges);
+        //Update BgpGenerator for the Query
+        BgpGenerator gBGP = query.getBgpGenerator();
         gBGP.setIndexEdgeProducers(tmpEdgeProducers);
+        gBGP.setIndexEdgeVariables(tmpEdgeVariables);
+        gBGP.setIndexEdgeFilters(tmpEdgeFilters);
         query.setQueryEdgeList(tmpEdges);
-        query.setGenerateBGP(gBGP);
-
-        //draft for last EDGE of a set of EDGES in a AND
-        if (i > 0) {
-            fr.inria.edelweiss.kgram.core.Exp e = exp.get(i - 1);
-            EdgeImpl ee = (EdgeImpl) e.getEdge();
-            ee.setLastEdge(true);
-            e.setEdge(ee);
-            exp.set(i - 1, e);
-            query.set(n, exp);
-        }
+        query.setBgpGenerator(gBGP);
     }
+
+//    //draft
+//    private void putFreeEdgesInBGP(Exp body) {
+//
+//        BasicGraphPattern bgp = new BasicGraphPattern();
+//        int index =-1;
+//        for (int i = 0; i < body.size(); i++){
+//            if(body.get(i).isTriple()){
+//                
+//                bgp.add(body.get(i));
+//                if(index!=-1){
+//                    body.remove(index);
+//                    index =i-1;
+//                }
+//                else{
+//                    index = i;
+//                }
+//            }
+//        }
+//        
+//        body.set(index, bgp);
+//        System.out.println(" RES "+body);
+//    }
 }

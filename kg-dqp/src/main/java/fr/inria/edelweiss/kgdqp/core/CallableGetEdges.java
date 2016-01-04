@@ -9,12 +9,9 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Memory;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,16 +39,7 @@ public class CallableGetEdges implements Callable<Iterable<Entity>> {
 
     @Override
     public Iterable<Entity> call() {
-//        StopWatch sw = new StopWatch();
-//        sw.start();
-        Iterable<Entity> res =  new ArrayList<Entity>();
-        if (p instanceof RemoteProducerWSImpl) {
-            RemoteProducerWSImpl rp = (RemoteProducerWSImpl) p;
-            if(!rp.isAlreadyProcessed(qEdge))
-              res = p.getEdges(gNode, from, qEdge, env);
-        }
-//        sw.stop();
-//        logger.info("Finished CallableGetEdge in " + sw.getTime() + " ms.");
+        Iterable<Entity> res  = p.getEdges(gNode, from, qEdge, env);
         return res;
     }
 

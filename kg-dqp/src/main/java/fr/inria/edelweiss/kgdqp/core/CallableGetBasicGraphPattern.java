@@ -16,9 +16,12 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
- *
- * @author macina
+ * Helper class to handle the retrieveing of results when getMappings() are
+ * parallelized.
+ * 
+ * @author Abdoul Macina, macina@i3s.unice.fr
  */
+@Deprecated
 public class CallableGetBasicGraphPattern implements Callable<Mappings>{
 
     private final Logger logger = Logger.getLogger(CallableGetBasicGraphPattern.class);
@@ -40,13 +43,7 @@ public class CallableGetBasicGraphPattern implements Callable<Mappings>{
     
     @Override
     public Mappings call() throws Exception {
-        StopWatch sw = new StopWatch();
-        sw.start();
-        logger.info("BGP in CALL : "+exp);
         Mappings mappings =  producer.getMappings(graphNode, from, exp, environment);
-        logger.info("resutls: "+mappings.size());
-        sw.stop();
-        logger.info("Finished CallableGetBGP in "+sw.getTime()+" ms.");
         return mappings;
     }
     

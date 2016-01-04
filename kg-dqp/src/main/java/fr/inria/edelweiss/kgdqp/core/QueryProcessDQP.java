@@ -105,45 +105,45 @@ public class QueryProcessDQP extends QueryProcess {
 
     public static QueryProcessDQP create(Graph g) {
         ProducerImpl p = ProducerImpl.create(g);
-        QueryProcessDQP exec = QueryProcessDQP.create(p);
+        QueryProcessDQP exec = create(p);
         return exec;
     }
 
     public static QueryProcessDQP create(Graph g, boolean provEnabled) {
         ProducerImpl p = ProducerImpl.create(g);
-        QueryProcessDQP exec = QueryProcessDQP.create(p, provEnabled);
+        QueryProcessDQP exec = create(p, provEnabled);
         return exec;
     }
 
     public static QueryProcessDQP create(Graph g, Provider serviceProvider) {
         ProducerImpl p = ProducerImpl.create(g);
-        QueryProcessDQP exec = QueryProcessDQP.create(p);
+        QueryProcessDQP exec = create(p);
         exec.set(serviceProvider);
         return exec;
     }
 
     public static QueryProcessDQP create(Graph g, Provider serviceProvider, boolean provEnabled) {
         ProducerImpl p = ProducerImpl.create(g);
-        QueryProcessDQP exec = QueryProcessDQP.create(p, provEnabled);
+        QueryProcessDQP exec = create(p, provEnabled);
         exec.set(serviceProvider);
         return exec;
     }
 
     public static QueryProcessDQP create(Graph g, Graph g2) {
-        QueryProcessDQP qp = QueryProcessDQP.create(g);
+        QueryProcessDQP qp = create(g);
         qp.add(g2);
         return qp;
     }
 
     public static QueryProcessDQP create(ProducerImpl prod) {
         Matcher match = MatcherImpl.create(prod.getGraph());
-        QueryProcessDQP exec = QueryProcessDQP.create(prod, match);
+        QueryProcessDQP exec = create(prod, match);
         return exec;
     }
 
     public static QueryProcessDQP create(ProducerImpl prod, boolean provEnabled) {
         Matcher match = MatcherImpl.create(prod.getGraph());
-        QueryProcessDQP exec = QueryProcessDQP.create(prod, match, provEnabled);
+        QueryProcessDQP exec = create(prod, match, provEnabled);
         return exec;
     }
 
@@ -209,4 +209,36 @@ public class QueryProcessDQP extends QueryProcess {
         }
     }
 
+    
+    public synchronized  static void  updateCounters(String query, String endpoint, boolean notEmptyResult, Long size){
+                //count number of queries
+                if (queryCounter.containsKey(query)) {
+                    Long n = queryCounter.get(query);
+                    queryCounter.put(query, n + 1L);
+                } else {
+                    queryCounter.put(query, 1L);
+                }
+//                 count number of source access
+                if (sourceCounter.containsKey(endpoint)) {
+                    Long n = sourceCounter.get(endpoint);
+                    sourceCounter.put(endpoint, n + 1L);
+                } else {
+                    sourceCounter.put(endpoint, 1L);
+                }
+
+                if (notEmptyResult) {
+                    if (queryVolumeCounter.containsKey(query)) {
+                        Long n = queryVolumeCounter.get(query);
+                        queryVolumeCounter.put(query, n + size);
+                    } else {
+                        queryVolumeCounter.put(query,  size);
+                    }
+                    if (sourceVolumeCounter.containsKey(endpoint)) {
+                        Long n = sourceVolumeCounter.get(endpoint);
+                        sourceVolumeCounter.put(endpoint, n +  size);
+                    } else {
+                        sourceVolumeCounter.put(endpoint,  size);
+                    }
+                }
+    }
 }

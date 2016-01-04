@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 
@@ -83,15 +84,12 @@ public class QueryLoad {
         return read(new InputStreamReader(stream));
     }
 
-    public String read(String name) {
+    public String read(String name)  {
         String query = "";
         try {          
             query = readWE(name);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        }  catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(QueryLoad.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (query == "") {
             return null;
@@ -99,17 +97,21 @@ public class QueryLoad {
         return query;
     }
     
-    public String readWE(String name) throws MalformedURLException, IOException {
+    public String readWE(String name) throws LoadException {
         String query = "", str = "";
         Reader fr;
-        if (isURL(name)) {
-            URL url = new URL(name);
-            fr = new InputStreamReader(url.openStream());
-        } else {
-            fr = new FileReader(name);
-        }
+        try {
+            if (isURL(name)) {
+                URL url = new URL(name);
+                fr = new InputStreamReader(url.openStream());
+            } else {
+                fr = new FileReader(name);
+            }
 
-        query = read(fr);
+            query = read(fr);
+        } catch (IOException ex) {
+            throw  LoadException.create(ex);
+        }
         if (query == "") {
             return null;
         }

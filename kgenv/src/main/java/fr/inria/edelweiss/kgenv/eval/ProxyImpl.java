@@ -1101,9 +1101,9 @@ public class ProxyImpl implements Proxy, ExprType {
     /**
      * same bnode for same label in same solution, different otherwise
      */
-    Object bnode(IDatatype dt, Environment env) {
+    IDatatype bnode(IDatatype dt, Environment env) {
         Map map = env.getMap();
-        Object bn = map.get(dt.getLabel());
+        IDatatype bn = (IDatatype) map.get(dt.getLabel());
         if (bn == null) {
             bn = createBlank();
             map.put(dt.getLabel(), bn);
@@ -1632,19 +1632,6 @@ public class ProxyImpl implements Proxy, ExprType {
         return getValue(every);
     }
        
-    
-    /**
-     * apply(kg:sum(?x), ?list)     
-     */
-//    private Object apply2(Expr exp, Environment env, Producer p, IDatatype dt) {
-//        if (dt.getValues() == null){
-//            return dt;
-//        }
-//        
-//        return eval(exp.getExp(0), env, p, dt.getValues());
-//               
-//    }
-    
     /**
      * apply(kg:plus, ?list)   
      * @return 
@@ -1653,17 +1640,19 @@ public class ProxyImpl implements Proxy, ExprType {
         if (! dt.isList()) {
             return null;
         }
+        Expr fun = exp.getExp(0);
+        //Expr fun = getEvaluator().getDefine(exp.getExp(0), env, p, 2).getFunction();
         List<IDatatype> list = dt.getValues();
         if (list.isEmpty()){
-            return neutral(exp.getExp(0), dt);
+            return neutral(fun, dt);
         }
         IDatatype[] value = new IDatatype[2];
         IDatatype res = list.get(0);
         value[0] = res;
         
         for (int i = 1; i < list.size(); i++) {            
-            value[1] = list.get(i);
-            res =  let(exp.getExp(0), env, p, value);           
+            value[1] = list.get(i);            
+            res =  let(fun, env, p, value);   
             if (res == null) {
                return error();
             }
@@ -1695,17 +1684,12 @@ public class ProxyImpl implements Proxy, ExprType {
             default: return dt;
         }
     }
-    
+         
      /**
      * exp = xt:fun(?x)
      */
     public IDatatype let(Expr exp, Environment env, Producer p, Object val) {
         return let(exp, exp.getExp(0), (IDatatype) val, env, p);
-//        Expr var  = exp.getExp(0);  
-//        env.set(exp, var, (IDatatype) val);
-//        Object res = eval.eval(exp, env, p);
-//        env.unset(exp, var);
-//        return (IDatatype) res;
     }
     
     IDatatype let(Expr exp, Expr var, IDatatype value, Environment env, Producer p){

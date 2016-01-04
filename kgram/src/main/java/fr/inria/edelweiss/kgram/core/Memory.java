@@ -1072,7 +1072,7 @@ public class Memory implements Environment {
 	}
         
         public Extension getExtension(){
-            return query.getOuterQuery().getExtension();
+            return query.getActualExtension();
         }
 
     @Override

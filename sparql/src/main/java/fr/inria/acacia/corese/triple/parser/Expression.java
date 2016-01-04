@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
@@ -153,11 +154,12 @@ implements Regex, Filter, Expr {
             return false;
         }
         
-        public boolean isExport(){
+        @Override
+        public boolean isPublic(){
 		return false;
 	}
 	
-	public void setExport(boolean b){
+	public void setPublic(boolean b){
 	}
         	
 	public boolean isArray(){
@@ -508,6 +510,11 @@ implements Regex, Filter, Expr {
 	public Object getValue() {
 		return null;
 	}
+        
+        @Override
+        public IDatatype getDatatypeValue(){
+            return null;
+        }
 
 	
 	public boolean isAggregate() {

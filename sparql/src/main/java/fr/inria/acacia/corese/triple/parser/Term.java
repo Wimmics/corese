@@ -68,7 +68,6 @@ public class Term extends Expression {
 	boolean isFunction = false,
 	isCount = false,
 	isPlus = false;
-	private boolean isExport = false;
 	boolean isDistinct = false;
 	boolean isShort = false;
 	String  modality;       
@@ -803,7 +802,7 @@ public class Term extends Expression {
 	public ArrayList<Expression> getArgs(){
 		return args;
 	}
-	
+        	
 	public void add(Expression exp) {
 		args.add(exp);
 	}
@@ -1036,15 +1035,16 @@ public class Term extends Expression {
     /**
      * @return the isExport
      */
-    public boolean isExport() {
-        return isExport;
+        @Override
+    public boolean isPublic() {
+        return false;
     }
 
     /**
      * @param isExport the isExport to set
      */
-    public void setExport(boolean isExport) {
-        this.isExport = isExport;
+        @Override
+    public void setPublic(boolean isExport) {
     }
 
     public Term getTerm(){

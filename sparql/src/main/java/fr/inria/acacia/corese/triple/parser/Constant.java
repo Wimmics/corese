@@ -291,6 +291,7 @@ public class Constant extends Atom {
 		return dm.getJType(nsm.toNamespace(datatypeURI));
 	}
 	
+        @Override
 	public IDatatype getDatatypeValue(){
 		if (dt == null) dt = createDatatype();
 		return dt;

@@ -23,21 +23,15 @@ import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.api.Log;
+import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import fr.inria.edelweiss.kgtool.load.Service;
 import fr.inria.edelweiss.kgtool.util.Extension;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -52,6 +46,7 @@ import org.xml.sax.SAXException;
  *
  */
 public class QueryProcess extends QuerySolver {
+	private static Logger logger = Logger.getLogger(QueryProcess.class);
 
 	//sort query edges taking cardinality into account
 	static boolean isSort = false;
@@ -280,7 +275,19 @@ public class QueryProcess extends QuerySolver {
 	public Mappings query(String squery, Mapping map, Dataset ds) throws EngineException{
 		Query q = compile(squery, ds);
 		return query(q, map, ds);
-	}	
+	}
+        
+        public Query compile(String squery, Dataset ds) throws EngineException{
+            if (! hasVisitor()){
+                // Rewrite query when @relax annotation, otherwise do nothing
+                addVisitor(new ASTRewriter());
+            }
+            return super.compile(squery, ds);
+        }
+        
+        public Query compile(String squery) throws EngineException{
+            return compile(squery, null);
+        }
 	
 	public Mappings query(String squery, Dataset ds) throws EngineException{
 		return query(squery, null, ds);
@@ -313,6 +320,21 @@ public class QueryProcess extends QuerySolver {
 	public Mappings eval(Query query, Mapping m){
             return qquery(query, m);
         } 
+          
+        @Override
+        public Query load(String path) {
+            QueryLoad ql = QueryLoad.create();
+            try {
+                String str = ql.readWE(path);
+                Query q = compile(str);
+                return q;
+            } catch (LoadException ex) {
+                logger.error(ex);
+            } catch (EngineException ex) {
+                logger.error(ex);            
+            }
+            return null;
+        }
 
 	public Mappings qquery(Query q, Mapping map) {
 		try {
@@ -439,11 +461,10 @@ public class QueryProcess extends QuerySolver {
 	Mappings query(Query q, Mapping m, Dataset ds) throws EngineException{
 		
 		pragma(q);
-                ASTQuery ast = getAST(q);
-                if (q.getService()!=null){//ast.hasService()){
+                if (q.getService()!=null){
                     //@service <http://dbpedia.org/sparql>
                     //select where {}
-                    return service(q, ast);
+                    return service(q, m);
                 }
 		Mappings map;
 		
@@ -543,10 +564,10 @@ public class QueryProcess extends QuerySolver {
          * @service <http://dbpedia.org/sparql>
          * select where {}     
          */
-        Mappings service(Query q, ASTQuery ast) throws EngineException  {
+        Mappings service(Query q, Mapping m) throws EngineException  {
             Service serv = new Service(q.getService());
             try {
-                return serv.query(q);
+                return serv.query(q, m);
             } catch (LoadException ex) {
                 throw new EngineException(ex);
             }

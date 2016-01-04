@@ -1,0 +1,192 @@
+@prefix sp: <http://spinrdf.org/sp#> .
+@prefix ex: <http://example.org/> . 
+[ a sp:Select ;
+ sp:distinct "true"^^xsd:boolean ;
+ sp:resultVariables (
+  _:sb0
+  _:sb1
+  _:sb2
+  [ sp:expression    [ a ex:test  ;
+    sp:arg1 _:sb3 ;
+   ] ;
+  sp:varName "a"]
+  [ sp:expression    [ a sp:group_concat  ;
+    sp:distinct "true"^^xsd:boolean ;
+    sp:arg1 _:sb1 ;
+    sp:separator ' ;' ;
+   ] ;
+  sp:varName "res"]
+ ) ;
+ sp:from ( ex:g1 ex:g2 ) ;
+ sp:fromNamed ( ex:g2 ex:g3 ) ;
+ sp:where   (
+  (
+  (
+  [ a sp:Union ;
+   sp:elements (
+    (
+    [ a sp:TriplePath ;
+     sp:subject _:sb1 ;
+     sp:path  [ a sp:SeqPath ;
+      sp:path1 ex:p1 ;
+      sp:path2  [ a sp:ModPath ;
+       sp:subPath ex:p2 ;
+      ]] ;
+     sp:object 12
+    ]    [ 
+     sp:subject <http://example.org/test?x=a&y=b> ;
+     sp:predicate _:sb4 ;
+     sp:object _:sb1
+    ]
+    )    (
+    [ 
+     sp:subject _:sb1 ;
+     sp:predicate _:sb1 ;
+     sp:object 'test'
+    ]
+    [ a sp:Bind ;
+     sp:expression 1 ;
+     sp:variable _:sb1 ;
+    ]
+    [ 
+     sp:subject _:sb1 ;
+     sp:predicate _:sb1 ;
+     sp:object _:sb5
+    ]
+    )   )
+  ]
+  )  [ a sp:Optional ;
+  sp:elements    (
+   [ 
+    sp:subject _:sb1 ;
+    sp:predicate _:sb6 ;
+    sp:object '2015-03-14'^^xsd:date
+   ]
+   )  ]
+  )  [ a sp:Minus ;
+  sp:elements   (
+  [ 
+   sp:subject _:sb7 ;
+   sp:predicate _:sb7 ;
+   sp:object _:sb7
+  ]
+  )  ]
+  [ a sp:Service ;
+   sp:serviceURI <http://example.org/test> ;
+   sp:elements 
+    (
+    [ 
+     sp:subject _:sb1 ;
+     sp:predicate _:sb8 ;
+     sp:object _:sb9
+    ]
+    [ 
+     sp:subject _:sb9 ;
+     sp:predicate _:sb6 ;
+     sp:object _:sb10
+    ]
+    )   
+  ]
+  [ a sp:Filter ;
+   sp:expression 
+   [ a sp:if  ;
+    sp:arg1 _:sb1 ;
+    sp:arg2     [ a sp:ne  ;
+     sp:arg1 _:sb11 ;
+     sp:arg2 _:sb7 ;
+    ] ;
+    sp:arg3     [ a xsd:datatype  ;
+     sp:arg1      [ a sp:add  ;
+      sp:arg1 _:sb1 ;
+      sp:arg2       [ a sp:mul  ;
+       sp:arg1 2 ;
+       sp:arg2 _:sb7 ;
+      ] ;
+     ] ;
+    ] ;
+   ]  ]  [ a sp:Filter ;
+   sp:expression 
+
+   [ a sp:Exists ;
+    sp:elements 
+     (
+     [ 
+      sp:subject _:sb1 ;
+      sp:predicate _:sb8 ;
+      sp:object _:sb1
+     ]
+     )    
+   ]
+  ]  [ a sp:Filter ;
+   sp:expression 
+   [ a sp:in  ;
+    sp:arg1 _:sb1 ;
+    sp:arg2 1 ;
+    sp:arg3 _:sb7 ;
+    sp:arg4 'a' ;
+   ]  ]  [ a sp:Bind ;
+   sp:expression    [ a ex:f  ;
+    sp:arg1 _:sb12 ;
+   ] ;
+   sp:variable _:sb13 ;
+  ]
+  [ a sp:Values ;
+   sp:variables (_:sb0 ) ;
+   sp:values (
+    (10 )
+   ) ;
+  ]
+  (
+  [ a sp:SubQuery ;
+   sp:query
+   [ a sp:Select ;
+    sp:star "true"^^xsd:boolean ;
+    sp:where      (
+     [ 
+      sp:subject _:sb1 ;
+      sp:predicate _:sb8 ;
+      sp:object _:sb9
+     ]
+     )
+ ;
+   ]
+
+  ]
+  )  )
+ ;
+ sp:groupBy ( _:sb0 _:sb14  ) ;
+ sp:orderBy ( _:sb9 _:sb15 [ a sp:Desc ;
+  sp:expression (_:sb7)]  ) ;
+ sp:limit 10 ;
+ sp:offset 10 ;
+ sp:having (
+ [ a sp:gt  ;
+  sp:arg1 _:sb1 ;
+  sp:arg2 _:sb7 ;
+ ] ) ;
+ sp:values 
+ [ a sp:Values ;
+  sp:variables (_:sb1 ) ;
+  sp:values (
+   (ex:a )
+   ([ a sp:Undef ;
+] )
+   (ex:b )
+  ) ;
+ ]
+]
+_:sb8 sp:varName "p" .
+_:sb3 sp:varName "o" .
+_:sb4 sp:varName "r" .
+_:sb6 sp:varName "q" .
+_:sb2 sp:varName "t" .
+_:sb15 sp:varName "xyz" .
+_:sb1 sp:varName "x" .
+_:sb11 sp:varName "w" .
+_:sb0 sp:varName "z" .
+_:sb7 sp:varName "y" .
+_:sb5 sp:varName "ff" .
+_:sb12 sp:varName "xx" .
+_:sb9 sp:varName "a" .
+_:sb13 sp:varName "fx" .
+_:sb14 sp:varName "zz" .

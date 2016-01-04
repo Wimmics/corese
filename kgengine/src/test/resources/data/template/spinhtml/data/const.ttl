@@ -1,0 +1,45 @@
+@prefix ex:      <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix sp:      <http://spinrdf.org/sp#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+_:b1  sp:varName "name"^^xsd:string .
+
+[]    a       sp:Construct ;
+
+      
+                
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+CONSTRUCT {
+    ?x foaf:name ?name .
+}
+WHERE {
+    ?x foaf:name ?name .
+    FILTER (isURI(?x) && isURI(?x)) .
+}"""^^xsd:string ;
+
+
+sp:templates ([ sp:object _:b1 ;
+                  sp:predicate foaf:name ;
+                  sp:subject _:b2
+                ]) ;
+                
+      sp:where ([ sp:object _:b1 ;
+                  sp:predicate foaf:name ;
+                  sp:subject _:b2
+                ] [ a       sp:Filter ;
+                  sp:expression
+                          [ a       sp:and ;
+                            sp:arg1 [ a       sp:isURI ;
+                                      sp:arg1 _:b2
+                                    ] ;
+                            sp:arg2 [ a       sp:isURI ;
+                                      sp:arg1 _:b2
+                                    ]
+                          ]
+                ]) .
+
+_:b2  sp:varName "x"^^xsd:string .

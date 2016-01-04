@@ -1,0 +1,62 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix sp:      <http://spinrdf.org/sp#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+
+_:b1  sp:varName "x"^^xsd:string .
+
+[]    a       sp:Select ;
+      sp:resultVariables ([ sp:expression
+                          [ a       sp:Min ;
+                            sp:expression
+                                    [ sp:varName "name"^^xsd:string
+                                    ]
+                          ] ;
+                  sp:varName "g"^^xsd:string
+                ]) ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ((MIN(?name)) AS ?g)
+WHERE {
+    {
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        SELECT *
+        WHERE {
+            ?x foaf:knows ?name .
+        }
+    } .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:SubQuery ;
+                  sp:query
+                          [ a       sp:Select ;
+                            sp:where ([ sp:object
+                                                [ sp:varName "name"^^xsd:string
+                                                ] ;
+                                        sp:predicate foaf:knows ;
+                                        sp:subject
+                                                [ sp:varName "x"^^xsd:string
+                                                ]
+                                      ])
+                          ]
+                ]
+                 [ a       sp:Bind ;
+                  sp:expression foaf:John ;
+                  sp:variable [ sp:varName "x"^^xsd:string
+                                                ]
+                ]
+                
+                  [ a       sp:Filter ;
+                  sp:expression
+                          [ a       sp:notIn ;
+                            sp:arg1 _:b1 ;
+                            sp:arg2 1 ;
+                            sp:arg11 [ a       sp:add ;
+                                      sp:arg1 _:b1 ;
+                                      sp:arg2 1
+                                    ]
+                          ]
+                ]
+                
+                ) .

@@ -1,3 +1,5 @@
+@prefix m: <http://ns.inria.fr/sparql-extension/method#>
+
 us:Circle    rdfs:subClassOf us:Figure 
 us:Rectangle rdfs:subClassOf us:Figure 
 us:Square    rdfs:subClassOf us:Rectangle 
@@ -22,22 +24,22 @@ us:height 2 ;
 us:base 3 .
 
 
-us:surfaceRectangle a xt:Method ;
+m:surfaceRectangle a xt:Method ;
 xt:name us:surface ;
 xt:input (us:Rectangle) ;
 xt:output xsd:double .
 
-us:surfaceSquare a xt:Method ;
+m:surfaceSquare a xt:Method ;
 xt:name us:surface ;
 xt:input (us:Square) ;
 xt:output xsd:double .
 
-us:surfaceCircle a xt:Method ;
+m:surfaceCircle a xt:Method ;
 xt:name us:surface ;
 xt:input (us:Circle) ;
 xt:output xsd:double .
 
-us:surfaceTriangle a xt:Method ;
+m:surfaceTriangle a xt:Method ;
 xt:name us:surface ;
 xt:input (us:Triangle) ;
 xt:output xsd:double .

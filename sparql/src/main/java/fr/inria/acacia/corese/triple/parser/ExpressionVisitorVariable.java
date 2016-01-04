@@ -88,9 +88,13 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             case ExprType.MAPMERGE:                
             case ExprType.MAPSELECT:                
             case ExprType.MAPEVERY:                
-            case ExprType.MAPANY:                
+            case ExprType.MAPANY: 
+                 map(t);
+                break;
+                
             case ExprType.APPLY:                
                 map(t);
+                //apply(t);
                 break;
                 
             case ExprType.AGGREGATE:
@@ -113,21 +117,18 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         if (fun != null) {
             // inside a function 
 
-            if (fun.isExport()) {
+            //if (fun.isExport()) {
                 // special case: export function contain exists {}
                 // will be evaluated with query that defines function
                 fun.setSystem(true);
-            }
+            //}
 
-            if (t.isSystem()) {
+            if (t.isSystem() && fun.hasMetadata()) {
                 // let (?m = select where {}){}
-                String serv = fun.getMetadata(Metadata.SERVICE);
-                if (serv != null) {
-                    Exp e = t.getExist().getBody().get(0).get(0);
-                    if (e.isQuery()) {
-                        ASTQuery ast = e.getQuery();
-                        ast.defService(serv);
-                    }
+                Exp e = t.getExist().getBody().get(0).get(0);
+                if (e.isQuery()) {
+                    ASTQuery ast = e.getQuery();
+                    ast.inherit(fun.getMetadata());
                 }
             }
         }
@@ -186,7 +187,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         for (Expression exp : t.getArgs()) {
             if (exp.isTerm() && !exp.getArgs().isEmpty()) {
                 Expression fun = exp.getArg(0);
-                fun.setExport(true);
+                fun.setPublic(true);
             }
         }
     }
@@ -270,6 +271,18 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             }
         }
         ast.setError("Incorrect Map: " + t);
+        ast.setFail(true);
+    }
+    
+    void apply(Term t) {
+        if (trace) System.out.println("Vis Apply: " + t);
+        if (t.getArgs().size() >= 2){        
+            for (int i = 1; i < t.getArgs().size(); i++) {
+                t.getArg(i).visit(this);
+            }
+            return;
+        }
+        ast.setError("Incorrect Apply: " + t);
         ast.setFail(true);
     }
     

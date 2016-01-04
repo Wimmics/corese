@@ -29,6 +29,10 @@ public class CompileService {
 	public CompileService(Provider p){
             provider = p;
 	}
+        
+        public CompileService(){
+            
+	}
 
 	/**
 	 * Generate bindings for the service, if any
@@ -143,7 +147,7 @@ public class CompileService {
 	/**
 	 * Generate bindings as bindings from Mappings
 	 */
-	void bindings(Query q, Mappings lmap, int start, int limit){
+	public void bindings(Query q, Mappings lmap, int start, int limit){
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ast.clearBindings();
 		ArrayList<Variable> lvar = new ArrayList<Variable>();
@@ -297,7 +301,7 @@ public class CompileService {
 	 * Generate bindings from Mappings as filter
 	 */
 	
-        void filter(Query q, Mappings lmap, int start, int limit){
+        public void filter(Query q, Mappings lmap, int start, int limit){
             
 		ASTQuery ast = (ASTQuery) q.getAST();
 		ArrayList<Term> lt;
@@ -309,7 +313,7 @@ public class CompileService {
 		for (int j = start; j < lmap.size() && j < limit; j++){
 			
 			Mapping map = lmap.get(j);
-                       
+                        
 //			if (! group.isDistinct(map)){
 //                            continue;
 //			}

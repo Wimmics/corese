@@ -2403,6 +2403,10 @@ public class Query extends Exp implements Graphable, Loopable {
     public Extension getExtension() {
         return extension;
     }
+    
+    public Extension getActualExtension(){
+        return getGlobalQuery().getExtension();
+    }
 
     /**
      * @param extention the extention to set
@@ -2415,6 +2419,8 @@ public class Query extends Exp implements Graphable, Loopable {
         return getExtension() != null || getGlobalQuery().getExtension() != null;
     }
     
+    
+    // API for Eval event-driven function call 
     public Expr getExpression(String name){
         return getExpression(name, false);
     }

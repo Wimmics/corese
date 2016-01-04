@@ -44,7 +44,13 @@ public class NodeImpl implements Node {
 		return atom;
 	}
 	
+        @Override
 	public IDatatype getValue(){
+		return atom.getDatatypeValue();               
+	}
+        
+        @Override
+        public IDatatype getDatatypeValue(){
 		return atom.getDatatypeValue();               
 	}
 	

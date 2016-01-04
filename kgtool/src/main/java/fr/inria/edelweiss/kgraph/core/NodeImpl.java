@@ -75,6 +75,11 @@ public class NodeImpl extends PointerObject implements Node, Entity {
             return graph.getValue(this);
         }
     }
+    
+    @Override
+    public IDatatype getDatatypeValue() {
+        return dt;
+    }
 
     @Override
     public boolean isBlank() {

@@ -255,6 +255,7 @@ public interface ExprType {
 	public static int SEQUENCE      = 324;
 	public static int RETURN        = 325;
 	public static int EVAL          = 326;
+	public static int FUNCALL       = 327;
         
 	public static int XT_SORT       = 330;
         

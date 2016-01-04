@@ -57,9 +57,8 @@ public class AppxSearchPlugin implements ExprType {
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
         switch (exp.oper()) {
             case APPROXIMATE:
-                isMore = ((ASTQuery) env.getQuery().getAST()).isMore();
+                isMore = ((ASTQuery) env.getQuery().getAST()).isRelax();
                 msg("[Eval appx ... ]: " + exp);
-
                 //0. check parameters
                 boolean ok = init(args);
                 if (!ok) {

@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgraph.approximate.ext;
 
 import static fr.inria.acacia.corese.cg.datatype.RDF.qrdfsLiteral;
 import static fr.inria.acacia.corese.cg.datatype.RDF.xsddouble;
+import static fr.inria.acacia.corese.cg.datatype.RDF.xsdstring;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
@@ -28,6 +29,7 @@ import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_LE
 import static fr.inria.edelweiss.kgraph.approximate.strategy.StrategyType.URI_WN;
 import fr.inria.edelweiss.kgraph.logic.OWL;
 import fr.inria.edelweiss.kgraph.logic.RDF;
+import fr.inria.edelweiss.kgraph.logic.RDFS;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +58,7 @@ public class ASTRewriter implements QueryVisitor {
 
     @Override
     public void visit(ASTQuery ast) {
-        if (!ast.isMore()) {
+        if (!ast.isRelax()) {
             return;
         }
 
@@ -147,7 +149,10 @@ public class ASTRewriter implements QueryVisitor {
 
         //*** LITERAL ***
         //datatype == xsd:string
-        if (atom.isLiteral() && atom.getDatatype().equalsIgnoreCase("xsd:string")) {
+        if (atom.isLiteral() 
+               // && atom.getDatatype().equalsIgnoreCase("xsd:string")
+                && atom.getDatatypeValue().getDatatypeURI().equals(xsdstring)
+                ) {
             add(lst, LITERAL_LEX);
 
             //@lang=en ??

@@ -3,9 +3,11 @@ package fr.inria.edelweiss.kgtool.load;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.query.CompileService;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -38,10 +40,13 @@ public class Service {
         return parseGraph(process(query));
     }
     
-     public Mappings query(Query query) throws LoadException{
+     public Mappings query(Query query, Mapping m) throws LoadException{
         ASTQuery ast = (ASTQuery) query.getAST();
         Mappings map;
-        if (ast.isSelect() || ast.isAsk()){
+        if (m != null){
+            mapping(query, m);
+        }
+        if (ast.isSelect() || ast.isAsk()){         
            map = parseMapping(process(ast.toString())); 
         }
         else {
@@ -53,6 +58,13 @@ public class Service {
         map.init(query);
         return map;
     }
+     
+     void mapping(Query q, Mapping m){
+         Mappings map = new Mappings();
+         map.add(m);
+         CompileService cs = new CompileService();
+         cs.filter(q, map, 0, 1);
+     }
     
     public String process(String query) {
          return process(query, MIME_TYPE);

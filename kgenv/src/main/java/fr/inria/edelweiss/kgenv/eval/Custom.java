@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgenv.eval;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -51,6 +52,27 @@ public class Custom {
     
     public IDatatype test(IDatatype dt){
         return dt;
+    }
+    
+    public IDatatype fib(IDatatype dt){
+        int n = dt.intValue();
+        if (n <= 2){
+            return DatatypeMap.newInstance(1);
+        }
+        else {
+            return fib(DatatypeMap.newInstance(n - 1)).plus(fib(DatatypeMap.newInstance(n - 2)));
+        }
+    }
+    
+        public IDatatype fibon(IDatatype dt){
+            return DatatypeMap.newInstance(fibo(dt.intValue()));
+        }
+
+    int fibo(int n){
+        if (n <= 2){
+            return 1;
+        }
+        return fibo(n - 1) + fibo (n -2);
     }
 
 }

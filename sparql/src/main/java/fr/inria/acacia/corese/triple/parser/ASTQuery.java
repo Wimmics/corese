@@ -76,6 +76,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	boolean isConclusion = false;
 	/** approximate projection */
 	boolean more = false;
+        private boolean isRelax = false;
         boolean isDelete = false;
 	/** default process join */
 	boolean join = false;
@@ -205,7 +206,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	
 	Hashtable<String, Expression> selectFunctions = new Hashtable<String, Expression>();
 	HashMap<String, Variable> varTemplate = new HashMap<String, Variable>();
-        private Extension define;
+        private ASTExtension define;
         private HashMap <String, Expression> undefined;
 	ExprTable selectExp   = new ExprTable();
 	ExprTable regexExpr   = new ExprTable();
@@ -214,6 +215,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     Hashtable<String, Exp> pragma;
     Hashtable<String, Exp> blank;
     Hashtable<String, Variable> blankNode;
+    Metadata annot;
     
     HashMap<String, Atom> dataBlank; 
 
@@ -322,14 +324,14 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     /**
      * @return the define
      */
-    public Extension getDefine() {
+    public ASTExtension getDefine() {
         return define;
     }
 
     /**
      * @param define the define to set
      */
-    public void setDefine(Extension define) {
+    public void setDefine(ASTExtension define) {
         this.define = define;
     }
 
@@ -361,6 +363,20 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         this.isFail = isFail;
     }
 
+    /**
+     * @return the isRelax
+     */
+    public boolean isRelax() {
+        return isRelax;
+    }
+
+    /**
+     * @param isRelax the isRelax to set
+     */
+    public void setRelax(boolean isRelax) {
+        this.isRelax = isRelax;
+    }
+
 	class ExprTable extends Hashtable<Expression,Expression> {};
 
 	/**
@@ -368,7 +384,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	 */
 	private ASTQuery() {
             dataset = Dataset.create();
-            define = new Extension();
+            define = new ASTExtension();
             undefined = new HashMap();
         }
 	
@@ -1046,12 +1062,66 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         define.defineFunction(def);
     	return def;
     }
+     
+     /**
+      * Create an extension ext function for predefined name function
+      * function rq;isURI(?x) { isURI(?x) }     
+      */
+    Function defExtension(String ext, String name, int arity) {
+        Constant c = Constant.create(ext);
+        ExpressionList el = new ExpressionList();
+        for (int i = 0; i < arity; i++){
+            el.add(new Variable("?_var_" + i));
+        }
+        Term t = createFunction(Constant.create(name), el);
+        return defineFunction(c, el, t, null);
+    }
       
     public void annotate(Function t, Metadata la) {
        t.annotate(la);
     }
     
-
+    public void setAnnotation(Metadata m){
+        if (m != null){
+            annot = m;
+            annotate(m);
+        }
+    }
+    
+    public Metadata getMetadata(){
+        return annot;
+    }
+    
+    public boolean hasMetadata(int type){
+        return annot != null && annot.hasMetadata(type);
+    }
+    
+    /**
+     * SubQuery within function inherit function Metadata
+     */
+    void inherit(Metadata meta) {
+        annotate(meta);
+    }
+    
+    void annotate(Metadata meta){ 
+        for (String m : meta) {
+            switch (meta.type(m)){               
+                case Metadata.MORE:
+                    setMore(true);
+                    break;
+                case Metadata.RELAX:
+                    setRelax(true);
+                    break;
+                 case Metadata.DEBUG:
+                    setDebug(true);
+                    break;   
+                case Metadata.SERVICE:
+                    defService(meta.get(m));
+                    break;
+            }
+            
+        }
+    }
      
     public Expression defineBody(ExpressionList lexp){
          Expression exp;
@@ -1128,8 +1198,8 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
        
      
      public void exportFunction(Expression def){
-         def.getArg(0).setExport(true);
-         def.setExport(true);
+         def.getArg(0).setPublic(true);
+         def.setPublic(true);
      }
        
     public  Term createFunction(Constant name, Expression exp) {
@@ -2456,11 +2526,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     	defNSNamespace(prefix, ns);
     	defPPNamespace(prefix, ns);
     }
-    
-    public void annotate(Metadata m){
-        
-    }
-    
+       
     public void defService(String ns){
         service = ns;
     }

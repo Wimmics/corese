@@ -75,6 +75,7 @@ public class QuerySolver  implements SPARQLEngine {
 	isOptimize = false,
 	isSPARQLCompliant = false;
     private boolean isGenerateMain = true;
+    private boolean loadFunction = false;
     private boolean isSynchronized = false;
     private boolean isPathType = false;
     private boolean isStorePath = true;
@@ -167,6 +168,14 @@ public class QuerySolver  implements SPARQLEngine {
 		}
 		visit.add(v);
 	}
+        
+        
+        public boolean hasVisitor(){
+            return visit != null && ! visit.isEmpty();
+        }
+        public List<QueryVisitor> getVisitorList(){
+            return visit;
+        }
 	
 	public void set(Provider p){
 		provider = p;
@@ -188,6 +197,7 @@ public class QuerySolver  implements SPARQLEngine {
 	
 	protected Transformer transformer(){
 		Transformer transformer = Transformer.create();
+                transformer.setSPARQLEngine(this);
 		if (sort != null) {
 			transformer.set(sort);
 		}
@@ -358,7 +368,7 @@ public class QuerySolver  implements SPARQLEngine {
         
 	public Query compile(String squery) throws EngineException {
 		return compile(squery, null);
-	}
+	}         
 	
 	// rule: construct where 
 	public Query compileRule(String squery) throws EngineException {
@@ -366,7 +376,8 @@ public class QuerySolver  implements SPARQLEngine {
         }
         
         void setParameter(Transformer transformer){
-            transformer.setGenerateMain(isGenerateMain);
+            transformer.setLoadFunction(isLoadFunction());
+            transformer.setGenerateMain(isGenerateMain());
             transformer.setNamespaces(NAMESPACES);
             transformer.setPragma(getPragma());
             transformer.setPlanProfile(getPlanProfile());
@@ -681,6 +692,25 @@ public class QuerySolver  implements SPARQLEngine {
      */
     public void setGenerateMain(boolean isGenerateMain) {
         this.isGenerateMain = isGenerateMain;
+    }
+
+    @Override
+    public Query load(String path) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * @return the loadFunction
+     */
+    public boolean isLoadFunction() {
+        return loadFunction;
+    }
+
+    /**
+     * @param loadFunction the loadFunction to set
+     */
+    public void setLoadFunction(boolean loadFunction) {
+        this.loadFunction = loadFunction;
     }
 	
 }

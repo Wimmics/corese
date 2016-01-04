@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,6 +68,7 @@ public class Processor {
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
         
+	private static final String FUNCALL  = "funcall";
 	private static final String EVAL  = "eval";
 	private static final String RETURN  = "return";
 	public static final String SEQUENCE  = "sequence";
@@ -352,21 +352,28 @@ public class Processor {
 	Method fun;
 	ExpPattern pattern;
 	boolean isCorrect = true;
-	
+	public static int count = 0;
 	private static final int IFLAG[] = {
 		Pattern.DOTALL, Pattern.MULTILINE, Pattern.CASE_INSENSITIVE,
 		Pattern.COMMENTS};
 	static final String SFLAG[] = {"s", "m", "i", "x"};
-        
-        static {
+        		
+	public static HashMap<String, Integer> table;
+	public static HashMap<Integer, String> tname, toccur;
+        static ASTQuery ast;
+    private String name;
+    
+     static {
             fixed = new HashMap();
             fixed.put(SET, true);
+            init();
+            deftable();
         }
-	
-	
-	public static Hashtable<String, Integer> table;
-	public static Hashtable<Integer, String> tname, toccur;
-    private String name;
+     
+     static void init(){
+         ast = ASTQuery.create();
+         ast.setBody(BasicGraphPattern.create());
+     }
     
 	Processor(){            
         }
@@ -445,9 +452,6 @@ public class Processor {
         }
 	
 	public void type(ASTQuery ast){
-		if (table == null){
-			deftable();
-		}
                 if (type() != ExprType.UNDEF){
                     // already done
                 }
@@ -541,10 +545,10 @@ public class Processor {
 	}
 	
 	
-	void deftable(){
-		table = new Hashtable<String, Integer>();
-		tname = new Hashtable<Integer, String>();
-		toccur = new Hashtable<Integer, String>();
+	static void deftable(){
+		table = new HashMap<String, Integer>();
+		tname = new HashMap<Integer, String>();
+		toccur = new HashMap<Integer, String>();
 
 		defoper("<", 	ExprType.LT);
 		defoper("<=", 	ExprType.LE);
@@ -560,14 +564,7 @@ public class Processor {
 		defoper("-", 	ExprType.MINUS);
 		defoper("*", 	ExprType.MULT);
 		defoper("/", 	ExprType.DIV);
-		
-		defoper("<:", 	ExprType.TLT);
-		defoper("<=:", 	ExprType.TLE);
-		defoper("=:", 	ExprType.TEQ);
-		defoper("!=:", 	ExprType.TNEQ);
-		defoper(">:", 	ExprType.TGT);
-		defoper(">=:", 	ExprType.TGE);
-		
+				
 		defoper(BOUND, ExprType.BOUND);
 		defoper(COUNT, 	ExprType.COUNT);
 		defoper(MIN, 	ExprType.MIN);
@@ -598,7 +595,7 @@ public class Processor {
 		defoper(SKOLEM,         ExprType.SKOLEM);
 		defoper(RETURN,         ExprType.RETURN);
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
-		defoper(LET,            ExprType.LET);
+		defsysoper(LET,            ExprType.LET);
 		defoper(SET,            ExprType.SET);
 		defoper(XT_LIST,        ExprType.LIST);
 		defoper(XT_IOTA,        ExprType.IOTA);
@@ -606,15 +603,16 @@ public class Processor {
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
 		defoper(XT_SORT,        ExprType.XT_SORT);
                 
-		defoper(EVAL,           ExprType.EVAL);                
-		defoper(APPLY,          ExprType.APPLY);
-		defoper(MAP,            ExprType.MAP);
-		defoper(FOR,            ExprType.FOR);
-		defoper(MAPLIST,        ExprType.MAPLIST);
-		defoper(MAPMERGE,       ExprType.MAPMERGE);
-		defoper(MAPSELECT,      ExprType.MAPSELECT);
-		defoper(MAPANY,         ExprType.MAPANY);
-		defoper(MAPEVERY,       ExprType.MAPEVERY);
+		defsysoper(FUNCALL,        ExprType.FUNCALL);                
+		defsysoper(EVAL,           ExprType.EVAL);                
+		defsysoper(APPLY,          ExprType.APPLY);
+		defsysoper(MAP,            ExprType.MAP);
+		defsysoper(FOR,            ExprType.FOR);
+		defsysoper(MAPLIST,        ExprType.MAPLIST);
+		defsysoper(MAPMERGE,       ExprType.MAPMERGE);
+		defsysoper(MAPSELECT,      ExprType.MAPSELECT);
+		defsysoper(MAPANY,         ExprType.MAPANY);
+		defsysoper(MAPEVERY,       ExprType.MAPEVERY);
                 
 		//defoper(XT_CONCAT,      ExprType.XT_CONCAT);
 //		defoper(XT_CONCAT,      ExprType.CONCAT);
@@ -639,7 +637,7 @@ public class Processor {
 		defoper(XT_EDGE,         ExprType.XT_EDGE);
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
                 
-		defoper(REGEX, 		ExprType.REGEX);
+		defsysoper(REGEX, 		ExprType.REGEX);
                 defoper(APPROXIMATE,	ExprType.APPROXIMATE);
                 defoper(APP_SIM,	ExprType.APP_SIM);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
@@ -655,15 +653,15 @@ public class Processor {
 		defoper(KGPLENGTH, ExprType.LENGTH);
 		defoper(KGPWEIGHT, ExprType.PWEIGHT);
 
-		defoper(XPATH, 	ExprType.XPATH);
-		defoper(KGXPATH, 	ExprType.XPATH);
-		defoper(SQL, 	ExprType.SQL);
+		defsysoper(XPATH, 	ExprType.XPATH);
+		defsysoper(KGXPATH, 	ExprType.XPATH);
+		defsysoper(SQL, 	ExprType.SQL);
 		defoper(KGSQL, 	ExprType.SQL);
 		defoper(KG_SPARQL, ExprType.KGRAM);
 		defoper(EXTERN, ExprType.EXTERN);
 		defoper(UNNEST, ExprType.UNNEST);
 		defoper(KGUNNEST, ExprType.UNNEST);
-		defoper(EXIST,  ExprType.EXIST);
+		defsysoper(EXIST,  ExprType.EXIST);
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(GROUPBY, ExprType.GROUPBY);
 		
@@ -680,11 +678,11 @@ public class Processor {
  		defoper(QUERY,          ExprType.QUERY);
  		defoper(EXTENSION,      ExprType.EXTENSION);
                
-		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
+		//defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
 		defoper(KG_EVAL, 		ExprType.APPLY_TEMPLATES);
-		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);
-		defoper(PPRINTALL, 	ExprType.APPLY_TEMPLATES_ALL);
-		defoper(PPRINTALLWITH, 	ExprType.APPLY_TEMPLATES_WITH_ALL);
+//		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);
+//		defoper(PPRINTALL, 	ExprType.APPLY_TEMPLATES_ALL);
+//		defoper(PPRINTALLWITH, 	ExprType.APPLY_TEMPLATES_WITH_ALL);
 		defoper(TEMPLATE, 	ExprType.CALL_TEMPLATE);
 		defoper(TEMPLATEWITH, 	ExprType.CALL_TEMPLATE_WITH);
 		defoper(TURTLE,         ExprType.TURTLE);                
@@ -745,8 +743,8 @@ public class Processor {
 		defoper(PROLOG,         ExprType.PROLOG);
 		defoper(PACKAGE,        ExprType.PACKAGE);
 		defoper(EXPORT,         ExprType.PACKAGE);
-		defoper(STL_DEFINE,     ExprType.FUNCTION);
-		defoper(FUNCTION,       ExprType.FUNCTION);
+		defsysoper(STL_DEFINE,     ExprType.FUNCTION);
+		defsysoper(FUNCTION,       ExprType.FUNCTION);
 		defoper(DEFINE,         ExprType.STL_DEFINE);                
 		defoper(LAMBDA,         ExprType.LAMBDA);
 		defoper(ERROR,          ExprType.ERROR);
@@ -754,7 +752,7 @@ public class Processor {
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
                 defoper(STL_GROUPCONCAT, ExprType.STL_GROUPCONCAT);
                 defoper(STL_AGGREGATE,   ExprType.STL_AGGREGATE);
-                defoper(AGGREGATE,       ExprType.AGGREGATE);
+                defsysoper(AGGREGATE,       ExprType.AGGREGATE);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);
@@ -788,7 +786,7 @@ public class Processor {
                 
                 //defoper(XT_POWER,  ExprType.POWER);
                 
-                defoper(XT_PLUS,   ExprType.PLUS);
+                defextoper(XT_PLUS,   ExprType.PLUS);
                 defoper(XT_MULT,   ExprType.MULT);
                 defoper(XT_MINUS,  ExprType.MINUS);
                 defoper(XT_DIV,    ExprType.DIV);
@@ -851,13 +849,39 @@ public class Processor {
 
 	}
 	
-	void defoper(String key, int value){
+	static void defoper(String key, int value){
+            define(key, value);
+        }
+        
+        static void defextoper(String key, int value){
+            define(key, value);
+            defExtension(key, 2);
+        }
+        
+        static void defsysoper(String key, int value){
+            define(key, value);
+        }
+        
+	static void define(String key, int value){
                 // isURI
 		table.put(key.toLowerCase(), value);
                 // rq:isURI
                 table.put(SPARQL + key.toLowerCase(), value);                
-		tname.put(value, key);
+		tname.put(value, key);  
 	}
+        
+        static void defExtension(String key, int arity){
+            String name = key.toLowerCase();
+            if (! key.startsWith("http://")){
+                name = SPARQL + key;
+            }
+            Function fun = ast.defExtension(name, key, arity);
+            fun.setPublic(true);
+        }
+        
+        public static ASTQuery getAST(){
+            return ast;
+        }
         
         boolean fixed(String name){
             return  fixed.containsKey(name);

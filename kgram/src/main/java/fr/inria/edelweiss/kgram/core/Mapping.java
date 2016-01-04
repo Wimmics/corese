@@ -871,7 +871,7 @@ public class Mapping
 	}
         
     public Extension getExtension(){
-            return query.getOuterQuery().getExtension();
+            return query.getActualExtension();
         }   
     
         @Override

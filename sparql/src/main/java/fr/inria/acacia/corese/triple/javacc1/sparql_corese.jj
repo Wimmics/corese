@@ -179,11 +179,6 @@ PARSER_BEGIN(SparqlCorese)
     	astq.defNamespace(p, ns);
     	astu.defNamespace(p, ns);
     }
-
-    void defService(String ns){
-    	astq.defService(ns);
-    	astu.defService(ns);
-    }
     
     void defBase(String s){
     	astq.defBase(s);
@@ -279,34 +274,39 @@ Exp Rule(): { Exp stack; }
   	{ return stack; }
 }
 
-Exp Query() : { Exp stack; }
+Exp Query() : { Exp stack; Metadata la = null;}
 {
 
 	{stack = BasicGraphPattern.create();}
-	
+	  
   Prolog()
-  
-  ( 
-  	  stack = SelectQuery()    (Defun(stack)) ?
-  	| stack = ConstructQuery() (Defun(stack)) ?
-  	| stack = DescribeQuery()  (Defun(stack)) ?
-  	| stack = AskQuery()       (Defun(stack)) ? 
-  	| UpdateQuery()            (Defun(stack)) ? 
-  	
-  	| stack = TemplateQuery()  (Defun(stack)) ?
-        | Defun(stack)     
+    (     la = Annotate()
+       ( 
+            ( stack = SelectQuery(la)    
+            | stack = ConstructQuery(la) 
+            | stack = DescribeQuery()  
+            | stack = AskQuery()        
+            | UpdateQuery()            	
+            | stack = TemplateQuery()
+            )  (Defun()) 
+        //?       
+        |  
+            (Function(la) | Package(la) | Export()) Defun()
+        )
+     //   | Defun()     
   	     	
   ) ?
   
   { return stack; }
 }
 
-void Defun(Exp stack) : { Metadata la = null;} {
+void Defun() : { Metadata la = null;} {
     (
-    ( la = Annotate() (Function(stack, la) | Package(stack, la))) 
-    //deprecated
-    | Export(stack)  
-    ) +   
+    ( la = Annotate() (Function(la) | Package(la))) 
+    //@deprecated
+    | Export()  
+    ) *
+    //+   
 }
 
 Exp LoadPattern() : {Exp stack;}
@@ -337,7 +337,6 @@ Exp LoadPattern2() : {Exp stack;}
 void Prolog() : {}
 {
      
-   (ServiceDecl())? 
    (  BaseDecl() | PrefixDecl() )*
 }
 
@@ -349,13 +348,6 @@ void BaseDecl() : { Token t; String s; Triple triple; }
   }
 }
 
-void ServiceDecl() : { Token t; String s; Triple triple; }
-{
-  <SERVICE>    s = Q_IRI_ref() (<DOT>) ?
-  {
-	defService(s);
-  }
-}
 
 void PrefixDecl() : { Token t1, t2; String s; Triple triple; }
 {
@@ -765,7 +757,7 @@ Expression XML(Exp stack) :
 
 // ---- Query type clauses
 
-Exp SelectQuery() : { Exp stack; }
+Exp SelectQuery(Metadata la) : { Exp stack; }
 {
 
     <SELECT>
@@ -779,6 +771,7 @@ Exp SelectQuery() : { Exp stack; }
   SolutionModifier()  
   {
     astq.setResultForm(ASTQuery.QT_SELECT);
+    astq.setAnnotation(la);
     return stack; 
   }
 }
@@ -792,7 +785,7 @@ void Debug(): {}
 
 
 
-Exp ConstructQuery() : { Exp stack1, stack2; boolean isRule = false;}
+Exp ConstructQuery(Metadata la) : { Exp stack1, stack2; boolean isRule = false;}
 {
   (<RULE> {isRule = true;} )? 
   
@@ -811,7 +804,8 @@ Exp ConstructQuery() : { Exp stack1, stack2; boolean isRule = false;}
   SolutionModifier()
   
   {	
-  astq.setConstruct(stack1); 	
+  astq.setConstruct(stack1); 
+  astq.setAnnotation(la);	
   astq.setRule(astq.isRule() || isRule);
   return stack2; }
   )
@@ -824,7 +818,9 @@ Exp ConstructQuery() : { Exp stack1, stack2; boolean isRule = false;}
   <WHERE> stack2 =  ConstructTemplate2()
   SolutionModifier()
   
-  {	astq.duplicateConstruct(stack2); 	return stack2; }
+  {	astq.duplicateConstruct(stack2); 
+        astq.setAnnotation(la);	
+        return stack2; }
   )
   )
   
@@ -1422,7 +1418,7 @@ void GraphPatternNotTriples(Exp stack) : {ASTQuery ast; Values values;}
 void SubQuery(Exp stack) : {ASTQuery ast; Query q; Exp exp;}
 {
  { ast = astq; astq = gast.subCreate(); } 
- exp = SelectQuery() 
+ exp = SelectQuery(null) 
  { astq.setBody(exp); q = Query.create(astq); stack.add(q); astq = ast; } 
 }
 
@@ -1447,7 +1443,7 @@ Exp ServiceExp() : {Exp exp, res; ASTQuery tmp; Query q;} {
 Exp SubConstruct() : {ASTQuery ast; Query q; Exp exp;}
 {
  { ast = astq; astq = gast.subCreate(); } 
- exp = ConstructQuery() 
+ exp = ConstructQuery(null) 
  { astq.setBody(exp); q = Query.create(astq); astq = ast; return q;} 
 }
 
@@ -2529,10 +2525,11 @@ Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term 
   { return expression; } 
 }
 
-Function Function(Exp stack, Metadata la) : 
-{ Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
+Function Function(Metadata la) : 
+{Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
 {
-  <FUNCTION> cst = IRIrefConst()
+  <FUNCTION> cst = IRIrefConst() 
+  { stack = BasicGraphPattern.create(); }
   v = ArgList(stack)
   body = Body(stack)
 
@@ -2545,7 +2542,8 @@ Function Function(Exp stack, Metadata la) :
 Metadata Annotate() : {Token t; Metadata list = null; String s; }
 {
     (
-        ((t = <ATEXPORT> | t = <ATPUBLIC> | t = <ATTRACE> | t = <ATDEBUG> | t = <ATTEST> )
+        ((t = <ATEXPORT> | t = <ATPUBLIC> | t = <ATTRACE> | t = <ATDEBUG> | t = <ATTEST> 
+        | t = <ATRELAX>  | t = <ATMORE>   | t = <ATIMPORT> )
         { if (list == null) { list = new Metadata();}
            list.add(t.image);
         }
@@ -2570,22 +2568,22 @@ Expression Body(Exp stack) : { ExpressionList body = new ExpressionList(); Expre
     { return astq.defineBody(body) ; }
 }
 
-void Package(Exp stack, Metadata list) : { Function term; Metadata la; }
+void Package(Metadata list) : { Function term; Metadata la; }
 {
     (<PACKAGE>) ?       
     <LBRACE> 
-        ( la = Annotate() term = Function(stack, la) 
+        ( la = Annotate() term = Function(la) 
         { astq.annotate(term, list); } ) +
     <RBRACE>
 }
 
 
 // @deprecated
-void Export(Exp stack) : { Term term; }
+void Export() : { Term term; }
 {
     <EXPORT> 
     <LBRACE> 
-        ( term = Function(stack, null) { astq.exportFunction(term); } ) +
+        ( term = Function(null) { astq.exportFunction(term); } ) +
     <RBRACE>
 }
 
@@ -2829,8 +2827,11 @@ TOKEN:
 | <ATPUBLIC: "@public">
 | <ATTRACE:  "@trace">
 | <ATDEBUG:  "@debug">
+| <ATMORE:   "@more">
+| <ATRELAX:  "@relax">
 | <ATTEST:   "@test">
 | <ATSERVICE:"@service">
+| <ATIMPORT: "@import">
 | <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	
 | <#A2Z: ["a"-"z","A"-"Z"]>
 | <#A2ZN: ["a"-"z","A"-"Z","0"-"9"]>

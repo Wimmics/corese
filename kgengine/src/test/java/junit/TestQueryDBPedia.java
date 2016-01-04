@@ -17,12 +17,13 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import static org.junit.Assert.assertEquals;
 
 public class TestQueryDBPedia {
 	
-	
+             
       @Test
     public void testAG2() throws EngineException {
 

@@ -358,7 +358,7 @@ public class TestRuleEngine {
 		}
 	}
 	
-	@Test
+	
 	public void test5(){
 
 		Graph g = createGraph();
@@ -449,7 +449,7 @@ public class TestRuleEngine {
 	
 	
 	
-	@Test
+	
 	public void test7(){
 		Graph g1 = createGraph(true);
 		Load load1 = Load.create(g1);

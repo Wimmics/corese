@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import static fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer.port;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
@@ -183,6 +184,7 @@ public class Profile {
             Graph g = load(path);
             setProfile(g);
             process(g);
+            initFunction();
         } catch (IOException ex) {
             Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (LoadException ex) {
@@ -233,6 +235,15 @@ public class Profile {
         for (Mapping m : map) {
             init(g, m);
         }
+    }
+    
+    /**
+     * Functions shared by server STTL transformations
+     */
+    void initFunction() throws IOException, EngineException{
+        String str = read(QUERY + "function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        Query q = exec.compile(str);
     }
 
     void init(Graph g, Mapping m) {

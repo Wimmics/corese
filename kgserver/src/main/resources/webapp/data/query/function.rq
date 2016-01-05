@@ -1,0 +1,42 @@
+#
+# Functions shared by server STTL transformations
+# javascript:trans() defined in webapp/js/server.js
+#
+@export package {
+
+function st:protocol(?uri) {
+    if (st:get(st:protocol, st:ajax)) {
+       concat("javascript:trans(\"", str(?uri), "\")") 
+    } 
+    else { str(?uri) }
+}
+
+function st:link(?uri) {
+     concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      coalesce(
+	concat("&profile=",   st:get(st:profile)), 
+	concat("&transform=", st:get(st:transform)), 
+	""))
+} 
+
+function st:plink(?uri) {
+    st:protocol(st:link(?uri))
+}
+
+function st:plink(?uri, ?profile) {
+  st:protocol( 
+    concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      "&profile=", ?profile))
+}
+
+#deprecated
+function st:link22(?uri) {
+   concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      "&profile=", st:get(st:profile))
+}
+
+
+}

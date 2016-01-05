@@ -1,0 +1,11 @@
+#
+# onChange=''
+#
+template st:change {
+      
+ if (st:get(st:protocol, st:ajax), 
+    "trans(this.form); return false;",
+    "submit();")  
+}
+where {
+}

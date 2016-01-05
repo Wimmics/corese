@@ -6,7 +6,7 @@ template st:content(?year) {
   "<p>"
   
   group {
-    "<a href='" st:protocol(concat(st:get(st:service), 	"?profile=st:dbpedia&uri=", encode_for_uri(?x)))  "'>" 
+    "<a href='" st:plink(?x, st:dbpedia) "'>" 
     str(?title)   
     "</a>"  
     

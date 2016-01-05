@@ -4,7 +4,7 @@ template cn:list {
   <table class='margin'>
   <tr>
   <td><a href='""" 
-  st:protocol(concat(st:get(st:service), "?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia")) 
+  st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
   "'>Carte</a></td><td>&nbsp;</td>"
 
   group {

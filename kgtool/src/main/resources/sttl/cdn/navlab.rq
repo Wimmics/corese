@@ -2,9 +2,7 @@ prefix cn: <http://cdn.fr/schema/>
 
 template st:navlab(?u, ?t) { 
   
-  "<a href='" 
-  st:protocol(concat(st:get(st:service), "?uri=", replace(str(?u), "'", "%27"), "&profile=st:dbpedia"))
-  "'>" ?t "</a>"
+  "<a href='" st:plink(?u, st:dbpedia) "'>" ?t "</a>"
 
 }
 where {

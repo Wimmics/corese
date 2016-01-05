@@ -16,12 +16,8 @@ template st:select(?t) {
   st:call-template(st:prev, ?t)
 
   "<select " st:call-template-with(st:server, st:sstyle)   
-    " id='uri' name='uri' onChange='" 
-  
-  if (st:get(st:protocol, st:ajax), 
-    "trans(this.form); return false;",
-    "submit();")
-  
+    " id='uri' name='uri' onChange='"   
+     st:call-template-with(st:server, st:change)    
   "'>"
   
     st:call-template(st:list, ?t)  

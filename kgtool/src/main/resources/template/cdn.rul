@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Dec 10 10:51:33 CET 2015
+Tue Jan 05 14:25:24 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -210,7 +210,7 @@ template cn:list {
   <table class='margin'>
   <tr>
   <td><a href='""" 
-  st:protocol(concat(st:get(st:service), "?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia")) 
+  st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
   "'>Carte</a></td><td>&nbsp;</td>"
 
   group {
@@ -506,9 +506,7 @@ prefix cn: <http://cdn.fr/schema/>
 
 template st:navlab(?u, ?t) { 
   
-  "<a href='" 
-  st:protocol(concat(st:get(st:service), "?uri=", replace(str(?u), "'", "%27"), "&profile=st:dbpedia"))
-  "'>" ?t "</a>"
+  "<a href='" st:plink(?u, st:dbpedia) "'>" ?t "</a>"
 
 }
 where {
@@ -566,30 +564,12 @@ function st:process(?x) {
   function st:default(?x) { 
     xsd:string(?x)
   }
-    
-   function st:protocol(?uri) {
-    if (st:get(st:protocol, st:ajax), 
-      concat("javascript:trans(\"", str(?uri), "\")"), 
-      str(?uri))
-  }
-     
-   function st:link(?uri) {
-     concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      coalesce(
-	concat("&profile=",   st:get(st:profile)), 
-	concat("&transform=", st:get(st:transform)), 
-	""))
- }
-  
+       
   function st:misc(?name) { 
     st:protocol(
       concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&transform=st:sparql%23core&profile=st:dbpedia"))
   }
   
-  function st:plink(?uri) {
-      st:protocol(st:link(?uri))
-  }
 
 ]]>
 </body>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Dec 10 10:51:33 CET 2015
+Tue Jan 05 14:25:24 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -123,7 +123,7 @@ template st:content(?year) {
   "<p>"
   
   group {
-    "<a href='" st:protocol(concat(st:get(st:service), 	"?profile=st:dbpedia&uri=", encode_for_uri(?x)))  "'>" 
+    "<a href='" st:plink(?x, st:dbpedia) "'>" 
     str(?title)   
     "</a>"  
     
@@ -187,31 +187,7 @@ template st:profile {
 }
 where {}
 
-  function st:protocol(?uri) {
-    if (st:get(st:protocol, st:ajax), 
-      concat("javascript:trans(\"", str(?uri), "\")"), 
-      str(?uri))
-  }
-  
-  function st:link(?uri) {
-     concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      coalesce(
-	concat("&profile=",   st:get(st:profile)), 
-	concat("&transform=", st:get(st:transform)), 
-	""))
-  } 
-  
-  function st:pplink(?uri, ?profile) {
-     st:protocol(concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      concat("&profile=",   ?profile)))
-  }
-   
-  function st:plink(?uri) {
-    st:protocol(st:link(?uri))
-  }
-  
+
 
 
     

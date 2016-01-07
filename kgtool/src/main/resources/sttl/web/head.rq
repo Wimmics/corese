@@ -1,8 +1,8 @@
 template st:head {
    
-  "<h2 class='center'>SPARQL Tutorial</h2>"
+  "<h2 class='center'>" str(?title) "</h2>"
   
 }
 where {
-
+  bind (coalesce(st:get(st:title), "Tutorial") as ?title)
 }

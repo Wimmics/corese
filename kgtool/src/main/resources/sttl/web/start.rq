@@ -22,5 +22,5 @@ template st:start {
 where {
 
   bind (coalesce(st:get(st:uri), st:intro) as ?uri)
-  
+
 }

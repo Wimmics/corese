@@ -31,12 +31,4 @@ function st:plink(?uri, ?profile) {
       "&profile=", ?profile))
 }
 
-#deprecated
-function st:link22(?uri) {
-   concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      "&profile=", st:get(st:profile))
-}
-
-
 }

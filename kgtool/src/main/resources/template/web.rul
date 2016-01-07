@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jan 05 14:25:23 CET 2016
+Thu Jan 07 13:56:25 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -33,7 +33,7 @@ template st:start {
 where {
 
   bind (coalesce(st:get(st:uri), st:intro) as ?uri)
-  
+
 }
 
 ]]>
@@ -154,13 +154,15 @@ where {}
 # RDF graph is a result graph
 #
 
+prefix spq: <http://ns.inria.fr/sparql-template/sparql#>
 template st:result {
 
-   st:call-template-with(st:sparql, st:result, st:get(st:service), st:sparql)
+   st:apply-templates-with(?sttl)
     
 }
 where {
   bind (st:get(st:query) as ?query)
+  bind (coalesce(st:get(st:sttl), spq:result)  as ?sttl)
   filter bound(?query)
 }
 
@@ -375,11 +377,11 @@ order by ?i
 <![CDATA[
 template st:head {
    
-  "<h2 class='center'>SPARQL Tutorial</h2>"
+  "<h2 class='center'>" str(?title) "</h2>"
   
 }
 where {
-
+  bind (coalesce(st:get(st:title), "Tutorial") as ?title)
 }
 
 ]]>

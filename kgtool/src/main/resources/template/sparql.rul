@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jan 05 14:25:23 CET 2016
+Thu Jan 07 13:56:25 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -122,14 +122,13 @@ where {
 # Utility template to be used by another transformation to
 # integrate SPARQL Query Results without headings
 #
-template st:result(?service, ?profile) {
+template st:result {
    
   st:call-template(st:page)
       
 }
 where {
-  bind (st:set(st:service, coalesce(?service, "/template")) as ?s)
-  bind (st:set(st:profile, coalesce(?profile, st:sparql)) as ?p)
+   bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
 }
 
 ]]>
@@ -171,7 +170,6 @@ order by ?i
 # Generate link for URI
 #
 template st:display(?x) {
-
   if (! bound(?profile)){ 
     st:call-template(st:esc, ?x) 
   }
@@ -416,6 +414,23 @@ where {}
   function st:lod(?x){
      coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
   }
+  
+  function st:display(?x){
+    let (?profile = coalesce(st:get(st:profile), st:null)){
+      if (?profile = st:null){ 
+	st:call-template(st:esc, ?x) 
+      }
+      else if (?profile = st:std){ 
+	st:call-template(st:linkesc, ?x) 
+      }
+      else if (st:lod(?x)){
+	st:call-template(st:linkesc, ?x)
+      }
+      else { 
+	st:call-template(st:linkprofile, ?x) 
+      }
+    }
+  }
 
 
 ]]>
@@ -544,7 +559,7 @@ template st:tablecons2 {
  "'>"
  "<th>"      st:number()
  "</th><td>" st:call-template(st:show,    ?x) 
- "</td><td>" st:call-template(st:display, ?x)
+ "</td><td>" st:display(?x)
  "</td><td>" st:call-template(st:tablecons3, ?x)
  "</td>"
  "</tr>"
@@ -558,6 +573,26 @@ where {
     }
 }
 order by ?x 
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Utility template to be used by another transformation to
+# integrate SPARQL Query Results without headings
+#
+template st:test {
+  @<h2>{ "Test" } 
+  st:call-template(st:page)
+      
+}
+where {
+   bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
+}
 
 ]]>
 </body>
@@ -622,8 +657,8 @@ template st:tablecons3(?x) {
 "<table>"
 group  {
  "<tr>"
- "<td>" st:call-template(st:display, ?p) 
- "</td><td>" st:call-template(st:display, ?y) 
+ "<td>" st:display(?p) 
+ "</td><td>" st:display(?y) 
  "</th><td>" st:call-template(st:show,    ?y) 
  "</td>"
  "</tr>"
@@ -649,7 +684,7 @@ order by ?x ?p ?y
 #  Get an optional icon from the dataset and display it
 #
 template st:show2(?x) {
-    st:call-template(st:display, ?y) 
+    st:display(?y) 
 }
 where {
   bind (st:get(st:dataset) as ?g)
@@ -693,9 +728,9 @@ template st:tablecons {
  "'>"
  "<th>"      st:number()
  "</th><td>" st:call-template(st:show,    ?x) 
- "</td><td>" st:call-template(st:display, ?x) 
- "</td><td>" st:call-template(st:display, ?p) 
- "</td><td>" st:call-template(st:display, ?y) 
+ "</td><td>" st:display(?x) 
+ "</td><td>" st:display(?p) 
+ "</td><td>" st:display(?y) 
  "</th><td>" st:call-template(st:show,    ?y) 
  "</td>"
  "</tr>"
@@ -708,6 +743,8 @@ where {
 }
 order by ?x ?p ?y
 
+
+
 ]]>
 </body>
 </rule>
@@ -719,7 +756,7 @@ prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template  {
  
     "<td>"  
-    coalesce(st:call-template(st:display, ?val), "&nbsp;")
+    coalesce(st:display(?val), "&nbsp;")
     "</td>" ; separator = " "
   
 }

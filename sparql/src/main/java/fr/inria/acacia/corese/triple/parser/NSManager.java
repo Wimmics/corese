@@ -47,6 +47,7 @@ public class NSManager {
 
     public static final String STL        = ExpType.STL;
     public static final String EXT        = ExpType.EXT;
+    public static final String USER       = ExpType.UXT;
     public static final String KGRAM      = ExpType.KGRAM;
     public static final String SPARQL     = ExpType.SPARQL;
     public static final String CUSTOM     = ExpType.CUSTOM;
@@ -203,7 +204,7 @@ public class NSManager {
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);
         def.put(EXT, EXT_PREF);
-        def.put(ExpType.UXT, "us");
+        def.put(USER, "us");
         def.put(ExpType.DT, "dt");
         def.put(CUSTOM, "cs");
         def.put(SPARQL, SPARQL_PREF);

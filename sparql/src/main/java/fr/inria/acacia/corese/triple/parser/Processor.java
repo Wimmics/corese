@@ -865,8 +865,10 @@ public class Processor {
 	static void define(String key, int value){
                 // isURI
 		table.put(key.toLowerCase(), value);
-                // rq:isURI
-                table.put(SPARQL + key.toLowerCase(), value);                
+                if (! key.startsWith("http://")){
+                    // rq:isURI
+                    table.put(SPARQL + key.toLowerCase(), value);   
+                }
 		tname.put(value, key);  
 	}
         

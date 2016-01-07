@@ -21,16 +21,16 @@ public class Context {
     public static final String STL = NSManager.STL;
     public static final String STL_QUERY    = STL + "query";
     public static final String STL_NAME     = STL + "name"; // query path name
-    public static final String STL_SERVICE  = STL + "service";
-    public static final String STL_SERVER   = STL + "server";
-    public static final String STL_PROFILE  = STL + "profile";
-    public static final String STL_SERVER_PROFILE = STL + "definition"; // profile.tll graph
-    public static final String STL_TRANSFORM = STL + "transform";
-    public static final String STL_URI      = STL + "uri";
-    public static final String STL_PROTOCOL = STL + "protocol";
+    public static final String STL_SERVICE  = STL + "service"; // /srv/template/
+    public static final String STL_SERVER   = STL + "server";  //  http://corese.inria.fr
+    public static final String STL_PROFILE  = STL + "profile"; // st:dbpedia
+    public static final String STL_SERVER_PROFILE = STL + "definition"; // profile.ttl graph
+    public static final String STL_TRANSFORM = STL + "transform"; // st:navlab
+    public static final String STL_URI      = STL + "uri";        // focus resource URI
+    public static final String STL_PROTOCOL = STL + "protocol";   // st:ajax
     public static final String STL_AJAX     = STL + "ajax";
-    public static final String STL_CONTEXT  = STL + "context";
-    public static final String STL_DATASET  = STL + "dataset";
+    public static final String STL_CONTEXT  = STL + "context";    // query named graph (for tutorial) 
+    public static final String STL_DATASET  = STL + "dataset";    // dataset named graph
     public static final String STL_EXPORT   = STL + "export";   
     public static final String STL_IMPORT   = STL + "import";   
     public static final String STL_PARAM    = STL + "param";   
@@ -50,6 +50,7 @@ public class Context {
        sexport = new HashMap();
        sexport.put(STL_DATASET, true);
        sexport.put(STL_PROTOCOL, true);
+       sexport.put(STL_SERVICE, true);
    }
 
     public Context() {
@@ -78,20 +79,27 @@ public class Context {
         return c;
     }
     
-    public void copy(Context c){
-        for (String str : c.keys()){
-            if (c.export(str)){
-               export(str, c.get(str)); 
+     public void complete(Context source) {
+        IDatatype export = source.get(Context.STL_EXPORT);
+        if (export != null && export.booleanValue()) {
+            copy(source);
+        } else {
+            // dataset, protocol
+            include(source);
+        }
+     }
+    
+    public void copy(Context source){
+        for (String str : source.keys()){
+            if (source.export(str)){
+               export(str, source.get(str)); 
             }
             else {
-                set(str, c.get(str));
+                set(str, source.get(str));
             }
         }
     }
     
-    boolean export(String str){        
-        return export.get(str) != null && export.get(str) && get(str) != null;
-    }
     
     // this include source
      public void include(Context source){
@@ -116,8 +124,11 @@ public class Context {
             }
         }
      }
-     
-
+           
+    boolean export(String str){        
+        return export.get(str) != null && export.get(str) && get(str) != null;
+    }
+    
     public Context set(String name, IDatatype value) {
         table.put(name, value);
         return this;

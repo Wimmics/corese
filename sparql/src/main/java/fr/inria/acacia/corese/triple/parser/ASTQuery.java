@@ -1065,7 +1065,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
      
      /**
       * Create an extension ext function for predefined name function
-      * function rq;isURI(?x) { isURI(?x) }     
+      * function rq:isURI(?x) { isURI(?x) }     
       */
     Function defExtension(String ext, String name, int arity) {
         Constant c = Constant.create(ext);

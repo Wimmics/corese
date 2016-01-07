@@ -2,7 +2,6 @@
 # Generate link for URI
 #
 template st:display(?x) {
-
   if (! bound(?profile)){ 
     st:call-template(st:esc, ?x) 
   }

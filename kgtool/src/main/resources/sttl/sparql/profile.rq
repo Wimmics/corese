@@ -8,4 +8,21 @@ where {}
   function st:lod(?x){
      coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
   }
+  
+  function st:display(?x){
+    let (?profile = coalesce(st:get(st:profile), st:null)){
+      if (?profile = st:null){ 
+	st:call-template(st:esc, ?x) 
+      }
+      else if (?profile = st:std){ 
+	st:call-template(st:linkesc, ?x) 
+      }
+      else if (st:lod(?x)){
+	st:call-template(st:linkesc, ?x)
+      }
+      else { 
+	st:call-template(st:linkprofile, ?x) 
+      }
+    }
+  }
 

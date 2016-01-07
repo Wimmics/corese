@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class Param {
     private String service;
+    private String server;
     private String profile;    
     private String transform;
     private String uri;
@@ -229,6 +230,20 @@ public class Param {
      */
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    /**
+     * @return the server
+     */
+    public String getServer() {
+        return server;
+    }
+
+    /**
+     * @param server the server to set
+     */
+    public void setServer(String server) {
+        this.server = server;
     }
 
 }

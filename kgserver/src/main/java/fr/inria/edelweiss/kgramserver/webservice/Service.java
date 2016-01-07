@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import java.util.ArrayList;

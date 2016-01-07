@@ -95,9 +95,10 @@ public class Tutorial {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri")  List<String> namedGraphUris) {
         // Dataset URI of the service
-        String uri = getManager().getURI(serv);
+        String uri = getManager().getURI(serv);        
         Param par = new Param(SERVICE + serv, getProfile(uri, profile, transform), transform, resource, name, query);
         par.setValue(value);
+        par.setServer(uri);
         par.setDataset(namedGraphUris, namedGraphUris);
         return new Transformer().template(getTripleStore(serv), par);
     }

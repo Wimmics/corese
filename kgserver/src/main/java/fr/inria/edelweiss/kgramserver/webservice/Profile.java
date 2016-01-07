@@ -42,7 +42,7 @@ public class Profile {
     static  String DATA = SERVER + "/data/";
     static  String QUERY = DATA + "query/";
       
-    HashMap<String,  Service> map, servers; 
+    HashMap<String,  Service> services, servers; 
     NSManager nsm;
     IDatatype profile;
 
@@ -64,7 +64,7 @@ public class Profile {
     }
 
     Profile(boolean b) {
-        map = new HashMap();
+        services = new HashMap();
         servers = new HashMap();
         nsm = NSManager.create();
         isProtected = b;
@@ -112,7 +112,16 @@ public class Profile {
                 }                     
                 if (s.getParam() != null){
                     par.setContext(s.getParam().copy());
-                }
+                }                
+            }
+        }
+        
+        if (par.getContext() == null && par.getServer() != null){
+            // use case: profile without st:param, server with st:param
+            // import server st:param
+            Service server = getServer(par.getServer());
+            if (server.getParam() != null){
+                par.setContext(server.getParam().copy());
             }
         }
        
@@ -139,7 +148,7 @@ public class Profile {
     }
 
     public Collection<Service> getServices() {
-        return map.values();
+        return services.values();
     }
 
     public Collection<Service> getServers() {
@@ -147,18 +156,11 @@ public class Profile {
     }
 
     void define(String name) {
-        if (!map.containsKey(name) && !isProtected) {
+        if (!services.containsKey(name) && !isProtected) {
             //init(WEBAPP_DATA, name);
             System.out.println("Profile: " + name);
             init(name);
         }
-    }
-
-    void process(Graph g) throws IOException, EngineException {
-        init(g);
-        // deprecated:
-        initLoad(g);
-        initServer(g);
     }
 
     void initServer(String name) {
@@ -192,6 +194,13 @@ public class Profile {
         } catch (EngineException ex) {
             Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    void process(Graph g) throws IOException, EngineException {
+        initService(g);
+        // deprecated:
+        initLoad(g);
+        initServer(g);
     }
 
     GraphStore loadServer(String name) throws IOException, LoadException {
@@ -228,25 +237,16 @@ public class Profile {
         return null;
     }
 
-    void init(Graph g) throws IOException, EngineException {
+    void initService(Graph g) throws IOException, EngineException {
         String str = read(QUERY + "profile.rq");
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
         for (Mapping m : map) {
-            init(g, m);
+            initService(g, m);
         }
     }
     
-    /**
-     * Functions shared by server STTL transformations
-     */
-    void initFunction() throws IOException, EngineException{
-        String str = read(QUERY + "function.rq");
-        QueryProcess exec = QueryProcess.create(Graph.create());
-        Query q = exec.compile(str);
-    }
-
-    void init(Graph g, Mapping m) {
+    void initService(Graph g, Mapping m) {
         Node prof   = m.getNode("?p");
         Node query  = m.getNode("?q");
         Node var    = m.getNode("?v");
@@ -272,10 +272,85 @@ public class Profile {
             Context c = new ContextBuilder(g).process(ctx);
             s.setParam(c);
         }
-        map.put(prof.getLabel(), s);
+        services.put(prof.getLabel(), s);
     }
-      
+       
     /**
+     * Initialize Server definitions: get RDF/S documents URI to be loaded (later)
+     * Create Server definitions (in addition to Service)
+     * @param g
+     * @throws EngineException 
+     */
+    void initServer(Graph g) throws EngineException {
+        String str = "select * where {"
+                + "?s a st:Server "
+                + "values ?p { st:data st:schema st:context }"
+                + "?s ?p ?d "
+                + "?d st:uri ?u "
+                + "optional { ?d st:name ?n } "
+                + "optional { ?s st:service ?sv } "
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(str);
+        for (Mapping m : map) {
+            Node sn = m.getNode("?s");
+            Node sv = m.getNode("?sv");
+            Node p = m.getNode("?p");
+            Node u = m.getNode("?u");
+            Node n = m.getNode("?n");
+           Service server = findServer(sn.getLabel());
+           server.setService((sv==null)?null:sv.getLabel());
+           server.add(p.getLabel(), u.getLabel(), (n != null)?n.getLabel():null);
+        }
+
+    }
+
+    /**
+     * Create Server if not exists
+     * @param name
+     * @return 
+     */
+    Service findServer(String name) {
+        Service server = getServer(name);
+        if (server == null) {
+            server = new Service(name);
+            servers.put(name, server);
+            Service service = getService(name);
+            if (service != null){
+                // Service and Server share Context parameters
+                server.setParam(service.getParam());
+            }
+        }
+        return server;
+    }
+    
+      /**
+     * Functions shared by server STTL transformations
+     */
+    void initFunction() throws IOException, EngineException{
+        String str = read(QUERY + "function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        Query q = exec.compile(str);
+    }
+
+    
+    /**
+     * 
+     * Service that defines a transformation
+     */
+    Service getService(String name) {
+        return services.get(name);
+    }
+    
+    /**
+     * Service that defines a Server 
+     */
+    Service getServer(String name){
+        return servers.get(name);
+    }
+    
+    
+      /**
      * 
      * @param g
      * @throws IOException
@@ -305,71 +380,7 @@ public class Profile {
         String[] list = load.getLabel().split(";");
         Service s = new Service(profile.getLabel());
         s.setLoad(list);
-        map.put(profile.getLabel(), s);
-    }
-
-    /**
-     * Initialize Server definitions: get RDF/S documents URI to be loaded (later)
-     * Create Server definitions (in addition to Service)
-     * @param g
-     * @throws EngineException 
-     */
-    void initServer(Graph g) throws EngineException {
-        String str = "select * where {"
-                + "?s a st:Server "
-                + "values ?p { st:data st:schema st:context }"
-                + "?s ?p ?d "
-                + "?d st:uri ?u "
-                + "optional { ?d st:name ?n } "
-                + "optional { ?s st:service ?sv } "
-                + "}";
-        QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.query(str);
-        for (Mapping m : map) {
-            Node sn = m.getNode("?s");
-            Node sv = m.getNode("?sv");
-            Node p = m.getNode("?p");
-            Node u = m.getNode("?u");
-            Node n = m.getNode("?n");
-           Service s = findServer(sn.getLabel());
-           s.setService((sv==null)?null:sv.getLabel());
-           s.add(p.getLabel(), u.getLabel(), (n != null)?n.getLabel():null);
-        }
-
-    }
-
-    /**
-     * Create Server if not exists
-     * @param name
-     * @return 
-     */
-    Service findServer(String name) {
-        Service s = getServer(name);
-        if (s == null) {
-            s = new Service(name);
-            servers.put(name, s);
-            Service fst = getService(name);
-            if (fst != null){
-                // Service and Server share Context parameters
-                s.setParam(fst.getParam());
-            }
-        }
-        return s;
-    }
-    
-    /**
-     * 
-     * Service that defines a transformation
-     */
-    Service getService(String name) {
-        return map.get(name);
-    }
-    
-    /**
-     * Service that defines a Server 
-     */
-    Service getServer(String name){
-        return servers.get(name);
+        services.put(profile.getLabel(), s);
     }
 
 }

@@ -227,7 +227,7 @@ st:cdn a st:Server ;
     st:param [
       st:text ( "France" "Contexte" "Savoie, Piémont" "Comté de Nice");
       st:topic ( (cn:fr) (cn:emp cn:context) (cn:mds) (cn:cdn)) ;      
-      st:uri cn:XVIII ;
+   #   st:uri cn:XVIII ;
       st:min 400 ;
       st:max 3000 ;
     ] .

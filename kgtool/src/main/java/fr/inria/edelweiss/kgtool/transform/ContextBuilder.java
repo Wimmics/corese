@@ -24,16 +24,16 @@ import java.util.logging.Logger;
  */
 public class ContextBuilder {
     
-    Graph g;
-    Context c;
+    Graph graph;
+    Context context;
     
     public ContextBuilder(Graph g){
-        this.g = g;
+        this.graph = g;
     }
     
     public ContextBuilder(String path){
-        g = Graph.create();
-        Load ld = Load.create(g);
+        graph = Graph.create();
+        Load ld = Load.create(graph);
         try {
             ld.loadWE(path);
         } catch (LoadException ex) {
@@ -46,7 +46,7 @@ public class ContextBuilder {
      * Create a Context from content of st:param
      */
     public Context process(){
-        Entity ent = g.getEdges(Context.STL_PARAM).iterator().next();
+        Entity ent = graph.getEdges(Context.STL_PARAM).iterator().next();
         if (ent == null){
             return new Context();
         }
@@ -54,28 +54,43 @@ public class ContextBuilder {
     }
     
     public Context process(Node ctx){
-        c = new Context();
-        context(ctx);
-        return c;
+        context = new Context();
+        context(ctx, false);
+        return context;
     }
         
-    void context(Node ctx) {
+    void context(Node ctx, boolean exporter) {
         importer(ctx);
 
-        for (Entity ent : g.getEdgeList(ctx)) {
-            if (!ent.getEdge().getLabel().equals(Context.STL_IMPORT)) {
-                Node object = ent.getNode(1);
+        for (Entity ent : graph.getEdgeList(ctx)) {
+            String label = ent.getEdge().getLabel();
+            Node object = ent.getNode(1);
+            
+            if (label.equals(Context.STL_EXPORT) && object.isBlank()){
+                // st:export [ st:lod (<http://dbpedia.org/>) ]
+                context(object, true);
+            }
+            else if (! label.equals(Context.STL_IMPORT)) {
 
                 if (object.isBlank()) {
-                    IDatatype list = list(g, object);
+                    IDatatype list = list(graph, object);
                     if (list != null) {
-                        c.set(ent.getEdge().getLabel(), list);
+                        set(label, list, exporter);
                         continue;
                     }
                 }
-                c.set(ent.getEdge().getLabel(), (IDatatype) object.getValue());
+                set(label, (IDatatype) object.getValue(), exporter);
             }
         }        
+    }
+    
+    void set(String name, IDatatype dt, boolean b){
+        if (b){
+            context.export(name, dt);
+        }
+        else {
+            context.set(name, dt);
+        }
     }
     
      /** 
@@ -86,11 +101,11 @@ public class ContextBuilder {
       * 
       */
      void importer(Node n){
-         Edge imp = g.getEdge(Context.STL_IMPORT, n, 0);        
+         Edge imp = graph.getEdge(Context.STL_IMPORT, n, 0);        
           if (imp != null){
-                Edge par = g.getEdge(Context.STL_PARAM, imp.getNode(1), 0);
+                Edge par = graph.getEdge(Context.STL_PARAM, imp.getNode(1), 0);
                 if (par != null){
-                    context(par.getNode(1));
+                    context(par.getNode(1), false);
                 }
             }
      }

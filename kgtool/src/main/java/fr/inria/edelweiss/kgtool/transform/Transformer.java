@@ -1408,13 +1408,14 @@ public class Transformer  {
     }
     
     void complete(Context ctx) {
-        IDatatype export = ctx.get(Context.STL_EXPORT);
-        if (export != null && export.booleanValue()) {
-            getContext().copy(ctx);
-        } else {
-            // dataset, protocol
-            getContext().include(ctx);
-        }
+        getContext().complete(ctx);
+//        IDatatype export = ctx.get(Context.STL_EXPORT);
+//        if (export != null && export.booleanValue()) {
+//            getContext().copy(ctx);
+//        } else {
+//            // dataset, protocol
+//            getContext().include(ctx);
+//        }
     }
     
     /**

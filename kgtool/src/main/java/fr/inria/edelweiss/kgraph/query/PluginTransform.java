@@ -79,8 +79,8 @@ public class PluginTransform implements ExprType {
 
             case FOCUS_NODE:
                 return getFocusNode(null, env);
-
-
+                
+ 
 
         }
 
@@ -153,6 +153,9 @@ public class PluginTransform implements ExprType {
 
             case VISITED:
                 return visited(dt, env, p);
+                
+            case STL_FORMAT:
+                return format(dt);     
                         
 
         }
@@ -208,6 +211,9 @@ public class PluginTransform implements ExprType {
                 
             case STL_GET:
                 return get(exp, env, p, dt1, dt2);   
+                
+            case STL_FORMAT:
+                return format(dt1, dt2);
                  
     
         }
@@ -270,6 +276,9 @@ public class PluginTransform implements ExprType {
                 
             case STL_VSET:
                 return vset(exp, env, p, dt1, dt2, dt3); 
+                
+            case STL_FORMAT:
+                return format(param);
                            
         }
 
@@ -283,7 +292,52 @@ public class PluginTransform implements ExprType {
         return Arrays.copyOfRange(obj, n, obj.length);
     }
     
+     IDatatype format(IDatatype dt1){
+        return plugin.getValue(dt1.stringValue());
+    }
     
+    IDatatype format(IDatatype dt1, IDatatype dt2){
+        return plugin.getValue(String.format(dt1.stringValue(), dt2.stringValue()));
+    }
+    
+    IDatatype format(IDatatype[] param){
+        String f = param[0].stringValue();
+        switch (param.length){
+            case 2: return plugin.getValue(String.format(f, param[1].stringValue()));
+            case 3: return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue()));
+            case 4: return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), param[3].stringValue()));
+            case 5: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue()));
+            case 6: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue()));                                   
+            case 7: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue()));                                   
+            case 8: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue(), param[7].stringValue())); 
+            case 9: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue()));
+
+            case 10: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue(), param[9].stringValue()));        
+            case 11: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue(), 
+                        param[9].stringValue(), param[10].stringValue())); 
+        
+        }
+        return null;
+    }
     
 
     private IDatatype bool(Expr exp, Environment env, Producer p, IDatatype dt) {

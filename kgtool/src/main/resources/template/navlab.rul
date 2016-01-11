@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jan 07 13:56:25 CET 2016
+Sun Jan 10 18:57:07 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -113,9 +113,10 @@ where {
 <body>
 <![CDATA[
 template st:icon(?label, ?ic) {
-
-  "<img width='250' alt=\"" str(?label) "\" src=\"" str(?ic) "\" />"
-
+  format {
+    "<img width='250' alt=\"%s\" src=\"%s\" />"
+    str(?label) str(?ic)
+  }
 }
 where {}
 
@@ -216,13 +217,12 @@ where {
 #
 
 template  st:href(?r, ?p) {
+  format {
+  
+  "<a href=\"%s\">%s</a>"
 
- "<a href=\"" 
-    str(?v) 
-  "\">"  
-    str(?v) 
-  "</a>"
-
+   str(?v) str(?v) 
+  }
 }
 
 where {
@@ -296,37 +296,39 @@ template st:map(?r, ?lat, ?lon) {
 
   if (st:get(st:protocol, st:ajax), "", 
   """<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>""")
+  
+format {
 
 """
   <script>
   function callback() {
-    var pos = new google.maps.LatLng("""  str(?lat) "," str(?lon) ");"
-      
-    """  
-    var mapOptions = {zoom: 7, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};
-            
+    var pos = new google.maps.LatLng(%s,%s);         
+    var mapOptions = {zoom: 7, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};            
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     
     google.maps.event.addListener(map, 'click', 
-    function( event ){
+    function(event){
       alert( "p:latitude: " + event.latLng.lat() + " " + "; p:longitude: " + event.latLng.lng() ); 
     });
     
-    var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });
-"""
-    
-    st:call-template(st:locateall, ?r)
-    
-"}"
-
-    if (st:get(st:protocol, st:ajax), "",
-        "google.maps.event.addDomListener(window, 'load', callback);")
-
-"""
-  </script>
-      
+    var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });   
+    %s
+    }
+  %s   
+  </script>      
   <p id="map-canvas" ></p>
-  """
+"""
+
+  str(?lat)
+  str(?lon)
+  
+  st:call-template(st:locateall, ?r)
+  
+  if (st:get(st:protocol, st:ajax), "",
+        "google.maps.event.addDomListener(window, 'load', callback);")
+  
+  }
+   
 }
 where {
   
@@ -419,11 +421,12 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 
 template  st:display(?r, ?l) {
+  format {
+    "<a href='%s'>%s</a>"
 
- "<a href='"  st:plink(?r)  "'>"  
-    str(coalesce(?l, ?pr)) 
-  "</a>"
-
+    st:plink(?r)
+    str(coalesce(?l, ?pr))
+  }
 }
 
 where {
@@ -469,36 +472,26 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 
 template st:frame(?label, ?icon, ?body) {
+format {
 
   """
-  <div class='center'>   
-  <h2>"""  str(?label) """</h2> 
-  </div>
+  <div class='center'><h2>%s</h2></div>
   <p>
-  <table>
-  <tr class='top'>
-  <td>
-  """
-  
-  if (?icon = "", "", 
-    st:call-template(st:icon, ?label, ?icon)  )
- 
-  """
-  </td><td>&nbsp;<td/><td>
-  <table>
-  """  
-  
-  str(?body)
-  
-  """
-  </table>
-  </td>
-  </tr>
-  </table>
+    <table>
+      <tr class='top'>
+	<td>%s</td>
+	<td>&nbsp;<td/>
+	<td><table>%s</table></td>
+      </tr>
+    </table>
   </p>
   """
 
-
+  str(?label)
+  if (?icon = "", "", 
+      st:call-template(st:icon, ?label, ?icon)  )
+  str(?body)    
+}  
 }
 where {
 
@@ -514,14 +507,18 @@ where {
 <body>
 <![CDATA[
 template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
-
-"<tr class='s" if (kg:even(?n), 0, 1) "'>"
-  "<th class='left'>" str(?title) "</th><td>" 
-  
-   st:call-template(?temp, ?r, ?p)
-   
-"</td></tr>" 
-  
+format {
+  """
+  <tr class='s%s'>
+    <th class='left'>%s</th>
+    <td>%s</td>
+  </tr> 
+  """
+ 
+  if (kg:even(?n), 0, 1)
+  str(?title)
+  st:call-template(?temp, ?r, ?p)
+ }
 }
 where {} 
 
@@ -562,15 +559,25 @@ limit 1
 prefix p: <http://fr.dbpedia.org/property/>
 prefix o: <http://dbpedia.org/ontology/>
 template st:locateall(?r) {
-
-  "var pos" st:number() " = new google.maps.LatLng(" str(?lat) "," str(?lon) ");"
+format {
+  """
+  var pos%s = new google.maps.LatLng(%s, %s);
                   
-  "var marker" st:number() 
-  "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
+  var marker %s 
+  = new google.maps.Marker({ position: pos%s, map: map, icon: '/img/smarker.png' });
   
-  "google.maps.event.addListener(marker" st:number() 
-  ", 'click', function () {window.location.href = '"   st:plink(?in)   "';});"
+  google.maps.event.addListener(marker%s, 'click', 
+  function () {window.location.href = '%s';});
+  """
   
+  st:number()
+  str(?lat)
+  str(?lon)
+  st:number()
+  st:number()
+  st:number()
+  st:plink(?in)
+}
 }
 where {
 

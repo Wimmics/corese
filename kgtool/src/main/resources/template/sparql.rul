@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jan 07 13:56:25 CET 2016
+Sun Jan 10 18:57:07 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -106,7 +106,10 @@ where {
 <body>
 <![CDATA[
 template st:link(?uri, ?title) {
-   "<a href='"  str(?uri) "'>" str(?title) "</a>"
+   format {
+   "<a href='%s'>%s</a>"
+   str(?uri) str(?title)
+   }
 }
 where {
 }
@@ -140,22 +143,23 @@ where {
 <![CDATA[
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:table {
+format {
 
- "<tr class='s" 
-   if (kg:even(st:number()), 1, 0)
- "'>"
- 
-  "<th>"  st:number() "</th>"
+  """
+  <tr class='s%s'> 
+  <th>%s</th>  
+  %s 
+  </tr>
+  """
   
-    st:apply-templates(?s)
- 
- "</tr>"
- 
+  if (kg:even(st:number()), 1, 0)
+  st:number()
+  st:apply-templates(?s)
+}
 }
 where {
   ?x rs:solution ?s 
-  ?s rs:index ?i
-  
+  ?s rs:index ?i  
 }
 order by ?i
 
@@ -215,12 +219,15 @@ where {
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 
 template st:pageask {
-"""
+format {
+
+  """
   <h3>Result</h3>
-  <p>
-  """      
-  ?b  
-  "</p>"
+  <p>%s</p>
+  """
+  
+  ?b
+  }
 }
 where {
   ?r rs:boolean ?b
@@ -238,7 +245,6 @@ template st:linkprofile(?x) {
   if (isURI(?x), 
     st:call-template(st:link, 
       coalesce(
-	#st:call-template(st:transform, ?x), 
 	st:plink(?x),
 	encode_for_uri(?x)),
       ?e),
@@ -310,35 +316,34 @@ where {
 <body>
 <![CDATA[
 template st:query(?q) {
+
+format {
+
   """
   <h3>Query</h3>
-  <form method='post' id='sparql' action='"""  st:get(st:service)  """'>
-  
-   <select name="profile">"""
-   
-   if (bound(?prof) && ?prof not in (st:sparql, st:std),
-    concat("<option value='", str(?prof), "'>Local</option>"),
-    "")
-   
-   """
-    <option value="st:sparql">LDP</option>
-    <option value="st:std">STD</option>
-   </select> 
-  
-    <br/>
-    <textarea cols='60' rows='10' name='query'>"""str(?q)
-    
-  """</textarea>
-    <br/>
-  """  
-   # st:call-template-with(st:server, st:submit, "sparql", "Submit", coalesce(st:get(st:protocol), st:std))
-       
-   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
-   
-    
-  """  
+  <form method='post' id='sparql' action='%s'>  
+    <select name="profile">  
+      %s   
+      <option value='st:sparql'>LDP</option>
+      <option value='st:std'>STD</option>
+    </select>   
+      <br/>
+      <textarea cols='60' rows='10' name='query'>%s</textarea>
+      <br/>
+    <input type='submit' value='submit' %s/>       
   </form>
   """
+  
+  st:get(st:service)
+  
+  if (bound(?prof) && ?prof not in (st:sparql, st:std),
+    st:format("<option value='%s'>Local</option>", str(?prof)),
+    "")
+    
+  str(?q)
+  
+  st:submit()
+  }
 }
 where {
   bind (st:get(st:profile) as ?prof)
@@ -533,7 +538,7 @@ where {
 #  Get an optional icon from the dataset and display it
 #
 template st:show(?x) {
-    "<img width='35' src='"  str(?l)   "' />" 
+    format { "<img width='35' src='%s' />"  str(?l) }
 #    st:call-template(st:show2, ?x)
 }
 where {
@@ -604,16 +609,16 @@ where {
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:open {
 
+format {
+
   """
   <h3>Result</h3>
-  <table>
+  <table>    
+  <tr class='s1'><td/>%s</tr>\n
   """
-  
- "<tr class='s1'><td/>"
  
-  st:call-template(st:th)
-  
- "</tr>\n"
+ st:call-template(st:th)
+ }
 }
 where {
 }
@@ -722,19 +727,22 @@ where {
 <body>
 <![CDATA[
 template st:tablecons {
-
- "<tr class='s" 
-   if (kg:even(st:number()), 1, 0)
- "'>"
- "<th>"      st:number()
- "</th><td>" st:call-template(st:show,    ?x) 
- "</td><td>" st:display(?x) 
- "</td><td>" st:display(?p) 
- "</td><td>" st:display(?y) 
- "</th><td>" st:call-template(st:show,    ?y) 
- "</td>"
- "</tr>"
- 
+format {
+  """
+  <tr class='s%s'>
+  <th>%s</th>
+  <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
+  </tr>
+  """
+  
+  if (kg:even(st:number()), 1, 0)
+  st:number()
+  st:call-template(st:show,    ?x)
+  st:display(?x) 
+  st:display(?p) 
+  st:display(?y) 
+  st:call-template(st:show,    ?y)
+}
 }
 where {
   ?x ?p ?y
@@ -754,11 +762,14 @@ order by ?x ?p ?y
 <![CDATA[
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template  {
- 
-    "<td>"  
+
+format { 
+    "<td>%s</td>" 
+    
     coalesce(st:display(?val), "&nbsp;")
-    "</td>" ; separator = " "
-  
+}  
+; separator = " "
+
 }
 where {
   ?x rs:solution ?in

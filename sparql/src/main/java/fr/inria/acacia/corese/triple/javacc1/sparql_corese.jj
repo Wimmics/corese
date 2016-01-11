@@ -658,6 +658,8 @@ Expression texp (Exp stack) : { Expression exp; }
                         exp = box(stack)
 	          | 
                         exp = group(stack)
+                  |
+                        exp = format(stack)
                  )
 { return exp; }
 }
@@ -689,7 +691,24 @@ Expression group(Exp stack) :
 		  
 }
 
+Expression format(Exp stack) : 
+{  Expression box, exp, sep; ExpressionList list; Token t; }
+{
 
+      <FORMAT>     { list = new ExpressionList(); }
+
+      <LBRACE>  
+            (            
+            exp = texp(stack)            
+            { list.add(exp); }
+            ) *
+      <RBRACE>
+
+      { 
+        box = astq.createFormat(list); 
+        return box;
+      }
+}
 
 Expression box(Exp stack) : 
 {  Expression box, exp, sep; ExpressionList list; Token t; }
@@ -2969,6 +2988,7 @@ TOKEN [IGNORE_CASE] :
 | <RESULT: "result" >
 | <PROJECTION: "projection" >
 | <GROUP: "group" >
+| <FORMAT: "format" >
 | <BOX: "box" >
 | <IBOX: "ibox" >
 | <SBOX: "sbox" >

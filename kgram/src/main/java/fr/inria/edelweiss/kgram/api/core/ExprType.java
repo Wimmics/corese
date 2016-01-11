@@ -225,6 +225,7 @@ public interface ExprType {
  	public static int STL_ISSTART               = 274;
  	public static int AGGLIST                   = 275;
  	public static int AGGREGATE                 = 276;
+ 	public static int STL_FORMAT                = 277;
         
               
 	public static int ISSKOLEM 	= 300;

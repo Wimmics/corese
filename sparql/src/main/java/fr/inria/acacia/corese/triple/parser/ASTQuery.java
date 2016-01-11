@@ -236,6 +236,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         private static String FUN_TEMPLATE_AGG      = Processor.FUN_AGGREGATE ; //Processor.FUN_GROUPCONCAT ;
         private static String FUN_TEMPLATE_CONCAT   = Processor.FUN_CONCAT ; 
         private static String FUN_TURTLE            = Processor.FUN_TURTLE ; 
+        private static String FUN_FORMAT            = Processor.FUN_FORMAT ; 
         
  	private static final String FUN_PROCESS = Processor.FUN_PROCESS;
  	private static final String FUN_PROCESS_URI = Processor.FUN_PROCESS_URI;
@@ -3034,6 +3035,10 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     	}
         term.setModality(el);
     	return term;
+    }
+    
+    public Term createFormat(ExpressionList el) {
+        return createFunction(FUN_FORMAT, el);
     }
     
     

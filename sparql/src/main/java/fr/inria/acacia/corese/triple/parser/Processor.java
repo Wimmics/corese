@@ -213,6 +213,7 @@ public class Processor {
 	public static final String STL_NUMBER       = STL + "number";
 	public static final String STL_INDEX        = STL + "index";
 	public static final String STL_FUTURE       = STL + "future";
+	public static final String STL_FORMAT       = STL + "format";
         
 	public static final String FUN_NUMBER       = NSManager.STL_PREF + ":"  + "_n_";
 	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
@@ -223,6 +224,7 @@ public class Processor {
 	public static final String FUN_GROUPCONCAT  = NSManager.STL_PREF + ":" + "group_concat"; 
 	public static final String FUN_AGGREGATE    = NSManager.STL_PREF + ":" + "aggregate"; 
 	public static final String FUN_TURTLE       = NSManager.STL_PREF + ":" + "turtle"; 
+	public static final String FUN_FORMAT       = NSManager.STL_PREF + ":" + "format"; 
 
 	       
 	static final String QNAME 	= KGRAM + "qname"; 
@@ -719,6 +721,7 @@ public class Processor {
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
+		defoper(STL_FORMAT,             ExprType.STL_FORMAT);
 		defoper(STL_INDEX,              ExprType.STL_INDEX);
 		defoper(STL_FUTURE,             ExprType.STL_FUTURE);
 		defoper(STL_LOAD,               ExprType.STL_LOAD);

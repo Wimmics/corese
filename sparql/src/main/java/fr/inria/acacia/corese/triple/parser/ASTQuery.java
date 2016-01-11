@@ -232,6 +232,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	private static final String CONCAT 	= Processor.CONCAT;
 	private static final String COALESCE 	= Processor.COALESCE;
 	private static final String IF 		= Processor.IF;
+	private static final String FORMAT 	= Processor.STL_FORMAT;
         
         private static String FUN_TEMPLATE_AGG      = Processor.FUN_AGGREGATE ; //Processor.FUN_GROUPCONCAT ;
         private static String FUN_TEMPLATE_CONCAT   = Processor.FUN_CONCAT ; 
@@ -3038,7 +3039,8 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     }
     
     public Term createFormat(ExpressionList el) {
-        return createFunction(FUN_FORMAT, el);
+        Term t = createFunction(FUN_FORMAT, el);
+        return t;
     }
     
     
@@ -3148,7 +3150,7 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 		Term t = createFunction(createQName(FUN_TEMPLATE_CONCAT));
 
 		if (template != null){
-			if (template.size() == 1){
+			if (template.size() == 1 && isSingleton(template.get(0))){
 				return compileTemplate(template.get(0), false, false);
 			}
 			else {
@@ -3161,6 +3163,14 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 
 		return t;
 	}
+        
+        /**
+         * return false when exp must be put in st:concat 
+         * use case: process st:number() as a Future using st:concat
+         */
+        boolean isSingleton(Expression exp){
+            return ! exp.getLabel().equals(FORMAT);
+        }
         
     
 	/**

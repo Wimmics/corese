@@ -4,8 +4,13 @@
 #
 @export package {
 
+
+function st:isAjax(){
+  st:get(st:protocol, st:ajax)
+}
+
 function st:protocol(?uri) {
-    if (st:get(st:protocol, st:ajax)) {
+    if (st:isAjax()) {
        concat("javascript:trans(\"", str(?uri), "\")") 
     } 
     else { str(?uri) }
@@ -29,6 +34,41 @@ function st:plink(?uri, ?profile) {
     concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
       "&profile=", ?profile))
+}
+
+
+# ____________________________________________________
+
+function st:server(?name){
+  st:call-template-with(st:server, ?name)
+}
+
+function st:head(){
+  if (st:isAjax(), "",
+    st:server(st:dohead))
+}
+
+function st:tail(){
+  if (st:isAjax(), "",
+    st:server(st:dotail))
+}
+
+function st:bstyle(){
+   if (st:isAjax(), 
+    st:server(st:bstyle), "")   
+}
+
+function st:sstyle(){
+   st:server(st:sstyle) 
+}
+
+function st:submit(){
+    if (st:isAjax()){ st:server(st:submit) }
+    else { "" }
+}
+
+function st:change(){
+  st:server(st:change)
 }
 
 }

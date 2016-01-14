@@ -875,8 +875,9 @@ public class ProducerImpl implements Producer, IProducerQP {
         Mappings map = new Mappings();
         Mapping m;
         for (IDatatype dt : list){
-            if (dt.isList()){               
-                 m = Mapping.create(qNodes, dt.getValues().toArray(qNodes));
+            if (dt.isList()){ 
+                 Node[] val = new Node[dt.size()];
+                 m = Mapping.create(qNodes, dt.getValues().toArray(val));
             }
             else {
                  m =  Mapping.create(lNodes.get(0), dt);

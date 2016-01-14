@@ -382,7 +382,7 @@ public class Transformer implements ExpType {
             if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
                 return;
             }
-            if (ast.getContext() != null && ast.getContext().isUserQuery()){
+            if (ast.isUserQuery()){
                 System.out.println("Compiler: extension function not available in server mode" );
                 return;
             }
@@ -418,13 +418,15 @@ public class Transformer implements ExpType {
         
         void undefinedFunction(Query q, ASTQuery ast){
             for (Expression exp : ast.getUndefined().values()){
-                boolean b = Interpreter.isDefined(exp);
-                if (b){
+                boolean ok = Interpreter.isDefined(exp);
+                if (ok){
                     return;
                 }
                 else {
-                    b = (isLoadFunction || ast.hasMetadata(Metadata.IMPORT)) && importFunction(q, exp);
-                    if (! b){
+                    ok = ! ast.isUserQuery() 
+                         && (isLoadFunction || ast.hasMetadata(Metadata.IMPORT)) 
+                         && importFunction(q, exp);
+                    if (! ok){
                         ast.addError("undefined expression: " + exp);
                     }
                 }             

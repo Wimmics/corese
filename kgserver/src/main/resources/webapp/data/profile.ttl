@@ -7,7 +7,14 @@
 
 st:dbpedia a st:Profile ;
   st:query  <query/frdbpedia.rq> ;
-  st:transform  st:navlab .
+  st:transform  st:navlab ;
+  st:param [ 
+    st:mapzoom 7 ;
+    st:mapsize "mapmedium" ;
+    st:mapicon1 "/img/bmarker.png" ;
+    st:mapicon2 "/img/smarker.png" 
+  ].
+  #st:transform "/user/corby/home/AAData/sttl/navlab" ;
   
 st:dbpediaen a st:Profile ;
   st:query  <query/frdbpediaen.rq> ;
@@ -17,6 +24,7 @@ st:dbpediaen a st:Profile ;
   ] .
   
 st:calendar a st:Profile ;
+  #st:transform "/user/corby/home/AAData/sttl/calendar"; 
   st:transform st:calendar ;
   st:param [
     st:debug true ;
@@ -49,6 +57,7 @@ st:calendar2 a st:Profile ;
   
 st:calendar3 a st:Profile ;
   st:query     <query/dbpediadate3.rq> ;
+  #st:transform "/user/corby/home/AAData/sttl/calcontent"; 
   st:transform st:content ;  
   st:param [
     st:uri    st:y1944 ;
@@ -180,6 +189,7 @@ st:data
 st:tutorial1 a st:Server ;
   st:service "rdf" ;
   st:transform st:web ;
+  #st:transform "/user/corby/home/AAData/sttl/web";
   st:data     
     [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
     [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
@@ -203,6 +213,7 @@ st:tutorial2 a st:Server ;
 # /tutorial/cdn
 st:cdn a st:Server ;
     st:service "cdn" ;
+    #st:transform "/user/corby/home/AAData/sttl/cdn"; 
     st:transform st:cdn ;
     
     st:param [

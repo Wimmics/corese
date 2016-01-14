@@ -298,6 +298,14 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
         }
         return defaultDataset.getContext();
     }
+    
+    public boolean isUserQuery(){
+        Context c = getContext();
+        if (c == null){
+            return false;
+        }
+        return c.isUserQuery();
+    }
 
     @Override
     public String toGraph() {

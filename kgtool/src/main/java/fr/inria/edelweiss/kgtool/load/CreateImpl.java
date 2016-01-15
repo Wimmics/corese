@@ -6,6 +6,7 @@ import java.util.List;
 
 import fr.inria.acacia.corese.triple.api.Creator;
 import fr.inria.acacia.corese.triple.parser.Atom;
+import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.RDFList;
@@ -102,7 +103,7 @@ public class CreateImpl implements Creator {
 		Node p = getProperty(property);
 		Node o;
 		if (object.isLiteral()){
-			o = getLiteral(property, object);
+			o = getLiteral(property, object.getConstant());
 		}
 		else {
 			o = getNode(object);
@@ -143,7 +144,7 @@ public class CreateImpl implements Creator {
 	Node getObject(Atom object){
 		Node o;
 		if (object.isLiteral()){
-			o = getLiteral(object);
+			o = getLiteral(object.getConstant());
 		}
 		else {
 			o = getNode(object);
@@ -152,14 +153,14 @@ public class CreateImpl implements Creator {
 	}
 
 	
-	Node getLiteral(Atom pred, Atom lit){
+	Node getLiteral(Atom pred, Constant lit){
 		String lang = lit.getLang();
 		String datatype = nsm.toNamespace(lit.getDatatype());
 		if (lang == "") lang = null;
 		return graph.addLiteral(pred.getLabel(), lit.getLabel(), datatype, lang);
 	}
 	
-	Node getLiteral(Atom lit){
+	Node getLiteral(Constant lit){
 		String lang = lit.getLang();
 		String datatype = nsm.toNamespace(lit.getDatatype());
 		if (lang == "") lang = null;

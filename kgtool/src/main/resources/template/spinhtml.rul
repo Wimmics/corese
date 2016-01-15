@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Jan 10 18:57:06 CET 2016
+Thu Jan 14 16:08:06 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -65,7 +65,7 @@ prefix sp:      <http://spinrdf.org/sp#> .
 
 template st:html {
 
-  st:call-template-with(st:server, st:head)
+  st:head()
   st:call-template(st:next)
 
   "<h3>SPARQL</h3>"
@@ -79,7 +79,7 @@ template st:html {
   "\n</pre>\n" 
   
    st:call-template(st:button)
-   st:call-template-with(st:server, st:tail)
+   st:tail()
 
 }
 where {

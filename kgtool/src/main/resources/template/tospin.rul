@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Jan 10 18:57:07 CET 2016
+Thu Jan 14 16:08:06 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -26,25 +26,22 @@ where {
 <body>
 <![CDATA[
 template st:query(?q) {
+
+format {
   """
   <h3>SPARQL Query</h3>
-  <form method='post' id='spin' action='/spin/tospin'>
-  
-    <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
-    
-    <textarea cols='60' rows='15' id='query' name='query'>"""str(?q)
-    
-  """</textarea>
-    <br/>"""
-    
-#    st:call-template-with(st:server, st:submit, "spin", "submit", coalesce(st:get(st:protocol), st:std) )
-    
-   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
-
-    
-  """  
+  <form method='post' id='spin' action='/spin/tospin'>  
+    <input type='hidden' name='transform' value='%s' />    
+    <textarea cols='60' rows='15' id='query' name='query'>%s</textarea>
+    <br/>       
+    <input type='submit' value='submit' %s />      
   </form>
   """
+  
+  st:get(st:transform)
+  str(?q)
+  st:submit()
+  }
 }
 where {
 }
@@ -73,25 +70,21 @@ where {
 <body>
 <![CDATA[
 template st:queryspin(?q) {
+format {
   """
   <h3>SPIN Query</h3>
-  <form method='post' id='sparql' action='/spin/tosparql'>
-  
-    <input type='hidden' name='transform' value='""" st:get(st:transform) """' />
-    
-    <textarea cols='60' rows='15' id='query2' name='query'>"""str(?q)
-    
-  """</textarea>
-    <br/>"""
-    
-    # st:call-template-with(st:server, st:submit, "sparql", "submit", coalesce(st:get(st:protocol), st:std))
-       
-   "<input type='submit' value='submit'"  st:call-template-with(st:server, st:submit)  " />"
-   
-    
-  """  
+  <form method='post' id='sparql' action='/spin/tosparql'> 
+    <input type='hidden' name='transform' value='%s' />    
+    <textarea cols='60' rows='15' id='query2' name='query'>%s</textarea>
+    <br/>           
+    <input type='submit' value='submit'"  %s  />      
   </form>
   """
+  
+  st:get(st:transform)
+  str(?q)
+  st:submit()
+  }
 }
 where {
 }
@@ -111,11 +104,11 @@ where {
 #
 template st:start {
 
-  st:call-template-with(st:server, st:head)
+  st:head()
   
   st:call-template(st:page)
   
-  st:call-template-with(st:server, st:tail)
+  st:tail()
 
 }
 where {
@@ -195,9 +188,7 @@ where {
 <![CDATA[
 template st:table {
 
- "<tr class='s" 
-   if (kg:even(st:number()), 1, 0)
- "'>"
+ "<tr>"
  "<th>"      st:number()
  "</th><td>" st:call-template(st:linkesc, ?x) 
  "</td><td>" st:call-template(st:esc, ?p) 
@@ -282,7 +273,7 @@ template st:open {
   """
   <h3>Result</h3>
   <table>
-  <tr class='s1'>
+  <tr>
   <th></th><th>subject</th><th>property</th><th>object</th>
   </tr>
   """

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Jan 10 18:57:07 CET 2016
+Thu Jan 14 16:08:06 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -90,6 +90,45 @@ where {
 <body>
 <![CDATA[
 #
+# Geolocate  resources on a map 
+# ?list = list(list(uri, lat, lon))
+#
+template st:gmap2(?list) {
+  format {
+    """
+    var pos%s = new google.maps.LatLng(%s, %s);
+		    
+    var marker%s 
+    = new google.maps.Marker({ position: pos%s, map: map, icon: '%s' });
+    
+    google.maps.event.addListener(marker%s, 'click', 
+    function () {window.location.href = '%s';});
+    """
+    
+    st:number()
+    str(?lat)
+    str(?lon)
+    st:number()
+    st:number()
+    coalesce(st:get(st:mapicon2), "/img/smarker.png")
+    st:number()
+    st:plink(?r)
+  }
+}
+where {
+
+  bind (unnest(?list) as (?r, ?lat, ?lon))
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # SPARQL Template Transformation 
 # Generate a HTML hypertext navigator on top of Linked Open Data
 # such as dbpedia
@@ -131,13 +170,17 @@ prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
 
 template st:descresource(?r) {
-
-  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
-  "<th class='left'>" str(?p) "</th><td>" 
+format {
+  """
+  <tr>
+  <th class='left'>%s</th>
+  <td>%s</td>
+  </tr>
+  """ 
   
-   st:call-template(st:triple, ?r, ?p, ?v)  
-  
-  "</td></tr>"  
+  str(?p)
+  st:call-template(st:triple, ?r, ?p, ?v)
+  }
 }
 where { 
     ?r ?p ?v
@@ -195,11 +238,11 @@ prefix p:  <http://fr.dbpedia.org/property/>
 
 template st:page {
 
-  st:call-template-with(st:server, st:head)
+  st:head()
 
   st:call-template(st:selecttry)
    
-  st:call-template-with(st:server, st:tail)
+  st:tail()
   
 }
 where {
@@ -262,13 +305,15 @@ where {
 prefix p: <http://fr.dbpedia.org/property/>
 prefix o: <http://dbpedia.org/ontology/>
 
-template st:locate {
+template st:glocate {
 
-  st:call-template(st:map, ?in, ?lat, ?lon)
+  st:call-template(st:gmap, ?in, ?lat, ?lon, aggregate(?elem))
   
 }
 where {
+
   ?in a o:Place 
+  
   {select * where { 
   # let o:place first because limit 1
     { ?in o:place [ 
@@ -279,59 +324,20 @@ where {
     {?in p:longitude ?lon ;
 	 p:latitude  ?lat }     
   } limit 1}
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate resource on a map given lat et long
-#
-
-template st:map(?r, ?lat, ?lon) {
-
-  if (st:get(st:protocol, st:ajax), "", 
-  """<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>""")
   
-format {
-
-"""
-  <script>
-  function callback() {
-    var pos = new google.maps.LatLng(%s,%s);         
-    var mapOptions = {zoom: 7, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};            
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    
-    google.maps.event.addListener(map, 'click', 
-    function(event){
-      alert( "p:latitude: " + event.latLng.lat() + " " + "; p:longitude: " + event.latLng.lng() ); 
-    });
-    
-    var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });   
-    %s
-    }
-  %s   
-  </script>      
-  <p id="map-canvas" ></p>
-"""
-
-  str(?lat)
-  str(?lon)
-  
-  st:call-template(st:locateall, ?r)
-  
-  if (st:get(st:protocol, st:ajax), "",
-        "google.maps.event.addDomListener(window, 'load', callback);")
-  
-  }
+  # search all other Place resources   
+   optional {
+      select (xt:list(?res, ?lat, ?lon) as ?elem) ?res
+      where {
+        bind (st:get(st:dataset) as ?g)
+	graph ?g {
+	  ?res p:longitude ?lon ; p:latitude ?lat
+	}
+      }
+   }
    
-}
-where {
-  
+   filter(! bound(?res) || ?in != ?res)
+
 }
 
 ]]>
@@ -466,6 +472,61 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+
+template st:gmap(?r, ?lat, ?lon, ?list) {
+
+  if (st:get(st:protocol, st:ajax), "", 
+  """<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>""")
+  
+format {
+
+"""
+  <script>
+  function callback() {
+    var pos = new google.maps.LatLng(%s,%s);         
+    var mapOptions = {zoom: %s, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};            
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    
+    google.maps.event.addListener(map, 'click', 
+    function(event){
+      alert( "p:latitude: " + event.latLng.lat() + " " + "; p:longitude: " + event.latLng.lng() ); 
+    });
+    
+    var marker = new google.maps.Marker({ position: pos, map: map, icon: '%s' });   
+    %s
+    }
+  %s   
+  </script>      
+  <p class='%s' id='map-canvas' ></p>
+"""
+
+  str(?lat)
+  str(?lon)
+  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapicon1), "/img/bmarker.png")
+  
+  st:call-template(st:gmap2, ?list)
+  
+  if (st:get(st:protocol, st:ajax), "",
+        "google.maps.event.addDomListener(window, 'load', callback);")
+        
+  coalesce(st:get(st:mapsize), "mapmedium")
+}
+   
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
@@ -481,7 +542,7 @@ format {
       <tr class='top'>
 	<td>%s</td>
 	<td>&nbsp;<td/>
-	<td><table>%s</table></td>
+	<td><table class='table'>%s</table></td>
       </tr>
     </table>
   </p>
@@ -509,13 +570,12 @@ where {
 template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
 format {
   """
-  <tr class='s%s'>
+  <tr>
     <th class='left'>%s</th>
     <td>%s</td>
   </tr> 
   """
  
-  if (kg:even(?n), 0, 1)
   str(?title)
   st:call-template(?temp, ?r, ?p)
  }
@@ -545,49 +605,6 @@ where {
   optional { ?x a ?t }
 }
 limit 1
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate  resources on a map (except resource given lat et long)
-#
-prefix p: <http://fr.dbpedia.org/property/>
-prefix o: <http://dbpedia.org/ontology/>
-template st:locateall(?r) {
-format {
-  """
-  var pos%s = new google.maps.LatLng(%s, %s);
-                  
-  var marker %s 
-  = new google.maps.Marker({ position: pos%s, map: map, icon: '/img/smarker.png' });
-  
-  google.maps.event.addListener(marker%s, 'click', 
-  function () {window.location.href = '%s';});
-  """
-  
-  st:number()
-  str(?lat)
-  str(?lon)
-  st:number()
-  st:number()
-  st:number()
-  st:plink(?in)
-}
-}
-where {
-
-   bind (st:get(st:dataset) as ?g)
-   graph ?g {
-    ?in p:longitude ?lon ; p:latitude ?lat
-    filter(?in != ?r)
-    }
-    
-}
 
 ]]>
 </body>
@@ -697,7 +714,7 @@ template {
   st:call-template(st:frame, ?label, coalesce(?ic, ""), 
      st:call-template(st:descplace, ?in))
    
-  st:call-template(st:locate, ?in)
+  st:call-template(st:glocate, ?in)
 
 }
 where {

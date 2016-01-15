@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Jan 10 18:57:07 CET 2016
+Thu Jan 14 16:08:06 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -174,13 +174,12 @@ template  cn:table(?min, ?max) {
 format {
 
   """
-  <tr class='%s'>
+  <tr>
   <th class='date'>%s</th>  
    %s         
   </tr>\n
   """
   
-  st:call-template(cn:style, ?d)
   st:call-template(cn:wikidate, ?d)
   st:call-template(cn:row, ?d)
 }
@@ -419,7 +418,7 @@ template cn:body(?c) {
  
  format {
     """
-    <table class='margin hcentury'>
+    <table class='margin hcentury table'>
     <tr class='head'><th>Date</th>%s</tr>    
     %s
     </table>

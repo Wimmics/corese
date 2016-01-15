@@ -2643,7 +2643,8 @@ ExpressionList ArgList(Exp stack) : { ExpressionList v; Token t; Expression expr
 Expression Arg(Exp stack) : {Expression exp;}
 {
 	(
-		exp = Expression(stack)  | exp = Array(stack)
+		exp = Expression(stack)  
+
 	)
 	{
 		return exp;
@@ -2652,25 +2653,6 @@ Expression Arg(Exp stack) : {Expression exp;}
 
 
 
-// fun(?x, [1 2 3])
-// return a blank that contains an array (aka pointer !)
-Expression Array(Exp stack) : {Expression exp; ExpressionList array;}
-{
-	{ 
-  		array = new ExpressionList(); 
-    }
-  
-	<LBRACKET> 
-		          exp = Arg(stack) { array.add(exp); }
-		( <COMMA> exp = Arg(stack) { array.add(exp); } ) * 
-		
-	<RBRACKET>
-		
-	{
-		exp = astq.newArray(array);
-		return exp;
-	}
-}
 
 
 

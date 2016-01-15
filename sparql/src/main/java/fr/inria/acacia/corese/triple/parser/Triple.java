@@ -1,12 +1,10 @@
 package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.config.PropertyGetter.PropertyCallback;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -31,13 +29,13 @@ public class Triple extends Exp {
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(Triple.class);
 	
-	final static String SDT = KeywordPP.SDT;
-	final static String LANG = KeywordPP.LANG;
+//	final static String SDT = KeywordPP.SDT;
+//	final static String LANG = KeywordPP.LANG;
 	final static String PREFIX = "PREFIX";
 	final static String BASE = "BASE";
 	static int ccid = 0;
 	// nb different system variables in a query ...
-	static final int MAX = 1000;
+	static final int MAX = Integer.MAX_VALUE;
 	ASTQuery ast;
 	//String tproperty;
 	Atom subject, object;
@@ -60,8 +58,7 @@ public class Triple extends Exp {
 	int line=-1; 
 	String rvar, pre;          // variable on get:gui::?x pre=?x value=get:gui
 	boolean isexp=false;     // is a filter
-	boolean isoption=false, isFirst=false, isLast=false, fake=false;  // is option::
-	int firstOptionID = -1, lastOptionID = -1; // index of first/last triple of an option pattern
+	boolean isoption=false;       
 	boolean isRec = false;   // graph rec ?s {}
 	boolean isall=false;     // all::p{n}
 	boolean istype=false;    // rdf:type or <= rdf:type
@@ -117,9 +114,9 @@ public class Triple extends Exp {
 	public static Triple create(String source, 
 			String subject, String property, String value){
 		Constant src = null;
-		if (source != null) src = new Constant(source);
-		Triple t = Triple.create(src, new Constant(subject),
-				new Constant(property), null, new Constant(value));
+		if (source != null) src =  Constant.create(source);
+		Triple t = Triple.create(src, Constant.create(subject),
+				Constant.create(property), null, Constant.create(value));
 		return t;
 	}
 	
@@ -160,7 +157,7 @@ public class Triple extends Exp {
 		setOne(atom.isIsone());
 	    setAll(atom.isIsall());
 	    setDirect(atom.isIsdirect());
-	    setIsset(atom.isIsset());
+	    //setIsset(atom.isIsset());
 	    setPath(atom.getStar());
 	    if (exp1.getIntVariable() != null){
 	    	setRVar(exp1.getIntVariable().getName());
@@ -240,13 +237,13 @@ public class Triple extends Exp {
 		return exp;
 	}
 	
-	boolean isString(String str) {
-		if ((str.startsWith("\"") && str.endsWith("\""))
-				|| (str.startsWith("'") && str.endsWith("'")))
-			return true;
-		else
-			return false;
-	}
+//	boolean isString(String str) {
+//		if ((str.startsWith("\"") && str.endsWith("\""))
+//				|| (str.startsWith("'") && str.endsWith("'")))
+//			return true;
+//		else
+//			return false;
+//	}
 	
 
 
@@ -431,15 +428,15 @@ public class Triple extends Exp {
 		return isexp;
 	}
 	
-	public String getDatatype() {
-		return object.getDatatype();
-	}
+//	public String getDatatype() {
+//		return object.getDatatype();
+//	}
 	
-	public String getLang() {
-		String l = object.getLang();
-		if (l == null) return "";
-		else return l;
-	}
+//	public String getLang() {
+//		String l = object.getLang();
+//		if (l == null) return "";
+//		else return l;
+//	}
 	
 	public int getStar() {
 		return star;
@@ -459,18 +456,18 @@ public class Triple extends Exp {
 	 * 0 and n are the variables of the genuine query (?x and ?y)
 	 * others are generated : ?v_i
 	 */
-	String getVar(int i, int n) {
-		if (i == 0)
-			return subject.getName() ;
-		else if (i == n)
-			return object.getName();
-		else
-			return genVar(i);
-	}
+//	String getVar(int i, int n) {
+//		if (i == 0)
+//			return subject.getName() ;
+//		else if (i == n)
+//			return object.getName();
+//		else
+//			return genVar(i);
+//	}
 	
-	String genVar(int i) {
-		return "?v" + id + "_" + i;
-	}
+//	String genVar(int i) {
+//		return "?v" + id + "_" + i;
+//	}
 	
 	public static boolean isVariable(String str) {
 		return (str.indexOf(KeywordPP.VAR1) == 0 || 
@@ -535,7 +532,7 @@ public class Triple extends Exp {
 		String SPACE = " ";
 		
 		if (source != null){
-			sb.append(source.toString() + " ");
+			sb.append(source.toString()).append(" ");
 		}
 		
 		String r = subject.toString();
@@ -560,14 +557,14 @@ public class Triple extends Exp {
 				
 		if (larg != null) {
 			// tuple()
-			sb.append(KeywordPP.TUPLE + KeywordPP.OPEN_PAREN + p + SPACE + r + SPACE + v + SPACE);
+			sb.append(KeywordPP.TUPLE + KeywordPP.OPEN_PAREN).append(p).append(SPACE).append(r).append(SPACE).append(v).append(SPACE);
 			for (Atom e : larg) {
-				sb.append(e.toString() + SPACE);
+				sb.append(e.toString()).append(SPACE);
 			}
 			sb.append(KeywordPP.CLOSE_PAREN + KeywordPP.DOT);
 		}
 		else {
-			sb.append(r + SPACE + p + SPACE + v + KeywordPP.DOT);
+			sb.append(r).append(SPACE).append(p).append(SPACE).append(v).append(KeywordPP.DOT);
 		}
 		
 		return sb;
@@ -647,21 +644,21 @@ public class Triple extends Exp {
 		return isoption;
 	}
 	
-	public void setLastOptionID(int num) {
-		lastOptionID = num;
-	}
-	
-	public int getLastOptionID() {
-		return lastOptionID;
-	}
-	
-	public void setFirstOptionID(int num) {
-		firstOptionID = num;
-	}
-	
-	public int getFirstOptionID() {
-		return firstOptionID;
-	}
+//	public void setLastOptionID(int num) {
+//		lastOptionID = num;
+//	}
+//	
+//	public int getLastOptionID() {
+//		return lastOptionID;
+//	}
+//	
+//	public void setFirstOptionID(int num) {
+//		firstOptionID = num;
+//	}
+//	
+//	public int getFirstOptionID() {
+//		return firstOptionID;
+//	}
 	
 	public int getID() {
 		return id;
@@ -673,39 +670,39 @@ public class Triple extends Exp {
 	
 	public void setTOption(boolean b) {
 		isoption = b;
-		isFirst = b;
-		isLast = b;
-		firstOptionID = id;
-		lastOptionID = id;
+//		isFirst = b;
+//		isLast = b;
+//		firstOptionID = id;
+//		lastOptionID = id;
 	}
 	
 	public void setOption(boolean b) {
 		isoption = b;
 	}
 	
-	public void setFake(boolean b) {
-		fake = b;
-	}
+//	public void setFake(boolean b) {
+//		fake = b;
+//	}
+//	
+//	public boolean isFake() {
+//		return fake;
+//	}
 	
-	public boolean isFake() {
-		return fake;
-	}
-	
-	public void setFirst(boolean b) {
-		isFirst = b;
-	}
-	
-	public void setLast(boolean b) {
-		isLast = b;
-	}
-	
-	public boolean isFirst() {
-		return isFirst;
-	}
-	
-	public boolean isLast() {
-		return isLast;
-	}
+//	public void setFirst(boolean b) {
+//		isFirst = b;
+//	}
+//	
+//	public void setLast(boolean b) {
+//		isLast = b;
+//	}
+//	
+//	public boolean isFirst() {
+//		return isFirst;
+//	}
+//	
+//	public boolean isLast() {
+//		return isLast;
+//	}
 	
 	public void setVariable(String var) {
 		variable = new Variable(var);

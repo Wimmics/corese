@@ -35,8 +35,6 @@ implements Regex, Filter, Expr {
 	static ArrayList<Expr> empty = new ArrayList<Expr>();
 	int min = -1, max = -1, retype = Regex.UNDEF;
 	
-	boolean isQName = false;
-	boolean isEget = false;
 	boolean isSystem = false;
 	boolean isInverse = false, isReverse = false;
 	
@@ -441,23 +439,7 @@ implements Regex, Filter, Expr {
 	public Expression rewrite(){
 		return this;
 	}
-	
-	
-	public boolean isQName() {
-		return isQName;
-	}
-	
-	public void setQName(boolean isQName) {
-		this.isQName = isQName;
-	}
-	
-	public boolean isEget() {
-		return isEget;
-	}
-	
-	public void setEget(boolean isEget) {
-		this.isEget = isEget;
-	}
+				
 	
 	/*************************************************************
 	 * 

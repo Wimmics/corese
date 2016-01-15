@@ -1385,16 +1385,17 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 
 	// ex:name or <uri>
 	public  Constant createConstant(String s) {
-		Constant cst = Constant.create(s);
-		cst.setLongName(getNSM().toNamespaceB(s));
+		Constant cst = Constant.createResource(s, getNSM().toNamespaceB(s));
+		//cst.setLongName(getNSM().toNamespaceB(s));
 		return cst;
 	}
 	
 	// ex:name
 	public  Constant createQName(String s) {
-		Constant cst = Constant.create(s);
 		String lname = getNSM().toNamespaceB(s);
-		cst.setLongName(lname);
+		Constant cst = Constant.createResource(s, lname);
+		//String lname = getNSM().toNamespaceB(s);
+		//cst.setLongName(lname);
 		if (s.equals(lname)){
 			addError("Undefined prefix: ", s);
 		}
@@ -1404,9 +1405,9 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
 	
 	// <uri>
 	public  Constant createURI(String s) {
-		Constant cst = Constant.create(s);
+		Constant cst = Constant.createResource(s, getNSM().toNamespaceB(s));
 		// base
-		cst.setLongName(getNSM().toNamespaceB(s));
+		//cst.setLongName(getNSM().toNamespaceB(s));
 		return cst;
 	}
 	
@@ -1851,10 +1852,10 @@ public class ASTQuery  implements Keyword, ASTVisitable, Graphable {
     	var1.addVariable(var2);
     }
 	
-	public Array newArray(ExpressionList list){
-		Array array =  new Array(list);
-		return array;
-	}
+//	public Array newArray(ExpressionList list){
+//		Array array =  new Array(list);
+//		return array;
+//	}
     
     public void setDescribe(Atom at){
     	setResultForm(QT_DESCRIBE); 

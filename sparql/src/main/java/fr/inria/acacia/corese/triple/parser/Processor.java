@@ -342,7 +342,6 @@ public class Processor {
         static final HashMap<String, Boolean> fixed; 
 	
 	Term term;
-	List<Expr> lExp;
         // function definition for UNDEF function call
 	private Expr define;
 	Pattern pat;
@@ -387,13 +386,7 @@ public class Processor {
         public static Processor create(){
             return new Processor();
         }
-	
-	
-	// Exp
-	
-	public List<Expr> getExpList(){
-		return lExp;
-	}
+			
 	
 	// filter(exist {PAT})
 	public ExpPattern getPattern(){
@@ -403,83 +396,34 @@ public class Processor {
 	public void setPattern(ExpPattern pat){
 		 pattern = pat;
 	}
-
-	
-	Expr getExp(int i){
-		return lExp.get(i);
-	}
-        
-        void setExp(int i, Expr e){
-            if (i < lExp.size()){
-                lExp.set(i, e);
-            }
-            else if (i == lExp.size()){
-                lExp.add(i, e);
-            }
-        }
-        
-        void addExp(int i, Expr e){
-            lExp.add(i, e);
-        }
-
-	
-	void setArguments(){
-		if (lExp == null){
-			lExp = new ArrayList<Expr>();
-			for (Expr e : term.getArgs()){
-				lExp.add(e);
-			}
-		}
-	}
-	
-	public int arity(){
-		return lExp.size();
-	}
-	
-	
-	public int type(){
-		return term.type();
-	}
-        
-        public int oper(){
-		return term.oper();
-	}
-        
-        void setOper(int n){
-            term.setOper(n);
-        }
-        
-        void setType(int n){
-            term.setType(n);
-        }
-	
-	public void type(ASTQuery ast){
-                if (type() != ExprType.UNDEF){
+	       	
+	public void type(Term term, ASTQuery ast){
+                if (term.type() != ExprType.UNDEF){
                     // already done
                 }
                 else if (term.isFunction()){
-			setType(ExprType.FUNCTION);
-			setOper(getOper());
-                        preprocess(ast);
+			term.setType(ExprType.FUNCTION);
+			term.setOper(getOper(term));
+                        preprocess(term, ast);
 		}
 		else if (term.isAnd()){
-			setType(ExprType.BOOLEAN);
-			setOper(ExprType.AND);
+			term.setType(ExprType.BOOLEAN);
+			term.setOper(ExprType.AND);
 		}
 		else if (term.isOr()){
-			setType(ExprType.BOOLEAN);
-			setOper(ExprType.OR);
+			term.setType(ExprType.BOOLEAN);
+			term.setOper(ExprType.OR);
 		}
 		else if (term.isNot()){
-			setType(ExprType.BOOLEAN);
-			setOper(ExprType.NOT);
+			term.setType(ExprType.BOOLEAN);
+			term.setOper(ExprType.NOT);
 		}
 		else {
-			setType(ExprType.TERM);
-			setOper(getOper());
+			term.setType(ExprType.TERM);
+			term.setOper(getOper(term));
 		}
 		
-		if (oper() == ExprType.UNDEF){
+		if (term.oper() == ExprType.UNDEF){
 			if (term.isPathExp()){
 				// Property Path Exp
 			}
@@ -490,50 +434,77 @@ public class Processor {
 		
 	}
                             
-        void prepare(ASTQuery ast) {
-            name = term.getLabel();
+       void prepare(Term term, ASTQuery ast) {
+        //name = term.getLabel();
         if (term.isFunction()) {
-            switch (oper()) {
-                case ExprType.IN:
-                    compileInList();
-                    break;
+            switch (term.oper()) {                
                 case ExprType.HASH:
-                    compileHash();
+                    compileHash(term);
                     break;
                 case ExprType.URI:
-                    compileURI(ast);
+                    compileURI(term, ast);
                     break;
                 case ExprType.CAST:
-                    compileCast();
-                    break;
+                    compileCast(term);
+                    break;               
+                    
                 case ExprType.REGEX:
-                    compileRegex();
-                    break;
+                case ExprType.EXIST:                  
+                case ExprType.STRREPLACE:                   
+                case ExprType.XPATH:                   
+                case ExprType.SQL:                   
+                case ExprType.EXTERNAL:                    
+                case ExprType.CUSTOM:
+                    
+                    prepareOwn(term, ast);
+            }
+        }
+
+        term.setArguments();
+        check(term, ast);
+    }
+       
+       /**
+        * Create a specific Processor for this term
+        * because we store specific data for the function
+        * Use case: regex
+        */
+       void prepareOwn(Term term, ASTQuery ast){
+           term.setProcessor(new Processor(term));
+           term.getProcessor().prepare2(term, ast);
+       }
+       
+       /**
+        * Run on the specific Processsor      
+        */
+      void prepare2(Term term, ASTQuery ast) {
+        if (term.isFunction()) {
+            switch (term.oper()) {
+                 case ExprType.REGEX:
+                    compileRegex(term);
+                    break;               
                 case ExprType.STRREPLACE:
-                    compileReplace();
+                    compileReplace(term);
                     break;
                 case ExprType.XPATH:
-                    compileXPath(ast);
+                    compileXPath(term, ast);
                     break;
                 case ExprType.SQL:
-                    compileSQL(ast);
+                    compileSQL(term, ast);
                     break;
                 case ExprType.EXTERNAL:
-                    compileExternal(ast);
+                    compileExternal(term, ast);
                     break;
                 case ExprType.CUSTOM:
-                    compileCustom(ast);
+                    compileCustom(term, ast);
                     break;
             }
         }
-        
-        setArguments();		
-        check(ast);
     }
         
 	
 	// TODO: error message
-	void check(ASTQuery ast){
+	void check(Term term, ASTQuery ast){
 		if (term.isAggregate()){ 
                    if (term.getName().equalsIgnoreCase(COUNT)){
                         if (term.getArity() > 1){
@@ -903,7 +874,7 @@ public class Processor {
         }
 	       
 	
-	int getOper(){
+	int getOper(Term term){
                 return getOper(term.getLabel());
         }
                 
@@ -943,7 +914,7 @@ public class Processor {
 	 * ->
 	 * cast(?x, xsd:integer, CoreseInteger)
 	 */
-	void compileCast(){
+	void compileCast(Term  term){
 		// name = xsd:integer | ... | str
 		String name = term.getName();
 		Constant dt = Constant.createResource(name);
@@ -951,13 +922,14 @@ public class Processor {
 		// type = CoreseInteger
 		Constant type = Constant.create(Constant.getJavaType(name), RDFS.xsdstring);
 		type.getDatatypeValue();
-		lExp = new ArrayList<Expr>();
+		List<Expr> lExp = new ArrayList<Expr>();
 		lExp.add(term.getArg(0));
 		lExp.add(dt);
 		lExp.add(type);
+                term.setExpList(lExp);
 	}
         
-        void preprocess(ASTQuery ast){
+        void preprocess(Term term, ASTQuery ast){
             switch (term.oper()){
                 
                 case ExprType.MAP:
@@ -967,15 +939,15 @@ public class Processor {
                 case ExprType.MAPEVERY:
                 case ExprType.MAPANY:
                 case ExprType.APPLY:
-                    processMap(ast);
+                    processMap(term, ast);
                     break;
                     
                 case ExprType.AGGREGATE:
-                    processAggregate(ast);
+                    processAggregate(term, ast);
                     break;
                                                       
                 case ExprType.LET:
-                    processLet(ast);
+                    processLet(term, ast);
                     break;
                                   
                     
@@ -988,8 +960,8 @@ public class Processor {
          * let (?x = exp, let (?y = exp, exp))
          * @param ast 
          */
-        void processLet(ASTQuery ast){
-            processMatch(ast);
+        void processLet(Term term, ASTQuery ast){
+            processMatch(term, ast);
         }
         
         
@@ -999,7 +971,7 @@ public class Processor {
          * let (?x = xt:get(?l, 0), ?p = xt:get(?l, 1), ?y = xt:get(?l, 2)) {} 
          * @param ast 
          */
-       void processMatch(ASTQuery ast) {
+       void processMatch(Term term, ASTQuery ast) {
             Expression match = term.getArg(0).getArg(0);
             Expression list  = term.getDefinition();
 
@@ -1038,7 +1010,7 @@ public class Processor {
          * map(xt:fun(?x), ?list)
          * @param ast 
          */
-      void processMap(ASTQuery ast) {
+      void processMap(Term term, ASTQuery ast) {
         if (term.getArgs().size() >= 2) {
             Expression fst = term.getArg(0);
 
@@ -1056,7 +1028,7 @@ public class Processor {
     }
       
       // aggregate(?x, xt:mediane)
-      void processAggregate(ASTQuery ast) {
+      void processAggregate(Term term, ASTQuery ast) {
         if (term.getArgs().size() == 2) {
             Expression rst = term.getArg(1);
             if (rst.isConstant()) {
@@ -1079,7 +1051,7 @@ public class Processor {
 	 * sha256(?x) ->
 	 * hash("SHA-256", ?x)
 	 */
-	void compileHash(){
+	void compileHash(Term term){
 		String name = term.getName();
 		if (name.startsWith("sha") || name.startsWith("SHA")){
 			name = "SHA-" + name.substring(3);
@@ -1087,25 +1059,22 @@ public class Processor {
 		term.setModality(name);
 	}
 	
-	void compileURI(ASTQuery ast){
+	void compileURI(Term term, ASTQuery ast){
 		String base = ast.getNSM().getBase();
 		if (base!=null && base!=""){
 			term.setModality(ast.getNSM().getBase());
 		}
 	}
-	
-	void compileInList(){
-		// ?x in (a b)
-		
-	}
-
-	
+        
+        void compileExist(Term term){
+        }
+			
 	/**
 	 * term = regex(?x,  ".*toto",  ["i"])
 	 * match.reset(string);
 	 * boolean res = match.matches();
 	 */
-	void compileRegex(){
+	void compileRegex(Term term){
 		String sflag = null;
                 if (term.getArity() == 3){
 			sflag = term.getArg(2).getName();
@@ -1144,7 +1113,7 @@ public class Processor {
 		match = pat.matcher("");
 	}
 	
-	void compileReplace(){
+	void compileReplace(Term term){
 		if (term.getArg(1).isConstant()){
                     String sflag = null;
                     if (term.getArity() == 4){
@@ -1179,7 +1148,7 @@ public class Processor {
 		return match.matches();
 	}
 	
-	void compileSQL(ASTQuery ast){
+	void compileSQL(Term term, ASTQuery ast){
 		//sql = new SQLFun();
 	}
 	
@@ -1195,7 +1164,7 @@ public class Processor {
 	/**
 	 * xpath(?g, '/book/title')
 	 */
-	void compileXPath(ASTQuery ast){
+	void compileXPath(Term term, ASTQuery ast){
 		xfun = new XPathFun();
 		if (ast == null) ast = ASTQuery.create();
 		xfun.init(ast.getNSM(),  !true);
@@ -1243,7 +1212,7 @@ public class Processor {
 	 * prefix ext: <function://package.className>
 	 * ext:fun() 
 	 */
-	void compileExternal(ASTQuery ast)  {
+	void compileExternal(Term term, ASTQuery ast)  {
 		String oper = term.getLabel();
 		String p ;
 		String path ;
@@ -1317,7 +1286,7 @@ public class Processor {
 		return null;
 	}
         
-        void compileCustom(ASTQuery ast){
+        void compileCustom(Term term, ASTQuery ast){
             name = term.getLabel().substring(CUSTOM.length());
         }
         
@@ -1325,20 +1294,6 @@ public class Processor {
         String getShortName(){
             return name;
         }
-
-    /**
-     * @return the define
-     */
-    public Expr getDefine() {
-        return define;
-    }
-
-    /**
-     * @param define the define to set
-     */
-    public void setDefine(Expr define) {
-        this.define = define;
-    }
 
 
 }

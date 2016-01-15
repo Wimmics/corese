@@ -57,12 +57,17 @@ public class Term extends Expression {
 	static final String LIST = "inList";
 	static final String SERVICE = "service";
 
-
+        // default processor to compile term
+        static Processor processor;
+        
+        // possibly dynamic processor to implement some functions: regex, ...
 	Processor proc;
 	Exp exist;
 	Constant cname;
 	
-	ArrayList<Expression> args=new ArrayList<Expression>();
+	ArrayList<Expression> args = new ArrayList<Expression>();
+        List<Expr> lExp;
+
 	// additional system arg:
 	Expression exp;
 	boolean isFunction = false,
@@ -73,6 +78,10 @@ public class Term extends Expression {
 	String  modality;       
         int type = ExprType.UNDEF, oper = ExprType.UNDEF;
         private int place = -1;
+        
+        static {
+            processor = new Processor();
+        }
 	
 	public Term() {
 	}
@@ -131,7 +140,7 @@ public class Term extends Expression {
 		t.args.add(exp3);
 		return t;
 	}
-	
+       	
 	public String getLabel() {
 		if (getLongName()!=null) return getLongName();
 		return name;
@@ -899,41 +908,59 @@ public class Term extends Expression {
         }
 	
         public String getShortName(){
+            if (proc == null || proc.getShortName() == null){
+                return getName();
+            }
             return proc.getShortName();
         }
 	
 	public Expr getExp(int i){
-		return proc.getExp(i);
+		return lExp.get(i);
 	}
         
         public void setExp(int i, Expr e){
-             proc.setExp(i, e);
-	}
+            if (i < lExp.size()){
+                lExp.set(i, e);
+            }
+            else if (i == lExp.size()){
+                lExp.add(i, e);
+            }
+        }
         
         public void addExp(int i, Expr e){
-             proc.addExp(i, e);
+            lExp.add(i, e);
+        }
+
+	
+	void setArguments(){
+		if (lExp == null){
+			lExp = new ArrayList<Expr>();
+			for (Expr e : getArgs()){
+				lExp.add(e);
+			}
+		}
 	}
+	
+	public int arity(){
+		return lExp.size();
+	}
+	
 	
 	public Expression getArg(){
 		return exp;
 	}
-        
-        
-        public Expr getDefine(){
-            return proc.getDefine();
-        }
-        
-        public void setDefine(Expr exp){
-            proc.setDefine(exp);
-        }
-	
+                      	
 	public void setArg(Expression e){
 		exp = e;
 	}
 	
 	public List<Expr> getExpList(){
-		return proc.getExpList();
+		return lExp;
 	}
+        
+        void setExpList(List<Expr> l){
+            lExp = l;
+        }
 	
 	public ExpPattern getPattern(){
 		if (proc == null){
@@ -943,7 +970,9 @@ public class Term extends Expression {
 	}
 	
 	public void setPattern(ExpPattern pat){
+            if (proc != null){
 		proc.setPattern(pat);
+            }
 	}
 	
 	void setExist(Exp exp){
@@ -961,15 +990,19 @@ public class Term extends Expression {
                     return this;
                 }
                 
-		proc = new Processor(this);
-		proc.type(ast);                
+		//proc = new Processor(this);
+                proc = processor;
+		proc.type(this, ast);                
 		
                 int i = 0;
 		for (Expression exp : getArgs()){
 			exp.prepare(ast);
 		}
 		
-		proc.prepare(ast);
+                // May create a specific Processor to manage this specific term
+                // and overload proc field
+                // Use case: regex, external fun, etc.
+		proc.prepare(this, ast);
                 
                 if (getArg() != null){
                     getArg().prepare(ast);
@@ -979,11 +1012,6 @@ public class Term extends Expression {
 		
 	}
         
-
-	public int arity(){
-		return proc.arity();
-	}
-	
 	
 	public int type(){
 		return type;
@@ -1008,6 +1036,10 @@ public class Term extends Expression {
 		// TODO Auto-generated method stub
 		return proc;
 	}
+        
+        void setProcessor(Processor p){
+            proc = p;
+        }
 	              
         public Term copy(Variable o, Variable n) {
             Term f = null;

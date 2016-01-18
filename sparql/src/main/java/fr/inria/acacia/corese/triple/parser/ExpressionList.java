@@ -1,7 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 /**
  * <p>Title: Corese</p>

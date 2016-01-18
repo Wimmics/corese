@@ -2,7 +2,6 @@ package fr.inria.acacia.corese.triple.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;

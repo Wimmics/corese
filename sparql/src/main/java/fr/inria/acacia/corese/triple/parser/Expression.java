@@ -5,7 +5,6 @@ import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -32,11 +31,11 @@ implements Regex, Filter, Expr {
 	public static final int POSFILTER = 2;
 	public static final int BOUND = 4;
 	
-	static ArrayList<Expr> empty = new ArrayList<Expr>();
-	int min = -1, max = -1, retype = Regex.UNDEF;
+	static ArrayList<Expr> empty = new ArrayList<Expr>(0);
+        int retype = Regex.UNDEF;
 	
 	boolean isSystem = false;
-	boolean isInverse = false, isReverse = false;
+        boolean isReverse = false;
 	
 	String name, longName;
 	Expression exp;
@@ -230,16 +229,6 @@ implements Regex, Filter, Expr {
 		return null;
 	}
 	
-	
-	public boolean isOptionVar(List<String> stdVar){
-		Variable var = getOptionVar(stdVar);
-		return var != null;
-	}
-	
-	public Variable getOptionVar(List<String> stdVar){
-		return null;
-	}
-	
 	public boolean isAnd(){
 		return false;
 	}
@@ -272,11 +261,11 @@ implements Regex, Filter, Expr {
 	}
 	
 	public boolean isInverse(){
-		return isInverse;
+		return false;
 	}
 	
 	public void setInverse(boolean b){
-		isInverse = b;
+		//isInverse = b;
 	}
 	
 	public boolean isReverse(){
@@ -295,33 +284,23 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
-	void setMin(int n){
-		min = n;
-	}
-	
 	public int getMin(){
-		return min;
+		return -1;
 	}
-	
-	void setMax(int n){
-		max = n;
-	}
-	
+
 	public int getMax(){
-		return max;
+		return -1;
 	}
 	
 	// include isPlus()
 	public boolean isCounter(){
-		return (min!=-1 || max != -1);
+		return false;
 	}
 	
 	boolean isOrVarEqCst(Variable var){
 		return false;
 	}
-	
-	void getCst(Vector<Constant> vec){}
-	
+		
 	public boolean isStar(){
 		return false;
 	}

@@ -3,7 +3,6 @@ package fr.inria.acacia.corese.triple.parser;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
@@ -77,6 +76,7 @@ public class Term extends Expression {
 	boolean isShort = false;
 	String  modality;       
         int type = ExprType.UNDEF, oper = ExprType.UNDEF;
+        int min = -1, max = -1;
         private int place = -1;
         
         static {
@@ -152,6 +152,26 @@ public class Term extends Expression {
 	
 	public Constant getCName(){
 		return cname;
+	}
+        
+        void setMin(int n){
+		min = n;
+	}
+	
+	public int getMin(){
+		return min;
+	}
+	
+	void setMax(int n){
+		max = n;
+	}
+	
+	public int getMax(){
+		return max;
+	}
+        
+        public boolean isCounter(){
+		return (min!=-1 || max != -1);
 	}
         
         public void setModality(ExpressionList el){
@@ -791,13 +811,13 @@ public class Term extends Expression {
 	}
 	
 	
-	public Variable getOptionVar(Vector<String> stdVar) {
-		for (int i = 0; i < getArity(); i++) {
-			Variable var = getArg(i).getOptionVar(stdVar);
-			if (var != null) return var;
-		}
-		return null;
-	}
+//	public Variable getOptionVar(Vector<String> stdVar) {
+//		for (int i = 0; i < getArity(); i++) {
+//			Variable var = getArg(i).getOptionVar(stdVar);
+//			if (var != null) return var;
+//		}
+//		return null;
+//	}
 	
 	
 	public  int getArity(){

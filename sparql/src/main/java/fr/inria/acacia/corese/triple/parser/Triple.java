@@ -2,7 +2,6 @@ package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -51,22 +50,16 @@ public class Triple extends Exp {
 	Expression exp, 
 		// path regex
 		regex;
-	String mode;
-	Vector<String> score; // score ?s { pattern }
+	String mode;	
 	int id=-1; // an unique id for triple (if needed to generate variable/option)
-	int star=0; // for path of length n
-	int line=-1; 
-	String rvar, pre;          // variable on get:gui::?x pre=?x value=get:gui
+	int star=0; // for path of length n	
 	boolean isexp=false;     // is a filter
 	boolean isoption=false;       
 	boolean isRec = false;   // graph rec ?s {}
-	boolean isall=false;     // all::p{n}
+	//boolean isall=false;     // all::p{n}
 	boolean istype=false;    // rdf:type or <= rdf:type
 	boolean isdirect=false;  // direct::rdf:type
-	boolean isone=false;     // one:: only one occurrence of ?x ?p ?y
-	boolean isset=false;     // all path of length <= n : relation{n}
-	boolean trace = false;
-	
+		
 	public Triple() {
 		setID();
 	}
@@ -155,16 +148,9 @@ public class Triple extends Exp {
 	
 	private void setTriple(Atom exp1, Atom atom, Atom exp2) {
 		setOne(atom.isIsone());
-	    setAll(atom.isIsall());
 	    setDirect(atom.isIsdirect());
-	    //setIsset(atom.isIsset());
 	    setPath(atom.getStar());
-	    if (exp1.getIntVariable() != null){
-	    	setRVar(exp1.getIntVariable().getName());
-	    }
-	    if (exp2.getIntVariable() != null){
-	    	setVVar(exp2.getIntVariable().getName());
-	    }
+	    
 	}
 	
 	public Triple getTriple(){
@@ -191,14 +177,7 @@ public class Triple extends Exp {
 	public void setID(int num) {
 		id = num;
 	}
-	
-	public void setLine(int n){
-		line = n;
-	}
-	
-	public int getLine(){
-		return line;
-	}
+
 	
 	/************************************************************************
 	 * 2. Semantic phase
@@ -266,50 +245,13 @@ public class Triple extends Exp {
 	public String getSourceName(){
 		if (source == null) return null;
 		return source.getName();
-	}
-	
-	public Atom getSourceExp(String name){
-		if (name == null) return null;
-		Atom at;
-		if (Triple.isVariable(name)){ 
-			Variable var = new Variable(name);
-			if (Variable.isBlankVariable(name)){
-				var.setBlankNode(true);
-			}
-			at = var;
-		}
-		else {
-			at = Constant.createResource(name);
-		}
-		return at;
-	}
+	}	
 	
 	public Atom getSource(){
 		return source;
 	}
 	
-	public void setScore(Vector<String> names){
-		score = names;
-	}
-	
-	public Vector<String> getScore(){
-		return score;
-	}
-	
-	/**
-	 * An outermost source does not overwrite local source
-	 */
-	public void setSource(String src) {
-		if (source == null && ! isexp){
-			setVSource(src);
-		}
-	}
-	
-	public void setVSource(String src) {
-		source = getSourceExp(src);
-	}
-	
-	
+
 	public void setVSource(Atom at) {
 		source = at;
 	}
@@ -428,15 +370,6 @@ public class Triple extends Exp {
 		return isexp;
 	}
 	
-//	public String getDatatype() {
-//		return object.getDatatype();
-//	}
-	
-//	public String getLang() {
-//		String l = object.getLang();
-//		if (l == null) return "";
-//		else return l;
-//	}
 	
 	public int getStar() {
 		return star;
@@ -446,44 +379,6 @@ public class Triple extends Exp {
 		star = s;
 	}
 	
-	boolean isNamespace() {
-		return (subject.getName().equalsIgnoreCase(PREFIX) || 
-				subject.getName().equals(BASE) );
-	}
-	
-	/**
-	 * Variable for ith node in the path
-	 * 0 and n are the variables of the genuine query (?x and ?y)
-	 * others are generated : ?v_i
-	 */
-//	String getVar(int i, int n) {
-//		if (i == 0)
-//			return subject.getName() ;
-//		else if (i == n)
-//			return object.getName();
-//		else
-//			return genVar(i);
-//	}
-	
-//	String genVar(int i) {
-//		return "?v" + id + "_" + i;
-//	}
-	
-	public static boolean isVariable(String str) {
-		return (str.indexOf(KeywordPP.VAR1) == 0 || 
-				str.indexOf(KeywordPP.VAR2) == 0 );
-	}
-	
-	public static boolean isQName(String str) {
-		return str.toLowerCase().matches("[a-z]*:[a-z_]*");
-	}
-	
-	public static boolean isABaseWord(String str) {
-		return (!isVariable(str) && !isQName(str) && 
-				!(str.startsWith(KeywordPP.OPEN) && 
-				  str.endsWith(KeywordPP.CLOSE)));
-	}
-	
 
 	public boolean isType() {
 		return istype;
@@ -491,12 +386,6 @@ public class Triple extends Exp {
 	
 	public void setType(boolean b) {
 		istype = b;
-	}
-	
-
-	
-	String getPre() {
-		return pre;
 	}
 	
 	
@@ -600,16 +489,6 @@ public class Triple extends Exp {
 		return isexp;
 	}
 	
-	/**
-	 * Does this exp refer one option variable (a var that is only referenced
-	 * in an option)
-	 * stdVar is the list of non optional variables (std var)
-	 */
-	public boolean isOptionVar(Vector<String> stdVar) {
-		if (exp == null)
-			return false;
-		return exp.isOptionVar(stdVar);
-	}
 	
 	Bind validate(Bind global, int n){
 		Bind env = new Bind();
@@ -717,7 +596,7 @@ public class Triple extends Exp {
 	}
 	
 	public boolean isOne() {
-		return isone;
+		return false;
 	}
 	
 	public boolean isPath(){
@@ -735,7 +614,7 @@ public class Triple extends Exp {
 	
 	
 	void setOne(boolean b) {
-		isone = b;
+		//isone = b;
 	}
 
 	
@@ -795,29 +674,12 @@ public class Triple extends Exp {
 	}
 	
 	
-	
-	public void setAll(boolean b) {
-		isall = b;
-	}
-	
 	public void setDirect(boolean b) {
 		isdirect = b;
 	}
 	
-	public void setIsset(boolean b) {
-		isset = b;
-	}
-	
 	public void setPath(int i) {
 		star = i;
-	}
-	
-	public void setRVar(String s) {
-		rvar = s;
-	}
-	
-	public void setVVar(String s) {
-		pre = s;
 	}
 	
 	private static String getRootPropertyQN() {

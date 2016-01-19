@@ -9,11 +9,12 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 
 template  st:display(?r, ?l) {
+  format {
+    "<a href='%s'>%s</a>"
 
- "<a href='"  st:plink(?r)  "'>"  
-    str(coalesce(?l, ?pr)) 
-  "</a>"
-
+    st:plink(?r)
+    str(coalesce(?l, ?pr))
+  }
 }
 
 where {

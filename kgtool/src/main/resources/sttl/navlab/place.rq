@@ -8,7 +8,7 @@ template {
   st:call-template(st:frame, ?label, coalesce(?ic, ""), 
      st:call-template(st:descplace, ?in))
    
-  st:call-template(st:locate, ?in)
+  st:call-template(st:glocate, ?in)
 
 }
 where {

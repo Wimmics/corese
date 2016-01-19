@@ -4,11 +4,14 @@
 prefix cn: <http://cdn.fr/schema/>
 template cn:row(?d) {
 
-  "<td>" 
-  group {
-       st:call-template(cn:date, ?d, ?topic)
-  }    
-  "</td>"
+  format {
+    "<td>%s</td>"
+    
+    group {
+	st:call-template(cn:date, ?d, ?topic)
+    } 
+  }
+  
 
 }
 where {

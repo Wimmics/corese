@@ -1,19 +1,27 @@
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:content(?year) {
 
-  "<a name=" str(?dd) "/>"
-  "<h4>" str(?dd) "</h4>"  
-  "<p>"
+format {
+  """
+  <a name='%s'/>
+  <h4>%s</h4>  
+  <p>%s</p>
+  """
   
+  str(?dd)
+  str(?dd)
   group {
-    "<a href='" st:plink(?x, st:dbpedia) "'>" 
-    str(?title)   
-    "</a>"  
+    format {
+      "<a href='%s'>%s</a>"  
+      
+      st:plink(?x, st:dbpedia)
+      str(?title)
+    } 
     
     ; separator = "<br/>"
   }
+}
 
-  "</p>"
 }
 where {
 

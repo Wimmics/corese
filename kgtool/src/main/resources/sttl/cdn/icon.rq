@@ -1,20 +1,30 @@
 prefix cn: <http://cdn.fr/schema/>
 template cn:icon {
 
-"<table class='margin'><tr>\n"
+format {
+  """
+  <table class='margin'><tr>\n
+  %s
+  </tr></table>\n
+  """
 
   group {
-    "<td>" 
-      "<a href='" ?i "'><img width='100' src='" ?i "' /></a>" 
-    "</td>"
-  }
-  
-"</tr></table>\n"
+    format {
+	"""
+	<td> 
+	  <a href='%s'><img width='100' src='%s' /></a>" 
+	</td>
+	"""
+	
+	?i ?i 
+      }
+    }
+}
 
 }
 where { }
-values ?i {
 
+values ?i {
 
 
 <http://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG>

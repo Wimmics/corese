@@ -1,11 +1,18 @@
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:month(?y, ?m) {
-
-    "<h3 class='center'>" cal:month(?m) "</h3>"
+format {
+    """
+    <h3 class='center'>%s</h3>    
+    <pre>
+    Mo Tu We Th Fr Sa Su \n    
+    %s    
+    %s
+    # additional space when last day is sunday (because \n alone fails)
+    %s    
+    </pre>
+    """
     
-    "<pre>"
-    "Mo Tu We Th Fr Sa Su \n"
-    
+    cal:month(?m)
     group {
     
         if (?n = 1, xt:space(?first - 1), "")
@@ -15,13 +22,11 @@ template st:month(?y, ?m) {
         
         ; separator = ""
     }
-    
     if (?first + ?days - 1 < 35 , "\n ", "")
-    # additional space when last day is sunday (because \n alone fails)
     if (?first + ?days - 1 = 35 && ?last = 7, " ", "")
-    
-    "</pre>"
-     
+}
+
+
     ; separator = "\n"                   
 }
 where {

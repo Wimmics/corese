@@ -1,16 +1,18 @@
 template st:enum(?year, ?f, ?l) {
-"<tr>"
+format {
+  "<tr>%s</tr>\n"
 
-group {
-  "<td>"
-
-  st:call-template(st:monthtab, ?year, ?month) 
-
-  "</td>"
-  "<td>&nbsp;&nbsp;</td>"
+  group {
+    format {
+      """
+      <td>%s</td>
+      <td>&nbsp;&nbsp;</td>
+      """
+      
+      st:call-template(st:monthtab, ?year, ?month)
+     }
+  }
 }
-
-"</tr>\n"
 }
 where {
 

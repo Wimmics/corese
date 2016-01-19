@@ -7,20 +7,23 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:index(?title) {
 
-"<table class='margin'><tr>"
+format {
+  """
+  <table class='margin'>
+  <tr>%s %s %s</tr>
+  </table>
+  """
 
   if (bound(?before), 
-    concat("<td><a href='", st:plink(?before), "'>Avant</a></td><td>&nbsp;&nbsp;</td>"), 
+    st:format("<td><a href='%s'>Avant</a></td><td>&nbsp;&nbsp;</td>", st:plink(?before)), 
     "")
     
-  st:call-template(cn:elem, ?title)
+  st:call-template(cn:elem, ?title) 
   
   if (bound(?after), 
-    concat("<td><a href='", st:plink(?after), "'>Après</a></td>"), 
+    st:format("<td><a href='%s'>Après</a></td>", st:plink(?after)), 
     "")  
-    
-"</tr></table>"
-
+}
 
 st:call-template(cn:list)   
 

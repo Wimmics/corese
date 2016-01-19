@@ -1,19 +1,30 @@
 prefix cn: <http://cdn.fr/schema/>
 template cn:list {
+
+format {
+
   """
   <table class='margin'>
   <tr>
-  <td><a href='""" 
-  st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
-  "'>Carte</a></td><td>&nbsp;</td>"
-
-  group {
-    "<td><a href='" st:misc(?query) "'>" str(?title) "</a></td><td>&nbsp;</td>"
-  }
-  
-  """</tr>
+  <td><a href='%s'>Carte</a></td><td>&nbsp;</td>
+  %s  
+  </tr>
   </table>
   """
+  
+  st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
+  
+  group {
+    format {
+      "<td><a href='%s'>%s</a></td><td>&nbsp;</td>"
+      
+      st:misc(?query)
+      str(?title)
+    }
+  }
+  
+}
+  
 }
 where {
 

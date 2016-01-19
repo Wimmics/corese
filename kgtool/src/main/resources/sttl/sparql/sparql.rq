@@ -8,13 +8,13 @@
 
 template st:sparql {
 
-  st:call-template-with(st:server, st:head)
+  st:head()
    
   st:call-template(st:query, coalesce(st:get(st:query), ""))  
   
   st:call-template(st:page)
     
-  st:call-template-with(st:server, st:tail)
+  st:tail()
 
 }
 where {

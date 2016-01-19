@@ -1,5 +1,8 @@
 template st:link(?uri, ?title) {
-   "<a href='"  str(?uri) "'>" str(?title) "</a>"
+   format {
+   "<a href='%s'>%s</a>"
+   str(?uri) str(?title)
+   }
 }
 where {
 }

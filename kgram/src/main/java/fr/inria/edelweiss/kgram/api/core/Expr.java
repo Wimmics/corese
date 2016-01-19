@@ -17,6 +17,7 @@ public interface Expr {
 	Object getPattern();
         boolean isSystem();
         boolean isPublic();
+        void setPublic(boolean b);
         boolean isTrace();
         boolean isDebug();
         boolean isTester();

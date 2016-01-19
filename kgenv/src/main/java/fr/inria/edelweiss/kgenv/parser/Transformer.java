@@ -478,18 +478,34 @@ public class Transformer implements ExpType {
          * @param q 
          */
         void definePublic(Extension ext, Query q){
+            definePublic(ext, q, true);
+        }
+        
+        /**
+         * isDefine = true means export to Interpreter
+         * Use case: Transformation st:profile does not export to Interpreter
+         * hence it uses isDefine = false
+         */
+        public void definePublic(Extension ext, Query q, boolean isDefine){
             for (FunMap m : ext.getMaps()){
                 for (Expr exp : m.values()){
                     Expression e = (Expression) exp;
-                    e.setPublic(true);
-                    definePublic(e, q);
+                    //e.setPublic(true);
+                    definePublic(e, q, isDefine);
                 }
             }            
         }
         
        void definePublic(Expression exp, Query q) {
-            Interpreter.define(exp);
-            if (exp.isSystem()) {               
+           definePublic(exp, q, true);
+       }
+       
+       void definePublic(Expression exp, Query q, boolean isDefine) {
+           if (isDefine){
+                Interpreter.define(exp);
+           }
+           exp.setPublic(true);
+           if (exp.isSystem()) {               
                 // export function with exists {} 
                 exp.getTerm().setPattern(q);
             }

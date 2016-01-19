@@ -67,6 +67,19 @@ public class Extension {
             }
         }
     }
+    
+    /**
+     * Use case: Transformation st:profile exports its functions to transformation
+     * They are declared as public
+     * Hence Interpreter isPublic() is OK.
+     */
+     public void setPublic(boolean b){
+        for (FunMap m : getMaps()){
+            for (Expr e : m.values()){
+                e.setPublic(b);
+            }
+        }
+    }
 
     public boolean isDefined(Expr exp) {
         return getMap(exp).containsKey(exp.getLabel());

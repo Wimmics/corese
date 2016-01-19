@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jan 14 16:08:06 CET 2016
+Tue Jan 19 08:50:29 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -56,23 +56,8 @@ st:call-template(st:desctriple,
   st:number(), ?r, ?p, ?tt, if (?href, st:href, st:property))
 
 }
-where { 
-
-  values (?p ?title ?titleen) {
-    (p:dateDeNaissance 	"Naissance" 	"Birth")
-    (p:dateDeDécès 	"Décès"		"Death")
-    (o:predecessor 	"Prédécesseur"	"Predecessor")
-    (o:successor 	"Successeur"	"Successor")
-    (o:father 		"Père"		"Father")
-    (o:mother 		"Mère"		"Mother")
-    (o:spouse 		"Conjoints"	"Spouse")
-    (o:child 		"Enfants"	"Children")
-    (o:residence 	"Résidence"	"Residence")
-    (rdfs:comment 	"Résumé"	"Abstract")
-    (o:wikiPageRedirects "Voir aussi"	"See Also")
-    (o:wikipedia	"Wikipedia"	"Wikipedia")
-    (o:dbpedia		"DBpedia"	"DBpedia")
-  }
+where {
+  bind (unnest(us:define()) as (?p,  ?title, ?titleen))   
   
   bind (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
   
@@ -81,6 +66,17 @@ where {
   bind (if (st:get(st:lang, "en"), ?titleen, ?title) as ?tt)
 
 }
+
+#
+# Properties to be displayed for Person (see profile.rq)
+#
+function us:define(){ 
+  let (?m = us:definition(st:person)){
+    if (xt:size(?m) = 0) { us:person() } else { ?m }
+  }
+}
+
+
 
 ]]>
 </body>
@@ -213,15 +209,54 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+
 template st:profile {
 
  
 }
 where {}
     
+#
+# Get the ?q = st:person st:param property from profile.ttl 
+# Return properties to be displayed
+# st:get(st:definition) return the profile.ttl RDF graph
+#
+function us:definition(?q){
+  st:set(st:currentProperty, ?q) ;
+  let (?m = 
+      select ?p ?title ?titleen where {
+	bind (st:get(st:currentProperty) as ?q)
+	bind (st:get(st:definition) as ?def)
+	graph ?def {
+	 [] ?q ?list
+	 ?list rdf:rest*/rdf:first (?p  ?title ?titleen)
+	}
+      })
+      { ?m }
+}
+
+#
+# Default properties to be displayed for Person
+#
+function us:person(){
+    let (?m = 
+      select * where {
+      values (?p ?title ?titleen) {
+	  (p:dateDeNaissance 	"Naissance" 	"Birth")
+	  (p:dateDeDécès 	"Décès"		"Death")
+	  (o:predecessor 	"Prédécesseur"	"Predecessor")
+	  (o:successor 		"Successeur"	"Successor")	 
+	  (rdfs:comment 	"Résumé"	"Abstract")
+	  (o:wikiPageRedirects  "Voir aussi"	"See Also")
+	  (o:wikipedia		"Wikipedia"	"Wikipedia")
+	  (o:dbpedia		"DBpedia"	"DBpedia")
+	}
+      })
+      { ?m }
+}  
   
-   
- 
 
 
 ]]>

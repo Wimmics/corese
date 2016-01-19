@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,13 +27,15 @@ public class ContextBuilder {
     
     Graph graph;
     Context context;
+    HashMap<String, Node> done; 
     
     public ContextBuilder(Graph g){
         this.graph = g;
+        done = new HashMap<String, Node>();
     }
     
     public ContextBuilder(String path){
-        graph = Graph.create();
+        this(Graph.create());
         Load ld = Load.create(graph);
         try {
             ld.loadWE(path);
@@ -94,23 +97,32 @@ public class ContextBuilder {
     }
     
      /** 
-      *       
-      * TODO: prevent loop 
-      * n =  [ st:import st:cal ]
-      * st:cal st:param [ ... ] 
-      * 
+      *           
       */
-     void importer(Node n){
-         Edge imp = graph.getEdge(Context.STL_IMPORT, n, 0);        
-          if (imp != null){
-                Edge par = graph.getEdge(Context.STL_PARAM, imp.getNode(1), 0);
-                if (par != null){
+     void importer(Node n) {         
+        for (Entity ent : graph.getEdges(Context.STL_IMPORT, n, 0)) {
+            if (ent != null){
+                Node imp = ent.getNode(1);
+                if (done(imp)){
+                    continue;
+                }
+                Edge par = graph.getEdge(Context.STL_PARAM, imp, 0);
+                if (par != null) {
                     context(par.getNode(1), false);
                 }
             }
+        }
      }
-        
-    
+     
+     boolean done(Node n) {
+        if (done.containsKey(n.getLabel())) {
+            return true;
+        } else {
+            done.put(n.getLabel(), n);
+        }
+        return false;
+    }
+             
     IDatatype list(Graph g, Node object) {
         List<IDatatype> list = g.getDatatypeList(object);
         if (! list.isEmpty()) {           

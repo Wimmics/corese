@@ -177,14 +177,18 @@ public class Loader {
             // TODO: level()
             profile(qprofile);
             
-            // share function definitions in  templates
-            for (Query t : qe.getTemplates()) {             
-                t.addExtension(qprofile.getExtension());
-            }
-            for (Query t : qe.getNamedTemplates()) {             
-                t.addExtension(qprofile.getExtension());
-            }           
-                       
+            if (qprofile.getExtension() != null){
+                fr.inria.edelweiss.kgenv.parser.Transformer tr = fr.inria.edelweiss.kgenv.parser.Transformer.create();
+                tr.definePublic(qprofile.getExtension(), qprofile, false);
+                // share function definitions in  templates
+                for (Query t : qe.getTemplates()) {             
+                    t.addExtension(qprofile.getExtension());
+                }
+                for (Query t : qe.getNamedTemplates()) {             
+                    t.addExtension(qprofile.getExtension());
+                }           
+            } 
+            
             Expr imp = qprofile.getProfile(STL_IMPORT);
             if (imp != null) {
                 String uri = imp.getExp(0).getLabel();

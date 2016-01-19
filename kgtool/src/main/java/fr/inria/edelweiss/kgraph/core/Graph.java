@@ -54,6 +54,7 @@ public class Graph implements Graphable, Loopable {
     private static Logger logger = Logger.getLogger(Graph.class);
     public static final String TOPREL
             = fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
+    static final ArrayList<Entity> EMPTY = new ArrayList<Entity>(0);
     public static boolean valueOut = !true;
     public static final int IGRAPH = -1;
     // edges in chronological order
@@ -1798,7 +1799,7 @@ public class Graph implements Graphable, Loopable {
     public Iterable<Entity> getEdges(String p) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
-            return new ArrayList<Entity>(0);
+            return EMPTY;
         }
         return getEdges(predicate);
     }
@@ -1806,9 +1807,13 @@ public class Graph implements Graphable, Loopable {
     public Iterable<Entity> getEdges(String p, Node n, int i) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
-            return new ArrayList<Entity>(0);
+            return EMPTY;
         }
-        return getEdges(predicate, n, i);
+        Iterable<Entity> it = getEdges(predicate, n, i);
+        if (it == null){
+            return EMPTY;
+        }
+        return it;
     }
     
     public Iterable<Entity> getEdges(IDatatype s, IDatatype p, IDatatype o) {
@@ -1834,7 +1839,7 @@ public class Graph implements Graphable, Loopable {
     public Iterable<Entity> getEdges(Node predicate) {
         Iterable<Entity> it = getEdges(predicate, null, 0);
         if (it == null) {
-            it = new ArrayList<Entity>(0);
+            it = EMPTY;
         }
         return it;
     }

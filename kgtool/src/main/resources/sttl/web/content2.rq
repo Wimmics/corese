@@ -1,6 +1,13 @@
 template st:content2(?t, ?p) {
 
-  str(?t) "<br/>"    group distinct { "<a href='" str(?d) "'>" str(?d) "</a>" ; separator="<br/>"} "<br/>"
+  str(?t) "<br/>"  
+  
+  group distinct { 
+    "<a href='" str(?d) "'>" str(?d) "</a>" 
+    ; separator="<br/>"
+  } 
+  
+  "<br/>"
  
 }
 where {

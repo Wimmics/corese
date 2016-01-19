@@ -1,6 +1,9 @@
 template st:head {
    
-  "<h2 class='center'>" str(?title) "</h2>"
+  format {
+  "<h2 class='center'>%s</h2>" 
+  str(?title)
+  }
   
 }
 where {

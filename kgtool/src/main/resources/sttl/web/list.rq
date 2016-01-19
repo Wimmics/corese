@@ -3,11 +3,18 @@
 #
 template st:list(?t) {
 
-  "<option value='" ?q "'" 
-    if (?q = ?t, "selected='true'", "")
-  ">" 
-  str(?i) ". " str(?title) 
-  "</option>" 
+format {
+  """
+  <option value='%s'" %s> 
+  %s . %s 
+  </option>
+  """
+  
+  ?q
+  if (?q = ?t, "selected='true'", "")
+  str(?i)
+  str(?title)
+}
    
 }
 where {

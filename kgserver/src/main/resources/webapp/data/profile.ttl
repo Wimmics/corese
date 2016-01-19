@@ -4,17 +4,45 @@
 # accessible using st:get(st:lang)
 #
 
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
 
 st:dbpedia a st:Profile ;
   st:query  <query/frdbpedia.rq> ;
-  st:transform  st:navlab ;
-  st:param [ 
-    st:mapzoom 7 ;
-    st:mapsize "mapmedium" ;
-    st:mapicon1 "/img/bmarker.png" ;
-    st:mapicon2 "/img/smarker.png" 
-  ].
-  #st:transform "/user/corby/home/AAData/sttl/navlab" ;
+  
+  st:param [    
+    st:import st:dbpediaParam, st:mapParam   
+  ] ;
+
+  st:transform  st:navlab .
+  #st:transform "/user/corby/home/AAData/sttl/navlab" .
+  
+st:mapParam
+    st:param [ 
+        st:mapzoom 6 ;
+        st:mapsize "mapmedium" ;
+        st:mapicon1 "/img/bmarker.png" ;
+        st:mapicon2 "/img/smarker.png" 
+      ]  .
+  
+st:dbpediaParam 
+  st:param [
+  
+  st:person (
+          (p:dateDeNaissance 	"Naissance" 	"Birth")
+	  (p:dateDeDécès 	"Décès"		"Death")
+	  (o:predecessor 	"Prédécesseur"	"Predecessor")
+	  (o:successor          "Successeur"	"Successor")
+	  (o:father 		"Père"		"Father")
+	  (o:mother 		"Mère"		"Mother")
+	  (o:spouse 		"Conjoints"	"Spouse")
+	  (o:child 		"Enfants"	"Children")
+	  (o:residence          "Résidence"	"Residence")
+	  (rdfs:comment 	"Résumé"	"Abstract")
+	  (o:wikiPageRedirects  "Voir aussi"	"See Also")
+	  (o:wikipedia          "Wikipedia"	"Wikipedia")
+	  (o:dbpedia		"DBpedia"	"DBpedia"))
+  ] .
   
 st:dbpediaen a st:Profile ;
   st:query  <query/frdbpediaen.rq> ;

@@ -172,9 +172,7 @@ implements EventsTreatment {
 		if (query.isSparql()){
 			//deprecated
 			// select fun(?x) as ?y
-			for (Enumeration<String> en = src.getSelectFunctions().keys(); 
-			en.hasMoreElements();){
-				String var = en.nextElement();
+			for (String var : src.getSelectFunctions().keySet()){
 				ast.setSelect(new Variable(var), src.getSelectFunctions().get(var));
 			}
 		}

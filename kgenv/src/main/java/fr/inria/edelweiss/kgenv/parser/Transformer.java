@@ -677,17 +677,7 @@ public class Transformer implements ExpType {
 	public void setSPARQL1(boolean b){
 		isSPARQL1 = b;
 	}
-	
-	@Deprecated
-	void bind(ASTQuery ast){
-		if (ast.getVariableBindings()!=null){
-			Expression exp = ast.bind();
-			if (exp == null) return;
-			Triple triple = Triple.create(exp);
-			ast.getBody().add(triple);
-		}
-	}
-	
+			
 	void bindings(Query q, ASTQuery ast){
 		
 		if (ast.getValues() == null){

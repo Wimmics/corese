@@ -199,7 +199,7 @@ public class Triple extends Exp {
 	
 	ASTQuery defaultAST(){
 		ASTQuery ast = ASTQuery.create();
-		ast.setKgram(true);
+		//ast.setKgram(true);
 		ast.setBody(new And());
 		return ast;
 	}

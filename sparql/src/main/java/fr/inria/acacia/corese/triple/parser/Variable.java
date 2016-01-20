@@ -103,7 +103,7 @@ public class Variable extends Atom {
 			return null;
 		}
 		Expression exp = ast.getExpression(name);
-		if (exp != null && (! exp.isFunctional() || ! ast.isKgram())){
+		if (exp != null && (! exp.isFunctional())){ // || ! ast.isKgram())){
 			// use case: do not rewrite ?val
 			// xpath() as ?val
 			// xsd:integer(?val)

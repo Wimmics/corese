@@ -868,7 +868,9 @@ public class Term extends Expression {
 	 * sum(?y) as ?z
 	 */
 	public Expression process(ASTQuery ast){
-		if (isAggregate() || (ast.isKgram() && isFunctional())) return this;
+		if (isAggregate() || isFunctional()){ //(ast.isKgram() && isFunctional())){
+                    return this;
+                }
 		for (int i=0; i<args.size(); i++){
 			Expression exp = args.get(i).process(ast);
 			if (exp == null) return null;

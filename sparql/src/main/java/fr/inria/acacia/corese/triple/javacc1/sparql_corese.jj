@@ -51,6 +51,7 @@ PARSER_BEGIN(SparqlCorese)
     /** An instanciation of the class ASTQuery (a graph representing the query) */
     ASTQuery astq, gast;
     ASTUpdate astu;
+    ASTTemplate astt;
     Basic prolog;
     Creator create;
     
@@ -605,7 +606,7 @@ void Template(Exp stack) :
 { String str; Variable var; Constant cst; Expression exp, sep; ExpressionList list; 
    List<Variable> varList;}
 {
-    <TEMPLATE> { cst = null; }
+    <TEMPLATE> { cst = null; astt = astq.defineTemplate(); }
     
     ( <DEBUG> { astq.setDebug(true); } ) ?
     
@@ -635,13 +636,13 @@ void Template(Exp stack) :
 		( 		  
                  exp = texp(stack)
 
-                { astq.addTemplate(exp); }
+                { astt.addTemplate(exp); }
 		  
 		   
 		) *
 		
 		( <SEMICOLON>  <SEPARATOR>  <EQ>  
-                      sep = PrimaryExpression(stack) { astq.setSeparator(sep); }
+                      sep = PrimaryExpression(stack) { astt.setSeparator(sep); }
                 ) ?
 		
 	
@@ -684,7 +685,7 @@ Expression group(Exp stack) :
 		  			  
 	<RBRACE>
     { 
-        exp = astq.createGroup(list); 
+        exp = astt.createGroup(list); 
         return exp;
     }
 		  		  
@@ -705,7 +706,7 @@ Expression format(Exp stack) :
       <RBRACE>
 
       { 
-        box = astq.createFormat(list); 
+        box = astt.createFormat(list); 
         return box;
       }
 }
@@ -724,7 +725,7 @@ Expression box(Exp stack) :
       <RBRACE>
 
       { 
-        box = astq.createBox(list, t.image ); 
+        box = astt.createBox(list, t.image ); 
         return box;
       }
 }
@@ -766,7 +767,7 @@ Expression XML(Exp stack) :
       <RBRACE>
 
       { 
-        box = astq.createXML(uri, lattr, list); 
+        box = astt.createXML(uri, lattr, list); 
         return box;
       }
 }
@@ -1055,8 +1056,8 @@ void Display(): { Token t; }
   <DISPLAY> ( 
   			  <D_RDF>  { astq.setRDF(true); }
   			| <D_JSON> { astq.setJSON(true); }  
-  			| <D_FLAT> { astq.setFlat(true); }
-  			| <D_ASQUERY> { astq.setPQuery(true); }
+  			//| <D_FLAT> { astq.setFlat(true); }
+  			//| <D_ASQUERY> { astq.setPQuery(true); }
   			| ( t = <INTEGER> { astq.setMaxDisplay(Integer.parseInt(t.image)); } 
   			  )	
   			| <D_XML> { astq.setXMLBind(true); }

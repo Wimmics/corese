@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.update;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
+import fr.inria.acacia.corese.triple.parser.ASTPrinter;
 import fr.inria.acacia.corese.triple.parser.And;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
@@ -105,7 +106,9 @@ public class Basic extends Update {
 	}	
 	
 	void prolog(StringBuffer sb){
-		getASTUpdate().getASTQuery().getSparqlPrefix(prolog, sb);
+		//getASTUpdate().getASTQuery().getSparqlPrefix(prolog, sb);
+                ASTPrinter pr = new ASTPrinter(getASTUpdate().getASTQuery());
+                pr.getSparqlPrefix(prolog, sb);
 	}
 	
 	public void defNamespace(String prefix, String ns){

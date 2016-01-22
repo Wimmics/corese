@@ -30,7 +30,6 @@ import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
 import java.util.HashMap;
 import java.util.Iterator;
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**

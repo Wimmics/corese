@@ -1117,7 +1117,7 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 	/**
 	 * Assign select nodes to all Mapping
 	 */
-	public void finalize(){
+	public void finish(){
 		if (getSelect() != null){
 			Node[] nodes = new Node[getSelect().size()];
 			int i = 0;
@@ -1135,6 +1135,7 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 		this.graph = graph;
 	}
 
+        @Override
 	public Object getGraph() {
 		return graph;
 	}

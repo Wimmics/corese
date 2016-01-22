@@ -79,6 +79,8 @@ public class Processor {
 	private static final String MAPLIST = "maplist";
 	private static final String MAPMERGE = "mapmerge";
 	private static final String MAPSELECT = "mapselect";
+	private static final String MAPFIND   = "mapfind";
+	private static final String MAPFINDLIST   = "mapfindlist";
 	private static final String APPLY   = "apply";
         
         private static final String XT_SELF     = EXT + "self";
@@ -306,33 +308,25 @@ public class Processor {
 	static final String SHA224 	= "sha224";
 	static final String SHA256	= "sha256";
 	static final String SHA384 	= "sha384";
-	static final String SHA512 	= "sha512";
-	
-        static final String KG_POWER 	= KGRAM + "power";
-        static final String KG_PLUS 	= KGRAM + "plus";
-        static final String KG_MINUS 	= KGRAM + "minus";
-        static final String KG_MULT 	= KGRAM + "mult";
-        static final String KG_DIV 	= KGRAM + "div";
-        static final String KG_CONCAT 	= KGRAM + "concat";
-        static final String KG_APPEND 	= KGRAM + "append";
-        static final String KG_AND 	= KGRAM + "and";
-        static final String KG_OR 	= KGRAM + "or";
-        static final String KG_NOT 	= KGRAM + "not";
-        static final String KG_EQUAL 	= KGRAM + "equal";
-        static final String KG_DIFF 	= KGRAM + "diff";
-       
-	static final String XT_POWER 	= EXT + "power";
-        static final String XT_PLUS 	= EXT + "plus";
-        static final String XT_MINUS 	= EXT + "minus";
-        static final String XT_MULT 	= EXT + "mult";
-        static final String XT_DIV 	= EXT + "divis";
-        static final String XT_AND 	= EXT + "and";
-        static final String XT_OR 	= EXT + "or";
-        static final String XT_NOT 	= EXT + "not";
-        static final String XT_EQUAL 	= EXT + "equal";
-        static final String XT_DIFF 	= EXT + "diff";
+	static final String SHA512 	= "sha512";              
+                     
+	static final String RQ_POWER 	= SPARQL + "power";
+        static final String RQ_PLUS 	= SPARQL + "plus";
+        static final String RQ_MINUS 	= SPARQL + "minus";
+        static final String RQ_MULT 	= SPARQL + "mult";
+        static final String RQ_DIV 	= SPARQL + "divis";
+        static final String RQ_AND 	= SPARQL + "and";
+        static final String RQ_OR 	= SPARQL + "or";
+        static final String RQ_NOT 	= SPARQL + "not";
+        static final String RQ_EQUAL 	= SPARQL + "equal";
+        static final String RQ_DIFF 	= SPARQL + "diff";
+        
         static final String XT_DISPLAY 	= EXT + "display";
         static final String XT_TUNE 	= EXT + "tune";
+        static final String XT_UNION 	= EXT + "union";
+        static final String XT_MINUS 	= EXT + "minus";
+        static final String XT_OPTIONAL = EXT + "optional";
+        static final String XT_JOIN     = EXT + "join";
         
         public static final String[] aggregate = 
 	{AVG, COUNT, SUM, MIN, MAX, SAMPLE, 
@@ -583,7 +577,9 @@ public class Processor {
 		defsysoper(FOR,            ExprType.FOR);
 		defsysoper(MAPLIST,        ExprType.MAPLIST);
 		defsysoper(MAPMERGE,       ExprType.MAPMERGE);
-		defsysoper(MAPSELECT,      ExprType.MAPSELECT);
+		defsysoper(MAPSELECT,      ExprType.MAPFINDLIST);
+		defsysoper(MAPFIND,        ExprType.MAPFIND);
+		defsysoper(MAPFINDLIST,    ExprType.MAPFINDLIST);
 		defsysoper(MAPANY,         ExprType.MAPANY);
 		defsysoper(MAPEVERY,       ExprType.MAPEVERY);
                 
@@ -744,33 +740,24 @@ public class Processor {
 		defoper(NUMBER,  ExprType.NUMBER);
 		defoper(EVEN,  ExprType.EVEN);
 		defoper(ODD,   ExprType.ODD);
+             
+                defoper(RQ_PLUS,   ExprType.PLUS);
+                defoper(RQ_MULT,   ExprType.MULT);
+                defoper(RQ_MINUS,  ExprType.MINUS);
+                defoper(RQ_DIV,    ExprType.DIV);
+                defoper(RQ_AND,    ExprType.AND);
+                defoper(RQ_OR,     ExprType.OR);
+                defoper(RQ_NOT,    ExprType.NOT);
+                defoper(RQ_EQUAL,  ExprType.EQ);
+                defoper(RQ_DIFF,   ExprType.NEQ); 
                 
-//                defoper(KG_POWER,  ExprType.POWER);
-//                defoper(KG_PLUS,   ExprType.PLUS);
-//                defoper(KG_MULT,   ExprType.MULT);
-//                defoper(KG_MINUS,  ExprType.MINUS);
-//                defoper(KG_DIV,    ExprType.DIV);
-//                defoper(KG_CONCAT, ExprType.CONCAT);
-//                defoper(KG_APPEND, ExprType.XT_APPEND);
-//                defoper(KG_AND,    ExprType.AND);
-//                defoper(KG_OR,     ExprType.OR);
-//                defoper(KG_NOT,    ExprType.NOT);
-//                defoper(KG_EQUAL,  ExprType.EQ);
-//                defoper(KG_DIFF,   ExprType.NEQ);
-                
-                //defoper(XT_POWER,  ExprType.POWER);
-                
-                defextoper(XT_PLUS,   ExprType.PLUS);
-                defoper(XT_MULT,   ExprType.MULT);
-                defoper(XT_MINUS,  ExprType.MINUS);
-                defoper(XT_DIV,    ExprType.DIV);
-                defoper(XT_AND,    ExprType.AND);
-                defoper(XT_OR,     ExprType.OR);
-                defoper(XT_NOT,    ExprType.NOT);
-                defoper(XT_EQUAL,  ExprType.EQ);
-                defoper(XT_DIFF,   ExprType.NEQ);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
-                defoper(XT_TUNE,   ExprType.XT_TUNE);  
+                defoper(XT_TUNE,   ExprType.XT_TUNE); 
+                
+                defoper(XT_UNION,  ExprType.XT_UNION);  
+                defoper(XT_MINUS,  ExprType.XT_MINUS);  
+                defoper(XT_OPTIONAL,ExprType.XT_OPTIONAL);  
+                defoper(XT_JOIN,    ExprType.XT_JOIN);  
                 
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);
@@ -935,7 +922,8 @@ public class Processor {
                 case ExprType.MAP:
                 case ExprType.MAPLIST:
                 case ExprType.MAPMERGE:
-                case ExprType.MAPSELECT:
+                case ExprType.MAPFIND:
+                case ExprType.MAPFINDLIST:
                 case ExprType.MAPEVERY:
                 case ExprType.MAPANY:
                 case ExprType.APPLY:

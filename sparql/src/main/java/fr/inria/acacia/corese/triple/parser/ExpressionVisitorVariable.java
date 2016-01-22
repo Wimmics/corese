@@ -86,7 +86,8 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             case ExprType.MAP:
             case ExprType.MAPLIST:                
             case ExprType.MAPMERGE:                
-            case ExprType.MAPSELECT:                
+            case ExprType.MAPFIND:                
+            case ExprType.MAPFINDLIST:                
             case ExprType.MAPEVERY:                
             case ExprType.MAPANY: 
                  map(t);

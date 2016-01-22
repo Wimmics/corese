@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jan 19 08:50:29 CET 2016
+Fri Jan 22 15:56:07 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -13,6 +13,7 @@ Tue Jan 19 08:50:29 CET 2016
 # Generate HTML from SPARQL Query Results
 # RDF is either construct where graph or 
 # select where in W3C DAWG result-set RDF vocabulary
+# Need server function.rq to be loaded
 #
 # Olivier Corby - Wimmics Inria I3S - 2015
 #
@@ -53,7 +54,6 @@ template st:start {
 
 }
 where {
-
 }
 
 ]]>
@@ -243,9 +243,7 @@ template st:linkprofile(?x) {
 
   if (isURI(?x), 
     st:call-template(st:link, 
-      coalesce(
-	st:plink(?x),
-	encode_for_uri(?x)),
+      coalesce(st:plink(?x), encode_for_uri(?x)),
       ?e),
     str(?e))
     
@@ -415,10 +413,13 @@ where {}
   
   # LOD URI hypertext link generated as is (see display.rq)
   # set by profile.ttl : st:param [ st:lod (URI) ]
+  #
   function st:lod(?x){
      coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
   }
-  
+    
+
+  # display resource uri
   function st:display(?x){
     let (?profile = coalesce(st:get(st:profile), st:null)){
       if (?profile = st:null){ 
@@ -430,11 +431,17 @@ where {}
       else if (st:lod(?x)){
 	st:call-template(st:linkesc, ?x)
       }
-      else { 
-	st:call-template(st:linkprofile, ?x) 
-      }
+      else {
+	st:call-template(st:linkprofile2, ?x)
+      }     
     }
   }
+  
+function st:init(){
+  if (coalesce(st:get(st:service), st:null) = st:null){
+    st:set(st:service, "/template")
+  }
+}
 
 
 ]]>
@@ -494,11 +501,11 @@ where {
 
    bind(st:turtle(?x) as ?t)
    
-   bind (replace(?t, "<", "&lt;") as ?tt)
+   bind (
+    let (?t = st:turtle(?x)) { replace(?t, "<", "&lt;") } 
+   as ?tt)
    
-   bind(
-    if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) 
-    as ?d) 
+#   bind(if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) as ?d) 
     
 }
 
@@ -622,6 +629,28 @@ template st:core {
 }
 where {
   
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:linkprofile2(?x) {
+
+  if (isURI(?x), 
+    st:call-template(st:link, 
+      coalesce(st:pplink(?x), encode_for_uri(?x)),
+      ?e),
+    str(?e))
+    
+}
+where {
+
+  bind (st:call-template(st:esc, ?x) as ?e)
+
 }
 
 ]]>

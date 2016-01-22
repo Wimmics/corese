@@ -13,6 +13,7 @@ public interface Pointerable {
     public static final int MAPPINGS = 1;
     public static final int MAPPING  = 2;
     public static final int ENTITY   = 3;
+    public static final int GRAPH    = 4;
     
     int pointerType();
     
@@ -21,6 +22,8 @@ public interface Pointerable {
     Mapping getMapping();
     
     Entity getEntity();
+    
+    Object getGraph();
     
     // let ((?x, ?y) = ?m)
     // ->

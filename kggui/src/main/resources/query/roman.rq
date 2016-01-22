@@ -11,7 +11,7 @@ select ?res ?val  (spqr:digit(?val) as ?dig)
 where {                           
   bind (  'II'^^dt:roman * 'X'^^dt:roman + 'V'^^dt:roman as ?res) 
   bind (maplist(rm:roman,  xt:iota(7)) as ?list)
-  bind (apply (xt:plus, ?list) as ?val)
+  bind (apply (rq:plus, ?list) as ?val)
 }
                   
 export {

@@ -26,6 +26,7 @@ public class Context {
     public static final String STL_PROFILE  = STL + "profile"; // st:dbpedia
     public static final String STL_SERVER_PROFILE = STL + "definition"; // profile.ttl graph
     public static final String STL_TRANSFORM = STL + "transform"; // st:navlab
+    public static final String STL_LOD_PROFILE = STL + "lodprofile"; 
     public static final String STL_URI      = STL + "uri";        // focus resource URI
     public static final String STL_PROTOCOL = STL + "protocol";   // st:ajax
     public static final String STL_AJAX     = STL + "ajax";

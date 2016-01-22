@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jan 19 08:50:29 CET 2016
+Fri Jan 22 15:56:07 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -279,16 +279,13 @@ template cn:row(?d) {
   
 
 }
-where {
-  bind (st:get(st:definition) as ?def)
-  bind (unnest(st:get(st:topic)) as ?e)
-  graph ?def {
-    ?e rdf:rest*/rdf:first ?topic
-  }
-  
+where {  
+  bind (unnest(st:get(st:topic)) as ?topicList)
+  bind (kg:number() as ?n)
+  bind (unnest(?topicList) as ?topic) 
 }
-group by ?e
-         
+group by ?topicList
+order by ?n
 
 ]]>
 </body>

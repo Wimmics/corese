@@ -54,7 +54,7 @@ public class ParsingTest {
                 + "}";
 
         ASTQuery ast = ASTQuery.create(query);
-        ast.setKgram(true);
+       // ast.setKgram(true);
         ParserSparql1.create(ast).parse();
         System.out.println(ast);
     }

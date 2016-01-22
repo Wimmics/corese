@@ -11,6 +11,7 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -361,7 +362,7 @@ public class PluginTransform implements ExprType {
      * If uri == null, get current transformer
      * TODO: cache for named graph
      */
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, String gname) {
+    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname) {
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         String transform = getTrans(uri, temp);
@@ -377,24 +378,24 @@ public class PluginTransform implements ExprType {
             transform = t.getTransformation();
         }
 
-        if (gname != null) {
+        if (dtgname != null) {
             // transform named graph
-            try {
-                boolean with = (exp == null) ? true
-                        : exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
-                        || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
-
-                Transformer gt = Transformer.create((Graph) prod.getGraph(), transform, gname, with);
-                complete(q, gt, uri);
-
-//                if (t == null) {
-//                    // get current transformer if any to get its NSManager 
-//                    t = (Transformer) q.getTransformer();
-//                }
-                t = gt;
-            } catch (LoadException ex) {
-                logger.error(ex);
-                t = Transformer.create(Graph.create(), null);
+            if (dtgname.isPointer() && dtgname.pointerType() == Pointerable.GRAPH){
+                // dtgname contains a Graph
+                // use case: let (?g = construct {} where {}){ 
+                // st:apply-templates-with-graph(st:navlab, ?g) }
+                t = Transformer.create((Graph)dtgname.getPointerObject(), transform);
+                complete(q, t, uri);
+            }
+            else {
+                String gname = dtgname.getLabel();
+                try {              
+                    t = Transformer.create((Graph) prod.getGraph(), transform, gname, isWith(exp));
+                    complete(q, t, uri);
+                } catch (LoadException ex) {
+                    logger.error(ex);
+                    t = Transformer.create(Graph.create(), null);
+                }
             }
         } else if (t == null) {
             t = Transformer.create(prod, transform);
@@ -411,6 +412,12 @@ public class PluginTransform implements ExprType {
         }
 
         return t;
+    }
+    
+    boolean isWith(Expr exp){
+        return (exp == null) ? true
+                        : exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
+                        || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
     }
     
 
@@ -501,7 +508,7 @@ public class PluginTransform implements ExprType {
      * Without focus node
      */
     IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, trans, temp, getLabel(name));
+        Transformer p = getTransformer(exp, env, prod, trans, temp, name);
         return p.process(getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
@@ -522,7 +529,7 @@ public class PluginTransform implements ExprType {
      */    
     IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, IDatatype name,
             Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, trans, temp, getLabel(name));
+        Transformer p = getTransformer(exp, env, prod, trans, temp, name);
         IDatatype dt = p.process(args, focus, arg,
                 getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL

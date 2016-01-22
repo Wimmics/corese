@@ -20,6 +20,7 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
@@ -302,6 +303,14 @@ public class PluginImpl extends ProxyImpl {
                 
             case STORE:
                 return ext.store(p, env, dt1, dt2);
+                
+            case XT_UNION:
+                return union(exp, env, p, dt1, dt2);
+                
+            case XT_MINUS:
+            case XT_OPTIONAL:
+            case XT_JOIN:
+                return algebra(exp, env, p, dt1, dt2);    
                 
             default:
                 return pt.function(exp, env, p, dt1, dt2);
@@ -683,8 +692,52 @@ public class PluginImpl extends ProxyImpl {
        }
        return edge.getNode(1).getValue();
     }
+    
+    private IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        if ((! (dt1.isPointer() && dt2.isPointer()))
+            || (dt1.pointerType() != dt2.pointerType()) ){
+            return null;
+        }
+        
+        if (dt1.pointerType() == Pointerable.MAPPINGS){
+            return algebra(exp, env, p, dt1, dt2);
+        }
+        
+        if (dt1.pointerType() == Pointerable.GRAPH){
+            Graph g1 = (Graph) dt1.getPointerObject();
+            Graph g2 = (Graph) dt2.getPointerObject();
+            Graph g = g1.union(g2);
+            return DatatypeMap.createObject(g);
+        }
+        
+        return null;
+    }
+    
+    private IDatatype algebra(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        if ((! (dt1.isPointer() && dt2.isPointer()))
+            || (dt1.pointerType() != dt2.pointerType()) ){
+            return null;
+        }
+        
+        if (dt1.pointerType() == Pointerable.MAPPINGS){
+            Mappings m1 = dt1.getPointerObject().getMappings();
+            Mappings m2 = dt2.getPointerObject().getMappings();
+            
+            Mappings m = null;
+            switch (exp.oper()){
+                case XT_MINUS:      m = m1.minus(m2); break;
+                case XT_JOIN:       m = m1.join(m2); break;
+                case XT_OPTIONAL:   m = m1.optional(m2); break;                   
+                case XT_UNION:      m = m1.union(m2); break;                   
+            }
+            
+            return DatatypeMap.createObject(m);
+        }
+        
+        return null;
+    }
 
-    private Object tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+    private IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
         if (dt1.getLabel().equals(LISTEN)){  
             if (dt2.booleanValue()){

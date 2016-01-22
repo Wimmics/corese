@@ -36,6 +36,27 @@ function st:plink(?uri, ?profile) {
       "&profile=", ?profile))
 }
 
+#
+# try to get specific profile for uri from profile.ttl 
+# st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia )) 
+# otherwise use st:profile
+#
+function st:pplink(?uri) {
+  st:plink(?uri, coalesce(st:getprofile(?uri), st:get(st:profile)))
+}
+
+# search list  st:lodprofile ((namespace profile))
+function st:getprofile(?uri){
+     let ((?ns, ?prof) = mapfind(st:match, ?uri, st:get(st:lodprofile)))
+     { ?prof }
+}
+
+# ?decl = (namespace profile)
+function st:match(?x, ?decl){
+    strstarts(?x, xt:get(?decl, 0))
+}
+  
+
 
 # ____________________________________________________
 

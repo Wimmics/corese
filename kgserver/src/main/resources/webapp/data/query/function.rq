@@ -53,7 +53,9 @@ function st:getprofile(?uri){
 
 # ?decl = (namespace profile)
 function st:match(?x, ?decl){
-    strstarts(?x, xt:get(?decl, 0))
+  let (?ns = xt:get(?decl, 0)){
+    strstarts(?x, ?ns) || coalesce(?ns = "*", false)
+  }
 }
   
 

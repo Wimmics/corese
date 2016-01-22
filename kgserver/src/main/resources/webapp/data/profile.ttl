@@ -7,15 +7,34 @@
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
 
+st:dbturtle a st:Profile ;
+  st:query  <query/frdbpedia.rq> ;
+  st:transform  st:turtle .
+  
+st:dbhturtle a st:Profile ;
+  st:query  <query/frdbpedia.rq> ;
+  st:transform  st:hturtle .  
+
+st:dbsparql a st:Profile ;
+  st:query  <query/frdbpedia.rq> ;
+  st:param [
+     st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia))
+  ] ;
+  st:transform st:sparql .
+ # st:transform  "/user/corby/home/AAData/sttl/sparql" . 
+
 st:dbpedia a st:Profile ;
   st:query  <query/frdbpedia.rq> ;
   
   st:param [    
-    st:import st:dbpediaParam, st:mapParam   
+    st:import st:dbpediaParam, st:mapParam  ;
+ #   st:lodprofile ((<http://fr.dbpedia.org/resource/N> st:dbsparql ))
   ] ;
 
   st:transform  st:navlab .
   #st:transform "/user/corby/home/AAData/sttl/navlab" .
+
+
   
 st:mapParam
     st:param [ 
@@ -165,6 +184,7 @@ st:sparql a st:Profile ;
     st:query <query/construct.rq> ;
     st:variable "?r" ;
     st:transform st:sparql .
+    #st:transform "/user/corby/home/AAData/sttl/sparql" .
 
     # LDP on target URI
 st:std a st:Profile ;
@@ -195,13 +215,22 @@ st:spqr a st:Profile ;
 st:query <query/spqr.rq>;
 st:transform st:navlab . 
        
-#st:cdn a st:Profile ;
-#st:query <query/cdn.rq>;
-#st:transform st:navlab .  
 
 ###################################
 
 #st:default st:load <tutorial/human1.rdf> ,  <tutorial/human2.rdf> , <tutorial/pragma.ttl> .
+
+st:ldp a st:Server ;
+st:service "ldp" ;
+ st:data [ st:uri <tutorial/human1.rdf>  ; st:name st:data ] ;
+ st:param [
+    st:lodprofile (
+    ( <http://fr.dbpedia.org/resource>  st:dbpedia )
+    ( <http://www.inria.fr/2015/humans> st:sparql )
+    ( "*" st:sparql )
+    );
+ ] .
+ 
 
 st:default a st:Server ;
 st:data     

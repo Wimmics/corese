@@ -29,6 +29,7 @@ public class Extension {
      void process(String name) {
         InputStream in = Extension.class.getResourceAsStream(name);
         if (in == null){
+            logger.error("QueryProcess resource not found: " + name);
             return;
         }
         try {

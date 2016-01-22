@@ -619,7 +619,8 @@ public class ProxyImpl implements Proxy, ExprType {
             case MAP:
             case MAPLIST:
             case MAPMERGE:
-            case MAPSELECT:
+            case MAPFIND:
+            case MAPFINDLIST:
                 return map(exp, env, p, param);
                                
             case APPLY:
@@ -1469,8 +1470,10 @@ public class ProxyImpl implements Proxy, ExprType {
     private IDatatype map(Expr exp, Environment env, Producer p, IDatatype[] param) {
         boolean maplist   = exp.oper() == MAPLIST; 
         boolean mapmerge  = exp.oper() == MAPMERGE; 
-        boolean mapselect = exp.oper() == MAPSELECT;
-        boolean hasList   = maplist || mapmerge;
+        boolean mapfindelem = exp.oper() == MAPFIND;
+        boolean mapfindlist = exp.oper() == MAPFINDLIST;
+        boolean mapfind = mapfindelem || mapfindlist;
+        boolean hasList = maplist || mapmerge;
         
         IDatatype list = null;
         IDatatype ldt = null;
@@ -1496,7 +1499,7 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         IDatatype[] value = new IDatatype[param.length];
         IDatatype[] res = (hasList) ? new IDatatype[list.size()] : null;
-        ArrayList<IDatatype> sub = (mapselect) ? new ArrayList<IDatatype>() : null;
+        ArrayList<IDatatype> sub = (mapfindlist) ? new ArrayList<IDatatype>() : null;
         int size = 0; 
         
         for (int i = 0;  (isList) ? i< list.size() : loop.hasNext(); i++){ 
@@ -1506,14 +1509,14 @@ public class ProxyImpl implements Proxy, ExprType {
                 IDatatype dt = param[j];
                 if (dt.isList()){
                     value[j] = (i < dt.size()) ? dt.get(i) : dt.get(dt.size()-1);
-                    if (mapselect && elem == null){
+                    if (mapfind && elem == null){
                         elem = value[j];
                     }
                 }
                 else if (dt.isLoop()){
                     if (loop.hasNext()){
                        value[j] = (IDatatype) p.getValue(loop.next());
-                       if (mapselect && elem == null){
+                       if (mapfind && elem == null){
                          elem = value[j];
                        }
                     }
@@ -1540,7 +1543,10 @@ public class ProxyImpl implements Proxy, ExprType {
                 }
                res[i] = val;
             }
-            else if (mapselect && val.booleanValue()){
+            else if (mapfindelem && val.booleanValue()){
+                return elem;
+            }
+            else if (mapfindlist && val.booleanValue()){
                     // select elem whose predicate is true
                     // mapselect (xt:prime, xt:iota(1, 100))
                     sub.add(elem);
@@ -1566,8 +1572,11 @@ public class ProxyImpl implements Proxy, ExprType {
         else if (maplist){
             return DatatypeMap.createList(res); 
         }
-        else if (mapselect){
+        else if (mapfindlist){
             return DatatypeMap.createList(sub);
+        }
+        else if (mapfindelem){
+            return null;
         }
         return TRUE;
     }

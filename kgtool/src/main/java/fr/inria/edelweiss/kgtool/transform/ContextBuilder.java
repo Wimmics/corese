@@ -124,12 +124,12 @@ public class ContextBuilder {
     }
              
     IDatatype list(Graph g, Node object) {
-        List<IDatatype> list = g.getDatatypeList(object);
-        if (! list.isEmpty()) {           
-            IDatatype dt = DatatypeMap.createList(list);
-            return dt;
+        List<IDatatype> list = g.reclist(object);
+        if (list == null) {           
+            return null;
         }
-        return null;
+       IDatatype dt = DatatypeMap.createList(list);
+       return dt;
     }
     
 

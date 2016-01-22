@@ -20,7 +20,8 @@ construct   {
   ?r ?pp ?vv .
   
   ?r p:latitude ?lat ; p:longitude ?lon . 
-  ?r o:place [ p:latitude ?plat ; p:longitude ?plon ] .
+  ?r o:place ?pl
+  ?pl p:latitude ?plat ; p:longitude ?plon  .
   
 }
 where {

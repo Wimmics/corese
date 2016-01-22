@@ -44,7 +44,7 @@ public class Profile {
       
     HashMap<String,  Service> services, servers; 
     NSManager nsm;
-    IDatatype profile;
+    IDatatype profileDatatype;
 
     boolean isProtected = false;
 
@@ -83,13 +83,19 @@ public class Profile {
      * transformation from profile
      */
     Param complete(Param par) throws IOException {
+        Context serverContext = null;
+        if (par.getServer() != null){           
+            Service server = getServer(par.getServer());
+            if (server.getParam() != null){
+                serverContext = server.getParam().copy();
+                complete(par, serverContext);
+            }
+        }
+        
         String value = par.getValue();
-        String query = par.getQuery();
-        String name = par.getName();
-        String transform = par.getTransform();
         String profile = par.getProfile();
         String uri = par.getUri();
-
+            
         if (profile != null) {
             // prodile declare a construct where query followed by a transformation
             String uprofile = nsm.toNamespace(profile);
@@ -97,13 +103,13 @@ public class Profile {
             define(uprofile);
             Service s = getService(uprofile);
             if (s != null) {
-                if (name == null) {
+                if (par.getName() == null) {
                     // parameter name overload profile name
-                    name = s.getQuery();
+                    par.setName(s.getQuery());
                 }
-                if (transform == null) {
+                if (par.getTransform() == null) {
                     // transform parameter overload profile transform
-                    transform = s.getTransform();
+                    par.setTransform(s.getTransform());
                 }               
                 if (uri != null) {
                     // resource given as a binding value to the query
@@ -116,19 +122,17 @@ public class Profile {
             }
         }
         
-        if (par.getContext() == null && par.getServer() != null){
+        if (par.getContext() == null && serverContext != null){
             // use case: profile without st:param, server with st:param
             // import server st:param
-            Service server = getServer(par.getServer());
-            if (server.getParam() != null){
-                par.setContext(server.getParam().copy());
-            }
+           par.setContext(serverContext);
         }
        
-        if (query == null){ 
-            if (name != null){
+        String query = par.getQuery();
+         if (query == null){ 
+            if (par.getName() != null){
             // load query definition
-                query = loadQuery(name);
+                query = loadQuery(par.getName());
             }
         }
         else if (isProtected) {
@@ -139,12 +143,43 @@ public class Profile {
             // additional values clause
             query += value;
         }
-
-        par.setTransform(transform);
-        par.setName(name);
-        par.setQuery(query);       
+        
+        par.setQuery(query);     
+                     
         return par;
 
+    }
+         
+    
+    /**
+     * Complete Param by Context 
+     */
+    void complete(Param p, Context c){
+      if (p.getUri() != null && p.getProfile() == null && p.getTransform() == null){
+            completeLOD(p, c);
+        }
+    }
+    
+    /**
+     * st:lodprofile ((<http://fr.dbpedia.org/resource> st:dbpedia))  
+     * If URI match lodprofile, use profile
+     */
+    void completeLOD(Param p, Context c){
+        String uri = p.getUri();
+        IDatatype lod = c.get(Context.STL_LOD_PROFILE);
+        if (lod != null && lod.isList()){
+            for (IDatatype def : lod.getValues()){
+                if (! def.isList()){
+                    continue;
+                }
+                String ns = def.getValues().get(0).getLabel();
+                if (ns.equals("*") || uri.startsWith(ns)){
+                       // def = (ns profile) 
+                       p.setProfile(def.getValues().get(1).getLabel());
+                       break;                    
+                }
+            }
+        }
     }
 
     public Collection<Service> getServices() {
@@ -168,13 +203,13 @@ public class Profile {
     }
     
     void setProfile(Graph g){
-        if (profile == null){
-            profile = DatatypeMap.createObject(Context.STL_SERVER_PROFILE, g);
+        if (profileDatatype == null){
+            profileDatatype = DatatypeMap.createObject(Context.STL_SERVER_PROFILE, g);
         }
     }
     
     IDatatype getProfile(){
-        return profile;
+        return profileDatatype;
     }
 
     /**
@@ -269,8 +304,7 @@ public class Profile {
             s.setServer(serv.getLabel());
         }      
         if (ctx != null){
-            Context c = new ContextBuilder(g).process(ctx);
-            s.setParam(c);
+            s.setParam(new ContextBuilder(g).process(ctx));
         }
         services.put(prof.getLabel(), s);
     }
@@ -289,6 +323,7 @@ public class Profile {
                 + "?d st:uri ?u "
                 + "optional { ?d st:name ?n } "
                 + "optional { ?s st:service ?sv } "
+                + "optional { ?s st:param ?c } "
                 + "}";
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
@@ -298,9 +333,13 @@ public class Profile {
             Node p = m.getNode("?p");
             Node u = m.getNode("?u");
             Node n = m.getNode("?n");
+            Node c = m.getNode("?c");
            Service server = findServer(sn.getLabel());
            server.setService((sv==null)?null:sv.getLabel());
            server.add(p.getLabel(), u.getLabel(), (n != null)?n.getLabel():null);
+           if (c != null && server.getParam() == null){
+               server.setParam(new ContextBuilder(g).process(c));
+           }
         }
 
     }
@@ -316,10 +355,10 @@ public class Profile {
             server = new Service(name);
             servers.put(name, server);
             Service service = getService(name);
-            if (service != null){
-                // Service and Server share Context parameters
-                server.setParam(service.getParam());
-            }
+//            if (service != null){
+//                // Service and Server share Context parameters
+//                server.setParam(service.getParam());
+//            }
         }
         return server;
     }

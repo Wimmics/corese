@@ -82,7 +82,7 @@ public class SPARQLRestAPI {
             @DefaultValue("false") @FormParam("entailments") String entailments, 
             @DefaultValue("false") @FormParam("load")        String load,
             @FormParam("profile")  String profile) {
-        String output;
+        
         boolean ent = entailments.equals("true");
         boolean owl = owlrl.equals("true");
         boolean ld  = load.equals("true");

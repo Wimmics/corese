@@ -126,7 +126,6 @@ public class Transformer {
 
             par = mprofile.complete(par);
             ctx = create(par);
-            ctx.setServerProfile(mprofile.getProfile());
                        
             if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {
                 // check profile, transform and query
@@ -186,7 +185,7 @@ public class Transformer {
         c.set(RESULT, ft.toString());
         c.set(LOAD, (p.getLoad() == null) ? "" : p.getLoad());
         c.setTransform((p.getTransform()== null) ? "" : p.getTransform());  
-        complete(c);
+        complete(c, p);
         IDatatype res = t.process();
         return res.stringValue();
     }
@@ -243,16 +242,17 @@ public class Transformer {
         if (par.getService() != null){
             ctx.setService(par.getService());
         }      
-         ctx.setServer(Profile.SERVER);
-         complete(ctx);         
-         ctx.setUserQuery(par.isUserQuery());
+        ctx.setServer(Profile.SERVER);
+        complete(ctx, par);         
         return ctx;
     }
     
-    Context complete(Context c){
+    Context complete(Context c, Param par){
         if (SPARQLRestAPI.isAjax){
             c.setProtocol(Context.STL_AJAX);
         }
+        c.setUserQuery(par.isUserQuery());
+        c.setServerProfile(mprofile.getProfile());
         return c;
     }
 

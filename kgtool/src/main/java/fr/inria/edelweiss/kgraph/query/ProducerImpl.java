@@ -869,18 +869,31 @@ public class ProducerImpl implements Producer, IProducerQP {
         return map;
     }
     
-    Mappings mapList(List<Node> lNodes, List<IDatatype> list) {
-        Node[] qNodes = new Node[lNodes.size()];
-        lNodes.toArray(qNodes);
+    
+    /**
+     * bind (unnest(exp) as ?x)
+     * bind (unnest(exp) as (?x, ?y))
+     * eval(exp) = list
+     * 
+     * 
+     */
+    Mappings mapList(List<Node> varList, List<IDatatype> valueList) {
+        Node[] qNodes = new Node[varList.size()];
+        varList.toArray(qNodes);
         Mappings map = new Mappings();
         Mapping m;
-        for (IDatatype dt : list){
-            if (dt.isList()){ 
+        for (IDatatype dt : valueList){
+            if (dt.isList() && varList.size() > 1){ 
+                // bind (((1 2)(3 4)) as (?x, ?y))
+                // ?x = 1 ; ?y = 2
                  Node[] val = new Node[dt.size()];
                  m = Mapping.create(qNodes, dt.getValues().toArray(val));
             }
             else {
-                 m =  Mapping.create(lNodes.get(0), dt);
+                // bind (((1 2)(3 4)) as ?x)
+                // HINT: bind (((1 2)(3 4)) as (?x))
+                // ?x = (1 2)
+                 m =  Mapping.create(varList.get(0), dt);
             }
            
             map.add(m);

@@ -22,7 +22,7 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.query.Mapper;
+import fr.inria.edelweiss.kgraph.query.MapperSQL;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 
@@ -141,7 +141,7 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 		Graph g = Graph.create();
 		QueryProcess exec = QueryProcess.create(g);
 		ProducerImpl p = (ProducerImpl) exec.getProducer();
-		p.set(new MapperImpl(p));
+		//p.set(new MapperImpl(p));
 		
 		try {
 			String query = 

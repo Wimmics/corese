@@ -5,10 +5,10 @@ import java.sql.SQLException;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgraph.query.Mapper;
+import fr.inria.edelweiss.kgraph.query.MapperSQL;
 
 
-public class MapperImpl extends Mapper {
+public class MapperImpl extends MapperSQL {
 	
 	MapperImpl(Producer p){
 		super(p);

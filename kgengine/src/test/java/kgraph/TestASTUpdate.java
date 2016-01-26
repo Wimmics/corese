@@ -25,7 +25,7 @@ import fr.inria.acacia.corese.triple.update.Composite;
 import fr.inria.acacia.corese.triple.update.Update;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.query.Mapper;
+import fr.inria.edelweiss.kgraph.query.MapperSQL;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.RDFFormat;

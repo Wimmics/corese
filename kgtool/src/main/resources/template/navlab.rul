@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jan 22 15:56:07 CET 2016
+Tue Jan 26 16:40:12 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -57,8 +57,8 @@ st:call-template(st:desctriple,
 
 }
 where {
-  bind (unnest(us:define()) as (?p,  ?title, ?titleen))   
-  
+  bind (unnest(us:person()) as (?p,  ?title, ?titleen))   
+
   bind (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
   
   filter ( ?href || exists { ?r ?p ?v } )
@@ -75,8 +75,6 @@ function us:define(){
     if (xt:size(?m) = 0) { us:person() } else { ?m }
   }
 }
-
-
 
 ]]>
 </body>
@@ -193,6 +191,8 @@ template st:property(?r, ?p) {
 
   if (isLiteral(?n), str(?n),
     st:call-template(st:display, ?n, coalesce(?ln, ?n)))
+    
+    ; separator = " - "
   
 }
 where { 
@@ -247,10 +247,19 @@ function us:person(){
 	  (p:dateDeNaissance 	"Naissance" 	"Birth")
 	  (p:dateDeDécès 	"Décès"		"Death")
 	  (o:predecessor 	"Prédécesseur"	"Predecessor")
-	  (o:successor 		"Successeur"	"Successor")	 
+	  (o:successor          "Successeur"	"Successor")
+	  (o:father 		"Père"		"Father")
+	  (o:mother 		"Mère"		"Mother")
+	  (o:spouse 		"Conjoints"	"Spouse")
+	  (o:child 		"Enfants"	"Children")
+	  (o:residence          "Résidence"	"Residence")
+	  (o:memberOf         	"Membre"	"Member")
+	  (o:bandMember         "Membre"	"Member")
+	  (o:starring         	"Acteur"	"Actor")
+	  (o:director         	"Metteur en scène"	"Director")
 	  (rdfs:comment 	"Résumé"	"Abstract")
 	  (o:wikiPageRedirects  "Voir aussi"	"See Also")
-	  (o:wikipedia		"Wikipedia"	"Wikipedia")
+	  (o:wikipedia          "Wikipedia"	"Wikipedia")
 	  (o:dbpedia		"DBpedia"	"DBpedia")
 	}
       })

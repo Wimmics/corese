@@ -70,6 +70,8 @@ public interface Node {
         DatatypeValue getDatatypeValue();
 	
 	Object getObject();
+        
+        Object getGraphStore();
 	
 	void setObject(Object o);
 	

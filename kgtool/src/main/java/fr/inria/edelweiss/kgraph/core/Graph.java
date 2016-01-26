@@ -946,6 +946,16 @@ public class Graph implements  Pointerable, Graphable, Loopable {
             index();
         }
     }
+    
+    /**
+     * Draft (transitivity is missing ...)
+     */
+    public void sameas(){
+        for (Entity ent : getEdges(OWL.SAMEAS)){
+            ent.getNode(1).setIndex(ent.getNode(0).getIndex());
+        }
+        index();
+    }
 
     void clearIndex() {
         gindex.clear();
@@ -2050,7 +2060,7 @@ public class Graph implements  Pointerable, Graphable, Loopable {
             return node;
         }
         String id = skolem(node.getLabel());
-        return NodeImpl.create(createSkolem(id));
+        return NodeImpl.create(createSkolem(id), this);
     }
 
     IDatatype createSkolem(String id) {
@@ -2126,11 +2136,11 @@ public class Graph implements  Pointerable, Graphable, Loopable {
     Node createNode(String key, IDatatype dt) {
         Node node;
         if (valueOut) {
-            node = NodeImpl.create(this, dt);
+            node = NodeImpl.create(dt, this);
             node.setKey(key);
             values.setValue(key, dt);
         } else {
-            node = NodeImpl.create(dt);
+            node = NodeImpl.create(dt, this);
         }
 
         return node;

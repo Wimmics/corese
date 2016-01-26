@@ -168,4 +168,9 @@ public class NodeImpl implements Node {
     public void setKey(String str) {
     }
 
+    @Override
+    public Object getGraphStore() {
+        return null;
+    }
+
 }

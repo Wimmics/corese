@@ -1056,6 +1056,12 @@ public class CoreseDatatype
 		// TODO Auto-generated method stub
 		return null;
 	}
+        
+        @Override
+	public Node getGraphStore() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public int nbNode() {

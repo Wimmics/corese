@@ -12,47 +12,59 @@ prefix p:    <http://fr.dbpedia.org/property/>
 prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
 construct   {
-  ?r a ?class .
-  ?r rdfs:label ?label ; rdfs:comment ?com .
-  ?r o:wikipedia ?pr ; o:dbpedia ?r
+  ?uri a ?class .
+  ?uri rdfs:label ?label ; rdfs:comment ?com .
+  ?uri o:wikipedia ?pr ; o:dbpedia ?uri
   
-  ?r ?qq ?ts . ?ts rdfs:label ?ls . ?qq rdfs:label ?lq .
-  ?r ?pp ?vv .
+  ?uri ?qq ?ts . ?ts rdfs:label ?ls . ?qq rdfs:label ?lq .
+  ?uri ?pp ?vv .
   
-  ?r p:latitude ?lat ; p:longitude ?lon . 
-  ?r o:place ?pl
+  ?uri p:latitude ?lat ; p:longitude ?lon . 
+  ?uri o:place ?pl
   ?pl p:latitude ?plat ; p:longitude ?plon  .
+  
+  ?uri ?propOf ?org
+  ?org rdfs:label ?lorg
   
 }
 where {
 bind (st:set(st:bind, st:values) as ?tmp)
-bind (st:get(st:uri) as ?r)
+bind (st:get(st:uri) as ?uri)
+bind (coalesce(st:get(st:lang), "fr") as ?lang)
 
 service <http://fr.dbpedia.org/sparql> {
   
-  ?r rdfs:label ?label . filter(langMatches(lang(?label), 'fr'))    
-  optional {  ?r rdfs:comment ?com . filter(langMatches(lang(?com) , 'fr')) }
+  ?uri rdfs:label ?label . filter(langMatches(lang(?label), "fr")) 
+  
+  optional {  
+    ?uri rdfs:comment ?com . filter(langMatches(lang(?com) , "fr")) 
+   }
  
   optional { 
-    ?r p:dateDeNaissance |  p:dateDeDécès | o:thumbnail  ?vv
-    ?r ?pp ?vv . 
+    ?uri p:dateDeNaissance |  p:dateDeDécès | o:thumbnail  ?vv
+    ?uri ?pp ?vv . 
     filter (?pp = o:thumbnail || isLiteral(?vv))    
   }
   
-  optional { ?r p:latitude|geo:lat   ?lat 
-             ?r p:longitude|geo:long ?lon  }
+  optional { ?uri p:latitude|geo:lat   ?lat 
+             ?uri p:longitude|geo:long ?lon  }
   optional {
-      ?r o:place ?pl
+      ?uri o:place ?pl
       ?pl p:latitude|geo:lat   ?plat 
       ?pl p:longitude|geo:long ?plon
   }
   optional {
-  ?r o:spouse |o:child
+  ?uri o:spouse |o:child
     |p:mère   |o:mother
     |p:père   |o:father
     |p:successeur   |o:successor 
     |p:prédécesseur |o:predecessor
     |o:residence 
+    
+    |o:bandMember
+    |o:formerBandMember
+    |o:starring
+    |o:director
     
     |p:sud |p:nord |p:est |p:ouest
     |p:sudEst  |p:sudOuest
@@ -60,7 +72,7 @@ service <http://fr.dbpedia.org/sparql> {
     
     |o:wikiPageRedirects ?s
     
-    ?r ?q ?s 
+    ?uri ?q ?s 
     
      filter isURI(?s) . ?s rdfs:label ?ls . 
      filter(langMatches(lang(?ls), 'fr')) 
@@ -69,25 +81,32 @@ service <http://fr.dbpedia.org/sparql> {
     filter(langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))    
 
     optional { 
-        ?s o:wikiPageRedirects ?rs        
+        ?s o:wikiPageRedirects ?uris        
     }
  
+  }
+  optional { 
+    ?org o:bandMember|o:starring|o:director ?uri 
+    ?org ?propOf ?uri
+    ?org rdfs:label ?lorg 
+    filter langMatches(lang(?lorg), "fr")
   }
 	     
 }
 
-bind (coalesce(?rs, ?s) as ?ts)
+bind (coalesce(?uris, ?s) as ?ts)
 
 bind (if (?q = p:successeur,   o:successor,
       if (?q = p:prédécesseur, o:predecessor,
       if (?q = p:mère, o:mother,
       if (?q = p:père, o:father,
-      ?q)))) 
+      if (?q = o:formerBandMember, o:bandMember, 
+      ?q))))) 
       as ?qq)
-      
+            
 bind (if (bound(?lat) || bound(?plat), o:Place, foaf:Person) as ?class)     
       
-bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr) 
+bind (concat(w:, (substr(?uri, strlen(r:) + 1))) as ?pr) 
 
   
 }

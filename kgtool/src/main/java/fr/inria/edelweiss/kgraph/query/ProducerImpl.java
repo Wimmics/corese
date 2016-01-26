@@ -7,7 +7,6 @@ import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgenv.eval.SQLResult;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -19,7 +18,6 @@ import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -37,7 +35,6 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
-import java.util.Collection;
 
 /**
  * Producer
@@ -140,9 +137,9 @@ public class ProducerImpl implements Producer, IProducerQP {
         return local;
     }
 
-    public void set(Mapper m) {
-        mapper = m;
-    }
+//    public void set(MapperSQL m) {
+//        mapper = m;
+//    }
 
     Node getNode(Edge edge, Node gNode, int i) {
         switch (i) {
@@ -173,8 +170,9 @@ public class ProducerImpl implements Producer, IProducerQP {
     // eg BIND(node as ?x)
     boolean isExtern(Node node, Environment env){
         return node.getIndex() == -1
-                || mode == EXTENSION
-                || env.getQuery().getGlobalQuery().isExtension() ;
+                || node.getGraphStore() != graph;
+//                || mode == EXTENSION
+//                || env.getQuery().getGlobalQuery().isExtension() ;
     }
 
     boolean isType(Edge edge, Environment env) {
@@ -826,137 +824,23 @@ public class ProducerImpl implements Producer, IProducerQP {
         if (!graph.isGraphNode(node)) {
             return false;
         }
-        if (from.size() == 0) {
+        if (from.isEmpty()) {
             return true;
         }
 
         return ei.isFrom(from, node);
     }
 
-    @Override
+   @Override
     public Mappings map(List<Node> nodes, Object object) {
-        // TODO Auto-generated method stub
-        if (object instanceof IDatatype) {
-            IDatatype dt = (IDatatype) object;
-            if (dt.getObject() != null) {
-                return map(nodes, dt.getObject());
-            }
-            else if (dt.isList()){ // || dt.isArray()){
-                return mapList(nodes, dt.getValues());
-            }
-            else {
-                return map(nodes, dt);
-            }
-        } else if (object instanceof SQLResult) {
-            // sql()
-            Mappings lMap = mapper.sql(nodes, (SQLResult) object);
-            return lMap;
-        } else if (object instanceof Mappings) {
-            return map(nodes, (Mappings) object);
-        } 
-        else if (object instanceof Collection){
-            return map(nodes, (Collection<IDatatype>)object);
-        }
-        return new Mappings();
-    }
-
-    Mappings map(List<Node> lNodes, Collection<IDatatype> list) {
-        Mappings map = new Mappings();
-        for (IDatatype dt : list){
-            Mapping m =  Mapping.create(lNodes.get(0), dt);
-            map.add(m);
-        }
-        return map;
-    }
-    
-    
-    /**
-     * bind (unnest(exp) as ?x)
-     * bind (unnest(exp) as (?x, ?y))
-     * eval(exp) = list
-     * 
-     * 
-     */
-    Mappings mapList(List<Node> varList, List<IDatatype> valueList) {
-        Node[] qNodes = new Node[varList.size()];
-        varList.toArray(qNodes);
-        Mappings map = new Mappings();
-        Mapping m;
-        for (IDatatype dt : valueList){
-            if (dt.isList() && varList.size() > 1){ 
-                // bind (((1 2)(3 4)) as (?x, ?y))
-                // ?x = 1 ; ?y = 2
-                 Node[] val = new Node[dt.size()];
-                 m = Mapping.create(qNodes, dt.getValues().toArray(val));
-            }
-            else {
-                // bind (((1 2)(3 4)) as ?x)
-                // HINT: bind (((1 2)(3 4)) as (?x))
-                // ?x = (1 2)
-                 m =  Mapping.create(varList.get(0), dt);
-            }
-           
-            map.add(m);
-        }
-        return map;
-    }
-    
-    Mappings map(List<Node> lNodes, IDatatype[] list) {
-        Mappings map = new Mappings();
-        for (IDatatype dt : list){
-            Mapping m =  Mapping.create(lNodes.get(0), dt);
-            map.add(m);
-        }
-        return map;
-    }
-
-    Mappings map(List<Node> lNodes, Mappings map) {
-        map.setNodes(lNodes);
-        return map;
-    }
-
-    Mappings map(List<Node> nodes, IDatatype dt) {
-        Node[] qNodes = new Node[nodes.size()];
-        int i = 0;
-        for (Node qNode : nodes) {
-            qNodes[i++] = qNode;
-        }
-        Mappings lMap = new Mappings();
-        List<Node> lNode = toNodeList(dt);
-        for (Node node : lNode) {
-            Node[] tNodes = new Node[1];
-            tNodes[0] = node;
-            Mapping map = Mapping.create(qNodes, tNodes);
-            lMap.add(map);
-        }
-        return lMap;
-    }
-    
-//    public Iterable<Object> toList(Object obj){
-//        IDatatype dt = (IDatatype) obj;
-//        if (obj instanceof Mappings){
-//            return 
-//        }
-//    }
-
-    @Override
+       return mapper.map(nodes, object);
+   }
+   
+   @Override
     public List<Node> toNodeList(Object obj) {
-        IDatatype dt = (IDatatype) obj;
-        List<Node> list = new ArrayList<Node>();
-        if (dt.isList()) {
-            for (IDatatype dd : dt.getValues()) {
-                if (dd.isXMLLiteral() && dd.getLabel().startsWith("http://")) {
-                    // try an URI
-                    dd = DatatypeMap.newResource(dd.getLabel());
-
-                }
-                list.add(getNode(dd));
-            }
-        } else {
-            list.add(getNode(dt));
-        }
-        return list;
+        return mapper.toNodeList(obj);
     }
+   
 
     void filter(Environment env) {
         // KGRAM exp for current edge

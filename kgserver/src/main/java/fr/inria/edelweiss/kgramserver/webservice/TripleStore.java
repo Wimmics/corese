@@ -112,7 +112,7 @@ public class TripleStore {
     
     void load(String path, String src) throws LoadException{
         Load ld = Load.create(graph);
-        ld.loadWE(path, src);
+        ld.loadWE(path, src, Load.TURTLE_FORMAT);
     }
     
     Mappings query(String query, Dataset ds) throws EngineException{

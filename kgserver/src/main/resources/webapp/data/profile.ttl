@@ -23,18 +23,44 @@ st:dbsparql a st:Profile ;
   st:transform st:sparql .
  # st:transform  "/user/corby/home/AAData/sttl/sparql" . 
 
-st:dbpedia a st:Profile ;
-  st:query  <query/frdbpedia.rq> ;
-  
-  st:param [    
+ 
+ 
+st:dbpedia a st:Profile ;   
+  st:param [ 
+    st:lang "fr" ;
     st:import st:dbpediaParam, st:mapParam  ;
- #   st:lodprofile ((<http://fr.dbpedia.org/resource/N> st:dbsparql ))
   ] ;
-
+  st:query  <query/frdbpedia.rq> ;
   st:transform  st:navlab .
-  #st:transform "/user/corby/home/AAData/sttl/navlab" .
 
-
+  
+st:dbpediadyn a st:Profile ;   
+  st:param [ 
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam  ;
+  ] ;
+  st:query     "/user/corby/home/AAServer/data/query/frdbpedia.rq" ;
+  st:transform "/user/corby/home/AAData/sttl/navlab" .  
+  
+  
+  
+st:dbedit a st:Profile ;
+  st:param [
+    st:uri <http://ns.inria.fr/sparql-template/date/10/2015>
+  ] ;
+   st:transform st:dbedit .
+  
+st:dbeditdyn a st:Profile ;
+  st:param [
+    st:uri <http://ns.inria.fr/sparql-template/date/10/2015>
+  ] ;
+  st:transform "/user/corby/home/AAData/sttl/dbedit" .
+  
+st:dbedityear a st:Profile ;
+  st:param [
+    st:uri <http://ns.inria.fr/sparql-template/date/2015>
+  ] ;
+  st:transform "/user/corby/home/AAData/sttl/dbedit#year" .
   
 st:mapParam
     st:param [ 
@@ -225,7 +251,7 @@ st:service "ldp" ;
  st:data [ st:uri <tutorial/human1.rdf>  ; st:name st:data ] ;
  st:param [
     st:lodprofile (
-    ( <http://fr.dbpedia.org/resource>  st:dbpedia )
+    ( <http://fr.dbpedia.org/resource>  st:dbsparql )
     ( <http://www.inria.fr/2015/humans> st:sparql )
     ( "*" st:sparql )
     );
@@ -293,10 +319,10 @@ st:cdn a st:Server ;
  st:history a st:Profile ;
     st:transform st:cdn ;        
     st:param [
-      st:text ( "France" "Contexte" "Savoie, Piémont" "Comté de Nice");
-      st:topic ( (cn:fr) (cn:emp cn:context) (cn:mds) (cn:cdn)) ;      
+      st:text ( "Antiquité" "France" "Contexte" "Savoie, Piémont" "Comté de Nice");
+      st:topic ( (cn:rome) (cn:fr) (cn:emp cn:context) (cn:mds) (cn:cdn)) ;      
    #   st:uri cn:XVIII ;
-      st:min 400 ;
+      st:min -700 ;
       st:max 3000 ;
     ] .
     

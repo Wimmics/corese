@@ -83,6 +83,7 @@ public class Compile {
         translate(root + "mix", lib + "mix.rul");
 
         translate(root + "navlab", lib + "navlab.rul");
+        translate(root + "dbedit", lib + "dbedit.rul");
 
         translate(root + "cdn", lib + "cdn.rul");
         translate(root + "calendar", lib + "calendar.rul");

@@ -5,10 +5,13 @@ where {}
   
   # LOD URI hypertext link generated as is (see display.rq)
   # set by profile.ttl : st:param [ st:lod (URI) ]
+  #
   function st:lod(?x){
      coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
   }
-  
+    
+
+  # display resource uri
   function st:display(?x){
     let (?profile = coalesce(st:get(st:profile), st:null)){
       if (?profile = st:null){ 
@@ -20,9 +23,15 @@ where {}
       else if (st:lod(?x)){
 	st:call-template(st:linkesc, ?x)
       }
-      else { 
-	st:call-template(st:linkprofile, ?x) 
-      }
+      else {
+	st:call-template(st:linkprofile2, ?x)
+      }     
     }
   }
+  
+function st:init(){
+  if (coalesce(st:get(st:service), st:null) = st:null){
+    st:set(st:service, "/template")
+  }
+}
 

@@ -7,10 +7,10 @@ where {
 
    bind(st:turtle(?x) as ?t)
    
-   bind (replace(?t, "<", "&lt;") as ?tt)
+   bind (
+    let (?t = st:turtle(?x)) { replace(?t, "<", "&lt;") } 
+   as ?tt)
    
-   bind(
-    if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) 
-    as ?d) 
+#   bind(if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) as ?d) 
     
 }

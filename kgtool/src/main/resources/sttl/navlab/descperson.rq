@@ -8,8 +8,8 @@ st:call-template(st:desctriple,
 
 }
 where {
-  bind (unnest(us:define()) as (?p,  ?title, ?titleen))   
-  
+  bind (unnest(us:person()) as (?p,  ?title, ?titleen))   
+
   bind (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
   
   filter ( ?href || exists { ?r ?p ?v } )
@@ -26,5 +26,3 @@ function us:define(){
     if (xt:size(?m) = 0) { us:person() } else { ?m }
   }
 }
-
-

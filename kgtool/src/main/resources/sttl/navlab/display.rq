@@ -12,7 +12,7 @@ template  st:display(?r, ?l) {
   format {
     "<a href='%s'>%s</a>"
 
-    st:plink(?r)
+    st:pplink(?r)
     str(coalesce(?l, ?pr))
   }
 }

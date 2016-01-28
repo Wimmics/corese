@@ -14,13 +14,10 @@ template cn:row(?d) {
   
 
 }
-where {
-  bind (st:get(st:definition) as ?def)
-  bind (unnest(st:get(st:topic)) as ?e)
-  graph ?def {
-    ?e rdf:rest*/rdf:first ?topic
-  }
-  
+where {  
+  bind (unnest(st:get(st:topic)) as ?topicList)
+  bind (kg:number() as ?n)
+  bind (unnest(?topicList) as ?topic) 
 }
-group by ?e
-         
+group by ?topicList
+order by ?n

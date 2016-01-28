@@ -1,0 +1,34 @@
+#
+# date translated as "10/2015"^^xsd:gYearMonth
+#
+template st:month {
+
+  st:call-template(st:title, ?date)
+
+  format {
+
+    """    
+    <p>
+    <table class='table'>
+      <tr style='vertical-align: bottom'>
+      %s
+      </tr>
+    </table>
+    </p>
+    """
+    
+    st:call-template(st:dbpedia, ?date)
+    
+  }
+  
+}
+where {
+
+#   bind (st:set(st:uri, <http://ns.inria.fr/sparql-template/date/09/2015>) as ?dd)
+
+   bind (st:get(st:uri) as ?uri)
+   bind (strafter(?uri, us:root()) as ?str)
+   bind (strdt(?str, xsd:gYearMonth) as ?date)
+   
+   filter kg:display(?date)
+}

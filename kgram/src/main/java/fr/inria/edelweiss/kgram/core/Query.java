@@ -2,7 +2,6 @@ package fr.inria.edelweiss.kgram.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -103,7 +102,7 @@ public class Query extends Exp implements Graphable, Loopable {
     // nb occurrences of predicates in where
     HashMap<String, Integer> ptable;
     HashMap<String, Edge> etable;
-    Hashtable<Edge, Query> table;
+    HashMap<Edge, Query> table;
     // Extended queries for additional group by
     List<Query> queries;
     private Extension extension;
@@ -191,7 +190,7 @@ public class Query extends Exp implements Graphable, Loopable {
 		funList 	= new ArrayList<Filter>();
 
 		compiler 	= new Compile(this);
-		table 		= new Hashtable<Edge, Query>();
+		table 		= new HashMap<Edge, Query>();
 		ftable 		= new HashMap<String, Filter>();
 		pragma 		= new HashMap<String, Object>(); 
 		tprinter 	= new HashMap<String, Object> (); 
@@ -207,8 +206,8 @@ public class Query extends Exp implements Graphable, Loopable {
 		relaxEdges 		= new ArrayList<Node>();
 		argList 		= new ArrayList<Node>();
                 queryEdgeList           = new ArrayList<Edge>();
-                bgpGenerator             = new BgpGenerator();
-                edgeAndContext             =  new HashMap<Edge, Exp>();
+                bgpGenerator            = new BgpGenerator();
+                edgeAndContext          = new HashMap<Edge, Exp>();
 
         querySorter = new QuerySorter(this);
 
@@ -403,6 +402,10 @@ public class Query extends Exp implements Graphable, Loopable {
             setFrom(q.getFrom());
             setNamed(q.getNamed());
         }
+    }
+    
+    boolean needEdge(){
+            return getGlobalQuery().isRelax() || getGlobalQuery().isRule();
     }
 
     public Query getGlobalQuery() {

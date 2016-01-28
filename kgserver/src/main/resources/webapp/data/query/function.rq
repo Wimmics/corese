@@ -20,10 +20,14 @@ function st:link(?uri) {
      concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
       coalesce(
-	concat("&profile=",   st:get(st:profile)), 
-	concat("&transform=", st:get(st:transform)), 
+	concat("&profile=",   st:qname(st:get(st:profile))), 
+	concat("&transform=", st:qname(st:get(st:transform))), 
 	""))
 } 
+
+function st:qname(?uri){
+  if (strstarts(?uri, st:), st:turtle(?uri), ?uri)
+}
 
 function st:plink(?uri) {
     st:protocol(st:link(?uri))
@@ -33,7 +37,7 @@ function st:plink(?uri, ?profile) {
   st:protocol( 
     concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
-      "&profile=", ?profile))
+      "&profile=", st:qname(?profile)))
 }
 
 #

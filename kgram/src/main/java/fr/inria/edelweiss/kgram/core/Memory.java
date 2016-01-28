@@ -29,6 +29,8 @@ import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
  */
 
 public class Memory implements Environment {
+         static final Edge[] emptyEdges = new Edge[0];
+         static final Entity[] emptyEntities = new Entity[0];
 
 	// number of times nodes are bound by Stack
 	// decrease with backtrack
@@ -346,7 +348,7 @@ public class Memory implements Environment {
 	Mapping store(Query q, Producer p, boolean subEval){
 		return store(query,  p, subEval, false);
 	}
-	
+              	
 	/**
 	 * subEval = true : result of minus() or inpath()
 	 * in this case we do not need select exp 
@@ -367,8 +369,8 @@ public class Memory implements Environment {
 				}
 			}
 		}
-		Edge[] qedge = new Edge[nbEdge];
-                Entity[] tedge = new Entity[nbEdge];
+		Edge[] qedge = emptyEdges;
+                Entity[] tedge = emptyEntities;
 		Node[] qnode = new Node[nb], tnode = new Node[nb], 
 		// order by
 		snode = new Node[q.getOrderBy().size()],
@@ -377,6 +379,8 @@ public class Memory implements Environment {
 		
 		int n = 0, i = 0;
                 if (isEdge){
+                    qedge = new Edge[nbEdge];
+                    tedge = new Entity[nbEdge];
                     for (Edge edge : qEdges){
                             if (edge!=null){
                                     qedge[n] = edge;

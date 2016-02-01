@@ -1003,7 +1003,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         term.setCName(name);
         return term;
     }
-
+   
     /**
      * function name(el) { exp } -> function (name(el), exp)
      */
@@ -1163,13 +1163,38 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     }
 
     public Term createFunction(String name, ExpressionList el) {
+        if (name.equals(Processor.MAPFUN)){
+            return createMapfun(name, el);
+        }
+        return createFun(name, el);
+    }
+        
+        
+    Term createFun(String name, ExpressionList el) {
         Term term = createFunction(name);
+    
         term.setModality(el);
         for (Expression exp : el) {
             term.add(exp);
         }
         return term;
     }
+    
+     /**
+     * mapfun(st:concat, us:cell, ?list) 
+     * ::=
+     * apply(st:concat, maplist(us:cell, ?list))
+     */
+     public Term createMapfun(String name, ExpressionList el) {
+         ExpressionList list = new ExpressionList();
+         list.add(el.get(0));
+         el.remove(0);
+         Term maplist = createFunction(Processor.MAPLIST, el);
+         list.add(maplist);
+         Term mapfun = createFunction(Processor.APPLY, list);
+         return mapfun;
+     }
+    
 
     public Triple createTriple(Expression exp) {
         checkBlank(exp);

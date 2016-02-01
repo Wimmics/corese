@@ -76,12 +76,13 @@ public class Processor {
 	public static final String LET     = "let";
         static final String FOR             = "for";
 	private static final String MAP     = "map";
-	private static final String MAPLIST = "maplist";
+	static final String MAPLIST = "maplist";
+	static final String MAPFUN = "mapfun";
 	private static final String MAPMERGE = "mapmerge";
 	private static final String MAPSELECT = "mapselect";
 	private static final String MAPFIND   = "mapfind";
 	private static final String MAPFINDLIST   = "mapfindlist";
-	private static final String APPLY   = "apply";
+	static final String APPLY   = "apply";
         
         private static final String XT_SELF     = EXT + "self";
         private static final String XT_FIRST    = EXT + "first";
@@ -91,8 +92,8 @@ public class Processor {
         private static final String FUN_XT_GET  = EXT_PREF + "gget";
         private static final String XT_SET      = EXT + "set";
         private static final String XT_CONS     = EXT + "cons";        
-        //private static final String XT_CONCAT   = EXT + "concat";
-        // private static final String XT_COUNT    = EXT + "count";
+        private static final String XT_ADD      = EXT + "add";
+        private static final String XT_MAPPING  = EXT + "mapping";
         private static final String XT_SIZE     = EXT + "size";      
         private static final String XT_GRAPH    = EXT + "graph";
         private static final String XT_SUBJECT  = EXT + "subject";
@@ -562,7 +563,7 @@ public class Processor {
 		defoper(SKOLEM,         ExprType.SKOLEM);
 		defoper(RETURN,         ExprType.RETURN);
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
-		defsysoper(LET,            ExprType.LET);
+		defsysoper(LET,         ExprType.LET);
 		defoper(SET,            ExprType.SET);
 		defoper(XT_LIST,        ExprType.LIST);
 		defoper(XT_IOTA,        ExprType.IOTA);
@@ -570,12 +571,14 @@ public class Processor {
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
 		defoper(XT_SORT,        ExprType.XT_SORT);
                 
+                
 		defsysoper(FUNCALL,        ExprType.FUNCALL);                
 		defsysoper(EVAL,           ExprType.EVAL);                
 		defsysoper(APPLY,          ExprType.APPLY);
 		defsysoper(MAP,            ExprType.MAP);
 		defsysoper(FOR,            ExprType.FOR);
 		defsysoper(MAPLIST,        ExprType.MAPLIST);
+		defsysoper(MAPFUN,         ExprType.MAPFUN);
 		defsysoper(MAPMERGE,       ExprType.MAPMERGE);
 		defsysoper(MAPSELECT,      ExprType.MAPFINDLIST);
 		defsysoper(MAPFIND,        ExprType.MAPFIND);
@@ -583,8 +586,8 @@ public class Processor {
 		defsysoper(MAPANY,         ExprType.MAPANY);
 		defsysoper(MAPEVERY,       ExprType.MAPEVERY);
                 
-		//defoper(XT_CONCAT,      ExprType.XT_CONCAT);
-//		defoper(XT_CONCAT,      ExprType.CONCAT);
+		defoper(XT_MAPPING,     ExprType.XT_MAPPING);
+		defoper(XT_ADD,         ExprType.XT_ADD);
 		defoper(XT_CONS,        ExprType.XT_CONS);
 		defoper(XT_FIRST,       ExprType.XT_FIRST);
 		defoper(XT_REST,        ExprType.XT_REST);
@@ -1014,7 +1017,7 @@ public class Processor {
             }
         }
     }
-      
+              
       // aggregate(?x, xt:mediane)
       void processAggregate(Term term, ASTQuery ast) {
         if (term.getArgs().size() == 2) {

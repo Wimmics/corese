@@ -46,9 +46,9 @@ st:dbpediadyn a st:Profile ;
   
 st:dbedit a st:Profile ;
   st:param [
-    st:uri <http://ns.inria.fr/sparql-template/date/10/2015>
+    st:uri <http://ns.inria.fr/sparql-template/date/09/2015>
   ] ;
-   st:transform st:dbedit .
+  st:transform st:dbedit .
   
 st:dbeditdyn a st:Profile ;
   st:param [

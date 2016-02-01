@@ -436,7 +436,7 @@ public class Interpreter implements Evaluator, ExprType {
         switch (exp.oper()) {
 
             case COUNT:
-
+            case AGGREGATE:
                 if (exp.arity() == 0) {
                     return proxy.aggregate(exp, env, p, null);
                 }

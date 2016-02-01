@@ -307,6 +307,10 @@ public class ProxyImpl implements Proxy, ExprType {
             case XT_DISPLAY:
                 System.out.println();
                 return TRUE;
+                
+            case XT_MAPPING:
+                // use case: aggregate(xt:mapping())
+                return DatatypeMap.createObject(env);
 
             default:
                 if (plugin != null) {
@@ -581,6 +585,9 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_CONS:
                 return DatatypeMap.cons(dt1, dt2);
+                
+            case XT_ADD:
+                return DatatypeMap.add(dt1, dt2);    
                 
             case XT_APPEND:
                 return DatatypeMap.append(dt1, dt2);

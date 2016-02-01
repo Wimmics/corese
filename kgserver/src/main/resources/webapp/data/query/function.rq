@@ -62,6 +62,48 @@ function st:match(?x, ?decl){
   }
 }
   
+# ____________________________________________________
+
+#
+# Generate a HTML table
+# call user defined us:cell() to generate cells
+#
+function st:table(?table){
+  st:format(
+    "<table class='table'>\n%s</table>\n", 
+      mapfun(rq:concat, st:row, ?table))
+}
+
+function st:row(?row){
+   st:format("<tr>%s</tr>\n", 
+    mapfun(rq:concat, us:cell, ?row))  
+}
+
+#
+# Generate a list of sublist with ?nc elements in each sublist
+# Use case: generate a HTML table.
+#
+function st:split(?list, ?nc){
+  let (?size  = xt:size(?list),
+       ?nr    = xt:div(?size, ?nc),
+       ?table = xt:list(),
+       ?jlist = xt:iota(0, ?nc - 1),
+       ?max   = if (xt:mod(?size, ?nc) = 0, ?nr - 1, ?nr)){
+    for (?i in xt:iota(0, ?max)){
+      let (?row = xt:list(), ?nb = ?i * ?nc){
+	for (?j in ?jlist){
+	  let (?k = ?nb + ?j){
+	    if (?k < ?size){
+	      xt:add(?row, xt:get(?list, ?k))
+	    }
+	  }
+	} ;
+	xt:add(?table, ?row)
+      }
+    } ;
+    ?table
+  }
+}
 
 
 # ____________________________________________________

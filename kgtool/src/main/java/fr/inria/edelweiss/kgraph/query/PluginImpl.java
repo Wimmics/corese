@@ -38,6 +38,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.GraphListen;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
@@ -377,10 +378,10 @@ public class PluginImpl extends ProxyImpl {
             step = args[2].intValue();
         }
         int length = (end - start + step) / step;
-        IDatatype[] ldt = new IDatatype[length];
+        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>(length);
         
         for (int i=0; i<length; i++){
-            ldt[i] = DatatypeMap.newInstance(start);
+            ldt.add(DatatypeMap.newInstance(start));
             start += step;
         }
         IDatatype dt = DatatypeMap.createList(ldt);
@@ -408,10 +409,10 @@ public class PluginImpl extends ProxyImpl {
        
         
         int length = (end - start + step) / step;
-        IDatatype[] ldt = new IDatatype[length];
+        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>(length);
         
         for (int i=0; i<length; i++){
-            ldt[i] = DatatypeMap.newInstance(str.substring(start, start+1));
+            ldt.add(DatatypeMap.newInstance(str.substring(start, start+1)));
             start += step;
         }
         IDatatype dt = DatatypeMap.createList(ldt);

@@ -476,7 +476,7 @@ public class DatatypeMap implements Cst, RDF {
     }
     
      public static IDatatype createList() {
-       return EMPTY_LIST;
+       return createList(new ArrayList<IDatatype>(0));
     }
 
     public static IDatatype createList(List<IDatatype> ldt) {
@@ -744,16 +744,25 @@ public class DatatypeMap implements Cst, RDF {
          }
      }
       
-     public static IDatatype cons(IDatatype fst, IDatatype rst){
-          if (! rst.isList()){
+      // modify
+     public static IDatatype add(IDatatype list, IDatatype elem){
+          if (! list.isList()){
               return null;
           }
-          List<IDatatype> val = getValues(rst);
+          List<IDatatype> val = getValues(list);
+          val.add(elem);
+          return list;
+      }
+     
+     // copy
+     public static IDatatype cons(IDatatype elem, IDatatype list){
+          if (! list.isList()){
+              return null;
+          }
+          List<IDatatype> val = getValues(list);
           ArrayList<IDatatype> res = new ArrayList(val.size()+1);
-          res.add(fst);
-          for (int i = 0; i<val.size(); i++){
-                 res.add(val.get(i));
-             }
+          res.add(elem);
+          res.addAll(val);        
           return createList(res);
       }
       

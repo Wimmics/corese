@@ -4,8 +4,10 @@ import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 public class CoreseList extends CoreseUndefLiteral {
 
@@ -26,30 +28,33 @@ public class CoreseList extends CoreseUndefLiteral {
         super(SEED + count++);
         list = Arrays.asList(dt);
     }
+    
+     public CoreseList(List<IDatatype> vec) {
+        super(SEED + count++);
+        list = vec;
+    }
 
     public IDatatype getDatatype() {
         return dt;
     }
 
-    public static CoreseList create(List<IDatatype> vec) {
-        IDatatype[] adt = new IDatatype[vec.size()];
-        vec.toArray(adt);
-        return new CoreseList(adt);
+    public static CoreseList create(List<IDatatype> vec) {        
+        return new CoreseList(vec);
     }
     
      public static CoreseList create(Collection<IDatatype> vec) {
-        IDatatype[] adt = new IDatatype[vec.size()];
-        vec.toArray(adt);
-        return new CoreseList(adt);
+        ArrayList<IDatatype> list = new ArrayList<IDatatype>(vec.size());
+        list.addAll(vec);
+        return new CoreseList(list);
     }
     
-
+     // cannot add()
     public static CoreseList create(IDatatype[] dts) {
         return new CoreseList(dts);
     }
 
     public static CoreseList create() {
-        return  new CoreseList(new IDatatype[0]);
+        return  new CoreseList(new ArrayList<IDatatype>());
     }
 
     public String toString() {

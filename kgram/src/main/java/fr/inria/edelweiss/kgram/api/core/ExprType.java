@@ -251,17 +251,18 @@ public interface ExprType {
  	public static int MAPFIND       = 318;
 	public static int MAPFINDLIST   = 319;
 	public static int MAPMERGE      = 320;
-	public static int FOR           = 321;
+	public static int MAPFUN        = 321;
 	public static int SET           = 322;
 	public static int SEQUENCE      = 323;
 	public static int RETURN        = 324;
 	public static int EVAL          = 325;
 	public static int FUNCALL       = 326;
+	public static int FOR           = 327;
         
 	public static int XT_SORT       = 330;
         
-        public static int XT_SUM         = 400;
-        public static int XT_PROD        = 401;
+        public static int XT_MAPPING     = 400;
+        public static int XT_ADD         = 401;
         public static int XT_CONCAT      = 402;
         public static int XT_COUNT       = 403;
         public static int XT_CONS        = 404;

@@ -1,5 +1,6 @@
 #
-# date translated as "10/2015"^^xsd:gYearMonth
+# URI <http://ns.inria.fr/sparql-template/date/10/2015>
+# translated as "10/2015"^^xsd:gYearMonth
 #
 template st:month {
 
@@ -7,7 +8,7 @@ template st:month {
 
   format {
 
-    """    
+    """
     <p>
     <table class='table'>
       <tr style='vertical-align: bottom'>
@@ -17,18 +18,25 @@ template st:month {
     </p>
     """
     
-    st:call-template(st:dbpedia, ?date)
+    st:call-template(st:dbpediafor, ?date)
     
   }
   
+  st:call-template(st:title, ?date)
+  
+  st:call-template(st:tail)
+ 
 }
 where {
 
 #   bind (st:set(st:uri, <http://ns.inria.fr/sparql-template/date/09/2015>) as ?dd)
+#   bind (st:set(st:profile, st:dbedit) as ?tt)
+#   bind (st:set(st:service, "template") as ?ss)
 
    bind (st:get(st:uri) as ?uri)
    bind (strafter(?uri, us:root()) as ?str)
    bind (strdt(?str, xsd:gYearMonth) as ?date)
+   bind (st:set(st:date, ?date) as ?tmp)
    
-   filter kg:display(?date)
+#   filter kg:display(?date)
 }

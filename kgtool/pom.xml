@@ -20,7 +20,7 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
             <artifactId>arp</artifactId>
             <version>2.2.b</version>
         </dependency>

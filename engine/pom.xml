@@ -4,12 +4,11 @@
     <parent>
         <groupId>fr.inria.wimmics</groupId>
         <artifactId>corese-parent</artifactId>
-        <version>3.1.4-SNAPSHOT</version>
+        <version>3.2.0</version>
         <relativePath>..</relativePath>
     </parent>
     <groupId>fr.inria.wimmics</groupId>
     <artifactId>engine</artifactId>
-  <version>3.1.4-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

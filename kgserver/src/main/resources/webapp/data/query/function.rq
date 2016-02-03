@@ -71,19 +71,31 @@ function st:match(?x, ?decl){
 function st:table(?table){
   st:format(
     "<table class='table'>\n%s</table>\n", 
-      mapfun(rq:concat, st:row, ?table))
+      apply(rq:concat, maplist(st:row, xt:iota(xt:size(?table)), ?table)))
 }
 
-function st:row(?row){
-   st:format("<tr>%s</tr>\n", 
-    mapfun(rq:concat, us:cell, ?row))  
+function st:row(?n, ?row){
+   st:format("<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n", 
+    ?n,
+    mapfun(rq:concat, st:cell, ?row))  
 }
+
+function st:cell(?elem){
+   st:format(
+    "<td style='vertical-align: bottom'>%s</td>\n", 
+    ?elem)  
+}	
+
 
 #
 # Generate a list of sublist with ?nc elements in each sublist
 # Use case: generate a HTML table.
 #
-function st:split(?list, ?nc){
+function st:split(?l, ?n){
+  xt:split(?l, ?n)
+}
+
+function xt:split(?list, ?nc){
   let (?size  = xt:size(?list),
        ?nr    = xt:div(?size, ?nc),
        ?table = xt:list(),

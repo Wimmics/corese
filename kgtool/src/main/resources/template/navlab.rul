@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jan 26 16:40:12 CET 2016
+Mon Feb 01 13:15:02 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -135,7 +135,7 @@ template st:start {
   
 }
 where {
-
+#  filter kg:display(st:get(st:uri))
 }
 
 ]]>

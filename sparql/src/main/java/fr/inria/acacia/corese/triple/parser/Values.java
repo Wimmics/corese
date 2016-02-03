@@ -36,6 +36,7 @@ public class Values extends Exp {
 		return new Values();
 	}
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb){
 		String SPACE = " ";
 		String NL = ASTQuery.NL;
@@ -75,6 +76,7 @@ public class Values extends Exp {
 		return sb;
 	}
 	
+        @Override
 	public boolean isValues(){
 		return true;
 	}
@@ -94,11 +96,15 @@ public class Values extends Exp {
 	public void addValues(List<Constant> l) {
 		lval.add(l);
 	}
+        
+        public void addExp(List<Expression> l) {
+	}
 
 	public List<List<Constant>> getValues() {
 		return lval;
 	}
 	
+        @Override
 	public boolean validate(ASTQuery ast, boolean exist){
 		for (Variable var : getVariables()){
 			ast.bind(var);

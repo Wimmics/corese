@@ -238,13 +238,13 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 	void print(Mapping map, Node qNode, StringBuffer sb){
 		Node node = map.getNode(qNode);
 		if (node != null){
-			sb.append(qNode);
-			sb.append(" = ");
-			sb.append(node);
-                        if (node.getObject() != null && node.getObject() != this &&
-                                (node.getObject() instanceof Mappings || node.getObject() instanceof Mapping)){
+			sb.append(qNode).append(" = ").append(node);
+                        Object obj = node.getObject();
+                        if (obj != null 
+                                && obj != this 
+                                && obj instanceof PointerObject){
                             sb.append(" : ");
-                            sb.append(node.getObject().toString());
+                            sb.append(obj.toString());
                         }
 			sb.append("; ");
 		}

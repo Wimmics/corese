@@ -4,7 +4,7 @@ prefix dc:  <http://contextus.net/ontology/ontomedia/misc/date#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix o:   <http://dbpedia.org/ontology/>
 
-template st:dbpedia {
+template  st:dbpedia(?date) {
      
      # every 10 cell, add a new row
      if (xt:mod(st:number() - 1, 10) = 0, 
@@ -20,46 +20,59 @@ template st:dbpedia {
 
 	"""
 	<td style='vertical-align: bottom'>
+	 %s (%s)
+	 <br/>
 	  <a href='%s'>
 	    <img width='100' alt="%s" src="%s" />
 	  </a>
-	  <br/>
-	  %s
+	 
 	</td>
 	"""
 	
+	?l
+	?c
 	st:plink(?x, st:dbpedia)
 	?x
 	?i 
-	?c
+	
+
       }
         
 }
 where {
-
-  bind (st:get(st:date) as ?date)
+  bind (st:get(st:date) as ?date) 
+  filter kg:slice(100)
   
   service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-    select ?x ?c ?i ?l ?date where {
-      ?rev dc:date ?date ; rdf:value ?c  
+  
+    select ?x ?c ?i ?date 
+    where {
+      ?rev dc:date ?date 
       ?x dbfr:revPerMonth ?rev 
-      ?x o:thumbnail ?i 
+      ?rev rdf:value ?c  
+      ?x o:thumbnail ?i  
       
 	FILTER (
-	     ! regex(str(?x), "Wikipédia:") 
-	  && ! regex(str(?x), "Utilisateur:") 
-	  && ! regex(str(?x), "Portail:") 
-	  && ! regex(str(?x), "Catégorie:") 
-	  && ! regex(str(?x), "Discussion_") 
-	  && ! regex(str(?x), "Modèle:") 
-	  && ! regex(str(?x), "Projet:")   
-	)
-	
-	#?x rdfs:label ?l filter langMatches(lang(?l), "fr")
+	     ! regex(?x, "Wikipédia:") 
+	  && ! regex(?x, "Utilisateur:") 
+	  && ! regex(?x, "Portail:") 
+	  && ! regex(?x, "Catégorie:") 
+	  && ! regex(?x, "Discussion_") 
+	  && ! regex(?x, "Modèle:") 
+	  && ! regex(?x, "Projet:")   
+	) 		
 
     }
     ORDER BY DESC(?c)
     LIMIT 100
+    
   }
+  
+  service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
+      ?x rdfs:label ?l filter langMatches(lang(?l), "fr")
+  }
+
 }
 ORDER BY DESC(?c)
+
+#pragma {kg:kgram kg:detail true}

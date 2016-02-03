@@ -115,7 +115,7 @@ query =  "select * where {?x c:isMemberOf @{filter(?this = <http://www.inria.fr/
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  5));
 
 
-query = "select * where {?x c:FirstName ?n} bindings ?n { ('Olivier') }";
+query = "select * where {?x c:FirstName ?n} values ?n { 'Olivier' }";
 
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  11));
 

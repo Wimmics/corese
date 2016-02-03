@@ -50,7 +50,7 @@ public class Mapper {
     }
     
     
-    Mappings map(List<Node> nodes, IDatatype dt) {        
+    Mappings map(List<Node> nodes, IDatatype dt) {   
         if (dt.isList()) { 
             return map(nodes, dt.getValues());
         } 
@@ -64,14 +64,16 @@ public class Mapper {
         }
     }
     
-    Mappings map(List<Node> nodes, Pointerable obj) {        
+    Mappings map(List<Node> nodes, Pointerable obj) { 
         switch (obj.pointerType()){
             case Pointerable.GRAPH: 
                 return map(nodes, (Graph) obj.getGraph());
                 
             case Pointerable.MAPPINGS:
                 return map(nodes, obj.getMappings());
-                               
+                
+            case Pointerable.ENTITY:
+                 return map(nodes, obj.getEntity());               
         }
         
         return map(nodes, (Object) obj);
@@ -106,6 +108,27 @@ public class Mapper {
         return map;
 
     }
+    
+    Mappings map(List<Node> varList, Entity e) {
+        Mappings map = new Mappings();
+        int size = varList.size();
+        if (size != 3) {
+            return map;
+        }
+        
+        Node[] qNodes = new Node[varList.size()];
+        Node[] nodes = new Node[qNodes.length];
+        varList.toArray(qNodes);
+
+        nodes[0] = e.getNode(0);
+        nodes[1] = e.getEdge().getEdgeNode();
+        nodes[2] = e.getNode(1);
+        map.add(Mapping.create(qNodes, nodes));
+
+        return map;
+    }
+    
+    
 
     Mappings map(List<Node> lNodes, Collection<IDatatype> list) {
         Mappings map = new Mappings();

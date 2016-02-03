@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 01 09:10:49 CET 2016
+Mon Feb 01 13:15:02 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -317,12 +317,12 @@ prefix o:   <http://dbpedia.org/ontology/>
 
 template  st:dbpediafor(?date) {
      
-     st:table(st:split(?list, 5))
+     let (?list = aggregate(us:cell(?l, ?c, ?x, ?i))){
+        st:table(st:split(?list, 5))
+     }
                   
 }
 where {
-  select (aggregate(xt:mapping()) as ?list) 
-  where {
     bind (st:get(st:date) as ?date) 
     filter kg:slice(100)
     
@@ -356,33 +356,26 @@ where {
     service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
 	?x rdfs:label ?l filter langMatches(lang(?l), "fr")
     }
-  }
 }
 
 
-function us:cell(?map){
-  let ((?l, ?c, ?x, ?i) = ?map){
+function us:cell(?l, ?c, ?x, ?i){
     st:format (
 
 	"""	
-	<td style='vertical-align: bottom'>
 	 %s (%s)
 	 <br/>
 	  <a href='%s'>
 	    <img width='100' alt="%s" src="%s" />
-	  </a>
-	 
-	</td>
+	  </a>	 
 	""" ,
-	
-      
+	      
 	?l,
 	?c,
 	st:plink(?x, st:dbpedia),
 	?x,
 	us:clean(?i) 	
       )
-   }
 }
 
 

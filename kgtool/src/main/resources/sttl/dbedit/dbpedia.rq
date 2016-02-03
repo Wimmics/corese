@@ -1,48 +1,57 @@
+#
+# Generate a table with DBpedia topmost resource updates
+# given month/year ?date
+#
+#
 prefix swp: <http://www.w3.org/2004/03/trix/swp-2/>
 prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
 prefix dc:  <http://contextus.net/ontology/ontomedia/misc/date#>
-prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix xsd: <http://www.w3.org/2001/xmlschema#>
 prefix o:   <http://dbpedia.org/ontology/>
 
-template st:dbpedia(?date) {
+template  st:dbpedia(?date) {
      
-     # every 10 cell, add a new row
-     if (xt:mod(st:number() - 1, 10) = 0, 
-      st:format(
-	"""
-	</tr>
-	<tr><th style='vertical-align: middle'>%s</th>
-	""",  
-	1 + xt:div(st:number(), 10) ),
-     "")
      
       format {
 
 	"""
+	%s
 	<td style='vertical-align: bottom'>
+	 %s (%s)
+	 <br/>
 	  <a href='%s'>
 	    <img width='100' alt="%s" src="%s" />
 	  </a>
-	  <br/>
-	  %s
+	 
 	</td>
 	"""
 	
+        # every p cell, add a new row
+	us:row(st:number(), 5)
+	?l
+	?c
 	st:plink(?x, st:dbpedia)
 	?x
-	?i 
-	?c
+	us:clean(?i) 
+	
+
       }
         
 }
 where {
+  bind (st:get(st:date) as ?date) 
+  filter kg:slice(100)
   
   service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-    select ?x ?c ?i ?l ?date where {
-      ?rev dc:date ?date ; rdf:value ?c  
+  
+    select ?x ?c ?i ?date 
+    where {
+      ?rev dc:date ?date 
       ?x dbfr:revPerMonth ?rev 
-      ?x o:thumbnail ?i 
-	FILTER (
+      ?rev rdf:value ?c  
+      ?x o:thumbnail ?i  
+      
+	filter (
 	     ! regex(?x, "Wikipédia:") 
 	  && ! regex(?x, "Utilisateur:") 
 	  && ! regex(?x, "Portail:") 
@@ -50,13 +59,34 @@ where {
 	  && ! regex(?x, "Discussion_") 
 	  && ! regex(?x, "Modèle:") 
 	  && ! regex(?x, "Projet:")   
-	)
-	
-	#?x rdfs:label ?l filter langMatches(lang(?l), "fr")
+	) 		
 
     }
-    ORDER BY DESC(?c)
-    LIMIT 100
+    order by desc(?c)
+    limit 50
+    
   }
+  
+  # split in two services appears to be much more efficient !
+  
+  service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
+      ?x rdfs:label ?l filter langMatches(lang(?l), "fr")
+  }
+
 }
-ORDER BY DESC(?c)
+order by desc(?c)
+
+
+# every p cell, add a new row
+function us:row(?n, ?p){
+  if (xt:mod(?n - 1, ?p) = 0, 
+      st:format(
+	"""
+	</tr>
+	<tr><th style='vertical-align: middle'>%s</th>
+	""",  
+	1 + xt:div(?n, ?p) ),
+     "")
+}
+
+

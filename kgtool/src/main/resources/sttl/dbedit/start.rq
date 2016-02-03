@@ -1,3 +1,7 @@
+#
+# Navigator on DBpedia topmost resource updates
+#
+#
 template st:start {
 
    st:call-template(st:month)

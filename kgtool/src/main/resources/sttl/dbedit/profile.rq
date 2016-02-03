@@ -38,3 +38,12 @@ function us:year(?date, ?incr){
 function us:root(){
   <http://ns.inria.fr/sparql-template/date/>
 }
+
+function us:clean(?s){
+  if (strcontains(?s, "Swastika")
+   || strcontains(?s, "Panzer-Division")
+   , 
+    "", ?s)
+}
+
+

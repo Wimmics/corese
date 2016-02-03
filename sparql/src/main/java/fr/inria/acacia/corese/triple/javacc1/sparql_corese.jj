@@ -543,7 +543,7 @@ void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri; Values va
 	
 	<WHERE> exp = GroupGraphPattern()
 
-        (values = ValueBindings() {upd.setValues(values); } ) ?
+        (values = Values() {upd.setValues(values); } ) ?
 	
 	{ upd.setBody(exp); astu.add(upd); }
 
@@ -880,7 +880,7 @@ Exp AskQuery() : { Exp stack; Values values;}
   Debug()
   ( DatasetClause() )*
   stack = WhereClause()
-  (values = ValueBindings()  {astq.setValues(values); } ) ?
+  (values = Values()  {astq.setValues(values); } ) ?
   
   {
   	astq.setResultForm(ASTQuery.QT_ASK);
@@ -1121,22 +1121,11 @@ void SolutionModifier() : {Values values;}
 {
    (Relax()) ?  
    (OrderGroup()) ? ( LimitOffset()) ? 
-   (values = ValueBindings() {astq.setValues(values); } ) ?
+   (values = Values() {astq.setValues(values); } ) ?
    (Display()) * 
    (Pragma()) *
 }
 
-
-Values ValueBindings() : {Values values;}
-{
-	(
-	values = Values()
-	|
-	values = Bindings()
-	)	
-	
-	{return values;}
-}
 
 Values Values() : {Variable var; Constant val; ArrayList<Variable> list = null; ArrayList<Constant>  value; Values values = null;}
 {
@@ -1181,31 +1170,6 @@ Values Values() : {Variable var; Constant val; ArrayList<Variable> list = null; 
 	
 	{ return values; }
 
-	
-}
-
-
-
-Values Bindings() : {Variable var; Constant val; ArrayList<Variable> list; ArrayList<Constant>  value; Values values;}
-{
-	{list = new ArrayList<Variable>();
-	 values = Values.create();
-	}
-
-	<BINDINGS> 
-	(var = Var() {list.add(var); }) *
-	 { values.setVariables(list); }
-	<LBRACE> 
-	(
-		<LPAREN> 
-			{ value = new ArrayList<Constant>(); }
-			( val = Value() { value.add(val); } ) * 
-			{ values.addValues(value); }
-		<RPAREN>
-	)*
-	<RBRACE>
-	
-	{ return values; }
 	
 }
 

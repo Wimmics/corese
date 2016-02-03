@@ -387,7 +387,7 @@ public class Mapping
 				str += qNodes[i] + " : " + lPath[i] + "\n";
 
 			}
-                        else if (e.getObject() != null){
+                        else if (e != null && e.getObject() != null){
                             str += e.getObject() + "\n";
                         }
 			i++;

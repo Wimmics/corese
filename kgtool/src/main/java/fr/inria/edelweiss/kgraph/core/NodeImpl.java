@@ -146,16 +146,11 @@ public class NodeImpl extends PointerObject implements Node, Entity {
     }
 
     public Object getObject() {
-        if (dt != null){
-            return dt.getObject();
-        }
-        return null;
+         return dt.getObject();
     }
 
     public void setObject(Object o) {
-        if (dt != null){
-             dt.setObject(o);
-        }    
+        dt.setObject(o);
     }
 
     @Override

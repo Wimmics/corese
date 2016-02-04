@@ -15,6 +15,7 @@ public class Values extends Exp {
 	private List<Variable> lvar;
 	private List<List<Constant>> lval;
         private Expression exp;
+        Exp bind;
         private boolean moved = false;
 	
 	Values(List<Variable> var, List<List<Constant>> lval){
@@ -147,6 +148,20 @@ public class Values extends Exp {
     
     public boolean hasExpression(){
         return exp != null;
+    }
+
+    /**
+     * @return the bind
+     */
+    public Exp getBind() {
+        return bind;
+    }
+
+    /**
+     * @param bind the bind to set
+     */
+    public void setBind(Exp bind) {
+        this.bind = bind;
     }
 
 

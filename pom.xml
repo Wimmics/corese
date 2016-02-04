@@ -9,6 +9,22 @@
 	Web site: http://wimmics.inria.fr/corese
 	Contact: olivier.corby@inria.fr
 	-->
+<!-- metadata: human readable informations for central -->
+        <description>Corese is a Semantic Web Factory (triple store and SPARQL endpoint) implementing RDF, RDFS, SPARQL 1.1 Query and Update.</description>
+        <url>https://github.com/Wimmics/corese</url>
+
+        <licenses>
+                <license>
+                        <name>CeCILL-C License:</name>
+                        <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html</url>
+                </license>
+        </licenses>
+
+        <scm>
+                <url>https://github.com/Wimmics/corese.git</url>
+        </scm>
+
+        <!-- end of central metada -->
 	<modelVersion>4.0.0</modelVersion>
     
 	<groupId>fr.inria.wimmics</groupId>
@@ -56,15 +72,6 @@
 		</developer>
 	</developers>
     
-	<scm>
-		<!--        <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</developerConnection>
-		<url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>-->
-		<connection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</connection>
-		<developerConnection>scm:svn:https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</developerConnection>
-		<url>https://scm.gforge.inria.fr/svn/kgram/Dev/trunk</url>
-	</scm>
-
 	<distributionManagement>
 		<repository>
 			<id>ossrh</id>
@@ -86,11 +93,6 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -140,6 +142,8 @@
 	</build>
     
 	<properties>
+		<!-- To ignore errors in javadoc usage. -->
+    		<additionalparam>-Xdoclint:none</additionalparam>
 		<!-- Sonar -->
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
@@ -160,7 +164,7 @@
 		<module>kgimport</module>
 		<module>sparql</module>
 		<module>rif</module>
-		<module>rtc</module><!-- RDF Triple Collector(firefox plugin)-->
+		<module>rtc</module> <!-- RDF Triple Collector(firefox plugin)-->
 		<!--<module>kgendpoint</module>-->
 	</modules>
     

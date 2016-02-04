@@ -2819,7 +2819,7 @@
       jj_consume_token(-1);
       throw new ParseException();
     }
-          {if (true) return values;}
+          {if (true) return astq.complete(values);}
     throw new Error("Missing return statement in function");
   }
 

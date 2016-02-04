@@ -1205,13 +1205,19 @@ public class Transformer implements ExpType {
 			exp = compileService((Service) query);		
 			break;
 
-		case VALUES:			
-			exp = bindings((Values) query);
-			if (exp == null){
-				// TODO:
-				logger.error("** Value Bindings: #values != #variables");
-				return null;
-			}
+		case VALUES:
+                        Values val = (Values) query;
+                        if (val.hasExpression()){
+                            exp = compile(val.getBind(), opt, level);
+                        }
+                        else {
+                            exp = bindings(val);
+                            if (exp == null){
+                                    // TODO:
+                                    logger.error("** Value Bindings: #values != #variables");
+                                    return null;
+                            }
+                        }
 			break;
 
 		default:

@@ -2258,6 +2258,27 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         }
         return null;
     }
+    
+    public Values complete(Values val){
+        if (val.hasExpression()){
+            Variable meta;
+            
+            if (val.getVariables().size() == 1){
+                meta = val.getVariables().get(0);                
+            }
+            else {
+               meta = metaVariable();
+               for (Variable var : val.getVariables()){
+                   meta.addVariable(var);
+               }
+            }
+            
+            Exp b = createBind(val.getExp(), meta);
+            val.setBind(b); 
+        }
+       
+        return val;
+    }
 
     public void setValues(Values v) {
         values = v;

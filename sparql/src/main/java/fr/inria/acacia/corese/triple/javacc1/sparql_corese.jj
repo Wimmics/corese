@@ -1127,10 +1127,15 @@ void SolutionModifier() : {Values values;}
 }
 
 
-Values Values() : {Variable var; Constant val; ArrayList<Variable> list = null; ArrayList<Constant>  value; Values values = null;}
+Values Values() : {
+    Variable var; Constant val; ArrayList<Variable> list = null; ArrayList<Constant>  value; Values values = null;
+    Expression exp;  Exp stack;
+}
 {
 	{list = new ArrayList<Variable>();
-	values = Values.create();}
+	 values = Values.create();
+         stack = BasicGraphPattern.create();
+        }
 
  <VALUES> 
  
@@ -1142,33 +1147,45 @@ Values Values() : {Variable var; Constant val; ArrayList<Variable> list = null; 
 		<RPAREN>
 			
 		<LBRACE> 
-		(
+                (
+                    exp = FunctionCorese(stack) { values.addExp(exp); }
+                    |
+                    (
 			<LPAREN> 
 				{ value = new ArrayList<Constant>(); }
-				( val = Value() { value.add(val); } ) * 
+                                
+                                ( val = Value() { value.add(val); } ) *                                                                    
+
 				{ values.addValues(value); }
 			<RPAREN>
-		)*
+                    )*
+                )
 		<RBRACE>
 	)
 
 	|
 	
 	(
-		var = Var() {list.add(var); }
-			{ values.setVariables(list); }
+		var = Var() 
+                { list.add(var); values.setVariables(list); }
 		
 		<LBRACE> 
-			(
-			{ value = new ArrayList<Constant>(); }
-			val = Value() { value.add(val); } 
+                (
+                     exp = FunctionCorese(stack) { values.addExp(exp); }
+                    |
+                    (
+			{ value   = new ArrayList<Constant>(); }
+			
+                        val = Value() { value.add(val); } 
+                                                    
 			{ values.addValues(value); }
-			) *
+                    ) *                   
+                )
 		<RBRACE>
 	)
 	)
 	
-	{ return values; }
+	{ return astq.complete(values); }
 
 	
 }
@@ -2348,7 +2365,7 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
 {	
 	// distance namespace isMulti sqrt depth cardinality isuri occurence
   ((
-	( t = <SIMPLE_STRING> | t = <DISTANCE> | t = <SCORE> | t = <COUNT> | t = <XPATH> )
+	( t = <SIMPLE_STRING> | t = <DISTANCE> | t = <SCORE> | t = <COUNT> | t = <XPATH>  )
 	v = ArgList(stack)
 	{ 
 		term = astq.createFunction(t.image, v); 
@@ -2940,7 +2957,6 @@ TOKEN [IGNORE_CASE] :
 | <IBOX: "ibox" >
 | <SBOX: "sbox" >
 | <HAVING: "having" >
-| <BINDINGS: "bindings" >
 | <VALUES: "values"  >
 | <BIND: "bind">
 | <UNDEF: "undef">

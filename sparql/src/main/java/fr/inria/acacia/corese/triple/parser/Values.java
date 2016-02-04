@@ -14,6 +14,8 @@ public class Values extends Exp {
 	
 	private List<Variable> lvar;
 	private List<List<Constant>> lval;
+        private Expression exp;
+        Exp bind;
         private boolean moved = false;
 	
 	Values(List<Variable> var, List<List<Constant>> lval){
@@ -97,7 +99,8 @@ public class Values extends Exp {
 		lval.add(l);
 	}
         
-        public void addExp(List<Expression> l) {
+        public void addExp(Expression exp) {
+            setExp(exp);
 	}
 
 	public List<List<Constant>> getValues() {
@@ -127,6 +130,38 @@ public class Values extends Exp {
      */
     public void setMoved(boolean moved) {
         this.moved = moved;
+    }
+
+    /**
+     * @return the exp
+     */
+    public Expression getExp() {
+        return exp;
+    }
+
+    /**
+     * @param exp the exp to set
+     */
+    public void setExp(Expression exp) {
+        this.exp = exp;
+    }
+    
+    public boolean hasExpression(){
+        return exp != null;
+    }
+
+    /**
+     * @return the bind
+     */
+    public Exp getBind() {
+        return bind;
+    }
+
+    /**
+     * @param bind the bind to set
+     */
+    public void setBind(Exp bind) {
+        this.bind = bind;
     }
 
 

@@ -311,6 +311,9 @@ public class ProxyImpl implements Proxy, ExprType {
             case XT_MAPPING:
                 // use case: aggregate(xt:mapping())
                 return DatatypeMap.createObject(env);
+                
+            case XT_QUERY:
+                return DatatypeMap.createObject(env.getQuery());
 
             default:
                 if (plugin != null) {
@@ -1794,45 +1797,21 @@ public class ProxyImpl implements Proxy, ExprType {
             return DatatypeMap.get(dt, ind);
         }
         if (dt.isPointer()){
-            if (dt.pointerType() == Pointerable.ENTITY){
-                return get(dt.getPointerObject().getEntity(), ind.intValue());
-            }
-            IDatatype res = (IDatatype) dt.getPointerObject().getValue(var.getLabel(), ind.intValue());
-            if (res == null){
-                // let ((?x, ?y) = select * where { ... optional { ?x rdf:value ?y }}
-                // ?y may be unbound, return specific UNDEF value 
-                res = UNDEF;
-            }
-            return res;
+            IDatatype res = (IDatatype) dt.getPointerObject().getValue(var.getLabel(), ind.intValue());          
+            // let ((?x, ?y) = select * where { ... optional { ?x rdf:value ?y }}
+            // ?y may be unbound, return specific UNDEF value 
+            return (res == null) ? UNDEF : res;
         }      
         return null;
     }
-       
-    
-    // ?x ?p ?y ?g
-    IDatatype get(Entity ent, int n){
-        Edge edge = ent.getEdge();
-        if (edge == null){
-            return null;
-        }
-        switch (n){
-            case 0: return nodeValue(edge.getNode(0));
-            case 1: 
-                Node var = edge.getEdgeVariable();
-                return nodeValue((var == null) ? edge.getEdgeNode() : var);                  
-            case 2: return nodeValue(edge.getNode(1));
-            case 3: return nodeValue(ent.getGraph());
-        }
-        return null;
-    }
-    
+            
     IDatatype nodeValue(Node n){
         return (IDatatype) n.getValue();
     }
      
     
     IDatatype reject(Environment env, IDatatype dtm){
-        if (dtm.pointerType() == Pointerable.MAPPING){
+        if (dtm.pointerType() == Pointerable.MAPPING_POINTER){
             env.getMappings().reject(dtm.getPointerObject().getMapping()); 
         }
         return TRUE;

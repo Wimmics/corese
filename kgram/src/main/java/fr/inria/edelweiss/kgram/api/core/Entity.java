@@ -6,7 +6,7 @@ package fr.inria.edelweiss.kgram.api.core;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public interface Entity extends Loopable, Pointerable {
+public interface Entity extends  Pointerable {
 	
 	Edge getEdge();
 	

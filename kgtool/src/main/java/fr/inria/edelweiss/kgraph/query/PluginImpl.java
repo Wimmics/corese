@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -700,11 +701,11 @@ public class PluginImpl extends ProxyImpl {
             return null;
         }
         
-        if (dt1.pointerType() == Pointerable.MAPPINGS){
+        if (dt1.pointerType() == Pointerable.MAPPINGS_POINTER){
             return algebra(exp, env, p, dt1, dt2);
         }
         
-        if (dt1.pointerType() == Pointerable.GRAPH){
+        if (dt1.pointerType() == Pointerable.GRAPH_POINTER){
             Graph g1 = (Graph) dt1.getPointerObject();
             Graph g2 = (Graph) dt2.getPointerObject();
             Graph g = g1.union(g2);
@@ -720,7 +721,7 @@ public class PluginImpl extends ProxyImpl {
             return null;
         }
         
-        if (dt1.pointerType() == Pointerable.MAPPINGS){
+        if (dt1.pointerType() == Pointerable.MAPPINGS_POINTER){
             Mappings m1 = dt1.getPointerObject().getMappings();
             Mappings m2 = dt2.getPointerObject().getMappings();
             
@@ -812,10 +813,10 @@ public class PluginImpl extends ProxyImpl {
 
     IDatatype depth(Graph g, Object o) {
         Node n = node(g, o);
-        if (n == null || g.getClassDistance() == null) {
+        if (n == null){ // || g.getClassDistance() == null) {
             return null;
         }
-        Integer d = g.getClassDistance().getDepth(n);
+        Integer d = g.setClassDistance().getDepth(n);
         if (d == null) {
             return null;
         }
@@ -891,7 +892,12 @@ public class PluginImpl extends ProxyImpl {
             return null;
         }
         QueryLoad ql = QueryLoad.create();
-        String str = ql.read(dt.getLabel());
+        String str = null;
+        try {
+            str = ql.readWE(dt.getLabel());
+        } catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(PluginImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (str == null){
             str = "";
         }

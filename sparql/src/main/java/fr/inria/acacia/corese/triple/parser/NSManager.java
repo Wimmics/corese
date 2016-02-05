@@ -1,8 +1,9 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -11,7 +12,13 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.PointerObject;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * <p>Title: Corese</p>
@@ -25,7 +32,7 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
  *
  * @author Olivier Corby
  */
-public class NSManager {
+public class NSManager extends PointerObject {
 
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -700,4 +707,32 @@ public class NSManager {
             return null;
         }
     }
+
+    @Override
+    public int pointerType() {
+        return NSMANAGER_POINTER;
+    } 
+ 
+    /**
+     * 
+     * for ((?p, ?n) in st:prefix()){ }
+     */
+    @Override
+    public Iterable getLoop() {
+        return getList().getValues();
+    }
+    
+    
+    public IDatatype getList(){
+        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        for (String p : tprefix.keySet()){
+            String n = getNamespace(p);
+            if (! isSystem(n)){
+                IDatatype def = DatatypeMap.createList(DatatypeMap.newInstance(p), DatatypeMap.newResource(n));
+                list.add(def);
+            }
+        }
+        return DatatypeMap.createList(list);
+    }
+    
 }

@@ -1267,26 +1267,7 @@ public class Transformer  {
     public void setTrace(boolean isTrace) {
         this.isTrace = isTrace;
     }
-    
-    
-    public Mappings NSMtoMappings(){
-        Mappings map =  new Mappings();      
-        Node[] qq = new Node[2];
-        qq[0] = NodeImpl.createVariable("?p");
-        qq[1] = NodeImpl.createVariable("?n");
-        
-        for (String p : nsm.getPrefixSet()){
-            String ns = nsm.getNamespace(p);
-            if (! nsm.isSystem(ns)){
-                Node[] tn = new Node[2];
-                tn[0] = DatatypeMap.newInstance(p);
-                tn[1] = DatatypeMap.newResource(ns); 
-                map.add(Mapping.create(qq, tn));
-            }
-        }
-        return map;
-    }
-
+      
     public void load(String uri) {
         if (loaded.containsKey(uri)){
             return;

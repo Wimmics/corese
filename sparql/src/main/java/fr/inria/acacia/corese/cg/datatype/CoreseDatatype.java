@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import java.util.List;
 
 /**
@@ -391,7 +392,7 @@ public class CoreseDatatype
         }
         
         public int pointerType(){
-            return Pointerable.UNDEF;
+            return Pointerable.UNDEF_POINTER;
         }
 	
 	public boolean isDecimal(){
@@ -1112,6 +1113,11 @@ public class CoreseDatatype
 
     @Override
     public Object getValue(String var, int n) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Query getQuery() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     }

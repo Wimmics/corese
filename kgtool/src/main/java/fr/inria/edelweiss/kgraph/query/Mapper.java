@@ -2,13 +2,16 @@ package fr.inria.edelweiss.kgraph.query;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.SQLResult;
+import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +19,7 @@ import java.util.List;
 
 /**
  * Implements unnest() statement 
+ * values ?var { unnest(exp) }
  * bind (unnest(?exp) as ?var)
  * bind (unnest(?exp) as (?x, ?y))
  * 
@@ -66,14 +70,20 @@ public class Mapper {
     
     Mappings map(List<Node> nodes, Pointerable obj) { 
         switch (obj.pointerType()){
-            case Pointerable.GRAPH: 
-                return map(nodes, (Graph) obj.getGraph());
+            case Pointerable.GRAPH_POINTER: 
+                return map(nodes, (Graph) obj.getGraphStore());
                 
-            case Pointerable.MAPPINGS:
+            case Pointerable.MAPPINGS_POINTER:
                 return map(nodes, obj.getMappings());
                 
-            case Pointerable.ENTITY:
-                 return map(nodes, obj.getEntity());               
+            case Pointerable.ENTITY_POINTER:
+                 return map(nodes, obj.getEntity()); 
+                
+            case Pointerable.NSMANAGER_POINTER:
+                 return map(nodes, (NSManager) obj);   
+                
+             case Pointerable.QUERY_POINTER:
+                 return map(nodes, obj.getQuery());       
         }
         
         return map(nodes, (Object) obj);
@@ -89,15 +99,13 @@ public class Mapper {
         Node[] nodes;
         Mappings map = new Mappings();
         int size = varList.size();
-        if (size != 1 && size != 3){
+        if (! (size == 1 || size == 3 || size == 4)){
             return map;
         }
         for (Entity ent : g.getEdges()){
             nodes = new Node[size];
-            if (size == 3){
-                nodes[0] = ent.getNode(0);
-                nodes[1] = ent.getEdge().getEdgeNode();
-                nodes[2] = ent.getNode(1);
+            if (size >= 3){
+                nodeArray(ent, nodes);
             }
             else {
                 nodes[0] = DatatypeMap.createObject(ent);
@@ -106,29 +114,70 @@ public class Mapper {
         }
         
         return map;
-
     }
     
+    void nodeArray(Entity ent, Node[] nodes){
+        nodes[0] = ent.getNode(0);
+        nodes[1] = ent.getEdge().getEdgeNode();
+        nodes[2] = ent.getNode(1);
+        if (nodes.length > 3){
+            nodes[3] = ent.getGraph(); 
+        }
+    }
+        
     Mappings map(List<Node> varList, Entity e) {
         Mappings map = new Mappings();
         int size = varList.size();
-        if (size != 3) {
+        if (size != 1) {
             return map;
         }
-        
-        Node[] qNodes = new Node[varList.size()];
-        Node[] nodes = new Node[qNodes.length];
+        Node[] qNodes = new Node[1];
         varList.toArray(qNodes);
-
-        nodes[0] = e.getNode(0);
-        nodes[1] = e.getEdge().getEdgeNode();
-        nodes[2] = e.getNode(1);
-        map.add(Mapping.create(qNodes, nodes));
+        
+        for (Object obj : e.getLoop()){
+            Node[] nodes = new Node[1];
+            nodes[0] = (Node) obj;
+            map.add(Mapping.create(qNodes, nodes));
+        }
 
         return map;
     }
     
-    
+     Mappings map(List<Node> varList, NSManager nsm){
+        Mappings map =  new Mappings(); 
+        int size = varList.size();
+        if (size > 2){
+            return map;
+        }
+        Node[] qNodes = new Node[size];
+        varList.toArray(qNodes);
+            
+        for (IDatatype def : nsm.getList().getValues()){          
+                Node[] tn = new Node[size];
+                for (int i = 0; i < size; i++){
+                    tn[i] = def.get(i);
+                }
+                map.add(Mapping.create(qNodes, tn));           
+        }
+        return map;
+    }
+     
+    Mappings map(List<Node> varList, Query q){
+        Mappings map =  new Mappings(); 
+        int size = varList.size();  
+        if (size != 1){
+            return map;
+        }
+        Node[] qNodes = new Node[size];
+        varList.toArray(qNodes);            
+        for (Edge e : q.getEdges()){          
+                Node[] tn = new Node[size];                
+                tn[0] = DatatypeMap.createObject(e);                
+                map.add(Mapping.create(qNodes, tn));           
+        }
+        return map;
+    }
+      
 
     Mappings map(List<Node> lNodes, Collection<IDatatype> list) {
         Mappings map = new Mappings();
@@ -180,7 +229,11 @@ public class Mapper {
         return map;
     }
 
-    Mappings map(List<Node> lNodes, Mappings map) {
+    /**
+     * Binding by position
+     * NOTE: could be binding by name
+     */
+    Mappings map(List<Node> lNodes, Mappings map) {       
         map.setNodes(lNodes);
         return map;
     }

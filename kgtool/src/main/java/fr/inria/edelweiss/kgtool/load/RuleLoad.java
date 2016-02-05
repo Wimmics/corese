@@ -58,11 +58,10 @@ public class RuleLoad {
 		return new RuleLoad(e);
 	}
 	
-	public void load(String file){
-		Document doc;
+        @Deprecated
+	public void load(String file){		
 		try {
-			doc = parse(file);
-			load(doc);
+			loadWE(file);
 		} catch (LoadException e) {
 			logger.error(e);
 		}
@@ -77,11 +76,11 @@ public class RuleLoad {
 		Document doc = parse(stream);
 		load(doc);
 	}
-
+        
+        @Deprecated
 	public void load(InputStream stream) {
 		try {
-			Document doc = parse(stream);
-			load(doc);
+                    loadWE(stream);
 		} catch (LoadException e) {
 			logger.error(e);
 		}
@@ -92,6 +91,7 @@ public class RuleLoad {
 		load(doc);
 	}
 
+        @Deprecated
 	public void load(Reader stream) {
 		try {
 			Document doc = parse(stream);

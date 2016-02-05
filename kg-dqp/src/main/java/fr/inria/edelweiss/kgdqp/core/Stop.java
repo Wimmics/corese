@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 
 /**
  *
@@ -33,6 +34,11 @@ public class Stop implements Entity {
 
     @Override
     public Node getGraph() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+     @Override
+    public Node getGraphStore() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -88,6 +94,11 @@ public class Stop implements Entity {
 
     @Override
     public int size() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Query getQuery() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

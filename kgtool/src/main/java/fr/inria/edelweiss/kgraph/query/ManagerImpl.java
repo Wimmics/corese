@@ -309,7 +309,11 @@ public class ManagerImpl implements Manager {
             graph.setIndex(true);
         }
         if (ope.isSilent()) {
-            load.load(uri, src);
+            try {
+                load.loadWE(uri, src);
+            } catch (LoadException ex) {
+                logger.error(ex);
+            }
             graph.logFinish(q);
         } else {
             try {

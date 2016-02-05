@@ -24,7 +24,6 @@ import fr.com.hp.hpl.jena.rdf.arp.ARP;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
-import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.exceptions.QueryLexicalException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.triple.api.Creator;
@@ -43,6 +42,7 @@ import fr.inria.edelweiss.kgtool.load.sesame.ParserLoaderSesame;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserTripleHandlerSesame;
 import java.io.ByteArrayInputStream;
 import java.net.URLConnection;
+import java.util.logging.Level;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -315,6 +315,7 @@ public class Load
     }
 
     @Override
+    @Deprecated
     public void load(String path) {
         load(path, null);
     }
@@ -329,6 +330,7 @@ public class Load
     }
 
     @Override
+    @Deprecated 
     public void load(String path, String src) {
         File file = new File(path);
         if (file.isDirectory()) {
@@ -691,7 +693,7 @@ public class Load
         if (path.endsWith(IRULE)) {
             // individual rule
             QueryLoad ql = QueryLoad.create();
-            String rule = ql.read(path);
+            String rule = ql.readWE(path);
             if (rule != null) {
                 engine.addRule(rule);
             }
@@ -710,12 +712,12 @@ public class Load
         load.loadWE(stream);
     }
 
-    void loadQuery(String path, String src) {
+    void loadQuery(String path, String src) throws LoadException {
         if (qengine == null) {
             qengine = QueryEngine.create(graph);
         }
         QueryLoad load = QueryLoad.create(qengine);
-        load.load(path);
+        load.loadWE(path);
     }
     
     void loadQuery(Reader read, String src) throws LoadException  {
@@ -723,12 +725,7 @@ public class Load
             qengine = QueryEngine.create(graph);
         }
         QueryLoad load = QueryLoad.create(qengine);
-        try {
-            load.load(read);
-        } catch (EngineException ex) {
-            throw new LoadException(ex);
-        }
-
+        load.load(read);
     }
     
 
@@ -766,7 +763,11 @@ public class Load
             Build save = build;
             build = BuildImpl.create(graph);
             build.setLimit(save.getLimit());
-            load(uri);
+            try {
+                loadWE(uri);
+            } catch (LoadException ex) {
+                logger.error(ex);
+            }
             build = save;
         }
     }

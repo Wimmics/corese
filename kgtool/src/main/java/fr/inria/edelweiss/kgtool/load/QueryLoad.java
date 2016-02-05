@@ -16,13 +16,12 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
-
 public class QueryLoad {
-    private static Logger logger = Logger.getLogger(QueryLoad.class);	
+
+    private static Logger logger = Logger.getLogger(QueryLoad.class);
     static final String HTTP = "http://";
     static final String FILE = "file://";
     static final String FTP = "ftp://";
@@ -44,7 +43,23 @@ public class QueryLoad {
     public static QueryLoad create(QueryEngine e) {
         return new QueryLoad(e);
     }
-
+        
+    public void loadWE(String name) throws LoadException {
+        String q = readWE(name);
+        if (q != null) {
+            Query qq;
+            try {
+                qq = engine.defQuery(q);
+            } catch (EngineException ex) {
+                throw LoadException.create(ex);
+            }
+            if (qq != null) {
+                qq.setPragma(Pragma.FILE, name);
+            }
+        }
+    }
+     
+    @Deprecated
     public void load(String name) {
         String q = read(name);
         if (q != null) {
@@ -54,13 +69,13 @@ public class QueryLoad {
                     qq.setPragma(Pragma.FILE, name);
                 }
             } catch (EngineException e) {
-                logger.error("Loading: " +name);
+                logger.error("Loading: " + name);
                 e.printStackTrace();
             }
         }
     }
-    
-       public void load(Reader read) throws LoadException, EngineException {
+
+    public void load(Reader read) throws LoadException {
         try {
             String q = read(read);
             if (q != null) {
@@ -68,6 +83,8 @@ public class QueryLoad {
             }
         } catch (IOException ex) {
             throw new LoadException(ex);
+        } catch (EngineException ex) {
+            throw new LoadException(ex);        
         }
     }
 
@@ -79,16 +96,26 @@ public class QueryLoad {
         }
         return false;
     }
-
+    
+    @Deprecated
     public String read(InputStream stream) throws IOException {
         return read(new InputStreamReader(stream));
     }
+    
+     public String readWE(InputStream stream) throws LoadException {
+        try {
+            return read(new InputStreamReader(stream));
+        } catch (IOException ex) {
+            throw new LoadException(ex);
+        }
+    }
 
-    public String read(String name)  {
+     @Deprecated
+    public String read(String name) {
         String query = "";
-        try {          
+        try {
             query = readWE(name);
-        }  catch (LoadException ex) {
+        } catch (LoadException ex) {
             java.util.logging.Logger.getLogger(QueryLoad.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (query == "") {
@@ -96,7 +123,7 @@ public class QueryLoad {
         }
         return query;
     }
-    
+
     public String readWE(String name) throws LoadException {
         String query = "", str = "";
         Reader fr;
@@ -110,14 +137,14 @@ public class QueryLoad {
 
             query = read(fr);
         } catch (IOException ex) {
-            throw  LoadException.create(ex);
+            throw LoadException.create(ex);
         }
         if (query == "") {
             return null;
         }
         return query;
     }
-    
+
     public String getResource(String name) throws IOException {
         InputStream stream = QueryLoad.class.getResourceAsStream(name);
         if (stream == null) {
@@ -127,7 +154,6 @@ public class QueryLoad {
         String str = read(fr);
         return str;
     }
-    
 
     String read(Reader fr) throws IOException {
         BufferedReader fq = new BufferedReader(fr);

@@ -380,7 +380,7 @@ public class PluginTransform implements ExprType {
 
         if (dtgname != null) {
             // transform named graph
-            if (dtgname.isPointer() && dtgname.pointerType() == Pointerable.GRAPH){
+            if (dtgname.isPointer() && dtgname.pointerType() == Pointerable.GRAPH_POINTER){
                 // dtgname contains a Graph
                 // use case: let (?g = construct {} where {}){ 
                 // st:apply-templates-with-graph(st:navlab, ?g) }
@@ -460,11 +460,11 @@ public class PluginTransform implements ExprType {
         return plugin.getValue(pref);
     }
 
-    Mappings prefix(Environment env, Producer prod) {
+    IDatatype prefix(Environment env, Producer prod) {
         Transformer p = getTransformer(env, prod);
-        return p.NSMtoMappings();
+        return DatatypeMap.createObject(p.getNSM());
     }
-
+    
     IDatatype isStart(Environment env, Producer prod) {
         Transformer p = getTransformer(env, prod);
         boolean b = p.isStart();

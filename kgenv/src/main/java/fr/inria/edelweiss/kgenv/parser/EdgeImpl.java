@@ -79,12 +79,22 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
         
         @Override
      public Iterable<Object> getLoop() {
-        ArrayList<Object> list = new ArrayList();
-        list.add(getNode(0).getValue());      
-        list.add(getPredicateNode().getValue());
-        list.add(getNode(1).getValue());
-        return list;
+       ArrayList<Object> list = new ArrayList();
+       for (int i = 0; i<3; i++){
+           list.add(getValue(null, i));
+       }
+       return list;
     }
+        
+     @Override
+     public Object getValue(String var, int n){        
+        switch (n){
+            case 0: return getNode(0).getValue();
+            case 1: return getPredicateNode().getValue();                  
+            case 2: return getNode(1).getValue();
+        }
+        return null;
+    }   
      
      public Node getPredicateNode(){
         Node var = getEdgeVariable();
@@ -219,7 +229,7 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
 
     @Override
     public int pointerType() {
-        return Pointerable.ENTITY;
+        return Pointerable.ENTITY_POINTER;
     }
 
     @Override

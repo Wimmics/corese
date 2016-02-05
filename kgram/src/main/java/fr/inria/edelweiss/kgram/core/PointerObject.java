@@ -1,12 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.edelweiss.kgram.core;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,10 +10,11 @@ import fr.inria.edelweiss.kgram.api.core.Pointerable;
  *
  */
 public abstract class PointerObject implements Pointerable {
+    static final ArrayList empty = new ArrayList(0);
 
     @Override
     public int pointerType() {
-        return UNDEF;
+        return UNDEF_POINTER;
     }
 
     @Override
@@ -35,6 +32,16 @@ public abstract class PointerObject implements Pointerable {
         return null;
     }
     
+     @Override
+    public Query getQuery() {
+        return null;
+    }
+    
+    @Override
+    public Object getGraphStore(){
+        return null;
+    }
+    
     @Override
     public int size(){
         return 0;
@@ -43,6 +50,10 @@ public abstract class PointerObject implements Pointerable {
     @Override
     public Object getValue(String var, int n){
         return null;
+    }
+    
+    public Iterable getLoop(){
+        return empty;
     }
 
 }

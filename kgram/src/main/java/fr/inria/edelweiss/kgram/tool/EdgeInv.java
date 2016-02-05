@@ -120,7 +120,7 @@ public class EdgeInv extends PointerObject implements Edge, Entity {
     }
     
     public int pointerType(){
-        return Pointerable.ENTITY;
+        return Pointerable.ENTITY_POINTER;
     }       
 
 }

@@ -13,7 +13,6 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
@@ -36,7 +35,7 @@ import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
 
 public class Mapping  
 	extends EnvironmentImpl 
-	implements Result, Environment, Loopable, Pointerable
+	implements Result, Environment, Pointerable
 {
         static final Edge[] emptyEdge   = new Edge[0];
         static final Entity[] emptyEntity = new Entity[0];
@@ -253,6 +252,7 @@ public class Mapping
 		query = q;
 	}
 	
+        @Override
 	public Query getQuery(){
 		return query;
 	}
@@ -932,7 +932,7 @@ public class Mapping
 
     @Override
     public int pointerType() {
-        return MAPPING;
+        return MAPPING_POINTER;
     }
 
     @Override
@@ -951,7 +951,7 @@ public class Mapping
     }
 
     @Override
-    public Object getGraph() {
+    public Object getGraphStore() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 	

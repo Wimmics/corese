@@ -2,18 +2,21 @@ package fr.inria.edelweiss.kgram.api.core;
 
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 
 /**
  *
  * @author Olivier Corby - Wimmics Inria I3S - 2015
  */
-public interface Pointerable {
+public interface Pointerable extends Loopable {
     
-    public static final int UNDEF    = -1;
-    public static final int MAPPINGS = 1;
-    public static final int MAPPING  = 2;
-    public static final int ENTITY   = 3;
-    public static final int GRAPH    = 4;
+    public static final int UNDEF_POINTER    = -1;
+    public static final int MAPPINGS_POINTER = 1;
+    public static final int MAPPING_POINTER  = 2;
+    public static final int ENTITY_POINTER   = 3;
+    public static final int GRAPH_POINTER    = 4;
+    public static final int NSMANAGER_POINTER= 5;
+    public static final int QUERY_POINTER    = 6;
     
     int pointerType();
     
@@ -23,7 +26,9 @@ public interface Pointerable {
     
     Entity getEntity();
     
-    Object getGraph();
+    Query getQuery();
+
+    Object getGraphStore();
     
     // let ((?x, ?y) = ?m)
     // ->

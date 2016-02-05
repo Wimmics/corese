@@ -20,7 +20,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
+public class Exp extends PointerObject 
+implements ExpType, ExpPattern, Iterable<Exp> {
 
     static Exp empty = new Exp(EMPTY);
     // group edge even if there is a disconnected filter
@@ -484,6 +485,17 @@ public class Exp implements ExpType, ExpPattern, Iterable<Exp> {
 
     public List<Exp> getExpList() {
         return args;
+    }
+    
+    void getEdgeList(List<Edge> list){
+        for (Exp exp : getExpList()){
+            if (exp.isEdge()){
+                list.add(exp.getEdge());
+            }
+            else {
+                exp.getEdgeList(list);
+            }
+        }
     }
 
     public Exp first() {

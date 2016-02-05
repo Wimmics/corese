@@ -11,7 +11,6 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
@@ -26,7 +25,7 @@ import fr.inria.edelweiss.kgram.event.EventManager;
  * @author Olivier Corby, Edelweiss, INRIA 2009
  */
 public class Mappings  extends PointerObject
-implements Comparator<Mapping> , Iterable<Mapping> , Loopable
+implements Comparator<Mapping> , Iterable<Mapping> 
 {
 	private static final String NL = System.getProperty("line.separator");;
 	/**
@@ -1136,6 +1135,11 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
 	}
 
         @Override
+	public Object getGraphStore() {
+		return graph;
+	}
+        
+         
 	public Object getGraph() {
 		return graph;
 	}
@@ -1201,7 +1205,7 @@ implements Comparator<Mapping> , Iterable<Mapping> , Loopable
         
         @Override
         public int pointerType(){
-            return MAPPINGS;
+            return MAPPINGS_POINTER;
         }
         
         @Override

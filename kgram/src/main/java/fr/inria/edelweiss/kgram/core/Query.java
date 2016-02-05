@@ -11,7 +11,6 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
@@ -27,7 +26,7 @@ import fr.inria.edelweiss.kgram.tool.Message;
  * @author Olivier Corby, Edelweiss, INRIA 2009
  *
  */
-public class Query extends Exp implements Graphable, Loopable {
+public class Query extends Exp implements Graphable {
 
     public static final int QP_T0 = 0; //No QP settings
     public static final int QP_DEFAULT = 1; //Default Corese QP
@@ -1198,6 +1197,7 @@ public class Query extends Exp implements Graphable, Loopable {
         }
     }
 
+    @Override
     public Query getQuery() {
         return this;
     }
@@ -2475,14 +2475,19 @@ public class Query extends Exp implements Graphable, Loopable {
     }
 
     @Override
-    public Iterable getLoop() {
-        ArrayList<Edge> list = new ArrayList();
-        for (Exp exp : getBody()){
-            if (exp.isEdge()){
-                list.add(exp.getEdge());
-            }
-        }
+    public Iterable getLoop() { 
+        return getEdges();
+    }
+    
+    public List<Edge> getEdges(){
+        ArrayList<Edge> list = new ArrayList<Edge>();
+        getBody().getEdgeList(list);
         return list;
+    }
+    
+    @Override
+    public int pointerType(){
+        return QUERY_POINTER;
     }
 
     /**

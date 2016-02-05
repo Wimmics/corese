@@ -90,7 +90,11 @@ public class TestQuery1 {
         //graph.setOptimize(true);
 
         Load ld = Load.create(graph);
-        init(graph, ld);
+        try {
+            init(graph, ld);
+        } catch (LoadException ex) {
+            Logger.getLogger(TestQuery1.class.getName()).log(Level.SEVERE, null, ex);
+        }
         //Option.isOption = false;
         //QueryProcess.setJoin(true);
         fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = !true;
@@ -98,26 +102,55 @@ public class TestQuery1 {
          
     }
 
-    static void init(Graph g, Load ld) {
-        ld.load(data + "comma/comma.rdfs");
-        ld.load(data + "comma/model.rdf");
-        ld.load(data + "comma/data");
+    static void init(Graph g, Load ld) throws LoadException {
+        ld.loadWE(data + "comma/comma.rdfs");
+        ld.loadWE(data + "comma/model.rdf");
+        ld.loadWE(data + "comma/data");
     }
 
     Graph getGraph() {
         return graph;
     }
 
-    Graph graph() {
+    Graph graph()  {
         Graph graph = Graph.create(true);
         graph.setOptimize(true);
 
         Load ld = Load.create(graph);
-        ld.load(data + "comma/comma.rdfs");
-        ld.load(data + "comma/model.rdf");
-        ld.load(data + "comma/data");
+        try {
+            ld.loadWE(data + "comma/comma.rdfs");
+            ld.loadWE(data + "comma/model.rdf");
+            ld.loadWE(data + "comma/data");
+        } catch (LoadException ex) {
+            Logger.getLogger(TestQuery1.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
         return graph;
     }
+    
+     @Test
+       public void testQueryUnnest() throws EngineException{
+           Graph g = GraphStore.create();                     
+           QueryProcess exec = QueryProcess.create(g);
+           Graph g1 = Graph.create();                     
+           QueryProcess exec1 = QueryProcess.create(g1);
+                     
+           String i = "insert data { us:John rdfs:label 'John'}";
+                     
+           String q = "prefix ex: <htp://example.org/>"
+                   + "select * "
+                   + "where {"
+                   + "?x ?p ?y optional {?x ?p ?p }"
+                   + "values ?t { unnest(xt:query()) }"
+                   + "values ?e { unnest(?t) }"
+                   + "}"                                                     
+                   ;
+                      
+           exec.query(i);                           
+           Mappings map = exec.query(q);           
+           assertEquals(6, map.size());         
+       } 
+       
     
     
     @Test  
@@ -127,25 +160,51 @@ public class TestQuery1 {
            Graph g1 = Graph.create();                     
            QueryProcess exec1 = QueryProcess.create(g1);
                      
-           String i = "insert data { us:prop rdfs:label 'prop' }";
+           String i = "insert data { us:prop1 rdfs:label 'prop' us:prop rdfs:label 'prop2' }";
                      
            String q = "select * where {"
-                   + "bind (unnest(us:define()) as (?s, ?p, ?o))"
-                 
+                   + "values (?s ?p ?o) { unnest(us:define()) }"                 
+                   + "values (?s ?p ?o ?g) { unnest(us:define()) }"
+                   + "?s ?p ?o "                 
                    + "}"
                    
                    + "function us:define(){"
                    + "let (?g = construct {us:prop1 rdfs:label 'prop' us:prop rdfs:label 'prop2'} where {})"
                    + "{ "
                    + "?g }"
-                   + "}"
-                                     
+                   + "}"                                    
                    ;
                       
            exec.query(i);                           
-           Mappings map = exec.query(q);           
-            assertEquals(2, map.size());
+           Mappings map = exec.query(q); 
+           System.out.println(map);
+           assertEquals(2, map.size());
        }
+    
+    
+    @Test
+    public void testUnnestNSM() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        String q = "prefix ex: <htp://example.org/>"
+                + "select *  where {"
+                + "values (?p ?n) {unnest(st:prefix())}"
+                + "}"
+                + "function us:test(){"
+                + "for ((?p, ?n) in st:prefix()){"
+                + "xt:display(?p, ?n)"
+                + "}"
+                + "}";
+
+        Mappings map = exec.query(q);
+        assertEquals(2, map.size()); // there is also a global prefix c:
+        IDatatype p = (IDatatype) map.getValue("?p");
+        IDatatype n = (IDatatype) map.getValue("?n");
+        assertEquals("ex", p.stringValue());
+        assertEquals("htp://example.org/", n.stringValue());
+    }
+
     
     @Test  
        public void testExtNode() throws EngineException{
@@ -1522,7 +1581,7 @@ public class TestQuery1 {
         
         Graph g = createGraph();
         Load ld = Load.create(g);
-        ld.load(data + "jsonld/test.jsonld");
+        ld.loadWE(data + "jsonld/test.jsonld");
 
         QueryProcess exec = QueryProcess.create(g);
 
@@ -2034,11 +2093,11 @@ public class TestQuery1 {
     
     
       @Test 
-    public void testTCff () throws EngineException{
+    public void testTCff () throws EngineException, LoadException{
         GraphStore gs = GraphStore.create();
         QueryProcess exec = QueryProcess.create(gs);
         Load ld = Load.create(gs);
-        ld.load(data + "template/owl/data/primer.owl");       
+        ld.loadWE(data + "template/owl/data/primer.owl");       
         Transformer t = Transformer.create(gs, Transformer.OWLRL);       
         IDatatype dt = t.process();
         
@@ -2119,11 +2178,11 @@ public class TestQuery1 {
     
     
     @Test 
-    public void testeng () throws EngineException{
+    public void testeng () throws EngineException, LoadException{
         GraphStore gs = GraphStore.create();
         QueryProcess exec = QueryProcess.create(gs);
         Load ld = Load.create(gs);
-        ld.load(data + "template/owl/data/primer.owl");
+        ld.loadWE(data + "template/owl/data/primer.owl");
         
         String q = "select * where {"
                 + "graph eng:describe {"
@@ -2186,10 +2245,10 @@ public class TestQuery1 {
         Load ld = Load.create(gs);
         try {
             ld.loadWE(data + "template/owl/data/primer.owl");                             
+            ld.loadWE(data + "owlrule/owlrllite.rul");
         } catch (LoadException ex) {
             Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
         }
-        ld.load(data + "owlrule/owlrllite.rul");
         RuleEngine re = ld.getRuleEngine();
         Date d1 = new Date();
         re.setProfile(re.OWL_RL_FULL);
@@ -2219,10 +2278,10 @@ public class TestQuery1 {
         Load ld = Load.create(gs);
         try {
             ld.loadWE(data + "template/owl/data/primer.owl");                             
+            ld.loadWE(data + "owlrule/owlrllite.rul");
         } catch (LoadException ex) {
             Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
         }
-        ld.load(data + "owlrule/owlrllite.rul");
         RuleEngine re = ld.getRuleEngine();
         Date d1 = new Date();
         //re.setProfile(re.OWL_RL);
@@ -2351,8 +2410,8 @@ public class TestQuery1 {
 
             Graph g = createGraph();
             Load ld = Load.create(g);
-            ld.load(RDF.RDF, Load.TURTLE_FORMAT);
-            ld.load(RDFS.RDFS, Load.TURTLE_FORMAT);
+            ld.loadWE(RDF.RDF, Load.TURTLE_FORMAT);
+            ld.loadWE(RDFS.RDFS, Load.TURTLE_FORMAT);
             
             Transformer t = Transformer.create(g, Transformer.TURTLE, RDF.RDF);
             String str = t.transform();
@@ -2373,8 +2432,8 @@ public class TestQuery1 {
        public void testGT() throws LoadException, EngineException {
             Graph g = createGraph();
             Load ld = Load.create(g);
-            ld.load(RDF.RDF, Load.TURTLE_FORMAT);
-            ld.load(RDFS.RDFS, Load.TURTLE_FORMAT);
+            ld.loadWE(RDF.RDF, Load.TURTLE_FORMAT);
+            ld.loadWE(RDFS.RDFS, Load.TURTLE_FORMAT);
             
             String t1 = "template { st:apply-templates-with-graph(st:turtle, rdf:)} where {}";
             String t2 = "template { st:apply-templates-with-graph(st:turtle, rdfs:)} where {}";
@@ -2440,8 +2499,8 @@ public class TestQuery1 {
        public void testTrig() throws LoadException {
             Graph g = Graph.create(true);
             Load ld = Load.create(g);
-            ld.load(RDF.RDF, Load.TURTLE_FORMAT);
-            ld.load(RDFS.RDFS, Load.TURTLE_FORMAT);
+            ld.loadWE(RDF.RDF, Load.TURTLE_FORMAT);
+            ld.loadWE(RDFS.RDFS, Load.TURTLE_FORMAT);
             
             Transformer pp = Transformer.create(g, Transformer.TRIG);
             String str = pp.transform();
@@ -2458,7 +2517,7 @@ public class TestQuery1 {
         Graph g = createGraph();
         Load ld = Load.create(g);
         //System.out.println("Load");
-        ld.load(data + "template/owl/data/primer.owl"); 
+        ld.loadWE(data + "template/owl/data/primer.owl"); 
         QueryProcess exec = QueryProcess.create(g);
         
          String t1 ="prefix f: <http://example.com/owl/families/> "
@@ -2485,7 +2544,7 @@ public class TestQuery1 {
         Graph g = createGraph();
         Load ld = Load.create(g);
         //System.out.println("Load");
-        ld.load(data + "template/spinhtml/data/"); 
+        ld.loadWE(data + "template/spinhtml/data/"); 
         QueryProcess exec = QueryProcess.create(g);
         
          String t1 ="prefix f: <http://example.com/owl/families/> "
@@ -2603,12 +2662,12 @@ public class TestQuery1 {
      
      
       @Test
-    public void testLoadJSONLD() {
+    public void testLoadJSONLD() throws LoadException {
 
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Load ld = Load.create(g);
-        ld.load(data + "jsonld/test.jsonld");
+        ld.loadWE(data + "jsonld/test.jsonld");
         
         
         
@@ -2689,12 +2748,12 @@ public class TestQuery1 {
     
      
      @Test
-    public void testRDFa() {
+    public void testRDFa() throws LoadException {
 
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Load ld = Load.create(g);
-        ld.load(data + "rdfa");
+        ld.loadWE(data + "rdfa");
         
         
         
@@ -3065,7 +3124,7 @@ public class TestQuery1 {
         
     }
          
-     public void testSPPP(String path) throws EngineException {
+     public void testSPPP(String path) throws EngineException, LoadException {
         String t1 =
                 "prefix f: <http://example.com/owl/families/> "
                 + "template  {  st:apply-templates-with(st:spin)}"
@@ -3073,7 +3132,7 @@ public class TestQuery1 {
         Graph g = createGraph();
         Load ld = Load.create(g);
         //System.out.println("Load");
-        ld.load(path);
+        ld.loadWE(path);
 
         QueryProcess exec = QueryProcess.create(g);
 
@@ -3719,54 +3778,54 @@ public class TestQuery1 {
         }
     }
 
-    @Test
-    public void test10() {
-
-        String query = "select  *  where {"
-      + "bind (kg:unnest(kg:sparql('select * where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
-      + "as (?a, ?b))"
-        + "} ";
-
-        try {
-
-            QueryProcess exec = QueryProcess.create(graph);
-
-            Mappings map = exec.query(query);
-            assertEquals("Result", 3, map.size());
-            Node node = map.getNode("?a");
-            assertEquals("Result", true, node != null);
-
-        } catch (EngineException e) {
-            assertEquals("Result", true, e);
-        }
-    }
+//    @Test
+//    public void test10() {
+//
+//        String query = "select  *  where {"
+//      + "bind (kg:unnest(kg:sparql('select * where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
+//      + "as (?a, ?b))"
+//        + "} ";
+//
+//        try {
+//
+//            QueryProcess exec = QueryProcess.create(graph);
+//
+//            Mappings map = exec.query(query);
+//            assertEquals("Result", 3, map.size());
+//            Node node = map.getNode("?a");
+//            assertEquals("Result", true, node != null);
+//
+//        } catch (EngineException e) {
+//            assertEquals("Result", true, e);
+//        }
+//    }
     
     
-     @Test
-    public void test10cons() {
-
-        String  query = 
-                "prefix c: <http://www.inria.fr/acacia/comma#>"
-                + "select  *  where {"
-      + "bind ((kg:sparql('"
-                + "prefix c: <http://www.inria.fr/acacia/comma#>"
-                + "construct  where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
-      + "as ?g)"
-                + "graph ?g { ?a ?p ?b }"
-        + "} ";
-
-        try {
-
-            QueryProcess exec = QueryProcess.create(graph);
-
-            Mappings map = exec.query(query);
-            assertEquals("Result", 5, map.size());
-            
-
-        } catch (EngineException e) {
-            assertEquals("Result", true, e);
-        }
-    }
+//     @Test
+//    public void test10cons() {
+//
+//        String  query = 
+//                "prefix c: <http://www.inria.fr/acacia/comma#>"
+//                + "select  *  where {"
+//      + "bind ((kg:sparql('"
+//                + "prefix c: <http://www.inria.fr/acacia/comma#>"
+//                + "construct  where {?x rdf:type c:Person; c:hasCreated ?doc}')) "
+//      + "as ?g)"
+//                + "graph ?g { ?a ?p ?b }"
+//        + "} ";
+//
+//        try {
+//
+//            QueryProcess exec = QueryProcess.create(graph);
+//
+//            Mappings map = exec.query(query);
+//            assertEquals("Result", 5, map.size());
+//            
+//
+//        } catch (EngineException e) {
+//            assertEquals("Result", true, e);
+//        }
+//    }
     
 
     @Test
@@ -3902,8 +3961,11 @@ public class TestQuery1 {
             Graph g = Graph.create(true);
             Load ld = Load.create(g);
             //ld.setBuild(new MyBuild(g));
-
-            init(g, ld);
+            try {
+                init(g, ld);
+            } catch (LoadException ex) {
+                Logger.getLogger(TestQuery1.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             QueryProcess exec = QueryProcess.create(g);
             Mappings map = exec.query(query);
@@ -3964,11 +4026,11 @@ public class TestQuery1 {
     }
 
     @Test
-    public void test17() {
+    public void test17() throws LoadException {
 
         Graph g = Graph.create(true);
         Load ld = Load.create(g);
-        ld.load(data + "comma/comma.rdfs");
+        ld.loadWE(data + "comma/comma.rdfs");
 
         QueryProcess exec = QueryProcess.create(g);
         String query = "select (kg:similarity(c:Person, c:Document) as ?sim) {}";
@@ -4823,12 +4885,12 @@ public class TestQuery1 {
     }
 
     @Test
-    public void test46() {
+    public void test46() throws LoadException {
 
         Graph graph = Graph.create(true);
         Load load = Load.create(graph);
-        load.load(data + "test/test1.ttl");
-        load.load(data + "test/test1.rul");
+        load.loadWE(data + "test/test1.ttl");
+        load.loadWE(data + "test/test1.rul");
 
         RuleEngine re = load.getRuleEngine();
         QueryProcess exec = QueryProcess.create(graph);

@@ -53,19 +53,19 @@ public class TestRuleEngine {
 		graph = createGraph(true);
 		Load load = Load.create(graph);
 
-		load.load(data + "engine/ontology/test.rdfs");
-		load.load(data + "engine/data/test.rdf");
-		
-		try {
-			load.loadWE(data + "engine/rule/test2.brul");
-			load.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
-		} catch (LoadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            try {
+                load.loadWE(data + "engine/ontology/test.rdfs");
+                load.loadWE(data + "engine/data/test.rdf");
+
+                load.loadWE(data + "engine/rule/test2.brul");
+                load.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
+            } catch (LoadException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 		
 		fengine = load.getRuleEngine();
                 fengine.setSpeedUp(true);
@@ -384,7 +384,7 @@ public class TestRuleEngine {
 	 * Rule engine with QueryExec on two graphs
 	 */
 	@Test
-	public void test6(){
+	public void test6() throws LoadException{
 		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
 
 		Graph g1 = createGraph(true);
@@ -393,8 +393,8 @@ public class TestRuleEngine {
 		Load load1 = Load.create(g1);
 		Load load2 = Load.create(g2);
 		
-		load1.load(data + "engine/ontology/test.rdfs");
-		load2.load(data + "engine/data/test.rdf");
+		load1.loadWE(data + "engine/ontology/test.rdfs");
+		load2.loadWE(data + "engine/data/test.rdf");
 
 		QueryProcess exec = QueryProcess.create(g1);
 		exec.add(g2);

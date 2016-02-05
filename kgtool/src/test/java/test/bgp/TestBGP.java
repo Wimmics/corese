@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 /**
  *
@@ -31,12 +32,12 @@ public class TestBGP {
     
 
      
-    public static void main(String[]  args) throws EngineException {
+    public static void main(String[]  args) throws EngineException, LoadException {
         //Test default KGRAM
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        ld.load(TestBGP.class.getClassLoader().getResource("demographie").getPath()+"/cog-2012.ttl");
-        ld.load(TestBGP.class.getClassLoader().getResource("demographie").getPath()+"/popleg-2010.ttl");
+        ld.loadWE(TestBGP.class.getClassLoader().getResource("demographie").getPath()+"/cog-2012.ttl");
+        ld.loadWE(TestBGP.class.getClassLoader().getResource("demographie").getPath()+"/popleg-2010.ttl");
         QueryProcess exec = QueryProcess.create(g);
         long start = System.currentTimeMillis();
         Mappings m = exec.query(query);

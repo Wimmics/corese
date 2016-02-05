@@ -632,7 +632,11 @@ public class TestW3C11KGraph {
 
         } else {
             QueryLoad ql = QueryLoad.create();
-            query = ql.read(fquery);
+            try {
+                query = ql.readWE(fquery);
+            } catch (LoadException ex) {
+                Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             if (query == null || query == "") {
                 System.out.println("** ERROR 1: " + fquery + " " + query);
@@ -734,7 +738,11 @@ public class TestW3C11KGraph {
                 rl.reset();
 
                 if (fresult != null && !isBlankResult) {
-                    rl.load(ttl2rdf(fresult));
+                    try {
+                        rl.loadWE(ttl2rdf(fresult));
+                    } catch (LoadException ex) {
+                        Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
                 int i = 0;
@@ -744,7 +752,11 @@ public class TestW3C11KGraph {
 //				}
                 for (String g : output.getURIs()) {
                     rl.reset();
-                    rl.load(g, output.getNameOrURI(i++));
+                    try {
+                        rl.loadWE(g, output.getNameOrURI(i++));
+                    } catch (LoadException ex) {
+                        Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 gres.index();
             } else {
@@ -845,7 +857,11 @@ public class TestW3C11KGraph {
                 ds.defFrom();
                 for (String file : fdefault) {
                     ds.addFrom(file);
-                    load.load(file, file);
+                    try {
+                        load.loadWE(file, file);
+                    } catch (LoadException ex) {
+                        Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
 
@@ -858,7 +874,11 @@ public class TestW3C11KGraph {
                 int i = 0;
                 for (String file : input.getURIs()) {
                     String name = input.getNameOrURI(i++);
-                    load.load(file, name);
+                    try {
+                        load.loadWE(file, name);
+                    } catch (LoadException ex) {
+                        Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     ds.addNamed(name);
                 }
             }
@@ -871,8 +891,8 @@ public class TestW3C11KGraph {
             if (rdfs) {
                 entail = QueryProcess.RDFS_ENTAILMENT;
                 ds.addFrom(RDFS.RDFS);
-                load.load(RDFS.RDFS);
                 try {
+                    load.loadWE(RDFS.RDFS);
                     load.loadWE(RULE);
                 } catch (LoadException e) {
                     e.printStackTrace();
@@ -885,7 +905,11 @@ public class TestW3C11KGraph {
 
             // exclude dublin core:
             load.exclude(DC);
-            load.load(RDF.RDF, RDF.RDF);
+            try {
+                load.loadWE(RDF.RDF, RDF.RDF);
+            } catch (LoadException ex) {
+                Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+            }
             ds.addFrom(RDF.RDF);
 
             //re.setDebug(true);
@@ -1096,7 +1120,11 @@ public class TestW3C11KGraph {
             //String ff = ttl2rdf(name);
             Graph g = Graph.create();
             Load load = Load.create(g);
-            load.load(name);
+            try {
+                load.loadWE(name);
+            } catch (LoadException ex) {
+                Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+            }
             p.add(nep, g);
         }
 
@@ -1401,7 +1429,11 @@ public class TestW3C11KGraph {
 
         Graph g = Graph.create();
         Load load = Load.create(g);
-        load.load(fresult);
+        try {
+            load.loadWE(fresult);
+        } catch (LoadException ex) {
+            Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         QueryProcess exec = QueryProcess.create(g);
         exec.setListGroup(true);

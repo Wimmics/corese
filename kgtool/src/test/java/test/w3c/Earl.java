@@ -8,7 +8,10 @@ import java.util.Date;
 import java.util.Formatter;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Earl {
 	
@@ -22,16 +25,18 @@ public class Earl {
 
 	
 	Earl(){
-		QueryLoad ql = QueryLoad.create();
-		header  = ql.read(data + "prefix.txt");
-		corese  = ql.read(data + "corese.txt");
-		pattern = ql.read(data + "pattern.txt");
-
-		sb  = new StringBuilder();
-		fmt = new Formatter(sb);
-		
-		fmt.format(header);
-		fmt.format(corese);
+            sb  = new StringBuilder();
+            fmt = new Formatter(sb);
+            try {
+                QueryLoad ql = QueryLoad.create();
+                header  = ql.readWE(data + "prefix.txt");
+                corese  = ql.readWE(data + "corese.txt");
+                pattern = ql.readWE(data + "pattern.txt");                              
+                fmt.format(header);
+                fmt.format(corese);
+            } catch (LoadException ex) {
+                Logger.getLogger(Earl.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
 	
 	void define(String test, boolean res){

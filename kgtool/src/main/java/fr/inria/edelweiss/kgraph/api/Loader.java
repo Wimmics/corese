@@ -20,9 +20,11 @@ public interface Loader {
 	
 	boolean isRule(String path);
 	
-	void load(String path);
+	@Deprecated
+        void load(String path);
 	
-	void load(String path, String source);
+	@Deprecated
+        void load(String path, String source);
         
         void load(String path, String base, String source, int format) throws LoadException;
 

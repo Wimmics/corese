@@ -181,7 +181,7 @@ public class EdgeImpl extends EdgeTop
     public Node getGraph() {
         return graph;
     }
-
+    
     public void setGraph(Node gNode) {
         graph = gNode;
     }

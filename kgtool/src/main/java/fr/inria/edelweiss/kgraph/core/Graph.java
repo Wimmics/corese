@@ -31,8 +31,6 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.util.StorageFactory;
-import fr.inria.edelweiss.kgram.api.core.Loopable;
-import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -50,7 +48,7 @@ import java.util.Map;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Graph implements  Pointerable, Graphable, Loopable {
+public class Graph extends GraphObject implements Graphable {
 
     private static Logger logger = Logger.getLogger(Graph.class);
     public static final String TOPREL
@@ -283,6 +281,11 @@ public class Graph implements  Pointerable, Graphable, Loopable {
         return this;
     }
     
+     @Override
+    public Graph getGraphStore() {
+        return this;
+    }
+    
     @Override
     public Iterable getLoop(){
         return getEdges();
@@ -319,26 +322,10 @@ public class Graph implements  Pointerable, Graphable, Loopable {
         this.optIndex = optIndex;
     }
 
-        public int pointerType() {
-        return Pointerable.GRAPH;
+    public int pointerType() {
+        return GRAPH_POINTER;
     }
-
-        public Mappings getMappings() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-        public Mapping getMapping() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-        public Entity getEntity() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-        public Object getValue(String var, int n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+   
     class TreeNode extends TreeMap<IDatatype, Entity> {
 
         TreeNode() {

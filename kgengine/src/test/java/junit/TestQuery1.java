@@ -17,6 +17,7 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
@@ -127,6 +128,77 @@ public class TestQuery1 {
        
         return graph;
     }
+    
+      @Test
+       public void testEventCall() throws EngineException{
+           Graph g = GraphStore.create();                     
+           QueryProcess exec = QueryProcess.create(g);
+           String q = "select * where {"
+                   + "?x ?p ?y"
+                   + "}"
+                   
+                   + "function xt:produce(?t){xt:list(?t)} "                  
+                   + "function xt:start(?q){ st:set(st:count, 0) ; us:count() } " 
+                   + "function xt:candidate(?q, ?t, ?b){us:count() ; ?b }"
+                   + "function xt:result(?q, ?m){us:count()}"                                     
+                   + "function xt:solution(?q, ?m){us:count()}"                   
+                   + "function xt:finish(?q, ?m){us:count()}"                   
+                   + "function us:count(){st:set(st:count, 1 + st:get(st:count))}"
+                   ;
+           
+           Mappings map = exec.query(q);
+           assertEquals(1, map.size());
+           Transformer t = (Transformer) map.getQuery().getTransformer();
+           Context c = t.getContext();
+           IDatatype dt = c.get(NSManager.STL+"count");
+           assertEquals(5, dt.intValue());
+     }
+    
+    @Test
+       public void testFunUpdate() throws EngineException{
+           Graph g = GraphStore.create();                     
+           QueryProcess exec = QueryProcess.create(g);
+           String i = "insert { us:John foaf:name ?n } "
+                   + "where { bind (us:name(us:John) as ?n) }"
+                   + "function us:name(?n){ 'John' }";
+           
+           exec.query(i);
+           Entity e = g.getEdges().iterator().next();
+           IDatatype dt = (IDatatype) e.getNode(1).getValue();
+           assertEquals("John", dt.stringValue());
+    }
+    
+    
+    
+     @Test
+       public void testNSMUnnest() throws EngineException{
+           Graph g = GraphStore.create();                     
+           QueryProcess exec = QueryProcess.create(g);
+                               
+           String i = "prefix ex: <htp://example.org/>"
+                   + "insert data { "
+                   + "us:John rdfs:label 'John'"
+                   + "ex:John rdfs:label 'John'"
+                   + "}";
+                     
+           String q = "prefix ex: <htp://example.org/>"
+                   + "select * "
+                   + "where {"                  
+                   + "?x ?p ?y "                   
+                   + "filter mapany(us:test, ?x, st:prefix())"                  
+                   + "}"
+                                                    
+                   + "function us:test(?uri, ?def){"
+                   + "let ((?p, ?n) = ?def){"
+                   + "strstarts(?uri, ?n)"
+                   + "}"
+                   + "}"                                    
+                   ;                   
+                      
+           exec.query(i);                           
+           Mappings map = exec.query(q);           
+           assertEquals(1, map.size());
+       } 
     
      @Test
        public void testQueryUnnest() throws EngineException{

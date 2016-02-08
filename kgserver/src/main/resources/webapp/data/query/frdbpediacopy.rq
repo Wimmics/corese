@@ -1,0 +1,112 @@
+#
+# SPARQL Query 
+# Extract a subgraph from dbpedia, to be processed by HTML Transformation st:navlab
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014
+#
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+insert   {
+  ?uri a ?class .
+  ?uri rdfs:label ?label ; rdfs:comment ?com .
+  ?uri o:wikipedia ?pr ; o:dbpedia ?uri
+  
+  ?uri ?qq ?ts . ?ts rdfs:label ?ls . ?qq rdfs:label ?lq .
+  ?uri ?pp ?vv .
+  
+  ?uri p:latitude ?lat ; p:longitude ?lon . 
+  ?uri o:place ?pl
+  ?pl p:latitude ?plat ; p:longitude ?plon  .
+  
+  ?uri ?propOf ?org
+  ?org rdfs:label ?lorg
+  
+}
+where {
+bind (st:set(st:bind, st:values) as ?tmp)
+bind (st:get(st:uri) as ?uri)
+bind (coalesce(st:get(st:lang), "fr") as ?lang)
+
+service <http://fr.dbpedia.org/sparql> {
+  
+  ?uri rdfs:label ?label . filter(langMatches(lang(?label), "fr")) 
+  
+  optional {  
+    ?uri rdfs:comment ?com . filter(langMatches(lang(?com) , "fr")) 
+   }
+ 
+  optional { 
+    ?uri p:dateDeNaissance |  p:dateDeDécès | o:thumbnail  ?vv
+    ?uri ?pp ?vv . 
+    filter (?pp = o:thumbnail || isLiteral(?vv))    
+  }
+  
+  optional { ?uri p:latitude|geo:lat   ?lat 
+             ?uri p:longitude|geo:long ?lon  }
+  optional {
+      ?uri o:place ?pl
+      ?pl p:latitude|geo:lat   ?plat 
+      ?pl p:longitude|geo:long ?plon
+  }
+  optional {
+  ?uri o:spouse |o:child
+    |p:mère   |o:mother
+    |p:père   |o:father
+    |p:successeur   |o:successor 
+    |p:prédécesseur |o:predecessor
+    |o:residence 
+    
+    |o:bandMember
+    |o:formerBandMember
+    |o:starring
+    |o:director
+    
+    |p:sud |p:nord |p:est |p:ouest
+    |p:sudEst  |p:sudOuest
+    |p:nordEst |p:nordOuest 
+    
+    |o:wikiPageRedirects ?s
+    
+    ?uri ?q ?s 
+    
+     filter isURI(?s) . ?s rdfs:label ?ls . 
+     filter(langMatches(lang(?ls), 'fr')) 
+    
+    ?q rdfs:label ?lq 
+    filter(langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))    
+
+    optional { 
+        ?s o:wikiPageRedirects ?uris        
+    }
+ 
+  }
+  optional { 
+    ?org o:bandMember|o:starring|o:director ?uri 
+    ?org ?propOf ?uri
+    ?org rdfs:label ?lorg 
+    filter langMatches(lang(?lorg), "fr")
+  }
+	     
+}
+
+bind (coalesce(?uris, ?s) as ?ts)
+
+bind (if (?q = p:successeur,   o:successor,
+      if (?q = p:prédécesseur, o:predecessor,
+      if (?q = p:mère, o:mother,
+      if (?q = p:père, o:father,
+      if (?q = o:formerBandMember, o:bandMember, 
+      ?q))))) 
+      as ?qq)
+            
+bind (if (bound(?lat) || bound(?plat), o:Place, foaf:Person) as ?class)     
+      
+bind (concat(w:, (substr(?uri, strlen(r:) + 1))) as ?pr) 
+
+  
+}

@@ -187,8 +187,27 @@ st:dbpediatest a st:Profile ;
   st:transform st:navlab .
 
 st:dbpediacopy a st:Profile ;
-  st:query     <query/frdbpediains.rq> ;
+  st:query     <query/frdbpediacopy.rq> ;
   st:transform st:navlab .
+  
+@prefix r: <http://fr.dbpedia.org/resource/>
+
+st:dbpediains a st:Profile ;
+  st:query     <query/frdbpediains.rq> ;
+  st:transform st:navlab ;
+  st:param [
+  # where to save graph resulting from query
+    st:file "/home/corby/dbpedia.ttl";
+    st:list (
+ # r:Gibraltar r:Ceuta r:Melilla r:Enclave_des_papes
+   r:Andorre r:Monaco  r:Kaliningrad r:Liechtenstein
+    r:Llívia r:Saint-Marin r:Vatican     r:Büsingen_am_Hochrhein r:Jungholz r:Baerle-Duc
+    r:Sastavci r:Brezovica_Žumberačka r:Akrotiri_et_Dhekelia <http://fr.dbpedia.org/resource/Campione_d'Italia>
+    <http://fr.dbpedia.org/resource/San'kovo-Medvezh'e>
+    r:Vennbahn    
+    )
+  ] .
+  
 
 st:dbpediaall a st:Profile ;
   st:query     <query/frdbpediaall.rq> ;
@@ -289,6 +308,27 @@ st:tutorial2 a st:Server ;
     [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] ;
   st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
+
+st:geo a st:Server ;
+  st:service "geo" ;
+  st:transform st:navlab ; 
+  #"/user/corby/home/AAData/sttl/navlab" ;
+  st:param [ 
+    st:lang "en"   ;
+    st:mapzoom 5 ;
+    st:mapsize "maplarge" ;
+    st:import  st:mapParam  ;
+  ] ;
+  st:data     
+    [ st:uri <dbpedia/dbpedia.ttl>  ; st:name st:geo ] .
+    
+
+st:save a st:Profile ;
+  st:query <query/save.rq> ;
+  st:transform st:sparql ;
+  st:param [
+    st:file "/home/corby/dbpedia.ttl";
+  ] .
 
   
 @prefix cn: <http://cdn.fr/schema/>

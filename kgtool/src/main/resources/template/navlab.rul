@@ -2,10 +2,26 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 01 13:15:02 CET 2016
+Sun Feb 07 11:15:01 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:save {
+
+  st:call-template(st:page)
+  
+}
+where {
+  bind (kg:write(st:get(st:file), st:atw(st:turtle)) as ?res)
+}
+
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -135,7 +151,6 @@ template st:start {
   
 }
 where {
-#  filter kg:display(st:get(st:uri))
 }
 
 ]]>
@@ -355,20 +370,17 @@ template st:glocate {
   
 }
 where {
-
   ?in a o:Place 
-  
-  {select * where { 
-  # let o:place first because limit 1
-    { ?in o:place [ 
-	p:longitude ?lon ;
-	p:latitude  ?lat]   
-    } 
-    union
-    {?in p:longitude ?lon ;
-	 p:latitude  ?lat }     
-  } limit 1}
-  
+
+  optional { 
+    ?in o:place [ 
+    p:longitude ?lon ;
+    p:latitude  ?lat] } 
+    
+  optional {
+    ?in p:longitude ?lon ;
+    p:latitude  ?lat }
+       
   # search all other Place resources   
    optional {
       select (xt:list(?res, ?lat, ?lon) as ?elem) ?res
@@ -379,7 +391,6 @@ where {
 	}
       }
    }
-   
    filter(! bound(?res) || ?in != ?res)
 
 }

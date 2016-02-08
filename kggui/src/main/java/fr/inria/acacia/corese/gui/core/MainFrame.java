@@ -1469,12 +1469,12 @@ public class MainFrame extends JFrame implements ActionListener {
         return logger;
     }
 
-    String readStyleSheet2(String name){
-        String path  = getClass().getResource(STYLE).getPath();
-        QueryLoad ql = QueryLoad.create();
-        String style = ql.read(path + name);
-        return style;
-    }
+//    String readStyleSheet2(String name){
+//        String path  = getClass().getResource(STYLE).getPath();
+//        QueryLoad ql = QueryLoad.create();
+//        String style = ql.read(path + name);
+//        return style;
+//    }
     
     String read(String name) throws LoadException, IOException {
         InputStream stream = getClass().getResourceAsStream(name);

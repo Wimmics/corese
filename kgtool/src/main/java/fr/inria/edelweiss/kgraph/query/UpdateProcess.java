@@ -105,7 +105,6 @@ public class UpdateProcess {
 				break;
 			}
 		}
-		
 		return map;
 	}
 	
@@ -281,6 +280,7 @@ public class UpdateProcess {
 		ast.setNSM(ope.getNSM());	
 		ast.setPragma(ga.getPragma());
 		ast.setPrefixExp(ga.getPrefixExp());
+                ast.setDefine(ga.getDefine());
 		ast.setSelectAll(true);
 		// where {pat}
 		ast.setBody(ope.getBody());		

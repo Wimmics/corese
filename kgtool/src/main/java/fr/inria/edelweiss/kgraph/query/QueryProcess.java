@@ -474,10 +474,7 @@ public class QueryProcess extends QuerySolver {
                         // map is the result of the last Update in q
                         // hence the query in map is a local query corresponding to the last Update in q
                         // return the Mappings of the last Update and the global query q
-                        map.setQuery(q);
-//			if (map.getQuery() == null){
-//                            map.setQuery(q);
-//                        }                     
+                        map.setQuery(q);   
 		}
 		else {
 			map =  synQuery(q, m);
@@ -488,8 +485,18 @@ public class QueryProcess extends QuerySolver {
 			}
 			log(Log.QUERY, q, map);
 		}
+                
+                finish(q, map);
 		return map;
 	}
+        
+       void finish(Query q, Mappings map) {
+            Eval eval = map.getEval();
+            if (eval != null) {
+                eval.finish(q, map);
+                map.setEval(null);
+            }
+        }
 	
 	Mappings synQuery(Query query, Mapping m) {
             Mappings map = null;

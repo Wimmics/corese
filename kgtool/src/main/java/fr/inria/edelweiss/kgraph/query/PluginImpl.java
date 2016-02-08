@@ -653,12 +653,24 @@ public class PluginImpl extends ProxyImpl {
         return (IDatatype) edge.getNode().getValue();
     }
 
+    private IDatatype accessGraph(Expr exp, Environment env, Producer p, IDatatype dt) {
+        if (dt.isPointer()){
+            Pointerable obj = dt.getPointerObject();
+           switch (dt.pointerType()){
+               case Pointerable.ENTITY_POINTER:
+                   return (IDatatype) obj.getEntity().getGraph().getValue();
+               case Pointerable.MAPPINGS_POINTER:                   
+                   return DatatypeMap.createObject(obj.getMappings().getGraph());
+           }           
+        }
+        return null;
+    }
+    
     private Object access(Expr exp, Environment env, Producer p, IDatatype dt) {
-        Object obj = dt.getObject();
-        if (obj == null || ! (obj instanceof Entity)){
+        if (! (dt.isPointer() && dt.pointerType() == Pointerable.ENTITY_POINTER)){
             return null;
         }
-        Entity ent = (Entity) obj;        
+        Entity ent = dt.getPointerObject().getEntity();        
         switch (exp.oper()){
             case XT_GRAPH:
                 return ent.getGraph().getValue();

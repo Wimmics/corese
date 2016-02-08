@@ -12,13 +12,9 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.PointerObject;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * <p>Title: Corese</p>

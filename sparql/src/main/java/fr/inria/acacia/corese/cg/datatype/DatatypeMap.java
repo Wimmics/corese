@@ -449,7 +449,10 @@ public class DatatypeMap implements Cst, RDF {
         return createObject("tmp", obj);
     }
 
-    public static IDatatype createObject(String name, Object obj) {        
+    public static IDatatype createObject(String name, Object obj) {      
+        if (obj == null){
+            return null;
+        }
         if (obj instanceof Pointerable){
             return new CoresePointer(name, (Pointerable) obj);
         }

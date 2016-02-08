@@ -105,6 +105,7 @@ public class Processor {
         private static final String XT_VARIABLES= EXT + "variables";
         private static final String XT_EDGE     = EXT + "edge";
         private static final String XT_QUERY    = EXT + "query";
+        private static final String XT_AST      = EXT + "ast";
         private static final String XT_TRIPLE   = EXT + "triple";
         static public final String XT_MAIN     = EXT + "main";
         static public final String FUN_XT_MAIN = EXT_PREF + "main";
@@ -610,6 +611,7 @@ public class Processor {
 		defoper(XT_EDGE,         ExprType.XT_EDGE);
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
 		defoper(XT_QUERY,        ExprType.XT_QUERY);
+		defoper(XT_AST,          ExprType.XT_AST);
                 
 		defsysoper(REGEX, 		ExprType.REGEX);
                 defoper(APPROXIMATE,	ExprType.APPROXIMATE);

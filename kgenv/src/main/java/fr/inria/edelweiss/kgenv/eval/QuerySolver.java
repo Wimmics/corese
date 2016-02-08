@@ -254,7 +254,7 @@ public class QuerySolver  implements SPARQLEngine {
 	/**
 	 * Core QueryExec processor
 	 */
-	public Mappings query(Query query, Mapping map){
+	public Mappings query(Query query, Mapping m){
 		init(query);
 		debug(query);
 		
@@ -268,9 +268,11 @@ public class QuerySolver  implements SPARQLEngine {
 		
 		pragma(kgram, query);
 		
-		Mappings lMap  = kgram.query(query, map);
+		Mappings map  = kgram.query(query, m);
+                //TODO: check memory usage when storing Eval
+                map.setEval(kgram);
 		
-		return lMap;
+		return map;
 	}
         
         Eval makeEval(){

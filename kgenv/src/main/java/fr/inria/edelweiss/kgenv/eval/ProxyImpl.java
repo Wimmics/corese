@@ -314,6 +314,9 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_QUERY:
                 return DatatypeMap.createObject(env.getQuery());
+                
+            case XT_AST:
+                return DatatypeMap.createObject(env.getQuery().getAST());
 
             default:
                 if (plugin != null) {
@@ -1473,8 +1476,8 @@ public class ProxyImpl implements Proxy, ExprType {
       * maplist return list of results
       * mapselect return sublist of elements that match a boolean predicate
       * map return true
-      * map on List or Loopable (IDatatype that contains e.g. Mappings)
-     * PRAGMA: lists must have same length
+      * map on List or Loopable (IDatatype that contains e.g Mappings)
+      * TODO: when getLoop() it works with only one loop
       * @return 
       */
     private IDatatype map(Expr exp, Environment env, Producer p, IDatatype[] param) {
@@ -1497,7 +1500,6 @@ public class ProxyImpl implements Proxy, ExprType {
                 break;
             }
             else if (dt.isLoop()) {
-                hasList = false; // prevent maplist mapmerge
                ldt = dt; 
                loop = ldt.getLoop().iterator();
                break;
@@ -1508,7 +1510,7 @@ public class ProxyImpl implements Proxy, ExprType {
             return null;
         }
         IDatatype[] value = new IDatatype[param.length];
-        IDatatype[] res = (hasList) ? new IDatatype[list.size()] : null;
+        ArrayList<IDatatype> res = (hasList)     ? new ArrayList<IDatatype>() : null;
         ArrayList<IDatatype> sub = (mapfindlist) ? new ArrayList<IDatatype>() : null;
         int size = 0; 
         
@@ -1524,6 +1526,7 @@ public class ProxyImpl implements Proxy, ExprType {
                     }
                 }
                 else if (dt.isLoop()){
+                    // TODO: track several dt Loop
                     if (loop.hasNext()){
                        value[j] = (IDatatype) p.getValue(loop.next());
                        if (mapfind && elem == null){
@@ -1551,7 +1554,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 else {
                     size += 1;
                 }
-               res[i] = val;
+               res.add(val);
             }
             else if (mapfindelem && val.booleanValue()){
                 return elem;
@@ -1566,15 +1569,15 @@ public class ProxyImpl implements Proxy, ExprType {
         
         if (mapmerge){
             int i = 0;
-            IDatatype[] merge = new IDatatype[size];
+            ArrayList<IDatatype> merge = new ArrayList<IDatatype>(size);
             for (IDatatype dt : res){
                 if (dt.isList()){
                     for (IDatatype v : dt.getValues()){
-                        merge[i++] = v;
+                        merge.add(v);
                     }
                 }
                 else {
-                    merge[i++] = dt;
+                    merge.add(dt);
                 }
             }
             return DatatypeMap.createList(merge);
@@ -1596,31 +1599,50 @@ public class ProxyImpl implements Proxy, ExprType {
      * every (xt:fun, ?list)   
      * every (xt:fun, ?x, ?list) 
      * every (xt:fun, ?l1, ?l2) 
-     * PRAGMA: lists must have same length
+     * TODO: when getLoop() it works with only one loop
      * error follow SPARQ semantics of OR (any) AND (every)
      * @return 
      */
     private IDatatype anyevery(Expr exp, Environment env, Producer p, IDatatype[] param) {
         boolean every = exp.oper() == MAPEVERY;       
         boolean any   = exp.oper() == MAPANY;       
-        IDatatype list = null;        
-        for (IDatatype dt : param){          
+        IDatatype list = null; 
+        IDatatype ldt = null;
+        Iterator loop = null ;
+        boolean isList = false;
+        
+        for (IDatatype dt : param){   
             if (dt.isList()){
+                isList = true;
                 list = dt;
                 break;
             }
+            else if (dt.isLoop()) {
+               ldt = dt; 
+               loop = ldt.getLoop().iterator();
+               break;
+            }
         }               
-        if (list == null){
+        if (list == null && ldt == null){
             return null;
         }
         IDatatype[] value = new IDatatype[param.length];
         boolean error = false;      
-        for (int i = 0; i<list.size(); i++){ 
-            
+        for (int i = 0; (isList) ? i < list.size() : loop.hasNext(); i++){ 
+
             for (int j = 0; j<value.length; j++){
                 IDatatype dt = param[j];
                 if (dt.isList()){
                     value[j] = (i < dt.size()) ? dt.get(i) : dt.get(dt.size()-1);  
+                }
+                else if (dt.isLoop()){
+                    if (loop.hasNext()){
+                       // TODO:  track the case with several dt loop
+                       value[j] = (IDatatype) p.getValue(loop.next());
+                    }
+                    else {
+                        return null;
+                    }
                 }
                 else {
                     value[j] = dt;

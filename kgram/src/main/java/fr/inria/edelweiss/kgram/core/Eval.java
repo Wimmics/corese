@@ -58,6 +58,7 @@ public class Eval implements ExpType, Plugin {
     private static final String FUN_RESULT  = PREF + "result";
     private static final String FUN_SOLUTION= PREF + "solution";
     private static final String FUN_START   = PREF + "start";
+    private static final String FUN_FINISH  = PREF + "finish";
     private static final String FUN_PRODUCE = PREF + "produce";
 
     static final int STOP = -2;
@@ -113,6 +114,7 @@ public class Eval implements ExpType, Plugin {
             hasMinus,
             hasResult   = false,
             hasStart    = false,
+            hasFinish   = false,
             hasProduce  = false,
             hasSolution = false;
 
@@ -191,6 +193,14 @@ public class Eval implements ExpType, Plugin {
 
         return map;
     }
+    
+    public void finish(Query q, Mappings map) {
+        if (hasFinish) {
+            memory.setResults(map);
+            Object res = eval(getExpression(FUN_FINISH),
+                    toArray(producer.getNode(q), producer.getNode(map)));
+        }
+    }
 
     Mappings eval(Query q) {
         return eval(null, q, null);
@@ -200,9 +210,9 @@ public class Eval implements ExpType, Plugin {
         init(q);
         if (hasStart && !q.isSubQuery()) {
             Object res = eval(getExpression(q, FUN_START), 
-                    toArray(producer.getNode(q), producer.getNode(q.getAST())));
+                    toArray(producer.getNode(q)));
         }
-        else {
+        {
             if (q.isCheck()) {
                 // Draft
                 Checker check = Checker.create(this);
@@ -612,6 +622,7 @@ public class Eval implements ExpType, Plugin {
         hasResult   = (getExpression(FUN_RESULT) != null);
         hasSolution = (getExpression(FUN_SOLUTION) != null);
         hasStart    = (getExpression(FUN_START) != null);
+        hasFinish   = (getExpression(FUN_FINISH) != null);
     }
 
     private void complete() {

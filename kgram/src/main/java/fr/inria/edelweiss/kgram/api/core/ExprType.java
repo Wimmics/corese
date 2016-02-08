@@ -293,6 +293,7 @@ public interface ExprType {
         public static int XT_OPTIONAL    = 427;
         public static int XT_JOIN        = 428;
         public static int XT_QUERY       = 429;
+        public static int XT_AST         = 430;
       
         public static int SLICE       = 450;
         

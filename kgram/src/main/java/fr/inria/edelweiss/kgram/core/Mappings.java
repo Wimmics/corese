@@ -51,7 +51,7 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	Group group, distinct;
 	Node fake;
 	Object object;
-        Eval eval;
+        private Eval eval;
 	private Object graph;
 	private int nbsolutions = 0;
 
@@ -397,9 +397,9 @@ implements Comparator<Mapping> , Iterable<Mapping>
 	}
 
         void sort(Eval eval){
-            this.eval = eval;
+            this.setEval(eval);
             Collections.sort(list, this);
-            this.eval = null;
+            this.setEval(null);
 	}
         
 	void sort(){
@@ -411,13 +411,13 @@ implements Comparator<Mapping> , Iterable<Mapping>
          * Sort according to node
          */
         void sort(Eval eval, Node node){ 
-            this.eval = eval;
+            this.setEval(eval);
             sortWithDesc = false;
             for (Mapping m : this){
                 m.setOrderBy(m.getNode(node));
             }
             sort();
-            this.eval = null;
+            this.setEval(null);
         }
         
         int find(Node node, Node qnode){
@@ -461,8 +461,8 @@ implements Comparator<Mapping> , Iterable<Mapping>
     }
         
       int comparator(Node n1, Node n2){
-          if (eval != null){
-              return eval.compare(n1, n2);
+          if (getEval() != null){
+              return getEval().compare(n1, n2);
           }
           return n1.compare(n2);
       }
@@ -1278,5 +1278,19 @@ implements Comparator<Mapping> , Iterable<Mapping>
 //			}
 //		}
 //	}
+
+    /**
+     * @return the eval
+     */
+    public Eval getEval() {
+        return eval;
+    }
+
+    /**
+     * @param eval the eval to set
+     */
+    public void setEval(Eval eval) {
+        this.eval = eval;
+    }
 
 }

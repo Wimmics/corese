@@ -1,0 +1,21 @@
+prefix ex: <htp://example.org/>
+select * 
+where {                  
+  ?x ?p ?y                    
+  filter mapany(us:test, ?x, st:prefix())                  
+}
+                                                    
+function us:test(?uri, ?def){
+  let ((?p, ?n) = ?def){
+    strstarts(?uri, ?n)
+  }
+}                                    
+  
+function us:check(){
+  let (?q = xt:query()){
+    for (?t in ?q){
+      let ((?s, ?p, ?o) = ?t){
+	if (isURI(?p) && not exists {?x ?p ?y}){
+	  xt:display('Missing: ', ?t)}
+  }}}
+}

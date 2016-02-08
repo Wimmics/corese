@@ -10,20 +10,17 @@ template st:glocate {
   
 }
 where {
-
   ?in a o:Place 
-  
-  {select * where { 
-  # let o:place first because limit 1
-    { ?in o:place [ 
-	p:longitude ?lon ;
-	p:latitude  ?lat]   
-    } 
-    union
-    {?in p:longitude ?lon ;
-	 p:latitude  ?lat }     
-  } limit 1}
-  
+
+  optional { 
+    ?in o:place [ 
+    p:longitude ?lon ;
+    p:latitude  ?lat] } 
+    
+  optional {
+    ?in p:longitude ?lon ;
+    p:latitude  ?lat }
+       
   # search all other Place resources   
    optional {
       select (xt:list(?res, ?lat, ?lon) as ?elem) ?res
@@ -34,7 +31,6 @@ where {
 	}
       }
    }
-   
    filter(! bound(?res) || ?in != ?res)
 
 }

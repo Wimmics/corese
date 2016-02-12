@@ -53,8 +53,10 @@ public class Tutorial {
     @Produces("text/html")
     public Response post(
             @PathParam("serv")      String serv,
-            @FormParam("profile")   String profile, // query + transform
-            @FormParam("uri")       String resource, // query + transform
+            @FormParam("profile")   String profile, 
+            @FormParam("uri")       String resource, 
+            @FormParam("mode")      String mode, 
+            @FormParam("param")     String param, 
             @FormParam("query")     String query, // SPARQL query
             @FormParam("name")      String name, // SPARQL query name (in webapp/query)
             @FormParam("value")     String value, // values clause that may complement query           
@@ -62,7 +64,7 @@ public class Tutorial {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri")   List<String> namedGraphUris) {
 
-        return get(serv, profile, resource, query, name, value, transform, defaultGraphUris, namedGraphUris);
+        return get(serv, profile, resource, mode, param, query, name, value, transform, defaultGraphUris, namedGraphUris);
     }
     
     @POST
@@ -72,6 +74,8 @@ public class Tutorial {
             @PathParam("serv")      String serv,
             @FormDataParam("profile")   String profile, // query + transform
             @FormDataParam("uri")       String resource, // query + transform
+            @FormDataParam("mode")      String mode, 
+            @FormDataParam("param")     String param, 
             @FormDataParam("query")     String query, // SPARQL query
             @FormDataParam("name")      String name, // SPARQL query name (in webapp/query)
             @FormDataParam("value")     String value, // values clause that may complement query           
@@ -79,7 +83,7 @@ public class Tutorial {
             @FormDataParam("default-graph-uri") List<FormDataBodyPart> defaultGraphUris,
             @FormDataParam("named-graph-uri")   List<FormDataBodyPart> namedGraphUris) {
 
-        return get(serv, profile, resource, query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
+        return get(serv, profile, resource, mode, param, query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
     }
 
     @GET
@@ -88,6 +92,8 @@ public class Tutorial {
             @PathParam("serv")      String serv,
             @QueryParam("profile")  String profile, // query + transform
             @QueryParam("uri")      String resource, // URI of resource focus
+            @QueryParam("mode")     String mode, 
+            @QueryParam("param")    String param, 
             @QueryParam("query")    String query, // SPARQL query
             @QueryParam("name")     String name, // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value")    String value, // values clause that may complement query           
@@ -99,6 +105,8 @@ public class Tutorial {
         Param par = new Param(SERVICE + serv, getProfile(uri, profile, transform), transform, resource, name, query);
         par.setValue(value);
         par.setServer(uri);
+        par.setMode(mode);
+        par.setParam(param);
         par.setDataset(namedGraphUris, namedGraphUris);
         return new Transformer().template(getTripleStore(serv), par);
     }

@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgraph.query;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.SQLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -83,7 +84,10 @@ public class Mapper {
                  return map(nodes, (NSManager) obj);   
                 
              case Pointerable.QUERY_POINTER:
-                 return map(nodes, obj.getQuery());       
+                 return map(nodes, obj.getQuery());
+                 
+             case Pointerable.CONTEXT_POINTER:
+                 return map(nodes, (Context) obj);
         }
         
         return map(nodes, (Object) obj);
@@ -143,7 +147,15 @@ public class Mapper {
         return map;
     }
     
-     Mappings map(List<Node> varList, NSManager nsm){
+    Mappings map(List<Node> varList, NSManager nsm){
+        return mapListOfList(varList, nsm.getList().getValues());
+    }
+     
+    Mappings map(List<Node> varList, Context c){
+        return mapListOfList(varList, c.getList().getValues());
+    }  
+     
+    Mappings mapListOfList(List<Node> varList, List<IDatatype> listOfList){
         Mappings map =  new Mappings(); 
         int size = varList.size();
         if (size > 2){
@@ -152,33 +164,27 @@ public class Mapper {
         Node[] qNodes = new Node[size];
         varList.toArray(qNodes);
             
-        for (IDatatype def : nsm.getList().getValues()){          
+        for (IDatatype def : listOfList){          
                 Node[] tn = new Node[size];
                 for (int i = 0; i < size; i++){
                     tn[i] = def.get(i);
-                }
+                }        
                 map.add(Mapping.create(qNodes, tn));           
         }
         return map;
-    }
-     
+    } 
+      
     Mappings map(List<Node> varList, Query q){
-        Mappings map =  new Mappings(); 
-        int size = varList.size();  
-        if (size != 1){
-            return map;
+        if (varList.size() != 1){
+            return new Mappings(); 
         }
-        Node[] qNodes = new Node[size];
-        varList.toArray(qNodes);            
-        for (Edge e : q.getEdges()){          
-                Node[] tn = new Node[size];                
-                tn[0] = DatatypeMap.createObject(e);                
-                map.add(Mapping.create(qNodes, tn));           
-        }
-        return map;
+       ArrayList<IDatatype> list = new  ArrayList<IDatatype>();
+       for (Edge e : q.getEdges()){          
+            list.add(DatatypeMap.createObject(e));                                         
+       }
+       return map(varList, list);
     }
       
-
     Mappings map(List<Node> lNodes, Collection<IDatatype> list) {
         Mappings map = new Mappings();
         for (IDatatype dt : list){
@@ -230,11 +236,10 @@ public class Mapper {
     }
 
     /**
-     * Binding by position
-     * NOTE: could be binding by name
+     * Binding by name
+     * Eval extBind() bind list of Node on this Mappings by name
      */
-    Mappings map(List<Node> lNodes, Mappings map) {       
-        map.setNodes(lNodes);
+    Mappings map(List<Node> list, Mappings map) {       
         return map;
     }
 

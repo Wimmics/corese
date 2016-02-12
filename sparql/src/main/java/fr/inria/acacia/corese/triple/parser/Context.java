@@ -6,6 +6,8 @@ package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -15,7 +17,7 @@ import java.util.HashMap;
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
  */
-public class Context {
+public class Context extends ASTObject {
 
     public static final String NL = System.getProperty("line.separator");
     public static final String STL = NSManager.STL;
@@ -40,6 +42,7 @@ public class Context {
     public static final String STL_VALUES   = STL + "values";
     public static final String STL_FILTER   = STL + "filter";
     public static final String STL_BIND     = STL + "bind";
+    public static final String STL_MODE     = STL + "mode";
     
     HashMap<String, IDatatype> table;
     static  HashMap<String, Boolean> sexport;
@@ -170,6 +173,14 @@ public class Context {
     public Context setURI(String str) {
         return setURI(STL_URI, str);
     }
+    
+     public Context setMode(String str) {
+        return setURI(STL_MODE, str);
+    }
+     
+     public Context setParam(String str) {
+        return set(STL_PARAM, str);
+    }
 
     public String getURI() {
         return stringValue(STL_URI);
@@ -179,20 +190,20 @@ public class Context {
         return setURI(STL_PROTOCOL, str);
     }
 
-    public Context setQuery(String str) {
+    public Context setQueryString(String str) {
         return set(STL_QUERY, str);
     }
 
     // add values clause to query
     public Context addValue(String value) {
-        String squery = getQuery();
+        String squery = getQueryString();
         if (getURI() == null && squery != null) {
-            setQuery(squery + value);
+            setQueryString(squery + value);
         }
         return this;
     }
 
-    public String getQuery() {
+    public String getQueryString() {
         return stringValue(STL_QUERY);
     }
 
@@ -261,6 +272,27 @@ public class Context {
 
     public void setServerProfile(IDatatype obj) {
         set(STL_SERVER_PROFILE, obj);
+    }
+    
+    public int pointerType(){
+        return Pointerable.CONTEXT_POINTER;
+    }
+    
+    public Iterable getLoop(){
+        return getList().getValues();       
+    }
+    
+    public IDatatype getList(){
+        ArrayList<IDatatype> list = new  ArrayList<IDatatype>();
+        for (String key : table.keySet()){
+            IDatatype val = table.get(key);
+            if (val != null){
+                IDatatype dt   = DatatypeMap.createResource(key);
+                IDatatype pair = DatatypeMap.createList(dt, val);
+                list.add(pair);
+            }
+        }
+        return DatatypeMap.createList(list);
     }
     
 }

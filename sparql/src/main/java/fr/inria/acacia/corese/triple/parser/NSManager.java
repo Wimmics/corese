@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.core.PointerObject;
 import java.util.ArrayList;
 
 /**
@@ -28,7 +27,7 @@ import java.util.ArrayList;
  *
  * @author Olivier Corby
  */
-public class NSManager extends PointerObject {
+public class NSManager extends ASTObject {
 
     /**
      * Use to keep the class version, to be consistent with the interface

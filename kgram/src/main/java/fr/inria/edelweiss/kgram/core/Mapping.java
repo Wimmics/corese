@@ -534,6 +534,7 @@ public class Mapping
             }
 	}
         
+        // TODO: manage Node isPath
         public void fixQueryNodes(Query q){
             for (int i = 0; i < qNodes.length; i++){
                 Node node = qNodes[i];

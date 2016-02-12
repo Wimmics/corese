@@ -1914,22 +1914,30 @@ public class Eval implements ExpType, Plugin {
     private int extBind(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         Memory env = memory;
-        Mappings lMap = evaluator.eval(exp.getFilter(), env, exp.getNodeList());
-
-        if (lMap != null) {
-
-            for (Mapping m : lMap) {
-                if (env.push(m, n, false)) {
+        Mappings map = evaluator.eval(exp.getFilter(), env, exp.getNodeList());
+        
+        if (map != null) {
+            HashMap<String, Node>  tab =  toMap(exp.getNodeList());
+            for (Mapping m : map) {
+                if (env.push(tab, m, n)) {  
                     backtrack = eval(p, gNode, stack, n + 1);
-                    env.pop(m, false);
+                    env.pop(tab, m);
                     if (backtrack < n) {
                         return backtrack;
                     }
-                }
+                }               
             }
         }
 
         return backtrack;
+    }
+    
+    HashMap<String, Node> toMap(List<Node> list){
+        HashMap<String, Node> m = new HashMap<String, Node>();
+        for (Node node : list){
+            m.put(node.getLabel(), node);
+        }
+        return m;
     }
 
     /**

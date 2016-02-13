@@ -70,6 +70,8 @@ public class Transformer {
     public Response queryPOSTHTML(
             @FormParam("profile") String profile, // query + transform
             @FormParam("uri") String resource, // query + transform
+            @FormParam("mode") String mode, 
+            @FormParam("param") String param, 
             @FormParam("query") String query, // SPARQL query
             @FormParam("name") String name, // SPARQL query name (in webapp/query)
             @FormParam("value") String value, // values clause that may complement query           
@@ -79,6 +81,8 @@ public class Transformer {
         
         Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
         par.setValue(value);
+        par.setMode(mode);
+        par.setParam(param);
         par.setDataset(from, named);
         return template(getTripleStore(), par);
     }
@@ -88,7 +92,9 @@ public class Transformer {
     @Produces("text/html")
     public Response queryPOSTHTML_MD(
             @FormDataParam("profile") String profile, // query + transform
-            @FormDataParam("uri") String resource, // query + transform
+            @FormDataParam("uri") String resource, 
+            @FormDataParam("mode") String mode, 
+            @FormDataParam("param") String param, 
             @FormDataParam("query") String query, // SPARQL query
             @FormDataParam("name") String name, // SPARQL query name (in webapp/query)
             @FormDataParam("value") String value, // values clause that may complement query           
@@ -98,6 +104,8 @@ public class Transformer {
         
         Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
         par.setValue(value);
+        par.setMode(mode);
+        par.setParam(param);
         par.setDataset(toStringList(from), toStringList(named));
         return template(getTripleStore(), par);
     }
@@ -107,6 +115,8 @@ public class Transformer {
     public Response queryGETHTML(
             @QueryParam("profile") String profile, // query + transform
             @QueryParam("uri") String resource, // URI of resource focus
+            @QueryParam("mode") String mode, 
+            @QueryParam("param") String param, 
             @QueryParam("query") String query, // SPARQL query
             @QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value") String value, // values clause that may complement query           
@@ -116,6 +126,8 @@ public class Transformer {
 
         Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
         par.setValue(value);
+        par.setMode(mode);
+        par.setParam(param);
         par.setDataset(namedGraphUris, namedGraphUris);
         return template(getTripleStore(), par);
     }
@@ -167,8 +179,8 @@ public class Transformer {
             ex.printStackTrace();
             String err = ex.toString();
             String q = null;
-            if (ctx != null && ctx.getQuery() != null){
-                q = ctx.getQuery();
+            if (ctx != null && ctx.getQueryString() != null){
+                q = ctx.getQueryString();
             }
             return Response.status(500).header(headerAccept, "*").entity(error(err, q)).build();
         }
@@ -220,29 +232,7 @@ public class Transformer {
    }
 
     Context create(Param par) {
-        Context ctx= par.getContext();
-        if (ctx == null){
-            ctx = new Context();
-        }
-        if (par.getProfile() != null) {
-            ctx.setProfile(nsm.toNamespace(par.getProfile()));
-        }
-        if (par.getTransform() != null) {
-            ctx.setTransform(nsm.toNamespace(par.getTransform()));
-        }
-        if (par.getUri() != null) {
-            ctx.setURI(nsm.toNamespace(par.getUri()));
-        }
-        if (par.getQuery() != null) {
-            ctx.setQuery(par.getQuery());
-        }
-        if (par.getName() != null) {
-            ctx.setName(par.getName());
-        }
-        if (par.getService() != null){
-            ctx.setService(par.getService());
-        }      
-        ctx.setServer(Profile.SERVER);
+        Context ctx= par.createContext();        
         complete(ctx, par);         
         return ctx;
     }

@@ -106,9 +106,11 @@ public class Processor {
         private static final String XT_EDGE     = EXT + "edge";
         private static final String XT_QUERY    = EXT + "query";
         private static final String XT_AST      = EXT + "ast";
+        private static final String XT_CONTEXT  = EXT + "context";
+        private static final String XT_PREFIX   = EXT + "prefix";        
         private static final String XT_TRIPLE   = EXT + "triple";
-        static public final String XT_MAIN     = EXT + "main";
-        static public final String FUN_XT_MAIN = EXT_PREF + "main";
+        static public final String XT_MAIN      = EXT + "main";
+        static public final String FUN_XT_MAIN  = EXT_PREF + "main";
        
 
 	private static final String PLENGTH = "pathLength";
@@ -612,6 +614,7 @@ public class Processor {
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
 		defoper(XT_QUERY,        ExprType.XT_QUERY);
 		defoper(XT_AST,          ExprType.XT_AST);
+		defoper(XT_CONTEXT,      ExprType.XT_CONTEXT);
                 
 		defsysoper(REGEX, 		ExprType.REGEX);
                 defoper(APPROXIMATE,	ExprType.APPROXIMATE);
@@ -688,6 +691,7 @@ public class Processor {
                 defoper(STL_URI,                ExprType.PPURI);
                 defoper(STL_PROLOG,             ExprType.PROLOG);
                 defoper(STL_PREFIX,             ExprType.STL_PREFIX);
+                defoper(XT_PREFIX,              ExprType.STL_PREFIX);
 		defoper(STL_INDENT,             ExprType.INDENT);
 		defoper(STL_LEVEL,              ExprType.LEVEL);
 		defoper(STL_NL,                 ExprType.STL_NL);

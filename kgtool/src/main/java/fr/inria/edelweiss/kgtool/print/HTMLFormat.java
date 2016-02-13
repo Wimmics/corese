@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import fr.inria.edelweiss.kgtool.util.MappingsGraph;
 import fr.inria.edelweiss.kgtool.util.MappingsProcess;
 
 /**
@@ -125,8 +126,9 @@ public class HTMLFormat {
     }
       
     Graph select(){
-        MappingsProcess mp = MappingsProcess.create(map);
-        return mp.getGraph(); 
+        //MappingsProcess mp = MappingsProcess.create(map);
+        MappingsGraph mg = MappingsGraph.create(map);
+        return mg.getGraph(); 
     }
 
     /**

@@ -1202,7 +1202,7 @@ public class Query extends Exp implements Graphable {
         return this;
     }
 
-    void trace() {
+    public void trace() {
         System.out.println("patternNodes: " + patternNodes);
         System.out.println("queryNodes: " + queryNodes);
         System.out.println("patternSelectNodes: " + patternSelectNodes);
@@ -1373,6 +1373,11 @@ public class Query extends Exp implements Graphable {
             case BIND:
                 collectExist(exp.getFilter().getExp());
                 store(exp.getNode(), exist, true);
+                if (exp.getNodeList() != null){
+                    for (Node n : exp.getNodeList()){
+                        store(n, exist, true);
+                    }
+                }
                 break;
 
             default:
@@ -1451,6 +1456,12 @@ public class Query extends Exp implements Graphable {
             case BIND:
                 Node qn = exp.getNode();
                 min = qIndex(query, qn);
+                if (exp.getNodeList() != null){
+                    for (Node bn : exp.getNodeList()){
+                        int ii = qIndex(query, bn);
+                        min = Math.min(min, ii);
+                    }
+                }
                         // continue on filter below:
 
             case FILTER:

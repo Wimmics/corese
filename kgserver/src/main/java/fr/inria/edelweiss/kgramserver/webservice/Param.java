@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgramserver.webservice;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import java.util.List;
 
 /**
@@ -11,11 +12,14 @@ import java.util.List;
  *
  */
 public class Param {
+    static NSManager nsm;
     private String service;
     private String server;
     private String profile;    
     private String transform;
     private String uri;
+    private String mode;
+    private String param;
     private String name;
     private String query;
     private String value;
@@ -27,6 +31,10 @@ public class Param {
     private boolean protect = false;
     private boolean isUserQuery = false;
     private Context context;
+    
+    static {
+        nsm = NSManager.create();
+    }
     
     Param(String s, String p, String t, String u, String n, String q){
         service = s;
@@ -42,6 +50,40 @@ public class Param {
         str += "profile: "   + getValue(profile) + "\n";
         str += "transform: " + getValue(transform) + "\n" ;
         return str;
+    }
+    
+    
+    Context createContext() {
+        Context ctx= getContext();
+        if (ctx == null){
+            ctx = new Context();
+        }
+        if (getProfile() != null) {
+            ctx.setProfile(nsm.toNamespace(getProfile()));
+        }
+        if (getTransform() != null) {
+            ctx.setTransform(nsm.toNamespace(getTransform()));
+        }
+        if (getUri() != null) {
+            ctx.setURI(nsm.toNamespace(getUri()));
+        }
+        if (getMode() != null) {
+            ctx.setMode(nsm.toNamespace(getMode()));
+        }
+         if (getParam()!= null) {
+            ctx.setParam(getParam());
+        }
+        if (getQuery() != null) {
+            ctx.setQueryString(getQuery());
+        }
+        if (getName() != null) {
+            ctx.setName(getName());
+        }
+        if (getService() != null){
+            ctx.setService(getService());
+        }      
+        ctx.setServer(Profile.SERVER);
+        return ctx;
     }
     
     String getValue(String str) {
@@ -244,6 +286,34 @@ public class Param {
      */
     public void setServer(String server) {
         this.server = server;
+    }
+
+    /**
+     * @return the mode
+     */
+    public String getMode() {
+        return mode;
+    }
+
+    /**
+     * @param mode the mode to set
+     */
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    /**
+     * @return the param
+     */
+    public String getParam() {
+        return param;
+    }
+
+    /**
+     * @param param the param to set
+     */
+    public void setParam(String param) {
+        this.param = param;
     }
 
 }

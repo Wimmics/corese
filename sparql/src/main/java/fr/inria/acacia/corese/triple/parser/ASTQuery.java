@@ -914,6 +914,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      * BIND( f(?x) as ?y )
      */
     public Exp createBind(Expression exp, Variable var) {
+       return Binding.create(exp, var);
+    }
+    
+    public Exp createBind2(Expression exp, Variable var) {
         if (var.getVariableList() != null) {
             // bind (sql() as ())
             return createASTBind(exp, var);

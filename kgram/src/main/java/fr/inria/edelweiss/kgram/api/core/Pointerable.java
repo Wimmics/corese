@@ -16,7 +16,8 @@ public interface Pointerable extends Loopable {
     public static final int ENTITY_POINTER   = 3;
     public static final int GRAPH_POINTER    = 4;
     public static final int NSMANAGER_POINTER= 5;
-    public static final int QUERY_POINTER    = 6;
+    public static final int CONTEXT_POINTER  = 6;
+    public static final int QUERY_POINTER    = 7;
     
     int pointerType();
     

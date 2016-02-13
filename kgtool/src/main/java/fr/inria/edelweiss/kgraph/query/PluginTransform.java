@@ -69,7 +69,10 @@ public class PluginTransform implements ExprType {
                 return prolog(null, env, p);
 
             case STL_PREFIX:
-                return prefix(env, p); 
+                return prefix(env, p);
+                
+            case XT_CONTEXT:
+                return context(env, p);
 
             case STL_INDEX:
                 return index(exp, env, p);
@@ -352,10 +355,6 @@ public class PluginTransform implements ExprType {
         return getTransformer(null, env, p, (IDatatype) null, (IDatatype) null, null);
     }
 
-//    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype trans) {
-//        return getTransformer(exp, env, prod, trans, null);
-//    }
-
     /**
      * uri: transformation URI 
      * gname: named graph 
@@ -425,7 +424,9 @@ public class PluginTransform implements ExprType {
         // set after init
         //t.init((ASTQuery) q.getAST());
         // TODO: uri vs transform ???
-        t.set(Transformer.STL_TRANSFORM, uri);
+        if (uri != null){
+            t.set(Transformer.STL_TRANSFORM, uri);
+        }
         t.complete(q, (Transformer) q.getTransformer());
     }
 
@@ -463,6 +464,11 @@ public class PluginTransform implements ExprType {
     IDatatype prefix(Environment env, Producer prod) {
         Transformer p = getTransformer(env, prod);
         return DatatypeMap.createObject(p.getNSM());
+    }
+    
+    IDatatype context(Environment env, Producer prod) {
+        Transformer p = getTransformer(env, prod);
+        return DatatypeMap.createObject(p.getContext());
     }
     
     IDatatype isStart(Environment env, Producer prod) {

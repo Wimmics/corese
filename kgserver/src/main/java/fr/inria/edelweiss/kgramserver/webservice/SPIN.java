@@ -62,7 +62,7 @@ public class SPIN {
             }
             g = sp.toSpinGraph(query);
 
-            Context c = new Context().setTransform(Transformer.TOSPIN).setQuery(query).setService(TOSPIN_SERVICE);
+            Context c = new Context().setTransform(Transformer.TOSPIN).setQueryString(query).setService(TOSPIN_SERVICE);
             complete(c);
             HTMLFormat ft = HTMLFormat.create(g, c);
 
@@ -115,7 +115,7 @@ public class SPIN {
             }
             ld.loadString(query, Load.TURTLE_FORMAT);
 
-            Context c = new Context().setTransform(Transformer.TOSPIN).setQuery(query).setService(TOSPARQL_SERVICE);
+            Context c = new Context().setTransform(Transformer.TOSPIN).setQueryString(query).setService(TOSPARQL_SERVICE);
             complete(c);
             HTMLFormat ft = HTMLFormat.create(g, c);
 

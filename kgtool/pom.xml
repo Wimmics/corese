@@ -133,8 +133,7 @@
             <groupId>edu.sussex.nlp</groupId>
             <artifactId>jws</artifactId>
             <version>11</version>
- 	    <scope>system</scope>
-	    <systemPath>${project.basedir}/src/main/resources/repo/edu/sussex/nlp/jws/11/jws-11.jar</systemPath>
+	    <optional>true</optional>
         </dependency>
     </dependencies>
 

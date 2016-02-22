@@ -6,13 +6,10 @@ import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.CombinedAlgorithm;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.Equality;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.JaroWinkler;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.NGram;
-import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.TextSimilarity;
 import fr.inria.edelweiss.kgraph.approximate.strategy.Priority;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Generate instance of similarity measurement algorithm
@@ -43,12 +40,13 @@ public class SimAlgorithmFactory {
             case jw:
                 return new JaroWinkler();
             case wn:
-                try {
-                    return new TextSimilarity(NLPHelper.createInstance());
-                } catch (Exception ex) {
-                    Logger.getLogger(SimAlgorithmFactory.class.getName()).log(Level.WARNING, "** Cannot initialize NLP helper, WordNet similarity algorithms are disabled!**");
-                }
-                return null;
+                return TextSimilarity.create();
+//                try {
+//                    return new TextSimilarity(NLPHelper.createInstance());
+//                } catch (Exception ex) {
+//                    //Logger.getLogger(SimAlgorithmFactory.class.getName()).log(Level.WARNING, "** Cannot initialize NLP helper, WordNet similarity algorithms are disabled!**");
+//                }
+//                return null;
             case ch:
             //integrate the old algorithm
             //return new ClassHieararchy(alg);
@@ -65,7 +63,7 @@ public class SimAlgorithmFactory {
      * @return
      */
     public static ISimAlgorithm createCombined(String algs, boolean defWeights) {
-        return createCombined(ApproximateStrategy.getAlgrithmList(algs), defWeights);
+        return createCombined(ApproximateStrategy.getAlgorithmList(algs), defWeights);
     }
 
     /**

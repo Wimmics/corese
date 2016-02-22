@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.approximate.strategy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,12 +24,12 @@ public enum StrategyType {
     //literal
     LITERAL_WN, 
     LITERAL_LEX; 
-    
+        
     /**
      * Return all values
      * @return 
      */
     public static List<StrategyType> allValues() {
         return Arrays.asList(StrategyType.values());
-    }
+    }   
 }

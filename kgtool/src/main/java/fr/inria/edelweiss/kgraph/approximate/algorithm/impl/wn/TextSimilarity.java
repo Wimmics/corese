@@ -11,6 +11,8 @@ import static fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.NLPHelper.
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.StringMetrics.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Text Similarity
@@ -25,6 +27,17 @@ public class TextSimilarity extends BaseAlgorithm {
 
     public TextSimilarity(NLPHelper nlp) {
         this(nlp, Type.valueOf(DEF_STRING_METRIC));
+    }
+    
+    public static TextSimilarity create() {
+        NLPHelper nl = null;
+        try {
+            nl = NLPHelper.createInstance();
+        } catch (Exception ex) {           
+            Logger.getLogger(TextSimilarity.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+       return new TextSimilarity(nl, Type.valueOf(DEF_STRING_METRIC));
     }
 
     public TextSimilarity(NLPHelper nlp, Type sm) {

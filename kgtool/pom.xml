@@ -125,14 +125,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>edu.sussex.nlp</groupId>
-            <artifactId>jws</artifactId>
-            <version>11</version>
-        </dependency>
-        <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-parser</artifactId>
             <version>3.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.sussex.nlp</groupId>
+            <artifactId>jws</artifactId>
+            <version>11</version>
+	    <optional>true</optional>
         </dependency>
     </dependencies>
 

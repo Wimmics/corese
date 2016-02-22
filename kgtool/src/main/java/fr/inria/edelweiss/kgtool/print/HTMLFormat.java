@@ -7,7 +7,6 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.MappingsGraph;
-import fr.inria.edelweiss.kgtool.util.MappingsProcess;
 
 /**
  * Apply HTML Transformation on Mappings or on Graph :

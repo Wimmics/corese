@@ -39,7 +39,7 @@ public class Approx {
                      + "[] rdfs:label 'the cat is on the mat' "
                     + "}"; 
              
-             String q = "@relax @debug " +
+             String q = //"@relax @debug " +
                       "select  *"
                      + " (sim() as ?s) "
                      + "where {"
@@ -47,39 +47,38 @@ public class Approx {
                      + "?x rdfs:label 'Jon' "
                      + "}"
                      + "order by desc(?s)";
-                     
-                     String q2 = 
-                             "prefix h: <http://www.inria.fr/2007/09/11/humans.rdfs#>\n" +
-"@relax @debug\n" +
-"select *  where {\n" +
-"  ?x  h:name \"Jon\"\n" +
-"}\n" +
-"order by desc(sim())";
-                     
-// +"pragma {kg:approximate kg:strategy "
-//+ "'URI_LEX', 'URI_EQUALITY', 'PROPERTY_EQUALITY', 'LITERAL_LEX' }"
-                     ;                    
+             
+           // +"pragma {kg:approximate kg:strategy "
+//                             + "'URI_LEX',  "
+//                             + "'LITERAL_LEX' "
+//                             + "}"
+                             
+                             ;
+                                         
                      
 //                     + "pragma {"
 //                     + "kg:approximate kg:strategy  "
-//                     + "'URI', "
-//                     + "'PROPERTY_EQUALITY', "
-//                     + "'URI_EQUALITY', "
-//                     + "'CLASS_HIERARCHY', "
-//                     + "'LITERAL_WN', "
+//                     + "'URI_LEX', "
+////                     + "'PROPERTY_EQUALITY', "
+////                     + "'URI_EQUALITY' "
+////                     + "'CLASS_HIERARCHY', "
+////                     + "'LITERAL_WN', "
 //                     + "'LITERAL_LEX' "
-//                     + ";"     
-//                    + " kg:algorithm 'jw', 'ng', 'ch', 'wn', 'eq' . " 
-//                     + "}"
-                    
-                    
+////                     + ";"     
+////                    + " kg:algorithm 'jw', 'ng', 'ch', 'wn', 'eq' . " 
+//                     + "}" ;  
                      
-             
-            // exec.addVisitor(new ASTRewriter());
-             
+                     String q2 =
+                   "prefix h: <http://www.inria.fr/2007/09/11/humans.rdfs#>"
+                   + "@relax   xsd:anyURI  "
+                   + "select * (sim() as ?s)  where {"
+                   + "  {us:Jon  h:name 12} union { us:Jim rdfs:label 'Jimmy' }"
+                   + "}"
+                   + "order by desc(sim()) " ;
+            
                      Load ld = Load.create(g);
                      ld.loadWE("/home/corby/Cours/2016/done/tp/human_2013.rdf");
-            // exec.query(i);
+             exec.query(i);
              
              Mappings map = exec.query(q2);
              System.out.println(map.getQuery().getAST());

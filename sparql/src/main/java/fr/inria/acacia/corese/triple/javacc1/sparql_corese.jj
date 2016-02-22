@@ -2542,18 +2542,31 @@ Function Function(Metadata la) :
 
 Metadata Annotate() : {Token t; Metadata list = null; String s; }
 {
-    (
+    ( { s = null; }
+
+      (
         ((t = <ATEXPORT> | t = <ATPUBLIC> | t = <ATTRACE> | t = <ATDEBUG> | t = <ATTEST> 
-        | t = <ATRELAX>  | t = <ATMORE>   | t = <ATIMPORT> )
+        | t = <ATMORE>   | t = <ATIMPORT> )
+
         { if (list == null) { list = new Metadata();}
            list.add(t.image);
-        }
+        })
         |
-        (t = <ATSERVICE> s = Q_IRI_ref() 
+         (t = <ATRELAX> 
+            {if (list == null) { list = new Metadata(); } ; list.add(t.image); }
+            (  
+                (<STAR> { list.add(t.image, "*");}) 
+                | 
+                ((s = IRIref() { list.add(t.image, s); } ) *)   
+            )
+         )
+        |
+        (t = <ATSERVICE> s = IRIref() 
             { if (list == null) { list = new Metadata();}
                list.add(t.image, s);
-            })
+            }
         )
+      )
     )*
  
     { return list; }

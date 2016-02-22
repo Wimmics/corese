@@ -90,6 +90,10 @@ public class Constant extends Atom {
 	public static Constant create(int n){
 		return new Constant(Integer.toString(n), RDFS.xsdinteger);
 	}
+        
+        public static Constant create(double d){
+		return new Constant(Double.toString(d), RDFS.xsddouble);
+	}
 	
 	public static Constant create(boolean b){
 		return new Constant((b)?"true":"false", RDFS.xsdboolean);

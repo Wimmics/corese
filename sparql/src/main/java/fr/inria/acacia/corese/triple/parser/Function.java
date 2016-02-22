@@ -72,13 +72,13 @@ public class Function extends Statement {
     
  
     
-    String getMetadata(String name){
-        if (annot == null){
-            return null;
-        }
-        return annot.get(name);
-    }
-    
+//    String getMetadata(String name){
+//        if (annot == null){
+//            return null;
+//        }
+//        return annot.get(name);
+//    }
+//    
     void annotate(String a) {
         switch (annot.type(a)) {
 

@@ -1072,7 +1072,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
                     setDebug(true);
                     break;
                 case Metadata.SERVICE:
-                    defService(meta.get(m));
+                    defService(meta.getValue(m));
                     break;
             }
 

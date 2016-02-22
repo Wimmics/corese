@@ -3,6 +3,7 @@ package fr.inria.acacia.corese.triple.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -20,14 +21,15 @@ public class Metadata implements Iterable<String> {
     public static final int IMPORT = 4;
     
     // Query
-    static final int RELAX   = 11;
+    public static final int RELAX   = 11;
     static final int MORE    = 12;
-    static final int SERVICE = 13;
+    public static final int SERVICE = 13;
     
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 
     
     HashMap<String, String> map;
+    HashMap<String, List<String>> value;
     
     
      static {
@@ -54,7 +56,8 @@ public class Metadata implements Iterable<String> {
     }
     
     public Metadata(){
-        map = new HashMap<String, String>();
+        map   = new HashMap<String, String>();
+        value = new HashMap();               
     }
     
     public String toString(){
@@ -63,8 +66,11 @@ public class Metadata implements Iterable<String> {
         sb.append(NL);
         for (String m : this){
             sb.append(m);
-            sb.append(" : ");
-            sb.append(get(m));
+            List<String> list = getValues(m);
+            if (list != null && ! list.isEmpty()){
+                sb.append(" : ");
+                sb.append(getValues(m));
+            }
             sb.append(NL);
         }
         return sb.toString();
@@ -74,8 +80,17 @@ public class Metadata implements Iterable<String> {
         map.put(str, str);
     }
     
-    public void add(String name, String str){
-       map.put(name, str);
+    public void add(String name, String val){
+       //map.put(name, val);
+       add(name);
+       List<String> list = value.get(name);
+       if (list == null){
+           list = new ArrayList<String>();
+           value.put(name, list);
+       }
+       if (! list.contains(val)){
+           list.add(val);
+       }
     }
     
     public boolean hasMetadata(int type){
@@ -83,14 +98,22 @@ public class Metadata implements Iterable<String> {
         if (str == null){
             return false;
         }
-        return map.containsKey(str);
+        return hasMetadata(str);
+    }
+    
+    public boolean hasMetadata(String name){
+       return map.containsKey(name); 
     }
     
     // add without overloading local
     void add(Metadata m){
-        for (String name : m.getMap().keySet()){
-            if (get(name) == null){
-                add(name, m.getMap().get(name));
+        for (String name : m){
+            if (! hasMetadata(name)){
+                //add(name, m.getMap().get(name));
+                add(name);
+                if (m.value.containsKey(name)){
+                    value.put(name, m.getValues(name));
+                }
             }
         }
     }
@@ -99,8 +122,38 @@ public class Metadata implements Iterable<String> {
         return map;
     }
     
-    public String get(String name){
-        return map.get(name);
+//    public String get(String name){
+//        return map.get(name);
+//    }
+    
+    public String getValue(int type){
+        return getValue(back.get(type)); 
+    }
+    
+     public String getValue(String name){
+         if (name == null){
+             return null;
+         }
+        List<String> list = getValues(name);
+        if (list == null || list.isEmpty()){
+            return null;
+        }
+        return list.get(0);
+    }
+     
+      public List<String> getValues(int type){
+          return getValues(back.get(type));
+      }
+     
+      public List<String> getValues(String name){
+         if (name == null){
+             return null;
+         }
+         List<String> val = value.get(name);
+         if (val == null){
+             return null;
+         }
+         return val;
     }
     
     public Iterator<String> iterator(){

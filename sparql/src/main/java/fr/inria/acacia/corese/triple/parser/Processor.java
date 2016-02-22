@@ -576,7 +576,7 @@ public class Processor {
 		defoper(XT_SORT,        ExprType.XT_SORT);
                 
                 
-		defsysoper(FUNCALL,        ExprType.FUNCALL);                
+		defoper(FUNCALL,           ExprType.FUNCALL);                
 		defsysoper(EVAL,           ExprType.EVAL);                
 		defsysoper(APPLY,          ExprType.APPLY);
 		defsysoper(MAP,            ExprType.MAP);
@@ -825,9 +825,13 @@ public class Processor {
             define(key, value);
         }
         
-        static void defextoper(String key, int value){
+         static void defextoper(String key, int value){
+            defextoper(key, value, 2);
+        }
+         
+        static void defextoper(String key, int value, int arity){
             define(key, value);
-            defExtension(key, 2);
+            defExtension(key, arity);
         }
         
         static void defsysoper(String key, int value){
@@ -851,6 +855,7 @@ public class Processor {
             }
             Function fun = ast.defExtension(name, key, arity);
             fun.setPublic(true);
+            System.out.println(fun);
         }
         
         public static ASTQuery getAST(){

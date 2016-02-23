@@ -6,7 +6,7 @@ import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.CombinedAlgorithm;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.Equality;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.JaroWinkler;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.NGram;
-import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.TextSimilarity;
+//import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.TextSimilarity;
 import fr.inria.edelweiss.kgraph.approximate.strategy.Priority;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,8 +39,10 @@ public class SimAlgorithmFactory {
                 return new Equality();
             case jw:
                 return new JaroWinkler();
-            case wn:
-                return TextSimilarity.create();
+                // remove 2 lines comment:
+//            case wn:
+//                return TextSimilarity.create();
+                
 //                try {
 //                    return new TextSimilarity(NLPHelper.createInstance());
 //                } catch (Exception ex) {

@@ -11,5 +11,4 @@ template st:start {
   
 }
 where {
-#  filter kg:display(st:get(st:uri))
 }

@@ -24,8 +24,7 @@ format {
    
    st:call-template(st:form, 
      ?n,
-     coalesce(st:get(st:query), 
-     str(?q)), 
+     coalesce(st:get(st:query), str(?q)), 
      str(?q), 
      coalesce(?s, st:null)) 
      

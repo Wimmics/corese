@@ -124,7 +124,7 @@
             <version>2.10.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-parser</artifactId>
             <version>3.5.2</version>
@@ -134,7 +134,7 @@
             <artifactId>jws</artifactId>
             <version>11</version>
 	    <optional>true</optional>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

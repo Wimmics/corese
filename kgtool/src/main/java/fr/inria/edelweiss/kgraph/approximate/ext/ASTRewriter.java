@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.Option;
+import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
@@ -44,7 +45,7 @@ public class ASTRewriter implements QueryVisitor {
 
     final static int S = 1, P = 2, O = 3;
     private final static String VAR = "?_var_";
-    public final static String APPROXIMATE = "approximate";
+    public final static String APPROXIMATE = Processor.APPROXIMATE;
     private int countVar = 0;
     private ASTQuery ast;
     ApproximateStrategy strategy;
@@ -172,7 +173,8 @@ public class ASTRewriter implements QueryVisitor {
             }
         }
         else if (dt.isLiteral() && relaxLiteral){ 
-                if (dt.getDatatypeURI().equals(xsdstring)) {       
+                if (dt.getCode() == IDatatype.STRING ||
+                    dt.getCode() == IDatatype.LITERAL ){ //(dt.getDatatypeURI().equals(xsdstring) ) {       
                     add(lst, LITERAL_LEX);
 
                 //@lang=en ??

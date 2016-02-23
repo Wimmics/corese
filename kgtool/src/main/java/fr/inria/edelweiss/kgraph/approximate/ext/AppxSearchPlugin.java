@@ -1,9 +1,7 @@
 package fr.inria.edelweiss.kgraph.approximate.ext;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.CoreseNumber;
 import fr.inria.acacia.corese.cg.datatype.CoreseStringLiteral;
-import fr.inria.acacia.corese.cg.datatype.CoreseURI;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -12,7 +10,6 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.ISimAlgorithm;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.SimAlgorithmFactory;
-import fr.inria.edelweiss.kgraph.approximate.algorithm.Utils;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.Utils.format;
 import static fr.inria.edelweiss.kgraph.approximate.algorithm.Utils.msg;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
@@ -30,13 +27,6 @@ public class AppxSearchPlugin implements ExprType {
     static final IDatatype FALSE = PluginImpl.FALSE;
     private final PluginImpl plugin;
 
-    private IDatatype dt1, dt2;
-    private String s1, s2, algs;
-    private double threshold = 0;
-    private boolean isMore = true;
-    private String parameter;
-
-    //private boolean isCalculateSimilarity = true;
     public AppxSearchPlugin(PluginImpl p) {
         this.plugin = p;
     }
@@ -55,31 +45,23 @@ public class AppxSearchPlugin implements ExprType {
     }
 
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
+        IDatatype[] param = (IDatatype[]) args;
         switch (exp.oper()) {
+            
             case APPROXIMATE:
-                isMore = ((ASTQuery) env.getQuery().getAST()).isRelax();
                 msg("[Eval appx ... ]: " + exp);
                 //0. check parameters
-                boolean ok = init(args);
-                if (!ok) {
-                    return FALSE;
-                }
-
-                //is approximate search
-                //TRUE: only calculate once, does not compute the value of similarity
-                //FALSE: need to compute the value of similarity
-                if (isMore) {
-                    return this.approximate(env, exp);
-                } else {
-                    return this.match();
-                }
+                return eval(exp, env, param);
+                
             default:
                 return null;
         }
     }
 
     // Use approximate as a filter function
-    private IDatatype match() {
+    private IDatatype match(IDatatype dt1, IDatatype dt2, String parameter, String algs, double threshold) {
+        String s1 = stringValue(dt1);
+        String s2 = stringValue(dt2);    
         if (s1.equalsIgnoreCase(s2)) {
             return TRUE;
         }
@@ -88,10 +70,19 @@ public class AppxSearchPlugin implements ExprType {
 
         return (sim > threshold) ? TRUE : FALSE;
     }
+    
+    String stringValue(IDatatype dt){
+        if (dt.hasLang()){
+            return dt.stringValue().concat("@").concat(dt.getLang());
+        }
+        return dt.stringValue();
+    }
 
     // Use 'approximate' as appx search and calculate similarity
-    private IDatatype approximate(Environment env, Expr exp) {
+    private IDatatype approximate(IDatatype dt1, IDatatype dt2, String parameter, String algs, double threshold, Environment env, Expr exp) {
         //0. initialize
+        String s1 = stringValue(dt1);
+        String s2 = stringValue(dt2);   
         Expr var = exp.getExp(0);
         ApproximateSearchEnv appxEnv = env.getAppxSearchEnv();
 
@@ -102,7 +93,7 @@ public class AppxSearchPlugin implements ExprType {
 
         //1 calculation to get current similarity and overall similarity
         if (s1.equalsIgnoreCase(s2)) {
-            singleSim = ISimAlgorithm.MAX;
+            singleSim   = ISimAlgorithm.MAX;
             combinedSim = ISimAlgorithm.MAX;
         } else {
             if (notExisted) { //2.1.2 otherwise, re-calculate
@@ -122,56 +113,66 @@ public class AppxSearchPlugin implements ExprType {
         return filtered ? TRUE : FALSE;
     }
 
-    //Initlize arguments
-    //filter approximate(var1, var2, 'alg1-alg2-alg3', 0.2, true)
-    //args[0] = var 1
-    //args[1] = uri
-    //args[2] = alg list
-    //args[3] = threshold
-    //args[4] = false|true
-    private boolean init(Object[] args) {
-        parameter = null;
-        if (args == null || args.length != 4) {
-            return false;
+    
+    /** 
+     * filter approximate(var1, var2, 'alg1-alg2-alg3', 0.2, true)
+        args[0] = var 1
+        args[1] = uri
+        args[2] = alg list
+        args[3] = threshold
+        args[4] = false|true.
+    */
+    private IDatatype eval(Expr exp, Environment env, IDatatype[] args) {
+        if (args.length != 4) {
+            return FALSE;
         }
 
-        dt1 = (IDatatype) (args[0]);
-        dt2 = (IDatatype) (args[1]);
-
-        //1 get strings
+        IDatatype dt1 = args[0];
+        IDatatype dt2 = args[1];
+        if (dt1.stringValue() == null || dt2.stringValue() == null) {
+            return null;
+        }
         //IF the types are different, then return FALSE directly
-        if (dt1.getCode() != dt2.getCode()) {
-            return false;
+        boolean match = match(dt1.getCode(), dt2.getCode());
+        if (! match){
+            return FALSE;
         }
 
-        if (!(args[2] instanceof CoreseStringLiteral)) {
-            return false;
+        if (!(args[2] instanceof CoreseStringLiteral)
+                || !args[3].isNumber()) {
+            return FALSE;
         }
 
-        algs = ((CoreseStringLiteral) args[2]).getStringValue();
+        String algs = args[2].stringValue();
+        double threshold = args[3].doubleValue();
 
-        if (!(args[3] instanceof CoreseNumber)) {
-            return false;
-        }
-
-        threshold = ((CoreseNumber) args[3]).doubleValue();
-
-        if (dt1 instanceof CoreseURI) {
-            s1 = dt1.getLabel();
-            s2 = dt2.getLabel();
+        String parameter = null;
+        if (dt1.isURI()) {
             parameter = BaseAlgorithm.OPTION_URI;
-        } else if (dt1 instanceof CoreseStringLiteral) {
-            s1 = ((CoreseStringLiteral) dt1).getStringValue();
-            s2 = ((CoreseStringLiteral) dt2).getStringValue();
+        }
+
+        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        //is approximate search
+        //TRUE: only calculate once, does not compute the value of similarity
+        //FALSE: need to compute the value of similarity
+        if (ast.isRelax()) {
+            return this.approximate(dt1, dt2, parameter, algs, threshold, env, exp);
         } else {
-            s1 = dt1.getLabel();
-            s2 = dt2.getLabel();
+            return this.match(dt1, dt2, parameter, algs, threshold);
         }
 
-        if (s1 == null || s2 == null) {
-            return false;
-        }
-
-        return true;
     }
+    
+    boolean match(int c1, int c2){
+        if (c1 == c2){
+            return true;
+        }
+        if ((c1 == IDatatype.STRING && c2 == IDatatype.LITERAL) ||
+            (c2 == IDatatype.STRING && c1 == IDatatype.LITERAL)){
+            return true;
+        }
+        
+        return false;
+    }
+  
 }

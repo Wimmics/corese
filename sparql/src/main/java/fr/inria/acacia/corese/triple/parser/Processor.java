@@ -55,7 +55,7 @@ public class Processor {
 	private static final String ISNUMERIC = "isNumeric";
 	private static final String LANG = "lang";
 	private static final String REGEX = "regex";
-        private static final String APPROXIMATE = "approximate";
+        public static final String APPROXIMATE = "approximate";
         private static final String APP_SIM = "sim";
 	public static  final String MATCH = "match";
 	private static final String LANGMATCH = "langMatches";

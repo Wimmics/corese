@@ -154,7 +154,7 @@ public class RuleEngine implements Engine, Graphable {
         Load ld = Load.create(graph);
         ld.setEngine(this);
         InputStream stream = RuleEngine.class.getResourceAsStream(name);
-        ld.load(stream, Load.RULE_FORMAT);
+        ld.parse(stream, Load.RULE_FORMAT);
     }
       
     /**

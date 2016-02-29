@@ -38,7 +38,7 @@ public class ContextBuilder {
         this(Graph.create());
         Load ld = Load.create(graph);
         try {
-            ld.loadWE(path);
+            ld.parse(path);
         } catch (LoadException ex) {
             Logger.getLogger(ContextBuilder.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -205,7 +205,8 @@ public class Transformer  {
             if (n == null) {
                 gg = Graph.create();
                 Load load = Load.create(gg);
-                load.load(name, Load.TURTLE_FORMAT);
+                //load.load(name, Load.TURTLE_FORMAT);
+                load.parse(name, Load.TURTLE_FORMAT);                
             } 
             else {
                 gg = g;
@@ -251,7 +252,7 @@ public class Transformer  {
     public String transform(String uri) throws LoadException{
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        ld.loadWE(uri);
+        ld.parse(uri);
         set(g);
         return transform();
     }
@@ -263,7 +264,7 @@ public class Transformer  {
     public void transform(InputStream in, OutputStream out, int format) throws LoadException, IOException{
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        ld.load(in, format);
+        ld.parse(in, format);
         set(g);
         String str = transform();
         if (str != null){
@@ -1278,7 +1279,8 @@ public class Transformer  {
         Graph g = Graph.create();
         Load load = Load.create(g);
         try {
-            load.load(uri, Load.TURTLE_FORMAT);
+            //load.load(uri, Load.TURTLE_FORMAT);
+            load.parse(uri, Load.TURTLE_FORMAT);             
             g.init();
             exec.add(g);
         } catch (LoadException ex) {

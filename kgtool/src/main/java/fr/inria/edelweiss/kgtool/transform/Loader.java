@@ -124,7 +124,7 @@ public class Loader {
             // loaded from Corese resource
             name = nsm.strip(pp, STL);
         }  else {
-            ld.loadWE(pp);
+            ld.parseDirRec(pp);
             return;
         }           
         String src = PPLIB + name;

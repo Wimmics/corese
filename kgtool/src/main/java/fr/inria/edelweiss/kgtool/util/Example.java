@@ -63,7 +63,7 @@ public class Example {
 			System.out.println(f);
 			
 			// load a construct-where rule base
-			ld.loadWE(RULE);
+			ld.parse(RULE);
 			// get the rule engine
 			RuleEngine re = ld.getRuleEngine();
 			// perform entailment with inference rules

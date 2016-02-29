@@ -842,7 +842,7 @@ public class PluginImpl extends ProxyImpl {
         loader(g);
         IDatatype dt = (IDatatype) o;
         try {
-            ld.loadWE(dt.getLabel());
+            ld.parse(dt.getLabel());
         } catch (LoadException e) {
             logger.error(e);
             return FALSE;

@@ -141,7 +141,7 @@ public class SPINProcess {
      public Graph toGraph(String spin, Graph g) throws EngineException {
         Load ld = Load.create(g);
         try {
-            ld.load(new ByteArrayInputStream(spin.getBytes("UTF-8")), Load.TURTLE_FORMAT);
+            ld.parse(new ByteArrayInputStream(spin.getBytes("UTF-8")), Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
             Logger.getLogger(SPINProcess.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedEncodingException ex) {

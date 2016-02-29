@@ -310,14 +310,14 @@ public class ManagerImpl implements Manager {
         }
         if (ope.isSilent()) {
             try {
-                load.loadWE(uri, src);
+                load.parse(uri, src);
             } catch (LoadException ex) {
                 logger.error(ex);
             }
             graph.logFinish(q);
         } else {
             try {
-                load.loadWE(uri, src);
+                load.parse(uri, src);
                 graph.logFinish(q);
             } catch (LoadException e) {
                 
@@ -327,7 +327,8 @@ public class ManagerImpl implements Manager {
                         && e.getException() != null
                         && e.getException().getMessage().contains("{E301}")) {
                     try {
-                        load.load(uri, src, src, Loader.TURTLE_FORMAT);
+                        //load.parse(uri, src, src, Loader.TURTLE_FORMAT);
+                        load.parse(uri, src, uri, Loader.TURTLE_FORMAT);
                     } catch (LoadException ex) {
                         error = true;
                     }

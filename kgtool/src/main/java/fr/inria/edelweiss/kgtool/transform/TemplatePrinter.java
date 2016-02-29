@@ -48,7 +48,7 @@ public class TemplatePrinter {
 	public StringBuilder process() throws IOException, LoadException {
 		Graph g = Graph.create();
 		Load ld = Load.create(g);
-		ld.loadWE(from);
+		ld.parseDirRec(from);
 		QueryEngine qe = ld.getQueryEngine();
                 if (qe == null){
                     throw new LoadException(new IOException("No templates"));

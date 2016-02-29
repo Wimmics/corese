@@ -245,7 +245,7 @@ public class Profile {
     GraphStore load(String path) throws IOException, LoadException {
         GraphStore g = GraphStore.create();
         Load load = Load.create(g);
-        load.load(path, Load.TURTLE_FORMAT);
+        load.parse(path, Load.TURTLE_FORMAT);
         return g;
     }
 

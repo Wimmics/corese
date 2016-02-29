@@ -155,7 +155,7 @@ public class Processor {
     GraphStore load(String uri, GraphStore g) throws LoadException {
         Load ld = Load.create(g);
         //ld.setLimit(100000);       
-        ld.loadWE(uri);
+        ld.parse(uri);
         return g;
     }
     

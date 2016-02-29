@@ -103,7 +103,8 @@ public class TripleStore {
         for (String f : load) {
             try {
                 logger.info("Load: " + f);
-                ld.loadWE(f, f, Load.TURTLE_FORMAT);
+                //ld.loadWE(f, f, Load.TURTLE_FORMAT);
+                ld.parse(f, Load.TURTLE_FORMAT);
             } catch (LoadException ex) {
                 java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -112,7 +113,7 @@ public class TripleStore {
     
     void load(String path, String src) throws LoadException{
         Load ld = Load.create(graph);
-        ld.loadWE(path, src, Load.TURTLE_FORMAT);
+        ld.parse(path, src, Load.TURTLE_FORMAT);
     }
     
     Mappings query(String query, Dataset ds) throws EngineException{

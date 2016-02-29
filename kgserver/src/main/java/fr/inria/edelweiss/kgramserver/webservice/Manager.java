@@ -122,10 +122,12 @@ public class Manager {
         Load ld = Load.create(g);
 
         for (Service.Doc d : s.getData()) {
-            ld.load(d.getUri(), d.getUri(), d.getName());
+            //ld.load(d.getUri(), d.getUri(), d.getName());
+            ld.parse(d.getUri(),  d.getName());
         }
         for (Service.Doc d : s.getSchema()) {
-            ld.load(d.getUri(), d.getUri(), d.getName());
+            //ld.load(d.getUri(), d.getUri(), d.getName());
+            ld.parse(d.getUri(),  d.getName());
         }
 
         if (s.getContext().size() > 0) {
@@ -134,7 +136,9 @@ public class Manager {
             Load lq = Load.create(gg);
 
             for (Service.Doc d : s.getContext()) {
-                lq.load(d.getUri(), d.getUri(), d.getName());
+                //lq.load(d.getUri(), d.getUri(), d.getName());
+                lq.parse(d.getUri(),  d.getName());
+                
             }
 
             init(gg);

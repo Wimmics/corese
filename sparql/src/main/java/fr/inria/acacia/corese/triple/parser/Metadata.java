@@ -24,6 +24,16 @@ public class Metadata implements Iterable<String> {
     public static final int RELAX   = 11;
     static final int MORE    = 12;
     public static final int SERVICE = 13;
+    public static final int DISPLAY = 14;
+    
+    static final String PREF = NSManager.KGRAM;
+    public static final String DISPLAY_TURTLE   = PREF + "turtle";
+    public static final String DISPLAY_JSON_LD  = PREF + "jsonld";
+    public static final String DISPLAY_RDF_XML  = PREF + "rdfxml";
+    
+    public static final String DISPLAY_JSON     = PREF + "json";
+    public static final String DISPLAY_XML      = PREF + "xml";
+    public static final String DISPLAY_RDF      = PREF + "rdf";
     
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 
@@ -48,6 +58,7 @@ public class Metadata implements Iterable<String> {
         define("@relax",    RELAX);      
         define("@service",  SERVICE);      
         define("@import",   IMPORT);      
+        define("@display",  DISPLAY);      
     }
     
     static void define(String str, int type){
@@ -75,7 +86,7 @@ public class Metadata implements Iterable<String> {
         }
         return sb.toString();
     }
-    
+       
     public void add(String str){
         map.put(str, str);
     }
@@ -91,6 +102,10 @@ public class Metadata implements Iterable<String> {
        if (! list.contains(val)){
            list.add(val);
        }
+    }
+    
+    public void add(String name, Constant val){
+        add(name, val.getLongName());
     }
     
     public boolean hasMetadata(int type){

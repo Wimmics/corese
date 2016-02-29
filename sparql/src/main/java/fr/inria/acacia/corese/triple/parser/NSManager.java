@@ -489,7 +489,7 @@ public class NSManager extends ASTObject {
         if (s == null) {
             baseURI = null;
         } else {
-             s = getBase(s);
+            s = getBase(s);
             base = s;
             try {
                 baseURI = new URI(s);

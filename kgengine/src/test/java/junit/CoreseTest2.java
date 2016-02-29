@@ -367,14 +367,14 @@ public class CoreseTest2 extends TestCase {
 		//graph.setOptimize(true);
 		
 		long t1 = new Date().getTime();
-		load.loadWE(data + "kgraph/rdf.rdf",  RDF.RDF);
-		load.loadWE(data + "kgraph/rdfs.rdf", RDFS.RDFS);
-		load.loadWE(data + "comma/comma.rdfs");
-		load.loadWE(data + "comma/commatest.rdfs");
-		load.loadWE(data + "comma/model.rdf");
-		load.loadWE(data + "comma/testrdf.rdf");
-		load.loadWE(data + "comma/data");
-		load.loadWE(data + "comma/data2");
+		load.parse(data + "kgraph/rdf.rdf",  RDF.RDF);
+		load.parse(data + "kgraph/rdfs.rdf", RDFS.RDFS);
+		load.parse(data + "comma/comma.rdfs");
+		load.parse(data + "comma/commatest.rdfs");
+		load.parse(data + "comma/model.rdf");
+		load.parse(data + "comma/testrdf.rdf");
+		load.parseDir(data + "comma/data");
+		load.parseDir(data + "comma/data2");
 		long t2 = new Date().getTime();
 		System.out.println((t2-t1) / 1000.0 + "s");
 		//System.out.println(graph);

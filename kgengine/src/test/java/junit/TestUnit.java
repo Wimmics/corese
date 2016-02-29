@@ -94,6 +94,7 @@ import fr.inria.edelweiss.kgram.core.Memory;
 //import fr.inria.edelweiss.kgram.core.*;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
+import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.core.Index;
@@ -108,6 +109,7 @@ import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.util.GraphStoreInit;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import fr.inria.edelweiss.kgtool.util.GraphUtil;
+import fr.inria.edelweiss.kgtool.util.MappingsGraph;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
 import java.io.File;
 import java.io.FileWriter;
@@ -172,13 +174,13 @@ public class TestUnit {
 
     static void init(Graph g) throws LoadException {
         Load ld = Load.create(g);
-        ld.loadWE(data + "kgraph/rdf.rdf", RDF.RDF);
-        ld.loadWE(data + "kgraph/rdfs.rdf", RDFS.RDFS);
-        ld.loadWE(data + "comma/comma.rdfs");
-        ld.loadWE(data + "comma/commatest.rdfs");
-        ld.loadWE(data + "comma/model.rdf");
+        ld.parse(data + "kgraph/rdf.rdf", RDF.RDF);
+        ld.parse(data + "kgraph/rdfs.rdf", RDFS.RDFS);
+        ld.parse(data + "comma/comma.rdfs");
+        ld.parse(data + "comma/commatest.rdfs");
+        ld.parse(data + "comma/model.rdf");
       //  ld.loadWE(data + "comma/testrdf.rdf");
-        ld.loadWE(data + "comma/data");
+        ld.parseDir(data + "comma/data");
        // ld.loadWE(data + "comma/data2");
         
     }
@@ -190,7 +192,7 @@ public class TestUnit {
 //        ld.loadWE(data + "template/spin/data");
 //        ld.loadWE(data + "template/sql/data");
 //        ld.loadWE(data + "work/owlrl");
-        ld.loadWE(data + "template/owl/data");
+        ld.parseDir(data + "template/owl/data");
 
     }
     
@@ -198,6 +200,140 @@ public class TestUnit {
       public static void main2(String[] args) throws EngineException{
           new TestUnit().testFib();
       }
+      
+     
+      public void testNSMaa() throws EngineException, IOException {
+         NSManager nsm = NSManager.create();
+         nsm.setBase("file:///home/corby/");
+         String str = nsm.toNamespaceB("/test.ttl");
+         System.out.println(str);
+     }
+      
+     
+    public void testIO() throws EngineException, IOException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        Load ld = Load.create(g);
+        ld.setDebug(true);
+        try {            
+            ld.parse(data + "junit/data/test.ttl");
+            ld.parse(data + "junit/data/test.ttl", "http://example.org/");
+            
+            ld.parse(data + "junit/data/test.rdf");
+            ld.parse(data + "junit/data/test.rdf", "http://example.org/");
+            
+            ld.parse(data + "junit/data/test.xml", Load.RDFXML_FORMAT);
+            
+        } catch (LoadException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertEquals(5, g.size());
+        System.out.println(g.display());
+    }
+     
+     @Test
+    public void testPPSPIN() throws EngineException, LoadException {
+        Graph g = createGraph();
+        Load ld = Load.create(g);
+        //System.out.println("Load");
+        ld.parseDir(data + "template/spinhtml/data/");
+        QueryProcess exec = QueryProcess.create(g);
+
+        String t1 = "prefix f: <http://example.com/owl/families/> "
+                + "template  {  st:apply-templates-with(st:spin)}"
+                + "where {}";
+        
+        String t2 = "prefix f: <http://example.com/owl/families/> "
+                + "template  {  st:apply-templates-with('/home/corby/AAData/sttl/spin')}"
+                + "where {}";
+
+
+        Mappings map = exec.query(t1);
+        //assertEquals(3060, map.getTemplateResult().getLabel().length());
+         System.out.println(map.getTemplateStringResult());
+    }
+     
+     
+     
+     
+     
+     
+     
+    public void testIO2() throws EngineException, IOException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        Load ld = Load.create(g);
+        ld.setDebug(true);
+        try {
+            ld.parseDirRec(data + "junit", "http://example.org");                      
+        } catch (LoadException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //assertEquals(4, g.size());
+        System.out.println(g.display());
+    }
+      
+      
+    public void testLP() throws EngineException, IOException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        Load ld = Load.create(g);
+        ld.setDebug(true);
+        try {
+            ld.parse(NSManager.RDF);                      
+                        
+        } catch (LoadException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        System.out.println(g.display());
+    } 
+    
+    
+       
+    public void testIO3() throws EngineException, IOException, LoadException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        Load ld = Load.create(g);
+        
+        String test = "<John> rdfs:label 'John' ";
+        
+        ld.loadString(test, Load.TURTLE_FORMAT);
+        ld.loadString(test, "http://example.org/", Load.TURTLE_FORMAT);
+        ld.loadString(test, "http://example.org/path/", "http://example.org/source/", "http://example.org/base/", Load.TURTLE_FORMAT);
+        
+        //ld.loadResource("data/junit/data/test.ttl", Load.TURTLE_FORMAT);
+        
+        System.out.println(g.display());
+        
+       }
+      
+      
+    public void testRelax1() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        String i = "insert data { "
+                + "us:John foaf:name 'John'@en ; foaf:age 11 "
+                + "}";
+        exec.query(i);
+
+        String q = "@relax "
+                + "select * (sim() as ?s) where {"
+                + "us:John foaf:name 'Jon' ; foaf:age 11 "
+                + "}";
+
+        Mappings map = exec.query(q);
+        //assertEquals(1, map.size());
+        System.out.println(map);
+        System.out.println(map.size());
+        System.out.println(map.getQuery().getAST());
+    }
+       
       
          
        public void testSameas() throws EngineException{
@@ -226,9 +362,74 @@ public class TestUnit {
        
       
          
+          public void testUnnestGraph() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
+
+        String q = "prefix ex: <htp://example.org/>"
+                + "select ?s ?p ?o  where {"
+                + "bind (us:test() as ?g)"
+                + "values (?s ?p ?o) {unnest(?g)}"
+                + "graph ?g {?s ?p ?o}"
+                + "}"
+                + "function us:test(){"
+                + "let (?g = construct { us:John rdfs:label 'John', _:b2 } where {})"
+                + "{?g}"
+                + "}";
+        
+        Mappings map = exec.query(q);
+              System.out.println(map);
+             
+//        assertEquals(1, map.size());
+//        IDatatype dt = (IDatatype) map.getValue("?x");
+//        assertEquals(1, dt.intValue());
+    }
+          
+          
+          
+          
+          
+          public void testUnnestSelect() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+     
+
+        String q = "prefix ex: <htp://example.org/>"
+                + "select *  where {"
+                + "values (?x ?y ?path) {unnest(us:test())}"
+                + "graph ?path { ?a ?p ?b }"
+                + "}"
+                + "function us:test(){"
+                + "let (?m = select * where {"
+                + "bind (us:graph() as ?g)"
+                + "graph ?g {?x foaf:knows+ :: ?path  ?y}"
+                + "})"
+                + "{?m}"
+                + "}"
+                
+                +"function us:graph(){"
+                + "let (?g = construct  {"
+                + "us:John foaf:knows us:Jack "
+                + "us:Jack foaf:knows us:Jim} where {})"
+                + "{?g}"
+                + "}"
+                
+                ;
+        
+        Mappings map = exec.query(q);
+              System.out.println(map);
+        assertEquals(4, map.size());
+//        IDatatype dt = (IDatatype) map.getValue("?x");
+//        assertEquals(1, dt.intValue());
+    }
+          
+          
+          
     public void testUnnestNSM() throws EngineException {
         Graph g = GraphStore.create();
         QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
 
         String q = "prefix ex: <htp://example.org/>"
                 + "select *  where {"
@@ -242,40 +443,114 @@ public class TestUnit {
 
         Mappings map = exec.query(q);
              System.out.println(map);
-        assertEquals(1, map.size());
-        IDatatype p = (IDatatype) map.getValue("?p");
-        IDatatype n = (IDatatype) map.getValue("?n");
-        assertEquals("ex", p.stringValue());
-        assertEquals("htp://example.org/", n.stringValue());
+        
     }
+    
+    
+    
+       public void testEventCall() throws EngineException{
+           Graph g = GraphStore.create();                     
+           QueryProcess exec = QueryProcess.create(g);
+           String q = "select * where {"
+                   + "bind (st:set(st:test, 'test') as ?test) "
+                   + "values (?key ?val) { unnest(xt:context()) } "                   
+                   + "}"                                                                                    
+                   + "function xt:start(?q){ st:set(st:count, 0)  } " 
+                
+                   ;
+           
+           Mappings map = exec.query(q);
+           assertEquals(2, map.size());          
+           System.out.println(map);                   
+     }
+     
+       public void testGraphUnnestlsdhfshfl() throws EngineException{
+           Graph g = GraphStore.create();                     
+           QueryProcess exec = QueryProcess.create(g);
+           
+           String q = "select * where {"
+                   + "bind (us:graph() as ?g)"
+                   + "graph ?g {"
+                   + "?x ?p ?y "
+                   + "?y ?q ?z"
+                   + "}"
+                   + "}"
+                   
+                   
+                   +"function us:graph(){"
+                   + "let (?g = construct {?s ?p ?o} where {values (?s ?p ?o) {unnest(xt:query())}})"
+                   + "{?g}"
+                   + "}"
+                   
+                   + "function xt:produce(?q){"                  
+                   + "xt:query()"
+                   + "}"
+                   ;
+           
+           Mappings map = exec.query(q);
+           System.out.println(map);
+           
+     }
+    
          
-         @Test
+         
        public void testGraphUnnest() throws EngineException{
            Graph g = GraphStore.create();                     
            QueryProcess exec = QueryProcess.create(g);
            Graph g1 = Graph.create();                     
            QueryProcess exec1 = QueryProcess.create(g1);
                      
-           String i = "insert data { us:John rdfs:label 'John'}";
+           String i = "prefix ex: <htp://example.org/>"
+                   + "insert data { "
+                   + "us:John rdfs:label 'John'"
+                   + "ex:John rdfs:label 'John'"
+                   + "}";
                      
            String q = "prefix ex: <htp://example.org/>"
                    + "select * "
-                  // + "(for (?e in ?t) {xt:display(?e) } as ?b)  "
                    + "where {"
-                   + "?x ?p ?y optional {?x ?p ?p }"
-                   + "values ?t { unnest(xt:query()) }"
-                   + "values ?e { unnest(?t) }"
+                   + " filter us:check() "
+                  
+                   + "?x foaf:name ?y ; ?p ?z "
+                   
+                   + "filter mapany(us:test, ?x, st:prefix())"
+                  
                    + "}"
                  
-                   +"function xt:result(?q, ?m){"
-                  // + "for (?t in ?q){xt:display(?t)}"
+                   + "function us:check(){"
+                   + "let (?q = xt:query()){"
+                   + "for (?t in ?q){"
+                   + "let ((?s, ?p, ?o) = ?t){"
+                   + "if (isURI(?p) && not exists {?x ?p ?y}){"
+                   + "xt:display('Missing: ', ?t)}"
+                   + "}}}"
+                   + "}"
+                   
+                   + "function us:trace() {"
+                   + "for (?def in st:prefix()){"
+                   + "xt:display(?def)"
+                   + "}"
+                   + "}"
+                   
+                   +"function us:test(?uri, ?def){"
+                   + "xt:display(?def);"
+                   + "let ((?p, ?n) = ?def){"
+                   + "strstarts(?uri, ?n)"
+                   + "}"
                    + "}"
                                      
+                   ;
+           
+           String q2 = "prefix ex: <htp://example.org/>"
+                   +"select (us:test() as ?t) where {}"
+                   
+                   + "function us:test(){"
+                   + "maplist (rq:self, st:prefix())"
+                   + "}"
                    ;
                       
            exec.query(i);                           
            Mappings map = exec.query(q);           
-           assertEquals(6, map.size());
             System.out.println(map);
        } 
        
@@ -4488,23 +4763,7 @@ Enum std  Time: 1.05
         System.out.println(map.getQuery());
     }
 
-    public void testPPSPIN() throws EngineException, LoadException {
-        Graph g = Graph.create();
-        Load ld = Load.create(g);
-        //System.out.println("Load");
-        ld.loadWE(data + "template/spin/data/");
-        QueryProcess exec = QueryProcess.create(g);
-
-        String t1 = "prefix f: <http://example.com/owl/families/> "
-                + "template  {  st:apply-templates-with(st:spin) }"
-                + "where {}";
-
-        // t1 = "template { st:apply-templates-with('/home/corby/AData/work/test')}" + "where {}";
-
-        Mappings map = exec.query(t1);
-        System.out.println(map.getTemplateStringResult());
-
-    }
+   
 
     public void testerhgodhf() throws EngineException, IOException {
         GraphStore gs = GraphStore.create();

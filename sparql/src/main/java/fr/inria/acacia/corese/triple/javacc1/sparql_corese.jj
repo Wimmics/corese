@@ -2540,7 +2540,7 @@ Function Function(Metadata la) :
   { return term; }
 }
 
-Metadata Annotate() : {Token t; Metadata list = null; String s; }
+Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
 {
     ( { s = null; }
 
@@ -2557,11 +2557,12 @@ Metadata Annotate() : {Token t; Metadata list = null; String s; }
             (  
                 (<STAR> { list.add(t.image, "*");}) 
                 | 
-                ((s = IRIref() { list.add(t.image, s); } ) *)   
+                ((s = IRIrefConst() { list.add(t.image, s); } ) *)   
             )
          )
         |
-        (t = <ATSERVICE> s = IRIref() 
+        ((t = <ATSERVICE> | t = <ATDISPLAY>)
+         s = IRIrefConst() 
             { if (list == null) { list = new Metadata();}
                list.add(t.image, s);
             }
@@ -2827,6 +2828,7 @@ TOKEN:
 | <ATRELAX:  "@relax">
 | <ATTEST:   "@test">
 | <ATSERVICE:"@service">
+| <ATDISPLAY:"@display">
 | <ATIMPORT: "@import">
 | <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	
 | <#A2Z: ["a"-"z","A"-"Z"]>

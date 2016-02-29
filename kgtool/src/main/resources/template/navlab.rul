@@ -2,26 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 07 11:15:01 CET 2016
+Sun Feb 28 17:53:23 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-template st:save {
-
-  st:call-template(st:page)
-  
-}
-where {
-  bind (kg:write(st:get(st:file), st:atw(st:turtle)) as ?res)
-}
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[

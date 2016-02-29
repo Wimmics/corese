@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 07 11:15:00 CET 2016
+Sun Feb 28 17:53:23 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -325,8 +325,7 @@ format {
    
    st:call-template(st:form, 
      ?n,
-     coalesce(st:get(st:query), 
-     str(?q)), 
+     coalesce(st:get(st:query), str(?q)), 
      str(?q), 
      coalesce(?s, st:null)) 
      

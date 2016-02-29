@@ -43,8 +43,13 @@ public class QueryLoad {
     public static QueryLoad create(QueryEngine e) {
         return new QueryLoad(e);
     }
-        
+    
+    @Deprecated
     public void loadWE(String name) throws LoadException {
+        parse(name);
+    }
+        
+    public void parse(String name) throws LoadException {
         String q = readWE(name);
         if (q != null) {
             Query qq;
@@ -74,8 +79,14 @@ public class QueryLoad {
             }
         }
     }
-
+    
+    
+    @Deprecated
     public void load(Reader read) throws LoadException {
+        parse(read);
+    }
+
+    public void parse(Reader read) throws LoadException {
         try {
             String q = read(read);
             if (q != null) {

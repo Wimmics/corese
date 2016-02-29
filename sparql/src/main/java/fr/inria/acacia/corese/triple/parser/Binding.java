@@ -5,6 +5,8 @@
 
 package fr.inria.acacia.corese.triple.parser;
 
+import java.util.List;
+
 /**
  *
  * @author Olivier Corby, Wimmics Inria I3S, 2014
@@ -45,19 +47,41 @@ public class Binding extends Exp {
        return var;
    }
    
+   /*
+    * bind (exp as var)
+    * bind (exp as (v1, .. vn))
+    * */
     public boolean validate(ASTQuery ast, boolean exist) {
-        if (ast.isBound(var)) {
-            ast.addError("Scope error: " + var);
-            ast.setCorrect(false);
-            return false;
+        List<Variable> list = var.getVariableList();
+        
+        if (list == null || list.isEmpty()){
+            if (ast.isBound(var)) {
+                ast.addError("Scope error: " + var);
+                ast.setCorrect(false);
+                return false;
+            }
+            ast.bind(var);
+            ast.defSelect(var); 
         }
-        ast.bind(var);
-        ast.defSelect(var);
+        else {
+            boolean ok = true;
+            for (Variable v : list){
+                if (ast.isBound(v)) {
+                    ast.addError("Scope error: " + v);
+                    ast.setCorrect(false);
+                    ok = false;
+                }
+                ast.bind(v);
+                ast.defSelect(v); 
+            }
+            if (! ok){
+                return false;
+            }
+        }
       
         boolean b = exp.validate(ast);
         return b;
     }
 
-    
 
 }

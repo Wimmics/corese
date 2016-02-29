@@ -130,7 +130,7 @@ public class Pipe {
 		pipe = Graph.create(true);
 		Loader load = Load.create(pipe);
             try {
-                load.loadWE(name);
+                load.parse(name);
             } catch (LoadException ex) {
                 java.util.logging.Logger.getLogger(Pipe.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -233,7 +233,7 @@ public class Pipe {
 	
 	void pload(String name){
             try {
-                load.loadWE(name);
+                load.parse(name);
             } catch (LoadException ex) {
                 java.util.logging.Logger.getLogger(Pipe.class.getName()).log(Level.SEVERE, null, ex);
             }

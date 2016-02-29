@@ -50,7 +50,6 @@ import fr.inria.acacia.corese.gui.query.GraphEngine;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -69,7 +68,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-01-29";
+    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-02-24";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 

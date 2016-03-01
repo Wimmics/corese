@@ -1051,6 +1051,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public boolean hasMetadata(int type) {
         return annot != null && annot.hasMetadata(type);
     }
+    
+    public boolean hasMetadata(int type, String value) {
+        return annot != null && annot.hasValue(type, value);
+    }
 
     /**
      * SubQuery within function inherit function Metadata

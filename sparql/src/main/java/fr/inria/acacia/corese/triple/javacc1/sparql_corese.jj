@@ -2561,7 +2561,7 @@ Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
             )
          )
         |
-        ((t = <ATSERVICE> | t = <ATDISPLAY>)
+        ((t = <ATSERVICE> | t = <ATDISPLAY> | t = <ATBIND>)
          s = IRIrefConst() 
             { if (list == null) { list = new Metadata();}
                list.add(t.image, s);
@@ -2828,6 +2828,7 @@ TOKEN:
 | <ATRELAX:  "@relax">
 | <ATTEST:   "@test">
 | <ATSERVICE:"@service">
+| <ATBIND:   "@bind">
 | <ATDISPLAY:"@display">
 | <ATIMPORT: "@import">
 | <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	

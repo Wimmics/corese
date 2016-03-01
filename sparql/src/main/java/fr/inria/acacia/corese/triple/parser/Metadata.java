@@ -25,6 +25,7 @@ public class Metadata implements Iterable<String> {
     static final int MORE    = 12;
     public static final int SERVICE = 13;
     public static final int DISPLAY = 14;
+    public static final int BIND    = 15;
     
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -57,6 +58,7 @@ public class Metadata implements Iterable<String> {
         define("@more",     MORE);      
         define("@relax",    RELAX);      
         define("@service",  SERVICE);      
+        define("@bind",     BIND);      
         define("@import",   IMPORT);      
         define("@display",  DISPLAY);      
     }
@@ -143,6 +145,11 @@ public class Metadata implements Iterable<String> {
     
     public String getValue(int type){
         return getValue(back.get(type)); 
+    }
+    
+    public boolean hasValue(int meta, String value){
+        String str = getValue(meta);
+        return str != null && str.equals(value);
     }
     
      public String getValue(String name){

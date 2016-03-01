@@ -18,6 +18,7 @@ import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.LoadFormat;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_IMPORT;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_PROFILE;
 import java.io.IOException;
@@ -130,7 +131,7 @@ public class Loader {
         String src = PPLIB + name;
 
         if (!ld.isRule(src)) {
-            src = src + Load.RULE;                  
+            src = src + LoadFormat.RULE;                  
         }
         InputStream stream = getClass().getResourceAsStream(src);
         if (stream == null) {             

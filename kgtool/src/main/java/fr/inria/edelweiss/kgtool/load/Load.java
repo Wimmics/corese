@@ -60,29 +60,6 @@ public class Load
 
     private static Logger logger = Logger.getLogger(Load.class);
     private static int DEFAULT_FORMAT = RDFXML_FORMAT;
-    public static final String RULE = ".rul";
-    static final String BRULE = ".brul";
-    static final String IRULE = ".rl";
-    static final String[] RULES = {RULE, BRULE, IRULE};
-    static final String QUERY = ".rq";
-    static final String UPDATE = ".ru";
-    static final String[] QUERIES = {QUERY, UPDATE};
-    static final String TURTLE = ".ttl";
-    static final String NT = ".nt";
-    static final String N3 = ".n3";
-    static final String TRIG = ".trig";
-    static final String NQUADS = ".nq";
-    static final String HTML = ".html";
-    static final String XHTML = ".xhtml";
-    static final String SVG = ".svg";
-    static final String XML = ".xml";
-    static final String EXT_RDF = ".rdf";
-    static final String EXT_RDFS = ".rdfs";
-    static final String EXT_OWL = ".owl";
-    static final String[] EXT_RDFA = {HTML, XHTML, SVG, XML};
-    static final String[] RDF_XML = {EXT_RDF, EXT_RDFS, EXT_OWL};
-    static final String JSONLD = ".jsonld";
-    static final String[] SUFFIX = {EXT_RDF, EXT_RDFS, EXT_OWL, TURTLE, NT, N3, NQUADS, TRIG, RULE, BRULE, IRULE, QUERY, UPDATE, HTML, XHTML, SVG, XML, JSONLD};
     static final String HTTP = "http://";
     static final String FTP = "ftp://";
     static final String FILE = "file://";
@@ -218,92 +195,30 @@ public class Load
         return true;
     }
 
-    int getTypeFormat(String contentType, int format) {
-        if (contentType.startsWith("text/turtle")) {
-            return TURTLE_FORMAT;
-        }
-        if (contentType.startsWith("text/n3")) {
-            return NT_FORMAT;
-        }
-        if (contentType.startsWith("text/trig")) {
-            return TRIG_FORMAT;
-        }
-        if (contentType.startsWith("text/n-quads")) {
-            return NQUADS_FORMAT;
-        }
-        if (contentType.startsWith("application/rdf+xml")) {
-            return RDFXML_FORMAT;
-        }
-        if (contentType.startsWith("application/json")) {
-            return JSONLD_FORMAT;
-        }
-
-        return format;
-    }
+   int getTypeFormat(String contentType, int format) {
+       return LoadFormat.getTypeFormat(contentType, format);
+   }
 
     // UNDEF_FORMAT loaded as RDF/XML
     @Override
     public int getFormat(String path) {
         return getFormat(path, UNDEF_FORMAT);
     }
+    
+    boolean hasFormat(String path){
+        return getFormat(path) != UNDEF_FORMAT;
+    }
 
     public int getFormat(String path, int defaultFormat) {
         if (defaultFormat != UNDEF_FORMAT) {
             return defaultFormat;
         }
-        if (isRDFXML(path)) {
-            return RDFXML_FORMAT;
-        } else if (hasExtension(path, TURTLE)) {
-            return TURTLE_FORMAT;
-        } else if (hasExtension(path, NT) || hasExtension(path, N3)) {
-            return NT_FORMAT;
-        } else if (hasExtension(path, JSONLD)) {
-            return JSONLD_FORMAT;
-        } else if (isRDFa(path)) {
-            return RDFA_FORMAT;
-        } else if (isRule(path)) {
-            return RULE_FORMAT;
-        } else if (isQuery(path)) {
-            return QUERY_FORMAT;
-        } else if (hasExtension(path, TRIG)) {
-            return TRIG_FORMAT;
-        } else if (hasExtension(path, NQUADS)) {
-            return NQUADS_FORMAT;
-        }
-        return defaultFormat;
+        return LoadFormat.getFormat(path);
     }
-
-    private boolean hasExtension(String path, String ext) {
-        return path.toLowerCase().endsWith(ext);
-    }
-
-    //check the extension of file to see if the file conforms to RDFa format
-    private boolean hasExtension(String path, String[] list) {
-        String str = path.toLowerCase();
-        for (String s : list) {
-            if (str.endsWith(s)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isRDFa(String path) {
-        return hasExtension(path, EXT_RDFA);
-    }
-
-    private boolean isRDFXML(String path) {
-        return hasExtension(path, RDF_XML);
-    }
-
+       
     @Override
     public boolean isRule(String path) {
-        return hasExtension(path, RULES);
-    }
-
-    public boolean isQuery(String path) {
-        return hasExtension(path, QUERIES);
-
+        return getFormat(path) == RULE_FORMAT;
     }
 
     /**
@@ -344,7 +259,7 @@ public class Load
             path += File.separator;
             for (String f : file.list()) {
                 String pname = path + f;
-                if (suffix(f)) {                                      
+                if (hasFormat(f)) {                                      
                     parseDoc(pname, name);
                 }
                 else if (rec) {
@@ -696,7 +611,7 @@ public class Load
             engine = RuleEngine.create(graph);
         }
 
-        if (path.endsWith(IRULE)) {
+        if (path.endsWith(LoadFormat.IRULE)) {
             // individual rule
             QueryLoad ql = QueryLoad.create();
             String rule = ql.readWE(path);
@@ -734,14 +649,14 @@ public class Load
         load.parse(read);
     }
 
-    boolean suffix(String path) {
-        for (String suf : SUFFIX) {
-            if (path.endsWith(suf)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    boolean suffix(String path) {
+//        for (String suf : SUFFIX) {
+//            if (path.endsWith(suf)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     public void statement(AResource subj, AResource pred, ALiteral lit) {
@@ -875,7 +790,7 @@ public class Load
             path += File.separator;
             int i = 0;
             for (String f : file.list()) {
-                if (!suffix(f)) {
+                if (! hasFormat(f)){ //(!suffix(f)) {
                     continue;
                 }
                 if (i++ >= maxFile) {
@@ -909,7 +824,7 @@ public class Load
             path += File.separator;
             int i = 0;
             for (String f : file.list()) {
-                if (!suffix(f)) {
+                if (! hasFormat(f)){ //(!suffix(f)) {
                     continue;
                 }
                 if (i++ >= maxFile) {

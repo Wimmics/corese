@@ -11,7 +11,8 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
-construct   {
+@bind kg:filter
+construct  {
   ?uri a ?class .
   ?uri rdfs:label ?label ; rdfs:comment ?com .
   ?uri o:wikipedia ?pr ; o:dbpedia ?uri
@@ -28,7 +29,7 @@ construct   {
   
 }
 where {
-bind (st:set(st:bind, st:values) as ?tmp)
+#bind (st:set(st:bind, st:values) as ?tmp)
 bind (st:get(st:uri) as ?uri)
 bind (coalesce(st:get(st:lang), "fr") as ?lang)
 

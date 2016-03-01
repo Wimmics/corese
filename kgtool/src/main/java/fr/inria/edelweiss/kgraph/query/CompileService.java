@@ -8,6 +8,8 @@ import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Exp;
+import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Values;
@@ -22,6 +24,8 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 
 public class CompileService {
+    public static final String VALUES = NSManager.KGRAM + "values";
+    public static final String FILTER = NSManager.KGRAM + "filter";
 
     Provider provider;
     Group group;
@@ -71,14 +75,21 @@ public class CompileService {
 
     boolean isValues(Query q) {
         String str = getBind(q);
-        return str != null && str.equals(Context.STL_VALUES);
+        return (str != null && str.equals(Context.STL_VALUES)) ||
+                hasMetaData(q, VALUES);
     }
 
     boolean isFilter(Query q) {
         String str = getBind(q);
-        return str != null && str.equals(Context.STL_FILTER);
+        return (str != null && str.equals(Context.STL_FILTER)) ||
+                hasMetaData(q, FILTER);
     }
-
+    
+     boolean hasMetaData(Query q, String type) {
+         ASTQuery ast = (ASTQuery) q.getAST();
+         return ast.hasMetadata(Metadata.BIND, type);
+    }
+        
     public void prepare(Query q) {
         Query g = q.getGlobalQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
@@ -173,7 +184,8 @@ public class CompileService {
             ast.setSaveBody(ast.getBody());
         }
         BasicGraphPattern body = BasicGraphPattern.create();
-        if (values.getValues().size() > 0) {
+        if (values.getVariables().size() > 0 && 
+            values.getValues().size() > 0) {
             body.add(values);
         }
         for (Exp e : ast.getSaveBody()) {

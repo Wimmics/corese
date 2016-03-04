@@ -295,7 +295,10 @@ public interface ExprType {
         public static int XT_QUERY       = 429;
         public static int XT_AST         = 430;
         public static int XT_CONTEXT     = 431;
-      
+        public static int XT_METADATA    = 432;
+        public static int XT_FROM        = 433;
+        public static int XT_NAMED       = 434;
+     
         public static int SLICE       = 450;
         
 

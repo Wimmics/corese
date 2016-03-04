@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.query;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.eval.SQLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -88,6 +89,9 @@ public class Mapper {
                  
              case Pointerable.CONTEXT_POINTER:
                  return map(nodes, (Context) obj);
+                 
+              case Pointerable.METADATA_POINTER:
+                 return map(nodes, (Metadata) obj);    
         }
         
         return map(nodes, (Object) obj);
@@ -153,8 +157,12 @@ public class Mapper {
      
     Mappings map(List<Node> varList, Context c){
         return mapListOfList(varList, c.getList().getValues());
-    }  
-     
+    } 
+    
+    Mappings map(List<Node> varList, Metadata m){
+        return map(varList, m.getList().getValues());
+    } 
+    
     Mappings mapListOfList(List<Node> varList, List<IDatatype> listOfList){
         Mappings map =  new Mappings(); 
         int size = varList.size();

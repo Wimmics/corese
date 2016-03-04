@@ -84,6 +84,7 @@ public class Loader {
                 load(ld, pp);
             } catch (LoadException e) {
                 // TODO Auto-generated catch block
+                logger.error(e);
                 logger.error("Transformer Load Error: " + pp);
             }
 

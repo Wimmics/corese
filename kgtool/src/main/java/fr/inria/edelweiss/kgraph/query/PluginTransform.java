@@ -14,7 +14,6 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -619,7 +618,7 @@ public class PluginTransform implements ExprType {
     }
 
     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
-        Transformer t = getTransformer(env, p);
+        //Transformer t = getTransformer(env, p);
         IDatatype dt = get(exp, env, p, dt1);
         if (dt == null) {
             return FALSE;
@@ -746,7 +745,7 @@ public class PluginTransform implements ExprType {
         IDatatype dt = p.xsdLiteral(o);
         return dt;
     }
-
+    
     /**
      * @deprecated
      */

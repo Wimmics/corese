@@ -2815,8 +2815,8 @@ public class Graph extends GraphObject implements Graphable {
      * explicitely referenced as a subject or object Hence ?x :p* ?y does not
      * return graph nodes
      */
-    public Node addGraph(String name) {
-        return basicAddGraph(name);
+    public Node addGraph(String label) {
+        return basicAddGraph(label);
     }
 
     public Node addResource(String label) {

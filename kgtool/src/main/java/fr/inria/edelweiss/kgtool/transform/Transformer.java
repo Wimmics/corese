@@ -1109,6 +1109,14 @@ public class Transformer  {
     }
     
     /**
+     * if prefix exists, return qname, else return URI as is (without <>)
+     */
+    public IDatatype qnameURI(IDatatype dt) {
+        String uri = nsm.toPrefix(dt.getLabel(), true);
+        return DatatypeMap.newStringBuilder(uri);                 
+    }
+    
+    /**
      * Display a Literal with its ^^xsd:datatype
      * Use case: OWL 2 functional syntax
      */
@@ -1354,13 +1362,13 @@ public class Transformer  {
      * context contains service URI
      * 
      */
-    public void init(ASTQuery ast){
-//        Context c = ast.getContext();
-//        if (c != null){
-//            setContext(c);
-//        }
-        setNSM(ast.getNSM());
-    }
+//    public void init(ASTQuery ast){
+////        Context c = ast.getContext();
+////        if (c != null){
+////            setContext(c);
+////        }
+//        setNSM(ast.getNSM());
+//    }
     
     
    /**
@@ -1392,13 +1400,6 @@ public class Transformer  {
     
     void complete(Context ctx) {
         getContext().complete(ctx);
-//        IDatatype export = ctx.get(Context.STL_EXPORT);
-//        if (export != null && export.booleanValue()) {
-//            getContext().copy(ctx);
-//        } else {
-//            // dataset, protocol
-//            getContext().include(ctx);
-//        }
     }
     
     /**
@@ -1406,7 +1407,7 @@ public class Transformer  {
      */
     void complete(NSManager nsm){
         if (nsm.isUserDefine()){
-             this.nsm.complete(nsm);
+             getNSM().complete(nsm);
         }
     }
 

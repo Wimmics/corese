@@ -206,7 +206,7 @@ public class PluginImpl extends ProxyImpl {
                 return setObject(o, null);
 
             case QNAME:
-                return qname(o, env);
+                return qname(dt, env);
                 
             case PROVENANCE:
                 return provenance(exp, env, o);
@@ -878,8 +878,7 @@ public class PluginImpl extends ProxyImpl {
         }
     }
 
-    IDatatype qname(Object o, Environment env) {
-        IDatatype dt = (IDatatype) o;
+    IDatatype qname(IDatatype dt, Environment env) {
         if (!dt.isURI()) {
             return dt;
         }

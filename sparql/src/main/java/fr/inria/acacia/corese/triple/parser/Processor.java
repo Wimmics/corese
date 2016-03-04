@@ -107,7 +107,10 @@ public class Processor {
         private static final String XT_QUERY    = EXT + "query";
         private static final String XT_AST      = EXT + "ast";
         private static final String XT_CONTEXT  = EXT + "context";
+        private static final String XT_METADATA = EXT + "metadata";
         private static final String XT_PREFIX   = EXT + "prefix";        
+        private static final String XT_FROM     = EXT + "from";        
+        private static final String XT_NAMED    = EXT + "named";        
         private static final String XT_TRIPLE   = EXT + "triple";
         static public final String XT_MAIN      = EXT + "main";
         static public final String FUN_XT_MAIN  = EXT_PREF + "main";
@@ -615,8 +618,11 @@ public class Processor {
 		defoper(XT_QUERY,        ExprType.XT_QUERY);
 		defoper(XT_AST,          ExprType.XT_AST);
 		defoper(XT_CONTEXT,      ExprType.XT_CONTEXT);
+		defoper(XT_METADATA,     ExprType.XT_METADATA);
+		defoper(XT_FROM,         ExprType.XT_FROM);
+		defoper(XT_NAMED,        ExprType.XT_NAMED);
                 
-		defsysoper(REGEX, 		ExprType.REGEX);
+		defsysoper(REGEX, 	ExprType.REGEX);
                 defoper(APPROXIMATE,	ExprType.APPROXIMATE);
                 defoper(APP_SIM,	ExprType.APP_SIM);
 		defoper(DATATYPE, 	ExprType.DATATYPE);

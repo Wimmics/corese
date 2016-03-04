@@ -197,6 +197,7 @@ public class NSManager extends ASTObject {
 
         def.put(SPIN, SPIN_PREF);
         def.put(FOAF, FOAF_PREF);
+        def.put("http://dbpedia.org/ontology/", "dbo");
         
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);
@@ -209,7 +210,7 @@ public class NSManager extends ASTObject {
         def.put(USER, "us");
         def.put(ExpType.DT, "dt");
         def.put(CUSTOM, "cs");
-        def.put(SPARQL, SPARQL_PREF);
+        def.put(SPARQL, SPARQL_PREF);        
     }
 
     // add default namespaces

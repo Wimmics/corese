@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,19 +12,20 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-public class Metadata implements Iterable<String> {
+public class Metadata extends ASTObject 
+    implements Iterable<String> {
     static final String NL = System.getProperty("line.separator");
     static final int UNDEFINED  = -1;
     
-    static final int TEST   = 0;
-    static final int DEBUG  = 1;
-    static final int TRACE  = 2;
-    static final int PUBLIC = 3;
+    public static final int TEST   = 0;
+    public static final int DEBUG  = 1;
+    public static final int TRACE  = 2;
+    public static final int PUBLIC = 3;
     public static final int IMPORT = 4;
     
     // Query
     public static final int RELAX   = 11;
-    static final int MORE    = 12;
+    public static final int MORE    = 12;
     public static final int SERVICE = 13;
     public static final int DISPLAY = 14;
     public static final int BIND    = 15;
@@ -35,6 +38,10 @@ public class Metadata implements Iterable<String> {
     public static final String DISPLAY_JSON     = PREF + "json";
     public static final String DISPLAY_XML      = PREF + "xml";
     public static final String DISPLAY_RDF      = PREF + "rdf";
+    
+    public static final String RELAX_URI        = PREF + "uri";
+    public static final String RELAX_PROPERTY   = PREF + "property";
+    public static final String RELAX_LITERAL    = PREF + "literal";
     
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 
@@ -93,8 +100,23 @@ public class Metadata implements Iterable<String> {
         map.put(str, str);
     }
     
+    public Metadata add(int type){
+        String name = name(type);
+        if (name != null){
+            add(name);
+        }
+        return this;
+    }
+    
+    public Metadata add(int type, String value){
+        String name = name(type);
+        if (name != null){
+            add(name, value);
+        }
+        return  this;
+    }
+    
     public void add(String name, String val){
-       //map.put(name, val);
        add(name);
        List<String> list = value.get(name);
        if (list == null){
@@ -111,7 +133,7 @@ public class Metadata implements Iterable<String> {
     }
     
     public boolean hasMetadata(int type){
-        String str = back.get(type);
+        String str = name(type);
         if (str == null){
             return false;
         }
@@ -123,12 +145,11 @@ public class Metadata implements Iterable<String> {
     }
     
     // add without overloading local
-    void add(Metadata m){
+    public void add(Metadata m){
         for (String name : m){
             if (! hasMetadata(name)){
-                //add(name, m.getMap().get(name));
                 add(name);
-                if (m.value.containsKey(name)){
+                if (m.getValues(name) != null){
                     value.put(name, m.getValues(name));
                 }
             }
@@ -138,13 +159,9 @@ public class Metadata implements Iterable<String> {
     public HashMap<String, String> getMap(){
         return map;
     }
-    
-//    public String get(String name){
-//        return map.get(name);
-//    }
-    
+       
     public String getValue(int type){
-        return getValue(back.get(type)); 
+        return getValue(name(type)); 
     }
     
     public boolean hasValue(int meta, String value){
@@ -164,7 +181,7 @@ public class Metadata implements Iterable<String> {
     }
      
       public List<String> getValues(int type){
-          return getValues(back.get(type));
+          return getValues(name(type));
       }
      
       public List<String> getValues(String name){
@@ -182,12 +199,48 @@ public class Metadata implements Iterable<String> {
             return map.keySet().iterator();
     }
     
-    int type(String a){
-        Integer i = annotation.get(a);
+    int type(String name){
+        Integer i = annotation.get(name);
         if (i == null){
             i = UNDEFINED;
         }
         return i;
     }
+    
+    String name(int type){
+        return  back.get(type);       
+    }
+    
+    
+     @Override
+    public int pointerType() {
+        return METADATA_POINTER;
+    } 
+ 
+    /**
+     * 
+     * for ((?p, ?n) in st:prefix()){ }
+     */
+    @Override
+    public Iterable getLoop() {
+        return getList().getValues();
+    }
+    
+    
+    public IDatatype getList(){
+         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+         for (String key : map.keySet()){
+             IDatatype name = DatatypeMap.createLiteral(key);
+             list.add(name);
+         }
+         return DatatypeMap.createList(list);
+    }
+    
+    
+    
+    
+    
+    
+    
 
 }

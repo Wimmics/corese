@@ -228,7 +228,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     HashMap<String, Exp> pragma;
     HashMap<String, Exp> blank;
     HashMap<String, Variable> blankNode;
-    Metadata annot;
+    Metadata metadata;
     HashMap<String, Atom> dataBlank;
     NSManager nsm;
     ASTUpdate astu;
@@ -1037,23 +1037,37 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         t.annotate(la);
     }
 
-    public void setAnnotation(Metadata m) {
-        if (m != null) {
-            annot = m;
+    public void setMetadata(Metadata m) {
+         metadata = m;
+    }
+    
+    public void setAnnotation(Metadata m){
+         if (m != null) {
+            setMetadata(m);
             annotate(m);
         }
     }
+    
+     public void addMetadata(Metadata m){
+         if (metadata == null){
+            setMetadata(m);
+         }
+         else {
+             metadata.add(m);
+         }
+         annotate(metadata);
+    }
 
     public Metadata getMetadata() {
-        return annot;
+        return metadata;
     }
 
     public boolean hasMetadata(int type) {
-        return annot != null && annot.hasMetadata(type);
+        return metadata != null && metadata.hasMetadata(type);
     }
     
     public boolean hasMetadata(int type, String value) {
-        return annot != null && annot.hasValue(type, value);
+        return metadata != null && metadata.hasValue(type, value);
     }
 
     /**
@@ -1063,7 +1077,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         annotate(meta);
     }
 
-    void annotate(Metadata meta) {
+    public void annotate(Metadata meta) {
         for (String m : meta) {
             switch (meta.type(m)) {
                 case Metadata.MORE:
@@ -1139,8 +1153,18 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         Term t = createFunction(Processor.MATCH, lvar);
         return Term.create("=", t, exp);
     }
+    
+    public Term defineLoop(Variable var, ExpressionList lvar, 
+            Expression exp, Expression body, boolean isLoop){
+        if (lvar == null){
+            return (isLoop) ? defLoop(var, exp, body) : defFor(var, exp, body);
+        }
+        else {
+            return (isLoop) ? defLoop(lvar, exp, body) : defFor(lvar, exp, body);
+        }     
+    }
 
-    public Term loop(Variable var, Expression exp, Expression body) {
+    public Term defFor(Variable var, Expression exp, Expression body) {
         return new ForLoop(var, exp, body);
     }
 
@@ -1148,9 +1172,41 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      * for ((?s, ?p, ?o) in exp){body} -> for (?var in exp){ let ((?s, ?p, ?o) =
      * ?var){body}} }
      */
-    public Term loop(ExpressionList lvar, Expression exp, Expression body) {
+    public Term defFor(ExpressionList lvar, Expression exp, Expression body) {
         Variable var = new Variable(FOR_VAR + nbd++);
-        return loop(var, exp, let(defLet(lvar, var), body));
+        return defFor(var, exp, let(defLet(lvar, var), body));
+    }
+    
+    /*
+     * loop (var in exp) {body}
+     * ::=
+     * let (?list = xt:list()){
+     *   for (var in exp){
+     *     xt:add(?list, body)
+     *   }
+     *   apply(rq:concat, ?list)
+     * }
+     */
+    public Term defLoop(Variable var, Expression exp, Expression body) {
+        Variable list = new Variable("?_list_" + nbd++);
+        Expression let = defLet(list, createFunction(createQName("xt:list")));
+        Expression add = createFunction(createQName("xt:add"), list, body);
+        Expression loop = new ForLoop(var, exp, add);
+        Expression app  = 
+                createFunction(Constant.createResource("apply"), 
+                createQName("rq:concat"), list);
+        Expression stmt = createFunction(Constant.createResource("sequence"), 
+                loop, app);
+        return let(let, stmt);
+    }
+
+    /**
+     * loop ((?s, ?p, ?o) in exp){body} -> for (?var in exp){ let ((?s, ?p, ?o) =
+     * ?var){body}} }
+     */
+    public Term defLoop(ExpressionList lvar, Expression exp, Expression body) {
+        Variable var = new Variable(FOR_VAR + nbd++);
+        return defLoop(var, exp, let(defLet(lvar, var), body));
     }
 
     public void exportFunction(Expression def) {

@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgraph.approximate.ext;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import static fr.inria.acacia.corese.cg.datatype.RDF.xsdstring;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
@@ -82,13 +81,13 @@ public class ASTRewriter implements QueryVisitor {
         }
         for (String str : list){
             String name = str.toLowerCase();
-            if (name.contains("uri")  || name.contains("*")){
+            if (name.equals(Metadata.RELAX_URI)  || name.contains("*")){
                 relaxURI        = true;
             }
-            if (name.contains("property") || name.contains("predicate")|| name.contains("*")){
+            if (name.equals(Metadata.RELAX_PROPERTY) || name.contains("*")){
                 relaxProperty   = true;
             }
-            if (name.contains("literal")  || name.contains("*")){
+            if (name.equals(Metadata.RELAX_LITERAL) || name.contains("*")){
                 relaxLiteral    = true;
             } 
         }

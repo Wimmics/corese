@@ -225,7 +225,7 @@ public class Load
      * parse directory content
      */
     public void parseDir(String path) throws LoadException {
-        parseDir(path, null);
+        parseDir(path, null, false);
     }
            
     /**
@@ -234,19 +234,22 @@ public class Load
      * base is now the path (it used to be the name)
      */
     public void parseDir(String path, String name) throws LoadException {
-        parseDir(new File(path), path, name, false);
+        parseDir(path, name, false);
     }
         
     public void parseDirRec(String path) throws LoadException {
-        parseDirRec(path, null);
+        parseDir(path, null, true);
     } 
         
     public void parseDirRec(String path, String name) throws LoadException {
-        parseDir(new File(path), path, name,  true);
+        parseDir(path, name,  true);
     } 
+       
+    public void parseDir(String path, String name, boolean rec) throws LoadException {
+        parseDir(new File(path), path, name, rec);
+    }
     
-    
-    /**
+     /**
      * name is the named graph where to create triples 
      * if name = null name := path of each file
      * Difference with loadWE:

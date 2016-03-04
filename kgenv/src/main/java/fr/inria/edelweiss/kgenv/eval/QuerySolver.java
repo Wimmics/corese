@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
@@ -100,6 +101,7 @@ public class QuerySolver  implements SPARQLEngine {
 	String defaultBase;
 
 	private BasicGraphPattern pragma;
+        private Metadata metadata;
 	
 	static int count = 0;
 	
@@ -382,6 +384,7 @@ public class QuerySolver  implements SPARQLEngine {
             transformer.setGenerateMain(isGenerateMain());
             transformer.setNamespaces(NAMESPACES);
             transformer.setPragma(getPragma());
+            transformer.setMetadata(metadata);
             transformer.setPlanProfile(getPlanProfile());
             transformer.setUseBind(isUseBind());
         }
@@ -713,6 +716,24 @@ public class QuerySolver  implements SPARQLEngine {
      */
     public void setLoadFunction(boolean loadFunction) {
         this.loadFunction = loadFunction;
+    }
+
+    /**
+     * @return the metadata
+     */
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata to set
+     */
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
+    
+     public void set(Metadata metadata) {
+        this.metadata = metadata;
     }
 	
 }

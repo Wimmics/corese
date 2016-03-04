@@ -12,6 +12,8 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -314,6 +316,17 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_QUERY:
                 return DatatypeMap.createObject(env.getQuery());
+                
+            case XT_METADATA:
+                ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+                if (ast.getMetadata() == null){
+                    return null;
+                }
+                return DatatypeMap.createObject(ast.getMetadata());
+                
+            case XT_FROM:
+            case XT_NAMED:
+                return dataset(exp, env, p);
                 
             case XT_AST:
                 return DatatypeMap.createObject(env.getQuery().getAST());
@@ -1845,6 +1858,19 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         if (dt.isPointer()){
             return getValue(dt.getPointerObject().size());                    
+        }
+        return null;
+    }
+    
+    IDatatype dataset(Expr exp, Environment env, Producer p){
+        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        Dataset ds = ast.getDataset();
+        
+        switch (exp.oper()){
+            case XT_FROM:
+                return ds.getFromList();
+            case XT_NAMED:
+                return ds.getNamedList();
         }
         return null;
     }

@@ -71,6 +71,7 @@ public class Transformer implements ExpType {
     private boolean isLoadFunction = true;
 	String namespaces, base;
         private Dataset dataset;
+        private Metadata metadata;
 	BasicGraphPattern pragma;
         private int planner = Query.STD_PLAN;
         
@@ -114,6 +115,10 @@ public class Transformer implements ExpType {
                     dataset = ds;
 		}
 	}
+        
+        public void setMetadata(Metadata m){
+            metadata = m;
+        }
 	
 	public void set(Sorter s){
 		sort = s;
@@ -211,7 +216,9 @@ public class Transformer implements ExpType {
 	}
         
         void annotate(ASTQuery ast){
-            
+            if (metadata != null){
+               ast.addMetadata(metadata);
+            }
         }
         
         /**

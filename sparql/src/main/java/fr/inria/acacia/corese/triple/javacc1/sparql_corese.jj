@@ -2405,9 +2405,10 @@ Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
 
 
 Term For (Exp stack) : 
-{Exp sub; Term t; Expression exp, body ; Variable var; ExpressionList arg, el = null; }
+{boolean isLoop = false; Exp sub; Term t; Expression exp, body ; Variable var; ExpressionList arg, el = null; }
 {
-    <FOR> <LPAREN> 
+    (<FOR> | <LOOP> {isLoop = true;})
+    <LPAREN> 
 
         ( var = Var() 
         | 
@@ -2427,8 +2428,7 @@ Term For (Exp stack) :
     <RPAREN>   
     body = Body(stack)
     
-    { t = (el == null) ? astq.loop(var, exp, body) : astq.loop(el, exp, body); 
-      return t;}
+    { return  astq.defineLoop(var, el, exp, body, isLoop); }
 }
 
 
@@ -2545,14 +2545,14 @@ Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
     ( { s = null; }
 
       (
-        ((t = <ATEXPORT> | t = <ATPUBLIC> | t = <ATTRACE> | t = <ATDEBUG> | t = <ATTEST> 
+        ((t = <ATEXPORT> | t = <ATPUBLIC> | t = <ATTRACE> | t = <ATDEBUG> 
         | t = <ATMORE>   | t = <ATIMPORT> )
 
         { if (list == null) { list = new Metadata();}
            list.add(t.image);
         })
         |
-         (t = <ATRELAX> 
+         ((t = <ATRELAX> | t = <ATTEST>) 
             {if (list == null) { list = new Metadata(); } ; list.add(t.image); }
             (  
                 (<STAR> { list.add(t.image, "*");}) 
@@ -2900,6 +2900,7 @@ TOKEN [IGNORE_CASE] :
 | < LET: "let">
 | < SET: "set">
 | < FOR: "for">
+| < LOOP: "loop">
 | < IF: "if">
 | < THEN: "then">
 | < ELSE: "else">

@@ -198,6 +198,13 @@ implements Comparator<Mapping> , Iterable<Mapping>
             }
             return getQuery().getAST();
         }
+        
+      public Object getContext() {
+        if (getQuery() == null) {
+            return null;
+        }
+        return getQuery().getContext();
+    }
 	
 	public void setQuery(Query q){
 		query = q;

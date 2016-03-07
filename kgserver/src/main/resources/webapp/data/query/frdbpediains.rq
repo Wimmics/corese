@@ -29,7 +29,6 @@ insert   {
 }
 where {
 
-bind (st:set(st:bind, st:values) as ?tmp)
 bind (coalesce(st:get(st:lang), "fr") as ?lang)
 
 values ?uri { unnest(st:get(st:list)) }

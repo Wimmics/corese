@@ -1,10 +1,10 @@
 prefix o:   <http://dbpedia.org/ontology/>
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+@bind kg:values
 construct  { 
   ?x o:birthDate ?date ; rdfs:label ?l
 } 
 where {
-  bind (st:set(st:bind, st:values) as ?test)
 
   bind (st:get(st:uri) as ?uri)
   bind (st:set(st:year, xsd:integer(substr(?uri, strlen(st:) + 2))) as ?y)

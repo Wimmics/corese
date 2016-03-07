@@ -11,7 +11,7 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
-@bind kg:filter
+#@bind kg:filter
 construct  {
   ?uri a ?class .
   ?uri rdfs:label ?label ; rdfs:comment ?com .

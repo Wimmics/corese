@@ -23,7 +23,6 @@ construct debug  {
   
 }
 where {
-bind (st:set(st:bind, st:values) as ?tmp)
 bind (st:get(st:uri) as ?r)
 
 service <http://fr.dbpedia.org/sparql> {

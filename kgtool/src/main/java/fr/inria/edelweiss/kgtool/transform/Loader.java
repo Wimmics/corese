@@ -101,10 +101,12 @@ public class Loader {
 
             for (Query q : qe.getTemplates()) {
                 q.setPPrinter(pp, trans);
+                q.setTransformationTemplate(true);
             }
             
             for (Query q : qe.getNamedTemplates()) {
                 q.setPPrinter(pp, trans);
+                q.setTransformationTemplate(true);
             }
             
         }

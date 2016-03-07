@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Option;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
@@ -291,6 +292,10 @@ public class QueryProcess extends QuerySolver {
 	
 	public Mappings query(String squery, Dataset ds) throws EngineException{
 		return query(squery, null, ds);
+	}
+        
+        public Mappings query(String squery, Context c) throws EngineException{
+		return query(squery, null, Dataset.create(c));
 	}
 	
 	public Mappings query(String squery, Mapping map) throws EngineException{

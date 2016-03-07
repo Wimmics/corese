@@ -1328,17 +1328,17 @@ public class Transformer  {
         return pp;
     }
 
-    public IDatatype get(String name) {
-        return getContext().get(name);
-    }
-    
-    public void set(String name, IDatatype dt2){
-        getContext().set(name, dt2);
-    }
-    
-    public void export(String name, IDatatype dt2){
-        getContext().export(name, dt2);
-    }
+//    public IDatatype get(String name) {
+//        return getContext().get(name);
+//    }
+//    
+//    public void set(String name, IDatatype dt2){
+//        getContext().set(name, dt2);
+//    }
+//    
+//    public void export(String name, IDatatype dt2){
+//        getContext().export(name, dt2);
+//    }
     
     /**
      * @return the context
@@ -1353,54 +1353,43 @@ public class Transformer  {
     public void setContext(Context context) {
         this.context = context;
     }
-    
-    /**
-     * Inherit NSManager & context of query that called this Transformer
-     * Use case:
-     * query = template { st:atw(st:cdn) } where {}
-     * query is run by service
-     * context contains service URI
-     * 
-     */
-//    public void init(ASTQuery ast){
-////        Context c = ast.getContext();
-////        if (c != null){
-////            setContext(c);
-////        }
-//        setNSM(ast.getNSM());
-//    }
-    
-    
+          
    /**
-   * this new Transformer  inherit information from query and current transformer (if any)
-   */
+    * Query q is the calling query (or template)
+    * Transformer ct is current Transformer
+    * this new Transformer  inherit information from query and current transformer (if any)
+    */
     public void complete(Query q, Transformer ct) {             
-        if (ct == null) {
-            ASTQuery ast = (ASTQuery) q.getAST();
-            Context ctx = ast.getContext();          
-            if (ctx != null){
-                // inherit query context
-                setContext(ctx);
-            }
-        }
-        else {
-            setNSM(ct.getNSM());            
-            complete(ct.getContext());
+       ASTQuery ast = (ASTQuery) q.getAST();
+       Context c = getContext(q, ct);
+       if (c != null){
+           // inherit exported properties:
+           getContext().complete(c);
+       }
+       if (ct != null)  {
+            setNSM(ct.getNSM());   
             if (ct.getVisitor() != null){
                 setVisitor(ct.getVisitor());
             }
-        }
-        
-        
+        }              
         // query prefix overload ct transformer prefix
         // because query call this new transformer
-        ASTQuery ast = (ASTQuery) q.getAST();
         complete(ast.getNSM());
     }
     
-    void complete(Context ctx) {
-        getContext().complete(ctx);
+    Context getContext(Query q, Transformer ct) {
+        if (ct == null) {
+            // inherit query context
+            //setContext(ast.getContext());
+            // inherit all properties:
+            //getContext().copy(ast.getContext());
+            return (Context) q.getContext();
+
+        } else {
+            return ct.getContext();
+        }
     }
+       
     
     /**
      * Inherit prefix from Query

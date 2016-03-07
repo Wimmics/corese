@@ -61,6 +61,7 @@ public class CompileService {
         }
     }
 
+   @Deprecated
     String getBind(Query q) {
         Transformer t = (Transformer) q.getTransformer();
         if (t != null) {

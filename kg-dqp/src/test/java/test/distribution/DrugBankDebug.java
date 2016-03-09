@@ -63,7 +63,6 @@ public class DrugBankDebug {
     // The methods must be annotated with annotation @Test. For example:
 
     @Test
-    @Ignore
     public void drugBankQuery() throws EngineException, MalformedURLException, IOException {
         Graph graph = Graph.create();
         QueryProcess exec = QueryProcess.create(graph);

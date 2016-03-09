@@ -4,7 +4,9 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
@@ -366,9 +368,9 @@ public class PluginTransform implements ExprType {
         String transform = getTrans(uri, temp);
         
         // @deprecated:
-        if (transform == null && q.hasPragma(Pragma.TEMPLATE)) {
-            transform = (String) q.getPragma(Pragma.TEMPLATE);
-        }
+//        if (transform == null && q.hasPragma(Pragma.TEMPLATE)) {
+//            transform = (String) q.getPragma(Pragma.TEMPLATE);
+//        }
 
         Transformer t = (Transformer) q.getTransformer(transform);
 
@@ -420,13 +422,13 @@ public class PluginTransform implements ExprType {
     
 
     void complete(Query q, Transformer t, IDatatype uri) {
-        // set after init
-        //t.init((ASTQuery) q.getAST());
-        // TODO: uri vs transform ???
-        if (uri != null){
-            t.set(Transformer.STL_TRANSFORM, uri);
-        }
+//        if (uri != null){
+//            t.getContext().set(Transformer.STL_TRANSFORM, uri);
+//        }
         t.complete(q, (Transformer) q.getTransformer());
+        if (uri != null){
+            t.getContext().set(Transformer.STL_TRANSFORM, uri);
+        }
     }
 
     /**
@@ -466,8 +468,7 @@ public class PluginTransform implements ExprType {
     }
     
     IDatatype context(Environment env, Producer prod) {
-        Transformer p = getTransformer(env, prod);
-        return DatatypeMap.createObject(p.getContext());
+        return DatatypeMap.createObject(getContext(env, prod));
     }
     
     IDatatype isStart(Environment env, Producer prod) {
@@ -607,18 +608,44 @@ public class PluginTransform implements ExprType {
          return exp;        
      }
     
-  
+   Context getTransformerContext(Environment env, Producer p){
+       Transformer t = getTransformer(env, p);
+       return t.getContext();
+   }
+   
+   Context getQueryContext(Environment env, Producer p) {
+        Query q = env.getQuery().getGlobalQuery();
+        Context c = (Context) q.getContext(); 
+        if (c == null && ! q.isTransformationTemplate()){
+            //  std Query or Template alone
+            c = new Context();
+            q.setContext(c);
+        }
+        return c;
+   }
+ 
+   /**
+    * Transformation templates share Transformer Context
+    * Query and Template alone have own Context
+    */
+    Context getContext(Environment env, Producer p) {
+        Context c = getQueryContext(env, p);
+        if (c == null){
+            c = getTransformerContext(env, p);
+            env.getQuery().setContext(c);
+        }
+        return c;
+    }
+           
     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt) {
         return get(exp, env, p, dt.getLabel());
     }
 
     public IDatatype get(Expr exp, Environment env, Producer p, String name) {
-        Transformer t = getTransformer(env, p);
-        return t.get(name);
+        return getContext(env, p).get(name);
     }
 
     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
-        //Transformer t = getTransformer(env, p);
         IDatatype dt = get(exp, env, p, dt1);
         if (dt == null) {
             return FALSE;
@@ -631,16 +658,28 @@ public class PluginTransform implements ExprType {
         return plugin.getValue(index++);
     }
 
-    public Object set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
-        Transformer t = getTransformer(env, p);
+    /**
+     * st:set(st:value, st:test)
+     * st:export(st:value, st:test)
+     * Set/export context property value
+     * Exported is transmitted to query Transformer Context if any
+     * that is when query executes st:apply-templates-with(st:turtle)
+     * the turtle transformer inherits the exported context property value
+     * Special case with server: query and transformer share *same* context
+     * hence in server mode, when query st:set(), the property is transmitted to next Transformer
+     * use case: profile with query + transformation, q and t share *same* Context
+     * 
+     */
+     public Object set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        Context c = getContext(env, p);
         if (exp.oper() == STL_SET){
-          t.set(dt1.getLabel(), dt2);
+          c.set(dt1.getLabel(), dt2);
         }
         else {
-           t.export(dt1.getLabel(), dt2); 
+           c.export(dt1.getLabel(), dt2); 
         }
         return dt2;
-    }
+    }    
 
     public IDatatype vset(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
         Transformer t = getTransformer(env, p);

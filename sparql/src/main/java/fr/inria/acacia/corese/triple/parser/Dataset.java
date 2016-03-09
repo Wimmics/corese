@@ -28,9 +28,14 @@ public class Dataset extends ASTObject {
 	// Protocol is false
 	boolean isUpdate = false;
 	
-	Dataset(){
+	public Dataset(){
             this(new ArrayList<Constant>(), new ArrayList<Constant>());
 	}
+        
+        public Dataset(Context c){
+            this();
+            context = c;
+        }
 	
 	Dataset(List<Constant> f, List<Constant> n){
 		from = f;
@@ -39,6 +44,10 @@ public class Dataset extends ASTObject {
 	
 	public static Dataset create(){
 		return new Dataset();
+	}
+        
+        public static Dataset create(Context c){
+		return new Dataset(c);
 	}
 	
 	public static Dataset create(List<Constant> f, List<Constant> n){
@@ -71,7 +80,6 @@ public class Dataset extends ASTObject {
 
         return new Dataset(from, named);
         }
-        
 	
 	public String toString(){
 		String str = "";
@@ -200,7 +208,10 @@ public class Dataset extends ASTObject {
         this.context = context;
     }
     
-    
+    public Dataset set(Context c){
+        setContext(c);
+        return this;
+    }
     
     @Override
     public int pointerType() {

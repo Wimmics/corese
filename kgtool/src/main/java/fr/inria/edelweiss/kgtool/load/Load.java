@@ -42,7 +42,10 @@ import fr.inria.edelweiss.kgtool.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserLoaderSesame;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserTripleHandlerSesame;
 import java.io.ByteArrayInputStream;
+import java.io.FileFilter;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -259,7 +262,7 @@ public class Load
      */
     void parseDir(File file, String path, String name,  boolean rec) throws LoadException {
         if (file.isDirectory()) {
-            path += File.separator;
+            path += File.separator;           
             for (String f : file.list()) {
                 String pname = path + f;
                 if (hasFormat(f)) {                                      
@@ -276,6 +279,30 @@ public class Load
         else {           
             parseDoc(path, name);
         }
+    }
+    
+    
+    /**
+     * Load files according to filter extensions (use ExtensionFilter)
+     */
+    public void parse(File file, FileFilter ff, String name, boolean rec) throws LoadException {
+        if (file.isDirectory()) {
+            for (File f : file.listFiles(ff)) {                
+               if (! f.isDirectory()){
+                   parseDoc(f.getAbsolutePath(), name);
+               }       
+            }
+            if (rec){
+                for (File dir : file.listFiles()){
+                    if (dir.isDirectory()){
+                        parse(dir, ff, name,  rec);
+                    }
+                }
+            }              
+        } 
+        else if (ff.accept(file)){
+            parseDoc(file.getAbsolutePath(), name);
+        }       
     }
     
     boolean match(String path, int format){

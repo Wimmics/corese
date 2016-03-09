@@ -206,7 +206,9 @@ public class Transformer implements ExpType {
                 
 		Query q = compile(ast);
 		q.setRule(ast.isRule());
-		
+		if (ast.getContext() != null){
+                    q.setContext(ast.getContext());
+                }
 		template(q, ast);
 				
 		q = transform(q, ast);

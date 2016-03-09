@@ -213,6 +213,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
             defaultDataset,
             // from, from named, with
             dataset;
+    Context context;
     List<Atom> adescribe = new ArrayList<Atom>();
     List<Variable> stack = new ArrayList<Variable>(); // bound variables
     List<String> vinfo;
@@ -258,13 +259,17 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      */
     public void setDefaultDataset(Dataset defaultDataset) {
         this.defaultDataset = defaultDataset;
+        if (defaultDataset != null && defaultDataset.getContext() != null){
+            setContext(defaultDataset.getContext());
+        }
     }
 
     public Context getContext() {
-        if (defaultDataset == null) {
-            return null;
-        }
-        return defaultDataset.getContext();
+        return context;
+    }
+    
+    public void setContext(Context c){
+        context = c;
     }
 
     public boolean isUserQuery() {

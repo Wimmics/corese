@@ -90,6 +90,7 @@ public class Query extends Exp implements Graphable {
     Object object;
 
     private Object pprinter;
+    private Object context;
     HashMap<String, Object> tprinter;
     Compile compiler;
     private QuerySorter querySorter;
@@ -151,6 +152,7 @@ public class Query extends Exp implements Graphable {
     private boolean isSynchronized = false;
 
     private boolean isTemplate = false;
+    private boolean isTransformationTemplate = false;
 
     // member of a set of templates of a pprinter (not a single query that is a template)
     private boolean isPrinterTemplate = false;
@@ -2208,15 +2210,15 @@ public class Query extends Exp implements Graphable {
     }
 
     public Object getTransformer(String p) {
-        return getOuterQuery().getPPrinter(p);
+        return getGlobalQuery().getPPrinter(p);
     }
 
     public Object getTransformer() {
-        return getOuterQuery().getPPrinter(null);
+        return getGlobalQuery().getPPrinter(null);
     }
 
     public void setTransformer(String p, Object pprinter) {
-        getOuterQuery().setPPrinter(p, pprinter);
+        getGlobalQuery().setPPrinter(p, pprinter);
     }
 
     public Object getPPrinter(String p) {
@@ -2553,6 +2555,42 @@ public class Query extends Exp implements Graphable {
 
     public void setEdgeAndContext(HashMap<Edge, Exp> edgeAndContext) {
         this.edgeAndContext = edgeAndContext;
+    }
+
+    /**
+     * @return the Context
+     */
+    public Object getContext() {
+        if (query == null){
+            return context;
+        }
+        return query.getContext();
+    }
+
+    /**
+     * @param Context the Context to set
+     */
+    public void setContext(Object context) {
+        if (query == null){
+            this.context = context;
+        }
+        else {
+            query.setContext(context);
+        }
+    }
+
+    /**
+     * @return the isTransformationTemplate
+     */
+    public boolean isTransformationTemplate() {
+        return isTransformationTemplate;
+    }
+
+    /**
+     * @param isTransformationTemplate the isTransformationTemplate to set
+     */
+    public void setTransformationTemplate(boolean isTransformationTemplate) {
+        this.isTransformationTemplate = isTransformationTemplate;
     }
 	
 }

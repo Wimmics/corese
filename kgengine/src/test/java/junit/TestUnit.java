@@ -2993,7 +2993,7 @@ public class TestUnit {
         exec.query(init);
         Query q = exec.compile(qq);
         Transformer t = Transformer.create(g, Transformer.TURTLE);
-//        t.set(Context.STL_URI, DatatypeMap.newResource("John"));
+        t.getContext().set(Context.STL_URI, DatatypeMap.newResource("John"));
         q.setTransformer(null, t);
         Mappings map = exec.query(q);
         Node n = map.getNode("?z");

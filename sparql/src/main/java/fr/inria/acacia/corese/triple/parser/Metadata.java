@@ -29,6 +29,7 @@ public class Metadata extends ASTObject
     public static final int SERVICE = 13;
     public static final int DISPLAY = 14;
     public static final int BIND    = 15;
+    public static final int TYPE    = 16;
     
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -42,6 +43,9 @@ public class Metadata extends ASTObject
     public static final String RELAX_URI        = PREF + "uri";
     public static final String RELAX_PROPERTY   = PREF + "property";
     public static final String RELAX_LITERAL    = PREF + "literal";
+    
+    public static final String PROBE            = PREF + "probe";
+    
     
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 
@@ -68,6 +72,7 @@ public class Metadata extends ASTObject
         define("@bind",     BIND);      
         define("@import",   IMPORT);      
         define("@display",  DISPLAY);      
+        define("@type",     TYPE);      
     }
     
     static void define(String str, int type){

@@ -29,8 +29,9 @@ st:dbpedia a st:Profile ;
   st:param [ 
     st:lang "fr" ;
     st:import st:dbpediaParam, st:mapParam  ;
+    st:workflow ( <query/frdbpedia.rq> <query/frdbpediaclean.rq> )
   ] ;
-  st:query  <query/frdbpedia.rq> ;
+ # st:query  <query/frdbpedia.rq> ;
   st:transform  st:navlab .
 
   
@@ -46,13 +47,15 @@ st:dbpediadyn a st:Profile ;
   
 st:dbedit a st:Profile ;
   st:param [
-    st:uri <http://ns.inria.fr/sparql-template/date/09/2015>
+    st:uri <http://ns.inria.fr/sparql-template/date/09/2015> ;
+    # include &mode=st:get(st:mode) to hypertext link to server
+    # st:include (st:mode)
   ] ;
   st:transform st:dbedit .
   
 st:dbeditdyn a st:Profile ;
   st:param [
-    st:uri <http://ns.inria.fr/sparql-template/date/10/2015>
+    st:uri <http://ns.inria.fr/sparql-template/date/10/2015> 
   ] ;
   st:transform "/user/corby/home/AAData/sttl/dbedit" .
   
@@ -263,7 +266,15 @@ st:transform st:navlab .
 
 ###################################
 
-#st:default st:load <tutorial/human1.rdf> ,  <tutorial/human2.rdf> , <tutorial/pragma.ttl> .
+
+st:test a st:Server ;
+st:service "test" ;
+ st:data [ st:uri <primer.owl>  ; st:name st:data ] ;
+ st:param [ 
+  st:workflow (<query/owlrltest.rq>)
+ ] ;
+ st:transform st:hturtle
+ .
 
 st:ldp a st:Server ;
 st:service "ldp" ;

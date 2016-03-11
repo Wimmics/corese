@@ -7,13 +7,19 @@ package fr.inria.edelweiss.kgramserver.webservice;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import static fr.inria.edelweiss.kgramserver.webservice.Utility.toStringList;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
+import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.kgtool.workflow.WorkflowProcess;
+import java.io.IOException;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -44,6 +50,7 @@ public class Transformer {
     private static Profile mprofile;
     private static NSManager nsm;
     boolean isDebug, isDetail;
+    static boolean isTest = false;
 
     static {
         init();
@@ -153,27 +160,36 @@ public class Transformer {
 
             String squery = par.getQuery();
             
-            if (isDebug) {
-                System.out.println("query: \n" + squery);
+//            if (isDebug) {
+//                System.out.println("query: \n" + squery);
+//            }
+            
+            if (par.getParam() != null){
+                isTest = par.getParam().equals("true");
             }
-            // servlet context given to query process and transformation
-            Mappings map = null;
-
-            if (squery != null && store != null) {
-                Dataset ds = createDataset(par.getFrom(), par.getNamed(), ctx);
-                map = store.query(squery, ds);
-
-                if (isDetail) {
-                    System.out.println(map);
-                }
-                if (isDebug) {
-                    System.out.println("map: " + map.size());
-                }
+            
+            if (true){
+                complete(store.getGraph(), ctx);
+                Dataset ds = createDataset(par.getFrom(), par.getNamed());
+                String res = workflow(store.getGraph(), ds, ctx, squery, ctx.getTransform());
+                return Response.status(200).header(headerAccept, "*").entity(result(par, res)).build();               
             }
-
-            HTMLFormat ft = HTMLFormat.create(store.getGraph(), map, ctx);
-
-            return Response.status(200).header(headerAccept, "*").entity(result(par, ft)).build();
+            else {
+                Mappings map = null;
+                if (squery != null && store != null) {
+                    Dataset ds = createDataset(par.getFrom(), par.getNamed(), ctx);
+                    map = store.query(squery, ds);
+                    if (isDetail) {
+                        System.out.println(map);
+                    }
+                    if (isDebug) {
+                        System.out.println("map: " + map.size());
+                    }
+                }
+                HTMLFormat ft = HTMLFormat.create(store.getGraph(), map, ctx);
+                return Response.status(200).header(headerAccept, "*").entity(result(par, ft.toString())).build();
+            }
+            
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
@@ -186,15 +202,66 @@ public class Transformer {
         }
     }
     
+    String workflow(Graph g, Dataset ds, Context c, String q, String t){
+        WorkflowProcess w = createWorkflow(g, ds, c, q, t);
+        try {
+            Data data = w.process(new Data(g));
+            return data.stringValue();
+        } catch (EngineException ex) {
+            logger.error(ex);
+            return ex.toString();
+        }
+    }
+    
+    WorkflowProcess createWorkflow(Graph g, Dataset ds, Context c, String q, String t){
+        WorkflowProcess w = new WorkflowProcess();
+        w.setContext(c);
+        w.setDataset(ds);
+        w.setDebug(isTest);
+        if (c.get(Context.STL_WORKFLOW) != null){
+            workflow(w, c.get(Context.STL_WORKFLOW));
+        }
+        else if (q != null){
+            w.addQuery(q);
+        }
+        boolean isDefault = false;
+        if (t == null){
+            isDefault = true;
+            t = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
+            c.setTransform(t);
+        }
+        w.addTemplate(t, isDefault);
+        return w;
+    }
+    
+    void workflow(WorkflowProcess w, IDatatype list) {
+        try {
+            for (IDatatype dt : list.getValues()) {
+                String q = getProfile().loadQuery(dt.getLabel());
+                w.addQuery(q);
+            }
+        } catch (IOException ex) {
+            logger.error(ex);
+        }
+    }
+        
+    void complete(Graph graph, Context context) {
+        Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
+        if (cg != null) {
+            context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
+        }
+        context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
+    }
+    
     /**
      * Return transformation result as a HTML textarea
      * hence it is protected wrt img ...
      */
-    String protect(Param p, HTMLFormat ft){
+    String protect(Param p, String ft){
         fr.inria.edelweiss.kgtool.transform.Transformer t = 
             fr.inria.edelweiss.kgtool.transform.Transformer.create(RESULT);
         Context c = t.getContext();
-        c.set(RESULT, ft.toString());
+        c.set(RESULT, ft);
         c.set(LOAD, (p.getLoad() == null) ? "" : p.getLoad());
         c.setTransform((p.getTransform()== null) ? "" : p.getTransform());  
         complete(c, p);
@@ -202,11 +269,11 @@ public class Transformer {
         return res.stringValue();
     }
     
-    String result(Param p, HTMLFormat ft){
+    String result(Param p, String ft){
         if (p.isProtect()){
             return protect(p, ft);
         }
-        return ft.toString();
+        return ft;
     }
     
     String get(String name){

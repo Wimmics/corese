@@ -86,11 +86,13 @@ public class ProviderImplCostMonitoring implements Provider {
         this.provEnabled = provEnabled;
     }
 
+    @Override
     public void set(String uri, double version) {
         this.version.put(uri, version);
     }
 
     // everybody is 1.0 except localhost
+    @Override
     public boolean isSparql0(Node serv) {
         Double f = version.get(serv.getLabel());
         return (f == null || f == 1.0);
@@ -115,13 +117,20 @@ public class ProviderImplCostMonitoring implements Provider {
     }
 
     /**
-     * If there is a QueryProcess for this URI, use it Otherwise send query to
-     * spaql endpoint If endpoint fails, use default QueryProcess if it exists
+     * If there is a QueryProcess for this URI, use it.
+     * Otherwise send query to * sparql endpoint.
+     * If endpoint fails, use default QueryProcess if it exists
+     * @param serv serv.getLabel() contains the URI of the SPARQL endpoint.
+     * @param exp  SPARQL query to execute.
+     * @param env  @TBD
+     * @return The mappings obtained from applying the request.
      */
+    @Override
     public Mappings service(Node serv, Exp exp, Environment env) {
         return service(serv, exp, null, env);
     }
 
+    @Override
     public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
         Query q = exp.getQuery();
 

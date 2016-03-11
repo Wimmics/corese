@@ -149,7 +149,6 @@
                     <!--<forkMode>never</forkMode>-->
                     <argLine>-Xmx512m</argLine>
                     <testFailureIgnore>true</testFailureIgnore>
-                    <skip>true</skip>
                 </configuration>
                 <version>2.16</version>
             </plugin>

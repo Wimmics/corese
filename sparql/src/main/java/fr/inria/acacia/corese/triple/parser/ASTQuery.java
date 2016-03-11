@@ -235,7 +235,6 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     ASTUpdate astu;
     ASTTemplate atemp;
     
-    private Constant empty;
     private boolean renameBlankNode = true;
     private String groupSeparator = " ";
     private boolean isTemplate = false;

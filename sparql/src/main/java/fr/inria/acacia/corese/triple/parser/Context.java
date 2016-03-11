@@ -8,7 +8,9 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -43,10 +45,13 @@ public class Context extends ASTObject {
     public static final String STL_FILTER   = STL + "filter";
     public static final String STL_BIND     = STL + "bind";
     public static final String STL_MODE     = STL + "mode";
+    public static final String STL_CLEAN    = STL + "clean";
+    public static final String STL_WORKFLOW = STL + "workflow";
     
     HashMap<String, IDatatype> table;
     static  HashMap<String, Boolean> sexport;
     HashMap<String, Boolean> export;
+    NSManager nsm;
     
     private boolean userQuery = false;
    
@@ -63,15 +68,23 @@ public class Context extends ASTObject {
     }
 
     public String toString() {
+        if (nsm == null){
+            nsm = NSManager.create();
+        }
         StringBuilder sb = new StringBuilder();
-        for (String key : table.keySet()) {
-            sb.append(key);
+        String[] keys = new String[table.size()];
+        table.keySet().toArray(keys);
+        Arrays.sort(keys);
+        for (String key : keys) {
+            sb.append(nsm.toPrefix(key, true));
             sb.append(" : ");
             sb.append(table.get(key));
             sb.append(NL);
         }
         return sb.toString();
     }
+    
+    
     
     public Collection<String> keys(){
         return table.keySet();
@@ -138,10 +151,17 @@ public class Context extends ASTObject {
         return this;
     }
     
+     public Context setName(String name, IDatatype value) {
+        return set(NSManager.STL+name, value);
+    }
+    
     public Context export(String name, IDatatype value) {
         table.put(name, value);
         export.put(name, true);
         return this;
+    }
+    public Context exportName(String name, IDatatype value) {
+        return export(NSManager.STL+name, value);
     }
 
     public Context set(String name, String str) {
@@ -246,6 +266,10 @@ public class Context extends ASTObject {
 
     public IDatatype get(String name) {
         return table.get(name);
+    }
+    
+    public IDatatype getName(String name) {
+        return get(NSManager.STL+name);
     }
 
     public String stringValue(String name) {

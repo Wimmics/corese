@@ -100,8 +100,37 @@ public class Mapping
 	}
 	
 	public static Mapping create(Node[] qnodes, Node[] nodes){
+		return simpleCreate(qnodes, nodes);
+	}
+        
+        static Mapping simpleCreate(Node[] qnodes, Node[] nodes){
 		return new Mapping(qnodes, nodes);
 	}
+        
+       public static Mapping safeCreate(Node[] qnodes, Node[] nodes) {
+            for (Node node : nodes) {
+                if (node == null) {
+                    return cleanCreate(qnodes, nodes);
+                }
+            }
+            return simpleCreate(qnodes, nodes);
+       }
+       
+       
+        static Mapping cleanCreate(Node[] qnodes, Node[] nodes) {
+            ArrayList<Node> query = new ArrayList<Node>();
+            ArrayList<Node> value = new ArrayList<Node>();
+            int i = 0;
+            for (Node node : nodes) {
+                if (node != null) {
+                    query.add(qnodes[i]);
+                    value.add(nodes[i]);
+                }
+                i++;
+            }
+            return create(query, value);
+       }
+        
 	
 	public static Mapping create(Node qnode, Node node){
 		Node[] qnodes = new Node[1], 

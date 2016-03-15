@@ -56,7 +56,7 @@ public class QueryLoad {
             try {
                 qq = engine.defQuery(q);
             } catch (EngineException ex) {
-                throw LoadException.create(ex);
+                throw LoadException.create(ex).setPath(name);
             }
             if (qq != null) {
                 qq.setPragma(Pragma.FILE, name);
@@ -148,7 +148,7 @@ public class QueryLoad {
 
             query = read(fr);
         } catch (IOException ex) {
-            throw LoadException.create(ex);
+            throw LoadException.create(ex).setPath(name);
         }
         if (query == "") {
             return null;

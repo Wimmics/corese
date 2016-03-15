@@ -10,7 +10,6 @@ import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -47,6 +46,10 @@ public class Context extends ASTObject {
     public static final String STL_MODE     = STL + "mode";
     public static final String STL_CLEAN    = STL + "clean";
     public static final String STL_WORKFLOW = STL + "workflow";
+    public static final String STL_DEBUG    = STL + "debug";
+    public static final String STL_LOOP     = STL + "loop";
+    public static final String STL_INDEX    = STL + "index";
+    public static final String STL_TEST     = STL + "test";
     
     HashMap<String, IDatatype> table;
     static  HashMap<String, Boolean> sexport;
@@ -166,6 +169,16 @@ public class Context extends ASTObject {
 
     public Context set(String name, String str) {
         table.put(name, DatatypeMap.newInstance(str));
+        return this;
+    }
+    
+     public Context set(String name, int n) {
+        table.put(name, DatatypeMap.newInstance(n));
+        return this;
+    }
+     
+     public Context set(String name, boolean n) {
+        table.put(name, DatatypeMap.newInstance(n));
         return this;
     }
 

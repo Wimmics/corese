@@ -1625,11 +1625,23 @@ public class Graph extends GraphObject implements Graphable {
         if (node == null) {
             return null;
         }
+        return getValue(name, node);
+    }
+        
+    public IDatatype getValue(String name, Node node){
+       Node value = getNode(name, node);
+       if (value == null){
+           return null;
+       }
+       return (IDatatype) value.getValue();
+    }
+    
+    public Node getNode(String name, Node node){
         Edge edge = getEdge(name, node, 0);
         if (edge == null) {
             return null;
         }
-        return (IDatatype) edge.getNode(1).getValue();
+        return edge.getNode(1);
     }
 
     public Iterable<Node> getNodes(Node pred, Node node, int n) {
@@ -1755,7 +1767,7 @@ public class Graph extends GraphObject implements Graphable {
      *     
      */
     
-    IDatatype list(Node node){
+    public IDatatype list(Node node){
         ArrayList<IDatatype> list = reclist(node);
         if (list == null){
             return null;
@@ -1872,6 +1884,14 @@ public class Graph extends GraphObject implements Graphable {
             return EMPTY;
         }
         return getEdges(predicate);
+    }
+    
+    public Entity getEdge(String p){
+        Iterator<Entity> it = getEdges(p).iterator();
+        if (it.hasNext()){
+            return it.next();
+        }
+        return null;
     }
     
     public Iterable<Entity> getEdges(String p, Node n, int i) {

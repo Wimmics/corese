@@ -47,6 +47,9 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
 import fr.inria.acacia.corese.gui.query.Buffer;
 import fr.inria.acacia.corese.gui.query.GraphEngine;
+import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.kgtool.workflow.WorkflowParser;
+import fr.inria.corese.kgtool.workflow.WorkflowProcess;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -68,7 +71,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-02-24";
+    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-03-21";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés 
@@ -83,6 +86,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem loadRDFs;
     private JMenuItem loadQuery;
     private JMenuItem loadPipe;
+    private JMenuItem loadWorkflow;
     private JMenuItem loadRule;
     private JMenuItem loadStyle;
     private JMenuItem cpTransform;   
@@ -425,6 +429,9 @@ public class MainFrame extends JFrame implements ActionListener {
         loadRDF = new JMenuItem("3 - Load RDF");
         loadRDF.addActionListener(this);
         loadRDF.setToolTipText("Step 3 : Load RDF file");
+        
+        loadWorkflow = new JMenuItem("Load Workflow");
+        loadWorkflow.addActionListener(this);
 
         loadQuery = new JMenuItem("Load Query");
         loadQuery.addActionListener(this);
@@ -562,6 +569,7 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(loadRule);
         fileMenu.add(loadRDF);
         fileMenu.add(loadQuery);
+        fileMenu.add(loadWorkflow);
         fileMenu.add(cpTransform);
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
@@ -894,6 +902,9 @@ public class MainFrame extends JFrame implements ActionListener {
         } //Appelle la fonction pour le chargement d'un fichier RDF
         else if (e.getSource() == loadRDF) {
             loadRDF();
+        }
+         else if (e.getSource() == loadWorkflow) {
+            loadWorkflow();
         } 
         else if (e.getSource() == cpTransform){
             compile();
@@ -1241,11 +1252,21 @@ public class MainFrame extends JFrame implements ActionListener {
         Filter FilterRDFS = new Filter(new String[]{"rdfs", "owl", "ttl"}, "RDFS/OWL files (*.rdfs,*.owl,*.ttl)");
         load(FilterRDFS);
     }
+    
+     public void loadWorkflow() {
+        Filter FilterRDF = new Filter(new String[]{"ttl"}, "Workflow files (*.ttl)");
+        load(FilterRDF, true);
+    }
 
     /**
      * Charge un fichier dans CORESE
      */
     public void load(Filter filter) {
+        load(filter, false);
+    }
+
+     
+    public void load(Filter filter, boolean wf) {
         controler(LOAD);
         l_path = null;
         JFileChooser fileChooser = new JFileChooser(l_path_courant);
@@ -1260,13 +1281,35 @@ public class MainFrame extends JFrame implements ActionListener {
                 l_path = f.getAbsolutePath();
                 l_path_courant = f.getParent();
                 if (l_path != null) {
-                    if (!model.contains(l_path)) {
+                    if (!model.contains(l_path) && ! wf) {
                         model.addElement(l_path);
                     }
                     appendMsg("Loading " + extension(l_path) + " File from path : " + l_path + "\n");
-                    load(l_path);
+                    if (wf){
+                        loadWF(l_path);
+                    }
+                    else {
+                        load(l_path); 
+                    }
                 }
             }
+        }
+    }
+    
+    void loadWF(String path){
+        WorkflowParser parser = new WorkflowParser();
+        parser.setDebug(true);
+        try {
+            parser.parse(path);
+            WorkflowProcess wp = parser.getWorkflowProcess();
+            wp.setDebug(true);
+            wp.process(new Data(myCorese.getGraph()));
+        } catch (LoadException ex) {
+            logger.error(ex);
+            appendMsg(ex.toString()); 
+        } catch (EngineException ex) {
+            logger.error(ex);
+            appendMsg(ex.toString()); 
         }
     }
     

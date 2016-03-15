@@ -749,10 +749,7 @@ public class Transformer implements ExpType {
 	
 	Node[] getNodes(List<Node> lNode){
 		Node[] nodes = new Node[lNode.size()];
-		int i = 0;
-		for (Node node : lNode){
-			nodes[i++] = node;
-		}
+                lNode.toArray(nodes);		
 		return nodes;
 	}
 	
@@ -769,13 +766,10 @@ public class Transformer implements ExpType {
 		return lNode;
 	}
 
-	Mapping create(Node[] lNode, List<Node> lVal){
+	Mapping create(Node[] lNode, List<Node> lVal){            
 		Node[] nodes = new Node[lVal.size()];
-		int i = 0;
-		for (Node node : lVal){
-			nodes[i++] = node;
-		}
-		return Mapping.create(lNode, nodes);
+                lVal.toArray(nodes);
+		return Mapping.safeCreate(lNode, nodes);
 	}
 	
 

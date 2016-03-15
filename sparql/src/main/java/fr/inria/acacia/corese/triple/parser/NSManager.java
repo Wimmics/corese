@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * <p>Title: Corese</p>
@@ -68,7 +69,7 @@ public class NSManager extends ASTObject {
     public static final String  STL_PREF = "st";
     public static final String  EXT_PREF = "xt";
     public static final String  SPARQL_PREF = "rq";
-    
+
     /**
      * prefix seed (ns1, ns2,...)
      */
@@ -76,7 +77,8 @@ public class NSManager extends ASTObject {
     private static final String DOT = ".";
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
-    static final char[] end = {'#', '/', '?', ':'}; // may end an URI ...
+    static final char[] END_CHAR = {'#', '/', '?', ':'}; // may end an URI ...
+    static final String[] PB_CHAR = {"(", ")", "'", "\"", ","};
     static final String pchar = ":";
     int count = 0;
     HashMap<String, String> def; // system namespace with prefered prefix
@@ -337,12 +339,7 @@ public class NSManager extends ASTObject {
     }
     
     public String toPrefixURI(String nsname, boolean skip) {
-        if (nsname.contains("(") 
-                || nsname.contains(")")
-                || nsname.contains("'")
-                || nsname.contains("\"")                
-                || nsname.contains(",")                
-                ) {
+        if (containsChar(nsname)) {
             return uri(nsname);
         } else {
             String str = toPrefix(nsname, skip);
@@ -352,6 +349,20 @@ public class NSManager extends ASTObject {
                 return str;
             }
         }
+    }
+    
+    boolean containsChar(String str){
+        for (String s : PB_CHAR){
+            if (str.contains(s)){
+                return true;
+            }
+        }
+        String name = strip(str);
+        if (name != str && name.length()>0 && name.charAt(0) >= '0' && name.charAt(0) <= '9'){
+            return true;
+        }
+        
+        return false;
     }
 
     String uri(String str) {
@@ -580,8 +591,8 @@ public class NSManager extends ASTObject {
     public static String nstrip(String name) {
         // remove namespace
         int index;
-        for (int i = 0; i < end.length; i++) {
-            index = name.lastIndexOf(end[i]);// ???
+        for (int i = 0; i < END_CHAR.length; i++) {
+            index = name.lastIndexOf(END_CHAR[i]);// ???
             if (index != -1) {
                 return name.substring(index + 1);
             }
@@ -615,8 +626,8 @@ public class NSManager extends ASTObject {
             return "";
         }
         int index;
-        for (int i = 0; i < end.length; i++) {
-            index = type.lastIndexOf(end[i]);
+        for (int i = 0; i < END_CHAR.length; i++) {
+            index = type.lastIndexOf(END_CHAR[i]);
             if (index != -1) {
                 String str = type.substring(0, index + 1);
                 return str;

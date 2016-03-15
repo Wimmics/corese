@@ -45,6 +45,7 @@ public class Profile {
     HashMap<String,  Service> services, servers; 
     NSManager nsm;
     IDatatype profileDatatype;
+    Graph profileGraph;
 
     boolean isProtected = false;
 
@@ -204,12 +205,17 @@ public class Profile {
     
     void setProfile(Graph g){
         if (profileDatatype == null){
+            profileGraph = g;
             profileDatatype = DatatypeMap.createObject(Context.STL_SERVER_PROFILE, g);
         }
     }
     
     IDatatype getProfile(){
         return profileDatatype;
+    }
+    
+    Graph getProfileGraph(){
+        return profileGraph;
     }
 
     /**
@@ -319,9 +325,7 @@ public class Profile {
         String str = "select * where {"
                 + "?s a st:Server "
                 + "values ?p { st:data st:schema st:context }"
-                + "?s ?p ?d "
-                + "?d st:uri ?u "
-                + "optional { ?d st:name ?n } "
+                + "optional { ?s ?p ?d . ?d st:uri ?u  optional { ?d st:name ?n }}"
                 + "optional { ?s st:service ?sv } "
                 + "optional { ?s st:param ?c } "
                 + "}";
@@ -331,12 +335,17 @@ public class Profile {
             Node sn = m.getNode("?s");
             Node sv = m.getNode("?sv");
             Node p = m.getNode("?p");
-            Node u = m.getNode("?u");
+            Node uri = m.getNode("?u");
             Node n = m.getNode("?n");
             Node c = m.getNode("?c");
+            
            Service server = findServer(sn.getLabel());
-           server.setService((sv==null)?null:sv.getLabel());
-           server.add(p.getLabel(), u.getLabel(), (n != null)?n.getLabel():null);
+           String service = (sv == null) ? null : sv.getLabel();
+           server.setService(service);
+           if (uri != null){
+              String name = (n != null) ? n.getLabel() : null;
+              server.add(p.getLabel(), uri.getLabel(), name);
+           }
            if (c != null && server.getParam() == null){
                server.setParam(new ContextBuilder(g).process(c));
            }

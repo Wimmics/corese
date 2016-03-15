@@ -18,8 +18,9 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.WorkflowProcess;
-import java.io.IOException;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -171,7 +172,7 @@ public class Transformer {
             if (true){
                 complete(store.getGraph(), ctx);
                 Dataset ds = createDataset(par.getFrom(), par.getNamed());
-                String res = workflow(store.getGraph(), ds, ctx, squery, ctx.getTransform());
+                String res = workflow(store.getGraph(), ctx, ds, mprofile.getProfileGraph(), squery, ctx.getTransform());
                 return Response.status(200).header(headerAccept, "*").entity(result(par, res)).build();               
             }
             else {
@@ -202,55 +203,50 @@ public class Transformer {
         }
     }
     
-    String workflow(Graph g, Dataset ds, Context c, String q, String t){
-        WorkflowProcess w = createWorkflow(g, ds, c, q, t);
+    String workflow(Graph g, Context c, Dataset ds, Graph profile, String q, String t) {
         try {
+            WorkflowProcess w = create(c, ds, profile, q, t);
+            w.setDebug(isTest);
             Data data = w.process(new Data(g));
             return data.stringValue();
         } catch (EngineException ex) {
             logger.error(ex);
             return ex.toString();
+        } catch (LoadException ex) {
+            logger.error(ex);
+            return ex.toString();
         }
     }
     
-    WorkflowProcess createWorkflow(Graph g, Dataset ds, Context c, String q, String t){
-        WorkflowProcess w = new WorkflowProcess();
-        w.setContext(c);
-        w.setDataset(ds);
-        w.setDebug(isTest);
-        if (c.get(Context.STL_WORKFLOW) != null){
-            workflow(w, c.get(Context.STL_WORKFLOW));
-        }
-        else if (q != null){
-            w.addQuery(q);
+     WorkflowProcess create(Context context, Dataset dataset, Graph profile, String q, String t) throws LoadException {
+        WorkflowProcess wp = new WorkflowProcess();
+        wp.setContext(context);
+        wp.setDataset(dataset);
+        IDatatype dt = context.get(Context.STL_WORKFLOW); 
+        if (dt != null) {
+            WorkflowParser parser = new WorkflowParser(wp, profile);
+            parser.workflow(dt);
+        } 
+        else if (q != null) {
+            wp.addQuery(q);
         }
         boolean isDefault = false;
-        if (t == null){
+        if (t == null) {
             isDefault = true;
             t = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
-            c.setTransform(t);
+            context.setTransform(t);
         }
-        w.addTemplate(t, isDefault);
-        return w;
+        wp.addTemplate(t, isDefault);
+        return wp;
     }
-    
-    void workflow(WorkflowProcess w, IDatatype list) {
-        try {
-            for (IDatatype dt : list.getValues()) {
-                String q = getProfile().loadQuery(dt.getLabel());
-                w.addQuery(q);
-            }
-        } catch (IOException ex) {
-            logger.error(ex);
-        }
-    }
-        
+             
     void complete(Graph graph, Context context) {
         Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
         if (cg != null) {
             context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
         }
         context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
+        context.set(Context.STL_SERVER_PROFILE, mprofile.getProfile());
     }
     
     /**
@@ -309,7 +305,7 @@ public class Transformer {
             c.setProtocol(Context.STL_AJAX);
         }
         c.setUserQuery(par.isUserQuery());
-        c.setServerProfile(mprofile.getProfile());
+        //c.setServerProfile(mprofile.getProfile());
         return c;
     }
 

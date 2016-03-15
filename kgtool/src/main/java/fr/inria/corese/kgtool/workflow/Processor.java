@@ -9,7 +9,7 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public interface Process {
+public interface Processor {
         
     Data process(Data d) throws EngineException ;
    
@@ -19,8 +19,12 @@ public interface Process {
         
     void setContext(Context c);
     
+    void inherit(Context c);
+
     void setDataset(Dataset ds);
 
+    void inherit(Dataset ds);
+    
     void setDebug(boolean b);
     
     boolean isDebug();

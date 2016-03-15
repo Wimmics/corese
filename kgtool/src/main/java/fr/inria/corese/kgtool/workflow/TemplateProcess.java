@@ -19,6 +19,7 @@ public class TemplateProcess extends  AbstractProcess {
     
     private String path;
     private boolean isDefault = false;
+    private Transformer transfomer;
     
     public TemplateProcess(String p){
         path = p;
@@ -31,7 +32,7 @@ public class TemplateProcess extends  AbstractProcess {
     
     @Override
     public Data process(Data data) throws EngineException {
-        if (getWorkflow().isDebug()){
+        if (isDebug()){
             System.out.println("Transformer: " + getPath());
         }
         if (isDefault && data.getMappings() != null && data.getMappings().getQuery().isTemplate()){
@@ -40,6 +41,7 @@ public class TemplateProcess extends  AbstractProcess {
             return data;
         }
         Transformer t = Transformer.create(data.getGraph(), getPath());
+        setTransfomer(t);
         init(t, data, getContext());
         Data res = new Data(data.getGraph());
         res.setTemplateResult(t.toString());
@@ -81,6 +83,20 @@ public class TemplateProcess extends  AbstractProcess {
      */
     public void setPath(String path) {
         this.path = path;
+    }
+
+    /**
+     * @return the transfomer
+     */
+    public Transformer getTransfomer() {
+        return transfomer;
+    }
+
+    /**
+     * @param transfomer the transfomer to set
+     */
+    public void setTransfomer(Transformer transfomer) {
+        this.transfomer = transfomer;
     }
    
 }

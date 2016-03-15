@@ -19,7 +19,7 @@ import fr.inria.edelweiss.kgtool.util.MappingsGraph;
  */
 public class SPARQLProcess extends  AbstractProcess {
 
-    String query;
+    private String query;
     // true means return input graph (use case: select where and return graph as is)
     private boolean probe = false;
     
@@ -29,11 +29,11 @@ public class SPARQLProcess extends  AbstractProcess {
     
     @Override
     public Data process(Data data) throws EngineException {  
-        if (getWorkflow().isDebug()){
-            System.out.println("Query: " + query);
+        if (isDebug()){
+            System.out.println("Query: " + getQuery());
         }
         Mappings map = query(data, getContext(), getDataset());
-        if (getWorkflow().isDebug() && map.getGraph() != null){
+        if (isDebug() && map.getGraph() != null){
             System.out.println(map.getGraph());
         }
         Data res = new Data(this, map, getGraph(map, data));
@@ -48,9 +48,9 @@ public class SPARQLProcess extends  AbstractProcess {
             if (c != null){
                 ds.setContext(c);
             }
-            return exec.query(query, ds);   
+            return exec.query(getQuery(), ds);   
         }
-        return exec.query(query, getContext());   
+        return exec.query(getQuery(), getContext());   
     }
     
     void complete(Data data) {
@@ -95,6 +95,20 @@ public class SPARQLProcess extends  AbstractProcess {
    
     public void setProbe(boolean neutral) {
         this.probe = neutral;
+    }
+
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(String query) {
+        this.query = query;
     }
         
 }

@@ -6,7 +6,6 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
 
 /**
  *

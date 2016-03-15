@@ -14,12 +14,17 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class AbstractProcess implements Process {
+public class AbstractProcess implements Processor {
     private Context context;
     private Dataset dataset;
     private Data data;
     private WorkflowProcess workflow;
     private boolean debug = false;
+    
+    @Override
+    public String toString(){
+        return getClass().getName();
+    }
     
      @Override
     public Data process(Data d) throws EngineException {
@@ -48,8 +53,20 @@ public class AbstractProcess implements Process {
     /**
      * @param context the context to set
      */
+    @Override
     public void setContext(Context context) {
         this.context = context;
+    }
+    
+    @Override
+    public void inherit(Context context) {
+        if (getContext() == null){
+           setContext(context); 
+        }
+        else {
+            // inherit exported properties
+           getContext().complete(context);
+        }
     }
 
     /**
@@ -104,8 +121,14 @@ public class AbstractProcess implements Process {
     /**
      * @param dataset the dataset to set
      */
+    @Override
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
+    }
+    
+    @Override
+    public void inherit(Dataset dataset) {
+        setDataset(dataset);
     }
 
 }

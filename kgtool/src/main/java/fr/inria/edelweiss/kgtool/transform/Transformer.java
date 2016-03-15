@@ -707,6 +707,9 @@ public class Transformer  {
 
         if (isDebug || isTrace) {
             System.out.println("pprint: " + level() + " " + exp + " " + dt1 + " " + dt2);
+            if (dt1 != null && dt1.isBlank()) System.out.println(Transformer.create(graph, TURTLE).process(dt1).getLabel());
+            if (dt2 != null && dt2.isBlank()) System.out.println("\n" + Transformer.create(graph, TURTLE).process(dt2).getLabel());
+            System.out.println("__");
         }
 
         Graph g = graph;
@@ -1365,6 +1368,7 @@ public class Transformer  {
        if (c != null){
            // inherit exported properties:
            getContext().complete(c);
+           init(getContext());
        }
        if (ct != null)  {
             setNSM(ct.getNSM());   
@@ -1375,6 +1379,12 @@ public class Transformer  {
         // query prefix overload ct transformer prefix
         // because query call this new transformer
         complete(ast.getNSM());
+    }
+    
+    void init(Context c) {
+        if (c.get(Context.STL_DEBUG) != null && c.get(Context.STL_DEBUG).booleanValue()) {
+            isDebug = true;
+        }
     }
     
     Context getContext(Query q, Transformer ct) {

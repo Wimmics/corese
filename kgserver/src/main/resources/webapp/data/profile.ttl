@@ -28,13 +28,74 @@ st:dbsparql a st:Profile ;
 st:dbpedia a st:Profile ;   
   st:param [ 
     st:lang "fr" ;
-    st:import st:dbpediaParam, st:mapParam  ;
-    st:workflow ( <query/frdbpedia.rq> <query/frdbpediaclean.rq> )
+    st:import st:dbpediaParam, st:mapParam  ;    
   ] ;
- # st:query  <query/frdbpedia.rq> ;
-  st:transform  st:navlab .
-
+  st:workflow [
+      sw:body ( 
+	<query/frdbpedia.rq> <query/frdbpediaclean.rq> 
+	[ a sw:Template ; sw:uri st:navlab ]
+      )
+  ] .
+ # st:transform  st:navlab .
   
+st:test a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:body (
+      [ a sw:Query ; sw:result sw:graph  ;
+	sw:body "select * where {?x ?p ?y} limit 100" ]
+      [ a sw:Template ; sw:uri st:sparql ]
+    )
+  ]
+.
+  
+st:loop a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:loop 3 ;
+    sw:body (
+      [ a sw:Query ; sw:body "select * where {?x ?p ?y} limit 100" ]
+      [ a sw:Template ; sw:uri st:sparql ]
+    )
+  ]
+
+st:dbpedialoop a st:Profile ;   
+  st:param [ 
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam  ;
+    st:file "/user/corby/home/test.ttl" ;    
+  ] ;
+  st:workflow [ 
+      sw:loop 5 ;
+      sw:body ( 
+      <query/frdbpediastart.rq> 
+      <query/frdbpediacopy.rq> <query/frdbpediaclean.rq> <query/frdbpedialoop.rq> <query/save.rq> )] ;
+  st:transform  st:navlab .
+  
+  
+st:owl a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:param [ sw:debug true ] ;
+    sw:body ( 
+    [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
+    [ a sw:Rule ; sw:uri sw:owlrl ] 
+    [ a sw:Template ; sw:uri st:turtle ]
+    )
+] ;
+st:transform st:sparql .
+
+
+st:owlsave a st:Profile ;
+  st:workflow [ st:body ( 
+  [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
+  [ a sw:Rule ; sw:uri sw:owlrl ] 
+  [ a sw:Template ; sw:uri st:turtle ]
+  )
+] ;
+st:transform st:sparql .
+
+
 st:dbpediadyn a st:Profile ;   
   st:param [ 
     st:lang "fr" ;
@@ -185,9 +246,6 @@ st:dbpediasparql a st:Profile ;
   st:query     <query/frdbpedia.rq> ;
   st:transform st:sparql .
 
-st:dbpediatest a st:Profile ;
-  st:query     <query/frdbpediatest.rq> ;
-  st:transform st:navlab .
 
 st:dbpediacopy a st:Profile ;
   st:query     <query/frdbpediacopy.rq> ;
@@ -218,7 +276,10 @@ st:dbpediaall a st:Profile ;
   st:transform st:navlab .
 
 st:navlab a st:Profile ;
-  st:transform st:navlab .  
+  st:workflow [ 
+    sw:body ( [ a sw:Template ; sw:uri st:navlab ] ) 
+  ] .
+#  st:transform st:navlab .  
 
 st:web a st:Profile ;
    st:transform st:web .
@@ -267,13 +328,13 @@ st:transform st:navlab .
 ###################################
 
 
-st:test a st:Server ;
-st:service "test" ;
- st:data [ st:uri <primer.owl>  ; st:name st:data ] ;
- st:param [ 
-  st:workflow (<query/owlrltest.rq>)
- ] ;
- st:transform st:hturtle
+   
+  
+st:owlrltest a st:Server ;
+  st:service "test" ;
+  st:data [ st:uri <primer.owl>  ; st:name st:data ] ;
+  st:workflow [ sw:body ( <query/owlrltest.rq> ) ] ;
+  st:transform st:hturtle
  .
 
 st:ldp a st:Server ;
@@ -290,9 +351,16 @@ st:service "ldp" ;
 
 st:default a st:Server ;
 st:data     
+    [ st:uri <dbpedia/rome.ttl>  ; st:name st:data ] . 
+ 
+ 
+st:default1 a st:Server ;
+st:data     
     [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
     [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
     [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] .
+    
+    
 
 
 # Dataset of specific services, e.g. /tutorial/rdf
@@ -320,6 +388,15 @@ st:tutorial2 a st:Server ;
   st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
 
+st:rome a st:Server ;   
+  st:service "rome" ;
+  st:param [ 
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam  ;   
+  ] ;
+  st:data [st:uri <dbpedia/rome.ttl> ; st:name st:data ] ;
+  st:transform  st:navlab .   
+  
 st:geo a st:Server ;
   st:service "geo" ;
   st:transform st:navlab ; 

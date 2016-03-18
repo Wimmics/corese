@@ -15,6 +15,7 @@ public interface Loader {
     static final int UNDEF_FORMAT  = 7;
     static final int TRIG_FORMAT   = 8;
     static final int NQUADS_FORMAT = 9;
+    static final int WORKFLOW_FORMAT = 10;
 
 	void init(Object o);
 	

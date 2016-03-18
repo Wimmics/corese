@@ -349,12 +349,12 @@ st:service "ldp" ;
  ] .
  
 
-st:default a st:Server ;
+st:default1 a st:Server ;
 st:data     
     [ st:uri <dbpedia/rome.ttl>  ; st:name st:data ] . 
  
  
-st:default1 a st:Server ;
+st:default a st:Server ;
 st:data     
     [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
     [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,

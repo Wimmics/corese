@@ -1727,7 +1727,7 @@ public class Graph extends GraphObject implements Graphable {
     }
 
     public boolean hasEdge(Node node, int i) {
-        Iterable<Entity> it = getEdges(node, 1);
+        Iterable<Entity> it = getEdges(node, i);
         return it.iterator().hasNext();
     }
 

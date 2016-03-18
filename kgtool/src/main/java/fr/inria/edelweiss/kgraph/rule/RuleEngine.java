@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.printer.SPIN;
@@ -97,6 +98,7 @@ public class RuleEngine implements Engine, Graphable {
     private boolean isConnect = false;
     private boolean isDuplicate = false;
     private boolean isSkipPath = false;
+    private Context context;
 
     public RuleEngine() {
         rules = new ArrayList<Rule>();
@@ -403,6 +405,15 @@ public class RuleEngine implements Engine, Graphable {
     void begin(){
         processProfile();
         graph.getContext().storeIndex(NSManager.KGRAM+"re1");
+        context();
+    }
+    
+    void context(){
+        if (getContext() != null){
+            for  (Rule r : getRules()){
+                r.getQuery().setContext(getContext());
+            }
+        }
     }
     
     /**
@@ -953,6 +964,20 @@ public class RuleEngine implements Engine, Graphable {
     @Override
     public Object getGraph() {
         return spinGraph;
+    }
+
+    /**
+     * @return the context
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     class STable extends Hashtable<Rule, Integer> {

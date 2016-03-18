@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 28 17:53:23 CET 2016
+Sat Mar 05 09:46:43 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -605,7 +605,8 @@ function st:process(?x) {
        
   function st:misc(?name) { 
     st:protocol(
-      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&transform=st:sparql%23core&profile=st:dbpedia"))
+      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&profile=st:sparql"))
+      #"&transform=st:sparql%23core&profile=st:dbpedia"))
   }
   
 

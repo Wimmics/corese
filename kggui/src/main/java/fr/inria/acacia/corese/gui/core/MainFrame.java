@@ -49,7 +49,7 @@ import fr.inria.acacia.corese.gui.query.Buffer;
 import fr.inria.acacia.corese.gui.query.GraphEngine;
 import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
-import fr.inria.corese.kgtool.workflow.WorkflowProcess;
+import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -1254,7 +1254,7 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
      public void loadWorkflow() {
-        Filter FilterRDF = new Filter(new String[]{"ttl"}, "Workflow files (*.ttl)");
+        Filter FilterRDF = new Filter(new String[]{"ttl", "sw"}, "Workflow files (*.ttl, *.sw)");
         load(FilterRDF, true);
     }
 
@@ -1298,12 +1298,17 @@ public class MainFrame extends JFrame implements ActionListener {
     
     void loadWF(String path){
         WorkflowParser parser = new WorkflowParser();
-        parser.setDebug(true);
+       // parser.setDebug(true);
         try {
+            Date d1 = new Date();
             parser.parse(path);
-            WorkflowProcess wp = parser.getWorkflowProcess();
-            wp.setDebug(true);
-            wp.process(new Data(myCorese.getGraph()));
+            SemanticWorkflow wp = parser.getWorkflowProcess();
+           // wp.setDebug(true);
+            Data res = wp.process(new Data(myCorese.getGraph()));
+            Date d2 = new Date();
+            appendMsg(res.toString() + "\n");
+            appendMsg("time: " + (d2.getTime() - d1.getTime()) / (1000.0) + "\n");
+            System.out.println("time: " + (d2.getTime() - d1.getTime()) / (1000.0));
         } catch (LoadException ex) {
             logger.error(ex);
             appendMsg(ex.toString()); 

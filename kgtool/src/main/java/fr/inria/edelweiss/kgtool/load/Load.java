@@ -30,6 +30,8 @@ import fr.inria.acacia.corese.triple.api.Creator;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.LoadTurtle;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.kgtool.workflow.WorkflowParser;
+import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.api.Log;
@@ -44,8 +46,6 @@ import fr.inria.edelweiss.kgtool.load.sesame.ParserTripleHandlerSesame;
 import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -74,6 +74,7 @@ public class Load
     Log log;
     RuleEngine engine;
     QueryEngine qengine;
+    private SemanticWorkflow workflow;
     HashMap<String, String> loaded;
     LoadPlugin plugin;
     Build build;
@@ -212,11 +213,19 @@ public class Load
         return getFormat(path) != UNDEF_FORMAT;
     }
 
-    public int getFormat(String path, int defaultFormat) {
-        if (defaultFormat != UNDEF_FORMAT) {
-            return defaultFormat;
+    public int getFormat(String path, int proposedFormat) {
+        if (proposedFormat != UNDEF_FORMAT) {
+            return proposedFormat;
         }
         return LoadFormat.getFormat(path);
+    }
+    
+    public int getFormatDefault(String path, int defaultFormat) {
+        int f = LoadFormat.getFormat(path);
+        if (f != UNDEF_FORMAT) {
+            return f;
+        }
+        return defaultFormat;
     }
        
     @Override
@@ -485,14 +494,14 @@ public class Load
     void synLoad(Reader stream, String path, String base, String name, int format) throws LoadException {
         try {
             writeLock().lock();
-            intLoad(stream, path, base, name, format);            
+            parse(stream, path, base, name, format);            
         } finally {
             writeLock().unlock();
         }
     }
     
     
-    void intLoad(Reader stream, String path, String base, String name, int format)  throws LoadException {
+    public void parse(Reader stream, String path, String base, String name, int format)  throws LoadException {
         switch (format) {
                 case TURTLE_FORMAT:
                 case NT_FORMAT:
@@ -510,7 +519,11 @@ public class Load
                 case RULE_FORMAT:
                     loadRule(stream, name);
                     break;
-
+                    
+                case WORKFLOW_FORMAT:
+                    loadWorkflow(stream, path);
+                    break;
+                    
                 case QUERY_FORMAT:
                     loadQuery(stream, name);
                     break;
@@ -529,12 +542,18 @@ public class Load
 
                 case UNDEF_FORMAT:
                 default:
-                    intLoad(stream, path, base, name, (DEFAULT_FORMAT == UNDEF_FORMAT) ? RDFXML_FORMAT : DEFAULT_FORMAT);
+                    parse(stream, path, base, name, (DEFAULT_FORMAT == UNDEF_FORMAT) ? RDFXML_FORMAT : DEFAULT_FORMAT);
             }
     }
 
     Lock writeLock() {
         return graph.writeLock();
+    }
+    
+    void loadWorkflow(Reader read, String path) throws LoadException{
+        WorkflowParser wp = new WorkflowParser();
+        wp.parse(read, path);
+        setWorkflow(wp.getWorkflowProcess());
     }
 
     void loadRDFXML(Reader stream, String path, String base, String name) throws LoadException {
@@ -906,5 +925,19 @@ public class Load
     @Deprecated
     public void load(InputStream stream, String path, String source, String base, int format) throws LoadException {
         parse(stream, path, source, base, format);
+    }
+
+    /**
+     * @return the workflow
+     */
+    public SemanticWorkflow getWorkflow() {
+        return workflow;
+    }
+
+    /**
+     * @param workflow the workflow to set
+     */
+    public void setWorkflow(SemanticWorkflow workflow) {
+        this.workflow = workflow;
     }
 }

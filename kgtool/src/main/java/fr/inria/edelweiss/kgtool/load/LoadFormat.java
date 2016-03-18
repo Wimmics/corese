@@ -28,6 +28,7 @@ public class LoadFormat {
     static final String EXT_RDFS = ".rdfs";
     static final String EXT_OWL = ".owl";
     static final String JSONLD = ".jsonld";
+    static final String SWF = ".sw";
 
     static HashMap<String, Integer> ptable, utable;
     
@@ -55,6 +56,7 @@ public class LoadFormat {
         define(EXT_RDFS,Loader.RDFXML_FORMAT);
         define(EXT_OWL, Loader.RDFXML_FORMAT);
         define(JSONLD,  Loader.JSONLD_FORMAT);
+        define(SWF,     Loader.WORKFLOW_FORMAT);
         
         utable = new HashMap<String, Integer>();
         udefine("text/turtle", Loader.TURTLE_FORMAT);
@@ -74,6 +76,9 @@ public class LoadFormat {
     }
     
     public static int getFormat(String path){
+        if (path == null){
+            return Loader.UNDEF_FORMAT;
+        }
         int index = path.lastIndexOf(".");
         if (index == -1){
             return Loader.UNDEF_FORMAT;

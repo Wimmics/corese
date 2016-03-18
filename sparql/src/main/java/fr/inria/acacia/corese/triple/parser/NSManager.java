@@ -48,6 +48,7 @@ public class NSManager extends ASTObject {
     public static final String FOAF  = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
 
+    public static final String SWL        = ExpType.SWL;
     public static final String STL        = ExpType.STL;
     public static final String EXT        = ExpType.EXT;
     public static final String USER       = ExpType.UXT;
@@ -67,8 +68,10 @@ public class NSManager extends ASTObject {
     private static final String SPIN_PREF = "sp";
     private static final String FOAF_PREF = "foaf";
     public static final String  STL_PREF = "st";
+    public static final String  SWL_PREF = "sw";
     public static final String  EXT_PREF = "xt";
     public static final String  SPARQL_PREF = "rq";
+    public static final String OWLRL = SWL + "owlrl";
 
     /**
      * prefix seed (ns1, ns2,...)
@@ -208,6 +211,7 @@ public class NSManager extends ASTObject {
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);
+        def.put(SWL, SWL_PREF);
         def.put(EXT, EXT_PREF);
         def.put(USER, "us");
         def.put(ExpType.DT, "dt");

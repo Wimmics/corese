@@ -14,7 +14,7 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class TemplateProcess extends  AbstractProcess {
+public class TemplateProcess extends  SemanticProcess {
 
     
     private String path;
@@ -30,6 +30,11 @@ public class TemplateProcess extends  AbstractProcess {
         isDefault = b;
     }
     
+      @Override
+    public boolean isTemplate() {
+        return true;
+    }
+     
     @Override
     public Data process(Data data) throws EngineException {
         if (isDebug()){

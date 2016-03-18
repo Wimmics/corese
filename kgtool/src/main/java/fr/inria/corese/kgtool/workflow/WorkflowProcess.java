@@ -1,213 +1,201 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import java.util.ArrayList;
-import java.util.List;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 
 /**
- * Workflow of Query | Update | RuleBase | Transformation
- * Each Process pass a Data with Graph to next Process
- * 
+ * Root class
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class WorkflowProcess extends  AbstractProcess {
-    private static final String NL = System.getProperty("line.separator");
-   
-    
-    ArrayList<Processor> list;
-    Data data;
-    private int loop = -1;
-
-    
-    public WorkflowProcess(){
-        list = new ArrayList<Processor>();
-    }
+public class WorkflowProcess implements AbstractProcess {
+    private Context context;
+    private Dataset dataset;
+    private Data data;
+    private SemanticWorkflow workflow;
+    private boolean debug = false;
+    // true means return input graph (use case: select where and return graph as is)
+    private boolean probe = false;
+    private boolean display = false;
+    private String result, uri;
     
     @Override
     public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString()).append(":");
-        int i = 1;
-        for (Processor p : getProcessList()){
-            sb.append(NL).append(i++).append(": ").append(p.toString());
-        }
-        return sb.toString();
+        return getClass().getName();
     }
     
-    public WorkflowProcess add(Processor p){
-        list.add(p);
-        p.subscribe(this);
-        return this;
-    }    
-    
-    public WorkflowProcess addQuery(String q){
-       return add(new SPARQLProcess(q));
+     @Override
+    public Data process(Data d) throws EngineException {
+        return d;
     }
+     
     
-     public WorkflowProcess addQueryPath(String path) throws LoadException{
-        String q = QueryLoad.create().readWE(path);
-        return addQuery(q);
-    }
-    
-    // return input graph
-    public WorkflowProcess addQueryProbe(String q){
-       SPARQLProcess sp = new SPARQLProcess(q);
-       sp.setProbe(true);
-       return add(sp);
-    }
-    
-    public WorkflowProcess addTemplate(String q){
-       return add(new TemplateProcess(q));
-    }
-    
-    public WorkflowProcess addTemplate(String q, boolean isDefault){
-       return add(new TemplateProcess(q, isDefault));
-    }
-    
-    public WorkflowProcess addRule(String q){
-       return add(new RuleProcess(q));
-    }
-    
-    // RuleBase.OWL_RL
-    public WorkflowProcess addRule(int type){
-       return add(new RuleProcess(type));
-    }
-    
-     public WorkflowProcess addResult(int type){
-       return add(new ResultProcess(type));
-    }
-    
-    public WorkflowProcess addResult(){
-       return add(new ResultProcess());
-    }
-    
-    public List<Processor> getProcessList(){
-        return list;
-    }
-      
-    public Data process() throws EngineException {
-        return process(new Data(Graph.create()));
-    }
-    
-    @Override
-    public Data process(Data data) throws EngineException { 
-        init();
-        if (getLoop() > 0){
-            return loop(data);
-        }
-        else {
-            return run(data);
-        }
-    }
-           
-    Data run(Data data) throws EngineException {  
-        setData(data);
-        trace();
-        for (Processor p : list){
-            complete(p);
-            data = p.process(data);           
-        }   
-        setData(data);
-        return data;
-    }
-    
-    Data loop(Data data) throws EngineException{
-        Context c = getContext();
-        for (int i = 1; i <= loop; i++){   
-            if (c != null){
-                c.set(Context.STL_INDEX, i);
-            }
-            data = run(data);
-        }
-        return data;
-    }
-    
-    
-      /**
-     * May start a loop if:
-     * st:loop 5
-     * &param = 10
-     */
-    void init(){
-        Context c = getContext();
-        if (c == null){
-            if (getLoop() > 0){
-                setContext(new Context());
-                initContext(getContext());
-            }
-        }
-        else {
-           initContext(getContext());
-        }
-    }
-    
-    void initContext(Context c) {
-        if (c.get(Context.STL_LOOP) == null) {
-            if (getLoop() > 0) {
-                c.set(Context.STL_LOOP, getLoop());
-            }
-        } else {
-            if (c.get(Context.STL_PARAM) != null) {
-                // param arg overload loop number
-                int val = Integer.parseInt(c.get(Context.STL_PARAM).stringValue());
-                c.set(Context.STL_LOOP, val);
-            }
-            setLoop(c.get(Context.STL_LOOP).intValue());
-        }
-    } 
-    
-    void trace(){
-         if (isDebug() && getContext() != null){
-            System.out.println(getContext());
-        }
-    }
-    
-    
-    // Process inherit workflow Context and Dataset (if any)
-    void complete(Processor p) {
-        if (getContext() != null) {
-            p.inherit(getContext());
-        }
-        if (getDataset() != null) {
-            p.inherit(getDataset());
-        }
-    }
-    
-    @Override
-    public String stringValue(Data data){
-        if (data.getProcess() == this){
-            return null;
-        }
-        return data.stringValue();
-    }
-       
 
+    @Override
+    public void subscribe(SemanticWorkflow w) {
+        setWorkflow(w);
+    }
+
+    @Override
+    public String stringValue(Data data) {
+        return null;
+    }
+    
     /**
-     * @return the loop
+     * @return the context
      */
-    public int getLoop() {
-        return loop;
+    public Context getContext() {
+        return context;
     }
 
     /**
-     * @param loop the loop to set
+     * @param context the context to set
      */
-    public void setLoop(int loop) {
-        this.loop = loop;
+    @Override
+    public void setContext(Context context) {
+        this.context = context;
     }
     
     @Override
-    public void setDebug(boolean b){
-        super.setDebug(b);
-        for (Processor p : getProcessList()){
-            p.setDebug(b);
+    public void inherit(Context context) {
+        if (getContext() == null){
+           setContext(context); 
+        }
+        else {
+            // inherit exported properties
+           getContext().complete(context);
         }
     }
- 
-   
+
+    /**
+     * @return the data
+     */
+    public Data getData() {
+        return data;
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(Data data) {
+        this.data = data;
+    }
+
+    /**
+     * @return the workflow
+     */
+    public SemanticWorkflow getWorkflow() {
+        return workflow;
+    }
+
+    /**
+     * @param workflow the workflow to set
+     */
+    public void setWorkflow(SemanticWorkflow workflow) {
+        this.workflow = workflow;
+    }
+
+    /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    /**
+     * @return the dataset
+     */
+    public Dataset getDataset() {
+        return dataset;
+    }
+
+    /**
+     * @param dataset the dataset to set
+     */
+    @Override
+    public void setDataset(Dataset dataset) {
+        this.dataset = dataset;
+    }
+    
+    @Override
+    public void inherit(Dataset dataset) {
+        setDataset(dataset);
+    }
+
+    @Override
+    public boolean isTemplate() {
+        return false;
+    }
+
+    /**
+     * @return the probe
+     */
+    public boolean isProbe() {
+        return probe;
+    }
+
+    /**
+     * @param probe the probe to set
+     */
+    @Override
+    public void setProbe(boolean probe) {
+        this.probe = probe;
+    }
+
+    /**
+     * @return the display
+     */
+    @Override
+    public boolean isDisplay() {
+        return display;
+    }
+
+    /**
+     * @param display the display to set
+     */
+    @Override
+    public void setDisplay(boolean display) {
+        this.display = display;
+    }
+
+    @Override
+    public void setResult(String r) {
+        result = r;
+    }
+
+    /**
+     * @return the result
+     */
+    public String getResult() {
+        return result;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getURI() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    @Override
+    public void setURI(String uri) {
+        this.uri = uri;
+    }
+
 }

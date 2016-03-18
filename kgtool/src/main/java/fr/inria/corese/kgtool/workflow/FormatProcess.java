@@ -12,7 +12,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class FormatProcess extends AbstractProcess {
+public class FormatProcess extends SemanticProcess {
     
     int format;
     Graph graph;

@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
  */
 public class Data {
     private Dataset dataset;
-    private Processor process;
+    private AbstractProcess process;
     private Mappings map;
     private Graph graph;
     private Context context;
@@ -29,7 +29,7 @@ public class Data {
         graph = g;
     }
       
-    Data(Processor p, Mappings m, Graph g){
+    Data(AbstractProcess p, Mappings m, Graph g){
         process = p;
         map = m;
         graph = g;
@@ -50,14 +50,14 @@ public class Data {
     /**
      * @return the process
      */
-    public Processor getProcess() {
+    public AbstractProcess getProcess() {
         return process;
     }
 
     /**
      * @param process the process to set
      */
-    public void setProcess(Processor process) {
+    public void setProcess(AbstractProcess process) {
         this.process = process;
     }
 

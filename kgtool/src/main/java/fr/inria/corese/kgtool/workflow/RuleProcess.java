@@ -1,6 +1,7 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.rule.Rule;
@@ -14,7 +15,7 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class RuleProcess extends  AbstractProcess {
+public class RuleProcess extends  SemanticProcess {
 
     private String path;
     private RuleEngine engine;
@@ -22,7 +23,7 @@ public class RuleProcess extends  AbstractProcess {
     
     public RuleProcess(String p){
         path = p;
-        if (path.equals(Transformer.OWLRL)){
+        if (path.equals(Transformer.OWLRL) || path.equals(NSManager.OWLRL)){
             profile = RuleEngine.OWL_RL;
         }
     }
@@ -38,6 +39,7 @@ public class RuleProcess extends  AbstractProcess {
                 System.out.println("RuleBase: " + path);
             }
             RuleEngine re = create(data.getGraph()); 
+            re.setContext(getContext());
             setEngine(re);
             re.process();
             Data res = new Data(data.getGraph());

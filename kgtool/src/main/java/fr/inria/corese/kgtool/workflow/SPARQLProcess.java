@@ -17,26 +17,35 @@ import fr.inria.edelweiss.kgtool.util.MappingsGraph;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class SPARQLProcess extends  AbstractProcess {
+public class SPARQLProcess extends  SemanticProcess {
 
     private String query;
-    // true means return input graph (use case: select where and return graph as is)
-    private boolean probe = false;
+    private String path;
     
     public SPARQLProcess(String q){
+        this(q, null);
+    }
+    
+    public SPARQLProcess(String q, String path){
         this.query = q;
+        this.path = path;
     }
     
     @Override
     public Data process(Data data) throws EngineException {  
-        if (isDebug()){
+        if (isDebug() || theDisplay()){
             System.out.println("Query: " + getQuery());
         }
-        Mappings map = query(data, getContext(), getDataset());
-        if (isDebug() && map.getGraph() != null){
-            System.out.println(map.getGraph());
-        }
+        Mappings map = query(data, getContext(), getDataset());        
         Data res = new Data(this, map, getGraph(map, data));
+        if (isDebug() || theDisplay()){ 
+            if (isGraphResult()){
+                System.out.println(res.getGraph());
+            }
+            else  {
+                System.out.println(map);
+            }
+        }        
         complete(res);
         setData(res);
         return res;
@@ -44,6 +53,9 @@ public class SPARQLProcess extends  AbstractProcess {
     
     Mappings query(Data data, Context c, Dataset ds) throws EngineException{
         QueryProcess exec = QueryProcess.create(data.getGraph());
+        if (path != null){
+            exec.setDefaultBase(path);
+        }
         if (ds != null){
             if (c != null){
                 ds.setContext(c);
@@ -60,11 +72,41 @@ public class SPARQLProcess extends  AbstractProcess {
         }
     }
     
-           
+    /**
+     * Should select where return a graph of bindings ?
+     */
+    boolean isGraphResult(){
+        String res = theResult();
+        if (res == null){
+            return false;
+        }
+        return res.equals(GRAPH);
+    }
+    
+    boolean isAProbe() {
+        if (isProbe() || getWorkflow().isProbe()) {
+            return true;
+        }
+        String res = theResult();
+        if (res == null) {
+            return false;
+        }
+        return res.equals(PROBE);
+    }
+    
+    String theResult(){
+        return (getResult() == null) ? getWorkflow().getResult() : getResult();
+    }
+    
+    boolean theDisplay(){
+        return isDisplay() || getWorkflow().isDisplay() ;
+    }   
+    
     Graph getGraph(Mappings map, Data data) {
         ASTQuery ast = (ASTQuery) map.getAST();
-        if (isProbe() || ast.hasMetadata(Metadata.TYPE, Metadata.PROBE)){
-            // @type kg:probe : return input graph
+        if (isAProbe() || ast.hasMetadata(Metadata.TYPE, Metadata.PROBE)){
+            // probe is a query that does not impact the workflow (except Update)
+            // @type kg:probe : return input graph as is
             return data.getGraph();
         }
         else if (ast.isSPARQLUpdate()) {
@@ -72,10 +114,16 @@ public class SPARQLProcess extends  AbstractProcess {
         } else if (map.getGraph() != null) {
             // construct
             return (Graph) map.getGraph();
-        } else {
-            // select : return bindings as RDF graph
+        } 
+        else if (isGraphResult()){
+            // select : return Mappings as RDF graph
+            // -- default server mode for query =
             MappingsGraph m = MappingsGraph.create(map);
             return m.getGraph();
+        }
+        else {
+            // select : return input graph (and Mappings)
+            return data.getGraph();
         }
     }
 
@@ -89,14 +137,6 @@ public class SPARQLProcess extends  AbstractProcess {
         return f.toString();
     }
     
-    public boolean isProbe() {
-        return probe;
-    }
-   
-    public void setProbe(boolean neutral) {
-        this.probe = neutral;
-    }
-
     /**
      * @return the query
      */

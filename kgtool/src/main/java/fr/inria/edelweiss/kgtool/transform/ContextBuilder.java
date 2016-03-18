@@ -32,6 +32,7 @@ public class ContextBuilder {
     public ContextBuilder(Graph g){
         this.graph = g;
         done = new HashMap<String, Node>();
+        context = new Context();
     }
     
     public ContextBuilder(String path){
@@ -49,17 +50,22 @@ public class ContextBuilder {
      * Create a Context from content of st:param
      */
     public Context process(){
-        Entity ent = graph.getEdges(Context.STL_PARAM).iterator().next();
+        Entity ent = graph.getEdge(Context.STL_PARAM);
         if (ent == null){
-            return new Context();
+            return context;
         }
         return process(ent.getNode(1));
     }
     
     public Context process(Node ctx){
-        context = new Context();
+        //context = new Context();
         context(ctx, false);
         return context;
+    }
+    
+    public ContextBuilder setContext(Context c){
+        context = c;
+        return this;
     }
         
     void context(Node ctx, boolean exporter) {

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.inria.edelweiss.kgramserver.webservice;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -19,7 +15,7 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
-import fr.inria.corese.kgtool.workflow.WorkflowProcess;
+import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -205,8 +201,10 @@ public class Transformer {
     
     String workflow(Graph g, Context c, Dataset ds, Graph profile, String q, String t) {
         try {
-            WorkflowProcess w = create(c, ds, profile, q, t);
-            w.setDebug(isTest);
+            SemanticWorkflow w = create(c, ds, profile, q, t);
+            if (! w.isDebug()){
+                w.setDebug(isTest);
+            }
             Data data = w.process(new Data(g));
             return data.stringValue();
         } catch (EngineException ex) {
@@ -218,26 +216,43 @@ public class Transformer {
         }
     }
     
-     WorkflowProcess create(Context context, Dataset dataset, Graph profile, String q, String t) throws LoadException {
-        WorkflowProcess wp = new WorkflowProcess();
+    /**
+     * Create a Workflow to process service
+     * If there is no explicit workflow specification, i.e no st:workflow [  ]
+     * create a Workflow with query/transform.
+     */
+     SemanticWorkflow create(Context context, Dataset dataset, Graph profile, String query, String transform) throws LoadException {
+        SemanticWorkflow wp = new SemanticWorkflow();
         wp.setContext(context);
         wp.setDataset(dataset);
-        IDatatype dt = context.get(Context.STL_WORKFLOW); 
-        if (dt != null) {
+        IDatatype swdt = context.get(Context.STL_WORKFLOW); 
+        if (swdt != null) {
             WorkflowParser parser = new WorkflowParser(wp, profile);
-            parser.workflow(dt);
+            parser.parse(profile.getNode(swdt));
         } 
-        else if (q != null) {
-            wp.addQuery(q);
+        else if (query != null) {
+            // select where return Graph Mappings
+            wp.addQueryGraph(query);
         }
-        boolean isDefault = false;
-        if (t == null) {
-            isDefault = true;
-            t = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
-            context.setTransform(t);
-        }
-        wp.addTemplate(t, isDefault);
+        defaultTransform(wp, transform);
         return wp;
+    }
+     
+     /**
+      * If transform = null and workflow does not end with transform:
+      * use st:sparql as default transform
+      */
+    void defaultTransform(SemanticWorkflow wp, String transform) {
+        boolean isDefault = false;
+        if (transform == null
+                && (wp.getProcessList().isEmpty() || ! wp.getProcessLast().isTemplate())) {
+            isDefault = true;
+            transform = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
+        }
+        if (transform != null) {
+            wp.addTemplate(transform, isDefault);
+            wp.getContext().setTransform(transform);
+        }
     }
              
     void complete(Graph graph, Context context) {

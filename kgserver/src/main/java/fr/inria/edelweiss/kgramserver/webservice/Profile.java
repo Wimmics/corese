@@ -88,7 +88,8 @@ public class Profile {
         if (par.getServer() != null){           
             Service server = getServer(par.getServer());
             if (server.getParam() != null){
-                serverContext = server.getParam().copy();
+                // may set a profile according to URI
+                serverContext = server.getParam(); //.copy();
                 complete(par, serverContext);
             }
         }
@@ -96,29 +97,29 @@ public class Profile {
         String value = par.getValue();
         String profile = par.getProfile();
         String uri = par.getUri();
-            
+        Service service = null;    
         if (profile != null) {
-            // prodile declare a construct where query followed by a transformation
+            // profile declare a construct where query followed by a transformation
             String uprofile = nsm.toNamespace(profile);
             // may load a new profile            
             define(uprofile);
-            Service s = getService(uprofile);
-            if (s != null) {
+            service = getService(uprofile);
+            if (service != null) {
                 if (par.getName() == null) {
                     // parameter name overload profile name
-                    par.setName(s.getQuery());
+                    par.setName(service.getQuery());
                 }
                 if (par.getTransform() == null) {
                     // transform parameter overload profile transform
-                    par.setTransform(s.getTransform());
+                    par.setTransform(service.getTransform());
                 }               
                 if (uri != null) {
                     // resource given as a binding value to the query
                     // generate values clause if profile specify variable
-                    value = getValues(s.getVariable(), uri);
+                    value = getValues(service.getVariable(), uri);
                 }                     
-                if (s.getParam() != null){
-                    par.setContext(s.getParam().copy());
+                if (service.getParam() != null){
+                    par.setContext(service.getParam().copy());
                 }                
             }
         }
@@ -126,7 +127,11 @@ public class Profile {
         if (par.getContext() == null && serverContext != null){
             // use case: profile without st:param, server with st:param
             // import server st:param
-           par.setContext(serverContext);
+           par.setContext(serverContext.copy());
+        }
+        
+        if (service != null){
+            
         }
        
         String query = par.getQuery();
@@ -287,6 +292,11 @@ public class Profile {
         }
     }
     
+    /**
+     * A service profile may have a transform, a workflow or both
+     * If both, there are two Mapping, one for each
+     * Build *one* service description 
+     */
     void initService(Graph g, Mapping m) {
         Node prof   = m.getNode("?p");
         Node query  = m.getNode("?q");
@@ -294,9 +304,12 @@ public class Profile {
         Node trans  = m.getNode("?t");
         Node serv   = m.getNode("?s");
         Node ctx    = m.getNode("?c");
+        Node sw     = m.getNode("?w");
 
-        Service s = new Service(prof.getLabel());
-
+        Service s = getService(prof.getLabel());
+        if (s == null){
+            s = new Service(prof.getLabel());
+        }
         if (trans != null) {
             s.setTransform(trans.getLabel());
         }
@@ -309,8 +322,17 @@ public class Profile {
         if (serv != null) {
             s.setServer(serv.getLabel());
         }      
-        if (ctx != null){
+        if (ctx != null && s.getParam() == null){
+            // parse Context only once
             s.setParam(new ContextBuilder(g).process(ctx));
+        }
+        if (sw != null){
+            // PRAGMA: this MUST be done AFTER ctx case just above 
+            // set st:workflow in st:param Context
+            if (s.getParam() == null){
+                s.setParam(new Context());
+            }
+            s.getParam().set(Context.STL_WORKFLOW, (IDatatype) sw.getValue());
         }
         services.put(prof.getLabel(), s);
     }

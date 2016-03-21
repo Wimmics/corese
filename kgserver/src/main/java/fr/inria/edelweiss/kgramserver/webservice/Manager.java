@@ -4,6 +4,11 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
+import fr.inria.corese.kgtool.workflow.WorkflowParser;
+import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -24,6 +29,9 @@ public class Manager {
 
     static final String STCONTEXT = Context.STL_CONTEXT;
     private static String DEFAULT = NSManager.STL + "default";
+    private static String CONTENT = NSManager.STL + "content";
+    private static String SCHEMA  = NSManager.STL + "schema";
+    private static String NAME    = NSManager.SWL + "name";
     static final String SKOLEM    = NSManager.STL + "skolem";
     
     static HashMap<String, TripleStore> 
@@ -63,6 +71,8 @@ public class Manager {
                     initTripleStore(p, s);
                 } catch (LoadException ex) {
                     Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (EngineException ex) {
+                    Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -90,7 +100,7 @@ public class Manager {
         return Transformer.getProfile();
     }
 
-     TripleStore initTripleStore(Profile p, Service s) throws LoadException {
+     TripleStore initTripleStore(Profile p, Service s) throws LoadException, EngineException {
         TripleStore store = createTripleStore(p, s);
         mapURI.put(s.getName(), store);
         if (s.getService()!=null){
@@ -99,7 +109,7 @@ public class Manager {
         return store;
     }
     
-      TripleStore createTripleStore(Profile p, Service s) throws LoadException {
+      TripleStore createTripleStore(Profile p, Service s) throws LoadException, EngineException {
         GraphStore g = GraphStore.create(s.isRDFSEntailment());
         if (s.getParam() != null){
             IDatatype dt = s.getParam().get(SKOLEM);
@@ -113,11 +123,23 @@ public class Manager {
         store.init(p.isProtected());       
         return store;
     }
+      
+      GraphStore init(TripleStore ts, Service service) throws LoadException, EngineException{
+          Graph g = getProfile().getProfileGraph();
+          Node serv = g.getNode(service.getName());
+          Node cont = g.getNode(CONTENT, serv);
+          if (cont == null){
+              return initService(ts, service);
+          }
+          else {
+             return initService(ts, g, serv);
+          }
+      }
 
     /**
      * Create TripleStore and Load data from profile service definitions
      */
-     GraphStore init(TripleStore ts, Service s) throws LoadException {
+     GraphStore initService(TripleStore ts, Service s) throws LoadException {
         GraphStore g = ts.getGraph();
         Load ld = Load.create(g);
 
@@ -145,12 +167,39 @@ public class Manager {
         }
         return g;
     }
+     
+     /**
+      * Init service dataset with Workflow of Load
+      */
+    GraphStore initService(TripleStore ts, Graph profile, Node server) throws LoadException, EngineException {
+        GraphStore g = ts.getGraph();
+        for (Entity ent : profile.getEdges(CONTENT, server, 0)){
+            Node swnode = ent.getNode(1);
+            Node name = profile.getNode(NAME, swnode);
+            if (name != null && name.getLabel().equals(STCONTEXT)) {
+                WorkflowParser wp = new WorkflowParser(profile);
+                SemanticWorkflow sw = wp.parse(swnode);
+                Graph gg = Graph.create();
+                sw.process(new Data(gg));
+                g.setNamedGraph(STCONTEXT, gg);
+            }
+            else {
+                // main and schema
+                WorkflowParser wp = new WorkflowParser(profile);
+                SemanticWorkflow sw = wp.parse(swnode);
+                sw.process(new Data(g));
+            }            
+        }
+        
+        return g;
+    } 
+     
     
      void init(TripleStore ts) {
         Service s = getProfile().getServer(DEFAULT);
         if (s != null) {
             try {
-                init(ts, s);
+                initService(ts, s);
             } catch (LoadException ex) {
                 Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -187,7 +236,7 @@ public class Manager {
      * draft
      */ 
     @Deprecated
-    TripleStore getTripleStore(String uri, String name) throws LoadException {
+    TripleStore getTripleStore(String uri, String name) throws LoadException, EngineException {
         if (uri != null) {
             String extURI = nsm.toNamespace(uri);
             TripleStore t = getTripleStore(extURI);

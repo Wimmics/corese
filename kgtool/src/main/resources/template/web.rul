@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 28 17:53:23 CET 2016
+Mon Mar 21 09:25:08 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -343,6 +343,7 @@ where {
       st:query     ?q
       optional { ?qt st:reference ?r }
       optional { ?qt st:solution  ?s }
+      optional { ?qt sw:body  ?s }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
   }
 }
@@ -416,7 +417,8 @@ format {
 where {
   bind (st:get(st:context) as ?g)
   graph ?g {
-    [] a st:Query ;
+  values ?qt {st:Query sw:Query}
+    [] a ?qt ;
       st:index ?i ;
       st:name ?q ;
       rdfs:label ?title

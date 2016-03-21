@@ -36,65 +36,7 @@ st:dbpedia a st:Profile ;
 	[ a sw:Template ; sw:uri st:navlab ]
       )
   ] .
- # st:transform  st:navlab .
   
-st:test a st:Profile ;
-  st:workflow [
-    sw:debug true ;
-    sw:body (
-      [ a sw:Query ; sw:result sw:graph  ;
-	sw:body "select * where {?x ?p ?y} limit 100" ]
-      [ a sw:Template ; sw:uri st:sparql ]
-    )
-  ]
-.
-  
-st:loop a st:Profile ;
-  st:workflow [
-    sw:debug true ;
-    sw:loop 3 ;
-    sw:body (
-      [ a sw:Query ; sw:body "select * where {?x ?p ?y} limit 100" ]
-      [ a sw:Template ; sw:uri st:sparql ]
-    )
-  ]
-
-st:dbpedialoop a st:Profile ;   
-  st:param [ 
-    st:lang "fr" ;
-    st:import st:dbpediaParam, st:mapParam  ;
-    st:file "/user/corby/home/test.ttl" ;    
-  ] ;
-  st:workflow [ 
-      sw:loop 5 ;
-      sw:body ( 
-      <query/frdbpediastart.rq> 
-      <query/frdbpediacopy.rq> <query/frdbpediaclean.rq> <query/frdbpedialoop.rq> <query/save.rq> )] ;
-  st:transform  st:navlab .
-  
-  
-st:owl a st:Profile ;
-  st:workflow [
-    sw:debug true ;
-    sw:param [ sw:debug true ] ;
-    sw:body ( 
-    [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
-    [ a sw:Rule ; sw:uri sw:owlrl ] 
-    [ a sw:Template ; sw:uri st:turtle ]
-    )
-] ;
-st:transform st:sparql .
-
-
-st:owlsave a st:Profile ;
-  st:workflow [ st:body ( 
-  [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
-  [ a sw:Rule ; sw:uri sw:owlrl ] 
-  [ a sw:Template ; sw:uri st:turtle ]
-  )
-] ;
-st:transform st:sparql .
-
 
 st:dbpediadyn a st:Profile ;   
   st:param [ 
@@ -325,30 +267,7 @@ st:query <query/spqr.rq>;
 st:transform st:navlab . 
        
 
-###################################
-
-
-   
-  
-st:owlrltest a st:Server ;
-  st:service "test" ;
-  st:data [ st:uri <primer.owl>  ; st:name st:data ] ;
-  st:workflow [ sw:body ( <query/owlrltest.rq> ) ] ;
-  st:transform st:hturtle
- .
-
-st:ldp a st:Server ;
-st:service "ldp" ;
- st:data [ st:uri <tutorial/human1.rdf>  ; st:name st:data ] ;
- st:param [
-    st:lodprofile (
-    ( <http://fr.dbpedia.org/resource>  st:dbsparql )
-    ( <http://www.inria.fr/2015/humans> st:sparql )
-    ( "*" st:sparql )
-    );
- ] .
  
-
 st:default1 a st:Server ;
 st:data     
     [ st:uri <dbpedia/rome.ttl>  ; st:name st:data ] . 
@@ -376,7 +295,38 @@ st:tutorial1 a st:Server ;
     [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
     [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
+  
+  
+st:tutotest a st:Server ;
+  st:service "tuto" ;
+  st:transform st:web ;
+  st:content 
+    [ a sw:Workflow ; sw:body ( 
+	[ a sw:Load ; sw:path <tutorial/human1.rdf> ; sw:name st:data1 ]
+	[ a sw:Load ; sw:path <tutorial/human2.rdf> ; sw:name st:data2 ]
+	[ a sw:Load ; sw:path <tutorial/pragma.ttl> ; sw:name st:pragma ]  
+	[ a sw:Load ; sw:path <tutorial/human.rdfs> ; sw:name st:schema ]     
+	[ a sw:RuleBase ; sw:uri sw:rdfs ]
+	)] ,  
+    [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
+        st:indexQuery) ]
+.  
 
+# execute the whole query list of the tutorial
+st:tutocheck a st:Profile ;
+   st:workflow  
+    [ a sw:Workflow ; sw:body ( 
+      [ a sw:Workflow ; sw:uri <tutorial/workflow.ttl>  ] 
+      )]
+. 
+
+st:indexQuery a sw:Query ; 
+   sw:body 
+   "insert { ?q st:index ?n } where { ?q a sw:Query bind (kg:number() as ?n) }"
+.
+       
+  
 st:tutorial2 a st:Server ;
   st:service "rdfs" ;
   st:transform st:web ;
@@ -474,4 +424,101 @@ st:owlrl a st:Server ;
 .
 
 
-#st:loadLocal a st:Profile ; st:load <paca/mglt.ttl>, <paca/spqr.ttl>, <paca/borne.ttl>, <paca/cdn.ttl> .
+# *****************************************************************
+# Test
+# *****************************************************************
+
+st:test a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:body (
+      [ a sw:Query ; sw:result sw:graph  ;
+	sw:body "select * where {?x ?p ?y} limit 100" ]
+      [ a sw:Template ; sw:uri st:sparql ]
+    )
+  ]
+.
+  
+st:loop a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:loop 3 ;
+    sw:body (
+      [ a sw:Query ; sw:body "select * where {?x ?p ?y} limit 100" ]
+      [ a sw:Template ; sw:uri st:sparql ]
+    )
+  ]
+
+st:dbpedialoop a st:Profile ;   
+  st:param [ 
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam  ;
+    st:file "/user/corby/home/test.ttl" ;    
+  ] ;
+  st:workflow [ 
+      sw:loop 5 ;
+      sw:body ( 
+      <query/frdbpediastart.rq> 
+      <query/frdbpediacopy.rq> <query/frdbpediaclean.rq> <query/frdbpedialoop.rq> <query/save.rq> )] ;
+  st:transform  st:navlab .
+  
+  
+st:owl a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:param [ sw:debug true ] ;
+    sw:body ( 
+    [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
+    [ a sw:Rule ; sw:uri sw:owlrl ] 
+    [ a sw:Template ; sw:uri st:turtle ]
+    )
+] ;
+st:transform st:sparql .
+
+
+st:owlsave a st:Profile ;
+  st:workflow [ st:body ( 
+  [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
+  [ a sw:Rule ; sw:uri sw:owlrl ] 
+  [ a sw:Template ; sw:uri st:turtle ]
+  )
+] ;
+st:transform st:sparql .
+
+
+
+
+
+ 
+st:owlrltest a st:Server ;
+  st:service "test" ;
+  st:data [ st:uri <primer.owl>  ; st:name st:data ] ;
+  st:workflow [ sw:body ( <query/owlrltest.rq> ) ] ;
+  st:transform st:hturtle
+ .
+
+st:ldp a st:Server ;
+st:service "ldp" ;
+ st:data [ st:uri <tutorial/human1.rdf>  ; st:name st:data ] ;
+ st:param [
+    st:lodprofile (
+    ( <http://fr.dbpedia.org/resource>  st:dbsparql )
+    ( <http://www.inria.fr/2015/humans> st:sparql )
+    ( "*" st:sparql )
+    );
+ ] .
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

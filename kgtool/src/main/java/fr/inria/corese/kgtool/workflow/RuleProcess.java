@@ -23,8 +23,11 @@ public class RuleProcess extends  SemanticProcess {
     
     public RuleProcess(String p){
         path = p;
-        if (path.equals(Transformer.OWLRL) || path.equals(NSManager.OWLRL)){
+        if (path.equals(NSManager.OWLRL)){
             profile = RuleEngine.OWL_RL;
+        }
+        else if (path.equals(NSManager.RDFSRL)){
+            profile = RuleEngine.OWL_RL_LITE;
         }
     }
     

@@ -45,4 +45,6 @@ public interface AbstractProcess {
     void setResult(String r);
     
     void setURI(String uri);
+    
+    void setName(String name);
 }

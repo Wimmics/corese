@@ -23,7 +23,7 @@ public class WorkflowProcess implements AbstractProcess {
     // true means return input graph (use case: select where and return graph as is)
     private boolean probe = false;
     private boolean display = false;
-    private String result, uri;
+    private String result, uri, name;
     
     @Override
     public String toString(){
@@ -196,6 +196,20 @@ public class WorkflowProcess implements AbstractProcess {
     @Override
     public void setURI(String uri) {
         this.uri = uri;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

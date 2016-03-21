@@ -18,12 +18,12 @@ import java.util.List;
 public class SemanticWorkflow extends  WorkflowProcess {
     private static final String NL = System.getProperty("line.separator");
      
-    ArrayList<AbstractProcess> list;
+    ArrayList<WorkflowProcess> list;
     Data data;
     private int loop = -1;
     
     public SemanticWorkflow(){
-        list = new ArrayList<AbstractProcess>();
+        list = new ArrayList<WorkflowProcess>();
     }
     
     @Override
@@ -31,13 +31,13 @@ public class SemanticWorkflow extends  WorkflowProcess {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString()).append(":");
         int i = 1;
-        for (AbstractProcess p : getProcessList()){
+        for (WorkflowProcess p : getProcessList()){
             sb.append(NL).append(i++).append(": ").append(p.toString());
         }
         return sb.toString();
     }
     
-    public SemanticWorkflow add(AbstractProcess p){
+    public SemanticWorkflow add(WorkflowProcess p){
         list.add(p);
         p.subscribe(this);
         return this;
@@ -95,11 +95,11 @@ public class SemanticWorkflow extends  WorkflowProcess {
        return add(new ResultProcess());
     }
     
-    public List<AbstractProcess> getProcessList(){
+    public List<WorkflowProcess> getProcessList(){
         return list;
     }
     
-     public AbstractProcess getProcessLast(){
+     public WorkflowProcess getProcessLast(){
          if (list.isEmpty()){
              return null;
          }
@@ -130,7 +130,10 @@ public class SemanticWorkflow extends  WorkflowProcess {
     Data run(Data data) throws EngineException {  
         setData(data);
         trace();
-        for (AbstractProcess p : list){
+        for (WorkflowProcess p : list){
+            if (isDebug()){
+                System.out.println("SW: " + p.getClass().getName());
+            }
             complete(p);
             data = p.process(data);           
         }   
@@ -191,7 +194,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
     
     
     // Process inherit workflow Context and Dataset (if any)
-    void complete(AbstractProcess p) {
+    void complete(WorkflowProcess p) {
         if (getContext() != null) {
             p.inherit(getContext());
         }
@@ -226,7 +229,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
     @Override
     public void setDebug(boolean b){
         super.setDebug(b);
-        for (AbstractProcess p : getProcessList()){
+        for (WorkflowProcess p : getProcessList()){
             p.setDebug(b);
         }
     }

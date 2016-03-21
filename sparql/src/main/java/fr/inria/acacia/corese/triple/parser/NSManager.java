@@ -72,6 +72,7 @@ public class NSManager extends ASTObject {
     public static final String  EXT_PREF = "xt";
     public static final String  SPARQL_PREF = "rq";
     public static final String OWLRL = SWL + "owlrl";
+    public static final String RDFSRL = SWL + "rdfs";
 
     /**
      * prefix seed (ns1, ns2,...)

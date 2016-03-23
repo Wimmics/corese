@@ -1347,11 +1347,15 @@ public class MainFrame extends JFrame implements ActionListener {
 					str = new String(b);
 					appendMsg("Loading file from path: " + selectedFile + "\n");
 				}
+				fis.close();
 			} catch (IOException ex) {
 				LOGGER.error(ex);
 			} finally {
 				if (fis != null) {
-					fis.close();
+					try {
+						fis.close();
+					} catch (IOException ex) {
+					}
 				}
 			}
 		}

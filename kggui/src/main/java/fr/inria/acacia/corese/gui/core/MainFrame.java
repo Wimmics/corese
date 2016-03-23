@@ -55,6 +55,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -178,13 +179,11 @@ public class MainFrame extends JFrame implements ActionListener {
 	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 	private MyEvalListener el;
 	Buffer buffer;
-	private static String STYLE = "/style/";
-	private static String QUERY = "/query/";
-	private static String STYLESHEET = "style.txt";
-	private static String TXT = ".txt";
-	private static String RQ = ".rq";
-	private static String XML = ".xml";
-	private static String RDF = ".rdf";
+	private static final String STYLE = "/style/";
+	private static final String QUERY = "/query/";
+	private static final String STYLESHEET = "style.txt";
+	private static final String TXT = ".txt";
+	private static final String RQ = ".rq";
 	private static final String URI_CORESE = "http://wimmics.inria.fr/corese";
 	private static final String URI_GRAPHSTREAM = "http://graphstream-project.org/";
 
@@ -194,11 +193,11 @@ public class MainFrame extends JFrame implements ActionListener {
 	 * Crée la fenêtre principale, initialise Corese
 	 *
 	 * @param aCapturer
-	 * @param p_PropertyPath
+	 * @param pPropertyPath
 	 */
-	public MainFrame(CaptureOutput aCapturer, String p_PropertyPath) {
+	public MainFrame(CaptureOutput aCapturer, String pPropertyPath) {
 		super();
-		this.setTitle(TITLE); //+ Corese.version + " - " + Corese.date );
+		this.setTitle(TITLE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(900, 700);
 		this.setMinimumSize(this.getSize());
@@ -241,6 +240,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		//S'applique lors d'un changement de selection d'onglet
 		conteneurOnglets.addChangeListener(
 			new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent changeEvent) {
 				// c est le composant sélectionné
 				Component c = conteneurOnglets.getSelectedComponent();
@@ -294,6 +294,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		this.setVisible(true);
 
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
@@ -897,8 +898,8 @@ public class MainFrame extends JFrame implements ActionListener {
 			fileChooser.setMultiSelectionEnabled(true);
 			int returnValue = fileChooser.showOpenDialog(null);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
-				File l_Files[] = fileChooser.getSelectedFiles();
-				for (File f : l_Files) {
+				File[] lFiles = fileChooser.getSelectedFiles();
+				for (File f : lFiles) {
 					lPath = f.getAbsolutePath();
 					if (lPath != null) {
 						try {
@@ -911,10 +912,10 @@ public class MainFrame extends JFrame implements ActionListener {
 								appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
 							}
 						} catch (EngineException e1) {
-							e1.printStackTrace();
+							LOGGER.error(e1);
 							appendMsg(e1.toString());
 						} catch (LoadException e1) {
-							e1.printStackTrace();
+							LOGGER.error(e1);
 							appendMsg(e1.toString());
 						}
 					}
@@ -953,7 +954,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		} //Commente une sélection dans la requête
 		else if (e.getSource() == comment) {
 			if (!nbreTab.isEmpty()) {
-				String line = "";
+				String line;
 				String result = "";
 				int selectedTextSartPosition = current.getTextPaneQuery().getSelectionStart();
 				int selectedTextEndPosition = current.getTextPaneQuery().getSelectionEnd();
@@ -967,12 +968,9 @@ public class MainFrame extends JFrame implements ActionListener {
 							//on commente
 							line = "#" + line;
 						}
-
 						result += line;
-
 					} catch (BadLocationException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						LOGGER.error(e1);
 					}
 				}
 				current.getTextPaneQuery().setText(result);
@@ -1219,7 +1217,7 @@ public class MainFrame extends JFrame implements ActionListener {
 				}
 
 				lCurrentPath = f.getParent();
-				
+
 				if (!model.contains(lPath) && !wf) {
 					model.addElement(lPath);
 				}
@@ -1334,8 +1332,9 @@ public class MainFrame extends JFrame implements ActionListener {
 			//Voici le fichier qu'on a selectionné
 			selectedFile = fileChooser.getSelectedFile();
 			lCurrentPath = selectedFile.getParent();
+			FileInputStream fis = null;
 			try {
-				FileInputStream fis = new FileInputStream(selectedFile);
+				fis = new FileInputStream(selectedFile);
 				int n;
 				while ((n = fis.available()) > 0) {
 					byte[] b = new byte[n];
@@ -1348,7 +1347,12 @@ public class MainFrame extends JFrame implements ActionListener {
 					str = new String(b);
 					appendMsg("Loading file from path: " + selectedFile + "\n");
 				}
-			} catch (IOException err) {
+			} catch (IOException ex) {
+				LOGGER.error(ex);
+			} finally {
+				if (fis != null) {
+					fis.close();
+				}
 			}
 		}
 		return str;

@@ -3,7 +3,7 @@ package fr.inria.edelweiss.kgraph.query;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -51,7 +51,7 @@ public class Construct
             isBuffer = false;
     private boolean test = false;
     Object rule;
-    Hashtable<Node, Node> table;
+    HashMap<Node, Node> table;
     Duplicate duplicate;
     private int loopIndex = -1;
     private Node prov;
@@ -67,7 +67,7 @@ public class Construct
 
     Construct(Query q, String src) {
         query = q;
-        table = new Hashtable<Node, Node>();
+        table = new HashMap<Node, Node>();
         count = 0;
         dtDefaultGraph = DatatypeMap.createResource(src);
         duplicate =  Duplicate.create();
@@ -212,6 +212,7 @@ public class Construct
         }
 
         if (env != null) {
+            // construct one solution in env
             clear();
             construct(gNode, exp, map, env);
         } else {
@@ -266,13 +267,16 @@ public class Construct
                         if (isDebug) {
                             logger.debug("** Construct: " + ent);
                         }
-                        //Entity ent = edge;
                         if (!isBuffer) {
+                            // isBuffer means: bufferise edges in a list 
+                            // that will be processed later by RuleEngine
+                            // otherwise, store edge in graph rigth now
                             ent = graph.addEdge(ent);
                         }
                         if (ent != null) {
                             map.setNbInsert(map.nbInsert() + 1);
                             if (lInsert != null) {
+                                // buffer where to store edges
                                 lInsert.add(ent);
                             }
 

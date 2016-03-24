@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,6 +34,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.EdgeIterator;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
+import java.util.HashMap;
 
 /**
  * Producer
@@ -98,6 +98,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         return mode;
     }
 
+    @Override
     public void setMode(int n) {
         switch (n) {
             case SKIP_DUPLICATE_TEST:
@@ -137,10 +138,6 @@ public class ProducerImpl implements Producer, IProducerQP {
         return local;
     }
 
-//    public void set(MapperSQL m) {
-//        mapper = m;
-//    }
-
     Node getNode(Edge edge, Node gNode, int i) {
         switch (i) {
             case IGRAPH:
@@ -171,8 +168,6 @@ public class ProducerImpl implements Producer, IProducerQP {
     boolean isExtern(Node node, Environment env){
         return node.getIndex() == -1
                 || node.getGraphStore() != graph;
-//                || mode == EXTENSION
-//                || env.getQuery().getGlobalQuery().isExtension() ;
     }
 
     boolean isType(Edge edge, Environment env) {
@@ -181,15 +176,20 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     /**
      *
-     * @param gNode : null or graph name of a graph pattern: graph gNode { }
+     * @param gNode : null or named graph pattern: graph gNode { }
      * @param from : null, from or from named if gNode != null
      * @param edge : query Edge
-     * @param env : Environment with partial variable bindings if gNode == null
-     * : simple triple enumerate one occurrence of each edge (not the duplicates
-     * in named graphs) else : triple in named graph enumerate all occurrences
-     * of edge in named graphs gNode may be a constant value or it may have a
+     * @param env : Environment with partial variable bindings 
+     * if gNode == null: query default graph, possibly with from
+     * eliminate duplicate edges (same edge with different named graph)    
+     * if gNode != null: query named graph, possibly with from named
+     * gNode may be a constant value or it may have a
      * value in env
-     *
+     *     
+     * Use cases:
+     * 1. named graph:   gNode edge, from named gNode edge (gNode: uri or var with or without value in env)
+     * 2. default graph: edge, from edge
+     * if edge has a bound query node, use its value to focus candidate edges in the Edge Index
      */
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
@@ -206,68 +206,63 @@ public class ProducerImpl implements Producer, IProducerQP {
         int n = 0;
 
         if (q.isRule()) {
+            // special case with tricky optimizations for rule engine
             if (q.getEdgeList() != null
                     && edge.getIndex() == q.getEdgeIndex()) {
-                // draft: transitive rule (see RuleEngine)
-                //System.out.println("PI: " + q.getEdgeList().size() + " " + q.getAST());
+                // transitive rule (see RuleEngine)
+                // there is a list of candidate edges
                 return q.getEdgeList();
             } else {
                 Exp exp = env.getExp();
                 if (exp != null && exp.getEdge() == edge && exp.getLevel() != -1) {
                     level = exp.getLevel();
                     n = ILIST;
-                    //System.out.println("PI: " + level);
+                    // rule engine requires new edges with level >= exp.getLevel()
+                    // ILIST is index of specific Edge Index sorted by reverse level
                 }
             }
         }
 
-        Node node = null, node2 = null;
+        Node focusNode = null, objectNode = null;
         boolean isType = false;
 
         if (level != -1) {
-        } else {
+            // use case: RuleEngine special case, skip focus node
+        } 
+        else {
             for (Index ei : graph.getIndexList()) {
                 // enumerate graph index to get the index i of nodes in edge: 0, 1, GRAPHINDEX
-                // by convention the index of last is the index of graph node
+                // by convention the index of last is the index of graph node wich is -1
+                // search edge query node with a value or which is a constant
                 int i = ei.getIndex();
                 if (i < edge.nbNode()) {
-                    // Edge has a node that is bound or constant ?
+                    // get ith node
                     Node qNode = getNode(edge, gNode, i);
                     if (qNode != null) {
-                        // there may be no gNode
                         if (i == 1
                                 && qNode.isConstant()
                                 && isType(edge, env)
                                 && graph.hasEntailment()) {
                             // RDFS entailment on ?x rdf:type c:Engineer
-                            // no dichotomy on c:Engineer to get subsumption
+                            // no focus on object node because:
+                            // no dichotomy on c:Engineer because we want subsumption
                         } else {
                             Node val = env.getNode(qNode);
-                            node = getValue(qNode, val, env);
+                            // candidate query node value:
+                            focusNode = getValue(qNode, val, env);
                           
-                            if (node == null) {
+                            if (focusNode == null) {
                                 if (qNode.isConstant() || val != null) {
-                                    // search a constant that is not in the graph: fail
+                                    // search a value that is not in the graph: fail
                                     return empty;
                                 }
                             } 
-//                            else if (q.isMatchBlank() && node.isBlank()) {
-//                                // blank node may deserve a recursive match, we may not join
-//                                // use case: OWL blank match
-//                                if (isFuzzy(edge, i)) {
-//                                    // fuzzy match: skip join on node
-//                                    node = null;
-//                                } else {
-//                                    // real join 
-//                                    n = i;
-//                                    break;
-//                                }
-//                            } 
                             else {
                                 n = i;
                                 if (i == 0 && !isType(edge, env)) {
+                                    // in case query object Node also have a value
                                     Node val2 = env.getNode(edge.getNode(1));
-                                    node2 = getValue(edge.getNode(1), val2, env);
+                                    objectNode = getValue(edge.getNode(1), val2, env);
                                 }
                                 break;
                             }
@@ -277,32 +272,35 @@ public class ProducerImpl implements Producer, IProducerQP {
             }
         }
 
-        if (node == null && from.size() > 0) {
-            // no query node has a value, there is a from [named]
-            // from named <uri>
-            // graph ?g { }
-            // <<bind>> ?g to uri 
+        if (focusNode == null && from.size() > 0) {
+            // no query node has a value, there is a from [named]          
             if (gNode != null) {
+                // iterator on named graph in from named:
                 return complete(getEdgesFrom(predicate, from), gNode, edge, env);
-            } else if (!isFromOK(from)) {
-                // from are unknown
+            } else if (! isFromOK(from)) {
+                // from URIs are unknown in current graph
                 return empty;
             }
         }
 
-        Iterable<Entity> it = graph.getEdges(predicate, node, node2, n);
+        // raw iterator of edges 
+        Iterable<Entity> it = graph.getEdges(predicate, focusNode, objectNode, n);
 
-        // check gNode/from/named
-        if (mode == EXTENSION) {
-            q.getGlobalQuery().setExtension(true);
-        }
         if (mode == EXTENSION && getQuery() == q) {
+            // Producer for an external graph ?g :
+            // bind (us:graph() as ?g) graph ?g { }
+            // see getProducer()
+            // skip named graph, from, etc.
             if (it == null) {
                 return empty;
             }
         } else {
-            it = complete(q, it, gNode, getNode(gNode, env), from, level);
+            // 1. default graph: eliminate duplicate edges (when same edge in different named graph)
+            // and process from
+            // 2. named graph: process gNode, from named
+            it = complete(it, gNode, getNode(gNode, env), from, level);
         }
+        
         // in case of local Matcher
         it = complete(it, gNode, edge, env);
 
@@ -343,8 +341,9 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
 
     /**
-     * Iterator of Entity that performs local match.match() Enable to have a
+     * Iterator of Entity that performs local Ontology match.match() Enable to have a
      * local ontology in case of several graphs with local ontologies
+     * In addition, with rdfs entailment, ?x a us:Person return one occurrence of each value of ?x
      */
     Iterable<Entity> complete(Iterable<Entity> it, Node gNode, Edge edge, Environment env) {
         if (isMatch && !env.getQuery().isRelax()) {
@@ -389,46 +388,31 @@ public class ProducerImpl implements Producer, IProducerQP {
         }
     }
 
-//	Iterable<Entity> getTypeEdges(Node predicate, Node type, Environment env){
-//		MetaIterator<Entity> meta = new MetaIterator<Entity>();
-//		
-//		for (Node node : graph.getTypeNodes()){
-//
-//			if (node.same(type) || match.isSubClassOf(node, type, env)){
-//				Iterable<Entity> it = graph.getEdges(predicate, node, 1);
-//				if (it != null){
-//					meta.next(it);
-//				}
-//			}
-//		}
-//		
-//		if (meta.isEmpty()){
-//			return empty;
-//		}
-//		
-//		return meta;
-//	}
-    /**
-     * Check from/named if no gNode, eliminate duplicate successive edges
-     */
-    Iterable<Entity> complete(Query q, Iterable<Entity> it, Node gNode, Node sNode,
+    Iterable<Entity> complete(Iterable<Entity> it, Node gNode, Node sNode,
             List<Node> from) {
-        return complete(q, it, gNode, sNode, from, -1);
+        return complete(it, gNode, sNode, from, -1);
     }
 
-    Iterable<Entity> complete(Query q, Iterable<Entity> it, Node gNode, Node sNode,
+    /**
+     * when default graph, eliminate duplicate edges, process from
+     * when named graph, process from named
+     */
+    Iterable<Entity> complete(Iterable<Entity> it, Node gNode, Node sNode,
             List<Node> from, int level) {
         if (it == null) {
             it = empty;
         } else if (gNode == null) {
-            // eliminate similar edges
-            // check from 
+            // query default graph, possibly with from U1, .. Un
+            // eliminate duplicate edges in different named graph           
             EdgeIterator ii = new EdgeIterator(graph, it, from, false);
+            // consider edges whose level is >= this level
+            // rule base optimisation (consider new edges)
             ii.setLevel(level);
-            ii.setSpeedUp(speedUp);
+            // depredated:
+            //ii.setSpeedUp(speedUp);
             it = ii;
         } else if (from.size() > 0 && sNode == null) {
-            // check from [named]			
+            // named graph ?g { } has no value, check from named			
             it = new EdgeIterator(graph, it, from, true);
         }
         return it;
@@ -473,8 +457,18 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
 
     /**
-     * Edges for Property Path Regex
+     * Edges for Property Path elementary Regex
+     * property | ^property  |  !(p1 | | pn)
+     * gNode: query named graph
+     * from: from/named
+     * src: target named graph
+     * start: the start node of target edges 
+     * index: 0 for start subject, 1 for start object
+     * index = 1 occurs when edge object has a value or is constant
+     * in this case path search goes from object to subject.
+     * 
      */
+    @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env,
             Regex exp, Node src, Node start, int index) {
 
@@ -508,33 +502,10 @@ public class ProducerImpl implements Producer, IProducerQP {
             return empty;
         }
 
-        // draft: computes edges with construct-where queries
-//		if (qengine!=null){
-//			return construct(start, exp, index);
-//		}
         Iterable<Entity> it = graph.getEdges(predicate, start, null, index);
 
-//		if (gNode != null || from.size()>0 || ! graph.hasDefault()){
-//			it = graph.getEdges(predicate, start, null, index);
-//		}
-//		else {
-//			it = graph.getDefaultEdges(predicate, start, null, index);			
-//			return it;
-//		}
-        // gNode, from
-        it = complete(env.getQuery(), it, gNode, src, from);
+        it = complete(it, gNode, src, from);
         return it;
-    }
-
-    // draft: computes edges with construct-where queries
-    Iterable<Entity> construct(Node start, Regex exp, int index) {
-        Mappings map = qengine.process(start, exp.getLongName(), index);
-        if (map == null || map.getGraph() == null) {
-            return empty;
-        }
-        Graph g = (Graph) map.getGraph();
-        g.prepare();
-        return g.getEdges();
     }
 
     /**
@@ -559,7 +530,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         if (meta.isEmpty()) {
             return empty;
         }
-        Iterable<Entity> it = complete(env.getQuery(), meta, gNode, src, from);
+        Iterable<Entity> it = complete(meta, gNode, src, from);
         return it;
     }
 
@@ -576,42 +547,55 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
 
     /**
-     * use case: path finder requires all nodes for zero length path
+     * SPARQL requires *all* graph nodes for zero length path
+     * that is all subject and object nodes
      *
      * TODO: env.isBound(gNode) is not thread safe
      */
+    @Override
     public Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge edge,
             Environment env, List<Regex> exp, int index) {
 
         Node node = edge.getNode(index);
+        
         if (node.isConstant()) {
+            // return constant
             Node nn = graph.copy(node);
-            ArrayList<Entity> list = new ArrayList<Entity>();
+            ArrayList<Entity> list = new ArrayList<Entity>(1);
             list.add(EntityImpl.create(null, nn));
             return list;
-        } else if (gNode == null) {
+        } 
+        else if (gNode == null) {
+            // default graph nodes
             if (from.size() > 0) {
                 return getNodes(gNode, from, env);
             } else {
                 return graph.getAllNodes();
             }
-        } else {
-            if (env.isBound(gNode)) {
-                node = env.getNode(gNode);
+        } 
+        // named graph nodes
+        else if (env.isBound(gNode)) {
+            // return nodes of this named graph
+            node = env.getNode(gNode);
+            return graph.getNodes(node);
+        } 
+        else if (gNode.isConstant()) {
+           // return nodes of this named graph
+           node = graph.getGraphNode(gNode.getLabel());
+            if (node != null) {
                 return graph.getNodes(node);
-            } else if (gNode.isConstant()) {
-                node = graph.getGraphNode(gNode.getLabel());
-                if (node != null) {
-                    return graph.getNodes(node);
-                }
-            } else if (from.size() > 0) {
-                return getNodes(gNode, from, env);
-            } else {
-                return graph.getAllNodes();
             }
+        } 
+        else if (from.size() > 0) {
+            // return nodes of from named graph
+            return getNodes(gNode, from, env);
+        } 
+        else {
+            // all nodes
+            return graph.getAllNodes();
         }
 
-        return new ArrayList<Entity>();
+        return empty;
     }
 
     /**
@@ -619,13 +603,14 @@ public class ProducerImpl implements Producer, IProducerQP {
      * are bound
      *
      */
-    public boolean contains(Node gNode, Node node) {
-        return true;
-    }
+//    public boolean contains(Node gNode, Node node) {
+//        return true;
+//    }
 
     /**
-     * Enumerate nodes from graphs in the list gNode == null : from gNode !=
-     * null : from named
+     * Enumerate nodes from graphs in the list 
+     * gNode == null : from 
+     * gNode != null : from named
      */
     Iterable<Entity> getNodes(Node gNode, List<Node> from, Environment env) {
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
@@ -656,7 +641,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         return new Iterable<Entity>() {
             public Iterator<Entity> iterator() {
 
-                final Hashtable<Node, Node> table = new Hashtable<Node, Node>();
+                final HashMap<Node, Node> table = new HashMap<Node, Node>();
                 final Iterator<Entity> it = iter.iterator();
 
                 return new Iterator<Entity>() {
@@ -670,7 +655,7 @@ public class ProducerImpl implements Producer, IProducerQP {
                             if (ent == null) {
                                 return null;
                             }
-                            if (!table.contains(ent.getNode())) {
+                            if (!table.containsKey(ent.getNode())) {
                                 table.put(ent.getNode(), ent.getNode());
                                 return ent;
                             }
@@ -685,6 +670,9 @@ public class ProducerImpl implements Producer, IProducerQP {
         };
     }
 
+    /**
+     * Return list of named graph Nodes, possibly in from    
+     */
     @Override
     public Iterable<Node> getGraphNodes(Node node, List<Node> from,
             Environment env) {
@@ -696,7 +684,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         return graph.getGraphNodes();
     }
 
-    public Iterable<Node> getGraphNodes2(Node node, final List<Node> from,
+    Iterable<Node> getGraphNodes2(Node node, final List<Node> from,
             Environment env) {
 
         List<Node> list = new ArrayList<Node>();
@@ -713,6 +701,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     /**
      *   Cast Java value into IDatatype 
      */
+    @Override
     public IDatatype getValue(Object value){
         if (value instanceof IDatatype){
             return (IDatatype) value;
@@ -734,6 +723,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     
     
     // cast IDatatype or Java value into DatatypeValue
+    @Override
     public DatatypeValue getDatatypeValue(Object value){
         if (value == null){
             return null;
@@ -747,49 +737,62 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
     
     /**
-     * Return a Node given a value (IDatatype value) Use case: select/bind (exp
-     * as node) return the Node in the graph or return the IDatatype value as is
+     * Return a Node given a value (IDatatype value) 
+     * Use case: select/bind (exp as node) 
+     * return the Node in the graph or return the IDatatype value as is
      * (to speed up)
      *
      */
-      synchronized public Node getNode(Object value) {
+    @Override
+     synchronized public Node getNode(Object value) {
         // TODO Auto-generated method stub
         if (!(value instanceof IDatatype)) {
             return DatatypeMap.createObject("tmp", value);
         }
         IDatatype dt = (IDatatype) value;
-        if (selfValue || dt.isFuture()) {
+        if (dt.isFuture()) {
             // future: template intermediate result 
             return dt;
         }
-
-        Node node = vcache.get(dt);
+        Node node = graph.getNode(dt, false, false);
         if (node != null) {
             return node;
-        }
-        // look up Node value in the graph
-        node = graph.getNode(dt, false, false);
-
-        if (node == null) {
-            node = dt;
-        }
-
-        vcache.put(dt, node);
-        return node;
-
-        //        if (dt.isBlank() && dt.getLabel().startsWith(Query.BPATH)) {
-//                // blank generated for path node: do not store it
-//                return local.getNode(dt, true, false);
-//            } else {
-//                node = local.getNode(dt, true, true);
-//        }
+        } 
+        return dt;
     }
+    
+//      synchronized public Node getNode2(Object value) {
+//        // TODO Auto-generated method stub
+//        if (!(value instanceof IDatatype)) {
+//            return DatatypeMap.createObject("tmp", value);
+//        }
+//        IDatatype dt = (IDatatype) value;
+//        if (selfValue || dt.isFuture()) {
+//            // future: template intermediate result 
+//            return dt;
+//        }
+//
+//        Node node = vcache.get(dt);
+//        if (node != null) {
+//            return node;
+//        }
+//        // look up Node value in the graph
+//        node = graph.getNode(dt, false, false);
+//
+//        if (node == null) {
+//            node = dt;
+//        }
+//
+//        vcache.put(dt, node);
+//        return node;
+//    }
 
     public Object getValue(Node node) {
         return node.getValue();
     }
 
     @Override
+    @Deprecated
     public Iterable<Entity> getNodes(Node gNode, List<Node> from, Node qNode,
             Environment env) {
         // TODO Auto-generated method stub
@@ -804,7 +807,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     @Override
     public void initPath(Edge edge, int index) {
-        //graph.initPath();
+        
     }
 
     @Override
@@ -831,6 +834,9 @@ public class ProducerImpl implements Producer, IProducerQP {
         return ei.isFrom(from, node);
     }
 
+    /**
+     * Cast function result into Mappings
+     */
    @Override
     public Mappings map(List<Node> nodes, Object object) {
        return mapper.map(nodes, object);
@@ -887,11 +893,11 @@ public class ProducerImpl implements Producer, IProducerQP {
         this.selfValue = selfValue;
     }
 
-    @Override
     /**
      * Overloading of graph ?g { } The value of ?g may an extended graph
      * producer
      */
+    @Override
     public boolean isProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
         if (dt.getObject() != null) {
@@ -979,12 +985,17 @@ public class ProducerImpl implements Producer, IProducerQP {
                 }
 
                 // case 2: bound
-                Iterator<Node> it = this.graph.getProperties().iterator();
-                while (it.hasNext()) {
-                    Node predNode = it.next();
-                    if (qpgn.getExpNode(PREDICATE).getLabel().equalsIgnoreCase(predNode.getLabel())) {
-                        return this.graph.size(predNode);
-                    }
+//                Iterator<Node> it = this.graph.getProperties().iterator();
+//                while (it.hasNext()) {
+//                    Node predNode = it.next();
+//                    if (qpgn.getExpNode(PREDICATE).getLabel().equalsIgnoreCase(predNode.getLabel())) {
+//                        return this.graph.size(predNode);
+//                    }
+//                }
+                
+                Node pred = graph.getPropertyNode(qpgn.getExpNode(PREDICATE).getLabel());
+                if (pred != null){
+                   return this.graph.size(pred); 
                 }
 
                 //case 3: not found

@@ -147,13 +147,13 @@ public class QueryProcess extends QuerySolver {
          * 
          */
         public static Eval createEval(Graph g, String q) throws EngineException{
-            QueryProcess exec = QueryProcess.create(g, false);
-            Eval eval = exec.createEval(q);
+            QueryProcess exec = create(g);
+            Eval eval = exec.createEval(q, null);
             return eval;
 	}
         
         public static Eval createEval(Graph g, Query q) throws EngineException{
-            QueryProcess exec = QueryProcess.create(g, false);
+            QueryProcess exec = create(g);
             Eval eval = exec.createEval(q);
             return eval;
 	}
@@ -170,7 +170,6 @@ public class QueryProcess extends QuerySolver {
 		ProducerImpl p =  ProducerImpl.create(g);
 		p.setMatch(isMatch);
 		QueryProcess exec = QueryProcess.create(p);
-                //exec.setManager(ManagerImpl.create(g));
 		exec.setMatch(isMatch);
 		return exec;
 	}

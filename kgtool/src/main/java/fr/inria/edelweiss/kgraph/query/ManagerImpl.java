@@ -15,7 +15,6 @@ import fr.inria.edelweiss.kgraph.core.Workflow;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.util.logging.Level;
 
 /**
  * SPARQL 1.1 Update
@@ -73,6 +72,7 @@ public class ManagerImpl implements Manager {
         return null;
     }
 
+    @Override
     public boolean process(Query q, Basic ope, Dataset ds) {
         String uri = ope.getGraph();
         boolean isDefault = ope.isDefault();
@@ -347,7 +347,7 @@ public class ManagerImpl implements Manager {
             }
         }
 
-        if (load.isRule(uri) && load.getRuleEngine() != null) { // && src!=null && src.equals(Entailment.RULE)){
+        if (load.isRule(uri) && load.getRuleEngine() != null) { 
             // load rule base into workflow
             // TODO ? load <rulebase.rul> into kg:workflow
             // pros: if there are several rule base load, they will be process() together
@@ -361,6 +361,7 @@ public class ManagerImpl implements Manager {
         return true;
     }
 
+    @Override
     public void insert(Query query, Mappings lMap, Dataset ds) {
         Construct cons = Construct.create(query);
         cons.setDebug(query.isDebug());
@@ -371,6 +372,7 @@ public class ManagerImpl implements Manager {
         lMap.setGraph(gg);
     }
 
+    @Override
     public void delete(Query query, Mappings lMap, Dataset ds) {
         Construct cons = Construct.create(query);
         cons.setDebug(query.isDebug());

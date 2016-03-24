@@ -1,7 +1,7 @@
 package fr.inria.edelweiss.kgtool.load;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.api.Creator;
@@ -24,17 +24,19 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
  * 
  */
 public class CreateImpl implements Creator {
-	
-	Hashtable<String, String> blank;
-	NSManager nsm;
-	Graph graph;
-	Node source;
-	Stack stack;
-	String base;
-	private boolean renameBlankNode = true;
-	int limit = Integer.MAX_VALUE;
+    private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(CreateImpl.class);
+    
+    HashMap<String, String> blank;
+    NSManager nsm;
+    Graph graph;
+    Node source;
+    Stack stack;
+    String base;
+    private boolean renameBlankNode = true;
+    int limit = Integer.MAX_VALUE;
     private String resource;
     private Node node;
+    Load load;
 	
 	class Stack extends ArrayList<Node> {
 		
@@ -47,24 +49,28 @@ public class CreateImpl implements Creator {
 		
 	}
 	
-	CreateImpl(Graph g){
+	CreateImpl(Graph g, Load ld){
 		graph = g;
-		blank = new Hashtable<String, String>();
+                load = ld;
+		blank = new HashMap<String, String>();
 		nsm = NSManager.create();
 		stack = new Stack();
 	}
 
-	public static CreateImpl create(Graph g){
-		return new CreateImpl(g);
+	public static CreateImpl create(Graph g, Load ld){
+		return new CreateImpl(g, ld);
 	}
         
+    @Override
         public void start(){
             graph.setUpdate(true);
         }
         
+    @Override
         public void finish(){
         }
 	
+    @Override
 	public void setLimit(int max){
 		limit = max;
 	}
@@ -76,15 +82,18 @@ public class CreateImpl implements Creator {
 	}
 	
 	
+    @Override
 	public void graph(Atom src){
 		stack.add(source);
 		source = graph.addGraph(src.getLabel());
 	}
 	
+    @Override
 	public void endGraph(Atom src){
 		source = stack.pop();
 	}
 	
+    @Override
 	public boolean accept(Atom subject, Atom property, Atom object){
 //		if (graph.size() / 10000 == graph.size()/ 10000.0){
 //			System.out.println(graph.size());
@@ -95,6 +104,7 @@ public class CreateImpl implements Creator {
 		return false;
 	}
 
+    @Override
 	public void triple(Atom subject, Atom property, Atom object) {		
 		if (source == null){
 			source = graph.addGraph(Entailment.DEFAULT);
@@ -111,8 +121,20 @@ public class CreateImpl implements Creator {
 		
 		Entity e = graph.create(source, s, p, o);
 		graph.addEdge(e);
+                parseImport(property, object);              
 	}
+    
+    void parseImport(Atom property, Atom object){
+        if (property.getLongName().equals(Load.IMPORTS)){
+            try {
+                load.parseImport(object.getLongName());
+            } catch (LoadException ex) {
+                logger.error(ex);
+            }
+        }
+    }
 	
+    @Override
 	public void triple(Atom property, List<Atom> l) {
 		if (source == null){
 			source = graph.addGraph(Entailment.DEFAULT);
@@ -130,6 +152,7 @@ public class CreateImpl implements Creator {
 		graph.addEdge(e);
 	}
 	
+    @Override
 	public void list(RDFList l){
 		for (Exp exp : l.getBody()){
 			if (exp.isTriple()){
@@ -206,10 +229,12 @@ public class CreateImpl implements Creator {
 		return id;
 	}
 
+    @Override
 	public boolean isRenameBlankNode() {
 		return renameBlankNode;
 	}
 
+    @Override
 	public  void setRenameBlankNode(boolean renameBlankNode) {
 		this.renameBlankNode = renameBlankNode;
 	}

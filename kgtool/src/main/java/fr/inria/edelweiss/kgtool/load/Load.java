@@ -588,7 +588,7 @@ public class Load
 
     void loadTurtle(Reader stream, String path, String base, String name) throws LoadException {
 
-        Creator cr = CreateImpl.create(graph);
+        Creator cr = CreateImpl.create(graph, this);
         cr.graph(Constant.create(name));
         cr.setRenameBlankNode(renameBlankNode);
         cr.setLimit(limit);
@@ -720,7 +720,7 @@ public class Load
         }
     }
 
-    void imports(String uri) {
+    void imports(String uri)  {
         if (!loaded.containsKey(uri)) {
             loaded.put(uri, uri);
             if (debug) {
@@ -736,6 +736,16 @@ public class Load
                 logger.error(ex);
             }
             build = save;
+        }
+    }
+    
+    void parseImport(String uri) throws LoadException {
+        if (!loaded.containsKey(uri)) {
+            loaded.put(uri, uri);
+            if (debug) {
+                logger.info("Import: " + uri);
+            }
+            parse(uri);
         }
     }
 

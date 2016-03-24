@@ -13,6 +13,7 @@ function st:process(?x) {
        
   function st:misc(?name) { 
     st:protocol(
-      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&transform=st:sparql%23core&profile=st:dbpedia"))
+      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&profile=st:sparql"))
+      #"&transform=st:sparql%23core&profile=st:dbpedia"))
   }
   

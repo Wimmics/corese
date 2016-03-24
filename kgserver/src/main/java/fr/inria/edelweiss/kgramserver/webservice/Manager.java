@@ -199,8 +199,10 @@ public class Manager {
         Service s = getProfile().getServer(DEFAULT);
         if (s != null) {
             try {
-                initService(ts, s);
+                init(ts, s);
             } catch (LoadException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (EngineException ex) {
                 Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

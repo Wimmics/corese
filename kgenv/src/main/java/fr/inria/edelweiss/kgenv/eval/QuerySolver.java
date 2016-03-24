@@ -290,8 +290,8 @@ public class QuerySolver  implements SPARQLEngine {
          * str  contains function definitions
          * @throws EngineException 
          */
-        public Eval createEval(String str) throws EngineException {
-            Query q = compile(str);
+        public Eval createEval(String str, Dataset ds) throws EngineException {
+            Query q = compile(str, ds);
             return createEval(q);
         }
         
@@ -302,12 +302,16 @@ public class QuerySolver  implements SPARQLEngine {
          }
         
         public IDatatype eval(String q) throws EngineException{
-            return eval(q, MAIN_FUN);
+            return eval(q, MAIN_FUN, null);
         }
         
-        public IDatatype eval(String q, String name) throws EngineException{
+        public IDatatype eval(String q, Dataset ds) throws EngineException {
+            return eval(q, MAIN_FUN, ds);
+        }
+        
+        IDatatype eval(String q, String name, Dataset ds) throws EngineException{
             setGenerateMain(false);
-            Eval eval = createEval(q);
+            Eval eval = createEval(q, ds);
             IDatatype dt = (IDatatype) eval.eval(name, new IDatatype[0]);
             return dt;
         }

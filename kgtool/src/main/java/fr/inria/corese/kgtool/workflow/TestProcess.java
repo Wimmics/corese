@@ -1,10 +1,14 @@
 package fr.inria.corese.kgtool.workflow;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,21 +36,37 @@ public class TestProcess extends SemanticProcess {
 
     @Override
     public Data process(Data data) throws EngineException {
-        Data test = pif.process(data);
-        Mappings map = test.getMappings();
-        if (isDebug()){
-            System.out.println("TP test: " + map.size());
-        }
-        if (map.size() > 0) {
-            if (pthen != null){
+        boolean test = test(data);
+        
+        if (test) {
+            if (pthen != null) {
                 return pthen.process(data);
             }
         } 
         else if (pelse != null) {
             return pelse.process(data);
-        } 
-        
+        }
+
         return data;
+    }
+    
+    boolean test(Data data) throws EngineException{
+         Data test = pif.process(data);
+         IDatatype dt = test.getDatatype();
+         Mappings map = test.getMappings();
+         if (dt != null){
+             try {
+                 return dt.isTrue();
+             } catch (CoreseDatatypeException ex) {
+                 throw new EngineException(ex);
+             }
+         }
+         else if (map == null){
+             throw new EngineException("Error:\n" + pif.toString());
+         } else {
+            return map.size() > 0;
+         }
+         
     }
 
     @Override

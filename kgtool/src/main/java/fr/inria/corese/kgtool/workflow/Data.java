@@ -1,5 +1,6 @@
 package fr.inria.corese.kgtool.workflow;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -15,6 +16,7 @@ public class Data {
     private Dataset dataset;
     private WorkflowProcess process;
     private Mappings map;
+    private IDatatype datatype;
     private Graph graph;
     private Context context;
     private TemplateVisitor visitor;
@@ -22,6 +24,11 @@ public class Data {
           
     public Data(Graph g){
         graph = g;
+    }
+    
+    Data(Graph g, IDatatype dt){
+        graph = g;
+        datatype = dt;
     }
     
     Data(Mappings m, Graph g){
@@ -143,6 +150,20 @@ public class Data {
      */
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
+    }
+
+    /**
+     * @return the datatype
+     */
+    public IDatatype getDatatype() {
+        return datatype;
+    }
+
+    /**
+     * @param datatype the datatype to set
+     */
+    public void setDatatype(IDatatype datatype) {
+        this.datatype = datatype;
     }
 
 }

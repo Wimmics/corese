@@ -42,6 +42,7 @@ public class WorkflowParser {
     public static final String TRANSFORMATION = PREF + "Transformation";
     public static final String LOAD = PREF + "Load";
     public static final String TEST = PREF + "Test";
+    public static final String FUNCTION = PREF + "Function";
     public static final String WORKFLOW = PREF + "Workflow";
     
     public static final String URI = PREF + "uri";
@@ -150,10 +151,20 @@ public class WorkflowParser {
         map.put(wf.getLabel(), sw);
         loop(wf);
         context(wf);
+        
         Node body = getGraph().getNode(BODY, wf);
+        Node uri  = getGraph().getNode(URI, wf);
+        
         if (body != null) {
             parse(wf, body);
         }
+        else if (uri != null) {
+            WorkflowParser parser = new WorkflowParser();
+            parser.setProcessMap(map);
+            SemanticWorkflow w = parser.parse(uri.getLabel());
+            sw.add(w);
+        }
+        
         complete(sw, (IDatatype) wf.getValue());
         return sw;
     }
@@ -292,6 +303,9 @@ public class WorkflowParser {
                     if (type.equals(QUERY) || type.equals(UPDATE)) {
                         ap = new SPARQLProcess(dbody.getLabel(), getPath());
                     }
+                    else if (type.equals(FUNCTION)){
+                        ap = new FunctionProcess(dbody.getLabel(), getPath());
+                    }
                 } 
                 else if (type.equals(LOAD)) {
                     ap = load(dt);
@@ -358,22 +372,36 @@ public class WorkflowParser {
     
          
     TestProcess test(IDatatype dt) throws LoadException {
-        IDatatype dif   = getGraph().getValue(IF, dt);
-        IDatatype dthen = getGraph().getValue(THEN, dt);
-        IDatatype delse = getGraph().getValue(ELSE, dt);
-        if (dif != null) {
-            WorkflowProcess pif = createProcess(dif);
+        WorkflowProcess pif = createIf(dt);
+        if (pif != null) {
+            IDatatype dthen = getGraph().getValue(THEN, dt);
+            IDatatype delse = getGraph().getValue(ELSE, dt);
             WorkflowProcess pthen = null;
             WorkflowProcess pelse = null;
-           if (dthen != null){
+            if (dthen != null) {
                 pthen = createProcess(dthen);
             }
             if (delse != null) {
-                 pelse = createProcess(delse);
+                pelse = createProcess(delse);
             }
             return new TestProcess(pif, pthen, pelse);
         }
-        return null;      
+        return null;
+    }
+    
+    WorkflowProcess createIf(IDatatype dt) throws LoadException {
+        IDatatype dif = getGraph().getValue(IF, dt);
+        if (dif == null) {
+            return null;
+        }
+        if (dif.isLiteral()){
+            // sw:if "us:test()"
+            return new FunctionProcess("function xt:main(){ " + dif.getLabel() + " }", getPath());
+        }
+        else {
+            return createProcess(dif);
+        }
+        
     }
     
        /**

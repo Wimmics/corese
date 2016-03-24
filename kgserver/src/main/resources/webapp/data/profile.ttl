@@ -7,24 +7,10 @@
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
 
-st:dbturtle a st:Profile ;
-  st:query  <query/frdbpedia.rq> ;
-  st:transform  st:turtle .
-  
-st:dbhturtle a st:Profile ;
-  st:query  <query/frdbpedia.rq> ;
-  st:transform  st:hturtle .  
 
-st:dbsparql a st:Profile ;
-  st:query  <query/frdbpedia.rq> ;
-  st:param [
-     st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia))
-  ] ;
-  st:transform st:sparql .
- # st:transform  "/user/corby/home/AAData/sttl/sparql" . 
+[] owl:imports <profile-test.ttl>
 
- 
- 
+
 st:dbpedia a st:Profile ;   
   st:param [ 
     st:lang "fr" ;
@@ -38,16 +24,6 @@ st:dbpedia a st:Profile ;
   ] .
   
 
-st:dbpediadyn a st:Profile ;   
-  st:param [ 
-    st:lang "fr" ;
-    st:import st:dbpediaParam, st:mapParam  ;
-  ] ;
-  st:query     "/user/corby/home/AAServer/data/query/frdbpedia.rq" ;
-  st:transform "/user/corby/home/AAData/sttl/navlab" .  
-  
-  
-  
 st:dbedit a st:Profile ;
   st:param [
     st:uri <http://ns.inria.fr/sparql-template/date/09/2015> ;
@@ -56,17 +32,7 @@ st:dbedit a st:Profile ;
   ] ;
   st:transform st:dbedit .
   
-st:dbeditdyn a st:Profile ;
-  st:param [
-    st:uri <http://ns.inria.fr/sparql-template/date/10/2015> 
-  ] ;
-  st:transform "/user/corby/home/AAData/sttl/dbedit" .
-  
-st:dbedityear a st:Profile ;
-  st:param [
-    st:uri <http://ns.inria.fr/sparql-template/date/2015>
-  ] ;
-  st:transform "/user/corby/home/AAData/sttl/dbedit#year" .
+
   
 st:mapParam
     st:param [ 
@@ -103,21 +69,12 @@ st:dbpediaen a st:Profile ;
   ] .
   
 st:calendar a st:Profile ;
-  #st:transform "/user/corby/home/AAData/sttl/calendar"; 
   st:transform st:calendar ;
   st:param [
     st:debug true ;
   ] .
   
-  
-st:calendartest a st:Profile ;
-  st:transform <http://ns.inria.fr/sparql-template/calendar#test> ;
-  st:param [
-    st:debug true ;
-    st:list (("OC" 1959) ("FC" 1964)) ;
-  ] .
-  
-  
+ 
 st:calendar1 a st:Profile ;
   st:query     <query/dbpediadate.rq> ;  
   st:transform st:content ;
@@ -136,7 +93,6 @@ st:calendar2 a st:Profile ;
   
 st:calendar3 a st:Profile ;
   st:query     <query/dbpediadate3.rq> ;
-  #st:transform "/user/corby/home/AAData/sttl/calcontent"; 
   st:transform st:content ;  
   st:param [
     st:uri    st:y1944 ;
@@ -178,11 +134,6 @@ st:gcalendar3 a st:Profile ;
     st:title "Born & Decease calendar";
   ] .
   
-  
-st:calendar4 a st:Profile ;
-  st:query     <file:///home/corby/ADataServer/query/dbpediadate4.rq> ;
-  st:transform "/home/corby/AData/sttl/content" .
-   
 
 st:dbpediasparql a st:Profile ;
   st:query     <query/frdbpedia.rq> ;
@@ -193,35 +144,11 @@ st:dbpediacopy a st:Profile ;
   st:query     <query/frdbpediacopy.rq> ;
   st:transform st:navlab .
   
-@prefix r: <http://fr.dbpedia.org/resource/>
-
-st:dbpediains a st:Profile ;
-  st:query     <query/frdbpediains.rq> ;
-  st:transform st:navlab ;
-  st:param [
-  # where to save graph resulting from query
-    st:file "/home/corby/dbpedia.ttl";
-    st:list (
- # r:Gibraltar r:Ceuta r:Melilla r:Enclave_des_papes
-   r:Andorre r:Monaco  r:Kaliningrad r:Liechtenstein
-    r:Llívia r:Saint-Marin r:Vatican     r:Büsingen_am_Hochrhein r:Jungholz r:Baerle-Duc
-    r:Sastavci r:Brezovica_Žumberačka r:Akrotiri_et_Dhekelia <http://fr.dbpedia.org/resource/Campione_d'Italia>
-    <http://fr.dbpedia.org/resource/San'kovo-Medvezh'e>
-    r:Vennbahn    
-    )
-  ] .
-  
-
-st:dbpediaall a st:Profile ;
-  st:query     <query/frdbpediaall.rq> ;
-  st:variable  "?r" ;
-  st:transform st:navlab .
 
 st:navlab a st:Profile ;
   st:workflow [ 
     sw:body ( [ a sw:Template ; sw:uri st:navlab ] ) 
   ] .
-#  st:transform st:navlab .  
 
 st:web a st:Profile ;
    st:transform st:web .
@@ -235,7 +162,6 @@ st:sparql a st:Profile ;
     st:query <query/construct.rq> ;
     st:variable "?r" ;
     st:transform st:sparql .
-    #st:transform "/user/corby/home/AAData/sttl/sparql" .
 
     # LDP on target URI
 st:std a st:Profile ;
@@ -246,57 +172,41 @@ st:std a st:Profile ;
 st:rdfs a st:Profile ;
     st:transform st:rdfs .
     
-st:local a st:Profile ;
-  st:query     <query/local.rq> ;
-  st:transform st:navlab .
 
-st:personen a st:Profile ;
-  st:query     <query/dbpedia.rq> ;
-  st:transform st:navlab .  
-
-st:bound a st:Profile ;
-st:query <query/bound.rq>;
-st:transform st:navlab .  
- 
-st:mglt a st:Profile ;
-st:query <query/mglt.rq>;
-st:transform st:navlab . 
-
-st:spqr a st:Profile ;
-st:query <query/spqr.rq>;
-st:transform st:navlab . 
-       
-
- 
-st:default1 a st:Server ;
-st:data     
-    [ st:uri <dbpedia/rome.ttl>  ; st:name st:data ] . 
+    
+# ******************************************************
+#
+#    Server Content
+#
+# ******************************************************
  
  
 st:default a st:Server ;
-st:data     
-    [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
-    [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
-    [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] .
-    
-    
+st:content [
+  a sw:Workflow ; sw:body (
+    [ a sw:Load ; sw:path <tutorial/human1.rdf>  ; sw:name st:data1 ] 
+    [ a sw:Load ; sw:path <tutorial/human2.rdf>  ; sw:name st:data2 ] 
+    [ a sw:Load ; sw:path <tutorial/pragma.ttl>  ; sw:name st:pragma ]    
+  )]
+.
 
 
-# Dataset of specific services, e.g. /tutorial/rdf
-
-#@base <file:///user/corby/home/ADataServer/>
-
+  
 st:tutorial1 a st:Server ;
   st:service "rdf" ;
   st:transform st:web ;
-  #st:transform "/user/corby/home/AAData/sttl/web";
-  st:data     
-    [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
-    [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
-    [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] ;
-  st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
-  
-  
+  st:content 
+    [ a sw:Workflow ; sw:body ( 
+	[ a sw:Load ; sw:path <tutorial/human1.rdf> ; sw:name st:data1 ]
+	[ a sw:Load ; sw:path <tutorial/human2.rdf> ; sw:name st:data2 ]
+	[ a sw:Load ; sw:path <tutorial/pragma.ttl> ; sw:name st:pragma ]  
+	)] ,  
+    [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
+        st:indexQuery) ]
+ .
+ 
+ 
 st:tutotest a st:Server ;
   st:service "tuto" ;
   st:transform st:web ;
@@ -311,33 +221,35 @@ st:tutotest a st:Server ;
     [ a sw:Workflow ; sw:name st:context ; sw:body ( 
         [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
         st:indexQuery) ]
-.  
-
-# execute the whole query list of the tutorial
-st:tutocheck a st:Profile ;
-   st:workflow  
-    [ a sw:Workflow ; sw:body ( 
-      [ a sw:Workflow ; sw:uri <tutorial/workflow.ttl>  ] 
-      )]
-. 
-
-st:indexQuery a sw:Query ; 
+ .
+ 
+ st:indexQuery a sw:Query ; 
    sw:body 
    "insert { ?q st:index ?n } where { ?q a sw:Query bind (kg:number() as ?n) }"
 .
-       
-  
-st:tutorial2 a st:Server ;
-  st:service "rdfs" ;
+   
+ 
+   
+# execute the whole query list of the tutorial above
+st:tutocheck a st:Profile ;
+   st:workflow  
+      [ a sw:Workflow ; sw:uri <tutorial/workflow.ttl>  ]      
+. 
+
+
+
+st:tutorial1save a st:Server ;
+  st:service "rdfsave" ;
   st:transform st:web ;
-  st:param [ st:lang "en" ] ;
   st:data     
     [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
     [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
     [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] ;
-  st:schema   [ st:uri <tutorial/human.rdfs> ; st:name st:schema ] ;
   st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
+         
+  
 
+  
 st:rome a st:Server ;   
   st:service "rome" ;
   st:param [ 
@@ -347,10 +259,11 @@ st:rome a st:Server ;
   st:data [st:uri <dbpedia/rome.ttl> ; st:name st:data ] ;
   st:transform  st:navlab .   
   
+  
+# geographic enclaves   
 st:geo a st:Server ;
   st:service "geo" ;
   st:transform st:navlab ; 
-  #"/user/corby/home/AAData/sttl/navlab" ;
   st:param [ 
     st:lang "en"   ;
     st:mapzoom 5 ;
@@ -361,37 +274,34 @@ st:geo a st:Server ;
     [ st:uri <dbpedia/dbpedia.ttl>  ; st:name st:geo ] .
     
 
-st:save a st:Profile ;
-  st:query <query/save.rq> ;
-  st:transform st:sparql ;
-  st:param [
-    st:file "/home/corby/dbpedia.ttl";
-  ] .
 
   
 @prefix cn: <http://cdn.fr/schema/>
   
 # /tutorial/cdn
+
 st:cdn a st:Server ;
     st:service "cdn" ;
-    #st:transform "/user/corby/home/AAData/sttl/cdn"; 
     st:transform st:cdn ;
     
     st:param [
       st:import st:history
     ] ;
     
-    st:data 
-    [ st:uri <cdn/aa_siecle.ttl> ], [ st:uri <cdn/fr.ttl> ], 
-    [ st:uri <cdn/spqr.ttl> ], 
-    [ st:uri <cdn/franc.ttl> ],
-    [ st:uri <cdn/eds.ttl> ], 
-    [ st:uri <cdn/emp.ttl> ],    [ st:uri <cdn/provence.ttl> ], [ st:uri <cdn/icon.rdf> ], 
-    [ st:uri <cdn/icon.ttl> ],   [ st:uri <cdn/context.ttl> ],  
-    [ st:uri <cdn/an1000.ttl> ], [ st:uri <cdn/an1100.ttl> ], 
-    [ st:uri <cdn/an1200.ttl> ], [ st:uri <cdn/an1300.ttl> ], [ st:uri  <cdn/an1400.ttl> ], 
-    [ st:uri <cdn/an1500.ttl> ], [ st:uri <cdn/an1600.ttl> ], [ st:uri <cdn/an1700.ttl> ], 
-    [ st:uri <cdn/an1800.ttl> ], [ st:uri <cdn/an1900.ttl> ], [ st:uri <cdn/pos.ttl> ].
+    st:content 
+      [ a sw:Workflow ; sw:body ( 
+	[ a sw:Load ; sw:path 
+	<cdn/aa_siecle.ttl> ,  <cdn/fr.ttl> , 
+	<cdn/spqr.ttl> , <cdn/franc.ttl> , <cdn/eds.ttl> , 
+	<cdn/emp.ttl> ,     <cdn/provence.ttl> ,  <cdn/icon.rdf> , 
+	<cdn/icon.ttl> ,    <cdn/context.ttl> ,  
+	<cdn/an1000.ttl> ,  <cdn/an1100.ttl> , 
+	<cdn/an1200.ttl> ,  <cdn/an1300.ttl> ,   <cdn/an1400.ttl> , 
+	<cdn/an1500.ttl> ,  <cdn/an1600.ttl> ,  <cdn/an1700.ttl> , 
+	<cdn/an1800.ttl> ,  <cdn/an1900.ttl> ,  <cdn/pos.ttl> 	
+	] ) ]    
+  .  
+    
     
     
  st:history a st:Profile ;
@@ -399,7 +309,6 @@ st:cdn a st:Server ;
     st:param [
       st:text ( "Antiquité" "France" "Contexte" "Savoie, Piémont" "Comté de Nice");
       st:topic ( (cn:rome) (cn:fr) (cn:emp cn:context) (cn:mds) (cn:cdn)) ;      
-   #   st:uri cn:XVIII ;
       st:min -700 ;
       st:max 3000 ;
     ] .
@@ -422,103 +331,5 @@ st:owlrl a st:Server ;
     st:schema 
     [ st:uri <primer.owl> ] 
 .
-
-
-# *****************************************************************
-# Test
-# *****************************************************************
-
-st:test a st:Profile ;
-  st:workflow [
-    sw:debug true ;
-    sw:body (
-      [ a sw:Query ; sw:result sw:graph  ;
-	sw:body "select * where {?x ?p ?y} limit 100" ]
-      [ a sw:Template ; sw:uri st:sparql ]
-    )
-  ]
-.
-  
-st:loop a st:Profile ;
-  st:workflow [
-    sw:debug true ;
-    sw:loop 3 ;
-    sw:body (
-      [ a sw:Query ; sw:body "select * where {?x ?p ?y} limit 100" ]
-      [ a sw:Template ; sw:uri st:sparql ]
-    )
-  ]
-
-st:dbpedialoop a st:Profile ;   
-  st:param [ 
-    st:lang "fr" ;
-    st:import st:dbpediaParam, st:mapParam  ;
-    st:file "/user/corby/home/test.ttl" ;    
-  ] ;
-  st:workflow [ 
-      sw:loop 5 ;
-      sw:body ( 
-      <query/frdbpediastart.rq> 
-      <query/frdbpediacopy.rq> <query/frdbpediaclean.rq> <query/frdbpedialoop.rq> <query/save.rq> )] ;
-  st:transform  st:navlab .
-  
-  
-st:owl a st:Profile ;
-  st:workflow [
-    sw:debug true ;
-    sw:param [ sw:debug true ] ;
-    sw:body ( 
-    [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
-    [ a sw:Rule ; sw:uri sw:owlrl ] 
-    [ a sw:Template ; sw:uri st:turtle ]
-    )
-] ;
-st:transform st:sparql .
-
-
-st:owlsave a st:Profile ;
-  st:workflow [ st:body ( 
-  [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
-  [ a sw:Rule ; sw:uri sw:owlrl ] 
-  [ a sw:Template ; sw:uri st:turtle ]
-  )
-] ;
-st:transform st:sparql .
-
-
-
-
-
- 
-st:owlrltest a st:Server ;
-  st:service "test" ;
-  st:data [ st:uri <primer.owl>  ; st:name st:data ] ;
-  st:workflow [ sw:body ( <query/owlrltest.rq> ) ] ;
-  st:transform st:hturtle
- .
-
-st:ldp a st:Server ;
-st:service "ldp" ;
- st:data [ st:uri <tutorial/human1.rdf>  ; st:name st:data ] ;
- st:param [
-    st:lodprofile (
-    ( <http://fr.dbpedia.org/resource>  st:dbsparql )
-    ( <http://www.inria.fr/2015/humans> st:sparql )
-    ( "*" st:sparql )
-    );
- ] .
- 
-
-
-
-
-
-
-
-
-
-
-
-
 
 

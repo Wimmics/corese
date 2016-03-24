@@ -44,6 +44,7 @@ import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.Option;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
@@ -102,6 +103,8 @@ import fr.inria.edelweiss.kgraph.core.NodeImpl;
 import fr.inria.edelweiss.kgraph.query.MatcherImpl;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.ProviderImpl;
+import fr.inria.edelweiss.kgtool.load.ExtensionFilter;
+import fr.inria.edelweiss.kgtool.load.LoadFormat;
 import fr.inria.edelweiss.kgtool.load.RuleLoad;
 import fr.inria.edelweiss.kgtool.print.JSONLDFormat;
 import fr.inria.edelweiss.kgtool.transform.DefaultVisitor;
@@ -109,8 +112,10 @@ import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.util.GraphStoreInit;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import fr.inria.edelweiss.kgtool.util.GraphUtil;
-import fr.inria.edelweiss.kgtool.util.MappingsGraph;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
+import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.kgtool.workflow.WorkflowParser;
+import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.MalformedURLException;
@@ -127,6 +132,7 @@ public class TestUnit {
 
     //static String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
     static String data = TestUnit.class.getClassLoader().getResource("data").getPath() + "/";
+    //static String webapp = TestUnit.class.getClassLoader().getResource("webapp").getPath() + "/";
     static String QUERY = TestUnit.class.getClassLoader().getResource("query").getPath() + "/";
     static String root = data;
     static String text = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/text/";
@@ -160,16 +166,21 @@ public class TestUnit {
     static public void init() {
         QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
         //QueryProcess.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
-
-        graph = Graph.create(true);
+        graph = start();
+       
+    }
+    
+    static Graph start(){
+         Graph g = Graph.create(true);
         //graph.setOptimize(true);
         System.out.println("load");
         try {
-            init(graph);
+            init(g);
         } catch (LoadException ex) {
             Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
         }
-        graph.init();
+        g.init();
+        return g;
     }
 
     static void init(Graph g) throws LoadException {
@@ -179,9 +190,9 @@ public class TestUnit {
         ld.parse(data + "comma/comma.rdfs");
         ld.parse(data + "comma/commatest.rdfs");
         ld.parse(data + "comma/model.rdf");
-      //  ld.loadWE(data + "comma/testrdf.rdf");
+       // ld.loadWE(data + "comma/testrdf.rdf");
         ld.parseDir(data + "comma/data");
-       // ld.loadWE(data + "comma/data2");
+        ld.parseDir(data + "comma/data2");
         
     }
 
@@ -201,6 +212,30 @@ public class TestUnit {
           new TestUnit().testFib();
       }
       
+      @Test
+      public void testMI() throws EngineException{
+          String i = "insert data {"
+                  + "us:Boy rdfs:subClassOf us:Man "
+                  + "us:Man rdfs:subClassOf us:Person "
+
+                  + "us:John a us:Boy, us:Man "
+                  + "}";
+          
+          String q = "select * where { ?x a us:Person }";
+          
+          Graph g = Graph.create(true);
+          QueryProcess exec = QueryProcess.create(g, true);
+          exec.query(i);
+          Mappings map = exec.query(q);
+          System.out.println(map);
+        }
+      
+      
+      
+      
+      
+      
+      
      
       public void testNSMaa() throws EngineException, IOException {
          NSManager nsm = NSManager.create();
@@ -209,7 +244,220 @@ public class TestUnit {
          System.out.println(str);
      }
       
-     
+    
+    //01 ?x = c:Icon c:superClassOf c:Icon
+    public void testbugdfg() throws EngineException, LoadException {
+        Graph g = Graph.create(true);
+        init(g);
+        String q = "select * where {?x ?p ?y optional{?y rdf:type ?class}"
+                + " filter (! bound(?class) && ! isLiteral(?y))}";
+
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        System.out.println(map.size());
+        
+        
+        Entity ent =null;
+        Node name = ent.getGraph();
+        name.equals(Entailment.RULE);
+        name.equals(Entailment.ENTAIL);
+    }
+    
+    
+    
+    
+    
+   public void testWorkflow() throws EngineException, LoadException {
+//       WorkflowParser wp = new WorkflowParser();
+//       WorkflowProcess w = wp.parse("/home/corby/AATest/junit/workflow/workflow.ttl");
+       
+       Load ld = Load.create(Graph.create());
+       ld.parse("/home/corby/AATest/junit/workflow/workflow.sw");
+        SemanticWorkflow w = ld.getWorkflow();
+       
+       System.out.println(w);
+       w.setDebug(true);
+       Data res = w.process();
+       System.out.println(res);
+       
+   }
+   
+   
+    
+    
+    
+    
+   public void testWorkflow11() throws EngineException, LoadException {
+       WorkflowParser wp = new WorkflowParser();
+       SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w9.ttl");
+       Data res = w.process();       
+        assertEquals(false, res.getDatatype().booleanValue());
+        System.out.println(res.getDatatype());
+   } 
+   
+    public void testWorkflow2() throws EngineException, LoadException {
+        SemanticWorkflow sub = new SemanticWorkflow()
+                .addQuery("insert  { "
+                + "us:John rdf:value ?val ; st:loop ?loop ; rdfs:label 'Jon' ;"
+                + "foaf:knows []} "
+                + "where { bind (st:get(st:index) as ?val) bind (st:get(st:loop) as ?loop)}")
+                ;
+        
+        SemanticWorkflow w = new SemanticWorkflow()
+                .addQuery("construct where {}")
+                .add(sub)
+                .addTemplate(Transformer.TURTLE)
+                ;
+        
+        Context c = new Context()
+                .export(Context.STL_TEST, DatatypeMap.newInstance(5)); 
+        //sub.setContext(c);
+        sub.setLoop(5);
+        sub.setContext(new Context());
+        w.setContext(c);
+        Graph g = Graph.create();
+        Data res = w.process(new Data(g));        
+        assertEquals(12, res.getGraph().size());
+       System.out.println(w);
+       System.out.println(w.getData());
+    }
+   
+    
+    public void testJSON() throws EngineException, LoadException {
+        String t =
+                "template { st:apply-templates-with(st:json) }"
+                + "where {}";
+
+        Graph g = Graph.create(); //createGraph();
+        Load ld = Load.create(g);
+        ld.parse(data + "jsonld/test.jsonld");
+
+        QueryProcess exec = QueryProcess.create(g);
+
+        Mappings map = exec.query(t);
+
+        String json = map.getTemplateStringResult();
+         System.out.println(json);
+        assertEquals(1210, json.length());
+
+        Graph gg = Graph.create();
+        Load ll = Load.create(gg);
+        ll.loadString(json, Load.JSONLD_FORMAT);
+
+        assertEquals(g.size(), gg.size());
+
+    }
+   
+    public void testDQP() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select * where {"
+                + "?x ?p ?y"
+                + "}"
+                
+                + "function xt:produce(?q){"
+                + "let ((?s, ?p, ?o) = ?q, "
+                + "      ?g = st:get(st:endpoint)){"
+                + "service ?g {}"
+                + "}"
+                + "}"
+                ;
+        
+   }
+   
+    public void testContext3() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select * "
+                + "where {"
+                + "values (?key ?value) { unnest(xt:context()) }"
+                //+ "filter st:get(st:type, 'API')" 
+                + "}"
+                
+                + "function us:test(){"
+                + "for ((?key, ?val) in xt:context()){"
+                + "xt:display(?key, ?val)}"
+                + "}";
+
+        Context c = new Context().setName("date", DatatypeMap.newDate());
+        c.setName("type", DatatypeMap.newInstance("GUI"));
+        exec.setMetadata(new Metadata().add(Metadata.DISPLAY, Metadata.DISPLAY_RDF));
+        Mappings map = exec.query(q, c);
+       
+        System.out.println(map);
+        ResultFormat r = ResultFormat.create(map);
+        //System.out.println(r);
+    }
+    
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      public void testDSC() throws EngineException, IOException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String i = "insert data {us:John rdfs:label 'Jon'}";
+        String q = "select "
+                + "(st:apply-templates-with(st:turtle) as ?b)"
+                + "(st:apply-templates-with(st:owl) as ?o)"
+                + "(st:get(st:test) as ?t) where {"
+                + ""
+                + "}";
+        
+        exec.query(i);
+        Context c = new Context().export(NSManager.STL+"test", DatatypeMap.newInstance(true));
+        Mappings map = exec.query(q, new Dataset().set(c));
+        System.out.println(map);
+     }
+    
+    
+    
+     public void testDataset2() throws EngineException, IOException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select (us:test() as ?t)  "
+                + "from kg:default "
+                + "from named kg:test "
+                + "where {}"
+                               
+                + "function us:test(){"
+                + "for (?g in xt:from()){xt:display(?g)} ;"
+                + "for (?g in xt:named()){xt:display(?g)}"
+                + "}";
+        
+        Mappings map = exec.query(q);
+        
+     }
+    
+    
+    public void testGLoop() throws EngineException, IOException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select (us:test() as ?t)"
+                + "where {}"
+                + ""
+                + "function us:test(){"
+                + "loop ((?s, ?p, ?o) in construct {us:John rdfs:label 'Jon', 'Jim' } where {}){"
+                + "?o"
+                + "}"
+                + "}";
+
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype)map.getValue("?t");
+        assertEquals("JonJim", dt.stringValue());
+    }
+      
+      
     public void testIO() throws EngineException, IOException {
         Graph g = GraphStore.create();
         QueryProcess exec = QueryProcess.create(g);
@@ -232,7 +480,14 @@ public class TestUnit {
         System.out.println(g.display());
     }
      
-     @Test
+   
+     
+      public void testFFFF() throws EngineException, LoadException {
+         LoadFormat f = new LoadFormat();
+         assertEquals(Loader.RDFXML_FORMAT, f.getFormat("test.rdf"));
+         assertEquals(Loader.TURTLE_FORMAT, f.getFormat("test.ttl"));
+     }
+     
     public void testPPSPIN() throws EngineException, LoadException {
         Graph g = createGraph();
         Load ld = Load.create(g);
@@ -267,7 +522,7 @@ public class TestUnit {
         Load ld = Load.create(g);
         ld.setDebug(true);
         try {
-            ld.parseDirRec(data + "junit", "http://example.org");                      
+            ld.parse(new File(data + "junit"), new ExtensionFilter(), null,true);                      
         } catch (LoadException ex) {
             Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -322,16 +577,30 @@ public class TestUnit {
                 + "}";
         exec.query(i);
 
-        String q = "@relax "
-                + "select * (sim() as ?s) where {"
+        String q = "@test st:test " +
+                 "select * (sim() as ?s) (us:test() as ?t) where {"
                 + "us:John foaf:name 'Jon' ; foaf:age 11 "
+                + "values ?m {unnest(xt:metadata())}"
+                + "filter us:test()"
+                + "}"
+                + ""
+                + "function us:test(){"
+               // + "xt:display(xt:metadata());"
+                + "mapany(rq:equal, '@test', xt:metadata())"
                 + "}";
-
+        
+        
+        exec.set(new Metadata()
+                .add(Metadata.RELAX, Metadata.RELAX_LITERAL)
+                //.add(Metadata.DEBUG)
+                //.add(Metadata.SERVICE, "http://fr.dbpedia.org/sparql")
+                );
+          //System.out.println(exec.getMetadata());
         Mappings map = exec.query(q);
         //assertEquals(1, map.size());
         System.out.println(map);
         System.out.println(map.size());
-        System.out.println(map.getQuery().getAST());
+        //System.out.println(map.getQuery().getAST());
     }
        
       
@@ -3245,34 +3514,7 @@ String init = "prefix ex: <http://example.org/>"
     }
 
    
-    public void testJSON() throws EngineException, LoadException {
-        String t =
-                "template  {  st:apply-templates-with(st:json)}"
-                + "where {}";
-        
-        Graph g = createGraph();
-        Load ld = Load.create(g);
-        ld.loadWE(data + "jsonld/test.jsonld");
-
-        QueryProcess exec = QueryProcess.create(g);
-
-        Mappings map = exec.query(t);
-        
-        String json = map.getTemplateStringResult();
-       // System.out.println(json);
-        assertEquals(1210, json.length());
-        
-        Graph gg = Graph.create();
-        Load ll = Load.create(gg);
-        ll.loadString(json, Load.JSONLD_FORMAT);
-        
-        assertEquals(g.size(), gg.size());
-        
-        
-        
-    }
-        
-   
+  
    
    
    
@@ -12235,7 +12477,7 @@ exec.setPlanProfile(Query.STD_PLAN);
 
     }
 
-    public void start() {
+    public void start2() {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         QueryLoad ql = QueryLoad.create();

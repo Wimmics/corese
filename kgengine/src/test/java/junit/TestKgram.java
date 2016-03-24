@@ -2326,7 +2326,7 @@ query = "select   distinct ?t1 ?t2     where {"+
         
 //        suite.addTest(new CoreseTest2(true, "testQuery", corese,
 //        "select where {?x rdf:type rdfs:Class filter (depth(?x) > 11)}", 12));
-//TODO: debug
+//TODO: bug
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select where {?x ?p ?y optional{?y rdf:type ?class}" +
         " filter (! bound(?class) && ! isLiteral(?y))}", 2));

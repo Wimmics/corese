@@ -125,6 +125,193 @@ public class TestQuery1 {
 
         return graph;
     }
+    
+      @Test
+    public void testJSON() throws EngineException, LoadException {
+        String t =
+                "template  {  st:apply-templates-with(st:json)}"
+                + "where {}";
+
+        Graph g = Graph.create(); //createGraph();
+        Load ld = Load.create(g);
+        ld.parse(data + "jsonld/test.jsonld");
+
+        QueryProcess exec = QueryProcess.create(g);
+
+        Mappings map = exec.query(t);
+
+        String json = map.getTemplateStringResult();
+        assertEquals(1258, json.length());
+
+        Graph gg = Graph.create();
+        Load ll = Load.create(gg);
+        ll.loadString(json, Load.JSONLD_FORMAT);
+
+        assertEquals(g.size(), gg.size());
+
+    }
+              
+    
+    @Test
+    public void testContext4() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "template {} "
+                + "where {"
+                + "bind (st:export(st:test, 'test') as ?t)"
+                + "bind (st:atw('" + data + "junit/sttl/test') as ?tt)" 
+                + "}";
+
+        Mappings map = exec.query(q);
+        Context c  = (Context) map.getContext();
+        IDatatype dt = c.getName("test");
+        assertEquals("test", dt.stringValue());
+        Transformer t = (Transformer) map.getQuery().getTransformer();
+        IDatatype res = t.getContext().getName("res");
+        assertEquals(10, res.intValue());
+    }
+    
+    
+        @Test
+    public void testContext33() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select * "
+                + "where {"
+                + "bind (st:atw('" + data + "junit/sttl/test') as ?tt)" 
+                + "}";
+
+        Context c = new Context().exportName("test", DatatypeMap.newInstance("test"));
+        Mappings map = exec.query(q, c);
+        IDatatype dt = (IDatatype) map.getValue(("?tt"));
+        assertEquals("test", dt.stringValue());
+       
+    }
+    
+    
+      @Test
+    public void testContext3() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select * "
+                + "where {"
+                + "bind (st:export(st:test, 'test') as ?t)"
+                + "bind (st:atw('" + data + "junit/sttl/test') as ?tt)" 
+                + "}";
+
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue(("?tt"));
+        assertEquals("test", dt.stringValue());
+       
+    }
+    
+    
+    
+    
+    @Test
+    public void testContext2() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "template { st:get(st:test) }"
+                + " where {"
+                + "select * where {"
+                + "bind (us:test() as ?t)"
+                + "}"
+                + "}"
+                + "function us:test(){"
+                + "st:set(st:test, 10)"
+                + "}";
+
+        Mappings map = exec.query(q);
+        assertEquals("10", map.getTemplateStringResult());
+        Context c = (Context)  map.getContext();      
+        IDatatype val = c.getName("test");
+        assertEquals(10, val.intValue());
+        assertEquals(true, map.getQuery().getTransformer() == null);    
+    }
+    
+    @Test
+    public void testContext() throws EngineException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select * (st:get(st:test) as ?tt) where {"
+                + "select * where {"
+                + "bind (us:test() as ?t)"
+                + "}"
+                + "}"
+                + "function us:test(){"
+                + "st:set(st:test, 10)"
+                + "}";
+
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?tt");
+        assertEquals(10, dt.intValue());
+        Context c = (Context)  map.getContext();      
+        IDatatype val = c.getName("test");
+        assertEquals(10, val.intValue());    
+    }
+    
+   
+    
+
+    
+    
+    // loop return concat of results of body of loop
+     @Test
+    public void testGLoop() throws EngineException, IOException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select (us:test() as ?t)"
+                + "where {}"
+                + ""
+                + "function us:test(){"
+                + "loop ((?s, ?p, ?o) in construct {us:John rdfs:label 'Jon', 'Jim' } where {}){"
+                + "?o"
+                + "}"
+                + "}";
+
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype)map.getValue("?t");
+        assertEquals("JonJim", dt.stringValue());
+    }
+    
+    
+      @Test
+     public void testMetaBind1() throws LoadException, EngineException {
+        Graph g = createGraph();       
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "@bind kg:values " +
+                 "select  * where {"
+                + "bind (<http://fr.dbpedia.org/resource/Auguste> as ?x) "
+                + "service <http://fr.dbpedia.org/sparql> {"
+                + "select * where {"
+                + "?x ?p ?y"
+                + "} limit 10}"
+                + "}";
+        Mappings map = exec.query(q);
+        assertEquals(10, map.size());
+        ASTQuery ast = (ASTQuery) map.getAST();
+        assertEquals(true, ast.toString().contains("values ("));
+     }
+     
+     @Test
+     public void testMetaBind2() throws LoadException, EngineException {
+        Graph g = createGraph();       
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "@bind kg:filter " +
+                 "select  * where {"
+                + "bind (<http://fr.dbpedia.org/resource/Auguste> as ?x) "
+                + "service <http://fr.dbpedia.org/sparql> {"
+                + "select * where {"
+                + "?x ?p ?y"
+                + "} limit 10}"
+                + "}";
+        Mappings map = exec.query(q);
+        assertEquals(10, map.size());
+        ASTQuery ast = (ASTQuery) map.getAST();
+        assertEquals(true, ast.toString().contains("filter ("));
+     }
+    
 
     @Test
     public void testIO() throws EngineException, IOException {
@@ -132,7 +319,6 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
 
         Load ld = Load.create(g);
-        ld.setDebug(true);
         try {            
             ld.parse(data + "junit/data/test.ttl");
             ld.parse(data + "junit/data/test.ttl", "http://example.org/");
@@ -155,7 +341,6 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
 
         Load ld = Load.create(g);
-        ld.setDebug(true);
         try {
             ld.parseDir(data + "junit/data");                      
             ld.parseDir(data + "junit/data", "http://example.org/");                      
@@ -337,8 +522,8 @@ public class TestQuery1 {
         Mappings map = exec.query(q);
         assertEquals(1, map.size());
         Transformer t = (Transformer) map.getQuery().getTransformer();
-        Context c = t.getContext();
-        IDatatype dt = c.get(NSManager.STL + "count");
+        Context c = (Context) map.getContext();
+        IDatatype dt = c.getName("count");
         assertEquals(5, dt.intValue());
     }
 
@@ -1800,30 +1985,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
-    public void testJSON() throws EngineException, LoadException {
-        String t =
-                "template  {  st:apply-templates-with(st:json)}"
-                + "where {}";
-
-        Graph g = createGraph();
-        Load ld = Load.create(g);
-        ld.parse(data + "jsonld/test.jsonld");
-
-        QueryProcess exec = QueryProcess.create(g);
-
-        Mappings map = exec.query(t);
-
-        String json = map.getTemplateStringResult();
-        assertEquals(1258, json.length());
-
-        Graph gg = Graph.create();
-        Load ll = Load.create(gg);
-        ll.loadString(json, Load.JSONLD_FORMAT);
-
-        assertEquals(g.size(), gg.size());
-
-    }
+   
 
     @Test
     public void testGeneralize() throws EngineException, LoadException, ParserConfigurationException, SAXException, IOException {

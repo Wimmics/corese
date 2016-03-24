@@ -20,7 +20,8 @@ format {
 where {
   bind (st:get(st:context) as ?g)
   graph ?g {
-    [] a st:Query ;
+  values ?qt {st:Query sw:Query}
+    [] a ?qt ;
       st:index ?i ;
       st:name ?q ;
       rdfs:label ?title

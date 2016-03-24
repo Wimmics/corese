@@ -1,3 +1,6 @@
+#
+# Keep one rdfs:label, delete others
+#
 delete {
     ?uri rdfs:label ?l
 }

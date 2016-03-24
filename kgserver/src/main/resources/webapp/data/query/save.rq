@@ -1,7 +1,9 @@
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
+prefix o:  <http://dbpedia.org/ontology/>
+prefix w:  <http://fr.wikipedia.org/wiki/>
+prefix r:  <http://fr.dbpedia.org/resource/>
 prefix p:  <http://fr.dbpedia.org/property/>
+
+@type kg:probe
 
 select * where {
   bind (kg:write(st:get(st:file), st:atw(st:turtle)) as ?res)

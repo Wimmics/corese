@@ -1,0 +1,218 @@
+#
+#  Additional profile for testing purpose
+#
+
+st:save a st:Profile ;
+  st:query <query/save.rq> ;
+  st:transform st:sparql ;
+  st:param [
+    st:file "/home/corby/dbpedia.ttl";
+  ] .
+
+st:dbsparql a st:Profile ;
+  st:query  <query/frdbpedia.rq> ;
+  st:param [
+     st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia))
+  ] ;
+  st:transform st:sparql .
+ 
+st:dbturtle a st:Profile ;
+  st:query  <query/frdbpedia.rq> ;
+  st:transform  st:turtle .
+  
+st:dbhturtle a st:Profile ;
+  st:query  <query/frdbpedia.rq> ;
+  st:transform  st:hturtle . 
+  
+  
+st:dbpediadyn a st:Profile ;   
+  st:param [ 
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam  ;
+  ] ;
+  st:query     "/user/corby/home/AAServer/data/query/frdbpedia.rq" ;
+  st:transform "/user/corby/home/AAData/sttl/navlab" .  
+  
+  
+st:dbeditdyn a st:Profile ;
+  st:param [
+    st:uri <http://ns.inria.fr/sparql-template/date/10/2015> 
+  ] ;
+  st:transform "/user/corby/home/AAData/sttl/dbedit" .
+    
+
+st:dbedityear a st:Profile ;
+  st:param [
+    st:uri <http://ns.inria.fr/sparql-template/date/2015>
+  ] ;
+  st:transform "/user/corby/home/AAData/sttl/dbedit#year" .
+  
+st:calendartest a st:Profile ;
+  st:transform <http://ns.inria.fr/sparql-template/calendar#test> ;
+  st:param [
+    st:debug true ;
+    st:list (("OC" 1959) ("FC" 1964)) ;
+  ] .
+  
+ st:calendar4 a st:Profile ;
+  st:query     <file:///home/corby/ADataServer/query/dbpediadate4.rq> ;
+  st:transform "/home/corby/AData/sttl/content" .
+    
+ @prefix r: <http://fr.dbpedia.org/resource/>
+
+st:dbpediains a st:Profile ;
+  st:query     <query/frdbpediains.rq> ;
+  st:transform st:navlab ;
+  st:param [
+  # where to save graph resulting from query
+    st:file "/home/corby/dbpedia.ttl";
+    st:list (
+ # r:Gibraltar r:Ceuta r:Melilla r:Enclave_des_papes
+   r:Andorre r:Monaco  r:Kaliningrad r:Liechtenstein
+    r:Llívia r:Saint-Marin r:Vatican     r:Büsingen_am_Hochrhein r:Jungholz r:Baerle-Duc
+    r:Sastavci r:Brezovica_Žumberačka r:Akrotiri_et_Dhekelia <http://fr.dbpedia.org/resource/Campione_d'Italia>
+    <http://fr.dbpedia.org/resource/San'kovo-Medvezh'e>
+    r:Vennbahn    
+    )
+  ] .
+   
+
+st:dbpediaall a st:Profile ;
+  st:query     <query/frdbpediaall.rq> ;
+  st:variable  "?r" ;
+  st:transform st:navlab .
+  
+st:local a st:Profile ;
+  st:query     <query/local.rq> ;
+  st:transform st:navlab .
+
+st:personen a st:Profile ;
+  st:query     <query/dbpedia.rq> ;
+  st:transform st:navlab .  
+
+st:bound a st:Profile ;
+st:query <query/bound.rq>;
+st:transform st:navlab .  
+ 
+st:mglt a st:Profile ;
+st:query <query/mglt.rq>;
+st:transform st:navlab . 
+
+st:spqr a st:Profile ;
+st:query <query/spqr.rq>;
+st:transform st:navlab . 
+         
+  
+st:test a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:body (
+      [ a sw:Query ; sw:result sw:graph  ;
+	sw:body "select * where {?x ?p ?y} limit 100" ]
+      [ a sw:Template ; sw:uri st:sparql ]
+    )
+  ]
+.
+  
+st:loop a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:loop 3 ;
+    sw:body (
+      [ a sw:Query ; sw:body "select * where {?x ?p ?y} limit 100" ]
+      [ a sw:Template ; sw:uri st:sparql ]
+    )
+  ]
+
+st:dbpedialoop a st:Profile ;   
+  st:param [ 
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam  ;
+    st:file "/user/corby/home/test.ttl" ;    
+  ] ;
+  st:workflow [ 
+      sw:loop 5 ;
+      sw:body ( 
+      <query/frdbpediastart.rq> 
+      <query/frdbpediacopy.rq> <query/frdbpediaclean.rq> <query/frdbpedialoop.rq> <query/save.rq> )] ;
+  st:transform  st:navlab .
+  
+  
+st:owl a st:Profile ;
+  st:workflow [
+    sw:debug true ;
+    sw:param [ sw:debug true ] ;
+    sw:body ( 
+    [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
+    [ a sw:Rule ; sw:uri sw:owlrl ] 
+    [ a sw:Template ; sw:uri st:turtle ]
+    )
+] ;
+st:transform st:sparql .
+
+
+st:owlsave a st:Profile ;
+  st:workflow [ st:body ( 
+  [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
+  [ a sw:Rule ; sw:uri sw:owlrl ] 
+  [ a sw:Template ; sw:uri st:turtle ]
+  )
+] ;
+st:transform st:sparql .
+
+
+
+
+
+ 
+st:owlrltest a st:Server ;
+  st:service "test" ;
+  st:data [ st:uri <primer.owl>  ; st:name st:data ] ;
+  st:workflow [ sw:body ( <query/owlrltest.rq> ) ] ;
+  st:transform st:hturtle
+ .
+
+st:ldp a st:Server ;
+st:service "ldp" ;
+ st:data [ st:uri <tutorial/human1.rdf>  ; st:name st:data ] ;
+ st:param [
+    st:lodprofile (
+    ( <http://fr.dbpedia.org/resource>  st:dbsparql )
+    ( <http://www.inria.fr/2015/humans> st:sparql )
+    ( "*" st:sparql )
+    );
+ ] .
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

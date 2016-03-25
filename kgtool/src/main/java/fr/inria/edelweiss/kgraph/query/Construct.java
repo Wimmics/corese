@@ -19,7 +19,6 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.util.Duplicate;
 
@@ -38,11 +37,10 @@ public class Construct
     int count = 0, ruleIndex = 0, index = 0;
     String root;
     Query query;
-    Graph graph;
+    GraphManager graph;
     Node defaultGraph;
     IDatatype dtDefaultGraph;
     List<Entity> lInsert, lDelete;
-    //List<String> from;
     Dataset ds;
     boolean isDebug = false,
             isDelete = false,
@@ -57,11 +55,11 @@ public class Construct
     private Node prov;
 
     Construct(Query q) {
-        this(q, Entailment.DEFAULT);
+        this(q, GraphManager.DEFAULT_GRAPH);
     }
 
     Construct(Query q, Dataset ds) {
-        this(q, Entailment.DEFAULT);
+        this(q, GraphManager.DEFAULT_GRAPH);
         this.ds = ds;
     }
 
@@ -84,6 +82,12 @@ public class Construct
         }
         return cons;
     }
+    
+    public static Construct create(Query q, GraphManager g) {
+        Construct cons = create(q);
+        cons.set(g);
+        return cons;
+    }
 
     public static Construct create(Query q, Dataset ds) {
         Construct cons = new Construct(q, ds);
@@ -99,12 +103,12 @@ public class Construct
         defaultGraph = n;
     }
 
-    public void setGraph(Graph g) {
-        graph = g;
-    }
-
     public void setBuffer(boolean b) {
         isBuffer = b;
+    }    
+    
+    public void set(GraphManager g){
+       graph = g; 
     }
     
      public boolean isBuffer() {
@@ -146,49 +150,42 @@ public class Construct
         return lDelete;
     }
 
-    public Graph construct(Mappings map) {
-        return construct(map, null, Graph.create());
+    public void construct(Mappings map) {
+         construct(map, null);
     }
-
-    public Graph construct(Mappings map, Graph g) {
-        return construct(map, null, g);
-    }
-
-    public Graph delete(Mappings map, Graph g, Dataset ds) {
+    
+    public void delete(Mappings map, Dataset ds) {
         setDelete(true);
         if (ds != null && ds.isUpdate()) {
             this.ds = ds;
         }
-        return construct(map, null, g);
+        construct(map, null);
     }
 
-    public Graph insert(Mappings map, Graph g, Dataset ds) {
+    public void insert(Mappings map, Dataset ds) {
         setInsert(true);
         if (ds != null && ds.isUpdate()) {
             this.ds = ds;
         }
-        return construct(map, null, g);
+        construct(map, null);
     }
-
-    /**
-     * Construct graph according to query and mapping/environment
-     */
-    public Graph construct(Mappings map, Environment env, Graph g) {
+         
+    public void construct(Mappings map, Environment env) {  
+        graph.start();
         Exp exp = query.getConstruct();
         if (isDelete) {
             exp = query.getDelete();
         }
 
-        if (g != null) {
-            graph = g;
-        }
         if (exp.first().isGraph()) {
             // draft: graph kg:system { }
             // in GraphStore
             Node gNode = exp.first().getGraphName();
-            if (gNode.isConstant()
-                    && graph.getNamedGraph(gNode.getLabel()) != null) {
-                graph = graph.getNamedGraph(gNode.getLabel());
+            if (gNode.isConstant()){
+                GraphManager m = graph.getNamedGraph(gNode.getLabel());
+                if (m != null){
+                    set(m);
+                }
             }
         }
 
@@ -197,7 +194,7 @@ public class Construct
 
         Node gNode = defaultGraph;
         if (gNode == null) {
-            gNode = graph.getResourceNode(dtDefaultGraph, true, false);
+            gNode = graph.getResourceNode(dtDefaultGraph);
         }
 
         if (isDelete) {
@@ -223,8 +220,8 @@ public class Construct
             }
         }
 
-        graph.prepare();
-        return graph;
+        graph.finish();
+        
     }
 
     /**
@@ -271,7 +268,7 @@ public class Construct
                             // isBuffer means: bufferise edges in a list 
                             // that will be processed later by RuleEngine
                             // otherwise, store edge in graph rigth now
-                            ent = graph.addEdge(ent);
+                            ent = graph.insert(ent);
                         }
                         if (ent != null) {
                             map.setNbInsert(map.nbInsert() + 1);
@@ -433,7 +430,7 @@ public class Construct
                 dt = (IDatatype) value;
             }
 
-            node = graph.getNode(gNode, dt, true, false);
+            node = graph.getNode(gNode, dt);
             table.put(qNode, node);
         }
 

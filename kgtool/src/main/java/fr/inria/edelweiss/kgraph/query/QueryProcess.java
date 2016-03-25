@@ -51,7 +51,8 @@ public class QueryProcess extends QuerySolver {
 
 	//sort query edges taking cardinality into account
 	static boolean isSort = false;
-        Manager manager;
+        private Manager updateManager;
+        private GraphManager graphManager;
 	Loader load;
 	ReentrantReadWriteLock lock;
 	// Producer may perform match locally
@@ -97,8 +98,13 @@ public class QueryProcess extends QuerySolver {
 		super(p, e, m);
                 Graph g = getGraph(p);
                 if (g != null){
-                    setManager(ManagerImpl.create(g));
+                    // construct 
+                    setGraphManager(new GraphManager(g));
+                    // update
+                    setManager(new ManagerImpl(getGraphManager()));
                 }
+                // service
+                set(ProviderImpl.create());
 		init();
 	}
 	
@@ -127,11 +133,11 @@ public class QueryProcess extends QuerySolver {
         }
         
         public void setManager(Manager man){
-            manager = man;
+            updateManager = man;
         }
         
         Manager getManager(){
-            return manager;
+            return updateManager;
         }
 
 	public static QueryProcess create(Graph g){
@@ -232,16 +238,11 @@ public class QueryProcess extends QuerySolver {
          * To Be Used by implementation other than Graph
          */
 	public static QueryProcess create(Producer prod, Matcher match){
-		Interpreter eval  = createInterpreter(prod, match);
-		QueryProcess exec = new QueryProcess(prod, eval, match);
-		exec.set(ProviderImpl.create());
- 		return exec;
+		return new QueryProcess(prod, createInterpreter(prod, match), match);
 	}
 	
 	public static QueryProcess create(Producer prod, Evaluator eval, Matcher match){
-		QueryProcess exec = new QueryProcess(prod, eval, match);
-		exec.set(ProviderImpl.create());
-		return exec;
+		return new QueryProcess(prod, eval, match);
 	}
 	
 	public static Interpreter createInterpreter(Producer p, Matcher m){
@@ -697,15 +698,12 @@ public class QueryProcess extends QuerySolver {
 	
 	 void construct(Mappings map, Dataset ds){
             Query query = map.getQuery();
-            Construct cons =  Construct.create(query);
-            cons.setDebug(isDebug() || query.isDebug());
-				
-            Graph gg = Graph.create();
-            // the construct result graph may be skolemized
-            // if kgram was told to do so
+            Graph gg = Graph.create(); 
+            // can be required to skolemize
             gg.setSkolem(isSkolem());
-            gg = cons.construct(map, gg);
-
+            Construct cons =  Construct.create(query, new GraphManager(gg));
+            cons.setDebug(isDebug() || query.isDebug());				                                 
+            cons.construct(map);
             map.setGraph(gg);
 	}
         
@@ -790,6 +788,20 @@ public class QueryProcess extends QuerySolver {
          if (getGraph() != null){
             getGraph().logFinish(query, m);
          }
+    }
+
+    /**
+     * @return the graphManager
+     */
+    public GraphManager getGraphManager() {
+        return graphManager;
+    }
+
+    /**
+     * @param graphManager the graphManager to set
+     */
+    public void setGraphManager(GraphManager graphManager) {
+        this.graphManager = graphManager;
     }
 	
 

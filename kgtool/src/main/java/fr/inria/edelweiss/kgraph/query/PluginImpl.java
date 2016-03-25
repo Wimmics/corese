@@ -852,7 +852,7 @@ public class PluginImpl extends ProxyImpl {
 
     void loader(Graph g) {
         if (ld == null) {
-            ld = ManagerImpl.getLoader();
+            ld = GraphManager.getLoader();
             ld.init(g);
         }
     }

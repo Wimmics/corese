@@ -14,7 +14,7 @@ import fr.inria.edelweiss.kgtool.print.ResultFormat;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class ResultProcess extends SemanticProcess {
+public class ResultProcess extends WorkflowProcess {
     int format = ResultFormat.UNDEF_FORMAT;
     
     public ResultProcess() {

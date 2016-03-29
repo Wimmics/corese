@@ -6,6 +6,8 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -21,6 +23,8 @@ public class Data {
     private Context context;
     private TemplateVisitor visitor;
     private String templateResult;
+    private List<Data> dataList;
+    private String name;
           
     public Data(Graph g){
         graph = g;
@@ -41,6 +45,17 @@ public class Data {
         map = m;
         graph = g;
     }
+    
+    Data(WorkflowProcess p, Graph g){
+        process = p;
+        graph = g;
+    }
+    
+    Data(WorkflowProcess p, List<Data> l){
+        process = p;
+        dataList = l;
+    }
+
     
     @Override
     public String toString(){
@@ -164,6 +179,51 @@ public class Data {
      */
     public void setDatatype(IDatatype datatype) {
         this.datatype = datatype;
+    }
+
+    /**
+     * @return the dataList
+     */
+    public List<Data> getDataList() {
+        return dataList;
+    }
+    
+    public List<Data> getResultList() {
+        if  (dataList == null){
+            return new ArrayList<Data>();
+        }
+        return dataList;
+    }
+    
+    
+    Data getResult() {
+        for (Data d : getResultList()) {
+            if (d.getName() == null) {
+                return d;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param dataList the dataList to set
+     */
+    public void setDataList(List<Data> dataList) {
+        this.dataList = dataList;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

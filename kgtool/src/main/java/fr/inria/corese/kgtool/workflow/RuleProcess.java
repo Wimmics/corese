@@ -8,14 +8,13 @@ import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.transform.Transformer;
 
 /**
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class RuleProcess extends  SemanticProcess {
+public class RuleProcess extends  WorkflowProcess {
 
     private String path;
     private RuleEngine engine;

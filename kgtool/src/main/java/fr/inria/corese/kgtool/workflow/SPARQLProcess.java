@@ -17,7 +17,7 @@ import fr.inria.edelweiss.kgtool.util.MappingsGraph;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class SPARQLProcess extends  SemanticProcess {
+public class SPARQLProcess extends  WorkflowProcess {
 
     private String query;
     private String path;
@@ -53,6 +53,10 @@ public class SPARQLProcess extends  SemanticProcess {
     
     Mappings query(Data data, Context c, Dataset ds) throws EngineException{
         QueryProcess exec = QueryProcess.create(data.getGraph());
+        if (getWorkflow().getGraph() != null){
+            // draft: additional graph considered as contextual dataset
+            exec.add(getWorkflow().getGraph());
+        }
         if (path != null){
             exec.setDefaultBase(path);
         }

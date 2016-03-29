@@ -44,6 +44,10 @@ public class WorkflowParser {
     public static final String TEST = PREF + "Test";
     public static final String FUNCTION = PREF + "Function";
     public static final String WORKFLOW = PREF + "Workflow";
+    public static final String PARALLEL = PREF + "Parallel";
+    public static final String DATASET = PREF + "Dataset";
+    public static final String PROBE = PREF + "Probe";
+    public static final String ASSERT = PREF + "Assert";
     
     public static final String URI = PREF + "uri";
     public static final String BODY = PREF + "body";
@@ -53,7 +57,7 @@ public class WorkflowParser {
     public static final String PATH = PREF + "path";
     public static final String NAME = PREF + "name";
     public static final String REC = PREF + "rec";
-    public static final String PROBE = WorkflowProcess.PROBE;
+    public static final String PROBE_VALUE = WorkflowProcess.PROBE;
     public static final String DISPLAY = PREF + "display";
     public static final String RESULT = PREF + "result";
     public static final String GRAPH = PREF + "graph";
@@ -61,7 +65,11 @@ public class WorkflowParser {
     public static final String IF = PREF + "if";
     public static final String THEN = PREF + "then";
     public static final String ELSE = PREF + "else";
-  
+    public static final String TEST_VALUE = PREF + "test";
+    public static final String VALUE = PREF + "value";
+    public static final String EXP = PREF + "exp";
+    
+ 
     private Graph graph;
     private SemanticWorkflow sw;
     private String path;
@@ -93,31 +101,40 @@ public class WorkflowParser {
         graph = g;
         this.sw = wp;
     }
-
+    
     public SemanticWorkflow parse(Graph g) throws LoadException {
+        return parse(g, null);
+    }
+    
+    public SemanticWorkflow parse(Graph g, String name) throws LoadException {
         setGraph(g);
-        Node node = getWorkflowNode();
+        Node node = getWorkflowNode(name);
         if (node != null) {
             parse(node);
         }
         complete(g);
         return sw;
     }
-
+    
     public SemanticWorkflow parse(String path) throws LoadException {
+        return parse(path, null);
+    }
+
+
+    public SemanticWorkflow parse(String path, String name) throws LoadException {
         setPath(path);
         Graph g = Graph.create();
         Load ld = Load.create(g);
         ld.parse(path, getFormat(ld, path));
         g.init();
-        return parse(g);
+        return parse(g, name);
     }
     
-     public SemanticWorkflow parse(InputStream stream, String path) throws LoadException {
+    public SemanticWorkflow parse(InputStream stream, String path) throws LoadException {
         return parse(new InputStreamReader(stream), path);
     }
      
-      public SemanticWorkflow parse(Reader stream, String path) throws LoadException {
+    public SemanticWorkflow parse(Reader stream, String path) throws LoadException {
         setPath(path);
         Graph g = Graph.create();
         Load ld = Load.create(g);
@@ -138,7 +155,13 @@ public class WorkflowParser {
           return format;
       }
  
- 
+    Node getNode(String name, Node node){
+        return getGraph().getNode(name, node);
+    }
+    
+    IDatatype getValue(String name, IDatatype dt){
+        return getGraph().getValue(name, dt);
+    }
     
     public SemanticWorkflow parse(Node wf) throws LoadException {
         if (isDebug()) {
@@ -152,8 +175,8 @@ public class WorkflowParser {
         loop(wf);
         context(wf);
         
-        Node body = getGraph().getNode(BODY, wf);
-        Node uri  = getGraph().getNode(URI, wf);
+        Node body = getNode(BODY, wf);
+        Node uri  = getNode(URI, wf);
         
         if (body != null) {
             parse(wf, body);
@@ -191,8 +214,11 @@ public class WorkflowParser {
     
     
     
-    Node getWorkflowNode() {
-        return getTopLevel(topLevel);
+    Node getWorkflowNode(String name) {
+        if (name == null){
+            return getTopLevel(topLevel);
+        }
+        return getGraph().getNode(name);
     }
     
     Node getTopLevel(List<String> list) {
@@ -212,7 +238,7 @@ public class WorkflowParser {
      * Workflow is a loop.
      */
     void loop(Node wf) {
-        IDatatype dt = getGraph().getValue(LOOP, wf);
+        IDatatype dt = getValue(LOOP, (IDatatype) wf.getValue());
         if (dt != null) {
             sw.setLoop(dt.intValue());
         }
@@ -224,7 +250,7 @@ public class WorkflowParser {
      * Parse sw:param as Workflow Context.
      */
     void context(Node wf){
-        Node c = getGraph().getNode(PARAM, wf);
+        Node c = getNode(PARAM, wf);
         if (c != null){
             ContextBuilder cb = new ContextBuilder(getGraph());           
             if (sw.getContext() != null){
@@ -267,7 +293,7 @@ public class WorkflowParser {
      */
      WorkflowProcess createProcess(IDatatype dt) throws LoadException {
         WorkflowProcess ap = null;
-        IDatatype dtype = getGraph().getValue(RDF.TYPE, dt);
+        IDatatype dtype = getValue(RDF.TYPE, dt);
         if (isDebug()) {
             System.out.println("WP: " + dt + " " + dtype);
         }
@@ -284,9 +310,8 @@ public class WorkflowParser {
                 ap = subWorkflow(getGraph().getNode(dt));
             } 
             else {
-                IDatatype duri  = getGraph().getValue(URI, dt);
-                IDatatype dbody = getGraph().getValue(BODY, dt);
-
+                IDatatype duri  = getValue(URI, dt);
+                IDatatype dbody = getValue(BODY, dt);
                 if (duri != null) {
                     String uri = duri.getLabel();
                     if (type.equals(QUERY) || type.equals(UPDATE)) {
@@ -306,14 +331,26 @@ public class WorkflowParser {
                     else if (type.equals(FUNCTION)){
                         ap = new FunctionProcess(dbody.getLabel(), getPath());
                     }
-                } 
+                    else if (type.equals(PARALLEL)){
+                        ap = parallel(getGraph().getNode(dt));
+                    }                   
+                }
+                else if (type.equals(PROBE)){
+                     ap = probe(dt);
+                 }
                 else if (type.equals(LOAD)) {
                     ap = load(dt);
                 }
                 else if (type.equals(TEST)) {
                     ap = test(dt);
                 }
-
+                else if (type.equals(DATASET)){
+                    ap = dataset(dt);
+                }
+                else if (type.equals(ASSERT)){
+                    ap = asserter(dt);
+                }
+                
                 if (ap != null) {
                     complete(ap, dt);
                 }
@@ -321,6 +358,10 @@ public class WorkflowParser {
          }
         return ap;
     }
+     
+     DatasetProcess dataset(IDatatype dt){
+         return new DatasetProcess();
+     }
      
     SPARQLProcess queryPath(String path) throws LoadException{
         String q = QueryLoad.create().readWE(path);
@@ -330,11 +371,12 @@ public class WorkflowParser {
     
     WorkflowProcess load(IDatatype dt){
         Node subject = getGraph().getNode(dt);
-        IDatatype dname = getGraph().getValue(NAME, dt);
-        IDatatype drec  = getGraph().getValue(REC, dt);
+        IDatatype dname = getValue(NAME, dt);
+        IDatatype drec  = getValue(REC, dt);
         String name = (dname == null) ? null : dname.getLabel();
         boolean rec = (drec == null) ? false : drec.booleanValue();
         SemanticWorkflow w = new SemanticWorkflow();
+        
         for (Entity ent : getGraph().getEdges(PATH, subject, 0)){
             String pp = ent.getNode(1).getLabel();
             w.add(new LoadProcess(pp, name, rec));
@@ -355,8 +397,8 @@ public class WorkflowParser {
      * | sw:uri ] ) dt is the subject of the subWorkflow definition
      */
     SemanticWorkflow subWorkflow(Node wf) throws LoadException {
-        Node body = getGraph().getNode(BODY, wf);
-        Node uri  = getGraph().getNode(URI, wf);
+        Node body = getNode(BODY, wf);
+        Node uri  = getNode(URI, wf);
         if (body != null) {
             WorkflowParser parser = new WorkflowParser(getGraph());
             parser.setProcessMap(map);
@@ -370,12 +412,43 @@ public class WorkflowParser {
         }
     }
     
+    ProbeProcess probe(IDatatype dt) throws LoadException {
+        IDatatype body = getValue(EXP, dt);
+        WorkflowProcess wp = createProcess(body);
+        return new ProbeProcess(wp);
+    }
+    
+    ParallelProcess parallel(Node wf) throws LoadException {
+        Node body = getNode(BODY, wf);
+        if (body != null) {
+            IDatatype dtbody = graph.list(body);
+            if (dtbody != null) {
+                ParallelProcess pp = new ParallelProcess();
+                for (IDatatype dt : dtbody.getValues()) {
+                    WorkflowProcess wp = createProcess(dt);
+                    pp.add(wp);
+                }
+                return pp;
+            }
+        }
+        return null;
+    }
+    
+    AssertProcess asserter(IDatatype dt) throws LoadException {
+        IDatatype dtest  = getValue(EXP, dt);
+        IDatatype dvalue = getValue(VALUE, dt);
+        if (dtest != null && dvalue != null){
+            WorkflowProcess w = fun(dtest);
+            return new AssertProcess(w, dvalue);
+        }
+        return null;
+    }
          
     TestProcess test(IDatatype dt) throws LoadException {
         WorkflowProcess pif = createIf(dt);
         if (pif != null) {
-            IDatatype dthen = getGraph().getValue(THEN, dt);
-            IDatatype delse = getGraph().getValue(ELSE, dt);
+            IDatatype dthen = getValue(THEN, dt);
+            IDatatype delse = getValue(ELSE, dt);
             WorkflowProcess pthen = null;
             WorkflowProcess pelse = null;
             if (dthen != null) {
@@ -390,18 +463,21 @@ public class WorkflowParser {
     }
     
     WorkflowProcess createIf(IDatatype dt) throws LoadException {
-        IDatatype dif = getGraph().getValue(IF, dt);
+        IDatatype dif = getValue(IF, dt);
         if (dif == null) {
             return null;
         }
-        if (dif.isLiteral()){
+       return fun(dif); 
+    }
+    
+    WorkflowProcess fun(IDatatype dt) throws LoadException{
+         if (dt.isLiteral()){
             // sw:if "us:test()"
-            return new FunctionProcess("function xt:main(){ " + dif.getLabel() + " }", getPath());
+            return new FunctionProcess("function xt:main(){ " + dt.getLabel() + " }", getPath());
         }
         else {
-            return createProcess(dif);
-        }
-        
+            return createProcess(dt);
+        }     
     }
     
        /**
@@ -410,25 +486,29 @@ public class WorkflowParser {
      */
     void complete(WorkflowProcess p, IDatatype dt){
         p.setURI(dt.getLabel());
-        IDatatype dn = getGraph().getValue(NAME, dt);      
+        IDatatype dn = getValue(NAME, dt);      
         if (dn != null){
             p.setName(dn.stringValue());
         }
-        IDatatype db = getGraph().getValue(DEBUG, dt);      
+        IDatatype db = getValue(DEBUG, dt);      
         if (db != null){
             p.setDebug(db.booleanValue());
         }
-        IDatatype dp = getGraph().getValue(PROBE, dt);      
-        if (dp != null){
-            p.setProbe(dp.booleanValue());
-        }
-        IDatatype dd = getGraph().getValue(DISPLAY, dt);      
+//        IDatatype dp = getValue(PROBE, dt);      
+//        if (dp != null){
+//            p.setProbe(dp.booleanValue());
+//        }
+        IDatatype dd = getValue(DISPLAY, dt);      
         if (dd != null){
             p.setDisplay(dd.booleanValue());
         }
-        IDatatype dr = getGraph().getValue(RESULT, dt);      
+        IDatatype dr = getValue(RESULT, dt);      
         if (dr != null){
             p.setResult(dr.getLabel());
+        }
+        IDatatype dm = getValue(MODE, dt);      
+        if (dm != null){
+            p.setMode(dm);
         }
     }
      

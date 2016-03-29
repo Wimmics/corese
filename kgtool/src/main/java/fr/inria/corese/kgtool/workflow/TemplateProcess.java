@@ -5,6 +5,7 @@
 
 package fr.inria.corese.kgtool.workflow;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
@@ -14,7 +15,7 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class TemplateProcess extends  SemanticProcess {
+public class TemplateProcess extends  WorkflowProcess {
 
     
     private String path;
@@ -49,7 +50,11 @@ public class TemplateProcess extends  SemanticProcess {
         setTransfomer(t);
         init(t, data, getContext());
         Data res = new Data(data.getGraph());
-        res.setTemplateResult(t.toString());
+        IDatatype dt = t.process();
+        if (dt != null){
+            res.setTemplateResult(dt.getLabel());
+            res.setDatatype(dt);
+        }
         res.setProcess(this);       
         complete(t, res);
         setData(res);

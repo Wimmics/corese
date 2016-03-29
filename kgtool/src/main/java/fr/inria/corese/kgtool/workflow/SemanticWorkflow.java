@@ -3,6 +3,7 @@ package fr.inria.corese.kgtool.workflow;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
     
       
     public Data process() throws EngineException {
-        return process(new Data(Graph.create()));
+        return process(new Data(GraphStore.create()));
     }
     
     @Override

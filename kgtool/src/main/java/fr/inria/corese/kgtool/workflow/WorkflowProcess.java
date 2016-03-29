@@ -5,9 +5,12 @@
 
 package fr.inria.corese.kgtool.workflow;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.edelweiss.kgraph.core.Graph;
+import java.util.List;
 
 /**
  * Root class
@@ -18,12 +21,14 @@ public class WorkflowProcess implements AbstractProcess {
     private Context context;
     private Dataset dataset;
     private Data data;
+    private Graph graph;
     private SemanticWorkflow workflow;
     private boolean debug = false;
     // true means return input graph (use case: select where and return graph as is)
     private boolean probe = false;
     private boolean display = false;
     private String result, uri, name;
+    private IDatatype mode;
     
     @Override
     public String toString(){
@@ -35,7 +40,9 @@ public class WorkflowProcess implements AbstractProcess {
         return d;
     }
      
-    
+    public List<WorkflowProcess> getProcessList(){
+        return null;
+    }
 
     @Override
     public void subscribe(SemanticWorkflow w) {
@@ -106,6 +113,10 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public boolean isDebug() {
         return debug;
+    }
+    
+    public boolean isRecDebug(){
+        return isDebug() || getWorkflow().isDebug();
     }
 
     /**
@@ -210,6 +221,34 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the graph
+     */
+    public Graph getGraph() {
+        return graph;
+    }
+
+    /**
+     * @param graph the graph to set
+     */
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
+    /**
+     * @return the mode
+     */
+    public IDatatype getMode() {
+        return mode;
+    }
+
+    /**
+     * @param mode the mode to set
+     */
+    public void setMode(IDatatype mode) {
+        this.mode = mode;
     }
 
 }

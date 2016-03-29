@@ -10,7 +10,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class LoadProcess extends SemanticProcess {
+public class LoadProcess extends WorkflowProcess {
     public static final String FILE = "file://";
     
     String path, name;

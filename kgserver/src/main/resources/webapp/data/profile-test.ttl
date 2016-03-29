@@ -2,6 +2,15 @@
 #  Additional profile for testing purpose
 #
 
+st:cdncopy a st:Profile ;
+st:workflow [ a sw:Workflow ; sw:body (
+    <query/frdbpediacdn.rq>     
+    <query/frdbpediacdncopy.rq> 
+    [ a sw:Transformation ; sw:uri st:navlab ] 
+    )]
+.
+
+
 st:save a st:Profile ;
   st:query <query/save.rq> ;
   st:transform st:sparql ;
@@ -184,9 +193,39 @@ st:service "ldp" ;
  ] .
  
 
+# deprecated syntax, use sw:Parallel
 
-
-
+st:tutorial11 a st:Server ;
+  st:service "rdf11" ;
+  st:transform st:web ;
+  st:content 
+    [ a sw:Workflow ; sw:body ( 
+	[ a sw:Load ; sw:path <tutorial/human1.rdf> ; sw:name st:data1 ]
+	[ a sw:Load ; sw:path <tutorial/human2.rdf> ; sw:name st:data2 ]
+	[ a sw:Load ; sw:path <tutorial/pragma.ttl> ; sw:name st:pragma ]  
+	)] ,  
+    [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
+        st:indexQuery) ]
+ .
+ 
+ 
+st:tutotest a st:Server ;
+  st:service "tuto" ;
+  st:transform st:web ;
+  st:content 
+    [ a sw:Workflow ; sw:body ( 
+	[ a sw:Load ; sw:path <tutorial/human1.rdf> ; sw:name st:data1 ]
+	[ a sw:Load ; sw:path <tutorial/human2.rdf> ; sw:name st:data2 ]
+	[ a sw:Load ; sw:path <tutorial/pragma.ttl> ; sw:name st:pragma ]  
+	[ a sw:Load ; sw:path <tutorial/human.rdfs> ; sw:name st:schema ]     
+	[ a sw:RuleBase ; sw:uri sw:rdfs ]
+	)] ,  
+    [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
+        st:indexQuery) ]
+ .
+ 
 
 
 

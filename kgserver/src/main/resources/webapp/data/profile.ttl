@@ -16,12 +16,15 @@ st:dbpedia a st:Profile ;
     st:lang "fr" ;
     st:import st:dbpediaParam, st:mapParam  ;    
   ] ;
-  st:workflow [
-      sw:body ( 
-	<query/frdbpedia.rq> <query/frdbpediaclean.rq> 
-	[ a sw:Template ; sw:uri st:navlab ]
-      )
-  ] .
+  st:workflow st:dbpediawf
+  .
+  
+st:dbpediawf a sw:Workflow ;
+  sw:body ( 
+    <query/frdbpedia.rq> <query/frdbpediaclean.rq> 
+    [ a sw:Template ; sw:uri st:navlab ]
+  )
+.
   
 
 st:dbedit a st:Profile ;
@@ -191,43 +194,41 @@ st:content [
 .
 
 
-  
 st:tutorial1 a st:Server ;
   st:service "rdf" ;
   st:transform st:web ;
   st:content 
-    [ a sw:Workflow ; sw:body ( 
-	[ a sw:Load ; sw:path <tutorial/human1.rdf> ; sw:name st:data1 ]
-	[ a sw:Load ; sw:path <tutorial/human2.rdf> ; sw:name st:data2 ]
-	[ a sw:Load ; sw:path <tutorial/pragma.ttl> ; sw:name st:pragma ]  
-	)] ,  
-    [ a sw:Workflow ; sw:name st:context ; sw:body ( 
-        [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
-        st:indexQuery) ]
- .
- 
- 
-st:tutotest a st:Server ;
-  st:service "tuto" ;
-  st:transform st:web ;
-  st:content 
-    [ a sw:Workflow ; sw:body ( 
-	[ a sw:Load ; sw:path <tutorial/human1.rdf> ; sw:name st:data1 ]
-	[ a sw:Load ; sw:path <tutorial/human2.rdf> ; sw:name st:data2 ]
-	[ a sw:Load ; sw:path <tutorial/pragma.ttl> ; sw:name st:pragma ]  
-	[ a sw:Load ; sw:path <tutorial/human.rdfs> ; sw:name st:schema ]     
-	[ a sw:RuleBase ; sw:uri sw:rdfs ]
-	)] ,  
-    [ a sw:Workflow ; sw:name st:context ; sw:body ( 
-        [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
-        st:indexQuery) ]
- .
- 
+  [ a sw:Workflow ; sw:body ( 
+
+    [ a sw:Parallel ; sw:body (
+    
+      # main dataset
+      [ a sw:Workflow ;  sw:body (
+	  [ a sw:Load ; sw:path <tutorial/human1.rdf> ; sw:name st:data1 ]
+	  [ a sw:Load ; sw:path <tutorial/human2.rdf> ; sw:name st:data2 ]
+	  [ a sw:Load ; sw:path <tutorial/pragma.ttl> ; sw:name st:pragma ]  
+      )] 
+      
+      # context dataset with predefined queries in a specific graph
+      [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+	  [ a sw:Query ; sw:body "construct where {}" ]
+	  [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
+	  st:indexQuery) ]
+    )]
+    
+    [a sw:Dataset]
+
+  )]
+.
+
  st:indexQuery a sw:Query ; 
    sw:body 
    "insert { ?q st:index ?n } where { ?q a sw:Query bind (kg:number() as ?n) }"
 .
-   
+  
+  
+
+
  
    
 # execute the whole query list of the tutorial above

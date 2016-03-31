@@ -245,7 +245,7 @@ public class Profile {
     void process(Graph g) throws IOException, EngineException {
         initService(g);
         // deprecated:
-        initLoad(g);
+       // initLoad(g);
         initServer(g);
     }
 

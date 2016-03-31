@@ -578,7 +578,7 @@ public class Transformer implements ExpType {
 		// bind is compiled as subquery
 		q.setBind(ast.isBind());
 		q.setRelax(ast.isMore());
-		
+		new QueryProfile(q).profile();
 		if (save != null){
 			compiler = save;
 		}

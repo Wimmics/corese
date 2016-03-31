@@ -46,7 +46,7 @@ public class RuleProcess extends  WorkflowProcess {
             re.process();
             Data res = new Data(data.getGraph());
             res.setProcess(this);
-            setData(res);
+            collect(res);
             if (isDebug()){
                 System.out.println(res.getGraph());
             }

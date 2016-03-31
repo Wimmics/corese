@@ -129,7 +129,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
     }
            
     Data run(Data data) throws EngineException {  
-        setData(data);
+        collect(data);
         trace();
         for (WorkflowProcess p : list){
             if (isDebug()){
@@ -138,7 +138,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
             complete(p);
             data = p.process(data);           
         }   
-        setData(data);
+        collect(data);
         return data;
     }
     

@@ -46,7 +46,8 @@ public class FunctionProcess extends WorkflowProcess {
         if (ds != null){
             ds.setContext(c);
         }
-        return exec.eval(getQuery(), ds);   
+        IDatatype res = exec.eval(getQuery(), ds);  
+        return res;
     }
 
     /**

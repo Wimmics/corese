@@ -57,7 +57,7 @@ public class TemplateProcess extends  WorkflowProcess {
         }
         res.setProcess(this);       
         complete(t, res);
-        setData(res);
+        collect(res);
         return res;
     }
     

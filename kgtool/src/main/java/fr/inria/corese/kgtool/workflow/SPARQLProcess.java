@@ -33,12 +33,12 @@ public class SPARQLProcess extends  WorkflowProcess {
     
     @Override
     public Data process(Data data) throws EngineException {  
-        if (isDebug() || theDisplay()){
+        if (isDebug() || isRecDisplay()){
             System.out.println("Query: " + getQuery());
         }
         Mappings map = query(data, getContext(), getDataset());        
         Data res = new Data(this, map, getGraph(map, data));
-        if (isDebug() || theDisplay()){ 
+        if (isDebug() || isRecDisplay()){ 
             if (isGraphResult()){
                 System.out.println(res.getGraph());
             }
@@ -47,7 +47,7 @@ public class SPARQLProcess extends  WorkflowProcess {
             }
         }        
         complete(res);
-        setData(res);
+        collect(res);
         return res;
     }
     
@@ -101,10 +101,7 @@ public class SPARQLProcess extends  WorkflowProcess {
     String theResult(){
         return (getResult() == null) ? getWorkflow().getResult() : getResult();
     }
-    
-    boolean theDisplay(){
-        return isDisplay() || getWorkflow().isDisplay() ;
-    }   
+     
     
     Graph getGraph(Mappings map, Data data) {
         ASTQuery ast = (ASTQuery) map.getAST();

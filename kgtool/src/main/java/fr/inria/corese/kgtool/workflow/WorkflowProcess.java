@@ -9,6 +9,12 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import static fr.inria.corese.kgtool.workflow.WorkflowParser.DEBUG;
+import static fr.inria.corese.kgtool.workflow.WorkflowParser.DISPLAY;
+import static fr.inria.corese.kgtool.workflow.WorkflowParser.MODE;
+import static fr.inria.corese.kgtool.workflow.WorkflowParser.NAME;
+import static fr.inria.corese.kgtool.workflow.WorkflowParser.RESULT;
+import static fr.inria.corese.kgtool.workflow.WorkflowParser.COLLECT;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.List;
 
@@ -27,6 +33,7 @@ public class WorkflowProcess implements AbstractProcess {
     // true means return input graph (use case: select where and return graph as is)
     private boolean probe = false;
     private boolean display = false;
+    private boolean collect = false;
     private String result, uri, name;
     private IDatatype mode;
     
@@ -93,6 +100,32 @@ public class WorkflowProcess implements AbstractProcess {
     public void setData(Data data) {
         this.data = data;
     }
+    
+    void collect(Data data){
+        if (isRecCollect()){
+            setData(data);
+        }
+    }
+    
+    boolean isRecCollect(){
+        return isCollect() || (pgetWorkflow().isCollect());
+    }
+     
+    boolean isRecDisplay(){
+        return isDisplay() || pgetWorkflow().isDisplay() ;
+    }   
+    
+    boolean isRecDebug(){
+        return isDebug() || pgetWorkflow().isDebug();
+    }
+
+     
+    WorkflowProcess pgetWorkflow() {
+        if (workflow != null){
+            return workflow;
+        }
+        return this;
+    } 
 
     /**
      * @return the workflow
@@ -111,17 +144,15 @@ public class WorkflowProcess implements AbstractProcess {
     /**
      * @return the debug
      */
+    @Override
     public boolean isDebug() {
         return debug;
     }
     
-    public boolean isRecDebug(){
-        return isDebug() || getWorkflow().isDebug();
-    }
-
     /**
      * @param debug the debug to set
      */
+    @Override
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
@@ -249,6 +280,42 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public void setMode(IDatatype mode) {
         this.mode = mode;
+    }
+    
+    
+    void set(String name, IDatatype dt){
+        if (name.equals(NAME)){
+            setName(dt.stringValue());
+        }
+        else if (name.equals(DEBUG)){
+            setDebug(dt.booleanValue());        
+        }
+        else  if (name.equals(DISPLAY)){
+            setDisplay(dt.booleanValue());        
+        }
+        else if (name.equals(RESULT)){
+            setResult(dt.getLabel());        
+        }
+        else if (name.equals(MODE)){
+            setMode(dt);        
+        } 
+        else if (name.equals(COLLECT)){
+            setCollect(dt.booleanValue());
+        }
+    }
+
+    /**
+     * @return the collect
+     */
+    public boolean isCollect() {
+        return collect;
+    }
+
+    /**
+     * @param collect the collect to set
+     */
+    public void setCollect(boolean collect) {
+        this.collect = collect;
     }
 
 }

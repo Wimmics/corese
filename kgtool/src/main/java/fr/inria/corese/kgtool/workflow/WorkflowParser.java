@@ -33,7 +33,7 @@ public class WorkflowParser {
 
     private static Logger logger = Logger.getLogger(WorkflowParser.class);
     public static final String PREF = NSManager.SWL;
-    
+        
     public static final String QUERY = PREF + "Query";
     public static final String UPDATE = PREF + "Update";
     public static final String RULE = PREF + "Rule";
@@ -68,8 +68,10 @@ public class WorkflowParser {
     public static final String TEST_VALUE = PREF + "test";
     public static final String VALUE = PREF + "value";
     public static final String EXP = PREF + "exp";
+    public static final String COLLECT = PREF + "collect";
     
- 
+    static final String[] propertyList = {NAME, DEBUG, DISPLAY, RESULT, MODE, COLLECT};
+
     private Graph graph;
     private SemanticWorkflow sw;
     private String path;
@@ -109,7 +111,13 @@ public class WorkflowParser {
     public SemanticWorkflow parse(Graph g, String name) throws LoadException {
         setGraph(g);
         Node node = getWorkflowNode(name);
-        if (node != null) {
+        if (node == null) {
+            if (path != null){
+                logger.error(path);
+            }
+           logger.error("Parser: cannot find top level Workflow " + ((name == null) ? "" : name));
+        }
+        else {
             parse(node);
         }
         complete(g);
@@ -480,36 +488,17 @@ public class WorkflowParser {
         }     
     }
     
-       /**
+     /**
      * sw:debug true
-     * sw:probe true
      */
     void complete(WorkflowProcess p, IDatatype dt){
         p.setURI(dt.getLabel());
-        IDatatype dn = getValue(NAME, dt);      
-        if (dn != null){
-            p.setName(dn.stringValue());
-        }
-        IDatatype db = getValue(DEBUG, dt);      
-        if (db != null){
-            p.setDebug(db.booleanValue());
-        }
-//        IDatatype dp = getValue(PROBE, dt);      
-//        if (dp != null){
-//            p.setProbe(dp.booleanValue());
-//        }
-        IDatatype dd = getValue(DISPLAY, dt);      
-        if (dd != null){
-            p.setDisplay(dd.booleanValue());
-        }
-        IDatatype dr = getValue(RESULT, dt);      
-        if (dr != null){
-            p.setResult(dr.getLabel());
-        }
-        IDatatype dm = getValue(MODE, dt);      
-        if (dm != null){
-            p.setMode(dm);
-        }
+        for (String name : propertyList){
+            IDatatype value = getValue(name, dt); 
+            if (value != null){
+                p.set(name, value);
+            }
+        }      
     }
      
     

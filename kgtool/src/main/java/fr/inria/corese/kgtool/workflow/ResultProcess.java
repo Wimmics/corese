@@ -27,7 +27,7 @@ public class ResultProcess extends WorkflowProcess {
     @Override
     public Data process(Data data) throws EngineException {       
         Data res = new Data(this, data.getMappings(), data.getGraph());
-        setData(res);
+        collect(res);
         return res;
     }
     

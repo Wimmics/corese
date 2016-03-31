@@ -173,6 +173,10 @@ public class Data {
     public IDatatype getDatatype() {
         return datatype;
     }
+    
+     public IDatatype getDatatypeValue() {
+        return datatype;
+    }
 
     /**
      * @param datatype the datatype to set
@@ -224,6 +228,13 @@ public class Data {
      */
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public IDatatype getValue(String var){
+        if (getMappings() == null){
+            return null;
+        }
+        return  (IDatatype) getMappings().getValue(var);
     }
 
 }

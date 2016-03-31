@@ -461,7 +461,7 @@ public class Memory implements Environment {
         clear();
         return map;
     }
-
+    
     /**
      * BNode table cleared for new solution
      */

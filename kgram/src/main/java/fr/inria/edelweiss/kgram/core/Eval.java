@@ -2371,7 +2371,7 @@ public class Eval implements ExpType, Plugin {
                 exp.setObject(lMap);
             }
         }
-
+        
         // enumerate the result of the sub query
         // bind the select nodes into the stack
         for (Mapping map : lMap) {

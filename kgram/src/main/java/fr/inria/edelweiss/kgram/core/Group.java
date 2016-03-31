@@ -31,6 +31,21 @@ public class Group implements Comparator<Mappings>{
 	boolean isDistinct = false, 
 		// min(?l, groupBy(?x, ?y))
 		isExtend = false;
+    private boolean isFake = false;
+
+    /**
+     * @return the afake
+     */
+    public boolean isFake() {
+        return isFake;
+    }
+
+    /**
+     * @param afake the afake to set
+     */
+    public void setFake(boolean afake) {
+        this.isFake = afake;
+    }
 
 	
 	class TreeMapping extends TreeMap<Mapping, Mappings> {	
@@ -52,14 +67,14 @@ public class Group implements Comparator<Mappings>{
 		}
 
 		@Override
-		public int compare(Mapping m1, Mapping m2){
+		public int compare(Mapping m1, Mapping m2){                  
 			if (isExtend){
 				return compareExtend(m1, m2);
 			}
 			
 			if (isDistinct){
 				return compareDistinct(m1, m2);
-			}
+			}                        
 			for (int i = 0; i<size; i++){
 				Node qNode = list.get(i);
 				int res = compare(m1.getGroupBy(qNode, i), m2.getGroupBy(qNode, i));
@@ -185,6 +200,7 @@ public class Group implements Comparator<Mappings>{
 		Mappings lm = table.get(map);
 		if (lm == null){
 			lm = new Mappings();
+                        lm.setFake(isFake());
 			table.put(map, lm);
 		}
 		lm.add(map);

@@ -89,6 +89,13 @@ public class Mapping
 		this();
 		init(q, t);
 	}
+        
+        static Mapping fake(Query q){
+            Mapping m = new Mapping();
+            m.setOrderBy(new Node[q.getOrderBy().size()]);
+            m.setGroupBy(new Node[q.getGroupBy().size()]);
+            return m;
+        }
 	
 	public static Mapping create(List<Node> q, List<Node> t){
 		return new Mapping(q, t);
@@ -893,13 +900,17 @@ public class Mapping
 	 * Mapping as Environment may compute aggregates
 	 * see same function in Memory
 	 */
+        @Override
 	public void aggregate(Evaluator eval, Producer p, Filter f){
+            if (! getMappings().isFake()){
 		for (Mapping map : getMappings()){
 			// in case there is a nested aggregate
 			eval.eval(f, map, p);
 		}
+            }
 	}
         
+        @Override
     public Extension getExtension(){
             return query.getActualExtension();
         }   

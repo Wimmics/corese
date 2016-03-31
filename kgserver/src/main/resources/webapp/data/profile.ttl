@@ -197,8 +197,11 @@ st:content [
 st:tutorial1 a st:Server ;
   st:service "rdf" ;
   st:transform st:web ;
-  st:content 
-  [ a sw:Workflow ; sw:body ( 
+  st:content st:tutocontent
+.
+
+st:tutocontent a sw:Workflow ; 
+  sw:body ( 
 
     [ a sw:Parallel ; sw:body (
     
@@ -216,9 +219,10 @@ st:tutorial1 a st:Server ;
 	  st:indexQuery) ]
     )]
     
+    # set st:context graph as named graph of main
     [a sw:Dataset]
 
-  )]
+  )
 .
 
  st:indexQuery a sw:Query ; 

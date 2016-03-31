@@ -116,6 +116,7 @@ import fr.inria.edelweiss.kgtool.util.ValueCache;
 import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
+import fr.inria.corese.kgtool.workflow.WorkflowProcess;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.MalformedURLException;
@@ -125,6 +126,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import static junit.TestQuery1.data;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -212,7 +214,59 @@ public class TestUnit {
           new TestUnit().testFib();
       }
       
-      @Test
+   
+    public void testFunodfh() throws EngineException {
+        String q =  "select * (max(?c) as ?mc) where {"
+                + "select (count(*) as ?c) (max(?y) as ?m) where {?x ?p ?y}"
+                + "}";
+              
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?c");
+        IDatatype dt2 = (IDatatype) map.getValue("?mc");
+        assertEquals(0, dt.intValue());
+        assertEquals(0, dt2.intValue());
+    }
+    
+     @Test
+    public void testGGGG() throws EngineException, LoadException {         
+        String q = "prefix c: <http://www.inria.fr/acacia/comma#>"
+                + "select distinct ?x  (count (?src) as ?count) (max(?src) as ?max)   where { "
+                + "?src rdf:type rdfs:Resource   "
+                + "graph ?src { ?x c:hasCreated ?y }}"
+                + "group by ?x "
+                + "order by desc(?max)"
+                + "having (?count >= 0)";
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        ld.parseDir(data + "comma/data");
+        QueryProcess exec = QueryProcess.create(g);       
+        Mappings map = exec.query(q);
+         System.out.println(map);
+    }
+     
+     
+     
+     
+   public void testWorkflow22() throws EngineException, LoadException {
+       WorkflowParser wp = new WorkflowParser();
+       SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w22.ttl");           
+       Data res = w.process(new Data(GraphStore.create()));
+        System.out.println(res.getGraph().display());
+       assertEquals(5, res.getGraph().size());
+   }  
+      
+   public void testServer1() throws EngineException, LoadException {
+       String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
+       QueryProcess exec = QueryProcess.create(Graph.create());
+       exec.query(q);
+       WorkflowParser wp = new WorkflowParser();
+       SemanticWorkflow w = wp.parse(data + "junit/workflow/server/w1.ttl", NSManager.USER+"test");           
+       Data res = w.process();  
+          System.out.println(res);
+   } 
+        
       public void testMI() throws EngineException{
           String i = "insert data {"
                   + "us:Boy rdfs:subClassOf us:Man "
@@ -231,12 +285,11 @@ public class TestUnit {
         }
       
       
-      
-      
-      
-      
-      
      
+      
+  
+           
+           
       public void testNSMaa() throws EngineException, IOException {
          NSManager nsm = NSManager.create();
          nsm.setBase("file:///home/corby/");

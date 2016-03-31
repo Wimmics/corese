@@ -126,6 +126,23 @@ public class TestQuery1 {
         return graph;
     }
     
+    
+     @Test
+    public void testAGG22() throws EngineException {
+        String q =  "select * (max(?c) as ?mc) where {"
+                + "select (count(*) as ?c) (max(?y) as ?m) where {?x ?p ?y}"
+                + "}";
+              
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?c");
+        IDatatype dt2 = (IDatatype) map.getValue("?mc");
+        assertEquals(0, dt.intValue());
+        assertEquals(0, dt2.intValue());
+    }
+    
+    
       @Test
     public void testJSON() throws EngineException, LoadException {
         String t =
@@ -141,7 +158,7 @@ public class TestQuery1 {
         Mappings map = exec.query(t);
 
         String json = map.getTemplateStringResult();
-        assertEquals(1258, json.length());
+        assertEquals(1260, json.length());
 
         Graph gg = Graph.create();
         Load ll = Load.create(gg);
@@ -426,7 +443,7 @@ public class TestQuery1 {
     public void testUnnestGraph() throws EngineException {
         Graph g = GraphStore.create();
         QueryProcess exec = QueryProcess.create(g);
-        QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
+        //QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
 
         String q = "prefix ex: <htp://example.org/>"
                 + "select ?s ?p ?o  where {"
@@ -448,7 +465,7 @@ public class TestQuery1 {
     public void testUnnestSelect() throws EngineException {
         Graph g = GraphStore.create();
         QueryProcess exec = QueryProcess.create(g);
-        QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
+        //QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
 
         String q = "prefix ex: <htp://example.org/>"
                 + "select *  where {"
@@ -472,7 +489,7 @@ public class TestQuery1 {
     public void testUnnestSelect2() throws EngineException {
         Graph g = GraphStore.create();
         QueryProcess exec = QueryProcess.create(g);
-        QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
+        //QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
 
         String q = "prefix ex: <htp://example.org/>"
                 + "select *  where {"
@@ -632,6 +649,8 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
+        System.out.println("*****************************************");
+        System.out.println(map);
         assertEquals(2, map.size()); // there is also a global prefix c:
         IDatatype p = (IDatatype) map.getValue("?p");
         IDatatype n = (IDatatype) map.getValue("?n");
@@ -3633,7 +3652,7 @@ public class TestQuery1 {
 
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
-        exec.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
+        //exec.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
 
         try {
             exec.query(init);
@@ -3767,7 +3786,8 @@ public class TestQuery1 {
 
     @Test
     public void test1() {
-        String query = "select check where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select check where {"
                 + "?x rdf:type c:Person ;"
                 + "c:FirstName 'John' ;"
                 + "c:name ?n"
@@ -3783,7 +3803,8 @@ public class TestQuery1 {
 
     @Test
     public void test2() {
-        String query = "select more * (kg:similarity() as ?sim) where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select more * (kg:similarity() as ?sim) where {"
                 + "?x rdf:type c:Engineer "
                 + "?x c:hasCreated ?doc "
                 + "?doc rdf:type c:WebPage"
@@ -3804,7 +3825,8 @@ public class TestQuery1 {
 
     @Test
     public void test2b() {
-        String query = "select more * (kg:similarity() as ?sim) where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select more * (kg:similarity() as ?sim) where {"
                 + "?x rdf:type ?c1 filter(kg:similarity(?c1, c:Engineer) > .5) "
                 + "?x c:hasCreated ?doc "
                 + "?doc rdf:type ?c2 filter(kg:similarity(?c2, c:WebPage) > .4)"
@@ -3822,7 +3844,8 @@ public class TestQuery1 {
 
     @Test
     public void test2c() {
-        String query = "select  (kg:similarity(c:Person, c:Document) as ?sim) where {}";
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  (kg:similarity(c:Person, c:Document) as ?sim) where {}";
         QueryProcess exec = QueryProcess.create(graph);
         try {
             Mappings map = exec.query(query);
@@ -3837,7 +3860,8 @@ public class TestQuery1 {
 
     @Test
     public void test3() {
-        String query = "select  * (kg:similarity() as ?sim) where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  * (kg:similarity() as ?sim) where {"
                 + "?x rdf:type c:Engineer "
                 + "?x c:hasCreated ?doc "
                 + "?doc rdf:type c:WebPage"
@@ -3885,13 +3909,15 @@ public class TestQuery1 {
         Graph graph = Graph.create(true);
         QueryProcess exec = QueryProcess.create(graph);
 
-        String update = "insert data {"
+        String update = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "insert data {"
                 + "<John> c:name 'John' ; rdf:value (1 2 3)"
                 + "c:name rdfs:domain c:Person "
                 + "c:Person rdfs:subClassOf c:Human "
                 + "}";
 
-        String query = "select  *  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  *  where {"
                 + "?x rdf:type c:Human ; c:name ?n ;"
                 + "rdf:value @(1 2)"
                 + "}";
@@ -3911,7 +3937,8 @@ public class TestQuery1 {
         Graph graph = Graph.create(true);
         QueryProcess exec = QueryProcess.create(graph);
 
-        String update = "insert data {"
+        String update = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "insert data {"
                 + "<John> c:name 'John' ; rdf:value (1 2 3)"
                 + "c:name rdfs:domain c:Person "
                 + "c:Person rdfs:subClassOf c:Human "
@@ -3919,7 +3946,8 @@ public class TestQuery1 {
 
         String drop = "drop graph kg:entailment";
 
-        String query = "select  *  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  *  where {"
                 + "?x rdf:type c:Human ; c:name ?n ;"
                 + "rdf:value @(1 2)"
                 + "}";
@@ -3940,7 +3968,8 @@ public class TestQuery1 {
         Graph graph = Graph.create(true);
         QueryProcess exec = QueryProcess.create(graph);
 
-        String update = "insert data {"
+        String update = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "insert data {"
                 + "<John> c:name 'John' ; rdf:value (1 2 3)"
                 + "c:name rdfs:domain c:Person "
                 + "c:Person rdfs:subClassOf c:Human "
@@ -3949,7 +3978,8 @@ public class TestQuery1 {
         String drop = "drop graph kg:entailment";
         String create = "create graph kg:entailment";
 
-        String query = "select  *  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  *  where {"
                 + "?x rdf:type c:Human ; c:name ?n ;"
                 + "rdf:value @(1 2)"
                 + "}";
@@ -3968,7 +3998,8 @@ public class TestQuery1 {
 
     public void test8() {
 
-        String query = "select  *  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  *  where {"
                 + "?x c:hasCreated ?doc"
                 + "} "
                 + "group by any "
@@ -3995,7 +4026,8 @@ public class TestQuery1 {
         Graph g1 = Graph.create(true);
         Graph g2 = Graph.create(true);
 
-        String query = "select  *  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  *  where {"
                 + "?x rdf:type ?t; c:name ?n"
                 + "} ";
 
@@ -4005,8 +4037,8 @@ public class TestQuery1 {
             QueryProcess exec = QueryProcess.create(g1);
             exec.add(g2);
 
-            e1.query("insert data {<John> rdf:type c:Person}");
-            e2.query("insert data {<John> c:name 'John'}");
+            e1.query("prefix c: <http://www.inria.fr/acacia/comma#>" +"insert data {<John> rdf:type c:Person}");
+            e2.query("prefix c: <http://www.inria.fr/acacia/comma#>" +"insert data {<John> c:name 'John'}");
 
             Mappings map = exec.query(query);
             assertEquals("Result", 1, map.size());
@@ -4065,7 +4097,7 @@ public class TestQuery1 {
     @Test
     public void test11() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select * (count(?doc) as ?c)"
                 + "(kg:setObject(?x, ?c) as ?t)"
                 + "where {"
@@ -4074,7 +4106,7 @@ public class TestQuery1 {
                 + "}"
                 + "group by ?x";
 
-        String query2 =
+        String query2 ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select distinct ?x"
                 + "(kg:getObject(?x) as ?v)"
                 + "where {"
@@ -4104,7 +4136,7 @@ public class TestQuery1 {
     @Test
     public void test111() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select * (count(?doc) as ?c)"
                 + "(kg:setProperty(?x, 0, ?c) as ?t)"
                 + "where {"
@@ -4113,7 +4145,7 @@ public class TestQuery1 {
                 + "}"
                 + "group by ?x";
 
-        String query2 =
+        String query2 ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select distinct ?x"
                 + "(kg:getProperty(?x, 0) as ?v)"
                 + "where {"
@@ -4143,7 +4175,7 @@ public class TestQuery1 {
     @Test
     public void test12() {
 
-        String query = "select  *  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +"select  *  where {"
                 + "?x rdf:type ?class; c:hasCreated ?doc}";
 
         try {
@@ -4163,7 +4195,7 @@ public class TestQuery1 {
     @Test
     public void test13() {
 
-        String query = "select  *  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +"select  *  where {"
                 + "?x rdf:type ?class; c:hasCreated ?doc}";
 
         try {
@@ -4183,7 +4215,7 @@ public class TestQuery1 {
     @Test
     public void test14() {
 
-        String query = "select  *  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +"select  *  where {"
                 + "?x rdf:type c:Person; c:hasCreated ?doc "
                 + "?doc rdf:type/rdfs:subClassOf* c:Document "
                 + "c:Document rdfs:label ?l ;"
@@ -4241,7 +4273,8 @@ public class TestQuery1 {
     @Test
     public void test16() {
 
-        String query = "select  * (kg:number() as ?num)  where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  * (kg:number() as ?num)  where {"
                 + "?x c:hasCreated ?doc "
                 + "}";
 
@@ -4267,14 +4300,16 @@ public class TestQuery1 {
         ld.parse(data + "comma/comma.rdfs");
 
         QueryProcess exec = QueryProcess.create(g);
-        String query = "select (kg:similarity(c:Person, c:Document) as ?sim) {}";
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select (kg:similarity(c:Person, c:Document) as ?sim) {}";
         try {
             Mappings map = exec.query(query);
             IDatatype dt = getValue(map, "?sim");
 
             assertEquals("Result", true, dt.getDoubleValue() < 0.5);
 
-            String update = "insert data {c:Human rdfs:subClassOf c:Person}";
+            String update = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                    "insert data {c:Human rdfs:subClassOf c:Person}";
             exec.query(update);
 
             //		assertEquals("Result", null, g.getClassDistance()); 	
@@ -4293,7 +4328,8 @@ public class TestQuery1 {
 
     @Test
     public void test18() {
-        String query = "select * where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select * where {"
                 + "c:Person rdfs:subClassOf+ :: $path ?c "
                 + "graph $path {?a ?p ?b}"
                 + "}";
@@ -4311,7 +4347,8 @@ public class TestQuery1 {
 
     @Test
     public void test19() {
-        String query = "select * "
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select * "
                 + "(pathLength($path) as ?l) (count(?a) as ?c) where {"
                 + "?x c:isMemberOf+ :: $path ?org "
                 + "graph $path {?a ?p ?b}"
@@ -4350,7 +4387,7 @@ public class TestQuery1 {
 
     @Test
     public void test20() {
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "prefix ext: <function://junit.TestQuery1> "
                 + "select (ext:fun(?fn, ?ln) as ?res) where {"
                 + "?x c:FirstName ?fn ; c:FamilyName ?ln"
@@ -4378,7 +4415,7 @@ public class TestQuery1 {
 
     @Test
     public void test21() {
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  * where {"
                 + "?x c:FirstName 'Olivier' "
                 + "filter(kg:contains('é', 'e')) "
@@ -4401,7 +4438,7 @@ public class TestQuery1 {
     @Test
     public void test22() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
@@ -4424,7 +4461,7 @@ public class TestQuery1 {
     @Test
     public void test23() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
@@ -4447,7 +4484,7 @@ public class TestQuery1 {
     @Test
     public void test24() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
@@ -4470,7 +4507,7 @@ public class TestQuery1 {
     @Test
     public void test25() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
@@ -4493,7 +4530,7 @@ public class TestQuery1 {
     @Test
     public void test26() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
@@ -4516,7 +4553,7 @@ public class TestQuery1 {
     @Test
     public void test27() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
@@ -4539,7 +4576,7 @@ public class TestQuery1 {
     @Test
     public void test28() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  "
                 + "where {"
                 + "c:Engineer rdfs:subClassOf+ :: $path ?y "
@@ -4563,7 +4600,7 @@ public class TestQuery1 {
     @Test
     public void test29() {
 
-        String query =
+        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select  "
                 + "where {"
                 + "?class rdfs:subClassOf+ :: $path c:Person "
@@ -5389,7 +5426,8 @@ public class TestQuery1 {
 
     @Test
     public void test53() {
-        String query = "select  * (kg:similarity() as ?sim) where {"
+        String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
+                "select  * (kg:similarity() as ?sim) where {"
                 + "?x rdf:type c:Engineer "
                 + "}"
                 + "order by desc(?sim)"
@@ -5541,25 +5579,26 @@ public class TestQuery1 {
     @Test
     public void test57() {
         Graph graph = createGraph();
-        QueryProcess.definePrefix("e", "htp://example.org/");
+       // QueryProcess.definePrefix("e", "htp://example.org/");
         QueryProcess exec = QueryProcess.create(graph);
 
         RuleEngine re = RuleEngine.create(graph);
 
         String rule =
-                "construct {[a e:Parent; e:term(?x ?y)]}"
+                "prefix e: <htp://example.org/>"
+                + "construct {[a e:Parent; e:term(?x ?y)]}"
                 + "where     {[a e:Father; e:term(?x ?y)]}";
 
-        String rule2 =
+        String rule2 = "prefix e: <htp://example.org/>" +
                 "construct {[a e:Father;   e:term(?x ?y)]}"
                 + "where     {[a e:Parent;   e:term(?x ?y)]}";
 
 
-        String rule3 =
+        String rule3 = "prefix e: <htp://example.org/>" +
                 "construct {[a e:Parent]}"
                 + "where     {[a e:Father]}";
 
-        String rule4 =
+        String rule4 = "prefix e: <htp://example.org/>" +
                 "construct {[a e:Father]}"
                 + "where     {[a e:Parent]}";
 
@@ -5572,11 +5611,11 @@ public class TestQuery1 {
             e1.printStackTrace();
         }
 
-        String init = "insert data {"
+        String init = "prefix e: <htp://example.org/>" +"insert data {"
                 + "[ a e:Father ; e:term(<John> <Jack>) ]"
                 + "}";
 
-        String query = "select  * where {"
+        String query = "prefix e: <htp://example.org/>" +"select  * where {"
                 + //"?x foaf:knows ?z " +
                 "[a e:Parent; e:term(?x ?y)]"
                 + "}";

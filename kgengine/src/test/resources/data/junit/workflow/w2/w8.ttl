@@ -1,0 +1,27 @@
+[] a sw:Workflow ;
+sw:body (
+
+  [ a sw:Test ; 
+  
+  sw:if   
+    [ a sw:Function ; sw:body 
+      """
+	function xt:main(){ false }
+      """
+    ] ;
+    
+    sw:then 
+      [ a sw:Function ; sw:body 
+	"""
+	  function xt:main(){ true }
+	"""
+      ] ;
+      
+     sw:else 
+      [ a sw:Function ; sw:body 
+	"""
+	  function xt:main(){ false }
+	"""
+      ]
+   ]
+)

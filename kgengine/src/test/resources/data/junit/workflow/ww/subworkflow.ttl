@@ -1,0 +1,5 @@
+[] a sw:Workflow ; 
+  sw:loop 2 ;
+  sw:body ( 
+  [ a sw:Query ; sw:uri <q2.rq> ] 
+) .

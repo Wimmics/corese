@@ -1,0 +1,12 @@
+sw:w2 a sw:Workflow ;
+
+sw:param [ st:value 10 ] ;
+
+sw:body ( 
+  [ a sw:Workflow ; 
+    sw:param [ st:test 20 ] ; 
+    sw:body (
+      [ a sw:Query ; sw:body "select (st:get(st:value) as ?v) where {} " ]
+    )]
+)
+.

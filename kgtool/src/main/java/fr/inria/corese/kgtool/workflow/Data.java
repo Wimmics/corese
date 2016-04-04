@@ -1,6 +1,7 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -25,6 +26,7 @@ public class Data {
     private String templateResult;
     private List<Data> dataList;
     private String name;
+    private boolean success = true;
           
     public Data(Graph g){
         graph = g;
@@ -167,12 +169,6 @@ public class Data {
         this.dataset = dataset;
     }
 
-    /**
-     * @return the datatype
-     */
-    public IDatatype getDatatype() {
-        return datatype;
-    }
     
      public IDatatype getDatatypeValue() {
         return datatype;
@@ -181,7 +177,7 @@ public class Data {
     /**
      * @param datatype the datatype to set
      */
-    public void setDatatype(IDatatype datatype) {
+    public void setDatatypeValue(IDatatype datatype) {
         this.datatype = datatype;
     }
 
@@ -197,6 +193,16 @@ public class Data {
             return new ArrayList<Data>();
         }
         return dataList;
+    }
+    
+    IDatatype getGraphList() {
+        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        for (Data d : getDataList()) {
+            if (d.getGraph() != null){
+                list.add(DatatypeMap.createObject(d.getGraph()));
+            }
+        }
+        return DatatypeMap.createList(list);
     }
     
     
@@ -235,6 +241,20 @@ public class Data {
             return null;
         }
         return  (IDatatype) getMappings().getValue(var);
+    }
+
+    /**
+     * @return the success
+     */
+    public boolean isSuccess() {
+        return success;
+    }
+
+    /**
+     * @param success the success to set
+     */
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
 }

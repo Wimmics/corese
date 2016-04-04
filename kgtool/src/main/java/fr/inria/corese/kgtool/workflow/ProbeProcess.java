@@ -16,12 +16,9 @@ public class ProbeProcess extends SemanticProcess {
     }
     
     @Override
-    public Data process(Data data) throws EngineException {
-        if (isDebug()){
-            System.out.println(getClass().getName());
-        }
+    public Data run(Data data) throws EngineException {       
         for (WorkflowProcess wp : getProcessList()){
-            Data res = wp.process(data);
+            Data res = wp.compute(data);
         }
         return data;
     }

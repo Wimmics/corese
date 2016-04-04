@@ -27,12 +27,15 @@ public class LoadProcess extends WorkflowProcess {
     }
    
     
-    
     @Override
-    public Data process(Data data) throws EngineException {
+    void start(Data data){
         if (isDebug()){
             System.out.println("Load: " + path);
         }
+    }
+    
+    @Override
+    public Data run(Data data) throws EngineException {
         Graph g = data.getGraph();
         Load ld = Load.create(g);
         try {

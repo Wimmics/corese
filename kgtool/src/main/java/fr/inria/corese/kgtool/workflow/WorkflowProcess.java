@@ -6,6 +6,7 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
@@ -16,6 +17,7 @@ import static fr.inria.corese.kgtool.workflow.WorkflowParser.NAME;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.RESULT;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.COLLECT;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +36,7 @@ public class WorkflowProcess implements AbstractProcess {
     private boolean probe = false;
     private boolean display = false;
     private boolean collect = false;
+    private boolean visit = false;
     private String result, uri, name;
     private IDatatype mode;
     
@@ -42,9 +45,95 @@ public class WorkflowProcess implements AbstractProcess {
         return getClass().getName();
     }
     
-     @Override
-    public Data process(Data d) throws EngineException {
+     
+    public Data compute(Data d) throws EngineException {
+        before(d);
+        start(d);
+        Data res = run(d);
+        finish(res);
+        after(res);
+        return res;
+    } 
+     
+    public Data run(Data d) throws EngineException {
         return d;
+    }
+       
+     
+    private void before(Data data) {
+        initContextData(data);
+        beforeDebug(data);
+    }
+    
+    void start(Data d){
+       
+    }
+    
+    private void after(Data data) {
+        afterDebug(data);
+    }
+    
+    void finish(Data d){
+        
+    }
+    
+    boolean isVisitable(boolean b){
+         if (isVisit() == b){
+            setVisit(!b);
+            return true;
+        }
+        return false;
+    }
+    
+    public void init(boolean b){
+        if (isVisitable(b)){
+            initialize();
+        }
+    }
+    
+    /**
+     * Performed recursively before running process()
+     * May initialize Context ...
+     * */
+    void initialize(){
+       
+    }
+    
+    /**
+     * Context contain input Data
+     * @param data 
+     */
+    void initContextData(Data data){
+        if (getContext() == null){
+            setContext(new Context());
+        }
+        set(Context.STL_GRAPH, data.getGraph());
+        set(Context.STL_SOLUTION, data.getMappings());
+        if (data.getDatatypeValue() != null){
+            getContext().set(Context.STL_VALUE, data.getDatatypeValue());
+        }
+        if (data.getDataList() != null){
+            getContext().set(Context.STL_GRAPH_LIST, data.getGraphList());
+        }
+    }
+    
+    void set(String name, Object obj){
+        if (obj != null){
+            getContext().set(name, DatatypeMap.createObject(obj));
+        }
+    }
+
+
+    void beforeDebug(Data data) {
+        if (isRecDebug()) {
+            System.out.println("SW: " + getClass().getName());
+        }
+    }
+
+    void afterDebug(Data data) {
+        if (isRecDebug()) {
+            System.out.println(data);
+        }
     }
      
     public List<WorkflowProcess> getProcessList(){
@@ -76,16 +165,31 @@ public class WorkflowProcess implements AbstractProcess {
         this.context = context;
     }
     
+    // Process inherit workflow Context and Dataset (if any)
+    void inherit(WorkflowProcess p) {
+       inherit(p.getContext());
+       inherit(p.getDataset());
+    }
+    
     @Override
     public void inherit(Context context) {
-        if (getContext() == null){
-           setContext(context); 
-        }
-        else {
-            // inherit exported properties
-           getContext().complete(context);
+        if (context != null) {
+            if (getContext() == null) {
+                setContext(context);
+            } else {
+                // inherit exported properties
+                getContext().complete(context);
+            }
         }
     }
+    
+    @Override
+    public void inherit(Dataset dataset) {
+        if (dataset != null) {
+            setDataset(dataset);
+        }
+    }
+
 
     /**
      * @return the data
@@ -172,11 +276,6 @@ public class WorkflowProcess implements AbstractProcess {
         this.dataset = dataset;
     }
     
-    @Override
-    public void inherit(Dataset dataset) {
-        setDataset(dataset);
-    }
-
     @Override
     public boolean isTemplate() {
         return false;
@@ -316,6 +415,20 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public void setCollect(boolean collect) {
         this.collect = collect;
+    }
+
+    /**
+     * @return the visit
+     */
+    public boolean isVisit() {
+        return visit;
+    }
+
+    /**
+     * @param visit the visit to set
+     */
+    public void setVisit(boolean visit) {
+        this.visit = visit;
     }
 
 }

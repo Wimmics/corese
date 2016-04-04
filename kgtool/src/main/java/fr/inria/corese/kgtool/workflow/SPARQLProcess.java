@@ -7,6 +7,7 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
@@ -32,27 +33,39 @@ public class SPARQLProcess extends  WorkflowProcess {
     }
     
     @Override
-    public Data process(Data data) throws EngineException {  
-        if (isDebug() || isRecDisplay()){
+    void start(Data data){
+        if (isRecDebug() || isRecDisplay()){
             System.out.println("Query: " + getQuery());
         }
+    }
+    
+     @Override
+    void finish(Data data) {
+        if (isRecDebug() || isRecDisplay()) {
+            if (isGraphResult()) {
+                System.out.println(data.getGraph());
+            } else {
+                System.out.println(data.getMappings());
+            }
+        }
+    }
+    
+    
+    @Override
+    public Data run(Data data) throws EngineException { 
         Mappings map = query(data, getContext(), getDataset());        
         Data res = new Data(this, map, getGraph(map, data));
-        if (isDebug() || isRecDisplay()){ 
-            if (isGraphResult()){
-                System.out.println(res.getGraph());
-            }
-            else  {
-                System.out.println(map);
-            }
-        }        
         complete(res);
         collect(res);
         return res;
     }
     
     Mappings query(Data data, Context c, Dataset ds) throws EngineException{
-        QueryProcess exec = QueryProcess.create(data.getGraph());
+        Graph g = data.getGraph();
+        if (g == null){
+            g = GraphStore.create();
+        }
+        QueryProcess exec = QueryProcess.create(g);
         if (getWorkflow().getGraph() != null){
             // draft: additional graph considered as contextual dataset
             exec.add(getWorkflow().getGraph());

@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 public class DatasetProcess extends WorkflowProcess {
     
     @Override
-    public Data process(Data data) {
+    public Data run(Data data) {
         if (getMode() == null) {
             return dataset(data);
         }

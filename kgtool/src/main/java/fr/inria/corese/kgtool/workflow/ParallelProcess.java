@@ -21,10 +21,10 @@ public class ParallelProcess extends SemanticProcess {
     
      
     @Override
-    public Data process(Data data) throws EngineException{
+    public Data run(Data data) throws EngineException{
         ArrayList<Data> list = new ArrayList<Data>();
         for (WorkflowProcess wp : getProcessList()){
-            Data res = wp.process(data);
+            Data res = wp.compute(data);
             res.setName(wp.getName());
             list.add(res);
         }

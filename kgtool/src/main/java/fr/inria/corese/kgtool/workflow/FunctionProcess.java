@@ -28,7 +28,7 @@ public class FunctionProcess extends WorkflowProcess {
     
     
     @Override
-   public Data process(Data data) throws EngineException{
+   public Data run(Data data) throws EngineException{
        IDatatype dt = eval(data, getContext(), getDataset());
        Data res = new Data(data.getGraph(), dt);
        res.setProcess(this);

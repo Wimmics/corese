@@ -37,7 +37,7 @@ public class TemplateProcess extends  WorkflowProcess {
     }
      
     @Override
-    public Data process(Data data) throws EngineException {
+    public Data run(Data data) throws EngineException {
         if (isDebug()){
             System.out.println("Transformer: " + getPath());
         }
@@ -53,7 +53,7 @@ public class TemplateProcess extends  WorkflowProcess {
         IDatatype dt = t.process();
         if (dt != null){
             res.setTemplateResult(dt.getLabel());
-            res.setDatatype(dt);
+            res.setDatatypeValue(dt);
         }
         res.setProcess(this);       
         complete(t, res);

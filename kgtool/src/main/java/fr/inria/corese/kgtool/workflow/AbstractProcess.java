@@ -1,6 +1,5 @@
 package fr.inria.corese.kgtool.workflow;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
@@ -16,7 +15,6 @@ public interface AbstractProcess {
     static final String GRAPH = PREF + "graph";
     static final String PROBE = PREF + "probe";
             
-    Data process(Data d) throws EngineException ;
    
     void subscribe(SemanticWorkflow w);
     

@@ -7,7 +7,7 @@ import java.util.List;
 
 
 /**
- * Super class of Atomic Process
+ * Super class of Process with a Process List (Test, Parallel, ..)
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
@@ -25,6 +25,16 @@ public class SemanticProcess extends WorkflowProcess {
     
     void add(WorkflowProcess p){
         processList.add(p);
+    }
+    
+     @Override
+    public void init(boolean b) {
+        if (isVisitable(b)) {
+            initialize();
+            for (WorkflowProcess p : processList) {
+                p.init(b);
+            }
+        }
     }
     
      @Override

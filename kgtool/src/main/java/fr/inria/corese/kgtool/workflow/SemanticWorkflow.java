@@ -2,7 +2,6 @@ package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
@@ -106,37 +105,50 @@ public class SemanticWorkflow extends  WorkflowProcess {
          }
         return list.get(list.size() - 1);
     }
+     
+    @Override
+    public void init(boolean b) {
+        if (isVisitable(b)){
+            initialize();
+            for (WorkflowProcess p : list) {
+                p.init(b);
+            }
+        }
+    }
     
-      
+    @Override
+    void initialize(){
+        super.initialize();
+    }
+         
     public Data process() throws EngineException {
         return process(new Data(GraphStore.create()));
     }
     
+    public Data process(Data data) throws EngineException {
+        init(isVisit());
+        return compute(data);
+    }
+    
     @Override
-    public Data process(Data data) throws EngineException { 
-        init();
+    public Data run(Data data) throws EngineException { 
+        initLoop();
         Data res;
         if (getLoop() > 0){
             res = loop(data);
         }
         else {
-            res = run(data);
-        }
-        if (isDebug()){
-            System.out.println(res);
+            res = exec(data);
         }
         return res;
     }
            
-    Data run(Data data) throws EngineException {  
+    Data exec(Data data) throws EngineException {  
         collect(data);
         trace();
         for (WorkflowProcess p : list){
-            if (isDebug()){
-                System.out.println("SW: " + p.getClass().getName());
-            }
-            complete(p);
-            data = p.process(data);           
+            p.inherit(this);
+            data = p.compute(data);           
         }   
         collect(data);
         return data;
@@ -148,7 +160,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
             if (c != null){
                 c.set(Context.STL_INDEX, i);
             }
-            data = run(data);
+            data = exec(data);
         }
         return data;
     }
@@ -159,7 +171,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
      * st:loop 5
      * &param = 10
      */
-    void init(){
+    void initLoop(){
         Context c = getContext();
         if (c == null){
             if (getLoop() > 0){
@@ -192,17 +204,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
             System.out.println(getContext());
         }
     }
-    
-    
-    // Process inherit workflow Context and Dataset (if any)
-    void complete(WorkflowProcess p) {
-        if (getContext() != null) {
-            p.inherit(getContext());
-        }
-        if (getDataset() != null) {
-            p.inherit(getDataset());
-        }
-    }
+        
     
     @Override
     public String stringValue(Data data){

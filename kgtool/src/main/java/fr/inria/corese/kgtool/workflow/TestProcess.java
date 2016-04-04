@@ -29,26 +29,26 @@ public class TestProcess extends SemanticProcess {
     }
 
     @Override
-    public Data process(Data data) throws EngineException {
+    public Data run(Data data) throws EngineException {
         boolean test = test(data);
         if (isDebug()){
             System.out.println(pif + " : " + test);
         }
         if (test) {
             if (pthen != null) {
-                return pthen.process(data);
+                return pthen.compute(data);
             }
         } 
         else if (pelse != null) {
-            return pelse.process(data);
+            return pelse.compute(data);
         }
 
         return data;
     }
     
     boolean test(Data data) throws EngineException{
-         Data test = pif.process(data);
-         IDatatype dt = test.getDatatype();
+         Data test = pif.compute(data);
+         IDatatype dt = test.getDatatypeValue();
          Mappings map = test.getMappings();
          if (dt != null){
              try {

@@ -26,22 +26,27 @@ public class AssertProcess extends SemanticProcess {
     }
     
     @Override
-    public Data process(Data data) throws EngineException{
-        Data val = test.process(data);
-        IDatatype dt = val.getDatatype();
-        IDatatype dtres = DatatypeMap.TRUE;
-        if (dt == null || ! dt.equals(value)){
-            dtres = DatatypeMap.FALSE;
-            System.out.println("Error: find " + dt + " instead of: " + value);
-        }
+    public Data run(Data data) throws EngineException{
+        Data val = test.compute(data);
+        IDatatype dt = val.getDatatypeValue();
         Data res = new Data(this, data.getMappings(), data.getGraph());
-        res.setDatatype(dtres);
+        res.setDatatypeValue(dt);
+        if (dt == null || ! dt.equals(value)){
+            res.setSuccess(false);
+        }
         return res;
     }
     
     @Override
+    void finish(Data data){
+       if (! data.isSuccess()){
+           System.out.println("Error: find " + data.getDatatypeValue() + " instead of: " + value);
+       }
+    }
+    
+    @Override
     public String  stringValue(Data data){
-        return data.getDatatype().toString();
+        return data.getDatatypeValue().toString();
     }
 
 }

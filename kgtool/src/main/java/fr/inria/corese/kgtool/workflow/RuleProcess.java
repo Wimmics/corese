@@ -35,21 +35,29 @@ public class RuleProcess extends  WorkflowProcess {
     }
     
     @Override
-    public Data process(Data data) throws EngineException {
+    void start(Data data){
+        if (isDebug()){
+              System.out.println("RuleBase: " + path);
+         }
+    }
+    
+    @Override
+    void finish(Data data){
+        if (isDebug()){
+              System.out.println(data.getGraph());
+         }
+    }
+    
+    @Override
+    public Data run(Data data) throws EngineException {
         try {
-            if (isDebug()){
-                System.out.println("RuleBase: " + path);
-            }
             RuleEngine re = create(data.getGraph()); 
             re.setContext(getContext());
             setEngine(re);
             re.process();
             Data res = new Data(data.getGraph());
             res.setProcess(this);
-            collect(res);
-            if (isDebug()){
-                System.out.println(res.getGraph());
-            }
+            collect(res);           
             return res;
         } catch (LoadException ex) {
             throw new EngineException(ex);

@@ -148,7 +148,7 @@ public class TestQueryWorkflow {
        WorkflowParser wp = new WorkflowParser();
        SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w9.ttl");
        Data res = w.process();       
-       assertEquals(false, res.getDatatype().booleanValue());
+       assertEquals(false, res.getDatatypeValue().booleanValue());
    } 
     
     @Test
@@ -156,7 +156,7 @@ public class TestQueryWorkflow {
        WorkflowParser wp = new WorkflowParser();
        SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w8.ttl");
        Data res = w.process();       
-        assertEquals(false, res.getDatatype().booleanValue());
+        assertEquals(false, res.getDatatypeValue().booleanValue());
    } 
     
       @Test

@@ -43,6 +43,7 @@ public class RuleProcess extends  WorkflowProcess {
     
     @Override
     void finish(Data data){
+        collect(data);           
         if (isDebug()){
               System.out.println(data.getGraph());
          }
@@ -57,7 +58,6 @@ public class RuleProcess extends  WorkflowProcess {
             re.process();
             Data res = new Data(data.getGraph());
             res.setProcess(this);
-            collect(res);           
             return res;
         } catch (LoadException ex) {
             throw new EngineException(ex);
@@ -73,7 +73,7 @@ public class RuleProcess extends  WorkflowProcess {
     RuleEngine create(Graph g) throws LoadException {
         RuleEngine re;
         if (profile == -1) {
-            re = init(g, getPath());
+            re = create(g, getPath());
         } else {
             re = RuleEngine.create(g);
             re.setProfile(profile);
@@ -90,7 +90,7 @@ public class RuleProcess extends  WorkflowProcess {
         }
     }
     
-    RuleEngine init(Graph g, String p) throws LoadException{
+    RuleEngine create(Graph g, String p) throws LoadException{
         Load ld = Load.create(g);
         ld.parse(p, Loader.RULE_FORMAT);
         return ld.getRuleEngine();

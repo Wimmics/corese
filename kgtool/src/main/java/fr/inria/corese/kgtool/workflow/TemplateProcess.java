@@ -31,16 +31,25 @@ public class TemplateProcess extends  WorkflowProcess {
         isDefault = b;
     }
     
-      @Override
+    @Override
     public boolean isTemplate() {
         return true;
     }
-     
+      
     @Override
-    public Data run(Data data) throws EngineException {
-        if (isDebug()){
+     void start(Data data){
+          if (isDebug()){
             System.out.println("Transformer: " + getPath());
         }
+     }
+     
+     @Override
+     void finish(Data data){
+         collect(data);
+     }  
+     
+    @Override
+    public Data run(Data data) throws EngineException {      
         if (isDefault && data.getMappings() != null && data.getMappings().getQuery().isTemplate()){
             // former SPARQLProcess is a template {} where {}
             // this Transformer is default transformer : return former template result
@@ -57,7 +66,6 @@ public class TemplateProcess extends  WorkflowProcess {
         }
         res.setProcess(this);       
         complete(t, res);
-        collect(res);
         return res;
     }
     

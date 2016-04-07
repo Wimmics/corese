@@ -11,30 +11,14 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class SemanticProcess extends WorkflowProcess {
-    
-    List<WorkflowProcess> processList;
-    
-    SemanticProcess(){
-        processList = new ArrayList<WorkflowProcess>();
-    }
+public class SemanticProcess extends CompositeProcess {
     
     SemanticProcess(List<WorkflowProcess> l){
-        processList = l;
+        super(l);
     }
     
-    void add(WorkflowProcess p){
-        processList.add(p);
-    }
-    
-     @Override
-    public void init(boolean b) {
-        if (isVisitable(b)) {
-            initialize();
-            for (WorkflowProcess p : processList) {
-                p.init(b);
-            }
-        }
+    SemanticProcess (){
+        super();
     }
     
      @Override
@@ -61,20 +45,7 @@ public class SemanticProcess extends WorkflowProcess {
         }
     }
 
-    /**
-     * @return the processList
-     */
-    @Override
-    public List<WorkflowProcess> getProcessList() {
-        return processList;
-    }
-
-    /**
-     * @param processList the processList to set
-     */
-    public void setProcessList(List<WorkflowProcess> processList) {
-        this.processList = processList;
-    }
+   
     
 
 }

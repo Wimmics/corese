@@ -68,7 +68,13 @@ public class Data {
         if (process != null){
             return process.stringValue(this);
         }
-        return null;
+        if (getMappings() != null){
+            return getMappings().toString();
+        }
+        if (getGraph() != null){
+            return getGraph().toString();
+        }
+        return getClass().getName();
     }
 
     /**

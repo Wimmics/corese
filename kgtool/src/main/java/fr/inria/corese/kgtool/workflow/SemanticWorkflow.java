@@ -15,15 +15,14 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class SemanticWorkflow extends  WorkflowProcess {
+public class SemanticWorkflow extends  CompositeProcess {
     private static final String NL = System.getProperty("line.separator");
      
-    ArrayList<WorkflowProcess> list;
     Data data;
     private int loop = -1;
     
     public SemanticWorkflow(){
-        list = new ArrayList<WorkflowProcess>();
+        super();
     }
     
     @Override
@@ -36,9 +35,9 @@ public class SemanticWorkflow extends  WorkflowProcess {
         }
         return sb.toString();
     }
-    
+       
     public SemanticWorkflow add(WorkflowProcess p){
-        list.add(p);
+        insert(p);
         p.subscribe(this);
         return this;
     }    
@@ -93,46 +92,44 @@ public class SemanticWorkflow extends  WorkflowProcess {
     
     public SemanticWorkflow addResult(){
        return add(new ResultProcess());
-    }
-    
-    public List<WorkflowProcess> getProcessList(){
-        return list;
-    }
-    
-     public WorkflowProcess getProcessLast(){
-         if (list.isEmpty()){
-             return null;
-         }
-        return list.get(list.size() - 1);
-    }
+    }     
      
-    @Override
-    public void init(boolean b) {
-        if (isVisitable(b)){
-            initialize();
-            for (WorkflowProcess p : list) {
-                p.init(b);
-            }
-        }
-    }
     
     @Override
-    void initialize(){
+    public void initialize(){
         super.initialize();
     }
-         
+        
+    /**
+     * starting point of a Workflow
+     */
     public Data process() throws EngineException {
         return process(new Data(GraphStore.create()));
     }
     
+    /**
+     * compute ::= super.before(); this.start(); this.run(); this.finish(); super.after()
+     */
     public Data process(Data data) throws EngineException {
         init(isVisit());
         return compute(data);
     }
     
     @Override
+    void start(Data data){
+       initLoop();
+    }
+    
+    @Override
+    void finish(Data data){
+        
+    }
+    /**
+     * run is the effective method that runs the workflow
+     */
+    
+    @Override
     public Data run(Data data) throws EngineException { 
-        initLoop();
         Data res;
         if (getLoop() > 0){
             res = loop(data);
@@ -146,7 +143,7 @@ public class SemanticWorkflow extends  WorkflowProcess {
     Data exec(Data data) throws EngineException {  
         collect(data);
         trace();
-        for (WorkflowProcess p : list){
+        for (WorkflowProcess p : getProcessList()){
             p.inherit(this);
             data = p.compute(data);           
         }   
@@ -236,5 +233,6 @@ public class SemanticWorkflow extends  WorkflowProcess {
             p.setDebug(b);
         }
     }
+
    
 }

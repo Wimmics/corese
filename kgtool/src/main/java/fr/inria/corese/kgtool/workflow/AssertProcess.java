@@ -6,7 +6,6 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 
 /**
@@ -20,7 +19,7 @@ public class AssertProcess extends SemanticProcess {
     IDatatype value;
     
     AssertProcess(WorkflowProcess w, IDatatype dt){
-        add(w);
+        insert(w);
         test = w;
         value = dt;
     }
@@ -36,6 +35,11 @@ public class AssertProcess extends SemanticProcess {
         }
         return res;
     }
+    
+    @Override
+    void start(Data data){
+          
+     }
     
     @Override
     void finish(Data data){

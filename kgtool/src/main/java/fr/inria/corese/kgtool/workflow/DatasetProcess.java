@@ -13,13 +13,18 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 public class DatasetProcess extends WorkflowProcess {
     
     @Override
+    void start(Data data){
+    }
+    
+    @Override
+    void finish(Data data){
+        
+    }
+    
+    @Override
     public Data run(Data data) {
         if (getMode() == null) {
             return dataset(data);
-        }
-        String mode = getMode().getLabel();
-        if (mode.equals(WorkflowParser.TEST_VALUE)){
-            System.out.println(data);
         }
         return data;
     }

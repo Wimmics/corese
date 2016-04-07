@@ -19,13 +19,23 @@ public class TestProcess extends SemanticProcess {
         this.pif = pif;
         this.pthen = pthen;
         this.pelse = pelse;
-        add(pif);
+        insert(pif);
         if (pthen != null){
-            add(pthen);
+            insert(pthen);
         }
         if (pelse != null) {
-            add(pelse);
+            insert(pelse);
         }
+    }
+    
+    @Override
+    void start(Data data){
+
+    }
+    
+    @Override
+    void finish(Data data){
+        
     }
 
     @Override

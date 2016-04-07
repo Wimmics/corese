@@ -17,7 +17,6 @@ import static fr.inria.corese.kgtool.workflow.WorkflowParser.NAME;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.RESULT;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.COLLECT;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +30,7 @@ public class WorkflowProcess implements AbstractProcess {
     private Data data;
     private Graph graph;
     private SemanticWorkflow workflow;
+    private WorkflowVisitor visitor;
     private boolean debug = false;
     // true means return input graph (use case: select where and return graph as is)
     private boolean probe = false;
@@ -63,6 +63,9 @@ public class WorkflowProcess implements AbstractProcess {
     private void before(Data data) {
         initContextData(data);
         beforeDebug(data);
+        if (recVisitor() != null){
+            recVisitor().before(this, data);
+        }
     }
     
     void start(Data d){
@@ -71,13 +74,16 @@ public class WorkflowProcess implements AbstractProcess {
     
     private void after(Data data) {
         afterDebug(data);
+        if (recVisitor() != null){
+            recVisitor().after(this, data);
+        }
     }
     
     void finish(Data d){
         
     }
     
-    boolean isVisitable(boolean b){
+    public boolean isVisitable(boolean b){
          if (isVisit() == b){
             setVisit(!b);
             return true;
@@ -95,7 +101,7 @@ public class WorkflowProcess implements AbstractProcess {
      * Performed recursively before running process()
      * May initialize Context ...
      * */
-    void initialize(){
+    public void initialize(){
        
     }
     
@@ -147,7 +153,7 @@ public class WorkflowProcess implements AbstractProcess {
 
     @Override
     public String stringValue(Data data) {
-        return null;
+        return "Data";
     }
     
     /**
@@ -221,6 +227,10 @@ public class WorkflowProcess implements AbstractProcess {
     
     boolean isRecDebug(){
         return isDebug() || pgetWorkflow().isDebug();
+    }
+    
+    WorkflowVisitor recVisitor(){
+        return pgetWorkflow().getVisitor();
     }
 
      
@@ -430,5 +440,20 @@ public class WorkflowProcess implements AbstractProcess {
     public void setVisit(boolean visit) {
         this.visit = visit;
     }
+    
+     /**
+     * @return the visitor
+     */
+    public WorkflowVisitor getVisitor() {
+        return visitor;
+    }
+
+    /**
+     * @param visitor the visitor to set
+     */
+    public void setVisitor(WorkflowVisitor visitor) {
+        this.visitor = visitor;
+    }
+   
 
 }

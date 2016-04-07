@@ -41,6 +41,7 @@ public class SPARQLProcess extends  WorkflowProcess {
     
      @Override
     void finish(Data data) {
+        collect(data);
         if (isRecDebug() || isRecDisplay()) {
             if (isGraphResult()) {
                 System.out.println(data.getGraph());
@@ -56,7 +57,6 @@ public class SPARQLProcess extends  WorkflowProcess {
         Mappings map = query(data, getContext(), getDataset());        
         Data res = new Data(this, map, getGraph(map, data));
         complete(res);
-        collect(res);
         return res;
     }
     
@@ -147,7 +147,7 @@ public class SPARQLProcess extends  WorkflowProcess {
         if (m.getQuery().isTemplate()){
             return m.getTemplateStringResult();
         }
-        ResultFormat f = ResultFormat.create(m);
+        ResultFormat f = ResultFormat.format(m);
         return f.toString();
     }
     

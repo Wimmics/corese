@@ -26,6 +26,16 @@ public class FunctionProcess extends WorkflowProcess {
         path = p;
     }
     
+     @Override
+    void start(Data data){
+
+     }
+    
+    @Override
+    void finish(Data data){
+        
+    } 
+    
     
     @Override
    public Data run(Data data) throws EngineException{

@@ -19,6 +19,15 @@ public class ParallelProcess extends SemanticProcess {
         super();
      }
     
+     @Override
+     void start(Data data){
+         
+     }
+     
+     @Override
+     void finish(Data data){
+         
+     }
      
     @Override
     public Data run(Data data) throws EngineException{

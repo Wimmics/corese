@@ -34,6 +34,11 @@ public class LoadProcess extends WorkflowProcess {
         }
     }
     
+     @Override
+    void finish(Data data){
+         
+    }
+    
     @Override
     public Data run(Data data) throws EngineException {
         Graph g = data.getGraph();
@@ -47,6 +52,11 @@ public class LoadProcess extends WorkflowProcess {
             throw new EngineException(ex);
         }
         return new Data(this, null, g);
+    }
+    
+    @Override
+    public String stringValue(Data data){
+        return data.getGraph().toString();
     }
 
 }

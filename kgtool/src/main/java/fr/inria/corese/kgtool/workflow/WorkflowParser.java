@@ -54,6 +54,7 @@ public class WorkflowParser {
     public static final String DEBUG = PREF + "debug";
     public static final String LOOP = PREF + "loop";
     public static final String PARAM = PREF + "param";
+    public static final String STL_PARAM = Context.STL_PARAM;
     public static final String PATH = PREF + "path";
     public static final String NAME = PREF + "name";
     public static final String REC = PREF + "rec";
@@ -182,22 +183,43 @@ public class WorkflowParser {
         map.put(wf.getLabel(), sw);
         loop(wf);
         context(wf);
-        
+        parseNode(wf);      
+        complete(sw, (IDatatype) wf.getValue());
+        return sw;
+    }
+    
+    void parseNode(Node wf) throws LoadException {
         Node body = getNode(BODY, wf);
         Node uri  = getNode(URI, wf);
-        
+
         if (body != null) {
             parse(wf, body);
-        }
-        else if (uri != null) {
+        } else if (uri != null) {
             WorkflowParser parser = new WorkflowParser();
             parser.setProcessMap(map);
             SemanticWorkflow w = parser.parse(uri.getLabel());
             sw.add(w);
         }
-        
-        complete(sw, (IDatatype) wf.getValue());
-        return sw;
+    }
+    
+      /**
+     * dt is Workflow element of a sw:body : sw:body ( [ a sw:Workflow ; sw:body
+     * | sw:uri ] ) dt is the subject of the subWorkflow definition
+     */
+    SemanticWorkflow subWorkflow(Node wf) throws LoadException {
+        Node body = getNode(BODY, wf);
+        Node uri  = getNode(URI, wf);
+        if (body != null) {
+            WorkflowParser parser = new WorkflowParser(getGraph());
+            parser.setProcessMap(map);
+            return parser.parse(wf); 
+        } else if (uri != null) {
+            WorkflowParser parser = new WorkflowParser();
+            parser.setProcessMap(map);
+            return parser.parse(uri.getLabel());
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -259,21 +281,31 @@ public class WorkflowParser {
      */
     void context(Node wf){
         Node c = getNode(PARAM, wf);
+        if (c == null){
+            c = getNode(STL_PARAM, wf);
+            if (c != null){
+                logger.error("Use " + PARAM + " instead of " + STL_PARAM);
+            }
+        }
         if (c != null){
-            ContextBuilder cb = new ContextBuilder(getGraph());           
-            if (sw.getContext() != null){
-                // wp workflow already has a Context
-                // complete wp context with current specification
-                // use case: server profile has a st:param Context
-                // and workflow has a sw:param Context
-                // result: merge them
-                cb.setContext(sw.getContext());
-            }
-            Context context = cb.process(c);
-            sw.setContext(context);           
-            if (isDebug()){
-                System.out.println(context);
-            }
+            parseContext(c);
+        }
+    }
+    
+    void parseContext(Node c) {
+        ContextBuilder cb = new ContextBuilder(getGraph());
+        if (sw.getContext() != null) {
+            // wp workflow already has a Context
+            // complete wp context with current specification
+            // use case: server profile has a st:param Context
+            // and workflow has a sw:param Context
+            // result: merge them
+            cb.setContext(sw.getContext());
+        }
+        Context context = cb.process(c);
+        sw.setContext(context);
+        if (isDebug()) {
+            System.out.println(context);
         }
     }
     
@@ -399,26 +431,6 @@ public class WorkflowParser {
         return w;
     }
        
-
-    /**
-     * dt is Workflow element of a sw:body : sw:body ( [ a sw:Workflow ; sw:body
-     * | sw:uri ] ) dt is the subject of the subWorkflow definition
-     */
-    SemanticWorkflow subWorkflow(Node wf) throws LoadException {
-        Node body = getNode(BODY, wf);
-        Node uri  = getNode(URI, wf);
-        if (body != null) {
-            WorkflowParser parser = new WorkflowParser(getGraph());
-            parser.setProcessMap(map);
-            return parser.parse(wf); 
-        } else if (uri != null) {
-            WorkflowParser parser = new WorkflowParser();
-            parser.setProcessMap(map);
-            return parser.parse(uri.getLabel());
-        } else {
-            return null;
-        }
-    }
     
     ProbeProcess probe(IDatatype dt) throws LoadException {
         IDatatype body = getValue(EXP, dt);
@@ -434,7 +446,7 @@ public class WorkflowParser {
                 ParallelProcess pp = new ParallelProcess();
                 for (IDatatype dt : dtbody.getValues()) {
                     WorkflowProcess wp = createProcess(dt);
-                    pp.add(wp);
+                    pp.insert(wp);
                 }
                 return pp;
             }

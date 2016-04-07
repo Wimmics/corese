@@ -12,7 +12,15 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 public class ProbeProcess extends SemanticProcess {
          
     ProbeProcess(WorkflowProcess wp){
-        add(wp);
+        insert(wp);
+    }
+    
+    @Override
+    void start(Data data){
+    }
+    
+    @Override
+    void finish(Data data){        
     }
     
     @Override

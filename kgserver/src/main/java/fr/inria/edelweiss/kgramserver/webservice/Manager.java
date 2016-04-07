@@ -7,7 +7,6 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
@@ -171,40 +170,8 @@ public class Manager {
         GraphStore g = ts.getGraph();
         SemanticWorkflow sw = new WorkflowParser(profile).parse(swnode);
         Data res = sw.process(new Data(g));
-
-        // Workflow produce several graphs ?
-//        for (Data data : res.getResultList()) {
-//            if (data.getName() != null && data.getName().equals(STCONTEXT)) {
-//                g.setNamedGraph(STCONTEXT, data.getGraph());
-//            }
-//        }
-
         return g;
     }
-
-//    GraphStore initService2(TripleStore ts, Graph profile, Node server) throws LoadException, EngineException {
-//        GraphStore g = ts.getGraph();
-//        for (Entity ent : profile.getEdges(CONTENT, server, 0)) {
-//            Node swnode = ent.getNode(1);
-//            Node name = profile.getNode(NAME, swnode);
-//
-//            if (name != null && name.getLabel().equals(STCONTEXT)) {
-//                // additional content to be loaded in a specific graph
-//                // that will be a named graph of the main graph content
-//                // use case: predefined queries, ontology.
-//                SemanticWorkflow sw = new WorkflowParser(profile).parse(swnode);
-//                Graph gg = Graph.create();
-//                sw.process(new Data(gg));
-//                g.setNamedGraph(STCONTEXT, gg);
-//            } else {
-//                // data and schema
-//                SemanticWorkflow sw = new WorkflowParser(profile).parse(swnode);
-//                sw.process(new Data(g));
-//            }
-//        }
-//
-//        return g;
-//    }
 
     void init(TripleStore ts) {
         Service s = getProfile().getServer(DEFAULT);

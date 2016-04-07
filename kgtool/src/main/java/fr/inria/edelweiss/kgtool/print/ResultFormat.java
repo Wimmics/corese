@@ -34,6 +34,8 @@ public class ResultFormat {
     Mappings map;
     Graph graph;
     int type = UNDEF_FORMAT;
+    private int construct_format = DEFAULT_CONSTRUCT_FORMAT;
+    private int select_format = DEFAULT_SELECT_FORMAT;
     
     static HashMap<String, Integer> table;
     
@@ -65,6 +67,12 @@ public class ResultFormat {
         this.type = type;
     }
     
+     ResultFormat(Mappings m, int sel, int cons) {
+        this(m);
+        this.select_format = sel;
+        this.construct_format = cons;
+     }
+    
     ResultFormat(Graph g, int type) {
         this(g);
         this.type = type;
@@ -74,8 +82,16 @@ public class ResultFormat {
         return new ResultFormat(m, type(m));
     }
     
+     static public ResultFormat format(Mappings m) {
+        return new ResultFormat(m, DEFAULT_SELECT_FORMAT, TURTLE_FORMAT);
+    }
+    
     static public ResultFormat create(Mappings m, int type) {
         return new ResultFormat(m, type);
+    }
+    
+    static public ResultFormat create(Mappings m, int sel, int cons) {
+        return new ResultFormat(m, sel, cons);
     }
     
     static public ResultFormat create(Graph g) {
@@ -119,7 +135,7 @@ public class ResultFormat {
         
     String graphToString(){
         if (type == UNDEF_FORMAT){
-            type = DEFAULT_CONSTRUCT_FORMAT;
+            type = getConstructFormat();
         }
         switch (type){
             case RDF_XML_FORMAT:
@@ -146,10 +162,10 @@ public class ResultFormat {
         } else {
             if (type == UNDEF_FORMAT) {
                 if (q.isConstruct()) {
-                    type = DEFAULT_CONSTRUCT_FORMAT;
+                    type = getConstructFormat();
                 } 
                 else {
-                    type = DEFAULT_SELECT_FORMAT;               
+                    type = getSelectFormat();               
                 }
             }
             
@@ -180,5 +196,33 @@ public class ResultFormat {
         fw.write(str);
         fw.flush();
         fw.close();
+    }
+
+    /**
+     * @return the construct_format
+     */
+    public int getConstructFormat() {
+        return construct_format;
+    }
+
+    /**
+     * @param construct_format the construct_format to set
+     */
+    public void setConstructFormat(int construct_format) {
+        this.construct_format = construct_format;
+    }
+
+    /**
+     * @return the select_format
+     */
+    public int getSelectFormat() {
+        return select_format;
+    }
+
+    /**
+     * @param select_format the select_format to set
+     */
+    public void setSelectFormat(int select_format) {
+        this.select_format = select_format;
     }
 }

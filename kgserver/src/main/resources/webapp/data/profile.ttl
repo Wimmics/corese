@@ -185,14 +185,15 @@ st:rdfs a st:Profile ;
  
  
 st:default a st:Server ;
-st:content [
-  a sw:Workflow ; sw:body (
+st:content st:humancontent
+.
+
+st:humancontent a sw:Workflow ; sw:body (
     [ a sw:Load ; sw:path <tutorial/human1.rdf>  ; sw:name st:data1 ] 
     [ a sw:Load ; sw:path <tutorial/human2.rdf>  ; sw:name st:data2 ] 
     [ a sw:Load ; sw:path <tutorial/pragma.ttl>  ; sw:name st:pragma ]    
-  )]
+  )
 .
-
 
 st:tutorial1 a st:Server ;
   st:service "rdf" ;
@@ -200,59 +201,31 @@ st:tutorial1 a st:Server ;
   st:content st:tutocontent
 .
 
-st:tutocontent a sw:Workflow ; 
-  sw:body ( 
-
-    [ a sw:Parallel ; sw:body (
-    
+st:tutocontent a sw:Workflow ; sw:body ( 
+    [ a sw:Parallel ; sw:body (    
       # main dataset
-      [ a sw:Workflow ;  sw:body (
-	  [ a sw:Load ; sw:path <tutorial/human1.rdf> ; sw:name st:data1 ]
-	  [ a sw:Load ; sw:path <tutorial/human2.rdf> ; sw:name st:data2 ]
-	  [ a sw:Load ; sw:path <tutorial/pragma.ttl> ; sw:name st:pragma ]  
-      )] 
-      
+      st:humancontent  
       # context dataset with predefined queries in a specific graph
       [ a sw:Workflow ; sw:name st:context ; sw:body ( 
 	  [ a sw:Query ; sw:body "construct where {}" ]
 	  [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
-	  st:indexQuery) ]
-    )]
-    
+	  st:indexQuery )]
+    )]    
     # set st:context graph as named graph of main
     [a sw:Dataset]
-
-  )
-.
+).
 
  st:indexQuery a sw:Query ; 
    sw:body 
    "insert { ?q st:index ?n } where { ?q a sw:Query bind (kg:number() as ?n) }"
 .
   
-  
-
-
- 
    
 # execute the whole query list of the tutorial above
 st:tutocheck a st:Profile ;
    st:workflow  
       [ a sw:Workflow ; sw:uri <tutorial/workflow.ttl>  ]      
 . 
-
-
-
-st:tutorial1save a st:Server ;
-  st:service "rdfsave" ;
-  st:transform st:web ;
-  st:data     
-    [ st:uri <tutorial/human1.rdf>  ; st:name st:data1 ] ,
-    [ st:uri <tutorial/human2.rdf>  ; st:name st:data2 ] ,
-    [ st:uri <tutorial/pragma.ttl>  ; st:name st:pragma ] ;
-  st:context  [ st:uri <tutorial/tutorial.ttl>  ; st:name st:context ] .
-         
-  
 
   
 st:rome a st:Server ;   
@@ -261,10 +234,13 @@ st:rome a st:Server ;
     st:lang "fr" ;
     st:import st:dbpediaParam, st:mapParam  ;   
   ] ;
-  st:data [st:uri <dbpedia/rome.ttl> ; st:name st:data ] ;
+  st:content st:romecontent ;
   st:transform  st:navlab .   
   
-  
+ st:romecontent a sw:Workflow ; sw:body ( 
+    [ a sw:Load ; sw:path <dbpedia/rome.ttl>  ] )
+.
+
 # geographic enclaves   
 st:geo a st:Server ;
   st:service "geo" ;
@@ -274,11 +250,14 @@ st:geo a st:Server ;
     st:mapzoom 5 ;
     st:mapsize "maplarge" ;
     st:import  st:mapParam  ;
-  ] ;
-  st:data     
-    [ st:uri <dbpedia/dbpedia.ttl>  ; st:name st:geo ] .
+  ] ;  
+  st:content st:geocontent
+.  
+  
+st:geocontent a sw:Workflow ; sw:body ( 
+    [ a sw:Load ; sw:path <dbpedia/dbpedia.ttl>  ] )
+.
     
-
 
   
 @prefix cn: <http://cdn.fr/schema/>
@@ -293,21 +272,22 @@ st:cdn a st:Server ;
       st:import st:history
     ] ;
     
-    st:content 
-      [ a sw:Workflow ; sw:body ( 
-	[ a sw:Load ; sw:path 
-	<cdn/aa_siecle.ttl> ,  <cdn/fr.ttl> , 
-	<cdn/spqr.ttl> , <cdn/franc.ttl> , <cdn/eds.ttl> , 
-	<cdn/emp.ttl> ,     <cdn/provence.ttl> ,  <cdn/icon.rdf> , 
-	<cdn/icon.ttl> ,    <cdn/context.ttl> ,  
-	<cdn/an1000.ttl> ,  <cdn/an1100.ttl> , 
-	<cdn/an1200.ttl> ,  <cdn/an1300.ttl> ,   <cdn/an1400.ttl> , 
-	<cdn/an1500.ttl> ,  <cdn/an1600.ttl> ,  <cdn/an1700.ttl> , 
-	<cdn/an1800.ttl> ,  <cdn/an1900.ttl> ,  <cdn/pos.ttl> 	
-	] ) ]    
+    st:content st:cdncontent  
   .  
     
-    
+st:cdncontent a sw:Workflow ; sw:body ( 
+[ a sw:Load ; sw:path 
+  <cdn/aa_siecle.ttl> ,  <cdn/fr.ttl> , 
+  <cdn/spqr.ttl> , <cdn/franc.ttl> , <cdn/eds.ttl> , 
+  <cdn/emp.ttl> ,     <cdn/provence.ttl> ,  <cdn/icon.rdf> , 
+  <cdn/icon.ttl> ,    <cdn/context.ttl> ,  
+  <cdn/an1000.ttl> ,  <cdn/an1100.ttl> , 
+  <cdn/an1200.ttl> ,  <cdn/an1300.ttl> ,   <cdn/an1400.ttl> , 
+  <cdn/an1500.ttl> ,  <cdn/an1600.ttl> ,  <cdn/an1700.ttl> , 
+  <cdn/an1800.ttl> ,  <cdn/an1900.ttl> ,  <cdn/pos.ttl> 	
+] )
+.
+
     
  st:history a st:Profile ;
     st:transform st:cdn ;        

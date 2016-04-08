@@ -1360,7 +1360,7 @@ public class Eval implements ExpType, Plugin {
         if (map1.size() == 0) {
             return backtrack;
         }
-
+        
         exp.rest().setMappings(map1);
         Mappings map2 = subEval(p, gNode, gNode, exp.rest(), exp);
 

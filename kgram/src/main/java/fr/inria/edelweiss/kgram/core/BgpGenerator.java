@@ -114,8 +114,8 @@ public class BgpGenerator extends Sorter {
 //            logger.info(" CASE 1 ");
             //transforming the first one is enough
             edges = indexProducerEdges.get(producers.get(0));
-            createUnionBGPANDLock(edges);
-            return newExp;
+                      createUnionBGPANDLock(edges);
+                       return newExp;
         } else {
 //                logger.info(" CASE 2 " + exp);   
             for (int i = 0; i < producers.size(); i++) {

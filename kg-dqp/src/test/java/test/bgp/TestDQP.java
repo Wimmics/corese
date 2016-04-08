@@ -42,13 +42,13 @@ public class TestDQP {
     String simple = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
     "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
     "SELECT ?nom ?popTotale  WHERE { " +
-    "    ?region igeo:codeRegion \"24\" ." +
+    "    ?region igeo:codeRegion ?v ." +
     "    ?region igeo:subdivisionDirecte ?departement ." +
     "     ?departement igeo:nom ?nom .  " +
     "    ?departement idemo:population ?popLeg ." +
     "    ?popLeg idemo:populationTotale ?popTotale ." +
     "} ORDER BY ?popTotale";
-        
+           
     String optional = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
     "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
     "SELECT ?nom ?popTotale  WHERE { " +
@@ -178,27 +178,25 @@ public class TestDQP {
         execDQP.setGroupingEnabled(true);
 
 
-//      GLOBAL BGP
-        execDQP.addRemote(new URL("http://"+host+":8081/sparql"), WSImplem.REST);
-        execDQP.addRemote(new URL("http://"+host+":8082/sparql"), WSImplem.REST);
-        execDQP.addRemote(new URL("http://"+host+":8083/sparql"), WSImplem.REST);
-        
+//      DUPLICATED DATA
+//        execDQP.addRemote(new URL("http://"+host+":8081/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8082/sparql"), WSImplem.REST);
+//        
 
+//      GLOBAL BGP
+//        execDQP.addRemote(new URL("http://"+host+":8083/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8084/sparql"), WSImplem.REST);
+//        
 //        
 //      Partial BGP and AND Lock
-//        execDQP.addRemote(new URL("http://"+host+":8087/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8088/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8089/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8090/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8085/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8086/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8087/sparql"), WSImplem.REST);
 
-//      Partial BGP and Lock + PIE
-//      execDQP.addRemote(new URL("http://"+host+":8084/sparql"), WSImplem.REST);
-//      execDQP.addRemote(new URL("http://"+host+":8085/sparql"), WSImplem.REST);
-//      execDQP.addRemote(new URL("http://"+host+":8086/sparql"), WSImplem.REST);
         
         
 //      Demographic
-        execDQP.addRemote(new URL("http://"+host+":8091/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8088/sparql"), WSImplem.REST);
         
         StopWatch sw = new StopWatch();
         sw.start();
@@ -220,8 +218,9 @@ public class TestDQP {
      public static void main(String[] args) throws EngineException, MalformedURLException {
         try {
             TestDQP test = new TestDQP();
-//            test.testLocal();
-            test.testDQP();
+            
+            test.testLocal();
+//            test.testDQP();
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
         }

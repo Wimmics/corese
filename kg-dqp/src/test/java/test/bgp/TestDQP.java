@@ -12,9 +12,11 @@ import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import static fr.inria.edelweiss.kgraph.api.Loader.TURTLE_FORMAT;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,13 +30,10 @@ import org.apache.log4j.Logger;
  * @author macina
  */
 public class TestDQP {
-    
 
-    private Logger logger = Logger.getLogger(TestDQP.class);
-    
-    static final String host = "localhost";
-   
+	private Logger logger = Logger.getLogger(TestDQP.class);
 
+	static final String host = "localhost";
 
     ArrayList<String> queries = new ArrayList<String>();
     public TestDQP() {
@@ -138,45 +137,51 @@ public class TestDQP {
 //     queries.add(subQuery);//OK but processed as AND by default  because EDGES + SUBQUERY is not an AND BGP-able
 //     //when method putFreeEdgesInBGP is used => duplicated result TO FIX
 //     queries.add(combination); //OK but process as AND by default: BGP is not relevant in this case
-     
-    }
-    public void testLocal() throws EngineException, MalformedURLException, IOException {
-        Graph graph = Graph.create();
-        QueryProcess exec = QueryProcessDQP.create(graph);
 
-        StopWatch sw = new StopWatch();
-        sw.start();
-        logger.info("Initializing GraphEngine, entailments: " + graph.getEntailment());
-        Load ld = Load.create(graph);
-        logger.info("Initialized GraphEngine: " + sw.getTime() + " ms");
+	}
 
-        sw.reset();
-        sw.start();
-        
-        ld.load(TestDQP.class.getClassLoader().getResource("demographie").getPath()+"/cog-2012.ttl");
-        ld.load(TestDQP.class.getClassLoader().getResource("demographie").getPath()+"/popleg-2010.ttl");
+	public void testLocal() throws EngineException, MalformedURLException, IOException {
+		Graph graph = Graph.create();
+		QueryProcess exec = QueryProcessDQP.create(graph);
 
-        
-        logger.info("Graph size: " + graph.size());
+		StopWatch sw = new StopWatch();
+		sw.start();
+		logger.info("Initializing GraphEngine, entailments: " + graph.getEntailment());
+		Load ld = Load.create(graph);
+		logger.info("Initialized GraphEngine: " + sw.getTime() + " ms");
 
-
-        for (String q : queries) {
-            logger.info("Querying with : \n" + q);
-            for (int i = 0; i < 10; i++) {
-                sw.reset();
-                sw.start();
-                Mappings results = exec.query(q);
-                logger.info(results.size() + " results: " + sw.getTime() + " ms");
+		sw.reset();
+		sw.start();
+            try {
+                ld.parseDir(TestDQP.class.getClassLoader().getResource("demographie").getPath() + "/cog-2012.ttl");
+            } catch (LoadException ex) {
+                java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-    }
-    
-    public void testDQP() throws EngineException, MalformedURLException{
-        Graph graph = Graph.create(false);
-        ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();
-        QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
-        execDQP.setGroupingEnabled(true);
 
+            try {
+                ld.parseDir(TestDQP.class.getClassLoader().getResource("demographie").getPath() + "/popleg-2010.ttl");
+            } catch (LoadException ex) {
+                java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+		logger.info("Graph size: " + graph.size());
+
+		for (String q : queries) {
+			logger.info("Querying with : \n" + q);
+			for (int i = 0; i < 10; i++) {
+				sw.reset();
+				sw.start();
+				Mappings results = exec.query(q);
+				logger.info(results.size() + " results: " + sw.getTime() + " ms");
+			}
+		}
+	}
+
+	public void testDQP() throws EngineException, MalformedURLException {
+		Graph graph = Graph.create(false);
+		ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();
+		QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
+		execDQP.setGroupingEnabled(true);
 
 //      DUPLICATED DATA
 //        execDQP.addRemote(new URL("http://"+host+":8081/sparql"), WSImplem.REST);

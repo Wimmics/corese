@@ -29,6 +29,7 @@ public class WorkflowProcess implements AbstractProcess {
     private Dataset dataset;
     private Data data;
     private Graph graph;
+    // Direct Embedding SemanticWorkflow
     private SemanticWorkflow workflow;
     private WorkflowVisitor visitor;
     private boolean debug = false;
@@ -132,8 +133,8 @@ public class WorkflowProcess implements AbstractProcess {
 
     void beforeDebug(Data data) {
         if (isRecDebug()) {
-            System.out.println("SW: " + getClass().getName());
-        }
+            System.out.println("SW: " + getURI() + " " + getClass().getName());           
+        } 
     }
 
     void afterDebug(Data data) {
@@ -161,6 +162,13 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public Context getContext() {
         return context;
+    }
+    
+    Context getCreateContext(){
+        if (getContext() == null){
+            setContext(new Context());
+        }
+        return getContext();
     }
 
     /**
@@ -319,6 +327,10 @@ public class WorkflowProcess implements AbstractProcess {
      */
     @Override
     public void setDisplay(boolean display) {
+        this.display = display;
+    }
+    
+     public void setRecDisplay(boolean display) {
         this.display = display;
     }
 

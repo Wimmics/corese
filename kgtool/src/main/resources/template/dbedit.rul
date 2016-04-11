@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Mar 04 10:47:27 CET 2016
+Mon Mar 21 09:25:09 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -591,7 +591,7 @@ template st:link(?date) {
       <a href='%s'>%s</a>
     """
     
-    st:plinkmode(uri(concat(us:root(), ?date)))
+    st:plink(uri(concat(us:root(), ?date)))
     ?date
   }
 

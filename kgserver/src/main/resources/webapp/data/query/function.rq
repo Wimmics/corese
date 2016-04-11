@@ -16,19 +16,30 @@ function st:protocol(?uri) {
     else { str(?uri) }
 }
 
+# take st:include (("mode" st:mode)) into account
+# to generate hyperlink
+# &mode= st:get(st:mode)
 function st:link(?uri) {
-    concat(st:get(st:service),
+    concat(
+      st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
       coalesce(
 	concat("&profile=",   st:qname(st:get(st:profile))), 
 	concat("&transform=", st:qname(st:get(st:transform))), 
-	""))
+	""),
+      st:include()
+    )
 } 
 
+# take st:include (("mode" st:mode)) into account
+# to generate hyperlink
+# &mode= st:get(st:mode)
 function st:link(?uri, ?profile) {
     concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
-      "&profile=", st:qname(?profile))
+      "&profile=", st:qname(?profile),
+      st:include()
+   )
 }
 
 function st:plink(?uri) {
@@ -39,19 +50,24 @@ function st:plink(?uri, ?profile) {
   st:protocol(st:link(?uri, ?profile))
 }
 
-function st:plinkmode(?uri) {
-  coalesce(st:plinkmode(?uri, st:get(st:mode)), 
-	   st:plink(?uri))
-}
-
-function st:plinkmode(?uri, ?mode) {
-  let (?res = concat(st:link(?uri), "&mode=", st:qname(?mode))){
-    st:protocol(?res)
-  }
-}
-
 function st:qname(?uri){
   kg:qname(?uri)
+}
+
+#
+# st:param [ st:include (("mode" st:mode)) ]
+# "&mode=" st:get(st:mode)
+#
+function st:include(){
+  coalesce(
+    loop ((?name, ?val) in st:get(st:include)){
+      let (?value = st:get(?val)){
+	coalesce(
+	  concat("&", ?name, "=", 
+	    if (isURI(?value), st:qname(?value), ?value)),
+	  "")
+      }},
+    "")
 }
 
 

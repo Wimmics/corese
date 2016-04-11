@@ -105,7 +105,7 @@ public class Manager {
     }
 
     TripleStore createTripleStore(Profile p, Service s) throws LoadException, EngineException {
-        GraphStore g = GraphStore.create(s.isRDFSEntailment());
+        GraphStore g = GraphStore.create(); //GraphStore.create(s.isRDFSEntailment());
         if (s.getParam() != null) {
             IDatatype dt = s.getParam().get(SKOLEM);
             if (dt != null && dt.booleanValue()) {
@@ -113,9 +113,8 @@ public class Manager {
             }
         }
         TripleStore store = new TripleStore(g, true);
-        store.setOWL(s.isOWLEntailment());
+        //store.setOWL(s.isOWLEntailment());
         init(store, s);
-        store.init(p.isProtected());
         return store;
     }
 
@@ -123,14 +122,48 @@ public class Manager {
         Graph g = getProfile().getProfileGraph();
         Node serv = g.getNode(service.getName());
         Node cont = g.getNode(CONTENT, serv);
-        if (cont == null) {
-            return initService(ts, service);
-        } else {
+        if (cont != null) {
             return initService(ts, g, serv, cont);
-        }
+        } 
+        else {
+             return initService(ts, service);
+       }
     }
 
+   
+
     /**
+     * Init service dataset with Workflow of Load
+     */
+    GraphStore initService(TripleStore ts, Graph profile, Node server, Node swnode) throws LoadException, EngineException {
+        GraphStore g = ts.getGraph();
+        SemanticWorkflow sw = new WorkflowParser(profile).parse(swnode);
+        Data res = sw.process(new Data(g));
+        if (res.getGraph() != null && res.getGraph() != g){
+            ts.setGraph(res.getGraph());
+        }
+        ts.finish(getProfile().isProtected());
+        return g;
+    }
+
+    void init(TripleStore ts) {
+        Service s = getProfile().getServer(DEFAULT);
+        if (s != null) {
+            try {
+                init(ts, s);
+            } catch (LoadException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (EngineException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    
+    
+    
+    
+     /**
      * Create TripleStore and Load data from profile service definitions
      */
     @Deprecated
@@ -164,31 +197,9 @@ public class Manager {
     }
 
     /**
-     * Init service dataset with Workflow of Load
-     */
-    GraphStore initService(TripleStore ts, Graph profile, Node server, Node swnode) throws LoadException, EngineException {
-        GraphStore g = ts.getGraph();
-        SemanticWorkflow sw = new WorkflowParser(profile).parse(swnode);
-        Data res = sw.process(new Data(g));
-        return g;
-    }
-
-    void init(TripleStore ts) {
-        Service s = getProfile().getServer(DEFAULT);
-        if (s != null) {
-            try {
-                init(ts, s);
-            } catch (LoadException ex) {
-                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (EngineException ex) {
-                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    /**
      * Complete context graph by: 1) add index to queries 2) load query from
      * st:queryURI and insert st:query
+     * @deprecated
      */
     void init(Graph g) {
         String init =

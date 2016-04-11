@@ -70,6 +70,8 @@ public class WorkflowParser {
     public static final String VALUE = PREF + "value";
     public static final String EXP = PREF + "exp";
     public static final String COLLECT = PREF + "collect";
+    public static final String COMPARE = PREF + "compare";
+    public static final String MAIN = PREF + "main";
     
     static final String[] propertyList = {NAME, DEBUG, DISPLAY, RESULT, MODE, COLLECT};
 
@@ -136,7 +138,9 @@ public class WorkflowParser {
         Load ld = Load.create(g);
         ld.parse(path, getFormat(ld, path));
         g.init();
-        return parse(g, name);
+        SemanticWorkflow w = parse(g);
+        w.setPath(path);
+        return w;
     }
     
     public SemanticWorkflow parse(InputStream stream, String path) throws LoadException {
@@ -149,7 +153,9 @@ public class WorkflowParser {
         Load ld = Load.create(g);
         ld.parse(stream, path, path, path, getFormat(ld, path));
         g.init();
-        return parse(g);
+        SemanticWorkflow w = parse(g);
+        w.setPath(path);
+        return w;
     } 
       
       /**
@@ -246,7 +252,11 @@ public class WorkflowParser {
     
     Node getWorkflowNode(String name) {
         if (name == null){
-            return getTopLevel(topLevel);
+            Node node = getGraph().getNode(MAIN);
+            if (node == null){
+                node = getTopLevel(topLevel);
+            }
+            return node;
         }
         return getGraph().getNode(name);
     }

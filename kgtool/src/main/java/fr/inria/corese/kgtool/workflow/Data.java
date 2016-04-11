@@ -57,6 +57,25 @@ public class Data {
         process = p;
         dataList = l;
     }
+    
+    Data copy(){
+        Data data = new Data(process, map, graph);
+        data.setDatatypeValue(datatype);
+        data.setDataList(dataList);
+        data.setVisitor(visitor);
+        data.setDataset(dataset);
+        data.setContext(context);
+        data.setTemplateResult(templateResult);
+        return data;
+    }
+    
+    Data copy(boolean b) {
+        Data input = copy();
+        if (getGraph() != null) {
+            input.setGraph(getGraph().copy());
+        }
+        return input;
+    }
 
     
     @Override

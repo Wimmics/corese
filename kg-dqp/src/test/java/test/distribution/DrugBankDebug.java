@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -64,7 +65,7 @@ public class DrugBankDebug {
     // The methods must be annotated with annotation @Test. For example:
 
     @Test
-    public void drugBankQuery() throws EngineException, MalformedURLException, IOException, LoadException {
+    public void drugBankQuery() throws EngineException, MalformedURLException, IOException {
         Graph graph = Graph.create();
         QueryProcess exec = QueryProcess.create(graph);
 
@@ -87,10 +88,12 @@ public class DrugBankDebug {
 //                logger.info(path + " loaded -> Graph size " + graph.size());
 //            }
 //        }
-
-
-//         ld.parseDir("/Users/gaignard/Desktop/producer-4/drugbank_dump.rdf"); // 300ms
-         ld.parseDir("/Users/gaignard/Desktop/Expe-FedEx-FedBench-G5K/updated-datasets/drugbank_dump.ttl"); // 300ms
+        try {
+            //         ld.parseDir("/Users/gaignard/Desktop/producer-4/drugbank_dump.rdf"); // 300ms
+            ld.parseDir("/Users/gaignard/Desktop/Expe-FedEx-FedBench-G5K/updated-datasets/drugbank_dump.ttl"); // 300ms
+        } catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(DrugBankDebug.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
 //        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/category_labels_en.ttl"); // 300ms
 //        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/DBpedia-LGD.ttl"); //  20 ms 

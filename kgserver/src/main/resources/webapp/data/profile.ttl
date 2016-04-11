@@ -14,7 +14,7 @@ prefix o:    <http://dbpedia.org/ontology/>
 st:dbpedia a st:Profile ;   
   st:param [ 
     st:lang "fr" ;
-    st:import st:dbpediaParam, st:mapParam  ;    
+    st:import st:dbpediaParam, st:mapParam  ;     
   ] ;
   st:workflow st:dbpediawf
   .
@@ -30,8 +30,8 @@ st:dbpediawf a sw:Workflow ;
 st:dbedit a st:Profile ;
   st:param [
     st:uri <http://ns.inria.fr/sparql-template/date/09/2015> ;
-    # include &mode=st:get(st:mode) to hypertext link to server
-    # st:include (st:mode)
+    # st:plink() include in hyperlink: mode = dbo:Artist
+    st:include (("mode" st:mode))
   ] ;
   st:transform st:dbedit .
   
@@ -207,7 +207,7 @@ st:tutocontent a sw:Workflow ; sw:body (
       st:humancontent  
       # context dataset with predefined queries in a specific graph
       [ a sw:Workflow ; sw:name st:context ; sw:body ( 
-	  [ a sw:Query ; sw:body "construct where {}" ]
+	  #[ a sw:Query ; sw:body "construct where {}" ]
 	  [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
 	  st:indexQuery )]
     )]    

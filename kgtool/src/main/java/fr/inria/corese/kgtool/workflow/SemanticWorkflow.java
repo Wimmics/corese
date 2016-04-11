@@ -5,8 +5,6 @@ import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Workflow of Query | Update | RuleBase | Transformation
@@ -20,6 +18,7 @@ public class SemanticWorkflow extends  CompositeProcess {
      
     Data data;
     private int loop = -1;
+    private String path;
     
     public SemanticWorkflow(){
         super();
@@ -234,5 +233,18 @@ public class SemanticWorkflow extends  CompositeProcess {
         }
     }
 
-   
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
 }

@@ -184,8 +184,8 @@ public class TestDQP {
 		execDQP.setGroupingEnabled(true);
 
 //      DUPLICATED DATA
-//        execDQP.addRemote(new URL("http://"+host+":8081/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8082/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8081/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8082/sparql"), WSImplem.REST);
 //        
 
 //      GLOBAL BGP
@@ -194,9 +194,9 @@ public class TestDQP {
 //        
 //        
 //      Partial BGP and AND Lock
-        execDQP.addRemote(new URL("http://"+host+":8085/sparql"), WSImplem.REST);
-        execDQP.addRemote(new URL("http://"+host+":8086/sparql"), WSImplem.REST);
-        execDQP.addRemote(new URL("http://"+host+":8087/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8085/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8086/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8087/sparql"), WSImplem.REST);
 
         
         

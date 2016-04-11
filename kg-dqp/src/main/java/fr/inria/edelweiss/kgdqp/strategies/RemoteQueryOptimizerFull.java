@@ -120,7 +120,7 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         }
         queryBody += "}";
 
-        logger.info("EDGE QUERY: "+queryBody);
+//        logger.info("EDGE QUERY: "+queryBody);
         String sparqlQuery =   sparqlPrefixes + queryBody;
         return sparqlQuery;
     }

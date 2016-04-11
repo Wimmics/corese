@@ -1,0 +1,15 @@
+ INFO 2016-04-11 15:32:13,069 [main] (TestDQP.java:149) - Initializing GraphEngine, entailments: null
+ INFO 2016-04-11 15:32:13,071 [main] (TestDQP.java:151) - Initialized GraphEngine: 2 ms
+ INFO 2016-04-11 15:32:19,016 [main] (TestDQP.java:177) - Graph size: 611318
+ INFO 2016-04-11 15:32:19,016 [main] (TestDQP.java:180) - Querying with : 
+PREFIX idemo:<http://rdf.insee.fr/def/demo#>PREFIX igeo:<http://rdf.insee.fr/def/geo#>SELECT ?nom ?popTotale  WHERE {     ?region igeo:codeRegion ?v .    ?region igeo:subdivisionDirecte ?departement .     ?departement igeo:nom ?nom .      ?departement idemo:population ?popLeg .    ?popLeg idemo:populationTotale ?popTotale .} ORDER BY ?popTotale
+ INFO 2016-04-11 15:32:19,315 [main] (TestDQP.java:185) - 100 results: 298 ms
+ INFO 2016-04-11 15:32:19,323 [main] (TestDQP.java:185) - 100 results: 8 ms
+ INFO 2016-04-11 15:32:19,330 [main] (TestDQP.java:185) - 100 results: 7 ms
+ INFO 2016-04-11 15:32:19,336 [main] (TestDQP.java:185) - 100 results: 6 ms
+ INFO 2016-04-11 15:32:19,341 [main] (TestDQP.java:185) - 100 results: 5 ms
+ INFO 2016-04-11 15:32:19,344 [main] (TestDQP.java:185) - 100 results: 3 ms
+ INFO 2016-04-11 15:32:19,348 [main] (TestDQP.java:185) - 100 results: 3 ms
+ INFO 2016-04-11 15:32:19,351 [main] (TestDQP.java:185) - 100 results: 3 ms
+ INFO 2016-04-11 15:32:19,354 [main] (TestDQP.java:185) - 100 results: 3 ms
+ INFO 2016-04-11 15:32:19,357 [main] (TestDQP.java:185) - 100 results: 3 ms

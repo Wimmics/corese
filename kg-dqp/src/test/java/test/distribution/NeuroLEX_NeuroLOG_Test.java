@@ -82,7 +82,6 @@ public class NeuroLEX_NeuroLOG_Test {
     //
 
     @Test
-    @Ignore
     public void remoteNeuroQuery() throws EngineException, MalformedURLException, IOException {
 
         String sparqlQuery = "PREFIX property: <http://neurolex.org/wiki/Special:URIResolver/Property-3A>"

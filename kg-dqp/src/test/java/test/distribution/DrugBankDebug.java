@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -63,8 +64,7 @@ public class DrugBankDebug {
     // The methods must be annotated with annotation @Test. For example:
 
     @Test
-    @Ignore
-    public void drugBankQuery() throws EngineException, MalformedURLException, IOException {
+    public void drugBankQuery() throws EngineException, MalformedURLException, IOException, LoadException {
         Graph graph = Graph.create();
         QueryProcess exec = QueryProcess.create(graph);
 
@@ -78,27 +78,27 @@ public class DrugBankDebug {
         sw.start();
 //        
 //        File rep = new File("/Users/gaignard/Desktop/Expe-FedEx-FedBench-G5K/updated-datasets/KEGG-2010-11");
-////        ld.load(rep.getAbsolutePath());
+////        ld.parseDir(rep.getAbsolutePath());
 //
 //        for (File f : rep.listFiles()) {
 //            if (f.getAbsolutePath().endsWith(".rdf")) {
 //                final String path = f.getAbsolutePath();
-//                ld.load(path);
+//                ld.parseDir(path);
 //                logger.info(path + " loaded -> Graph size " + graph.size());
 //            }
 //        }
 
 
-//         ld.load("/Users/gaignard/Desktop/producer-4/drugbank_dump.rdf"); // 300ms
-         ld.load("/Users/gaignard/Desktop/Expe-FedEx-FedBench-G5K/updated-datasets/drugbank_dump.ttl"); // 300ms
+//         ld.parseDir("/Users/gaignard/Desktop/producer-4/drugbank_dump.rdf"); // 300ms
+         ld.parseDir("/Users/gaignard/Desktop/Expe-FedEx-FedBench-G5K/updated-datasets/drugbank_dump.ttl"); // 300ms
 
-//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/category_labels_en.ttl"); // 300ms
-//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/DBpedia-LGD.ttl"); //  20 ms 
-//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/geo_coordinates_en.ttl"); //  800ms (1.5M) 
-//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/persondata_en.ttl"); //  140 ms (350K) 
-//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/images_en.ttl"); //  2300ms (4M) 
-//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/instance_types_en.ttl"); // 1393 ms (5.5M) 
-//        ld.load("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-1/article_categories_en.ttl"); // 4487 ms (10M)
+//        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/category_labels_en.ttl"); // 300ms
+//        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/DBpedia-LGD.ttl"); //  20 ms 
+//        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/geo_coordinates_en.ttl"); //  800ms (1.5M) 
+//        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/persondata_en.ttl"); //  140 ms (350K) 
+//        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/images_en.ttl"); //  2300ms (4M) 
+//        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/instance_types_en.ttl"); // 1393 ms (5.5M) 
+//        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-1/article_categories_en.ttl"); // 4487 ms (10M)
 
         System.out.println("Graph size: " + graph.size());
 

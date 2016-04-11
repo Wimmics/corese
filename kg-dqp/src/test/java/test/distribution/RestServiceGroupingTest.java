@@ -149,7 +149,7 @@ public class RestServiceGroupingTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void queryRewritingTest() throws MalformedURLException, EngineException {
         Graph graph = Graph.create(false);
         ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();
@@ -169,7 +169,7 @@ public class RestServiceGroupingTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
-    @Ignore
+//    @Ignore
     public void dqpGroupTest() throws MalformedURLException, EngineException {
         Graph graph = Graph.create(false);
         ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();

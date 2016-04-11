@@ -1,0 +1,182 @@
+ INFO 2016-03-22 16:46:51,045 [main] (ServiceGrouper.java:84) - Building indices for 
+ INFO 2016-03-22 16:46:51,048 [main] (ServiceGrouper.java:85) - {?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-22 16:46:51,230 [main] (ServiceGrouper.java:559) - Edge index
+ INFO 2016-03-22 16:46:51,231 [main] (ServiceGrouper.java:575) - Source index
+ INFO 2016-03-22 16:46:51,233 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-22 16:46:51,233 [main] (ServiceGrouper.java:426) - Processing
+[?region igeo:codeRegion '24' . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-22 16:46:51,233 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion '24' .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-22 16:46:51,233 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-22 16:46:51,233 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-22 16:46:51,234 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion '24' .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-22 16:46:51,234 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-22 16:46:51,234 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ INFO 2016-03-22 16:46:51,235 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-03-22 16:46:51,235 [main] (ServiceGrouper.java:272) - {?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+ INFO 2016-03-22 16:46:51,235 [main] (ServiceGrouper.java:277) - 1 free variables for ?region igeo:codeRegion '24' . 
+ INFO 2016-03-22 16:46:51,235 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-03-22 16:46:51,235 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:nom ?nom . 
+ INFO 2016-03-22 16:46:51,236 [main] (ServiceGrouper.java:277) - 3 free variables for service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-22 16:46:51,236 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ WARN 2016-03-22 16:46:51,236 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion '24' . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-22 16:46:51,237 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion '24' . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ INFO 2016-03-22 16:46:51,237 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:subdivisionDirecte ?departement .  with ?departement igeo:nom ?nom . 
+ WARN 2016-03-22 16:46:51,237 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion '24' . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-22 16:46:51,237 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion '24' . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ INFO 2016-03-22 16:46:51,238 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:subdivisionDirecte ?departement .  with ?departement igeo:nom ?nom . 
+ INFO 2016-03-22 16:46:51,238 [main] (ServiceGrouper.java:340) - {?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+ INFO 2016-03-22 16:46:51,238 [main] (ServiceGrouper.java:118) - Final rewritten query
+ INFO 2016-03-22 16:46:51,238 [main] (ServiceGrouper.java:119) - prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select ?nom ?popTotale 
+where
+{?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+order by ?popTotale 
+
+
+ INFO 2016-03-22 16:46:51,252 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:codeRegion '24'
+ INFO 2016-03-22 16:46:51,253 [pool-1-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,253 [pool-1-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,341 [pool-1-thread-1] (CallableResult.java:63) - Finished CallableResult in 88 ms.
+ INFO 2016-03-22 16:46:51,341 [pool-1-thread-2] (CallableResult.java:63) - Finished CallableResult in 88 ms.
+ INFO 2016-03-22 16:46:51,342 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 89ms.
+ INFO 2016-03-22 16:46:51,343 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-22 16:46:51,344 [pool-2-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,344 [pool-2-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,370 [pool-2-thread-1] (CallableResult.java:63) - Finished CallableResult in 26 ms.
+ INFO 2016-03-22 16:46:51,377 [pool-2-thread-2] (CallableResult.java:63) - Finished CallableResult in 33 ms.
+ INFO 2016-03-22 16:46:51,378 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 34ms.
+ INFO 2016-03-22 16:46:51,378 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-22 16:46:51,379 [pool-3-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,379 [pool-3-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,391 [pool-3-thread-2] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-03-22 16:46:51,392 [pool-3-thread-1] (CallableResult.java:63) - Finished CallableResult in 13 ms.
+ INFO 2016-03-22 16:46:51,392 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 13ms.
+ INFO 2016-03-22 16:46:51,393 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-22 16:46:51,393 [pool-4-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,393 [pool-4-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,403 [pool-4-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-22 16:46:51,403 [pool-4-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-22 16:46:51,403 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-03-22 16:46:51,403 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-22 16:46:51,404 [pool-5-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,404 [pool-5-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,412 [pool-5-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-22 16:46:51,413 [pool-5-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-03-22 16:46:51,413 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-03-22 16:46:51,414 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-22 16:46:51,414 [pool-6-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,414 [pool-6-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,423 [pool-6-thread-2] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-03-22 16:46:51,424 [pool-6-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-22 16:46:51,424 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-03-22 16:46:51,424 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-22 16:46:51,425 [pool-7-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,425 [pool-7-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,433 [pool-7-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-22 16:46:51,433 [pool-7-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-22 16:46:51,434 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-03-22 16:46:51,434 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-22 16:46:51,434 [pool-8-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,435 [pool-8-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-22 16:46:51,446 [pool-8-thread-2] (CallableResult.java:63) - Finished CallableResult in 11 ms.
+ INFO 2016-03-22 16:46:51,452 [pool-8-thread-1] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-03-22 16:46:51,454 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 19ms.
+ INFO 2016-03-22 16:46:51,456 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((?departement = <http://id.insee.fr/geo/departement/41>) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) }
+
+
+ INFO 2016-03-22 16:46:51,497 [main] (TestDQP.java:207) - 6 results in 454 ms
+ INFO 2016-03-22 16:46:51,497 [main] (TestDQP.java:208) - 
+01 ?nom = "Indre"; ?popTotale = 235181; 
+02 ?nom = "Cher"; ?popTotale = 319693; 
+03 ?nom = "Loir-et-Cher"; ?popTotale = 342471; 
+04 ?nom = "Eure-et-Loir"; ?popTotale = 444385; 
+05 ?nom = "Indre-et-Loire"; ?popTotale = 615557; 
+06 ?nom = "Loiret"; ?popTotale = 684104; 
+
+ INFO 2016-03-22 16:46:51,497 [main] (TestDQP.java:209) - Remote queries
+ INFO 2016-03-22 16:46:51,498 [main] (TestDQP.java:210) - =========
+	?region igeo:subdivisionDirecte ?departement
+	2
+--
+	?departement igeo:nom ?nom
+	12
+--
+	?region igeo:codeRegion '24'
+	2
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((?departement = <http://id.insee.fr/geo/departement/41>) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) }  
+	1
+--
+	>====  Sum = 17  =====
+
+ INFO 2016-03-22 16:46:51,498 [main] (TestDQP.java:211) - Transferred results per query
+ INFO 2016-03-22 16:46:51,498 [main] (TestDQP.java:212) - =========
+	?region igeo:subdivisionDirecte ?departement
+	12
+--
+	?departement igeo:nom ?nom
+	12
+--
+	?region igeo:codeRegion '24'
+	2
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((?departement = <http://id.insee.fr/geo/departement/41>) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) }  
+	6
+--
+	>====  Sum = 32  =====
+
+ INFO 2016-03-22 16:46:51,498 [main] (TestDQP.java:213) - Remote queries per data source
+ INFO 2016-03-22 16:46:51,499 [main] (TestDQP.java:214) - =========
+	http://localhost:8085/sparql
+	8
+--
+	http://localhost:8084/sparql
+	8
+--
+	http://localhost:8086/sparql
+	1
+--
+	>====  Sum = 17  =====
+
+ INFO 2016-03-22 16:46:51,499 [main] (TestDQP.java:215) - Transferred results per source
+ INFO 2016-03-22 16:46:51,499 [main] (TestDQP.java:216) - =========
+	http://localhost:8085/sparql
+	13
+--
+	http://localhost:8084/sparql
+	13
+--
+	http://localhost:8086/sparql
+	6
+--
+	>====  Sum = 32  =====
+

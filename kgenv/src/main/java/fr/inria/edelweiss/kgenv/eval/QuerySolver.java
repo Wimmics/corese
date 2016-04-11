@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
@@ -75,6 +76,7 @@ public class QuerySolver  implements SPARQLEngine {
 	isOptimize = false,
 	isSPARQLCompliant = false;
     private boolean isGenerateMain = true;
+    private boolean loadFunction = false;
     private boolean isSynchronized = false;
     private boolean isPathType = false;
     private boolean isStorePath = true;
@@ -99,6 +101,7 @@ public class QuerySolver  implements SPARQLEngine {
 	String defaultBase;
 
 	private BasicGraphPattern pragma;
+        private Metadata metadata;
 	
 	static int count = 0;
 	
@@ -167,6 +170,14 @@ public class QuerySolver  implements SPARQLEngine {
 		}
 		visit.add(v);
 	}
+        
+        
+        public boolean hasVisitor(){
+            return visit != null && ! visit.isEmpty();
+        }
+        public List<QueryVisitor> getVisitorList(){
+            return visit;
+        }
 	
 	public void set(Provider p){
 		provider = p;
@@ -188,6 +199,7 @@ public class QuerySolver  implements SPARQLEngine {
 	
 	protected Transformer transformer(){
 		Transformer transformer = Transformer.create();
+                transformer.setSPARQLEngine(this);
 		if (sort != null) {
 			transformer.set(sort);
 		}
@@ -244,7 +256,7 @@ public class QuerySolver  implements SPARQLEngine {
 	/**
 	 * Core QueryExec processor
 	 */
-	public Mappings query(Query query, Mapping map){
+	public Mappings query(Query query, Mapping m){
 		init(query);
 		debug(query);
 		
@@ -258,9 +270,11 @@ public class QuerySolver  implements SPARQLEngine {
 		
 		pragma(kgram, query);
 		
-		Mappings lMap  = kgram.query(query, map);
+		Mappings map  = kgram.query(query, m);
+                //TODO: check memory usage when storing Eval
+                map.setEval(kgram);
 		
-		return lMap;
+		return map;
 	}
         
         Eval makeEval(){
@@ -276,8 +290,8 @@ public class QuerySolver  implements SPARQLEngine {
          * str  contains function definitions
          * @throws EngineException 
          */
-        public Eval createEval(String str) throws EngineException {
-            Query q = compile(str);
+        public Eval createEval(String str, Dataset ds) throws EngineException {
+            Query q = compile(str, ds);
             return createEval(q);
         }
         
@@ -288,12 +302,16 @@ public class QuerySolver  implements SPARQLEngine {
          }
         
         public IDatatype eval(String q) throws EngineException{
-            return eval(q, MAIN_FUN);
+            return eval(q, MAIN_FUN, null);
         }
         
-        public IDatatype eval(String q, String name) throws EngineException{
+        public IDatatype eval(String q, Dataset ds) throws EngineException {
+            return eval(q, MAIN_FUN, ds);
+        }
+        
+        IDatatype eval(String q, String name, Dataset ds) throws EngineException{
             setGenerateMain(false);
-            Eval eval = createEval(q);
+            Eval eval = createEval(q, ds);
             IDatatype dt = (IDatatype) eval.eval(name, new IDatatype[0]);
             return dt;
         }
@@ -358,7 +376,7 @@ public class QuerySolver  implements SPARQLEngine {
         
 	public Query compile(String squery) throws EngineException {
 		return compile(squery, null);
-	}
+	}         
 	
 	// rule: construct where 
 	public Query compileRule(String squery) throws EngineException {
@@ -366,9 +384,11 @@ public class QuerySolver  implements SPARQLEngine {
         }
         
         void setParameter(Transformer transformer){
-            transformer.setGenerateMain(isGenerateMain);
+            transformer.setLoadFunction(isLoadFunction());
+            transformer.setGenerateMain(isGenerateMain());
             transformer.setNamespaces(NAMESPACES);
             transformer.setPragma(getPragma());
+            transformer.setMetadata(metadata);
             transformer.setPlanProfile(getPlanProfile());
             transformer.setUseBind(isUseBind());
         }
@@ -681,6 +701,43 @@ public class QuerySolver  implements SPARQLEngine {
      */
     public void setGenerateMain(boolean isGenerateMain) {
         this.isGenerateMain = isGenerateMain;
+    }
+
+    @Override
+    public Query load(String path) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * @return the loadFunction
+     */
+    public boolean isLoadFunction() {
+        return loadFunction;
+    }
+
+    /**
+     * @param loadFunction the loadFunction to set
+     */
+    public void setLoadFunction(boolean loadFunction) {
+        this.loadFunction = loadFunction;
+    }
+
+    /**
+     * @return the metadata
+     */
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata to set
+     */
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
+    
+     public void set(Metadata metadata) {
+        this.metadata = metadata;
     }
 	
 }

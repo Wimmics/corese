@@ -44,7 +44,13 @@ public class NodeImpl implements Node {
 		return atom;
 	}
 	
+        @Override
 	public IDatatype getValue(){
+		return atom.getDatatypeValue();               
+	}
+        
+        @Override
+        public IDatatype getDatatypeValue(){
 		return atom.getDatatypeValue();               
 	}
 	
@@ -160,6 +166,11 @@ public class NodeImpl implements Node {
 
     @Override
     public void setKey(String str) {
+    }
+
+    @Override
+    public Object getGraphStore() {
+        return null;
     }
 
 }

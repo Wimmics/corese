@@ -31,6 +31,7 @@ import java.util.ArrayList;
 class Walker extends Interpreter {
 
     static IDatatype ZERO = DatatypeMap.ZERO;
+    static IDatatype TRUE = DatatypeMap.TRUE;
     static final StringBuilder EMPTY = new StringBuilder(0);
     Expr exp;
     Node qNode, tNode;
@@ -215,16 +216,26 @@ class Walker extends Interpreter {
             case GROUPCONCAT:
             case STL_GROUPCONCAT:
                 return groupConcat(f, env, p);
-
+                               
             case COUNT:
-
                 if (exp.arity() == 0) {
                     // count(*)
-                    if (accept(f, map)) {
+                    if (accept(f, map)) {                        
                         num++;
                     }
                     return null;
                 }
+                break;
+                
+            case AGGREGATE:
+                if (exp.arity() == 0) {
+                    if (accept(f, map)) {                        
+                        list.add(DatatypeMap.createObject(map));
+                    }
+                    return null;
+                }  
+                break;
+                
         }
 
 
@@ -233,47 +244,14 @@ class Walker extends Interpreter {
         }
 
         Expr arg = exp.getExp(0);
-        Node node = null;
-        IDatatype dt = null;
-
-//        if (arg.isVariable()) {
-//            // sum(?x)
-//            // get value from Node Mapping
-//            node = map.getTNode(qNode);
-//            if (node == null) {
-//                return null;
-//            }
-//            dt = (IDatatype) node.getValue();
-//        } else {
-//            // sum(?x + ?y)
-//            // eval ?x + ?y
-//            dt = (IDatatype) eval.eval(arg, map, p);
-//        }
-        
-        dt = (IDatatype) eval.eval(arg, map, p);
-
+        Node node = null;        
+        IDatatype dt = (IDatatype) eval.eval(arg, map, p);;
+              
         if (dt != null) {
 
             switch (exp.oper()) {
 
                 case MIN:
-                    if (dt.isBlank()) {
-                        isError = true;
-                        break;
-                    }
-                    if (dtres == null) {
-                        dtres = dt;
-                    } else {
-                        try {
-                            if (dt.less(dtres)) {
-                                dtres = dt;
-                            }
-
-                        } catch (CoreseDatatypeException e) {
-                        }
-                    }
-                    break;
-
                 case MAX:
                     if (dt.isBlank()) {
                         isError = true;
@@ -283,14 +261,18 @@ class Walker extends Interpreter {
                         dtres = dt;
                     } else {
                         try {
-                            if (dt.greater(dtres)) {
+                            if (exp.oper() == MIN) {
+                                if (dt.less(dtres)) {
+                                    dtres = dt;
+                                }
+                            } else if (dt.greater(dtres)) {
                                 dtres = dt;
                             }
                         } catch (CoreseDatatypeException e) {
                         }
                     }
                     break;
-
+               
                 case COUNT:
                     if (accept(f, dt)) {
                         num++;
@@ -338,9 +320,10 @@ class Walker extends Interpreter {
                 case AGGREGATE:
                     if (dt == null) {
                         isError = true;
-                    } else if (accept(f, dt)) {
-                        list.add(dt);
-                    }
+                    } 
+                    else if (accept(f, dt)) {
+                          list.add(dt);
+                    }                                                                 
                     break;
 
             }

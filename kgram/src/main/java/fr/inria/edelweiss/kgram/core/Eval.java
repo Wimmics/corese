@@ -30,7 +30,6 @@ import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
 import java.util.HashMap;
 import java.util.Iterator;
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 /**
@@ -59,6 +58,7 @@ public class Eval implements ExpType, Plugin {
     private static final String FUN_RESULT  = PREF + "result";
     private static final String FUN_SOLUTION= PREF + "solution";
     private static final String FUN_START   = PREF + "start";
+    private static final String FUN_FINISH  = PREF + "finish";
     private static final String FUN_PRODUCE = PREF + "produce";
 
     static final int STOP = -2;
@@ -114,6 +114,7 @@ public class Eval implements ExpType, Plugin {
             hasMinus,
             hasResult   = false,
             hasStart    = false,
+            hasFinish   = false,
             hasProduce  = false,
             hasSolution = false;
 
@@ -192,6 +193,14 @@ public class Eval implements ExpType, Plugin {
 
         return map;
     }
+    
+    public void finish(Query q, Mappings map) {
+        if (hasFinish) {
+            memory.setResults(map);
+            Object res = eval(getExpression(FUN_FINISH),
+                    toArray(producer.getNode(q), producer.getNode(map)));
+        }
+    }
 
     Mappings eval(Query q) {
         return eval(null, q, null);
@@ -201,9 +210,9 @@ public class Eval implements ExpType, Plugin {
         init(q);
         if (hasStart && !q.isSubQuery()) {
             Object res = eval(getExpression(q, FUN_START), 
-                    toArray(producer.getNode(q), producer.getNode(q.getAST())));
+                    toArray(producer.getNode(q)));
         }
-        else {
+        {
             if (q.isCheck()) {
                 // Draft
                 Checker check = Checker.create(this);
@@ -613,6 +622,7 @@ public class Eval implements ExpType, Plugin {
         hasResult   = (getExpression(FUN_RESULT) != null);
         hasSolution = (getExpression(FUN_SOLUTION) != null);
         hasStart    = (getExpression(FUN_START) != null);
+        hasFinish   = (getExpression(FUN_FINISH) != null);
     }
 
     private void complete() {
@@ -1904,22 +1914,30 @@ public class Eval implements ExpType, Plugin {
     private int extBind(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         Memory env = memory;
-        Mappings lMap = evaluator.eval(exp.getFilter(), env, exp.getNodeList());
-
-        if (lMap != null) {
-
-            for (Mapping m : lMap) {
-                if (env.push(m, n, false)) {
+        Mappings map = evaluator.eval(exp.getFilter(), env, exp.getNodeList());
+        
+        if (map != null) {
+            HashMap<String, Node>  tab =  toMap(exp.getNodeList());
+            for (Mapping m : map) {
+                if (env.push(tab, m, n)) {  
                     backtrack = eval(p, gNode, stack, n + 1);
-                    env.pop(m, false);
+                    env.pop(tab, m);
                     if (backtrack < n) {
                         return backtrack;
                     }
-                }
+                }               
             }
         }
 
         return backtrack;
+    }
+    
+    HashMap<String, Node> toMap(List<Node> list){
+        HashMap<String, Node> m = new HashMap<String, Node>();
+        for (Node node : list){
+            m.put(node.getLabel(), node);
+        }
+        return m;
     }
 
     /**
@@ -2353,7 +2371,7 @@ public class Eval implements ExpType, Plugin {
                 exp.setObject(lMap);
             }
         }
-
+        
         // enumerate the result of the sub query
         // bind the select nodes into the stack
         for (Mapping map : lMap) {

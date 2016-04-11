@@ -182,7 +182,10 @@ public class BgpGenerator extends Sorter {
                 andLock.add(tmpExp);
                 key += e.getLabel();
                 joinedEdges.add(e);
-                edgeAndContext.putIfAbsent(e, andLock);
+  //              edgeAndContext.putIfAbsent(e, andLock);
+                if (! edgeAndContext.containsKey(e)){
+                    edgeAndContext.put(e, andLock);
+                }
 
                 //addfilters
                 ArrayList<Filter> filters = indexEdgeFilters.get(e);

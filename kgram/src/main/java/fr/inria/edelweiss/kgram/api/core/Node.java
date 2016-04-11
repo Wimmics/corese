@@ -66,8 +66,12 @@ public interface Node {
 	// the target value for Matcher and Evaluator
 	// for KGRAM query it returns IDatatype
 	Object getValue();
+        
+        DatatypeValue getDatatypeValue();
 	
 	Object getObject();
+        
+        Object getGraphStore();
 	
 	void setObject(Object o);
 	

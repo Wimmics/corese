@@ -19,7 +19,7 @@ public class Extension {
     private String name;
     private Object pack;
     
-    class FunMap extends HashMap<String, Expr> {}
+    public class FunMap extends HashMap<String, Expr> {}
 
     public Extension() {
         //map = new FunMap();
@@ -45,7 +45,7 @@ public class Extension {
         return maps[n];
     }
     
-    FunMap[] getMaps(){
+    public FunMap[] getMaps(){
         return maps;
     }
 
@@ -64,6 +64,19 @@ public class Extension {
                 if (! isDefined(e.getFunction())){ //getExp(0))){
                     define(e);
                 }
+            }
+        }
+    }
+    
+    /**
+     * Use case: Transformation st:profile exports its functions to transformation
+     * They are declared as public
+     * Hence Interpreter isPublic() is OK.
+     */
+     public void setPublic(boolean b){
+        for (FunMap m : getMaps()){
+            for (Expr e : m.values()){
+                e.setPublic(b);
             }
         }
     }

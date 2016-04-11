@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.filter;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -343,6 +344,21 @@ public class Pattern implements ExprType, Expr {
 
     @Override
     public String getShortName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isPublic() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DatatypeValue getDatatypeValue() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setPublic(boolean b) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

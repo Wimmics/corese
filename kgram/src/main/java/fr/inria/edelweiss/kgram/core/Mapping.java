@@ -13,7 +13,6 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
@@ -36,7 +35,7 @@ import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
 
 public class Mapping  
 	extends EnvironmentImpl 
-	implements Result, Environment, Loopable, Pointerable
+	implements Result, Environment, Pointerable
 {
         static final Edge[] emptyEdge   = new Edge[0];
         static final Entity[] emptyEntity = new Entity[0];
@@ -90,6 +89,13 @@ public class Mapping
 		this();
 		init(q, t);
 	}
+        
+        static Mapping fake(Query q){
+            Mapping m = new Mapping();
+            m.setOrderBy(new Node[q.getOrderBy().size()]);
+            m.setGroupBy(new Node[q.getGroupBy().size()]);
+            return m;
+        }
 	
 	public static Mapping create(List<Node> q, List<Node> t){
 		return new Mapping(q, t);
@@ -101,8 +107,37 @@ public class Mapping
 	}
 	
 	public static Mapping create(Node[] qnodes, Node[] nodes){
+		return simpleCreate(qnodes, nodes);
+	}
+        
+        static Mapping simpleCreate(Node[] qnodes, Node[] nodes){
 		return new Mapping(qnodes, nodes);
 	}
+        
+       public static Mapping safeCreate(Node[] qnodes, Node[] nodes) {
+            for (Node node : nodes) {
+                if (node == null) {
+                    return cleanCreate(qnodes, nodes);
+                }
+            }
+            return simpleCreate(qnodes, nodes);
+       }
+       
+       
+        static Mapping cleanCreate(Node[] qnodes, Node[] nodes) {
+            ArrayList<Node> query = new ArrayList<Node>();
+            ArrayList<Node> value = new ArrayList<Node>();
+            int i = 0;
+            for (Node node : nodes) {
+                if (node != null) {
+                    query.add(qnodes[i]);
+                    value.add(nodes[i]);
+                }
+                i++;
+            }
+            return create(query, value);
+       }
+        
 	
 	public static Mapping create(Node qnode, Node node){
 		Node[] qnodes = new Node[1], 
@@ -253,6 +288,7 @@ public class Mapping
 		query = q;
 	}
 	
+        @Override
 	public Query getQuery(){
 		return query;
 	}
@@ -387,7 +423,7 @@ public class Mapping
 				str += qNodes[i] + " : " + lPath[i] + "\n";
 
 			}
-                        else if (e.getObject() != null){
+                        else if (e != null && e.getObject() != null){
                             str += e.getObject() + "\n";
                         }
 			i++;
@@ -534,6 +570,7 @@ public class Mapping
             }
 	}
         
+        // TODO: manage Node isPath
         public void fixQueryNodes(Query q){
             for (int i = 0; i < qNodes.length; i++){
                 Node node = qNodes[i];
@@ -863,15 +900,19 @@ public class Mapping
 	 * Mapping as Environment may compute aggregates
 	 * see same function in Memory
 	 */
+        @Override
 	public void aggregate(Evaluator eval, Producer p, Filter f){
+            if (! getMappings().isFake()){
 		for (Mapping map : getMappings()){
 			// in case there is a nested aggregate
 			eval.eval(f, map, p);
 		}
+            }
 	}
         
+        @Override
     public Extension getExtension(){
-            return query.getOuterQuery().getExtension();
+            return query.getActualExtension();
         }   
     
         @Override
@@ -932,7 +973,7 @@ public class Mapping
 
     @Override
     public int pointerType() {
-        return MAPPING;
+        return MAPPING_POINTER;
     }
 
     @Override
@@ -947,6 +988,11 @@ public class Mapping
 
     @Override
     public ApproximateSearchEnv getAppxSearchEnv() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object getGraphStore() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 	

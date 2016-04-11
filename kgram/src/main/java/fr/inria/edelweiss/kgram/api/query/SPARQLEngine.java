@@ -14,4 +14,6 @@ public interface SPARQLEngine {
     
     Mappings eval(Query q, Mapping m);
     
+    Query load(String path);
+    
 }

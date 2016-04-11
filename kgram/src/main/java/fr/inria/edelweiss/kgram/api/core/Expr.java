@@ -16,6 +16,8 @@ public interface Expr {
 	// Exp as Object for modularity
 	Object getPattern();
         boolean isSystem();
+        boolean isPublic();
+        void setPublic(boolean b);
         boolean isTrace();
         boolean isDebug();
         boolean isTester();
@@ -35,6 +37,7 @@ public interface Expr {
 	void setArg(Expr exp);
 
 	Object getValue();
+        DatatypeValue getDatatypeValue();
 	
 	int type();
         

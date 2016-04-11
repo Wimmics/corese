@@ -2,7 +2,6 @@ package fr.inria.edelweiss.kgram.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,7 +11,6 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
@@ -28,7 +26,7 @@ import fr.inria.edelweiss.kgram.tool.Message;
  * @author Olivier Corby, Edelweiss, INRIA 2009
  *
  */
-public class Query extends Exp implements Graphable, Loopable {
+public class Query extends Exp implements Graphable {
 
     public static final int QP_T0 = 0; //No QP settings
     public static final int QP_DEFAULT = 1; //Default Corese QP
@@ -92,6 +90,7 @@ public class Query extends Exp implements Graphable, Loopable {
     Object object;
 
     private Object pprinter;
+    private Object context;
     HashMap<String, Object> tprinter;
     Compile compiler;
     private QuerySorter querySorter;
@@ -103,7 +102,7 @@ public class Query extends Exp implements Graphable, Loopable {
     // nb occurrences of predicates in where
     HashMap<String, Integer> ptable;
     HashMap<String, Edge> etable;
-    Hashtable<Edge, Query> table;
+    HashMap<Edge, Query> table;
     // Extended queries for additional group by
     List<Query> queries;
     private Extension extension;
@@ -153,6 +152,7 @@ public class Query extends Exp implements Graphable, Loopable {
     private boolean isSynchronized = false;
 
     private boolean isTemplate = false;
+    private boolean isTransformationTemplate = false;
 
     // member of a set of templates of a pprinter (not a single query that is a template)
     private boolean isPrinterTemplate = false;
@@ -191,7 +191,7 @@ public class Query extends Exp implements Graphable, Loopable {
 		funList 	= new ArrayList<Filter>();
 
 		compiler 	= new Compile(this);
-		table 		= new Hashtable<Edge, Query>();
+		table 		= new HashMap<Edge, Query>();
 		ftable 		= new HashMap<String, Filter>();
 		pragma 		= new HashMap<String, Object>(); 
 		tprinter 	= new HashMap<String, Object> (); 
@@ -207,8 +207,8 @@ public class Query extends Exp implements Graphable, Loopable {
 		relaxEdges 		= new ArrayList<Node>();
 		argList 		= new ArrayList<Node>();
                 queryEdgeList           = new ArrayList<Edge>();
-                bgpGenerator             = new BgpGenerator();
-                edgeAndContext             =  new HashMap<Edge, Exp>();
+                bgpGenerator            = new BgpGenerator();
+                edgeAndContext          = new HashMap<Edge, Exp>();
 
         querySorter = new QuerySorter(this);
 
@@ -403,6 +403,10 @@ public class Query extends Exp implements Graphable, Loopable {
             setFrom(q.getFrom());
             setNamed(q.getNamed());
         }
+    }
+    
+    boolean needEdge(){
+            return getGlobalQuery().isRelax() || getGlobalQuery().isRule();
     }
 
     public Query getGlobalQuery() {
@@ -1195,11 +1199,12 @@ public class Query extends Exp implements Graphable, Loopable {
         }
     }
 
+    @Override
     public Query getQuery() {
         return this;
     }
 
-    void trace() {
+    public void trace() {
         System.out.println("patternNodes: " + patternNodes);
         System.out.println("queryNodes: " + queryNodes);
         System.out.println("patternSelectNodes: " + patternSelectNodes);
@@ -1370,6 +1375,11 @@ public class Query extends Exp implements Graphable, Loopable {
             case BIND:
                 collectExist(exp.getFilter().getExp());
                 store(exp.getNode(), exist, true);
+                if (exp.getNodeList() != null){
+                    for (Node n : exp.getNodeList()){
+                        store(n, exist, true);
+                    }
+                }
                 break;
 
             default:
@@ -1448,6 +1458,12 @@ public class Query extends Exp implements Graphable, Loopable {
             case BIND:
                 Node qn = exp.getNode();
                 min = qIndex(query, qn);
+                if (exp.getNodeList() != null){
+                    for (Node bn : exp.getNodeList()){
+                        int ii = qIndex(query, bn);
+                        min = Math.min(min, ii);
+                    }
+                }
                         // continue on filter below:
 
             case FILTER:
@@ -2194,15 +2210,15 @@ public class Query extends Exp implements Graphable, Loopable {
     }
 
     public Object getTransformer(String p) {
-        return getOuterQuery().getPPrinter(p);
+        return getGlobalQuery().getPPrinter(p);
     }
 
     public Object getTransformer() {
-        return getOuterQuery().getPPrinter(null);
+        return getGlobalQuery().getPPrinter(null);
     }
 
     public void setTransformer(String p, Object pprinter) {
-        getOuterQuery().setPPrinter(p, pprinter);
+        getGlobalQuery().setPPrinter(p, pprinter);
     }
 
     public Object getPPrinter(String p) {
@@ -2407,6 +2423,10 @@ public class Query extends Exp implements Graphable, Loopable {
     public Extension getExtension() {
         return extension;
     }
+    
+    public Extension getActualExtension(){
+        return getGlobalQuery().getExtension();
+    }
 
     /**
      * @param extention the extention to set
@@ -2419,6 +2439,8 @@ public class Query extends Exp implements Graphable, Loopable {
         return getExtension() != null || getGlobalQuery().getExtension() != null;
     }
     
+    
+    // API for Eval event-driven function call 
     public Expr getExpression(String name){
         return getExpression(name, false);
     }
@@ -2466,14 +2488,19 @@ public class Query extends Exp implements Graphable, Loopable {
     }
 
     @Override
-    public Iterable getLoop() {
-        ArrayList<Edge> list = new ArrayList();
-        for (Exp exp : getBody()){
-            if (exp.isEdge()){
-                list.add(exp.getEdge());
-            }
-        }
+    public Iterable getLoop() { 
+        return getEdges();
+    }
+    
+    public List<Edge> getEdges(){
+        ArrayList<Edge> list = new ArrayList<Edge>();
+        getBody().getEdgeList(list);
         return list;
+    }
+    
+    @Override
+    public int pointerType(){
+        return QUERY_POINTER;
     }
 
     /**
@@ -2528,6 +2555,42 @@ public class Query extends Exp implements Graphable, Loopable {
 
     public void setEdgeAndContext(HashMap<Edge, Exp> edgeAndContext) {
         this.edgeAndContext = edgeAndContext;
+    }
+
+    /**
+     * @return the Context
+     */
+    public Object getContext() {
+        if (query == null){
+            return context;
+        }
+        return query.getContext();
+    }
+
+    /**
+     * @param Context the Context to set
+     */
+    public void setContext(Object context) {
+        if (query == null){
+            this.context = context;
+        }
+        else {
+            query.setContext(context);
+        }
+    }
+
+    /**
+     * @return the isTransformationTemplate
+     */
+    public boolean isTransformationTemplate() {
+        return isTransformationTemplate;
+    }
+
+    /**
+     * @param isTransformationTemplate the isTransformationTemplate to set
+     */
+    public void setTransformationTemplate(boolean isTransformationTemplate) {
+        this.isTransformationTemplate = isTransformationTemplate;
     }
 	
 }

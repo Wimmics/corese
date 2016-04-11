@@ -225,6 +225,7 @@ public interface ExprType {
  	public static int STL_ISSTART               = 274;
  	public static int AGGLIST                   = 275;
  	public static int AGGREGATE                 = 276;
+ 	public static int STL_FORMAT                = 277;
         
               
 	public static int ISSKOLEM 	= 300;
@@ -247,19 +248,21 @@ public interface ExprType {
 	public static int ERROR         = 315;
 	public static int MAPEVERY      = 316;
 	public static int MAPANY        = 317;
-	public static int MAPSELECT     = 318;
-	public static int MAPMERGE      = 319;
- 	public static int MAPFIND       = 320;
-	public static int FOR           = 322;
-	public static int SET           = 323;
-	public static int SEQUENCE      = 324;
-	public static int RETURN        = 325;
-	public static int EVAL          = 326;
+ 	public static int MAPFIND       = 318;
+	public static int MAPFINDLIST   = 319;
+	public static int MAPMERGE      = 320;
+	public static int MAPFUN        = 321;
+	public static int SET           = 322;
+	public static int SEQUENCE      = 323;
+	public static int RETURN        = 324;
+	public static int EVAL          = 325;
+	public static int FUNCALL       = 326;
+	public static int FOR           = 327;
         
 	public static int XT_SORT       = 330;
         
-        public static int XT_SUM         = 400;
-        public static int XT_PROD        = 401;
+        public static int XT_MAPPING     = 400;
+        public static int XT_ADD         = 401;
         public static int XT_CONCAT      = 402;
         public static int XT_COUNT       = 403;
         public static int XT_CONS        = 404;
@@ -284,7 +287,18 @@ public interface ExprType {
         public static int XT_GEN_GET     = 422;
         public static int XT_DISPLAY     = 423;
         public static int XT_TUNE        = 424;
-       
+        
+        public static int XT_UNION       = 425;
+        public static int XT_MINUS       = 426;
+        public static int XT_OPTIONAL    = 427;
+        public static int XT_JOIN        = 428;
+        public static int XT_QUERY       = 429;
+        public static int XT_AST         = 430;
+        public static int XT_CONTEXT     = 431;
+        public static int XT_METADATA    = 432;
+        public static int XT_FROM        = 433;
+        public static int XT_NAMED       = 434;
+     
         public static int SLICE       = 450;
         
 

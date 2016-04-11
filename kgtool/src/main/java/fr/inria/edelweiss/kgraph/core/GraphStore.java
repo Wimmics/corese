@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.core;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Draft Graph Store where named graphs are hidden for system use 
@@ -14,7 +15,7 @@ public class GraphStore extends Graph {
 
    
 
-    HashMap<String, Graph> store;
+    private HashMap<String, Graph> store;
 
 
     GraphStore() {
@@ -32,16 +33,31 @@ public class GraphStore extends Graph {
         }
         return gs;
     }
+    
+    @Override
+     public GraphStore copy(){
+        GraphStore g = new GraphStore();
+        g.inherit(this);
+        g.copy(this);
+        g.setNamedGraph(this);
+        return g;
+    }
 
+    void setNamedGraph(GraphStore g) {
+        for (String name : g.getNames()) {
+            setNamedGraph(name, g.getNamedGraph(name));
+        }
+    }
 
+    @Override
     public Graph getNamedGraph(String name) {
-        return store.get(name);
+        return getStore().get(name);
     }
 
     public Graph createNamedGraph(String name) {
         Graph g = Graph.create();
         g.index();
-        store.put(name, g);
+        getStore().put(name, g);
         return g;
     }
     
@@ -54,16 +70,35 @@ public class GraphStore extends Graph {
         return g;
     }
 
+    @Override
     public void setNamedGraph(String name, Graph g) {
-        store.put(name, g);
+        getStore().put(name, g);
     }
 
     public Collection<Graph> getNamedGraphs() {
-        return store.values();
+        return getStore().values();
+    }
+    
+    public Set<String> getNames(){
+        return getStore().keySet();
     }
 
     public Graph getDefaultGraph() {
         return this;
+    }
+
+    /**
+     * @return the store
+     */
+    public HashMap<String, Graph> getStore() {
+        return store;
+    }
+
+    /**
+     * @param store the store to set
+     */
+    public void setStore(HashMap<String, Graph> store) {
+        this.store = store;
     }
     
    

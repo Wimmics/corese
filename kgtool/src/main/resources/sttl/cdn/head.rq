@@ -3,17 +3,20 @@
 #
 prefix cn: <http://cdn.fr/schema/>
 template cn:head(?c, ?title) {
+format {
 
-  "<a name='" str(?title) "'></a>"
+  """
+  <a name='%s'></a>
+  <h2 class='century'>%se Siècle</h2>
+  %s
+  <p>%s</p>
+  """
     
-    "<h2 class='century'>" ?title "e Siècle</h2>"
-  
+    str(?title)
+    ?title
     st:call-template(cn:icon, cn:icon)
-    
-    "<p>"
     st:call-template(cn:index,  ?title)
-    "</p>"
-    
+    }
 }
 where {
 }

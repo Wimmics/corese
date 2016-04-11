@@ -1,7 +1,5 @@
 package fr.inria.edelweiss.kgtool.load;
 
-import java.io.UnsupportedEncodingException;
-
 public class LoadException extends Exception {
 	
 	private Exception ex;
@@ -20,6 +18,11 @@ public class LoadException extends Exception {
 		this.set(ee);
 		this.setObject(oo);
 	}
+        
+        @Override
+        public String getMessage(){
+            return ex.getMessage();
+        }
 	
 	public static LoadException create(Exception e){
 		return new LoadException(e);
@@ -41,6 +44,7 @@ public class LoadException extends Exception {
 		return ee;
 	}
 	
+        @Override
 	public String toString(){
 		if (ex == null) return super.toString();
 		
@@ -54,7 +58,7 @@ public class LoadException extends Exception {
 		if (getObject() != null){
 			str += "\n" + getObject();
 		}
-		else {
+		if (getPath() != null) {
 			str += "\n" + getPath();
 		}
 		return str;
@@ -72,8 +76,9 @@ public class LoadException extends Exception {
 		return object;
 	}
 
-	public void setPath(String path) {
+	public LoadException setPath(String path) {
 		this.path = path;
+                return this;
 	}
 
 	public String getPath() {

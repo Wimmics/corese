@@ -3,12 +3,14 @@
 # RDF graph is a result graph
 #
 
+prefix spq: <http://ns.inria.fr/sparql-template/sparql#>
 template st:result {
 
-   st:call-template-with(st:sparql, st:result, st:get(st:service), st:sparql)
+   st:apply-templates-with(?sttl)
     
 }
 where {
   bind (st:get(st:query) as ?query)
+  bind (coalesce(st:get(st:sttl), spq:result)  as ?sttl)
   filter bound(?query)
 }

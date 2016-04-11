@@ -20,6 +20,7 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
@@ -37,9 +38,11 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.GraphListen;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -203,7 +206,7 @@ public class PluginImpl extends ProxyImpl {
                 return setObject(o, null);
 
             case QNAME:
-                return qname(o, env);
+                return qname(dt, env);
                 
             case PROVENANCE:
                 return provenance(exp, env, o);
@@ -303,6 +306,14 @@ public class PluginImpl extends ProxyImpl {
             case STORE:
                 return ext.store(p, env, dt1, dt2);
                 
+            case XT_UNION:
+                return union(exp, env, p, dt1, dt2);
+                
+            case XT_MINUS:
+            case XT_OPTIONAL:
+            case XT_JOIN:
+                return algebra(exp, env, p, dt1, dt2);    
+                
             default:
                 return pt.function(exp, env, p, dt1, dt2);
         }
@@ -368,10 +379,10 @@ public class PluginImpl extends ProxyImpl {
             step = args[2].intValue();
         }
         int length = (end - start + step) / step;
-        IDatatype[] ldt = new IDatatype[length];
+        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>(length);
         
         for (int i=0; i<length; i++){
-            ldt[i] = DatatypeMap.newInstance(start);
+            ldt.add(DatatypeMap.newInstance(start));
             start += step;
         }
         IDatatype dt = DatatypeMap.createList(ldt);
@@ -399,10 +410,10 @@ public class PluginImpl extends ProxyImpl {
        
         
         int length = (end - start + step) / step;
-        IDatatype[] ldt = new IDatatype[length];
+        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>(length);
         
         for (int i=0; i<length; i++){
-            ldt[i] = DatatypeMap.newInstance(str.substring(start, start+1));
+            ldt.add(DatatypeMap.newInstance(str.substring(start, start+1)));
             start += step;
         }
         IDatatype dt = DatatypeMap.createList(ldt);
@@ -642,12 +653,24 @@ public class PluginImpl extends ProxyImpl {
         return (IDatatype) edge.getNode().getValue();
     }
 
+    private IDatatype accessGraph(Expr exp, Environment env, Producer p, IDatatype dt) {
+        if (dt.isPointer()){
+            Pointerable obj = dt.getPointerObject();
+           switch (dt.pointerType()){
+               case Pointerable.ENTITY_POINTER:
+                   return (IDatatype) obj.getEntity().getGraph().getValue();
+               case Pointerable.MAPPINGS_POINTER:                   
+                   return DatatypeMap.createObject(obj.getMappings().getGraph());
+           }           
+        }
+        return null;
+    }
+    
     private Object access(Expr exp, Environment env, Producer p, IDatatype dt) {
-        Object obj = dt.getObject();
-        if (obj == null || ! (obj instanceof Entity)){
+        if (! (dt.isPointer() && dt.pointerType() == Pointerable.ENTITY_POINTER)){
             return null;
         }
-        Entity ent = (Entity) obj;        
+        Entity ent = dt.getPointerObject().getEntity();        
         switch (exp.oper()){
             case XT_GRAPH:
                 return ent.getGraph().getValue();
@@ -683,8 +706,52 @@ public class PluginImpl extends ProxyImpl {
        }
        return edge.getNode(1).getValue();
     }
+    
+    private IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        if ((! (dt1.isPointer() && dt2.isPointer()))
+            || (dt1.pointerType() != dt2.pointerType()) ){
+            return null;
+        }
+        
+        if (dt1.pointerType() == Pointerable.MAPPINGS_POINTER){
+            return algebra(exp, env, p, dt1, dt2);
+        }
+        
+        if (dt1.pointerType() == Pointerable.GRAPH_POINTER){
+            Graph g1 = (Graph) dt1.getPointerObject();
+            Graph g2 = (Graph) dt2.getPointerObject();
+            Graph g = g1.union(g2);
+            return DatatypeMap.createObject(g);
+        }
+        
+        return null;
+    }
+    
+    private IDatatype algebra(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        if ((! (dt1.isPointer() && dt2.isPointer()))
+            || (dt1.pointerType() != dt2.pointerType()) ){
+            return null;
+        }
+        
+        if (dt1.pointerType() == Pointerable.MAPPINGS_POINTER){
+            Mappings m1 = dt1.getPointerObject().getMappings();
+            Mappings m2 = dt2.getPointerObject().getMappings();
+            
+            Mappings m = null;
+            switch (exp.oper()){
+                case XT_MINUS:      m = m1.minus(m2); break;
+                case XT_JOIN:       m = m1.join(m2); break;
+                case XT_OPTIONAL:   m = m1.optional(m2); break;                   
+                case XT_UNION:      m = m1.union(m2); break;                   
+            }
+            
+            return DatatypeMap.createObject(m);
+        }
+        
+        return null;
+    }
 
-    private Object tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+    private IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
         if (dt1.getLabel().equals(LISTEN)){  
             if (dt2.booleanValue()){
@@ -758,10 +825,10 @@ public class PluginImpl extends ProxyImpl {
 
     IDatatype depth(Graph g, Object o) {
         Node n = node(g, o);
-        if (n == null || g.getClassDistance() == null) {
+        if (n == null){ // || g.getClassDistance() == null) {
             return null;
         }
-        Integer d = g.getClassDistance().getDepth(n);
+        Integer d = g.setClassDistance().getDepth(n);
         if (d == null) {
             return null;
         }
@@ -775,7 +842,7 @@ public class PluginImpl extends ProxyImpl {
         loader(g);
         IDatatype dt = (IDatatype) o;
         try {
-            ld.loadWE(dt.getLabel());
+            ld.parse(dt.getLabel());
         } catch (LoadException e) {
             logger.error(e);
             return FALSE;
@@ -785,7 +852,7 @@ public class PluginImpl extends ProxyImpl {
 
     void loader(Graph g) {
         if (ld == null) {
-            ld = ManagerImpl.getLoader();
+            ld = GraphManager.getLoader();
             ld.init(g);
         }
     }
@@ -811,8 +878,7 @@ public class PluginImpl extends ProxyImpl {
         }
     }
 
-    IDatatype qname(Object o, Environment env) {
-        IDatatype dt = (IDatatype) o;
+    IDatatype qname(IDatatype dt, Environment env) {
         if (!dt.isURI()) {
             return dt;
         }
@@ -837,7 +903,12 @@ public class PluginImpl extends ProxyImpl {
             return null;
         }
         QueryLoad ql = QueryLoad.create();
-        String str = ql.read(dt.getLabel());
+        String str = null;
+        try {
+            str = ql.readWE(dt.getLabel());
+        } catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(PluginImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (str == null){
             str = "";
         }

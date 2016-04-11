@@ -1,0 +1,34 @@
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+
+template st:descperson(?r) {
+
+st:call-template(st:desctriple, 
+  st:number(), ?r, ?p, ?tt, if (?href, st:href, st:property))
+
+}
+where { 
+
+  values (?p ?title ?titleen) {
+    (p:dateDeNaissance 	"Naissance" 	"Birth")
+    (p:dateDeDécès 	"Décès"		"Death")
+    (o:predecessor 	"Prédécesseur"	"Predecessor")
+    (o:successor 	"Successeur"	"Successor")
+    (o:father 		"Père"		"Father")
+    (o:mother 		"Mère"		"Mother")
+    (o:spouse 		"Conjoints"	"Spouse")
+    (o:child 		"Enfants"	"Children")
+    (o:residence 	"Résidence"	"Residence")
+    (rdfs:comment 	"Résumé"	"Abstract")
+    (o:wikiPageRedirects "Voir aussi"	"See Also")
+    (o:wikipedia	"Wikipedia"	"Wikipedia")
+    (o:dbpedia		"DBpedia"	"DBpedia")
+  }
+  
+  bind (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
+  
+  filter ( ?href || exists { ?r ?p ?v } )
+  
+  bind (if (st:get(st:lang, "en"), ?titleen, ?title) as ?tt)
+
+}

@@ -6,14 +6,18 @@
 prefix cn: <http://cdn.fr/schema/>
 
 template cn:elem(?title) {
-
-    "<td><a href='"  st:plink(?century) "'>" 
-    
-    "<span" ?class ">" ?date "</span>"
-    
-    "</a></td>"
-    "<td>&nbsp;&nbsp;</td>"
- 
+  format {
+      """
+      <td>
+      <a href='%s'><span %s>%s</span></a>
+      </td>
+      <td>&nbsp;&nbsp;</td>
+      """
+  
+      st:plink(?century)
+      ?class
+      ?date
+  } 
 }
 where {
 

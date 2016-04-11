@@ -105,7 +105,6 @@ public class UpdateProcess {
 				break;
 			}
 		}
-		
 		return map;
 	}
 	
@@ -132,9 +131,12 @@ public class UpdateProcess {
         
         
         /**
-	 * Called by Manager (delete/insert operations)
 	 * query is the global Query
 	 * ast is the current update action
+         * use case: 
+         * delete insert data
+         * delete insert where
+         * In case of data, fake an empty where and process as a where update.
 	 */
              Mappings update(Query query, ASTQuery ast) {
 		
@@ -281,6 +283,7 @@ public class UpdateProcess {
 		ast.setNSM(ope.getNSM());	
 		ast.setPragma(ga.getPragma());
 		ast.setPrefixExp(ga.getPrefixExp());
+                ast.setDefine(ga.getDefine());
 		ast.setSelectAll(true);
 		// where {pat}
 		ast.setBody(ope.getBody());		

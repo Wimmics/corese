@@ -9,5 +9,6 @@ public interface RDF {
 	public static final String FIRST 	= RDF  + "first";
 	public static final String REST 	= RDF  + "rest";
 	public static final String NIL	 	= RDF  + "nil";
+	public static final String VALUE	= RDF  + "value";
 
 }

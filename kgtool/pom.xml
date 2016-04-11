@@ -4,12 +4,11 @@
     
     <groupId>fr.inria.wimmics</groupId>
     <artifactId>kgtool</artifactId>
-    <version>3.1.4-SNAPSHOT</version>
     
     <parent>
         <groupId>fr.inria.wimmics</groupId>
         <artifactId>corese-parent</artifactId>
-        <version>3.1.4-SNAPSHOT</version>
+        <version>3.2.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <repositories>
@@ -20,7 +19,7 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
             <artifactId>arp</artifactId>
             <version>2.2.b</version>
         </dependency>
@@ -37,7 +36,8 @@
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>sparql</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
@@ -125,16 +125,17 @@
             <version>2.10.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>edu.sussex.nlp</groupId>
-            <artifactId>jws</artifactId>
-            <version>11</version>
-        </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-parser</artifactId>
             <version>3.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>edu.sussex.nlp</groupId>
+            <artifactId>jws</artifactId>
+            <version>11</version>
+	    <optional>true</optional>
+        </dependency>-->
     </dependencies>
 
     <build>
@@ -209,4 +210,4 @@
 
         </plugins>
     </build>
-</project>
+<profiles> <profile> <id>jenkins</id> <activation> <property> <name>env.BUILD_NUMBER</name> </property> </activation> <build> <plugins> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>cobertura-maven-plugin</artifactId> </plugin> </plugins> </build> </profile> </profiles> </project>

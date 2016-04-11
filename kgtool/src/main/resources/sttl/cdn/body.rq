@@ -1,18 +1,18 @@
 prefix cn: <http://cdn.fr/schema/>
 template cn:body(?c) {
  
+ format {
     """
-    <table class='margin hcentury'>
-    <tr class='head'> 
-    <th>Date</th>"""
-    
-    st:call-template(cn:rowtitle, ?c)
-    "</tr>"
-    
-    st:call-template(cn:table, ?min, ?max)
+    <table class='margin hcentury table'>
+    <tr class='head'><th>Date</th>%s</tr>    
+    %s
+    </table>
+    """
 
-    "</table>"
-    
+  st:call-template(cn:rowtitle, ?c)    
+  st:call-template(cn:table, ?min, ?max)
+
+}   
 }  
 where {
    ?c cn:start ?min ; cn:finish ?max 

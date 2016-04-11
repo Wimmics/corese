@@ -2,7 +2,7 @@
 #  Get an optional icon from the dataset and display it
 #
 template st:show2(?x) {
-    st:call-template(st:display, ?y) 
+    st:display(?y) 
 }
 where {
   bind (st:get(st:dataset) as ?g)

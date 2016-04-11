@@ -18,6 +18,7 @@ import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.LoadFormat;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_IMPORT;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_PROFILE;
 import java.io.IOException;
@@ -83,6 +84,7 @@ public class Loader {
                 load(ld, pp);
             } catch (LoadException e) {
                 // TODO Auto-generated catch block
+                logger.error(e);
                 logger.error("Transformer Load Error: " + pp);
             }
 
@@ -99,10 +101,12 @@ public class Loader {
 
             for (Query q : qe.getTemplates()) {
                 q.setPPrinter(pp, trans);
+                q.setTransformationTemplate(true);
             }
             
             for (Query q : qe.getNamedTemplates()) {
                 q.setPPrinter(pp, trans);
+                q.setTransformationTemplate(true);
             }
             
         }
@@ -124,13 +128,13 @@ public class Loader {
             // loaded from Corese resource
             name = nsm.strip(pp, STL);
         }  else {
-            ld.loadWE(pp);
+            ld.parseDirRec(pp);
             return;
         }           
         String src = PPLIB + name;
 
         if (!ld.isRule(src)) {
-            src = src + Load.RULE;                  
+            src = src + LoadFormat.RULE;                  
         }
         InputStream stream = getClass().getResourceAsStream(src);
         if (stream == null) {             
@@ -177,14 +181,18 @@ public class Loader {
             // TODO: level()
             profile(qprofile);
             
-            // share function definitions in  templates
-            for (Query t : qe.getTemplates()) {             
-                t.addExtension(qprofile.getExtension());
-            }
-            for (Query t : qe.getNamedTemplates()) {             
-                t.addExtension(qprofile.getExtension());
-            }           
-                       
+            if (qprofile.getExtension() != null){
+                fr.inria.edelweiss.kgenv.parser.Transformer tr = fr.inria.edelweiss.kgenv.parser.Transformer.create();
+                tr.definePublic(qprofile.getExtension(), qprofile, false);
+                // share function definitions in  templates
+                for (Query t : qe.getTemplates()) {             
+                    t.addExtension(qprofile.getExtension());
+                }
+                for (Query t : qe.getNamedTemplates()) {             
+                    t.addExtension(qprofile.getExtension());
+                }           
+            } 
+            
             Expr imp = qprofile.getProfile(STL_IMPORT);
             if (imp != null) {
                 String uri = imp.getExp(0).getLabel();

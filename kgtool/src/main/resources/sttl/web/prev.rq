@@ -1,10 +1,16 @@
 template st:prev(?t) {
 
-  "<a  href='" st:plink(?n) "'>"
-  "<button type='button'"  st:call-template-with(st:server, st:bstyle)       
-  ">Previous</button>"
-  "</a>"  
-    
+format {
+  """
+  <a  href='%s'>
+  <button type='button' %s>Previous</button>
+  </a>
+  """
+  
+  st:plink(?n)
+  st:bstyle()
+  }
+  
 }
 where {
   bind (st:get(st:context) as ?g)

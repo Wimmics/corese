@@ -3,24 +3,4 @@ template st:profile {
 }
 where {}
 
-function st:protocol(?uri) {
-    if (st:get(st:protocol, st:ajax), 
-      concat("javascript:trans(\"", str(?uri), "\")"), 
-      str(?uri))
-  }
-  
-  function st:protocol2(?uri, ?arg) {
-      concat("javascript:trans(\"", str(?uri), "\", ", str(?arg), ");") 
-  }
-  
-  function st:link(?uri) {
-     concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      "&profile=", st:get(st:profile))
-  }
-  
-  function st:plink(?uri) {
-    st:protocol(st:link(?uri))
-  }
-
 

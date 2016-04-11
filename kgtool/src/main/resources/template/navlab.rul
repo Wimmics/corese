@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Dec 10 10:51:33 CET 2015
+Sun Feb 28 17:53:23 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -10,7 +10,7 @@ Thu Dec 10 10:51:33 CET 2015
 <body>
 <![CDATA[
 template st:insert(?uri) {
-    "<a href='"  st:pplink(?uri, st:dbpediacopy) "'><button type='button'>Insert</button></a>" 
+    "<a href='"  st:plink(?uri, st:dbpediacopy) "'><button type='button'>Insert</button></a>" 
 }
 where {
 
@@ -56,30 +56,63 @@ st:call-template(st:desctriple,
   st:number(), ?r, ?p, ?tt, if (?href, st:href, st:property))
 
 }
-where { 
+where {
+  bind (unnest(us:person()) as (?p,  ?title, ?titleen))   
 
-  values (?p ?title ?titleen) {
-    (p:dateDeNaissance 	"Naissance" 	"Birth")
-    (p:dateDeDécès 	"Décès"		"Death")
-    (o:predecessor 	"Prédécesseur"	"Predecessor")
-    (o:successor 	"Successeur"	"Successor")
-    (o:father 		"Père"		"Father")
-    (o:mother 		"Mère"		"Mother")
-    (o:spouse 		"Conjoints"	"Spouse")
-    (o:child 		"Enfants"	"Children")
-    (o:residence 	"Résidence"	"Residence")
-    (rdfs:comment 	"Résumé"	"Abstract")
-    (o:wikiPageRedirects "Voir aussi"	"See Also")
-    (o:wikipedia	"Wikipedia"	"Wikipedia")
-    (o:dbpedia		"DBpedia"	"DBpedia")
-  }
-  
   bind (if (?p in (o:wikipedia, o:dbpedia), true, false) as ?href)
   
   filter ( ?href || exists { ?r ?p ?v } )
   
   bind (if (st:get(st:lang, "en"), ?titleen, ?title) as ?tt)
 
+}
+
+#
+# Properties to be displayed for Person (see profile.rq)
+#
+function us:define(){ 
+  let (?m = us:definition(st:person)){
+    if (xt:size(?m) = 0) { us:person() } else { ?m }
+  }
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate  resources on a map 
+# ?list = list(list(uri, lat, lon))
+#
+template st:gmap2(?list) {
+  format {
+    """
+    var pos%s = new google.maps.LatLng(%s, %s);
+		    
+    var marker%s 
+    = new google.maps.Marker({ position: pos%s, map: map, icon: '%s' });
+    
+    google.maps.event.addListener(marker%s, 'click', 
+    function () {window.location.href = '%s';});
+    """
+    
+    st:number()
+    str(?lat)
+    str(?lon)
+    st:number()
+    st:number()
+    coalesce(st:get(st:mapicon2), "/img/smarker.png")
+    st:number()
+    st:plink(?r)
+  }
+}
+where {
+
+  bind (unnest(?list) as (?r, ?lat, ?lon))
+  
 }
 
 ]]>
@@ -102,7 +135,6 @@ template st:start {
   
 }
 where {
-
 }
 
 ]]>
@@ -113,9 +145,10 @@ where {
 <body>
 <![CDATA[
 template st:icon(?label, ?ic) {
-
-  "<img width='250' alt=\"" str(?label) "\" src=\"" str(?ic) "\" />"
-
+  format {
+    "<img width='250' alt=\"%s\" src=\"%s\" />"
+    str(?label) str(?ic)
+  }
 }
 where {}
 
@@ -130,13 +163,17 @@ prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
 
 template st:descresource(?r) {
-
-  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
-  "<th class='left'>" str(?p) "</th><td>" 
+format {
+  """
+  <tr>
+  <th class='left'>%s</th>
+  <td>%s</td>
+  </tr>
+  """ 
   
-   st:call-template(st:triple, ?r, ?p, ?v)  
-  
-  "</td></tr>"  
+  str(?p)
+  st:call-template(st:triple, ?r, ?p, ?v)
+  }
 }
 where { 
     ?r ?p ?v
@@ -153,6 +190,8 @@ template st:property(?r, ?p) {
 
   if (isLiteral(?n), str(?n),
     st:call-template(st:display, ?n, coalesce(?ln, ?n)))
+    
+    ; separator = " - "
   
 }
 where { 
@@ -169,36 +208,62 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+
 template st:profile {
 
  
 }
 where {}
+    
+#
+# Get the ?q = st:person st:param property from profile.ttl 
+# Return properties to be displayed
+# st:get(st:definition) return the profile.ttl RDF graph
+#
+function us:definition(?q){
+  st:set(st:currentProperty, ?q) ;
+  let (?m = 
+      select ?p ?title ?titleen where {
+	bind (st:get(st:currentProperty) as ?q)
+	bind (st:get(st:definition) as ?def)
+	graph ?def {
+	 [] ?q ?list
+	 ?list rdf:rest*/rdf:first (?p  ?title ?titleen)
+	}
+      })
+      { ?m }
+}
 
- function st:protocol(?uri) {
-    if (st:get(st:protocol, st:ajax), 
-      concat("javascript:trans(\"", str(?uri), "\")"), 
-      str(?uri))
-  }
-  
-  function st:link(?uri) {
-     concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      coalesce(
-	concat("&profile=",   st:get(st:profile)), 
-	concat("&transform=", st:get(st:transform)), 
-	""))
-  }
-  
-  function st:pplink(?uri, ?profile) {
-     st:protocol(concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      concat("&profile=",   ?profile)))
-  }
-   
-  function st:plink(?uri) {
-    st:protocol(st:link(?uri))
-  }
+#
+# Default properties to be displayed for Person
+#
+function us:person(){
+    let (?m = 
+      select * where {
+      values (?p ?title ?titleen) {
+	  (p:dateDeNaissance 	"Naissance" 	"Birth")
+	  (p:dateDeDécès 	"Décès"		"Death")
+	  (o:predecessor 	"Prédécesseur"	"Predecessor")
+	  (o:successor          "Successeur"	"Successor")
+	  (o:father 		"Père"		"Father")
+	  (o:mother 		"Mère"		"Mother")
+	  (o:spouse 		"Conjoints"	"Spouse")
+	  (o:child 		"Enfants"	"Children")
+	  (o:residence          "Résidence"	"Residence")
+	  (o:memberOf         	"Membre"	"Member")
+	  (o:bandMember         "Membre"	"Member")
+	  (o:starring         	"Acteur"	"Actor")
+	  (o:director         	"Metteur en scène"	"Director")
+	  (rdfs:comment 	"Résumé"	"Abstract")
+	  (o:wikiPageRedirects  "Voir aussi"	"See Also")
+	  (o:wikipedia          "Wikipedia"	"Wikipedia")
+	  (o:dbpedia		"DBpedia"	"DBpedia")
+	}
+      })
+      { ?m }
+}  
   
 
 
@@ -216,11 +281,11 @@ prefix p:  <http://fr.dbpedia.org/property/>
 
 template st:page {
 
-  st:call-template-with(st:server, st:head)
+  st:head()
 
   st:call-template(st:selecttry)
    
-  st:call-template-with(st:server, st:tail)
+  st:tail()
   
 }
 where {
@@ -238,13 +303,12 @@ where {
 #
 
 template  st:href(?r, ?p) {
+  format {
+  
+  "<a href=\"%s\">%s</a>"
 
- "<a href=\"" 
-    str(?v) 
-  "\">"  
-    str(?v) 
-  "</a>"
-
+   str(?v) str(?v) 
+  }
 }
 
 where {
@@ -284,74 +348,35 @@ where {
 prefix p: <http://fr.dbpedia.org/property/>
 prefix o: <http://dbpedia.org/ontology/>
 
-template st:locate {
+template st:glocate {
 
-  st:call-template(st:map, ?in, ?lat, ?lon)
+  st:call-template(st:gmap, ?in, ?lat, ?lon, aggregate(?elem))
   
 }
 where {
   ?in a o:Place 
-  {select * where { 
-  # let o:place first because limit 1
-    { ?in o:place [ 
-	p:longitude ?lon ;
-	p:latitude  ?lat]   
-    } 
-    union
-    {?in p:longitude ?lon ;
-	 p:latitude  ?lat }     
-  } limit 1}
-}
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate resource on a map given lat et long
-#
-
-template st:map(?r, ?lat, ?lon) {
-
-  if (st:get(st:protocol, st:ajax), "", 
-  """<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>""")
-
-"""
-  <script>
-  function callback() {
-    var pos = new google.maps.LatLng("""  str(?lat) "," str(?lon) ");"
-      
-    """  
-    var mapOptions = {zoom: 7, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};
-            
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  optional { 
+    ?in o:place [ 
+    p:longitude ?lon ;
+    p:latitude  ?lat] } 
     
-    google.maps.event.addListener(map, 'click', 
-    function( event ){
-      alert( "p:latitude: " + event.latLng.lat() + " " + "; p:longitude: " + event.latLng.lng() ); 
-    });
-    
-    var marker = new google.maps.Marker({ position: pos, map: map, icon: '/img/bmarker.png' });
-"""
-    
-    st:call-template(st:locateall, ?r)
-    
-"}"
+  optional {
+    ?in p:longitude ?lon ;
+    p:latitude  ?lat }
+       
+  # search all other Place resources   
+   optional {
+      select (xt:list(?res, ?lat, ?lon) as ?elem) ?res
+      where {
+        bind (st:get(st:dataset) as ?g)
+	graph ?g {
+	  ?res p:longitude ?lon ; p:latitude ?lat
+	}
+      }
+   }
+   filter(! bound(?res) || ?in != ?res)
 
-    if (st:get(st:protocol, st:ajax), "",
-        "google.maps.event.addDomListener(window, 'load', callback);")
-
-"""
-  </script>
-      
-  <p id="map-canvas" ></p>
-  """
-}
-where {
-  
 }
 
 ]]>
@@ -441,11 +466,12 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 
 template  st:display(?r, ?l) {
+  format {
+    "<a href='%s'>%s</a>"
 
- "<a href='"  st:plink(?r)  "'>"  
-    str(coalesce(?l, ?pr)) 
-  "</a>"
-
+    st:pplink(?r)
+    str(coalesce(?l, ?pr))
+  }
 }
 
 where {
@@ -485,42 +511,87 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+
+template st:gmap(?r, ?lat, ?lon, ?list) {
+
+  if (st:get(st:protocol, st:ajax), "", 
+  """<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>""")
+  
+format {
+
+"""
+  <script>
+  function callback() {
+    var pos = new google.maps.LatLng(%s,%s);         
+    var mapOptions = {zoom: %s, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};            
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    
+    google.maps.event.addListener(map, 'click', 
+    function(event){
+      alert( "p:latitude: " + event.latLng.lat() + " " + "; p:longitude: " + event.latLng.lng() ); 
+    });
+    
+    var marker = new google.maps.Marker({ position: pos, map: map, icon: '%s' });   
+    %s
+    }
+  %s   
+  </script>      
+  <p class='%s' id='map-canvas' ></p>
+"""
+
+  str(?lat)
+  str(?lon)
+  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapicon1), "/img/bmarker.png")
+  
+  st:call-template(st:gmap2, ?list)
+  
+  if (st:get(st:protocol, st:ajax), "",
+        "google.maps.event.addDomListener(window, 'load', callback);")
+        
+  coalesce(st:get(st:mapsize), "mapmedium")
+}
+   
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 
 template st:frame(?label, ?icon, ?body) {
+format {
 
   """
-  <div class='center'>   
-  <h2>"""  str(?label) """</h2> 
-  </div>
+  <div class='center'><h2>%s</h2></div>
   <p>
-  <table>
-  <tr class='top'>
-  <td>
-  """
-  
-  if (?icon = "", "", 
-    st:call-template(st:icon, ?label, ?icon)  )
- 
-  """
-  </td><td>&nbsp;<td/><td>
-  <table>
-  """  
-  
-  str(?body)
-  
-  """
-  </table>
-  </td>
-  </tr>
-  </table>
+    <table>
+      <tr class='top'>
+	<td>%s</td>
+	<td>&nbsp;<td/>
+	<td><table class='table'>%s</table></td>
+      </tr>
+    </table>
   </p>
   """
 
-
+  str(?label)
+  if (?icon = "", "", 
+      st:call-template(st:icon, ?label, ?icon)  )
+  str(?body)    
+}  
 }
 where {
 
@@ -536,14 +607,17 @@ where {
 <body>
 <![CDATA[
 template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
-
-"<tr class='s" if (kg:even(?n), 0, 1) "'>"
-  "<th class='left'>" str(?title) "</th><td>" 
-  
-   st:call-template(?temp, ?r, ?p)
-   
-"</td></tr>" 
-  
+format {
+  """
+  <tr>
+    <th class='left'>%s</th>
+    <td>%s</td>
+  </tr> 
+  """
+ 
+  str(?title)
+  st:call-template(?temp, ?r, ?p)
+ }
 }
 where {} 
 
@@ -570,39 +644,6 @@ where {
   optional { ?x a ?t }
 }
 limit 1
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate  resources on a map (except resource given lat et long)
-#
-prefix p: <http://fr.dbpedia.org/property/>
-prefix o: <http://dbpedia.org/ontology/>
-template st:locateall(?r) {
-
-  "var pos" st:number() " = new google.maps.LatLng(" str(?lat) "," str(?lon) ");"
-                  
-  "var marker" st:number() 
-  "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
-  
-  "google.maps.event.addListener(marker" st:number() 
-  ", 'click', function () {window.location.href = '"   st:plink(?in)   "';});"
-  
-}
-where {
-
-   bind (st:get(st:dataset) as ?g)
-   graph ?g {
-    ?in p:longitude ?lon ; p:latitude ?lat
-    filter(?in != ?r)
-    }
-    
-}
 
 ]]>
 </body>
@@ -712,7 +753,7 @@ template {
   st:call-template(st:frame, ?label, coalesce(?ic, ""), 
      st:call-template(st:descplace, ?in))
    
-  st:call-template(st:locate, ?in)
+  st:call-template(st:glocate, ?in)
 
 }
 where {

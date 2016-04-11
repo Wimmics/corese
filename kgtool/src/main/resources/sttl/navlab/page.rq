@@ -5,11 +5,11 @@ prefix p:  <http://fr.dbpedia.org/property/>
 
 template st:page {
 
-  st:call-template-with(st:server, st:head)
+  st:head()
 
   st:call-template(st:selecttry)
    
-  st:call-template-with(st:server, st:tail)
+  st:tail()
   
 }
 where {

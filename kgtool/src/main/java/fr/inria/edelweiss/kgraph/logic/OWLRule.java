@@ -66,7 +66,7 @@ public class OWLRule {
 				
 		Load ld = Load.create(graph);
 		ld.setEngine(re);
-		ld.loadWE(src);		
+		ld.parse(src);		
 		QueryEngine qe = ld.getQueryEngine();
 		
 		for (Rule r : re.getRules()){

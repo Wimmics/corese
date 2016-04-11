@@ -205,7 +205,8 @@ public class Transformer  {
             if (n == null) {
                 gg = Graph.create();
                 Load load = Load.create(gg);
-                load.load(name, Load.TURTLE_FORMAT);
+                //load.load(name, Load.TURTLE_FORMAT);
+                load.parse(name, Load.TURTLE_FORMAT);                
             } 
             else {
                 gg = g;
@@ -251,7 +252,7 @@ public class Transformer  {
     public String transform(String uri) throws LoadException{
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        ld.loadWE(uri);
+        ld.parse(uri);
         set(g);
         return transform();
     }
@@ -263,7 +264,7 @@ public class Transformer  {
     public void transform(InputStream in, OutputStream out, int format) throws LoadException, IOException{
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        ld.load(in, format);
+        ld.parse(in, format);
         set(g);
         String str = transform();
         if (str != null){
@@ -706,6 +707,9 @@ public class Transformer  {
 
         if (isDebug || isTrace) {
             System.out.println("pprint: " + level() + " " + exp + " " + dt1 + " " + dt2);
+            if (dt1 != null && dt1.isBlank()) System.out.println(Transformer.create(graph, TURTLE).process(dt1).getLabel());
+            if (dt2 != null && dt2.isBlank()) System.out.println("\n" + Transformer.create(graph, TURTLE).process(dt2).getLabel());
+            System.out.println("__");
         }
 
         Graph g = graph;
@@ -1108,6 +1112,14 @@ public class Transformer  {
     }
     
     /**
+     * if prefix exists, return qname, else return URI as is (without <>)
+     */
+    public IDatatype qnameURI(IDatatype dt) {
+        String uri = nsm.toPrefix(dt.getLabel(), true);
+        return DatatypeMap.newStringBuilder(uri);                 
+    }
+    
+    /**
      * Display a Literal with its ^^xsd:datatype
      * Use case: OWL 2 functional syntax
      */
@@ -1267,26 +1279,7 @@ public class Transformer  {
     public void setTrace(boolean isTrace) {
         this.isTrace = isTrace;
     }
-    
-    
-    public Mappings NSMtoMappings(){
-        Mappings map =  new Mappings();      
-        Node[] qq = new Node[2];
-        qq[0] = NodeImpl.createVariable("?p");
-        qq[1] = NodeImpl.createVariable("?n");
-        
-        for (String p : nsm.getPrefixSet()){
-            String ns = nsm.getNamespace(p);
-            if (! nsm.isSystem(ns)){
-                Node[] tn = new Node[2];
-                tn[0] = DatatypeMap.newInstance(p);
-                tn[1] = DatatypeMap.newResource(ns); 
-                map.add(Mapping.create(qq, tn));
-            }
-        }
-        return map;
-    }
-
+      
     public void load(String uri) {
         if (loaded.containsKey(uri)){
             return;
@@ -1297,7 +1290,8 @@ public class Transformer  {
         Graph g = Graph.create();
         Load load = Load.create(g);
         try {
-            load.load(uri, Load.TURTLE_FORMAT);
+            //load.load(uri, Load.TURTLE_FORMAT);
+            load.parse(uri, Load.TURTLE_FORMAT);             
             g.init();
             exec.add(g);
         } catch (LoadException ex) {
@@ -1337,17 +1331,17 @@ public class Transformer  {
         return pp;
     }
 
-    public IDatatype get(String name) {
-        return getContext().get(name);
-    }
-    
-    public void set(String name, IDatatype dt2){
-        getContext().set(name, dt2);
-    }
-    
-    public void export(String name, IDatatype dt2){
-        getContext().export(name, dt2);
-    }
+//    public IDatatype get(String name) {
+//        return getContext().get(name);
+//    }
+//    
+//    public void set(String name, IDatatype dt2){
+//        getContext().set(name, dt2);
+//    }
+//    
+//    public void export(String name, IDatatype dt2){
+//        getContext().export(name, dt2);
+//    }
     
     /**
      * @return the context
@@ -1362,67 +1356,57 @@ public class Transformer  {
     public void setContext(Context context) {
         this.context = context;
     }
-    
-    /**
-     * Inherit NSManager & context of query that called this Transformer
-     * Use case:
-     * query = template { st:atw(st:cdn) } where {}
-     * query is run by service
-     * context contains service URI
-     * 
-     */
-    public void init(ASTQuery ast){
-//        Context c = ast.getContext();
-//        if (c != null){
-//            setContext(c);
-//        }
-        setNSM(ast.getNSM());
-    }
-    
-    
+          
    /**
-   * this new Transformer  inherit information from query and current transformer (if any)
-   */
+    * Query q is the calling query (or template)
+    * Transformer ct is current Transformer
+    * this new Transformer  inherit information from query and current transformer (if any)
+    */
     public void complete(Query q, Transformer ct) {             
-        if (ct == null) {
-            ASTQuery ast = (ASTQuery) q.getAST();
-            Context ctx = ast.getContext();          
-            if (ctx != null){
-                // inherit query context
-                setContext(ctx);
-            }
-        }
-        else {
-            setNSM(ct.getNSM());            
-            complete(ct.getContext());
+       ASTQuery ast = (ASTQuery) q.getAST();
+       Context c = getContext(q, ct);
+       if (c != null){
+           // inherit exported properties:
+           getContext().complete(c);
+           init(getContext());
+       }
+       if (ct != null)  {
+            setNSM(ct.getNSM());   
             if (ct.getVisitor() != null){
                 setVisitor(ct.getVisitor());
             }
-        }
-        
-        
+        }              
         // query prefix overload ct transformer prefix
         // because query call this new transformer
-        ASTQuery ast = (ASTQuery) q.getAST();
         complete(ast.getNSM());
     }
     
-    void complete(Context ctx) {
-        IDatatype export = ctx.get(Context.STL_EXPORT);
-        if (export != null && export.booleanValue()) {
-            getContext().copy(ctx);
-        } else {
-            // dataset, protocol
-            getContext().include(ctx);
+    void init(Context c) {
+        if (c.get(Context.STL_DEBUG) != null && c.get(Context.STL_DEBUG).booleanValue()) {
+            isDebug = true;
         }
     }
+    
+    Context getContext(Query q, Transformer ct) {
+        if (ct == null) {
+            // inherit query context
+            //setContext(ast.getContext());
+            // inherit all properties:
+            //getContext().copy(ast.getContext());
+            return (Context) q.getContext();
+
+        } else {
+            return ct.getContext();
+        }
+    }
+       
     
     /**
      * Inherit prefix from Query
      */
     void complete(NSManager nsm){
         if (nsm.isUserDefine()){
-             this.nsm.complete(nsm);
+             getNSM().complete(nsm);
         }
     }
 

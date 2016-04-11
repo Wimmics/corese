@@ -2,8 +2,8 @@ template st:opencons {
 
   """
   <h3>Result</h3>
-  <table>
-  <tr class='s1'>
+  <table class='table'>
+  <tr>
   <th></th><th></th><th>subject</th><th>property</th><th>object</th><th></th>
   </tr>
   """

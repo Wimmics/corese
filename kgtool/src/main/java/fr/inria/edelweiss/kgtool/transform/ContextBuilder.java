@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,18 +25,21 @@ import java.util.logging.Logger;
  */
 public class ContextBuilder {
     
-    Graph g;
-    Context c;
+    Graph graph;
+    Context context;
+    HashMap<String, Node> done; 
     
     public ContextBuilder(Graph g){
-        this.g = g;
+        this.graph = g;
+        done = new HashMap<String, Node>();
+        context = new Context();
     }
     
     public ContextBuilder(String path){
-        g = Graph.create();
-        Load ld = Load.create(g);
+        this(Graph.create());
+        Load ld = Load.create(graph);
         try {
-            ld.loadWE(path);
+            ld.parse(path);
         } catch (LoadException ex) {
             Logger.getLogger(ContextBuilder.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -46,63 +50,92 @@ public class ContextBuilder {
      * Create a Context from content of st:param
      */
     public Context process(){
-        Entity ent = g.getEdges(Context.STL_PARAM).iterator().next();
+        Entity ent = graph.getEdge(Context.STL_PARAM);
         if (ent == null){
-            return new Context();
+            return context;
         }
         return process(ent.getNode(1));
     }
     
     public Context process(Node ctx){
-        c = new Context();
-        context(ctx);
-        return c;
+        //context = new Context();
+        context(ctx, false);
+        return context;
+    }
+    
+    public ContextBuilder setContext(Context c){
+        context = c;
+        return this;
     }
         
-    void context(Node ctx) {
+    void context(Node ctx, boolean exporter) {
         importer(ctx);
 
-        for (Entity ent : g.getEdgeList(ctx)) {
-            if (!ent.getEdge().getLabel().equals(Context.STL_IMPORT)) {
-                Node object = ent.getNode(1);
+        for (Entity ent : graph.getEdgeList(ctx)) {
+            String label = ent.getEdge().getLabel();
+            Node object = ent.getNode(1);
+            
+            if (label.equals(Context.STL_EXPORT) && object.isBlank()){
+                // st:export [ st:lod (<http://dbpedia.org/>) ]
+                context(object, true);
+            }
+            else if (! label.equals(Context.STL_IMPORT)) {
 
                 if (object.isBlank()) {
-                    IDatatype list = list(g, object);
+                    IDatatype list = list(graph, object);
                     if (list != null) {
-                        c.set(ent.getEdge().getLabel(), list);
+                        set(label, list, exporter);
                         continue;
                     }
                 }
-                c.set(ent.getEdge().getLabel(), (IDatatype) object.getValue());
+                set(label, (IDatatype) object.getValue(), exporter);
             }
         }        
     }
     
+    void set(String name, IDatatype dt, boolean b){
+        if (b){
+            context.export(name, dt);
+        }
+        else {
+            context.set(name, dt);
+        }
+    }
+    
      /** 
-      *       
-      * TODO: prevent loop 
-      * n =  [ st:import st:cal ]
-      * st:cal st:param [ ... ] 
-      * 
+      *           
       */
-     void importer(Node n){
-         Edge imp = g.getEdge(Context.STL_IMPORT, n, 0);        
-          if (imp != null){
-                Edge par = g.getEdge(Context.STL_PARAM, imp.getNode(1), 0);
-                if (par != null){
-                    context(par.getNode(1));
+     void importer(Node n) {         
+        for (Entity ent : graph.getEdges(Context.STL_IMPORT, n, 0)) {
+            if (ent != null){
+                Node imp = ent.getNode(1);
+                if (done(imp)){
+                    continue;
+                }
+                Edge par = graph.getEdge(Context.STL_PARAM, imp, 0);
+                if (par != null) {
+                    context(par.getNode(1), false);
                 }
             }
-     }
-        
-    
-    IDatatype list(Graph g, Node object) {
-        List<IDatatype> list = g.getDatatypeList(object);
-        if (! list.isEmpty()) {           
-            IDatatype dt = DatatypeMap.createList(list);
-            return dt;
         }
-        return null;
+     }
+     
+     boolean done(Node n) {
+        if (done.containsKey(n.getLabel())) {
+            return true;
+        } else {
+            done.put(n.getLabel(), n);
+        }
+        return false;
+    }
+             
+    IDatatype list(Graph g, Node object) {
+        List<IDatatype> list = g.reclist(object);
+        if (list == null) {           
+            return null;
+        }
+       IDatatype dt = DatatypeMap.createList(list);
+       return dt;
     }
     
 

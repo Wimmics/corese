@@ -1,21 +1,27 @@
 template st:era(?fst, ?rst) {
+format {
+  """
+  <table>
+  <tr>%s</tr>
+  </table>
+  """ 
 
-"<table>"
-  "<tr>"
-  
   group {
-    "<td>"  
-      "<span class='shrink'>"
-	"<h3 class='center'>" ?year "</h3>"
-	"<div class='border'>"
-	st:call-template(st:calendar, ?year)  
-      "</div></span>"
-    "</td>"
-  }
-  
-  "</tr>"
-"</table>"  
-
+    format {
+	"""
+	<td>  
+	  <span class='shrink'>
+	    <h3 class='center'>%s</h3>
+	    <div class='border'>%s</div>
+	  </span>
+	</td>
+	"""
+	
+	?year
+	st:call-template(st:calendar, ?year)
+      }
+    }
+}
 }
 where {
   bind (unnest(xt:iota(?fst, ?rst)) as ?year)

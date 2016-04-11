@@ -10,13 +10,13 @@ import org.apache.log4j.Logger;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -26,6 +26,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Closure;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.Construct;
+import fr.inria.edelweiss.kgraph.query.GraphManager;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -97,6 +98,7 @@ public class RuleEngine implements Engine, Graphable {
     private boolean isConnect = false;
     private boolean isDuplicate = false;
     private boolean isSkipPath = false;
+    private Context context;
 
     public RuleEngine() {
         rules = new ArrayList<Rule>();
@@ -154,7 +156,7 @@ public class RuleEngine implements Engine, Graphable {
         Load ld = Load.create(graph);
         ld.setEngine(this);
         InputStream stream = RuleEngine.class.getResourceAsStream(name);
-        ld.load(stream, Load.RULE_FORMAT);
+        ld.parse(stream, Load.RULE_FORMAT);
     }
       
     /**
@@ -403,6 +405,15 @@ public class RuleEngine implements Engine, Graphable {
     void begin(){
         processProfile();
         graph.getContext().storeIndex(NSManager.KGRAM+"re1");
+        context();
+    }
+    
+    void context(){
+        if (getContext() != null){
+            for  (Rule r : getRules()){
+                r.getQuery().setContext(getContext());
+            }
+        }
     }
     
     /**
@@ -638,7 +649,7 @@ public class RuleEngine implements Engine, Graphable {
         Query qq = rule.getQuery();
         Construct cons = Construct.create(qq, Entailment.RULE);
         cons.setRule(rule, rule.getIndex(), rule.getProvenance());
-        cons.setGraph(graph);
+        cons.set(new GraphManager(graph));
         cons.setLoopIndex(loopIndex);
         cons.setDebug(debug);
 
@@ -741,7 +752,7 @@ public class RuleEngine implements Engine, Graphable {
             graph.addOpt(r.getUniquePredicate(), cons.getInsertList());
         } else {
             // create edges from Mappings as usual
-            cons.insert(map, graph, null);
+            cons.insert(map, null);
         }
     }
     
@@ -953,6 +964,20 @@ public class RuleEngine implements Engine, Graphable {
     @Override
     public Object getGraph() {
         return spinGraph;
+    }
+
+    /**
+     * @return the context
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     class STable extends Hashtable<Rule, Integer> {

@@ -1,32 +1,58 @@
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+
 template st:profile {
 
  
 }
 where {}
+    
+#
+# Get the ?q = st:person st:param property from profile.ttl 
+# Return properties to be displayed
+# st:get(st:definition) return the profile.ttl RDF graph
+#
+function us:definition(?q){
+  st:set(st:currentProperty, ?q) ;
+  let (?m = 
+      select ?p ?title ?titleen where {
+	bind (st:get(st:currentProperty) as ?q)
+	bind (st:get(st:definition) as ?def)
+	graph ?def {
+	 [] ?q ?list
+	 ?list rdf:rest*/rdf:first (?p  ?title ?titleen)
+	}
+      })
+      { ?m }
+}
 
- function st:protocol(?uri) {
-    if (st:get(st:protocol, st:ajax), 
-      concat("javascript:trans(\"", str(?uri), "\")"), 
-      str(?uri))
-  }
-  
-  function st:link(?uri) {
-     concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      coalesce(
-	concat("&profile=",   st:get(st:profile)), 
-	concat("&transform=", st:get(st:transform)), 
-	""))
-  }
-  
-  function st:pplink(?uri, ?profile) {
-     st:protocol(concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      concat("&profile=",   ?profile)))
-  }
-   
-  function st:plink(?uri) {
-    st:protocol(st:link(?uri))
-  }
+#
+# Default properties to be displayed for Person
+#
+function us:person(){
+    let (?m = 
+      select * where {
+      values (?p ?title ?titleen) {
+	  (p:dateDeNaissance 	"Naissance" 	"Birth")
+	  (p:dateDeDécès 	"Décès"		"Death")
+	  (o:predecessor 	"Prédécesseur"	"Predecessor")
+	  (o:successor          "Successeur"	"Successor")
+	  (o:father 		"Père"		"Father")
+	  (o:mother 		"Mère"		"Mother")
+	  (o:spouse 		"Conjoints"	"Spouse")
+	  (o:child 		"Enfants"	"Children")
+	  (o:residence          "Résidence"	"Residence")
+	  (o:memberOf         	"Membre"	"Member")
+	  (o:bandMember         "Membre"	"Member")
+	  (o:starring         	"Acteur"	"Actor")
+	  (o:director         	"Metteur en scène"	"Director")
+	  (rdfs:comment 	"Résumé"	"Abstract")
+	  (o:wikiPageRedirects  "Voir aussi"	"See Also")
+	  (o:wikipedia          "Wikipedia"	"Wikipedia")
+	  (o:dbpedia		"DBpedia"	"DBpedia")
+	}
+      })
+      { ?m }
+}  
   
 

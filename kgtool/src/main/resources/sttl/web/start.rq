@@ -7,20 +7,20 @@
 #
 template st:start {
 
-  st:call-template-with(st:server, st:head)
+  st:head()
 
   st:call-template(st:head)
     
-  st:call-template(st:select, ?uri)
+  st:call-template(st:selectform, ?uri)
   
   st:call-template(st:display, ?uri)
    
   st:call-template(st:tail)
 
-  st:call-template-with(st:server, st:tail)
+  st:tail()
 }
 where {
 
   bind (coalesce(st:get(st:uri), st:intro) as ?uri)
-  
+
 }

@@ -4,12 +4,12 @@
 # use year 2000 to have a bisextile year (to get January 29)
 #
 template st:dbpedia(?date) {
-
-  "<a href='"
-    st:plink(concat("st:d2000-", month(?date), "-", day(?date))) 
-  "'>" day(?date) 
-  "</a>"
-  
+  format {
+    "<a href='%s'>%s</a>"
+    
+    st:plink(concat("st:d2000-", month(?date), "-", day(?date)))
+    day(?date)
+  } 
 }
 where {
 

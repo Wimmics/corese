@@ -1,6 +1,7 @@
 template st:icon(?label, ?ic) {
-
-  "<img width='250' alt=\"" str(?label) "\" src=\"" str(?ic) "\" />"
-
+  format {
+    "<img width='250' alt=\"%s\" src=\"%s\" />"
+    str(?label) str(?ic)
+  }
 }
 where {}

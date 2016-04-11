@@ -61,7 +61,7 @@ public class Start {
 		Load ld = Load.create(g);
 		for (String doc : load){
 			try {
-				ld.loadWE(doc);
+				ld.parseDir(doc);
 			} catch (LoadException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

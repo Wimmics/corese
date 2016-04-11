@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgraph.approximate.strategy;
 
-import static fr.inria.edelweiss.kgraph.approximate.strategy.ApproximateStrategy.getAlgrithmList;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.ISimAlgorithm;
 import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.BaseAlgorithm;
 import java.util.ArrayList;

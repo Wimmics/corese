@@ -2,10 +2,29 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Dec 10 10:51:33 CET 2015
+Sun Feb 28 17:53:23 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+#
+# onChange=''
+#
+template st:change {
+      
+ if (st:get(st:protocol, st:ajax), 
+    "trans(this.form); return false;",
+    "submit();")  
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -89,6 +108,9 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# <input type='submit' ...
+#
 template st:submit {
       
   " " st:call-template(st:bstyle) " onClick='trans(this.form); return false;'"

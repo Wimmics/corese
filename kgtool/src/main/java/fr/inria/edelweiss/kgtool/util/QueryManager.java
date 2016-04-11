@@ -172,12 +172,7 @@ public class QueryManager {
             throw LoadException.create(new IOException(src));
         }
         QueryLoad ld = QueryLoad.create();
-        try {
-            String str = ld.read(stream);
-            return str;
-        } catch (IOException ex) {
-            throw LoadException.create(ex);
-        }
+        return ld.readWE(stream);
     }
 
     /**

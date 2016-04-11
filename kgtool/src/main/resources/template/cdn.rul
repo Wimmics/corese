@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Dec 10 10:51:33 CET 2015
+Sat Mar 05 09:46:43 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -62,20 +62,30 @@ where {
 prefix cn: <http://cdn.fr/schema/>
 template cn:icon {
 
-"<table class='margin'><tr>\n"
+format {
+  """
+  <table class='margin'><tr>\n
+  %s
+  </tr></table>\n
+  """
 
   group {
-    "<td>" 
-      "<a href='" ?i "'><img width='100' src='" ?i "' /></a>" 
-    "</td>"
-  }
-  
-"</tr></table>\n"
+    format {
+	"""
+	<td> 
+	  <a href='%s'><img width='100' src='%s' /></a>" 
+	</td>
+	"""
+	
+	?i ?i 
+      }
+    }
+}
 
 }
 where { }
-values ?i {
 
+values ?i {
 
 
 <http://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG>
@@ -161,15 +171,18 @@ prefix cn: <http://cdn.fr/schema/>
 prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 template  cn:table(?min, ?max) {
+format {
 
-  "<tr class='" st:call-template(cn:style, ?d) "'>"
-
-  "<th class='date'>" st:call-template(cn:wikidate, ?d)  "</th>"
+  """
+  <tr>
+  <th class='date'>%s</th>  
+   %s         
+  </tr>\n
+  """
   
-   st:call-template(cn:row, ?d)
-         
-  "</tr>\n"
-
+  st:call-template(cn:wikidate, ?d)
+  st:call-template(cn:row, ?d)
+}
 }
 where {
   {select distinct ?d  where {
@@ -191,7 +204,7 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:hlink(?u, ?t) { 
   
-  "<a href=\"" ?u "\">" ?t "</a>"
+  format { "<a href=\"%s\">%s</a>" ?u ?t}
 
 }
 where {
@@ -206,20 +219,31 @@ where {
 <![CDATA[
 prefix cn: <http://cdn.fr/schema/>
 template cn:list {
+
+format {
+
   """
   <table class='margin'>
   <tr>
-  <td><a href='""" 
-  st:protocol(concat(st:get(st:service), "?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia")) 
-  "'>Carte</a></td><td>&nbsp;</td>"
-
-  group {
-    "<td><a href='" st:misc(?query) "'>" str(?title) "</a></td><td>&nbsp;</td>"
-  }
-  
-  """</tr>
+  <td><a href='%s'>Carte</a></td><td>&nbsp;</td>
+  %s  
+  </tr>
   </table>
   """
+  
+  st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
+  
+  group {
+    format {
+      "<td><a href='%s'>%s</a></td><td>&nbsp;</td>"
+      
+      st:misc(?query)
+      str(?title)
+    }
+  }
+  
+}
+  
 }
 where {
 
@@ -245,23 +269,23 @@ values (?query ?title){
 prefix cn: <http://cdn.fr/schema/>
 template cn:row(?d) {
 
-  "<td>" 
-  group {
-       st:call-template(cn:date, ?d, ?topic)
-  }    
-  "</td>"
-
-}
-where {
-  bind (st:get(st:definition) as ?def)
-  bind (unnest(st:get(st:topic)) as ?e)
-  graph ?def {
-    ?e rdf:rest*/rdf:first ?topic
+  format {
+    "<td>%s</td>"
+    
+    group {
+	st:call-template(cn:date, ?d, ?topic)
+    } 
   }
   
+
 }
-group by ?e
-         
+where {  
+  bind (unnest(st:get(st:topic)) as ?topicList)
+  bind (kg:number() as ?n)
+  bind (unnest(?topicList) as ?topic) 
+}
+group by ?topicList
+order by ?n
 
 ]]>
 </body>
@@ -302,20 +326,23 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:index(?title) {
 
-"<table class='margin'><tr>"
+format {
+  """
+  <table class='margin'>
+  <tr>%s %s %s</tr>
+  </table>
+  """
 
   if (bound(?before), 
-    concat("<td><a href='", st:plink(?before), "'>Avant</a></td><td>&nbsp;&nbsp;</td>"), 
+    st:format("<td><a href='%s'>Avant</a></td><td>&nbsp;&nbsp;</td>", st:plink(?before)), 
     "")
     
-  st:call-template(cn:elem, ?title)
+  st:call-template(cn:elem, ?title) 
   
   if (bound(?after), 
-    concat("<td><a href='", st:plink(?after), "'>Après</a></td>"), 
+    st:format("<td><a href='%s'>Après</a></td>", st:plink(?after)), 
     "")  
-    
-"</tr></table>"
-
+}
 
 st:call-template(cn:list)   
 
@@ -349,14 +376,18 @@ where {
 prefix cn: <http://cdn.fr/schema/>
 
 template cn:elem(?title) {
-
-    "<td><a href='"  st:plink(?century) "'>" 
-    
-    "<span" ?class ">" ?date "</span>"
-    
-    "</a></td>"
-    "<td>&nbsp;&nbsp;</td>"
- 
+  format {
+      """
+      <td>
+      <a href='%s'><span %s>%s</span></a>
+      </td>
+      <td>&nbsp;&nbsp;</td>
+      """
+  
+      st:plink(?century)
+      ?class
+      ?date
+  } 
 }
 where {
 
@@ -382,18 +413,18 @@ order by ?min
 prefix cn: <http://cdn.fr/schema/>
 template cn:body(?c) {
  
+ format {
     """
-    <table class='margin hcentury'>
-    <tr class='head'> 
-    <th>Date</th>"""
-    
-    st:call-template(cn:rowtitle, ?c)
-    "</tr>"
-    
-    st:call-template(cn:table, ?min, ?max)
+    <table class='margin hcentury table'>
+    <tr class='head'><th>Date</th>%s</tr>    
+    %s
+    </table>
+    """
 
-    "</table>"
-    
+  st:call-template(cn:rowtitle, ?c)    
+  st:call-template(cn:table, ?min, ?max)
+
+}   
 }  
 where {
    ?c cn:start ?min ; cn:finish ?max 
@@ -409,22 +440,21 @@ where {
 <body>
 <![CDATA[
 template st:query {
+format {
   """
   <h3>Query</h3>
-  <form method='post' action='"""
-  
-  st:get(st:service)
-  
-  """'>
-    <textarea cols='60' rows='10' name='query'>"""
-
-    st:get(st:query)
-    
-  """</textarea>
+  <form method='post' action='%s'>
+    <textarea cols='60' rows='10' name='query'>
+    %s    
+    </textarea>
     <br/>
     <input type='submit' value='Submit'/>
   </form>
   """
+  
+  st:get(st:service)
+  st:get(st:query)
+}
 }
 where {
 }
@@ -460,7 +490,6 @@ prefix cn: <http://cdn.fr/schema/>
 
 template st:servlet {
 
-      #"/kgram/sparql/template" 
       st:get(st:service)
       "?query=" 
               
@@ -480,17 +509,20 @@ where {
 #
 prefix cn: <http://cdn.fr/schema/>
 template cn:head(?c, ?title) {
+format {
 
-  "<a name='" str(?title) "'></a>"
+  """
+  <a name='%s'></a>
+  <h2 class='century'>%se Siècle</h2>
+  %s
+  <p>%s</p>
+  """
     
-    "<h2 class='century'>" ?title "e Siècle</h2>"
-  
+    str(?title)
+    ?title
     st:call-template(cn:icon, cn:icon)
-    
-    "<p>"
     st:call-template(cn:index,  ?title)
-    "</p>"
-    
+    }
 }
 where {
 }
@@ -506,9 +538,12 @@ prefix cn: <http://cdn.fr/schema/>
 
 template st:navlab(?u, ?t) { 
   
-  "<a href='" 
-  st:protocol(concat(st:get(st:service), "?uri=", replace(str(?u), "'", "%27"), "&profile=st:dbpedia"))
-  "'>" ?t "</a>"
+  format { 
+    "<a href='%s'>%s</a>" 
+    
+    st:plink(?u, st:dbpedia) 
+    ?t 
+  }
 
 }
 where {
@@ -537,6 +572,7 @@ template cn:href(?r, ?u, ?t, ?i) {
 	st:call-template(cn:hlink, ?u, ?t))
 
   if (?img, "</div>", "")
+  
 }
 where {
 
@@ -566,30 +602,13 @@ function st:process(?x) {
   function st:default(?x) { 
     xsd:string(?x)
   }
-    
-   function st:protocol(?uri) {
-    if (st:get(st:protocol, st:ajax), 
-      concat("javascript:trans(\"", str(?uri), "\")"), 
-      str(?uri))
-  }
-     
-   function st:link(?uri) {
-     concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      coalesce(
-	concat("&profile=",   st:get(st:profile)), 
-	concat("&transform=", st:get(st:transform)), 
-	""))
- }
-  
+       
   function st:misc(?name) { 
     st:protocol(
-      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&transform=st:sparql%23core&profile=st:dbpedia"))
+      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&profile=st:sparql"))
+      #"&transform=st:sparql%23core&profile=st:dbpedia"))
   }
   
-  function st:plink(?uri) {
-      st:protocol(st:link(?uri))
-  }
 
 ]]>
 </body>
@@ -653,12 +672,13 @@ where {
 prefix cn: <http://cdn.fr/schema/>
 template cn:rowtitle(?c) {
 
-      "<th>"   
-	if (?label = "Antiquité", 
-	  if (?max <= 500, str(?label), "&nbsp;"),
-	  str(?label))
-      "</th>"
-   
+   format { 
+    "<th>%s</th>"
+    
+    if (?label = "Antiquité", 
+    if (?max <= 500, str(?label), "&nbsp;"),
+    str(?label))
+   }
 }  
 where {
 
@@ -667,7 +687,6 @@ where {
   bind (unnest(st:get(st:text)) as ?label)
   
 }
-#values ?label {"Antiquité" "France" "Contexte" "Savoie, Piémont, Comté de Nice"}
     
 
 ]]>

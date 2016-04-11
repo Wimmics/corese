@@ -1,0 +1,36 @@
+#
+# Geolocate resource on a map given lat et long
+#
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+
+template st:glocate {
+
+  st:call-template(st:gmap, ?in, ?lat, ?lon, aggregate(?elem))
+  
+}
+where {
+  ?in a o:Place 
+
+  optional { 
+    ?in o:place [ 
+    p:longitude ?lon ;
+    p:latitude  ?lat] } 
+    
+  optional {
+    ?in p:longitude ?lon ;
+    p:latitude  ?lat }
+       
+  # search all other Place resources   
+   optional {
+      select (xt:list(?res, ?lat, ?lon) as ?elem) ?res
+      where {
+        bind (st:get(st:dataset) as ?g)
+	graph ?g {
+	  ?res p:longitude ?lon ; p:latitude ?lat
+	}
+      }
+   }
+   filter(! bound(?res) || ?in != ?res)
+
+}

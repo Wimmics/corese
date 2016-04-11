@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Dec 10 10:51:33 CET 2015
+Sun Feb 28 17:53:23 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -146,13 +146,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# tricky case:
-# subclassOf(intersectionOf() ?y)
-# there are two templates for intersection/union 
-# depending if it is embedded in subClassOf or not
-#
-
 template {
    "DisjointUnion("  
      	?in " " box { group { ?e ; separator = "\n" } }

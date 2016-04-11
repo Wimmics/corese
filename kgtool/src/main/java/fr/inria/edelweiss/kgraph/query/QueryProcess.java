@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Option;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
@@ -23,21 +24,15 @@ import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.api.Log;
+import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import fr.inria.edelweiss.kgtool.load.Service;
 import fr.inria.edelweiss.kgtool.util.Extension;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -52,10 +47,12 @@ import org.xml.sax.SAXException;
  *
  */
 public class QueryProcess extends QuerySolver {
+	private static Logger logger = Logger.getLogger(QueryProcess.class);
 
 	//sort query edges taking cardinality into account
 	static boolean isSort = false;
-        Manager manager;
+        private Manager updateManager;
+        private GraphManager graphManager;
 	Loader load;
 	ReentrantReadWriteLock lock;
 	// Producer may perform match locally
@@ -101,8 +98,13 @@ public class QueryProcess extends QuerySolver {
 		super(p, e, m);
                 Graph g = getGraph(p);
                 if (g != null){
-                    setManager(ManagerImpl.create(g));
+                    // construct 
+                    setGraphManager(new GraphManager(g));
+                    // update
+                    setManager(new ManagerImpl(getGraphManager()));
                 }
+                // service
+                set(ProviderImpl.create());
 		init();
 	}
 	
@@ -131,11 +133,11 @@ public class QueryProcess extends QuerySolver {
         }
         
         public void setManager(Manager man){
-            manager = man;
+            updateManager = man;
         }
         
         Manager getManager(){
-            return manager;
+            return updateManager;
         }
 
 	public static QueryProcess create(Graph g){
@@ -151,13 +153,13 @@ public class QueryProcess extends QuerySolver {
          * 
          */
         public static Eval createEval(Graph g, String q) throws EngineException{
-            QueryProcess exec = QueryProcess.create(g, false);
-            Eval eval = exec.createEval(q);
+            QueryProcess exec = create(g);
+            Eval eval = exec.createEval(q, null);
             return eval;
 	}
         
         public static Eval createEval(Graph g, Query q) throws EngineException{
-            QueryProcess exec = QueryProcess.create(g, false);
+            QueryProcess exec = create(g);
             Eval eval = exec.createEval(q);
             return eval;
 	}
@@ -174,7 +176,6 @@ public class QueryProcess extends QuerySolver {
 		ProducerImpl p =  ProducerImpl.create(g);
 		p.setMatch(isMatch);
 		QueryProcess exec = QueryProcess.create(p);
-                //exec.setManager(ManagerImpl.create(g));
 		exec.setMatch(isMatch);
 		return exec;
 	}
@@ -237,16 +238,11 @@ public class QueryProcess extends QuerySolver {
          * To Be Used by implementation other than Graph
          */
 	public static QueryProcess create(Producer prod, Matcher match){
-		Interpreter eval  = createInterpreter(prod, match);
-		QueryProcess exec = new QueryProcess(prod, eval, match);
-		exec.set(ProviderImpl.create());
- 		return exec;
+		return new QueryProcess(prod, createInterpreter(prod, match), match);
 	}
 	
 	public static QueryProcess create(Producer prod, Evaluator eval, Matcher match){
-		QueryProcess exec = new QueryProcess(prod, eval, match);
-		exec.set(ProviderImpl.create());
-		return exec;
+		return new QueryProcess(prod, eval, match);
 	}
 	
 	public static Interpreter createInterpreter(Producer p, Matcher m){
@@ -280,10 +276,26 @@ public class QueryProcess extends QuerySolver {
 	public Mappings query(String squery, Mapping map, Dataset ds) throws EngineException{
 		Query q = compile(squery, ds);
 		return query(q, map, ds);
-	}	
+	}
+        
+        public Query compile(String squery, Dataset ds) throws EngineException{
+            if (! hasVisitor()){
+                // Rewrite query when @relax annotation, otherwise do nothing
+                addVisitor(new ASTRewriter());
+            }
+            return super.compile(squery, ds);
+        }
+        
+        public Query compile(String squery) throws EngineException{
+            return compile(squery, null);
+        }
 	
 	public Mappings query(String squery, Dataset ds) throws EngineException{
 		return query(squery, null, ds);
+	}
+        
+        public Mappings query(String squery, Context c) throws EngineException{
+		return query(squery, null, Dataset.create(c));
 	}
 	
 	public Mappings query(String squery, Mapping map) throws EngineException{
@@ -313,6 +325,21 @@ public class QueryProcess extends QuerySolver {
 	public Mappings eval(Query query, Mapping m){
             return qquery(query, m);
         } 
+          
+        @Override
+        public Query load(String path) {
+            QueryLoad ql = QueryLoad.create();
+            try {
+                String str = ql.readWE(path);
+                Query q = compile(str);
+                return q;
+            } catch (LoadException ex) {
+                logger.error(ex);
+            } catch (EngineException ex) {
+                logger.error(ex);            
+            }
+            return null;
+        }
 
 	public Mappings qquery(Query q, Mapping map) {
 		try {
@@ -439,11 +466,10 @@ public class QueryProcess extends QuerySolver {
 	Mappings query(Query q, Mapping m, Dataset ds) throws EngineException{
 		
 		pragma(q);
-                ASTQuery ast = getAST(q);
-                if (q.getService()!=null){//ast.hasService()){
+                if (q.getService()!=null){
                     //@service <http://dbpedia.org/sparql>
                     //select where {}
-                    return service(q, ast);
+                    return service(q, m);
                 }
 		Mappings map;
 		
@@ -453,10 +479,7 @@ public class QueryProcess extends QuerySolver {
                         // map is the result of the last Update in q
                         // hence the query in map is a local query corresponding to the last Update in q
                         // return the Mappings of the last Update and the global query q
-                        map.setQuery(q);
-//			if (map.getQuery() == null){
-//                            map.setQuery(q);
-//                        }                     
+                        map.setQuery(q);   
 		}
 		else {
 			map =  synQuery(q, m);
@@ -467,8 +490,18 @@ public class QueryProcess extends QuerySolver {
 			}
 			log(Log.QUERY, q, map);
 		}
+                
+                finish(q, map);
 		return map;
 	}
+        
+       void finish(Query q, Mappings map) {
+            Eval eval = map.getEval();
+            if (eval != null) {
+                eval.finish(q, map);
+                map.setEval(null);
+            }
+        }
 	
 	Mappings synQuery(Query query, Mapping m) {
             Mappings map = null;
@@ -543,10 +576,10 @@ public class QueryProcess extends QuerySolver {
          * @service <http://dbpedia.org/sparql>
          * select where {}     
          */
-        Mappings service(Query q, ASTQuery ast) throws EngineException  {
+        Mappings service(Query q, Mapping m) throws EngineException  {
             Service serv = new Service(q.getService());
             try {
-                return serv.query(q);
+                return serv.query(q, m);
             } catch (LoadException ex) {
                 throw new EngineException(ex);
             }
@@ -665,15 +698,12 @@ public class QueryProcess extends QuerySolver {
 	
 	 void construct(Mappings map, Dataset ds){
             Query query = map.getQuery();
-            Construct cons =  Construct.create(query);
-            cons.setDebug(isDebug() || query.isDebug());
-				
-            Graph gg = Graph.create();
-            // the construct result graph may be skolemized
-            // if kgram was told to do so
+            Graph gg = Graph.create(); 
+            // can be required to skolemize
             gg.setSkolem(isSkolem());
-            gg = cons.construct(map, gg);
-
+            Construct cons =  Construct.create(query, new GraphManager(gg));
+            cons.setDebug(isDebug() || query.isDebug());				                                 
+            cons.construct(map);
             map.setGraph(gg);
 	}
         
@@ -758,6 +788,20 @@ public class QueryProcess extends QuerySolver {
          if (getGraph() != null){
             getGraph().logFinish(query, m);
          }
+    }
+
+    /**
+     * @return the graphManager
+     */
+    public GraphManager getGraphManager() {
+        return graphManager;
+    }
+
+    /**
+     * @param graphManager the graphManager to set
+     */
+    public void setGraphManager(GraphManager graphManager) {
+        this.graphManager = graphManager;
     }
 	
 

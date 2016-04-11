@@ -4,16 +4,18 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -68,7 +70,10 @@ public class PluginTransform implements ExprType {
                 return prolog(null, env, p);
 
             case STL_PREFIX:
-                return prefix(env, p); 
+                return prefix(env, p);
+                
+            case XT_CONTEXT:
+                return context(env, p);
 
             case STL_INDEX:
                 return index(exp, env, p);
@@ -79,8 +84,8 @@ public class PluginTransform implements ExprType {
 
             case FOCUS_NODE:
                 return getFocusNode(null, env);
-
-
+                
+ 
 
         }
 
@@ -153,6 +158,9 @@ public class PluginTransform implements ExprType {
 
             case VISITED:
                 return visited(dt, env, p);
+                
+            case STL_FORMAT:
+                return format(dt);     
                         
 
         }
@@ -208,6 +216,9 @@ public class PluginTransform implements ExprType {
                 
             case STL_GET:
                 return get(exp, env, p, dt1, dt2);   
+                
+            case STL_FORMAT:
+                return format(dt1, dt2);
                  
     
         }
@@ -270,6 +281,9 @@ public class PluginTransform implements ExprType {
                 
             case STL_VSET:
                 return vset(exp, env, p, dt1, dt2, dt3); 
+                
+            case STL_FORMAT:
+                return format(param);
                            
         }
 
@@ -283,7 +297,52 @@ public class PluginTransform implements ExprType {
         return Arrays.copyOfRange(obj, n, obj.length);
     }
     
+     IDatatype format(IDatatype dt1){
+        return plugin.getValue(dt1.stringValue());
+    }
     
+    IDatatype format(IDatatype dt1, IDatatype dt2){
+        return plugin.getValue(String.format(dt1.stringValue(), dt2.stringValue()));
+    }
+    
+    IDatatype format(IDatatype[] param){
+        String f = param[0].stringValue();
+        switch (param.length){
+            case 2: return plugin.getValue(String.format(f, param[1].stringValue()));
+            case 3: return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue()));
+            case 4: return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), param[3].stringValue()));
+            case 5: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue()));
+            case 6: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue()));                                   
+            case 7: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue()));                                   
+            case 8: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue(), param[7].stringValue())); 
+            case 9: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue()));
+
+            case 10: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue(), param[9].stringValue()));        
+            case 11: 
+                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
+                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
+                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue(), 
+                        param[9].stringValue(), param[10].stringValue())); 
+        
+        }
+        return null;
+    }
     
 
     private IDatatype bool(Expr exp, Environment env, Producer p, IDatatype dt) {
@@ -297,25 +356,21 @@ public class PluginTransform implements ExprType {
         return getTransformer(null, env, p, (IDatatype) null, (IDatatype) null, null);
     }
 
-//    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype trans) {
-//        return getTransformer(exp, env, prod, trans, null);
-//    }
-
     /**
      * uri: transformation URI 
      * gname: named graph 
      * If uri == null, get current transformer
      * TODO: cache for named graph
      */
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, String gname) {
+    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname) {
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         String transform = getTrans(uri, temp);
         
         // @deprecated:
-        if (transform == null && q.hasPragma(Pragma.TEMPLATE)) {
-            transform = (String) q.getPragma(Pragma.TEMPLATE);
-        }
+//        if (transform == null && q.hasPragma(Pragma.TEMPLATE)) {
+//            transform = (String) q.getPragma(Pragma.TEMPLATE);
+//        }
 
         Transformer t = (Transformer) q.getTransformer(transform);
 
@@ -323,24 +378,24 @@ public class PluginTransform implements ExprType {
             transform = t.getTransformation();
         }
 
-        if (gname != null) {
+        if (dtgname != null) {
             // transform named graph
-            try {
-                boolean with = (exp == null) ? true
-                        : exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
-                        || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
-
-                Transformer gt = Transformer.create((Graph) prod.getGraph(), transform, gname, with);
-                complete(q, gt, uri);
-
-//                if (t == null) {
-//                    // get current transformer if any to get its NSManager 
-//                    t = (Transformer) q.getTransformer();
-//                }
-                t = gt;
-            } catch (LoadException ex) {
-                logger.error(ex);
-                t = Transformer.create(Graph.create(), null);
+            if (dtgname.isPointer() && dtgname.pointerType() == Pointerable.GRAPH_POINTER){
+                // dtgname contains a Graph
+                // use case: let (?g = construct {} where {}){ 
+                // st:apply-templates-with-graph(st:navlab, ?g) }
+                t = Transformer.create((Graph)dtgname.getPointerObject(), transform);
+                complete(q, t, uri);
+            }
+            else {
+                String gname = dtgname.getLabel();
+                try {              
+                    t = Transformer.create((Graph) prod.getGraph(), transform, gname, isWith(exp));
+                    complete(q, t, uri);
+                } catch (LoadException ex) {
+                    logger.error(ex);
+                    t = Transformer.create(Graph.create(), null);
+                }
             }
         } else if (t == null) {
             t = Transformer.create(prod, transform);
@@ -359,13 +414,21 @@ public class PluginTransform implements ExprType {
         return t;
     }
     
+    boolean isWith(Expr exp){
+        return (exp == null) ? true
+                        : exp.oper() == ExprType.APPLY_TEMPLATES_GRAPH
+                        || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_GRAPH;
+    }
+    
 
     void complete(Query q, Transformer t, IDatatype uri) {
-        // set after init
-        //t.init((ASTQuery) q.getAST());
-        // TODO: uri vs transform ???
-        t.set(Transformer.STL_TRANSFORM, uri);
+//        if (uri != null){
+//            t.getContext().set(Transformer.STL_TRANSFORM, uri);
+//        }
         t.complete(q, (Transformer) q.getTransformer());
+        if (uri != null){
+            t.getContext().set(Transformer.STL_TRANSFORM, uri);
+        }
     }
 
     /**
@@ -399,11 +462,15 @@ public class PluginTransform implements ExprType {
         return plugin.getValue(pref);
     }
 
-    Mappings prefix(Environment env, Producer prod) {
+    IDatatype prefix(Environment env, Producer prod) {
         Transformer p = getTransformer(env, prod);
-        return p.NSMtoMappings();
+        return DatatypeMap.createObject(p.getNSM());
     }
-
+    
+    IDatatype context(Environment env, Producer prod) {
+        return DatatypeMap.createObject(getContext(env, prod));
+    }
+    
     IDatatype isStart(Environment env, Producer prod) {
         Transformer p = getTransformer(env, prod);
         boolean b = p.isStart();
@@ -447,7 +514,7 @@ public class PluginTransform implements ExprType {
      * Without focus node
      */
     IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, trans, temp, getLabel(name));
+        Transformer p = getTransformer(exp, env, prod, trans, temp, name);
         return p.process(getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
@@ -468,7 +535,7 @@ public class PluginTransform implements ExprType {
      */    
     IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, IDatatype name,
             Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, trans, temp, getLabel(name));
+        Transformer p = getTransformer(exp, env, prod, trans, temp, name);
         IDatatype dt = p.process(args, focus, arg,
                 getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
@@ -541,18 +608,44 @@ public class PluginTransform implements ExprType {
          return exp;        
      }
     
-  
+   Context getTransformerContext(Environment env, Producer p){
+       Transformer t = getTransformer(env, p);
+       return t.getContext();
+   }
+   
+   Context getQueryContext(Environment env, Producer p) {
+        Query q = env.getQuery().getGlobalQuery();
+        Context c = (Context) q.getContext(); 
+        if (c == null && ! q.isTransformationTemplate()){
+            //  std Query or Template alone
+            c = new Context();
+            q.setContext(c);
+        }
+        return c;
+   }
+ 
+   /**
+    * Transformation templates share Transformer Context
+    * Query and Template alone have own Context
+    */
+    Context getContext(Environment env, Producer p) {
+        Context c = getQueryContext(env, p);
+        if (c == null){
+            c = getTransformerContext(env, p);
+            env.getQuery().setContext(c);
+        }
+        return c;
+    }
+           
     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt) {
         return get(exp, env, p, dt.getLabel());
     }
 
     public IDatatype get(Expr exp, Environment env, Producer p, String name) {
-        Transformer t = getTransformer(env, p);
-        return t.get(name);
+        return getContext(env, p).get(name);
     }
 
     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
-        Transformer t = getTransformer(env, p);
         IDatatype dt = get(exp, env, p, dt1);
         if (dt == null) {
             return FALSE;
@@ -565,16 +658,28 @@ public class PluginTransform implements ExprType {
         return plugin.getValue(index++);
     }
 
-    public Object set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
-        Transformer t = getTransformer(env, p);
+    /**
+     * st:set(st:value, st:test)
+     * st:export(st:value, st:test)
+     * Set/export context property value
+     * Exported is transmitted to query Transformer Context if any
+     * that is when query executes st:apply-templates-with(st:turtle)
+     * the turtle transformer inherits the exported context property value
+     * Special case with server: query and transformer share *same* context
+     * hence in server mode, when query st:set(), the property is transmitted to next Transformer
+     * use case: profile with query + transformation, q and t share *same* Context
+     * 
+     */
+     public Object set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        Context c = getContext(env, p);
         if (exp.oper() == STL_SET){
-          t.set(dt1.getLabel(), dt2);
+          c.set(dt1.getLabel(), dt2);
         }
         else {
-           t.export(dt1.getLabel(), dt2); 
+           c.export(dt1.getLabel(), dt2); 
         }
         return dt2;
-    }
+    }    
 
     public IDatatype vset(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
         Transformer t = getTransformer(env, p);
@@ -679,7 +784,7 @@ public class PluginTransform implements ExprType {
         IDatatype dt = p.xsdLiteral(o);
         return dt;
     }
-
+    
     /**
      * @deprecated
      */

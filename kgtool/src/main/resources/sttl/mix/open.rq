@@ -4,7 +4,7 @@
 #
 template st:open {
 
-st:call-template-with(st:server, st:head)
+st:head()
 
 "<h3>Result</h3>"
 

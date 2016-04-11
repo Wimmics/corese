@@ -2,26 +2,36 @@ template st:profile {
   
 }
 where {}
-
-function st:protocol(?uri) {
-    if (st:get(st:protocol, st:ajax), 
-      concat("javascript:trans(\"", str(?uri), "\")"), 
-      str(?uri))
-  }
-  
-  function st:link(?uri) {
-     concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      "&profile=", st:get(st:profile))
-  }
-  
-  function st:plink(?uri) {
-    st:protocol(st:link(?uri))
-  }
   
   # LOD URI hypertext link generated as is (see display.rq)
   # set by profile.ttl : st:param [ st:lod (URI) ]
+  #
   function st:lod(?x){
      coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
   }
+    
+
+  # display resource uri
+  function st:display(?x){
+    let (?profile = coalesce(st:get(st:profile), st:null)){
+      if (?profile = st:null){ 
+	st:call-template(st:esc, ?x) 
+      }
+      else if (?profile = st:std){ 
+	st:call-template(st:linkesc, ?x) 
+      }
+      else if (st:lod(?x)){
+	st:call-template(st:linkesc, ?x)
+      }
+      else {
+	st:call-template(st:linkprofile2, ?x)
+      }     
+    }
+  }
+  
+function st:init(){
+  if (coalesce(st:get(st:service), st:null) = st:null){
+    st:set(st:service, "/template")
+  }
+}
 

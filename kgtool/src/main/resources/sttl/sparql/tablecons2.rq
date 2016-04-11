@@ -1,11 +1,9 @@
 template st:tablecons2 {
 
- "<tr class='s" 
-   if (kg:even(st:number()), 1, 0)
- "'>"
+ "<tr>"
  "<th>"      st:number()
  "</th><td>" st:call-template(st:show,    ?x) 
- "</td><td>" st:call-template(st:display, ?x)
+ "</td><td>" st:display(?x)
  "</td><td>" st:call-template(st:tablecons3, ?x)
  "</td>"
  "</tr>"

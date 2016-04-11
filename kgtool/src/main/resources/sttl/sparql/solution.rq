@@ -1,10 +1,13 @@
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template  {
- 
-    "<td>"  
-    coalesce(st:call-template(st:display, ?val), "&nbsp;")
-    "</td>" ; separator = " "
-  
+
+format { 
+    "<td>%s</td>" 
+    
+    coalesce(st:display(?val), "&nbsp;")
+}  
+; separator = " "
+
 }
 where {
   ?x rs:solution ?in

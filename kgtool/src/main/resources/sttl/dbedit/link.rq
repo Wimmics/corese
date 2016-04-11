@@ -1,0 +1,13 @@
+template st:link(?date) {
+
+  format {
+    """
+      <a href='%s'>%s</a>
+    """
+    
+    st:plink(uri(concat(us:root(), ?date)))
+    ?date
+  }
+
+}
+where {}

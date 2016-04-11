@@ -7,17 +7,29 @@
 #
 template st:display(?n) {
 
-"<h3>" str(?l) "</h3>"
-"<p>"  
-  str(?c) 
-  if (bound(?r), 
-    concat("<br/><a href='", str(?r), "'>(", str(?r), ")</a>"), "")
-"</p>"
+format {
+  """
+  <h3>%s</h3>
+  <p>  
+  %s
+  %s
+  </p>
+  %s
+  %s
+  """
 
-   st:call-template(st:form, ?n,
-     coalesce(st:get(st:query), str(?q)), str(?q), coalesce(?s, st:null))
+   str(?l)
+   str(?c)   
+   if (bound(?r), st:format("<br/><a href='%s'>(%s)</a>", str(?r), str(?r)), "")
    
+   st:call-template(st:form, 
+     ?n,
+     coalesce(st:get(st:query), str(?q)), 
+     str(?q), 
+     coalesce(?s, st:null)) 
+     
    st:call-template(st:result)
+ }
       
 }
 where {
@@ -30,6 +42,7 @@ where {
       st:query     ?q
       optional { ?qt st:reference ?r }
       optional { ?qt st:solution  ?s }
+      optional { ?qt sw:body  ?s }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
   }
 }

@@ -2,12 +2,11 @@
 # Utility template to be used by another transformation to
 # integrate SPARQL Query Results without headings
 #
-template st:result(?service, ?profile) {
+template st:result {
    
   st:call-template(st:page)
       
 }
 where {
-  bind (st:set(st:service, coalesce(?service, "/template")) as ?s)
-  bind (st:set(st:profile, coalesce(?profile, st:sparql)) as ?p)
+   bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
 }

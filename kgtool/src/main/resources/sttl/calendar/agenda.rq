@@ -1,16 +1,23 @@
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:agenda {
-"<pre>"
-    "\n" cal:month(?m) "\n"
-    "Mo Tu We Th Fr Sa Su \n"
-    group {
-        if (?n = 1, xt:space(cal:num(?jour) - 1), "")
-        if (?n < 10, " ", "") ?n " "
-        if (?jour = "Sunday", "\n", "")
-        ; separator = ""
-    }
-"</pre>"
-    
+
+format {
+  """
+  <pre>
+      \n%s\n
+      Mo Tu We Th Fr Sa Su \n
+      %s
+  </pre>
+  """
+  
+  cal:month(?m)
+  group {
+	  if (?n = 1, xt:space(cal:num(?jour) - 1), "")
+	  if (?n < 10, " ", "") ?n " "
+	  if (?jour = "Sunday", "\n", "")
+	  ; separator = ""
+  }
+}    
     ; separator = "\n"                   
 }
 where {

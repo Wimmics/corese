@@ -1,0 +1,621 @@
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix geo:   <http://id.insee.fr/geo/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix igeo:  <http://rdf.insee.fr/def/geo#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+
+
+<http://id.insee.fr/geo/region/04>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "04" ;
+        igeo:codeRegionTest          "04" ;
+        igeo:nameTest                 "La Réunion" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/97411> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/pays/france> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/974> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FRA4> , <http://data.ign.fr/id/geofla/region/04> .
+        
+
+<http://id.insee.fr/geo/region/03>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "03" ;
+        igeo:codeRegionTest          "03" ;
+        igeo:nameTest                 "Guyane" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/97302> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/pays/france> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/973> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FRA3> , <http://data.ign.fr/id/geofla/region/03> .
+        
+
+
+<http://id.insee.fr/geo/region/83>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "83" ;
+        igeo:codeRegionTest          "83" ;
+        igeo:nameTest                 "Auvergne" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/63113> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/15> ,  <http://id.insee.fr/geo/departement/63> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Auvergne> , <http://data.ign.fr/id/geofla/region/83> , <http://nuts.geovocab.org/id/FR72> .
+ 
+ 
+
+<http://id.insee.fr/geo/region/02>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "02" ;
+        igeo:codeRegionTest          "02" ;
+        igeo:nameTest                 "Martinique" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/97209> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/pays/france> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/972> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FRA2> , <http://data.ign.fr/id/geofla/region/02> .
+        
+<http://id.insee.fr/geo/region/01>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "01" ;
+        igeo:codeRegionTest          "01" ;
+        igeo:nameTest                 "Guadeloupe" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/97105> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/pays/france> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/971> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FRA1> , <http://data.ign.fr/id/geofla/region/01> .
+
+<http://id.insee.fr/geo/region/25>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "25" ;
+        igeo:codeRegionTest          "25" ;
+        igeo:nameTest                 "Basse-Normandie" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/14118> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/14> , <http://id.insee.fr/geo/departement/50> , <http://id.insee.fr/geo/departement/61> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Basse-Normandie> , <http://nuts.geovocab.org/id/FR25> , <http://data.ign.fr/id/geofla/region/25> .
+
+<http://id.insee.fr/geo/region/74>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "74" ;
+        igeo:codeRegionTest          "74" ;
+        igeo:nameTest                 "Limousin" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/87085> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/23> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/region/74> , <http://fr.dbpedia.org/resource/Limousin> , <http://nuts.geovocab.org/id/FR63> .
+        
+
+<http://id.insee.fr/geo/region/22>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "22" ;
+        igeo:codeRegionTest          "22" ;
+        igeo:nameTest                 "Picardie" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/80021> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/60> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Picardie> , <http://data.ign.fr/id/geofla/region/22> , <http://nuts.geovocab.org/id/FR22> .
+        
+ 
+<http://id.insee.fr/geo/region/54>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "54" ;
+        igeo:codeRegionTest          "54" ;
+        igeo:nameTest                 "Poitou-Charentes" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/86194> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/79> , <http://id.insee.fr/geo/departement/17> , <http://id.insee.fr/geo/departement/16> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Poitou-Charentes> , <http://nuts.geovocab.org/id/FR53> , <http://data.ign.fr/id/geofla/region/54> .
+
+<http://id.insee.fr/geo/region/43>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "43" ;
+        igeo:codeRegionTest          "43" ;
+        igeo:nameTest                 "Franche-Comté" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/25056> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/39> , <http://id.insee.fr/geo/departement/25> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Franche-Comté> , <http://data.ign.fr/id/geofla/region/43> , <http://nuts.geovocab.org/id/FR43> .
+        
+        
+<http://id.insee.fr/geo/region/23>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "23" ;
+        igeo:codeRegionTest          "23" ;
+        igeo:nameTest                 "Haute-Normandie" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/76540> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/27> , <http://id.insee.fr/geo/departement/76> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Haute-Normandie> , <http://data.ign.fr/id/geofla/region/23> , <http://nuts.geovocab.org/id/FR23> .
+        
+<http://id.insee.fr/geo/region/24>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "24" ;
+        igeo:codeRegionTest          "24" ;
+        igeo:nameTest                 "Centre" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/45234> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/36> , <http://id.insee.fr/geo/departement/37> , <http://id.insee.fr/geo/departement/28> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR24> , <http://fr.dbpedia.org/resource/Région_Centre> , <http://data.ign.fr/id/geofla/region/24> .
+
+
+<http://id.insee.fr/geo/region/52>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "52" ;
+        igeo:codeRegionTest          "52" ;
+        igeo:nameTest                 "Pays de la Loire" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/44109> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/72> , <http://id.insee.fr/geo/departement/53> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR51> , <http://data.ign.fr/id/geofla/region/52> , <http://fr.dbpedia.org/resource/Pays_de_la_Loire> .
+
+
+
+<http://id.insee.fr/geo/region/94>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "94" ;
+        igeo:codeRegionTest          "94" ;
+        igeo:nameTest                 "Corse" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/2A004> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/2A> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Corse> , <http://nuts.geovocab.org/id/FR83> , <http://data.ign.fr/id/geofla/region/94> .
+        
+ 
+ <http://id.insee.fr/geo/region/91>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "91" ;
+        igeo:codeRegionTest          "91" ;
+        igeo:nameTest                 "Languedoc-Roussillon" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/34172> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/66> , <http://id.insee.fr/geo/departement/11> , <http://id.insee.fr/geo/departement/34> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR81> , <http://data.ign.fr/id/geofla/region/91> , <http://fr.dbpedia.org/resource/Languedoc-Roussillon> .
+ 
+  
+<http://id.insee.fr/geo/region/26>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "26" ;
+        igeo:codeRegionTest          "26" ;
+        igeo:nameTest                 "Bourgogne" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/21231> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/21> , <http://id.insee.fr/geo/departement/71> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR26> , <http://fr.dbpedia.org/resource/Bourgogne> , <http://data.ign.fr/id/geofla/region/26> .
+                
+
+<http://id.insee.fr/geo/region/11>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "11" ;
+        igeo:codeRegionTest          "11" ;
+        igeo:nameTest                 "Île-de-France" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/75056> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceMetropolitaine> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/78> , <http://id.insee.fr/geo/departement/75> , <http://id.insee.fr/geo/departement/77> , <http://id.insee.fr/geo/departement/91> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR10> , <http://fr.dbpedia.org/resource/Île-de-France> , <http://data.ign.fr/id/geofla/region/11> .
+        
+        
+
+<http://id.insee.fr/geo/region/53>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "53" ;
+        igeo:codeRegionTest          "53" ;
+        igeo:nameTest                 "Bretagne" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/35238> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/29> , <http://id.insee.fr/geo/departement/35> , <http://id.insee.fr/geo/departement/22> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Région_Bretagne> , <http://data.ign.fr/id/geofla/region/53> , <http://nuts.geovocab.org/id/FR52> .
+        
+
+<http://id.insee.fr/geo/region/72>
+        a                        igeo:Region ;
+        igeo:codeINSEE           "72" ;
+        igeo:codeRegionTest          "72" ;
+        igeo:nameTest                 "Aquitaine" ;
+        igeo:prefectureDeRegion  <http://id.insee.fr/geo/commune/33063> ;
+        igeo:subdivisionDe       <http://id.insee.fr/geo/territoireFrancais/franceDeProvince> ;
+        igeo:subdivisionDirecte  <http://id.insee.fr/geo/departement/64> , <http://id.insee.fr/geo/departement/24> , <http://id.insee.fr/geo/departement/33> , <http://id.insee.fr/geo/departement/40> , <http://id.insee.fr/geo/departement/47> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Aquitaine> , <http://data.ign.fr/id/geofla/region/72> , <http://nuts.geovocab.org/id/FR61> .
+        
+
+
+<http://id.insee.fr/geo/departement/42>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "42" ;
+        igeo:codeINSEE           "42" ;
+        igeo:nom                 "Loire" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/42218> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/42> , <http://fr.dbpedia.org/resource/Loire_(département)> , <http://nuts.geovocab.org/id/FR715> .
+        
+<http://id.insee.fr/geo/departement/33>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "33" ;
+        igeo:codeINSEE           "33" ;
+        igeo:nom                 "Gironde" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/33063> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Gironde_(département)> , <http://data.ign.fr/id/geofla/departement/33> , <http://nuts.geovocab.org/id/FR612> .
+        
+        <http://id.insee.fr/geo/departement/71>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "71" ;
+        igeo:codeINSEE           "71" ;
+        igeo:nom                 "Saône-et-Loire" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/71270> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR263> , <http://data.ign.fr/id/geofla/departement/71> , <http://fr.dbpedia.org/resource/Saône-et-Loire> .
+        
+        
+
+<http://id.insee.fr/geo/departement/34>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "34" ;
+        igeo:codeINSEE           "34" ;
+        igeo:nom                 "Hérault" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/34172> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/34> , <http://fr.dbpedia.org/resource/Hérault_(département)> , <http://nuts.geovocab.org/id/FR813> .
+
+<http://id.insee.fr/geo/departement/72>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "72" ;
+        igeo:codeINSEE           "72" ;
+        igeo:nom                "Sarthe" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/72181> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Sarthe_(département)> , <http://data.ign.fr/id/geofla/departement/72> , <http://nuts.geovocab.org/id/FR514> .
+
+<http://id.insee.fr/geo/departement/35>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "35" ;
+        igeo:codeINSEE           "35" ;
+        igeo:nom                 "Ille-et-Vilaine" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/35238> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/35> , <http://fr.dbpedia.org/resource/Ille-et-Vilaine> , <http://nuts.geovocab.org/id/FR523> .
+
+
+<http://id.insee.fr/geo/departement/73>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "73" ;
+        igeo:codeINSEE           "73" ;
+        igeo:nom                 "Savoie" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/73065> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Savoie_(département)> , <http://nuts.geovocab.org/id/FR717> , <http://data.ign.fr/id/geofla/departement/73> .
+
+
+<http://id.insee.fr/geo/departement/36>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "36" ;
+        igeo:codeINSEE           "36" ;
+        igeo:nom                 "Indre" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/36044> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Indre_(département)> , <http://nuts.geovocab.org/id/FR243> , <http://data.ign.fr/id/geofla/departement/36> .
+
+
+<http://id.insee.fr/geo/departement/74>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "74" ;
+        igeo:codeINSEE           "74" ;
+        igeo:nom                 "Haute-Savoie" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/74010> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Haute-Savoie> , <http://nuts.geovocab.org/id/FR718> , <http://data.ign.fr/id/geofla/departement/74> .
+
+
+<http://id.insee.fr/geo/departement/37>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "37" ;
+        igeo:codeINSEE           "37" ;
+        igeo:nom                 "Indre-et-Loire" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/37261> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR244> , <http://fr.dbpedia.org/resource/Indre-et-Loire> , <http://data.ign.fr/id/geofla/departement/37> .
+
+
+<http://id.insee.fr/geo/departement/75>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "75" ;
+        igeo:codeINSEE           "75" ;
+        igeo:nom                 "Paris" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/75056> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR101> , <http://data.ign.fr/id/geofla/departement/75> .
+
+<http://id.insee.fr/geo/departement/38>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "38" ;
+        igeo:codeINSEE           "38" ;
+        igeo:nom                 "Isère" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/38185> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Isère_(département)> , <http://nuts.geovocab.org/id/FR714> , <http://data.ign.fr/id/geofla/departement/38> .
+
+
+<http://id.insee.fr/geo/departement/76>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "76" ;
+        igeo:codeINSEE           "76" ;
+        igeo:nom                 "Seine-Maritime" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/76540> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Seine-Maritime> , <http://data.ign.fr/id/geofla/departement/76> , <http://nuts.geovocab.org/id/FR232> .
+
+
+<http://id.insee.fr/geo/departement/39>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "39" ;
+        igeo:codeINSEE           "39" ;
+        igeo:nom                 "Jura" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/39300> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/39> , <http://nuts.geovocab.org/id/FR432> , <http://fr.dbpedia.org/resource/Jura_(département)> .
+
+
+<http://id.insee.fr/geo/departement/77>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "77" ;
+        igeo:codeINSEE           "77" ;
+        igeo:nom                 "Seine-et-Marne" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/77288> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR102> , <http://fr.dbpedia.org/resource/Seine-et-Marne> , <http://data.ign.fr/id/geofla/departement/77> .
+        
+
+<http://id.insee.fr/geo/departement/21>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "21" ;
+        igeo:codeINSEE           "21" ;
+        igeo:nom                 "Côte-d'Or" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/21231> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/21> , <http://nuts.geovocab.org/id/FR261> , <http://fr.dbpedia.org/resource/Côte-d'Or> .
+
+
+<http://id.insee.fr/geo/departement/78>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "78" ;
+        igeo:codeINSEE           "78" ;
+        igeo:nom                 "Yvelines" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/78646> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR103> , <http://fr.dbpedia.org/resource/Yvelines> , <http://data.ign.fr/id/geofla/departement/78> .
+
+<http://id.insee.fr/geo/departement/22>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "22" ;
+        igeo:codeINSEE           "22" ;
+        igeo:nom                 "Côtes-d'Armor" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/22278> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Côtes-d'Armor> , <http://nuts.geovocab.org/id/FR521> , <http://data.ign.fr/id/geofla/departement/22> .
+
+<http://id.insee.fr/geo/departement/79>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "79" ;
+        igeo:codeINSEE           "79" ;
+        igeo:nom                 "Deux-Sèvres" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/79191> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/79> , <http://fr.dbpedia.org/resource/Deux-Sèvres> , <http://nuts.geovocab.org/id/FR533> .
+
+
+
+<http://id.insee.fr/geo/departement/60>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "60" ;
+        igeo:codeINSEE           "60" ;
+        igeo:nom                 "Oise" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/60057> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR222> , <http://fr.dbpedia.org/resource/Oise_(département)> , <http://data.ign.fr/id/geofla/departement/60> .
+
+
+
+<http://id.insee.fr/geo/departement/23>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "23" ;
+        igeo:codeINSEE           "23" ;
+        igeo:nom                 "Creuse" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/23096> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/23> , <http://fr.dbpedia.org/resource/Creuse_(département)> , <http://nuts.geovocab.org/id/FR632> .
+
+
+
+
+<http://id.insee.fr/geo/departement/61>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "61" ;
+        igeo:codeINSEE           "61" ;
+        igeo:nom                 "Orne" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/61001> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Orne_(département)> , <http://data.ign.fr/id/geofla/departement/61> , <http://nuts.geovocab.org/id/FR253> .
+        
+
+<http://id.insee.fr/geo/departement/24>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "24" ;
+        igeo:codeINSEE           "24" ;
+        igeo:nom                 "Dordogne" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/24322> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/24> , <http://fr.dbpedia.org/resource/Dordogne_(département)> , <http://nuts.geovocab.org/id/FR611> .
+
+<http://id.insee.fr/geo/departement/971>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "971" ;
+        igeo:codeINSEE           "971" ;
+        igeo:nom                "Guadeloupe" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/97105> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/971> , <http://nuts.geovocab.org/id/FRA10> , <http://fr.dbpedia.org/resource/Guadeloupe> .
+
+<http://id.insee.fr/geo/departement/62>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "62" ;
+        igeo:codeINSEE           "62" ;
+        igeo:nom                 "Pas-de-Calais" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/62041> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/62> , <http://nuts.geovocab.org/id/FR302> , <http://fr.dbpedia.org/resource/Pas-de-Calais> .
+
+
+<http://id.insee.fr/geo/departement/25>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "25" ;
+        igeo:codeINSEE           "25" ;
+        igeo:nom                 "Doubs" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/25056> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR431> , <http://fr.dbpedia.org/resource/Doubs_(département)> , <http://data.ign.fr/id/geofla/departement/25> .
+
+<http://id.insee.fr/geo/departement/972>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "972" ;
+        igeo:codeINSEE           "972" ;
+        igeo:nom                 "Martinique" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/97209> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FRA20> , <http://fr.dbpedia.org/resource/Martinique> , <http://data.ign.fr/id/geofla/departement/972> .
+
+
+
+<http://id.insee.fr/geo/departement/63>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "63" ;
+        igeo:codeINSEE           "63" ;
+        igeo:nom                 "Puy-de-Dôme" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/63113> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR724> , <http://data.ign.fr/id/geofla/departement/63> , <http://fr.dbpedia.org/resource/Puy-de-Dôme> .
+
+
+<http://id.insee.fr/geo/departement/26>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "26" ;
+        igeo:codeINSEE           "26" ;
+        igeo:nom                 "Drôme" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/26362> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Drôme_(département)> , <http://nuts.geovocab.org/id/FR713> , <http://data.ign.fr/id/geofla/departement/26> .
+
+
+<http://id.insee.fr/geo/departement/973>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "973" ;
+        igeo:codeINSEE           "973" ;
+        igeo:nom                 "Guyane" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/97302> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/973> , <http://fr.dbpedia.org/resource/Guyane> , <http://nuts.geovocab.org/id/FRA30> .
+
+
+
+<http://id.insee.fr/geo/departement/64>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "64" ;
+        igeo:codeINSEE           "64" ;
+        igeo:nom                 "Pyrénées-Atlantiques" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/64445> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/64> , <http://nuts.geovocab.org/id/FR615> , <http://fr.dbpedia.org/resource/Pyrénées-Atlantiques> .
+
+<http://id.insee.fr/geo/departement/27>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "27" ;
+        igeo:codeINSEE           "27" ;
+        igeo:nom                 "Eure" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/27229> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/27> , <http://fr.dbpedia.org/resource/Eure_(département)> , <http://nuts.geovocab.org/id/FR231> .
+
+
+<http://id.insee.fr/geo/departement/974>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "974" ;
+        igeo:codeINSEE           "974" ;
+        igeo:nom                 "La Réunion" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/97411> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/La_Réunion> , <http://nuts.geovocab.org/id/FRA40> , <http://data.ign.fr/id/geofla/departement/974> .
+
+
+<http://id.insee.fr/geo/departement/65>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "65" ;
+        igeo:codeINSEE           "65" ;
+        igeo:nom                 "Hautes-Pyrénées" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/65440> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Hautes-Pyrénées> , <http://nuts.geovocab.org/id/FR626> , <http://data.ign.fr/id/geofla/departement/65> .
+
+
+
+<http://id.insee.fr/geo/departement/28>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "28" ;
+        igeo:codeINSEE           "28" ;
+        igeo:nom                 "Eure-et-Loir" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/28085> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/28> , <http://fr.dbpedia.org/resource/Eure-et-Loir> , <http://nuts.geovocab.org/id/FR242> .
+
+<http://id.insee.fr/geo/departement/66>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "66" ;
+        igeo:codeINSEE           "66" ;
+        igeo:nom                 "Pyrénées-Orientales" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/66136> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR815> , <http://fr.dbpedia.org/resource/Pyrénées-Orientales> , <http://data.ign.fr/id/geofla/departement/66> .
+
+<http://id.insee.fr/geo/departement/29>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "29" ;
+        igeo:codeINSEE           "29" ;
+        igeo:nom                 "Finistère" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/29232> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR522> , <http://data.ign.fr/id/geofla/departement/29> , <http://fr.dbpedia.org/resource/Finistère> .
+
+
+
+
+<http://id.insee.fr/geo/departement/976>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "976" ;
+        igeo:codeINSEE           "976" ;
+        igeo:nom                "Mayotte" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/97608> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Mayotte> , <http://nuts.geovocab.org/id/FRA50> , <http://data.ign.fr/id/geofla/departement/976> .
+
+
+<http://id.insee.fr/geo/departement/10>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "10" ;
+        igeo:codeINSEE           "10" ;
+        igeo:nom                 "Aube" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/10387> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Aube_(département)> , <http://data.ign.fr/id/geofla/departement/10> , <http://nuts.geovocab.org/id/FR212> .
+
+
+<http://id.insee.fr/geo/departement/67>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "67" ;
+        igeo:codeINSEE           "67" ;
+        igeo:nom                "Bas-Rhin" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/67482> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/67> , <http://nuts.geovocab.org/id/FR421> , <http://fr.dbpedia.org/resource/Bas-Rhin> .
+
+
+<http://id.insee.fr/geo/departement/11>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "11" ;
+        igeo:codeINSEE           "11" ;
+        igeo:nom                "Aude" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/11069> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR811> , <http://fr.dbpedia.org/resource/Aude_(département)> , <http://data.ign.fr/id/geofla/departement/11> .
+
+
+<http://id.insee.fr/geo/departement/68>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "68" ;
+        igeo:codeINSEE           "68" ;
+        igeo:nom                "Haut-Rhin" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/68066> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Haut-Rhin> , <http://nuts.geovocab.org/id/FR422> , <http://data.ign.fr/id/geofla/departement/68> .
+
+
+<http://id.insee.fr/geo/departement/12>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "12" ;
+        igeo:codeINSEE           "12" ;
+        igeo:nom                "Aveyron" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/12202> ;
+        owl:sameAs               <http://fr.dbpedia.org/resource/Aveyron_(département)> , <http://data.ign.fr/id/geofla/departement/12> , <http://nuts.geovocab.org/id/FR622> .
+
+
+<http://id.insee.fr/geo/departement/69>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "69" ;
+        igeo:codeINSEE           "69" ;
+        igeo:nom                "Rhône" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/69123> ;
+        owl:sameAs               <http://nuts.geovocab.org/id/FR716> , <http://fr.dbpedia.org/resource/Rhône_(département)> , <http://data.ign.fr/id/geofla/departement/69> .
+
+
+<http://id.insee.fr/geo/departement/50>
+        a                        igeo:Departement ;
+        igeo:codeDepartement     "50" ;
+        igeo:codeINSEE           "50" ;
+        igeo:nom                 "Manche" ;
+        igeo:prefecture          <http://id.insee.fr/geo/commune/50502> ;
+        owl:sameAs               <http://data.ign.fr/id/geofla/departement/50> , <http://nuts.geovocab.org/id/FR252> , <http://fr.dbpedia.org/resource/Manche_(département)> .
+
+
+
+

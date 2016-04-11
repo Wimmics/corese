@@ -4,31 +4,34 @@
 # ?q actual query, ?t query template, ?s query solution
 #
 template st:form(?n, ?q, ?t, ?s) {
-  """
-   <script type="text/javascript">           
-        function show(name){
-            document.getElementById('query').value = document.getElementById(name).value;
-        }                
-   </script>
-       
-   <form method='post'  id='form' 	action='"""st:get(st:service)"""' >   
-   <input type='hidden' id='tmp' 	value='"""str(?t)"""' />
-   <input type='hidden' id='sol' 	value='"""str(?s)"""' />
-   <input type='hidden' name='uri' 	value='"""?n"""'/>
-   <input type='hidden' name='profile'  value='"""st:get(st:profile)"""'/> 
-   """
+
+   st:call-template(st:script)
    
-   if (?s = st:null, "", st:call-template(st:nav))
-      
-   "<input type='submit' value='submit' "  
-     st:call-template-with(st:server, st:submit)  
-   "/>"
+   format {
    
-   """
-   <br/>
-   <textarea cols='60' rows='10' id='query' name='query'>"""str(?q)"""</textarea>
-   </form>
-   """
+    """
+    <form method='post'  id='form' 	action='%s' >   
+      <input type='hidden' name='profile' value='%s' />     
+      <input type='hidden' id='tmp' 	value='%s' />
+      <input type='hidden' id='sol' 	value='%s' />
+      <input type='hidden' name='uri' 	value='%s' />
+      %s
+      <input type='submit' value='submit' %s/>
+      <br/>
+      <textarea cols='60' rows='10' id='query' name='query'>%s</textarea>
+    </form>
+    """  
+   
+    st:get(st:service) 
+    st:get(st:profile)
+    str(?t) 
+    str(?s) 
+    ?n 
+    if (?s = st:null, "", st:call-template(st:nav))
+    st:submit() 
+    str(?q)
+    }
+   
 }
 where {
 }

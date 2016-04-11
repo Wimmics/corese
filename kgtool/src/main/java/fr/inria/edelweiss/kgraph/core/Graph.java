@@ -31,7 +31,6 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.util.StorageFactory;
-import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -49,11 +48,12 @@ import java.util.Map;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Graph implements Graphable, Loopable {
+public class Graph extends GraphObject implements Graphable {
 
     private static Logger logger = Logger.getLogger(Graph.class);
     public static final String TOPREL
             = fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
+    static final ArrayList<Entity> EMPTY = new ArrayList<Entity>(0);
     public static boolean valueOut = !true;
     public static final int IGRAPH = -1;
     // edges in chronological order
@@ -281,6 +281,11 @@ public class Graph implements Graphable, Loopable {
         return this;
     }
     
+     @Override
+    public Graph getGraphStore() {
+        return this;
+    }
+    
     @Override
     public Iterable getLoop(){
         return getEdges();
@@ -317,6 +322,10 @@ public class Graph implements Graphable, Loopable {
         this.optIndex = optIndex;
     }
 
+    public int pointerType() {
+        return GRAPH_POINTER;
+    }
+   
     class TreeNode extends TreeMap<IDatatype, Entity> {
 
         TreeNode() {
@@ -923,6 +932,16 @@ public class Graph implements Graphable, Loopable {
         if (isIndex) {
             index();
         }
+    }
+    
+    /**
+     * Draft (transitivity is missing ...)
+     */
+    public void sameas(){
+        for (Entity ent : getEdges(OWL.SAMEAS)){
+            ent.getNode(1).setIndex(ent.getNode(0).getIndex());
+        }
+        index();
     }
 
     void clearIndex() {
@@ -1606,11 +1625,23 @@ public class Graph implements Graphable, Loopable {
         if (node == null) {
             return null;
         }
+        return getValue(name, node);
+    }
+        
+    public IDatatype getValue(String name, Node node){
+       Node value = getNode(name, node);
+       if (value == null){
+           return null;
+       }
+       return (IDatatype) value.getValue();
+    }
+    
+    public Node getNode(String name, Node node){
         Edge edge = getEdge(name, node, 0);
         if (edge == null) {
             return null;
         }
-        return (IDatatype) edge.getNode(1).getValue();
+        return edge.getNode(1);
     }
 
     public Iterable<Node> getNodes(Node pred, Node node, int n) {
@@ -1696,7 +1727,7 @@ public class Graph implements Graphable, Loopable {
     }
 
     public boolean hasEdge(Node node, int i) {
-        Iterable<Entity> it = getEdges(node, 1);
+        Iterable<Entity> it = getEdges(node, i);
         return it.iterator().hasNext();
     }
 
@@ -1710,7 +1741,7 @@ public class Graph implements Graphable, Loopable {
         List<Node> list = getList(node);
         ArrayList<IDatatype> ldt = new ArrayList<IDatatype>();
         for (Node n : list) {
-            ldt.add((IDatatype) n.getValue());
+            ldt.add(value(n));
         }
         return ldt;
     }
@@ -1731,6 +1762,58 @@ public class Graph implements Graphable, Loopable {
             }
         }
     }
+    
+    /**
+     *     
+     */
+    
+    public IDatatype list(Node node){
+        ArrayList<IDatatype> list = reclist(node);
+        if (list == null){
+            return null;
+        }
+        return DatatypeMap.createList(list);
+    }
+    
+      public ArrayList<IDatatype> reclist(Node node) {
+        if (node.getLabel().equals(RDF.NIL)) {
+            return new ArrayList<IDatatype>();
+        } 
+        else {
+            Edge first = getEdge(RDF.FIRST, node, 0);
+            Edge rest  = getEdge(RDF.REST, node, 0);
+            if (first == null || rest == null) {
+                return null;
+            }
+            ArrayList<IDatatype> list = reclist(rest.getNode(1));
+            if (list == null){
+                return null;
+            }
+            Node val = first.getNode(1);
+            
+            if (val.isBlank()){
+                // may be a list
+                ArrayList<IDatatype> ll = reclist(val);
+                if (ll == null){
+                    // not a list
+                    list.add(0, value(val));
+                }
+                else {
+                    // list
+                    list.add(0, DatatypeMap.createList(ll));
+                }
+            }
+            else {
+                list.add(0, value(val));
+            }
+            return list;
+        }
+    }
+      
+      IDatatype value(Node n){
+          return (IDatatype) n.getValue();
+      }
+
 
     boolean isTopRelation(Node predicate) {
         return predicate.getLabel().equals(TOPREL);
@@ -1798,17 +1881,29 @@ public class Graph implements Graphable, Loopable {
     public Iterable<Entity> getEdges(String p) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
-            return new ArrayList<Entity>(0);
+            return EMPTY;
         }
         return getEdges(predicate);
+    }
+    
+    public Entity getEdge(String p){
+        Iterator<Entity> it = getEdges(p).iterator();
+        if (it.hasNext()){
+            return it.next();
+        }
+        return null;
     }
     
     public Iterable<Entity> getEdges(String p, Node n, int i) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
-            return new ArrayList<Entity>(0);
+            return EMPTY;
         }
-        return getEdges(predicate, n, i);
+        Iterable<Entity> it = getEdges(predicate, n, i);
+        if (it == null){
+            return EMPTY;
+        }
+        return it;
     }
     
     public Iterable<Entity> getEdges(IDatatype s, IDatatype p, IDatatype o) {
@@ -1834,7 +1929,7 @@ public class Graph implements Graphable, Loopable {
     public Iterable<Entity> getEdges(Node predicate) {
         Iterable<Entity> it = getEdges(predicate, null, 0);
         if (it == null) {
-            it = new ArrayList<Entity>(0);
+            it = EMPTY;
         }
         return it;
     }
@@ -1972,7 +2067,7 @@ public class Graph implements Graphable, Loopable {
             return node;
         }
         String id = skolem(node.getLabel());
-        return NodeImpl.create(createSkolem(id));
+        return NodeImpl.create(createSkolem(id), this);
     }
 
     IDatatype createSkolem(String id) {
@@ -2048,11 +2143,11 @@ public class Graph implements Graphable, Loopable {
     Node createNode(String key, IDatatype dt) {
         Node node;
         if (valueOut) {
-            node = NodeImpl.create(this, dt);
+            node = NodeImpl.create(dt, this);
             node.setKey(key);
             values.setValue(key, dt);
         } else {
-            node = NodeImpl.create(dt);
+            node = NodeImpl.create(dt, this);
         }
 
         return node;
@@ -2673,6 +2768,13 @@ public class Graph implements Graphable, Loopable {
             copy(ent);
         }
     }
+    
+    public Graph union(Graph g){
+        Graph gu = Graph.create();
+        gu.copy(this);
+        gu.copy(g);
+        return gu;       
+    }
 
     void copyEdge(Entity ent) {
     }
@@ -2733,8 +2835,8 @@ public class Graph implements Graphable, Loopable {
      * explicitely referenced as a subject or object Hence ?x :p* ?y does not
      * return graph nodes
      */
-    public Node addGraph(String name) {
-        return basicAddGraph(name);
+    public Node addGraph(String label) {
+        return basicAddGraph(label);
     }
 
     public Node addResource(String label) {

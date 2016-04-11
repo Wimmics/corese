@@ -5,8 +5,6 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Pointerable;
-import fr.inria.edelweiss.kgram.core.PointerObject;
 
 /**
  * Node
@@ -14,15 +12,12 @@ import fr.inria.edelweiss.kgram.core.PointerObject;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class NodeImpl extends PointerObject implements Node, Entity {
+public class NodeImpl extends GraphObject implements Node, Entity {
 
-    String key = INITKEY;
+//    String key = INITKEY;
     public static boolean byIDatatype = false;
     Graph graph;
-    // these fields can be removed:
-    // index is used when an RDF graph is used as a query graph
     int index = -1;
-    // dt is used when the graph does not manage values
     IDatatype dt;
 
     NodeImpl(IDatatype val) {
@@ -36,13 +31,13 @@ public class NodeImpl extends PointerObject implements Node, Entity {
         return new NodeImpl(val);
     }
 
-    NodeImpl(Graph g, IDatatype val) {
+    NodeImpl(IDatatype val, Graph g) {
         graph = g;
         dt = val;
     }
 
-    public static Node create(Graph g, IDatatype val) {
-        return new NodeImpl(g, val);
+    public static Node create(IDatatype val, Graph g) {
+        return new NodeImpl(val, g);
     }
 
     @Override
@@ -69,11 +64,17 @@ public class NodeImpl extends PointerObject implements Node, Entity {
 
     @Override
     public IDatatype getValue() {
-        if (graph == null) {
-            return dt;
-        } else {
-            return graph.getValue(this);
-        }
+        return dt;
+//        if (graph == null) {
+//            return dt;
+//        } else {
+//            return graph.getValue(this);
+//        }
+    }
+    
+    @Override
+    public IDatatype getDatatypeValue() {
+        return dt;
     }
 
     @Override
@@ -115,7 +116,7 @@ public class NodeImpl extends PointerObject implements Node, Entity {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + (this.key != null ? this.key.hashCode() : 0);
+       // hash = 67 * hash + (this.key != null ? this.key.hashCode() : 0);
         hash = 67 * hash + (this.dt != null ? this.dt.hashCode() : 0);
         return hash;
     }
@@ -144,16 +145,11 @@ public class NodeImpl extends PointerObject implements Node, Entity {
     }
 
     public Object getObject() {
-        if (dt != null){
-            return dt.getObject();
-        }
-        return null;
+         return dt.getObject();
     }
 
     public void setObject(Object o) {
-        if (dt != null){
-             dt.setObject(o);
-        }    
+        dt.setObject(o);
     }
 
     @Override
@@ -177,12 +173,12 @@ public class NodeImpl extends PointerObject implements Node, Entity {
 
     @Override
     public String getKey() {
-        return key;
+        return null;
     }
 
     @Override
     public void setKey(String str) {
-        key = str;
+        
     }
 
     @Override
@@ -197,5 +193,10 @@ public class NodeImpl extends PointerObject implements Node, Entity {
     @Override
     public Iterable getLoop() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object getGraphStore() {
+        return graph;
     }
 }

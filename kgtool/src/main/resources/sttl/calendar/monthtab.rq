@@ -1,35 +1,34 @@
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:monthtab(?y, ?m) {
+  format {
+      """
+      <h3 class='center'>%s</h3>   
+      <table class='month'>
+	<tr>%s</tr>
+	<tr>    
+	%s   
+	%s    
+	</tr>    
+	%s    
+      </table>
+      """
+      
+  cal:month(?m)
+  st:call-template(st:title)
+  xt:td(?first - 1)
+  
+  group {            
+	  "<td class='day'>"          
+	  st:call-template(st:date, ?date)        
+	  "</td>"                       
+	  if (?day = "Sunday", "</tr>\n<tr>", "")
+		  
+	  ; separator = ""
+  }
+  
+  if (?first + ?days - 1 <= 35 , "<tr><td>&nbsp;</td></tr>", "")   
+  }
 
-    "<h3 class='center'>" cal:month(?m) "</h3>"
-    
-    "<table class='month'>"
-    "<tr>" st:call-template(st:title)
-    "</tr>"
-
-    "<tr>"
-    
-    xt:td(?first - 1)
-   
-    group {
-            
-        "<td class='day'>" 
-         
-        st:call-template(st:date, ?date)
-        
-        "</td>"
-                        
-        if (?day = "Sunday", "</tr>\n<tr>", "")
-                
-        ; separator = ""
-    }
-    
-    "</tr>"
-    
-    if (?first + ?days - 1 <= 35 , "<tr><td>&nbsp;</td></tr>", "")
-    
-    "</table>"
-     
 }
 where {
     bind (cal:days(?y, ?m)       as ?days)

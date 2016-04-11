@@ -3,7 +3,7 @@ package fr.inria.edelweiss.kgraph.query;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -19,7 +19,6 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.util.Duplicate;
 
@@ -38,11 +37,10 @@ public class Construct
     int count = 0, ruleIndex = 0, index = 0;
     String root;
     Query query;
-    Graph graph;
+    GraphManager graph;
     Node defaultGraph;
     IDatatype dtDefaultGraph;
     List<Entity> lInsert, lDelete;
-    //List<String> from;
     Dataset ds;
     boolean isDebug = false,
             isDelete = false,
@@ -51,23 +49,23 @@ public class Construct
             isBuffer = false;
     private boolean test = false;
     Object rule;
-    Hashtable<Node, Node> table;
+    HashMap<Node, Node> table;
     Duplicate duplicate;
     private int loopIndex = -1;
     private Node prov;
 
     Construct(Query q) {
-        this(q, Entailment.DEFAULT);
+        this(q, GraphManager.DEFAULT_GRAPH);
     }
 
     Construct(Query q, Dataset ds) {
-        this(q, Entailment.DEFAULT);
+        this(q, GraphManager.DEFAULT_GRAPH);
         this.ds = ds;
     }
 
     Construct(Query q, String src) {
         query = q;
-        table = new Hashtable<Node, Node>();
+        table = new HashMap<Node, Node>();
         count = 0;
         dtDefaultGraph = DatatypeMap.createResource(src);
         duplicate =  Duplicate.create();
@@ -82,6 +80,12 @@ public class Construct
                 cons.setDeleteList(new ArrayList<Entity>());
             }
         }
+        return cons;
+    }
+    
+    public static Construct create(Query q, GraphManager g) {
+        Construct cons = create(q);
+        cons.set(g);
         return cons;
     }
 
@@ -99,12 +103,12 @@ public class Construct
         defaultGraph = n;
     }
 
-    public void setGraph(Graph g) {
-        graph = g;
-    }
-
     public void setBuffer(boolean b) {
         isBuffer = b;
+    }    
+    
+    public void set(GraphManager g){
+       graph = g; 
     }
     
      public boolean isBuffer() {
@@ -146,49 +150,42 @@ public class Construct
         return lDelete;
     }
 
-    public Graph construct(Mappings map) {
-        return construct(map, null, Graph.create());
+    public void construct(Mappings map) {
+         construct(map, null);
     }
-
-    public Graph construct(Mappings map, Graph g) {
-        return construct(map, null, g);
-    }
-
-    public Graph delete(Mappings map, Graph g, Dataset ds) {
+    
+    public void delete(Mappings map, Dataset ds) {
         setDelete(true);
         if (ds != null && ds.isUpdate()) {
             this.ds = ds;
         }
-        return construct(map, null, g);
+        construct(map, null);
     }
 
-    public Graph insert(Mappings map, Graph g, Dataset ds) {
+    public void insert(Mappings map, Dataset ds) {
         setInsert(true);
         if (ds != null && ds.isUpdate()) {
             this.ds = ds;
         }
-        return construct(map, null, g);
+        construct(map, null);
     }
-
-    /**
-     * Construct graph according to query and mapping/environment
-     */
-    public Graph construct(Mappings map, Environment env, Graph g) {
+         
+    public void construct(Mappings map, Environment env) {  
+        graph.start();
         Exp exp = query.getConstruct();
         if (isDelete) {
             exp = query.getDelete();
         }
 
-        if (g != null) {
-            graph = g;
-        }
         if (exp.first().isGraph()) {
             // draft: graph kg:system { }
             // in GraphStore
             Node gNode = exp.first().getGraphName();
-            if (gNode.isConstant()
-                    && graph.getNamedGraph(gNode.getLabel()) != null) {
-                graph = graph.getNamedGraph(gNode.getLabel());
+            if (gNode.isConstant()){
+                GraphManager m = graph.getNamedGraph(gNode.getLabel());
+                if (m != null){
+                    set(m);
+                }
             }
         }
 
@@ -197,7 +194,7 @@ public class Construct
 
         Node gNode = defaultGraph;
         if (gNode == null) {
-            gNode = graph.getResourceNode(dtDefaultGraph, true, false);
+            gNode = graph.getResourceNode(dtDefaultGraph);
         }
 
         if (isDelete) {
@@ -212,6 +209,7 @@ public class Construct
         }
 
         if (env != null) {
+            // construct one solution in env
             clear();
             construct(gNode, exp, map, env);
         } else {
@@ -222,8 +220,8 @@ public class Construct
             }
         }
 
-        graph.prepare();
-        return graph;
+        graph.finish();
+        
     }
 
     /**
@@ -266,13 +264,16 @@ public class Construct
                         if (isDebug) {
                             logger.debug("** Construct: " + ent);
                         }
-                        //Entity ent = edge;
                         if (!isBuffer) {
-                            ent = graph.addEdge(ent);
+                            // isBuffer means: bufferise edges in a list 
+                            // that will be processed later by RuleEngine
+                            // otherwise, store edge in graph rigth now
+                            ent = graph.insert(ent);
                         }
                         if (ent != null) {
                             map.setNbInsert(map.nbInsert() + 1);
                             if (lInsert != null) {
+                                // buffer where to store edges
                                 lInsert.add(ent);
                             }
 
@@ -429,7 +430,7 @@ public class Construct
                 dt = (IDatatype) value;
             }
 
-            node = graph.getNode(gNode, dt, true, false);
+            node = graph.getNode(gNode, dt);
             table.put(qNode, node);
         }
 

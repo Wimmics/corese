@@ -3,13 +3,12 @@
 #
 
 template  st:href(?r, ?p) {
+  format {
+  
+  "<a href=\"%s\">%s</a>"
 
- "<a href=\"" 
-    str(?v) 
-  "\">"  
-    str(?v) 
-  "</a>"
-
+   str(?v) str(?v) 
+  }
 }
 
 where {

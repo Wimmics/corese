@@ -12,7 +12,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.log4j.Logger;
@@ -24,12 +24,14 @@ import fr.com.hp.hpl.jena.rdf.arp.ARP;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
-import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.exceptions.QueryLexicalException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.triple.api.Creator;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.LoadTurtle;
+import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.kgtool.workflow.WorkflowParser;
+import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.api.Log;
@@ -42,6 +44,7 @@ import fr.inria.edelweiss.kgtool.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserLoaderSesame;
 import fr.inria.edelweiss.kgtool.load.sesame.ParserTripleHandlerSesame;
 import java.io.ByteArrayInputStream;
+import java.io.FileFilter;
 import java.net.URLConnection;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -60,40 +63,19 @@ public class Load
 
     private static Logger logger = Logger.getLogger(Load.class);
     private static int DEFAULT_FORMAT = RDFXML_FORMAT;
-    public static final String RULE = ".rul";
-    static final String BRULE = ".brul";
-    static final String IRULE = ".rl";
-    static final String[] RULES = {RULE, BRULE, IRULE};
-    static final String QUERY = ".rq";
-    static final String UPDATE = ".ru";
-    static final String[] QUERIES = {QUERY, UPDATE};
-    static final String TURTLE = ".ttl";
-    static final String NT = ".nt";
-    static final String TRIG = ".trig";
-    static final String NQUADS = ".nq";
-    static final String HTML = ".html";
-    static final String XHTML = ".xhtml";
-    static final String SVG = ".svg";
-    static final String XML = ".xml";
-    static final String EXT_RDF = ".rdf";
-    static final String EXT_RDFS = ".rdfs";
-    static final String EXT_OWL = ".owl";
-    static final String[] EXT_RDFA = {HTML, XHTML, SVG, XML};
-    static final String[] RDF_XML = {EXT_RDF, EXT_RDFS, EXT_OWL};
-    static final String JSONLD = ".jsonld";
-    static final String[] SUFFIX = {EXT_RDF, EXT_RDFS, EXT_OWL, TURTLE, NT, NQUADS, TRIG, RULE, BRULE, IRULE, QUERY, UPDATE, HTML, XHTML, SVG, XML, JSONLD};
     static final String HTTP = "http://";
     static final String FTP = "ftp://";
     static final String FILE = "file://";
     static final String[] protocols = {HTTP, FTP, FILE};
-    static final String OWL = "http://www.w3.org/2002/07/owl#";
+    static final String OWL = NSManager.OWL; 
     static final String IMPORTS = OWL + "imports";
     int maxFile = Integer.MAX_VALUE;
     Graph graph;
     Log log;
     RuleEngine engine;
     QueryEngine qengine;
-    Hashtable<String, String> loaded;
+    private SemanticWorkflow workflow;
+    HashMap<String, String> loaded;
     LoadPlugin plugin;
     Build build;
     String source;
@@ -129,7 +111,7 @@ public class Load
 
     public void setLimit(int max) {
         limit = max;
-        if (build != null){
+        if (build != null) {
             build.setLimit(limit);
         }
     }
@@ -137,7 +119,7 @@ public class Load
     void set(Graph g) {
         graph = g;
         log = g.getLog();
-        loaded = new Hashtable<String, String>();
+        loaded = new HashMap<String, String>();
         build = BuildImpl.create(graph);
     }
 
@@ -216,213 +198,210 @@ public class Load
         }
         return true;
     }
-    
-    int getTypeFormat(String contentType, int format){
-        if (contentType.startsWith("text/turtle")){
-            return TURTLE_FORMAT;
-        }
-        if (contentType.startsWith("text/n3")){
-            return NT_FORMAT;
-        }
-        if (contentType.startsWith("text/trig")){
-            return TRIG_FORMAT;
-        }
-        if (contentType.startsWith("text/n-quads")){
-            return NQUADS_FORMAT;
-        }        
-        if (contentType.startsWith("application/rdf+xml")){
-            return RDFXML_FORMAT;
-        }
-        if (contentType.startsWith("application/json")){
-            return JSONLD_FORMAT;
-        }
-        
-        return format;
-    }
+
+   int getTypeFormat(String contentType, int format) {
+       return LoadFormat.getTypeFormat(contentType, format);
+   }
 
     // UNDEF_FORMAT loaded as RDF/XML
     @Override
     public int getFormat(String path) {
         return getFormat(path, UNDEF_FORMAT);
     }
+    
+    boolean hasFormat(String path){
+        return getFormat(path) != UNDEF_FORMAT;
+    }
 
-    public int getFormat(String path, int defaultFormat) {
-        if (defaultFormat != UNDEF_FORMAT){
-            return defaultFormat;
+    public int getFormat(String path, int proposedFormat) {
+        if (proposedFormat != UNDEF_FORMAT) {
+            return proposedFormat;
         }
-        if (isRDFXML(path)){
-            return RDFXML_FORMAT;
-        }
-        else if (hasExtension(path, TURTLE)){
-            return TURTLE_FORMAT;
-        }
-        else if (hasExtension(path, NT)){
-            return NT_FORMAT;
-        } 
-         else if (hasExtension(path, JSONLD)){
-            return JSONLD_FORMAT;
-        }   
-        else if (isRDFa(path)){
-            return RDFA_FORMAT;
-        }
-        else if (isRule(path)){
-            return RULE_FORMAT;
-        }
-        else if (isQuery(path)){
-            return QUERY_FORMAT;
-        }
-        else if (hasExtension(path, TRIG)){
-            return TRIG_FORMAT;
-        }
-        else if (hasExtension(path, NQUADS)){
-            return NQUADS_FORMAT;
+        return LoadFormat.getFormat(path);
+    }
+    
+    public int getFormatDefault(String path, int defaultFormat) {
+        int f = LoadFormat.getFormat(path);
+        if (f != UNDEF_FORMAT) {
+            return f;
         }
         return defaultFormat;
     }
-
-    private boolean hasExtension(String path, String ext) {
-        return path.toLowerCase().endsWith(ext);
-    }
-
-
-    //check the extension of file to see if the file conforms to RDFa format
-    private boolean hasExtension(String path, String[] list) {
-        String str = path.toLowerCase();
-        for (String s : list) {
-            if (str.endsWith(s)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isRDFa(String path) {
-        return hasExtension(path, EXT_RDFA);
-    }
-
-    private boolean isRDFXML(String path) {
-        return hasExtension(path, RDF_XML);
-    }
-
+       
     @Override
     public boolean isRule(String path) {
-        return hasExtension(path, RULES);
+        return getFormat(path) == RULE_FORMAT;
     }
 
-    public boolean isQuery(String path) {
-        return hasExtension(path, QUERIES);
-
+    /**
+     * parse directory content
+     */
+    public void parseDir(String path) throws LoadException {
+        parseDir(path, null, false);
     }
-
-    @Override
-    public void load(String path) {
-        load(path, null);
+           
+    /**
+     * Parse directory (not subdirectory)
+     * name is named graph (if not null) else path is named graph
+     * base is now the path (it used to be the name)
+     */
+    public void parseDir(String path, String name) throws LoadException {
+        parseDir(path, name, false);
     }
-
-    @Override
-    public void loadWE(String path) throws LoadException {
-        loadWE(path, null);
+        
+    public void parseDirRec(String path) throws LoadException {
+        parseDir(path, null, true);
+    } 
+        
+    public void parseDirRec(String path, String name) throws LoadException {
+        parseDir(path, name,  true);
+    } 
+       
+    public void parseDir(String path, String name, boolean rec) throws LoadException {
+        parseDir(new File(path), path, name, rec);
     }
     
-     public void loadWE(String path, int format) throws LoadException {
-        loadWE(path, null, format);
-    }
-
-    @Override
-    public void load(String path, String src) {
-        File file = new File(path);
-        if (file.isDirectory()) {
-            path += File.separator;
-            int i = 0;
-            for (String f : file.list()) {
-                if (!suffix(f)) {
-                    continue;
-                }
-                if (i++ >= maxFile) {
-                    return;
-                }
-                String name = path + f;
-                load(name, src);
-            }
-        } else {
-            if (debug) {
-                logger.info("** Load: " + nb++ + " " + graph.size() + " " + path);
-            }
-            try {
-                load(path, src, null);
-            } catch (LoadException e) {
-                logger.error(e);
-            }
-        }
-    }
-
-    @Override
-    public void loadWE(String path, String src) throws LoadException {
-         loadWE(path, src, UNDEF_FORMAT);
-     }
-
      /**
-      * format is a suggested default format when path has no extension
-      * default UNDEF_FORMAT is loaded as RDF/XML
-      */
-     public void loadWE(String path, String src, int format) throws LoadException {
-        File file = new File(path);
+     * name is the named graph where to create triples 
+     * if name = null name := path of each file
+     * Difference with loadWE:
+     * recursion on subdirectory when rec = true
+     * no recursion on directory with SW extension (even if rec = true)
+     * base is now the path of each file (not the name)
+     */
+    void parseDir(File file, String path, String name,  boolean rec) throws LoadException {
         if (file.isDirectory()) {
-            path += File.separator;
-            int i = 0;
+            path += File.separator;           
             for (String f : file.list()) {
-                if (!suffix(f)) {
-                    continue;
+                String pname = path + f;
+                if (hasFormat(f)) {                                      
+                    parseDoc(pname, name);
                 }
-                if (i++ >= maxFile) {
-                    return;
+                else if (rec) {
+                    File dir = new File(pname);
+                    if (dir.isDirectory()){
+                        parseDir(dir, pname, name,  rec);
+                    }
                 }
-                String name = path + f;
-                loadWE(name, src, format);
             }
-        } else {
-            if (debug) {
-                logger.info("** Load: " + nb++ + " " + graph.size() + " " + path);
-            }
-            load(path, src, null, format);
+        } 
+        else {           
+            parseDoc(path, name);
         }
     }
-     
-     
-
-    void log(String name) {
-        if (graph != null) {
-            graph.log(Log.LOAD, name);
-            graph.logLoad(name);
+    
+    
+    /**
+     * Load files according to filter extensions (use ExtensionFilter)
+     */
+    public void parse(File file, FileFilter ff, String name, boolean rec) throws LoadException {
+        if (file.isDirectory()) {
+            for (File f : file.listFiles(ff)) {                
+               if (! f.isDirectory()){
+                   parseDoc(f.getAbsolutePath(), name);
+               }       
+            }
+            if (rec){
+                for (File dir : file.listFiles()){
+                    if (dir.isDirectory()){
+                        parse(dir, ff, name,  rec);
+                    }
+                }
+            }              
+        } 
+        else if (ff.accept(file)){
+            parseDoc(file.getAbsolutePath(), name);
+        }       
+    }
+    
+    boolean match(String path, int format){
+        if (format == UNDEF_FORMAT){
+            return true;
         }
+        return getFormat(path) == format;
+    }
+    
+    void parseDoc(String path, String name) throws LoadException {       
+        if (debug) {
+                logger.info("** Load: " + nb++ + " " + graph.size() + " " + path);
+         }
+         parse(path, name, path, UNDEF_FORMAT);
     }
 
     /**
      * format is a suggested format when path has no extension
+     * default format is RDF/XML
      */
-    public void load(String path, int format) throws LoadException {
-        localLoad(path, path, path, getFormat(path, format));
+    public void parse(String path) throws LoadException {
+        parse(path, path, path, UNDEF_FORMAT);
+    }
+    
+    public void parse(String path, int format) throws LoadException {
+        parse(path, path, path, format);
+    }
+    
+    public void parse(String path, String name) throws LoadException {
+        parse(path, name, path, UNDEF_FORMAT);
+    }
+    
+    public void parse(String path, String name, int format) throws LoadException {
+        parse(path, name, path, UNDEF_FORMAT);
     }
 
-    public void load(String path, String base, String source) throws LoadException {
-        localLoad(path, base, source, getFormat(path));
+    /**
+     * name: the named graph (if null, name = path)
+     * base: base for relative URI (if null, base = path)
+     * getFormat: 
+     * if format  = UNDEF use path extension if any
+     * if format != UNDEF use format (even if it contradicts the extension)
+     * use case: rdf/xml file has .xml extension but we want to load it as RDFXML_FORMAT
+     * if format is UNDEF and path is URI with content type: use content type format
+     */
+    public void parse(String path, String name, String base, int format) throws LoadException {
+        name = (name == null) ? path : name;
+        base   = (base == null)   ? path : base;
+        name = uri(name);
+        base   = uri(base);
+        localLoad(path, base, name, getFormat(path, format));
+    }
+    
+    
+    
+    public void parse(InputStream stream) throws LoadException {
+        parse(stream, UNDEF_FORMAT);
     }
 
-    @Override
-    public void load(String path, String base, String source, int format) throws LoadException {
-        localLoad(path, base, source, getFormat(path, format));
+    public void parse(InputStream stream, int format) throws LoadException {
+        parse(stream, Entailment.DEFAULT, format);
     }
 
-    private void localLoad(String path, String base, String source, int format) throws LoadException {
+    public void parse(InputStream stream, String name, int format) throws LoadException {
+        parse(stream, name, name, name, format);
+    }
+
+    // TODO: clean arg order
+    public void parse(InputStream stream, String path, String name, String base, int format) throws LoadException {
+        log("stream");
+
+        try {
+            Reader read = reader(stream);
+            synLoad(read, path, base, name, format);
+        } catch (UnsupportedEncodingException e) {
+            throw new LoadException(e);
+        }
+    }
+
+    // if base = null   : base = uri(path)
+    // if name = null : name = base
+    // base used for rdf/xml & turtle
+    private void localLoad(String path, String base, String name, int format) throws LoadException {
 
         log(path);
 
         if (format == RULE_FORMAT) {
             loadRule(path, base);
             return;
-        }
-        else 
-        if (format == QUERY_FORMAT) {
+        } else if (format == QUERY_FORMAT) {
             loadQuery(path, base);
             return;
         }
@@ -436,8 +415,8 @@ public class Load
                 URLConnection c = url.openConnection();
                 String contentType = c.getContentType();
                 stream = c.getInputStream();
-                read = reader(stream); 
-                if (format == UNDEF_FORMAT && contentType != null){
+                read = reader(stream);
+                if (format == UNDEF_FORMAT && contentType != null) {
                     format = getTypeFormat(contentType, format);
                 }
             } else {
@@ -454,11 +433,11 @@ public class Load
             base = uri(path);
         }
 
-        if (source == null) {
-            source = base;
+        if (name == null) {
+            name = base;
         }
-
-        synLoad(read, path, base, source, format);
+        
+        synLoad(read, path, base, name, format);
 
         if (stream != null) {
             try {
@@ -468,7 +447,14 @@ public class Load
             }
         }
     }
-    
+
+    void log(String name) {
+        if (graph != null) {
+            graph.log(Log.LOAD, name);
+            graph.logLoad(name);
+        }
+    }
+
     Reader reader(InputStream stream) throws UnsupportedEncodingException {
         return new InputStreamReader(stream);
     }
@@ -477,121 +463,108 @@ public class Load
         logger.error(mes);
     }
 
- 
-    public void load(InputStream stream) throws LoadException {
-        load(stream, UNDEF_FORMAT);
-    }
-    
     public void loadString(String str, int format) throws LoadException {
         loadString(str, Entailment.DEFAULT, format);
     }
 
-    public void loadString(String str, String src, int format) throws LoadException{
-         loadString(str, src, src, src, format);
+    public void loadString(String str, String name, int format) throws LoadException {
+        loadString(str, name, name, name, format);
     }
-    
-     public void loadString(String str, String path, String src, String base, int format) throws LoadException{
+
+    public void loadString(String str, String path, String name, String base, int format) throws LoadException {
         try {
-            load(new ByteArrayInputStream(str.getBytes("UTF-8")), path, src, base, format);
+            parse(new ByteArrayInputStream(str.getBytes("UTF-8")), path, name, base, format);
         } catch (UnsupportedEncodingException ex) {
             throw new LoadException(ex);
         }
     }
-     
-    public void loadResource(String name, int format) throws  LoadException {
-        loadResource(name, Entailment.DEFAULT, format);
+
+    public void loadResource(String path, int format) throws LoadException {
+        loadResource(path, Entailment.DEFAULT, format);
     }
-     
-     public void loadResource(String name, String src, int format) throws  LoadException {
-        InputStream stream = Load.class.getResourceAsStream(name);
+
+    public void loadResource(String path, String name, int format) throws LoadException {
+        InputStream stream = Load.class.getResourceAsStream(path);
         if (stream == null) {
-            throw new LoadException(new IOException(name));
+            throw new LoadException(new IOException(path));
         }
-        load(stream, src, format);
-    }
-    
-    public void load(InputStream stream, int format) throws LoadException {
-        load(stream, Entailment.DEFAULT, format);
+        parse(stream, name, format);
     }
 
-    public void load(InputStream stream, String source, int format) throws LoadException {
-        load(stream, source, source, source, format);
-    }
-
-    public void load(InputStream stream, String path, String source, String base, int format) throws LoadException {
-        log("stream");
-
-        try {
-            Reader read = reader(stream);
-            synLoad(read, path, base, source,  format);
-//            synLoad(read, path, source, base, format);
-        } catch (UnsupportedEncodingException e) {
-            throw new LoadException(e);
-        }
-    }
-
-
-
-       
-    void synLoad(Reader stream, String path, String base, String src, int format) throws LoadException {
+    void synLoad(Reader stream, String path, String base, String name, int format) throws LoadException {
         try {
             writeLock().lock();
-
-            switch (format) {
-                case TURTLE_FORMAT:
-                case NT_FORMAT:
-                    loadTurtle(stream, path, base, src);
-                    break;
-                    
-                case NQUADS_FORMAT:
-                    loadWithSesame(stream, path, base, src, RDFFormat.NQUADS);
-                    break;
-                case TRIG_FORMAT:
-                    loadWithSesame(stream, path, base, src, RDFFormat.TRIG);
-                    break;
-                    
-                case RULE_FORMAT:
-                    loadRule(stream, src);
-                    break;
-                    
-                case QUERY_FORMAT:
-                    loadQuery(stream, src);
-                    break;
-
-                case RDFA_FORMAT:
-                    loadRDFa(stream, path, base, src);
-                    break;
-
-                case JSONLD_FORMAT:
-                    loadJsonld(stream, path, base, src);
-                    break;
-
-                case RDFXML_FORMAT:
-                    loadRDFXML(stream, path, base, src);
-                    break;
-                    
-                case UNDEF_FORMAT:
-                default:
-                    loadRDFXML(stream, path, base, src);
-            }
+            parse(stream, path, base, name, format);            
         } finally {
             writeLock().unlock();
         }
-        }
+    }
+    
+    
+    public void parse(Reader stream, String path, String base, String name, int format)  throws LoadException {
+        switch (format) {
+                case TURTLE_FORMAT:
+                case NT_FORMAT:
+                    loadTurtle(stream, path, base, name);
+                    break;
+
+                case NQUADS_FORMAT:
+                    loadWithSesame(stream, path, base, name, RDFFormat.NQUADS);
+                    break;
+                    
+                case TRIG_FORMAT:
+                    loadWithSesame(stream, path, base, name, RDFFormat.TRIG);
+                    break;
+
+                case RULE_FORMAT:
+                    loadRule(stream, name);
+                    break;
+                    
+                case WORKFLOW_FORMAT:
+                    loadWorkflow(stream, path);
+                    break;
+                    
+                case QUERY_FORMAT:
+                    loadQuery(stream, name);
+                    break;
+
+                case RDFA_FORMAT:
+                    loadRDFa(stream, path, base, name);
+                    break;
+
+                case JSONLD_FORMAT:
+                    loadJsonld(stream, path, base, name);
+                    break;
+
+                case RDFXML_FORMAT:
+                    loadRDFXML(stream, path, base, name);
+                    break;
+
+                case UNDEF_FORMAT:
+                default:
+                    parse(stream, path, base, name, (DEFAULT_FORMAT == UNDEF_FORMAT) ? RDFXML_FORMAT : DEFAULT_FORMAT);
+            }
+    }
 
     Lock writeLock() {
         return graph.writeLock();
     }
+    
+    void loadWorkflow(Reader read, String path) throws LoadException{
+        WorkflowParser wp = new WorkflowParser();
+        wp.parse(read, path);
+        setWorkflow(wp.getWorkflowProcess());
+    }
 
-    void loadRDFXML(Reader stream, String path, String base, String src) throws LoadException {
+    void loadRDFXML(Reader stream, String path, String base, String name) throws LoadException {
 
         if (hasPlugin) {
-            src = plugin.statSource(src);
+            name = plugin.statSource(name);
             base = plugin.statBase(base);
         }
         String save = source;
-        source = src;
-        build.setSource(src);
+        source = name;
+        build.setSource(name);
         build.start();
         ARP arp = new ARP();
         try {
@@ -607,17 +580,16 @@ public class Load
             throw LoadException.create(e, arp.getLocator(), path);
         } catch (IOException e) {
             throw LoadException.create(e, arp.getLocator(), path);
-        }
-        finally {
+        } finally {
             build.finish();
             source = save;
         }
     }
 
-    void loadTurtle(Reader stream, String path, String base, String src) throws LoadException {
+    void loadTurtle(Reader stream, String path, String base, String name) throws LoadException {
 
-        Creator cr = CreateImpl.create(graph);
-        cr.graph(Constant.create(src));
+        Creator cr = CreateImpl.create(graph, this);
+        cr.graph(Constant.create(name));
         cr.setRenameBlankNode(renameBlankNode);
         cr.setLimit(limit);
         cr.start();
@@ -628,14 +600,13 @@ public class Load
             throw LoadException.create(e, path);
         } catch (QuerySyntaxException e) {
             throw LoadException.create(e, path);
-        }
-        finally {
+        } finally {
             cr.finish();
         }
     }
 
     // load RDFa
-    void loadRDFa(Reader stream, String path, String base, String src) throws LoadException {
+    void loadRDFa(Reader stream, String path, String base, String name) throws LoadException {
         CoreseRDFaTripleSink sink = new CoreseRDFaTripleSink(graph, null);
         sink.setHelper(renameBlankNode, limit);
 
@@ -650,7 +621,7 @@ public class Load
     }
 
     // load JSON-LD
-    void loadJsonld(Reader stream, String path, String base, String src) throws LoadException {
+    void loadJsonld(Reader stream, String path, String base, String name) throws LoadException {
 
         JSONLDTripleCallback callback = new CoreseJsonTripleCallback(graph, null);
         ((CoreseJsonTripleCallback) callback).setHelper(renameBlankNode, limit);
@@ -665,11 +636,11 @@ public class Load
         }
     }
 
-        //load turtle with parser sesame(openRDF)
-        //can surpot format:.ttl, .nt, .nq and .trig
-        //now only used for .trig and .nq
-    void loadWithSesame(Reader stream, String path, String base, String src, RDFFormat format) throws LoadException {
-        ParserTripleHandlerSesame handler = new ParserTripleHandlerSesame(graph, src);
+    //load turtle with parser sesame(openRDF)
+    //can surpot format:.ttl, .nt, .nq and .trig
+    //now only used for .trig and .nq
+    void loadWithSesame(Reader stream, String path, String base, String name, RDFFormat format) throws LoadException {
+        ParserTripleHandlerSesame handler = new ParserTripleHandlerSesame(graph, name);
         handler.setHelper(renameBlankNode, limit);
         ParserLoaderSesame loader = ParserLoaderSesame.create(stream, base);
 
@@ -683,65 +654,58 @@ public class Load
             throw LoadException.create(ex, path);
         }
     }
-    void loadRule(String path, String src) throws LoadException {
+
+    void loadRule(String path, String name) throws LoadException {
         if (engine == null) {
             engine = RuleEngine.create(graph);
         }
 
-        if (path.endsWith(IRULE)) {
+        if (path.endsWith(LoadFormat.IRULE)) {
             // individual rule
             QueryLoad ql = QueryLoad.create();
-            String rule = ql.read(path);
+            String rule = ql.readWE(path);
             if (rule != null) {
                 engine.addRule(rule);
             }
         } else {
             // rule base
             RuleLoad load = RuleLoad.create(engine);
-            load.loadWE(path);
+            load.parse(path);
         }
     }
 
-    public void loadRule(Reader stream, String src) throws LoadException {
+    public void loadRule(Reader stream, String name) throws LoadException {
         if (engine == null) {
             engine = RuleEngine.create(graph);
         }
         RuleLoad load = RuleLoad.create(engine);
-        load.loadWE(stream);
+        load.parse(stream);
     }
 
-    void loadQuery(String path, String src) {
+    void loadQuery(String path, String name) throws LoadException {
         if (qengine == null) {
             qengine = QueryEngine.create(graph);
         }
         QueryLoad load = QueryLoad.create(qengine);
-        load.load(path);
+        load.parse(path);
     }
-    
-    void loadQuery(Reader read, String src) throws LoadException  {
+
+    void loadQuery(Reader read, String name) throws LoadException {
         if (qengine == null) {
             qengine = QueryEngine.create(graph);
         }
         QueryLoad load = QueryLoad.create(qengine);
-        try {
-            load.load(read);
-        } catch (EngineException ex) {
-            throw new LoadException(ex);
-        }
-
+        load.parse(read);
     }
-    
 
-    boolean suffix(String path) {
-        //if (isURL(path)) return true;
-
-        for (String suf : SUFFIX) {
-            if (path.endsWith(suf)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    boolean suffix(String path) {
+//        for (String suf : SUFFIX) {
+//            if (path.endsWith(suf)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     public void statement(AResource subj, AResource pred, ALiteral lit) {
@@ -756,18 +720,32 @@ public class Load
         }
     }
 
-    void imports(String uri) {
-        if (! loaded.contains(uri)) {
+    void imports(String uri)  {
+        if (!loaded.containsKey(uri)) {
             loaded.put(uri, uri);
             if (debug) {
                 logger.info("Import: " + uri);
             }
-            
+
             Build save = build;
             build = BuildImpl.create(graph);
             build.setLimit(save.getLimit());
-            load(uri);
+            try {
+                parse(uri);
+            } catch (LoadException ex) {
+                logger.error(ex);
+            }
             build = save;
+        }
+    }
+    
+    void parseImport(String uri) throws LoadException {
+        if (!loaded.containsKey(uri)) {
+            loaded.put(uri, uri);
+            if (debug) {
+                logger.info("Import: " + uri);
+            }
+            parse(uri);
         }
     }
 
@@ -820,11 +798,8 @@ public class Load
         this.renameBlankNode = renameBlankNode;
     }
 
-    
-    
- 
     /**
-     * @deprecated
+     * *******************************************************
      */
     @Deprecated
     @Override
@@ -835,6 +810,7 @@ public class Load
     /**
      * source is the graph name path is a pseudo path that may have an extension
      * and hence specify the input format
+     *
      * @deprecated
      */
     public void load(InputStream stream, String source, String path) throws LoadException {
@@ -848,6 +824,130 @@ public class Load
         load(stream, path, source, source, getFormat(path));
     }
 
-   
+    @Override
+    @Deprecated
+    public void load(String path) {
+        load(path, null);
+    }
+
+    @Override
+    @Deprecated
+    public void loadWE(String path) throws LoadException {
+        loadWE(path, null);
+    }
+
+    @Deprecated
+    public void loadWE(String path, int format) throws LoadException {
+        loadWE(path, null, format);
+    }
+
+    @Override
+    @Deprecated
+    public void load(String path, String src) {
+        File file = new File(path);
+        if (file.isDirectory()) {
+            path += File.separator;
+            int i = 0;
+            for (String f : file.list()) {
+                if (! hasFormat(f)){ //(!suffix(f)) {
+                    continue;
+                }
+                if (i++ >= maxFile) {
+                    return;
+                }
+                String name = path + f;
+                load(name, src);
+            }
+        } else {
+            if (debug) {
+                logger.info("** Load: " + nb++ + " " + graph.size() + " " + path);
+            }
+            try {
+                load(path, src, null);
+            } catch (LoadException e) {
+                logger.error(e);
+            }
+        }
+    }
+
+    @Override
+    @Deprecated
+    public void loadWE(String path, String src) throws LoadException {
+        loadWE(path, src, UNDEF_FORMAT);
+    }
+
+    @Deprecated        
+     public void loadWE(String path, String source, int format) throws LoadException {
+        File file = new File(path);
+        if (file.isDirectory()) {
+            path += File.separator;
+            int i = 0;
+            for (String f : file.list()) {
+                if (! hasFormat(f)){ //(!suffix(f)) {
+                    continue;
+                }
+                if (i++ >= maxFile) {
+                    return;
+                }
+                String name = path + f;
+                loadWE(name, source, format);
+            }
+        } else {
+            if (debug) {
+                logger.info("** Load: " + nb++ + " " + graph.size() + " " + path);
+            }
+            load(path, source, null, format);
+        }
+    }
     
+
+    @Deprecated
+    public void load(String path, int format) throws LoadException {
+        localLoad(path, path, path, getFormat(path, format));
+    }
+
+    @Deprecated
+    public void load(String path, String base, String source) throws LoadException {
+        localLoad(path, base, source, getFormat(path));
+    }
+
+    @Deprecated
+    @Override
+    public void load(String path, String base, String source, int format) throws LoadException {
+        localLoad(path, base, source, getFormat(path, format));
+    }
+
+    @Deprecated
+    public void load(InputStream stream) throws LoadException {
+        load(stream, UNDEF_FORMAT);
+    }
+
+    @Deprecated
+    public void load(InputStream stream, int format) throws LoadException {
+        load(stream, Entailment.DEFAULT, format);
+    }
+
+    @Deprecated
+    public void load(InputStream stream, String source, int format) throws LoadException {
+        load(stream, source, source, source, format);
+    }
+
+    @Deprecated
+    public void load(InputStream stream, String path, String source, String base, int format) throws LoadException {
+        parse(stream, path, source, base, format);
+    }
+
+    /**
+     * @return the workflow
+     */
+    public SemanticWorkflow getWorkflow() {
+        return workflow;
+    }
+
+    /**
+     * @param workflow the workflow to set
+     */
+    public void setWorkflow(SemanticWorkflow workflow) {
+        this.workflow = workflow;
+    }
 }

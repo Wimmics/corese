@@ -106,7 +106,6 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	
 	boolean same(Node n1, Node n2){
             return gg.getIndex().same(n1, n2);
-		//return EdgeIndex.same(n1, n2);
 	}
 
 	@Override
@@ -166,6 +165,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 				last = ent.getEdge();
                                // last = getResult(ent, res);
                                 if (hasLevel && last.getIndex() < level){
+                                    // use case: Rule Engine requires edges with level >= this.level
                                     it = empty.iterator();
                                     return null;
                                 }

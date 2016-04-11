@@ -16,8 +16,10 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.load.RuleLoad;
+import java.util.logging.Level;
 
 /**
  * Pipeline described using RDF, interpreted using SPARQL queries
@@ -127,7 +129,11 @@ public class Pipe {
 	public void load(String name){
 		pipe = Graph.create(true);
 		Loader load = Load.create(pipe);
-		load.load(name);
+            try {
+                load.parse(name);
+            } catch (LoadException ex) {
+                java.util.logging.Logger.getLogger(Pipe.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
 	
 	public void process(){
@@ -226,7 +232,11 @@ public class Pipe {
 	
 	
 	void pload(String name){
-		load.load(name);
+            try {
+                load.parse(name);
+            } catch (LoadException ex) {
+                java.util.logging.Logger.getLogger(Pipe.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
 	
 	

@@ -1,17 +1,13 @@
 template st:tail {
-  
+format {
   """ 
   <h3>Dataset</h3>
-  """
-  
-  st:call-template(st:content) 
-  
-  """ 
+  %s
   <p> <hr/> </p>
   """
   
-  
-
+  st:call-template(st:content)
+}
 }
 where {
 

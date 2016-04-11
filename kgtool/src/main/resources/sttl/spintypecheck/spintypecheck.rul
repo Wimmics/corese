@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Mar 27 14:31:32 CET 2015
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:start {
+   st:apply-all-templates(st:start)
+   "\n" 
+   "typecheck completed"
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:default {
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if triples in a SPIN query exists in the triple store
+#
+prefix sp: <http://spinrdf.org/sp#> .
+template {
+  "undefined class: " st:apply-templates-with-graph(st:spin, st:query, ?t)
+}
+where {
+
+graph st:query {
+   [] sp:where/(! sp:void)+ ?t
+   
+   ?t sp:subject   ?s ;
+      sp:predicate rdf:type ;
+      sp:object    ?c
+      
+      filter isURI(?c)
+ }
+      filter not exists {
+	{ ?c a rdfs:Class }
+	union { ?c a owl:Class }
+	union { ?c rdfs:subClassOf ?d }
+	union { ?d rdfs:subClassOf ?c }
+      }
+    
+   
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if triples in a SPIN query exists in the triple store
+#
+prefix sp: <http://spinrdf.org/sp#> .
+template {
+  "missing triple: "  st:apply-templates-with-graph(st:spin, st:query, ?t)
+}
+where {
+
+graph st:query {
+   ?q sp:where/(! sp:void)+ ?t
+   
+   ?t sp:subject   ?s ;
+      sp:predicate ?p ;
+      sp:object    ?o 
+          
+    bind(exists { ?s sp:varName ?n } as ?es)
+    bind(exists { ?p sp:varName ?n } as ?ep)
+    bind(exists { ?o sp:varName ?n } as ?eo)     
+}
+ 
+    filter(
+    !
+    if (?es && ?ep && ?eo, 
+      
+      if (?s = ?p,
+	  if (?s = ?o, exists {?pp ?pp ?pp}, exists {?pp ?pp ?oo}),
+	  if (?s = ?o, exists {?ss ?pp ?ss}, 
+	    if (?p = ?o, exists {?ss ?pp ?pp}, exists {?ss ?pp ?oo}))),
+      
+      if (?es, 
+	if (?ep, 
+	  if (?s = ?p, exists{?pp ?pp ?o}, exists{?ss ?pp ?o}),
+	  if (?eo, if (?s = ?o, exists{?ss ?p ?ss}, exists{?ss ?p ?oo}),  
+	    exists{?ss ?p ?o})),
+	if (?ep, 
+	  if (?eo, if (?p = ?o, exists{?s ?pp ?pp}, exists{?s ?pp ?oo}), 
+	    exists{?s ?pp ?o}),
+	  if (?eo, exists{?s ?p ?oo},  exists{?s ?p ?o}))))
+   )
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sp: <http://spinrdf.org/sp#> .
+template {
+  "undefined variable: " str(?n) " in " 
+  st:apply-templates-with-graph(st:spin, st:query, ?f)
+}
+where {
+  select distinct ?f ?n where {
+  
+    graph st:query {
+      ?q sp:where/(! sp:void)+ ?f
+      ?f ?p ?v
+      ?v sp:varName ?n
+      filter(strstarts(?p, sp:arg))
+      
+      filter not exists {
+	?q sp:where/(! sp:void)+ ?t
+	{ ?t sp:subject ?v } 
+	union {?t sp:predicate ?v}
+	union {?t sp:object ?v}    
+      }
+    }
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if triples in a SPIN query exists in the triple store
+#
+prefix sp: <http://spinrdf.org/sp#> .
+template {
+  "undefined property: " 
+  st:apply-templates-with-graph(st:spin, st:query, ?t)
+}
+where {
+
+graph st:query {
+   [] sp:where/(! sp:void)+ ?t
+   
+   ?t sp:predicate ?p 
+      
+      filter isURI(?p)
+ }
+ 
+      filter not exists {
+	{ ?p a rdf:Property }
+	union { ?p a ?c . filter(strstarts(?c, owl:)) }
+      }
+    
+   
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sp: <http://spinrdf.org/sp#> .
+template {
+  "undefined variable in select clause: " str(?n) 
+}
+where {
+  graph st:query {
+  
+    ?q sp:resultVariables ?sel    
+    ?sel rdf:rest*/rdf:first ?v
+    filter not exists { ?v sp:expression ?e }
+    
+    filter not exists { ?q sp:where/(! sp:void)+ ?v }  
+    ?v sp:varName ?n
+
+    }  
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

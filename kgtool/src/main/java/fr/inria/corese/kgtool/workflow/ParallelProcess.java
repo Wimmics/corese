@@ -1,0 +1,45 @@
+package fr.inria.corese.kgtool.workflow;
+
+import fr.inria.acacia.corese.exceptions.EngineException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author Olivier Corby, Wimmics INRIA I3S, 2016
+ *
+ */
+public class ParallelProcess extends SemanticProcess {
+        
+     ParallelProcess(List<WorkflowProcess> l){
+        super(l);
+    }
+     
+     ParallelProcess(){
+        super();
+     }
+    
+     @Override
+     void start(Data data){
+         
+     }
+     
+     @Override
+     void finish(Data data){
+         
+     }
+     
+    @Override
+    public Data run(Data data) throws EngineException{
+        ArrayList<Data> list = new ArrayList<Data>();
+        for (WorkflowProcess wp : getProcessList()){
+            Data res = wp.compute(data);
+            res.setName(wp.getName());
+            list.add(res);
+        }
+        return new Data(this, list);
+    }
+    
+   
+
+}

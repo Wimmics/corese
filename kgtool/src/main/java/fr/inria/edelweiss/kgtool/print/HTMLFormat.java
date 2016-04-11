@@ -6,10 +6,11 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
-import fr.inria.edelweiss.kgtool.util.MappingsProcess;
+import fr.inria.edelweiss.kgtool.util.MappingsGraph;
 
 /**
- * Apply HTML Transformation on Mappings or on Graph :
+ * Apply HTML Transformation on Query result Mappings or on Graph dataset
+ * Used by STTL Server
  * construct : result graph
  * select    : serialization of Mappings into RDF
  * 
@@ -98,19 +99,24 @@ public class HTMLFormat {
        return defaultTransform;
     }
     
+    /**
+     * Transformer Context:
+     * st:context = additional st:context graph such as a default SPARQL query graph (SPARQL Tutorial)
+     * profile: st:context [ st:uri <uri> ]
+     * st:dataset = the triple store dataset, hence we can have a result graph and the dataset graph
+     * The dataset give access e.g to the ontology
+     * Use case: 
+     * bind (st:get(st:dataset) as ?g) graph ?g { }
+     * bind (st:get(st:context) as ?g) graph ?g { }.
+     */
     String process(Mappings map, Graph g, String trans){ 
         Transformer t = Transformer.create(g, trans);
-        context.setTransform(trans);
-        // triple store graph has a st:context graph
-        // add it to the transformer context
-        Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
-        if (cg != null){
-            context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
-        }
-        context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
+        context.setTransform(trans);        
+        complete(context, graph);
         t.setContext(context);
         
         if (map != null && map.getQuery() != null){
+            // Transformer inherit Query Transformer Visitor if any
             Transformer tr = (Transformer) map.getQuery().getTransformer();
             if (tr != null && tr.getVisitor() != null){
                 t.setVisitor(tr.getVisitor());
@@ -119,14 +125,24 @@ public class HTMLFormat {
         return t.toString();
     }
     
+        // triple store graph has a st:context graph
+        // add it to the transformer context
+    void complete(Context context, Graph graph) {
+        Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
+        if (cg != null) {
+            context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
+        }
+        context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
+    }
+    
     String expand(String str){
-        //ASTQuery ast = (ASTQuery) map.getQuery().getAST();
         return nsm.toNamespace(str);
     }
       
     Graph select(){
-        MappingsProcess mp = MappingsProcess.create(map);
-        return mp.getGraph(); 
+        //MappingsProcess mp = MappingsProcess.create(map);
+        MappingsGraph mg = MappingsGraph.create(map);
+        return mg.getGraph(); 
     }
 
     /**

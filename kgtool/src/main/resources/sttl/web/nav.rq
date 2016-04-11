@@ -1,10 +1,15 @@
 template st:nav {
  
- "<input type='button' " st:call-template-with(st:server, st:bstyle) """ 
-      onclick="show('sol')" value='Solution' />
+ format {
+ 
+ """
+ <input type='button' %s onclick="show('sol')" value='Solution' />      
+ <input type='button' %s onclick="show('tmp')" value='Template' /> 
+ """
       
-  <input type='button' """ st:call-template-with(st:server, st:bstyle) """ 
-      onclick="show('tmp')" value='Template' /> """
+  st:bstyle()
+  st:bstyle()   
+  }
    
  }
 where {}

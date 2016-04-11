@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgtool.util;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,11 +30,12 @@ public class Extension {
      void process(String name) {
         InputStream in = Extension.class.getResourceAsStream(name);
         if (in == null){
+            logger.error("QueryProcess resource not found: " + name);
             return;
         }
         try {
             QueryLoad ql = QueryLoad.create();
-            String str = ql.read(in);
+            String str = ql.readWE(in);
             QueryProcess exec = QueryProcess.create(Graph.create());
             try {
                 exec.compile(str);
@@ -41,7 +43,7 @@ public class Extension {
                 logger.error(name);
                 logger.error(ex);
             }
-        } catch (IOException ex) {
+        } catch (LoadException ex) {
             logger.error(ex);
         }
 

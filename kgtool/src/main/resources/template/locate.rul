@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Dec 10 10:51:33 CET 2015
+Sun Feb 28 17:53:23 CET 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -11,11 +11,11 @@ Thu Dec 10 10:51:33 CET 2015
 <![CDATA[
 template st:start {
   
-  st:call-template-with(st:server, st:head)
+  st:head()
   
   st:call-template(st:locate)
   
-  st:call-template-with(st:server, st:tail)
+  st:tail()
 }
 where {
 

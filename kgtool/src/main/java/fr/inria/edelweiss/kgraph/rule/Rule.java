@@ -13,9 +13,9 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Closure;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,9 +45,9 @@ public class Rule {
     static {
         try {
             QueryLoad ql = QueryLoad.create();
-            TRANS_QUERY = ql.read(Rule.class.getResourceAsStream("/query/transitive.rq"));
-            TRANS_PSEUDO_QUERY = ql.read(Rule.class.getResourceAsStream("/query/transitivepseudo.rq"));
-        } catch (IOException ex) {
+            TRANS_QUERY = ql.readWE(Rule.class.getResourceAsStream("/query/transitive.rq"));
+            TRANS_PSEUDO_QUERY = ql.readWE(Rule.class.getResourceAsStream("/query/transitivepseudo.rq"));
+        } catch (LoadException ex) {
             Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

@@ -3,7 +3,7 @@ template st:open {
   """
   <h3>Result</h3>
   <table>
-  <tr class='s1'>
+  <tr>
   <th></th><th>subject</th><th>property</th><th>object</th>
   </tr>
   """

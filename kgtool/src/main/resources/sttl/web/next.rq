@@ -1,9 +1,14 @@
 template st:next(?t) {
 
-  "<a  href='" st:plink(?n) "'>"
-  "<button type='button'"  st:call-template-with(st:server, st:bstyle)
-  ">Next</button>"
-  "</a>"  
+format {
+  """
+  <a  href='%s'>
+  <button type='button' %s>Next</button>
+  </a>
+  """ 
+  st:plink(?n)
+  st:bstyle()
+ }
     
 }
 where {

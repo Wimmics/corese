@@ -2,13 +2,17 @@ prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
 
 template st:descresource(?r) {
-
-  "<tr class='s" if (kg:even(st:number()), 0, 1) "'>"
-  "<th class='left'>" str(?p) "</th><td>" 
+format {
+  """
+  <tr>
+  <th class='left'>%s</th>
+  <td>%s</td>
+  </tr>
+  """ 
   
-   st:call-template(st:triple, ?r, ?p, ?v)  
-  
-  "</td></tr>"  
+  str(?p)
+  st:call-template(st:triple, ?r, ?p, ?v)
+  }
 }
 where { 
     ?r ?p ?v

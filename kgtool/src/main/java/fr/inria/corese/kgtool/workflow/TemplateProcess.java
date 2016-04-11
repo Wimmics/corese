@@ -38,9 +38,9 @@ public class TemplateProcess extends  WorkflowProcess {
       
     @Override
      void start(Data data){
-          if (isDebug()){
+        if (isDebug()){
             System.out.println("Transformer: " + getPath());
-        }
+        }       
      }
      
      @Override

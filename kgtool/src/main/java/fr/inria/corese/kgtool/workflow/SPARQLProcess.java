@@ -35,6 +35,7 @@ public class SPARQLProcess extends  WorkflowProcess {
     @Override
     void start(Data data){
         if (isRecDebug() || isRecDisplay()){
+            System.out.println(getWorkflow().getPath());
             System.out.println("Query: " + getQuery());
         }
     }

@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Run Processes as in parallel with copy of input Graph
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
@@ -15,7 +16,7 @@ public class ParallelProcess extends SemanticProcess {
         super(l);
     }
      
-     ParallelProcess(){
+     public ParallelProcess(){
         super();
      }
     
@@ -32,14 +33,16 @@ public class ParallelProcess extends SemanticProcess {
     @Override
     public Data run(Data data) throws EngineException{
         ArrayList<Data> list = new ArrayList<Data>();
-        for (WorkflowProcess wp : getProcessList()){
-            Data res = wp.compute(data);
+        for (WorkflowProcess wp : getProcessList()){          
+            Data res = wp.compute(data.copy(true));
             res.setName(wp.getName());
             list.add(res);
         }
-        return new Data(this, list);
+        Data output = new Data(this, list);
+        output.setGraph(data.getGraph());
+        return output;
     }
     
-   
+    
 
 }

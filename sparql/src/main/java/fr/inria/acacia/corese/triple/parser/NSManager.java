@@ -469,19 +469,23 @@ public class NSManager extends ASTObject {
     }
 
     public String toString() {
-        return toString(null, false);
+        return toString(null, false, true);
     }
     
     public String toString(String title) {
-        return toString(title, false);
+        return toString(title, false, true);
     }
 
     public String toString(String title, boolean all) {
+        return toString(title, all, true);
+    }
+    
+    public String toString(String title, boolean all, boolean bas) {
         if (title == null){
             title = "prefix";
         }
-        StringBuffer sb = new StringBuffer();
-        if (base != null) {
+        StringBuilder sb = new StringBuilder();
+        if (bas && base != null) {
             sb.append("base <");
             sb.append(base);
             sb.append(">");

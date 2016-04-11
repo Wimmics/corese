@@ -3,7 +3,6 @@ package fr.inria.acacia.corese.triple.parser;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
@@ -57,23 +56,32 @@ public class Term extends Expression {
 	static final String LIST = "inList";
 	static final String SERVICE = "service";
 
-
+        // default processor to compile term
+        static Processor processor;
+        
+        // possibly dynamic processor to implement some functions: regex, ...
 	Processor proc;
 	Exp exist;
 	Constant cname;
 	
-	ArrayList<Expression> args=new ArrayList<Expression>();
+	ArrayList<Expression> args = new ArrayList<Expression>();
+        List<Expr> lExp;
+
 	// additional system arg:
 	Expression exp;
 	boolean isFunction = false,
 	isCount = false,
 	isPlus = false;
-	private boolean isExport = false;
 	boolean isDistinct = false;
 	boolean isShort = false;
 	String  modality;       
         int type = ExprType.UNDEF, oper = ExprType.UNDEF;
+        int min = -1, max = -1;
         private int place = -1;
+        
+        static {
+            processor = new Processor();
+        }
 	
 	public Term() {
 	}
@@ -132,7 +140,7 @@ public class Term extends Expression {
 		t.args.add(exp3);
 		return t;
 	}
-	
+       	
 	public String getLabel() {
 		if (getLongName()!=null) return getLongName();
 		return name;
@@ -144,6 +152,26 @@ public class Term extends Expression {
 	
 	public Constant getCName(){
 		return cname;
+	}
+        
+        void setMin(int n){
+		min = n;
+	}
+	
+	public int getMin(){
+		return min;
+	}
+	
+	void setMax(int n){
+		max = n;
+	}
+	
+	public int getMax(){
+		return max;
+	}
+        
+        public boolean isCounter(){
+		return (min!=-1 || max != -1);
 	}
         
         public void setModality(ExpressionList el){
@@ -783,13 +811,13 @@ public class Term extends Expression {
 	}
 	
 	
-	public Variable getOptionVar(Vector<String> stdVar) {
-		for (int i = 0; i < getArity(); i++) {
-			Variable var = getArg(i).getOptionVar(stdVar);
-			if (var != null) return var;
-		}
-		return null;
-	}
+//	public Variable getOptionVar(Vector<String> stdVar) {
+//		for (int i = 0; i < getArity(); i++) {
+//			Variable var = getArg(i).getOptionVar(stdVar);
+//			if (var != null) return var;
+//		}
+//		return null;
+//	}
 	
 	
 	public  int getArity(){
@@ -803,7 +831,7 @@ public class Term extends Expression {
 	public ArrayList<Expression> getArgs(){
 		return args;
 	}
-	
+        	
 	public void add(Expression exp) {
 		args.add(exp);
 	}
@@ -840,7 +868,9 @@ public class Term extends Expression {
 	 * sum(?y) as ?z
 	 */
 	public Expression process(ASTQuery ast){
-		if (isAggregate() || (ast.isKgram() && isFunctional())) return this;
+		if (isAggregate() || isFunctional()){ //(ast.isKgram() && isFunctional())){
+                    return this;
+                }
 		for (int i=0; i<args.size(); i++){
 			Expression exp = args.get(i).process(ast);
 			if (exp == null) return null;
@@ -900,41 +930,59 @@ public class Term extends Expression {
         }
 	
         public String getShortName(){
+            if (proc == null || proc.getShortName() == null){
+                return getName();
+            }
             return proc.getShortName();
         }
 	
 	public Expr getExp(int i){
-		return proc.getExp(i);
+		return lExp.get(i);
 	}
         
         public void setExp(int i, Expr e){
-             proc.setExp(i, e);
-	}
+            if (i < lExp.size()){
+                lExp.set(i, e);
+            }
+            else if (i == lExp.size()){
+                lExp.add(i, e);
+            }
+        }
         
         public void addExp(int i, Expr e){
-             proc.addExp(i, e);
+            lExp.add(i, e);
+        }
+
+	
+	void setArguments(){
+		if (lExp == null){
+			lExp = new ArrayList<Expr>();
+			for (Expr e : getArgs()){
+				lExp.add(e);
+			}
+		}
 	}
+	
+	public int arity(){
+		return lExp.size();
+	}
+	
 	
 	public Expression getArg(){
 		return exp;
 	}
-        
-        
-        public Expr getDefine(){
-            return proc.getDefine();
-        }
-        
-        public void setDefine(Expr exp){
-            proc.setDefine(exp);
-        }
-	
+                      	
 	public void setArg(Expression e){
 		exp = e;
 	}
 	
 	public List<Expr> getExpList(){
-		return proc.getExpList();
+		return lExp;
 	}
+        
+        void setExpList(List<Expr> l){
+            lExp = l;
+        }
 	
 	public ExpPattern getPattern(){
 		if (proc == null){
@@ -944,7 +992,9 @@ public class Term extends Expression {
 	}
 	
 	public void setPattern(ExpPattern pat){
+            if (proc != null){
 		proc.setPattern(pat);
+            }
 	}
 	
 	void setExist(Exp exp){
@@ -962,15 +1012,19 @@ public class Term extends Expression {
                     return this;
                 }
                 
-		proc = new Processor(this);
-		proc.type(ast);                
+		//proc = new Processor(this);
+                proc = processor;
+		proc.type(this, ast);                
 		
                 int i = 0;
 		for (Expression exp : getArgs()){
 			exp.prepare(ast);
 		}
 		
-		proc.prepare(ast);
+                // May create a specific Processor to manage this specific term
+                // and overload proc field
+                // Use case: regex, external fun, etc.
+		proc.prepare(this, ast);
                 
                 if (getArg() != null){
                     getArg().prepare(ast);
@@ -980,11 +1034,6 @@ public class Term extends Expression {
 		
 	}
         
-
-	public int arity(){
-		return proc.arity();
-	}
-	
 	
 	public int type(){
 		return type;
@@ -1009,6 +1058,10 @@ public class Term extends Expression {
 		// TODO Auto-generated method stub
 		return proc;
 	}
+        
+        void setProcessor(Processor p){
+            proc = p;
+        }
 	              
         public Term copy(Variable o, Variable n) {
             Term f = null;
@@ -1036,15 +1089,16 @@ public class Term extends Expression {
     /**
      * @return the isExport
      */
-    public boolean isExport() {
-        return isExport;
+        @Override
+    public boolean isPublic() {
+        return false;
     }
 
     /**
      * @param isExport the isExport to set
      */
-    public void setExport(boolean isExport) {
-        this.isExport = isExport;
+        @Override
+    public void setPublic(boolean isExport) {
     }
 
     public Term getTerm(){

@@ -449,7 +449,10 @@ public class DatatypeMap implements Cst, RDF {
         return createObject("tmp", obj);
     }
 
-    public static IDatatype createObject(String name, Object obj) {        
+    public static IDatatype createObject(String name, Object obj) {      
+        if (obj == null){
+            return null;
+        }
         if (obj instanceof Pointerable){
             return new CoresePointer(name, (Pointerable) obj);
         }
@@ -476,7 +479,7 @@ public class DatatypeMap implements Cst, RDF {
     }
     
      public static IDatatype createList() {
-       return EMPTY_LIST;
+       return createList(new ArrayList<IDatatype>(0));
     }
 
     public static IDatatype createList(List<IDatatype> ldt) {
@@ -484,6 +487,19 @@ public class DatatypeMap implements Cst, RDF {
         return dt;
     }
     
+    public static IDatatype createList(IDatatype dt) {
+        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>();
+        ldt.add(dt);
+        return  CoreseList.create(ldt);
+    }
+    
+    public static IDatatype createList(IDatatype dt1, IDatatype dt2) {
+        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>();
+        ldt.add(dt1);
+        ldt.add(dt2);
+        return  CoreseList.create(ldt);
+    }
+
      public static IDatatype createList(Collection<IDatatype> ldt) {
         IDatatype dt = CoreseList.create(ldt);
         return dt;
@@ -744,16 +760,25 @@ public class DatatypeMap implements Cst, RDF {
          }
      }
       
-     public static IDatatype cons(IDatatype fst, IDatatype rst){
-          if (! rst.isList()){
+      // modify
+     public static IDatatype add(IDatatype list, IDatatype elem){
+          if (! list.isList()){
               return null;
           }
-          List<IDatatype> val = getValues(rst);
+          List<IDatatype> val = getValues(list);
+          val.add(elem);
+          return list;
+      }
+     
+     // copy
+     public static IDatatype cons(IDatatype elem, IDatatype list){
+          if (! list.isList()){
+              return null;
+          }
+          List<IDatatype> val = getValues(list);
           ArrayList<IDatatype> res = new ArrayList(val.size()+1);
-          res.add(fst);
-          for (int i = 0; i<val.size(); i++){
-                 res.add(val.get(i));
-             }
+          res.add(elem);
+          res.addAll(val);        
           return createList(res);
       }
       

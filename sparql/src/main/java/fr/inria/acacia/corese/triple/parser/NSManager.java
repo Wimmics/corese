@@ -1,8 +1,9 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -12,6 +13,8 @@ import org.apache.log4j.Logger;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * <p>Title: Corese</p>
@@ -25,7 +28,7 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
  *
  * @author Olivier Corby
  */
-public class NSManager {
+public class NSManager extends ASTObject {
 
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -45,8 +48,10 @@ public class NSManager {
     public static final String FOAF  = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
 
+    public static final String SWL        = ExpType.SWL;
     public static final String STL        = ExpType.STL;
     public static final String EXT        = ExpType.EXT;
+    public static final String USER       = ExpType.UXT;
     public static final String KGRAM      = ExpType.KGRAM;
     public static final String SPARQL     = ExpType.SPARQL;
     public static final String CUSTOM     = ExpType.CUSTOM;
@@ -63,9 +68,12 @@ public class NSManager {
     private static final String SPIN_PREF = "sp";
     private static final String FOAF_PREF = "foaf";
     public static final String  STL_PREF = "st";
+    public static final String  SWL_PREF = "sw";
     public static final String  EXT_PREF = "xt";
     public static final String  SPARQL_PREF = "rq";
-    
+    public static final String OWLRL = SWL + "owlrl";
+    public static final String RDFSRL = SWL + "rdfs";
+
     /**
      * prefix seed (ns1, ns2,...)
      */
@@ -73,7 +81,8 @@ public class NSManager {
     private static final String DOT = ".";
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
-    static final char[] end = {'#', '/', '?', ':'}; // may end an URI ...
+    static final char[] END_CHAR = {'#', '/', '?', ':'}; // may end an URI ...
+    static final String[] PB_CHAR = {"(", ")", "'", "\"", ","};
     static final String pchar = ":";
     int count = 0;
     HashMap<String, String> def; // system namespace with prefered prefix
@@ -194,6 +203,7 @@ public class NSManager {
 
         def.put(SPIN, SPIN_PREF);
         def.put(FOAF, FOAF_PREF);
+        def.put("http://dbpedia.org/ontology/", "dbo");
         
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);
@@ -202,11 +212,12 @@ public class NSManager {
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);
+        def.put(SWL, SWL_PREF);
         def.put(EXT, EXT_PREF);
-        def.put(ExpType.UXT, "us");
+        def.put(USER, "us");
         def.put(ExpType.DT, "dt");
         def.put(CUSTOM, "cs");
-        def.put(SPARQL, SPARQL_PREF);
+        def.put(SPARQL, SPARQL_PREF);        
     }
 
     // add default namespaces
@@ -333,12 +344,7 @@ public class NSManager {
     }
     
     public String toPrefixURI(String nsname, boolean skip) {
-        if (nsname.contains("(") 
-                || nsname.contains(")")
-                || nsname.contains("'")
-                || nsname.contains("\"")                
-                || nsname.contains(",")                
-                ) {
+        if (containsChar(nsname)) {
             return uri(nsname);
         } else {
             String str = toPrefix(nsname, skip);
@@ -348,6 +354,20 @@ public class NSManager {
                 return str;
             }
         }
+    }
+    
+    boolean containsChar(String str){
+        for (String s : PB_CHAR){
+            if (str.contains(s)){
+                return true;
+            }
+        }
+        String name = strip(str);
+        if (name != str && name.length()>0 && name.charAt(0) >= '0' && name.charAt(0) <= '9'){
+            return true;
+        }
+        
+        return false;
     }
 
     String uri(String str) {
@@ -486,7 +506,7 @@ public class NSManager {
         if (s == null) {
             baseURI = null;
         } else {
-             s = getBase(s);
+            s = getBase(s);
             base = s;
             try {
                 baseURI = new URI(s);
@@ -576,8 +596,8 @@ public class NSManager {
     public static String nstrip(String name) {
         // remove namespace
         int index;
-        for (int i = 0; i < end.length; i++) {
-            index = name.lastIndexOf(end[i]);// ???
+        for (int i = 0; i < END_CHAR.length; i++) {
+            index = name.lastIndexOf(END_CHAR[i]);// ???
             if (index != -1) {
                 return name.substring(index + 1);
             }
@@ -611,8 +631,8 @@ public class NSManager {
             return "";
         }
         int index;
-        for (int i = 0; i < end.length; i++) {
-            index = type.lastIndexOf(end[i]);
+        for (int i = 0; i < END_CHAR.length; i++) {
+            index = type.lastIndexOf(END_CHAR[i]);
             if (index != -1) {
                 String str = type.substring(0, index + 1);
                 return str;
@@ -699,4 +719,32 @@ public class NSManager {
             return null;
         }
     }
+
+    @Override
+    public int pointerType() {
+        return NSMANAGER_POINTER;
+    } 
+ 
+    /**
+     * 
+     * for ((?p, ?n) in st:prefix()){ }
+     */
+    @Override
+    public Iterable getLoop() {
+        return getList().getValues();
+    }
+    
+    
+    public IDatatype getList(){
+        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        for (String p : tprefix.keySet()){
+            String n = getNamespace(p);
+            if (! isSystem(n)){
+                IDatatype def = DatatypeMap.createList(DatatypeMap.newInstance(p), DatatypeMap.newResource(n));
+                list.add(def);
+            }
+        }
+        return DatatypeMap.createList(list);
+    }
+    
 }

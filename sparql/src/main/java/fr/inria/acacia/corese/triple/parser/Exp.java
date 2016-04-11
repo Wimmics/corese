@@ -1,6 +1,5 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -8,7 +7,9 @@ import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * <p>Title: Corese</p>
@@ -27,13 +28,11 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	
 	/** logger from log4j */
 	private static Logger logger = Logger.getLogger(Exp.class); 
-	private static String SUBSTATEOF = RDFS.COSSUBSTATEOF ;
-	private static final String LEAF = "leaf_";
 	
-	private Vector<Exp> body;
+	private ArrayList<Exp> body;
 	
 	public Exp() {
-		body = new Vector<Exp>();
+		body = new ArrayList<Exp>();
 	}
 	
 	public  boolean add(Exp exp){
@@ -87,7 +86,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		body.addAll(exp.getBody());
 	}
 	
-	public Vector<Exp> getBody(){
+	public List<Exp> getBody(){
 		return body;
 	}
 	
@@ -161,16 +160,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		return this;
 	}
 	
-	void setScore(Vector<String> names){
-		Exp exp;
-		for (int i=0;  i<size(); i++){
-			exp = eget(i);
-			exp.setScore(names);
-		}
-	}
-	
 
-	
 	void setNegation(boolean b) {
 	}
 	

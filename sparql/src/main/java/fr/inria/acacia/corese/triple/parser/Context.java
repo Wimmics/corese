@@ -6,6 +6,9 @@ package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -15,22 +18,23 @@ import java.util.HashMap;
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
  */
-public class Context {
+public class Context extends ASTObject {
 
     public static final String NL = System.getProperty("line.separator");
     public static final String STL = NSManager.STL;
     public static final String STL_QUERY    = STL + "query";
     public static final String STL_NAME     = STL + "name"; // query path name
-    public static final String STL_SERVICE  = STL + "service";
-    public static final String STL_SERVER   = STL + "server";
-    public static final String STL_PROFILE  = STL + "profile";
-    public static final String STL_SERVER_PROFILE = STL + "definition"; // profile.tll graph
-    public static final String STL_TRANSFORM = STL + "transform";
-    public static final String STL_URI      = STL + "uri";
-    public static final String STL_PROTOCOL = STL + "protocol";
+    public static final String STL_SERVICE  = STL + "service"; // /srv/template/
+    public static final String STL_SERVER   = STL + "server";  //  http://corese.inria.fr
+    public static final String STL_PROFILE  = STL + "profile"; // st:dbpedia
+    public static final String STL_SERVER_PROFILE = STL + "definition"; // profile.ttl graph
+    public static final String STL_TRANSFORM = STL + "transform"; // st:navlab
+    public static final String STL_LOD_PROFILE = STL + "lodprofile"; 
+    public static final String STL_URI      = STL + "uri";        // focus resource URI
+    public static final String STL_PROTOCOL = STL + "protocol";   // st:ajax
     public static final String STL_AJAX     = STL + "ajax";
-    public static final String STL_CONTEXT  = STL + "context";
-    public static final String STL_DATASET  = STL + "dataset";
+    public static final String STL_CONTEXT  = STL + "context";    // query named graph (for tutorial) 
+    public static final String STL_DATASET  = STL + "dataset";    // dataset named graph
     public static final String STL_EXPORT   = STL + "export";   
     public static final String STL_IMPORT   = STL + "import";   
     public static final String STL_PARAM    = STL + "param";   
@@ -39,10 +43,23 @@ public class Context {
     public static final String STL_VALUES   = STL + "values";
     public static final String STL_FILTER   = STL + "filter";
     public static final String STL_BIND     = STL + "bind";
+    public static final String STL_MODE     = STL + "mode";
+    public static final String STL_CLEAN    = STL + "clean";
+    public static final String STL_WORKFLOW = STL + "workflow";
+    public static final String STL_DEBUG    = STL + "debug";
+    public static final String STL_LOOP     = STL + "loop";
+    public static final String STL_INDEX    = STL + "index";
+    public static final String STL_TEST     = STL + "test";
+    public static final String STL_GRAPH    = STL + "graph";
+    public static final String STL_GRAPH_LIST    = STL + "graphs";
+    public static final String STL_SOLUTION = STL + "solution";
+    public static final String STL_VALUE    = STL + "value";
+    
     
     HashMap<String, IDatatype> table;
     static  HashMap<String, Boolean> sexport;
     HashMap<String, Boolean> export;
+    NSManager nsm;
     
     private boolean userQuery = false;
    
@@ -50,6 +67,7 @@ public class Context {
        sexport = new HashMap();
        sexport.put(STL_DATASET, true);
        sexport.put(STL_PROTOCOL, true);
+       sexport.put(STL_SERVICE, true);
    }
 
     public Context() {
@@ -58,15 +76,23 @@ public class Context {
     }
 
     public String toString() {
+        if (nsm == null){
+            nsm = NSManager.create();
+        }
         StringBuilder sb = new StringBuilder();
-        for (String key : table.keySet()) {
-            sb.append(key);
+        String[] keys = new String[table.size()];
+        table.keySet().toArray(keys);
+        Arrays.sort(keys);
+        for (String key : keys) {
+            sb.append(nsm.toPrefix(key, true));
             sb.append(" : ");
             sb.append(table.get(key));
             sb.append(NL);
         }
         return sb.toString();
     }
+    
+    
     
     public Collection<String> keys(){
         return table.keySet();
@@ -78,20 +104,27 @@ public class Context {
         return c;
     }
     
-    public void copy(Context c){
-        for (String str : c.keys()){
-            if (c.export(str)){
-               export(str, c.get(str)); 
+     public void complete(Context source) {
+        IDatatype export = source.get(Context.STL_EXPORT);
+        if (export != null && export.booleanValue()) {
+            copy(source);
+        } else {
+            // dataset, protocol
+            include(source);
+        }
+     }
+    
+    public void copy(Context source){
+        for (String str : source.keys()){
+            if (source.export(str)){
+               export(str, source.get(str)); 
             }
             else {
-                set(str, c.get(str));
+                set(str, source.get(str));
             }
         }
     }
     
-    boolean export(String str){        
-        return export.get(str) != null && export.get(str) && get(str) != null;
-    }
     
     // this include source
      public void include(Context source){
@@ -116,11 +149,18 @@ public class Context {
             }
         }
      }
-     
-
+           
+    boolean export(String str){        
+        return export.get(str) != null && export.get(str) && get(str) != null;
+    }
+    
     public Context set(String name, IDatatype value) {
         table.put(name, value);
         return this;
+    }
+    
+     public Context setName(String name, IDatatype value) {
+        return set(NSManager.STL+name, value);
     }
     
     public Context export(String name, IDatatype value) {
@@ -128,9 +168,22 @@ public class Context {
         export.put(name, true);
         return this;
     }
+    public Context exportName(String name, IDatatype value) {
+        return export(NSManager.STL+name, value);
+    }
 
     public Context set(String name, String str) {
         table.put(name, DatatypeMap.newInstance(str));
+        return this;
+    }
+    
+     public Context set(String name, int n) {
+        table.put(name, DatatypeMap.newInstance(n));
+        return this;
+    }
+     
+     public Context set(String name, boolean n) {
+        table.put(name, DatatypeMap.newInstance(n));
         return this;
     }
 
@@ -158,6 +211,14 @@ public class Context {
     public Context setURI(String str) {
         return setURI(STL_URI, str);
     }
+    
+     public Context setMode(String str) {
+        return setURI(STL_MODE, str);
+    }
+     
+     public Context setParam(String str) {
+        return set(STL_PARAM, str);
+    }
 
     public String getURI() {
         return stringValue(STL_URI);
@@ -167,20 +228,20 @@ public class Context {
         return setURI(STL_PROTOCOL, str);
     }
 
-    public Context setQuery(String str) {
+    public Context setQueryString(String str) {
         return set(STL_QUERY, str);
     }
 
     // add values clause to query
     public Context addValue(String value) {
-        String squery = getQuery();
+        String squery = getQueryString();
         if (getURI() == null && squery != null) {
-            setQuery(squery + value);
+            setQueryString(squery + value);
         }
         return this;
     }
 
-    public String getQuery() {
+    public String getQueryString() {
         return stringValue(STL_QUERY);
     }
 
@@ -224,6 +285,10 @@ public class Context {
     public IDatatype get(String name) {
         return table.get(name);
     }
+    
+    public IDatatype getName(String name) {
+        return get(NSManager.STL+name);
+    }
 
     public String stringValue(String name) {
         IDatatype dt = table.get(name);
@@ -249,6 +314,27 @@ public class Context {
 
     public void setServerProfile(IDatatype obj) {
         set(STL_SERVER_PROFILE, obj);
+    }
+    
+    public int pointerType(){
+        return Pointerable.CONTEXT_POINTER;
+    }
+    
+    public Iterable getLoop(){
+        return getList().getValues();       
+    }
+    
+    public IDatatype getList(){
+        ArrayList<IDatatype> list = new  ArrayList<IDatatype>();
+        for (String key : table.keySet()){
+            IDatatype val = table.get(key);
+            if (val != null){
+                IDatatype dt   = DatatypeMap.createResource(key);
+                IDatatype pair = DatatypeMap.createList(dt, val);
+                list.add(pair);
+            }
+        }
+        return DatatypeMap.createList(list);
     }
     
 }

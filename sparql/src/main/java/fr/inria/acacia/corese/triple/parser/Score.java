@@ -1,6 +1,5 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import java.util.Vector;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 
@@ -17,6 +16,7 @@ import fr.inria.acacia.corese.triple.cst.KeywordPP;
  * It implements score ?s { PATTERN }
  * <br>
  * @author Olivier Corby
+ * @deprecated
  */
 
 public class Score extends And {
@@ -63,15 +63,15 @@ public class Score extends And {
     return exp;
   }
 
-  void setScore(Vector<String> names){
-    Vector<String> vec = names;
-    if (! names.contains(score)){
-      vec = new Vector<String>();
-      vec.addAll(names);
-      vec.add(score);
-    }
-    eget(0).setScore(vec);
-  }
+//  void setScore(Vector<String> names){
+//    Vector<String> vec = names;
+//    if (! names.contains(score)){
+//      vec = new Vector<String>();
+//      vec.addAll(names);
+//      vec.add(score);
+//    }
+//    eget(0).setScore(vec);
+//  }
 
   public String toString(){
       return KeywordPP.SCORE + KeywordPP.SPACE + score + KeywordPP.OPEN_BRACKET + super.toString() + KeywordPP.CLOSE_BRACKET;

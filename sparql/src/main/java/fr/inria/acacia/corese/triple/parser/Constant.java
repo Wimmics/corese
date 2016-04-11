@@ -23,71 +23,62 @@ public class Constant extends Atom {
 	private static Logger logger = Logger.getLogger(Constant.class);
 	private static NSManager nsm;
 	static DatatypeMap dm;
+	boolean isQName = false;
 	IDatatype dt;
+	String datatype = null;
 	
-	String srcDatatype = null; // the source datatype if any (not infered)
-	boolean literal = false;
-	boolean isBlank = false;
 	int weight = 1;
 	private Variable var;
 	// draft regexp
 	private Expression exp;
+        
+        static {        
+            dm = DatatypeMap.create();
+            nsm = NSManager.create();
+	}
 
 	public Constant() {}
 
-	 Constant(String name) {
+	 private Constant(String name) {
 		super(name);
 		// by safety:
 		setLongName(name);
 		datatype = RDFS.RDFSRESOURCE;
 	}
 
-	 Constant(String name, String dt, String lg, boolean bliteral) {
-		super(name, dt, lg);
-		literal = bliteral;
+	 private Constant(String name, String datatype, String lg) {
+		super(name);
+                this.datatype = datatype;
+                setDatatypeValue(DatatypeMap.createLiteral(name, nsm.toNamespace(datatype), lg));
 	}
 
-	 Constant(String name, String dt) {
-		this(name, dt, null, true);
+	 private Constant(String name, String dt) {
+		this(name, dt, null);
 	}
-	
-	 Constant(String name, String dt, String lg) {
-		this(name, dt, lg, true);		
-	}           
-	
+		  	
 	public static Constant create(String str){
-		return new Constant(str);
+		Constant cst = new Constant(str);
+                cst.setDatatypeValue(DatatypeMap.createResource(cst.getLongName()));
+                return cst;
 	}
-	
-	public static Constant create(){
-		return new Constant();
-	}
-	
-	public static Constant createResource(){
-		Constant cst = new Constant();
-		cst.setDatatype(RDFS.RDFSRESOURCE);
-		return cst;
-	}
-	
-	public static Constant createBlank(){
-		Constant cst = new Constant();
-		cst.setDatatype(RDFS.RDFSRESOURCE);
-		cst.setBlank(true);
-		return cst;
+        
+        public static Constant createResource(String str, String longName){
+		Constant cst = new Constant(str);
+                cst.setLongName(longName);
+                cst.setDatatypeValue(DatatypeMap.createResource(longName));
+                return cst;
 	}
 	
 	public static Constant createBlank(String label){
 		Constant cst = new Constant(label);
-		cst.setBlank(true);
+                cst.setDatatypeValue(DatatypeMap.createBlank(label));
 		return cst;
 	}
 	
 	public static Constant createResource(String str){
-		Constant cst =  new Constant(str);
-		if (nsm==null){
-			nsm = NSManager.create();
-		}
+		Constant cst =  new Constant(str);		
 		cst.setLongName(nsm.toNamespace(str));
+                cst.setDatatypeValue(DatatypeMap.createResource(cst.getLongName()));
 		return cst;
 	}
         
@@ -98,6 +89,10 @@ public class Constant extends Atom {
 	
 	public static Constant create(int n){
 		return new Constant(Integer.toString(n), RDFS.xsdinteger);
+	}
+        
+        public static Constant create(double d){
+		return new Constant(Double.toString(d), RDFS.xsddouble);
 	}
 	
 	public static Constant create(boolean b){
@@ -112,19 +107,51 @@ public class Constant extends Atom {
 		Constant cst = new Constant(name, dt, lg);
 		return cst;
 	}
-	
-	public static Constant array(ExpressionList el){
-		return new Array(el);
+        
+        public String getDatatype() {
+		return datatype;
 	}
 	
-	public StringBuffer toString(StringBuffer sb) {
-		if (isLiteral()){
-			
-			
-			if (lang != null) {
+	void setDatatype(String str) {
+		datatype = str;
+	}
+        
+        boolean hasRealDatatype() {
+		if (datatype == null) return false;
+		for (String str : RDFS.FAKEDT){
+			if (datatype.equals(str)){
+				return false;
+			}
+		}
+		return true;				
+	}
+
+//	// only xsd/rdf datatype (no rdfs:Literal no rdfs:Resource)
+//	public String getRealDatatype() {
+//		if (! hasRealDatatype()){
+//			return null;
+//                }
+//                else {
+//			return datatype;
+//                }
+//	}
+
+	public String getLang() {
+		return dt.getLang();
+	}
+
+	public boolean hasLang() {
+            String lg = dt.getLang();
+            return lg != null && lg != "";
+	}
+
+
+       public StringBuffer toString(StringBuffer sb) { 
+		if (isLiteral()){						
+			if (hasLang()) {
 				//return name + "@" + lang;
 				toString(name, sb);
-				sb.append(KeywordPP.LANG + lang);
+				sb.append(KeywordPP.LANG + getLang());
 			} 
 			else if (hasRealDatatype()) {
 				if (datatype.equals(RDF.qxsdInteger) || datatype.equals(RDF.xsdinteger)){
@@ -253,46 +280,13 @@ public class Constant extends Atom {
 		return false;
 	}
 	
-	/**
-	 * 
-	 */
-	public IDatatype createDatatype(){
-		if (dm == null){
-			dm = DatatypeMap.create();
-			nsm = NSManager.create();
-		}
-		IDatatype dt = null;
-		if (isBlank()){
-			//dt = CoreseDatatype.create(Cst.jTypeBlank, null, name, null);
-			dt = DatatypeMap.createBlank(name);
-		}
-		else if (isResource()){
-			String str = getLongName();
-			if (str == null){
-				logger.error("** Constant2Datatype: longName missing: " + this);
-				str = name;
-			}
-			dt = DatatypeMap.createResource(str);
-
-		}
-		else {
-			String ndt =  nsm.toNamespace(datatype);
-			dt = DatatypeMap.createLiteral(name, ndt,  lang);
-		}
-		return dt;
-		
-	}
-	
-	static String getJavaType(String datatypeURI){
-		if (dm == null){
-			dm = DatatypeMap.create();
-			nsm = NSManager.create();
-		}
+	static String getJavaType(String datatypeURI){		
 		return dm.getJType(nsm.toNamespace(datatypeURI));
 	}
 	
+        @Override
 	public IDatatype getDatatypeValue(){
-		if (dt == null) dt = createDatatype();
+		//if (dt == null) dt = createDatatype();
 		return dt;
 	}
 	
@@ -307,23 +301,19 @@ public class Constant extends Atom {
 	public static Constant create(IDatatype dt){
 		Constant cst;
 		if (dt.isLiteral()){
-			cst = Constant.create(dt.getLabel(), dt.getDatatype().getLabel(), dt.getLang());
+			cst = create(dt.getLabel(), dt.getDatatype().getLabel(), dt.getLang());
 		}
-		else {
+		else if (dt.isURI()){
 			// URI & Blank
-			cst = Constant.create(dt.getLabel());
-			if (dt.isBlank()){
-				cst.setBlank(true);
-			}
+			cst = create(dt.getLabel());			
 		}
+                else {
+                    cst = createBlank(dt.getLabel());
+                }
 		cst.setDatatypeValue(dt);
 		return cst;
 	}
-	
-	public boolean  hasDatatypeValue(){
-		return dt != null;
-	}
-	
+		
 	public void setDatatypeValue(IDatatype dd){
 		dt = dd;
 	}
@@ -335,27 +325,20 @@ public class Constant extends Atom {
 	public int length(){
 		return 1;
 	}
-	
-	void setLiteral(boolean b) {
-		literal = b;
-	}
+		
 
 	public boolean isConstant() {
 		return true;
 	}
 
 	public boolean isLiteral() {
-        return literal;
+           return dt.isLiteral();
     }
 	
 	public boolean isBlank(){
-		return isBlank;
+            return dt.isBlank();
 	}
-	
-	public void setBlank(boolean b){
-		isBlank = b;
-	}
-	
+		
 	public void setWeight(String w){
 		try {
 			setWeight(Integer.parseInt(w));
@@ -378,7 +361,7 @@ public class Constant extends Atom {
 	}
 	
 	public boolean isResource() {
-		return ! literal && ! isBlank;
+            return dt.isURI();
 	}
 
 	// use when "get:name::?x" or "c:SomeRelation::?p" because we have both a variable and a constant
@@ -399,7 +382,13 @@ public class Constant extends Atom {
         return var;
     }
 
- 
+        public boolean isQName() {
+		return isQName;
+	}
+	
+	public void setQName(boolean isQName) {
+		this.isQName = isQName;
+	}
     
 	/**
 	 * KGRAM
@@ -419,15 +408,31 @@ public class Constant extends Atom {
 	public Constant copy(){
 		Constant cst;
 		if (isLiteral()){
-			cst = new Constant(getLabel(), getDatatype(), getLang());
+			cst = create(getName(), getDatatype(), getLang());                       
 		}
-		else {
-			cst = new Constant(getLabel());
+		else if (isResource()){
+			cst = createResource(getName(), getLongName());
 			cst.setQName(isQName);
 		}
-		cst.setLongName(getLongName());
+                else {
+                    cst = createBlank(getName());
+                }
+                cst.setDatatypeValue(getDatatypeValue());
 		return cst;
 	}
+        
+//        public Constant copySave(){
+//		Constant cst;
+//		if (isLiteral()){
+//			cst = new Constant(getLabel(), getDatatype(), getLang());                       
+//		}
+//		else {
+//			cst = new Constant(getLabel());
+//			cst.setQName(isQName);
+//		}
+//		cst.setLongName(getLongName());
+//		return cst;
+//	}
         
          void visit(ExpressionVisitor v){
             v.visit(this);

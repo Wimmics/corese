@@ -15,12 +15,10 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 
 public class Atom extends Expression implements ElementClause{
 	
-	String datatype = null;
-	String lang = null;
 	boolean isone = false;
 	boolean isall = false;
 	boolean isdirect = false;
-	boolean isset = false;
+	//boolean isset = false;
 	int star;
 	
 	public Atom() {
@@ -29,12 +27,6 @@ public class Atom extends Expression implements ElementClause{
     
     public Atom(String name) {
 		super(name);
-	}
-
-	public Atom(String name, String dt, String lg) {
-		super(name);
-		datatype = dt;
-		lang = lg;
 	}
 	
 	public boolean equals(Object at){
@@ -64,46 +56,7 @@ public class Atom extends Expression implements ElementClause{
 	public boolean isResource() {
 		return false;
 	}
-
-	public String getDatatype() {
-		return datatype;
-	}
-
-	boolean hasRealDatatype() {
-		if (datatype == null) return false;
-		for (String str : RDFS.FAKEDT){
-			if (datatype.equals(str)){
-				return false;
-			}
-		}
-		return true;				
-	}
-
-	// only xsd/rdf datatype (no rdfs:Literal no rdfs:Resource)
-	public String getRealDatatype() {
-		if (! hasRealDatatype())
-			return null;
-		else
-			return datatype;
-	}
-
-	public String getLang() {
-		return lang;
-	}
-
-	public boolean hasLang() {
-		return lang != null && lang != "";
-	}
-
-
-	void setLang(String str) {
-		lang = str;
-	}
-
-	void setDatatype(String str) {
-		datatype = str;
-	}
-
+	
 	public boolean isIsall() {
 		return isall;
 	}
@@ -136,13 +89,13 @@ public class Atom extends Expression implements ElementClause{
 		this.star = star;
 	}
 
-	public boolean isIsset() {
-		return isset;
-	}
-
-	public void setIsset(boolean isset) {
-		this.isset = isset;
-	}
+//	public boolean isIsset() {
+//		return isset;
+//	}
+//
+//	public void setIsset(boolean isset) {
+//		this.isset = isset;
+//	}
 
 	public Atom getAtom() {
 		return this;

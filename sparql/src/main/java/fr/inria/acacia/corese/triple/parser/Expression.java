@@ -1,10 +1,10 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -31,13 +31,11 @@ implements Regex, Filter, Expr {
 	public static final int POSFILTER = 2;
 	public static final int BOUND = 4;
 	
-	static ArrayList<Expr> empty = new ArrayList<Expr>();
-	int min = -1, max = -1, retype = Regex.UNDEF;
+	static ArrayList<Expr> empty = new ArrayList<Expr>(0);
+        int retype = Regex.UNDEF;
 	
-	boolean isQName = false;
-	boolean isEget = false;
 	boolean isSystem = false;
-	boolean isInverse = false, isReverse = false;
+        boolean isReverse = false;
 	
 	String name, longName;
 	Expression exp;
@@ -153,11 +151,12 @@ implements Regex, Filter, Expr {
             return false;
         }
         
-        public boolean isExport(){
+        @Override
+        public boolean isPublic(){
 		return false;
 	}
 	
-	public void setExport(boolean b){
+	public void setPublic(boolean b){
 	}
         	
 	public boolean isArray(){
@@ -230,16 +229,6 @@ implements Regex, Filter, Expr {
 		return null;
 	}
 	
-	
-	public boolean isOptionVar(List<String> stdVar){
-		Variable var = getOptionVar(stdVar);
-		return var != null;
-	}
-	
-	public Variable getOptionVar(List<String> stdVar){
-		return null;
-	}
-	
 	public boolean isAnd(){
 		return false;
 	}
@@ -272,11 +261,11 @@ implements Regex, Filter, Expr {
 	}
 	
 	public boolean isInverse(){
-		return isInverse;
+		return false;
 	}
 	
 	public void setInverse(boolean b){
-		isInverse = b;
+		//isInverse = b;
 	}
 	
 	public boolean isReverse(){
@@ -295,33 +284,23 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
-	void setMin(int n){
-		min = n;
-	}
-	
 	public int getMin(){
-		return min;
+		return -1;
 	}
-	
-	void setMax(int n){
-		max = n;
-	}
-	
+
 	public int getMax(){
-		return max;
+		return -1;
 	}
 	
 	// include isPlus()
 	public boolean isCounter(){
-		return (min!=-1 || max != -1);
+		return false;
 	}
 	
 	boolean isOrVarEqCst(Variable var){
 		return false;
 	}
-	
-	void getCst(Vector<Constant> vec){}
-	
+		
 	public boolean isStar(){
 		return false;
 	}
@@ -439,23 +418,7 @@ implements Regex, Filter, Expr {
 	public Expression rewrite(){
 		return this;
 	}
-	
-	
-	public boolean isQName() {
-		return isQName;
-	}
-	
-	public void setQName(boolean isQName) {
-		this.isQName = isQName;
-	}
-	
-	public boolean isEget() {
-		return isEget;
-	}
-	
-	public void setEget(boolean isEget) {
-		this.isEget = isEget;
-	}
+				
 	
 	/*************************************************************
 	 * 
@@ -508,6 +471,11 @@ implements Regex, Filter, Expr {
 	public Object getValue() {
 		return null;
 	}
+        
+        @Override
+        public IDatatype getDatatypeValue(){
+            return null;
+        }
 
 	
 	public boolean isAggregate() {

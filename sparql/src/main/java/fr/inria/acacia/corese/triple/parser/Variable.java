@@ -2,7 +2,6 @@ package fr.inria.acacia.corese.triple.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
@@ -104,7 +103,7 @@ public class Variable extends Atom {
 			return null;
 		}
 		Expression exp = ast.getExpression(name);
-		if (exp != null && (! exp.isFunctional() || ! ast.isKgram())){
+		if (exp != null && (! exp.isFunctional())){ // || ! ast.isKgram())){
 			// use case: do not rewrite ?val
 			// xpath() as ?val
 			// xsd:integer(?val)
@@ -150,12 +149,12 @@ public class Variable extends Atom {
 		return this;
 	}
 	
-	public Variable getOptionVar(Vector<String> stdVar) {
-		if (! stdVar.contains(name)){
-			return this;
-		}
-		else return null;
-	}
+//	public Variable getOptionVar(Vector<String> stdVar) {
+//		if (! stdVar.contains(name)){
+//			return this;
+//		}
+//		else return null;
+//	}
 	
 	public boolean isBlankNode() {
 		return isBlankNode;

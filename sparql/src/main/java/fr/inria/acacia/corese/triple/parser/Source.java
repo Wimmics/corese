@@ -1,6 +1,5 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import java.util.Vector;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 

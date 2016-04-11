@@ -14,49 +14,49 @@ import org.apache.log4j.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-public class Extension {
-    private static Logger logger = Logger.getLogger(Extension.class);	
+public class ASTExtension {
+    private static Logger logger = Logger.getLogger(ASTExtension.class);	
 
     static final String NL = System.getProperty("line.separator");
     //FunMap map;
-    FunMap[] maps;
+    ASTFunMap[] maps;
     private String name;
     private Constant pack;
     ArrayList<Expression> funList;
     
-    public class FunMap extends HashMap<String, Expression> {}
+    public class ASTFunMap extends HashMap<String, Expression> {}
 
-    public Extension() {
+    public ASTExtension() {
         //map = new FunMap();
-        maps = new FunMap[11];
+        maps = new ASTFunMap[11];
         for (int i=0; i<maps.length; i++){
-            maps[i] = new FunMap();
+            maps[i] = new ASTFunMap();
         }
         funList = new ArrayList();
     }
     
-    public Extension(String n){
+    public ASTExtension(String n){
         this();
         name = n;
     }
     
-    FunMap getMap(Expression exp){
+    ASTFunMap getMap(Expression exp){
         return getMap(exp.getArgs().size());
     }
     
-    FunMap getMap(int n){
+    ASTFunMap getMap(int n){
          if (n >= maps.length){
             return null;
         }
         return maps[n];
     }
     
-    public FunMap[] getMaps(){
+    public ASTFunMap[] getMaps(){
         return maps;
     }
     
     public boolean isEmpty(){
-        for (FunMap m : getMaps()){
+        for (ASTFunMap m : getMaps()){
             if (! m.isEmpty()){
                 return false;
             }
@@ -83,7 +83,7 @@ public class Extension {
      */
     public void define(Expression exp) {
         Expression fun = exp.getFunction(); //exp.getArg(0);
-        FunMap fm = getMap(fun);
+        ASTFunMap fm = getMap(fun);
         if (fm == null){
             logger.error("To many args: " + exp);
             return;
@@ -91,8 +91,8 @@ public class Extension {
         fm.put(fun.getLabel(), exp);
     }
     
-    public void add(Extension ext){
-        for (FunMap m : ext.getMaps()){
+    public void add(ASTExtension ext){
+        for (ASTFunMap m : ext.getMaps()){
             for (Expression e : m.values()){
                 if (! isDefined(e.getFunction())){
                     define(e);
@@ -129,7 +129,7 @@ public class Extension {
     }
     
     public Expression get(String label, int n) {
-        FunMap m = getMap(n);
+        ASTFunMap m = getMap(n);
         if (m == null){
             return null;
         }
@@ -140,7 +140,7 @@ public class Extension {
         StringBuilder sb = new StringBuilder();
         sb.append("extension: ");
         sb.append(NL);
-        for (FunMap m : getMaps()){
+        for (ASTFunMap m : getMaps()){
             for (Expression exp : m.values()) {
                 sb.append(exp);
                 sb.append(NL);

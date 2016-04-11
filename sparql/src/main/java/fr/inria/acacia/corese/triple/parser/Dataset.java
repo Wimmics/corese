@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,7 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
  * @author Olivier Corby, Wimmics, INRIA 2012
  *
  */
-public class Dataset {
+public class Dataset extends ASTObject {
 	protected static final String KG = ExpType.KGRAM;
 	static final String EMPTY = KG + "empty";
 	static final Constant CEMPTY = Constant.create(EMPTY);
@@ -26,9 +28,14 @@ public class Dataset {
 	// Protocol is false
 	boolean isUpdate = false;
 	
-	Dataset(){
+	public Dataset(){
             this(new ArrayList<Constant>(), new ArrayList<Constant>());
 	}
+        
+        public Dataset(Context c){
+            this();
+            context = c;
+        }
 	
 	Dataset(List<Constant> f, List<Constant> n){
 		from = f;
@@ -37,6 +44,10 @@ public class Dataset {
 	
 	public static Dataset create(){
 		return new Dataset();
+	}
+        
+        public static Dataset create(Context c){
+		return new Dataset(c);
 	}
 	
 	public static Dataset create(List<Constant> f, List<Constant> n){
@@ -69,7 +80,6 @@ public class Dataset {
 
         return new Dataset(from, named);
         }
-        
 	
 	public String toString(){
 		String str = "";
@@ -197,6 +207,44 @@ public class Dataset {
     public void setContext(Context context) {
         this.context = context;
     }
+    
+    public Dataset set(Context c){
+        setContext(c);
+        return this;
+    }
+    
+    @Override
+    public int pointerType() {
+        return DATASET_POINTER;
+    } 
+ 
+    /**
+     * 
+     * for ((?g) in xt:dataset()){ }
+     */
+    @Override
+    public Iterable getLoop() {
+        return getNamedList().getValues();
+    }
+    
+    
+    public IDatatype getNamedList(){
+        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        if (named != null){
+            for (Constant g : named){
+                list.add(g.getDatatypeValue());
+            }
+        }
+        return DatatypeMap.createList(list);
+    }
 		
-
+    public IDatatype getFromList(){
+        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        if (from != null){
+            for (Constant g : from){
+                list.add(g.getDatatypeValue());
+            }
+        }
+        return DatatypeMap.createList(list);
+    }
 }

@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +55,7 @@ public class Processor {
 	private static final String ISNUMERIC = "isNumeric";
 	private static final String LANG = "lang";
 	private static final String REGEX = "regex";
-        private static final String APPROXIMATE = "approximate";
+        public static final String APPROXIMATE = "approximate";
         private static final String APP_SIM = "sim";
 	public static  final String MATCH = "match";
 	private static final String LANGMATCH = "langMatches";
@@ -69,6 +68,7 @@ public class Processor {
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
         
+	private static final String FUNCALL  = "funcall";
 	private static final String EVAL  = "eval";
 	private static final String RETURN  = "return";
 	public static final String SEQUENCE  = "sequence";
@@ -76,10 +76,13 @@ public class Processor {
 	public static final String LET     = "let";
         static final String FOR             = "for";
 	private static final String MAP     = "map";
-	private static final String MAPLIST = "maplist";
+	static final String MAPLIST = "maplist";
+	static final String MAPFUN = "mapfun";
 	private static final String MAPMERGE = "mapmerge";
 	private static final String MAPSELECT = "mapselect";
-	private static final String APPLY   = "apply";
+	private static final String MAPFIND   = "mapfind";
+	private static final String MAPFINDLIST   = "mapfindlist";
+	static final String APPLY   = "apply";
         
         private static final String XT_SELF     = EXT + "self";
         private static final String XT_FIRST    = EXT + "first";
@@ -89,8 +92,8 @@ public class Processor {
         private static final String FUN_XT_GET  = EXT_PREF + "gget";
         private static final String XT_SET      = EXT + "set";
         private static final String XT_CONS     = EXT + "cons";        
-        //private static final String XT_CONCAT   = EXT + "concat";
-        // private static final String XT_COUNT    = EXT + "count";
+        private static final String XT_ADD      = EXT + "add";
+        private static final String XT_MAPPING  = EXT + "mapping";
         private static final String XT_SIZE     = EXT + "size";      
         private static final String XT_GRAPH    = EXT + "graph";
         private static final String XT_SUBJECT  = EXT + "subject";
@@ -101,9 +104,16 @@ public class Processor {
         private static final String XT_REJECT   = EXT + "reject";
         private static final String XT_VARIABLES= EXT + "variables";
         private static final String XT_EDGE     = EXT + "edge";
+        private static final String XT_QUERY    = EXT + "query";
+        private static final String XT_AST      = EXT + "ast";
+        private static final String XT_CONTEXT  = EXT + "context";
+        private static final String XT_METADATA = EXT + "metadata";
+        private static final String XT_PREFIX   = EXT + "prefix";        
+        private static final String XT_FROM     = EXT + "from";        
+        private static final String XT_NAMED    = EXT + "named";        
         private static final String XT_TRIPLE   = EXT + "triple";
-        static public final String XT_MAIN     = EXT + "main";
-        static public final String FUN_XT_MAIN = EXT_PREF + "main";
+        static public final String XT_MAIN      = EXT + "main";
+        static public final String FUN_XT_MAIN  = EXT_PREF + "main";
        
 
 	private static final String PLENGTH = "pathLength";
@@ -213,6 +223,7 @@ public class Processor {
 	public static final String STL_NUMBER       = STL + "number";
 	public static final String STL_INDEX        = STL + "index";
 	public static final String STL_FUTURE       = STL + "future";
+	public static final String STL_FORMAT       = STL + "format";
         
 	public static final String FUN_NUMBER       = NSManager.STL_PREF + ":"  + "_n_";
 	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
@@ -223,6 +234,7 @@ public class Processor {
 	public static final String FUN_GROUPCONCAT  = NSManager.STL_PREF + ":" + "group_concat"; 
 	public static final String FUN_AGGREGATE    = NSManager.STL_PREF + ":" + "aggregate"; 
 	public static final String FUN_TURTLE       = NSManager.STL_PREF + ":" + "turtle"; 
+	public static final String FUN_FORMAT       = NSManager.STL_PREF + ":" + "format"; 
 
 	       
 	static final String QNAME 	= KGRAM + "qname"; 
@@ -304,33 +316,25 @@ public class Processor {
 	static final String SHA224 	= "sha224";
 	static final String SHA256	= "sha256";
 	static final String SHA384 	= "sha384";
-	static final String SHA512 	= "sha512";
-	
-        static final String KG_POWER 	= KGRAM + "power";
-        static final String KG_PLUS 	= KGRAM + "plus";
-        static final String KG_MINUS 	= KGRAM + "minus";
-        static final String KG_MULT 	= KGRAM + "mult";
-        static final String KG_DIV 	= KGRAM + "div";
-        static final String KG_CONCAT 	= KGRAM + "concat";
-        static final String KG_APPEND 	= KGRAM + "append";
-        static final String KG_AND 	= KGRAM + "and";
-        static final String KG_OR 	= KGRAM + "or";
-        static final String KG_NOT 	= KGRAM + "not";
-        static final String KG_EQUAL 	= KGRAM + "equal";
-        static final String KG_DIFF 	= KGRAM + "diff";
-       
-	static final String XT_POWER 	= EXT + "power";
-        static final String XT_PLUS 	= EXT + "plus";
-        static final String XT_MINUS 	= EXT + "minus";
-        static final String XT_MULT 	= EXT + "mult";
-        static final String XT_DIV 	= EXT + "divis";
-        static final String XT_AND 	= EXT + "and";
-        static final String XT_OR 	= EXT + "or";
-        static final String XT_NOT 	= EXT + "not";
-        static final String XT_EQUAL 	= EXT + "equal";
-        static final String XT_DIFF 	= EXT + "diff";
+	static final String SHA512 	= "sha512";              
+                     
+	static final String RQ_POWER 	= SPARQL + "power";
+        static final String RQ_PLUS 	= SPARQL + "plus";
+        static final String RQ_MINUS 	= SPARQL + "minus";
+        static final String RQ_MULT 	= SPARQL + "mult";
+        static final String RQ_DIV 	= SPARQL + "divis";
+        static final String RQ_AND 	= SPARQL + "and";
+        static final String RQ_OR 	= SPARQL + "or";
+        static final String RQ_NOT 	= SPARQL + "not";
+        static final String RQ_EQUAL 	= SPARQL + "equal";
+        static final String RQ_DIFF 	= SPARQL + "diff";
+        
         static final String XT_DISPLAY 	= EXT + "display";
         static final String XT_TUNE 	= EXT + "tune";
+        static final String XT_UNION 	= EXT + "union";
+        static final String XT_MINUS 	= EXT + "minus";
+        static final String XT_OPTIONAL = EXT + "optional";
+        static final String XT_JOIN     = EXT + "join";
         
         public static final String[] aggregate = 
 	{AVG, COUNT, SUM, MIN, MAX, SAMPLE, 
@@ -340,7 +344,6 @@ public class Processor {
         static final HashMap<String, Boolean> fixed; 
 	
 	Term term;
-	List<Expr> lExp;
         // function definition for UNDEF function call
 	private Expr define;
 	Pattern pat;
@@ -352,21 +355,28 @@ public class Processor {
 	Method fun;
 	ExpPattern pattern;
 	boolean isCorrect = true;
-	
+	public static int count = 0;
 	private static final int IFLAG[] = {
 		Pattern.DOTALL, Pattern.MULTILINE, Pattern.CASE_INSENSITIVE,
 		Pattern.COMMENTS};
 	static final String SFLAG[] = {"s", "m", "i", "x"};
-        
-        static {
+        		
+	public static HashMap<String, Integer> table;
+	public static HashMap<Integer, String> tname, toccur;
+        static ASTQuery ast;
+    private String name;
+    
+     static {
             fixed = new HashMap();
             fixed.put(SET, true);
+            init();
+            deftable();
         }
-	
-	
-	public static Hashtable<String, Integer> table;
-	public static Hashtable<Integer, String> tname, toccur;
-    private String name;
+     
+     static void init(){
+         ast = ASTQuery.create();
+         ast.setBody(BasicGraphPattern.create());
+     }
     
 	Processor(){            
         }
@@ -378,13 +388,7 @@ public class Processor {
         public static Processor create(){
             return new Processor();
         }
-	
-	
-	// Exp
-	
-	public List<Expr> getExpList(){
-		return lExp;
-	}
+			
 	
 	// filter(exist {PAT})
 	public ExpPattern getPattern(){
@@ -394,86 +398,34 @@ public class Processor {
 	public void setPattern(ExpPattern pat){
 		 pattern = pat;
 	}
-
-	
-	Expr getExp(int i){
-		return lExp.get(i);
-	}
-        
-        void setExp(int i, Expr e){
-            if (i < lExp.size()){
-                lExp.set(i, e);
-            }
-            else if (i == lExp.size()){
-                lExp.add(i, e);
-            }
-        }
-        
-        void addExp(int i, Expr e){
-            lExp.add(i, e);
-        }
-
-	
-	void setArguments(){
-		if (lExp == null){
-			lExp = new ArrayList<Expr>();
-			for (Expr e : term.getArgs()){
-				lExp.add(e);
-			}
-		}
-	}
-	
-	public int arity(){
-		return lExp.size();
-	}
-	
-	
-	public int type(){
-		return term.type();
-	}
-        
-        public int oper(){
-		return term.oper();
-	}
-        
-        void setOper(int n){
-            term.setOper(n);
-        }
-        
-        void setType(int n){
-            term.setType(n);
-        }
-	
-	public void type(ASTQuery ast){
-		if (table == null){
-			deftable();
-		}
-                if (type() != ExprType.UNDEF){
+	       	
+	public void type(Term term, ASTQuery ast){
+                if (term.type() != ExprType.UNDEF){
                     // already done
                 }
                 else if (term.isFunction()){
-			setType(ExprType.FUNCTION);
-			setOper(getOper());
-                        preprocess(ast);
+			term.setType(ExprType.FUNCTION);
+			term.setOper(getOper(term));
+                        preprocess(term, ast);
 		}
 		else if (term.isAnd()){
-			setType(ExprType.BOOLEAN);
-			setOper(ExprType.AND);
+			term.setType(ExprType.BOOLEAN);
+			term.setOper(ExprType.AND);
 		}
 		else if (term.isOr()){
-			setType(ExprType.BOOLEAN);
-			setOper(ExprType.OR);
+			term.setType(ExprType.BOOLEAN);
+			term.setOper(ExprType.OR);
 		}
 		else if (term.isNot()){
-			setType(ExprType.BOOLEAN);
-			setOper(ExprType.NOT);
+			term.setType(ExprType.BOOLEAN);
+			term.setOper(ExprType.NOT);
 		}
 		else {
-			setType(ExprType.TERM);
-			setOper(getOper());
+			term.setType(ExprType.TERM);
+			term.setOper(getOper(term));
 		}
 		
-		if (oper() == ExprType.UNDEF){
+		if (term.oper() == ExprType.UNDEF){
 			if (term.isPathExp()){
 				// Property Path Exp
 			}
@@ -484,50 +436,77 @@ public class Processor {
 		
 	}
                             
-        void prepare(ASTQuery ast) {
-            name = term.getLabel();
+       void prepare(Term term, ASTQuery ast) {
+        //name = term.getLabel();
         if (term.isFunction()) {
-            switch (oper()) {
-                case ExprType.IN:
-                    compileInList();
-                    break;
+            switch (term.oper()) {                
                 case ExprType.HASH:
-                    compileHash();
+                    compileHash(term);
                     break;
                 case ExprType.URI:
-                    compileURI(ast);
+                    compileURI(term, ast);
                     break;
                 case ExprType.CAST:
-                    compileCast();
-                    break;
+                    compileCast(term);
+                    break;               
+                    
                 case ExprType.REGEX:
-                    compileRegex();
-                    break;
+                case ExprType.EXIST:                  
+                case ExprType.STRREPLACE:                   
+                case ExprType.XPATH:                   
+                case ExprType.SQL:                   
+                case ExprType.EXTERNAL:                    
+                case ExprType.CUSTOM:
+                    
+                    prepareOwn(term, ast);
+            }
+        }
+
+        term.setArguments();
+        check(term, ast);
+    }
+       
+       /**
+        * Create a specific Processor for this term
+        * because we store specific data for the function
+        * Use case: regex
+        */
+       void prepareOwn(Term term, ASTQuery ast){
+           term.setProcessor(new Processor(term));
+           term.getProcessor().prepare2(term, ast);
+       }
+       
+       /**
+        * Run on the specific Processsor      
+        */
+      void prepare2(Term term, ASTQuery ast) {
+        if (term.isFunction()) {
+            switch (term.oper()) {
+                 case ExprType.REGEX:
+                    compileRegex(term);
+                    break;               
                 case ExprType.STRREPLACE:
-                    compileReplace();
+                    compileReplace(term);
                     break;
                 case ExprType.XPATH:
-                    compileXPath(ast);
+                    compileXPath(term, ast);
                     break;
                 case ExprType.SQL:
-                    compileSQL(ast);
+                    compileSQL(term, ast);
                     break;
                 case ExprType.EXTERNAL:
-                    compileExternal(ast);
+                    compileExternal(term, ast);
                     break;
                 case ExprType.CUSTOM:
-                    compileCustom(ast);
+                    compileCustom(term, ast);
                     break;
             }
         }
-        
-        setArguments();		
-        check(ast);
     }
         
 	
 	// TODO: error message
-	void check(ASTQuery ast){
+	void check(Term term, ASTQuery ast){
 		if (term.isAggregate()){ 
                    if (term.getName().equalsIgnoreCase(COUNT)){
                         if (term.getArity() > 1){
@@ -541,10 +520,10 @@ public class Processor {
 	}
 	
 	
-	void deftable(){
-		table = new Hashtable<String, Integer>();
-		tname = new Hashtable<Integer, String>();
-		toccur = new Hashtable<Integer, String>();
+	static void deftable(){
+		table = new HashMap<String, Integer>();
+		tname = new HashMap<Integer, String>();
+		toccur = new HashMap<Integer, String>();
 
 		defoper("<", 	ExprType.LT);
 		defoper("<=", 	ExprType.LE);
@@ -560,14 +539,7 @@ public class Processor {
 		defoper("-", 	ExprType.MINUS);
 		defoper("*", 	ExprType.MULT);
 		defoper("/", 	ExprType.DIV);
-		
-		defoper("<:", 	ExprType.TLT);
-		defoper("<=:", 	ExprType.TLE);
-		defoper("=:", 	ExprType.TEQ);
-		defoper("!=:", 	ExprType.TNEQ);
-		defoper(">:", 	ExprType.TGT);
-		defoper(">=:", 	ExprType.TGE);
-		
+				
 		defoper(BOUND, ExprType.BOUND);
 		defoper(COUNT, 	ExprType.COUNT);
 		defoper(MIN, 	ExprType.MIN);
@@ -598,7 +570,7 @@ public class Processor {
 		defoper(SKOLEM,         ExprType.SKOLEM);
 		defoper(RETURN,         ExprType.RETURN);
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
-		defoper(LET,            ExprType.LET);
+		defsysoper(LET,         ExprType.LET);
 		defoper(SET,            ExprType.SET);
 		defoper(XT_LIST,        ExprType.LIST);
 		defoper(XT_IOTA,        ExprType.IOTA);
@@ -606,18 +578,23 @@ public class Processor {
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
 		defoper(XT_SORT,        ExprType.XT_SORT);
                 
-		defoper(EVAL,           ExprType.EVAL);                
-		defoper(APPLY,          ExprType.APPLY);
-		defoper(MAP,            ExprType.MAP);
-		defoper(FOR,            ExprType.FOR);
-		defoper(MAPLIST,        ExprType.MAPLIST);
-		defoper(MAPMERGE,       ExprType.MAPMERGE);
-		defoper(MAPSELECT,      ExprType.MAPSELECT);
-		defoper(MAPANY,         ExprType.MAPANY);
-		defoper(MAPEVERY,       ExprType.MAPEVERY);
                 
-		//defoper(XT_CONCAT,      ExprType.XT_CONCAT);
-//		defoper(XT_CONCAT,      ExprType.CONCAT);
+		defoper(FUNCALL,           ExprType.FUNCALL);                
+		defsysoper(EVAL,           ExprType.EVAL);                
+		defsysoper(APPLY,          ExprType.APPLY);
+		defsysoper(MAP,            ExprType.MAP);
+		defsysoper(FOR,            ExprType.FOR);
+		defsysoper(MAPLIST,        ExprType.MAPLIST);
+		defsysoper(MAPFUN,         ExprType.MAPFUN);
+		defsysoper(MAPMERGE,       ExprType.MAPMERGE);
+		defsysoper(MAPSELECT,      ExprType.MAPFINDLIST);
+		defsysoper(MAPFIND,        ExprType.MAPFIND);
+		defsysoper(MAPFINDLIST,    ExprType.MAPFINDLIST);
+		defsysoper(MAPANY,         ExprType.MAPANY);
+		defsysoper(MAPEVERY,       ExprType.MAPEVERY);
+                
+		defoper(XT_MAPPING,     ExprType.XT_MAPPING);
+		defoper(XT_ADD,         ExprType.XT_ADD);
 		defoper(XT_CONS,        ExprType.XT_CONS);
 		defoper(XT_FIRST,       ExprType.XT_FIRST);
 		defoper(XT_REST,        ExprType.XT_REST);
@@ -638,8 +615,14 @@ public class Processor {
 		defoper(XT_VARIABLES,    ExprType.XT_VARIABLES);
 		defoper(XT_EDGE,         ExprType.XT_EDGE);
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
+		defoper(XT_QUERY,        ExprType.XT_QUERY);
+		defoper(XT_AST,          ExprType.XT_AST);
+		defoper(XT_CONTEXT,      ExprType.XT_CONTEXT);
+		defoper(XT_METADATA,     ExprType.XT_METADATA);
+		defoper(XT_FROM,         ExprType.XT_FROM);
+		defoper(XT_NAMED,        ExprType.XT_NAMED);
                 
-		defoper(REGEX, 		ExprType.REGEX);
+		defsysoper(REGEX, 	ExprType.REGEX);
                 defoper(APPROXIMATE,	ExprType.APPROXIMATE);
                 defoper(APP_SIM,	ExprType.APP_SIM);
 		defoper(DATATYPE, 	ExprType.DATATYPE);
@@ -655,15 +638,15 @@ public class Processor {
 		defoper(KGPLENGTH, ExprType.LENGTH);
 		defoper(KGPWEIGHT, ExprType.PWEIGHT);
 
-		defoper(XPATH, 	ExprType.XPATH);
-		defoper(KGXPATH, 	ExprType.XPATH);
-		defoper(SQL, 	ExprType.SQL);
+		defsysoper(XPATH, 	ExprType.XPATH);
+		defsysoper(KGXPATH, 	ExprType.XPATH);
+		defsysoper(SQL, 	ExprType.SQL);
 		defoper(KGSQL, 	ExprType.SQL);
 		defoper(KG_SPARQL, ExprType.KGRAM);
 		defoper(EXTERN, ExprType.EXTERN);
 		defoper(UNNEST, ExprType.UNNEST);
 		defoper(KGUNNEST, ExprType.UNNEST);
-		defoper(EXIST,  ExprType.EXIST);
+		defsysoper(EXIST,  ExprType.EXIST);
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(GROUPBY, ExprType.GROUPBY);
 		
@@ -680,11 +663,11 @@ public class Processor {
  		defoper(QUERY,          ExprType.QUERY);
  		defoper(EXTENSION,      ExprType.EXTENSION);
                
-		defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
+		//defoper(PPRINT, 	ExprType.APPLY_TEMPLATES);
 		defoper(KG_EVAL, 		ExprType.APPLY_TEMPLATES);
-		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);
-		defoper(PPRINTALL, 	ExprType.APPLY_TEMPLATES_ALL);
-		defoper(PPRINTALLWITH, 	ExprType.APPLY_TEMPLATES_WITH_ALL);
+//		defoper(PPRINTWITH, 	ExprType.APPLY_TEMPLATES_WITH);
+//		defoper(PPRINTALL, 	ExprType.APPLY_TEMPLATES_ALL);
+//		defoper(PPRINTALLWITH, 	ExprType.APPLY_TEMPLATES_WITH_ALL);
 		defoper(TEMPLATE, 	ExprType.CALL_TEMPLATE);
 		defoper(TEMPLATEWITH, 	ExprType.CALL_TEMPLATE_WITH);
 		defoper(TURTLE,         ExprType.TURTLE);                
@@ -714,6 +697,7 @@ public class Processor {
                 defoper(STL_URI,                ExprType.PPURI);
                 defoper(STL_PROLOG,             ExprType.PROLOG);
                 defoper(STL_PREFIX,             ExprType.STL_PREFIX);
+                defoper(XT_PREFIX,              ExprType.STL_PREFIX);
 		defoper(STL_INDENT,             ExprType.INDENT);
 		defoper(STL_LEVEL,              ExprType.LEVEL);
 		defoper(STL_NL,                 ExprType.STL_NL);
@@ -721,6 +705,7 @@ public class Processor {
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
+		defoper(STL_FORMAT,             ExprType.STL_FORMAT);
 		defoper(STL_INDEX,              ExprType.STL_INDEX);
 		defoper(STL_FUTURE,             ExprType.STL_FUTURE);
 		defoper(STL_LOAD,               ExprType.STL_LOAD);
@@ -745,8 +730,8 @@ public class Processor {
 		defoper(PROLOG,         ExprType.PROLOG);
 		defoper(PACKAGE,        ExprType.PACKAGE);
 		defoper(EXPORT,         ExprType.PACKAGE);
-		defoper(STL_DEFINE,     ExprType.FUNCTION);
-		defoper(FUNCTION,       ExprType.FUNCTION);
+		defsysoper(STL_DEFINE,     ExprType.FUNCTION);
+		defsysoper(FUNCTION,       ExprType.FUNCTION);
 		defoper(DEFINE,         ExprType.STL_DEFINE);                
 		defoper(LAMBDA,         ExprType.LAMBDA);
 		defoper(ERROR,          ExprType.ERROR);
@@ -754,7 +739,7 @@ public class Processor {
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
                 defoper(STL_GROUPCONCAT, ExprType.STL_GROUPCONCAT);
                 defoper(STL_AGGREGATE,   ExprType.STL_AGGREGATE);
-                defoper(AGGREGATE,       ExprType.AGGREGATE);
+                defsysoper(AGGREGATE,       ExprType.AGGREGATE);
 
 		defoper(SIMILAR, ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);
@@ -772,33 +757,24 @@ public class Processor {
 		defoper(NUMBER,  ExprType.NUMBER);
 		defoper(EVEN,  ExprType.EVEN);
 		defoper(ODD,   ExprType.ODD);
+             
+                defoper(RQ_PLUS,   ExprType.PLUS);
+                defoper(RQ_MULT,   ExprType.MULT);
+                defoper(RQ_MINUS,  ExprType.MINUS);
+                defoper(RQ_DIV,    ExprType.DIV);
+                defoper(RQ_AND,    ExprType.AND);
+                defoper(RQ_OR,     ExprType.OR);
+                defoper(RQ_NOT,    ExprType.NOT);
+                defoper(RQ_EQUAL,  ExprType.EQ);
+                defoper(RQ_DIFF,   ExprType.NEQ); 
                 
-//                defoper(KG_POWER,  ExprType.POWER);
-//                defoper(KG_PLUS,   ExprType.PLUS);
-//                defoper(KG_MULT,   ExprType.MULT);
-//                defoper(KG_MINUS,  ExprType.MINUS);
-//                defoper(KG_DIV,    ExprType.DIV);
-//                defoper(KG_CONCAT, ExprType.CONCAT);
-//                defoper(KG_APPEND, ExprType.XT_APPEND);
-//                defoper(KG_AND,    ExprType.AND);
-//                defoper(KG_OR,     ExprType.OR);
-//                defoper(KG_NOT,    ExprType.NOT);
-//                defoper(KG_EQUAL,  ExprType.EQ);
-//                defoper(KG_DIFF,   ExprType.NEQ);
-                
-                //defoper(XT_POWER,  ExprType.POWER);
-                
-                defoper(XT_PLUS,   ExprType.PLUS);
-                defoper(XT_MULT,   ExprType.MULT);
-                defoper(XT_MINUS,  ExprType.MINUS);
-                defoper(XT_DIV,    ExprType.DIV);
-                defoper(XT_AND,    ExprType.AND);
-                defoper(XT_OR,     ExprType.OR);
-                defoper(XT_NOT,    ExprType.NOT);
-                defoper(XT_EQUAL,  ExprType.EQ);
-                defoper(XT_DIFF,   ExprType.NEQ);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
-                defoper(XT_TUNE,   ExprType.XT_TUNE);  
+                defoper(XT_TUNE,   ExprType.XT_TUNE); 
+                
+                defoper(XT_UNION,  ExprType.XT_UNION);  
+                defoper(XT_MINUS,  ExprType.XT_MINUS);  
+                defoper(XT_OPTIONAL,ExprType.XT_OPTIONAL);  
+                defoper(XT_JOIN,    ExprType.XT_JOIN);  
                 
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);
@@ -851,13 +827,46 @@ public class Processor {
 
 	}
 	
-	void defoper(String key, int value){
+	static void defoper(String key, int value){
+            define(key, value);
+        }
+        
+         static void defextoper(String key, int value){
+            defextoper(key, value, 2);
+        }
+         
+        static void defextoper(String key, int value, int arity){
+            define(key, value);
+            defExtension(key, arity);
+        }
+        
+        static void defsysoper(String key, int value){
+            define(key, value);
+        }
+        
+	static void define(String key, int value){
                 // isURI
 		table.put(key.toLowerCase(), value);
-                // rq:isURI
-                table.put(SPARQL + key.toLowerCase(), value);                
-		tname.put(value, key);
+                if (! key.startsWith("http://")){
+                    // rq:isURI
+                    table.put(SPARQL + key.toLowerCase(), value);   
+                }
+		tname.put(value, key);  
 	}
+        
+        static void defExtension(String key, int arity){
+            String name = key.toLowerCase();
+            if (! key.startsWith("http://")){
+                name = SPARQL + key;
+            }
+            Function fun = ast.defExtension(name, key, arity);
+            fun.setPublic(true);
+            System.out.println(fun);
+        }
+        
+        public static ASTQuery getAST(){
+            return ast;
+        }
         
         boolean fixed(String name){
             return  fixed.containsKey(name);
@@ -874,7 +883,7 @@ public class Processor {
         }
 	       
 	
-	int getOper(){
+	int getOper(Term term){
                 return getOper(term.getLabel());
         }
                 
@@ -914,7 +923,7 @@ public class Processor {
 	 * ->
 	 * cast(?x, xsd:integer, CoreseInteger)
 	 */
-	void compileCast(){
+	void compileCast(Term  term){
 		// name = xsd:integer | ... | str
 		String name = term.getName();
 		Constant dt = Constant.createResource(name);
@@ -922,31 +931,33 @@ public class Processor {
 		// type = CoreseInteger
 		Constant type = Constant.create(Constant.getJavaType(name), RDFS.xsdstring);
 		type.getDatatypeValue();
-		lExp = new ArrayList<Expr>();
+		List<Expr> lExp = new ArrayList<Expr>();
 		lExp.add(term.getArg(0));
 		lExp.add(dt);
 		lExp.add(type);
+                term.setExpList(lExp);
 	}
         
-        void preprocess(ASTQuery ast){
+        void preprocess(Term term, ASTQuery ast){
             switch (term.oper()){
                 
                 case ExprType.MAP:
                 case ExprType.MAPLIST:
                 case ExprType.MAPMERGE:
-                case ExprType.MAPSELECT:
+                case ExprType.MAPFIND:
+                case ExprType.MAPFINDLIST:
                 case ExprType.MAPEVERY:
                 case ExprType.MAPANY:
                 case ExprType.APPLY:
-                    processMap(ast);
+                    processMap(term, ast);
                     break;
                     
                 case ExprType.AGGREGATE:
-                    processAggregate(ast);
+                    processAggregate(term, ast);
                     break;
                                                       
                 case ExprType.LET:
-                    processLet(ast);
+                    processLet(term, ast);
                     break;
                                   
                     
@@ -959,8 +970,8 @@ public class Processor {
          * let (?x = exp, let (?y = exp, exp))
          * @param ast 
          */
-        void processLet(ASTQuery ast){
-            processMatch(ast);
+        void processLet(Term term, ASTQuery ast){
+            processMatch(term, ast);
         }
         
         
@@ -970,7 +981,7 @@ public class Processor {
          * let (?x = xt:get(?l, 0), ?p = xt:get(?l, 1), ?y = xt:get(?l, 2)) {} 
          * @param ast 
          */
-       void processMatch(ASTQuery ast) {
+       void processMatch(Term term, ASTQuery ast) {
             Expression match = term.getArg(0).getArg(0);
             Expression list  = term.getDefinition();
 
@@ -1009,7 +1020,7 @@ public class Processor {
          * map(xt:fun(?x), ?list)
          * @param ast 
          */
-      void processMap(ASTQuery ast) {
+      void processMap(Term term, ASTQuery ast) {
         if (term.getArgs().size() >= 2) {
             Expression fst = term.getArg(0);
 
@@ -1025,9 +1036,9 @@ public class Processor {
             }
         }
     }
-      
+              
       // aggregate(?x, xt:mediane)
-      void processAggregate(ASTQuery ast) {
+      void processAggregate(Term term, ASTQuery ast) {
         if (term.getArgs().size() == 2) {
             Expression rst = term.getArg(1);
             if (rst.isConstant()) {
@@ -1050,7 +1061,7 @@ public class Processor {
 	 * sha256(?x) ->
 	 * hash("SHA-256", ?x)
 	 */
-	void compileHash(){
+	void compileHash(Term term){
 		String name = term.getName();
 		if (name.startsWith("sha") || name.startsWith("SHA")){
 			name = "SHA-" + name.substring(3);
@@ -1058,25 +1069,22 @@ public class Processor {
 		term.setModality(name);
 	}
 	
-	void compileURI(ASTQuery ast){
+	void compileURI(Term term, ASTQuery ast){
 		String base = ast.getNSM().getBase();
 		if (base!=null && base!=""){
 			term.setModality(ast.getNSM().getBase());
 		}
 	}
-	
-	void compileInList(){
-		// ?x in (a b)
-		
-	}
-
-	
+        
+        void compileExist(Term term){
+        }
+			
 	/**
 	 * term = regex(?x,  ".*toto",  ["i"])
 	 * match.reset(string);
 	 * boolean res = match.matches();
 	 */
-	void compileRegex(){
+	void compileRegex(Term term){
 		String sflag = null;
                 if (term.getArity() == 3){
 			sflag = term.getArg(2).getName();
@@ -1115,7 +1123,7 @@ public class Processor {
 		match = pat.matcher("");
 	}
 	
-	void compileReplace(){
+	void compileReplace(Term term){
 		if (term.getArg(1).isConstant()){
                     String sflag = null;
                     if (term.getArity() == 4){
@@ -1150,7 +1158,7 @@ public class Processor {
 		return match.matches();
 	}
 	
-	void compileSQL(ASTQuery ast){
+	void compileSQL(Term term, ASTQuery ast){
 		//sql = new SQLFun();
 	}
 	
@@ -1166,7 +1174,7 @@ public class Processor {
 	/**
 	 * xpath(?g, '/book/title')
 	 */
-	void compileXPath(ASTQuery ast){
+	void compileXPath(Term term, ASTQuery ast){
 		xfun = new XPathFun();
 		if (ast == null) ast = ASTQuery.create();
 		xfun.init(ast.getNSM(),  !true);
@@ -1214,7 +1222,7 @@ public class Processor {
 	 * prefix ext: <function://package.className>
 	 * ext:fun() 
 	 */
-	void compileExternal(ASTQuery ast)  {
+	void compileExternal(Term term, ASTQuery ast)  {
 		String oper = term.getLabel();
 		String p ;
 		String path ;
@@ -1288,7 +1296,7 @@ public class Processor {
 		return null;
 	}
         
-        void compileCustom(ASTQuery ast){
+        void compileCustom(Term term, ASTQuery ast){
             name = term.getLabel().substring(CUSTOM.length());
         }
         
@@ -1296,20 +1304,6 @@ public class Processor {
         String getShortName(){
             return name;
         }
-
-    /**
-     * @return the define
-     */
-    public Expr getDefine() {
-        return define;
-    }
-
-    /**
-     * @param define the define to set
-     */
-    public void setDefine(Expr define) {
-        this.define = define;
-    }
 
 
 }

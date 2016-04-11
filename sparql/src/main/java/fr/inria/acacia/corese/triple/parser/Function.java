@@ -1,7 +1,5 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import java.util.HashMap;
-
 /**
  * Function definition function xt:fun(x) { exp }
  *
@@ -12,6 +10,7 @@ public class Function extends Statement {
     private boolean isDebug = false;
     private boolean isTest = false;
     private boolean isTrace = false;
+    private boolean isPublic = false;
     
     Metadata annot;
     
@@ -46,6 +45,10 @@ public class Function extends Statement {
         return annot;
     }
     
+    boolean hasMetadata(){
+        return annot != null;
+    }
+    
     void annotate(Metadata m){
         if (m == null){
             return;
@@ -69,13 +72,13 @@ public class Function extends Statement {
     
  
     
-    String getMetadata(String name){
-        if (annot == null){
-            return null;
-        }
-        return annot.get(name);
-    }
-    
+//    String getMetadata(String name){
+//        if (annot == null){
+//            return null;
+//        }
+//        return annot.get(name);
+//    }
+//    
     void annotate(String a) {
         switch (annot.type(a)) {
 
@@ -92,7 +95,7 @@ public class Function extends Statement {
                 break;
 
             case Metadata.PUBLIC:
-                setExport(true);
+                setPublic(true);
                 break;
         }
     }
@@ -138,4 +141,21 @@ public class Function extends Statement {
     public void setTrace(boolean isTrace) {
         this.isTrace = isTrace;
     }
+    
+        /**
+     * @return the isExport
+     */
+        @Override
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    /**
+     * @param isExport the isExport to set
+     */
+        @Override
+    public void setPublic(boolean isExport) {
+        this.isPublic = isExport;
+    }
+
 }

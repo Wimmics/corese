@@ -2,6 +2,17 @@
 #  Additional profile for testing purpose
 #
 
+st:dbpediatest a st:Profile ;   
+  st:param [ 
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam  ; 
+    st:include (("mode" st:mode)) ;
+    st:mode st:test
+  ] ;
+  st:workflow st:dbpediawf
+  .
+
+
 st:cdncopy a st:Profile ;
 st:workflow [ a sw:Workflow ; sw:body (
     <query/frdbpediacdn.rq>     

@@ -224,7 +224,7 @@ public class RemoteProducerWSImpl implements Producer {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
 //                    l.load(is, ".ttl");
-                    l.load(is);
+                    l.parse(is);
                     logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
                 }
                 

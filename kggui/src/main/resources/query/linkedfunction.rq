@@ -1,0 +1,11 @@
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar#>
+prefix ag:  <http://ns.inria.fr/sparql-extension/aggregate#>
+select * 
+(cal:day(now()) as ?d) 
+  (aggregate(?v, ag:avg)         as ?a)
+  (aggregate(?v, ag:median)      as ?m)
+  (aggregate(?v, ag:sort_concat) as ?c)
+  (aggregate(?v, ag:sigma) 	 as ?s)
+where {
+  bind(unnest(xt:iota(10)) as ?v)
+}

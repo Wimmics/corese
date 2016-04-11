@@ -147,7 +147,7 @@ public class Engine
     		// parse a query
     		//ASTQuery ast=server.parse(queryString);
     		ASTQuery ast = ASTQuery.create(queryString);
-    		ast.setSPARQL1(true);
+    		//ast.setSPARQL1(true);
     		ParserSparql1.create(ast).parse();
     		// expansion of prefix
     		//ast = ast.expand();

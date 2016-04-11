@@ -1,0 +1,9 @@
+select * where {
+  ?x ?p ?y
+}
+function xt:start(?q){
+xt:display(xt:ast())
+}
+function xt:finish(?q, ?m){
+xt:display(xt:ast())
+}

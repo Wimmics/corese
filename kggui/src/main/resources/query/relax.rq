@@ -1,0 +1,5 @@
+@relax *
+select * (sim() as ?sim) where {
+  ?x foaf:name 'Oliver'
+}
+order by desc(?sim)

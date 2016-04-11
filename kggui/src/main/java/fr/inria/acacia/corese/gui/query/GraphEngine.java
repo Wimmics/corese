@@ -110,14 +110,14 @@ public class GraphEngine  {
 		build = b;
 	}
 	
-	public void load(String path) throws EngineException {
+	public void load(String path) throws EngineException, LoadException {
 		if (path.endsWith(BRUL)){
 			bengine.load(path);
 		}
 		else 
 		{
                     Load ld = loader();
-                    ld.load(path);
+                    ld.parse(path);
                     // in case of load rule
                     if (ld.getRuleEngine() != null){
                         rengine = ld.getRuleEngine();
@@ -126,7 +126,7 @@ public class GraphEngine  {
                 
 	}
 	
-	public void loadDir(String path) throws EngineException {
+	public void loadDir(String path) throws EngineException, LoadException {
 		load(path);
 	}
 	
@@ -194,11 +194,11 @@ public class GraphEngine  {
 
 	
 	public void load(InputStream rdf, String source) throws EngineException {
-		try {
-			loader().load(rdf, source);
-		} catch (LoadException e) {
-			throw new EngineException(e.toString());
-		}
+//		try {
+//			loader().load(rdf, source);
+//		} catch (LoadException e) {
+//			throw new EngineException(e.toString());
+//		}
 	}
 
 	

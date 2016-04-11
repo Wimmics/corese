@@ -7,7 +7,7 @@ where {
 }
 
 function us:surface(?x){
-  eval (us:method(us:surface, ?x), ?x)
+  funcall (us:method(us:surface, ?x), ?x)
 }
 
 function us:method(?m, ?x){ kg:display(?x) ;

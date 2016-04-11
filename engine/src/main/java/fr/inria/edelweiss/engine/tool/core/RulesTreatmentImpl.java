@@ -54,7 +54,7 @@ public class RulesTreatmentImpl implements RulesTreatment {
 					//ASTQuery ast=server.parse(ruleString);
 					
 					ASTQuery ast = ASTQuery.create(ruleString);
-					ast.setSPARQL1(true);
+					//ast.setSPARQL1(true);
 					ast = ParserSparql1.create(ast).parse();
 					
 					//ast = ast.expand();

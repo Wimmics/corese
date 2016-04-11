@@ -1,0 +1,51 @@
+#
+# Custom aggregates
+# Olivier Corby, 2015, Wimmics Inria I3S UNS CNRS
+#
+prefix ag: <http://ns.inria.fr/sparql-extension/aggregate#>
+select 
+  (aggregate(?v, ag:avg)         as ?a)
+  (aggregate(?v, ag:median)      as ?m)
+  (aggregate(?v, ag:sort_concat) as ?c)
+  (aggregate(?v, ag:sigma) 	 as ?s)
+where {
+  ?x rdf:value ?v 
+}
+
+#
+# Median
+#
+function ag:median(?list){
+  let (?l = xt:sort(?list)){
+    xt:get(?l, xsd:integer((xt:size(?l) - 1) / 2))
+  }
+}
+
+#
+# Standard deviation
+#
+function ag:sigma(?list){
+  let (?m = ag:avg(?list),
+       ?dev = apply (rq:plus, maplist(ag:sqdiff, ?list, ?m)) / xt:size(?list))
+  { power(?dev, 0.5) }
+  
+}
+
+function ag:avg(?list){
+  apply (rq:plus, ?list) / xt:size(?list) 
+}
+
+function ag:sqdiff(?x, ?m){
+  rq:power(?x - ?m, 2)
+}
+
+#
+# group_concat that would sort its argument list
+#
+function ag:sort_concat(?list){
+  apply(ag:concat, xt:sort(?list))
+}
+
+function ag:concat(?x, ?y){
+   concat(?x, "; ", ?y)
+}

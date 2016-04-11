@@ -1,0 +1,13 @@
+prefix h: <http://www.inria.fr/2007/09/11/humans.rdfs#>
+select * where {
+  ?x a ?t
+  filter us:match(?t, h:Man)
+}
+
+function us:match(?t, ?q) { 
+  exists { 
+    { ?t rdfs:subClassOf* ?q } union 
+    { ?q rdfs:subClassOf* ?t } union
+    { ?q rdfs:subClassOf/^rdfs:subClassOf ?t }
+  }
+}

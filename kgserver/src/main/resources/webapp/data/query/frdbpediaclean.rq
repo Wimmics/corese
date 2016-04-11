@@ -1,0 +1,17 @@
+#
+# Keep one rdfs:label, delete others
+#
+delete {
+    ?uri rdfs:label ?l
+}
+insert {
+    ?uri rdfs:label ?sl
+} 
+where {
+    bind (st:get(st:uri) as ?uri) 
+    filter bound(?uri) 
+    { select ?uri (sample(?l) as ?sl)  
+      where {?uri rdfs:label ?l} 
+      having (count(?l) > 1) }
+    ?uri rdfs:label ?l
+}

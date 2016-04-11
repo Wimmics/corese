@@ -1,0 +1,15 @@
+#
+# Set st:uri to next ressource, here successor of current uri
+# Workflow next loop will tackle this new uri
+#
+prefix o:    <http://dbpedia.org/ontology/>
+@type kg:probe
+select *
+where {
+  bind (st:get(st:uri) as ?uri)
+  ?uri o:successor ?suc
+  bind (
+    if (st:get(st:index) < st:get(st:loop) , st:set(st:uri, ?suc), true) 
+  as ?s)
+  filter xt:display(concat(st:get(st:index), " : ", st:get(st:uri)))
+}

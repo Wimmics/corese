@@ -5,11 +5,11 @@
 #
 prefix o:   <http://dbpedia.org/ontology/>
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+@bind kg:values
 construct { 
   ?x o:deathDate ?date ; rdfs:label ?l
 } 
 where {
-  bind (st:set(st:bind, st:values) as ?test)
 
   bind (substr(st:get(st:uri), strlen(st:) + 2) as ?str)
   bind (coalesce(xsd:date(?str), "2000-02-29"^^xsd:date) as ?param)

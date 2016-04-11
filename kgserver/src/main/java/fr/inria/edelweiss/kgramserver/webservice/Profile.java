@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import static fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer.port;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
@@ -41,9 +42,10 @@ public class Profile {
     static  String DATA = SERVER + "/data/";
     static  String QUERY = DATA + "query/";
       
-    HashMap<String,  Service> map, servers; 
+    HashMap<String,  Service> services, servers; 
     NSManager nsm;
-    IDatatype profile;
+    IDatatype profileDatatype;
+    Graph profileGraph;
 
     boolean isProtected = false;
 
@@ -63,7 +65,7 @@ public class Profile {
     }
 
     Profile(boolean b) {
-        map = new HashMap();
+        services = new HashMap();
         servers = new HashMap();
         nsm = NSManager.create();
         isProtected = b;
@@ -82,43 +84,61 @@ public class Profile {
      * transformation from profile
      */
     Param complete(Param par) throws IOException {
+        Context serverContext = null;
+        if (par.getServer() != null){           
+            Service server = getServer(par.getServer());
+            if (server.getParam() != null){
+                // may set a profile according to URI
+                serverContext = server.getParam(); //.copy();
+                complete(par, serverContext);
+            }
+        }
+        
         String value = par.getValue();
-        String query = par.getQuery();
-        String name = par.getName();
-        String transform = par.getTransform();
         String profile = par.getProfile();
         String uri = par.getUri();
-
+        Service service = null;    
         if (profile != null) {
-            // prodile declare a construct where query followed by a transformation
+            // profile declare a construct where query followed by a transformation
             String uprofile = nsm.toNamespace(profile);
             // may load a new profile            
             define(uprofile);
-            Service s = getService(uprofile);
-            if (s != null) {
-                if (name == null) {
+            service = getService(uprofile);
+            if (service != null) {
+                if (par.getName() == null) {
                     // parameter name overload profile name
-                    name = s.getQuery();
+                    par.setName(service.getQuery());
                 }
-                if (transform == null) {
+                if (par.getTransform() == null) {
                     // transform parameter overload profile transform
-                    transform = s.getTransform();
+                    par.setTransform(service.getTransform());
                 }               
                 if (uri != null) {
                     // resource given as a binding value to the query
                     // generate values clause if profile specify variable
-                    value = getValues(s.getVariable(), uri);
+                    value = getValues(service.getVariable(), uri);
                 }                     
-                if (s.getParam() != null){
-                    par.setContext(s.getParam().copy());
-                }
+                if (service.getParam() != null){
+                    par.setContext(service.getParam().copy());
+                }                
             }
         }
+        
+        if (par.getContext() == null && serverContext != null){
+            // use case: profile without st:param, server with st:param
+            // import server st:param
+           par.setContext(serverContext.copy());
+        }
+        
+        if (service != null){
+            
+        }
        
-        if (query == null){ 
-            if (name != null){
+        String query = par.getQuery();
+         if (query == null){ 
+            if (par.getName() != null){
             // load query definition
-                query = loadQuery(name);
+                query = loadQuery(par.getName());
             }
         }
         else if (isProtected) {
@@ -129,16 +149,47 @@ public class Profile {
             // additional values clause
             query += value;
         }
-
-        par.setTransform(transform);
-        par.setName(name);
-        par.setQuery(query);       
+        
+        par.setQuery(query);     
+                     
         return par;
 
     }
+         
+    
+    /**
+     * Complete Param by Context 
+     */
+    void complete(Param p, Context c){
+      if (p.getUri() != null && p.getProfile() == null && p.getTransform() == null){
+            completeLOD(p, c);
+        }
+    }
+    
+    /**
+     * st:lodprofile ((<http://fr.dbpedia.org/resource> st:dbpedia))  
+     * If URI match lodprofile, use profile
+     */
+    void completeLOD(Param p, Context c){
+        String uri = p.getUri();
+        IDatatype lod = c.get(Context.STL_LOD_PROFILE);
+        if (lod != null && lod.isList()){
+            for (IDatatype def : lod.getValues()){
+                if (! def.isList()){
+                    continue;
+                }
+                String ns = def.getValues().get(0).getLabel();
+                if (ns.equals("*") || uri.startsWith(ns)){
+                       // def = (ns profile) 
+                       p.setProfile(def.getValues().get(1).getLabel());
+                       break;                    
+                }
+            }
+        }
+    }
 
     public Collection<Service> getServices() {
-        return map.values();
+        return services.values();
     }
 
     public Collection<Service> getServers() {
@@ -146,18 +197,11 @@ public class Profile {
     }
 
     void define(String name) {
-        if (!map.containsKey(name) && !isProtected) {
+        if (!services.containsKey(name) && !isProtected) {
             //init(WEBAPP_DATA, name);
             System.out.println("Profile: " + name);
             init(name);
         }
-    }
-
-    void process(Graph g) throws IOException, EngineException {
-        init(g);
-        // deprecated:
-        initLoad(g);
-        initServer(g);
     }
 
     void initServer(String name) {
@@ -165,13 +209,18 @@ public class Profile {
     }
     
     void setProfile(Graph g){
-        if (profile == null){
-            profile = DatatypeMap.createObject(Context.STL_SERVER_PROFILE, g);
+        if (profileDatatype == null){
+            profileGraph = g;
+            profileDatatype = DatatypeMap.createObject(Context.STL_SERVER_PROFILE, g);
         }
     }
     
     IDatatype getProfile(){
-        return profile;
+        return profileDatatype;
+    }
+    
+    Graph getProfileGraph(){
+        return profileGraph;
     }
 
     /**
@@ -183,6 +232,7 @@ public class Profile {
             Graph g = load(path);
             setProfile(g);
             process(g);
+            initFunction();
         } catch (IOException ex) {
             Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (LoadException ex) {
@@ -190,6 +240,13 @@ public class Profile {
         } catch (EngineException ex) {
             Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    void process(Graph g) throws IOException, EngineException {
+        initService(g);
+        // deprecated:
+       // initLoad(g);
+        initServer(g);
     }
 
     GraphStore loadServer(String name) throws IOException, LoadException {
@@ -199,7 +256,7 @@ public class Profile {
     GraphStore load(String path) throws IOException, LoadException {
         GraphStore g = GraphStore.create();
         Load load = Load.create(g);
-        load.load(path, Load.TURTLE_FORMAT);
+        load.parse(path, Load.TURTLE_FORMAT);
         return g;
     }
 
@@ -226,25 +283,33 @@ public class Profile {
         return null;
     }
 
-    void init(Graph g) throws IOException, EngineException {
+    void initService(Graph g) throws IOException, EngineException {
         String str = read(QUERY + "profile.rq");
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
         for (Mapping m : map) {
-            init(g, m);
+            initService(g, m);
         }
     }
-
-    void init(Graph g, Mapping m) {
+    
+    /**
+     * A service profile may have a transform, a workflow or both
+     * If both, there are two Mapping, one for each
+     * Build *one* service description 
+     */
+    void initService(Graph g, Mapping m) {
         Node prof   = m.getNode("?p");
         Node query  = m.getNode("?q");
         Node var    = m.getNode("?v");
         Node trans  = m.getNode("?t");
         Node serv   = m.getNode("?s");
         Node ctx    = m.getNode("?c");
+        Node sw     = m.getNode("?w");
 
-        Service s = new Service(prof.getLabel());
-
+        Service s = getService(prof.getLabel());
+        if (s == null){
+            s = new Service(prof.getLabel());
+        }
         if (trans != null) {
             s.setTransform(trans.getLabel());
         }
@@ -257,14 +322,105 @@ public class Profile {
         if (serv != null) {
             s.setServer(serv.getLabel());
         }      
-        if (ctx != null){
-            Context c = new ContextBuilder(g).process(ctx);
-            s.setParam(c);
+        if (ctx != null && s.getParam() == null){
+            // parse Context only once
+            s.setParam(new ContextBuilder(g).process(ctx));
         }
-        map.put(prof.getLabel(), s);
+        if (sw != null){
+            // PRAGMA: this MUST be done AFTER ctx case just above 
+            // set st:workflow in st:param Context
+            if (s.getParam() == null){
+                s.setParam(new Context());
+            }
+            s.getParam().set(Context.STL_WORKFLOW, (IDatatype) sw.getValue());
+        }
+        services.put(prof.getLabel(), s);
     }
-      
+       
     /**
+     * Initialize Server definitions: get RDF/S documents URI to be loaded (later)
+     * Create Server definitions (in addition to Service)
+     * @param g
+     * @throws EngineException 
+     */
+    void initServer(Graph g) throws EngineException {
+        String str = "select * where {"
+                + "?s a st:Server "
+                + "values ?p { st:data st:schema st:context }"
+                + "optional { ?s ?p ?d . ?d st:uri ?u  optional { ?d st:name ?n }}"
+                + "optional { ?s st:service ?sv } "
+                + "optional { ?s st:param ?c } "
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(str);
+        for (Mapping m : map) {
+            Node sn = m.getNode("?s");
+            Node sv = m.getNode("?sv");
+            Node p = m.getNode("?p");
+            Node uri = m.getNode("?u");
+            Node n = m.getNode("?n");
+            Node c = m.getNode("?c");
+            
+           Service server = findServer(sn.getLabel());
+           String service = (sv == null) ? null : sv.getLabel();
+           server.setService(service);
+           if (uri != null){
+              String name = (n != null) ? n.getLabel() : null;
+              server.add(p.getLabel(), uri.getLabel(), name);
+           }
+           if (c != null && server.getParam() == null){
+               server.setParam(new ContextBuilder(g).process(c));
+           }
+        }
+
+    }
+
+    /**
+     * Create Server if not exists
+     * @param name
+     * @return 
+     */
+    Service findServer(String name) {
+        Service server = getServer(name);
+        if (server == null) {
+            server = new Service(name);
+            servers.put(name, server);
+            Service service = getService(name);
+//            if (service != null){
+//                // Service and Server share Context parameters
+//                server.setParam(service.getParam());
+//            }
+        }
+        return server;
+    }
+    
+      /**
+     * Functions shared by server STTL transformations
+     */
+    void initFunction() throws IOException, EngineException{
+        String str = read(QUERY + "function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        Query q = exec.compile(str);
+    }
+
+    
+    /**
+     * 
+     * Service that defines a transformation
+     */
+    Service getService(String name) {
+        return services.get(name);
+    }
+    
+    /**
+     * Service that defines a Server 
+     */
+    Service getServer(String name){
+        return servers.get(name);
+    }
+    
+    
+      /**
      * 
      * @param g
      * @throws IOException
@@ -294,71 +450,7 @@ public class Profile {
         String[] list = load.getLabel().split(";");
         Service s = new Service(profile.getLabel());
         s.setLoad(list);
-        map.put(profile.getLabel(), s);
-    }
-
-    /**
-     * Initialize Server definitions: get RDF/S documents URI to be loaded (later)
-     * Create Server definitions (in addition to Service)
-     * @param g
-     * @throws EngineException 
-     */
-    void initServer(Graph g) throws EngineException {
-        String str = "select * where {"
-                + "?s a st:Server "
-                + "values ?p { st:data st:schema st:context }"
-                + "?s ?p ?d "
-                + "?d st:uri ?u "
-                + "optional { ?d st:name ?n } "
-                + "optional { ?s st:service ?sv } "
-                + "}";
-        QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.query(str);
-        for (Mapping m : map) {
-            Node sn = m.getNode("?s");
-            Node sv = m.getNode("?sv");
-            Node p = m.getNode("?p");
-            Node u = m.getNode("?u");
-            Node n = m.getNode("?n");
-           Service s = findServer(sn.getLabel());
-           s.setService((sv==null)?null:sv.getLabel());
-           s.add(p.getLabel(), u.getLabel(), (n != null)?n.getLabel():null);
-        }
-
-    }
-
-    /**
-     * Create Server if not exists
-     * @param name
-     * @return 
-     */
-    Service findServer(String name) {
-        Service s = getServer(name);
-        if (s == null) {
-            s = new Service(name);
-            servers.put(name, s);
-            Service fst = getService(name);
-            if (fst != null){
-                // Service and Server share Context parameters
-                s.setParam(fst.getParam());
-            }
-        }
-        return s;
-    }
-    
-    /**
-     * 
-     * Service that defines a transformation
-     */
-    Service getService(String name) {
-        return map.get(name);
-    }
-    
-    /**
-     * Service that defines a Server 
-     */
-    Service getServer(String name){
-        return servers.get(name);
+        services.put(profile.getLabel(), s);
     }
 
 }

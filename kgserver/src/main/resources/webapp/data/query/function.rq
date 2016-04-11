@@ -1,0 +1,178 @@
+#
+# Functions shared by server STTL transformations
+# javascript:trans() defined in webapp/js/server.js
+#
+@export package {
+
+
+function st:isAjax(){
+  st:get(st:protocol, st:ajax)
+}
+
+function st:protocol(?uri) {
+    if (st:isAjax()) {
+       concat("javascript:trans(\"", str(?uri), "\")") 
+    } 
+    else { str(?uri) }
+}
+
+function st:link(?uri) {
+    concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      coalesce(
+	concat("&profile=",   st:qname(st:get(st:profile))), 
+	concat("&transform=", st:qname(st:get(st:transform))), 
+	""))
+} 
+
+function st:link(?uri, ?profile) {
+    concat(st:get(st:service),
+      "?uri=", encode_for_uri(?uri),          
+      "&profile=", st:qname(?profile))
+}
+
+function st:plink(?uri) {
+    st:protocol(st:link(?uri))
+}
+
+function st:plink(?uri, ?profile) {
+  st:protocol(st:link(?uri, ?profile))
+}
+
+function st:plinkmode(?uri) {
+  coalesce(st:plinkmode(?uri, st:get(st:mode)), 
+	   st:plink(?uri))
+}
+
+function st:plinkmode(?uri, ?mode) {
+  let (?res = concat(st:link(?uri), "&mode=", st:qname(?mode))){
+    st:protocol(?res)
+  }
+}
+
+function st:qname(?uri){
+  kg:qname(?uri)
+}
+
+
+#
+# try to get specific profile for uri from profile.ttl 
+# st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia )) 
+# otherwise use st:profile
+#
+function st:pplink(?uri) {
+  st:plink(?uri, coalesce(st:getprofile(?uri), st:get(st:profile)))
+}
+
+# ?arg = st:mode
+function st:include(?arg){
+  coalesce(
+    let (?m = st:get(?arg)) { bound(?m) } &&
+    mapany (rq:equal, ?arg, st:get(st:include)), 
+    false)
+}
+
+# search list  st:lodprofile ((namespace profile))
+function st:getprofile(?uri){
+     let ((?ns, ?prof) = mapfind(st:match, ?uri, st:get(st:lodprofile)))
+     { ?prof }
+}
+
+# ?decl = (namespace profile)
+function st:match(?x, ?decl){
+  let (?ns = xt:get(?decl, 0)){
+    strstarts(?x, ?ns) || coalesce(?ns = "*", false)
+  }
+}
+  
+# ____________________________________________________
+
+#
+# Generate a HTML table
+# call user defined us:cell() to generate cells
+#
+function st:table(?table){
+  st:format(
+    "<table class='table'>\n%s</table>\n", 
+      apply(rq:concat, maplist(st:row, xt:iota(xt:size(?table)), ?table)))
+}
+
+function st:row(?n, ?row){
+   st:format("<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n", 
+    ?n,
+    mapfun(rq:concat, st:cell, ?row))  
+}
+
+function st:cell(?elem){
+   st:format(
+    "<td style='vertical-align: bottom'>%s</td>\n", 
+    ?elem)  
+}	
+
+
+#
+# Generate a list of sublist with ?nc elements in each sublist
+# Use case: generate a HTML table.
+#
+function st:split(?l, ?n){
+  xt:split(?l, ?n)
+}
+
+function xt:split(?list, ?nc){
+  let (?size  = xt:size(?list),
+       ?nr    = xt:div(?size, ?nc),
+       ?table = xt:list(),
+       ?jlist = xt:iota(0, ?nc - 1),
+       ?max   = if (xt:mod(?size, ?nc) = 0, ?nr - 1, ?nr)){
+    for (?i in xt:iota(0, ?max)){
+      let (?row = xt:list(), ?nb = ?i * ?nc){
+	for (?j in ?jlist){
+	  let (?k = ?nb + ?j){
+	    if (?k < ?size){
+	      xt:add(?row, xt:get(?list, ?k))
+	    }
+	  }
+	} ;
+	xt:add(?table, ?row)
+      }
+    } ;
+    ?table
+  }
+}
+
+
+# ____________________________________________________
+
+function st:server(?name){
+  st:call-template-with(st:server, ?name)
+}
+
+function st:head(){
+  if (st:isAjax(), "",
+    st:server(st:dohead))
+}
+
+function st:tail(){
+  if (st:isAjax(), "",
+    st:server(st:dotail))
+}
+
+function st:bstyle(){
+   if (st:isAjax(), 
+    st:server(st:bstyle), "")   
+}
+
+function st:sstyle(){
+   st:server(st:sstyle) 
+}
+
+function st:submit(){
+    if (st:isAjax()){ st:server(st:submit) }
+    else { "" }
+}
+
+function st:change(){
+  st:server(st:change)
+}
+
+}

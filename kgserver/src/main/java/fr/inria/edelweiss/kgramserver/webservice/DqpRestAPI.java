@@ -17,7 +17,6 @@ import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;

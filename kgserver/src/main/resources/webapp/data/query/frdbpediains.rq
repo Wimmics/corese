@@ -11,81 +11,107 @@ prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
-insert  {
-  ?r a ?class .
-  ?r rdfs:label ?label ; rdfs:comment ?com .
-  ?r o:wikipedia ?pr ; o:dbpedia ?r
+insert   {
+  ?uri a ?class .
+  ?uri rdfs:label ?label ; rdfs:comment ?com .
+  ?uri o:wikipedia ?pr ; o:dbpedia ?uri
   
-  ?r ?qq ?ts . ?ts rdfs:label ?ls . ?qq rdfs:label ?lq .
-  ?r ?pp ?vv .
+  ?uri ?qq ?ts . ?ts rdfs:label ?ls . ?qq rdfs:label ?lq .
+  ?uri ?pp ?vv .
   
-  ?r p:latitude ?lat ; p:longitude ?lon .
+  ?uri p:latitude ?lat ; p:longitude ?lon . 
+  ?uri o:place ?pl
+  ?pl p:latitude ?plat ; p:longitude ?plon  .
   
+  ?uri ?propOf ?org
+  ?org rdfs:label ?lorg
   
 }
 where {
 
-bind (st:get(st:uri) as ?r)
+bind (coalesce(st:get(st:lang), "fr") as ?lang)
+
+values ?uri { unnest(st:get(st:list)) }
 
 service <http://fr.dbpedia.org/sparql> {
-
-  ?r rdfs:label ?label . filter(lang(?label) = 'fr')    
-  optional {  ?r rdfs:comment ?com . filter(lang(?com) = 'fr') }
+  
+  ?uri rdfs:label ?label . filter(langMatches(lang(?label), "fr")) 
+  
+  optional {  
+    ?uri rdfs:comment ?com . filter(langMatches(lang(?com) , "fr")) 
+   }
  
-  optional { ?r ?pp ?vv . 
-    filter(((?pp = p:dateDeNaissance || ?pp = p:dateDeDécès) && isLiteral(?vv)) 
-         || ?pp = o:thumbnail  
-#        || ?pp = o:activeYearsEndYear || ?pp = o:activeYearsStartYear
-        ) 
+  optional { 
+    ?uri p:dateDeNaissance |  p:dateDeDécès | o:thumbnail  ?vv
+    ?uri ?pp ?vv . 
+    filter (?pp = o:thumbnail || isLiteral(?vv))    
   }
   
-  optional { ?r ?plat ?lat filter(?plat = p:latitude  || ?plat = geo:lat)
-             ?r ?plon ?lon filter(?plon = p:longitude || ?plon = geo:long) }
+  optional { ?uri p:latitude|geo:lat   ?lat 
+             ?uri p:longitude|geo:long ?lon  }
   optional {
-    ?r ?q ?s 
+      ?uri o:place ?pl
+      ?pl p:latitude|geo:lat   ?plat 
+      ?pl p:longitude|geo:long ?plon
+  }
+  optional {
+  ?uri o:spouse |o:child
+    |p:mère   |o:mother
+    |p:père   |o:father
+    |p:successeur   |o:successor 
+    |p:prédécesseur |o:predecessor
+    |o:residence 
     
-    filter(
-       ?q = o:spouse || ?q = o:child
-    || ?q = p:mère   || ?q = o:mother
-    || ?q = p:père   || ?q = o:father
-    || ?q = p:successeur   || ?q = o:successor 
-    || ?q = p:prédécesseur || ?q = o:predecessor
-    || ?q = o:residence 
+    |o:bandMember
+    |o:formerBandMember
+    |o:starring
+    |o:director
     
-    || ?q = p:sud || ?q = p:nord || ?q = p:est || ?q = p:ouest
-    || ?q = p:sudEst  || ?q = p:sudOuest
-    || ?q = p:nordEst || ?q = p:nordOuest 
+    |p:sud |p:nord |p:est |p:ouest
+    |p:sudEst  |p:sudOuest
+    |p:nordEst |p:nordOuest 
     
-    || ?q = o:wikiPageRedirects
-    ) 
-
-    optional { 
-        ?s o:wikiPageRedirects ?rs        
-    }
+    |o:wikiPageRedirects ?s
     
-   
+    ?uri ?q ?s 
     
-    filter isURI(?s) . ?s rdfs:label ?ls . filter(lang(?ls) = 'fr') 
+     filter isURI(?s) . ?s rdfs:label ?ls . 
+     filter(langMatches(lang(?ls), 'fr')) 
     
     ?q rdfs:label ?lq 
-    filter(langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))         
+    filter(langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))    
 
+    optional { 
+        ?s o:wikiPageRedirects ?uris        
+    }
+ 
+  }
+  optional { 
+    ?org o:bandMember|o:starring|o:director ?uri 
+    ?org ?propOf ?uri
+    ?org rdfs:label ?lorg 
+    filter langMatches(lang(?lorg), "fr")
   }
 	     
 }
 
-bind (coalesce(?rs, ?s) as ?ts)
+bind (coalesce(?uris, ?s) as ?ts)
 
 bind (if (?q = p:successeur,   o:successor,
       if (?q = p:prédécesseur, o:predecessor,
       if (?q = p:mère, o:mother,
       if (?q = p:père, o:father,
-      ?q)))) 
+      if (?q = o:formerBandMember, o:bandMember, 
+      ?q))))) 
       as ?qq)
+            
+bind (if (bound(?lat) || bound(?plat), o:Place, foaf:Person) as ?class)     
       
-bind (if (bound(?lat), o:Place, foaf:Person) as ?class)     
-      
-bind (concat(w:, (substr(?r, strlen(r:) + 1))) as ?pr) 
+bind (concat(w:, (substr(?uri, strlen(r:) + 1))) as ?pr) 
 
-  
+}
+
+# save graph after insert completes
+function xt:finish(?q, ?m){
+  kg:write(st:get(st:file), st:atw(st:turtle))
 }

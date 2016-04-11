@@ -1,7 +1,8 @@
 select * where {
-   ?p st:transform ?t 
+   { ?p st:transform ?t } union { ?p st:workflow ?w }     
    optional { ?p st:query    ?q }
    optional { ?p st:variable ?v }
    optional { ?p st:server   ?s }
-   optional { ?p st:param    ?c}
+   optional { ?p st:param    ?c }
 }
+order by ?p

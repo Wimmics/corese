@@ -1,19 +1,22 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.inria.edelweiss.kgramserver.webservice;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import static fr.inria.edelweiss.kgramserver.webservice.Utility.toStringList;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
+import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.kgtool.workflow.WorkflowParser;
+import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -44,6 +47,7 @@ public class Transformer {
     private static Profile mprofile;
     private static NSManager nsm;
     boolean isDebug, isDetail;
+    static boolean isTest = false;
 
     static {
         init();
@@ -70,6 +74,8 @@ public class Transformer {
     public Response queryPOSTHTML(
             @FormParam("profile") String profile, // query + transform
             @FormParam("uri") String resource, // query + transform
+            @FormParam("mode") String mode, 
+            @FormParam("param") String param, 
             @FormParam("query") String query, // SPARQL query
             @FormParam("name") String name, // SPARQL query name (in webapp/query)
             @FormParam("value") String value, // values clause that may complement query           
@@ -79,6 +85,8 @@ public class Transformer {
         
         Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
         par.setValue(value);
+        par.setMode(mode);
+        par.setParam(param);
         par.setDataset(from, named);
         return template(getTripleStore(), par);
     }
@@ -88,7 +96,9 @@ public class Transformer {
     @Produces("text/html")
     public Response queryPOSTHTML_MD(
             @FormDataParam("profile") String profile, // query + transform
-            @FormDataParam("uri") String resource, // query + transform
+            @FormDataParam("uri") String resource, 
+            @FormDataParam("mode") String mode, 
+            @FormDataParam("param") String param, 
             @FormDataParam("query") String query, // SPARQL query
             @FormDataParam("name") String name, // SPARQL query name (in webapp/query)
             @FormDataParam("value") String value, // values clause that may complement query           
@@ -98,6 +108,8 @@ public class Transformer {
         
         Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
         par.setValue(value);
+        par.setMode(mode);
+        par.setParam(param);
         par.setDataset(toStringList(from), toStringList(named));
         return template(getTripleStore(), par);
     }
@@ -107,6 +119,8 @@ public class Transformer {
     public Response queryGETHTML(
             @QueryParam("profile") String profile, // query + transform
             @QueryParam("uri") String resource, // URI of resource focus
+            @QueryParam("mode") String mode, 
+            @QueryParam("param") String param, 
             @QueryParam("query") String query, // SPARQL query
             @QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value") String value, // values clause that may complement query           
@@ -116,6 +130,8 @@ public class Transformer {
 
         Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
         par.setValue(value);
+        par.setMode(mode);
+        par.setParam(param);
         par.setDataset(namedGraphUris, namedGraphUris);
         return template(getTripleStore(), par);
     }
@@ -126,7 +142,6 @@ public class Transformer {
 
             par = mprofile.complete(par);
             ctx = create(par);
-            ctx.setServerProfile(mprofile.getProfile());
                        
             if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {
                 // check profile, transform and query
@@ -142,60 +157,134 @@ public class Transformer {
 
             String squery = par.getQuery();
             
-            if (isDebug) {
-                System.out.println("query: \n" + squery);
+//            if (isDebug) {
+//                System.out.println("query: \n" + squery);
+//            }
+            
+            if (par.getParam() != null){
+                isTest = par.getParam().equals("true");
             }
-            // servlet context given to query process and transformation
-            Mappings map = null;
-
-            if (squery != null && store != null) {
-                Dataset ds = createDataset(par.getFrom(), par.getNamed(), ctx);
-                map = store.query(squery, ds);
-
-                if (isDetail) {
-                    System.out.println(map);
-                }
-                if (isDebug) {
-                    System.out.println("map: " + map.size());
-                }
+            
+            if (true){
+                complete(store.getGraph(), ctx);
+                Dataset ds = createDataset(par.getFrom(), par.getNamed());
+                String res = workflow(store.getGraph(), ctx, ds, mprofile.getProfileGraph(), squery, ctx.getTransform());
+                return Response.status(200).header(headerAccept, "*").entity(result(par, res)).build();               
             }
-
-            HTMLFormat ft = HTMLFormat.create(store.getGraph(), map, ctx);
-
-            return Response.status(200).header(headerAccept, "*").entity(result(par, ft)).build();
+            else {
+                Mappings map = null;
+                if (squery != null && store != null) {
+                    Dataset ds = createDataset(par.getFrom(), par.getNamed(), ctx);
+                    map = store.query(squery, ds);
+                    if (isDetail) {
+                        System.out.println(map);
+                    }
+                    if (isDebug) {
+                        System.out.println("map: " + map.size());
+                    }
+                }
+                HTMLFormat ft = HTMLFormat.create(store.getGraph(), map, ctx);
+                return Response.status(200).header(headerAccept, "*").entity(result(par, ft.toString())).build();
+            }
+            
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
             String err = ex.toString();
             String q = null;
-            if (ctx != null && ctx.getQuery() != null){
-                q = ctx.getQuery();
+            if (ctx != null && ctx.getQueryString() != null){
+                q = ctx.getQueryString();
             }
             return Response.status(500).header(headerAccept, "*").entity(error(err, q)).build();
         }
+    }
+    
+    String workflow(Graph g, Context c, Dataset ds, Graph profile, String q, String t) {
+        try {
+            SemanticWorkflow w = create(c, ds, profile, q, t);
+            if (! w.isDebug()){
+                w.setDebug(isTest);
+            }
+            Data data = w.process(new Data(g));
+            return data.stringValue();
+        } catch (EngineException ex) {
+            logger.error(ex);
+            return ex.toString();
+        } catch (LoadException ex) {
+            logger.error(ex);
+            return ex.toString();
+        }
+    }
+    
+    /**
+     * Create a Workflow to process service
+     * If there is no explicit workflow specification, i.e no st:workflow [  ]
+     * create a Workflow with query/transform.
+     */
+     SemanticWorkflow create(Context context, Dataset dataset, Graph profile, String query, String transform) throws LoadException {
+        SemanticWorkflow wp = new SemanticWorkflow();
+        wp.setContext(context);
+        wp.setDataset(dataset);
+        IDatatype swdt = context.get(Context.STL_WORKFLOW); 
+        if (swdt != null) {
+            WorkflowParser parser = new WorkflowParser(wp, profile);
+            parser.parse(profile.getNode(swdt));
+        } 
+        else if (query != null) {
+            // select where return Graph Mappings
+            wp.addQueryGraph(query);
+        }
+        defaultTransform(wp, transform);
+        return wp;
+    }
+     
+     /**
+      * If transform = null and workflow does not end with transform:
+      * use st:sparql as default transform
+      */
+    void defaultTransform(SemanticWorkflow wp, String transform) {
+        boolean isDefault = false;
+        if (transform == null
+                && (wp.getProcessList().isEmpty() || ! wp.getProcessLast().isTemplate())) {
+            isDefault = true;
+            transform = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
+        }
+        if (transform != null) {
+            wp.addTemplate(transform, isDefault);
+            wp.getContext().setTransform(transform);
+        }
+    }
+             
+    void complete(Graph graph, Context context) {
+        Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
+        if (cg != null) {
+            context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
+        }
+        context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
+        context.set(Context.STL_SERVER_PROFILE, mprofile.getProfile());
     }
     
     /**
      * Return transformation result as a HTML textarea
      * hence it is protected wrt img ...
      */
-    String protect(Param p, HTMLFormat ft){
+    String protect(Param p, String ft){
         fr.inria.edelweiss.kgtool.transform.Transformer t = 
             fr.inria.edelweiss.kgtool.transform.Transformer.create(RESULT);
         Context c = t.getContext();
-        c.set(RESULT, ft.toString());
+        c.set(RESULT, ft);
         c.set(LOAD, (p.getLoad() == null) ? "" : p.getLoad());
         c.setTransform((p.getTransform()== null) ? "" : p.getTransform());  
-        complete(c);
+        complete(c, p);
         IDatatype res = t.process();
         return res.stringValue();
     }
     
-    String result(Param p, HTMLFormat ft){
+    String result(Param p, String ft){
         if (p.isProtect()){
             return protect(p, ft);
         }
-        return ft.toString();
+        return ft;
     }
     
     String get(String name){
@@ -221,38 +310,17 @@ public class Transformer {
    }
 
     Context create(Param par) {
-        Context ctx= par.getContext();
-        if (ctx == null){
-            ctx = new Context();
-        }
-        if (par.getProfile() != null) {
-            ctx.setProfile(nsm.toNamespace(par.getProfile()));
-        }
-        if (par.getTransform() != null) {
-            ctx.setTransform(nsm.toNamespace(par.getTransform()));
-        }
-        if (par.getUri() != null) {
-            ctx.setURI(nsm.toNamespace(par.getUri()));
-        }
-        if (par.getQuery() != null) {
-            ctx.setQuery(par.getQuery());
-        }
-        if (par.getName() != null) {
-            ctx.setName(par.getName());
-        }
-        if (par.getService() != null){
-            ctx.setService(par.getService());
-        }      
-         ctx.setServer(Profile.SERVER);
-         complete(ctx);         
-         ctx.setUserQuery(par.isUserQuery());
+        Context ctx= par.createContext();        
+        complete(ctx, par);         
         return ctx;
     }
     
-    Context complete(Context c){
+    Context complete(Context c, Param par){
         if (SPARQLRestAPI.isAjax){
             c.setProtocol(Context.STL_AJAX);
         }
+        c.setUserQuery(par.isUserQuery());
+        //c.setServerProfile(mprofile.getProfile());
         return c;
     }
 

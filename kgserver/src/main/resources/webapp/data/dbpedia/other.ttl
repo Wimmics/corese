@@ -1,0 +1,39 @@
+<http://fr.dbpedia.org/resource/Ceuta> a foaf:Person ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Ceuta> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_Ceuta.svg?width=300> ;
+  p:latitude: 35.888668 ; p:longitude: -5.3212738 ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Ceuta" ;
+  rdfs:comment "Ceuta (du latin Septem Fratres ; Abyla dans l\'Antiquité ou Sebta سبتة en berbère et en arabe) est une ville autonome espagnole formant une encoche sur la côte nord du Maroc en Afrique."@fr ;
+  rdfs:label "Ceuta"@fr .
+
+
+<http://fr.dbpedia.org/resource/Gibraltar> a foaf:Person ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Gibraltar> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Gibraltar.svg?width=300> ;
+  p:latitude: 36.13705 ; p:longitude: -5.34782 ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Gibraltar" ;
+  rdfs:comment "Gibraltar (de l\'arabe « Djebel Tariq » (جبل طارق), « le mont de Tariq » du nom de Tariq ibn Ziyad), est un territoire britannique d\'outre-mer, situé au sud de la péninsule Ibérique, en bordure du détroit de Gibraltar qui relie la Méditerranée à l\'océan Atlantique. Il correspond au rocher de Gibraltar et à ses environs immédiats et est séparé de l\'Espagne par une frontière de 1,2 kilomètres. Gibraltar est possession du Royaume-Uni depuis 1704."@fr ;
+  rdfs:label "Gibraltar"@fr .
+  
+  
+  <http://fr.dbpedia.org/resource/Melilla> a foaf:Person ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Melilla> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Melilla.svg?width=300> ;
+  p:latitude: 35.28276 ; p:longitude: -2.94582 ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Melilla" ;
+  rdfs:comment "Melilla (en berbère: Mřič (Mritch) [« la blanche »], ou Mliliya en darija) est une ville autonome espagnole située sur la côte nord-ouest de l\'Afrique, en face de la péninsule Ibérique, appartenant à la région géographique du Rif oriental et formant une enclave dans le territoire marocain. Administrée en tant que partie de la province de Malaga avant le 14 mars 1995, elle détient depuis le statut d\'une ville autonome, assez proche de celui d\'une communauté autonome espagnole."@fr ;
+  rdfs:label "Melilla"@fr .
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

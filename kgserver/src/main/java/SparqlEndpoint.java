@@ -129,11 +129,11 @@ public class SparqlEndpoint {
 
 //          region_departement.createServer();
 //          region_name.createServer();
-          departement_name.createServer();
+//          departement_name.createServer();
         
         
         SparqlEndpoint demographic = new SparqlEndpoint(8088, SparqlEndpoint.class.getClassLoader().getResource("demographie").getPath()+"/popleg-2013-sc.ttl");
-//        demographic.createServer();
+        demographic.createServer();
     }
 
 }

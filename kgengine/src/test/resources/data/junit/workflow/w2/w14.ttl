@@ -1,0 +1,12 @@
+[] a sw:Workflow ;
+
+sw:body (
+  [a sw:Parallel ;
+
+  sw:body(
+    [ a sw:Query ; sw:body "construct { us:Jim foaf:name 'Jim' } where {}" ]   
+
+    [ a sw:Update ; sw:body "insert data { us:John foaf:name 'Jon' } " ]
+
+  )]
+)

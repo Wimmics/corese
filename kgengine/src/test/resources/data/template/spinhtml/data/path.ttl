@@ -1,0 +1,45 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix sp:      <http://spinrdf.org/sp#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+[]    a       sp:Select ;
+      sp:resultVariables (_:b1 [ sp:expression
+                          [ a       sp:Min ;
+                            sp:expression
+                                    [ sp:varName "name"^^xsd:string
+                                    ]
+                          ] ;
+                  sp:varName "g"^^xsd:string ]
+                ) ;
+      sp:text """SELECT ?x ?name
+WHERE {
+    ?x ^(((foaf:knows/foaf:name))+ ?name .
+}"""^^xsd:string ;
+      sp:where ([ a       sp:TriplePath ;
+                  sp:object _:b2 ;
+                  sp:path [ a       sp:ReversePath ;
+                            sp:subPath
+                                    [ a       sp:ModPath ;
+                                      sp:modMax -2 ;
+                                      sp:modMin 1 ;
+                                      sp:subPath
+                                              [ a       sp:SeqPath ;
+                                                sp:path1 foaf:knows ;
+                                                sp:path2 foaf:name
+                                              ]
+                                    ]
+                          ] ;
+                  sp:subject _:b1
+                ]) ;
+                
+                sp:bindings [
+		  sp:variables (_:b1 _:b2) ;
+		  sp:values ((1 foaf:test) ([a sp:Undef] 2))
+                ] .
+
+_:b2  sp:varName "name"^^xsd:string .
+
+_:b1  sp:varName "x"^^xsd:string .

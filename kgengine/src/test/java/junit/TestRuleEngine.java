@@ -53,19 +53,19 @@ public class TestRuleEngine {
 		graph = createGraph(true);
 		Load load = Load.create(graph);
 
-		load.load(data + "engine/ontology/test.rdfs");
-		load.load(data + "engine/data/test.rdf");
-		
-		try {
-			load.loadWE(data + "engine/rule/test2.brul");
-			load.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
-		} catch (LoadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            try {
+                load.parse(data + "engine/ontology/test.rdfs");
+                load.parse(data + "engine/data/test.rdf");
+
+                load.parse(data + "engine/rule/test2.brul");
+                load.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
+            } catch (LoadException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 		
 		fengine = load.getRuleEngine();
                 fengine.setSpeedUp(true);
@@ -95,7 +95,7 @@ public class TestRuleEngine {
      public void testOWLRL() throws LoadException, EngineException{
           GraphStore g = GraphStore.create();
         Load ld = Load.create(g);
-        ld.loadWE(data + "template/owl/data/primer.owl");
+        ld.parse(data + "template/owl/data/primer.owl");
         RuleEngine re = RuleEngine.create(g);
         re.setProfile(RuleEngine.OWL_RL_LITE);
         re.process();
@@ -169,7 +169,7 @@ public class TestRuleEngine {
     public void testOWLRL2() throws LoadException, EngineException {
         GraphStore g = GraphStore.create();
         Load ld = Load.create(g);
-        ld.loadWE(data + "template/owl/data/primer.owl");
+        ld.parse(data + "template/owl/data/primer.owl");
         RuleEngine re = RuleEngine.create(g);
         re.setProfile(RuleEngine.OWL_RL_LITE);
         //re.process();
@@ -243,11 +243,11 @@ public class TestRuleEngine {
      RuleEngine testRules() throws LoadException {
         Graph g = createGraph();
         Load ld = Load.create(g);
-        ld.loadWE(data + "comma/comma.rdfs");
-        ld.loadWE(data + "comma/data");
-        ld.loadWE(data + "comma/data2");
+        ld.parse(data + "comma/comma.rdfs");
+        ld.parseDir(data + "comma/data");
+        ld.parseDir(data + "comma/data2");
         try {
-            ld.loadWE(data + "owlrule/owlrllite-junit.rul");
+            ld.parse(data + "owlrule/owlrllite-junit.rul");
         } catch (LoadException e) {
             e.printStackTrace();
         }
@@ -358,7 +358,7 @@ public class TestRuleEngine {
 		}
 	}
 	
-	@Test
+	
 	public void test5(){
 
 		Graph g = createGraph();
@@ -384,7 +384,7 @@ public class TestRuleEngine {
 	 * Rule engine with QueryExec on two graphs
 	 */
 	@Test
-	public void test6(){
+	public void test6() throws LoadException{
 		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
 
 		Graph g1 = createGraph(true);
@@ -393,8 +393,8 @@ public class TestRuleEngine {
 		Load load1 = Load.create(g1);
 		Load load2 = Load.create(g2);
 		
-		load1.load(data + "engine/ontology/test.rdfs");
-		load2.load(data + "engine/data/test.rdf");
+		load1.parse(data + "engine/ontology/test.rdfs");
+		load2.parse(data + "engine/data/test.rdf");
 
 		QueryProcess exec = QueryProcess.create(g1);
 		exec.add(g2);
@@ -404,7 +404,7 @@ public class TestRuleEngine {
 		load2.setEngine(re);
 		
 		try {
-			load2.loadWE(data + "engine/rule/test2.brul");
+			load2.parse(data + "engine/rule/test2.brul");
 			load2.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
 		} catch (LoadException e) {
 			// TODO Auto-generated catch block
@@ -449,11 +449,11 @@ public class TestRuleEngine {
 	
 	
 	
-	@Test
-	public void test7(){
+	
+	public void test7() throws LoadException{
 		Graph g1 = createGraph(true);
 		Load load1 = Load.create(g1);
-		load1.load(root + "sdk/sdk.rdf");
+		load1.parse(root + "sdk/sdk.rdf");
 		
 		String init = "load <" + root + "rule/server.rul> into graph kg:rule";
 		String query = "select * where {?x a ?class}";

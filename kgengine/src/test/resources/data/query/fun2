@@ -1,0 +1,11 @@
+prefix f1: <file:///home/corby/AATest/query/fun1#>
+prefix f2: <file:///home/corby/AATest/query/fun2#>
+
+
+function f2:test() {
+  f1:fun()
+}
+
+function f2:fun() {
+  "Hello"
+}

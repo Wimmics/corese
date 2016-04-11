@@ -30,6 +30,8 @@ import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.util.logging.Level;
 import org.junit.Ignore;
 
 @Ignore
@@ -302,7 +304,13 @@ public class CoreseTest2 extends TestCase {
 //		if (query.contains("last query")){
 //			Processor.finish();
 //		}
-		if (graph == null) init();
+		if (graph == null){
+                    try {
+                        init();
+                    } catch (LoadException ex) {
+                        java.util.logging.Logger.getLogger(CoreseTest2.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
                 //QueryProcess.setSort(true);
 		QueryProcess exec = QueryProcess.create(graph);
 		//exec.set(SorterImpl.create(graph));
@@ -345,7 +353,7 @@ public class CoreseTest2 extends TestCase {
 
     }
     
-	void init(){
+	void init() throws LoadException{
 		//String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
                 //String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
                 String data = CoreseTest2.class.getClassLoader().getResource("data").getPath() + "/";
@@ -359,43 +367,43 @@ public class CoreseTest2 extends TestCase {
 		//graph.setOptimize(true);
 		
 		long t1 = new Date().getTime();
-		load.load(data + "kgraph/rdf.rdf",  RDF.RDF);
-		load.load(data + "kgraph/rdfs.rdf", RDFS.RDFS);
-		load.load(data + "comma/comma.rdfs");
-		load.load(data + "comma/commatest.rdfs");
-		load.load(data + "comma/model.rdf");
-		load.load(data + "comma/testrdf.rdf");
-		load.load(data + "comma/data");
-		load.load(data + "comma/data2");
+		load.parse(data + "kgraph/rdf.rdf",  RDF.RDF);
+		load.parse(data + "kgraph/rdfs.rdf", RDFS.RDFS);
+		load.parse(data + "comma/comma.rdfs");
+		load.parse(data + "comma/commatest.rdfs");
+		load.parse(data + "comma/model.rdf");
+		load.parse(data + "comma/testrdf.rdf");
+		load.parseDir(data + "comma/data");
+		load.parseDir(data + "comma/data2");
 		long t2 = new Date().getTime();
 		System.out.println((t2-t1) / 1000.0 + "s");
 		//System.out.println(graph);
 	}
 	
 	
-	void init2(){
-//		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
-                String data = CoreseTest2.class.getClassLoader().getResource("data").getPath()+"/";
-
-		graph = Graph.create(true);
-		graph.set(Entailment.DATATYPE_INFERENCE, true);
-
-		Load load = Load.create(graph);
-		graph.setOptimize(true);
-		
-		long t1 = new Date().getTime();
-		load.load(data + "kgraph/rdf.rdf",  RDF.RDF);
-		load.load(data + "kgraph/rdfs.rdf", RDFS.RDFS);
-		load.load(data + "commattl/comma.ttl");
-		load.load(data + "commattl/commatest.ttl");
-		load.load(data + "commattl/model.ttl");
-		load.load(data + "commattl/testrdf.ttl");
-		load.load(data + "commattl/data");
-		load.load(data + "commattl/data2");
-		long t2 = new Date().getTime();
-		System.out.println((t2-t1) / 1000.0 + "s");
-		System.out.println(graph);
-	}
+//	void init2(){
+////		String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+//                String data = CoreseTest2.class.getClassLoader().getResource("data").getPath()+"/";
+//
+//		graph = Graph.create(true);
+//		graph.set(Entailment.DATATYPE_INFERENCE, true);
+//
+//		Load load = Load.create(graph);
+//		graph.setOptimize(true);
+//		
+//		long t1 = new Date().getTime();
+//		load.load(data + "kgraph/rdf.rdf",  RDF.RDF);
+//		load.load(data + "kgraph/rdfs.rdf", RDFS.RDFS);
+//		load.load(data + "commattl/comma.ttl");
+//		load.load(data + "commattl/commatest.ttl");
+//		load.load(data + "commattl/model.ttl");
+//		load.load(data + "commattl/testrdf.ttl");
+//		load.load(data + "commattl/data");
+//		load.load(data + "commattl/data2");
+//		long t2 = new Date().getTime();
+//		System.out.println((t2-t1) / 1000.0 + "s");
+//		System.out.println(graph);
+//	}
 	
 
 

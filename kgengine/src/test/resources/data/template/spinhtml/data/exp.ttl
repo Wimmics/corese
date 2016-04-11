@@ -1,0 +1,128 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix sp:      <http://spinrdf.org/sp#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+_:b1  sp:varName "y"^^xsd:string .
+
+[]    a       sp:Select ;
+      sp:from <file:///usr/local/tomcat/g1> ;
+      sp:fromNamed <file:///usr/local/tomcat/g2> ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT *
+FROM <file:///usr/local/tomcat/g1>
+FROM NAMED <file:///usr/local/tomcat/g2>
+WHERE {
+    {
+        ?x foaf:name ?name .
+        FILTER ((?x + ?y) < ?z) .
+    }
+    UNION
+    {
+        ?y foaf:name ?name .
+    }
+    UNION
+    {
+        ?z foaf:name ?name .
+        OPTIONAL {
+            ?z foaf:knows ?t .
+        } .
+    } .
+}"""^^xsd:string ;
+      sp:where (
+      [ a       sp:NamedGraph ;
+                  sp:elements ([ sp:object
+                                      [ sp:varName "name"^^xsd:string
+                                      ] ;
+                              sp:predicate foaf:name ;
+                              sp:subject _:b1
+                            ]) ;
+                  sp:graphNameNode
+                          [ sp:varName "g"^^xsd:string
+                          ]
+      ]
+                
+      [ a       sp:Union ;
+                  sp:elements (
+                  (
+			      [ sp:object foaf:Person  ;
+                                sp:predicate rdf:type ;
+                                sp:subject _:b3
+                              ] 
+			      [ sp:object _:b2 ;
+                                sp:predicate foaf:name ;
+                                sp:subject _:b3
+                              ] 
+                               [ a       sp:Minus ;
+                  sp:elements ([ sp:object _:b1 ;
+                              sp:predicate foaf:name ;
+                              sp:subject _:b2
+                            ])
+			  ]
+			   [ a       sp:Filter ;
+			      sp:expression
+			      [ a       sp:Exists ;
+				sp:elements ([ sp:object "James" ;
+					    sp:predicate foaf:name ;
+					    sp:subject _:b1
+					     ])
+			      ]
+			   ]
+                              
+                              [ a       sp:Filter ;
+                                sp:expression
+                                        [ a       sp:ne ;
+                                          sp:arg1 [ a       sp:add ;
+                                                    sp:arg1 _:b3 ;
+                                                    sp:arg2 _:b1
+                                                  ] ;
+                                          sp:arg2 _:b4
+                                        ]
+                              ])
+                              
+                              ([ sp:object _:b2 ;
+                                sp:predicate foaf:name ;
+                                sp:subject _:b1
+                              ]
+                               [ a       sp:Filter ;
+                  sp:expression
+                          [ a       sp:and ;
+                            sp:arg1 [ a       foaf:test ;
+				      sp:arg2 _:b2 ;
+                                      sp:arg1 _:b1 
+
+                                    ] ;
+                            sp:arg2 [ a       sp:isURI ;
+                                      sp:arg1 _:b2
+                                    ]
+                          ]]
+                
+                              
+                              ) ([ sp:object _:b2 ;
+                                sp:predicate foaf:name ;
+                                sp:subject _:b4
+                              ] [ a       sp:Optional ;
+                                sp:elements (
+                                
+                                [ sp:object _:b5  ;
+                                  sp:predicate foaf:knows ;
+                                  sp:subject _:b4
+                                ]
+                                [ sp:object foaf:Human  ;
+                                  sp:predicate rdf:type ;
+                                  sp:subject _:b4
+                                ]
+                                
+                               )
+                              ]))
+                ]) .
+
+_:b2  sp:varName "name"^^xsd:string .
+
+_:b4  sp:varName "z"^^xsd:string .
+
+_:b3  sp:varName "x"^^xsd:string .
+
+_:b5  sp:varName "t"^^xsd:string .

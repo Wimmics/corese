@@ -18,6 +18,9 @@ import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TestKgram extends TestSuite
 {
@@ -96,7 +99,11 @@ public class TestKgram extends TestSuite
     		  Load load = Load.create(qGraph);
     		  nsm = NSManager.create();
     		  nsm.defNamespace("http://www.inria.fr/edelweiss/2008/query#", "q");
-    		  load.load(DATA + "/comma/query.rdf");
+                  try {
+                      load.loadWE(DATA + "/comma/query.rdf");
+                  } catch (LoadException ex) {
+                      Logger.getLogger(TestKgram.class.getName()).log(Level.SEVERE, null, ex);
+                  }
 			  qGraph.index();
 
  //Query.testJoin = false; 
@@ -115,7 +122,7 @@ query =  "select * where {?x c:isMemberOf @{filter(?this = <http://www.inria.fr/
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  5));
 
 
-query = "select * where {?x c:FirstName ?n} bindings ?n { ('Olivier') }";
+query = "select * where {?x c:FirstName ?n} values ?n { 'Olivier' }";
 
 suite.addTest(new CoreseTest2(true, "testQuery", corese, query,  11));
 
@@ -2319,7 +2326,7 @@ query = "select   distinct ?t1 ?t2     where {"+
         
 //        suite.addTest(new CoreseTest2(true, "testQuery", corese,
 //        "select where {?x rdf:type rdfs:Class filter (depth(?x) > 11)}", 12));
-//TODO: debug
+//TODO: bug
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select where {?x ?p ?y optional{?y rdf:type ?class}" +
         " filter (! bound(?class) && ! isLiteral(?y))}", 2));

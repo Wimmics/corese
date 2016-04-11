@@ -1,0 +1,18 @@
+function xt:main(){
+  us:test()
+}
+
+function us:test(){
+  let (?res = true){
+    for ((?b, ?v, ?e) in 
+      select * where { 
+	filter st:visit(st:start, st:trace)     
+	bind (st:apply-templates-with(st:owlrl) as ?b) 
+	bind (unnest(st:visited())  as ?v)
+	bind (unnest(st:errors(?v)) as ?e)
+      } ){ 
+	xt:display(if (isBlank(?v), xt:turtle(?v), ?v), ?e) ; set(?res = ?b)
+    } ;
+    ?res
+  }
+}

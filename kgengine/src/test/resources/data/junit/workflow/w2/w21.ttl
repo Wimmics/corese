@@ -1,0 +1,28 @@
+[] a sw:Workflow ;
+
+sw:param [ st:value 1 ; st:max 5 ] ;
+
+sw:body ( us:test )
+
+.
+
+us:test a sw:Workflow ;
+sw:body (
+  [ a sw:Test ; 
+  
+    sw:if 
+    """st:get(st:value) <= st:get(st:max)""" ;
+    
+    sw:then [ a sw:Workflow ; sw:body ( 
+    
+      [ a sw:Update ; sw:body 
+	"""insert { [] rdf:value ?value } 
+	where { bind (st:get(st:value) as ?value)
+	bind (st:set(st:value, ?value + 1 ) as ?next) }""" ]
+	
+	us:test
+	
+    )] ;
+        
+  ]
+)

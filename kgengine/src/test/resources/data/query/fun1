@@ -1,0 +1,18 @@
+prefix f1: <file:///home/corby/AATest/query/fun1#>
+prefix f2: <file:///home/corby/AATest/query/fun2#>
+
+@import 
+select where {}
+
+function f1:test() {
+  f2:test()
+}
+
+function f1:fun() {
+  f2:fun()
+}
+
+function f1:foo(){
+  let ((?b) = select * where { ?a ?p ?b })
+  { "foo" }
+}

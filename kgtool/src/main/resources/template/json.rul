@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 28 17:53:23 CET 2016
+Thu Apr 14 15:38:02 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -128,7 +128,9 @@ template st:body {
    
 }
 where {
-   {select distinct ?in where {
+
+   select distinct ?in where {
+     bind (st:get(st:uri) as ?in)
      ?in ?p ?y
      
      filter (
@@ -145,7 +147,7 @@ where {
         || not exists { ?x ?q ?in }
        ))    
    }
-   order by ?in}
+   order by ?in
    
 }
 
@@ -160,17 +162,10 @@ template st:head {
 
 """{
 "@context": {"""
-  box {
-    "\"rdf\": \""  str(rdf:)  "\","  st:nl()
-    "\"rdfs\": \"" str(rdfs:) "\","  st:nl()
-    "\"owl\": \""  str(owl:)  "\","  st:nl()
-    "\"xsd\": \""  str(xsd:)  "\","  st:nl()
-    "\"foaf\": \"http://xmlns.com/foaf/0.1/\""
-    
-    st:call-template(st:prefix)
-    
+  ibox {       
+    st:call-template(st:prefix)    
   }
-"},"
+"\n},"
 
 st:nl()
 st:nl()
@@ -229,15 +224,40 @@ order by ?y
 <![CDATA[
 template st:prefix {
 
- "," st:nl()
+ st:nl()
  
  "\"" str(?p) "\": \""  str(?n) "\""  
 
- ; separator = ""
+ ; separator = ","
  
 }
 where {
   bind (unnest(st:prefix()) as (?p, ?n))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# JSON LD Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:result {
+
+  format { 
+    """<h3>JSON</h3>
+    <pre>%s</pre>"""
+    st:call-template(st:start)
+  }
+  
+}
+where {
 }
 
 ]]>

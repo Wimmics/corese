@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 28 17:53:23 CET 2016
+Thu Apr 14 15:38:02 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -199,6 +199,31 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# RDF/XML Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:result {
+  format { 
+    """<h3>RDF/XML</h3>
+    <pre>%s</pre>"""
+    replace(replace(st:call-template(st:start), "&", "&amp;"), "<", "&lt;")
+  }
+  
+}
+where {
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:listtriple(?x, ?p, ?y) {
    "<" st:turtle(?p, true) ">"
    
@@ -230,6 +255,7 @@ template st:main {
 }
 where {
    select distinct ?in where {
+     bind (st:get(st:uri) as ?in)
      ?in ?p ?y
      
      filter (isURI(?in) || ! exists { ?x ?q ?in } )
@@ -285,38 +311,16 @@ where {
 <![CDATA[
 template st:head {
 
-"<rdf:RDF"
-  box {
-    "xmlns:rdf='"  str(rdf:) "'"  st:nl()
-    "xmlns:rdfs='" str(rdfs:) "'" st:nl()
-    "xmlns:owl='"  str(owl:) "'"  st:nl()
-    "xmlns:xsd='"  str(xsd:) "'"  st:nl() 
-    
+"<" st:turtle(rdf:RDF)
+  ibox {
     st:call-template(st:prefix)
-    
   }
-">"
-"\n\n"
+
+">\n\n"
 
 }
 where {
 
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:prefix {
-
-  "xmlns:" str(?p) "='" str(?n) "'" 
-
-}
-where {
-  bind( kg:unnest(st:prefix()) as (?p, ?n))
 }
 
 ]]>
@@ -345,6 +349,27 @@ where {
       
 }
 
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:prefix {
+
+ st:nl()  
+ format { 
+    "xmlns:%s='%s'"  
+    str(?p) str(?n) 
+ }
+ ; separator = ""
+
+}
+where {
+  bind( kg:unnest(st:prefix()) as (?p, ?n))
+}
 
 ]]>
 </body>

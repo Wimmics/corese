@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 28 17:53:23 CET 2016
+Thu Apr 14 15:38:02 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -66,7 +66,11 @@ where {
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:th {
  
-    "<th>" str(?v) "</th>" ; separator = " "
+    format {
+      "<th>%s</th>" 
+      str(?v)
+    } 
+    ; separator = " "
  
 }
 where {
@@ -170,35 +174,6 @@ order by ?i
 <body>
 <![CDATA[
 #
-# Generate link for URI
-#
-template st:display(?x) {
-  if (! bound(?profile)){ 
-    st:call-template(st:esc, ?x) 
-  }
-  else if (?profile = st:std){ 
-    st:call-template(st:linkesc, ?x) 
-  }
-  else if (st:lod(?x)){
-    st:call-template(st:linkesc, ?x)
-  }
-  else { 
-    st:call-template(st:linkprofile, ?x) 
-  }
-          
-}
-where {
-      bind (st:get(st:profile) as ?profile)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # Trap select * where {} solution as there is no variable (see solution.rq)
 #
 template st:default {
@@ -239,11 +214,14 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# st:pplink search specific profile for URI wrt st:lodprofile() if any
+#
 template st:linkprofile(?x) {
 
   if (isURI(?x), 
     st:call-template(st:link, 
-      coalesce(st:plink(?x), encode_for_uri(?x)),
+      coalesce(st:pplink(?x), encode_for_uri(?x)),
       ?e),
     str(?e))
     
@@ -271,22 +249,6 @@ template st:pageselect {
     
 }
 where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:transform(?x) {
-
-    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" st:get(st:profile)
-    
-}
-where {
-
 }
 
 ]]>
@@ -388,7 +350,6 @@ where {
 template st:opencons {
 
   """
-  <h3>Result</h3>
   <table class='table'>
   <tr>
   <th></th><th></th><th>subject</th><th>property</th><th>object</th><th></th>
@@ -411,7 +372,7 @@ template st:profile {
 }
 where {}
   
-  # LOD URI hypertext link generated as is (see display.rq)
+  # LOD URI hypertext link generated as is 
   # set by profile.ttl : st:param [ st:lod (URI) ]
   #
   function st:lod(?x){
@@ -432,7 +393,7 @@ where {}
 	st:call-template(st:linkesc, ?x)
       }
       else {
-	st:call-template(st:linkprofile2, ?x)
+	st:call-template(st:linkprofile, ?x)
       }     
     }
   }
@@ -521,7 +482,6 @@ where {
 #
 template st:show(?x) {
     format { "<img width='35' src='%s' />"  str(?l) }
-#    st:call-template(st:show2, ?x)
 }
 where {
   bind (st:get(st:dataset) as ?g)
@@ -531,33 +491,6 @@ where {
   }
 }
 limit 1
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:tablecons2 {
-
- "<tr>"
- "<th>"      st:number()
- "</th><td>" st:call-template(st:show,    ?x) 
- "</td><td>" st:display(?x)
- "</td><td>" st:call-template(st:tablecons3, ?x)
- "</td>"
- "</tr>"
- 
-}
-where {
-  select distinct ?x where {
-    ?x ?p ?y
-    bind (st:get(st:uri) as ?uri)
-    filter (if (bound(?uri), ?uri in (?x, ?p, ?y), true))
-    }
-}
-order by ?x 
 
 ]]>
 </body>
@@ -592,7 +525,6 @@ template st:open {
 format {
 
   """
-  <h3>Result</h3>
   <table class='table'>    
   <tr><td/>%s</tr>\n
   """
@@ -630,76 +562,6 @@ template st:core {
 where {
   
 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:linkprofile2(?x) {
-
-  if (isURI(?x), 
-    st:call-template(st:link, 
-      coalesce(st:pplink(?x), encode_for_uri(?x)),
-      ?e),
-    str(?e))
-    
-}
-where {
-
-  bind (st:call-template(st:esc, ?x) as ?e)
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:tablecons3(?x) {
-"<table>"
-group  {
- "<tr>"
- "<td>" st:display(?p) 
- "</td><td>" st:display(?y) 
- "</th><td>" st:call-template(st:show,    ?y) 
- "</td>"
- "</tr>"
- }
- "</table>"
- 
-}
-where {
-  ?x ?p ?y
-  bind (st:get(st:uri) as ?uri)
-  filter (if (bound(?uri), ?uri in (?x, ?p, ?y), true))
-}
-order by ?x ?p ?y
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-#  Get an optional icon from the dataset and display it
-#
-template st:show2(?x) {
-    st:display(?y) 
-}
-where {
-  bind (st:get(st:dataset) as ?g)
-  graph ?g { 
-     ?x rdfs:seeAlso ?y   
-  }
-}
-limit 1
 
 ]]>
 </body>

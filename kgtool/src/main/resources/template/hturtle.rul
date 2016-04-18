@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 28 17:53:23 CET 2016
+Thu Apr 14 15:38:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -16,7 +16,7 @@ Sun Feb 28 17:53:23 CET 2016
 template st:close {
   
   "\n</pre>\n"
-  st:call-template-with(st:server, st:tail)
+  st:tail()
   
 }
 where {
@@ -68,7 +68,6 @@ template st:start {
   st:call-template(st:close)
 }
 where {
-
 }
 
 
@@ -85,14 +84,19 @@ where {
 #
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:main {
-    
-  if (?b, 
-    st:call-template(st:result),
-    st:apply-templates-with(st:turtlehtml))
-  
+      
+    replace(st:prolog("@prefix"), "<", "&lt;")
+    str(?main)
+
 }
 where {
    bind (exists { ?rs a rs:ResultSet } as ?b)
+   bind (if (?b, true, st:export(st:uri, st:get(st:uri))) as ?e)
+   
+   bind (if (?b, 
+    st:call-template(st:resultset),
+    st:apply-templates-with(st:turtlehtml)) as ?main)
+    
 }
 
 
@@ -107,15 +111,40 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:resultset {
+  str(?res)
+  ; separator = "\n\n"
+}
+where {
+  ?rs rs:solution ?s 
+  ?s rs:index ?i  
+  ?s rs:binding [ rs:variable ?var ; rs:value ?val ]
+    
+  graph eng:dataset {
+     bind (st:apply-templates-with(st:turtlehtml, ?val) as ?res)
+  }
+  
+}
+order by ?i ?var
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
 template st:open {
 
-st:call-template-with(st:server, st:head)
-
-"<h3>Result</h3>"
+  st:head()
 
 "\n<pre>\n"
-
-  replace(st:prolog("@prefix"), "<", "&lt;")
   
 }
 where {
@@ -188,20 +217,14 @@ where {
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 
 template st:result {
-  str(?res)
-  ; separator = "\n\n"
-}
-where {
-  ?rs rs:solution ?s 
-  ?s rs:index ?i  
-  ?s rs:binding [ rs:variable ?var ; rs:value ?val ]
-    
-  graph eng:dataset {
-     bind (st:apply-templates-with(st:turtlehtml, ?val) as ?res)
-  }
+
+  "<h3>Turtle</h3>\n"
+  st:call-template(st:start)
   
 }
-order by ?i ?var
+where {
+ 
+}
 
 ]]>
 </body>

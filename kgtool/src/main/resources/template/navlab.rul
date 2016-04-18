@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 21 09:25:09 CET 2016
+Thu Apr 14 15:38:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -443,7 +443,8 @@ where {
   { ?x a foaf:Person } 
   union { ?x a o:Place }
   union { ?x a o:Resource }
-  filter(?x = coalesce(st:get(st:uri), ?x))
+  
+ filter(?x = coalesce(st:get(st:uri), ?x))
 }
 limit 1
 

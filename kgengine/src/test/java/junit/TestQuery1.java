@@ -126,6 +126,31 @@ public class TestQuery1 {
         return graph;
     }
     
+     @Test
+    public void testJSON() throws EngineException, LoadException {
+        String t =
+                "template  {  st:apply-templates-with(st:json)}"
+                + "where {}";
+
+        Graph g = Graph.create(); //createGraph();
+        Load ld = Load.create(g);
+        ld.parse(data + "jsonld/test.jsonld");
+
+        QueryProcess exec = QueryProcess.create(g);
+
+        Mappings map = exec.query(t);
+
+        String json = map.getTemplateStringResult();
+        assertEquals(true, (json.length() == 1066 || json.length() == 1064));
+
+        Graph gg = Graph.create();
+        Load ll = Load.create(gg);
+        ll.loadString(json, Load.JSONLD_FORMAT);
+
+        assertEquals(g.size(), gg.size());
+
+    }
+    
     
      @Test
     public void testAGG22() throws EngineException {
@@ -143,30 +168,7 @@ public class TestQuery1 {
     }
     
     
-      @Test
-    public void testJSON() throws EngineException, LoadException {
-        String t =
-                "template  {  st:apply-templates-with(st:json)}"
-                + "where {}";
-
-        Graph g = Graph.create(); //createGraph();
-        Load ld = Load.create(g);
-        ld.parse(data + "jsonld/test.jsonld");
-
-        QueryProcess exec = QueryProcess.create(g);
-
-        Mappings map = exec.query(t);
-
-        String json = map.getTemplateStringResult();
-        assertEquals(1260, json.length());
-
-        Graph gg = Graph.create();
-        Load ll = Load.create(gg);
-        ll.loadString(json, Load.JSONLD_FORMAT);
-
-        assertEquals(g.size(), gg.size());
-
-    }
+     
               
     
     @Test
@@ -2395,7 +2397,7 @@ public class TestQuery1 {
                 + "}";
         Mappings map = exec.query(q);
         //System.out.println(map.getTemplateStringResult());
-        assertEquals(152, map.getTemplateStringResult().length());
+        assertEquals(202, map.getTemplateStringResult().length());
 
 
     }
@@ -2747,17 +2749,17 @@ public class TestQuery1 {
 
         Transformer t = Transformer.create(g, Transformer.TURTLE, RDF.RDF);
         String str = t.transform();
-        assertEquals(3821, str.length());
+        assertEquals(3933, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE, RDFS.RDFS);
         str = t.transform();
         //System.out.println(str);
-        assertEquals(3160, str.length());
+        assertEquals(3272, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE);
         str = t.transform();
         //System.out.println(str);
-        assertEquals(6936, str.length());
+        assertEquals(7048, str.length());
     }
 
     @Test
@@ -2775,17 +2777,17 @@ public class TestQuery1 {
         Mappings map = exec.query(t1);
         String str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(3821, str.length());
+        assertEquals(3933, str.length());
 
         map = exec.query(t2);
         str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(3160, str.length());
+        assertEquals(3272, str.length());
 
         map = exec.query(t3);
         str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(6936, str.length());
+        assertEquals(7048, str.length());
     }
 
     @Test
@@ -2831,7 +2833,7 @@ public class TestQuery1 {
 
         Transformer pp = Transformer.create(g, Transformer.TRIG);
         String str = pp.transform();
-        assertEquals(10038, str.length());
+        assertEquals(10484, str.length());
 
 
     }
@@ -2859,7 +2861,7 @@ public class TestQuery1 {
 
         map = exec.query(t2);
 
-        assertEquals(9083, map.getTemplateResult().getLabel().length());
+        assertEquals(9244, map.getTemplateResult().getLabel().length());
 
     }
 
@@ -2877,7 +2879,7 @@ public class TestQuery1 {
 
 
         Mappings map = exec.query(t1);
-        assertEquals(3060, map.getTemplateResult().getLabel().length());
+        assertEquals(3254, map.getTemplateResult().getLabel().length());
 
     }
 

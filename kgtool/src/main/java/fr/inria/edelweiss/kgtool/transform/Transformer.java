@@ -1098,6 +1098,7 @@ public class Transformer  {
     public IDatatype turtle(IDatatype dt, boolean force) {
 
         if (dt.isURI()) {
+            nsm.setRecord(true);
             String uri = nsm.toPrefixURI(dt.getLabel(), ! force);
             dt = DatatypeMap.newStringBuilder(uri);          
         } else if (dt.isLiteral()) {

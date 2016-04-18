@@ -17,6 +17,7 @@ import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.util.HashMap;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -27,6 +28,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.log4j.Logger;
 
 /**
@@ -48,6 +50,7 @@ public class Transformer {
     private static NSManager nsm;
     boolean isDebug, isDetail;
     static boolean isTest = false;
+    static HashMap<String, String> contentType;
 
     static {
         init();
@@ -56,6 +59,10 @@ public class Transformer {
     static void init() {
         nsm = NSManager.create();
         mprofile = SPARQLRestAPI.getProfile();
+        contentType = new HashMap<String, String>();
+        contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.TURTLE, "text/turtle; charset=utf-8");
+        contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.RDFXML, "application/rdf+xml; charset=utf-8");
+        contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.JSON,   "application/ld+json; charset=utf-8");    
     }
     
     static Profile getProfile(){
@@ -155,37 +162,20 @@ public class Transformer {
                 }
             }
 
-            String squery = par.getQuery();
-            
-//            if (isDebug) {
-//                System.out.println("query: \n" + squery);
-//            }
-            
+            String squery = par.getQuery();            
             if (par.getParam() != null){
                 isTest = par.getParam().equals("true");
             }
             
-            if (true){
-                complete(store.getGraph(), ctx);
-                Dataset ds = createDataset(par.getFrom(), par.getNamed());
-                String res = workflow(store.getGraph(), ctx, ds, mprofile.getProfileGraph(), squery, ctx.getTransform());
-                return Response.status(200).header(headerAccept, "*").entity(result(par, res)).build();               
+            complete(store.getGraph(), ctx);
+            Dataset ds = createDataset(par.getFrom(), par.getNamed());
+            Data data = workflow(store.getGraph(), ctx, ds, mprofile.getProfileGraph(), squery, ctx.getTransform());
+            ResponseBuilder rb = Response.status(200).header(headerAccept, "*").entity(result(par, data.stringValue()));
+            String format = getContentType(data);
+            if (format != null && ! ctx.getService().contains("srv")){
+                 rb.header("Content-type", format);
             }
-            else {
-                Mappings map = null;
-                if (squery != null && store != null) {
-                    Dataset ds = createDataset(par.getFrom(), par.getNamed(), ctx);
-                    map = store.query(squery, ds);
-                    if (isDetail) {
-                        System.out.println(map);
-                    }
-                    if (isDebug) {
-                        System.out.println("map: " + map.size());
-                    }
-                }
-                HTMLFormat ft = HTMLFormat.create(store.getGraph(), map, ctx);
-                return Response.status(200).header(headerAccept, "*").entity(result(par, ft.toString())).build();
-            }
+            return rb.build();
             
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
@@ -199,21 +189,22 @@ public class Transformer {
         }
     }
     
-    String workflow(Graph g, Context c, Dataset ds, Graph profile, String q, String t) {
-        try {
-            SemanticWorkflow w = create(c, ds, profile, q, t);
-            if (! w.isDebug()){
-                w.setDebug(isTest);
-            }
-            Data data = w.process(new Data(g));
-            return data.stringValue();
-        } catch (EngineException ex) {
-            logger.error(ex);
-            return ex.toString();
-        } catch (LoadException ex) {
-            logger.error(ex);
-            return ex.toString();
+    String getContentType(Data data){
+        String trans = data.getProcess().getTransformation();
+        if (trans != null){
+            return contentType.get(trans);          
         }
+        return null;
+    }
+    
+    Data workflow(Graph g, Context c, Dataset ds, Graph profile, String q, String t)
+            throws LoadException, EngineException {
+        SemanticWorkflow w = create(c, ds, profile, q, t);
+        if (!w.isDebug()) {
+            w.setDebug(isTest);
+        }
+        Data data = w.process(new Data(g));
+        return data;
     }
     
     /**
@@ -245,7 +236,7 @@ public class Transformer {
     void defaultTransform(SemanticWorkflow wp, String transform) {
         boolean isDefault = false;
         if (transform == null
-                && (wp.getProcessList().isEmpty() || ! wp.getProcessLast().isTemplate())) {
+                && (wp.getProcessList().isEmpty() || ! wp.getProcessLast().isTransformation())) {
             isDefault = true;
             transform = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
         }

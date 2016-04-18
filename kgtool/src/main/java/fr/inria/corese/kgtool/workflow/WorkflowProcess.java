@@ -6,7 +6,6 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
@@ -40,6 +39,7 @@ public class WorkflowProcess implements AbstractProcess {
     private boolean visit = false;
     private String result, uri, name;
     private IDatatype mode;
+    String path;
     
     @Override
     public String toString(){
@@ -114,22 +114,9 @@ public class WorkflowProcess implements AbstractProcess {
         if (getContext() == null){
             setContext(new Context());
         }
-        set(Context.STL_GRAPH, data.getGraph());
-        set(Context.STL_SOLUTION, data.getMappings());
-        if (data.getDatatypeValue() != null){
-            getContext().set(Context.STL_VALUE, data.getDatatypeValue());
-        }
-        if (data.getDataList() != null){
-            getContext().set(Context.STL_GRAPH_LIST, data.getGraphList());
-        }
+        data.initContext(getContext());
     }
     
-    void set(String name, Object obj){
-        if (obj != null){
-            getContext().set(name, DatatypeMap.createObject(obj));
-        }
-    }
-
 
     void beforeDebug(Data data) {
         if (isRecDebug()) {
@@ -295,8 +282,16 @@ public class WorkflowProcess implements AbstractProcess {
     }
     
     @Override
-    public boolean isTemplate() {
+    public boolean isTransformation() {
         return false;
+    }
+    
+    boolean isTemplate() {
+        return false;
+    }
+    
+    boolean isModify(){
+        return ! isTransformation();
     }
 
     /**
@@ -465,7 +460,24 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public void setVisitor(WorkflowVisitor visitor) {
         this.visitor = visitor;
+    }  
+    
+       /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
     }
-   
+
+    /**
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+    
+    public String getTransformation(){
+        return null;
+    }
 
 }

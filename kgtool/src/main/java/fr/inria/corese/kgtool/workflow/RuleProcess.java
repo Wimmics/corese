@@ -16,7 +16,6 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
  */
 public class RuleProcess extends  WorkflowProcess {
 
-    private String path;
     private RuleEngine engine;
     int profile = -1;
     
@@ -94,20 +93,6 @@ public class RuleProcess extends  WorkflowProcess {
         Load ld = Load.create(g);
         ld.parse(p, Loader.RULE_FORMAT);
         return ld.getRuleEngine();
-    }
-
-    /**
-     * @return the path
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * @param path the path to set
-     */
-    public void setPath(String path) {
-        this.path = path;
     }
 
     /**

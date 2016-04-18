@@ -18,7 +18,6 @@ public class SemanticWorkflow extends  CompositeProcess {
      
     Data data;
     private int loop = -1;
-    private String path;
     
     public SemanticWorkflow(){
         super();
@@ -69,11 +68,11 @@ public class SemanticWorkflow extends  CompositeProcess {
     }
     
     public SemanticWorkflow addTemplate(String q){
-       return add(new TemplateProcess(q));
+       return add(new TransformationProcess(q));
     }
     
     public SemanticWorkflow addTemplate(String q, boolean isDefault){
-       return add(new TemplateProcess(q, isDefault));
+       return add(new TransformationProcess(q, isDefault));
     }
     
     public SemanticWorkflow addRule(String q){
@@ -233,18 +232,12 @@ public class SemanticWorkflow extends  CompositeProcess {
         }
     }
 
-    /**
-     * @return the path
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * @param path the path to set
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
+    
+    public String getTransformation(){
+        if (getProcessLast() != null && getProcessLast().isTransformation()){
+            return getProcessLast().getPath();
+        }
+        return null;
+    } 
 
 }

@@ -364,18 +364,18 @@ public class WorkflowParser {
                 IDatatype dbody = getValue(BODY, dt);
                 if (duri != null) {
                     String uri = duri.getLabel();
-                    if (type.equals(QUERY) || type.equals(UPDATE)) {
+                    if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
                         ap = queryPath(uri);
                     } else if (type.equals(RULE) || type.equals(RULEBASE)) {
                         ap = new RuleProcess(uri);
-                    } else if (type.equals(TEMPLATE) || type.equals(TRANSFORMATION)) {
-                        ap = new TemplateProcess(uri);
+                    } else if (type.equals(TRANSFORMATION)) {
+                        ap = new TransformationProcess(uri);
                     } else if (type.equals(LOAD)) {
                         ap = load(dt);
                     }
                 }  
                 else if (dbody != null) {
-                    if (type.equals(QUERY) || type.equals(UPDATE)) {
+                    if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
                         ap = new SPARQLProcess(dbody.getLabel(), getPath());
                     }
                     else if (type.equals(FUNCTION)){

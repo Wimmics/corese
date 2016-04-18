@@ -34,7 +34,7 @@ public interface AbstractProcess {
     
     boolean isDebug();
     
-    boolean isTemplate();
+    boolean isTransformation();
     
     void setProbe(boolean b);
 

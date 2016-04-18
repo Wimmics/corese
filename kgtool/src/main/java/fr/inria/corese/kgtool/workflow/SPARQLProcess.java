@@ -1,10 +1,12 @@
 package fr.inria.corese.kgtool.workflow;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
@@ -21,7 +23,6 @@ import fr.inria.edelweiss.kgtool.util.MappingsGraph;
 public class SPARQLProcess extends  WorkflowProcess {
 
     private String query;
-    private String path;
     
     public SPARQLProcess(String q){
         this(q, null);
@@ -87,6 +88,11 @@ public class SPARQLProcess extends  WorkflowProcess {
         Transformer t = (Transformer) data.getMappings().getQuery().getTransformer();
         if (t != null && t.getVisitor() != null) {
             data.setVisitor(t.getVisitor());
+        }
+        Node temp = data.getMappings().getTemplateResult();
+        if (temp != null){
+            data.setDatatypeValue((IDatatype) temp.getValue());
+            data.setTemplateResult(data.getDatatypeValue().stringValue());
         }
     }
     

@@ -1,0 +1,569 @@
+REST endpoint instanciated http://localhost:8084/sparql
+REST endpoint instanciated http://localhost:8085/sparql
+REST endpoint instanciated http://localhost:8086/sparql
+Building indices for 
+{?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+Edge index
+Source index
+Found consecutive triple patterns into {?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+Processing
+[?region igeo:codeRegion '24' . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+Triple pattern ?region igeo:codeRegion '24' .  appears in more than one data source, excluded from SERVICE.
+Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+Triple pattern ?region igeo:codeRegion '24' .  appears in more than one data source, excluded from SERVICE.
+Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+Ranking : 
+{?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+1 free variables for ?region igeo:codeRegion '24' . 
+2 free variables for ?region igeo:subdivisionDirecte ?departement . 
+2 free variables for ?departement igeo:nom ?nom . 
+3 free variables for service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+Sorting services possibly with the same score
+Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion '24' . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion '24' . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+{?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+Final rewritten query
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select ?nom ?popTotale 
+where
+{?region igeo:codeRegion '24' . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+order by ?popTotale 
+
+
+Building predicates indices for AND{EDGE{?region igeo:codeRegion '24'} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} SERVICE{NODE{<http://localhost:8086/sparql> } select [NODE{?departement }, NODE{?popLeg }, NODE{?popTotale }]
+QUERY{AND{EDGE{?departement idemo:population ?popLeg} EDGE{?popLeg idemo:populationTotale ?popTotale} } } } }
+Building predicates indices for AND{EDGE{?departement idemo:population ?popLeg} EDGE{?popLeg idemo:populationTotale ?popTotale} }
+END of building index!
+END of building index!
+Searching for BGP : BGP{EDGE{?region igeo:codeRegion '24'} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} }
+CallableResult for GetMappings
+CallableResult for GetMappings
+BGP QUERY: 
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion '24' . 
+ 	 ?region igeo:subdivisionDirecte ?departement . 
+ 	 ?departement igeo:nom ?nom . 
+ } 
+BGP QUERY: 
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion '24' . 
+ 	 ?region igeo:subdivisionDirecte ?departement . 
+ 	 ?departement igeo:nom ?nom . 
+ } 
+ results found 
+PREFIX pp: <http://ns.inria.fr/edelweiss/2010/kgram/pprinter/>
+PREFIX st: <http://ns.inria.fr/sparql-template/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX cos: <http://www.inria.fr/acacia/corese#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fp: <ftp://ftp-sop.inria.fr/wimmics/soft/pprint/>
+PREFIX dt: <http://ns.inria.fr/sparql-datatype/>
+PREFIX cs: <http://ns.inria.fr/sparql-custom/>
+PREFIX cw: <http://ns.inria.fr/edelweiss/2010/kgram/construct/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX igeo: <http://rdf.insee.fr/def/geo#>
+PREFIX idemo: <http://rdf.insee.fr/def/demo#>
+PREFIX xt: <http://ns.inria.fr/sparql-extension/>
+PREFIX kg: <http://ns.inria.fr/edelweiss/2010/kgram/>
+PREFIX sp: <http://spinrdf.org/sp#>
+PREFIX us: <http://ns.inria.fr/sparql-extension/user/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rq: <http://ns.inria.fr/sparql-function/>
+PREFIX eng: <http://ns.inria.fr/edelweiss/2010/kgram/extension/>
+
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion '24' . 
+ 	 ?region igeo:subdivisionDirecte ?departement . 
+ 	 ?departement igeo:nom ?nom . 
+ } 
+to http://localhost:8085/sparql
+<?xml version="1.0" ?>
+<sparql xmlns='http://www.w3.org/2005/sparql-results#'>
+<head>
+<variable name='region'/>
+<variable name='departement'/>
+<variable name='nom'/>
+</head>
+<results>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/41</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Loir-et-Cher</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/28</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Eure-et-Loir</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/45</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Loiret</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/37</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Indre-et-Loire</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/18</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Cher</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/36</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Indre</literal></binding>
+</result>
+</results>
+</sparql>
+
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/41>
+?nom = "Loir-et-Cher"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/28>
+?nom = "Eure-et-Loir"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/45>
+?nom = "Loiret"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/37>
+?nom = "Indre-et-Loire"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/18>
+?nom = "Cher"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/36>
+?nom = "Indre"
+  number of triple BGP???  3  ??? 18
+Results (cardinality 6) merged in  36 ms from http://localhost:8085/sparql
+ results found 
+PREFIX pp: <http://ns.inria.fr/edelweiss/2010/kgram/pprinter/>
+PREFIX st: <http://ns.inria.fr/sparql-template/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX cos: <http://www.inria.fr/acacia/corese#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fp: <ftp://ftp-sop.inria.fr/wimmics/soft/pprint/>
+PREFIX dt: <http://ns.inria.fr/sparql-datatype/>
+PREFIX cs: <http://ns.inria.fr/sparql-custom/>
+PREFIX cw: <http://ns.inria.fr/edelweiss/2010/kgram/construct/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX igeo: <http://rdf.insee.fr/def/geo#>
+PREFIX idemo: <http://rdf.insee.fr/def/demo#>
+PREFIX xt: <http://ns.inria.fr/sparql-extension/>
+PREFIX kg: <http://ns.inria.fr/edelweiss/2010/kgram/>
+PREFIX sp: <http://spinrdf.org/sp#>
+PREFIX us: <http://ns.inria.fr/sparql-extension/user/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rq: <http://ns.inria.fr/sparql-function/>
+PREFIX eng: <http://ns.inria.fr/edelweiss/2010/kgram/extension/>
+
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion '24' . 
+ 	 ?region igeo:subdivisionDirecte ?departement . 
+ 	 ?departement igeo:nom ?nom . 
+ } 
+to http://localhost:8084/sparql
+<?xml version="1.0" ?>
+<sparql xmlns='http://www.w3.org/2005/sparql-results#'>
+<head>
+<variable name='region'/>
+<variable name='departement'/>
+<variable name='nom'/>
+</head>
+<results>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/41</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Loir-et-Cher</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/28</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Eure-et-Loir</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/45</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Loiret</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/37</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Indre-et-Loire</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/18</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Cher</literal></binding>
+</result>
+<result>
+<binding name='region'><uri>http://id.insee.fr/geo/region/24</uri></binding>
+<binding name='departement'><uri>http://id.insee.fr/geo/departement/36</uri></binding>
+<binding name='nom'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Indre</literal></binding>
+</result>
+</results>
+</sparql>
+
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/41>
+?nom = "Loir-et-Cher"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/28>
+?nom = "Eure-et-Loir"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/45>
+?nom = "Loiret"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/37>
+?nom = "Indre-et-Loire"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/18>
+?nom = "Cher"
+  number of triple BGP???  3  ??? 18
+?region = <http://id.insee.fr/geo/region/24>
+?departement = <http://id.insee.fr/geo/departement/36>
+?nom = "Indre"
+  number of triple BGP???  3  ??? 18
+Results (cardinality 6) merged in  37 ms from http://localhost:8084/sparql
+RESULTS: 6 FROM http://localhost:8085/sparql
+Finished CallableResult in 40 ms.
+RESULTS: 6 FROM http://localhost:8084/sparql
+Finished CallableResult in 42 ms.
+Global results retrieved in getMappings 42ms.
+Searching for edge : ?region igeo:codeRegion '24'
+CallableResult for GetEdge
+CallableResult for GetEdge
+EDGE QUERY: CONSTRUCT  { ?region igeo:codeRegion '24' } 
+ WHERE { 
+	 ?region igeo:codeRegion '24' .
+ }
+EDGE QUERY: CONSTRUCT  { ?region igeo:codeRegion '24' } 
+ WHERE { 
+	 ?region igeo:codeRegion '24' .
+ }
+sending query 
+PREFIX pp: <http://ns.inria.fr/edelweiss/2010/kgram/pprinter/>
+PREFIX st: <http://ns.inria.fr/sparql-template/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX cos: <http://www.inria.fr/acacia/corese#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fp: <ftp://ftp-sop.inria.fr/wimmics/soft/pprint/>
+PREFIX dt: <http://ns.inria.fr/sparql-datatype/>
+PREFIX cs: <http://ns.inria.fr/sparql-custom/>
+PREFIX cw: <http://ns.inria.fr/edelweiss/2010/kgram/construct/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX igeo: <http://rdf.insee.fr/def/geo#>
+PREFIX idemo: <http://rdf.insee.fr/def/demo#>
+PREFIX xt: <http://ns.inria.fr/sparql-extension/>
+PREFIX kg: <http://ns.inria.fr/edelweiss/2010/kgram/>
+PREFIX sp: <http://spinrdf.org/sp#>
+PREFIX us: <http://ns.inria.fr/sparql-extension/user/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rq: <http://ns.inria.fr/sparql-function/>
+PREFIX eng: <http://ns.inria.fr/edelweiss/2010/kgram/extension/>
+CONSTRUCT  { ?region igeo:codeRegion '24' } 
+ WHERE { 
+	 ?region igeo:codeRegion '24' .
+ }
+to http://localhost:8084/sparql
+sending query 
+PREFIX pp: <http://ns.inria.fr/edelweiss/2010/kgram/pprinter/>
+PREFIX st: <http://ns.inria.fr/sparql-template/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX cos: <http://www.inria.fr/acacia/corese#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fp: <ftp://ftp-sop.inria.fr/wimmics/soft/pprint/>
+PREFIX dt: <http://ns.inria.fr/sparql-datatype/>
+PREFIX cs: <http://ns.inria.fr/sparql-custom/>
+PREFIX cw: <http://ns.inria.fr/edelweiss/2010/kgram/construct/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX igeo: <http://rdf.insee.fr/def/geo#>
+PREFIX idemo: <http://rdf.insee.fr/def/demo#>
+PREFIX xt: <http://ns.inria.fr/sparql-extension/>
+PREFIX kg: <http://ns.inria.fr/edelweiss/2010/kgram/>
+PREFIX sp: <http://spinrdf.org/sp#>
+PREFIX us: <http://ns.inria.fr/sparql-extension/user/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rq: <http://ns.inria.fr/sparql-function/>
+PREFIX eng: <http://ns.inria.fr/edelweiss/2010/kgram/extension/>
+CONSTRUCT  { ?region igeo:codeRegion '24' } 
+ WHERE { 
+	 ?region igeo:codeRegion '24' .
+ }
+to http://localhost:8085/sparql
+Results (cardinality 1) merged in  80 ms from http://localhost:8085/sparql
+Results (cardinality 1) merged in  80 ms from http://localhost:8084/sparql
+[] a kg:Graph ;
+kg:edge     1 ;
+kg:node     2 ;
+kg:graph    1 ;
+kg:property 1 ;
+kg:uri      1 ;
+kg:bnode    0 ;
+kg:literal  1 ;
+kg:date     "2016-03-11T16:48:30"^^xsd:dateTime ;
+.
+[] a kg:Index ;
+kg:index 0 ;
+kg:item [ rdf:predicate <http://rdf.insee.fr/def/geo#codeRegion> ; rdf:value 1] ;
+kg:total 1
+.
+
+  number of triple EDGE ???  1
+[] a kg:Graph ;
+kg:edge     1 ;
+kg:node     2 ;
+kg:graph    1 ;
+kg:property 1 ;
+kg:uri      1 ;
+kg:bnode    0 ;
+kg:literal  1 ;
+kg:date     "2016-03-11T16:48:30"^^xsd:dateTime ;
+.
+[] a kg:Index ;
+kg:index 0 ;
+kg:item [ rdf:predicate <http://rdf.insee.fr/def/geo#codeRegion> ; rdf:value 1] ;
+kg:total 1
+.
+
+  number of triple EDGE ???  1
+Finished CallableResult in 102 ms.
+Finished CallableResult in 102 ms.
+Global results retrieved in getEdges 103ms.
+Searching for edge : ?region igeo:subdivisionDirecte ?departement
+CallableResult for GetEdge
+CallableResult for GetEdge
+EDGE QUERY: CONSTRUCT  { <http://id.insee.fr/geo/region/24> igeo:subdivisionDirecte ?departement } 
+ WHERE { 
+	 <http://id.insee.fr/geo/region/24> igeo:subdivisionDirecte ?departement .
+ }
+EDGE QUERY: CONSTRUCT  { <http://id.insee.fr/geo/region/24> igeo:subdivisionDirecte ?departement } 
+ WHERE { 
+	 <http://id.insee.fr/geo/region/24> igeo:subdivisionDirecte ?departement .
+ }
+sending query 
+PREFIX pp: <http://ns.inria.fr/edelweiss/2010/kgram/pprinter/>
+PREFIX st: <http://ns.inria.fr/sparql-template/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX cos: <http://www.inria.fr/acacia/corese#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fp: <ftp://ftp-sop.inria.fr/wimmics/soft/pprint/>
+PREFIX dt: <http://ns.inria.fr/sparql-datatype/>
+PREFIX cs: <http://ns.inria.fr/sparql-custom/>
+PREFIX cw: <http://ns.inria.fr/edelweiss/2010/kgram/construct/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX igeo: <http://rdf.insee.fr/def/geo#>
+PREFIX idemo: <http://rdf.insee.fr/def/demo#>
+PREFIX xt: <http://ns.inria.fr/sparql-extension/>
+PREFIX kg: <http://ns.inria.fr/edelweiss/2010/kgram/>
+PREFIX sp: <http://spinrdf.org/sp#>
+PREFIX us: <http://ns.inria.fr/sparql-extension/user/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rq: <http://ns.inria.fr/sparql-function/>
+PREFIX eng: <http://ns.inria.fr/edelweiss/2010/kgram/extension/>
+CONSTRUCT  { <http://id.insee.fr/geo/region/24> igeo:subdivisionDirecte ?departement } 
+ WHERE { 
+	 <http://id.insee.fr/geo/region/24> igeo:subdivisionDirecte ?departement .
+ }
+to http://localhost:8084/sparql
+sending query 
+PREFIX pp: <http://ns.inria.fr/edelweiss/2010/kgram/pprinter/>
+PREFIX st: <http://ns.inria.fr/sparql-template/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX cos: <http://www.inria.fr/acacia/corese#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fp: <ftp://ftp-sop.inria.fr/wimmics/soft/pprint/>
+PREFIX dt: <http://ns.inria.fr/sparql-datatype/>
+PREFIX cs: <http://ns.inria.fr/sparql-custom/>
+PREFIX cw: <http://ns.inria.fr/edelweiss/2010/kgram/construct/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace>
+PREFIX igeo: <http://rdf.insee.fr/def/geo#>
+PREFIX idemo: <http://rdf.insee.fr/def/demo#>
+PREFIX xt: <http://ns.inria.fr/sparql-extension/>
+PREFIX kg: <http://ns.inria.fr/edelweiss/2010/kgram/>
+PREFIX sp: <http://spinrdf.org/sp#>
+PREFIX us: <http://ns.inria.fr/sparql-extension/user/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rq: <http://ns.inria.fr/sparql-function/>
+PREFIX eng: <http://ns.inria.fr/edelweiss/2010/kgram/extension/>
+CONSTRUCT  { <http://id.insee.fr/geo/region/24> igeo:subdivisionDirecte ?departement } 
+ WHERE { 
+	 <http://id.insee.fr/geo/region/24> igeo:subdivisionDirecte ?departement .
+ }
+to http://localhost:8085/sparql
+Results (cardinality 6) merged in  7 ms from http://localhost:8084/sparql
+[] a kg:Graph ;
+kg:edge     6 ;
+kg:node     7 ;
+kg:graph    1 ;
+kg:property 1 ;
+kg:uri      7 ;
+kg:bnode    0 ;
+kg:literal  0 ;
+kg:date     "2016-03-11T16:48:30"^^xsd:dateTime ;
+.
+[] a kg:Index ;
+kg:index 0 ;
+kg:item [ rdf:predicate <http://rdf.insee.fr/def/geo#subdivisionDirecte> ; rdf:value 6] ;
+kg:total 6
+.
+
+  number of triple EDGE ???  6
+Results (cardinality 6) merged in  8 ms from http://localhost:8085/sparql
+[] a kg:Graph ;
+kg:edge     6 ;
+kg:node     7 ;
+kg:graph    1 ;
+kg:property 1 ;
+kg:uri      7 ;
+kg:bnode    0 ;
+kg:literal  0 ;
+kg:date     "2016-03-11T16:48:30"^^xsd:dateTime ;
+.
+[] a kg:Index ;
+kg:index 0 ;
+kg:item [ rdf:predicate <http://rdf.insee.fr/def/geo#subdivisionDirecte> ; rdf:value 6] ;
+kg:total 6
+.
+
+  number of triple EDGE ???  6
+Finished CallableResult in 25 ms.
+Finished CallableResult in 25 ms.
+Global results retrieved in getEdges 27ms.
+Searching for edge : ?departement igeo:nom ?nom
+Global results retrieved in getEdges 0ms.
+Searching for edge : ?departement igeo:nom ?nom
+Global results retrieved in getEdges 0ms.
+Searching for edge : ?departement igeo:nom ?nom
+Global results retrieved in getEdges 0ms.
+Searching for edge : ?departement igeo:nom ?nom
+Global results retrieved in getEdges 0ms.
+Searching for edge : ?departement igeo:nom ?nom
+Global results retrieved in getEdges 0ms.
+Searching for edge : ?departement igeo:nom ?nom
+Global results retrieved in getEdges 0ms.
+** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((?departement = <http://id.insee.fr/geo/departement/41>) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) }
+
+
+6 results in 407 ms
+
+01 ?nom = "Indre"; ?popTotale = 235181; 
+02 ?nom = "Cher"; ?popTotale = 319693; 
+03 ?nom = "Loir-et-Cher"; ?popTotale = 342471; 
+04 ?nom = "Eure-et-Loir"; ?popTotale = 444385; 
+05 ?nom = "Indre-et-Loire"; ?popTotale = 615557; 
+06 ?nom = "Loiret"; ?popTotale = 684104; 
+
+Remote queries
+=========
+	?region igeo:subdivisionDirecte ?departement
+	2
+--
+	BGP{EDGE{?region igeo:codeRegion '24'} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} }
+	2
+--
+	?region igeo:codeRegion '24'
+	2
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((?departement = <http://id.insee.fr/geo/departement/41>) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) }  
+	1
+--
+	>====  Sum = 7  =====
+
+Transferred results per query
+=========
+	?region igeo:subdivisionDirecte ?departement
+	12
+--
+	BGP{EDGE{?region igeo:codeRegion '24'} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} }
+	12
+--
+	?region igeo:codeRegion '24'
+	2
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((?departement = <http://id.insee.fr/geo/departement/41>) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) }  
+	6
+--
+	>====  Sum = 32  =====
+
+Remote queries per data source
+=========
+	http://localhost:8085/sparql
+	3
+--
+	http://localhost:8084/sparql
+	3
+--
+	http://localhost:8086/sparql
+	1
+--
+	>====  Sum = 7  =====
+
+Transferred results per source
+=========
+	http://localhost:8085/sparql
+	13
+--
+	http://localhost:8084/sparql
+	13
+--
+	http://localhost:8086/sparql
+	6
+--
+	>====  Sum = 32  =====
+

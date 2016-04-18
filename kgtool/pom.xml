@@ -36,7 +36,8 @@
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>sparql</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>

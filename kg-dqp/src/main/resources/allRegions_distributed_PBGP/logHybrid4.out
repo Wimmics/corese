@@ -1,0 +1,371 @@
+ INFO 2016-03-25 13:37:31,167 [main] (ServiceGrouper.java:84) - Building indices for 
+ INFO 2016-03-25 13:37:31,169 [main] (ServiceGrouper.java:85) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-25 13:37:31,375 [main] (ServiceGrouper.java:559) - Edge index
+ INFO 2016-03-25 13:37:31,376 [main] (ServiceGrouper.java:575) - Source index
+ INFO 2016-03-25 13:37:31,377 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-25 13:37:31,377 [main] (ServiceGrouper.java:426) - Processing
+[?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-25 13:37:31,377 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-25 13:37:31,378 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-25 13:37:31,379 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-25 13:37:31,379 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-25 13:37:31,379 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-25 13:37:31,380 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-25 13:37:31,380 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ INFO 2016-03-25 13:37:31,380 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-03-25 13:37:31,381 [main] (ServiceGrouper.java:272) - {?region igeo:codeRegion ?v . 
+?departement igeo:nom ?nom . 
+?region igeo:subdivisionDirecte ?departement . 
+service <http://localhost:8096/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+ INFO 2016-03-25 13:37:31,381 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:codeRegion ?v . 
+ INFO 2016-03-25 13:37:31,381 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:nom ?nom . 
+ INFO 2016-03-25 13:37:31,381 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-03-25 13:37:31,382 [main] (ServiceGrouper.java:277) - 3 free variables for service <http://localhost:8096/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-25 13:37:31,382 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ WARN 2016-03-25 13:37:31,383 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-25 13:37:31,383 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ INFO 2016-03-25 13:37:31,384 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?region igeo:subdivisionDirecte ?departement . 
+ WARN 2016-03-25 13:37:31,384 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-25 13:37:31,384 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ INFO 2016-03-25 13:37:31,385 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-03-25 13:37:31,385 [main] (ServiceGrouper.java:340) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8096/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+ INFO 2016-03-25 13:37:31,385 [main] (ServiceGrouper.java:118) - Final rewritten query
+ INFO 2016-03-25 13:37:31,385 [main] (ServiceGrouper.java:119) - prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select ?nom ?popTotale 
+where
+{?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8096/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+order by ?popTotale 
+
+
+ INFO 2016-03-25 13:37:31,388 [main] (ServiceGrouper.java:57) - Building predicates indices for AND{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} SERVICE{NODE{<http://localhost:8096/sparql> } select [NODE{?departement }, NODE{?popLeg }, NODE{?popTotale }]
+QUERY{AND{EDGE{?departement idemo:population ?popLeg} EDGE{?popLeg idemo:populationTotale ?popTotale} } } } }
+ INFO 2016-03-25 13:37:31,388 [main] (ServiceGrouper.java:57) - Building predicates indices for AND{EDGE{?departement idemo:population ?popLeg} EDGE{?popLeg idemo:populationTotale ?popTotale} }
+ INFO 2016-03-25 13:37:31,388 [main] (ServiceGrouper.java:65) - END of building index!
+ INFO 2016-03-25 13:37:31,389 [main] (ServiceGrouper.java:65) - END of building index!
+ INFO 2016-03-25 13:37:31,413 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+ INFO 2016-03-25 13:37:31,415 [pool-1-thread-2] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-03-25 13:37:31,415 [pool-1-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-03-25 13:37:31,416 [pool-1-thread-2] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion ?v . 
+ 	 ?region igeo:subdivisionDirecte ?departement . 
+ } 
+ INFO 2016-03-25 13:37:31,416 [pool-1-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion ?v . 
+ 	 ?region igeo:subdivisionDirecte ?departement . 
+ } 
+ INFO 2016-03-25 13:37:31,461 [pool-1-thread-1] (CallableResult.java:59) - RESULTS: 15 FROM http://localhost:8093/sparql
+ INFO 2016-03-25 13:37:31,462 [pool-1-thread-1] (CallableResult.java:63) - Finished CallableResult in 47 ms.
+ INFO 2016-03-25 13:37:31,462 [pool-1-thread-2] (CallableResult.java:59) - RESULTS: 41 FROM http://localhost:8094/sparql
+ INFO 2016-03-25 13:37:31,462 [pool-1-thread-2] (CallableResult.java:63) - Finished CallableResult in 47 ms.
+ INFO 2016-03-25 13:37:31,465 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 50ms.
+ INFO 2016-03-25 13:37:31,466 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:codeRegion ?v
+ INFO 2016-03-25 13:37:31,467 [pool-2-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,467 [pool-2-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,473 [pool-2-thread-3] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,620 [pool-2-thread-1] (CallableResult.java:63) - Finished CallableResult in 153 ms.
+ INFO 2016-03-25 13:37:31,671 [pool-2-thread-2] (CallableResult.java:63) - Finished CallableResult in 204 ms.
+ INFO 2016-03-25 13:37:31,684 [pool-2-thread-3] (CallableResult.java:63) - Finished CallableResult in 211 ms.
+ INFO 2016-03-25 13:37:31,701 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 233ms.
+ INFO 2016-03-25 13:37:31,702 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,703 [pool-3-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,708 [pool-3-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-25 13:37:31,709 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-25 13:37:31,709 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,709 [pool-4-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,714 [pool-4-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-25 13:37:31,714 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,714 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,715 [pool-5-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,719 [pool-5-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,720 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,720 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,720 [pool-6-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,725 [pool-6-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-25 13:37:31,725 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,725 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,725 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 0ms.
+ INFO 2016-03-25 13:37:31,726 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,726 [pool-8-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,731 [pool-8-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-25 13:37:31,731 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,731 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,732 [pool-9-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,736 [pool-9-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,736 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,736 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,737 [pool-10-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,741 [pool-10-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,741 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,742 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,747 [pool-11-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,752 [pool-11-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-25 13:37:31,752 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-03-25 13:37:31,752 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,753 [pool-12-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,757 [pool-12-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,757 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,757 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,758 [pool-13-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,762 [pool-13-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,762 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,763 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,763 [pool-14-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,767 [pool-14-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,768 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,768 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,768 [pool-15-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,772 [pool-15-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,773 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,773 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,773 [pool-16-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,777 [pool-16-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,778 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,778 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,778 [pool-17-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,782 [pool-17-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,783 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-25 13:37:31,783 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,783 [pool-18-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,787 [pool-18-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,787 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,788 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,788 [pool-19-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,792 [pool-19-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,792 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,793 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,793 [pool-20-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,797 [pool-20-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,797 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,797 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,798 [pool-21-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,802 [pool-21-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,802 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,802 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,803 [pool-22-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,806 [pool-22-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-25 13:37:31,807 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,807 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,807 [pool-23-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,811 [pool-23-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,811 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,811 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,812 [pool-24-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,815 [pool-24-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-25 13:37:31,816 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,816 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,816 [pool-25-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,820 [pool-25-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,820 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,820 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,821 [pool-26-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,825 [pool-26-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,825 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,825 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-25 13:37:31,825 [pool-27-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-25 13:37:31,829 [pool-27-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-25 13:37:31,829 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-25 13:37:31,830 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?departement igeo:nom ?nom} }
+ INFO 2016-03-25 13:37:31,830 [pool-28-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-03-25 13:37:31,830 [pool-28-thread-2] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-03-25 13:37:31,830 [pool-28-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ } 
+ INFO 2016-03-25 13:37:31,830 [pool-28-thread-2] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ } 
+ INFO 2016-03-25 13:37:31,847 [pool-28-thread-2] (CallableResult.java:59) - RESULTS: 12 FROM http://localhost:8095/sparql
+ INFO 2016-03-25 13:37:31,847 [pool-28-thread-2] (CallableResult.java:63) - Finished CallableResult in 17 ms.
+ INFO 2016-03-25 13:37:31,852 [pool-28-thread-1] (CallableResult.java:59) - RESULTS: 45 FROM http://localhost:8094/sparql
+ INFO 2016-03-25 13:37:31,852 [pool-28-thread-1] (CallableResult.java:63) - Finished CallableResult in 22 ms.
+ INFO 2016-03-25 13:37:31,853 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 23ms.
+ INFO 2016-03-25 13:37:31,858 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/38>) || (?departement = <http://id.insee.fr/geo/departement/74>)) || (?departement = <http://id.insee.fr/geo/departement/42>)) || (?departement = <http://id.insee.fr/geo/departement/26>)) || (?departement = <http://id.insee.fr/geo/departement/73>)) || (?departement = <http://id.insee.fr/geo/departement/69>)) || (?departement = <http://id.insee.fr/geo/departement/13>)) || (?departement = <http://id.insee.fr/geo/departement/51>)) || (?departement = <http://id.insee.fr/geo/departement/10>)) || (?departement = <http://id.insee.fr/geo/departement/52>)) || (?departement = <http://id.insee.fr/geo/departement/90>)) || (?departement = <http://id.insee.fr/geo/departement/54>)) || (?departement = <http://id.insee.fr/geo/departement/976>)) || (?departement = <http://id.insee.fr/geo/departement/12>)) || (?departement = <http://id.insee.fr/geo/departement/65>)) || (?departement = <http://id.insee.fr/geo/departement/974>)) || (?departement = <http://id.insee.fr/geo/departement/973>)) || (?departement = <http://id.insee.fr/geo/departement/15>)) || (?departement = <http://id.insee.fr/geo/departement/63>)) || (?departement = <http://id.insee.fr/geo/departement/972>)) }
+
+
+ INFO 2016-03-25 13:37:31,938 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/971>) || (?departement = <http://id.insee.fr/geo/departement/14>)) || (?departement = <http://id.insee.fr/geo/departement/50>)) || (?departement = <http://id.insee.fr/geo/departement/61>)) || (?departement = <http://id.insee.fr/geo/departement/23>)) || (?departement = <http://id.insee.fr/geo/departement/60>)) || (?departement = <http://id.insee.fr/geo/departement/79>)) || (?departement = <http://id.insee.fr/geo/departement/17>)) || (?departement = <http://id.insee.fr/geo/departement/16>)) || (?departement = <http://id.insee.fr/geo/departement/39>)) || (?departement = <http://id.insee.fr/geo/departement/25>)) || (?departement = <http://id.insee.fr/geo/departement/27>)) || (?departement = <http://id.insee.fr/geo/departement/76>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/72>)) || (?departement = <http://id.insee.fr/geo/departement/53>)) || (?departement = <http://id.insee.fr/geo/departement/2A>)) || (?departement = <http://id.insee.fr/geo/departement/66>)) }
+
+
+ INFO 2016-03-25 13:37:32,020 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((((((((((?departement = <http://id.insee.fr/geo/departement/11>) || (?departement = <http://id.insee.fr/geo/departement/34>)) || (?departement = <http://id.insee.fr/geo/departement/21>)) || (?departement = <http://id.insee.fr/geo/departement/71>)) || (?departement = <http://id.insee.fr/geo/departement/78>)) || (?departement = <http://id.insee.fr/geo/departement/75>)) || (?departement = <http://id.insee.fr/geo/departement/77>)) || (?departement = <http://id.insee.fr/geo/departement/91>)) || (?departement = <http://id.insee.fr/geo/departement/29>)) || (?departement = <http://id.insee.fr/geo/departement/35>)) || (?departement = <http://id.insee.fr/geo/departement/22>)) || (?departement = <http://id.insee.fr/geo/departement/64>)) || (?departement = <http://id.insee.fr/geo/departement/24>)) || (?departement = <http://id.insee.fr/geo/departement/33>)) }
+
+
+ INFO 2016-03-25 13:37:32,084 [main] (TestDQP.java:207) - 53 results in 919 ms
+ INFO 2016-03-25 13:37:32,085 [main] (TestDQP.java:208) - 
+01 ?nom = "Creuse"; ?popTotale = 125714; 
+02 ?nom = "Territoire de Belfort"; ?popTotale = 147777; 
+03 ?nom = "Corse-du-Sud"; ?popTotale = 151621; 
+04 ?nom = "Cantal"; ?popTotale = 152797; 
+05 ?nom = "Haute-Marne"; ?popTotale = 188083; 
+06 ?nom = "Indre"; ?popTotale = 235181; 
+07 ?nom = "Hautes-Pyrénées"; ?popTotale = 236728; 
+08 ?nom = "Guyane"; ?popTotale = 246507; 
+09 ?nom = "Jura"; ?popTotale = 270914; 
+10 ?nom = "Aveyron"; ?popTotale = 289257; 
+11 ?nom = "Orne"; ?popTotale = 298248; 
+12 ?nom = "Aube"; ?popTotale = 314825; 
+13 ?nom = "Mayenne"; ?popTotale = 318095; 
+14 ?nom = "Charente"; ?popTotale = 366587; 
+15 ?nom = "Aude"; ?popTotale = 374868; 
+16 ?nom = "Deux-Sèvres"; ?popTotale = 383079; 
+17 ?nom = "Martinique"; ?popTotale = 391837; 
+18 ?nom = "Guadeloupe"; ?popTotale = 409055; 
+19 ?nom = "Dordogne"; ?popTotale = 429579; 
+20 ?nom = "Savoie"; ?popTotale = 437915; 
+21 ?nom = "Eure-et-Loir"; ?popTotale = 444385; 
+22 ?nom = "Pyrénées-Orientales"; ?popTotale = 471573; 
+23 ?nom = "Drôme"; ?popTotale = 509444; 
+24 ?nom = "Manche"; ?popTotale = 518364; 
+25 ?nom = "Côte-d\'Or"; ?popTotale = 543648; 
+26 ?nom = "Doubs"; ?popTotale = 548026; 
+27 ?nom = "Saône-et-Loire"; ?popTotale = 575097; 
+28 ?nom = "Marne"; ?popTotale = 583691; 
+29 ?nom = "Sarthe"; ?popTotale = 584865; 
+30 ?nom = "Eure"; ?popTotale = 612518; 
+31 ?nom = "Indre-et-Loire"; ?popTotale = 615557; 
+32 ?nom = "Côtes-d\'Armor"; ?popTotale = 617565; 
+33 ?nom = "Charente-Maritime"; ?popTotale = 652610; 
+34 ?nom = "Puy-de-Dôme"; ?popTotale = 658489; 
+35 ?nom = "Pyrénées-Atlantiques"; ?popTotale = 685564; 
+36 ?nom = "Calvados"; ?popTotale = 706635; 
+37 ?nom = "Meurthe-et-Moselle"; ?popTotale = 745398; 
+38 ?nom = "Loire"; ?popTotale = 774144; 
+39 ?nom = "Haute-Savoie"; ?popTotale = 793342; 
+40 ?nom = "Oise"; ?popTotale = 835918; 
+41 ?nom = "La Réunion"; ?popTotale = 844741; 
+42 ?nom = "Finistère"; ?popTotale = 934625; 
+43 ?nom = "Ille-et-Vilaine"; ?popTotale = 1047873; 
+44 ?nom = "Hérault"; ?popTotale = 1111881; 
+45 ?nom = "Isère"; ?popTotale = 1263850; 
+46 ?nom = "Essonne"; ?popTotale = 1273233; 
+47 ?nom = "Seine-Maritime"; ?popTotale = 1280410; 
+48 ?nom = "Seine-et-Marne"; ?popTotale = 1387830; 
+49 ?nom = "Yvelines"; ?popTotale = 1446301; 
+50 ?nom = "Gironde"; ?popTotale = 1536448; 
+51 ?nom = "Rhône"; ?popTotale = 1812196; 
+52 ?nom = "Bouches-du-Rhône"; ?popTotale = 2022604; 
+53 ?nom = "Paris"; ?popTotale = 2254262; 
+
+ INFO 2016-03-25 13:37:32,085 [main] (TestDQP.java:209) - Remote queries
+ INFO 2016-03-25 13:37:32,086 [main] (TestDQP.java:210) - =========
+	?region igeo:subdivisionDirecte ?departement
+	24
+--
+	?region igeo:codeRegion ?v
+	3
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/971>) || (?departement = <http://id.insee.fr/geo/departement/14>)) || (?departement = <http://id.insee.fr/geo/departement/50>)) || (?departement = <http://id.insee.fr/geo/departement/61>)) || (?departement = <http://id.insee.fr/geo/departement/23>)) || (?departement = <http://id.insee.fr/geo/departement/60>)) || (?departement = <http://id.insee.fr/geo/departement/79>)) || (?departement = <http://id.insee.fr/geo/departement/17>)) || (?departement = <http://id.insee.fr/geo/departement/16>)) || (?departement = <http://id.insee.fr/geo/departement/39>)) || (?departement = <http://id.insee.fr/geo/departement/25>)) || (?departement = <http://id.insee.fr/geo/departement/27>)) || (?departement = <http://id.insee.fr/geo/departement/76>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/72>)) || (?departement = <http://id.insee.fr/geo/departement/53>)) || (?departement = <http://id.insee.fr/geo/departement/2A>)) || (?departement = <http://id.insee.fr/geo/departement/66>)) }  
+	1
+--
+	BGP{EDGE{?departement igeo:nom ?nom} }
+	2
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/38>) || (?departement = <http://id.insee.fr/geo/departement/74>)) || (?departement = <http://id.insee.fr/geo/departement/42>)) || (?departement = <http://id.insee.fr/geo/departement/26>)) || (?departement = <http://id.insee.fr/geo/departement/73>)) || (?departement = <http://id.insee.fr/geo/departement/69>)) || (?departement = <http://id.insee.fr/geo/departement/13>)) || (?departement = <http://id.insee.fr/geo/departement/51>)) || (?departement = <http://id.insee.fr/geo/departement/10>)) || (?departement = <http://id.insee.fr/geo/departement/52>)) || (?departement = <http://id.insee.fr/geo/departement/90>)) || (?departement = <http://id.insee.fr/geo/departement/54>)) || (?departement = <http://id.insee.fr/geo/departement/976>)) || (?departement = <http://id.insee.fr/geo/departement/12>)) || (?departement = <http://id.insee.fr/geo/departement/65>)) || (?departement = <http://id.insee.fr/geo/departement/974>)) || (?departement = <http://id.insee.fr/geo/departement/973>)) || (?departement = <http://id.insee.fr/geo/departement/15>)) || (?departement = <http://id.insee.fr/geo/departement/63>)) || (?departement = <http://id.insee.fr/geo/departement/972>)) }  
+	1
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((?departement = <http://id.insee.fr/geo/departement/11>) || (?departement = <http://id.insee.fr/geo/departement/34>)) || (?departement = <http://id.insee.fr/geo/departement/21>)) || (?departement = <http://id.insee.fr/geo/departement/71>)) || (?departement = <http://id.insee.fr/geo/departement/78>)) || (?departement = <http://id.insee.fr/geo/departement/75>)) || (?departement = <http://id.insee.fr/geo/departement/77>)) || (?departement = <http://id.insee.fr/geo/departement/91>)) || (?departement = <http://id.insee.fr/geo/departement/29>)) || (?departement = <http://id.insee.fr/geo/departement/35>)) || (?departement = <http://id.insee.fr/geo/departement/22>)) || (?departement = <http://id.insee.fr/geo/departement/64>)) || (?departement = <http://id.insee.fr/geo/departement/24>)) || (?departement = <http://id.insee.fr/geo/departement/33>)) }  
+	1
+--
+	BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+	2
+--
+	>====  Sum = 34  =====
+
+ INFO 2016-03-25 13:37:32,086 [main] (TestDQP.java:211) - Transferred results per query
+ INFO 2016-03-25 13:37:32,087 [main] (TestDQP.java:212) - =========
+	?region igeo:subdivisionDirecte ?departement
+	0
+--
+	?region igeo:codeRegion ?v
+	51
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/971>) || (?departement = <http://id.insee.fr/geo/departement/14>)) || (?departement = <http://id.insee.fr/geo/departement/50>)) || (?departement = <http://id.insee.fr/geo/departement/61>)) || (?departement = <http://id.insee.fr/geo/departement/23>)) || (?departement = <http://id.insee.fr/geo/departement/60>)) || (?departement = <http://id.insee.fr/geo/departement/79>)) || (?departement = <http://id.insee.fr/geo/departement/17>)) || (?departement = <http://id.insee.fr/geo/departement/16>)) || (?departement = <http://id.insee.fr/geo/departement/39>)) || (?departement = <http://id.insee.fr/geo/departement/25>)) || (?departement = <http://id.insee.fr/geo/departement/27>)) || (?departement = <http://id.insee.fr/geo/departement/76>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) || (?departement = <http://id.insee.fr/geo/departement/28>)) || (?departement = <http://id.insee.fr/geo/departement/72>)) || (?departement = <http://id.insee.fr/geo/departement/53>)) || (?departement = <http://id.insee.fr/geo/departement/2A>)) || (?departement = <http://id.insee.fr/geo/departement/66>)) }  
+	20
+--
+	BGP{EDGE{?departement igeo:nom ?nom} }
+	57
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/38>) || (?departement = <http://id.insee.fr/geo/departement/74>)) || (?departement = <http://id.insee.fr/geo/departement/42>)) || (?departement = <http://id.insee.fr/geo/departement/26>)) || (?departement = <http://id.insee.fr/geo/departement/73>)) || (?departement = <http://id.insee.fr/geo/departement/69>)) || (?departement = <http://id.insee.fr/geo/departement/13>)) || (?departement = <http://id.insee.fr/geo/departement/51>)) || (?departement = <http://id.insee.fr/geo/departement/10>)) || (?departement = <http://id.insee.fr/geo/departement/52>)) || (?departement = <http://id.insee.fr/geo/departement/90>)) || (?departement = <http://id.insee.fr/geo/departement/54>)) || (?departement = <http://id.insee.fr/geo/departement/976>)) || (?departement = <http://id.insee.fr/geo/departement/12>)) || (?departement = <http://id.insee.fr/geo/departement/65>)) || (?departement = <http://id.insee.fr/geo/departement/974>)) || (?departement = <http://id.insee.fr/geo/departement/973>)) || (?departement = <http://id.insee.fr/geo/departement/15>)) || (?departement = <http://id.insee.fr/geo/departement/63>)) || (?departement = <http://id.insee.fr/geo/departement/972>)) }  
+	19
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((?departement = <http://id.insee.fr/geo/departement/11>) || (?departement = <http://id.insee.fr/geo/departement/34>)) || (?departement = <http://id.insee.fr/geo/departement/21>)) || (?departement = <http://id.insee.fr/geo/departement/71>)) || (?departement = <http://id.insee.fr/geo/departement/78>)) || (?departement = <http://id.insee.fr/geo/departement/75>)) || (?departement = <http://id.insee.fr/geo/departement/77>)) || (?departement = <http://id.insee.fr/geo/departement/91>)) || (?departement = <http://id.insee.fr/geo/departement/29>)) || (?departement = <http://id.insee.fr/geo/departement/35>)) || (?departement = <http://id.insee.fr/geo/departement/22>)) || (?departement = <http://id.insee.fr/geo/departement/64>)) || (?departement = <http://id.insee.fr/geo/departement/24>)) || (?departement = <http://id.insee.fr/geo/departement/33>)) }  
+	14
+--
+	BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+	56
+--
+	>====  Sum = 217  =====
+
+ INFO 2016-03-25 13:37:32,087 [main] (TestDQP.java:213) - Remote queries per data source
+ INFO 2016-03-25 13:37:32,087 [main] (TestDQP.java:214) - =========
+	http://localhost:8095/sparql
+	2
+--
+	http://localhost:8093/sparql
+	20
+--
+	http://localhost:8094/sparql
+	9
+--
+	http://localhost:8096/sparql
+	3
+--
+	>====  Sum = 34  =====
+
+ INFO 2016-03-25 13:37:32,087 [main] (TestDQP.java:215) - Transferred results per source
+ INFO 2016-03-25 13:37:32,087 [main] (TestDQP.java:216) - =========
+	http://localhost:8095/sparql
+	37
+--
+	http://localhost:8093/sparql
+	22
+--
+	http://localhost:8094/sparql
+	105
+--
+	http://localhost:8096/sparql
+	53
+--
+	>====  Sum = 217  =====
+

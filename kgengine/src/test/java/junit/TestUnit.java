@@ -345,8 +345,8 @@ public class TestUnit {
        WorkflowParser wp = new WorkflowParser();
        SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w9.ttl");
        Data res = w.process();       
-        assertEquals(false, res.getDatatype().booleanValue());
-        System.out.println(res.getDatatype());
+        assertEquals(false, res.getDatatypeValue().booleanValue());
+        System.out.println(res.getDatatypeValue());
    } 
    
     public void testWorkflow2() throws EngineException, LoadException {

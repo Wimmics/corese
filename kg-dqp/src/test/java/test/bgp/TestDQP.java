@@ -12,9 +12,11 @@ import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import static fr.inria.edelweiss.kgraph.api.Loader.TURTLE_FORMAT;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,94 +35,101 @@ public class TestDQP {
 
 	static final String host = "localhost";
 
-	ArrayList<String> queries = new ArrayList<String>();
-
-	public TestDQP() {
-
-		String simple = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-			+ "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-			+ "SELECT ?nom ?popTotale  WHERE { "
-			+ "    ?region igeo:codeRegion \"24\" ."
-			+ "    ?region igeo:subdivisionDirecte ?departement ."
-			+ "     ?departement igeo:nom ?nom .  "
-			+ "    ?departement idemo:population ?popLeg ."
-			+ "    ?popLeg idemo:populationTotale ?popTotale ."
-			+ "} ORDER BY ?popTotale";
-
-		String optional = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-			+ "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-			+ "SELECT ?nom ?popTotale  WHERE { "
-			+ "    ?region igeo:codeRegion ?v ."
-			+ "    ?region igeo:subdivisionDirecte ?departement ."
-			+ "     OPTIONAL { ?departement igeo:nom ?nom . } "
-			+ "    ?departement idemo:population ?popLeg ."
-			+ "    ?popLeg idemo:populationTotale ?popTotale ."
-			+ "} ORDER BY ?popTotale";
-
-		String union = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-			+ "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-			+ "SELECT ?nom ?popTotale  WHERE { "
-			+ "    { ?region igeo:codeRegion ?v ."
-			+ "    ?region igeo:subdivisionDirecte ?departement ."
-			+ "     ?departement igeo:nom ?nom . } UNION { "
-			+ "    ?departement idemo:population ?popLeg ."
-			+ "    ?popLeg idemo:populationTotale ?popTotale . } "
-			+ "} ORDER BY ?popTotale";
-
-		String subQuery = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-			+ "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-			+ "SELECT ?nom ?popTotale  WHERE { "
-			+ "      ?region igeo:codeRegion ?v ."
-			+ "    ?region igeo:subdivisionDirecte ?departement ."
-			+ "     { Select * where {?departement igeo:nom ?nom . } }  "
-			+ "    ?departement idemo:population ?popLeg ."
-			+ "    ?popLeg idemo:populationTotale ?popTotale . "
-			+ "} ORDER BY ?popTotale";
-
-		String minus = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-			+ "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-			+ "SELECT ?nom ?popTotale  WHERE { "
-			+ "   {  ?region igeo:codeRegion ?v ."
-			+ "    ?region igeo:subdivisionDirecte ?departement . }"
-			+ "     minus {?departement igeo:nom ?nom . }  "
-			+ "    ?departement idemo:population ?popLeg ."
-			+ "    ?popLeg idemo:populationTotale ?popTotale . "
-			+ "} ORDER BY ?popTotale";
-
-		String limit = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-			+ "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-			+ "SELECT ?nom ?popTotale  WHERE { "
-			+ "   ?region igeo:codeRegion ?v ."
-			+ "    ?region igeo:subdivisionDirecte ?departement . "
-			+ "    ?departement igeo:nom ?nom .   "
-			+ "    ?departement idemo:population ?popLeg ."
-			+ "    ?popLeg idemo:populationTotale ?popTotale . "
-			+ "} LIMIT 2 ";
-
-		String filters = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-			+ "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-			+ "SELECT ?nom ?popTotale  WHERE { "
-			+ "   ?region igeo:codeRegion ?v ."
-			+ "    ?region igeo:subdivisionDirecte ?departement . "
-			+ "    ?departement igeo:nom ?nom .   "
-			+ "    ?departement idemo:population ?popLeg ."
-			+ "    ?popLeg idemo:populationTotale ?popTotale . "
-			+ "FILTER (?v = \"24\")"
-			+ "FILTER (?nom = \"Loir-et-Cher\")"
-			+ "} ORDER BY ?popTotale";
-
-		String combination = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-			+ "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-			+ "SELECT ?nom ?popTotale  WHERE { "
-			+ "   ?region igeo:codeRegion ?v ."
-			+ "    { Select * where { ?region igeo:subdivisionDirecte ?departement .} } "
-			+ "     OPTIONAL { ?departement igeo:nom ?nom . } "
-			+ "    ?departement idemo:population ?popLeg ."
-			+ "    ?popLeg idemo:populationTotale ?popTotale . "
-			+ "FILTER (?v = \"24\")"
-			+ "} ORDER BY ?popTotale";
-
-		queries.add(simple); //OK
+    ArrayList<String> queries = new ArrayList<String>();
+    public TestDQP() {
+        
+    String simple = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
+    "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
+    "SELECT ?nom ?popTotale  WHERE { " +
+    "    ?region igeo:codeRegion ?v ." +
+    "    ?region igeo:subdivisionDirecte ?departement ." +
+    "     ?departement igeo:nom ?nom .  " +
+    "    ?departement idemo:population ?popLeg ." +
+    "    ?popLeg idemo:populationTotale ?popTotale ." +
+    "} ORDER BY ?popTotale";
+           
+    String optional = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
+    "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
+    "SELECT ?nom ?popTotale  WHERE { " +
+    "    ?region igeo:codeRegion ?v ." +
+    "    ?region igeo:subdivisionDirecte ?departement ." +
+    "     OPTIONAL { ?departement igeo:nom ?nom . } " +
+    "    ?departement idemo:population ?popLeg ." +
+    "    ?popLeg idemo:populationTotale ?popTotale ." +
+    "} ORDER BY ?popTotale";
+    
+    
+    String union = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
+    "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
+    "SELECT ?nom ?popTotale  WHERE { " +
+    "    { ?region igeo:codeRegion ?v ." +
+    "    ?region igeo:subdivisionDirecte ?departement ." +
+    "     ?departement igeo:nom ?nom . } UNION { " +
+    "    ?departement idemo:population ?popLeg ." +
+    "    ?popLeg idemo:populationTotale ?popTotale . } " +
+    "} ORDER BY ?popTotale";
+    
+    
+     String subQuery = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
+    "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
+    "SELECT ?nom ?popTotale  WHERE { " +
+    "      ?region igeo:codeRegion ?v ." +
+    "    ?region igeo:subdivisionDirecte ?departement ." +
+    "     { Select * where {?departement igeo:nom ?nom . } }  " +
+    "    ?departement idemo:population ?popLeg ." +
+    "    ?popLeg idemo:populationTotale ?popTotale . " +
+    "} ORDER BY ?popTotale";
+    
+    
+    
+     String minus = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
+    "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
+    "SELECT ?nom ?popTotale  WHERE { " +
+    "   {  ?region igeo:codeRegion ?v ." +
+    "    ?region igeo:subdivisionDirecte ?departement . }" +
+    "     minus {?departement igeo:nom ?nom . }  " +
+    "    ?departement idemo:population ?popLeg ." +
+    "    ?popLeg idemo:populationTotale ?popTotale . " +
+    "} ORDER BY ?popTotale";
+    
+    
+    
+       String limit = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
+    "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
+    "SELECT ?nom ?popTotale  WHERE { " +
+    "   ?region igeo:codeRegion ?v ." +
+    "    ?region igeo:subdivisionDirecte ?departement . " +
+    "    ?departement igeo:nom ?nom .   " +
+    "    ?departement idemo:population ?popLeg ." +
+    "    ?popLeg idemo:populationTotale ?popTotale . " +
+    "} LIMIT 2 ";
+    
+    
+     String filters = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
+    "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
+    "SELECT ?nom ?popTotale  WHERE { " +
+    "   ?region igeo:codeRegion ?v ." +
+    "    ?region igeo:subdivisionDirecte ?departement . " +
+    "    ?departement igeo:nom ?nom .   " +
+    "    ?departement idemo:population ?popLeg ." +
+    "    ?popLeg idemo:populationTotale ?popTotale . " +
+    "FILTER (?v = \"24\")" +
+    "FILTER (?nom = \"Loir-et-Cher\")" +
+    "} ORDER BY ?popTotale";
+     
+     
+     String combination = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>" +
+    "PREFIX igeo:<http://rdf.insee.fr/def/geo#>" +
+    "SELECT ?nom ?popTotale  WHERE { " +
+    "   ?region igeo:codeRegion ?v ." +
+    "    { Select * where { ?region igeo:subdivisionDirecte ?departement .} } " +
+    "     OPTIONAL { ?departement igeo:nom ?nom . } " +
+    "    ?departement idemo:population ?popLeg ." +
+    "    ?popLeg idemo:populationTotale ?popTotale . " +
+    "FILTER (?v = \"24\")" +
+    "} ORDER BY ?popTotale";
+     
+     queries.add(simple); //OK
 //     queries.add(optional);//OK
 //     queries.add(minus);//OK
 //     queries.add(union);//OK
@@ -143,9 +152,17 @@ public class TestDQP {
 
 		sw.reset();
 		sw.start();
+            try {
+                ld.parseDir(TestDQP.class.getClassLoader().getResource("demographie").getPath() + "/cog-2012.ttl");
+            } catch (LoadException ex) {
+                java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-		ld.load(TestDQP.class.getClassLoader().getResource("demographie").getPath() + "/cog-2012.ttl");
-		ld.load(TestDQP.class.getClassLoader().getResource("demographie").getPath() + "/popleg-2010.ttl");
+            try {
+                ld.parseDir(TestDQP.class.getClassLoader().getResource("demographie").getPath() + "/popleg-2010.ttl");
+            } catch (LoadException ex) {
+                java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
 		logger.info("Graph size: " + graph.size());
 
@@ -166,48 +183,51 @@ public class TestDQP {
 		QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
 		execDQP.setGroupingEnabled(true);
 
-//      GLOBAL BGP
-		execDQP.addRemote(new URL("http://" + host + ":8081/sparql"), WSImplem.REST);
-		execDQP.addRemote(new URL("http://" + host + ":8082/sparql"), WSImplem.REST);
-		execDQP.addRemote(new URL("http://" + host + ":8083/sparql"), WSImplem.REST);
+//      DUPLICATED DATA
+        execDQP.addRemote(new URL("http://"+host+":8081/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8082/sparql"), WSImplem.REST);
+//        
 
+//      GLOBAL BGP
+//        execDQP.addRemote(new URL("http://"+host+":8083/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8084/sparql"), WSImplem.REST);
+//        
 //        
 //      Partial BGP and AND Lock
+//        execDQP.addRemote(new URL("http://"+host+":8085/sparql"), WSImplem.REST);
+//        execDQP.addRemote(new URL("http://"+host+":8086/sparql"), WSImplem.REST);
 //        execDQP.addRemote(new URL("http://"+host+":8087/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8088/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8089/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8090/sparql"), WSImplem.REST);
-//      Partial BGP and Lock + PIE
-//      execDQP.addRemote(new URL("http://"+host+":8084/sparql"), WSImplem.REST);
-//      execDQP.addRemote(new URL("http://"+host+":8085/sparql"), WSImplem.REST);
-//      execDQP.addRemote(new URL("http://"+host+":8086/sparql"), WSImplem.REST);
+
+        
+        
 //      Demographic
-		execDQP.addRemote(new URL("http://" + host + ":8091/sparql"), WSImplem.REST);
+        execDQP.addRemote(new URL("http://"+host+":8088/sparql"), WSImplem.REST);
+        
+        StopWatch sw = new StopWatch();
+        sw.start();
+        for(String query : queries){
+            Mappings map = execDQP.query(query);
+            logger.info(map.size() + " results in " + sw.getTime() + " ms");
+            logger.info("\n"+map.toString());
+            logger.info(Messages.countQueries);
+            logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryCounter));
+            logger.info(Messages.countTransferredResults);
+            logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryVolumeCounter));
+            logger.info(Messages.countDS);
+            logger.info(Util.prettyPrintCounter(QueryProcessDQP.sourceCounter));
+            logger.info(Messages.countTransferredResultsPerSource);
+            logger.info(Util.prettyPrintCounter(QueryProcessDQP.sourceVolumeCounter));
+        }
+    }
 
-		StopWatch sw = new StopWatch();
-		sw.start();
-		for (String query : queries) {
-			Mappings map = execDQP.query(query);
-			logger.info(map.size() + " results in " + sw.getTime() + " ms");
-			logger.info("\n" + map.toString());
-			logger.info(Messages.countQueries);
-			logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryCounter));
-			logger.info(Messages.countTransferredResults);
-			logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryVolumeCounter));
-			logger.info(Messages.countDS);
-			logger.info(Util.prettyPrintCounter(QueryProcessDQP.sourceCounter));
-			logger.info(Messages.countTransferredResultsPerSource);
-			logger.info(Util.prettyPrintCounter(QueryProcessDQP.sourceVolumeCounter));
-		}
-	}
-
-	public static void main(String[] args) throws EngineException, MalformedURLException {
-		try {
-			TestDQP test = new TestDQP();
-//            test.testLocal();
-			test.testDQP();
-		} catch (IOException ex) {
-			java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+     public static void main(String[] args) throws EngineException, MalformedURLException {
+        try {
+            TestDQP test = new TestDQP();
+            
+            test.testLocal();
+//            test.testDQP();
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     }
 }

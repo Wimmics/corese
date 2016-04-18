@@ -1,0 +1,1062 @@
+ INFO 2016-03-24 13:29:25,943 [main] (ServiceGrouper.java:84) - Building indices for 
+ INFO 2016-03-24 13:29:25,945 [main] (ServiceGrouper.java:85) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-24 13:29:26,084 [main] (ServiceGrouper.java:559) - Edge index
+ INFO 2016-03-24 13:29:26,085 [main] (ServiceGrouper.java:575) - Source index
+ INFO 2016-03-24 13:29:26,086 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-24 13:29:26,086 [main] (ServiceGrouper.java:426) - Processing
+[?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-24 13:29:26,086 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-24 13:29:26,086 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-24 13:29:26,086 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-24 13:29:26,088 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-24 13:29:26,088 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-03-24 13:29:26,088 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ INFO 2016-03-24 13:29:26,089 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-03-24 13:29:26,089 [main] (ServiceGrouper.java:272) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+ INFO 2016-03-24 13:29:26,089 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:codeRegion ?v . 
+ INFO 2016-03-24 13:29:26,089 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-03-24 13:29:26,089 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:nom ?nom . 
+ INFO 2016-03-24 13:29:26,090 [main] (ServiceGrouper.java:277) - 3 free variables for service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }
+ INFO 2016-03-24 13:29:26,090 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ WARN 2016-03-24 13:29:26,091 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-24 13:29:26,091 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ INFO 2016-03-24 13:29:26,091 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+ WARN 2016-03-24 13:29:26,091 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-24 13:29:26,092 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ INFO 2016-03-24 13:29:26,092 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:nom ?nom . 
+ WARN 2016-03-24 13:29:26,092 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ WARN 2016-03-24 13:29:26,092 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement idemo:population ?popLeg . , ?popLeg idemo:populationTotale ?popTotale . ]
+ INFO 2016-03-24 13:29:26,092 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-03-24 13:29:26,093 [main] (ServiceGrouper.java:340) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+ INFO 2016-03-24 13:29:26,093 [main] (ServiceGrouper.java:118) - Final rewritten query
+ INFO 2016-03-24 13:29:26,093 [main] (ServiceGrouper.java:119) - prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select ?nom ?popTotale 
+where
+{?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+service <http://localhost:8086/sparql> {?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . }}
+order by ?popTotale 
+
+
+ INFO 2016-03-24 13:29:26,110 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:codeRegion ?v
+ INFO 2016-03-24 13:29:26,112 [pool-1-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,112 [pool-1-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,248 [pool-1-thread-1] (CallableResult.java:63) - Finished CallableResult in 137 ms.
+ INFO 2016-03-24 13:29:26,271 [pool-1-thread-2] (CallableResult.java:63) - Finished CallableResult in 160 ms.
+ INFO 2016-03-24 13:29:26,282 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 171ms.
+ INFO 2016-03-24 13:29:26,282 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,283 [pool-2-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,283 [pool-2-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,297 [pool-2-thread-2] (CallableResult.java:63) - Finished CallableResult in 14 ms.
+ INFO 2016-03-24 13:29:26,299 [pool-2-thread-1] (CallableResult.java:63) - Finished CallableResult in 16 ms.
+ INFO 2016-03-24 13:29:26,301 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 18ms.
+ INFO 2016-03-24 13:29:26,301 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,302 [pool-3-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,303 [pool-3-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,314 [pool-3-thread-1] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-03-24 13:29:26,327 [pool-3-thread-2] (CallableResult.java:63) - Finished CallableResult in 24 ms.
+ INFO 2016-03-24 13:29:26,327 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 24ms.
+ INFO 2016-03-24 13:29:26,328 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,328 [pool-4-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,328 [pool-4-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,333 [pool-4-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,336 [pool-4-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,336 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,337 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,337 [pool-5-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,342 [pool-5-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,347 [pool-5-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,349 [pool-5-thread-1] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-03-24 13:29:26,349 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,350 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,350 [pool-6-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,350 [pool-6-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,358 [pool-6-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,363 [pool-6-thread-2] (CallableResult.java:63) - Finished CallableResult in 13 ms.
+ INFO 2016-03-24 13:29:26,363 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 13ms.
+ INFO 2016-03-24 13:29:26,363 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,364 [pool-7-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,364 [pool-7-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,368 [pool-7-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,371 [pool-7-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,371 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,371 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,372 [pool-8-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,372 [pool-8-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,376 [pool-8-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,379 [pool-8-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,380 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,380 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,380 [pool-9-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,381 [pool-9-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,388 [pool-9-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,390 [pool-9-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-24 13:29:26,391 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 11ms.
+ INFO 2016-03-24 13:29:26,391 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,391 [pool-10-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,393 [pool-10-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,397 [pool-10-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,402 [pool-10-thread-1] (CallableResult.java:63) - Finished CallableResult in 11 ms.
+ INFO 2016-03-24 13:29:26,402 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-03-24 13:29:26,403 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,403 [pool-11-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,404 [pool-11-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,411 [pool-11-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,412 [pool-11-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,412 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,413 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,413 [pool-12-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,413 [pool-12-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,419 [pool-12-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,420 [pool-12-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,420 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,420 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,420 [pool-13-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,420 [pool-13-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,425 [pool-13-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,426 [pool-13-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,427 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,427 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,427 [pool-14-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,427 [pool-14-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,444 [pool-14-thread-2] (CallableResult.java:63) - Finished CallableResult in 17 ms.
+ INFO 2016-03-24 13:29:26,445 [pool-14-thread-1] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-03-24 13:29:26,445 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 18ms.
+ INFO 2016-03-24 13:29:26,446 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,446 [pool-15-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,446 [pool-15-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,450 [pool-15-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,453 [pool-15-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,453 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,453 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,454 [pool-16-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,454 [pool-16-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,459 [pool-16-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,462 [pool-16-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,463 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,463 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,463 [pool-17-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,463 [pool-17-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,467 [pool-17-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,470 [pool-17-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,471 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,471 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,471 [pool-18-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,472 [pool-18-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,476 [pool-18-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,478 [pool-18-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,478 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,478 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,479 [pool-19-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,479 [pool-19-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,483 [pool-19-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,486 [pool-19-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,487 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,487 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,487 [pool-20-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,488 [pool-20-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,491 [pool-20-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,497 [pool-20-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-24 13:29:26,497 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-03-24 13:29:26,498 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,498 [pool-21-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,498 [pool-21-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,501 [pool-21-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,503 [pool-21-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,503 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,504 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,504 [pool-22-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,504 [pool-22-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,507 [pool-22-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,509 [pool-22-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,509 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,509 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,510 [pool-23-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,510 [pool-23-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,518 [pool-23-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,525 [pool-23-thread-1] (CallableResult.java:63) - Finished CallableResult in 15 ms.
+ INFO 2016-03-24 13:29:26,525 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 15ms.
+ INFO 2016-03-24 13:29:26,526 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,526 [pool-24-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,526 [pool-24-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,530 [pool-24-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,532 [pool-24-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,532 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,533 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,533 [pool-25-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,533 [pool-25-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,536 [pool-25-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,540 [pool-25-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,541 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,541 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,541 [pool-26-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,541 [pool-26-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,544 [pool-26-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,546 [pool-26-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,546 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,546 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,546 [pool-27-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,546 [pool-27-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,549 [pool-27-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,550 [pool-27-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,551 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,551 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,551 [pool-28-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,551 [pool-28-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,555 [pool-28-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,559 [pool-28-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,559 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 2ms.
+ INFO 2016-03-24 13:29:26,559 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,560 [pool-29-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,560 [pool-29-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,564 [pool-29-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,565 [pool-29-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,565 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,566 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,566 [pool-30-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,566 [pool-30-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,569 [pool-30-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,571 [pool-30-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,571 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,571 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,572 [pool-31-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,572 [pool-31-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,575 [pool-31-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,576 [pool-31-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,576 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,577 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,577 [pool-32-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,577 [pool-32-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,582 [pool-32-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,584 [pool-32-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,585 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,585 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,585 [pool-33-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,585 [pool-33-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,590 [pool-33-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,591 [pool-33-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,591 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,591 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,592 [pool-34-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,592 [pool-34-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,595 [pool-34-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,597 [pool-34-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,597 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,597 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,598 [pool-35-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,598 [pool-35-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,601 [pool-35-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,602 [pool-35-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,602 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,602 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,603 [pool-36-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,603 [pool-36-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,606 [pool-36-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,608 [pool-36-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,608 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,608 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,609 [pool-37-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,609 [pool-37-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,614 [pool-37-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,619 [pool-37-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-24 13:29:26,619 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-03-24 13:29:26,620 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,620 [pool-38-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,620 [pool-38-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,624 [pool-38-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,625 [pool-38-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,626 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,626 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,626 [pool-39-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,626 [pool-39-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,630 [pool-39-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,631 [pool-39-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,631 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,632 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,632 [pool-40-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,632 [pool-40-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,635 [pool-40-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,637 [pool-40-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,637 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,637 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,638 [pool-41-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,638 [pool-41-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,641 [pool-41-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,642 [pool-41-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,643 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,643 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,643 [pool-42-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,644 [pool-42-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,647 [pool-42-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,649 [pool-42-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,649 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,649 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,650 [pool-43-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,650 [pool-43-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,657 [pool-43-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,657 [pool-43-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,658 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,658 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,658 [pool-44-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,658 [pool-44-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,662 [pool-44-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,663 [pool-44-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,663 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,663 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,663 [pool-45-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,663 [pool-45-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,667 [pool-45-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,669 [pool-45-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,669 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,669 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,670 [pool-46-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,670 [pool-46-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,673 [pool-46-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,674 [pool-46-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,674 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,675 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,675 [pool-47-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,675 [pool-47-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,678 [pool-47-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,681 [pool-47-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,681 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,681 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,682 [pool-48-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,682 [pool-48-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,690 [pool-48-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,690 [pool-48-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,691 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-03-24 13:29:26,691 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,691 [pool-49-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,691 [pool-49-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,695 [pool-49-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,696 [pool-49-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,696 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,697 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,697 [pool-50-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,697 [pool-50-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,701 [pool-50-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,702 [pool-50-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,703 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,703 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,703 [pool-51-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,706 [pool-51-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,706 [pool-51-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,712 [pool-51-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,713 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,713 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,713 [pool-52-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,713 [pool-52-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,717 [pool-52-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,718 [pool-52-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,718 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,719 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,719 [pool-53-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,719 [pool-53-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,722 [pool-53-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,726 [pool-53-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,726 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,726 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,726 [pool-54-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,728 [pool-54-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,731 [pool-54-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,733 [pool-54-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,735 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-03-24 13:29:26,736 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,736 [pool-55-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,736 [pool-55-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,751 [pool-55-thread-1] (CallableResult.java:63) - Finished CallableResult in 15 ms.
+ INFO 2016-03-24 13:29:26,755 [pool-55-thread-2] (CallableResult.java:63) - Finished CallableResult in 19 ms.
+ INFO 2016-03-24 13:29:26,756 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 20ms.
+ INFO 2016-03-24 13:29:26,756 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,757 [pool-56-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,757 [pool-56-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,761 [pool-56-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,762 [pool-56-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,762 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,762 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,762 [pool-57-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,762 [pool-57-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,765 [pool-57-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,767 [pool-57-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,768 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,768 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,768 [pool-58-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,768 [pool-58-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,772 [pool-58-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,773 [pool-58-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,773 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,773 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,773 [pool-59-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,773 [pool-59-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,776 [pool-59-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,778 [pool-59-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,778 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,778 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,778 [pool-60-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,779 [pool-60-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,784 [pool-60-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,789 [pool-60-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-24 13:29:26,789 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-03-24 13:29:26,790 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,790 [pool-61-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,790 [pool-61-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,794 [pool-61-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,796 [pool-61-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,796 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,796 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,797 [pool-62-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,797 [pool-62-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,800 [pool-62-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,801 [pool-62-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,801 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,802 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,802 [pool-63-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,802 [pool-63-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,805 [pool-63-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,807 [pool-63-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,807 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,807 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,808 [pool-64-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,808 [pool-64-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,811 [pool-64-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,813 [pool-64-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,813 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,813 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,813 [pool-65-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,813 [pool-65-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,818 [pool-65-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,820 [pool-65-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-03-24 13:29:26,820 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:26,820 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,821 [pool-66-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,821 [pool-66-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,824 [pool-66-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,826 [pool-66-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,826 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,827 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,827 [pool-67-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,827 [pool-67-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,829 [pool-67-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:26,831 [pool-67-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,831 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,831 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,832 [pool-68-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,832 [pool-68-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,834 [pool-68-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:26,836 [pool-68-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,836 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,837 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,837 [pool-69-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,837 [pool-69-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,841 [pool-69-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,842 [pool-69-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,843 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,843 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,843 [pool-70-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,843 [pool-70-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,846 [pool-70-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,847 [pool-70-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,847 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,848 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,848 [pool-71-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,848 [pool-71-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,851 [pool-71-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,853 [pool-71-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,853 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,854 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,854 [pool-72-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,854 [pool-72-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,857 [pool-72-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,858 [pool-72-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,859 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,859 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,859 [pool-73-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,859 [pool-73-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,862 [pool-73-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,864 [pool-73-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,867 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,867 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,867 [pool-74-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,868 [pool-74-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,872 [pool-74-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,873 [pool-74-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,874 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,874 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,875 [pool-75-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,875 [pool-75-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,877 [pool-75-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:26,879 [pool-75-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,879 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,879 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,879 [pool-76-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,880 [pool-76-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,885 [pool-76-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,885 [pool-76-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,888 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-03-24 13:29:26,889 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,889 [pool-77-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,889 [pool-77-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,892 [pool-77-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,895 [pool-77-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,895 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,895 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,895 [pool-78-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,895 [pool-78-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,900 [pool-78-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,903 [pool-78-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-03-24 13:29:26,903 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-03-24 13:29:26,904 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,904 [pool-79-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,904 [pool-79-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,906 [pool-79-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:26,908 [pool-79-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,908 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,908 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,909 [pool-80-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,909 [pool-80-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,915 [pool-80-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,915 [pool-80-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:26,915 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:26,915 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,916 [pool-81-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,916 [pool-81-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,919 [pool-81-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,920 [pool-81-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,920 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,920 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,921 [pool-82-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,921 [pool-82-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,923 [pool-82-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:26,924 [pool-82-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,924 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 3ms.
+ INFO 2016-03-24 13:29:26,925 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,925 [pool-83-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,925 [pool-83-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,928 [pool-83-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,928 [pool-83-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,929 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,929 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,929 [pool-84-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,929 [pool-84-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,932 [pool-84-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,933 [pool-84-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,933 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,933 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,934 [pool-85-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,934 [pool-85-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,939 [pool-85-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,947 [pool-85-thread-2] (CallableResult.java:63) - Finished CallableResult in 13 ms.
+ INFO 2016-03-24 13:29:26,948 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 14ms.
+ INFO 2016-03-24 13:29:26,948 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,948 [pool-86-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,948 [pool-86-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,951 [pool-86-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,953 [pool-86-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,953 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,953 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,953 [pool-87-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,954 [pool-87-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,956 [pool-87-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:26,957 [pool-87-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,958 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,958 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,958 [pool-88-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,958 [pool-88-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,961 [pool-88-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,962 [pool-88-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,962 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,962 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,962 [pool-89-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,962 [pool-89-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,965 [pool-89-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,966 [pool-89-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,966 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,966 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,966 [pool-90-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,966 [pool-90-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,968 [pool-90-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:26,969 [pool-90-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,970 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,970 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,970 [pool-91-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,970 [pool-91-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,973 [pool-91-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,974 [pool-91-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,974 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,974 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,974 [pool-92-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,974 [pool-92-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,977 [pool-92-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,978 [pool-92-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,978 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,979 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,979 [pool-93-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,979 [pool-93-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,982 [pool-93-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,983 [pool-93-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,983 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,983 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,984 [pool-94-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,984 [pool-94-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,988 [pool-94-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,989 [pool-94-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:26,989 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:26,989 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,989 [pool-95-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,989 [pool-95-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,993 [pool-95-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,993 [pool-95-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:26,993 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,994 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:26,994 [pool-96-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,994 [pool-96-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,997 [pool-96-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,997 [pool-96-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:26,998 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:26,998 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:26,998 [pool-97-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:26,998 [pool-97-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,016 [pool-97-thread-2] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-03-24 13:29:27,017 [pool-97-thread-1] (CallableResult.java:63) - Finished CallableResult in 19 ms.
+ INFO 2016-03-24 13:29:27,017 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 19ms.
+ INFO 2016-03-24 13:29:27,017 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,017 [pool-98-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,017 [pool-98-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,020 [pool-98-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,021 [pool-98-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,022 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:27,022 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,022 [pool-99-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,022 [pool-99-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,026 [pool-99-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,028 [pool-99-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:27,029 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-03-24 13:29:27,029 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,029 [pool-100-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,029 [pool-100-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,031 [pool-100-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,032 [pool-100-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,033 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,033 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,033 [pool-101-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,033 [pool-101-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,035 [pool-101-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,036 [pool-101-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,036 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 3ms.
+ INFO 2016-03-24 13:29:27,037 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,037 [pool-102-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,037 [pool-102-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,041 [pool-102-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,042 [pool-102-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:27,042 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:27,043 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,043 [pool-103-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,043 [pool-103-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,045 [pool-103-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,047 [pool-103-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,047 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,047 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,047 [pool-104-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,047 [pool-104-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,050 [pool-104-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,051 [pool-104-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,051 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,051 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,052 [pool-105-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,052 [pool-105-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,054 [pool-105-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,056 [pool-105-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,056 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,056 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,057 [pool-106-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,057 [pool-106-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,067 [pool-106-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-24 13:29:27,067 [pool-106-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-03-24 13:29:27,067 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-03-24 13:29:27,068 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,068 [pool-107-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,068 [pool-107-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,070 [pool-107-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,072 [pool-107-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,072 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,072 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,073 [pool-108-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,073 [pool-108-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,076 [pool-108-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,077 [pool-108-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,077 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,077 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,077 [pool-109-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,078 [pool-109-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,080 [pool-109-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,081 [pool-109-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,081 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,081 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,082 [pool-110-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,082 [pool-110-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,084 [pool-110-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,085 [pool-110-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,086 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,086 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,086 [pool-111-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,086 [pool-111-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,090 [pool-111-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,090 [pool-111-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,090 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,090 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,090 [pool-112-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,090 [pool-112-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,093 [pool-112-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,096 [pool-112-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-03-24 13:29:27,096 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-03-24 13:29:27,096 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,096 [pool-113-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,096 [pool-113-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,099 [pool-113-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,101 [pool-113-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:27,101 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:27,101 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,101 [pool-114-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,102 [pool-114-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,105 [pool-114-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,105 [pool-114-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,105 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 3ms.
+ INFO 2016-03-24 13:29:27,106 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,106 [pool-115-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,106 [pool-115-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,108 [pool-115-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,109 [pool-115-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,109 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 3ms.
+ INFO 2016-03-24 13:29:27,110 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,110 [pool-116-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,110 [pool-116-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,113 [pool-116-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,115 [pool-116-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:27,115 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:27,116 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,116 [pool-117-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,117 [pool-117-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,119 [pool-117-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,121 [pool-117-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,121 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,121 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,122 [pool-118-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,122 [pool-118-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,126 [pool-118-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,126 [pool-118-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,126 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,126 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,126 [pool-119-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,127 [pool-119-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,130 [pool-119-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,131 [pool-119-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,131 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,131 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,132 [pool-120-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,132 [pool-120-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,134 [pool-120-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,136 [pool-120-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,136 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,136 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,136 [pool-121-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,136 [pool-121-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,139 [pool-121-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,141 [pool-121-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-03-24 13:29:27,141 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:27,141 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,142 [pool-122-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,142 [pool-122-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,144 [pool-122-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,146 [pool-122-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,146 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,146 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,146 [pool-123-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,146 [pool-123-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,149 [pool-123-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,150 [pool-123-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,150 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,151 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,151 [pool-124-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,151 [pool-124-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,154 [pool-124-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,155 [pool-124-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,155 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,155 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,156 [pool-125-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,157 [pool-125-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,158 [pool-125-thread-1] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-03-24 13:29:27,161 [pool-125-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,161 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:27,161 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,161 [pool-126-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,162 [pool-126-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,164 [pool-126-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,166 [pool-126-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,166 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:27,166 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-03-24 13:29:27,166 [pool-127-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,166 [pool-127-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,169 [pool-127-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,170 [pool-127-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,170 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-03-24 13:29:27,170 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-03-24 13:29:27,171 [pool-128-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,171 [pool-128-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-03-24 13:29:27,174 [pool-128-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-03-24 13:29:27,175 [pool-128-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-03-24 13:29:27,176 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-03-24 13:29:27,178 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/23>) || (?departement = <http://id.insee.fr/geo/departement/19>)) || (?departement = <http://id.insee.fr/geo/departement/87>)) || (?departement = <http://id.insee.fr/geo/departement/70>)) || (?departement = <http://id.insee.fr/geo/departement/39>)) || (?departement = <http://id.insee.fr/geo/departement/25>)) || (?departement = <http://id.insee.fr/geo/departement/90>)) || (?departement = <http://id.insee.fr/geo/departement/68>)) || (?departement = <http://id.insee.fr/geo/departement/67>)) || (?departement = <http://id.insee.fr/geo/departement/78>)) || (?departement = <http://id.insee.fr/geo/departement/75>)) || (?departement = <http://id.insee.fr/geo/departement/77>)) || (?departement = <http://id.insee.fr/geo/departement/91>)) || (?departement = <http://id.insee.fr/geo/departement/95>)) || (?departement = <http://id.insee.fr/geo/departement/93>)) || (?departement = <http://id.insee.fr/geo/departement/92>)) || (?departement = <http://id.insee.fr/geo/departement/94>)) || (?departement = <http://id.insee.fr/geo/departement/12>)) || (?departement = <http://id.insee.fr/geo/departement/65>)) || (?departement = <http://id.insee.fr/geo/departement/81>)) }
+
+
+ INFO 2016-03-24 13:29:27,276 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/82>) || (?departement = <http://id.insee.fr/geo/departement/46>)) || (?departement = <http://id.insee.fr/geo/departement/09>)) || (?departement = <http://id.insee.fr/geo/departement/32>)) || (?departement = <http://id.insee.fr/geo/departement/31>)) || (?departement = <http://id.insee.fr/geo/departement/54>)) || (?departement = <http://id.insee.fr/geo/departement/57>)) || (?departement = <http://id.insee.fr/geo/departement/88>)) || (?departement = <http://id.insee.fr/geo/departement/55>)) || (?departement = <http://id.insee.fr/geo/departement/47>)) || (?departement = <http://id.insee.fr/geo/departement/40>)) || (?departement = <http://id.insee.fr/geo/departement/64>)) || (?departement = <http://id.insee.fr/geo/departement/24>)) || (?departement = <http://id.insee.fr/geo/departement/33>)) || (?departement = <http://id.insee.fr/geo/departement/21>)) || (?departement = <http://id.insee.fr/geo/departement/71>)) || (?departement = <http://id.insee.fr/geo/departement/58>)) || (?departement = <http://id.insee.fr/geo/departement/89>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) }
+
+
+ INFO 2016-03-24 13:29:27,374 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/28>) || (?departement = <http://id.insee.fr/geo/departement/41>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/86>)) || (?departement = <http://id.insee.fr/geo/departement/79>)) || (?departement = <http://id.insee.fr/geo/departement/17>)) || (?departement = <http://id.insee.fr/geo/departement/16>)) || (?departement = <http://id.insee.fr/geo/departement/56>)) || (?departement = <http://id.insee.fr/geo/departement/29>)) || (?departement = <http://id.insee.fr/geo/departement/35>)) || (?departement = <http://id.insee.fr/geo/departement/22>)) || (?departement = <http://id.insee.fr/geo/departement/60>)) || (?departement = <http://id.insee.fr/geo/departement/80>)) || (?departement = <http://id.insee.fr/geo/departement/02>)) || (?departement = <http://id.insee.fr/geo/departement/08>)) || (?departement = <http://id.insee.fr/geo/departement/10>)) || (?departement = <http://id.insee.fr/geo/departement/51>)) || (?departement = <http://id.insee.fr/geo/departement/52>)) || (?departement = <http://id.insee.fr/geo/departement/72>)) }
+
+
+ INFO 2016-03-24 13:29:27,468 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/53>) || (?departement = <http://id.insee.fr/geo/departement/44>)) || (?departement = <http://id.insee.fr/geo/departement/85>)) || (?departement = <http://id.insee.fr/geo/departement/49>)) || (?departement = <http://id.insee.fr/geo/departement/43>)) || (?departement = <http://id.insee.fr/geo/departement/03>)) || (?departement = <http://id.insee.fr/geo/departement/15>)) || (?departement = <http://id.insee.fr/geo/departement/63>)) || (?departement = <http://id.insee.fr/geo/departement/01>)) || (?departement = <http://id.insee.fr/geo/departement/07>)) || (?departement = <http://id.insee.fr/geo/departement/38>)) || (?departement = <http://id.insee.fr/geo/departement/74>)) || (?departement = <http://id.insee.fr/geo/departement/42>)) || (?departement = <http://id.insee.fr/geo/departement/26>)) || (?departement = <http://id.insee.fr/geo/departement/73>)) || (?departement = <http://id.insee.fr/geo/departement/69>)) || (?departement = <http://id.insee.fr/geo/departement/2B>)) || (?departement = <http://id.insee.fr/geo/departement/2A>)) || (?departement = <http://id.insee.fr/geo/departement/59>)) || (?departement = <http://id.insee.fr/geo/departement/13>)) }
+
+
+ INFO 2016-03-24 13:29:27,566 [main] (ProviderImplCostMonitoring.java:229) - ** Provider: 
+prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?departement idemo:population ?popLeg . 
+?popLeg idemo:populationTotale ?popTotale . 
+filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/84>) || (?departement = <http://id.insee.fr/geo/departement/06>)) || (?departement = <http://id.insee.fr/geo/departement/04>)) || (?departement = <http://id.insee.fr/geo/departement/05>)) || (?departement = <http://id.insee.fr/geo/departement/83>)) || (?departement = <http://id.insee.fr/geo/departement/11>)) || (?departement = <http://id.insee.fr/geo/departement/48>)) || (?departement = <http://id.insee.fr/geo/departement/30>)) || (?departement = <http://id.insee.fr/geo/departement/66>)) || (?departement = <http://id.insee.fr/geo/departement/34>)) || (?departement = <http://id.insee.fr/geo/departement/14>)) || (?departement = <http://id.insee.fr/geo/departement/50>)) || (?departement = <http://id.insee.fr/geo/departement/61>)) || (?departement = <http://id.insee.fr/geo/departement/27>)) || (?departement = <http://id.insee.fr/geo/departement/76>)) || (?departement = <http://id.insee.fr/geo/departement/976>)) || (?departement = <http://id.insee.fr/geo/departement/974>)) || (?departement = <http://id.insee.fr/geo/departement/973>)) || (?departement = <http://id.insee.fr/geo/departement/972>)) || (?departement = <http://id.insee.fr/geo/departement/971>)) }
+
+
+ INFO 2016-03-24 13:29:27,672 [main] (TestDQP.java:207) - 99 results in 1731 ms
+ INFO 2016-03-24 13:29:27,673 [main] (TestDQP.java:208) - 
+01 ?nom = "Lozère"; ?popTotale = 80712; 
+02 ?nom = "Creuse"; ?popTotale = 125714; 
+03 ?nom = "Hautes-Alpes"; ?popTotale = 144640; 
+04 ?nom = "Territoire de Belfort"; ?popTotale = 147777; 
+05 ?nom = "Corse-du-Sud"; ?popTotale = 151621; 
+06 ?nom = "Cantal"; ?popTotale = 152797; 
+07 ?nom = "Ariège"; ?popTotale = 158379; 
+08 ?nom = "Alpes-de-Haute-Provence"; ?popTotale = 166726; 
+09 ?nom = "Haute-Corse"; ?popTotale = 173889; 
+10 ?nom = "Lot"; ?popTotale = 180470; 
+11 ?nom = "Haute-Marne"; ?popTotale = 188083; 
+12 ?nom = "Gers"; ?popTotale = 197598; 
+13 ?nom = "Meuse"; ?popTotale = 198334; 
+14 ?nom = "Nièvre"; ?popTotale = 222688; 
+15 ?nom = "Haute-Loire"; ?popTotale = 233918; 
+16 ?nom = "Indre"; ?popTotale = 235181; 
+17 ?nom = "Hautes-Pyrénées"; ?popTotale = 236728; 
+18 ?nom = "Guyane"; ?popTotale = 246507; 
+19 ?nom = "Haute-Saône"; ?popTotale = 246782; 
+20 ?nom = "Corrèze"; ?popTotale = 249452; 
+21 ?nom = "Tarn-et-Garonne"; ?popTotale = 256867; 
+22 ?nom = "Jura"; ?popTotale = 270914; 
+23 ?nom = "Ardennes"; ?popTotale = 289075; 
+24 ?nom = "Aveyron"; ?popTotale = 289257; 
+25 ?nom = "Orne"; ?popTotale = 298248; 
+26 ?nom = "Aube"; ?popTotale = 314825; 
+27 ?nom = "Mayenne"; ?popTotale = 318095; 
+28 ?nom = "Cher"; ?popTotale = 319693; 
+29 ?nom = "Ardèche"; ?popTotale = 330017; 
+30 ?nom = "Loir-et-Cher"; ?popTotale = 342471; 
+31 ?nom = "Lot-et-Garonne"; ?popTotale = 343645; 
+32 ?nom = "Yonne"; ?popTotale = 352182; 
+33 ?nom = "Allier"; ?popTotale = 353742; 
+34 ?nom = "Charente"; ?popTotale = 366587; 
+35 ?nom = "Aude"; ?popTotale = 374868; 
+36 ?nom = "Deux-Sèvres"; ?popTotale = 383079; 
+37 ?nom = "Haute-Vienne"; ?popTotale = 384411; 
+38 ?nom = "Vosges"; ?popTotale = 388551; 
+39 ?nom = "Martinique"; ?popTotale = 391837; 
+40 ?nom = "Tarn"; ?popTotale = 393877; 
+41 ?nom = "Guadeloupe"; ?popTotale = 409055; 
+42 ?nom = "Landes"; ?popTotale = 411197; 
+43 ?nom = "Dordogne"; ?popTotale = 429579; 
+44 ?nom = "Savoie"; ?popTotale = 437915; 
+45 ?nom = "Vienne"; ?popTotale = 442696; 
+46 ?nom = "Eure-et-Loir"; ?popTotale = 444385; 
+47 ?nom = "Pyrénées-Orientales"; ?popTotale = 471573; 
+48 ?nom = "Drôme"; ?popTotale = 509444; 
+49 ?nom = "Manche"; ?popTotale = 518364; 
+50 ?nom = "Côte-d\'Or"; ?popTotale = 543648; 
+51 ?nom = "Doubs"; ?popTotale = 548026; 
+52 ?nom = "Aisne"; ?popTotale = 554512; 
+53 ?nom = "Vaucluse"; ?popTotale = 562254; 
+54 ?nom = "Saône-et-Loire"; ?popTotale = 575097; 
+55 ?nom = "Marne"; ?popTotale = 583691; 
+56 ?nom = "Somme"; ?popTotale = 584184; 
+57 ?nom = "Sarthe"; ?popTotale = 584865; 
+58 ?nom = "Eure"; ?popTotale = 612518; 
+59 ?nom = "Indre-et-Loire"; ?popTotale = 615557; 
+60 ?nom = "Côtes-d\'Armor"; ?popTotale = 617565; 
+61 ?nom = "Ain"; ?popTotale = 636916; 
+62 ?nom = "Charente-Maritime"; ?popTotale = 652610; 
+63 ?nom = "Puy-de-Dôme"; ?popTotale = 658489; 
+64 ?nom = "Vendée"; ?popTotale = 674843; 
+65 ?nom = "Loiret"; ?popTotale = 684104; 
+66 ?nom = "Pyrénées-Atlantiques"; ?popTotale = 685564; 
+67 ?nom = "Calvados"; ?popTotale = 706635; 
+68 ?nom = "Meurthe-et-Moselle"; ?popTotale = 745398; 
+69 ?nom = "Gard"; ?popTotale = 750025; 
+70 ?nom = "Morbihan"; ?popTotale = 761433; 
+71 ?nom = "Loire"; ?popTotale = 774144; 
+72 ?nom = "Haut-Rhin"; ?popTotale = 774976; 
+73 ?nom = "Haute-Savoie"; ?popTotale = 793342; 
+74 ?nom = "Maine-et-Loire"; ?popTotale = 823546; 
+75 ?nom = "Oise"; ?popTotale = 835918; 
+76 ?nom = "La Réunion"; ?popTotale = 844741; 
+77 ?nom = "Finistère"; ?popTotale = 934625; 
+78 ?nom = "Var"; ?popTotale = 1046346; 
+79 ?nom = "Ille-et-Vilaine"; ?popTotale = 1047873; 
+80 ?nom = "Moselle"; ?popTotale = 1068119; 
+81 ?nom = "Alpes-Maritimes"; ?popTotale = 1096741; 
+82 ?nom = "Hérault"; ?popTotale = 1111881; 
+83 ?nom = "Bas-Rhin"; ?popTotale = 1128825; 
+84 ?nom = "Val-d\'Oise"; ?popTotale = 1211138; 
+85 ?nom = "Isère"; ?popTotale = 1263850; 
+86 ?nom = "Essonne"; ?popTotale = 1273233; 
+87 ?nom = "Seine-Maritime"; ?popTotale = 1280410; 
+88 ?nom = "Haute-Garonne"; ?popTotale = 1325392; 
+89 ?nom = "Loire-Atlantique"; ?popTotale = 1364453; 
+90 ?nom = "Val-de-Marne"; ?popTotale = 1367091; 
+91 ?nom = "Seine-et-Marne"; ?popTotale = 1387830; 
+92 ?nom = "Yvelines"; ?popTotale = 1446301; 
+93 ?nom = "Gironde"; ?popTotale = 1536448; 
+94 ?nom = "Seine-Saint-Denis"; ?popTotale = 1565222; 
+95 ?nom = "Hauts-de-Seine"; ?popTotale = 1611290; 
+96 ?nom = "Rhône"; ?popTotale = 1812196; 
+97 ?nom = "Bouches-du-Rhône"; ?popTotale = 2022604; 
+98 ?nom = "Paris"; ?popTotale = 2254262; 
+99 ?nom = "Nord"; ?popTotale = 2635494; 
+
+ INFO 2016-03-24 13:29:27,673 [main] (TestDQP.java:209) - Remote queries
+ INFO 2016-03-24 13:29:27,674 [main] (TestDQP.java:210) - =========
+	?region igeo:subdivisionDirecte ?departement
+	54
+--
+	?region igeo:codeRegion ?v
+	2
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/53>) || (?departement = <http://id.insee.fr/geo/departement/44>)) || (?departement = <http://id.insee.fr/geo/departement/85>)) || (?departement = <http://id.insee.fr/geo/departement/49>)) || (?departement = <http://id.insee.fr/geo/departement/43>)) || (?departement = <http://id.insee.fr/geo/departement/03>)) || (?departement = <http://id.insee.fr/geo/departement/15>)) || (?departement = <http://id.insee.fr/geo/departement/63>)) || (?departement = <http://id.insee.fr/geo/departement/01>)) || (?departement = <http://id.insee.fr/geo/departement/07>)) || (?departement = <http://id.insee.fr/geo/departement/38>)) || (?departement = <http://id.insee.fr/geo/departement/74>)) || (?departement = <http://id.insee.fr/geo/departement/42>)) || (?departement = <http://id.insee.fr/geo/departement/26>)) || (?departement = <http://id.insee.fr/geo/departement/73>)) || (?departement = <http://id.insee.fr/geo/departement/69>)) || (?departement = <http://id.insee.fr/geo/departement/2B>)) || (?departement = <http://id.insee.fr/geo/departement/2A>)) || (?departement = <http://id.insee.fr/geo/departement/59>)) || (?departement = <http://id.insee.fr/geo/departement/13>)) }  
+	1
+--
+	?departement igeo:nom ?nom
+	200
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/23>) || (?departement = <http://id.insee.fr/geo/departement/19>)) || (?departement = <http://id.insee.fr/geo/departement/87>)) || (?departement = <http://id.insee.fr/geo/departement/70>)) || (?departement = <http://id.insee.fr/geo/departement/39>)) || (?departement = <http://id.insee.fr/geo/departement/25>)) || (?departement = <http://id.insee.fr/geo/departement/90>)) || (?departement = <http://id.insee.fr/geo/departement/68>)) || (?departement = <http://id.insee.fr/geo/departement/67>)) || (?departement = <http://id.insee.fr/geo/departement/78>)) || (?departement = <http://id.insee.fr/geo/departement/75>)) || (?departement = <http://id.insee.fr/geo/departement/77>)) || (?departement = <http://id.insee.fr/geo/departement/91>)) || (?departement = <http://id.insee.fr/geo/departement/95>)) || (?departement = <http://id.insee.fr/geo/departement/93>)) || (?departement = <http://id.insee.fr/geo/departement/92>)) || (?departement = <http://id.insee.fr/geo/departement/94>)) || (?departement = <http://id.insee.fr/geo/departement/12>)) || (?departement = <http://id.insee.fr/geo/departement/65>)) || (?departement = <http://id.insee.fr/geo/departement/81>)) }  
+	1
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/28>) || (?departement = <http://id.insee.fr/geo/departement/41>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/86>)) || (?departement = <http://id.insee.fr/geo/departement/79>)) || (?departement = <http://id.insee.fr/geo/departement/17>)) || (?departement = <http://id.insee.fr/geo/departement/16>)) || (?departement = <http://id.insee.fr/geo/departement/56>)) || (?departement = <http://id.insee.fr/geo/departement/29>)) || (?departement = <http://id.insee.fr/geo/departement/35>)) || (?departement = <http://id.insee.fr/geo/departement/22>)) || (?departement = <http://id.insee.fr/geo/departement/60>)) || (?departement = <http://id.insee.fr/geo/departement/80>)) || (?departement = <http://id.insee.fr/geo/departement/02>)) || (?departement = <http://id.insee.fr/geo/departement/08>)) || (?departement = <http://id.insee.fr/geo/departement/10>)) || (?departement = <http://id.insee.fr/geo/departement/51>)) || (?departement = <http://id.insee.fr/geo/departement/52>)) || (?departement = <http://id.insee.fr/geo/departement/72>)) }  
+	1
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/82>) || (?departement = <http://id.insee.fr/geo/departement/46>)) || (?departement = <http://id.insee.fr/geo/departement/09>)) || (?departement = <http://id.insee.fr/geo/departement/32>)) || (?departement = <http://id.insee.fr/geo/departement/31>)) || (?departement = <http://id.insee.fr/geo/departement/54>)) || (?departement = <http://id.insee.fr/geo/departement/57>)) || (?departement = <http://id.insee.fr/geo/departement/88>)) || (?departement = <http://id.insee.fr/geo/departement/55>)) || (?departement = <http://id.insee.fr/geo/departement/47>)) || (?departement = <http://id.insee.fr/geo/departement/40>)) || (?departement = <http://id.insee.fr/geo/departement/64>)) || (?departement = <http://id.insee.fr/geo/departement/24>)) || (?departement = <http://id.insee.fr/geo/departement/33>)) || (?departement = <http://id.insee.fr/geo/departement/21>)) || (?departement = <http://id.insee.fr/geo/departement/71>)) || (?departement = <http://id.insee.fr/geo/departement/58>)) || (?departement = <http://id.insee.fr/geo/departement/89>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) }  
+	1
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/84>) || (?departement = <http://id.insee.fr/geo/departement/06>)) || (?departement = <http://id.insee.fr/geo/departement/04>)) || (?departement = <http://id.insee.fr/geo/departement/05>)) || (?departement = <http://id.insee.fr/geo/departement/83>)) || (?departement = <http://id.insee.fr/geo/departement/11>)) || (?departement = <http://id.insee.fr/geo/departement/48>)) || (?departement = <http://id.insee.fr/geo/departement/30>)) || (?departement = <http://id.insee.fr/geo/departement/66>)) || (?departement = <http://id.insee.fr/geo/departement/34>)) || (?departement = <http://id.insee.fr/geo/departement/14>)) || (?departement = <http://id.insee.fr/geo/departement/50>)) || (?departement = <http://id.insee.fr/geo/departement/61>)) || (?departement = <http://id.insee.fr/geo/departement/27>)) || (?departement = <http://id.insee.fr/geo/departement/76>)) || (?departement = <http://id.insee.fr/geo/departement/976>)) || (?departement = <http://id.insee.fr/geo/departement/974>)) || (?departement = <http://id.insee.fr/geo/departement/973>)) || (?departement = <http://id.insee.fr/geo/departement/972>)) || (?departement = <http://id.insee.fr/geo/departement/971>)) }  
+	1
+--
+	>====  Sum = 261  =====
+
+ INFO 2016-03-24 13:29:27,674 [main] (TestDQP.java:211) - Transferred results per query
+ INFO 2016-03-24 13:29:27,674 [main] (TestDQP.java:212) - =========
+	?region igeo:subdivisionDirecte ?departement
+	105
+--
+	?region igeo:codeRegion ?v
+	45
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/53>) || (?departement = <http://id.insee.fr/geo/departement/44>)) || (?departement = <http://id.insee.fr/geo/departement/85>)) || (?departement = <http://id.insee.fr/geo/departement/49>)) || (?departement = <http://id.insee.fr/geo/departement/43>)) || (?departement = <http://id.insee.fr/geo/departement/03>)) || (?departement = <http://id.insee.fr/geo/departement/15>)) || (?departement = <http://id.insee.fr/geo/departement/63>)) || (?departement = <http://id.insee.fr/geo/departement/01>)) || (?departement = <http://id.insee.fr/geo/departement/07>)) || (?departement = <http://id.insee.fr/geo/departement/38>)) || (?departement = <http://id.insee.fr/geo/departement/74>)) || (?departement = <http://id.insee.fr/geo/departement/42>)) || (?departement = <http://id.insee.fr/geo/departement/26>)) || (?departement = <http://id.insee.fr/geo/departement/73>)) || (?departement = <http://id.insee.fr/geo/departement/69>)) || (?departement = <http://id.insee.fr/geo/departement/2B>)) || (?departement = <http://id.insee.fr/geo/departement/2A>)) || (?departement = <http://id.insee.fr/geo/departement/59>)) || (?departement = <http://id.insee.fr/geo/departement/13>)) }  
+	20
+--
+	?departement igeo:nom ?nom
+	100
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/23>) || (?departement = <http://id.insee.fr/geo/departement/19>)) || (?departement = <http://id.insee.fr/geo/departement/87>)) || (?departement = <http://id.insee.fr/geo/departement/70>)) || (?departement = <http://id.insee.fr/geo/departement/39>)) || (?departement = <http://id.insee.fr/geo/departement/25>)) || (?departement = <http://id.insee.fr/geo/departement/90>)) || (?departement = <http://id.insee.fr/geo/departement/68>)) || (?departement = <http://id.insee.fr/geo/departement/67>)) || (?departement = <http://id.insee.fr/geo/departement/78>)) || (?departement = <http://id.insee.fr/geo/departement/75>)) || (?departement = <http://id.insee.fr/geo/departement/77>)) || (?departement = <http://id.insee.fr/geo/departement/91>)) || (?departement = <http://id.insee.fr/geo/departement/95>)) || (?departement = <http://id.insee.fr/geo/departement/93>)) || (?departement = <http://id.insee.fr/geo/departement/92>)) || (?departement = <http://id.insee.fr/geo/departement/94>)) || (?departement = <http://id.insee.fr/geo/departement/12>)) || (?departement = <http://id.insee.fr/geo/departement/65>)) || (?departement = <http://id.insee.fr/geo/departement/81>)) }  
+	20
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/28>) || (?departement = <http://id.insee.fr/geo/departement/41>)) || (?departement = <http://id.insee.fr/geo/departement/45>)) || (?departement = <http://id.insee.fr/geo/departement/18>)) || (?departement = <http://id.insee.fr/geo/departement/86>)) || (?departement = <http://id.insee.fr/geo/departement/79>)) || (?departement = <http://id.insee.fr/geo/departement/17>)) || (?departement = <http://id.insee.fr/geo/departement/16>)) || (?departement = <http://id.insee.fr/geo/departement/56>)) || (?departement = <http://id.insee.fr/geo/departement/29>)) || (?departement = <http://id.insee.fr/geo/departement/35>)) || (?departement = <http://id.insee.fr/geo/departement/22>)) || (?departement = <http://id.insee.fr/geo/departement/60>)) || (?departement = <http://id.insee.fr/geo/departement/80>)) || (?departement = <http://id.insee.fr/geo/departement/02>)) || (?departement = <http://id.insee.fr/geo/departement/08>)) || (?departement = <http://id.insee.fr/geo/departement/10>)) || (?departement = <http://id.insee.fr/geo/departement/51>)) || (?departement = <http://id.insee.fr/geo/departement/52>)) || (?departement = <http://id.insee.fr/geo/departement/72>)) }  
+	20
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/82>) || (?departement = <http://id.insee.fr/geo/departement/46>)) || (?departement = <http://id.insee.fr/geo/departement/09>)) || (?departement = <http://id.insee.fr/geo/departement/32>)) || (?departement = <http://id.insee.fr/geo/departement/31>)) || (?departement = <http://id.insee.fr/geo/departement/54>)) || (?departement = <http://id.insee.fr/geo/departement/57>)) || (?departement = <http://id.insee.fr/geo/departement/88>)) || (?departement = <http://id.insee.fr/geo/departement/55>)) || (?departement = <http://id.insee.fr/geo/departement/47>)) || (?departement = <http://id.insee.fr/geo/departement/40>)) || (?departement = <http://id.insee.fr/geo/departement/64>)) || (?departement = <http://id.insee.fr/geo/departement/24>)) || (?departement = <http://id.insee.fr/geo/departement/33>)) || (?departement = <http://id.insee.fr/geo/departement/21>)) || (?departement = <http://id.insee.fr/geo/departement/71>)) || (?departement = <http://id.insee.fr/geo/departement/58>)) || (?departement = <http://id.insee.fr/geo/departement/89>)) || (?departement = <http://id.insee.fr/geo/departement/36>)) || (?departement = <http://id.insee.fr/geo/departement/37>)) }  
+	20
+--
+	prefix idemo: <http://rdf.insee.fr/def/demo#> prefix igeo: <http://rdf.insee.fr/def/geo#> select *  where {?departement idemo:population ?popLeg .  ?popLeg idemo:populationTotale ?popTotale .  filter ((((((((((((((((((((?departement = <http://id.insee.fr/geo/departement/84>) || (?departement = <http://id.insee.fr/geo/departement/06>)) || (?departement = <http://id.insee.fr/geo/departement/04>)) || (?departement = <http://id.insee.fr/geo/departement/05>)) || (?departement = <http://id.insee.fr/geo/departement/83>)) || (?departement = <http://id.insee.fr/geo/departement/11>)) || (?departement = <http://id.insee.fr/geo/departement/48>)) || (?departement = <http://id.insee.fr/geo/departement/30>)) || (?departement = <http://id.insee.fr/geo/departement/66>)) || (?departement = <http://id.insee.fr/geo/departement/34>)) || (?departement = <http://id.insee.fr/geo/departement/14>)) || (?departement = <http://id.insee.fr/geo/departement/50>)) || (?departement = <http://id.insee.fr/geo/departement/61>)) || (?departement = <http://id.insee.fr/geo/departement/27>)) || (?departement = <http://id.insee.fr/geo/departement/76>)) || (?departement = <http://id.insee.fr/geo/departement/976>)) || (?departement = <http://id.insee.fr/geo/departement/974>)) || (?departement = <http://id.insee.fr/geo/departement/973>)) || (?departement = <http://id.insee.fr/geo/departement/972>)) || (?departement = <http://id.insee.fr/geo/departement/971>)) }  
+	19
+--
+	>====  Sum = 349  =====
+
+ INFO 2016-03-24 13:29:27,674 [main] (TestDQP.java:213) - Remote queries per data source
+ INFO 2016-03-24 13:29:27,674 [main] (TestDQP.java:214) - =========
+	http://localhost:8085/sparql
+	128
+--
+	http://localhost:8084/sparql
+	128
+--
+	http://localhost:8086/sparql
+	5
+--
+	>====  Sum = 261  =====
+
+ INFO 2016-03-24 13:29:27,674 [main] (TestDQP.java:215) - Transferred results per source
+ INFO 2016-03-24 13:29:27,674 [main] (TestDQP.java:216) - =========
+	http://localhost:8085/sparql
+	125
+--
+	http://localhost:8084/sparql
+	125
+--
+	http://localhost:8086/sparql
+	99
+--
+	>====  Sum = 349  =====
+

@@ -19,12 +19,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgengine</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgdqp</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
@@ -117,7 +117,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>sparql</artifactId>
+            <version>${project.parent.version}</version>
             <type>jar</type>
         </dependency>
     </dependencies>

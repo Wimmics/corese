@@ -193,8 +193,8 @@ public class RemoteProducerWSImpl implements Producer {
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env) {
 
-        logger.debug("gNode = " + gNode);
-        logger.debug("from = " + from);
+//        logger.debug("gNode = " + gNode);
+//        logger.debug("from = " + from);
 
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createSimpleOptimizer();
 //        RemoteQueryOptimizer qo = RemoteQueryOptimizerFactory.createFilterOptimizer();
@@ -212,7 +212,7 @@ public class RemoteProducerWSImpl implements Producer {
             if (SourceSelectorWS.ask(qEdge, this, env)) {
                 logger.debug("sending query \n" + rwSparql + "\n" + "to " + rp.getEndpoint());
                 String sparqlRes = rp.getEdges(rwSparql);
-                logger.debug(sparqlRes);
+//                logger.debug(sparqlRes);
 
                 if (env.getQuery() != null && env.getQuery().isDebug()) {
                     System.out.println("Query:\n" + rwSparql + "\n" + rp.getEndpoint());
@@ -224,11 +224,13 @@ public class RemoteProducerWSImpl implements Producer {
                     Load l = Load.create(g);
                     is = new ByteArrayInputStream(sparqlRes.getBytes());
 //                    l.load(is, ".ttl");
-                    l.load(is);
+                    l.parse(is);
                     logger.debug("Results (cardinality " + g.size() + ") merged in  " + sw.getTime() + " ms from " + rp.getEndpoint());
                 }
                 
-
+//                synchronized(this){
+//                   logger.info(g+"  number of triple EDGE ???  "+g.size()); 
+//                }
                 QueryProcessDQP.updateCounters(qEdge.toString(), rp.getEndpoint(), isNotEmpty, new Long(g.size()));
                 
                 if(isNotEmpty){
@@ -758,6 +760,12 @@ public class RemoteProducerWSImpl implements Producer {
                     logger.info("Result:\n" + sparqlRes);
                 }
                 boolean isNotEmpty = sparqlRes != null;
+                
+//                synchronized(this){
+//                    for(Mapping m : mappings)
+//                   logger.info(m+"  number of triple BGP???  "+m.size()+"  ??? "+new Long(mappings.size() * mappings.get(0).size())); 
+//                }
+                
                 QueryProcessDQP.updateCounters(bgp.toString(), rp.getEndpoint(), isNotEmpty, new Long(mappings.size()));
 
                 if (isNotEmpty) {

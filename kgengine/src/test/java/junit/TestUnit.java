@@ -114,9 +114,11 @@ import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import fr.inria.edelweiss.kgtool.util.GraphUtil;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
 import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.kgtool.workflow.ParallelProcess;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.corese.kgtool.workflow.WorkflowProcess;
+import fr.inria.corese.kgtool.workflow.WorkflowVisitor;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.MalformedURLException;
@@ -229,7 +231,74 @@ public class TestUnit {
         assertEquals(0, dt2.intValue());
     }
     
-     @Test
+    
+   
+     
+    
+    public void testServer29() throws EngineException, LoadException {
+        String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        exec.query(q);
+        
+        WorkflowParser wp = new WorkflowParser();
+        SemanticWorkflow sw = wp.parse(data + "junit/workflow/w2/w29.ttl");        
+        Data res = sw.process();
+ 
+       assertEquals(8062, res.getTemplateResult().length());
+        System.out.println(res);
+        System.out.println(res.getTemplateResult().length());
+    }
+    
+    @Test
+    public void testServer1() throws EngineException, LoadException {
+        String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        exec.query(q);
+        
+        WorkflowParser wp = new WorkflowParser();
+        SemanticWorkflow w = wp.parse(data + "junit/workflow/server/w2.ttl", NSManager.USER + "test");
+        w.setVisitor(new MyWorkflowVisitor());
+        Data res = w.process();
+        System.out.println(res);
+    }
+    
+    class MyWorkflowVisitor implements WorkflowVisitor {
+
+        @Override
+        public void before(WorkflowProcess wp, Data data) {
+            System.out.println("Before: " + wp.getClass().getName());
+        }
+
+        @Override
+        public void after(WorkflowProcess wp, Data data) {
+             System.out.println("After: " + wp.getClass().getName());           
+        }
+    
+    }
+     
+    
+     public void testServer30() throws EngineException, LoadException {
+        String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        exec.query(q);
+        
+        WorkflowParser wp = new WorkflowParser();
+        SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w30.ttl");
+        Data res = w.process();
+        System.out.println(res);
+    }
+    
+     public void testServer3() throws EngineException, LoadException {
+        String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        exec.query(q);
+        
+        WorkflowParser wp = new WorkflowParser();
+        SemanticWorkflow w = wp.parse(data + "junit/workflow/server/w3.ttl");
+        Data res = w.process();
+        System.out.println(res);
+    }
+     
     public void testGGGG() throws EngineException, LoadException {         
         String q = "prefix c: <http://www.inria.fr/acacia/comma#>"
                 + "select distinct ?x  (count (?src) as ?count) (max(?src) as ?max)   where { "
@@ -248,24 +317,36 @@ public class TestUnit {
      
      
      
-     
-   public void testWorkflow22() throws EngineException, LoadException {
+    public void testWorkflowMeta() throws EngineException, LoadException {
+        SemanticWorkflow sw =  new SemanticWorkflow();
+        ParallelProcess p = new ParallelProcess();
+        
+        for (int i = 1; i <= 26; i++) {
+            if (i == 11 || i == 12){
+                continue;
+            }
+            WorkflowParser wp = new WorkflowParser();
+            SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w" + i + ".ttl");
+            w.setDebug(false);
+            w.setRecDisplay(false);
+            p.insert(w);
+        }
+        sw.add(p);       
+      
+        Data res = sw.process();       
+      
+   }  
+    
+    
+   public void testWorkflow26() throws EngineException, LoadException {
        WorkflowParser wp = new WorkflowParser();
-       SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w22.ttl");           
+       SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w26.ttl");           
        Data res = w.process(new Data(GraphStore.create()));
-        System.out.println(res.getGraph().display());
-       assertEquals(5, res.getGraph().size());
+       System.out.println(res.isSuccess());
+      
    }  
       
-   public void testServer1() throws EngineException, LoadException {
-       String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
-       QueryProcess exec = QueryProcess.create(Graph.create());
-       exec.query(q);
-       WorkflowParser wp = new WorkflowParser();
-       SemanticWorkflow w = wp.parse(data + "junit/workflow/server/w1.ttl", NSManager.USER+"test");           
-       Data res = w.process();  
-          System.out.println(res);
-   } 
+  
         
       public void testMI() throws EngineException{
           String i = "insert data {"

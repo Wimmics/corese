@@ -41,16 +41,5 @@
             <artifactId>neo4j-tinkerpop-api-impl</artifactId>
             <version>0.3-2.3.2</version>
         </dependency>
-        <dependency>
-            <groupId>com.michaelpollmeier</groupId>
-            <artifactId>orientdb-gremlin</artifactId>
-            <version>3.1.1-incubating.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tinkerpop</groupId>
-            <artifactId>tinkergraph-gremlin</artifactId>
-            <version>3.1.1-incubating</version>
-            <type>jar</type>
-        </dependency>
     </dependencies>
 </project>

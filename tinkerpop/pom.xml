@@ -29,7 +29,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kgtool</artifactId>
-            <version>${global.version}</version>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tinkerpop</groupId>
+            <artifactId>gremlin-core</artifactId>
+            <version>3.1.1-incubating</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>

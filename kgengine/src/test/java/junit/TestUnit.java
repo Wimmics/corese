@@ -12568,7 +12568,8 @@ exec.setPlanProfile(Query.STD_PLAN);
             //assertEquals("Result", 4, map.size());
 
             ResultFormat f = ResultFormat.create(map);
-            System.out.println(f);
+            System.out.println(f); 
+            //test
 
         } catch (EngineException e) {
             e.printStackTrace();

@@ -5,6 +5,7 @@ import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import java.util.Date;
 
 /**
  * Workflow of Query | Update | RuleBase | Transformation
@@ -18,6 +19,8 @@ public class SemanticWorkflow extends  CompositeProcess {
      
     Data data;
     private int loop = -1;
+    private Date d1;
+    private Date d2;
     
     public SemanticWorkflow(){
         super();
@@ -109,8 +112,27 @@ public class SemanticWorkflow extends  CompositeProcess {
      * compute ::= super.before(); this.start(); this.run(); this.finish(); super.after()
      */
     public Data process(Data data) throws EngineException {
+        before(data);
+        Data res = doProcess(data);
+        after(res);
+        return res;
+    }
+    
+    Data doProcess(Data data)throws EngineException {
         init(isVisit());
         return compute(data);
+    }
+    
+    void before(Data data){
+        d1 = new Date();
+    }
+    
+    void after(Data data){
+        d2 = new Date();
+    }
+    
+    public double getTime(){
+        return (d2.getTime() - d1.getTime()) / 1000.0;
     }
     
     @Override

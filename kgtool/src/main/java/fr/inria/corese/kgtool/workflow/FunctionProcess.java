@@ -19,7 +19,6 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 public class FunctionProcess extends WorkflowProcess {
     
     private String query;
-    String path;
     
     FunctionProcess(String q, String p){
         query = q;
@@ -72,6 +71,11 @@ public class FunctionProcess extends WorkflowProcess {
      */
     public void setQuery(String query) {
         this.query = query;
+    }
+    
+    @Override
+    public String stringValue(Data data){
+        return data.getDatatypeValue().toString();
     }
 
 }

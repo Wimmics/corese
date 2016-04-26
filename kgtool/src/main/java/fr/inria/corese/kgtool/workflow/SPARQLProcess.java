@@ -56,7 +56,7 @@ public class SPARQLProcess extends  WorkflowProcess {
     
     @Override
     public Data run(Data data) throws EngineException { 
-        Mappings map = query(data, getContext(), getDataset());        
+        Mappings map = query(data, getContext(), getDataset()); 
         Data res = new Data(this, map, getGraph(map, data));
         complete(res);
         return res;
@@ -72,16 +72,16 @@ public class SPARQLProcess extends  WorkflowProcess {
             // draft: additional graph considered as contextual dataset
             exec.add(getWorkflow().getGraph());
         }
-        if (path != null){
-            exec.setDefaultBase(path);
+        if (getPath() != null){
+            exec.setDefaultBase(getPath());
         }
-        if (ds != null){
-            if (c != null){
-                ds.setContext(c);
-            }
-            return exec.query(getQuery(), ds);   
+        return exec.query(getQuery(), ds, c);   
+    }
+    
+    void init(Data data){
+        if (data.getVisitor() != null){
+            
         }
-        return exec.query(getQuery(), getContext());   
     }
     
     void complete(Data data) {

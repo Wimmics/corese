@@ -354,7 +354,8 @@ public class Processor {
 	Object processor;
 	Method fun;
 	ExpPattern pattern;
-	boolean isCorrect = true;
+	boolean isCorrect = true,
+                isCompiled = false;
 	public static int count = 0;
 	private static final int IFLAG[] = {
 		Pattern.DOTALL, Pattern.MULTILINE, Pattern.CASE_INSENSITIVE,
@@ -1085,13 +1086,14 @@ public class Processor {
 	 * boolean res = match.matches();
 	 */
 	void compileRegex(Term term){
+            if (term.getArg(1).isConstant() && (term.getArity() == 2 || term.getArg(2).isConstant())){
+                isCompiled = true;           
 		String sflag = null;
                 if (term.getArity() == 3){
-			sflag = term.getArg(2).getName();
+                    sflag = term.getArg(2).getName();
 		}		
-                if (term.getArg(1).isConstant()){
-			compilePattern(term.getArg(1).getName(), sflag, true);
-		}
+                compilePattern(term.getArg(1).getName(), sflag, true);
+            }
 	}
 	
 	
@@ -1146,12 +1148,8 @@ public class Processor {
 		return res;
 	}	
 	
-	public boolean regex(String str, String exp){
-		if (term.getArg(1).isVariable()){
-                    String sflag = null;
-                    if (term.getArity() == 3){
-                            sflag = term.getArg(2).getName();
-                    }	
+	public boolean regex(String str, String exp, String sflag){
+		if (! isCompiled){                    
                     compilePattern(exp, sflag, true);
 		}
 		match.reset(str);

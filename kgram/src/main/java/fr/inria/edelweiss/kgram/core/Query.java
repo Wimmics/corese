@@ -174,6 +174,7 @@ public class Query extends Exp implements Graphable {
     private HashMap<Edge, Exp> edgeAndContext;
 
     private String service;
+    private Object templateVisitor;
 
     
     
@@ -2208,7 +2209,7 @@ public class Query extends Exp implements Graphable {
     public boolean isSynchronized() {
         return isSynchronized;
     }
-
+    
     public Object getTransformer(String p) {
         return getGlobalQuery().getPPrinter(p);
     }
@@ -2555,6 +2556,22 @@ public class Query extends Exp implements Graphable {
 
     public void setEdgeAndContext(HashMap<Edge, Exp> edgeAndContext) {
         this.edgeAndContext = edgeAndContext;
+    }
+    
+     public Object getTemplateVisitor() {
+        if (query == null){
+            return templateVisitor;
+        }
+        return query.getTemplateVisitor();
+    }
+     
+      public void setTemplateVisitor(Object tv) {
+        if (query == null){
+             templateVisitor = tv;
+        }
+        else {
+            query.setTemplateVisitor(tv);
+        }
     }
 
     /**

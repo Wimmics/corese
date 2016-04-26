@@ -500,6 +500,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return TRUE;
     }
 
+    @Override
     public Object function(Expr exp, Environment env, Producer p, Object o1, Object o2) {
         IDatatype dt1 = (IDatatype) o1;
         IDatatype dt2 = (IDatatype) o2;
@@ -579,7 +580,7 @@ public class ProxyImpl implements Proxy, ExprType {
                     return null;
                 }
                 Processor proc = getProcessor(exp);
-                b = proc.regex(dt1.getLabel(), dt2.getLabel());
+                b = proc.regex(dt1.getLabel(), dt2.getLabel(), null);
                 return (b) ? TRUE : FALSE;
             }
 
@@ -717,12 +718,11 @@ public class ProxyImpl implements Proxy, ExprType {
         switch (exp.oper()) {
 
             case REGEX:
-                // it may have a 3rd argument stored as getModality()
                 if (!isStringLiteral(dt)) {
                     return null;
                 }
                 Processor proc = getProcessor(exp);
-                b = proc.regex(dt.getLabel(), dt1.getLabel());
+                b = proc.regex(dt.getLabel(), dt1.getLabel(), param[2].getLabel());
                 return (b) ? TRUE : FALSE;
 
             case SUBSTR:

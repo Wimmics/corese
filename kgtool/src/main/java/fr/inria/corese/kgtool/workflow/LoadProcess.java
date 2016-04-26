@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 public class LoadProcess extends WorkflowProcess {
     public static final String FILE = "file://";
     
-    String path, name;
+    String name;
     boolean rec = false;
     
     public LoadProcess(String path){

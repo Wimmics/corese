@@ -1,10 +1,12 @@
 package fr.inria.corese.kgtool.workflow;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
@@ -21,7 +23,6 @@ import fr.inria.edelweiss.kgtool.util.MappingsGraph;
 public class SPARQLProcess extends  WorkflowProcess {
 
     private String query;
-    private String path;
     
     public SPARQLProcess(String q){
         this(q, null);
@@ -55,7 +56,7 @@ public class SPARQLProcess extends  WorkflowProcess {
     
     @Override
     public Data run(Data data) throws EngineException { 
-        Mappings map = query(data, getContext(), getDataset());        
+        Mappings map = query(data, getContext(), getDataset()); 
         Data res = new Data(this, map, getGraph(map, data));
         complete(res);
         return res;
@@ -71,22 +72,27 @@ public class SPARQLProcess extends  WorkflowProcess {
             // draft: additional graph considered as contextual dataset
             exec.add(getWorkflow().getGraph());
         }
-        if (path != null){
-            exec.setDefaultBase(path);
+        if (getPath() != null){
+            exec.setDefaultBase(getPath());
         }
-        if (ds != null){
-            if (c != null){
-                ds.setContext(c);
-            }
-            return exec.query(getQuery(), ds);   
+        return exec.query(getQuery(), ds, c);   
+    }
+    
+    void init(Data data){
+        if (data.getVisitor() != null){
+            
         }
-        return exec.query(getQuery(), getContext());   
     }
     
     void complete(Data data) {
         Transformer t = (Transformer) data.getMappings().getQuery().getTransformer();
         if (t != null && t.getVisitor() != null) {
             data.setVisitor(t.getVisitor());
+        }
+        Node temp = data.getMappings().getTemplateResult();
+        if (temp != null){
+            data.setDatatypeValue((IDatatype) temp.getValue());
+            data.setTemplateResult(data.getDatatypeValue().stringValue());
         }
     }
     

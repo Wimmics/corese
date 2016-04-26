@@ -71,7 +71,7 @@ public class Data {
     
     Data copy(boolean b) {
         Data input = copy();
-        if (getGraph() != null) {
+        if (b && getGraph() != null) {
             input.setGraph(getGraph().copy());
         }
         return input;
@@ -220,6 +220,29 @@ public class Data {
         return dataList;
     }
     
+    void initContext(Context c) {
+        set(c, Context.STL_GRAPH, getGraph());
+        set(c, Context.STL_SOLUTION, getMappings());
+        if (getDatatypeValue() != null) {
+            c.set(Context.STL_VALUE, getDatatypeValue());
+        }
+        
+        if (getDataList() != null) {
+            // use case: former Parallel process generated Data List
+            c.set(Context.STL_GRAPH_LIST, getGraphList());
+            IDatatype dt = getTransformationList();
+            if (dt.size() > 0) {
+                c.set(Context.STL_TRANSFORMATION_LIST, dt);
+            }
+        }
+    }
+
+    void set(Context c, String name, Object obj) {
+        if (obj != null) {
+            c.set(name, DatatypeMap.createObject(obj));
+        }
+    }
+
     IDatatype getGraphList() {
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
         for (Data d : getDataList()) {
@@ -230,6 +253,15 @@ public class Data {
         return DatatypeMap.createList(list);
     }
     
+    IDatatype getTransformationList() {
+        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        for (Data d : getDataList()) {
+            if (d.getTemplateResult()!= null){
+                list.add(d.getDatatypeValue());
+            }
+        }
+        return DatatypeMap.createList(list);
+    }            
     
     Data getResult() {
         for (Data d : getResultList()) {

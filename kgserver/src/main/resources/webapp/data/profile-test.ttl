@@ -2,15 +2,7 @@
 #  Additional profile for testing purpose
 #
 
-st:dbpediatest a st:Profile ;   
-  st:param [ 
-    st:lang "fr" ;
-    st:import st:dbpediaParam, st:mapParam  ; 
-    st:include (("mode" st:mode)) ;
-    st:mode st:test
-  ] ;
-  st:workflow st:dbpediawf
-  .
+
 
 
 st:cdncopy a st:Profile ;
@@ -129,7 +121,7 @@ st:test a st:Profile ;
     sw:body (
       [ a sw:Query ; sw:result sw:graph  ;
 	sw:body "select * where {?x ?p ?y} limit 100" ]
-      [ a sw:Template ; sw:uri st:sparql ]
+      [ a sw:Transformation ; sw:uri st:sparql ]
     )
   ]
 .
@@ -140,7 +132,7 @@ st:loop a st:Profile ;
     sw:loop 3 ;
     sw:body (
       [ a sw:Query ; sw:body "select * where {?x ?p ?y} limit 100" ]
-      [ a sw:Template ; sw:uri st:sparql ]
+      [ a sw:Transformation ; sw:uri st:sparql ]
     )
   ]
 
@@ -165,7 +157,7 @@ st:owl a st:Profile ;
     sw:body ( 
     [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
     [ a sw:Rule ; sw:uri sw:owlrl ] 
-    [ a sw:Template ; sw:uri st:turtle ]
+    [ a sw:Transformation ; sw:uri st:turtle ]
     )
 ] ;
 st:transform st:sparql .
@@ -175,13 +167,10 @@ st:owlsave a st:Profile ;
   st:workflow [ st:body ( 
   [ a sw:Query ; sw:uri <query/frdbpediaclean.rq> ] 
   [ a sw:Rule ; sw:uri sw:owlrl ] 
-  [ a sw:Template ; sw:uri st:turtle ]
+  [ a sw:Transformation ; sw:uri st:turtle ]
   )
 ] ;
 st:transform st:sparql .
-
-
-
 
 
  
@@ -192,8 +181,31 @@ st:owlrltest a st:Server ;
   st:transform st:hturtle
  .
 
+
+ 
 st:ldp a st:Server ;
-st:service "ldp" ;
+  st:service "ldp" ;
+  st:content st:humancontent ; 
+  st:workflow st:turtleWF
+.
+ 
+
+st:ldpdbpedia a st:Server ; 
+  st:service "dbpedia" ;
+  st:workflow st:ldpdbpediaWF
+  .
+  
+st:ldpdbpediaWF a sw:Workflow ;
+  sw:body ( 
+    <query/frdbpedia.rq> <query/frdbpediaclean.rq> 
+    [ a sw:Transformation ; sw:uri st:turtle ]
+  )
+.
+
+
+
+st:ldp1 a st:Server ;
+st:service "ldp1" ;
  st:data [ st:uri <tutorial/human1.rdf>  ; st:name st:data ] ;
  st:param [
     st:lodprofile (
@@ -203,12 +215,6 @@ st:service "ldp" ;
     );
  ] .
  
-
-
-
-
-
-
 
 
 

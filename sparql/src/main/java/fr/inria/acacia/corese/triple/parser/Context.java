@@ -52,6 +52,7 @@ public class Context extends ASTObject {
     public static final String STL_TEST     = STL + "test";
     public static final String STL_GRAPH    = STL + "graph";
     public static final String STL_GRAPH_LIST    = STL + "graphs";
+    public static final String STL_TRANSFORMATION_LIST    = STL + "transformations";
     public static final String STL_SOLUTION = STL + "solution";
     public static final String STL_VALUE    = STL + "value";
     

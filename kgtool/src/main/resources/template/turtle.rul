@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sun Feb 28 17:53:23 CET 2016
+Thu Apr 14 15:38:02 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -15,6 +15,25 @@ Sun Feb 28 17:53:23 CET 2016
 #
 template st:start {
   st:prolog("@prefix")
+  str(?main)
+}
+where {
+  bind (st:call-template(st:main) as ?main)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:main {
   group { 
     st:apply-templates(?x)
     ; separator = "\n\n"
@@ -22,6 +41,7 @@ template st:start {
 }
 where {
   select distinct ?x where { 
+    bind (st:get(st:uri) as ?x)
     ?x ?p ?y     
     filter ( 
       isURI(?x) 

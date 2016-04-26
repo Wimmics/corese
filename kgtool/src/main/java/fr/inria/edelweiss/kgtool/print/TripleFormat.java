@@ -120,7 +120,7 @@ public class TripleFormat extends RDFFormat {
 		}
 	}
 	
-	void header(StringBuilder bb){
+	void header2(StringBuilder bb){
 		boolean first = true;
 		for (String p : nsm.getPrefixSet()){
 			
@@ -132,10 +132,15 @@ public class TripleFormat extends RDFFormat {
 			}
 			
 			String ns = nsm.getNamespace(p);
-			bb.append(PREFIX + SPACE + p + ": <" + toXML(ns) + "> .");
+			//bb.append(PREFIX + SPACE + p + ": <" + toXML(ns) + "> .");
+                        bb.append(String.format("@prefix %s: <%s>", p, toXML(ns)));
 		}
 	}
-	
+        
+       @Override
+	void header(StringBuilder bb){
+            bb.append(nsm.toString(PREFIX, false, false));
+        }
 	
 	
 	void print(Node gNode, Node node){

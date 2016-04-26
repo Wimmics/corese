@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 21 09:25:09 CET 2016
+Thu Apr 14 15:38:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -47,6 +47,7 @@ where {
 #   bind (st:set(st:service, "template") as ?ss)
 
    bind (st:get(st:uri)  as ?uri)
+   # type of resoures to focus on
    bind (st:get(st:mode) as ?type)
    bind (strafter(?uri, us:root()) as ?str)
    bind (strdt(?str, xsd:gYearMonth) as ?date)
@@ -584,6 +585,11 @@ function us:cell(?l, ?c, ?x, ?i){
 <rule>
 <body>
 <![CDATA[
+#
+# profile.ttl may specify: st:include (("mode" st:mode))
+# st:mode parameter specify a rdf:type of resource to focus on
+# st:plink take st:include into account to generate hyperlink
+#
 template st:link(?date) {
 
   format {

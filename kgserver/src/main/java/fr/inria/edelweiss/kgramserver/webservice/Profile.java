@@ -197,15 +197,15 @@ public class Profile {
     }
 
     void define(String name) {
-        if (!services.containsKey(name) && !isProtected) {
-            //init(WEBAPP_DATA, name);
-            System.out.println("Profile: " + name);
-            init(name);
-        }
+//        if (!services.containsKey(name) && !isProtected) {
+//            //init(WEBAPP_DATA, name);
+//            System.out.println("Profile: " + name);
+//            init(name);
+//        }
     }
 
-    void initServer(String name) {
-        init(DATA + name);
+    void initServer(String name, String local) {
+        init(DATA + name, local);
     }
     
     void setProfile(Graph g){
@@ -227,9 +227,12 @@ public class Profile {
      *
      * path = DATA + profile.ttl
      */
-    void init(String path) {
+    void init(String path, String local) {
         try {
-            Graph g = load(path);
+            GraphStore g = load(path);
+            if (local != null){
+                load(g, local);
+            }
             setProfile(g);
             process(g);
             initFunction();
@@ -255,9 +258,13 @@ public class Profile {
 
     GraphStore load(String path) throws IOException, LoadException {
         GraphStore g = GraphStore.create();
-        Load load = Load.create(g);
-        load.parse(path, Load.TURTLE_FORMAT);
+        load(g, path);
         return g;
+    }
+    
+    void load(GraphStore g, String path) throws LoadException{
+        Load load = Load.create(g);
+        load.parse(path, Load.TURTLE_FORMAT);       
     }
 
     String read(String path) throws IOException {

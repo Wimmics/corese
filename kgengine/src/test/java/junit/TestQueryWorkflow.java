@@ -15,8 +15,9 @@ import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
-import static junit.TestQuery1.data;
+import static junit.TestUnit.data;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -32,6 +33,44 @@ import org.junit.Test;
  */
 public class TestQueryWorkflow {
     
+     @Test
+    public void testServer29() throws EngineException, LoadException {
+        String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        exec.query(q);
+        
+        WorkflowParser wp = new WorkflowParser();
+        SemanticWorkflow sw = wp.parse(data + "junit/workflow/w2/w29.ttl");        
+        Data res = sw.process();
+ 
+       assertEquals(8062, res.getTemplateResult().length());       
+    }
+    
+    
+    @Test
+    // test SPARQL Tutorial
+    public void testServer28() throws EngineException, LoadException {
+        String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        exec.query(q);
+        
+        WorkflowParser wp = new WorkflowParser();
+        SemanticWorkflow sw = wp.parse(data + "junit/workflow/w2/w28b.ttl");        
+        Data res = sw.process();
+ 
+       assertEquals(7660, res.getTemplateResult().length());
+    }
+ 
+    
+    
+      @Test
+   public void testWorkflow26() throws EngineException, LoadException {
+       WorkflowParser wp = new WorkflowParser();
+       SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w26.ttl");           
+       Data res = w.process(new Data(GraphStore.create()));
+       assertEquals(true, res.isSuccess());
+      
+   }  
     
      @Test
    public void testWorkflow22() throws EngineException, LoadException {
@@ -91,7 +130,7 @@ public class TestQueryWorkflow {
   @Test
    public void testWorkflow15() throws EngineException, LoadException {
        WorkflowParser wp = new WorkflowParser();
-       SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w15.ttl", NSManager.SWL+"test");           
+       SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w15.ttl");           
        Data res = w.process(new Data(GraphStore.create())); 
        WorkflowProcess wf = w.getProcessLast();
        int count = 0;
@@ -272,7 +311,7 @@ public class TestQueryWorkflow {
         Graph g = Graph.create();
         Data res = w.process(new Data(g));
         String str = res.stringValue();
-        assertEquals(303, str.length());
+        assertEquals(502, str.length());
     }
     
 }

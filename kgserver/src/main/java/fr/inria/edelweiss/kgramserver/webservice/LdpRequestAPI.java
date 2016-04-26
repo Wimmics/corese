@@ -40,7 +40,7 @@ public class LdpRequestAPI {
     private static final TripleStore store = new TripleStore();
     private static final QueryProcess exec = QueryProcess.create(store.graph);
     private final String headerAccept = "Access-Control-Allow-Origin";
-    private final static String SERVER = "http://localhost:8080/kgram/ldp/";
+    private final static String SERVER = "http://localhost:8080/ldp/";
 
     //^(?!upload|create)(.*)$
     @GET
@@ -48,7 +48,7 @@ public class LdpRequestAPI {
     @Produces("text/turtle")
     public Response getResourceGET(@PathParam("path") String res) {
         try {
-            return getResourceResonse(res, false);
+            return getResourceResponse(res, false);
         } catch (EngineException ex) {
             logger.error(ex);
             return Response.serverError().header(headerAccept, "*").entity(ex).build();
@@ -82,7 +82,7 @@ public class LdpRequestAPI {
     @Path("{path:.+}")
     public Response getResourceHEAD(@PathParam("path") String resource) {
         try {
-            return getResourceResonse(resource, false);
+            return getResourceResponse(resource, false);
         } catch (EngineException ex) {
             logger.error(ex);
             return Response.serverError().header(headerAccept, "*").entity(ex).build();
@@ -121,7 +121,7 @@ public class LdpRequestAPI {
         return Response.ok().header(headerAccept, "*").header("Allow", "POST, OPTIONS").build();
     }
 
-    private Response getResourceResonse(String res, boolean head) throws EngineException {
+    private Response getResourceResponse(String res, boolean head) throws EngineException {
         String content = "";
         if (!head) {
             //String tmp = "http://fr.dbpedia.org/resource/";

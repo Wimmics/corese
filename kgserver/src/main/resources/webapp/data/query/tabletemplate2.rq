@@ -1,0 +1,22 @@
+template {
+  format {
+    "<table>%s</table>"
+   
+    group {
+      format {
+	  "<tr><td>%s</td></tr>"
+	  st:apply-templates-with(?t)
+      }
+    }
+  }
+}
+where {
+  bind (st:export(st:uri,     st:get(st:uri)) as ?b)
+  bind (st:export(st:profile, st:get(st:profile)) as ?c)
+}
+values ?t {
+  <http://ns.inria.fr/sparql-template/sparql#result> 
+  st:hturtle 
+  <http://ns.inria.fr/sparql-template/rdfxml#result> 
+  <http://ns.inria.fr/sparql-template/json#result> 
+}

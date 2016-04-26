@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.api.IDatatype;
@@ -15,24 +10,22 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class TemplateProcess extends  WorkflowProcess {
+public class TransformationProcess extends  WorkflowProcess {
 
-    
-    private String path;
     private boolean isDefault = false;
     private Transformer transfomer;
     
-    public TemplateProcess(String p){
+    public TransformationProcess(String p){
         path = p;
     }
     
-     public TemplateProcess(String p, boolean b){
+     public TransformationProcess(String p, boolean b){
         path = p;
         isDefault = b;
     }
     
     @Override
-    public boolean isTemplate() {
+    public boolean isTransformation() {
         return true;
     }
       
@@ -87,20 +80,6 @@ public class TemplateProcess extends  WorkflowProcess {
         if (t.getVisitor() != null){
             data.setVisitor(t.getVisitor());
         }
-    }
-
-    /**
-     * @return the path
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * @param path the path to set
-     */
-    public void setPath(String path) {
-        this.path = path;
     }
 
     /**

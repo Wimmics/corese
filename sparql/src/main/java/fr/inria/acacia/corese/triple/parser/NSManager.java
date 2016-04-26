@@ -14,7 +14,6 @@ import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import java.util.ArrayList;
-import java.util.logging.Level;
 
 /**
  * <p>Title: Corese</p>
@@ -89,6 +88,7 @@ public class NSManager extends ASTObject {
     HashMap<String, Integer> index;  // namespace -> number
     HashMap<String, String> tns;     // namespace -> prefix
     HashMap<String, String> tprefix; // prefix -> namespace
+    HashMap<String, String> trecord; 
     String base;
     URI baseURI;
     private String uri, exp;
@@ -102,12 +102,14 @@ public class NSManager extends ASTObject {
      *
      */
     private String defaultNamespaces = null;
+    private boolean record = false;
 
     private NSManager() {
         def = new HashMap<String, String>();
         tprefix = new HashMap<String, String>();
         tns = new HashMap<String, String>();
         index = new HashMap<String, Integer>();
+        trecord = new HashMap<String, String>();
         define();
     }
 
@@ -399,8 +401,15 @@ public class NSManager extends ASTObject {
         if (!(xml && p.equals(""))) {
             str += pchar;
         }
+        record(ns);
         str += nsname.substring(ns.length());
         return str;
+    }
+    
+    void record(String ns){
+         if (isRecord() && ! trecord.containsKey(ns)){
+            trecord.put(ns, ns);
+        }
     }
 
     /**
@@ -486,24 +495,24 @@ public class NSManager extends ASTObject {
         }
         StringBuilder sb = new StringBuilder();
         if (bas && base != null) {
-            sb.append("base <");
-            sb.append(base);
-            sb.append(">");
-            sb.append(NL);
+            sb.append("base <").append(base).append(">").append(NL);
         }
         for (String p : getPrefixSet()) {
             String ns = getNamespace(p);
-            if (all || !isSystem(ns)) {
-                sb.append(title);
-                sb.append(" ");
-                sb.append(p);
-                sb.append(": <");
-                sb.append(getNamespace(p));
-                sb.append(">");
+            if (all || isDisplayable(ns)) {
+                sb.append(title).append(" ").append(p);
+                sb.append(": <").append(getNamespace(p)).append(">");
                 sb.append(NL);
             }
         }
         return sb.toString();
+    }
+        
+    boolean isDisplayable(String ns){
+        if (isRecord()){
+            return trecord.containsKey(ns);
+        }
+        return ! isSystem(ns);
     }
 
     public void setBase(String s) {
@@ -630,7 +639,7 @@ public class NSManager extends ASTObject {
     
 	
 	
-	public static String namespace(String type) {  //retourne le namespace d'un type
+    public static String namespace(String type) {  //retourne le namespace d'un type
         if (type.startsWith(HASH)) {
             return "";
         }
@@ -743,12 +752,26 @@ public class NSManager extends ASTObject {
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
         for (String p : tprefix.keySet()){
             String n = getNamespace(p);
-            if (! isSystem(n)){
-                IDatatype def = DatatypeMap.createList(DatatypeMap.newInstance(p), DatatypeMap.newResource(n));
-                list.add(def);
+            if (isDisplayable(n)){
+                IDatatype ldt = DatatypeMap.createList(DatatypeMap.newInstance(p), DatatypeMap.newResource(n));
+                list.add(ldt);
             }
         }
         return DatatypeMap.createList(list);
+    }
+
+    /**
+     * @return the record
+     */
+    public boolean isRecord() {
+        return record;
+    }
+
+    /**
+     * @param record the record to set
+     */
+    public void setRecord(boolean record) {
+        this.record = record;
     }
     
 }

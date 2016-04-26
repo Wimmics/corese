@@ -26,6 +26,33 @@ st:dbpediawf a sw:Workflow ;
   )
 .
   
+  
+  
+st:turtle a st:Profile ;
+st:workflow st:turtleWF .
+
+st:turtleWF a sw:Workflow ; 
+sw:body ( 
+  [ a sw:Transformation ; sw:uri st:turtle ] 
+)  . 
+
+st:rdfxml a st:Profile ;
+st:workflow st:rdfxmlWF .
+
+st:rdfxmlWF a sw:Workflow ; 
+sw:body ( 
+  [ a sw:Transformation ; sw:uri st:rdfxml ] 
+)  . 
+
+st:json a st:Profile ;
+st:workflow st:jsonWF .
+
+st:jsonWF a sw:Workflow ; 
+sw:body ( 
+  [ a sw:Transformation ; sw:uri st:json ] 
+)  . 
+ 
+ 
 
 st:dbedit a st:Profile ;
   st:param [
@@ -184,7 +211,7 @@ st:rdfs a st:Profile ;
 # ******************************************************
  
  
-st:default a st:Server ;
+st:default2 a st:Server ;
 st:content st:humancontent
 .
 
@@ -221,7 +248,7 @@ sw:body (
     [a sw:Transformation ; sw:uri <http://ns.inria.fr/sparql-template/hturtle#result>]
     [a sw:Transformation ; sw:uri <http://ns.inria.fr/sparql-template/rdfxml#result>]
     [a sw:Transformation ; sw:uri <http://ns.inria.fr/sparql-template/json#result>]
-    #[a sw:Template       ; sw:uri <query/tabletemplategraph.rq>]
+    [a sw:Template       ; sw:uri <query/tabletemplategraph.rq>]
     )
   ]
   

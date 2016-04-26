@@ -1164,7 +1164,6 @@ public class Transformer  {
        }
        load.profile(qe, qe);
        setHasDefault(qe.getTemplate(STL_DEFAULT) != null);
-       
        Query profile = qe.getTemplate(STL_PROFILE);
        if (profile != null && profile.getExtension() != null){
            Expr exp = profile.getExtension().get(STL_AGGREGATE);
@@ -1332,17 +1331,6 @@ public class Transformer  {
         return pp;
     }
 
-//    public IDatatype get(String name) {
-//        return getContext().get(name);
-//    }
-//    
-//    public void set(String name, IDatatype dt2){
-//        getContext().set(name, dt2);
-//    }
-//    
-//    public void export(String name, IDatatype dt2){
-//        getContext().export(name, dt2);
-//    }
     
     /**
      * @return the context
@@ -1373,10 +1361,14 @@ public class Transformer  {
        }
        if (ct != null)  {
             setNSM(ct.getNSM());   
-            if (ct.getVisitor() != null){
-                setVisitor(ct.getVisitor());
-            }
-        }              
+//            if (ct.getVisitor() != null){
+//                setVisitor(ct.getVisitor());
+//            }
+        }
+       TemplateVisitor vis = getVisitor(q, ct);
+       if (vis != null){
+           setVisitor(vis);
+       }
         // query prefix overload ct transformer prefix
         // because query call this new transformer
         complete(ast.getNSM());
@@ -1385,6 +1377,15 @@ public class Transformer  {
     void init(Context c) {
         if (c.get(Context.STL_DEBUG) != null && c.get(Context.STL_DEBUG).booleanValue()) {
             isDebug = true;
+        }
+    }
+    
+    TemplateVisitor getVisitor(Query q, Transformer ct){
+        if (ct == null){
+            return (TemplateVisitor) q.getTemplateVisitor();
+        }
+        else {
+            return ct.getVisitor();
         }
     }
     
@@ -1428,64 +1429,59 @@ public class Transformer  {
         }
     }
     
-    public void visit(IDatatype name, IDatatype obj, IDatatype arg){
-        if (visitor == null){
-            initVisit(name, obj, arg);
-        }
-        visitor.visit(name, obj, arg);        
-   }
+//    public void visit(IDatatype name, IDatatype obj, IDatatype arg){
+////        if (visitor == null){
+////            initVisit(name, obj, arg);
+////        }
+//        defVisitor().visit(name, obj, arg);        
+//   }
     
-    TemplateVisitor defVisitor(){
+    public TemplateVisitor defVisitor(){
         if (visitor == null){
             initVisit();
         }
         return visitor;
     }
     
-    public IDatatype vset(IDatatype obj, IDatatype prop, IDatatype arg){
-        return defVisitor().set(obj, prop, arg);
-    }
-    
-    public IDatatype vget(IDatatype obj, IDatatype prop){
-        return defVisitor().get(obj, prop);
-    }
-    
-    public Collection<IDatatype> visited(){
-        if (visitor != null){
-           return visitor.visited();
-        }
-        return new ArrayList<IDatatype>();
-    }
-    
-    public boolean visited(IDatatype dt){
-        if (visitor != null){
-            return visitor.isVisited(dt);
-        }
-        return false;
-    }
+//    public IDatatype vset(IDatatype obj, IDatatype prop, IDatatype arg){
+//        return defVisitor().set(obj, prop, arg);
+//    }
+//    
+//    public IDatatype vget(IDatatype obj, IDatatype prop){
+//        return defVisitor().get(obj, prop);
+//    }
+//    
+//    public Collection<IDatatype> visited(){
+//        return defVisitor().visited();
+////        if (visitor != null){
+////           return visitor.visited();
+////        }
+////        return new ArrayList<IDatatype>();
+//    }
+//    
+//    public boolean visited(IDatatype dt){
+//        return defVisitor().isVisited(dt);
+////        if (visitor != null){
+////            return visitor.isVisited(dt);
+////        }
+////        return false;
+//    }
+// 
     
     public IDatatype visitedGraph(){
+ //       return defVisitor().visitedGraph();
         if (visitor == null){
             return null;
         }
         return visitor.visitedGraph();
     } 
     
-    void initVisit(IDatatype name, IDatatype obj, IDatatype arg){
-        initVisit();
-    }
+//    void initVisit(IDatatype name, IDatatype obj, IDatatype arg){
+//        initVisit();
+//    }
     
     void initVisit(){
         setVisitor(new DefaultVisitor());
     }
-        
-    void initVisit2(IDatatype name, IDatatype obj, IDatatype arg){
-        if (name.getLabel().equals(STL_START)){
-            if (obj.getLabel().equals(STL_TRACE)){
-                setVisitor(new DefaultVisitor());
-                visitor.visit(name, obj, arg);
-            }
-        }
-    }
-       
+          
 }

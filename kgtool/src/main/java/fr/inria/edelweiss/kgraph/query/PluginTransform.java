@@ -6,10 +6,8 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Term;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -20,6 +18,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
 import java.util.Collection;
@@ -679,67 +678,72 @@ public class PluginTransform implements ExprType {
            c.export(dt1.getLabel(), dt2); 
         }
         return dt2;
-    }    
+    }  
+    
+     
+    TemplateVisitor getVisitor(Environment env, Producer p){
+        TemplateVisitor tv = (TemplateVisitor) env.getQuery().getTemplateVisitor();
+        if (tv == null){
+            tv = getTransformer(env, p).defVisitor();
+            env.getQuery().setTemplateVisitor(tv);
+        }
+        return tv;
+    }
 
     public IDatatype vset(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
-        Transformer t = getTransformer(env, p);
-        return t.vset(dt1, dt2, dt3);
+        return getVisitor(env, p).set(dt1, dt2, dt3);
+//        Transformer t = getTransformer(env, p);
+//        return t.vset(dt1, dt2, dt3);
     }
 
     public IDatatype vget(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
-        Transformer t = getTransformer(env, p);
-        return t.vget(dt1, dt2);
+        return getVisitor(env, p).get(dt1, dt2);
+//        Transformer t = getTransformer(env, p);
+//        return t.vget(dt1, dt2);
     }
 
-    public Object visited(Expr exp, Environment env, Producer p) {
-        Transformer t = getTransformer(env, p);
-        Collection<IDatatype> list = t.visited();
-        return DatatypeMap.createObject("list", list);
+    public IDatatype visited(Expr exp, Environment env, Producer p) {
+        Collection<IDatatype> list = getVisitor(env, p).visited();
+        return DatatypeMap.createList(list);
+//        Transformer t = getTransformer(env, p);
+//        Collection<IDatatype> list = t.visited();
     }
 
-    public Object visited(Expr exp, Environment env, Producer p, IDatatype dt) {
-        Transformer t = getTransformer(env, p);
-        boolean b = t.visited(dt);
+    public IDatatype visited(Expr exp, Environment env, Producer p, IDatatype dt) {
+        boolean b = getVisitor(env, p).isVisited(dt);
         return plugin.getValue(b);
+//        Transformer t = getTransformer(env, p);
+//        boolean b = t.visited(dt);
+//        return plugin.getValue(b);
     }
     
      public IDatatype errors(Expr exp, Environment env, Producer p, IDatatype dt) {
-        Transformer t = getTransformer(env, p);
-	return DatatypeMap.createList(t.getVisitor().getErrors(dt));
+        Collection<IDatatype> list = getVisitor(env, p).getErrors(dt);
+        return DatatypeMap.createList(list);
+//        Transformer t = getTransformer(env, p);
+//	return DatatypeMap.createList(t.getVisitor().getErrors(dt));
     }
 
     // Visitor design pattern
-    public Object visit(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
-        Transformer t = getTransformer(env, p);
+    public IDatatype visit(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
+       // Transformer t = getTransformer(env, p);
         if (dt1 == null) {
             dt1 = VISIT_DEFAULT;
         }
-        t.visit(dt1, dt2, dt3);
+        getVisitor(env, p).visit(dt1, dt2, dt3);
+        //t.visit(dt1, dt2, dt3);
         return TRUE;
     }
 
-    IDatatype visited(IDatatype dt, Environment env, Producer p) {
-        Transformer pp = getTransformer(env, p);
-        boolean b = pp.isVisited(dt);
+    
+    
+    
+    // stack visit
+    IDatatype visited(IDatatype dt, Environment env, Producer p) {      
+        Transformer t = getTransformer(env, p);
+        boolean b = t.isVisited(dt);
         return plugin.getValue(b);
     }
-
-    /**
-     * proc: st:process(?y) def: st:process(?x) = st:apply-templates(?x) copy
-     * def right exp and rename its variable (?x) as proc variable (?y) PRAGMA:
-     * do no process exists {} in def
-     */
-//    Expr rewrite(Expr proc, Expr def, ASTQuery ast) {
-//        Term tproc = (Term) proc;
-//        Term tdef = (Term) def;
-//        Variable v1 = tdef.getArg(0).getArg(0).getVariable(); // ?x
-//        Variable v2 = tproc.getArg(0).getVariable(); // ?y
-//        // replace ?x by ?y
-//        Expression tt = tdef.getArg(1).copy(v1, v2);
-//        tt.compile(ast);
-//        return tt;
-//    }
-    
     
      /**
      * create concat(str, st:number(), str)

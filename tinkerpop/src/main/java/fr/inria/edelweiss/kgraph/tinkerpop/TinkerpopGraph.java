@@ -6,6 +6,7 @@
 package fr.inria.edelweiss.kgraph.tinkerpop;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeQuad;
 import java.util.Iterator;
 import org.apache.commons.configuration.BaseConfiguration;
@@ -14,6 +15,7 @@ import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 /**
@@ -61,11 +63,31 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 				String context = gremlinCurrent.value(CONTEXT);
 				Entity result = EdgeQuad.create(
 					createNode(context),
-					createNode(gremlinCurrent.outVertex().value(VALUE).toString()),
+					unmapNode(gremlinCurrent.outVertex()),
 					createNode(gremlinCurrent.label()),
-					createNode(gremlinCurrent.inVertex().value(VALUE).toString())
+					unmapNode(gremlinCurrent.inVertex())
 				);
 				return result;
+			}
+
+			private Node unmapNode(Vertex node) {
+				switch ((String) node.value(KIND)) {
+					case IRI:
+						return createNode((String) node.value(VALUE));
+					case BNODE:
+						return createBlank((String) node.value(VALUE));
+					case LITERAL:
+						String label = (String) node.value(VALUE);
+						String type = (String) node.value(TYPE);
+						VertexProperty<String> lang = node.property(LANG);
+						if (lang.isPresent()) {
+							return addLiteral(label, type, lang.value());
+						} else {
+							return addLiteral(label, type);
+						}
+					default:
+						throw new IllegalArgumentException("node " + node.toString() + " type is unknown.");
+				}
 			}
 		}
 

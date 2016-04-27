@@ -18,6 +18,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 /**
  * Bridge to make a Neo4j database accessible from Corese.
+ *
  * @author edemairy
  */
 public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
@@ -26,10 +27,22 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	private class GremlinIterable<T extends Entity> implements Iterable<Entity> {
 
+		// @TODO à dédupliquer d'avec RdfToNeo4j
+		public static final String LITERAL = "literal";
+		public static final String IRI = "IRI";
+		public static final String BNODE = "bnode";
+		public static final String CONTEXT = "context";
+		public static final String KIND = "kind";
+		public static final String LANG = "lang";
+		public static final String TYPE = "type";
+		public static final String VALUE = "value";
+
 		private final Iterator<Edge> edges;
 
 		private class GremlinIterator<T> implements Iterator<Entity> {
+
 			private final Iterator<Edge> edges;
+
 			GremlinIterator(Iterator<Edge> edges) {
 				this.edges = edges;
 			}
@@ -45,12 +58,12 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 				// 1. context à aller chercher sur l'arc
 				// 2.création des Nodes à faire en fonction de "kind" 
 				Edge gremlinCurrent = edges.next();
-				VertexProperty<String> o = gremlinCurrent.inVertex().property("context"); 
-				Entity result = EdgeQuad.create( 
-					createNode(o.value()), 
-					createNode(gremlinCurrent.label()), 
-					createNode(gremlinCurrent.inVertex().label()),
-					createNode(gremlinCurrent.outVertex().label())
+				String context = gremlinCurrent.value(CONTEXT);
+				Entity result = EdgeQuad.create(
+					createNode(context),
+					createNode(gremlinCurrent.outVertex().value(VALUE).toString()),
+					createNode(gremlinCurrent.label()),
+					createNode(gremlinCurrent.inVertex().value(VALUE).toString())
 				);
 				return result;
 			}
@@ -70,8 +83,8 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	public TinkerpopGraph(Graph neo4jGraph) {
 		super();
 		this.neo4jGraph = neo4jGraph;
-		for (String key:neo4jGraph.variables().keys()) {
-			System.out.println("key = "+key);
+		for (String key : neo4jGraph.variables().keys()) {
+			System.out.println("key = " + key);
 		}
 	}
 
@@ -80,6 +93,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		neo4jGraph.close();
 		super.finalize();
 	}
+
 	/**
 	 *
 	 * @param dbPath

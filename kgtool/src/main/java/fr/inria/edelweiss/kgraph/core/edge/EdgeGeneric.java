@@ -38,7 +38,6 @@ public class EdgeGeneric extends EdgeTop
         this.object = object;
     }
     
-    
     EdgeGeneric(Node g, Node pred, Node subject, Node object, Node arg1) {
         this(g, pred, subject, object);
    }
@@ -82,7 +81,7 @@ public class EdgeGeneric extends EdgeTop
         return str;
     }
       
-    public String toParse(){
+	public String toParse() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("tuple");
 		sb.append("(");
@@ -94,7 +93,6 @@ public class EdgeGeneric extends EdgeTop
 		return sb.toString();
 	}
     
-
     @Override
     public boolean contains(Node node) {
         // TODO Auto-generated method stub
@@ -130,10 +128,14 @@ public class EdgeGeneric extends EdgeTop
        return null;
     }
     
-    public void setNode(int i, Node n){
-        switch (i){
-            case 0: subject = n; break;
-            case 1: object  = n; break;
+	public void setNode(int i, Node n) {
+		switch (i) {
+			case 0:
+				subject = n;
+				break;
+			case 1:
+				object = n;
+				break;
         }
     }
 
@@ -176,7 +178,7 @@ public class EdgeGeneric extends EdgeTop
 
     @Override
     public Object getProvenance() {
-        if (prov != null && ! (prov instanceof Node)) {
+		if (prov != null && !(prov instanceof Node)) {
             prov = DatatypeMap.createObject("p" + pcount++, prov);
         }
         return prov;
@@ -188,4 +190,3 @@ public class EdgeGeneric extends EdgeTop
     }
     
 }
-

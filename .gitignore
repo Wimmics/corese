@@ -5,3 +5,5 @@ log/
 .settings
 .idea
 *.iml
+/kgtool/nbproject/
+/kgenv/nbproject/

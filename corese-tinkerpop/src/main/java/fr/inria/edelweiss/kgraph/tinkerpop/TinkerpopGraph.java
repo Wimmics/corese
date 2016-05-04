@@ -8,10 +8,15 @@ package fr.inria.edelweiss.kgraph.tinkerpop;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeQuad;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
@@ -25,7 +30,8 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
  */
 public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
-	Graph neo4jGraph;
+	private Graph tGraph;
+	private final static Logger LOGGER = Logger.getLogger(TinkerpopGraph.class.getSimpleName());
 
 	private class GremlinIterable<T extends Entity> implements Iterable<Entity> {
 
@@ -102,17 +108,28 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	}
 
-	public TinkerpopGraph(Graph neo4jGraph) {
+	public TinkerpopGraph(Graph tGraph) {
 		super();
-		this.neo4jGraph = neo4jGraph;
-		for (String key : neo4jGraph.variables().keys()) {
-			System.out.println("key = " + key);
+		this.tGraph = tGraph;
+		LOGGER.log(Level.INFO,"#vertices = {0}", new Object[]{tGraph.traversal().V().count().next()} );
+		LOGGER.log(Level.INFO,"#edges = {0}", new Object[]{tGraph.traversal().E().count().next()} );
+		LOGGER.info("** Variables of the graph **");
+		for (String key : tGraph.variables().keys()) {
+			LOGGER.info("key = " + key);
 		}
+		LOGGER.info("****************************");
+		LOGGER.info("** configuration **");
+		Configuration config = tGraph.configuration();
+		for (Iterator<String> c= config.getKeys(); c.hasNext(); ) {
+			String key = c.next();
+			LOGGER.log(Level.INFO, "{0} {1}", new Object[]{key, config.getString(key)});
+		}
+		LOGGER.info("****************************");
 	}
 
 	@Override
 	public void finalize() throws Throwable {
-		neo4jGraph.close();
+		tGraph.close();
 		super.finalize();
 	}
 
@@ -121,18 +138,24 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	 * @param dbPath
 	 * @return
 	 */
-	public static TinkerpopGraph create(String dbPath) {
-		Configuration config = new BaseConfiguration();
-		config.setProperty(Neo4jGraph.CONFIG_DIRECTORY, dbPath);
-//		config.setProperty("gremlin.neo4j.conf.cache_type", "none");
-//		config.setProperty("gremlin.neo4j.conf.allow_store_upgrade", "true");
-		return new TinkerpopGraph(Neo4jGraph.open(config));
+	public static TinkerpopGraph create(String driverName, String dbPath) {
+		try {
+			Configuration config = new BaseConfiguration();
+			config.setProperty(Neo4jGraph.CONFIG_DIRECTORY, dbPath);
+			Class gclass = Class.forName(driverName);
+			Method factoryMethod = gclass.getMethod("open", Configuration.class);
+			Graph actualGraph = (Graph) factoryMethod.invoke(null, config);
+			return new TinkerpopGraph(actualGraph);
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			Logger.getLogger(TinkerpopGraph.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return null;
 	}
 
 	@Override
 	public Iterable<Entity> getEdges() {
-		Iterator<Edge> edges = neo4jGraph.edges();
-		GraphTraversalSource g = neo4jGraph.traversal();
+		Iterator<Edge> edges = tGraph.edges();
+		GraphTraversalSource g = tGraph.traversal();
 		System.out.println(g.V().count().value());
 		return new GremlinIterable<>(edges);
 	}
@@ -140,6 +163,6 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	@Override
 	public void clean() {
 		super.clean();
-		neo4jGraph.tx().commit();
+		tGraph.tx().commit();
 	}
 }

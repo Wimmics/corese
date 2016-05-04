@@ -17,12 +17,12 @@ public class SimpleQuery {
 	private static String[] queries = {"select * where {?x ?p ?y}"};
 
 	public static void main(String[] args) {
-//		Graph graph = Graph.create(false);
-//		QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
-//		execDQP.setGroupingEnabled(true); // @ToBeDocumented
-//		execDQP.addRemote(new URL(), WSImplem.REST);
-//for (String query : queries) {
-//			Mappings map = execDQP.query(query);
-//		}
+		Graph graph = Graph.create(false);
+		QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
+		execDQP.setGroupingEnabled(true); // @ToBeDocumented
+		execDQP.addRemote(new URL(), WSImplem.REST);
+for (String query : queries) {
+			Mappings map = execDQP.query(query);
+		}
 	}
 }

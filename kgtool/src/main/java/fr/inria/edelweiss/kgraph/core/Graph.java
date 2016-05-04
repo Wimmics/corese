@@ -502,7 +502,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         this(LENGTH);
     }
 
-    Graph(int length) {
+    public Graph(int length) {
         lock = new ReentrantReadWriteLock();
 
         tables = new ArrayList<Index>(length);

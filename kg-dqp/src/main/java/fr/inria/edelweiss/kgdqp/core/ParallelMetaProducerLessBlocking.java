@@ -304,9 +304,11 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
         Memory memory = (Memory) env;
         Node[] nodes = memory.getNodes();
         ArrayList<Producer> tmp = new ArrayList<Producer>();
-        for (int i = 0; result && nodes[i] != null && nodes[i + 1] != null; i++) {
+        int j = 0;
+        for (int i = 0; nodes[i] != null && nextBoundNode(i, nodes)  < nodes.length && result; i=j) {
+            j = nextBoundNode(i, nodes);
             ArrayList<Producer> p1 = bookKeeping.get(nodes[i].getValue().toString());
-            ArrayList<Producer> p2 = bookKeeping.get(nodes[i + 1].getValue().toString());
+            ArrayList<Producer> p2 = bookKeeping.get(nodes[j].getValue().toString());
 
             if (tmp.isEmpty()) {
                 tmp = (ArrayList<Producer>) p1.clone();
@@ -314,6 +316,7 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
             tmp = intersection(tmp, p2);
             result = !tmp.isEmpty();
         }
+        
         if (!tmp.isEmpty()) {
             sameProducers = tmp;
         }
@@ -334,5 +337,16 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
             }
         }
         return tmp;
+    }
+    /**
+     * 
+     * @param i
+     * @param nodes
+     * @return 
+     */
+    private int nextBoundNode(int i, Node[] nodes) {
+        while(i+1<nodes.length && nodes[i+1]==null)
+            i++;
+        return i+1;
     }
 }

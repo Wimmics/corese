@@ -129,7 +129,7 @@ public class MatcherImpl implements Matcher {
     }
 
     boolean matchType(Edge q, Edge r, Environment env) {
-
+        
         if (!match(q.getNode(0), r.getNode(0), env)) {
             return false;
         }
@@ -146,7 +146,7 @@ public class MatcherImpl implements Matcher {
         }
 
         Node qnode = q.getNode(1);
-
+        
         switch (localMode) {
             case STRICT:
                 return match(qnode, r.getNode(1), env);
@@ -260,10 +260,12 @@ public class MatcherImpl implements Matcher {
         this.mode = mode;
     }
 
+    @Override
     public int getMode() {
         return mode;
     }
 
+    @Override
     public boolean match(Node q, Node t, Environment env) {
         if (q.isVariable() || q.isBlank()) {
             return true;

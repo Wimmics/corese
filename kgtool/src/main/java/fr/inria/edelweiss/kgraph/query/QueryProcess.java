@@ -289,16 +289,6 @@ public class QueryProcess extends QuerySolver {
     public Mappings query(String squery, Context c) throws EngineException {
         return doQuery(squery, null, Dataset.create(c));
     }
-
-    public Mappings query(String squery, Dataset ds, Context c) throws EngineException {
-        if (ds == null && c != null){
-            ds = new Dataset();
-        }
-        if (c != null) {
-            ds.setContext(c);
-        }
-        return query(squery, ds);
-    }
     
     public Mappings query(String squery, Mapping map) throws EngineException {
         return query(squery, map, null);

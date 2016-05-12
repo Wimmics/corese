@@ -2,88 +2,23 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:02 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
 <rule>
 <body>
 <![CDATA[
-template  {
-
-  "{"
-    "\"@value\": \""       str(?in) "\", "
-    "\"@language\": \""    lang(?in) "\""
-  "}"
-  
-}
-where {
-  bind (st:getFocusNode() as ?in)
-  filter (datatype(?in) = rdf:langString)
-  
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template {
 
-  "{\"@id\": \""  str(?in)  "\"}"
-  
-}
-where {
-  ?x ?p ?in
-  filter isBlank(?in)
-  filter ( 
-    not exists { ?in rdf:rest ?r } ||
-	exists { ?y  rdf:first ?in }
-  )
-}
-limit 1
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template  {
-
-  "{"
-    "\"@value\": \""   str(?in) "\", "
-    "\"@type\": \""    datatype(?in) "\""
-  "}"
+  str(?in)
   
 }
 where {
   bind (st:getFocusNode() as ?in)
   filter (
-    ! strstarts(datatype(?in), xsd:) &&
-    ! strstarts(datatype(?in), rdf:) 
+    datatype(?in)  in (xsd:integer, xsd:double, xsd:boolean)
   )
-  
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-
-  ?in
-  
-}
-where {
-  bind (st:getFocusNode() as ?in)
-  filter (datatype(?in) = xsd:string)
 }
 
 ]]>
@@ -118,16 +53,69 @@ where {
 <rule>
 <body>
 <![CDATA[
-template {
+#
+# default literal template 
+#
+template  {
 
-  str(?in)
+  "{"
+    "\"@value\": \""   str(?in) "\", "
+    "\"@type\": \""    st:turtle(datatype(?in)) "\""
+  "}"
   
 }
 where {
   bind (st:getFocusNode() as ?in)
   filter (
-    datatype(?in)  in (xsd:integer, xsd:double, xsd:boolean)
+    strstarts(datatype(?in), xsd:)
   )
+  
+}
+pragma { kg:template kg:priority 100 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template  {
+
+  "{"
+    "\"@value\": \""       str(?in) "\", "
+    "\"@language\": \""    lang(?in) "\""
+  "}"
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (datatype(?in) = rdf:langString)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template  {
+
+  "{"
+    "\"@value\": \""   str(?in) "\", "
+    "\"@type\": \""    datatype(?in) "\""
+  "}"
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (
+    ! strstarts(datatype(?in), xsd:) &&
+    ! strstarts(datatype(?in), rdf:) 
+  )
+  
 }
 
 ]]>
@@ -153,25 +141,37 @@ limit 1
 <rule>
 <body>
 <![CDATA[
-#
-# default literal template 
-#
-template  {
+template {
 
-  "{"
-    "\"@value\": \""   str(?in) "\", "
-    "\"@type\": \""    st:turtle(datatype(?in)) "\""
-  "}"
+  "{\"@id\": \""  str(?in)  "\"}"
+  
+}
+where {
+  ?x ?p ?in
+  filter isBlank(?in)
+  filter ( 
+    not exists { ?in rdf:rest ?r } ||
+	exists { ?y  rdf:first ?in }
+  )
+}
+limit 1
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+  ?in
   
 }
 where {
   bind (st:getFocusNode() as ?in)
-  filter (
-    strstarts(datatype(?in), xsd:)
-  )
-  
+  filter (datatype(?in) = xsd:string)
 }
-pragma { kg:template kg:priority 100 }
 
 ]]>
 </body>

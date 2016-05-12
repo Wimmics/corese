@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -38,24 +38,6 @@ function st:process(?in) {
 <rule>
 <body>
 <![CDATA[
-template {
-  xsd:string(?l) "(" ?y ")"  
-}
-where {
-  ?in ?p ?y
-}
-values (?p ?l){
-(owl:complementOf 	  "ObjectComplementOf")
-(owl:datatypeComplementOf "DataComplementOf")
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 #
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
@@ -79,21 +61,47 @@ where {
 <body>
 <![CDATA[
 template {
-  xsd:string(?l)
-  "(" 
-    st:turtle(?n) " " ?p " "  ?c 
-  ")"  
+  "ObjectHasSelf(" ?y ")"  
 }
 where {
-  ?in owl:onDataRange ?c ;
-    owl:onProperty ?p ;
-    ?q  ?n 
+  ?in owl:hasSelf true ;
+    owl:onProperty ?y 
 }
-values (?q ?l) {
-  (owl:maxQualifiedCardinality  "DataMaxCardinality")
-  (owl:minQualifiedCardinality  "DataMinCardinality")
-  (owl:qualifiedCardinality     "DataExactCardinality")
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  if (isBlank(?e), st:nl(), "")
+  ?e 
+  ; separator = " "
 }
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+  st:xsdLiteral(?in)
+}
+where {
+  bind(st:getFocusNode() as ?in)
+  filter(isLiteral(?in))
+}
+pragma { st:template st:priority 1000 }
 
 ]]>
 </body>
@@ -134,149 +142,21 @@ where {
 <body>
 <![CDATA[
 template {
-  "DatatypeRestriction(" ?dt " " 
-      group  { 
-	?p " " 
-	if (isURI(?v), st:turtle(?v), st:apply-templates(?v))
-      }
+  xsd:string(?l)
+  "(" 
+    st:turtle(?n) " " ?p " "  ?c 
   ")"  
 }
 where {
-  ?in a rdfs:Datatype ;
-    owl:onDatatype ?dt ;
-    owl:withRestrictions [
-      rdf:rest*/rdf:first [ ?p ?v ]
-    ]
+  ?in owl:onDataRange ?c ;
+    owl:onProperty ?p ;
+    ?q  ?n 
 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  "ObjectHasSelf(" ?y ")"  
+values (?q ?l) {
+  (owl:maxQualifiedCardinality  "DataMaxCardinality")
+  (owl:minQualifiedCardinality  "DataMinCardinality")
+  (owl:qualifiedCardinality     "DataExactCardinality")
 }
-where {
-  ?in owl:hasSelf true ;
-    owl:onProperty ?y 
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-  st:xsdLiteral(?in)
-}
-where {
-  bind(st:getFocusNode() as ?in)
-  filter(isLiteral(?in))
-}
-pragma { st:template st:priority 1000 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (isBlank(?e), st:nl(), "")
-  ?e 
-  ; separator = " "
-}
-where {
-  ?in rdf:rest*/rdf:first ?e
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    if (bound(?t), "DataUnionOf", "ObjectUnionOf") 
-    "(" 
-	ibox {
-	  ?y  
-	}
-    ")" 
-}
-where {
-  ?in owl:unionOf ?y 
-  filter (?y != rdf:nil)
-  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-  if (bound(?t1) || bound(?t2), "DataSomeValuesFrom", "ObjectSomeValuesFrom")  
-  "(" ?p " " ?z ")"  
-}
-where {
-  ?in owl:someValuesFrom ?z ;
-  owl:onProperty ?p .
-    optional { ?z a ?t1 filter(?t1 = rdfs:Datatype) }
-    optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (bound(?t), "DataOneOf", "ObjectOneOf")
-  "("  ?y ")"  
-}
-where {
-  ?in owl:oneOf ?y 
-  optional { ?in a ?t . filter(?t = rdfs:Datatype) }
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {}
-where {
-  ?in a ?t
-  filter (strstarts(?t, owl:) 
-     || strstarts(?t, rdf:) 
-     || strstarts(?t, rdfs:))
-}
-limit 1
-pragma { st:template st:priority 1000 }
 
 ]]>
 </body>
@@ -307,10 +187,80 @@ where {
 <body>
 <![CDATA[
 template {
-    owl:Nothing
+  "DatatypeRestriction(" ?dt " " 
+      group  { 
+	?p " " 
+	if (isURI(?v), st:turtle(?v), st:apply-templates(?v))
+      }
+  ")"  
 }
 where {
-  ?in owl:unionOf ()
+  ?in a rdfs:Datatype ;
+    owl:onDatatype ?dt ;
+    owl:withRestrictions [
+      rdf:rest*/rdf:first [ ?p ?v ]
+    ]
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?t), "DataUnionOf", "ObjectUnionOf") 
+    "(" 
+	ibox {
+	  ?y  
+	}
+    ")" 
+}
+where {
+  ?in owl:unionOf ?y 
+  filter (?y != rdf:nil)
+  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  if (bound(?t), "DataOneOf", "ObjectOneOf")
+  "("  ?y ")"  
+}
+where {
+  ?in owl:oneOf ?y 
+  optional { ?in a ?t . filter(?t = rdfs:Datatype) }
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  xsd:string(?l)
+  "(" 
+    st:turtle(?n) " " ?p " "  ?c 
+  ")"  
+}
+where {
+  ?in owl:onClass ?c ;
+    owl:onProperty ?p ;
+    ?q  ?n 
+}
+values (?q ?l) {
+  (owl:maxQualifiedCardinality "ObjectMaxCardinality")
+  (owl:minQualifiedCardinality "ObjectMinCardinality")
+  (owl:qualifiedCardinality    "ObjectExactCardinality")
 }
 
 ]]>
@@ -343,6 +293,20 @@ values (?q ?lo ?ld) {
 <body>
 <![CDATA[
 template {
+    owl:Nothing
+}
+where {
+  ?in owl:unionOf ()
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
     owl:Thing
 }
 where {
@@ -356,21 +320,57 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
 template {
-  xsd:string(?l)
-  "(" 
-    st:turtle(?n) " " ?p " "  ?c 
-  ")"  
+  if (bound(?t1) || bound(?t2), "DataSomeValuesFrom", "ObjectSomeValuesFrom")  
+  "(" ?p " " ?z ")"  
 }
 where {
-  ?in owl:onClass ?c ;
-    owl:onProperty ?p ;
-    ?q  ?n 
+  ?in owl:someValuesFrom ?z ;
+  owl:onProperty ?p .
+    optional { ?z a ?t1 filter(?t1 = rdfs:Datatype) }
+    optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
 }
-values (?q ?l) {
-  (owl:maxQualifiedCardinality "ObjectMaxCardinality")
-  (owl:minQualifiedCardinality "ObjectMinCardinality")
-  (owl:qualifiedCardinality    "ObjectExactCardinality")
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {}
+where {
+  ?in a ?t
+  filter (strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:))
+}
+limit 1
+pragma { st:template st:priority 1000 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  xsd:string(?l) "(" ?y ")"  
+}
+where {
+  ?in ?p ?y
+}
+values (?p ?l){
+(owl:complementOf 	  "ObjectComplementOf")
+(owl:datatypeComplementOf "DataComplementOf")
 }
 
 ]]>

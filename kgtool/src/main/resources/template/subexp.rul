@@ -2,32 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-template st:profile {
- 
-}
-where {}
-
-  function st:aggregate(?x) { st:agg_and(?x) }
-  
-  function st:err(?x) { URI(concat(st:, "owlrl/", str(?x))) }
-
-  function st:alreadyVisited(?x, ?tag, ?suc) {
-    if (st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
-  }
-
-
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -51,45 +29,20 @@ where {
 <rule>
 <body>
 <![CDATA[
-template {
-  ?suc
+template st:profile {
+ 
 }
-where {
-  ?in owl:intersectionOf|owl:unionOf ?z 
-  ?z rdf:rest*/rdf:first ?e 
-  
-  bind (
-    st:call-template(st:subClassExpression, ?e)
-    as ?suc
-  )
-  
-}
+where {}
 
-]]>
-</body>
-</rule>
+  function st:aggregate(?x) { st:agg_and(?x) }
+  
+  function st:err(?x) { URI(concat(st:, "owlrl/", str(?x))) }
 
-<rule>
-<body>
-<![CDATA[
-template {
-  ?suc
-}
-where {
-   ?in a owl:Restriction ;
-	owl:onProperty ?p 
-	
-   bind (
-     exists {
-	{ ?in owl:hasValue ?v }
-	union
-	{ ?in owl:someValuesFrom ?e
-	  filter (?e = owl:Thing ||
-	    st:call-template(st:subClassExpression, ?e)) }
-      }
-      as ?suc)     
-}
-	    
+  function st:alreadyVisited(?x, ?tag, ?suc) {
+    if (st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
+  }
+
+
 
 ]]>
 </body>
@@ -142,6 +95,53 @@ where {
     }
     as ?suc)
     
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+   ?in a owl:Restriction ;
+	owl:onProperty ?p 
+	
+   bind (
+     exists {
+	{ ?in owl:hasValue ?v }
+	union
+	{ ?in owl:someValuesFrom ?e
+	  filter (?e = owl:Thing ||
+	    st:call-template(st:subClassExpression, ?e)) }
+      }
+      as ?suc)     
+}
+	    
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+  ?in owl:intersectionOf|owl:unionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
+  
+  bind (
+    st:call-template(st:subClassExpression, ?e)
+    as ?suc
+  )
+  
 }
 
 ]]>

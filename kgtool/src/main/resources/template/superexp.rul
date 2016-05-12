@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -55,13 +55,46 @@ template {
   ?suc
 }
 where {
-  ?in owl:complementOf ?z 
+  ?in owl:intersectionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
   
   bind (
-    st:call-template-with(st:subexp, st:subClassExpression, ?z)
-  as ?suc)
+    st:call-template(st:superClassExpression, ?e)
+    as ?suc
+  )
   
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if there is an unauthorized OWL property for superClassExpression ?in
+# return false in this case, otherwise template fails (return nothing)
+#
+template {
+  false
+}
+where {
+    ?in ?p ?y
+    
+    bind (
+      ?p in (
+        owl:intersectionOf, owl:complementOf, 
+	owl:onProperty, owl:hasValue, owl:allValuesFrom, 
+	owl:maxCardinality, owl:maxQualifiedCardinality, owl:onClass,
+	rdf:type
+	)
+      as ?suc)
+      	
+      filter (st:visit(st:err("failSuper"), ?in, ?suc))
+      filter (! ?suc)
+}
+limit 1
 
 ]]>
 </body>
@@ -108,48 +141,15 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Check if there is an unauthorized OWL property for superClassExpression ?in
-# return false in this case, otherwise template fails (return nothing)
-#
-template {
-  false
-}
-where {
-    ?in ?p ?y
-    
-    bind (
-      ?p in (
-        owl:intersectionOf, owl:complementOf, 
-	owl:onProperty, owl:hasValue, owl:allValuesFrom, 
-	owl:maxCardinality, owl:maxQualifiedCardinality, owl:onClass,
-	rdf:type
-	)
-      as ?suc)
-      	
-      filter (st:visit(st:err("failSuper"), ?in, ?suc))
-      filter (! ?suc)
-}
-limit 1
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template {
   ?suc
 }
 where {
-  ?in owl:intersectionOf ?z 
-  ?z rdf:rest*/rdf:first ?e 
+  ?in owl:complementOf ?z 
   
   bind (
-    st:call-template(st:superClassExpression, ?e)
-    as ?suc
-  )
+    st:call-template-with(st:subexp, st:subClassExpression, ?z)
+  as ?suc)
   
 }
 

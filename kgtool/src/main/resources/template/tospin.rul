@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -25,25 +25,15 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:query(?q) {
-
-format {
-  """
-  <h3>SPARQL Query</h3>
-  <form method='post' id='spin' action='/spin/tospin'>  
-    <input type='hidden' name='transform' value='%s' />    
-    <textarea cols='60' rows='15' id='query' name='query'>%s</textarea>
-    <br/>       
-    <input type='submit' value='submit' %s />      
-  </form>
-  """
+template st:tosparql {
   
-  st:get(st:transform)
-  str(?q)
-  st:submit()
-  }
+  st:call-template(st:query, st:call-template(st:sparql))
+  
+  st:call-template(st:queryspin, coalesce(st:get(st:query), ""))
+  
 }
 where {
+
 }
 
 ]]>
@@ -69,22 +59,8 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:queryspin(?q) {
-format {
-  """
-  <h3>SPIN Query</h3>
-  <form method='post' id='sparql' action='/spin/tosparql'> 
-    <input type='hidden' name='transform' value='%s' />    
-    <textarea cols='60' rows='15' id='query2' name='query'>%s</textarea>
-    <br/>           
-    <input type='submit' value='submit'"  %s  />      
-  </form>
-  """
-  
-  st:get(st:transform)
-  str(?q)
-  st:submit()
-  }
+template st:link(?uri, ?title) {
+   "<a href=\""  str(?uri) "\">" str(?title) "</a>"
 }
 where {
 }
@@ -156,24 +132,15 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:link(?uri, ?title) {
-   "<a href=\""  str(?uri) "\">" str(?title) "</a>"
-}
-where {
-}
+template st:open {
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-
-template st:spin {
-  
-  "@prefix sp: <http://spinrdf.org/sp#> .\n\n"
-  st:apply-templates-with(st:turtle)
+  """
+  <h3>Result</h3>
+  <table>
+  <tr>
+  <th></th><th>subject</th><th>property</th><th>object</th>
+  </tr>
+  """
   
 }
 where {
@@ -210,6 +177,78 @@ order by ?x ?p ?y
 <rule>
 <body>
 <![CDATA[
+
+template st:spin {
+  
+  "@prefix sp: <http://spinrdf.org/sp#> .\n\n"
+  st:apply-templates-with(st:turtle)
+  
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:queryspin(?q) {
+format {
+  """
+  <h3>SPIN Query</h3>
+  <form method='post' id='sparql' action='/spin/tosparql'> 
+    <input type='hidden' name='transform' value='%s' />    
+    <textarea cols='60' rows='15' id='query2' name='query'>%s</textarea>
+    <br/>           
+    <input type='submit' value='submit'"  %s  />      
+  </form>
+  """
+  
+  st:get(st:transform)
+  str(?q)
+  st:submit()
+  }
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:query(?q) {
+
+format {
+  """
+  <h3>SPARQL Query</h3>
+  <form method='post' id='spin' action='/spin/tospin'>  
+    <input type='hidden' name='transform' value='%s' />    
+    <textarea cols='60' rows='15' id='query' name='query'>%s</textarea>
+    <br/>       
+    <input type='submit' value='submit' %s />      
+  </form>
+  """
+  
+  st:get(st:transform)
+  str(?q)
+  st:submit()
+  }
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:esc(?x) {
 
   str(?d)
@@ -232,63 +271,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:tospin {
-  
-  st:call-template(st:query, coalesce(st:get(st:query), ""))
-  
-  st:call-template(st:queryspin, st:call-template(st:spin))
-  
-}
-where {
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:tosparql {
-  
-  st:call-template(st:query, st:call-template(st:sparql))
-  
-  st:call-template(st:queryspin, coalesce(st:get(st:query), ""))
-  
-}
-where {
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:open {
-
-  """
-  <h3>Result</h3>
-  <table>
-  <tr>
-  <th></th><th>subject</th><th>property</th><th>object</th>
-  </tr>
-  """
-  
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:linkesc(?x) {
 
   if (isURI(?x), 
@@ -300,6 +282,24 @@ where {
 
   bind (st:call-template(st:esc, ?x) as ?e)
     
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:tospin {
+  
+  st:call-template(st:query, coalesce(st:get(st:query), ""))
+  
+  st:call-template(st:queryspin, st:call-template(st:spin))
+  
+}
+where {
+
 }
 
 ]]>

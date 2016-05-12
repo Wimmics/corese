@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -17,22 +17,17 @@ Thu Apr 14 15:38:02 CEST 2016
 # Olivier Corby - Wimmics Inria I3S - 2015
 #
 
-template st:start {
-
-  st:call-template-with(st:server, st:head)
-  
-  st:call-template(st:body)
-     
-  st:call-template(st:class)
-    
-  st:call-template(st:property)
-
-  st:call-template-with(st:server, st:tail)
+template st:body {
+  "<p>"
+  "<span class='color'>Namespace: </span>" 
+  "<span class='bold'>" str(?uri) "</span>"  
+  "</p>"
 
 }
 where {
 
-
+  bind(st:get(st:uri) as ?uri)
+  
 }
 
 ]]>
@@ -80,6 +75,39 @@ where {
 # Olivier Corby - Wimmics Inria I3S - 2015
 #
 
+template st:start {
+
+  st:call-template-with(st:server, st:head)
+  
+  st:call-template(st:body)
+     
+  st:call-template(st:class)
+    
+  st:call-template(st:property)
+
+  st:call-template-with(st:server, st:tail)
+
+}
+where {
+
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
+#
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+
 template st:class {
 
  st:call-template(st:classdesc, ?x) 
@@ -89,59 +117,6 @@ where {
  ?x a rdfs:Class
 }
 order by ?x
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate HTML from SPARQL Query Results
-# RDF is either construct where graph or 
-# select where in W3C DAWG result-set RDF vocabulary
-#
-# Olivier Corby - Wimmics Inria I3S - 2015
-#
-
-template st:property {
-
- st:call-template(st:propertydesc, ?x) 
-
-}
-where {
- ?x a rdf:Property
-}
-order by ?x
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate HTML from SPARQL Query Results
-# RDF is either construct where graph or 
-# select where in W3C DAWG result-set RDF vocabulary
-#
-# Olivier Corby - Wimmics Inria I3S - 2015
-#
-
-template st:body {
-  "<p>"
-  "<span class='color'>Namespace: </span>" 
-  "<span class='bold'>" str(?uri) "</span>"  
-  "</p>"
-
-}
-where {
-
-  bind(st:get(st:uri) as ?uri)
-  
-}
 
 ]]>
 </body>
@@ -178,6 +153,31 @@ where {
   optional { ?in rdfs:label       ?l }
   optional { ?in rdfs:comment     ?c }  
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
+#
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+
+template st:property {
+
+ st:call-template(st:propertydesc, ?x) 
+
+}
+where {
+ ?x a rdf:Property
+}
+order by ?x
 
 ]]>
 </body>

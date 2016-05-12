@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -41,6 +41,75 @@ where {
 	### super Class Expression ###
 	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_3")
 	("super" "Not a valid Super Class Expression" "Class_Expressions_3")
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:mainOWL(?tag) {
+	st:call-template(st:axiomClassExp, ?tag)
+}
+where {
+	
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:allEL(?tag) {
+
+	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+
+}
+where {
+
+	bind(st:linkPro(?id) as ?href)
+	
+} values (?tag ?mess ?id) {
+	### axiom ###
+	("datatypeLit" "Restriction on datatypes" "Entities")
+	("datatypeRes" "Restriction on datatypes" "Entities")
+	("fail" "Statement not supported" "Feature_Overview")
+	("disjointClass" "Class Expression not supported with a Disjoint Class" "Class_Expressions")
+	("domain" "Class Expression not supported as object of rdfs:domain or rdfs:range" "OWL_2_EL_2")
+	("equivClass" "Class Expression not supported with owl:equivalentClass" "Class_Expressions")
+	("anonymous" "Anonymous individuals are not supported" "Entities")
+	("key" "Class Expression not supported as subject of owl:hasKey" "OWL_2_EL_2")
+	("subClass" "Class Expression not supported with rdfs:subClassOf" "Class_Expressions")
+
+	### classExp ###
+	("failClassExp" "Statement not supported in a Class Expression" "Class_Expressions")
+	("classExp" "Not a valid Class Expression" "Class_Expressions")
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:oneEL(?tag) {
+
+	"<span class=owlel>OWL EL: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+
+}
+where {
+
+	bind(st:linkPro(?ida) as ?hrefa)
+	bind(st:linkPro(?idb) as ?hrefb)
+	
+} values (?tag ?messa ?ida ?messb ?idb) {
+	### classExp ###
+	("one" "individual" "Class_Expressions" "literal" "Data_Ranges")
 }
 
 ]]>
@@ -104,47 +173,11 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:axiomClassExp(?tag) {
-
-	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
-
-}
-where {
-
-	bind(st:linkOWL(?id) as ?href)
-	bind(st:linkOWL(?idb) as ?hrefb)
-	
-} values (?tag ?mess ?id ?messb ?idb) {
-	### axiom ###
-	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:mainQL(?tag) {
 	st:call-template(st:allQL, ?tag)
 }
 where {
 
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:mainOWL(?tag) {
-	st:call-template(st:axiomClassExp, ?tag)
-}
-where {
-	
 }
 
 ]]>
@@ -175,19 +208,19 @@ function st:linkOWL(?x) {
 <rule>
 <body>
 <![CDATA[
-template st:oneEL(?tag) {
+template st:axiomClassExp(?tag) {
 
-	"<span class=owlel>OWL EL: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
 
 }
 where {
 
-	bind(st:linkPro(?ida) as ?hrefa)
-	bind(st:linkPro(?idb) as ?hrefb)
+	bind(st:linkOWL(?id) as ?href)
+	bind(st:linkOWL(?idb) as ?hrefb)
 	
-} values (?tag ?messa ?ida ?messb ?idb) {
-	### classExp ###
-	("one" "individual" "Class_Expressions" "literal" "Data_Ranges")
+} values (?tag ?mess ?id ?messb ?idb) {
+	### axiom ###
+	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
 }
 
 ]]>
@@ -225,39 +258,6 @@ where {
 	### super Class Expression ###
 	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_2")
 	("super" "Not a valid Sub Class Expression" "Class_Expressions_2")
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:allEL(?tag) {
-
-	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
-
-}
-where {
-
-	bind(st:linkPro(?id) as ?href)
-	
-} values (?tag ?mess ?id) {
-	### axiom ###
-	("datatypeLit" "Restriction on datatypes" "Entities")
-	("datatypeRes" "Restriction on datatypes" "Entities")
-	("fail" "Statement not supported" "Feature_Overview")
-	("disjointClass" "Class Expression not supported with a Disjoint Class" "Class_Expressions")
-	("domain" "Class Expression not supported as object of rdfs:domain or rdfs:range" "OWL_2_EL_2")
-	("equivClass" "Class Expression not supported with owl:equivalentClass" "Class_Expressions")
-	("anonymous" "Anonymous individuals are not supported" "Entities")
-	("key" "Class Expression not supported as subject of owl:hasKey" "OWL_2_EL_2")
-	("subClass" "Class Expression not supported with rdfs:subClassOf" "Class_Expressions")
-
-	### classExp ###
-	("failClassExp" "Statement not supported in a Class Expression" "Class_Expressions")
-	("classExp" "Not a valid Class Expression" "Class_Expressions")
 }
 
 ]]>

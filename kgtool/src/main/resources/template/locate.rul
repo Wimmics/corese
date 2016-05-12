@@ -2,29 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-template st:start {
-  
-  st:head()
-  
-  st:call-template(st:locate)
-  
-  st:tail()
-}
-where {
-
-}
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -52,59 +33,17 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Geolocate resource on a map given lat et long
-#
-
-template st:closelocate {
-  """}
-
-  google.maps.event.addDomListener(window, 'load', initialize);
-
-  </script>
-      
-  <p id="map-canvas"></p>
-  """
+template st:start {
+  
+  st:head()
+  
+  st:call-template(st:locate)
+  
+  st:tail()
 }
 where {
-  
+
 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate  resources on a map (except resource given lat et long)
-#
-prefix p:    <http://fr.dbpedia.org/property/>
-prefix o:    <http://dbpedia.org/ontology/>
-prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
-
-template st:locateall {
-
-  "var pos" st:number()  " = new google.maps.LatLng("      
-      str(?lat) "," str(?lon) ");"
-                  
-  "var marker" st:number() "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
-  
-  "google.maps.event.addListener(marker" st:number() 
-  ", 'click', function () {window.location.href = \"" 
-  st:call-template(st:link, ?in) 
-  "\";});"
-  
-}
-where {
-  ?in a o:Place .
-  service <http://fr.dbpedia.org/sparql> {
-    ?in  p:longitude  ?lon ; 
-      p:latitude  ?lat
-  }
-}
-pragma { kg:service kg:slice 50 }
 
 ]]>
 </body>
@@ -157,6 +96,31 @@ pragma { kg:service kg:slice 10 }
 <rule>
 <body>
 <![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+
+template st:closelocate {
+  """}
+
+  google.maps.event.addDomListener(window, 'load', initialize);
+
+  </script>
+      
+  <p id="map-canvas"></p>
+  """
+}
+where {
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 
 template st:transform {
      
@@ -169,6 +133,42 @@ template st:transform {
 where {
  
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate  resources on a map (except resource given lat et long)
+#
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+template st:locateall {
+
+  "var pos" st:number()  " = new google.maps.LatLng("      
+      str(?lat) "," str(?lon) ");"
+                  
+  "var marker" st:number() "= new google.maps.Marker({ position: pos" st:number() ", map: map, icon: '/img/smarker.png' });"
+  
+  "google.maps.event.addListener(marker" st:number() 
+  ", 'click', function () {window.location.href = \"" 
+  st:call-template(st:link, ?in) 
+  "\";});"
+  
+}
+where {
+  ?in a o:Place .
+  service <http://fr.dbpedia.org/sparql> {
+    ?in  p:longitude  ?lon ; 
+      p:latitude  ?lat
+  }
+}
+pragma { kg:service kg:slice 50 }
 
 ]]>
 </body>

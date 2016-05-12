@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -68,6 +68,33 @@ where {
 <body>
 <![CDATA[
 template {
+    "Declaration(" xsd:string(?l) "(" 
+    ?in  
+    "))"   
+}
+where {
+select ?in ?t ?l where {
+  ?in a ?t
+  values (?t ?l) {
+    (owl:ObjectProperty 	"ObjectProperty")
+    (owl:DatatypeProperty 	"DataProperty")
+    (owl:AnnotationProperty 	"AnnotationProperty")
+    (owl:TransitiveProperty  	"ObjectProperty")
+    (owl:SymmetricProperty  	"ObjectProperty")
+    (owl:InverseFunctionalProperty  	"ObjectProperty")
+  }
+}
+limit 1
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
      "Declaration(Datatype(" ?in  "))"  
 }
 where {
@@ -88,33 +115,6 @@ template {
 }
 where {
   ?in a rdfs:Datatype
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    "Declaration(" xsd:string(?l) "(" 
-    ?in  
-    "))"   
-}
-where {
-select ?in ?t ?l where {
-  ?in a ?t
-  values (?t ?l) {
-    (owl:ObjectProperty 	"ObjectProperty")
-    (owl:DatatypeProperty 	"DataProperty")
-    (owl:AnnotationProperty 	"AnnotationProperty")
-    (owl:TransitiveProperty  	"ObjectProperty")
-    (owl:SymmetricProperty  	"ObjectProperty")
-    (owl:InverseFunctionalProperty  	"ObjectProperty")
-  }
-}
-limit 1
 }
 
 ]]>

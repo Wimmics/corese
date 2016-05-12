@@ -2,31 +2,34 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
 <rule>
 <body>
 <![CDATA[
-#
-# Timeline SPARQL Template - Olivier Corby - 2014
-#
 prefix cn: <http://cdn.fr/schema/>
-template st:substart(?cent) {
+template cn:body(?c) {
+ 
+ format {
+    """
+    <table class='margin hcentury table'>
+    <tr class='head'><th>Date</th>%s</tr>    
+    %s
+    </table>
+    """
 
-  # st:call-template(cn:head, cn:head)
-   
-   st:call-template(cn:content, ?cent)   
-        
-   st:call-template(cn:sign, cn:sign)
-   
- #  st:call-template(cn:tail, cn:tail)
+  st:call-template(cn:rowtitle, ?c)    
+  st:call-template(cn:table, ?min, ?max)
 
-}
-where {
+}   
 }  
+where {
+   ?c cn:start ?min ; cn:finish ?max 
+}
 
+    
 
 ]]>
 </body>
@@ -39,17 +42,201 @@ where {
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
-template cn:content(?c) {
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template  cn:table(?min, ?max) {
+format {
+
+  """
+  <tr>
+  <th class='date'>%s</th>  
+   %s         
+  </tr>\n
+  """
   
-    st:call-template(cn:head, ?c, ?title)
-    
-    st:call-template(cn:body, ?c)
+  st:call-template(cn:wikidate, ?d)
+  st:call-template(cn:row, ?d)
+}
+}
+where {
+  {select distinct ?d  where {
+    values ?p { cn:date cn:begin } 
+    ?uri ?p ?d 
+  }}
+  filter(?min <= ?d && ?d <= ?max)
+}
+order by asc(?d)
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cn: <http://cdn.fr/schema/>
+template cn:img(?i) {
+  "<img width='75' src=\"" ?i "\"/>" 
+}
+where {
+#  bind(?u as ?uri)
+#  bind(?t as ?text)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Timeline SPARQL Template - Olivier Corby - 2014
+#
+prefix cn: <http://cdn.fr/schema/>
+
+template st:start {
    
-    st:call-template(cn:tail, ?c, ?title)
+   st:call-template(st:substart, (coalesce(st:get(st:uri), cn:XIV)))   
+        
+}
+where {
+}  
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cn: <http://cdn.fr/schema/>
+
+template cn:hlink(?u, ?t) { 
+  
+  format { "<a href=\"%s\">%s</a>" ?u ?t}
 
 }
 where {
-  ?c rdfs:label ?title
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cn: <http://cdn.fr/schema/>
+prefix o:  <http://dbpedia.org/ontology/>
+
+template cn:href(?r, ?u, ?t, ?i) {
+
+  if (?img, "<div class='margin'>", "")
+  
+  if (?img, 
+    concat(st:call-template(cn:img, ?i), "<br/>"), 
+    "")
+    
+   if (isURI(?r) && ?isp, 
+	st:call-template(st:navlab, ?r, ?t),
+	st:call-template(cn:hlink, ?u, ?t))
+
+  if (?img, "</div>", "")
+  
+}
+where {
+
+  bind ( exists { ?r a ?tt . filter (?tt in (foaf:Person, o:Place)) 
+  } as ?isp )
+  
+  bind(bound(?i) && isURI(?i) as ?img)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Timeline SPARQL Template - Olivier Corby - 2014
+#
+prefix cn: <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template  cn:date(?date, ?topic) {
+
+  group { ?uri ; separator = "<br/>" } 
+
+}
+where {
+
+ graph ?g { [] cn:topic ?topic . 
+	    { ?uri cn:date ?date } union { ?uri cn:begin ?date }
+	  }
+ 
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+}
+where {}
+
+function st:process(?x) {
+    if (isLiteral(?x), xsd:string(?x), st:apply-templates(?x))
+  }
+    
+  function st:default(?x) { 
+    xsd:string(?x)
+  }
+       
+  function st:misc(?name) { 
+    st:protocol(
+      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&profile=st:sparql"))
+      #"&transform=st:sparql%23core&profile=st:dbpedia"))
+  }
+  
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Timeline SPARQL Template - Olivier Corby - 2014
+#
+prefix cn: <http://cdn.fr/schema/>
+template cn:sign {
+
+   st:call-template(cn:icon, cn:icon)
+   
+#   st:call-template(st:query)
+
+   """
+   <p>
+   This page is generated from an <a href='http://www.w3.org/RDF'>RDF</a> Dataset using 
+   <a href='http://ns.inria.fr/sparql-template'>SPARQL Template Transformation</a> and <a href='http://wimmics.inria.fr/corese'>Corese</a> server. The Transformation dynamically gets additional Linked Open Data from <a href='http://fr.dbpedia.org'>dbpedia.fr</a> using SPARQL 1.1 service.
+   <br/>
+   Most of the pictures are links to <a href='http://fr.wikipedia.org/'>Wikipedia</a>.
+   </p>
+   """
+   now()
+}
+where {
 }
 
 ]]>
@@ -114,48 +301,20 @@ values ?i {
 <rule>
 <body>
 <![CDATA[
-#
-# Timeline SPARQL Template - Olivier Corby - 2014
-#
 prefix cn: <http://cdn.fr/schema/>
 
-template st:start {
-   
-   st:call-template(st:substart, (coalesce(st:get(st:uri), cn:XIV)))   
-        
-}
-where {
-}  
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn:   <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-
-template cn:test(?p) {
-   "<p>" str(?p) "</p>"
-   
-}
-where {
-
-  service <http://fr.dbpedia.org/sparql> {
-    select * where {
-      ?p a ?t
-    } limit 1
+template st:navlab(?u, ?t) { 
+  
+  format { 
+    "<a href='%s'>%s</a>" 
+    
+    st:plink(?u, st:dbpedia) 
+    ?t 
   }
-  
- 
+
 }
-pragma {kg:query kg:detail true}
+where {
+}
 
 ]]>
 </body>
@@ -164,96 +323,24 @@ pragma {kg:query kg:detail true}
 <rule>
 <body>
 <![CDATA[
-#
-# Timeline SPARQL Template - Olivier Corby - 2014
-#
-prefix cn: <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-
-template  cn:table(?min, ?max) {
+template st:query {
 format {
-
   """
-  <tr>
-  <th class='date'>%s</th>  
-   %s         
-  </tr>\n
+  <h3>Query</h3>
+  <form method='post' action='%s'>
+    <textarea cols='60' rows='10' name='query'>
+    %s    
+    </textarea>
+    <br/>
+    <input type='submit' value='Submit'/>
+  </form>
   """
   
-  st:call-template(cn:wikidate, ?d)
-  st:call-template(cn:row, ?d)
+  st:get(st:service)
+  st:get(st:query)
 }
 }
 where {
-  {select distinct ?d  where {
-    values ?p { cn:date cn:begin } 
-    ?uri ?p ?d 
-  }}
-  filter(?min <= ?d && ?d <= ?max)
-}
-order by asc(?d)
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn: <http://cdn.fr/schema/>
-
-template cn:hlink(?u, ?t) { 
-  
-  format { "<a href=\"%s\">%s</a>" ?u ?t}
-
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn: <http://cdn.fr/schema/>
-template cn:list {
-
-format {
-
-  """
-  <table class='margin'>
-  <tr>
-  <td><a href='%s'>Carte</a></td><td>&nbsp;</td>
-  %s  
-  </tr>
-  </table>
-  """
-  
-  st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
-  
-  group {
-    format {
-      "<td><a href='%s'>%s</a></td><td>&nbsp;</td>"
-      
-      st:misc(?query)
-      str(?title)
-    }
-  }
-  
-}
-  
-}
-where {
-
-}
-values (?query ?title){
-  ("/data/query/cdnplace.rq" 	"Lieu")
-  ("/data/query/cdnperson.rq" 	"Personne")
-  ("/data/query/cdnfr.rq" 	"France")
-  ("/data/query/cdneds.rq" 	"Savoie")
-  ("/data/query/cdnmisc.rq" 	"Autre")
 }
 
 ]]>
@@ -294,20 +381,67 @@ order by ?n
 <rule>
 <body>
 <![CDATA[
-prefix cn:   <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-prefix o:    <http://dbpedia.org/ontology/>
+#
+# Timeline SPARQL Template - Olivier Corby - 2014
+#
+prefix cn: <http://cdn.fr/schema/>
+template st:substart(?cent) {
 
-template cn:geticon {
-   ?ic
+  # st:call-template(cn:head, cn:head)
+   
+   st:call-template(cn:content, ?cent)   
+        
+   st:call-template(cn:sign, cn:sign)
+   
+ #  st:call-template(cn:tail, cn:tail)
+
 }
 where {
+}  
 
-  service <http://fr.dbpedia.org/sparql> {
-    ?in o:thumbnail ?ic
-    #       ?in foaf:depiction ?ic
-  }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Hypertext link trigger Corese server 
+# Answer using SPARQL Template Transformation
+#
+prefix cn: <http://cdn.fr/schema/>
+
+template st:servlet {
+
+      st:get(st:service)
+      "?query=" 
+              
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Timeline SPARQL Template - Olivier Corby - 2014
+#
+prefix cn: <http://cdn.fr/schema/>
+
+template cn:tail(?c, ?title) {
+
+    "<p>"    
+    st:call-template(cn:index,  ?title)        
+    "</p>"
     
+}
+where {
 }
 
 ]]>
@@ -369,6 +503,30 @@ where {
 <body>
 <![CDATA[
 #
+# Timeline SPARQL Template - Olivier Corby - 2014
+#
+prefix cn: <http://cdn.fr/schema/>
+template cn:content(?c) {
+  
+    st:call-template(cn:head, ?c, ?title)
+    
+    st:call-template(cn:body, ?c)
+   
+    st:call-template(cn:tail, ?c, ?title)
+
+}
+where {
+  ?c rdfs:label ?title
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # Generate Century Index
 # Hypertext link may trigger Corese server 
 # Answer using SPARQL Template Transformation
@@ -411,26 +569,39 @@ order by ?min
 <body>
 <![CDATA[
 prefix cn: <http://cdn.fr/schema/>
-template cn:body(?c) {
- 
- format {
-    """
-    <table class='margin hcentury table'>
-    <tr class='head'><th>Date</th>%s</tr>    
-    %s
-    </table>
-    """
+prefix foaf: <http://xmlns.com/foaf/0.1/>
 
-  st:call-template(cn:rowtitle, ?c)    
-  st:call-template(cn:table, ?min, ?max)
+template  cn:wikidate(?d) {
 
-}   
-}  
+  "<a href='http://fr.wikipedia.org/wiki/" ?d "'>" ?d "</a>"
+
+}
 where {
-   ?c cn:start ?min ; cn:finish ?max 
+
 }
 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cn:   <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+
+template cn:geticon {
+   ?ic
+}
+where {
+
+  service <http://fr.dbpedia.org/sparql> {
+    ?in o:thumbnail ?ic
+    #       ?in foaf:depiction ?ic
+  }
     
+}
 
 ]]>
 </body>
@@ -439,63 +610,27 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:query {
-format {
-  """
-  <h3>Query</h3>
-  <form method='post' action='%s'>
-    <textarea cols='60' rows='10' name='query'>
-    %s    
-    </textarea>
-    <br/>
-    <input type='submit' value='Submit'/>
-  </form>
-  """
+prefix cn:   <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+
+template cn:test(?p) {
+   "<p>" str(?p) "</p>"
+   
+}
+where {
+
+  service <http://fr.dbpedia.org/sparql> {
+    select * where {
+      ?p a ?t
+    } limit 1
+  }
   
-  st:get(st:service)
-  st:get(st:query)
+ 
 }
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn: <http://cdn.fr/schema/>
-template cn:img(?i) {
-  "<img width='75' src=\"" ?i "\"/>" 
-}
-where {
-#  bind(?u as ?uri)
-#  bind(?t as ?text)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Hypertext link trigger Corese server 
-# Answer using SPARQL Template Transformation
-#
-prefix cn: <http://cdn.fr/schema/>
-
-template st:servlet {
-
-      st:get(st:service)
-      "?query=" 
-              
-}
-where {
-}
+pragma {kg:query kg:detail true}
 
 ]]>
 </body>
@@ -535,128 +670,42 @@ where {
 <body>
 <![CDATA[
 prefix cn: <http://cdn.fr/schema/>
+template cn:list {
 
-template st:navlab(?u, ?t) { 
+format {
+
+  """
+  <table class='margin'>
+  <tr>
+  <td><a href='%s'>Carte</a></td><td>&nbsp;</td>
+  %s  
+  </tr>
+  </table>
+  """
   
-  format { 
-    "<a href='%s'>%s</a>" 
-    
-    st:plink(?u, st:dbpedia) 
-    ?t 
+  st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
+  
+  group {
+    format {
+      "<td><a href='%s'>%s</a></td><td>&nbsp;</td>"
+      
+      st:misc(?query)
+      str(?title)
+    }
   }
-
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn: <http://cdn.fr/schema/>
-prefix o:  <http://dbpedia.org/ontology/>
-
-template cn:href(?r, ?u, ?t, ?i) {
-
-  if (?img, "<div class='margin'>", "")
   
-  if (?img, 
-    concat(st:call-template(cn:img, ?i), "<br/>"), 
-    "")
-    
-   if (isURI(?r) && ?isp, 
-	st:call-template(st:navlab, ?r, ?t),
-	st:call-template(cn:hlink, ?u, ?t))
-
-  if (?img, "</div>", "")
+}
   
 }
 where {
 
-  bind ( exists { ?r a ?tt . filter (?tt in (foaf:Person, o:Place)) 
-  } as ?isp )
-  
-  bind(bound(?i) && isURI(?i) as ?img)
-  
 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:profile {
-
-}
-where {}
-
-function st:process(?x) {
-    if (isLiteral(?x), xsd:string(?x), st:apply-templates(?x))
-  }
-    
-  function st:default(?x) { 
-    xsd:string(?x)
-  }
-       
-  function st:misc(?name) { 
-    st:protocol(
-      concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&profile=st:sparql"))
-      #"&transform=st:sparql%23core&profile=st:dbpedia"))
-  }
-  
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Timeline SPARQL Template - Olivier Corby - 2014
-#
-prefix cn: <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-
-template  cn:date(?date, ?topic) {
-
-  group { ?uri ; separator = "<br/>" } 
-
-}
-where {
-
- graph ?g { [] cn:topic ?topic . 
-	    { ?uri cn:date ?date } union { ?uri cn:begin ?date }
-	  }
- 
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Timeline SPARQL Template - Olivier Corby - 2014
-#
-prefix cn: <http://cdn.fr/schema/>
-
-template cn:tail(?c, ?title) {
-
-    "<p>"    
-    st:call-template(cn:index,  ?title)        
-    "</p>"
-    
-}
-where {
+values (?query ?title){
+  ("/data/query/cdnplace.rq" 	"Lieu")
+  ("/data/query/cdnperson.rq" 	"Personne")
+  ("/data/query/cdnfr.rq" 	"France")
+  ("/data/query/cdneds.rq" 	"Savoie")
+  ("/data/query/cdnmisc.rq" 	"Autre")
 }
 
 ]]>
@@ -721,55 +770,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix cn: <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-
-template  cn:wikidate(?d) {
-
-  "<a href='http://fr.wikipedia.org/wiki/" ?d "'>" ?d "</a>"
-
-}
-where {
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Timeline SPARQL Template - Olivier Corby - 2014
-#
-prefix cn: <http://cdn.fr/schema/>
-template cn:sign {
-
-   st:call-template(cn:icon, cn:icon)
-   
-#   st:call-template(st:query)
-
-   """
-   <p>
-   This page is generated from an <a href='http://www.w3.org/RDF'>RDF</a> Dataset using 
-   <a href='http://ns.inria.fr/sparql-template'>SPARQL Template Transformation</a> and <a href='http://wimmics.inria.fr/corese'>Corese</a> server. The Transformation dynamically gets additional Linked Open Data from <a href='http://fr.dbpedia.org'>dbpedia.fr</a> using SPARQL 1.1 service.
-   <br/>
-   Most of the pictures are links to <a href='http://fr.wikipedia.org/'>Wikipedia</a>.
-   </p>
-   """
-   now()
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix cn:   <http://cdn.fr/schema/>
 prefix foaf: <http://xmlns.com/foaf/0.1/>
 prefix o:    <http://dbpedia.org/ontology/>
@@ -811,6 +811,30 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix cn: <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template {
+    if (bound(?lnk), 
+      st:call-template(cn:href, ?lnk, ?c), 
+      ?c)
+}
+where {
+
+  ?in rdf:rest*/rdf:first ?elem
+  
+  { ?elem rdfs:label ?c ; cn:link ?lnk }
+  union 
+  { ?elem rdfs:comment ?c }
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix cn:   <http://cdn.fr/schema/>
 prefix foaf: <http://xmlns.com/foaf/0.1/>
 prefix o:    <http://dbpedia.org/ontology/>
@@ -840,30 +864,6 @@ where {
       concat(w:, (substr(?in, strlen(r:) + 1))),
       ?lnk) 
     as ?link)  
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn: <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-
-template {
-    if (bound(?lnk), 
-      st:call-template(cn:href, ?lnk, ?c), 
-      ?c)
-}
-where {
-
-  ?in rdf:rest*/rdf:first ?elem
-  
-  { ?elem rdfs:label ?c ; cn:link ?lnk }
-  union 
-  { ?elem rdfs:comment ?c }
 }
 
 ]]>

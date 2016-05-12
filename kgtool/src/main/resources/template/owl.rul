@@ -2,47 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-
-template  st:statement  {
-
-  xt:nl(st:apply-templates-with-all(st:owlstatement, ?in), 2)
-  ; separator = ""
- 
-}
-where {
-
-  select distinct ?in where {
-     ?in ?p ?y 
-     
-     filter (?p not in 
-     (rdfs:subClassOf, owl:equivalentClass)
-     )
-     
-    filter (
-      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
-      (isBlank(?in) && not exists { ?x ?q ?in } )
-    )
-  # OWL vocabulary must not be pretty printed
-    filter (! xt:system(?in))
-
-  }
-  order by ?in
-     
-}
-
-
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -64,74 +27,6 @@ where {
       
 }
 
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Starting template for OWL pretty printing from RDF to Functional Syntax
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template st:html {
-  st:call-template-with(st:server, st:head)
-  
-  "<h3>OWL Functional Syntax</h3>"
-  "<pre>"
-  st:call-template(st:start)
-  "</pre>"
-  
-  st:call-template-with(st:server, st:tail)
-}
-where {
-     bind(st:export(st:html, true) as ?ctx) 
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Starting template for OWL pretty printing from RDF to Functional Syntax
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template st:import {
-
-   "Import(" ?i  ")\n"
-   ; separator = ""
-   
-}
-where {
-
-  ?in a owl:Ontology ; 
-    owl:imports ?i 
-      
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:annotation(?in) {
-
-   st:call-template(st:annotation1, ?in)
-   st:call-template(st:annotation2, ?in)
-   
-}
-where {
-  
-}
 
 ]]>
 </body>
@@ -170,6 +65,42 @@ where {
 <rule>
 <body>
 <![CDATA[
+
+template  st:test  {
+
+  kg:display(count(*))
+ 
+}
+where {
+
+  select distinct ?in where {
+     ?in ?p ?y 
+     
+     filter (?p not in 
+     (rdfs:subClassOf, owl:equivalentClass)
+     )
+     
+    filter (
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
+    )
+  # OWL vocabulary must not be pretty printed
+    filter (! xt:system(?in))
+
+  }
+  order by ?in
+     
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # Starting template for OWL pretty printing from RDF to Functional Syntax
 # st:apply-all-templates run all templates on each value 
@@ -197,66 +128,6 @@ where {
   order by ?in
 }
 
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-
-template  st:property  {
-
-    xt:nl(st:apply-templates-with-all(st:owlproperty, ?in), 2)
-    ; separator = ""
-   
-}
-where {
-
-  select distinct ?in where {
-  values ?p { rdf:type owl:propertyChainAxiom owl:propertyDisjointWith owl:inverseOf rdfs:domain rdfs:range rdfs:subPropertyOf owl:equivalentProperty}
-     ?in ?p ?y 
-    filter (
-      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
-      (isBlank(?in) && not exists { ?x ?q ?in } )
-    )
-  # OWL vocabulary must not be pretty printed
-    filter (! xt:system(?in))
-
-        
-  }
-  order by ?in
-        
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:annotation1 {
-   "Annotation(" 
-      ?p " " ?t
-   ")\n"
-   ; separator = ""
-}
-where {
-  ?in ?p ?t
-  filter not exists {
-   ?a a owl:Annotation ;
-      owl:annotatedSource   ?in ;
-      owl:annotatedProperty ?p ;     
-      owl:annotatedTarget   ?t 
-  }
-}
-values ?p { 
-  owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith 
-  rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy 
-}
 
 ]]>
 </body>
@@ -346,62 +217,11 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:annotation2 {     
-   "Annotation(\n" 
-   
-      group { "Annotation(" ?q  " "  ?c ")\n" }
-      
-      ?p " " ?t 
-   
-   ")\n"
-}
-where {
-  ?a owl:annotatedSource ?in ;
-      a owl:Annotation ;
-      owl:annotatedProperty ?p ;      
-      owl:annotatedTarget   ?t ;
-      ?q ?c
-      
-      filter(?q not in (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
-      
-  ?in ?p ?t
-    
-}
 
+template  st:statement  {
 
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:header {
-"""#
-# Generated using OWL 2 to Functional Syntax STTL Transformation
-# Olivier Corby - Wimmics - Inria, I3S, UNS, CNRS
-# """ now() 
-
-"""
-#
-"""
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-
-template  st:test  {
-
-  kg:display(count(*))
+  xt:nl(st:apply-templates-with-all(st:owlstatement, ?in), 2)
+  ; separator = ""
  
 }
 where {
@@ -426,6 +246,88 @@ where {
 }
 
 
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template st:import {
+
+   "Import(" ?i  ")\n"
+   ; separator = ""
+   
+}
+where {
+
+  ?in a owl:Ontology ; 
+    owl:imports ?i 
+      
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:annotation(?in) {
+
+   st:call-template(st:annotation1, ?in)
+   st:call-template(st:annotation2, ?in)
+   
+}
+where {
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template st:html {
+  st:call-template-with(st:server, st:head)
+  
+  "<h3>OWL Functional Syntax</h3>"
+  "<pre>"
+  st:call-template(st:start)
+  "</pre>"
+  
+  st:call-template-with(st:server, st:tail)
+}
+where {
+     bind(st:export(st:html, true) as ?ctx) 
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:prefix {
+  "Prefix(" str(?p) ": = <" str(?n) ">)" "\n"
+}
+where {
+  bind (kg:unnest(st:prefix()) as (?p, ?n))
+}
 
 ]]>
 </body>
@@ -466,11 +368,109 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:prefix {
-  "Prefix(" str(?p) ": = <" str(?n) ">)" "\n"
+
+template  st:property  {
+
+    xt:nl(st:apply-templates-with-all(st:owlproperty, ?in), 2)
+    ; separator = ""
+   
 }
 where {
-  bind (kg:unnest(st:prefix()) as (?p, ?n))
+
+  select distinct ?in where {
+  values ?p { rdf:type owl:propertyChainAxiom owl:propertyDisjointWith owl:inverseOf rdfs:domain rdfs:range rdfs:subPropertyOf owl:equivalentProperty}
+     ?in ?p ?y 
+    filter (
+      (isURI(?in)   && not exists { ?in a owl:Ontology }) ||
+      (isBlank(?in) && not exists { ?x ?q ?in } )
+    )
+  # OWL vocabulary must not be pretty printed
+    filter (! xt:system(?in))
+
+        
+  }
+  order by ?in
+        
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:header {
+"""#
+# Generated using OWL 2 to Functional Syntax STTL Transformation
+# Olivier Corby - Wimmics - Inria, I3S, UNS, CNRS
+# """ now() 
+
+"""
+#
+"""
+}
+where {
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:annotation2 {     
+   "Annotation(\n" 
+   
+      group { "Annotation(" ?q  " "  ?c ")\n" }
+      
+      ?p " " ?t 
+   
+   ")\n"
+}
+where {
+  ?a owl:annotatedSource ?in ;
+      a owl:Annotation ;
+      owl:annotatedProperty ?p ;      
+      owl:annotatedTarget   ?t ;
+      ?q ?c
+      
+      filter(?q not in (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
+      
+  ?in ?p ?t
+    
+}
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:annotation1 {
+   "Annotation(" 
+      ?p " " ?t
+   ")\n"
+   ; separator = ""
+}
+where {
+  ?in ?p ?t
+  filter not exists {
+   ?a a owl:Annotation ;
+      owl:annotatedSource   ?in ;
+      owl:annotatedProperty ?p ;     
+      owl:annotatedTarget   ?t 
+  }
+}
+values ?p { 
+  owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith 
+  rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy 
 }
 
 ]]>

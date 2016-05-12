@@ -2,30 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-template st:equivClassExpression(?x) {
-  ?suc
-}
-where {
-    bind (
-      if (isURI(?x), ?x != owl:Thing, 
-         st:apply-templates-all(?x))
-    as ?suc)
-   
-  #filter (st:visit(st:err("equiv"), ?x, ?suc))
-  filter(st:alreadyVisited(?x, "equiv", ?suc))
-}
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -51,15 +31,39 @@ where {}
 <rule>
 <body>
 <![CDATA[
-template {
-  true
+template st:equivClassExpression(?x) {
+  ?suc
 }
 where {
-   ?in a owl:Restriction ;
-	owl:onProperty ?p ;
-	owl:hasValue ?v 	        
+    bind (
+      if (isURI(?x), ?x != owl:Thing, 
+         st:apply-templates-all(?x))
+    as ?suc)
+   
+  #filter (st:visit(st:err("equiv"), ?x, ?suc))
+  filter(st:alreadyVisited(?x, "equiv", ?suc))
 }
-	    
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+  ?in owl:intersectionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
+  
+  bind (
+    st:call-template(st:equivClassExpression, ?e)
+    as ?suc
+  )
+  
+}
 
 ]]>
 </body>
@@ -99,18 +103,14 @@ limit 1
 <body>
 <![CDATA[
 template {
-  ?suc
+  true
 }
 where {
-  ?in owl:intersectionOf ?z 
-  ?z rdf:rest*/rdf:first ?e 
-  
-  bind (
-    st:call-template(st:equivClassExpression, ?e)
-    as ?suc
-  )
-  
+   ?in a owl:Restriction ;
+	owl:onProperty ?p ;
+	owl:hasValue ?v 	        
 }
+	    
 
 ]]>
 </body>

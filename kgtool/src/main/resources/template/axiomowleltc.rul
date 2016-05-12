@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -23,118 +23,6 @@ where {}
   }
 
 
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-	?suc
-}
-where {
-	?in owl:AllDisjointClasses ?z
-	
-	bind (
-		not exists {
-			?z rdf:rest*/rdf:first ?e
-			filter(! st:call-template-with(st:classexpowleltc, st:classExpression, ?e))
-		}
-	as ?suc)
-	
-	filter(st:alreadyVisited(?in, "disjointClass", ?suc))
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-	?suc
-}
-where {
-	?in rdfs:subClassOf ?y
-	
-	filter (
-		isURI(?in) ||
-		not exists { ?x ?p ?in }
-	)
-	
-	bind (
-		st:call-template-with(st:classexpowleltc, st:classExpression, ?in) &&
-		st:call-template-with(st:classexpowleltc, st:classExpression, ?y)
-	as ?suc)
-	
-	filter(st:alreadyVisited(?in, "subClass", ?suc))
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-# the following datatypes must not be used in OWL 2 EL:
-# xsd:double, xsd:float, xsd:nonPositiveInteger,
-# xsd:positiveInteger, xsd:negativeInteger,
-# xsd:long, xsd:int, xsd:short, xsd:byte,
-# xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
-# xsd:unsignedByte, xsd:language, xsd:boolean
-
-template {
-	?suc
-}
-where {
-	{ ?in rdfs:range ?y }
-	union { ?in a owl:Restriction;
-			?p ?y }
-			
-	bind (
-		# datatypes not allowed
-		?y NOT IN (
-			xsd:double, xsd:float, xsd:nonPositiveInteger,
-			xsd:positiveInteger, xsd:negativeInteger,
-			xsd:long, xsd:int, xsd:short, xsd:byte,
-			xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
-			xsd:unsignedByte, xsd:language, xsd:boolean
-		)
-	as ?suc)
-	
-	filter(isURI(?y) && ! ?suc)
-	filter(st:visit(st:err("datatypeRes"), ?in, ?suc))
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-	?suc
-}
-where {
-	?in owl:equivalentClass ?y
-	
-	filter (
-		isURI(?in) ||
-		not exists { ?x ?p ?in }
-	)
-	
-	bind (
-		st:call-template-with(st:classexpowleltc, st:classExpression, ?in) &&
-		st:call-template-with(st:classexpowleltc, st:classExpression, ?y)
-	as ?suc)
-	
-	filter(st:alreadyVisited(?in, "equivClass", ?suc))
-}
 
 ]]>
 </body>
@@ -224,34 +112,20 @@ limit 1
 <rule>
 <body>
 <![CDATA[
-# the following datatypes must not be used in OWL 2 EL:
-# xsd:double, xsd:float, xsd:nonPositiveInteger,
-# xsd:positiveInteger, xsd:negativeInteger,
-# xsd:long, xsd:int, xsd:short, xsd:byte,
-# xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
-# xsd:unsignedByte, xsd:language, xsd:boolean
-
 template {
 	?suc
 }
 where {
+	?in owl:AllDisjointClasses ?z
 	
 	bind (
-		# datatypes not allowed
 		not exists {
-			?in ?p ?y
-			
-			filter(datatype(?y) IN (xsd:double, xsd:float, xsd:nonPositiveInteger,
-				xsd:positiveInteger, xsd:negativeInteger,
-				xsd:long, xsd:int, xsd:short, xsd:byte,
-				xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
-				xsd:unsignedByte, xsd:language, xsd:boolean
-			))
+			?z rdf:rest*/rdf:first ?e
+			filter(! st:call-template-with(st:classexpowleltc, st:classExpression, ?e))
 		}
 	as ?suc)
-
-	filter(isLiteral(?y) && ! ?suc)
-	filter(st:visit(st:err("datatypeLit"), ?in, ?suc))
+	
+	filter(st:alreadyVisited(?in, "disjointClass", ?suc))
 }
 
 ]]>
@@ -348,27 +222,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template {
-	?suc
-}
-where {
-	?in rdfs:domain|rdfs:range ?y
-	
-	bind (
-		isURI(?y) ||
-		st:call-template-with(st:classexpowleltc,st:classExpression, ?y)
-	as ?suc)
-	
-	filter(st:alreadyVisited(?in, "domain", ?suc))
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template  {
   ?suc  
 }
@@ -393,6 +246,116 @@ template {
 	?suc
 }
 where {
+	?in rdfs:subClassOf ?y
+	
+	filter (
+		isURI(?in) ||
+		not exists { ?x ?p ?in }
+	)
+	
+	bind (
+		st:call-template-with(st:classexpowleltc, st:classExpression, ?in) &&
+		st:call-template-with(st:classexpowleltc, st:classExpression, ?y)
+	as ?suc)
+	
+	filter(st:alreadyVisited(?in, "subClass", ?suc))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in owl:equivalentClass ?y
+	
+	filter (
+		isURI(?in) ||
+		not exists { ?x ?p ?in }
+	)
+	
+	bind (
+		st:call-template-with(st:classexpowleltc, st:classExpression, ?in) &&
+		st:call-template-with(st:classexpowleltc, st:classExpression, ?y)
+	as ?suc)
+	
+	filter(st:alreadyVisited(?in, "equivClass", ?suc))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+# the following datatypes must not be used in OWL 2 EL:
+# xsd:double, xsd:float, xsd:nonPositiveInteger,
+# xsd:positiveInteger, xsd:negativeInteger,
+# xsd:long, xsd:int, xsd:short, xsd:byte,
+# xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
+# xsd:unsignedByte, xsd:language, xsd:boolean
+
+template {
+	?suc
+}
+where {
+	{ ?in rdfs:range ?y }
+	union { ?in a owl:Restriction;
+			?p ?y }
+			
+	bind (
+		# datatypes not allowed
+		?y NOT IN (
+			xsd:double, xsd:float, xsd:nonPositiveInteger,
+			xsd:positiveInteger, xsd:negativeInteger,
+			xsd:long, xsd:int, xsd:short, xsd:byte,
+			xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
+			xsd:unsignedByte, xsd:language, xsd:boolean
+		)
+	as ?suc)
+	
+	filter(isURI(?y) && ! ?suc)
+	filter(st:visit(st:err("datatypeRes"), ?in, ?suc))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in rdfs:domain|rdfs:range ?y
+	
+	bind (
+		isURI(?y) ||
+		st:call-template-with(st:classexpowleltc,st:classExpression, ?y)
+	as ?suc)
+	
+	filter(st:alreadyVisited(?in, "domain", ?suc))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
 	?in a owl:NamedIndividual, ?t
 	
 	filter (
@@ -404,6 +367,43 @@ where {
 		(?t = owl:Class)
 	as ?suc)
 	filter(st:visit(st:err("individual"), ?in, ?suc))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+# the following datatypes must not be used in OWL 2 EL:
+# xsd:double, xsd:float, xsd:nonPositiveInteger,
+# xsd:positiveInteger, xsd:negativeInteger,
+# xsd:long, xsd:int, xsd:short, xsd:byte,
+# xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
+# xsd:unsignedByte, xsd:language, xsd:boolean
+
+template {
+	?suc
+}
+where {
+	
+	bind (
+		# datatypes not allowed
+		not exists {
+			?in ?p ?y
+			
+			filter(datatype(?y) IN (xsd:double, xsd:float, xsd:nonPositiveInteger,
+				xsd:positiveInteger, xsd:negativeInteger,
+				xsd:long, xsd:int, xsd:short, xsd:byte,
+				xsd:unsignedLong, xsd:unsignedInt, xsd:unsignedShort,
+				xsd:unsignedByte, xsd:language, xsd:boolean
+			))
+		}
+	as ?suc)
+
+	filter(isLiteral(?y) && ! ?suc)
+	filter(st:visit(st:err("datatypeLit"), ?in, ?suc))
 }
 
 ]]>

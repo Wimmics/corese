@@ -1,0 +1,1756 @@
+@prefix w: <http://fr.wikipedia.org/wiki/>
+@prefix r: <http://fr.dbpedia.org/resource/>
+@prefix p: <http://fr.dbpedia.org/property/>
+dbo:child rdfs:label "child"@en .
+
+dbo:coemperor rdfs:label "coemperor"@en .
+
+dbo:father rdfs:label "père"@fr .
+
+dbo:mother rdfs:label "mère"@fr .
+
+dbo:parent rdfs:label "parent"@en ;
+  rdfs:label "parent"@fr .
+
+dbo:predecessor rdfs:label "predecessor"@en ;
+  rdfs:label "prédécesseur"@fr .
+
+dbo:spouse rdfs:label "spouse"@en .
+
+dbo:successor rdfs:label "successeur"@fr ;
+  rdfs:label "successor"@en .
+
+dbo:usurper rdfs:label "usurper"@en .
+
+dbo:wikiPageWikiLink rdfs:label "Link from a Wikipage to another Wikipage"@en .
+
+p:adopté rdfs:label "adopté"@fr .
+
+p:après rdfs:label "après"@fr .
+
+p:avant rdfs:label "avant"@fr .
+
+p:coEmpereur rdfs:label "co-empereur"@fr .
+
+p:enfant rdfs:label "enfant"@fr .
+
+p:femme rdfs:label "femme"@fr .
+
+p:règneDe rdfs:label "règne de"@fr .
+
+p:usurpateur rdfs:label "usurpateur"@fr .
+
+<http://fr.dbpedia.org/resource/175> rdfs:label "175"@fr .
+
+<http://fr.dbpedia.org/resource/20_av._J.-C.> rdfs:label "-20"@fr .
+
+<http://fr.dbpedia.org/resource/236> rdfs:label "236"@fr .
+
+r:Aelia_Flacilla rdfs:label "Aelia Flacilla"@fr .
+
+r:Aelia_Galla rdfs:label "Aelia Galla"@fr .
+
+r:Afinia_Gemina_Baebiana rdfs:label "Afinia Gemina Baebiana"@fr .
+
+<http://fr.dbpedia.org/resource/Agrippine_l'Aînée> rdfs:label "Agrippine l\'Aînée"@fr .
+
+r:Agrippine_la_Jeune rdfs:label "Agrippine la Jeune"@fr .
+
+r:Albia_Dominica rdfs:label "Albia Dominica"@fr .
+
+r:Anicia_Juliana rdfs:label "Anicia Juliana"@fr .
+
+r:Annia_Faustina rdfs:label "Annia Faustina"@fr .
+
+r:Anthemiolus rdfs:label "Anthemiolus"@fr .
+
+r:Anthémius a foaf:Person ;
+  dbo:child r:Anthemiolus ;
+  dbo:dbpedia r:Anthémius ;
+  dbo:deathDate "472-07-11+02:00"^^xsd:date ;
+  dbo:predecessor r:Libius_Severus ;
+  dbo:spouse r:Marcia_Euphemia ;
+  dbo:successor r:Flavius_Anicius_Olybrius ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Anthemius.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Anthemiolus ;
+  dbo:wikiPageWikiLink r:Flavius_Anicius_Olybrius ;
+  dbo:wikiPageWikiLink r:Libius_Severus ;
+  dbo:wikiPageWikiLink r:Marcia_Euphemia ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Anthémius" ;
+  p:dateDeDécès "472-07-11+02:00"^^xsd:date ;
+  p:dateDeNaissance "c.420"@fr ;
+  p:femme r:Marcia_Euphemia ;
+  rdfs:comment "Procopius Anthemius (v. 420 - 11 juillet 472) était un empereur romain d\'Occident du 12 avril 467 au 11 juillet 472. C\'est l\'un des « empereurs d\'ombre » du Ve siècle, il était certainement le dernier ayant les capacités nécessaires pour ce poste."@fr ;
+  rdfs:label "Anthémius"@fr .
+
+r:Antonia_la_Jeune rdfs:label "Antonia la Jeune"@fr .
+
+r:Antonin_le_Pieux a foaf:Person ;
+  dbo:birthDate "86-09-19+02:00"^^xsd:date ;
+  dbo:child r:Faustine_la_Jeune ;
+  dbo:dbpedia r:Antonin_le_Pieux ;
+  dbo:deathDate "161-03-07+02:00"^^xsd:date ;
+  dbo:father <http://fr.dbpedia.org/resource/Titus_Aurelius_Fulvus_(consul_en_89)> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Titus_Aurelius_Fulvus_(consul_en_89)> ;
+  dbo:predecessor r:Hadrien ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Faustine_l'Ancienne> ;
+  dbo:successor r:Lucius_Aurelius_Verus ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Antoninus_Pius_Glyptothek_Munich_337.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Faustine_l'Ancienne> ;
+  dbo:wikiPageWikiLink r:Faustine_la_Jeune ;
+  dbo:wikiPageWikiLink r:Hadrien ;
+  dbo:wikiPageWikiLink r:Lucius_Aurelius_Verus ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Titus_Aurelius_Fulvus_(consul_en_89)> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Antonin_le_Pieux" ;
+  p:dateDeDécès "Lorium, Étrurie, Italie"@fr ;
+  p:dateDeDécès "161-03-07+02:00"^^xsd:date ;
+  p:dateDeNaissance "86-09-19+02:00"^^xsd:date ;
+  p:femme <http://fr.dbpedia.org/resource/Faustine_l'Ancienne> ;
+  rdfs:comment "Antonin le Pieux (19 septembre 86 à Lanuvium, Latium – 7 mars 161) est un empereur romain, qui régna de 138 à 161. Par son père (Titus Aurelius Fulvus, consul en 89) et son grand-père (Titus Aurelius Fulvus, consul en 85), il est originaire de Nemausus (Nîmes)."@fr ;
+  rdfs:label "Antonin le Pieux"@fr .
+
+r:Arrecina_Tertulla rdfs:label "Arrecina Tertulla"@fr .
+
+r:Atia_Balba_Caesonia rdfs:label "Atia Balba Caesonia"@fr .
+
+r:Auguste a foaf:Person ;
+  dbo:birthDate "-63-09-23+02:00"^^xsd:date ;
+  dbo:child r:Julia_Caesaris_filia ;
+  dbo:dbpedia r:Auguste ;
+  dbo:deathDate "14-08-19+02:00"^^xsd:date ;
+  dbo:father r:Caius_Octavius ;
+  dbo:mother r:Atia_Balba_Caesonia ;
+  dbo:parent r:Atia_Balba_Caesonia ;
+  dbo:parent r:Caius_Octavius ;
+  dbo:predecessor r:Jules_César ;
+  dbo:spouse r:Clodia_Pulchra ;
+  dbo:spouse r:Livie ;
+  dbo:spouse r:Scribonia ;
+  dbo:successor r:Tibère ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Augustus_Bevilacqua_Glyptothek_Munich_317.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Atia_Balba_Caesonia ;
+  dbo:wikiPageWikiLink r:Caius_Octavius ;
+  dbo:wikiPageWikiLink r:Clodia_Pulchra ;
+  dbo:wikiPageWikiLink r:Jules_César ;
+  dbo:wikiPageWikiLink r:Julia_Caesaris_filia ;
+  dbo:wikiPageWikiLink r:Livie ;
+  dbo:wikiPageWikiLink r:Scribonia ;
+  dbo:wikiPageWikiLink r:Tibère ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Auguste" ;
+  p:après r:Tibère ;
+  p:avant r:Jules_César ;
+  p:dateDeDécès "14-08-19+02:00"^^xsd:date ;
+  p:dateDeNaissance "-63-09-23+02:00"^^xsd:date ;
+  rdfs:comment "Auguste, né sous le nom de Caius Octavius le 23 septembre 63 av. J.-C. à Rome, d\'abord appelé Octave puis Octavien, porte le nom de Imperator Caesar Divi Filius Augustus à sa mort le 19 août 14 ap. J.-C. à Nola. Il est le premier empereur romain, du 16 janvier 27 av. J.-C. au 19 août 14 ap. J.-C.Issu d\'une ancienne et riche famille de rang équestre appartenant à la gens plébéienne des Octavii, il devient fils adoptif posthume de son grand-oncle maternel Jules César en 44 av."@fr ;
+  rdfs:label "Auguste"@fr .
+
+<http://fr.dbpedia.org/resource/Aurélien_(empereur_romain)> a foaf:Person ;
+  dbo:birthDate "214-09-09+02:00"^^xsd:date ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Aurélien_(empereur_romain)> ;
+  dbo:predecessor r:Quintillus ;
+  dbo:spouse r:Ulpia_Severina ;
+  dbo:successor r:Marcus_Claudius_Tacite ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/106_Aurelianus.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Marcus_Claudius_Tacite ;
+  dbo:wikiPageWikiLink r:Quintillus ;
+  dbo:wikiPageWikiLink r:Ulpia_Severina ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Aurélien_(empereur_romain)" ;
+  p:dateDeDécès "Caenophrurium"@fr ;
+  p:dateDeDécès "septembre 275"@fr ;
+  p:dateDeNaissance "Sirmium"@fr ;
+  p:dateDeNaissance "214-09-09+02:00"^^xsd:date ;
+  p:femme r:Ulpia_Severina ;
+  rdfs:comment "Aurélien (Imperator Caesar Lucius Domitius Aurelianus Pius Felix Augustus, Germanicus Maximus, Gothicus Maximus, Carpicus Maximus, Dacicus Maximus, Arabicus Maximus, Palmyrenus Maximus), né le 9 septembre 214/215 et mort en septembre 275, est empereur romain de l\'été 270 à septembre 275. Il réunifie l’Empire romain, continue sa consolidation face aux barbares, et entame des réformes religieuses et monétaires qui annoncent celles de la tétrarchie, dix ans plus tard."@fr ;
+  rdfs:label "Aurélien (empereur romain)"@fr .
+
+r:Avidia rdfs:label "Avidia Plautia"@fr .
+
+r:Basilina rdfs:label "Basilina"@fr .
+
+r:Britannicus rdfs:label "Britannicus"@fr .
+
+r:Bruttia_Crispina rdfs:label "Bruttia Crispina"@fr .
+
+r:Caecilia_Paulina rdfs:label "Caecilia Paulina"@fr .
+
+<http://fr.dbpedia.org/resource/Caenis_(épouse_de_Vespasien)> rdfs:label "Caenis (épouse de Vespasien)"@fr .
+
+r:Caius_Octavius rdfs:label "Gaius Octavius"@fr .
+
+<http://fr.dbpedia.org/resource/Caius_Sulpicius_Galba_(consul_en_-5)> rdfs:label "Caius Sulpicius Galba (consul en -5)"@fr .
+
+r:Caligula a foaf:Person ;
+  dbo:birthDate "12-08-31+02:00"^^xsd:date ;
+  dbo:child <http://fr.dbpedia.org/resource/Julia_Drusilla_(fille_de_Caligula)> ;
+  dbo:dbpedia r:Caligula ;
+  dbo:deathDate "41-01-24+02:00"^^xsd:date ;
+  dbo:father r:Germanicus ;
+  dbo:mother <http://fr.dbpedia.org/resource/Agrippine_l'Aînée> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Agrippine_l'Aînée> ;
+  dbo:parent r:Germanicus ;
+  dbo:predecessor r:Tibère ;
+  dbo:spouse r:Cæsonia_Milonia ;
+  dbo:spouse r:Junia_Claudilla ;
+  dbo:spouse r:Livia_Orestilla ;
+  dbo:spouse r:Lollia_Paulina ;
+  dbo:successor <http://fr.dbpedia.org/resource/Claude_(empereur_romain)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Caligula_bust.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Agrippine_l'Aînée> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Claude_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Cæsonia_Milonia ;
+  dbo:wikiPageWikiLink r:Germanicus ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Julia_Drusilla_(fille_de_Caligula)> ;
+  dbo:wikiPageWikiLink r:Junia_Claudilla ;
+  dbo:wikiPageWikiLink r:Livia_Orestilla ;
+  dbo:wikiPageWikiLink r:Lollia_Paulina ;
+  dbo:wikiPageWikiLink r:Tibère ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Caligula" ;
+  p:dateDeDécès "41-01-24+02:00"^^xsd:date ;
+  p:dateDeNaissance "12-08-31+02:00"^^xsd:date ;
+  rdfs:comment "Caligula (31 août 12 à Antium - 24 janvier 41 à Rome) (latin : CAIUS•JULIUS•CAESAR•AUGUSTUS•GERMANICUS) est le troisième empereur romain, régnant de 37 à 41, succédant à Tibère. Après un début de règne prometteur, où il est en grande faveur auprès du peuple romain, il devient peu à peu un empereur autocratique, délaissant et assassinant ceux qui avaient soutenu son ascension, tout en nourrissant une grande haine pour le Sénat."@fr ;
+  rdfs:label "Caligula"@fr .
+
+r:Caracalla a foaf:Person ;
+  dbo:birthDate "188-04-04+02:00"^^xsd:date ;
+  dbo:dbpedia r:Caracalla ;
+  dbo:deathDate "217-04-08+02:00"^^xsd:date ;
+  dbo:father r:Septime_Sévère ;
+  dbo:mother r:Julia_Domna ;
+  dbo:parent r:Julia_Domna ;
+  dbo:parent r:Septime_Sévère ;
+  dbo:predecessor r:Septime_Sévère ;
+  dbo:spouse r:Plautille ;
+  dbo:successor r:Macrin ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Caracalla_bust.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Julia_Domna ;
+  dbo:wikiPageWikiLink r:Macrin ;
+  dbo:wikiPageWikiLink r:Plautille ;
+  dbo:wikiPageWikiLink r:Septime_Sévère ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Caracalla" ;
+  p:dateDeDécès "près de Harran"@fr ;
+  p:dateDeDécès "217-04-08+02:00"^^xsd:date ;
+  p:dateDeNaissance "188-04-04+02:00"^^xsd:date ;
+  rdfs:comment "Caracalla (4 avril 188 - 8 avril 217), né Lucius Septimius Bassianus puis appelé Marcus Aurelius Severus Antoninus Augustus, est un empereur romain, qui régna de 211 à 217. Il est l\'auteur de l\'édit de Caracalla qui étendit la citoyenneté romaine à tous les habitants de l\'Empire romain."@fr ;
+  rdfs:label "Caracalla"@fr .
+
+r:Carin a foaf:Person ;
+  dbo:dbpedia r:Carin ;
+  dbo:father r:Carus ;
+  dbo:parent r:Carus ;
+  dbo:predecessor r:Carus ;
+  dbo:spouse r:Magnia_Urbica ;
+  dbo:successor r:Dioclétien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/CarinusAureus.jpg?width=300> ;
+  dbo:usurper r:Dioclétien ;
+  dbo:wikiPageWikiLink r:Carus ;
+  dbo:wikiPageWikiLink r:Dioclétien ;
+  dbo:wikiPageWikiLink r:Magnia_Urbica ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Carin" ;
+  p:dateDeDécès "Margus"@fr ;
+  p:dateDeDécès "mars 285"@fr ;
+  p:dateDeNaissance "c.250"@fr ;
+  p:femme r:Magnia_Urbica ;
+  rdfs:comment "Carin (Marcus Aurelius Carinus) est empereur romain en 284 et 285."@fr ;
+  rdfs:label "Carin"@fr .
+
+r:Carus a foaf:Person ;
+  dbo:child r:Carin ;
+  dbo:child r:Numérien ;
+  dbo:dbpedia r:Carus ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Probus_(empereur)> ;
+  dbo:successor r:Numérien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Carus1.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Carin ;
+  dbo:wikiPageWikiLink r:Numérien ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Probus_(empereur)> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Carus" ;
+  p:dateDeDécès "août 283"@fr ;
+  p:dateDeDécès "près de Ctésiphon"@fr ;
+  p:dateDeNaissance "c.230 - Narbonne"@fr ;
+  p:dateDeNaissance "ou Narona"@fr ;
+  rdfs:comment "Carus (Marcus Aurelius Carus) (v.230 - 283) est empereur romain de 282 à 283, père de Carin et Numérien qui lui succéderont."@fr ;
+  rdfs:label "Carus"@fr .
+
+<http://fr.dbpedia.org/resource/Claude_(empereur_romain)> a foaf:Person ;
+  dbo:birthDate "-10-08-01+02:00"^^xsd:date ;
+  dbo:child r:Britannicus ;
+  dbo:child r:Claudia_Antonia ;
+  dbo:child r:Claudia_Octavia ;
+  dbo:child r:Plautia_Urgulanilla ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Claude_(empereur_romain)> ;
+  dbo:deathDate "54-10-13+02:00"^^xsd:date ;
+  dbo:father r:Nero_Claudius_Drusus ;
+  dbo:mother r:Antonia_la_Jeune ;
+  dbo:parent r:Antonia_la_Jeune ;
+  dbo:parent r:Nero_Claudius_Drusus ;
+  dbo:predecessor r:Caligula ;
+  dbo:spouse r:Agrippine_la_Jeune ;
+  dbo:spouse r:Messaline ;
+  dbo:spouse r:Plautia_Urgulanilla ;
+  dbo:spouse r:Ælia_Pætina ;
+  dbo:successor r:Néron ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Claudius_Pio-Clementino_Inv243.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Agrippine_la_Jeune ;
+  dbo:wikiPageWikiLink r:Antonia_la_Jeune ;
+  dbo:wikiPageWikiLink r:Britannicus ;
+  dbo:wikiPageWikiLink r:Caligula ;
+  dbo:wikiPageWikiLink r:Claudia_Antonia ;
+  dbo:wikiPageWikiLink r:Claudia_Octavia ;
+  dbo:wikiPageWikiLink r:Messaline ;
+  dbo:wikiPageWikiLink r:Nero_Claudius_Drusus ;
+  dbo:wikiPageWikiLink r:Néron ;
+  dbo:wikiPageWikiLink r:Plautia_Urgulanilla ;
+  dbo:wikiPageWikiLink r:Ælia_Pætina ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Claude_(empereur_romain)" ;
+  p:adopté r:Néron ;
+  p:dateDeDécès "54-10-13+02:00"^^xsd:date ;
+  p:dateDeNaissance "-10-08-01+02:00"^^xsd:date ;
+  rdfs:comment "Claude (1er août 10 av. J.-C. – 13 octobre 54) est le quatrième empereur romain, qui régna de 41 à 54 apr. J.-C.Né à Lugdunum (Lyon) en Gaule en 10 av. J.-C., fils de Drusus et d\'Antonia la Jeune (elle-même fille de Marc Antoine et d\'Octavie), il fut le premier empereur né hors d\'Italie."@fr ;
+  rdfs:label "Claude (empereur romain)"@fr .
+
+r:Claude_II_le_Gothique a foaf:Person ;
+  dbo:birthDate "213-05-10+02:00"^^xsd:date ;
+  dbo:dbpedia r:Claude_II_le_Gothique ;
+  dbo:predecessor r:Gallien ;
+  dbo:successor r:Quintillus ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/104_Claudius_II_Gothicus.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Gallien ;
+  dbo:wikiPageWikiLink r:Quintillus ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Claude_II_le_Gothique" ;
+  p:dateDeDécès "août 270  - Rome"@fr ;
+  p:dateDeNaissance "213-05-10+02:00"^^xsd:date ;
+  rdfs:comment "Claude II (Marcus Aurelius Claudius Gothicus) (10 mai 214 - août 270), dit Claude le Gothique, est un empereur romain de septembre 268 à sa mort en 270."@fr ;
+  rdfs:label "Claude II le Gothique"@fr .
+
+r:Claudia_Antonia rdfs:label "Claudia Antonia"@fr .
+
+r:Claudia_Augusta rdfs:label "Claudia Augusta"@fr .
+
+r:Claudia_Octavia rdfs:label "Claudia Octavia"@fr .
+
+r:Clodia_Pulchra rdfs:label "Clodia Pulchra"@fr .
+
+<http://fr.dbpedia.org/resource/Cnaeus_Domitius_Ahenobarbus_(consul_en_32)> rdfs:label "Gnaeus Domitius Ahenobarbus (consul en 32)"@fr .
+
+<http://fr.dbpedia.org/resource/Commode_(empereur)> a foaf:Person ;
+  dbo:birthDate "161-08-31+02:00"^^xsd:date ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Commode_(empereur)> ;
+  dbo:deathDate "192-12-31+02:00"^^xsd:date ;
+  dbo:father r:Marc_Aurèle ;
+  dbo:mother r:Faustine_la_Jeune ;
+  dbo:parent r:Faustine_la_Jeune ;
+  dbo:parent r:Marc_Aurèle ;
+  dbo:predecessor r:Marc_Aurèle ;
+  dbo:spouse r:Bruttia_Crispina ;
+  dbo:successor r:Pertinax ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Commodus_Musei_Capitolini_MC1120.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Bruttia_Crispina ;
+  dbo:wikiPageWikiLink r:Faustine_la_Jeune ;
+  dbo:wikiPageWikiLink r:Marc_Aurèle ;
+  dbo:wikiPageWikiLink r:Pertinax ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Commode_(empereur)" ;
+  p:dateDeDécès "à Rome, Italie"@fr ;
+  p:dateDeDécès "192-12-31+02:00"^^xsd:date ;
+  p:dateDeNaissance "à Lanuvium, Italie"@fr ;
+  p:dateDeNaissance "161-08-31+02:00"^^xsd:date ;
+  rdfs:comment "Commode (latin : Imperator Caesar Lucius Aelius Aurelius Commodus Augustus Pius Felix Sarmaticus Germanicus Maximus Britannicus) (31 août 161 - 31 décembre 192) est un empereur romain qui régna de 180 à 192. À l\'instar de Caligula, Néron et Domitien, son image est celle d\'un empereur cruel et sanguinaire."@fr ;
+  rdfs:label "Commode (empereur)"@fr .
+
+r:Constance_Chlore rdfs:label "Constance Chlore"@fr .
+
+r:Constance_II a foaf:Person ;
+  dbo:birthDate "317-08-07+02:00"^^xsd:date ;
+  dbo:child r:Gratien ;
+  dbo:dbpedia r:Constance_II ;
+  dbo:deathDate "361-11-03+02:00"^^xsd:date ;
+  dbo:father <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Eusébie_(impératrice)> ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Faustina_(impératrice)> ;
+  dbo:successor <http://fr.dbpedia.org/resource/Julien_(empereur_romain)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Statua_di_Costanzo_II_-_San_Giovanni_in_Laterano.jpg?width=300> ;
+  dbo:usurper <http://fr.dbpedia.org/resource/Julien_(empereur_romain)> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Eusébie_(impératrice)> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Faustina_(impératrice)> ;
+  dbo:wikiPageWikiLink r:Gratien ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Julien_(empereur_romain)> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Constance_II" ;
+  p:après <http://fr.dbpedia.org/resource/Julien_(empereur_romain)> ;
+  p:dateDeDécès "361-11-03+02:00"^^xsd:date ;
+  p:dateDeNaissance "317-08-07+02:00"^^xsd:date ;
+  rdfs:comment "Constance II (Flavius Julius Constantius en latin), né le 7 août 317 à Sirmium et mort le 3 novembre 361 à Mopsucrène, est un empereur romain chrétien du Bas-Empire.Né sous le règne de son père, l\'empereur Constantin, Constance est élevé le 8 novembre 324 au rang de César, soit vice-empereur, de même que ses deux frères, Constant et Constantin II, et son cousin Dalmatius."@fr ;
+  rdfs:label "Constance II"@fr .
+
+r:Constance_III rdfs:label "Constance III"@fr .
+
+r:Constant_Ier rdfs:label "Constant Ier"@fr .
+
+<http://fr.dbpedia.org/resource/Constantin_II_(empereur_romain)> rdfs:label "Constantin II (empereur romain)"@fr .
+
+<http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> a foaf:Person ;
+  dbo:child r:Constance_II ;
+  dbo:child r:Constant_Ier ;
+  dbo:child <http://fr.dbpedia.org/resource/Constantin_II_(empereur_romain)> ;
+  dbo:child r:Crispus ;
+  dbo:coemperor <http://fr.dbpedia.org/resource/Galère_(empereur_romain)> ;
+  dbo:coemperor r:Licinius ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:deathDate "337-05-22+02:00"^^xsd:date ;
+  dbo:father r:Constance_Chlore ;
+  dbo:mother <http://fr.dbpedia.org/resource/Hélène_(mère_de_Constantin)> ;
+  dbo:parent r:Constance_Chlore ;
+  dbo:parent <http://fr.dbpedia.org/resource/Hélène_(mère_de_Constantin)> ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Galère_(empereur_romain)> ;
+  dbo:predecessor r:Licinius ;
+  dbo:spouse r:Fausta ;
+  dbo:spouse r:Minervina ;
+  dbo:successor r:Constance_II ;
+  dbo:successor r:Constant_Ier ;
+  dbo:successor <http://fr.dbpedia.org/resource/Constantin_II_(empereur_romain)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Head_Constantine_Musei_Capitolini_MC1072.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Constance_Chlore ;
+  dbo:wikiPageWikiLink r:Constance_II ;
+  dbo:wikiPageWikiLink r:Constant_Ier ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Constantin_II_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Crispus ;
+  dbo:wikiPageWikiLink r:Fausta ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Galère_(empereur_romain)> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Hélène_(mère_de_Constantin)> ;
+  dbo:wikiPageWikiLink r:Licinius ;
+  dbo:wikiPageWikiLink r:Minervina ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Constantin_Ier_(empereur_romain)" ;
+  p:dateDeDécès "Nicomédie"@fr ;
+  p:dateDeDécès "337-05-22+02:00"^^xsd:date ;
+  p:dateDeNaissance "0001-02-27+02:00"^^xsd:gMonthDay ;
+  p:règne "337-05-22+02:00"^^xsd:date ;
+  rdfs:comment "Flavius Valerius Aurelius Constantinus, né à Naissus en Mésie (aujourd\'hui Niš en Serbie) le 27 février 272, est proclamé 34e empereur romain sous le nom Constantin Ier en 306 par les légions de Bretagne et mort le 22 mai 337 après 31 ans de règne, est une figure prépondérante du IVe siècle.Non seulement il marque la fin d\'une ère de persécutions des chrétiens, mais il aide l\'Église chrétienne à prendre son essor, en établissant la liberté de culte par le biais de l\'édit de Milan (313), et en plaçant le Dieu chrétien au-dessus de son rôle d\'empereur à l\'instar du Sol Invictus. "@fr ;
+  rdfs:label "Constantin Ier (empereur romain)"@fr .
+
+r:Cornelia_Supera rdfs:label "Cornelia Supera"@fr .
+
+r:Crispus rdfs:label "Crispus"@fr .
+
+r:Cæsonia_Milonia rdfs:label "Cæsonia Milonia"@fr .
+
+r:Diaduménien rdfs:label "Diaduménien"@fr .
+
+r:Didia_Clara rdfs:label "Didia Clara"@fr .
+
+r:Didius_Julianus a foaf:Person ;
+  dbo:birthDate "133-01-30+02:00"^^xsd:date ;
+  dbo:child r:Didia_Clara ;
+  dbo:dbpedia r:Didius_Julianus ;
+  dbo:deathDate "193-06-01+02:00"^^xsd:date ;
+  dbo:predecessor r:Pertinax ;
+  dbo:spouse r:Manlia_Scantilla ;
+  dbo:successor r:Septime_Sévère ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/DidiusJulianusSest.jpg?width=300> ;
+  dbo:usurper r:Septime_Sévère ;
+  dbo:wikiPageWikiLink r:Didia_Clara ;
+  dbo:wikiPageWikiLink r:Manlia_Scantilla ;
+  dbo:wikiPageWikiLink r:Pertinax ;
+  dbo:wikiPageWikiLink r:Septime_Sévère ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Didius_Julianus" ;
+  p:dateDeDécès "193-06-01+02:00"^^xsd:date ;
+  p:dateDeNaissance "Mediolanum"@fr ;
+  p:dateDeNaissance "133-01-30+02:00"^^xsd:date ;
+  p:enfant r:Didia_Clara ;
+  p:femme r:Manlia_Scantilla ;
+  rdfs:comment "Didius Julianus (Marcus Didius Severus Iulianus) (133 ou 137 – 193) est un empereur romain qui régna du 28 mars au 1er juin 193.↑ Dion Cassius, Histoire romaine↑ Histoire Auguste, Didius Julianus"@fr ;
+  rdfs:label "Didius Julianus"@fr .
+
+r:Dioclétien a foaf:Person ;
+  dbo:birthDate "244-12-22+02:00"^^xsd:date ;
+  dbo:child r:Galeria_Valeria ;
+  dbo:dbpedia r:Dioclétien ;
+  dbo:deathDate "311-12-03+02:00"^^xsd:date ;
+  dbo:predecessor r:Carin ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Prisca_(impératrice)> ;
+  dbo:successor r:Constance_Chlore ;
+  dbo:successor <http://fr.dbpedia.org/resource/Galère_(empereur_romain)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Istanbul_-_Museo_archeol._-_Diocleziano_(284-305_d.C.)_-_Foto_G._Dall'Orto_28-5-2006.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Carin ;
+  dbo:wikiPageWikiLink r:Constance_Chlore ;
+  dbo:wikiPageWikiLink r:Galeria_Valeria ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Galère_(empereur_romain)> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Prisca_(impératrice)> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Dioclétien" ;
+  p:dateDeDécès "Aspalathos"@fr ;
+  p:dateDeDécès "311-12-03+02:00"^^xsd:date ;
+  p:dateDeNaissance "Salona"@fr ;
+  p:dateDeNaissance "244-12-22+02:00"^^xsd:date ;
+  p:enfant r:Galeria_Valeria ;
+  p:femme <http://fr.dbpedia.org/resource/Prisca_(impératrice)> ;
+  rdfs:comment "Dioclétien, de son nom complet Caius Aurelius Valerius Diocletianus Augustus (né v. le 22 décembre 244 en Dalmatie - mort le 3 décembre 311), est un empereur romain qui régna du 20 novembre 284 au 1er mai 305.Né dans une famille modeste de Dalmatie, Dioclétien gravit les échelons de l\'armée pour devenir commandant de la cavalerie de l\'empereur Carus. Après la mort de Carus et de son fils Numérien durant la campagne en Perse, il est proclamé empereur."@fr ;
+  rdfs:label "Dioclétien"@fr .
+
+r:Domitia_Longina rdfs:label "Domitia Longina"@fr .
+
+r:Domitia_Lucilla_Minor rdfs:label "Domitia Lucilla Minor"@fr .
+
+r:Domitien a foaf:Person ;
+  dbo:birthDate "51-10-24+02:00"^^xsd:date ;
+  dbo:dbpedia r:Domitien ;
+  dbo:deathDate "96-09-18+02:00"^^xsd:date ;
+  dbo:father r:Vespasien ;
+  dbo:mother <http://fr.dbpedia.org/resource/Domitilla_l'Aînée> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Domitilla_l'Aînée> ;
+  dbo:parent r:Vespasien ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Titus_(empereur_romain)> ;
+  dbo:spouse r:Domitia_Longina ;
+  dbo:successor r:Nerva ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Domiziano_da_collezione_albani,_fine_del_I_sec._dc._02.JPG?width=300> ;
+  dbo:wikiPageWikiLink r:Domitia_Longina ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Domitilla_l'Aînée> ;
+  dbo:wikiPageWikiLink r:Nerva ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Titus_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Vespasien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Domitien" ;
+  p:dateDeDécès "96-09-18+02:00"^^xsd:date ;
+  p:dateDeNaissance "51-10-24+02:00"^^xsd:date ;
+  rdfs:comment "Domitien, né sous le nom de Titus Flavius Domitianus le 24 octobre 51 et mort le 18 septembre 96 à Rome, est empereur romain de 81 jusqu\'à sa mort. Il est le troisième et dernier représentant de la dynastie flavienne."@fr ;
+  rdfs:label "Domitien"@fr .
+
+<http://fr.dbpedia.org/resource/Domitilla_l'Aînée> rdfs:label "Domitilla l\'Aînée"@fr .
+
+r:Domitilla_la_Jeune rdfs:label "Domitilla la Jeune"@fr .
+
+r:Dèce a foaf:Person ;
+  dbo:child r:Herennius_Etruscus ;
+  dbo:child r:Hostilien ;
+  dbo:coemperor r:Herennius_Etruscus ;
+  dbo:dbpedia r:Dèce ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Philippe_l'Arabe> ;
+  dbo:spouse r:Herennia_Etruscilla ;
+  dbo:successor r:Trébonien_Galle ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Emperor_Traianus_Decius_(Mary_Harrsch).jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Herennia_Etruscilla ;
+  dbo:wikiPageWikiLink r:Herennius_Etruscus ;
+  dbo:wikiPageWikiLink r:Hostilien ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Philippe_l'Arabe> ;
+  dbo:wikiPageWikiLink r:Trébonien_Galle ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Dèce" ;
+  p:dateDeDécès "Abrittus"@fr ;
+  p:dateDeDécès "juin 251"@fr ;
+  p:dateDeNaissance "v. 201 - Budalia"@fr ;
+  rdfs:comment "Dèce, appelé aussi Trajan Dèce (Gaius Messius Quintus Trajanus Decius)  (v. 201 - juin 251), est empereur romain de 249 à 251. Il succède à Philippe l\'Arabe contre qui il a mené une révolte. En 251, il associe son fils Herennius au pouvoir et dirige l\'Empire avec lui. Tous deux meurent en juin 251 à la bataille d\'Abrittus."@fr ;
+  rdfs:label "Dèce"@fr .
+
+r:Eparcha_Avita rdfs:label "Eparcha Avita"@fr .
+
+r:Eparchus_Avitus a foaf:Person ;
+  dbo:dbpedia r:Eparchus_Avitus ;
+  dbo:predecessor r:Pétrone_Maxime ;
+  dbo:successor r:Majorien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Tremissis_Avitus-RIC_2402.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Majorien ;
+  dbo:wikiPageWikiLink r:Pétrone_Maxime ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Eparchus_Avitus" ;
+  p:avant r:Pétrone_Maxime ;
+  p:dateDeDécès "fin 456 ou 457"@fr ;
+  p:dateDeNaissance "c.395"@fr ;
+  rdfs:comment "Eparchius Avitus (v. 395 - 456) est un noble arverne qui fut empereur romain d\'Occident de 455 à 456."@fr ;
+  rdfs:label "Eparchus Avitus"@fr .
+
+<http://fr.dbpedia.org/resource/Eudocia_(princesse_romaine)> rdfs:label "Eudocia (princesse romaine)"@fr .
+
+<http://fr.dbpedia.org/resource/Eusébie_(impératrice)> rdfs:label "Eusébie (impératrice)"@fr .
+
+r:Fausta rdfs:label "Fausta"@fr .
+
+<http://fr.dbpedia.org/resource/Faustina_(impératrice)> rdfs:label "Faustina (impératrice)"@fr .
+
+<http://fr.dbpedia.org/resource/Faustine_l'Ancienne> rdfs:label "Faustine l\'Ancienne"@fr .
+
+r:Faustine_la_Jeune rdfs:label "Faustine la Jeune"@fr .
+
+r:Flavia_Titiana rdfs:label "Flavia Titiana"@fr .
+
+r:Flavius_Anicius_Olybrius a foaf:Person ;
+  dbo:child r:Anicia_Juliana ;
+  dbo:dbpedia r:Flavius_Anicius_Olybrius ;
+  dbo:predecessor r:Anthémius ;
+  dbo:spouse r:Galla_Placidia_la_Jeune ;
+  dbo:successor r:Glycérius ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Anicius_Olybrius.png?width=300> ;
+  dbo:wikiPageWikiLink r:Anicia_Juliana ;
+  dbo:wikiPageWikiLink r:Anthémius ;
+  dbo:wikiPageWikiLink r:Galla_Placidia_la_Jeune ;
+  dbo:wikiPageWikiLink r:Glycérius ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Flavius_Anicius_Olybrius" ;
+  p:dateDeDécès "0001-10-23+02:00"^^xsd:gMonthDay ;
+  p:enfant r:Anicia_Juliana ;
+  p:femme r:Galla_Placidia_la_Jeune ;
+  p:règne "0001-10-23+02:00"^^xsd:gMonthDay ;
+  rdfs:comment "Anicius Olybrius, mort le 23 octobre ou le 2 novembre 472, est empereur de l\'Empire romain d\'Occident pendant quelques mois en 472."@fr ;
+  rdfs:label "Flavius Anicius Olybrius"@fr ;
+  rdfs:label "Olybrius"@fr .
+
+r:Flavius_Arcadius rdfs:label "Flavius Arcadius"@fr .
+
+r:Flavius_Honorius a foaf:Person ;
+  dbo:birthDate "384-09-09+02:00"^^xsd:date ;
+  dbo:dbpedia r:Flavius_Honorius ;
+  dbo:deathDate "423-08-15+02:00"^^xsd:date ;
+  dbo:father r:Théodose_Ier ;
+  dbo:mother r:Aelia_Flacilla ;
+  dbo:parent r:Aelia_Flacilla ;
+  dbo:parent r:Théodose_Ier ;
+  dbo:predecessor r:Théodose_Ier ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Marie_(fille_de_Stilicon)> ;
+  dbo:spouse r:Thermantia ;
+  dbo:successor <http://fr.dbpedia.org/resource/Jean_(usurpateur)> ;
+  dbo:successor r:Valentinien_III ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Solidus_Honorius_402_76001657.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Aelia_Flacilla ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Jean_(usurpateur)> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Marie_(fille_de_Stilicon)> ;
+  dbo:wikiPageWikiLink r:Thermantia ;
+  dbo:wikiPageWikiLink r:Théodose_Ier ;
+  dbo:wikiPageWikiLink r:Valentinien_III ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Flavius_Honorius" ;
+  p:dateDeDécès "423-08-15+02:00"^^xsd:date ;
+  p:dateDeNaissance "384-09-09+02:00"^^xsd:date ;
+  rdfs:comment "Flavius Honorius (9 septembre 384 - 15 août 423) est fait coempereur par son père Théodose Ier dans la partie occidentale de l\'Empire romain à partir de 393. Puis, par division effective à la mort de Théodose, il est empereur romain d\'Occident de 395 à sa mort en 423. Son frère aîné, Flavius Arcadius, gouverna l\'Empire romain d\'Orient."@fr ;
+  rdfs:label "Flavius Honorius"@fr .
+
+r:Flavius_Julius_Constantius rdfs:label "Jules Constance"@fr .
+
+r:Flavius_Oreste rdfs:label "Flavius Oreste"@fr .
+
+r:Florien a foaf:Person ;
+  dbo:dbpedia r:Florien ;
+  dbo:predecessor r:Marcus_Claudius_Tacite ;
+  dbo:successor <http://fr.dbpedia.org/resource/Probus_(empereur)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Antoninianus_Florianus-unpub_ant_hercules.jpg?width=300> ;
+  dbo:usurper <http://fr.dbpedia.org/resource/Probus_(empereur)> ;
+  dbo:wikiPageWikiLink r:Marcus_Claudius_Tacite ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Probus_(empereur)> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Florien" ;
+  p:dateDeDécès "septembre 276 - Tarse"@fr ;
+  p:usurpateur <http://fr.dbpedia.org/resource/Probus_(empereur)> ;
+  rdfs:comment "Florien (Marcus Annius Florianus Pius) est empereur romain de juin à août 276."@fr ;
+  rdfs:label "Florien"@fr .
+
+r:Galba a foaf:Person ;
+  dbo:birthDate "-3-12-24+02:00"^^xsd:date ;
+  dbo:dbpedia r:Galba ;
+  dbo:deathDate "69-01-15+02:00"^^xsd:date ;
+  dbo:father <http://fr.dbpedia.org/resource/Caius_Sulpicius_Galba_(consul_en_-5)> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Caius_Sulpicius_Galba_(consul_en_-5)> ;
+  dbo:predecessor r:Néron ;
+  dbo:successor <http://fr.dbpedia.org/resource/Othon_(empereur_romain)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/017_Galba.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Caius_Sulpicius_Galba_(consul_en_-5)> ;
+  dbo:wikiPageWikiLink r:Néron ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Othon_(empereur_romain)> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Galba" ;
+  p:dateDeDécès "69-01-15+02:00"^^xsd:date ;
+  p:dateDeNaissance "près de Terracine"@fr ;
+  p:dateDeNaissance "-3-12-24+02:00"^^xsd:date ;
+  rdfs:comment "Galba (24 décembre 3 av. J.-C. - 15 janvier 69 apr. J.-C.) (latin : Servius Sulpicius Galba Imperator Caesar Augustus) est un empereur romain, qui régna de juin 68 jusqu\'à sa mort. Sixième empereur depuis Auguste, il fut aussi le premier de l\'année des quatre empereurs."@fr ;
+  rdfs:label "Galba"@fr .
+
+r:Galeria_Fundana rdfs:label "Galeria Fundana"@fr .
+
+r:Galeria_Valeria rdfs:label "Galeria Valeria"@fr .
+
+r:Galla_Placidia rdfs:label "Galla Placidia"@fr .
+
+r:Galla_Placidia_la_Jeune rdfs:label "Galla Placidia la Jeune"@fr .
+
+r:Gallien a foaf:Person ;
+  dbo:child r:Salonin ;
+  dbo:child r:Valérien_II ;
+  dbo:coemperor r:Valérien ;
+  dbo:dbpedia r:Gallien ;
+  dbo:father r:Valérien ;
+  dbo:mother r:Mariniane ;
+  dbo:parent r:Mariniane ;
+  dbo:parent r:Valérien ;
+  dbo:predecessor r:Émilien ;
+  dbo:spouse r:Salonine ;
+  dbo:successor r:Claude_II_le_Gothique ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Altes_Museum-Gallienus.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Claude_II_le_Gothique ;
+  dbo:wikiPageWikiLink r:Mariniane ;
+  dbo:wikiPageWikiLink r:Salonin ;
+  dbo:wikiPageWikiLink r:Salonine ;
+  dbo:wikiPageWikiLink r:Valérien ;
+  dbo:wikiPageWikiLink r:Valérien_II ;
+  dbo:wikiPageWikiLink r:Émilien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Gallien" ;
+  p:dateDeDécès "Mediolanum"@fr ;
+  p:dateDeDécès "septembre 268"@fr ;
+  p:dateDeNaissance "c.218"@fr ;
+  rdfs:comment "Gallien (Publius Licinius Egnatius Gallienus) (218 - 268) est empereur romain d\'octobre 253 à septembre 268. Jusqu\'en 260, il partage le pouvoir avec son père Valérien. Il est le dernier membre de l\'ordre sénatorial à devenir empereur. Après lui, ses successeurs ne sont plus que des militaires. Son règne a été l\'une des périodes les plus critiques pour l\'Empire romain."@fr ;
+  rdfs:label "Gallien"@fr .
+
+<http://fr.dbpedia.org/resource/Galère_(empereur_romain)> a foaf:Person ;
+  dbo:child r:Valeria_Maximilla ;
+  dbo:coemperor <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:coemperor r:Licinius ;
+  dbo:coemperor r:Maximin_II_Daïa ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Galère_(empereur_romain)> ;
+  dbo:deathDate "311-05-05+02:00"^^xsd:date ;
+  dbo:predecessor r:Dioclétien ;
+  dbo:predecessor r:Maximien_Hercule ;
+  dbo:spouse r:Galeria_Valeria ;
+  dbo:successor <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:successor r:Licinius ;
+  dbo:successor r:Maximin_II_Daïa ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Romuliana_Galerius_head.jpg?width=300> ;
+  dbo:usurper <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:usurper r:Maximien_Hercule ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Constantin_Ier_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Dioclétien ;
+  dbo:wikiPageWikiLink r:Galeria_Valeria ;
+  dbo:wikiPageWikiLink r:Licinius ;
+  dbo:wikiPageWikiLink r:Maximien_Hercule ;
+  dbo:wikiPageWikiLink r:Maximin_II_Daïa ;
+  dbo:wikiPageWikiLink r:Valeria_Maximilla ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Galère_(empereur_romain)" ;
+  p:dateDeDécès "311-05-05+02:00"^^xsd:date ;
+  p:dateDeNaissance "v. 250 - Felix Romuliana"@fr ;
+  p:enfant r:Valeria_Maximilla ;
+  p:femme r:Galeria_Valeria ;
+  rdfs:comment "Maximien Galère, dit Galère (Caius Galerius Valerius Maximianus en latin), né vers 250 à Felix Romuliana et mort en avril 311 en Dardanie, est un empereur romain du Bas-Empire ayant régné pendant la Tétrarchie.Originaire d\'une famille thrace très modeste, Galère entre très tôt dans l\'armée et progresse rapidement dans la hiérarchie militaire. Repéré par l\'empereur Dioclétien, il épouse sa fille Valeria et devient son César, soit son vice-empereur, responsable de l\'Illyrie, en 293."@fr ;
+  rdfs:label "Galère (empereur romain)"@fr .
+
+r:Germanicus rdfs:label "Germanicus"@fr .
+
+r:Glycérius a foaf:Person ;
+  dbo:dbpedia r:Glycérius ;
+  dbo:predecessor r:Flavius_Anicius_Olybrius ;
+  dbo:successor r:Julius_Nepos ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Glicerio_-_MNR_Palazzo_Massimo.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Flavius_Anicius_Olybrius ;
+  dbo:wikiPageWikiLink r:Julius_Nepos ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Glycérius" ;
+  p:dateDeDécès "après 480"@fr ;
+  p:dateDeNaissance "c.420"@fr ;
+  rdfs:comment "Flavius Glycerius, ou Glycère, est un empereur romain régnant de mars 473 à juin 474. D\'obscure origine, il semble être un ancien serviteur du prince burgonde Gondebaud, alors en Italie où il mène une carrière politico-militaire, et peut-être le chef de la garde personnelle de celui-ci."@fr ;
+  rdfs:label "Glycérius"@fr .
+
+r:Gordien_III a foaf:Person ;
+  dbo:birthDate "225-01-20+02:00"^^xsd:date ;
+  dbo:dbpedia r:Gordien_III ;
+  dbo:deathDate "244-02-11+02:00"^^xsd:date ;
+  dbo:predecessor r:Maxime_Pupien ;
+  dbo:spouse r:Tranquilline ;
+  dbo:successor <http://fr.dbpedia.org/resource/Philippe_l'Arabe> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Gordien_III_-_Musée_de_Pergame_-_Berlin.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Maxime_Pupien ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Philippe_l'Arabe> ;
+  dbo:wikiPageWikiLink r:Tranquilline ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Gordien_III" ;
+  p:dateDeDécès "Circesium"@fr ;
+  p:dateDeDécès "244-02-11+02:00"^^xsd:date ;
+  p:dateDeNaissance "225-01-20+02:00"^^xsd:date ;
+  p:femme r:Tranquilline ;
+  rdfs:comment "Gordien III (Marcus Antonius Gordianus Pius) (20 janvier 225 - 11 février 244) est empereur romain de 238 à 244, pendant la période dite de l\'« Anarchie militaire »."@fr ;
+  rdfs:label "Gordien III"@fr .
+
+r:Gordien_Ier rdfs:label "Gordien Ier"@fr .
+
+r:Gratien rdfs:label "Gratien"@fr .
+
+r:Hadrien a foaf:Person ;
+  dbo:birthDate "76-01-24+02:00"^^xsd:date ;
+  dbo:dbpedia r:Hadrien ;
+  dbo:deathDate "138-07-10+02:00"^^xsd:date ;
+  dbo:father r:Publius_Aelius_Hadrianus_Afer ;
+  dbo:parent r:Publius_Aelius_Hadrianus_Afer ;
+  dbo:predecessor r:Trajan ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Sabine_(épouse_d'Hadrien)> ;
+  dbo:successor r:Antonin_le_Pieux ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Emperor_Hadrian_Louvre_Ma3131_n2.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Antonin_le_Pieux ;
+  dbo:wikiPageWikiLink r:Publius_Aelius_Hadrianus_Afer ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Sabine_(épouse_d'Hadrien)> ;
+  dbo:wikiPageWikiLink r:Trajan ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Hadrien" ;
+  p:dateDeDécès "Baïes, Campanie, Italie"@fr ;
+  p:dateDeDécès "138-07-10+02:00"^^xsd:date ;
+  p:dateDeNaissance "Rome, Italie ou Italica, Hispanie"@fr ;
+  p:dateDeNaissance "76-01-24+02:00"^^xsd:date ;
+  p:femme <http://fr.dbpedia.org/resource/Sabine_(épouse_d'Hadrien)> ;
+  rdfs:comment "Hadrien (Imperator Caesar Traianus Hadrianus Augustus, en grec Ἁδριανός ou Ἀδριανός), né le 24 janvier 76 à Italica et mort le 10 juillet 138 à Baïes, est un empereur romain de la dynastie des Antonins. Il succède en 117 à Trajan et règne jusqu\'à sa mort."@fr ;
+  rdfs:label "Hadrien"@fr .
+
+r:Herennia_Etruscilla rdfs:label "Herennia Etruscilla"@fr .
+
+r:Herennius_Etruscus rdfs:label "Herennius Etruscus"@fr .
+
+r:Hostilien rdfs:label "Hostilianus"@fr .
+
+r:Héliogabale a foaf:Person ;
+  dbo:dbpedia r:Héliogabale ;
+  dbo:deathDate "222-03-11+02:00"^^xsd:date ;
+  dbo:father r:Sextus_Varius_Marcellus ;
+  dbo:mother r:Julia_Soaemias ;
+  dbo:parent r:Julia_Soaemias ;
+  dbo:parent r:Sextus_Varius_Marcellus ;
+  dbo:predecessor r:Macrin ;
+  dbo:spouse r:Annia_Faustina ;
+  dbo:spouse r:Julia_Aquilia_Severa ;
+  dbo:spouse r:Julia_Paula ;
+  dbo:successor r:Sévère_Alexandre ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Elagabalo_(203_o_204-222_d.C)_-_Musei_capitolini_-_Foto_Giovanni_Dall'Orto_-_15-08-2000.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Annia_Faustina ;
+  dbo:wikiPageWikiLink r:Julia_Aquilia_Severa ;
+  dbo:wikiPageWikiLink r:Julia_Paula ;
+  dbo:wikiPageWikiLink r:Julia_Soaemias ;
+  dbo:wikiPageWikiLink r:Macrin ;
+  dbo:wikiPageWikiLink r:Sextus_Varius_Marcellus ;
+  dbo:wikiPageWikiLink r:Sévère_Alexandre ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Héliogabale" ;
+  p:dateDeDécès "222-03-11+02:00"^^xsd:date ;
+  p:dateDeNaissance "v. 203 - Émèse"@fr ;
+  p:règne "222-03-11+02:00"^^xsd:date ;
+  rdfs:comment "Héliogabale ou Élagabal (Varius Avitus Bassianus) (v. 203 - 11 mars 222) est empereur romain de 218 à 222 sous le nom de Marcus Aurelius Antoninus.Il nait, vers 203, à Émèse, en Syrie. C\'est le fils de Julia Soemias et de Varius Marcellus. Par sa mère, il est l\'arrière-petit-fils de Julius Bassianus d\'Émèse, le petit-neveu par alliance de l\'empereur Septime Sévère, qui avait épousé sa grand-tante Julia Domna en secondes noces, et le neveu de Caracalla."@fr ;
+  rdfs:label "Héliogabale"@fr ;
+  rdfs:label "Élagabal (empereur)"@fr .
+
+<http://fr.dbpedia.org/resource/Hélène_(femme_de_Julien)> rdfs:label "Hélène (femme de Julien)"@fr .
+
+<http://fr.dbpedia.org/resource/Hélène_(mère_de_Constantin)> rdfs:label "Hélène (mère de Constantin)"@fr .
+
+<http://fr.dbpedia.org/resource/Jean_(usurpateur)> a foaf:Person ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Jean_(usurpateur)> ;
+  dbo:predecessor r:Flavius_Honorius ;
+  dbo:successor r:Valentinien_III ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Solidus_Johannes-s4283.png?width=300> ;
+  dbo:wikiPageWikiLink r:Flavius_Honorius ;
+  dbo:wikiPageWikiLink r:Valentinien_III ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Jean_(usurpateur)" ;
+  p:dateDeDécès "mai 425"@fr ;
+  p:règneDe r:Valentinien_III ;
+  rdfs:comment "Jean, mort en 425 à Aquilée (Italie), est un haut fonctionnaire romain élevé au rang d\'empereur romain d\'Occident en 423, considéré comme usurpateur, et éliminé dès 425 par l\'intervention de Théodose II, empereur d\'Orient, en faveur de son cousin Valentinien III."@fr ;
+  rdfs:label "Jean (usurpateur)"@fr .
+
+r:Jovien a foaf:Person ;
+  dbo:dbpedia r:Jovien ;
+  dbo:deathDate "364-02-17+02:00"^^xsd:date ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Julien_(empereur_romain)> ;
+  dbo:successor r:Valentinien_Ier ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/JOVIAN_-_RIC_VIII_223_-_671793.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Julien_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Valentinien_Ier ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Jovien" ;
+  p:dateDeDécès "Drépane"@fr ;
+  p:dateDeDécès "364-02-17+02:00"^^xsd:date ;
+  p:dateDeNaissance "c.332 - Singidunum"@fr ;
+  rdfs:comment "Jovien, Flavius Claudius Jovianus (v.332 - 17 février 364), est empereur romain de 363 à 364. On ne sait quasiment rien de sa vie avant l\'expédition en Perse de Julien."@fr ;
+  rdfs:label "Jovien"@fr .
+
+r:Jules_César rdfs:label "Jules César"@fr .
+
+r:Julia_Aquilia_Severa rdfs:label "Julia Aquilia Severa"@fr .
+
+r:Julia_Caesaris_filia rdfs:label "Julia Caesaris filia"@fr .
+
+r:Julia_Domna rdfs:label "Julia Domna"@fr .
+
+<http://fr.dbpedia.org/resource/Julia_Drusilla_(fille_de_Caligula)> rdfs:label "Julia Drusilla (fille de Caligula)"@fr .
+
+r:Julia_Mamaea rdfs:label "Julia Mamaea"@fr .
+
+r:Julia_Paula rdfs:label "Julia Paula"@fr .
+
+r:Julia_Soaemias rdfs:label "Julia Soaemias"@fr .
+
+r:Julia_Titi rdfs:label "Julia Titi"@fr .
+
+<http://fr.dbpedia.org/resource/Julien_(empereur_romain)> a foaf:Person ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Julien_(empereur_romain)> ;
+  dbo:deathDate "363-06-26+02:00"^^xsd:date ;
+  dbo:father r:Flavius_Julius_Constantius ;
+  dbo:mother r:Basilina ;
+  dbo:parent r:Basilina ;
+  dbo:parent r:Flavius_Julius_Constantius ;
+  dbo:predecessor r:Constance_II ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Hélène_(femme_de_Julien)> ;
+  dbo:successor r:Jovien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/JulianusII-antioch(360-363)-CNG.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Basilina ;
+  dbo:wikiPageWikiLink r:Constance_II ;
+  dbo:wikiPageWikiLink r:Flavius_Julius_Constantius ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Hélène_(femme_de_Julien)> ;
+  dbo:wikiPageWikiLink r:Jovien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Julien_(empereur_romain)" ;
+  p:dateDeDécès "Ctesiphon"@fr ;
+  p:dateDeDécès "363-06-26+02:00"^^xsd:date ;
+  p:dateDeNaissance 331 ;
+  rdfs:comment "Flavius Claudius Julianus (331 ou 332 - 26 juin 363), nommé Julien l\'Apostat par la tradition chrétienne, également appelé Julien le Philosophe ou Julien II (par référence au précédent empereur Didius Julianus), ou encore Julien l\'Empereur, est nommé César en Gaule de 355 à 361 par Constance II, puis proclamé empereur romain à part entière de 361 à 363."@fr ;
+  rdfs:label "Julien (empereur romain)"@fr .
+
+r:Julius_Caesar_Drusus rdfs:label "Julius Caesar Drusus"@fr .
+
+r:Julius_Nepos a foaf:Person ;
+  dbo:dbpedia r:Julius_Nepos ;
+  dbo:predecessor r:Glycérius ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Léon_Ier_(empereur_byzantin)> ;
+  dbo:successor r:Romulus_Augustule ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Tremissis_Julius_Nepos-RIC_3221.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Glycérius ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Léon_Ier_(empereur_byzantin)> ;
+  dbo:wikiPageWikiLink r:Romulus_Augustule ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Julius_Nepos" ;
+  p:dateDeDécès "- Dalmatie"@fr ;
+  p:dateDeDécès "0001-04-25+02:00"^^xsd:gMonthDay ;
+  p:dateDeNaissance "c.430"@fr ;
+  rdfs:comment "Flavius Julius Nepos (v. 430 - 480) est empereur romain d\'Occident de juin 474 à août 475. Fils de Nepotianus, il est le neveu par alliance de l’impératrice Aelia Verina, épouse de Léon Ier l’empereur d’Orient.Flavius Julius Nepos a été César, pour l\'Occident, du début ( 9 ?) février 474 au 24 juin 474, date à laquelle il a été élevé Auguste pour l\'Occident."@fr ;
+  rdfs:label "Julius Nepos"@fr .
+
+r:Junia_Claudilla rdfs:label "Junia Claudilla"@fr .
+
+<http://fr.dbpedia.org/resource/Justine_(impératrice)> rdfs:label "Justina"@fr .
+
+r:Libius_Severus a foaf:Person ;
+  dbo:dbpedia r:Libius_Severus ;
+  dbo:predecessor r:Majorien ;
+  dbo:successor r:Anthémius ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/As_Libius_Severus-Ricimer_MonogramRIC_2716.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Anthémius ;
+  dbo:wikiPageWikiLink r:Majorien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Libius_Severus" ;
+  p:dateDeDécès "septembre 465"@fr ;
+  rdfs:comment "Sévère III (en latin Libius Severus) est un empereur romain d\'Occident mort en septembre 465.Il est nommé empereur en novembre 461 par le patrice Ricimer, mais n\'est pas reconnu par l\'empereur d\'Orient, ni par les Romains de Dalmatie ou de Gaule, qui font presque sécession. Tout le pouvoir est exercé par Ricimer.Il meurt en septembre 465, après un règne si inexistant qu\'aucun successeur immédiat ne lui est nommé."@fr ;
+  rdfs:label "Libius Severus"@fr .
+
+r:Licinia_Eudoxia rdfs:label "Licinia Eudoxia"@fr .
+
+r:Licinius rdfs:label "Licinius"@fr .
+
+r:Livia_Orestilla rdfs:label "Livia Orestilla"@fr .
+
+r:Livie rdfs:label "Livie"@fr .
+
+r:Lollia_Paulina rdfs:label "Lollia Paulina"@fr .
+
+r:Lucilla rdfs:label "Lucille (impératrice)"@fr .
+
+r:Lucius_Aelius rdfs:label "Lucius Aelius"@fr .
+
+r:Lucius_Aurelius_Verus a foaf:Person ;
+  dbo:birthDate "130-12-15+02:00"^^xsd:date ;
+  dbo:coemperor r:Marc_Aurèle ;
+  dbo:dbpedia r:Lucius_Aurelius_Verus ;
+  dbo:father r:Lucius_Aelius ;
+  dbo:mother r:Avidia ;
+  dbo:parent r:Avidia ;
+  dbo:parent r:Lucius_Aelius ;
+  dbo:predecessor r:Antonin_le_Pieux ;
+  dbo:spouse r:Lucilla ;
+  dbo:successor r:Marc_Aurèle ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Lucius_Verus_-_MET_-_L.2007.26.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Antonin_le_Pieux ;
+  dbo:wikiPageWikiLink r:Avidia ;
+  dbo:wikiPageWikiLink r:Lucilla ;
+  dbo:wikiPageWikiLink r:Lucius_Aelius ;
+  dbo:wikiPageWikiLink r:Marc_Aurèle ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Lucius_Aurelius_Verus" ;
+  p:coEmpereur r:Marc_Aurèle ;
+  p:dateDeDécès "Altinum"@fr ;
+  p:dateDeNaissance "130-12-15+02:00"^^xsd:date ;
+  p:femme r:Lucilla ;
+  rdfs:comment "Lucius Aurelius Verus, né à Rome le 15 décembre 130 sous le nom de Lucius Ceionius Commodus, adopté en 138 par Antonin le Pieux sous le nom de Lucius Aelius Aurelius Commodus, est coempereur romain avec Marc Aurèle du 8 mars 161 à janvier 169, date de sa mort à Altinum en Vénétie."@fr ;
+  rdfs:label "Lucius Aurelius Verus"@fr ;
+  rdfs:label "Lucius Verus"@fr .
+
+r:Lucius_Vitellius rdfs:label "Lucius Vitellius"@fr .
+
+<http://fr.dbpedia.org/resource/Léon_Ier_(empereur_byzantin)> rdfs:label "Léon Ier (empereur byzantin)"@fr .
+
+r:Macrin a foaf:Person ;
+  dbo:child r:Diaduménien ;
+  dbo:coemperor r:Diaduménien ;
+  dbo:dbpedia r:Macrin ;
+  dbo:predecessor r:Caracalla ;
+  dbo:spouse r:Nonia_Celsa ;
+  dbo:successor r:Héliogabale ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Aureus_Macrinus-RIC_0079.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Caracalla ;
+  dbo:wikiPageWikiLink r:Diaduménien ;
+  dbo:wikiPageWikiLink r:Héliogabale ;
+  dbo:wikiPageWikiLink r:Nonia_Celsa ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Macrin" ;
+  p:dateDeDécès "juin 218  - en Cappadoce"@fr ;
+  p:dateDeNaissance "c.165 - Césarée de Maurétanie Césarienne"@fr ;
+  p:enfant r:Diaduménien ;
+  rdfs:comment "Macrin (Marcus Opellius Macrinus) (v. 165 - 218) est un empereur romain qui régna de 217 à 218. Macrin est le premier empereur romain à être issu directement de l\'ordre équestre. Il était originaire de Maurétanie Césarienne, .↑ « Dion Cassius, LXXXIX, le dit de « race maure » », Paul Petit, Histoire générale de l\'Empire romain, Seuil, 1974, p.331.↑ « simple chevalier d\'origine maure », Lucien Jerphagnon, Les divins Césars, Tallandier, 2004, p.208"@fr ;
+  rdfs:label "Macrin"@fr .
+
+r:Magnia_Urbica rdfs:label "Magnia Urbica"@fr .
+
+r:Majorien a foaf:Person ;
+  dbo:dbpedia r:Majorien ;
+  dbo:deathDate "461-08-07+02:00"^^xsd:date ;
+  dbo:predecessor r:Eparchus_Avitus ;
+  dbo:successor r:Libius_Severus ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/As_Majorian-RIC_2646v.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Eparchus_Avitus ;
+  dbo:wikiPageWikiLink r:Libius_Severus ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Majorien" ;
+  p:dateDeDécès "461-08-07+02:00"^^xsd:date ;
+  p:dateDeNaissance "vers 420"@fr ;
+  rdfs:comment "Flavius Julius Valerius Majorianus, dit Majorien (vers 420 - 7 août 461), règne sur l’Empire romain d\'Occident de 457 à 461. Il fut le dernier empereur qui se déplaça dans le réduit romain formé par l’Italie, le sud de la Gaule et la façade méditerranéenne de l’Espagne."@fr ;
+  rdfs:label "Majorien"@fr .
+
+r:Manlia_Scantilla rdfs:label "Manlia Scantilla"@fr .
+
+r:Marc_Aurèle a foaf:Person ;
+  dbo:birthDate "121-04-26+02:00"^^xsd:date ;
+  dbo:child <http://fr.dbpedia.org/resource/Commode_(empereur)> ;
+  dbo:child r:Lucilla ;
+  dbo:dbpedia r:Marc_Aurèle ;
+  dbo:deathDate "180-03-17+02:00"^^xsd:date ;
+  dbo:father <http://fr.dbpedia.org/resource/Marcus_Annius_Verus_(préteur)> ;
+  dbo:mother r:Domitia_Lucilla_Minor ;
+  dbo:parent r:Domitia_Lucilla_Minor ;
+  dbo:parent <http://fr.dbpedia.org/resource/Marcus_Annius_Verus_(préteur)> ;
+  dbo:predecessor r:Antonin_le_Pieux ;
+  dbo:spouse r:Faustine_la_Jeune ;
+  dbo:successor <http://fr.dbpedia.org/resource/Commode_(empereur)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/L'Image_et_le_Pouvoir_-_Buste_cuirassé_de_Marc_Aurèle_agé_-_3.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Antonin_le_Pieux ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Commode_(empereur)> ;
+  dbo:wikiPageWikiLink r:Domitia_Lucilla_Minor ;
+  dbo:wikiPageWikiLink r:Faustine_la_Jeune ;
+  dbo:wikiPageWikiLink r:Lucilla ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Marcus_Annius_Verus_(préteur)> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Marc_Aurèle" ;
+  p:dateDeDécès "à Vindobona, Pannonie"@fr ;
+  p:dateDeDécès "180-03-17+02:00"^^xsd:date ;
+  p:dateDeNaissance "à Rome, Italie"@fr ;
+  p:dateDeNaissance "121-04-26+02:00"^^xsd:date ;
+  p:femme r:Faustine_la_Jeune ;
+  rdfs:comment "Marc Aurèle (26 avril 121 à  Rome – 17 mars 180, probablement à Vindobona) est un empereur romain, ainsi qu\'un philosophe stoïcien qui dirige l\'Empire romain à son apogée. Il accède au pouvoir le 7 mars 161 et règne jusqu\'à sa mort qui correspond à la fin de la Pax Romana.Marcus Annius Verus (initialement Marcus Catilius Severus) prend, après son adoption par l\'empereur Antonin le Pieux, le nom de Marcus Ælius Aurelius Verus."@fr ;
+  rdfs:label "Marc Aurèle"@fr .
+
+r:Marcia rdfs:label "Marcia"@fr .
+
+r:Marcia_Euphemia rdfs:label "Marcia Euphemia"@fr .
+
+r:Marcia_Furnilla rdfs:label "Marcia Furnilla"@fr .
+
+r:Marcia_Otacilia_Severa rdfs:label "Otacilie"@fr .
+
+<http://fr.dbpedia.org/resource/Marcus_Annius_Verus_(préteur)> rdfs:label "Marcus Annius Verus (préteur)"@fr .
+
+r:Marcus_Claudius_Tacite a foaf:Person ;
+  dbo:dbpedia r:Marcus_Claudius_Tacite ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Aurélien_(empereur_romain)> ;
+  dbo:successor r:Florien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/EmpereurTacite.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Aurélien_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Florien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Marcus_Claudius_Tacite" ;
+  p:dateDeDécès "Tyane"@fr ;
+  p:dateDeDécès "juin 276"@fr ;
+  p:dateDeNaissance "c.200 - Interamna"@fr ;
+  rdfs:comment "Marcus Claudius Tacite (v.200 - 276) est empereur romain de 275 à 276."@fr ;
+  rdfs:label "Marcus Claudius Tacite"@fr .
+
+r:Marcus_Ulpius_Traianus rdfs:label "Marcus Ulpius Traianus"@fr .
+
+<http://fr.dbpedia.org/resource/Marie_(fille_de_Stilicon)> rdfs:label "Marie (fille de Stilicon)"@fr .
+
+r:Marina_Severa rdfs:label "Marina Severa"@fr .
+
+r:Mariniane rdfs:label "Mariniane"@fr .
+
+r:Maxime_Pupien a foaf:Person ;
+  dbo:dbpedia r:Maxime_Pupien ;
+  dbo:predecessor r:Gordien_Ier ;
+  dbo:predecessor r:Maximin_Ier_le_Thrace ;
+  dbo:successor r:Gordien_III ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/071_Pupienus_29_mm_ext.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Gordien_III ;
+  dbo:wikiPageWikiLink r:Gordien_Ier ;
+  dbo:wikiPageWikiLink r:Maximin_Ier_le_Thrace ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Maxime_Pupien" ;
+  p:dateDeDécès "0001-07-29+02:00"^^xsd:gMonthDay ;
+  p:dateDeNaissance "c.178"@fr ;
+  rdfs:comment "Maxime Pupien (Marcus Clodius Pupienus Maximus) est empereur romain de février à mai 238, conjointement avec Balbin."@fr ;
+  rdfs:label "Maxime Pupien"@fr .
+
+r:Maximien_Hercule rdfs:label "Maximien Hercule"@fr .
+
+r:Maximin_II_Daïa rdfs:label "Maximin II Daïa"@fr .
+
+r:Maximin_Ier_le_Thrace a foaf:Person ;
+  dbo:dbpedia r:Maximin_Ier_le_Thrace ;
+  dbo:predecessor r:Sévère_Alexandre ;
+  dbo:spouse <http://fr.dbpedia.org/resource/236> ;
+  dbo:spouse r:Caecilia_Paulina ;
+  dbo:successor r:Gordien_Ier ;
+  dbo:successor r:Maxime_Pupien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Max_thrax.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/236> ;
+  dbo:wikiPageWikiLink r:Caecilia_Paulina ;
+  dbo:wikiPageWikiLink r:Gordien_Ier ;
+  dbo:wikiPageWikiLink r:Maxime_Pupien ;
+  dbo:wikiPageWikiLink r:Sévère_Alexandre ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Maximin_Ier_le_Thrace" ;
+  p:dateDeDécès "Aquilée"@fr ;
+  p:dateDeDécès "avril 238"@fr ;
+  p:dateDeNaissance "v. 173 - Thrace ou Mésie"@fr ;
+  rdfs:comment "Maximin Ier le Thrace ou Maximin Ier ou Maximin le Thrace (Caius Julius Verus Maximinus Thrax) (° vers 173 - †238) est un empereur romain qui régna de 235 à 238, pendant la période dite de l\'« Anarchie militaire »."@fr ;
+  rdfs:label "Maximin Ier le Thrace"@fr .
+
+r:Messaline rdfs:label "Messaline"@fr .
+
+r:Minervina rdfs:label "Minervina"@fr .
+
+r:Nero_Claudius_Drusus rdfs:label "Nero Claudius Drusus"@fr .
+
+r:Nerva a foaf:Person ;
+  dbo:birthDate "30-11-08+02:00"^^xsd:date ;
+  dbo:dbpedia r:Nerva ;
+  dbo:deathDate "98-01-27+02:00"^^xsd:date ;
+  dbo:predecessor r:Domitien ;
+  dbo:successor r:Trajan ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Nerva_Tivoli_Massimo.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Domitien ;
+  dbo:wikiPageWikiLink r:Trajan ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Nerva" ;
+  p:adopté r:Trajan ;
+  p:dateDeDécès "98-01-27+02:00"^^xsd:date ;
+  p:dateDeNaissance "30-11-08+02:00"^^xsd:date ;
+  rdfs:comment "Nerva, né sous le nom de Marcus Cocceius Nerva le 8 novembre 30 à Narni et mort le 27 janvier 98 à Rome, est empereur romain du 18 septembre 96 jusqu\'à sa mort. À sa mort, il porte le nom de Imperator Nerva Caesar Augustus Germanicus.Nerva devient empereur à l\'âge avancé de 66 ans, après une vie passée au service de l\'Empire sous Néron et les empereurs de la dynastie flavienne."@fr ;
+  rdfs:label "Nerva"@fr .
+
+r:Nonia_Celsa rdfs:label "Nonia Celsa"@fr .
+
+r:Numérien a foaf:Person ;
+  dbo:coemperor r:Carin ;
+  dbo:dbpedia r:Numérien ;
+  dbo:father r:Carus ;
+  dbo:parent r:Carus ;
+  dbo:predecessor r:Carus ;
+  dbo:successor r:Carin ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/AV_Antoninianus_Numerianus.JPG?width=300> ;
+  dbo:wikiPageWikiLink r:Carin ;
+  dbo:wikiPageWikiLink r:Carus ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Numérien" ;
+  p:coEmpereur r:Carin ;
+  p:dateDeDécès "novembre 284"@fr ;
+  p:dateDeDécès "Émèse"@fr ;
+  p:dateDeNaissance "c.253"@fr ;
+  rdfs:comment "Numérien (Marcus Aurelius Numerianus) est empereur romain d\'août 283 à novembre 284."@fr ;
+  rdfs:label "Numérien"@fr .
+
+r:Néron a foaf:Person ;
+  dbo:birthDate "37-12-15+02:00"^^xsd:date ;
+  dbo:child r:Claudia_Augusta ;
+  dbo:dbpedia r:Néron ;
+  dbo:deathDate "68-06-11+02:00"^^xsd:date ;
+  dbo:father <http://fr.dbpedia.org/resource/Cnaeus_Domitius_Ahenobarbus_(consul_en_32)> ;
+  dbo:mother r:Agrippine_la_Jeune ;
+  dbo:parent r:Agrippine_la_Jeune ;
+  dbo:parent <http://fr.dbpedia.org/resource/Cnaeus_Domitius_Ahenobarbus_(consul_en_32)> ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Claude_(empereur_romain)> ;
+  dbo:spouse r:Claudia_Octavia ;
+  dbo:spouse r:Poppée ;
+  dbo:spouse r:Statilia_Messalina ;
+  dbo:successor r:Galba ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Nero_Palatino_Inv618.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Agrippine_la_Jeune ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Claude_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Claudia_Augusta ;
+  dbo:wikiPageWikiLink r:Claudia_Octavia ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Cnaeus_Domitius_Ahenobarbus_(consul_en_32)> ;
+  dbo:wikiPageWikiLink r:Galba ;
+  dbo:wikiPageWikiLink r:Poppée ;
+  dbo:wikiPageWikiLink r:Statilia_Messalina ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Néron" ;
+  p:dateDeDécès "68-06-11+02:00"^^xsd:date ;
+  p:dateDeNaissance "37-12-15+02:00"^^xsd:date ;
+  rdfs:comment "Néron (latin : IMPERATOR NERO CLAVDIVS CAESAR AVGVSTVS GERMANICVS), né Lucius Domitius Ahenobarbus le 15 décembre 37 et mort le 9/11 juin 68, est le cinquième et dernier empereur romain de la dynastie julio-claudienne ; il régna de 54 à 68.Il accède au trône le 13 octobre 54, à la mort de son grand-oncle et père adoptif Claude (Claudius), Empereur de Rome. En 66, il ajoute le titre Imperator à son nom."@fr ;
+  rdfs:label "Néron"@fr .
+
+r:Orbiane rdfs:label "Orbiane"@fr .
+
+<http://fr.dbpedia.org/resource/Othon_(empereur_romain)> a foaf:Person ;
+  dbo:birthDate "32-04-28+02:00"^^xsd:date ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Othon_(empereur_romain)> ;
+  dbo:deathDate "69-04-16+02:00"^^xsd:date ;
+  dbo:predecessor r:Galba ;
+  dbo:spouse r:Poppée ;
+  dbo:successor r:Vitellius ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/OthoDen.jpg?width=300> ;
+  dbo:usurper r:Vitellius ;
+  dbo:wikiPageWikiLink r:Galba ;
+  dbo:wikiPageWikiLink r:Poppée ;
+  dbo:wikiPageWikiLink r:Vitellius ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Othon_(empereur_romain)" ;
+  p:dateDeDécès "69-04-16+02:00"^^xsd:date ;
+  p:dateDeNaissance "32-04-28+02:00"^^xsd:date ;
+  p:usurpateur r:Vitellius ;
+  rdfs:comment "Othon (latin : Imperator Marcus Otho Caesar Augustus) (32-69) est un empereur romain qui régna de janvier à avril 69. Son frère aîné,  Lucius Salvius Otho Titianus, fut consul en 52."@fr ;
+  rdfs:label "Othon (empereur romain)"@fr .
+
+<http://fr.dbpedia.org/resource/Palladius_(César)> rdfs:label "Palladius (César)"@fr .
+
+r:Pertinax a foaf:Person ;
+  dbo:birthDate "126-08-01+02:00"^^xsd:date ;
+  dbo:dbpedia r:Pertinax ;
+  dbo:deathDate "193-03-28+02:00"^^xsd:date ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Commode_(empereur)> ;
+  dbo:spouse r:Flavia_Titiana ;
+  dbo:successor r:Didius_Julianus ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Pertinax.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Commode_(empereur)> ;
+  dbo:wikiPageWikiLink r:Didius_Julianus ;
+  dbo:wikiPageWikiLink r:Flavia_Titiana ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Pertinax" ;
+  p:dateDeDécès "à Rome, Italie"@fr ;
+  p:dateDeDécès "193-03-28+02:00"^^xsd:date ;
+  p:dateDeNaissance "à Alba, Italie"@fr ;
+  p:dateDeNaissance "126-08-01+02:00"^^xsd:date ;
+  rdfs:comment "Publius Helvius Pertinax (latin : Imperator Caesar Publius Helvius Pertinax Augustus), né le 1er août 126 et mort le 28 mars 193, est un empereur romain, qui régna de janvier à mars 193. S\'il ne put pas réellement affirmer une politique particulière durant son court règne, il passe à la postérité comme un empereur favorable au Sénat et représentant des anciennes vertus romaines."@fr ;
+  rdfs:label "Pertinax"@fr .
+
+<http://fr.dbpedia.org/resource/Philippe_II_(empereur_romain)> rdfs:label "Philippe II (empereur romain)"@fr .
+
+<http://fr.dbpedia.org/resource/Philippe_l'Arabe> a foaf:Person ;
+  dbo:child <http://fr.dbpedia.org/resource/Philippe_II_(empereur_romain)> ;
+  dbo:coemperor <http://fr.dbpedia.org/resource/Philippe_II_(empereur_romain)> ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Philippe_l'Arabe> ;
+  dbo:predecessor r:Gordien_III ;
+  dbo:spouse r:Marcia_Otacilia_Severa ;
+  dbo:successor r:Dèce ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Bust_of_emperor_Philippus_Arabus_-_Hermitage_Museum.jpg?width=300> ;
+  dbo:usurper r:Dèce ;
+  dbo:wikiPageWikiLink r:Dèce ;
+  dbo:wikiPageWikiLink r:Gordien_III ;
+  dbo:wikiPageWikiLink r:Marcia_Otacilia_Severa ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Philippe_II_(empereur_romain)> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Philippe_l\'Arabe" ;
+  p:après r:Dèce ;
+  p:avant r:Gordien_III ;
+  p:coEmpereur <http://fr.dbpedia.org/resource/Philippe_II_(empereur_romain)> ;
+  p:dateDeDécès "Vérone"@fr ;
+  p:dateDeDécès "automne 249"@fr ;
+  p:dateDeNaissance "c. 204 - Shahba"@fr ;
+  p:femme r:Marcia_Otacilia_Severa ;
+  rdfs:comment "Philippe l\'Arabe (Imperator Caesar Marcus Iulius Philippus Pius Felix Augustus, Persicus Maximus, Parthicus Maximus, Carpicus Maximus, Germanicus Maximus) (v. 204 - 249) est empereur romain de 244 à 249."@fr ;
+  rdfs:label "Philippe l\'Arabe"@fr .
+
+r:Plautia_Urgulanilla rdfs:label "Plautia Urgulanilla"@fr .
+
+r:Plautille rdfs:label "Fulvia Plautilla"@fr .
+
+r:Plotine rdfs:label "Plotine"@fr .
+
+r:Poppée rdfs:label "Poppée"@fr .
+
+<http://fr.dbpedia.org/resource/Prisca_(impératrice)> rdfs:label "Prisca (impératrice)"@fr .
+
+<http://fr.dbpedia.org/resource/Probus_(empereur)> a foaf:Person ;
+  dbo:birthDate "232-08-19+02:00"^^xsd:date ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Probus_(empereur)> ;
+  dbo:predecessor r:Florien ;
+  dbo:successor r:Carus ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Probus_Musei_Capitolini_MC493.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Carus ;
+  dbo:wikiPageWikiLink r:Florien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Probus_(empereur)" ;
+  p:dateDeDécès "Sirmium"@fr ;
+  p:dateDeDécès "octobre 282"@fr ;
+  p:dateDeNaissance "Sirmium"@fr ;
+  p:dateDeNaissance "232-08-19+02:00"^^xsd:date ;
+  rdfs:comment "Probus (Marcus Aurelius Probus) (v. 232 – 282),  est empereur romain de juillet 276 à octobre 282. Héritant d’un Empire romain réunifié, il continue l’œuvre de sécurisation des frontières et de reconstruction économique entamée par son prédécesseur Aurélien."@fr ;
+  rdfs:label "Probus (Empereur)"@fr ;
+  rdfs:label "Probus (empereur)"@fr .
+
+r:Publius_Aelius_Hadrianus_Afer rdfs:label "Publius Aelius Hadrianus Afer"@fr .
+
+r:Publius_Septimius_Geta a foaf:Person ;
+  dbo:birthDate "189-03-27+02:00"^^xsd:date ;
+  dbo:coemperor r:Caracalla ;
+  dbo:dbpedia r:Publius_Septimius_Geta ;
+  dbo:deathDate "211-12-26+02:00"^^xsd:date ;
+  dbo:father r:Septime_Sévère ;
+  dbo:mother r:Julia_Domna ;
+  dbo:parent r:Julia_Domna ;
+  dbo:parent r:Septime_Sévère ;
+  dbo:predecessor r:Septime_Sévère ;
+  dbo:successor r:Caracalla ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Publius_Septimius_Geta_Louvre_Ma1076_n2.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Caracalla ;
+  dbo:wikiPageWikiLink r:Julia_Domna ;
+  dbo:wikiPageWikiLink r:Septime_Sévère ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Publius_Septimius_Geta" ;
+  p:coEmpereur r:Caracalla ;
+  p:dateDeDécès "211-12-26+02:00"^^xsd:date ;
+  p:dateDeNaissance "189-03-27+02:00"^^xsd:date ;
+  rdfs:comment "Geta (Lucius Publius Septimius Antoninus Geta) (27 mars 189 - 26 décembre 211) est un empereur romain, qui régna en 211.D\'origine berbère,, par son père Septime Sévère, il participa avec son frère aîné Caracalla aux campagnes de son père, lequel, à sa mort, les désigna tous deux pour lui succéder."@fr ;
+  rdfs:label "Publius Septimius Geta"@fr .
+
+r:Pulchérie rdfs:label "Pulchérie"@fr .
+
+r:Pétrone_Maxime a foaf:Person ;
+  dbo:child <http://fr.dbpedia.org/resource/Palladius_(César)> ;
+  dbo:dbpedia r:Pétrone_Maxime ;
+  dbo:deathDate "455-04-22+02:00"^^xsd:date ;
+  dbo:predecessor r:Valentinien_III ;
+  dbo:spouse r:Eparcha_Avita ;
+  dbo:spouse r:Licinia_Eudoxia ;
+  dbo:spouse r:Volusiana ;
+  dbo:successor r:Eparchus_Avitus ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Solidus_Petronius_Maximus-RIC_2201.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Eparcha_Avita ;
+  dbo:wikiPageWikiLink r:Eparchus_Avitus ;
+  dbo:wikiPageWikiLink r:Licinia_Eudoxia ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Palladius_(César)> ;
+  dbo:wikiPageWikiLink r:Valentinien_III ;
+  dbo:wikiPageWikiLink r:Volusiana ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Pétrone_Maxime" ;
+  p:dateDeDécès "455-04-22+02:00"^^xsd:date ;
+  p:dateDeNaissance "c.396"@fr ;
+  rdfs:comment "Petronius Anicius Maximus dit Pétrone Maxime est né vers 396 et est mort à Rome le 31 mai 455. C\'est un empereur romain d\'occident du Ve siècle. Il reste en place de mars à mai 455.Sénateur très en vue de l\'Empire, il complote contre l\'empereur Valentinien III qui a violé son épouse. Il le fait assassiner par Optila et Thraustila qui sont des gardes du corps du général Aetius assassiné à Ravenne le 24 septembre 454."@fr ;
+  rdfs:label "Pétrone Maxime"@fr .
+
+r:Quintillus a foaf:Person ;
+  dbo:dbpedia r:Quintillus ;
+  dbo:predecessor r:Claude_II_le_Gothique ;
+  dbo:successor <http://fr.dbpedia.org/resource/Aurélien_(empereur_romain)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Quintillus-270-Antoninianus-2,51g-(CNG).jpg?width=300> ;
+  dbo:usurper <http://fr.dbpedia.org/resource/Aurélien_(empereur_romain)> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Aurélien_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Claude_II_le_Gothique ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Quintillus" ;
+  p:dateDeDécès "octobre 270 - Aquilée"@fr ;
+  p:dateDeNaissance "Sirmium"@fr ;
+  p:usurpateur <http://fr.dbpedia.org/resource/Aurélien_(empereur_romain)> ;
+  rdfs:comment "Quintillus (Marcus Aurelius Claudius Quintillus) est le frère cadet de l’empereur romain Claude le Gothique et lui succède brièvement d\'août à octobre 270.D. Kienast  et  M. Peachin placent le début de son règne en septembre 270, alors que J.P. Callu pense qu\'il a été associé deux mois à l\'imperium par son frère et n\'a régné que quelques jours tout seul (Orose ne lui donne qu\'un règne de 17 jours)."@fr ;
+  rdfs:label "Quintillus"@fr .
+
+r:Romulus_Augustule a foaf:Person ;
+  dbo:dbpedia r:Romulus_Augustule ;
+  dbo:father r:Flavius_Oreste ;
+  dbo:parent r:Flavius_Oreste ;
+  dbo:predecessor r:Julius_Nepos ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/RomulusAugustus.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Flavius_Oreste ;
+  dbo:wikiPageWikiLink r:Julius_Nepos ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Romulus_Augustule" ;
+  p:dateDeDécès "Castellum Lucullanum"@fr ;
+  p:dateDeDécès "après 476"@fr ;
+  rdfs:comment "Romulus Augustule, ou en latin Flavius Romulus Augustus (vers 460 - 511 (?)), parfois appelé Romulus Augustulus, est le dernier empereur romain d\'Occident, sa chute marquant la fin de l\'Empire romain d\'Occident. Il ne régna que 10 mois, réduit selon les sources à n\'être qu\'une «marionnette» manipulée par son père."@fr ;
+  rdfs:label "Romulus Augustule"@fr .
+
+<http://fr.dbpedia.org/resource/Sabine_(épouse_d'Hadrien)> rdfs:label "Sabine (épouse d\'Hadrien)"@fr .
+
+r:Salonin rdfs:label "Salonin"@fr .
+
+r:Salonine rdfs:label "Cornelia Salonina"@fr .
+
+r:Scribonia rdfs:label "Scribonia (épouse d\'Octavien)"@fr .
+
+r:Septime_Sévère a foaf:Person ;
+  dbo:birthDate "145-04-11+02:00"^^xsd:date ;
+  dbo:child r:Caracalla ;
+  dbo:child r:Publius_Septimius_Geta ;
+  dbo:dbpedia r:Septime_Sévère ;
+  dbo:deathDate "211-02-04+02:00"^^xsd:date ;
+  dbo:predecessor r:Didius_Julianus ;
+  dbo:spouse <http://fr.dbpedia.org/resource/175> ;
+  dbo:spouse r:Julia_Domna ;
+  dbo:successor r:Publius_Septimius_Geta ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Ngv,_testa_di_settimio_severo_193-211,_02.JPG?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/175> ;
+  dbo:wikiPageWikiLink r:Caracalla ;
+  dbo:wikiPageWikiLink r:Didius_Julianus ;
+  dbo:wikiPageWikiLink r:Julia_Domna ;
+  dbo:wikiPageWikiLink r:Publius_Septimius_Geta ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Septime_Sévère" ;
+  p:dateDeDécès "Eboracum"@fr ;
+  p:dateDeDécès "211-02-04+02:00"^^xsd:date ;
+  p:dateDeNaissance "Leptis Magna"@fr ;
+  p:dateDeNaissance "145-04-11+02:00"^^xsd:date ;
+  rdfs:comment "Septime Sévère (Lucius Septimius Severus Pertinax) (11 avril 145 - 4 février 211) est un empereur romain d\'origine africaine, qui règne de 193 à 211. Avec lui commence l\'arrivée au pouvoir de provinciaux d\'ascendance non romaine et la dynastie des Sévères dont il est l\'éponyme. Il est le seul empereur né dans la province d\'Afrique.↑ 1,0 et 1,1 Anthony R. Birley, Septimius Severus: The African Emperor, Londres,  Routledge, (ISBN 0-415-16591-1), (2000) [1971], p. 1↑ Eutrope, VIII, 18."@fr ;
+  rdfs:label "Septime Sévère"@fr .
+
+r:Sextus_Varius_Marcellus rdfs:label "Sextus Varius Marcellus"@fr .
+
+r:Statilia_Messalina rdfs:label "Statilia Messalina"@fr .
+
+r:Sévère_Alexandre a foaf:Person ;
+  dbo:birthDate "208-10-01+02:00"^^xsd:date ;
+  dbo:dbpedia r:Sévère_Alexandre ;
+  dbo:mother r:Julia_Mamaea ;
+  dbo:parent r:Julia_Mamaea ;
+  dbo:predecessor r:Héliogabale ;
+  dbo:spouse r:Orbiane ;
+  dbo:successor r:Maximin_Ier_le_Thrace ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/062_Severus_Alexander.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Héliogabale ;
+  dbo:wikiPageWikiLink r:Julia_Mamaea ;
+  dbo:wikiPageWikiLink r:Maximin_Ier_le_Thrace ;
+  dbo:wikiPageWikiLink r:Orbiane ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Sévère_Alexandre" ;
+  p:dateDeDécès "Moguntiacum"@fr ;
+  p:dateDeDécès "0001-03-19+02:00"^^xsd:gMonthDay ;
+  p:dateDeNaissance "Arca Cæsarea"@fr ;
+  p:dateDeNaissance "208-10-01+02:00"^^xsd:date ;
+  rdfs:comment "Sévère Alexandre (Imperator Caesar Marcus Aurelius Severus Alexander Pius Felix Augustus, Persicus Maximus (?)) est un empereur romain qui régna de 222 à 235. Il est le dernier de la dynastie des Sévères."@fr ;
+  rdfs:label "Sévère Alexandre"@fr .
+
+r:Thermantia rdfs:label "Thermantia"@fr .
+
+r:Théodose_Ier a foaf:Person ;
+  dbo:birthDate "347-01-11+02:00"^^xsd:date ;
+  dbo:child r:Flavius_Arcadius ;
+  dbo:child r:Flavius_Honorius ;
+  dbo:child r:Galla_Placidia ;
+  dbo:child r:Pulchérie ;
+  dbo:coemperor r:Gratien ;
+  dbo:dbpedia r:Théodose_Ier ;
+  dbo:deathDate "395-01-17+02:00"^^xsd:date ;
+  dbo:father <http://fr.dbpedia.org/resource/Théodose_l'Ancien> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Théodose_l'Ancien> ;
+  dbo:predecessor r:Gratien ;
+  dbo:predecessor r:Valens ;
+  dbo:spouse r:Aelia_Flacilla ;
+  dbo:spouse r:Aelia_Galla ;
+  dbo:successor r:Flavius_Arcadius ;
+  dbo:successor r:Flavius_Honorius ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Theodosius_I._Roman_Coin.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Aelia_Flacilla ;
+  dbo:wikiPageWikiLink r:Aelia_Galla ;
+  dbo:wikiPageWikiLink r:Flavius_Arcadius ;
+  dbo:wikiPageWikiLink r:Flavius_Honorius ;
+  dbo:wikiPageWikiLink r:Galla_Placidia ;
+  dbo:wikiPageWikiLink r:Gratien ;
+  dbo:wikiPageWikiLink r:Pulchérie ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Théodose_l'Ancien> ;
+  dbo:wikiPageWikiLink r:Valens ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Théodose_Ier" ;
+  p:dateDeDécès "395-01-17+02:00"^^xsd:date ;
+  p:dateDeNaissance "347-01-11+02:00"^^xsd:date ;
+  rdfs:comment "Théodose Ier, en latin Flavius Theodosius Augustus, aussi nommé Théodose le Grand (du grec ancien θεός, théos, « dieu » et δόσ- radical de δόσις, dosis, « don », plus patronymique -ιος), né en 347 et mort le 17 janvier 395, est empereur romain de 379 à 395, fêté le 17 janvier en tant que saint des Églises chrétiennes,."@fr ;
+  rdfs:label "Théodose Ier"@fr .
+
+<http://fr.dbpedia.org/resource/Théodose_l'Ancien> rdfs:label "Théodose l\'Ancien"@fr .
+
+r:Tiberius_Néron rdfs:label "Tiberius Néron"@fr .
+
+r:Tibère a foaf:Person ;
+  dbo:birthDate "42-11-16+02:00"^^xsd:date ;
+  dbo:child r:Julia_Caesaris_filia ;
+  dbo:child r:Julius_Caesar_Drusus ;
+  dbo:dbpedia r:Tibère ;
+  dbo:deathDate "37-03-16+02:00"^^xsd:date ;
+  dbo:father r:Tiberius_Néron ;
+  dbo:mother r:Livie ;
+  dbo:parent r:Livie ;
+  dbo:parent r:Tiberius_Néron ;
+  dbo:predecessor r:Auguste ;
+  dbo:spouse <http://fr.dbpedia.org/resource/20_av._J.-C.> ;
+  dbo:spouse r:Julia_Caesaris_filia ;
+  dbo:spouse r:Vipsania_Agrippina ;
+  dbo:successor r:Caligula ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Tiberius_palermo.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/20_av._J.-C.> ;
+  dbo:wikiPageWikiLink r:Auguste ;
+  dbo:wikiPageWikiLink r:Caligula ;
+  dbo:wikiPageWikiLink r:Julia_Caesaris_filia ;
+  dbo:wikiPageWikiLink r:Julius_Caesar_Drusus ;
+  dbo:wikiPageWikiLink r:Livie ;
+  dbo:wikiPageWikiLink r:Tiberius_Néron ;
+  dbo:wikiPageWikiLink r:Vipsania_Agrippina ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Tibère" ;
+  p:dateDeDécès "37-03-16+02:00"^^xsd:date ;
+  p:dateDeNaissance "42-11-16+02:00"^^xsd:date ;
+  p:enfant r:Julius_Caesar_Drusus ;
+  rdfs:comment "Tibère (latin : Tiberius Caesar Divi Augusti Filius Augustus), né à Rome le 16 novembre 42 av. J.-C. et mort à Misène le 16 mars 37 ap. J.-C., est le deuxième empereur romain de 14 à 37. Il appartient à la dynastie Julio-Claudienne.C\'est un descendant de la gens Claudia et il porte à la naissance le nom de Tiberius Claudius Nero."@fr ;
+  rdfs:label "Tibère"@fr .
+
+<http://fr.dbpedia.org/resource/Titus_(empereur_romain)> a foaf:Person ;
+  dbo:birthDate "39-12-30+02:00"^^xsd:date ;
+  dbo:child r:Julia_Titi ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Titus_(empereur_romain)> ;
+  dbo:deathDate "81-09-13+02:00"^^xsd:date ;
+  dbo:father r:Vespasien ;
+  dbo:mother <http://fr.dbpedia.org/resource/Domitilla_l'Aînée> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Domitilla_l'Aînée> ;
+  dbo:parent r:Vespasien ;
+  dbo:predecessor r:Vespasien ;
+  dbo:spouse r:Arrecina_Tertulla ;
+  dbo:spouse r:Marcia_Furnilla ;
+  dbo:successor r:Domitien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Head_Titus_Glyptothek_Munich_338.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Arrecina_Tertulla ;
+  dbo:wikiPageWikiLink r:Domitien ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Domitilla_l'Aînée> ;
+  dbo:wikiPageWikiLink r:Julia_Titi ;
+  dbo:wikiPageWikiLink r:Marcia_Furnilla ;
+  dbo:wikiPageWikiLink r:Vespasien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Titus_(empereur_romain)" ;
+  p:dateDeDécès "81-09-13+02:00"^^xsd:date ;
+  p:dateDeNaissance "39-12-30+02:00"^^xsd:date ;
+  rdfs:comment "Titus (latin : IMPERATOR•TITVS•CAESAR•VESPASIANVS•AVGVSTVS) (30 décembre 39 – 13 septembre 81), appartenant à la dynastie des Flaviens, est un empereur romain, qui régna de 79 à 81."@fr ;
+  rdfs:label "Titus (empereur romain)"@fr .
+
+<http://fr.dbpedia.org/resource/Titus_Aurelius_Fulvus_(consul_en_89)> rdfs:label "Titus Aurelius Fulvus (consul en 89)"@fr .
+
+<http://fr.dbpedia.org/resource/Titus_Flavius_Sabinus_(père_de_Vespasien)> rdfs:label "Titus Flavius Sabinus (père de Vespasien)"@fr .
+
+r:Trajan a foaf:Person ;
+  dbo:birthDate "53-09-18+02:00"^^xsd:date ;
+  dbo:dbpedia r:Trajan ;
+  dbo:deathDate "117-08-09+02:00"^^xsd:date ;
+  dbo:father r:Marcus_Ulpius_Traianus ;
+  dbo:mother r:Marcia ;
+  dbo:parent r:Marcia ;
+  dbo:parent r:Marcus_Ulpius_Traianus ;
+  dbo:predecessor r:Nerva ;
+  dbo:spouse r:Plotine ;
+  dbo:successor r:Hadrien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Traianus_Glyptothek_Munich_72b.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Hadrien ;
+  dbo:wikiPageWikiLink r:Marcia ;
+  dbo:wikiPageWikiLink r:Marcus_Ulpius_Traianus ;
+  dbo:wikiPageWikiLink r:Nerva ;
+  dbo:wikiPageWikiLink r:Plotine ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Trajan" ;
+  p:adopté r:Hadrien ;
+  p:dateDeDécès "Selinus"@fr ;
+  p:dateDeDécès "117-08-09+02:00"^^xsd:date ;
+  p:dateDeNaissance "Rome ou Italica"@fr ;
+  p:dateDeNaissance "53-09-18+02:00"^^xsd:date ;
+  p:femme r:Plotine ;
+  rdfs:comment "Trajan, né sous le nom de Marcus Ulpius Traianus le 18 septembre 53 à Italica ou à Rome et mort le 8 ou 9 août 117 à Selinus, en Cilicie, est empereur romain de fin janvier 98 à août 117."@fr ;
+  rdfs:label "Trajan"@fr .
+
+r:Tranquilline rdfs:label "Furia Sabinia Tranquillina"@fr .
+
+r:Trébonien_Galle a foaf:Person ;
+  dbo:child r:Volusien ;
+  dbo:dbpedia r:Trébonien_Galle ;
+  dbo:predecessor r:Dèce ;
+  dbo:spouse r:Afinia_Gemina_Baebiana ;
+  dbo:successor r:Émilien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Trébonien_Galle.jpg?width=300> ;
+  dbo:usurper r:Émilien ;
+  dbo:wikiPageWikiLink r:Afinia_Gemina_Baebiana ;
+  dbo:wikiPageWikiLink r:Dèce ;
+  dbo:wikiPageWikiLink r:Volusien ;
+  dbo:wikiPageWikiLink r:Émilien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Trébonien_Galle" ;
+  p:dateDeDécès "Interamna"@fr ;
+  p:dateDeDécès "août 253"@fr ;
+  p:dateDeNaissance "- Italie"@fr ;
+  rdfs:comment "Trébonien Galle (Gaius Vibius Trebonianus Gallus) est empereur romain de mi-juin 251 à août 253."@fr ;
+  rdfs:label "Trébonien Galle"@fr .
+
+r:Ulpia_Severina rdfs:label "Ulpia Severina"@fr .
+
+r:Valens a foaf:Person ;
+  dbo:coemperor r:Gratien ;
+  dbo:coemperor r:Valentinien_II ;
+  dbo:dbpedia r:Valens ;
+  dbo:deathDate "378-08-09+02:00"^^xsd:date ;
+  dbo:predecessor r:Jovien ;
+  dbo:spouse r:Albia_Dominica ;
+  dbo:successor r:Gratien ;
+  dbo:successor r:Valentinien_II ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/ValensSesterce.png?width=300> ;
+  dbo:wikiPageWikiLink r:Albia_Dominica ;
+  dbo:wikiPageWikiLink r:Gratien ;
+  dbo:wikiPageWikiLink r:Jovien ;
+  dbo:wikiPageWikiLink r:Valentinien_II ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Valens" ;
+  p:dateDeDécès "Andrinople"@fr ;
+  p:dateDeDécès "378-08-09+02:00"^^xsd:date ;
+  p:dateDeNaissance "c.328 - Cibalae"@fr ;
+  p:femme r:Albia_Dominica ;
+  rdfs:comment "Flavius Julius Valens (latin : Imperator Caesar Flavius Iulius Valens Augustus), né vers 328 et mort au combat le 9 août 378, co-empereur romain de 364 à 378, d\'abord avec son frère Valentinien Ier (jusqu\'au mois de novembre 375), puis avec ses neveux Valentinien II et Gratien.Son frère lui confie le gouvernement de la partie orientale de l\'empire, avec Constantinople pour capitale. Il peut donc être considéré aussi comme empereur byzantin."@fr ;
+  rdfs:label "Valens"@fr .
+
+r:Valentinien_II a foaf:Person ;
+  dbo:coemperor r:Théodose_Ier ;
+  dbo:coemperor r:Valens ;
+  dbo:dbpedia r:Valentinien_II ;
+  dbo:deathDate "392-05-15+02:00"^^xsd:date ;
+  dbo:father r:Valentinien_Ier ;
+  dbo:mother <http://fr.dbpedia.org/resource/Justine_(impératrice)> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Justine_(impératrice)> ;
+  dbo:parent r:Valentinien_Ier ;
+  dbo:predecessor r:Valens ;
+  dbo:predecessor r:Valentinien_Ier ;
+  dbo:successor r:Théodose_Ier ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Missorium_Théodose_dt_Valentinien_II.jpg?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Justine_(impératrice)> ;
+  dbo:wikiPageWikiLink r:Théodose_Ier ;
+  dbo:wikiPageWikiLink r:Valens ;
+  dbo:wikiPageWikiLink r:Valentinien_Ier ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Valentinien_II" ;
+  p:coEmpereur r:Valens ;
+  p:dateDeDécès "Vienne"@fr ;
+  p:dateDeDécès "392-05-15+02:00"^^xsd:date ;
+  p:dateDeNaissance 371 ;
+  p:règne "392-05-15+02:00"^^xsd:date ;
+  rdfs:comment "Valentinien II (371, Vienne – 392), fils de Valentinien Ier, est empereur romain de 375 à 392."@fr ;
+  rdfs:label "Valentinien II"@fr .
+
+r:Valentinien_III a foaf:Person ;
+  dbo:birthDate "419-07-02+02:00"^^xsd:date ;
+  dbo:child <http://fr.dbpedia.org/resource/Eudocia_(princesse_romaine)> ;
+  dbo:child r:Galla_Placidia_la_Jeune ;
+  dbo:dbpedia r:Valentinien_III ;
+  dbo:deathDate "455-03-16+02:00"^^xsd:date ;
+  dbo:father r:Constance_III ;
+  dbo:mother r:Galla_Placidia ;
+  dbo:parent r:Constance_III ;
+  dbo:parent r:Galla_Placidia ;
+  dbo:predecessor r:Flavius_Honorius ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Jean_(usurpateur)> ;
+  dbo:spouse r:Licinia_Eudoxia ;
+  dbo:successor r:Pétrone_Maxime ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Solidus_ValentinianIII-wedding.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Constance_III ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Eudocia_(princesse_romaine)> ;
+  dbo:wikiPageWikiLink r:Flavius_Honorius ;
+  dbo:wikiPageWikiLink r:Galla_Placidia ;
+  dbo:wikiPageWikiLink r:Galla_Placidia_la_Jeune ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Jean_(usurpateur)> ;
+  dbo:wikiPageWikiLink r:Licinia_Eudoxia ;
+  dbo:wikiPageWikiLink r:Pétrone_Maxime ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Valentinien_III" ;
+  p:dateDeDécès "455-03-16+02:00"^^xsd:date ;
+  p:dateDeNaissance "419-07-02+02:00"^^xsd:date ;
+  p:femme r:Licinia_Eudoxia ;
+  rdfs:comment "Valentinien III (en latin Placidius Valentinianus), né le 2 juillet 419 à Ravenne, mort le 16 mars 455 à Rome, est empereur romain d\'Occident de 424 à 455."@fr ;
+  rdfs:label "Valentinien III"@fr .
+
+r:Valentinien_Ier a foaf:Person ;
+  dbo:child r:Aelia_Galla ;
+  dbo:child r:Gratien ;
+  dbo:child r:Valentinien_II ;
+  dbo:coemperor r:Valens ;
+  dbo:dbpedia r:Valentinien_Ier ;
+  dbo:deathDate "375-11-17+02:00"^^xsd:date ;
+  dbo:predecessor r:Jovien ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Justine_(impératrice)> ;
+  dbo:spouse r:Marina_Severa ;
+  dbo:successor r:Gratien ;
+  dbo:successor r:Valens ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/ValentinianI.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Aelia_Galla ;
+  dbo:wikiPageWikiLink r:Gratien ;
+  dbo:wikiPageWikiLink r:Jovien ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Justine_(impératrice)> ;
+  dbo:wikiPageWikiLink r:Marina_Severa ;
+  dbo:wikiPageWikiLink r:Valens ;
+  dbo:wikiPageWikiLink r:Valentinien_II ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Valentinien_Ier" ;
+  p:dateDeDécès "Pannonie"@fr ;
+  p:dateDeDécès "375-11-17+02:00"^^xsd:date ;
+  p:dateDeNaissance "c.321 - Cibalae"@fr ;
+  rdfs:comment "Valentinien Ier (Flavius Valentinianus) (321 - 17 novembre 375), co-empereur romain de 364 à 375 avec son frère cadet Valens, empereur de 364 à 375.↑ Histoire de la Lorraine, Les temps anciens, Encyclopédie illustrée de la Lorraine, Editions Serpenoise, p. 204"@fr ;
+  rdfs:label "Valentinien Ier"@fr .
+
+r:Valeria_Maximilla rdfs:label "Valeria Maximilla"@fr .
+
+r:Valérien a foaf:Person ;
+  dbo:child r:Gallien ;
+  dbo:coemperor r:Gallien ;
+  dbo:dbpedia r:Valérien ;
+  dbo:predecessor r:Émilien ;
+  dbo:spouse r:Mariniane ;
+  dbo:successor r:Gallien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Aureus_Valerian-RIC_0034-transparent.png?width=300> ;
+  dbo:wikiPageWikiLink r:Gallien ;
+  dbo:wikiPageWikiLink r:Mariniane ;
+  dbo:wikiPageWikiLink r:Émilien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Valérien" ;
+  p:coEmpereur r:Gallien ;
+  p:dateDeDécès "ap.260  - Perse"@fr ;
+  p:dateDeNaissance "c.193"@fr ;
+  rdfs:comment "Valérien (Publius Licinius Valerianus) est empereur romain de 253 à 260. Il partage le pouvoir avec son fils Gallien (Publius Licinius Egnatius Gallienus ; 218 - 268) qui lui succède comme unique empereur romain de 260 à 268."@fr ;
+  rdfs:label "Valérien"@fr .
+
+r:Valérien_II rdfs:label "Valérien II"@fr .
+
+r:Vespasien a foaf:Person ;
+  dbo:birthDate "9-11-17+02:00"^^xsd:date ;
+  dbo:child r:Domitien ;
+  dbo:child r:Domitilla_la_Jeune ;
+  dbo:child <http://fr.dbpedia.org/resource/Titus_(empereur_romain)> ;
+  dbo:dbpedia r:Vespasien ;
+  dbo:deathDate "79-06-23+02:00"^^xsd:date ;
+  dbo:father <http://fr.dbpedia.org/resource/Titus_Flavius_Sabinus_(père_de_Vespasien)> ;
+  dbo:parent <http://fr.dbpedia.org/resource/Titus_Flavius_Sabinus_(père_de_Vespasien)> ;
+  dbo:predecessor r:Vitellius ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Caenis_(épouse_de_Vespasien)> ;
+  dbo:spouse <http://fr.dbpedia.org/resource/Domitilla_l'Aînée> ;
+  dbo:successor <http://fr.dbpedia.org/resource/Titus_(empereur_romain)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Vespasianus01_pushkin_edit.png?width=300> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Caenis_(épouse_de_Vespasien)> ;
+  dbo:wikiPageWikiLink r:Domitien ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Domitilla_l'Aînée> ;
+  dbo:wikiPageWikiLink r:Domitilla_la_Jeune ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Titus_(empereur_romain)> ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Titus_Flavius_Sabinus_(père_de_Vespasien)> ;
+  dbo:wikiPageWikiLink r:Vitellius ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Vespasien" ;
+  p:dateDeDécès "79-06-23+02:00"^^xsd:date ;
+  p:dateDeNaissance "près de Reate"@fr ;
+  p:dateDeNaissance "9-11-17+02:00"^^xsd:date ;
+  rdfs:comment "Vespasien (latin : Imperator Caesar Vespasianus Augustus) (17 novembre 9 – † 23 juin 79) est empereur romain de 69 à 79. Il est le fondateur de la dynastie des Flaviens qui règnent sur l\'Empire de 69 à 96. Ses fils Titus, puis Domitien lui succèdent."@fr ;
+  rdfs:label "Vespasien"@fr .
+
+r:Vipsania_Agrippina rdfs:label "Vipsania Agrippina"@fr .
+
+r:Vitellius a foaf:Person ;
+  dbo:birthDate "15-09-24+02:00"^^xsd:date ;
+  dbo:dbpedia r:Vitellius ;
+  dbo:deathDate "69-12-22+02:00"^^xsd:date ;
+  dbo:father r:Lucius_Vitellius ;
+  dbo:parent r:Lucius_Vitellius ;
+  dbo:predecessor <http://fr.dbpedia.org/resource/Othon_(empereur_romain)> ;
+  dbo:spouse r:Galeria_Fundana ;
+  dbo:successor r:Vespasien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Vittelius_monnaie_ag1.JPG?width=300> ;
+  dbo:usurper r:Vespasien ;
+  dbo:wikiPageWikiLink r:Galeria_Fundana ;
+  dbo:wikiPageWikiLink r:Lucius_Vitellius ;
+  dbo:wikiPageWikiLink <http://fr.dbpedia.org/resource/Othon_(empereur_romain)> ;
+  dbo:wikiPageWikiLink r:Vespasien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Vitellius" ;
+  p:dateDeDécès "69-12-22+02:00"^^xsd:date ;
+  p:dateDeNaissance "15-09-24+02:00"^^xsd:date ;
+  p:femme r:Galeria_Fundana ;
+  p:règne "69-12-22+02:00"^^xsd:date ;
+  p:usurpateur r:Vespasien ;
+  rdfs:comment "Vitellius (en latin : Aulus Vitellius Germanicus Imperator Augustus), né le 24 septembre 15 et mort le 22 décembre 69 à Rome, est le huitième empereur romain du 19 avril au 22 décembre 69, appelée année des quatre empereurs."@fr ;
+  rdfs:label "Vitellius"@fr .
+
+r:Volusiana rdfs:label "Volusiana"@fr .
+
+r:Volusien rdfs:label "Volusien"@fr .
+
+r:Ælia_Pætina rdfs:label "Ælia Pætina"@fr .
+
+r:Émilien a foaf:Person ;
+  dbo:dbpedia r:Émilien ;
+  dbo:predecessor r:Trébonien_Galle ;
+  dbo:spouse r:Cornelia_Supera ;
+  dbo:successor r:Valérien ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Antoninianus_Aemilianus-RIC_0015.jpg?width=300> ;
+  dbo:usurper r:Valérien ;
+  dbo:wikiPageWikiLink r:Cornelia_Supera ;
+  dbo:wikiPageWikiLink r:Trébonien_Galle ;
+  dbo:wikiPageWikiLink r:Valérien ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Émilien" ;
+  p:dateDeDécès "août 253  à Spolète"@fr ;
+  p:dateDeNaissance "c.207 - Afrique"@fr ;
+  rdfs:comment "Émilien ou Æmilien (Marcus Aemilius Aemilianus) est empereur romain de juin à septembre/octobre 253, pendant l\'anarchie militaire."@fr ;
+  rdfs:label "Émilien"@fr .

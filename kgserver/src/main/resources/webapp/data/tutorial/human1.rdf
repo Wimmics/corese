@@ -19,7 +19,7 @@
   <name>Harry</name>
   <hasChild rdf:resource="#John"/>
   <hasSpouse rdf:resource="#Sophie"/>
-  <phoneNumber rdf:datatype='&humans;#PhoneNumber'>32.08.98</phoneNumber>
+  <phoneNumber rdf:datatype='&humans;#PhoneNumber'>32 08 98</phoneNumber>
 </Man>
  
    

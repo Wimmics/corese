@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Thu May 12 08:49:03 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -35,16 +35,15 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template st:graph {
+template st:open {
 
-  st:call-template(st:open)
+  st:head()
+
+"\n<pre>\n"
   
-  st:apply-templates-with(st:turtlehtml)
-  
-  st:call-template(st:close)
 }
 where {
-  
+
 }
 
 
@@ -59,15 +58,16 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template st:start {
+template st:graph {
 
   st:call-template(st:open)
   
-  st:call-template(st:main)
-    
+  st:apply-templates-with(st:turtlehtml)
+  
   st:call-template(st:close)
 }
 where {
+  
 }
 
 
@@ -111,69 +111,15 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template st:start {
 
-template st:resultset {
-  str(?res)
-  ; separator = "\n\n"
-}
-where {
-  ?rs rs:solution ?s 
-  ?s rs:index ?i  
-  ?s rs:binding [ rs:variable ?var ; rs:value ?val ]
+  st:call-template(st:open)
+  
+  st:call-template(st:main)
     
-  graph eng:dataset {
-     bind (st:apply-templates-with(st:turtlehtml, ?val) as ?res)
-  }
-  
-}
-order by ?i ?var
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:open {
-
-  st:head()
-
-"\n<pre>\n"
-  
+  st:call-template(st:close)
 }
 where {
-
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:error {
-  if (bound(?c), concat(?c, " errors"), "") 
-}
-where {
-
-  select (count(*) as ?c)
-  where {
-    bind(kg:unnest(st:visited()) as ?x)
-  }
-  having (?c > 0)
-  
 }
 
 
@@ -214,6 +160,31 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
+template st:error {
+  if (bound(?c), concat(?c, " errors"), "") 
+}
+where {
+
+  select (count(*) as ?c)
+  where {
+    bind(kg:unnest(st:visited()) as ?x)
+  }
+  having (?c > 0)
+  
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 
 template st:result {
@@ -225,6 +196,35 @@ template st:result {
 where {
  
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:resultset {
+  str(?res)
+  ; separator = "\n\n"
+}
+where {
+  ?rs rs:solution ?s 
+  ?s rs:index ?i  
+  ?s rs:binding [ rs:variable ?var ; rs:value ?val ]
+    
+  graph eng:dataset {
+     bind (st:apply-templates-with(st:turtlehtml, ?val) as ?res)
+  }
+  
+}
+order by ?i ?var
 
 ]]>
 </body>

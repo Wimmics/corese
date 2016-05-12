@@ -943,12 +943,16 @@ public class Transformer  {
      * st:apply-all-templates(?x ; separator = sep)
      */
     IDatatype result(List<IDatatype> result, String sep) {
-        if (defAggregate == ExprType.AGGAND){
+        if (isBoolean()){
             return booleanResult(result);
         }
         else {
              return stringResult(result, sep);
         }
+    }
+    
+    boolean isBoolean(){
+        return defAggregate == ExprType.AGGAND;
     }
         
         
@@ -1043,7 +1047,9 @@ public class Transformer  {
      * Default display when all templates fail
      */
     IDatatype display(IDatatype dt, Query q) {
-        //exec.getEvaluator().eval
+        if (isBoolean()){
+            return DatatypeMap.TRUE;
+        }
         int ope = defaut;
         if (q != null) {
            // Expr exp = q.getProfile(STL_DEFAULT);

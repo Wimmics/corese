@@ -29,6 +29,7 @@ import java.util.Arrays;
 public class DefaultVisitor implements TemplateVisitor {
     static final String STL         = NSManager.STL;
     static final String TRACE       = STL + "trace";
+    static final String GRAPH       = STL + "graph";
     static final String START       = STL + "start";
     static final String TRANSFORM   = STL + "transform";
     static final String SILENT      = STL + "silent";
@@ -88,7 +89,10 @@ public class DefaultVisitor implements TemplateVisitor {
         if (arg == null){
             return;
         }
-        if (obj.equals(TRACE)){
+        if (obj.equals(GRAPH)){
+            addGraph((Graph) arg.getPointerObject());
+        }
+        else if (obj.equals(TRACE)){
             silent = ! getValue(arg);
         }
         else if (obj.equals(TRANSFORM)){
@@ -180,6 +184,10 @@ public class DefaultVisitor implements TemplateVisitor {
     	}
     }
     
+    void addGraph(Graph g){
+        visitedGraph.copy(g);
+    }
+    
     void storeGraph(String name, IDatatype obj){
         Entity ent = visitedGraph.add(DatatypeMap.newResource(Entailment.DEFAULT), 
                 obj, DatatypeMap.newResource(RDF.TYPE), DatatypeMap.newResource(name));
@@ -203,19 +211,23 @@ public class DefaultVisitor implements TemplateVisitor {
         return DatatypeMap.newStringBuilder(toSB());     
     }
     
+    @Override
     public String toString(){
         return toSB().toString();
     }
     
+    @Override
     public Collection<IDatatype> visited(){  
         return list;
     }
     
+    @Override
     public IDatatype visitedGraph(){
         visitedGraph.init();
         return visitedNode;
     }
     
+    @Override
     public boolean isVisited(IDatatype dt){
         if (isDistinct){
             return distinct.containsKey(dt);
@@ -231,6 +243,7 @@ public class DefaultVisitor implements TemplateVisitor {
         return false;
      }
      
+    @Override
      public void setGraph(Graph g){
          graph = g;
      }
@@ -277,11 +290,13 @@ public class DefaultVisitor implements TemplateVisitor {
         this.distinct = distinct;
     }
 
+    @Override
     public IDatatype set(IDatatype obj, IDatatype prop, IDatatype arg) {
           value.put(obj, arg);
           return arg;
     }
     
+    @Override
     public IDatatype get(IDatatype obj, IDatatype prop) {
           return value.get(obj);
     }
@@ -289,9 +304,10 @@ public class DefaultVisitor implements TemplateVisitor {
     /**
      * @return the errors of a node as an array
      */
+    @Override
     public Collection<IDatatype> getErrors(IDatatype dt){
-    	if(errors.get(dt) != null){
-    		return errors.get(dt);
+    	if (errors.containsKey(dt)){
+            return errors.get(dt);
     	}
     	else return new ArrayList<IDatatype>(0);
     }

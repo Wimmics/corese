@@ -146,10 +146,10 @@ public class TestDQP {
                 + "    ?departement igeo:nom ?nom .   "
                 + "   ?departement igeo:subdivisionDirecte ?arrondissement . "
                 + "   ?arrondissement igeo:subdivisionDirecte ?canton . "
-                + "    ?canton igeo:nom ?cantonNom .   "
-                + "FILTER (?v = \"11\")"
-                + "FILTER (?cantonNom = \"Paris 14e  canton\")"
-                + "} ORDER BY ?popTotale";
+                + "    ?canton igeo:nom ?cantonNom . "
+                + " FILTER (?v = \"11\") "
+                + " FILTER (?cantonNom = \"Paris 14e  canton\") "
+                + "}";
 
         String all = "PREFIX idemo:<http://rdf.insee.fr/def/demo#> "
                 + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
@@ -225,26 +225,35 @@ public class TestDQP {
         }
     }
 
-    public void testDQP() throws EngineException, MalformedURLException {
+    public void testDQP(String testCase) throws EngineException, MalformedURLException {
         Graph graph = Graph.create(false);
         ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();
         QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
         execDQP.setGroupingEnabled(true);
+        
+//      Mode BGP or not
         if (modeBGP) {
             execDQP.setPlanProfile(Query.QP_BGP);
         }
 
 //      DUPLICATED DATA
-        execDQP.addRemote(new URL("http://"+host+":8081/sparql"), WSImplem.REST);
-        execDQP.addRemote(new URL("http://"+host+":8082/sparql"), WSImplem.REST);
+        if (testCase.equals("d")) {
+            execDQP.addRemote(new URL("http://" + host + ":8081/sparql"), WSImplem.REST);
+            execDQP.addRemote(new URL("http://" + host + ":8082/sparql"), WSImplem.REST);
+        }
+
 //      GLOBAL BGP
-//        execDQP.addRemote(new URL("http://" + host + ":8083/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://" + host + ":8084/sparql"), WSImplem.REST);
+        if (testCase.equals("g")) {
+            execDQP.addRemote(new URL("http://" + host + ":8083/sparql"), WSImplem.REST);
+            execDQP.addRemote(new URL("http://" + host + ":8084/sparql"), WSImplem.REST);
+        }
 
 //      Partial BGP and AND Lock
-//        execDQP.addRemote(new URL("http://"+host+":8085/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8086/sparql"), WSImplem.REST);
-//        execDQP.addRemote(new URL("http://"+host+":8087/sparql"), WSImplem.REST);
+        if (testCase.equals("p")) {
+            execDQP.addRemote(new URL("http://" + host + ":8085/sparql"), WSImplem.REST);
+            execDQP.addRemote(new URL("http://" + host + ":8086/sparql"), WSImplem.REST);
+            execDQP.addRemote(new URL("http://" + host + ":8087/sparql"), WSImplem.REST);
+        }
 //      Demographic
         execDQP.addRemote(new URL("http://" + host + ":8088/sparql"), WSImplem.REST);
 
@@ -271,10 +280,12 @@ public class TestDQP {
         Option bgpOpt = new Option("bgp", "modeBGP", false, "specify the evaluation strategy");
         Option helpOpt = new Option("h", "help", false, "print this message");
         Option centralizeOpt = new Option("c", "centralize", false, "to evualuate in a centralized context");
+        Option testCaseOpt = new Option("tc", "tesCase", true, "chose the test case ( d, g or p)");
 
         options.addOption(bgpOpt);
         options.addOption(helpOpt);
         options.addOption(centralizeOpt);
+        options.addOption(testCaseOpt);
 
         String header = "blabla";
         String footer = "\nPlease report any issue to macina@i3s.unice.fr";
@@ -297,7 +308,10 @@ public class TestDQP {
             if (cmd.hasOption("c")) {
                 test.testLocal();
             } else {
-                test.testDQP();
+                if (cmd.hasOption("tc")) {
+                    String tetsCase = cmd.getOptionValue("tc");
+                    test.testDQP(tetsCase);
+                }
             }
 
         } catch (ParseException exp) {

@@ -26,6 +26,11 @@ public class SemanticWorkflow extends  CompositeProcess {
         super();
     }
     
+     public SemanticWorkflow(String name){
+        super();
+        setName(name);
+    }
+    
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -255,6 +260,7 @@ public class SemanticWorkflow extends  CompositeProcess {
     }
 
     
+    @Override
     public String getTransformation(){
         if (getProcessLast() != null && getProcessLast().isTransformation()){
             return getProcessLast().getPath();

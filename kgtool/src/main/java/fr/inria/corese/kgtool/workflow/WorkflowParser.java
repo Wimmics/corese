@@ -48,6 +48,7 @@ public class WorkflowParser {
     public static final String DATASET = PREF + "Dataset";
     public static final String PROBE = PREF + "Probe";
     public static final String ASSERT = PREF + "Assert";
+    public static final String DATASHAPE = PREF + "Shape";
     
     public static final String URI = PREF + "uri";
     public static final String BODY = PREF + "body";
@@ -72,6 +73,7 @@ public class WorkflowParser {
     public static final String COLLECT = PREF + "collect";
     public static final String COMPARE = PREF + "compare";
     public static final String MAIN = PREF + "main";
+    public static final String SHAPE = PREF + "shape";
     
     static final String[] propertyList = {NAME, DEBUG, DISPLAY, RESULT, MODE, COLLECT};
 
@@ -366,12 +368,24 @@ public class WorkflowParser {
                     String uri = duri.getLabel();
                     if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
                         ap = queryPath(uri);
-                    } else if (type.equals(RULE) || type.equals(RULEBASE)) {
+                    } 
+                    else if (type.equals(FUNCTION)) {
+                        ap = functionPath(uri);
+                    }
+                    else if (type.equals(RULE) || type.equals(RULEBASE)) {
                         ap = new RuleProcess(uri);
-                    } else if (type.equals(TRANSFORMATION)) {
+                    } 
+                    else if (type.equals(TRANSFORMATION)) {
                         ap = new TransformationProcess(uri);
-                    } else if (type.equals(LOAD)) {
+                    } 
+                    else if (type.equals(LOAD)) {
                         ap = load(dt);
+                    }
+                    else if (type.equals(DATASHAPE)){
+                        IDatatype dshape  = getValue(SHAPE, dt);
+                        if (dshape != null){
+                            ap = new ShapeWorkflow(dshape.getLabel(), uri);
+                        }
                     }
                 }  
                 else if (dbody != null) {
@@ -416,6 +430,11 @@ public class WorkflowParser {
     SPARQLProcess queryPath(String path) throws LoadException{
         String q = QueryLoad.create().readWE(path);
         return new SPARQLProcess(q, path);
+    } 
+    
+    FunctionProcess functionPath(String path) throws LoadException{
+        String q = QueryLoad.create().readWE(path);
+        return new FunctionProcess(q, path);
     } 
           
     

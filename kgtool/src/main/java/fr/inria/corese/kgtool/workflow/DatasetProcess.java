@@ -48,7 +48,7 @@ public class DatasetProcess extends WorkflowProcess {
             if (res != null) {
                 Graph g = res.getGraph();
                 for (Data dd : data.getDataList()) {                   
-                    if (dd.getName() != null && dd.getGraph() != null && dd != res) {
+                    if (dd.getName() != null && dd.getGraph() != null && dd != res) {                        
                         namedGraph(g, dd);
                     }
                 }
@@ -60,6 +60,7 @@ public class DatasetProcess extends WorkflowProcess {
     }
     
     void namedGraph(Graph g, Data dd){
+        dd.getGraph().init();
         // declare dd as extended named graph
         g.setNamedGraph(dd.getName(), dd.getGraph()); 
         // export dd in context using sw:name as context property

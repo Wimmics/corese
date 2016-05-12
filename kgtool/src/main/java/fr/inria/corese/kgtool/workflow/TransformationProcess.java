@@ -95,5 +95,10 @@ public class TransformationProcess extends  WorkflowProcess {
     public void setTransfomer(Transformer transfomer) {
         this.transfomer = transfomer;
     }
+    
+    @Override
+    public String getTransformation(){
+        return getPath();
+    } 
    
 }

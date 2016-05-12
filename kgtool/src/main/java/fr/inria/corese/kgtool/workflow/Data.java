@@ -271,6 +271,20 @@ public class Data {
         }
         return null;
     }
+    
+    
+    Dataset dataset(Context c, Dataset ds) {
+        if (ds == null && (c != null || getVisitor()!= null)) {
+            ds = new Dataset();
+        }
+        if (c != null) {
+            ds.setContext(c);
+        }
+        if (getVisitor()!= null) {
+            ds.setTemplateVisitor(getVisitor());
+        }
+        return ds;
+    }
 
     /**
      * @param dataList the dataList to set

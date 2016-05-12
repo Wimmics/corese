@@ -75,13 +75,7 @@ public class SPARQLProcess extends  WorkflowProcess {
         if (getPath() != null){
             exec.setDefaultBase(getPath());
         }
-        return exec.query(getQuery(), ds, c);   
-    }
-    
-    void init(Data data){
-        if (data.getVisitor() != null){
-            
-        }
+        return exec.query(getQuery(), data.dataset(c, ds));   
     }
     
     void complete(Data data) {

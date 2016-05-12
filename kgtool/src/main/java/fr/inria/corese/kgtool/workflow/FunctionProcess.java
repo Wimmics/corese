@@ -49,13 +49,7 @@ public class FunctionProcess extends WorkflowProcess {
         if (path != null){
             exec.setDefaultBase(path);
         }
-        if (ds == null && c != null){
-            ds = new Dataset();
-        }
-        if (ds != null){
-            ds.setContext(c);
-        }
-        IDatatype res = exec.eval(getQuery(), ds);  
+        IDatatype res = exec.eval(getQuery(), data.dataset(c, ds));  
         return res;
     }
 
@@ -75,7 +69,7 @@ public class FunctionProcess extends WorkflowProcess {
     
     @Override
     public String stringValue(Data data){
-        return data.getDatatypeValue().toString();
+        return data.getDatatypeValue().stringValue();
     }
-
+    
 }

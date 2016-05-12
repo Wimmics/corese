@@ -156,7 +156,12 @@ public class Context extends ASTObject {
     }
     
     public Context set(String name, IDatatype value) {
-        table.put(name, value);
+        if (value == null){
+            table.remove(name);
+        }
+        else {
+            table.put(name, value);
+        }
         return this;
     }
     

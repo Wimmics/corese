@@ -245,7 +245,7 @@ public class ProducerImpl implements Producer, IProducerQP {
                                 && graph.hasEntailment()) {
                             // RDFS entailment on ?x rdf:type c:Engineer
                             // no focus on object node because:
-                            // no dichotomy on c:Engineer because we want subsumption
+                            // no dichotomy on c:Engineer because we want subsumption                           
                         } else {
                             Node val = env.getNode(qNode);
                             // candidate query node value:
@@ -907,6 +907,9 @@ public class ProducerImpl implements Producer, IProducerQP {
         return graph.getNamedGraph(node.getLabel()) != null;
     }
 
+    /**
+     * Node contains a Graph: return Producer for this Graph
+     */
     @Override
     public Producer getProducer(Node node, Environment env) {
         IDatatype dt = (IDatatype) node.getValue();
@@ -923,7 +926,10 @@ public class ProducerImpl implements Producer, IProducerQP {
             g = Graph.create();
         }
         ProducerImpl p = ProducerImpl.create(g);
+        MatcherImpl  m = MatcherImpl.create(g);
         p.setMode(EXTENSION);
+        p.setMatch(true);
+        p.set(m);
         // producer remember the query that createt it
         // use case: templates may share this producer
         p.setQuery(env.getQuery());

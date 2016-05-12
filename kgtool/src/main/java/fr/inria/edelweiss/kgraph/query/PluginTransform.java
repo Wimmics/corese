@@ -113,6 +113,9 @@ public class PluginTransform implements ExprType {
 
             case STL_GET:
                 return get(exp, env, p, dt);
+                
+            case STL_SET:                
+                return set(exp, env, p, dt, null);    
 
             case STL_BOOLEAN:
                 return bool(exp, env, p, dt);
@@ -692,46 +695,33 @@ public class PluginTransform implements ExprType {
 
     public IDatatype vset(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
         return getVisitor(env, p).set(dt1, dt2, dt3);
-//        Transformer t = getTransformer(env, p);
-//        return t.vset(dt1, dt2, dt3);
     }
 
     public IDatatype vget(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         return getVisitor(env, p).get(dt1, dt2);
-//        Transformer t = getTransformer(env, p);
-//        return t.vget(dt1, dt2);
     }
 
     public IDatatype visited(Expr exp, Environment env, Producer p) {
         Collection<IDatatype> list = getVisitor(env, p).visited();
         return DatatypeMap.createList(list);
-//        Transformer t = getTransformer(env, p);
-//        Collection<IDatatype> list = t.visited();
     }
 
     public IDatatype visited(Expr exp, Environment env, Producer p, IDatatype dt) {
         boolean b = getVisitor(env, p).isVisited(dt);
         return plugin.getValue(b);
-//        Transformer t = getTransformer(env, p);
-//        boolean b = t.visited(dt);
-//        return plugin.getValue(b);
     }
     
      public IDatatype errors(Expr exp, Environment env, Producer p, IDatatype dt) {
         Collection<IDatatype> list = getVisitor(env, p).getErrors(dt);
         return DatatypeMap.createList(list);
-//        Transformer t = getTransformer(env, p);
-//	return DatatypeMap.createList(t.getVisitor().getErrors(dt));
     }
 
     // Visitor design pattern
     public IDatatype visit(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
-       // Transformer t = getTransformer(env, p);
         if (dt1 == null) {
             dt1 = VISIT_DEFAULT;
         }
         getVisitor(env, p).visit(dt1, dt2, dt3);
-        //t.visit(dt1, dt2, dt3);
         return TRUE;
     }
 

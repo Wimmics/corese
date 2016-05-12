@@ -271,6 +271,13 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public void setContext(Context c){
         context = c;
     }
+    
+    public Object getTemplateVisitor(){
+        if (defaultDataset != null){
+            return defaultDataset.getTemplateVisitor();
+        }
+        return null;
+    }
 
     public boolean isUserQuery() {
         Context c = getContext();

@@ -42,7 +42,7 @@ public class TestDQP {
 
     static final String host = "localhost";
 
-    ArrayList<String> queries = new ArrayList<String>();
+    private ArrayList<String> queries = new ArrayList<String>();
     private boolean modeBGP = false;
 
     public TestDQP(boolean modeBGP) {
@@ -301,10 +301,11 @@ public class TestDQP {
                 formatter.printHelp("kgdqp", header, options, footer, true);
                 System.exit(0);
             }
+            
             if (cmd.hasOption("bgp")) {
                 test = new TestDQP(true);
             }
-            System.out.println(cmd.hasOption("bgp"));
+            
             if (cmd.hasOption("c")) {
                 test.testLocal();
             } else {

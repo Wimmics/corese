@@ -60,15 +60,12 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
 
         logger.info("Searching for edge : " + edge.toString());
 
-        Memory memory = (Memory) env;
         //BGP mode
-//        if (memory.getCurrentAndLockExpression() != null) {
          if (env.getQuery().getEdgeAndContext().containsKey(edge)) {
-//            boolean isLastEdge = env.getExp().equals(memory.getCurrentAndLockExpression().getExpList().get(memory.getCurrentAndLockExpression().getExpList().size() - 1));
              Exp currentAnd = env.getQuery().getEdgeAndContext().get(edge);
              boolean isLastEdge = env.getExp().equals(currentAnd.getExpList().get(currentAnd.getExpList().size() - 1));
 
-             //to handle previous AND already  processed by BGP
+            //to handle previous AND already  processed by BGP
             boolean edgesFromSameSources = false;
             if (isLastEdge) {
                 edgesFromSameSources = sameSource(env);
@@ -85,7 +82,7 @@ public class ParallelMetaProducerLessBlocking extends MetaProducer {
                         } 
                         else {
                             //check if the current producer is in the list of sameProduers then no need to send this edge
-                            //bbecause already done by the equivalent BGP
+                            //because already done by the equivalent BGP
                             if (!sameProducers.contains(p)) {
                                 CallableResult getEdges = new CallableResult(p, gNode, from, Exp.create(EDGE, edge), env);
                                 futures.add(completions.submit(getEdges));

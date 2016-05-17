@@ -36,6 +36,7 @@ import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.GraphListen;
 import java.util.ArrayList;
@@ -934,6 +935,10 @@ public class PluginImpl extends ProxyImpl {
     Transformer getTransformer(Environment env, Producer p) {
         return pt.getTransformer(env, p);
     } 
+    
+    TemplateVisitor getVisitor(Environment env, Producer p){
+        return pt.getVisitor(env, p);
+    }
     
     public Expr decode(Expr exp, Environment env, Producer p){
         return pt.decode(exp, env, p);

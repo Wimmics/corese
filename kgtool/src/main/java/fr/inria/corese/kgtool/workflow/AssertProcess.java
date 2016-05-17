@@ -30,7 +30,14 @@ public class AssertProcess extends SemanticProcess {
         IDatatype dt = val.getDatatypeValue();
         Data res = new Data(this, data.getMappings(), data.getGraph());
         res.setDatatypeValue(dt);
-        if (dt == null || ! dt.equals(value)){
+        if (val.getMappings() != null){
+            res.setSuccess(val.getMappings().size() > 0);
+            res.addData(val);
+            if (isDebug()){
+                System.out.println(val.getMappings());
+            }
+        }
+        else if (dt == null || ! dt.equals(value)){
             res.setSuccess(false);
         }
         return res;
@@ -43,14 +50,26 @@ public class AssertProcess extends SemanticProcess {
     
     @Override
     void finish(Data data){
-       if (! data.isSuccess()){
-           System.out.println("Error: find " + data.getDatatypeValue() + " instead of: " + value);
+       message(data);
+    }
+    
+    void message(Data data){
+        if (data.isSuccess()){
+            System.out.println(getName() + " ok");
+        }
+        else {
+           if (data.getDataList() != null){
+               System.out.println(getName() + " fail");
+           }
+           else {
+                System.out.println(getName() + " fail: find " + data.getDatatypeValue() + " instead of: " + value);
+           }
        }
     }
     
     @Override
     public String  stringValue(Data data){
-        return data.getDatatypeValue().toString();
+        return Boolean.valueOf(data.isSuccess()).toString();        
     }
 
 }

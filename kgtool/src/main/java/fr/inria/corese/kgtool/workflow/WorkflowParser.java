@@ -486,7 +486,10 @@ public class WorkflowParser {
     AssertProcess asserter(IDatatype dt) throws LoadException {
         IDatatype dtest  = getValue(EXP, dt);
         IDatatype dvalue = getValue(VALUE, dt);
-        if (dtest != null && dvalue != null){
+        if (dvalue == null){
+            dvalue = DatatypeMap.TRUE;
+        }
+        if (dtest != null){
             WorkflowProcess w = fun(dtest);
             return new AssertProcess(w, dvalue);
         }
@@ -521,7 +524,8 @@ public class WorkflowParser {
     
     WorkflowProcess fun(IDatatype dt) throws LoadException{
          if (dt.isLiteral()){
-            // sw:if "us:test()"
+            // sw:Test   sw:if "us:test()"
+            // sw:Assert sw:exp "xt:size(?g)"
             return new FunctionProcess("function xt:main(){ " + dt.getLabel() + " }", getPath());
         }
         else {

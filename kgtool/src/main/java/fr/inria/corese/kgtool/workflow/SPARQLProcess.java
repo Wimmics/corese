@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.MappingsGraph;
 
@@ -79,9 +80,13 @@ public class SPARQLProcess extends  WorkflowProcess {
     }
     
     void complete(Data data) {
-        Transformer t = (Transformer) data.getMappings().getQuery().getTransformer();
-        if (t != null && t.getVisitor() != null) {
-            data.setVisitor(t.getVisitor());
+//        Transformer t = (Transformer) data.getMappings().getQuery().getTransformer();
+//        if (t != null && t.getVisitor() != null) {
+//            data.setVisitor(t.getVisitor());
+//        }
+        TemplateVisitor vis = (TemplateVisitor) data.getMappings().getQuery().getTemplateVisitor();
+        if (vis != null){
+            data.setVisitor(vis);
         }
         Node temp = data.getMappings().getTemplateResult();
         if (temp != null){

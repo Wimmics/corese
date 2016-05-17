@@ -279,7 +279,7 @@ public class Data {
         }
         if (c != null) {
             ds.setContext(c);
-        }
+        }        
         if (getVisitor()!= null) {
             ds.setTemplateVisitor(getVisitor());
         }
@@ -291,6 +291,13 @@ public class Data {
      */
     public void setDataList(List<Data> dataList) {
         this.dataList = dataList;
+    }
+    
+    void addData(Data d){
+        if (dataList == null){
+            dataList = new ArrayList<Data>();
+        }
+        dataList.add(d);
     }
 
     /**

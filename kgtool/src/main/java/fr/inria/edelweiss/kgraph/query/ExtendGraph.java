@@ -18,6 +18,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.IOException;
 import java.util.HashMap;
@@ -121,8 +122,11 @@ public class ExtendGraph {
     }
     
     Object visited(Producer p, Expr exp, Environment env) {
-        Transformer t = plugin.getTransformer(env, p);
-        return t.visitedGraph();
+        TemplateVisitor vis = plugin.getVisitor(env, p);
+        if (vis == null){
+            return null;
+        }
+        return vis.visitedGraph();
     }
 
    

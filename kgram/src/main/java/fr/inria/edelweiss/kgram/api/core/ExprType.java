@@ -226,6 +226,7 @@ public interface ExprType {
  	public static int AGGLIST                   = 275;
  	public static int AGGREGATE                 = 276;
  	public static int STL_FORMAT                = 277;
+ 	public static int STL_VISITED_GRAPH         = 278;
         
               
 	public static int ISSKOLEM 	= 300;

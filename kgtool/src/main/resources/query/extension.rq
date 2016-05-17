@@ -1,9 +1,14 @@
-template {
+@export package { 
 
-
+# Specify focus node of transformation 
+# default is st:get(st:uri) as usual
+# no focus :
+# st:param [ st:focus false ]
+# focus on st:get(st:elem)
+# st:param [ st:focus st:elem ]
+function st:focus(){
+    st:get(coalesce(st:get(st:focus), st:uri))
 }
-where {}
-export { 
 
 function xt:turtle() {  
     st:apply-templates-with(st:turtle)

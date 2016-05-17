@@ -200,11 +200,18 @@ public class DefaultVisitor implements TemplateVisitor {
             IDatatype res = t.process(dt);
             if (res != null){
                 sb.append(res.getLabel());
-                sb.append(NL);
-                sb.append(NL);
+                sb.append(NL).append(NL);
             }
         }
+        if (visitedGraph.size() > 0){
+            sb.append(toStringGraph());
+        }
         return sb;
+    }
+    
+    String toStringGraph(){
+        Transformer t = Transformer.create(visitedGraph, getTransform());
+        return t.toString();
     }
     
     public IDatatype display(){

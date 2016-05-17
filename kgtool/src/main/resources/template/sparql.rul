@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 12 08:49:02 CEST 2016
+Tue May 17 09:45:41 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -236,9 +236,7 @@ format {
   <h3>Query</h3>
   <form method='post' id='sparql' action='%s'>  
     <select name="profile">  
-      %s   
       <option value='st:sparql'>LDP</option>
-      <option value='st:std'>STD</option>
     </select>   
       <br/>
       <textarea cols='60' rows='10' name='query'>%s</textarea>
@@ -248,10 +246,6 @@ format {
   """
   
   st:get(st:service)
-  
-  if (bound(?prof) && ?prof not in (st:sparql, st:std),
-    st:format("<option value='%s'>Local</option>", str(?prof)),
-    "")
     
   str(?q)
   
@@ -333,7 +327,7 @@ where {
 <body>
 <![CDATA[
 template st:tablecons {
-  if (bound(?uri) && ! st:get(st:all, true)) {
+  if (bound(?uri)) {
     st:call-template(st:tableconsuri)
   }
   else {
@@ -341,7 +335,7 @@ template st:tablecons {
   }
 }
 where {
-  bind (st:get(st:uri) as ?uri)
+  bind (st:focus() as ?uri)
 }
 
 

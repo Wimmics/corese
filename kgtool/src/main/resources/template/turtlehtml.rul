@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 12 08:49:03 CEST 2016
+Tue May 17 09:45:42 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -82,7 +82,7 @@ template st:start {
 where {
   
   select distinct ?x where { 
-    bind (st:get(st:uri) as ?x)
+    bind (st:focus() as ?x)
     ?x ?p ?y     
     filter ( 
       isURI(?x) 

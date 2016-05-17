@@ -64,6 +64,9 @@ public class PluginTransform implements ExprType {
 
             case STL_VISITED:
                 return visited(exp, env, p);
+                
+           case STL_VISITED_GRAPH:
+                return visitedGraph(exp, env, p);     
 
             case PROLOG:
                 return prolog(null, env, p);
@@ -122,7 +125,7 @@ public class PluginTransform implements ExprType {
 
             case STL_VISITED:
                 return visited(exp, env, p, dt);
-                
+                                                
             case STL_ERRORS:
                 return errors(exp, env, p, dt);
 
@@ -160,7 +163,7 @@ public class PluginTransform implements ExprType {
 
             case VISITED:
                 return visited(dt, env, p);
-                
+                                
             case STL_FORMAT:
                 return format(dt);     
                         
@@ -704,6 +707,10 @@ public class PluginTransform implements ExprType {
     public IDatatype visited(Expr exp, Environment env, Producer p) {
         Collection<IDatatype> list = getVisitor(env, p).visited();
         return DatatypeMap.createList(list);
+    }
+    
+    public IDatatype visitedGraph(Expr exp, Environment env, Producer p) {
+        return getVisitor(env, p).visitedGraph();
     }
 
     public IDatatype visited(Expr exp, Environment env, Producer p, IDatatype dt) {

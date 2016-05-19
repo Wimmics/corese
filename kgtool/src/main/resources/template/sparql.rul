@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue May 17 09:45:41 CEST 2016
+Thu May 19 16:47:48 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -235,7 +235,8 @@ format {
   """
   <h3>Query</h3>
   <form method='post' id='sparql' action='%s'>  
-    <select name="profile">  
+    <select name="profile"> 
+      %s
       <option value='st:sparql'>LDP</option>
     </select>   
       <br/>
@@ -246,9 +247,8 @@ format {
   """
   
   st:get(st:service)
-    
+  if (bound(?prof), st:format("<option value='%s'>Profile</option>", ?prof), "")
   str(?q)
-  
   st:submit()
   }
 }

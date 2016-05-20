@@ -710,7 +710,7 @@ public class PluginTransform implements ExprType {
     }
     
     public IDatatype visitedGraph(Expr exp, Environment env, Producer p) {
-        return getVisitor(env, p).visitedGraph();
+        return getVisitor(env, p).visitedGraphNode();
     }
 
     public IDatatype visited(Expr exp, Environment env, Producer p, IDatatype dt) {

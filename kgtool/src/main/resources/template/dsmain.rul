@@ -1,0 +1,334 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Thu May 19 16:47:47 CEST 2016
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:main(?shape) {
+  st:apply-templates-all(?shape)
+}
+where {
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:start {
+  st:call-template(st:main, ?shape)
+}
+where {
+  bind ( st:visit(st:start, st:trace) as ?vis) 
+ # bind (kg:display(str(st:get(st:shape))) as ?b)
+  bind (coalesce(st:get(st:shape), st:shape) as ?shape)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:profile {}
+where {}
+
+
+function st:aggregate(?x) {
+  st:agg_and(?x)
+}
+
+
+
+@export {
+
+function sh:test(){
+    st:get(st:test, true)
+}
+
+function sh:core(){
+    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/core", st:dscore)
+}
+
+function sh:property(){
+    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/property", st:dsproperty)
+}
+
+function sh:inverse(){
+    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/inverse", st:dsinverse)
+}
+
+# test and report error
+function sh:hasShape(?s, ?sh, ?shape){
+    st:apply-templates-with-all(sh:core(), ?sh, ?shape, ?s, true)
+}
+
+# test and do not report error
+function sh:testShape(?s, ?sh, ?shape){
+    st:apply-templates-with-all(sh:core(), ?sh, ?shape, ?s, false)
+}
+
+function sh:hasProperty(?s, ?sh, ?shape, ?vis){
+    st:apply-templates-with-all(sh:property(), ?sh, ?shape, ?s, ?vis)
+}
+
+function sh:hasInverseProperty(?s, ?sh, ?shape, ?vis){
+    st:apply-templates-with-all(sh:inverse(), ?sh, ?shape, ?s, ?vis)
+}
+
+
+function sh:safe(?sh, ?shape, ?suc){
+    if (?suc) { true }
+    else {
+        let (?b = exists { graph ?shape { ?sh sh:severity ?sev filter (?sev != sh:Violation) } } )
+        { ?b }
+    }
+}
+
+function st:report(?name, ?s, ?suc, ?vis){
+    if (?vis) {
+        st:visit(?name, ?s, ?suc)
+    }
+}
+
+
+function st:report(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o, ?suc, ?vis){
+    if (?vis && ! ?suc) { 
+        sh:result(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o) ;
+        st:visit(?name, ?s, ?suc)
+    }
+}
+
+# create a result validation graph
+function sh:result(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
+    let (?g = 
+       construct {
+        ?r rdf:type sh:ValidationResult ;
+            sh:severity ?sev ;
+            sh:focusNode ?foc ;
+            sh:subject ?s ;
+            sh:predicate ?p ;
+            sh:object ?o ;
+            sh:message ?mes
+        } 
+        where { 
+            bind (uuid() as ?r)
+            graph ?shape { 
+                # first triple pattern needed to bind ?sh
+                ?sh sh:predicate|sh:constraint ?any 
+                optional { ?sh sh:severity ?se } 
+                bind (coalesce(?se, sh:Violation) as ?sev)
+                bind (st:apply-templates-with(st:turtle, ?sh) as ?mes)
+            }
+        } 
+        values (?name ?sh ?shape ?foc ?s ?p ?o){ (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
+        ) 
+    {
+        st:visit(st:trace, st:graph, ?g)
+    }
+}
+
+function sh:count(?s, ?p){
+  let ((?c) = select ?s ?p (count(*) as ?c) where { ?s ?p ?o } )
+  { ?c }
+}
+
+function sh:invCount(?o, ?p){
+  let ((?c) = select ?o ?p (count(*) as ?c) where { ?s ?p ?o } )
+  { ?c }
+}
+
+function sh:hasKind(?value, ?kind){
+    (isIRI(?value)     && ?kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
+    (isLiteral(?value) && ?kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
+    (isBlank(?value)   && ?kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
+}
+
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape) {
+  ?suc
+}
+where {
+
+  graph ?shape {
+    ?sh sh:scopeClass ?c       
+    optional { ?sh sh:filterShape ?fs }  
+  }
+  
+  ?s a ?c
+  
+  filter ( ! bound(?fs) || sh:testShape(?s, ?fs, ?shape) )
+  
+  bind (sh:hasShape(?s, ?sh, ?shape) as ?suc)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template  (?shape) {
+  ?suc
+}
+where {
+
+graph ?shape {   
+    ?sh sh:scope [
+        a sh:PropertyScope ;
+		  sh:predicate ?p  
+        ]
+    optional { ?sh sh:filterShape ?fs }  
+  }
+  
+
+  { select distinct ?s ?p where { ?s ?p ?o } }
+  
+  filter ( ! bound(?fs) || sh:testShape(?s, ?fs, ?shape) )
+  
+  bind (sh:hasShape(?s, ?sh, ?shape) as ?suc)
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape) {
+  ?suc
+}
+where {
+
+  graph ?shape {
+    ?sh sh:scope [ a sh:AllObjectsScope ]       
+    optional { ?sh sh:filterShape ?fs }   
+  }
+  
+  { select distinct ?o where { ?s ?p ?o } }
+  
+  filter ( ! bound(?fs) || sh:testShape(?o, ?fs, ?shape) )
+
+  bind (sh:hasShape(?o, ?sh, ?shape) as ?suc)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape) {
+  ?suc
+}
+where {
+
+  graph ?shape {
+    ?sh sh:scopeNode ?s
+    optional { ?sh sh:filterShape ?fs }  
+  }
+  
+  filter ( ! bound(?fs) || sh:testShape(?s, ?fs, ?shape) )
+  bind (sh:hasShape(?s, ?sh, ?shape) as ?suc)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape) {
+  ?suc
+}
+where {
+
+  graph ?shape {
+    ?sh sh:scope [ a sh:AllSubjectsScope ] 
+    optional { ?sh sh:filterShape ?fs }  
+  }
+  
+  { select distinct ?s where { ?s ?p ?o } } 
+  
+  filter ( ! bound(?fs) || sh:testShape(?s, ?fs, ?shape) )
+
+  bind (sh:hasShape(?s, ?sh, ?shape) as ?suc)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape) {
+  ?suc
+}
+where {
+
+  graph ?shape {
+    ?sh sh:scope [
+        a sh:InversePropertyScope ;
+		sh:predicate ?p 
+		]
+		
+    optional { ?sh sh:filterShape ?fs }  
+  
+  }
+  
+  { select distinct ?p ?o where { ?s ?p ?o } }
+  
+  filter ( ! bound(?fs) || sh:testShape(?o, ?fs, ?shape) ) 
+  
+  bind (sh:hasShape(?o, ?sh, ?shape) as ?suc)
+}
+
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

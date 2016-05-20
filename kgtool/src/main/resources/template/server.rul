@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 12 08:49:02 CEST 2016
+Thu May 19 16:47:47 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -71,7 +71,7 @@ where {}
 template st:dohead {
 
   st:call-template(st:header)
-  st:call-template(st:banner)
+ # st:call-template(st:banner)
   
 }
 where {
@@ -225,7 +225,7 @@ template st:banner  {
 <td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a>
 </td>
 
-<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='http://www.i3s.unice.fr/I3S/LOGOS/NewlogoI3S-250x70.png' /></a>
+<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='/img/logo/i3s.gif' height='100'/></a>
 </td>
 </tr>
 </table>

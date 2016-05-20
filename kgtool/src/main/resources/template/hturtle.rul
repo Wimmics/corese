@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 12 08:49:03 CEST 2016
+Thu May 19 16:47:48 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -91,7 +91,7 @@ template st:main {
 }
 where {
    bind (exists { ?rs a rs:ResultSet } as ?b)
-   bind (if (?b, true, st:export(st:uri, st:get(st:uri))) as ?e)
+   bind (if (?b, true, st:export(st:uri,   st:focus()))   as ?e)
    
    bind (if (?b, 
     st:call-template(st:resultset),

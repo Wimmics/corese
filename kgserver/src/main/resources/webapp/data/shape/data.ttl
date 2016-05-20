@@ -1,0 +1,32 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://www.example.org/> .
+
+ex:Alice a ex:Person ;
+    ex:member ex:W3c ;
+	ex:email <mailto:alice@example.org> ;
+	foaf:knows ex:Bob, ex:Bill .
+
+ex:Bob a ex:Person ;
+	ex:member ex:Acme ;
+	foaf:knows ex:James 
+.
+
+ex:Jim a foaf:Human ;
+    foaf:name "Jim"@en ;
+    foaf:knows ex:Alice
+
+ex:NewYork a ex:Place .
+
+	
+ex:John a ex:Person ;
+	ex:member ex:W3c ;
+	ex:value 10 .
+	
+	
+ex:Jack 
+    foaf:name "Jack", "Jacques" ;
+    ex:name "Jacques", "Jacky"  ;
+    ex:value 10 ; rdf:value 20 ;
+    ex:label "aa"@fr, "bb"@fr ;
+    foaf:knows ex:James
+.

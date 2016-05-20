@@ -37,6 +37,7 @@ public class WorkflowProcess implements AbstractProcess {
     private boolean display = false;
     private boolean collect = false;
     private boolean visit = false;
+    private boolean log = false; 
     private String result, uri, name;
     private IDatatype mode;
     String path;
@@ -478,6 +479,20 @@ public class WorkflowProcess implements AbstractProcess {
     
     public String getTransformation(){
         return null;
+    }
+
+    /**
+     * @return the log
+     */
+    public boolean isLog() {
+        return log;
+    }
+
+    /**
+     * @param log the log to set
+     */
+    public void setLog(boolean log) {
+        this.log = log;
     }
 
 }

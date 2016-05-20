@@ -117,6 +117,7 @@ import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.ParallelProcess;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
+import fr.inria.corese.kgtool.workflow.ShapeWorkflow;
 import fr.inria.corese.kgtool.workflow.WorkflowProcess;
 import fr.inria.corese.kgtool.workflow.WorkflowVisitor;
 import java.io.File;
@@ -212,9 +213,174 @@ public class TestUnit {
     }
     
     
-      public static void main2(String[] args) throws EngineException{
+      public static void main(String[] args) throws EngineException, LoadException{
           new TestUnit().testFib();
       }
+      
+      
+      
+           
+      public void testShape() throws EngineException{
+          ShapeWorkflow sw = new ShapeWorkflow(data + "shape/data/shape.ttl", data + "shape/data/data.ttl", Transformer.RDFXML);
+          Data data = sw.process();
+          System.out.println(data.isSuccess());
+          System.out.println(data);
+          System.out.println(data.getVisitor().visitedGraph());
+          //System.out.println(data.getGraph());
+      }
+      
+      
+      
+      
+    
+    public void testGWF() throws EngineException, LoadException {
+        SemanticWorkflow sw = new WorkflowParser().parse(data + "test/workflow/w1.ttl");
+        Data data = sw.process();
+        System.out.println(data);
+    }
+ 
+    @Test
+     public void testShape2() throws EngineException, LoadException{
+          for (int i = 0; i<1; i++){
+            SemanticWorkflow sw = new WorkflowParser().parse(data + "shape/test/workflow.ttl");
+            //sw.setContext(new Context().setURI(NSManager.STL+"shape", NSManager.STL+"shape"));
+            Data data = sw.process();
+            //  System.out.println(data.getValidationGraph());
+          }
+          //System.out.println(data);
+//          System.out.println(data.getDatatypeValue());
+          
+      }
+      
+     
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+       public void testFib() throws EngineException, LoadException{
+             Graph g = createGraph(); 
+             QueryProcess exec = QueryProcess.create(g);
+        
+             String q1 =  
+                    "function xt:main(){"
+                     + "us:fib(35)"
+                     + "}" 
+                     
+              +     "function us:fib(?n) {"
+                     + "if (?n <= 2){ 1 }"
+                     + "else { us:fib(?n - 1) + us:fib(?n - 2) }"
+                     + "} ";
+             
+             QueryLoad ql = QueryLoad.create();
+             String q2 = ql.readWE(data + "test/fun.rq");
+             String q3 = ql.readWE(data + "test/sigma.rq");
+
+             // 30 : 0.3487  JS : 0.0076
+             // 35 : 3.6     JS : 0.0683
+            Mappings map = null;
+            
+            int n = 10;
+            int res = 0;
+            double time = 0, total = 0;
+            double dd = 0;
+            
+            
+           ArrayList<Integer> ll = null;
+           for (int i = 0; i < n; i++) {
+//               ArrayList<Integer> list = new ArrayList<Integer>();
+//               ll = list;
+//               int size = 1000;
+//               for (int j = 0; j < size; j++) {
+//                   list.add(size - j);
+//               }
+                Date d1 = new Date();             
+                //map = exec.query(q3);
+                //res = fib(35);
+                //sort(list);
+                 stat();
+                Date d2 = new Date();
+                time = d2.getTime() - d1.getTime() ;
+                System.out.println(i + " : " + time);
+                total += time;
+            }
+            
+            System.out.println("Time : " + (total) / (n ));
+            System.out.println("dd = " + dd);
+            System.out.println(map);
+           
+            // System.out.println(map.getQuery().getExtension());
+           System.out.println(Interpreter.count);
+                              
+        }
+       
+      
+       
+      void stat() {
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 1; i < 100000; i++) {
+            list.add(i);
+        }
+
+        double sig = sigma(list);
+        int med = median(list);
+        double avg = avg(list);
+
+    }
+
+    int median(List<Integer> list) {
+        Collections.sort(list);
+        return list.get((int) (list.size() - 1) / 2);
+    }
+
+    double sigma(List<Integer> list) {
+        double avg = avg(list);
+        double tmp = 0;
+        for (int i = 0; i < list.size(); i++) {
+            tmp += Math.pow(list.get(i) - avg, 2);
+        }
+        double pow = Math.pow(tmp / list.size(), 0.5);
+        return pow;
+    }
+
+    double avg(List<Integer> list) {
+        double avg = 0;
+        for (int i = 0; i < list.size(); i++) {
+            avg += list.get(i);
+        }
+        return avg / list.size();
+    }
+
+    void sort(ArrayList<Integer> l) {
+        for (int i = l.size() - 1; i > 0; i--) {
+            for (int j = 0; j < i; j++) {
+                if (l.get(j + 1) < l.get(j)) {
+                    int tmp = l.get(j + 1);
+                    l.set(j + 1, l.get(j));
+                    l.set(j, tmp);
+                }
+            }
+        }
+    }
+       
+       int fib(int n){
+           if (n <= 2){ return 1; }
+           else { return fib(n - 1) + fib(n - 2) ; }
+       }
       
    
     public void testFunodfh() throws EngineException {
@@ -249,7 +415,16 @@ public class TestUnit {
         System.out.println(res.getTemplateResult().length());
     }
     
-    @Test
+    
+    public void testRegex() throws EngineException{
+        String q = "select ('a' as ?a) ('b' as ?b) ('i' as ?i) (regex(?a, ?b, ?i) as ?x) where {"
+                + "}";
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        Mappings map = exec.query(q);
+        System.out.println(map);
+    }
+    
+    
     public void testServer1() throws EngineException, LoadException {
         String q = QueryLoad.create().readWE("/home/corby/AAServer/data/query/function.rq");
         QueryProcess exec = QueryProcess.create(Graph.create());
@@ -260,6 +435,7 @@ public class TestUnit {
         w.setVisitor(new MyWorkflowVisitor());
         Data res = w.process();
         System.out.println(res);
+        System.out.println("Time: " + w.getTime());
     }
     
     class MyWorkflowVisitor implements WorkflowVisitor {
@@ -337,12 +513,19 @@ public class TestUnit {
       
    }  
     
-    
-   public void testWorkflow26() throws EngineException, LoadException {
+   public void testWorkflow66()  {
        WorkflowParser wp = new WorkflowParser();
-       SemanticWorkflow w = wp.parse(data + "junit/workflow/w2/w26.ttl");           
-       Data res = w.process(new Data(GraphStore.create()));
-       System.out.println(res.isSuccess());
+       SemanticWorkflow w;           
+        try {
+            w = wp.parse("/user/corby/home/AATest/shape/workflow.ttl");
+             Data res = w.process();   
+       System.out.println("finish");
+        } catch (LoadException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (EngineException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+   
       
    }  
       
@@ -1568,37 +1751,7 @@ public class TestUnit {
       
       
       
-         public void testFib() throws EngineException{
-             Graph g = createGraph(); 
-             QueryProcess exec = QueryProcess.create(g);
         
-             String q =  
-                    "function xt:main(){"
-                     + "us:fib(30)"
-                     + "}" 
-                     
-              +     "function us:fib(?n) {"
-                     + "if (?n <= 2){ 1 }"
-                     + "else { us:fib(?n - 1) + us:fib(?n - 2) }"
-                     + "} ";
-           
-             
-            Mappings map = null;
-            
-            Date d1 = new Date();
-            int n = 10;
-            for (int i = 0; i<n; i++){
-                map = exec.query(q);
-            }
-            Date d2 = new Date();
-            System.out.println("Time : " + (d2.getTime() - d1.getTime()) / (n * 1000.0));
-
-            System.out.println(map);
-            System.out.println(Interpreter.count);
-            
-            
-        
-        }
       
     public void testSolution() throws EngineException {
         Graph g = Graph.create();
@@ -4039,12 +4192,7 @@ String init = "prefix ex: <http://example.org/>"
             
         }
         
-        int fib(int n){
-            if (n <= 2){
-                return 1;
-            }
-            return fib(n - 1) + fib(n - 2);
-        }
+       
     
     
     
@@ -12649,8 +12797,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             //assertEquals("Result", 4, map.size());
 
             ResultFormat f = ResultFormat.create(map);
-            System.out.println(f); 
-            //test
+            System.out.println(f);
 
         } catch (EngineException e) {
             e.printStackTrace();

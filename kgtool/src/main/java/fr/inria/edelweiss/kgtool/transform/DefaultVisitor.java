@@ -229,9 +229,15 @@ public class DefaultVisitor implements TemplateVisitor {
     }
     
     @Override
-    public IDatatype visitedGraph(){
+    public IDatatype visitedGraphNode(){
         visitedGraph.init();
         return visitedNode;
+    }
+    
+    @Override
+    public Graph visitedGraph(){
+        visitedGraph.init();
+        return visitedGraph;
     }
     
     @Override

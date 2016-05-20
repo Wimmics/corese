@@ -34,7 +34,6 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collection;
 import org.apache.log4j.Logger;
 
 /**
@@ -60,8 +59,10 @@ public class Transformer  {
     public static final String SPIN         = STL + "spin";
     public static final String TOSPIN       = STL + "tospin";
     public static final String OWL          = STL + "owl";
-    public static final String OWLRL        = STL + "owlrl";   
+    public static final String OWLRL        = STL + "owlrl"; 
+    public static final String DATASHAPE    = STL + "dsmain";     
     public static final String TURTLE       = STL + "turtle";
+    public static final String TURTLE_HTML  = STL + "hturtle";
     public static final String RDFXML       = STL + "rdfxml";
     public static final String JSON         = STL + "json";
     public static final String TRIG         = STL + "trig";
@@ -1479,7 +1480,7 @@ public class Transformer  {
         if (visitor == null){
             return null;
         }
-        return visitor.visitedGraph();
+        return visitor.visitedGraphNode();
     } 
     
 //    void initVisit(IDatatype name, IDatatype obj, IDatatype arg){

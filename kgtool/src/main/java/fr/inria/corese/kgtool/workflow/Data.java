@@ -165,6 +165,13 @@ public class Data {
     public void setVisitor(TemplateVisitor visitor) {
         this.visitor = visitor;
     }
+    
+    public Graph getValidationGraph(){
+        if (visitor == null){
+            return null;
+        }
+        return visitor.visitedGraph();
+    }
 
     /**
      * @return the templateResult

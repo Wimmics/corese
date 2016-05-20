@@ -1,7 +1,12 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Generic Process to be programmed
@@ -14,6 +19,12 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  *
  */
 public class DatasetProcess extends WorkflowProcess {
+    
+    DatasetProcess(){}
+    
+    DatasetProcess(String mode){
+        setMode(DatatypeMap.newResource(mode));
+    }
     
     @Override
     void start(Data data){
@@ -30,9 +41,45 @@ public class DatasetProcess extends WorkflowProcess {
             return dataset(data);
         }
         String mode = getMode().getLabel();
-        if (mode.equals(WorkflowParser.COMPARE)){
+        if (mode.equals(WorkflowParser.WORKFLOW_VALUE)){
+            return workflow(data);
+        }
+        else if (mode.equals(WorkflowParser.COMPARE)){
             return compare(data);
         }
+        else if (mode.equals(WorkflowParser.VISITOR)){
+            Data res = new Data(this, data.getVisitor().visitedGraph());
+            res.setVisitor(data.getVisitor());
+            return res;
+        }
+        return data;
+    }
+    
+    /**
+     * sw:workflow named graph is a workflow description
+     * parse and run workflow on data graph
+     */
+    Data workflow(Data data) {
+        Data tmp = dataset(data);
+        Graph wg = tmp.getGraph().getNamedGraph(WorkflowParser.WORKFLOW_VALUE);
+        Graph g  = tmp.getGraph();
+        if (wg == null){
+            wg = data.getGraph();
+            g = GraphStore.create();
+        }
+        Data input = data.copy();
+        input.setGraph(g);
+        
+        try {
+            SemanticWorkflow sw = new WorkflowParser().parse(wg);
+            Data res = sw.process(input);
+            return res;
+        } catch (LoadException ex) {
+            Logger.getLogger(DatasetProcess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (EngineException ex) {
+            Logger.getLogger(DatasetProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         return data;
     }
     

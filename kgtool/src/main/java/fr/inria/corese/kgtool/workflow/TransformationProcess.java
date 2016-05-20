@@ -16,11 +16,11 @@ public class TransformationProcess extends  WorkflowProcess {
     private Transformer transfomer;
     
     public TransformationProcess(String p){
-        path = p;
+        setPath(p);
     }
     
      public TransformationProcess(String p, boolean b){
-        path = p;
+        this(p);
         isDefault = b;
     }
     

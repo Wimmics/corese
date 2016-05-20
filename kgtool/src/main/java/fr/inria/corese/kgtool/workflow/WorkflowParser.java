@@ -68,12 +68,14 @@ public class WorkflowParser {
     public static final String THEN = PREF + "then";
     public static final String ELSE = PREF + "else";
     public static final String TEST_VALUE = PREF + "test";
+    public static final String WORKFLOW_VALUE = PREF + "workflow";
     public static final String VALUE = PREF + "value";
     public static final String EXP = PREF + "exp";
     public static final String COLLECT = PREF + "collect";
     public static final String COMPARE = PREF + "compare";
     public static final String MAIN = PREF + "main";
     public static final String SHAPE = PREF + "shape";
+    public static final String VISITOR = PREF + "visitor";
     
     static final String[] propertyList = {NAME, DEBUG, DISPLAY, RESULT, MODE, COLLECT};
 
@@ -364,6 +366,9 @@ public class WorkflowParser {
             else {
                 IDatatype duri  = getValue(URI, dt);
                 IDatatype dbody = getValue(BODY, dt);
+                IDatatype dtest = getValue(TEST_VALUE, dt);
+                boolean test = dtest != null && dtest.booleanValue();
+
                 if (duri != null) {
                     String uri = duri.getLabel();
                     if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
@@ -382,10 +387,7 @@ public class WorkflowParser {
                         ap = load(dt);
                     }
                     else if (type.equals(DATASHAPE)){
-                        IDatatype dshape  = getValue(SHAPE, dt);
-                        if (dshape != null){
-                            ap = new ShapeWorkflow(dshape.getLabel(), uri);
-                        }
+                        ap = datashape(dt, uri, test);
                     }
                 }  
                 else if (dbody != null) {
@@ -420,6 +422,17 @@ public class WorkflowParser {
                 }
             }
          }
+        return ap;
+    }
+     
+    ShapeWorkflow datashape(IDatatype dt, String uri, boolean  test) {
+        ShapeWorkflow ap = null;
+        IDatatype dshape = getValue(SHAPE, dt);
+        IDatatype dpath  = getValue(PATH, dt);
+        if (dshape != null) {
+            String format = (dpath == null) ? null : dpath.getLabel();
+            ap = new ShapeWorkflow(dshape.getLabel(), uri, format, test);
+        }
         return ap;
     }
      
@@ -463,8 +476,13 @@ public class WorkflowParser {
     
     ProbeProcess probe(IDatatype dt) throws LoadException {
         IDatatype body = getValue(EXP, dt);
-        WorkflowProcess wp = createProcess(body);
-        return new ProbeProcess(wp);
+        if (body == null){
+            return new ProbeProcess();
+        }
+        else {
+            WorkflowProcess wp = createProcess(body);        
+            return new ProbeProcess(wp);
+        }
     }
     
     ParallelProcess parallel(Node wf) throws LoadException {

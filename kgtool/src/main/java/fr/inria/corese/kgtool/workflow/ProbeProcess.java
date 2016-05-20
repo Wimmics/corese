@@ -10,6 +10,8 @@ import fr.inria.acacia.corese.exceptions.EngineException;
  *
  */
 public class ProbeProcess extends SemanticProcess {
+    
+    ProbeProcess(){}
          
     ProbeProcess(WorkflowProcess wp){
         insert(wp);

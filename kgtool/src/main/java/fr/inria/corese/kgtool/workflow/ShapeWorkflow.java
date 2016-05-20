@@ -1,9 +1,8 @@
 package fr.inria.corese.kgtool.workflow;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 
 /**
@@ -14,13 +13,33 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
  */
 public class ShapeWorkflow extends SemanticWorkflow {
     public static final String SHAPE_NAME  = NSManager.STL + "shape";
-    public static final String SHAPE_TRANS = "/user/corby/home/AATest/shape/sttl/scope";
+    public static final String SHAPE_TRANS_TEST = "/home/corby/AAData/sttl/datashape/main";
+    public static final String SHAPE_TRANS = Transformer.DATASHAPE;
+    public static final String FORMAT = Transformer.TURTLE;
+    public static final String FORMAT_HTML = Transformer.TURTLE_HTML;
+    
+    private String format = FORMAT;
     
     public ShapeWorkflow(String shape, String data){
-        create(shape, data);
+        create(shape, data, format, false);
     }
     
-    void create(String shape, String data){
+    public ShapeWorkflow(String shape, String data, String trans){
+        create(shape, data, trans, false);
+    }
+    
+    public ShapeWorkflow(String shape, String data, boolean test){
+        create(shape, data, format, test);
+    }
+    
+    public ShapeWorkflow(String shape, String data, String trans, boolean test){
+        create(shape, data, trans, test);
+    }
+    
+    private void create(String shape, String data, String format, boolean test){
+        if (format == null){
+            format = FORMAT;
+        }
         LoadProcess ld = new LoadProcess(data);
         LoadProcess ls = new LoadProcess(shape);
         ParallelProcess para = new ParallelProcess();
@@ -29,8 +48,15 @@ public class ShapeWorkflow extends SemanticWorkflow {
         
         this.add(para)
             .add(new DatasetProcess())
-            .add(new TransformationProcess(SHAPE_TRANS));
+            .add(new TransformationProcess((test)?SHAPE_TRANS_TEST:SHAPE_TRANS));
         
+        this.add(new DatasetProcess(WorkflowParser.VISITOR));
+        
+        this.add(new TransformationProcess(format));
+        
+        if (test){
+            setContext(new Context().export(Context.STL_TEST, DatatypeMap.TRUE));
+        }       
     }
     
     
@@ -43,13 +69,13 @@ public class ShapeWorkflow extends SemanticWorkflow {
     
     @Override
     public String stringValue(Data data){
-        Transformer t = Transformer.create(getValidation(data), Transformer.TURTLE);
-        return t.transform();
-    }
-    
-    public Graph getValidation(Data data){
-        TemplateVisitor vis = data.getVisitor();
-        return (Graph) vis.visitedGraph().getPointerObject();
+        if (data.getGraph().size() == 0){
+            return "Validation succeeded";
+        }
+        else {
+            return data.getTemplateResult();
+        }
     }
 
+   
 }

@@ -13,8 +13,9 @@ import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
-import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.MappingsGraph;
+import java.util.Date;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -22,6 +23,8 @@ import fr.inria.edelweiss.kgtool.util.MappingsGraph;
  *
  */
 public class SPARQLProcess extends  WorkflowProcess {
+    private static Logger logger = Logger.getLogger(SPARQLProcess.class);
+    static final String NL = System.getProperty("line.separator");
 
     private String query;
     
@@ -76,14 +79,31 @@ public class SPARQLProcess extends  WorkflowProcess {
         if (getPath() != null){
             exec.setDefaultBase(getPath());
         }
-        return exec.query(getQuery(), data.dataset(c, ds));   
+        log1(c);    
+        Date d1 = new Date();
+        Mappings map = exec.query(getQuery(), data.dataset(c, ds)); 
+        log2(d1, new Date());  
+        return map;
+    }
+    
+    void log1(Context c){
+        if (isLog() || pgetWorkflow().isLog()){
+            if (c != null && c.get(Context.STL_URI) != null){
+                logger.info(getQuery() + NL + "URI: " + c.get(Context.STL_URI).getLabel() + NL);  
+            }
+            else {
+                logger.info(getQuery());
+            }
+        }
+    }
+    
+    void log2(Date d1, Date d2){
+        if (isLog() || pgetWorkflow().isLog()){
+            logger.info("Time : " + (d2.getTime() - d1.getTime()) / 1000.0);
+        }
     }
     
     void complete(Data data) {
-//        Transformer t = (Transformer) data.getMappings().getQuery().getTransformer();
-//        if (t != null && t.getVisitor() != null) {
-//            data.setVisitor(t.getVisitor());
-//        }
         TemplateVisitor vis = (TemplateVisitor) data.getMappings().getQuery().getTemplateVisitor();
         if (vis != null){
             data.setVisitor(vis);

@@ -35,7 +35,11 @@ public class Param {
     static {
         nsm = NSManager.create();
     }
-    
+
+    Param(String s) {
+        service = s;
+    }
+   
     Param(String s, String p, String t, String u, String n, String q){
         service = s;
         profile = p;

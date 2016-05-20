@@ -2,6 +2,8 @@ package fr.inria.edelweiss.kgramserver.webservice;
 
 import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.corese.kgtool.workflow.ShapeWorkflow;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -90,6 +92,10 @@ public class Processor {
             @QueryParam("query") String query,
             @PathParam("serv") String serv) {
         
+        if (serv.equals("shape")){
+            return shape(uri, trans);
+        }
+        
         boolean rdfs = entail != null && entail.equals("rdfs");
         GraphStore g = GraphStore.create(rdfs);
         
@@ -134,6 +140,36 @@ public class Processor {
              par.setProtect(true);
          }
          return new Transformer().template(new TripleStore(g), par);
+    }
+    
+    public Response shape(String uri, String shape) {
+        if (uri == null || shape == null){
+           String m1 = ((uri == null)   ? "Undefined RDF Graph" : "");
+           String m2 = ((shape == null) ? "Undefined Data Shape" : "");
+           return Response.status(500).header(headerAccept, "*").entity(error(m1, m2)).build(); 
+        }
+        ShapeWorkflow sw = new ShapeWorkflow(resolve(shape), resolve(uri), ShapeWorkflow.FORMAT_HTML);
+        Param par = new Param("/process");
+        par.setLoad(uri);
+        par.setTransform(shape);
+        //par.setProtect(true);
+        Transformer t = new Transformer();
+        return t.process(sw, new TripleStore(GraphStore.create()), par, t.create(par));
+    }
+    
+    
+    String resolve(String uri){
+        URI url;
+        try {
+            url = new URI(uri);
+            if (!url.isAbsolute()) {
+                url = base.resolve(uri);
+                uri= url.toString();
+            }
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return uri;
     }
     
      String error(String err, String q){

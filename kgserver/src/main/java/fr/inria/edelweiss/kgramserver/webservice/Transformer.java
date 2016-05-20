@@ -8,11 +8,9 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgram.core.Mappings;
 import static fr.inria.edelweiss.kgramserver.webservice.Utility.toStringList;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
@@ -169,13 +167,17 @@ public class Transformer {
             
             complete(store.getGraph(), ctx);
             Dataset ds = createDataset(par.getFrom(), par.getNamed());
-            Data data = workflow(store.getGraph(), ctx, ds, mprofile.getProfileGraph(), squery, ctx.getTransform());
-            ResponseBuilder rb = Response.status(200).header(headerAccept, "*").entity(result(par, data.stringValue()));
-            String format = getContentType(data);
-            if (format != null && ! ctx.getService().contains("srv")){
-                 rb.header("Content-type", format);
-            }
-            return rb.build();
+            SemanticWorkflow sw = workflow(ctx, ds, mprofile.getProfileGraph(), squery, ctx.getTransform());
+            
+//            Data data = sw.process(new Data(store.getGraph()));
+//            ResponseBuilder rb = Response.status(200).header(headerAccept, "*").entity(result(par, data.stringValue()));
+//            String format = getContentType(data);
+//            if (format != null && ! ctx.getService().contains("srv")){
+//                 rb.header("Content-type", format);
+//            }
+//            return rb.build();
+            
+            return process(sw, store, par, ctx);
             
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
@@ -189,6 +191,28 @@ public class Transformer {
         }
     }
     
+    public Response process(SemanticWorkflow sw, TripleStore store, Param par, Context ctx) {
+        try {
+            Data data = sw.process(new Data(store.getGraph()));
+            ResponseBuilder rb = Response.status(200).header(headerAccept, "*").entity(result(par, data.stringValue()));
+            String format = getContentType(data);
+            if (format != null && !ctx.getService().contains("srv")) {
+                rb.header("Content-type", format);
+            }
+            return rb.build();
+        } 
+        catch (Exception ex) {
+            logger.error("Error while querying the remote KGRAM engine");
+            ex.printStackTrace();
+            String err = ex.toString();
+            String q = null;
+            if (ctx != null && ctx.getQueryString() != null){
+                q = ctx.getQueryString();
+            }
+            return Response.status(500).header(headerAccept, "*").entity(error(err, q)).build();
+        }
+    }
+
     String getContentType(Data data){
         String trans = data.getProcess().getTransformation();
         if (trans != null){
@@ -197,14 +221,13 @@ public class Transformer {
         return null;
     }
     
-    Data workflow(Graph g, Context c, Dataset ds, Graph profile, String q, String t)
+    SemanticWorkflow workflow(Context c, Dataset ds, Graph profile, String q, String t)
             throws LoadException, EngineException {
         SemanticWorkflow w = create(c, ds, profile, q, t);
         if (!w.isDebug()) {
             w.setDebug(isTest);
         }
-        Data data = w.process(new Data(g));
-        return data;
+        return w;
     }
     
     /**

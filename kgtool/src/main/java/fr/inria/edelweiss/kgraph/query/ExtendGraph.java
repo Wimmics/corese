@@ -126,7 +126,7 @@ public class ExtendGraph {
         if (vis == null){
             return null;
         }
-        return vis.visitedGraph();
+        return vis.visitedGraphNode();
     }
 
    

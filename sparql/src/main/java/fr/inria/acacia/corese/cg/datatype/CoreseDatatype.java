@@ -407,118 +407,146 @@ public class CoreseDatatype
 		return false;
 	}
 	
+        @Override
 	public boolean isURI() {
 		return false;
 	}
 	
+        @Override
 	public void setLang(String str){
 	}
 	
+        @Override
 	public boolean hasLang(){
 		return false;
 	}
 	
+        @Override
 	public String getLang(){
 		return null;
 	}
 	
+        @Override
 	public void setDatatype(String uri){
 		
 	}
 	
+        @Override
 	public IDatatype getDatatype(){
 		return datatype;
 	}
 	
 	@Deprecated
+        @Override
 	public IDatatype getExtDatatype(){
 		return getDatatype();
 	}
 	
 	// URI has rdfs:Resource as datatype
+        @Override
 	public IDatatype getIDatatype(){
 		return getDatatype();
 	}
 	
+        @Override
 	public  int getCode(){
 		return code;
 	}
 	
 	
+        @Override
 	public boolean startsWith(IDatatype iod){
 		return false;
 	}
 	
+        @Override
 	public boolean contains(IDatatype iod){
 		return false;
 	}
 	
+        @Override
 	public String getLowerCaseLabel() {
 		return "";
 	}
 	
+        @Override
 	public void setValue(String str) {}
         
         @Override
         public void setValue(String str, int nid, IStorage pmgr) {}
 	
+        @Override
 	public String getNormalizedLabel() {
 		return "";
 	}
 	
+        @Override
 	public void setValue(IDatatype dt){
 		
 	}
 	
+        @Override
 	public String getLabel(){
 		return getNormalizedLabel();
 	}
         
+        @Override
 	public StringBuilder getStringBuilder(){
 		return null;
 	}
         
+        @Override
         public void setStringBuilder(StringBuilder s){
 	}
        	
+        @Override
 	public boolean isNumber() {
 		return false;
 	}
 	
+        @Override
         public boolean booleanValue(){
             return false;
         }
         
+        @Override
        public String stringValue(){
             return getLabel();
         }
 	
+        @Override
 	public long longValue(){
 		return -1;
 	}
 	
+        @Override
 	public int intValue(){
 		return -1;
 	}
 	
+        @Override
 	public double doubleValue(){
 		return  -1;
 	}
 	
+        @Override
 	public float floatValue(){
 		return  -1;
 	}
 	
 	
 	
+        @Override
 	public double getdValue(){
 		return -1;
 	}
 	
+        @Override
 	public long getlValue(){
 		return -1;
 	}
 	
+        @Override
 	public int getiValue(){
 		return -1;
 	}

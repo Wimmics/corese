@@ -171,7 +171,7 @@
                 </div>
             </div>
         </div>
-        <!--Services: DBPeida Query-->
+        <!--Services: DBPedia Query-->
         <div class="col-md-4 ">
             <div class="panel panel-warning">
                 <div class="panel-heading">
@@ -203,6 +203,14 @@
 
                                     </div>
                                     </div>
+        
+        
+ </div>
+ </div>        
+ 
+<div class="container">
+    
+    <div class="row">
                                     <!--Services: transformation self-services-->
                                     <div class="col-md-4">
                                         <div class="panel panel-info">
@@ -211,7 +219,7 @@
                                             </div>
                                             <div class="panel-body">
                                                 <form method='POST' action='/process/test' id='selfServiceForm'>
-                                                    <label for='uri'>RDF graph URI: </label>
+                                                    <label for='uri'>RDF Graph: </label>
                                                     <input type='text' id='uri' name='uri' value = 'http://corese.inria.fr/data/tutorial/human1.rdf' class="form-control custom-control" /><br/>
                                                     <label for='sel'>Format: </label><br>
                                                     <select name='transform' class="form-control" id='sel'>
@@ -229,6 +237,28 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    
+                                    <div class="col-md-4">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">Data Shape</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                <form method='POST' action='/process/shape' id='shape'>
+                                                    <label for='uri'>RDF Graph: </label>
+                                                    <input type='text' id='uri' name='uri' value = '/data/shape/data.ttl' class="form-control custom-control" /><br/>
+                                                    <label for='sel'>Shape: </label><br>
+                                                    <input type="text"  name='transform' class="form-control" id='sel' value='/data/shape/shape.ttl'/>                                                       
+                                                    <br/><br><br>
+                                                    <input type='submit' value='Validate' class="btn btn-info" onClick="trans(this.form); return false;">
+                                                </form>
+
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                    
+                                    
                                     </div>
                                     </div>
                                     <!-- Services end-->

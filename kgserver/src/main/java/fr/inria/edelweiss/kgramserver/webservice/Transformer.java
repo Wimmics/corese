@@ -239,6 +239,7 @@ public class Transformer {
         SemanticWorkflow wp = new SemanticWorkflow();
         wp.setContext(context);
         wp.setDataset(dataset);
+        wp.setLog(true);
         IDatatype swdt = context.get(Context.STL_WORKFLOW); 
         if (swdt != null) {
             WorkflowParser parser = new WorkflowParser(wp, profile);

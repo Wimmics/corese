@@ -26,7 +26,14 @@ st:dbpediawf a sw:Workflow ;
   )
 .
   
-  
+st:hturtle a st:Profile ;
+st:workflow st:hturtleWF .
+
+st:hturtleWF a sw:Workflow ; 
+sw:body ( 
+  [ a sw:Transformation ; sw:uri st:hturtle ] 
+)  . 
+
   
 st:turtle a st:Profile ;
 st:workflow st:turtleWF .
@@ -210,7 +217,10 @@ st:rdfs a st:Profile ;
 #
 # ******************************************************
  
- 
+st:default3 a st:Server ;
+st:shareContent st:romecontent
+.
+
 st:default2 a st:Server ;
 st:content st:humancontent
 .
@@ -297,7 +307,7 @@ st:rome a st:Server ;
     st:lang "fr" ;
     st:import st:dbpediaParam, st:mapParam  ;   
   ] ;
-  st:content st:romecontent ;
+  st:shareContent st:romecontent ;
   st:transform  st:navlab .   
   
  st:romecontent a sw:Workflow ; sw:body ( 

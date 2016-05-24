@@ -38,7 +38,7 @@ public class TinkerpopGraphTest {
 			config.setProperty(key, value);
 		}
 
-		TinkerpopGraph graph = TinkerpopGraph.create(DRIVER, config);
+		TinkerpopGraph graph = TinkerpopGraph.create(DRIVER, config).get();
 		int cpt = 0;
 		System.out.println("Number of edges:" + IteratorUtils.count(graph.getEdges()));
 		if (DISPLAY_EDGES) {

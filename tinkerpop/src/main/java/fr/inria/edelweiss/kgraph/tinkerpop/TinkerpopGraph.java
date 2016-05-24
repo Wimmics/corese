@@ -9,15 +9,13 @@ import fr.inria.edelweiss.kgraph.core.EdgeQuad;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
-import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
@@ -28,7 +26,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
  */
 public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
-	private Graph tGraph;
+	private org.apache.tinkerpop.gremlin.structure.Graph tGraph;
 	private final static Logger LOGGER = Logger.getLogger(TinkerpopGraph.class.getSimpleName());
 
 	private class GremlinIterable<T extends Entity> implements Iterable<Entity> {
@@ -106,8 +104,10 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	}
 
-	public TinkerpopGraph(Graph tGraph) {
+	public TinkerpopGraph() {
 		super();
+	}
+	public void setTinkerpopGraph(org.apache.tinkerpop.gremlin.structure.Graph tGraph) {
 		this.tGraph = tGraph;
 		LOGGER.log(Level.INFO, "#vertices = {0}", new Object[]{tGraph.traversal().V().count().next()});
 		LOGGER.log(Level.INFO, "#edges = {0}", new Object[]{tGraph.traversal().E().count().next()});
@@ -140,16 +140,37 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	 * @param dbPath
 	 * @return
 	 */
-	public static TinkerpopGraph create(String driverName, Configuration config) {
+	public static Optional<TinkerpopGraph> create(String driverName, Configuration config) {
 		try {
 			Class gclass = Class.forName(driverName);
 			Method factoryMethod = gclass.getMethod("open", Configuration.class);
-			Graph actualGraph = (Graph) factoryMethod.invoke(null, config);
-			return new TinkerpopGraph(actualGraph);
+			org.apache.tinkerpop.gremlin.structure.Graph actualGraph = (org.apache.tinkerpop.gremlin.structure.Graph) factoryMethod.invoke(null, config);
+			TinkerpopGraph result = new TinkerpopGraph();
+			result.setTinkerpopGraph(actualGraph);
+			return Optional.of(result);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			Logger.getLogger(TinkerpopGraph.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		return null;
+	}
+
+	/**
+	 * Helper that use a String array to generate the configuration used to
+	 * inialize the tinkerpop driver.
+	 *
+	 * @param driverName Name of the class of the driver to instanciate.
+	 * @param configArray Array following the pattern { key_1, value_1,
+	 * key_2, value_2, etc. }
+	 * @return
+	 */
+	public static Optional<TinkerpopGraph> create(String driverName, String[] configArray) {
+		Configuration config = new BaseConfiguration();
+		for (int i = 0; i < configArray.length; i += 2) {
+			String key = configArray[i];
+			String value = configArray[i + 1];
+			config.setProperty(key, value);
+		}
+		return create(driverName, config);
 	}
 
 	@Override

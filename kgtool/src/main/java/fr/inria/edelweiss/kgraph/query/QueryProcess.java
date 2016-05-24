@@ -27,12 +27,17 @@ import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgraph.tinkerpop.TinkerpopGraph;
+import fr.inria.edelweiss.kgraph.tinkerpop.TinkerpopProducer;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.load.Service;
 import fr.inria.edelweiss.kgtool.util.Extension;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import java.util.Optional;
+import org.apache.log4j.Logger;
+import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 
 /**
  * Evaluator of SPARQL query by KGRAM Implement KGRAM as a lightweight version
@@ -163,13 +168,19 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * isMatch = true: Each Producer perform local Matcher.match() on its own
-     * graph for subsumption Hence each graph can have its own ontology and
-     * return one occurrence of each resource for ?x rdf:type aClass isMatch =
-     * false: (default) Global producer perform Matcher.match()
+	 * isMatch = true: Each Producer perform local Matcher.match() on its
+	 * own graph for subsumption Hence each graph can have its own ontology
+	 * and return one occurrence of each resource for ?x rdf:type aClass
+	 * isMatch = false: (default) Global producer perform Matcher.match()
      */
     public static QueryProcess create(Graph g, boolean isMatch) {
-        ProducerImpl p = ProducerImpl.create(g);
+		String DRIVER = "org.apache.tinkerpop.gremlin.orientdb.OrientGraph";
+		String DB_PATH = "plocal:/Users/edemairy/Developpement/RdfToGraph/src/test/resources/testConvertOrientdbResult.orientdb";
+		String[] CONFIG = {OrientGraph.CONFIG_URL, DB_PATH};
+//		ProducerImpl p =  ProducerImpl.create(g);
+		TinkerpopProducer p = new TinkerpopProducer(g);
+		Optional<TinkerpopGraph> graph = TinkerpopGraph.create(DRIVER, CONFIG);
+		p.setTinkerpopGraph(graph.get());
         p.setMatch(isMatch);
         QueryProcess exec = QueryProcess.create(p);
         exec.setMatch(isMatch);
@@ -687,7 +698,8 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * Pragma specific to kgraph (in addition to generic pragma in QuerySolver)
+	 * Pragma specific to kgraph (in addition to generic pragma in
+	 * QuerySolver)
      */
     void pragma(Query query) {
         ASTQuery ast = (ASTQuery) query.getAST();
@@ -778,6 +790,7 @@ public class QueryProcess extends QuerySolver {
     public void setGraphManager(GraphManager graphManager) {
         this.graphManager = graphManager;
     }
+
     /**
      * ****************************************
      */

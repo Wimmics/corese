@@ -26,6 +26,8 @@ import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgraph.tinkerpop.TinkerpopGraph;
+import fr.inria.edelweiss.kgraph.tinkerpop.TinkerpopProducer;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.load.Service;

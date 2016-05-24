@@ -92,6 +92,11 @@
 	  <version>2.8.0-beta2</version>
 	  <scope>runtime</scope>
 	 </dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>tinkerpop</artifactId>
+	  <version>${project.version}</version>
+	 </dependency>
 	</dependencies>
 
 	<build>

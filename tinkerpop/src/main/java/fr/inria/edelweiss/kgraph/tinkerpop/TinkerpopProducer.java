@@ -38,11 +38,16 @@ public class TinkerpopProducer extends ProducerImpl {
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env) {
 		Node subject = qEdge.getNode(0);
 		Node object = qEdge.getNode(1);
-		if (isPredicateFree(qEdge) && subject.isVariable() && object.isVariable()) {
-			return tpGraph.getEdges();
+		if (isPredicateFree(qEdge)) {
+			if (subject.isVariable()) {
+				if (object.isVariable()) {
+					return tpGraph.getEdges();
+				}
+			}
 		} else {
-			throw new UnsupportedOperationException("not supported yet");
+			return tpGraph.getEdges(qEdge.getEdgeNode().getLabel());
 		}
+		return null;
 	}
 
 	private boolean isPredicateFree(Edge edge) {

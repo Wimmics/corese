@@ -4,10 +4,10 @@
 package fr.inria.edelweiss.kgraph.tinkerpop;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.EdgeQuad;
+import fr.inria.edelweiss.kgraph.tinkerpop.mapper.TinkerpopToCorese;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -16,8 +16,6 @@ import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 /**
  * Bridge to make a Neo4j database accessible from Corese.
@@ -27,19 +25,11 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	private org.apache.tinkerpop.gremlin.structure.Graph tGraph;
+	private TinkerpopToCorese unmapper;
+
 	private final static Logger LOGGER = Logger.getLogger(TinkerpopGraph.class.getSimpleName());
 
 	private class GremlinIterable<T extends Entity> implements Iterable<Entity> {
-
-		// @TODO à dédupliquer d'avec RdfToGraph
-		public static final String LITERAL = "literal";
-		public static final String IRI = "IRI";
-		public static final String BNODE = "bnode";
-		public static final String CONTEXT = "context";
-		public static final String KIND = "kind";
-		public static final String LANG = "lang";
-		public static final String TYPE = "type";
-		public static final String VALUE = "value";
 
 		private final Iterator<Edge> edges;
 
@@ -58,38 +48,8 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 			@Override
 			public Entity next() {
-				// \todo 
-				// 1. context à aller chercher sur l'arc
-				// 2.création des Nodes à faire en fonction de "kind" 
 				Edge gremlinCurrent = edges.next();
-				String context = gremlinCurrent.value(CONTEXT);
-				Entity result = EdgeQuad.create(
-					createNode(context),
-					unmapNode(gremlinCurrent.outVertex()),
-					createNode((String) gremlinCurrent.value(VALUE)),
-					unmapNode(gremlinCurrent.inVertex())
-				);
-				return result;
-			}
-
-			private Node unmapNode(Vertex node) {
-				switch ((String) node.value(KIND)) {
-					case IRI:
-						return createNode((String) node.value(VALUE));
-					case BNODE:
-						return createBlank((String) node.value(VALUE));
-					case LITERAL:
-						String label = (String) node.value(VALUE);
-						String type = (String) node.value(TYPE);
-						VertexProperty<String> lang = node.property(LANG);
-						if (lang.isPresent()) {
-							return addLiteral(label, type, lang.value());
-						} else {
-							return addLiteral(label, type);
-						}
-					default:
-						throw new IllegalArgumentException("node " + node.toString() + " type is unknown.");
-				}
+				return unmapper.buildEntity(gremlinCurrent);
 			}
 		}
 
@@ -101,12 +61,13 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		public Iterator<Entity> iterator() {
 			return new GremlinIterator<>(edges);
 		}
-
 	}
 
 	public TinkerpopGraph() {
 		super();
+		unmapper = new TinkerpopToCorese(this);
 	}
+
 	public void setTinkerpopGraph(org.apache.tinkerpop.gremlin.structure.Graph tGraph) {
 		this.tGraph = tGraph;
 		LOGGER.log(Level.INFO, "#vertices = {0}", new Object[]{tGraph.traversal().V().count().next()});
@@ -179,6 +140,17 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		GraphTraversalSource g = tGraph.traversal();
 		System.out.println(g.V().count().value());
 		return new GremlinIterable<>(edges);
+	}
+
+	/**
+	 * @param edgeName
+	 * @return 
+	 */
+	@Override
+	public Iterable<Entity> getEdges(String edgeName) {
+		GraphTraversalSource traversal = tGraph.traversal();
+		Iterable<Entity> result = traversal.E().has("value", edgeName).map(e->unmapper.buildEntity(e.get())).toList();
+		return result;
 	}
 
 	@Override

@@ -647,23 +647,22 @@ public class Transformer  {
     }
 
     public IDatatype process(IDatatype dt) {
-        return process(null, dt, null, null, false, null, null, null);
+        return process(null, dt, null, false, null, null, null);
     }
     
     public IDatatype process(IDatatype[] a){
-        return process(a, (a.length>0)?a[0]:null, null, null, false, null, null, null);
+        return process(a, (a.length>0)?a[0]:null, null, false, null, null, null);
     }
 
 
     public IDatatype template(String temp, IDatatype dt) {
-        return process(null, dt, null, temp, false, null, null, null);
+        return process(null, dt, temp, false, null, null, null);
     }
 
     /**
      * exp: the fun call, eg st:apply-templates(?x) 
      * dt1: focus node 
-     * dt2: arg
-     * args: list of args in case of st:call-template
+     * args: list of args 
      * temp: name of a template (may be null) 
      * allTemplates: execute all templates on focus and concat results 
      * sep: separator in case of allTemplates
@@ -678,7 +677,7 @@ public class Transformer  {
      * context of evaluation: it is an extension function of a SPARQL query
      * select (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
-    public IDatatype process(IDatatype[] args, IDatatype dt1, IDatatype dt2, String temp,
+    public IDatatype process(IDatatype[] args, IDatatype dt1, String temp,
             boolean allTemplates, String sep, Expr exp, Query q) {      
         if (dt1 == null) {
             return EMPTY;
@@ -703,14 +702,11 @@ public class Transformer  {
             // use case:
             // template {"subClassOf(" ?in " " ?y ")"} where {?in rdfs:subClassOf ?y}
             start = true;
-            stack.push(dt1, query);
+            stack.push(dt1, args, query);
        }
 
         if (isDebug || isTrace) {
-            System.out.println("pprint: " + level() + " " + exp + " " + dt1 + " " + dt2);
-            if (dt1 != null && dt1.isBlank()) System.out.println(Transformer.create(graph, TURTLE).process(dt1).getLabel());
-            if (dt2 != null && dt2.isBlank()) System.out.println("\n" + Transformer.create(graph, TURTLE).process(dt2).getLabel());
-            System.out.println("__");
+            trace(dt1, args, exp);
         }
 
         Graph g = graph;
@@ -729,7 +725,7 @@ public class Transformer  {
             // named template may have specific arguments
             tq = templateList.get(0);
         }
-        Mapping m = getMapping(args, dt1, dt2, tq);
+        Mapping m = getMapping(args, dt1, tq);
 
         for (Query qq : templateList) {
             
@@ -739,14 +735,14 @@ public class Transformer  {
                 qq.setDebug(true);
             }
                         
-            if (!qq.isFail() && !stack.contains(dt1, qq)) {
+            if (!qq.isFail() && !stack.contains(dt1, args, qq)) {
 
                 nbt++;
 
                 if (allTemplates) {
                     count++;
                 }
-                stack.push(dt1, qq);
+                stack.push(dt1, args, qq);
                if (stack.size() > max) {
                     max = stack.size();
                 }
@@ -759,7 +755,7 @@ public class Transformer  {
                 if (qq != tq && qq.getArgList() != null){
                     // std template has arg list: create appropriate Mapping
                     // TODO: we may want to check that card(arg) = card(param)
-                    bm = getMapping(args, dt1, dt2, qq);
+                    bm = getMapping(args, dt1, qq);
                 }
                 
                 Mappings map = exec.query(qq, bm);
@@ -823,7 +819,7 @@ public class Transformer  {
         }
         else if (isHasDefault()) {
             // apply st:default named template
-            IDatatype res = process(args, dt1, dt2, STL_DEFAULT, allTemplates, sep, exp, q);
+            IDatatype res = process(args, dt1, STL_DEFAULT, allTemplates, sep, exp, q);
             if (res != EMPTY) {
                 return res;
             }
@@ -832,38 +828,55 @@ public class Transformer  {
         // use a default display (may be dt1 as is or st:turtle)
         return display(dt1, q);
     }
- 
+    
+    void trace(IDatatype dt1, IDatatype[] args, Expr exp) {
+        boolean hasArg = args != null && args.length > 1;
+        System.out.println("process: " + level() + " " + exp + " " + ((hasArg)?"":dt1));
+        if (hasArg) {
+            for (int i = 0; i < args.length; i++) {
+                System.out.print(args[i] + " ");
+                if (args[i].isBlank()){
+                    System.out.println(Transformer.create(graph, TURTLE).process(args[i]).getLabel());
+                }
+            }
+            System.out.println();
+        }
+        else if (dt1 != null && dt1.isBlank()) {
+            System.out.println(Transformer.create(graph, TURTLE).process(dt1).getLabel());
+        }
+        System.out.println("__");
+    }
+    
     /**
      * when st:call-template(name, v1, ... vn)
      * ldt = [name, v1, ... vn]
      * otherwise ldt = null
      */
-    Mapping getMapping(IDatatype[] ldt, IDatatype dt1, IDatatype dt2, Query q) {
+    Mapping getMapping(IDatatype[] ldt, IDatatype dt1, Query q) {
         if (ldt != null && q != null && ! q.getArgList().isEmpty()){
             return getMapping(ldt, q.getArgList());
         }
         
         Node qn1 = NodeImpl.createVariable(getArg(q, 0));
         Node n1 = getNode(dt1);
-        if (dt2 == null) {
-            return Mapping.create(qn1, n1);
-        } else {
-            Node qn2 = NodeImpl.createVariable(getArg(q, 1));
-            Node n2 = getNode(dt2);
-            return Mapping.create(qn1, n1, qn2, n2);
-        }
+        return Mapping.create(qn1, n1);
+//        if (dt2 == null) {
+//            return Mapping.create(qn1, n1);
+//        } else {
+//            Node qn2 = NodeImpl.createVariable(getArg(q, 1));
+//            Node n2 = getNode(dt2);
+//            return Mapping.create(qn1, n1, qn2, n2);
+//        }
     }
     
     /**
-     * ldt = [name, v1, ... vn]
-     * first arg is the name of the template, skip it here
-     */
+     * 
+     */  
     Mapping getMapping(IDatatype[] ldt, List<Node> args){
         int size = Math.min(ldt.length, args.size());
         Node[] qn = new Node[size];
         Node[] tn = new Node[size];
         for (int i = 0; i<size; i++){
-            // i+1 because we skip name = ldt[0]
            qn[i] = NodeImpl.createVariable(args.get(i).getLabel());
            tn[i] = getNode(ldt[i]);
         }

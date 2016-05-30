@@ -19,6 +19,21 @@ st:dbpedia a st:Profile ;
   st:workflow st:dbpediawf
   .
   
+  
+st:shape a st:Server ;
+    st:service "shape" ;
+    st:workflow st:shapeWF .
+
+st:shapeWF a sw:Workflow ;
+# get param(graph) and mode(shape) from server Context
+# parser get them from Context when creating ShapeProcess
+sw:body (
+    [ a sw:Shape ]
+    [ a sw:Transformation ; sw:uri st:dsresult ]
+    #[ a sw:Transformation ; sw:uri "/home/corby/AAData/sttl/datashape/result" ]
+) .
+
+  
 st:dbpediawf a sw:Workflow ;
   sw:body ( 
     <query/frdbpedia.rq> <query/frdbpediaclean.rq> 

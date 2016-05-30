@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 19 16:47:48 CEST 2016
+Mon May 30 08:39:58 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -85,7 +85,8 @@ where {
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:main {
       
-    replace(st:prolog("@prefix"), "<", "&lt;")
+    replace(st:prolog("prefix"), "<", "&lt;")
+    st:nl()
     str(?main)
 
 }

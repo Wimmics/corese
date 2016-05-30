@@ -30,6 +30,8 @@ PARSER_BEGIN(SparqlCorese)
   	import fr.inria.acacia.corese.triple.parser.*;
   	import fr.inria.acacia.corese.triple.update.*;
   	import fr.inria.acacia.corese.triple.api.Creator;
+  	import fr.inria.acacia.corese.api.IDatatype;
+  	import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
   	
   
   /**
@@ -2440,9 +2442,43 @@ Expression LetForExp() : {Exp sub; Expression exp;}
     sub = ServiceExp()  { exp = astq.toExist(sub); }
     |
     sub = SubConstruct() { exp = astq.toExist(BasicGraphPattern.create(sub)); }
-)
+    | 
+    <AT> exp = CstList() 
+
+) 
 { return exp; }
 }
+
+Constant CstList() : {IDatatype dt; Constant list;}  {
+    dt = ExpList()
+    { return astq.createLDSList(dt); }
+}
+
+IDatatype ExpList() : { IDatatype dt; ArrayList<IDatatype> list; }
+{
+    { list = new ArrayList<IDatatype>() ;}
+    <LPAREN> (
+            (dt = ListTerm() | dt = ExpList()) 
+            { list.add(dt); } )* 
+    <RPAREN>
+    { return DatatypeMap.createList(list); }
+
+}
+
+IDatatype ListTerm() : { String s; Token t1;  Atom a; }
+{
+  ( 	 
+  	  s = Q_IRI_ref() { a = astq.createURI(s); }
+  	| t1 = <QNAME>    { a = astq.createQName(t1.image);  }
+  	| t1 = <QNAME_NS> { a = astq.createQName(t1.image); }
+  	| a = RDFLiteral() 
+  	| a = NumericLiteral()
+  	| a = BooleanLiteral()     	
+  )
+  { return a.getDatatypeValue(); }
+}
+
+
 
 Term Let (Exp stack) : 
 { Expression exp ; Expression arg; ExpressionList list; }

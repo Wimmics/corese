@@ -8,6 +8,8 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.*;
 import fr.inria.acacia.corese.triple.update.*;
 import fr.inria.acacia.corese.triple.api.Creator;
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 
 public class SparqlCoreseTokenManager implements SparqlCoreseConstants
 {

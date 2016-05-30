@@ -4,10 +4,7 @@
 
 ex:AndOrPropertyScopeExampleShape
 	a sh:Shape ;
-	sh:scope [
-		a sh:PropertyScope ;
-		sh:predicate foaf:knows ;
-	] ;
+	sh:scopeProperty foaf:knows ;	
 	sh:constraint [
         sh:and (
             [sh:property [
@@ -106,7 +103,7 @@ ex:PersonNodeShape
 	] ;
 	sh:property [
         sh:predicate foaf:knows ;
-        sh:valueShape [
+        sh:shape [
             sh:inverseProperty [
                 sh:predicate rdf:value ;
                 sh:minCount 1
@@ -131,10 +128,7 @@ ex:PersonNodeShape
 	
 ex:PropertyScopeExampleShape
 	a sh:Shape ;
-	sh:scope [
-		a sh:PropertyScope ;
-		sh:predicate foaf:knows ;
-	] ;
+	sh:scopeProperty  foaf:knows ;
 	sh:property [
 		sh:predicate ex:email ;
 		sh:minCount 1 
@@ -147,10 +141,7 @@ ex:PropertyScopeExampleShape
 	
 ex:InvPropertyScopeExampleShape
 	a sh:Shape ;
-	sh:scope [
-		a sh:InversePropertyScope ;
-		sh:predicate foaf:knows ;
-	] ;
+	sh:scopeInverseProperty foaf:knows ;
 	sh:property [
 		sh:predicate ex:email ;
 		sh:minCount 1 

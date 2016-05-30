@@ -34,6 +34,10 @@
     color:green
 }
 
+.literal {
+    color: brown   
+}
+
 .kw {
     font-weight: bold;
     color:green

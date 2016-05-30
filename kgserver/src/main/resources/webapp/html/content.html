@@ -32,7 +32,7 @@
             </div>
         </div>
         
-        <div class="col-md-2" >
+<!--        <div class="col-md-2" >
             <div class="panel panel-primary">
                 <div class="panel-heading"></div>
                 <div class="panel-body" align="center">
@@ -42,7 +42,7 @@
                     </a>              
                 </div>
             </div>
-        </div>
+        </div>-->
     
         <!-- one example: france kings-->
         <div class="col-md-2" >
@@ -239,7 +239,7 @@
                                     </div>
                                     
                                     
-                                    <div class="col-md-4">
+<!--                                    <div class="col-md-4">
                                         <div class="panel panel-info">
                                             <div class="panel-heading">
                                                 <h3 class="panel-title">Data Shape</h3>
@@ -256,7 +256,27 @@
 
                                             </div>
                                         </div>
-                                    </div>                                    
+                                    </div> -->
+                                    
+                                     <div class="col-md-4">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">Data Shape</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                <form method='POST' action='/tutorial/shape' id='shape2'>
+                                                    <label for='uri'>RDF Graph: </label>
+                                                    <input type='text' id='param' name='param' value = 'http://localhost:8080/data/shape/data.ttl' class="form-control custom-control" /><br/>
+                                                    <label for='sel'>Shape: </label><br>
+                                                    <input type="text"  name='mode' class="form-control" id='sel2' value='http://localhost:8080/data/shape/shape.ttl'/>                                                       
+                                                    <br/><br><br>
+                                                    <input type='submit' value='Validate' class="btn btn-info" onClick="trans(this.form); return false;">
+                                                </form>
+
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    
                                     
                                     
                                     </div>

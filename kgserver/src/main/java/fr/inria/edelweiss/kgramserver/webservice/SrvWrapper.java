@@ -19,7 +19,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Redirect.java
+ * This class enables to assign an URL to services
+ * because as services are accessed using AJAX, they have no specific URL
+ * This service is triggered only when using explicitely a /srv/ URL
+ * url = /srv/tutorial/rdf?uri=etc
+ * Executes target service /tutorial/rdf?uri=etc
+ * reads the demo_new.html page
+ * replaces the content of the #contentOfSite HTML div by the result of the target service.
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 22 juin 2015

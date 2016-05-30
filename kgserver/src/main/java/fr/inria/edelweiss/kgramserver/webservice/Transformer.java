@@ -30,8 +30,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.log4j.Logger;
 
 /**
- * SPARQL endpoint 
- * eval query and/or apply transformation (on query result) and return HTML
+ * HTML SPARQL endpoint 
+ * eval query and/or apply transformation (on query result) or execute a Workflow and return HTML
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
@@ -259,8 +259,7 @@ public class Transformer {
       */
     void defaultTransform(SemanticWorkflow wp, String transform) {
         boolean isDefault = false;
-        if (transform == null
-                && (wp.getProcessList().isEmpty() || ! wp.getProcessLast().isTransformation())) {
+        if (transform == null && ! wp.hasTransformation()) {
             isDefault = true;
             transform = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
         }

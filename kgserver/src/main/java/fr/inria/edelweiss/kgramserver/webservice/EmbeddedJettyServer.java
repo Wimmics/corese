@@ -43,9 +43,17 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
- * Embedded HTTP server for Corese. Using Jetty implementation. Modified: add the options to enable SSL connection, Fuqi Song, 21 Jan 2015
+ * Embedded HTTP server for Corese, Using Jetty implementation 
+ * SPARQL endpoint: SPARQLRestAPI
+ * Semantic web services at Transformer, Tutorial, etc
+ * Home page demo_new.html includes JS that feed it with html/content.html, etc
+ * Web page services are executed using AJAX with trans(url) JS function (see js/server.js)
+ * Semantic web services are defined in  data/profile.ttl
+ * SSL connection
  * 
  * @author alban.gaignard@cnrs.fr
+ * @author Fuqi Song Inria 2015
+ * @author Olivier Corby Inria 2015-2016
  */
 public class EmbeddedJettyServer {
 

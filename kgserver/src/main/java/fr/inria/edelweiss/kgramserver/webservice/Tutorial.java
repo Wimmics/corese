@@ -16,9 +16,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * SPARQL endpoint apply transformation (like Transformer)
+ * HTML SPARQL endpoint apply transformation (like Transformer)
  * Each service manage it's own TripleStore
- * TripleStore content is defined by server in profile.ttl
+ * TripleStore content is defined in profile.ttl
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *

@@ -55,6 +55,7 @@ public class Context extends ASTObject {
     public static final String STL_TRANSFORMATION_LIST    = STL + "transformations";
     public static final String STL_SOLUTION = STL + "solution";
     public static final String STL_VALUE    = STL + "value";
+    public static final String STL_VISITOR  = STL + "visitor";
     
     
     HashMap<String, IDatatype> table;

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 19 16:47:48 CEST 2016
+Mon May 30 08:39:58 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -273,16 +273,17 @@ template st:profile(?in) {
 where {}
 
 function st:process(?in) { 
-  if (isBlank(?in), 
-    st:blank(?in),	  
-    st:clean(st:turtle(?in))	
-  )
+  if (isBlank(?in), st:blank(?in),	  
+  if (isURI(?in), st:clean(st:turtle(?in)),
+  st:literal(st:clean(st:turtle(?in)))))
 }
 
 function st:clean(?in){
-  if (contains(?in, "<"), 
-    replace(?in, "<", "&lt;"), 		
-    ?in)
+    replace(?in, "<", "&lt;") 		
+}
+
+function st:literal(?lit){
+   st:format("<span class='literal'>%s</span>", replace(?lit, "\\\\n", "\n"))
 }
   
 function st:blank(?in){

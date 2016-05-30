@@ -308,13 +308,13 @@ public class WorkflowParser {
     
     void parseContext(Node c) {
         ContextBuilder cb = new ContextBuilder(getGraph());
-        if (sw.getContext() != null) {
+        if (getContext() != null) {
             // wp workflow already has a Context
             // complete wp context with current specification
             // use case: server profile has a st:param Context
             // and workflow has a sw:param Context
             // result: merge them
-            cb.setContext(sw.getContext());
+            cb.setContext(getContext());
         }
         Context context = cb.process(c);
         sw.setContext(context);
@@ -324,9 +324,13 @@ public class WorkflowParser {
     }
     
     void complete(Graph g) {
-        if (sw.getContext() != null){
-            complete(sw.getContext(), g);
+        if (getContext() != null){
+            complete(getContext(), g);
         }
+    }
+    
+    Context getContext(){
+        return sw.getContext();
     }
     
     void complete(Context c, Graph g){
@@ -363,6 +367,9 @@ public class WorkflowParser {
                 // special case (with complete done)
                 ap = subWorkflow(getGraph().getNode(dt));
             } 
+            else if (type.equals(DATASHAPE)){
+                ap = datashape(dt);
+            }
             else {
                 IDatatype duri  = getValue(URI, dt);
                 IDatatype dbody = getValue(BODY, dt);
@@ -386,9 +393,7 @@ public class WorkflowParser {
                     else if (type.equals(LOAD)) {
                         ap = load(dt);
                     }
-                    else if (type.equals(DATASHAPE)){
-                        ap = datashape(dt, uri, test);
-                    }
+                    
                 }  
                 else if (dbody != null) {
                     if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
@@ -425,15 +430,38 @@ public class WorkflowParser {
         return ap;
     }
      
-    ShapeWorkflow datashape(IDatatype dt, String uri, boolean  test) {
+     /**
+      * Special case: may get input from Context     
+      */
+    ShapeWorkflow datashape(IDatatype dt) {
+        IDatatype dtest  = getValue(TEST_VALUE, dt);
+        boolean test  = (dtest == null) ? false : dtest.booleanValue();
+        
+        String uri    = getParam(dt, URI, Context.STL_PARAM);
+        String shape  = getParam(dt, SHAPE, Context.STL_MODE);
+        String format = getParam(dt, PATH, PATH);
         ShapeWorkflow ap = null;
-        IDatatype dshape = getValue(SHAPE, dt);
-        IDatatype dpath  = getValue(PATH, dt);
-        if (dshape != null) {
-            String format = (dpath == null) ? null : dpath.getLabel();
-            ap = new ShapeWorkflow(dshape.getLabel(), uri, format, test);
+        if (shape != null && uri != null) {
+            ap = new ShapeWorkflow(shape, uri, format, test);
         }
         return ap;
+    }
+    
+    
+    /**
+     * Retrieve param from workflow graph pred or from context name
+     */
+    String getParam(IDatatype node, String pred, String name){
+        IDatatype dt = getValue(pred, node);
+        if (dt == null){
+            if (getContext() != null){
+                dt = getContext().get(name);
+            }
+        }
+        if (dt == null){
+            return null;
+        }
+        return dt.getLabel();
     }
      
      DatasetProcess dataset(IDatatype dt){

@@ -3,7 +3,12 @@ package fr.inria.corese.kgtool.workflow;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import java.awt.font.TransformAttribute;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Domain Specific Workflow to process DataShape on RDF Graph
@@ -17,8 +22,13 @@ public class ShapeWorkflow extends SemanticWorkflow {
     public static final String SHAPE_TRANS = Transformer.DATASHAPE;
     public static final String FORMAT = Transformer.TURTLE;
     public static final String FORMAT_HTML = Transformer.TURTLE_HTML;
+    private static final String NL = System.getProperty("line.separator");
+    static final String SHAPE_TEMPLATE = "/query/shape.rq";
     
     private String format = FORMAT;
+    TransformationProcess transformer;
+    
+    SPARQLProcess sp;
     
     public ShapeWorkflow(String shape, String data){
         create(shape, data, format, false);
@@ -36,27 +46,44 @@ public class ShapeWorkflow extends SemanticWorkflow {
         create(shape, data, trans, test);
     }
     
-    private void create(String shape, String data, String format, boolean test){
-        if (format == null){
-            format = FORMAT;
+    @Override
+    boolean isShape(){
+        return true;
+    }
+    
+    private void create(String shape, String data, String trans, boolean test){
+        if (trans != null){
+            format = trans;
         }
+        setCollect(true);
         LoadProcess ld = new LoadProcess(data);
         LoadProcess ls = new LoadProcess(shape);
         ParallelProcess para = new ParallelProcess();
         para.insert(new SemanticWorkflow().add(ld));
         para.insert(new SemanticWorkflow(SHAPE_NAME).add(ls));
-        
+        // test = true: use DataShape transformation not compiled
         this.add(para)
             .add(new DatasetProcess())
             .add(new TransformationProcess((test)?SHAPE_TRANS_TEST:SHAPE_TRANS));
-        
+        // set focus graph as Visitor Report Graph
         this.add(new DatasetProcess(WorkflowParser.VISITOR));
-        
-        this.add(new TransformationProcess(format));
-        
+        // display Visitor Report Graph (turtle or html turtle)
+        //transformer = new TransformationProcess(format);
+        //this.add(transformer);
+                      
         if (test){
             setContext(new Context().export(Context.STL_TEST, DatatypeMap.TRUE));
         }       
+    }
+    
+    String template(String name){
+       try {
+            QueryLoad ql = QueryLoad.create();
+           return ql.readWE(ShapeWorkflow.class.getResourceAsStream(name));
+        } catch (LoadException ex) {
+            Logger.getLogger(ShapeWorkflow.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+       return null;
     }
     
     
@@ -69,13 +96,30 @@ public class ShapeWorkflow extends SemanticWorkflow {
     
     @Override
     public String stringValue(Data data){
+        String res ;
         if (data.getGraph().size() == 0){
-            return "Validation succeeded";
+            res = success();
         }
         else {
-            return data.getTemplateResult();
+            //res = data.getTemplateResult();
+            Transformer t = Transformer.create(data.getVisitedGraph(), format);
+            res = t.transform();
+        }
+        return res;
+    }
+    
+    String success(){
+        if (format.equals(FORMAT_HTML)){
+            return "<h2>Data Shape Validation</h2><pre>sucess</pre>";
+        }
+        else {
+            return "Data Shape Validation success";
         }
     }
 
+   @Override
+   public String getTransformation(){
+       return format;
+   }
    
 }

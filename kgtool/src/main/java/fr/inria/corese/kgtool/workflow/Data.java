@@ -166,7 +166,7 @@ public class Data {
         this.visitor = visitor;
     }
     
-    public Graph getValidationGraph(){
+    public Graph getVisitedGraph(){
         if (visitor == null){
             return null;
         }

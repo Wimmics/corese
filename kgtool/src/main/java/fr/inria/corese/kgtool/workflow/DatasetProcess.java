@@ -2,6 +2,7 @@ package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -48,11 +49,17 @@ public class DatasetProcess extends WorkflowProcess {
             return compare(data);
         }
         else if (mode.equals(WorkflowParser.VISITOR)){
-            Data res = new Data(this, data.getVisitor().visitedGraph());
-            res.setVisitor(data.getVisitor());
-            return res;
+           return visitor(data);
         }
         return data;
+    }
+    
+    Data visitor(Data data) {
+//        Data res = new Data(this, data.getVisitedGraph());
+//        res.setVisitor(data.getVisitor());
+//        return res;
+       data.getGraph().setNamedGraph(Context.STL_VISITOR, data.getVisitedGraph());
+       return data;
     }
     
     /**

@@ -261,11 +261,18 @@ public class SemanticWorkflow extends  CompositeProcess {
 
     
     @Override
-    public String getTransformation(){
-        if (getProcessLast() != null && getProcessLast().isTransformation()){
-            return getProcessLast().getPath();
+    public String getTransformation(){       
+        WorkflowProcess wp = getProcessLast();
+        if (wp == null){
+            return null;
         }
-        return null;
+        else {
+            return wp.getTransformation();
+        } 
     } 
+    
+    public boolean hasTransformation(){  
+        return getTransformation() != null;
+    }
 
 }

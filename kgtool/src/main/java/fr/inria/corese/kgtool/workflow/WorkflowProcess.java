@@ -291,6 +291,10 @@ public class WorkflowProcess implements AbstractProcess {
         return false;
     }
     
+    boolean isShape(){
+        return true;
+    }
+    
     boolean isModify(){
         return ! isTransformation();
     }

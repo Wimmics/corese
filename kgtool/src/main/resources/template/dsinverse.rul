@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 19 16:47:47 CEST 2016
+Mon May 30 08:39:58 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -31,8 +31,8 @@ function st:aggregate(?x) {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis){
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o){
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
@@ -55,8 +55,8 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis){
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o){
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
@@ -79,8 +79,8 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis){
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o){
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
@@ -103,8 +103,8 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis){
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o){
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
@@ -130,7 +130,7 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis) {
+template (?shape, ?sh, ?vis, ?o) {
   sh:safe(?sh, ?suc)
 }
 where {
@@ -159,8 +159,8 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis) {
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
   graph ?shape {  
@@ -187,18 +187,18 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis){
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o){
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
   graph ?shape {  
-    ?sh sh:valueShape ?cst ; sh:predicate ?p 
+    ?sh sh:shape ?cst ; sh:predicate ?p 
   }
   
   ?s ?p ?o
   
-  bind (sh:testShape(?s, ?cst, ?shape) as ?suc)
+  bind (sh:testShape(?shape, ?cst, ?s) as ?suc)
   
   bind (st:report(sh:valueShape, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
 }
@@ -212,8 +212,8 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis){
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o){
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
@@ -237,8 +237,8 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis) {
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
   graph ?shape {  
@@ -261,8 +261,8 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?sh, ?shape, ?o, ?vis){
-  sh:safe(?sh, ?shape, ?suc)
+template (?shape, ?sh, ?vis, ?o){
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
 

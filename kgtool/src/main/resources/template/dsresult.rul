@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Mon May 30 08:39:58 CEST 2016
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:main {
+    st:call-template(st:title)
+    st:call-template(st:shape)
+    st:call-template(st:index)
+    
+    st:call-template(st:show)
+
+    #st:apply-templates-with-graph(st:hturtle, ?g)
+}
+where {
+    bind (st:get(st:param) as ?par)
+    bind (st:visitedGraph() as ?g)
+    filter bound(?par)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:title {
+    format {
+        """
+        <h2>Data Shape Validation</h2>
+        <p>
+        <a href='http://w3c.github.io/data-shapes/shacl/'>Data Shape: http://w3c.github.io/data-shapes/shacl/</a> <br/>
+        <a href='%s'>RDF: %s</a> <br/>
+        <a href='%s'>Shape: %s </a> 
+        </p>
+        """
+        
+        st:get(st:param)st:get(st:param)
+        st:get(st:mode)st:get(st:mode)
+    } 
+}
+where {
+    
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:start {
+    st:call-template(st:main)
+}
+where {
+    
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:index {
+    format {
+        "<h4>%s: %s</h4>" 
+        
+        strafter(?s, sh:) ?c
+    }
+}
+where {
+    select ?s (count(*) as ?c) where {
+        graph st:visitor { ?x a sh:ValidationResult ; sh:severity ?s }
+    } 
+    group by ?s
+    order by ?s
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:detail {
+    format {
+        """
+        <pre>%s</pre> 
+        <pre>%s</pre>
+        
+        """ 
+        
+       if (exists { ?s ?p ?o }, st:apply-templates-with(st:turtlehtml, ?s), str(?s))
+        
+        group { st:apply-templates-with-graph(st:turtlehtml, st:visitor, ?r) ; separator = "\n" }
+    }
+}
+where {
+    graph st:visitor { ?r sh:focusNode ?s }  
+    
+}
+group by ?s
+order by ?s
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:shape {
+    format {
+        "<h4>Validation Result: %s</h4>" 
+        
+        ?c
+    }
+}
+where {
+
+    {select (count(*) as ?c) where {
+        graph st:visitor { ?x a sh:ValidationResult }
+    }}
+    filter (?c > 0)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh:  <http://www.w3.org/ns/shacl#>
+prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
+
+template st:show {
+format {
+    """ 
+    <table>
+    <tr><th class="center">Data Shape</th><th class="center">Validation</th><th class="center">RDF</th></tr>
+    <tr class="top"><td>%s</td><td>%s</td><td>%s</td></tr>
+    </table>
+    """
+
+    st:apply-templates-with-graph(st:hturtle, st:shape)
+    st:apply-templates-with-graph(st:hturtle, st:visitor)
+    st:apply-templates-with(st:hturtle)
+}
+
+}
+where {
+
+}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

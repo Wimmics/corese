@@ -41,8 +41,13 @@ public class DatasetProcess extends WorkflowProcess {
         if (getMode() == null) {
             return dataset(data);
         }
-        String mode = getMode().getLabel();
-        if (mode.equals(WorkflowParser.WORKFLOW_VALUE)){
+        String mode = getModeString();
+        if (mode.equals(WorkflowParser.NEW)){
+            Data res = data.copy();
+            res.setGraph(data.getGraph().empty());
+            return  res;
+        }
+        else if (mode.equals(WorkflowParser.WORKFLOW_VALUE)){
             return workflow(data);
         }
         else if (mode.equals(WorkflowParser.COMPARE)){

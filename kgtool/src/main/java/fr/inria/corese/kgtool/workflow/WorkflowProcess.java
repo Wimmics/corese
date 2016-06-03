@@ -53,7 +53,7 @@ public class WorkflowProcess implements AbstractProcess {
         start(d);
         Data res = run(d);
         finish(res);
-        after(res);
+        after(d, res);
         return res;
     } 
      
@@ -74,7 +74,10 @@ public class WorkflowProcess implements AbstractProcess {
        
     }
     
-    private void after(Data data) {
+    private void after(Data in, Data data) {
+        if (in.getVisitor() != null && data.getVisitor() == null){
+            data.setVisitor(in.getVisitor());
+        }
         afterDebug(data);
         if (recVisitor() != null){
             recVisitor().after(this, data);
@@ -394,6 +397,13 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public IDatatype getMode() {
         return mode;
+    }
+    
+    public String getModeString(){
+        if (mode == null){
+            return null;
+        }
+        return mode.getLabel();
     }
 
     /**

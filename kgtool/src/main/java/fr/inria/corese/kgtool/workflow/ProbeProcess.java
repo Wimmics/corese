@@ -1,6 +1,8 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.edelweiss.kgtool.transform.DefaultVisitor;
+import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 
 /**
  * Execute a sub Process but return the input Data
@@ -19,6 +21,9 @@ public class ProbeProcess extends SemanticProcess {
     
     @Override
     void start(Data data){
+        if (getModeString() != null && getModeString().equals(WorkflowParser.VISITOR)){
+            data.setVisitor(new DefaultVisitor());
+        }
     }
     
     @Override

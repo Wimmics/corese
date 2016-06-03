@@ -15,9 +15,12 @@ import fr.inria.edelweiss.kgtool.transform.ContextBuilder;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -76,6 +79,11 @@ public class WorkflowParser {
     public static final String MAIN = PREF + "main";
     public static final String SHAPE = PREF + "shape";
     public static final String VISITOR = PREF + "visitor";
+    public static final String SPIN = PREF + "spin";
+    public static final String NEW = PREF + "new";
+    
+    public static final String LOAD_PARAM = Context.STL_PARAM;
+    public static final String MODE_PARAM = Context.STL_MODE;
     
     static final String[] propertyList = {NAME, DEBUG, DISPLAY, RESULT, MODE, COLLECT};
 
@@ -84,6 +92,7 @@ public class WorkflowParser {
     private String path;
     private boolean debug = !true;
     private SWMap map;
+    private Context context;
     
     static final ArrayList<String> topLevel;
     
@@ -91,6 +100,18 @@ public class WorkflowParser {
         topLevel = new ArrayList<String>();
         topLevel.add(BODY);
     }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
+    }
+    
+    Context getContext(){
+        return context;
+    }
+   
     
     class SWMap extends HashMap<String, SemanticWorkflow> {}
 
@@ -109,6 +130,7 @@ public class WorkflowParser {
         this();
         graph = g;
         this.sw = wp;
+        setContext(wp.getContext());
     }
     
     public SemanticWorkflow parse(Graph g) throws LoadException {
@@ -220,16 +242,24 @@ public class WorkflowParser {
         Node body = getNode(BODY, wf);
         Node uri  = getNode(URI, wf);
         if (body != null) {
-            WorkflowParser parser = new WorkflowParser(getGraph());
-            parser.setProcessMap(map);
+            WorkflowParser parser = new WorkflowParser(getGraph()).complete(this);
             return parser.parse(wf); 
         } else if (uri != null) {
-            WorkflowParser parser = new WorkflowParser();
-            parser.setProcessMap(map);
+            WorkflowParser parser = new WorkflowParser().complete(this);
             return parser.parse(uri.getLabel());
         } else {
             return null;
         }
+    }
+    
+    /**
+     * 
+     * This completed by wp
+     */
+    WorkflowParser complete(WorkflowParser wp){
+        setProcessMap(wp.getProcessMap());
+        setContext(wp.getContext());
+        return this;
     }
     
     /**
@@ -328,11 +358,7 @@ public class WorkflowParser {
             complete(getContext(), g);
         }
     }
-    
-    Context getContext(){
-        return sw.getContext();
-    }
-    
+     
     void complete(Context c, Graph g){
         if (c.get(Context.STL_SERVER_PROFILE) == null){
             c.set(Context.STL_SERVER_PROFILE, DatatypeMap.createObject(g));
@@ -370,6 +396,9 @@ public class WorkflowParser {
             else if (type.equals(DATASHAPE)){
                 ap = datashape(dt);
             }
+            else if (type.equals(TRANSFORMATION)){
+                ap = transformation(dt);
+            }
             else {
                 IDatatype duri  = getValue(URI, dt);
                 IDatatype dbody = getValue(BODY, dt);
@@ -387,13 +416,9 @@ public class WorkflowParser {
                     else if (type.equals(RULE) || type.equals(RULEBASE)) {
                         ap = new RuleProcess(uri);
                     } 
-                    else if (type.equals(TRANSFORMATION)) {
-                        ap = new TransformationProcess(uri);
-                    } 
                     else if (type.equals(LOAD)) {
                         ap = load(dt);
-                    }
-                    
+                    }                   
                 }  
                 else if (dbody != null) {
                     if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
@@ -430,6 +455,11 @@ public class WorkflowParser {
         return ap;
     }
      
+    TransformationProcess transformation(IDatatype dt) {
+        String uri = getParam(dt, URI, MODE_PARAM, true);
+        return new TransformationProcess(uri);
+    }
+     
      /**
       * Special case: may get input from Context     
       */
@@ -437,8 +467,8 @@ public class WorkflowParser {
         IDatatype dtest  = getValue(TEST_VALUE, dt);
         boolean test  = (dtest == null) ? false : dtest.booleanValue();
         
-        String uri    = getParam(dt, URI, Context.STL_PARAM);
-        String shape  = getParam(dt, SHAPE, Context.STL_MODE);
+        String uri    = getParam(dt, URI, LOAD_PARAM, true);
+        String shape  = getParam(dt, SHAPE, Context.STL_MODE, true);
         String format = getParam(dt, PATH, PATH);
         ShapeWorkflow ap = null;
         if (shape != null && uri != null) {
@@ -451,17 +481,60 @@ public class WorkflowParser {
     /**
      * Retrieve param from workflow graph pred or from context name
      */
-    String getParam(IDatatype node, String pred, String name){
+     String getParam(IDatatype node, String pred, String name){
+         return getParam(node, pred, name, false);
+     }
+
+    
+    String getParam(IDatatype node, String pred, String name, boolean uri){
         IDatatype dt = getValue(pred, node);
         if (dt == null){
-            if (getContext() != null){
-                dt = getContext().get(name);
+            String value = getParam(name);
+            if (value != null){
+                if (uri){
+                    return resolve(value);
+                }
+                else {
+                    return value;
+                }
             }
         }
         if (dt == null){
             return null;
         }
+        
         return dt.getLabel();
+    }
+    
+    String getParam(String name){
+        if (getContext() == null || getContext().get(name) == null){
+            return null;
+        }
+        return getContext().get(name).getLabel();
+    }
+    
+    String resolve(String uri) {
+        if (getContext() == null){
+            return uri;
+        }
+        IDatatype dts = getContext().get(Context.STL_SERVER);
+        if (dts != null) {
+            return resolve(uri, dts.getLabel());
+        }
+        return uri;
+    }
+    
+     String resolve(String uri, String base){
+        try {
+            URI url = new URI(uri);
+            if (! url.isAbsolute()) {
+                url = new URI(base).resolve(uri);
+                uri= url.toString();
+            }
+        } catch (URISyntaxException ex) {
+            logger.info(ex);
+        }
+        return uri;
     }
      
      DatasetProcess dataset(IDatatype dt){
@@ -495,6 +568,13 @@ public class WorkflowParser {
             String pp = ent.getNode(1).getLabel();
             w.add(new LoadProcess(pp, name, rec));
         }
+        
+        // get what to load from Context st:param
+        String uri  = getParam(LOAD_PARAM);
+        if (uri != null){
+            w.add(new LoadProcess(resolve(uri), name, rec));
+        }
+        
         if (w.getProcessList().size() == 1){
             return w.getProcessLast();
         }

@@ -57,7 +57,7 @@ public class DefaultVisitor implements TemplateVisitor {
     boolean isDistinct = true;
     
     
-    DefaultVisitor(){
+    public DefaultVisitor(){
         map      = new HashMap();
         distinct = new HashMap();
         value    = new HashMap();

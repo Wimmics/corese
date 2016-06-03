@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon May 30 08:39:58 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -38,52 +38,14 @@ template (?shape, ?sh, ?vis, ?s) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-    GRAPH ?shape {
-        ?sh sh:constraint ?sa  ?sa sh:or ?or 
-    }
-    
-    bind (us:or(?or, ?s, ?shape) as ?count)
-	bind (! bound(?count) AS ?failure) .
-	bind ( IF (?failure, false, ?count > 0)  as ?suc)
-
-    bind (st:report(sh:or, ?sa, ?shape, ?s,  ?suc, ?vis) as ?b)
-  
-}
-
-# count success
-function us:or(?or, ?s, ?shape){
-    let ((?count) = 
-        SELECT ?or ?s ?shape (SUM(?val) AS ?count)
-		WHERE {
-			GRAPH ?shape {
-				?or rdf:rest*/rdf:first ?sh
-			}
-			BIND (st:testShape(?shape, ?sh, ?s) AS ?hasShape) 
-			BIND (IF(bound(?hasShape), IF (?hasShape, 1, 0), 'error') AS ?val) .
-		})
-		{ ?count }
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?s) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
     graph ?shape {
         ?sh sh:inverseProperty ?cst        
         optional { ?cst sh:filterShape ?fs }
         filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s)) 
+        ?cst sh:predicate ?p
     }
     
-    bind (sh:hasInverseProperty(?shape, ?cst, ?vis, ?s) as ?suc)
+    bind (sh:hasInverseProperty(?shape, ?cst, ?vis, ?s, ?p) as ?suc)
   
 }
 
@@ -100,37 +62,14 @@ template (?shape, ?sh, ?vis, ?s) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-    graph ?shape {
-        ?sh sh:constraint ?sn 
-        ?sn sh:not ?cst        
-    }
-
-    bind (! st:testShape(?shape, ?cst, ?s) as ?suc)
-
-    bind (st:report(sh:not, ?sn, ?shape, ?s,  ?suc, ?vis) as ?b)
-  
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?s) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    graph ?shape {
-        ?sh sh:property ?cst        
+    graph ?shape { 
+        ?sh sh:property ?cst  
         optional { ?cst sh:filterShape ?fs } 
         filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s)) 
-   }
-   
-    bind (sh:hasProperty(?shape, ?cst, ?vis, ?s) as ?suc)
+        ?cst sh:predicate ?p
+    }
+  
+    bind (sh:hasProperty(?shape, ?cst, ?vis, ?s, ?p) as ?suc)
   
 }
 
@@ -177,53 +116,14 @@ where {
     graph ?shape {
         ?sh sh:constraint ?cst 
         filter (?cst != sh:Closed)
-        filter not exists { ?cst sh:and|sh:or|sh:not|sh:closed ?bool }
+        filter not exists { ?cst sh:closed ?bool }
         
         optional { ?cst sh:filterShape ?fs } 
-        filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s)) 
+        filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s))         
    }
    
     bind (sh:hasConstraint(?shape, ?cst, ?vis, ?s) as ?suc)
   
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?s) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    GRAPH ?shape {
-        ?sh sh:constraint ?sa  ?sa sh:and ?and 
-    }
-    
-    bind (us:and(?and, ?s, ?shape) as ?count)
-	bind (! bound(?count) AS ?failure) .
-	bind ( IF (?failure, false, ?count = 0)  as ?suc)
-
-    bind (st:report(sh:and, ?sa, ?shape, ?s,  ?suc, ?vis) as ?b)
-  
-}
-
-# count failures
-function us:and(?and, ?s, ?shape){
-    let ((?count) = 
-        SELECT ?and ?s ?shape (SUM(?val) AS ?count)
-		WHERE {
-			GRAPH ?shape {
-				?and rdf:rest*/rdf:first ?sh 
-			}
-			BIND (st:testShape(?shape, ?sh, ?s) AS ?hasShape) 
-			BIND (IF(bound(?hasShape), IF (?hasShape, 0, 1), 'error') AS ?val) .
-		})
-		{ ?count }
 }
 
 ]]>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu May 19 16:47:48 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -134,22 +134,50 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:start(?in) {
-  st:call-template(?uri, ?desc)    
-  
+template st:main(?in) {
+    ?res  
 }
 where {
 
-  bind (unnest(st:errors(?in)) as ?e)
-  bind (STRBEFORE(STRAFTER(?e, st:), "/") as ?type)
-  bind (STRAFTER(STRAFTER(?e, st:), "/")  as ?desc)
+  #bind (unnest(st:errors(?in)) as ?e)
+  values ?e { unnest(st:errors(?in)) }
+  filter strstarts(?e, st:)
+  bind (strafter(?e, st:) as ?str)
+  bind (strbefore(?str, "/") as ?type)
+  bind (strafter(?str, "/")  as ?desc)
     
 values (?type ?uri) {
-  ("owlel" st:mainEL)
-  ("owlql" st:mainQL)
-  ("owlrl" st:mainRL)
-  ("owltc" st:mainOWL)
-}    
+    ("owlel" st:mainEL)
+    ("owlql" st:mainQL)
+    ("owlrl" st:mainRL)
+    ("owltc" st:mainOWL)
+} 
+
+ bind ( st:call-template(?uri, ?desc)  as ?res)
+ 
+ filter (strlen(?res) > 0)
+
+
+} 
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:start(?in) {
+  format {
+    """
+    <span class='errors'>%s</span>
+    """
+    ?res 
+  }  
+}
+where {
+    bind (st:call-template(st:main, ?in) as ?res)
+    filter (bound(?res) && strlen(?res) > 0)
 } 
 
 ]]>

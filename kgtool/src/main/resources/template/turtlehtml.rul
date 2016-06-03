@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon May 30 08:39:58 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -10,9 +10,9 @@ Mon May 30 08:39:58 CEST 2016
 <body>
 <![CDATA[
 template st:pperrorsp(?in) {
-			"""<span class="errors">"""
-		    st:call-template-with(st:pperror, st:start, ?in)
-		    """</span>"""
+
+    st:call-template-with(st:pperror, st:start, ?in)
+
 }
 where {
 }
@@ -247,9 +247,11 @@ order by ?x
 <body>
 <![CDATA[
 template st:pperror(?in) {
-	"""<span class='fail'>"""
-		st:call-template(st:ibox, ?in)
-	"</span>"
+	format {
+        "<span class='fail'>%s</span>"
+	
+        st:call-template(st:ibox, ?in)
+	}
 }
 where {
 
@@ -345,7 +347,7 @@ where {
   ?in rdf:rest* ?r
   ?r  rdf:first ?e
   
-  bind(isBlank(?e) && 
+  bind (isBlank(?e) && 
     ((st:isStart() &&  exists { ?x ?p ?e . filter(?x != ?r) })
     || exists { ?e ?q ?e })
     as ?refer)
@@ -413,7 +415,7 @@ template {
 }
 where {
   ?in ?p ?y
-  filter (isBlank(?in))
+  filter isBlank(?in)
   filter not exists { ?in rdf:first ?e }
   
   bind (exists { ?a ?q ?in } as ?nested)

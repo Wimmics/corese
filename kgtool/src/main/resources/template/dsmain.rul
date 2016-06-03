@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon May 30 08:39:58 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -74,8 +74,6 @@ function st:aggregate(?x) {
   st:agg_and(?x)
 }
 
-
-
 @export {
 
 function sh:test(){
@@ -112,16 +110,20 @@ function sh:testShape(?shape, ?sh, ?s){
     st:apply-templates-with-all(sh:main(), ?shape, ?sh, false, ?s)
 }
 
+function sh:testShapeCore(?shape, ?sh, ?s){
+    st:apply-templates-with-all(sh:core(), ?shape, ?sh, false, ?s)
+}
+
 function sh:hasConstraint(?shape, ?sh, ?vis, ?s){
     st:apply-templates-with-all(sh:constraint(), ?shape, ?sh, ?vis, ?s)
 }
 
-function sh:hasProperty(?shape, ?sh, ?vis, ?s){
-    st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s)
+function sh:hasProperty(?shape, ?sh, ?vis, ?s, ?p){
+    st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
-function sh:hasInverseProperty(?shape, ?sh, ?vis, ?s){
-    st:apply-templates-with-all(sh:inverse(), ?shape, ?sh, ?vis, ?s)
+function sh:hasInverseProperty(?shape, ?sh, ?vis, ?s, ?p){
+    st:apply-templates-with-all(sh:inverse(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
 
@@ -237,6 +239,55 @@ function sh:hasKind(?value, ?kind){
     (isBlank(?value)   && ?kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
 }
 
+function sh:mlength(?q, ?s, ?m){
+    coalesce(
+        ! isBlank(?s) && 
+        if (?q = sh:minLength, strlen(?s) >= ?m, strlen(?s) <= ?m), 
+        false) 
+}
+
+function sh:mcount(?q, ?s, ?m){
+    if (?q = sh:minCount, ?s >= ?m, ?s <= ?m)
+}
+
+# used by inverse/property and
+# count fail
+function sh:and(?fun, ?and, ?s, ?p, ?shape){
+    sh:bool(?fun, ?and, ?s, ?p, ?shape, 0, 1)
+}
+
+# used by inverse/property or
+# count success
+function sh:or(?fun, ?or, ?s, ?p, ?shape){
+    sh:bool(?fun, ?or, ?s, ?p, ?shape, 1, 0)
+}
+
+function sh:bool(?fun, ?bool, ?s, ?p, ?shape, ?suc, ?fail){
+    let ((?count) = 
+        SELECT ?fun ?bool ?s ?p ?shape ?suc ?fail (SUM(?val) AS ?count)
+		WHERE {
+			GRAPH ?shape {
+				?bool rdf:rest*/rdf:first ?sh
+			}
+			BIND (funcall(?fun, ?shape, ?sh, false, ?s, ?p) AS ?hasShape)
+			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
+		})
+		{ ?count }
+}
+
+# constraint
+function sh:bool(?bool, ?s, ?shape, ?suc, ?fail){
+    let ((?count) = 
+        SELECT ?bool ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
+		WHERE {
+			GRAPH ?shape {
+				?bool rdf:rest*/rdf:first ?sh 			    
+			}
+			BIND (sh:testShapeCore(?shape, ?sh, ?s) AS ?hasShape)
+			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
+		})
+		{ ?count }
+}
 
 }
 
@@ -339,7 +390,7 @@ template (?shape, ?sh, ?vis, ?s) {
 where {
 
   graph ?shape {
-    ?x sh:shape | sh:filterShape ?sh
+    ?x sh:shape|sh:filterShape|sh:and|sh:or|sh:not ?sh
     filter not exists { ?sh sh:scodeNode|sh:scopeClass|sh:scope|sh:scopeProperty|sh:scopeInverseProperty ?scope }
     optional { ?sh sh:filterShape ?fs }  
   }

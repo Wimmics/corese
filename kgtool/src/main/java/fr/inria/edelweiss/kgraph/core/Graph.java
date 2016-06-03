@@ -2640,9 +2640,14 @@ public class Graph extends GraphObject implements Graphable {
     }
     
     public Graph copy(){
-        Graph g = new Graph();
-        g.inherit(this);
+        Graph g = empty();
         g.copy(this);
+        return g;
+    }
+    
+    public Graph empty(){
+        Graph g = Graph.create();
+        g.inherit(this);
         return g;
     }
     

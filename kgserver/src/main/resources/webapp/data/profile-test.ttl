@@ -5,6 +5,52 @@
 
 
 
+st:hturtle2 a st:Profile ;
+st:workflow [
+    a sw:Workflow ; 
+    sw:param [ st:focus false ] ;
+    sw:body ( 
+        [a sw:Query ; sw:uri <query/construct2.rq> ]
+        [ a sw:Transformation ; sw:uri st:hturtle ] 
+        )
+]
+. 
+
+st:hturtle3 a st:Profile ;
+st:workflow [
+    a sw:Workflow ; 
+    sw:param [ st:focus st:uri ] ;
+    sw:body ( 
+        [a sw:Query ; sw:uri <query/construct2.rq> ]
+        [ a sw:Transformation ; sw:uri st:hturtle ] 
+        )
+]
+. 
+
+
+st:sparql1 a st:Profile ;
+    st:query <query/construct2.rq> ;
+    st:transform st:sparql        
+.
+
+st:sparql2 a st:Profile ;
+    st:param [ st:focus false ] ;
+    st:query <query/construct2.rq> ;
+    st:transform st:sparql        
+.
+
+st:sparql3 a st:Profile ;
+    st:param [ st:focus st:uri ] ;
+    st:workflow [
+        a sw:Workflow ; 
+        sw:body (
+            [a sw:Query ; sw:uri <query/construct2.rq> ]
+            [a sw:Transformation ; sw:uri st:sparql ]
+        )
+    ]
+.
+
+
 st:cdncopy a st:Profile ;
 st:workflow [ a sw:Workflow ; sw:body (
     <query/frdbpediacdn.rq>     
@@ -24,7 +70,8 @@ st:save a st:Profile ;
 st:dbsparql a st:Profile ;
   st:query  <query/frdbpedia.rq> ;
   st:param [
-     st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia))
+     #st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia)) ;
+     st:lod (<http://fr.dbpedia.org/resource/>)
   ] ;
   st:transform st:sparql .
  

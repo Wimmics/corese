@@ -20,20 +20,6 @@ st:dbpedia a st:Profile ;
   .
   
   
-st:shape a st:Server ;
-    st:service "shape" ;
-    st:workflow st:shapeWF .
-
-st:shapeWF a sw:Workflow ;
-# get param(graph) and mode(shape) from server Context
-# parser get them from Context when creating ShapeProcess
-sw:body (
-    [ a sw:Shape ]
-    [ a sw:Transformation ; sw:uri st:dsresult ]
-    #[ a sw:Transformation ; sw:uri "/home/corby/AAData/sttl/datashape/result" ]
-) .
-
-  
 st:dbpediawf a sw:Workflow ;
   sw:body ( 
     <query/frdbpedia.rq> <query/frdbpediaclean.rq> 
@@ -398,11 +384,95 @@ st:cdncontent a sw:Workflow ; sw:body (
     ] .
           
 
-st:owlrl a st:Server ;
+st:owlrl2 a st:Server ;
     st:service "owlrl" ;
     st:transform st:hturtle ;
     st:schema 
     [ st:uri <primer.owl> ] 
 .
+
+# ************************************************************************
+
+st:shape a st:Server ;
+    st:service "shape" ;
+    st:workflow st:shapeWF .
+
+st:shapeWF a sw:Workflow ;
+# get param(graph) and mode(shape) from server Context
+# parser get them from Context when creating ShapeProcess
+sw:body (
+    [ a sw:Shape ]
+    [ a sw:Transformation ; sw:uri st:dsresult ]
+    #[ a sw:Transformation ; sw:uri "/home/corby/AAData/sttl/datashape/result" ]
+) .
+
+
+
+
+
+#
+# Generic type check 
+# Context st:param is the RDF to load
+# Context st:mode  is the transformation type checker
+#
+st:typecheck a st:Profile ;
+st:workflow st:typecheckWF
+.
+
+st:typecheckWF a sw:Workflow ; 
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Probe ; sw:mode sw:visitor ]
+    [ a sw:Transformation ] # sw:uri = st:mode 
+    [ a sw:Transformation ; sw:uri st:hturtle ]
+)
+.
+
+st:typecheckowl a st:Profile ;
+st:workflow st:typecheckOWLWF
+.
+
+st:typecheckOWLWF a sw:Workflow ; 
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # st:param 
+    [ a sw:Probe ; sw:mode sw:visitor ]
+    [ a sw:Transformation ; sw:uri st:owltc ]  
+    [ a sw:Transformation ; sw:uri st:owlrl ]  
+    [ a sw:Transformation ; sw:uri st:owlqltc ]  
+    [ a sw:Transformation ; sw:uri st:owleltc ]  
+    [ a sw:Transformation ; sw:uri st:hturtle ]
+)
+.
+
+
+st:display a st:Profile ;
+st:workflow st:displayWF
+.
+
+st:displayWF a sw:Workflow ; 
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Transformation ] # sw:uri = st:mode 
+)
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

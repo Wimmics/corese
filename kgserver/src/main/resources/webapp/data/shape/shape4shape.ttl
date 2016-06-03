@@ -1,0 +1,221 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://www.example.org/> .
+
+
+ex:s1 a sh:Shape ;
+sh:scopeClass sh:Shape ;
+sh:constraint [ sh:closed true ; sh:ignoredProperties (rdf:type) ];
+sh:property [
+    sh:predicate sh:filterShape
+] ;
+sh:property [
+    sh:predicate sh:scope ;
+    sh:classIn (sh:AllSubjectsScope sh:AllObjectsScope)
+] ;
+sh:property [
+    sh:predicate sh:scopeProperty ;
+    sh:nodeKind sh:IRI
+] ;
+sh:property [
+    sh:predicate sh:scopeInverseProperty ;
+    sh:nodeKind sh:IRI
+] ;
+sh:property [
+    sh:predicate sh:scopeClass ;
+    sh:nodeKind sh:IRI 
+] ;
+sh:property [
+    sh:predicate sh:scopeNode ;
+    sh:nodeKind sh:IRIOrLiteral 
+] ;
+sh:property [
+    sh:predicate sh:constraint
+] ;
+sh:property [
+    sh:predicate sh:property
+] ;
+sh:property [
+    sh:predicate sh:inverseProperty
+] 
+.
+
+
+
+ex:s2 a sh:Shape ;
+sh:scopeInverseProperty sh:property ;
+sh:constraint [ sh:closed true ; sh:ignoredProperties (rdf:type) ];
+sh:property [
+    sh:predicate sh:predicate ;
+    sh:maxCount 1 ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate sh:shape
+] ;
+sh:property [
+    sh:predicate sh:filterShape
+] ;
+sh:property [
+    sh:predicate sh:and, sh:or, sh:not
+] ;
+sh:property [
+    sh:predicate sh:severity ;
+    sh:in (sh:violation sh:Warning sh:Info)
+] ;
+sh:property [
+    sh:predicate sh:class
+] ;
+sh:property [
+    sh:predicate sh:classIn
+] ;
+sh:property [
+    sh:predicate sh:datatype ;
+    sh:nodeKind sh:IRI
+] ;
+sh:property [
+    sh:predicate sh:datatypeIn
+] ;
+sh:property [
+    sh:predicate sh:in
+] ;
+sh:property [
+    sh:predicate sh:pattern
+] ;
+sh:property [
+    sh:predicate sh:stem
+] ;
+sh:property [
+    sh:predicate sh:hasValue
+] ;
+sh:property [
+    sh:predicate sh:minLength, sh:maxLength ;
+    sh:datatype xsd:integer    
+] ;
+sh:property [
+    sh:predicate sh:minCount, sh:maxCount ;
+    sh:datatype xsd:integer
+] ;
+sh:property [
+    sh:predicate sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive
+] ;
+sh:property [
+    sh:predicate sh:nodeKind ;
+    sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
+] ;
+sh:property [
+    sh:predicate sh:uniqueLang
+] ;
+sh:property [
+    sh:predicate sh:lessThan, sh:lessThanOrEquals, sh:equals, sh:disjoint
+] .
+
+
+ex:s3 a sh:Shape ;
+sh:scopeInverseProperty sh:inverseProperty ;
+sh:constraint [ sh:closed true ; sh:ignoredProperties (rdf:type) ];
+sh:property [
+    sh:predicate sh:predicate ;
+    sh:maxCount 1 ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate sh:shape
+] ;
+sh:property [
+    sh:predicate sh:filterShape
+] ;
+sh:property [
+    sh:predicate sh:and, sh:or, sh:not
+] ;
+sh:property [
+    sh:predicate sh:severity ;
+    sh:in (sh:violation sh:Warning sh:Info)
+] ;
+sh:property [
+    sh:predicate sh:class
+] ;
+sh:property [
+    sh:predicate sh:classIn
+] ;
+sh:property [
+    sh:predicate sh:in
+] ;
+sh:property [
+    sh:predicate sh:pattern
+] ;
+sh:property [
+    sh:predicate sh:stem
+] ;
+sh:property [
+    sh:predicate sh:hasValue
+] ;
+sh:property [
+    sh:predicate sh:minLength, sh:maxLength
+] ;
+sh:property [
+    sh:predicate sh:minCount, sh:maxCount
+] ;
+sh:property [
+    sh:predicate sh:nodeKind ;
+    sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
+] .
+
+
+
+ex:s4 a sh:Shape ;
+sh:scopeInverseProperty sh:constraint ;
+sh:constraint [ sh:closed true ; sh:ignoredProperties (rdf:type) ];
+sh:property [
+    sh:predicate sh:ignoredProperties ;
+    sh:nodeKind sh:BlankNode
+] ;
+sh:property [
+    sh:predicate sh:shape
+] ;
+sh:property [
+    sh:predicate sh:filterShape
+] ;
+sh:property [
+    sh:predicate sh:severity ;
+    sh:in (sh:violation sh:Warning sh:Info)
+] ;
+sh:property [
+    sh:predicate sh:closed ;
+    sh:datatype xsd:boolean
+] ;
+sh:property [
+    sh:predicate sh:not, sh:and, sh:or
+] ;
+
+sh:property [
+    sh:predicate sh:class
+] ;
+sh:property [
+    sh:predicate sh:classIn
+] ;
+sh:property [
+    sh:predicate sh:datatype
+] ;
+sh:property [
+    sh:predicate sh:datatypeIn
+] ;
+sh:property [
+    sh:predicate sh:in
+] ;
+sh:property [
+    sh:predicate sh:pattern
+] ;
+sh:property [
+    sh:predicate sh:stem
+] ;
+sh:property [
+    sh:predicate sh:minLength, sh:maxLength
+] ;
+sh:property [
+    sh:predicate sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive
+] ;
+sh:property [
+    sh:predicate sh:nodeKind ;
+    sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
+]  .
+

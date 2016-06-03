@@ -235,7 +235,12 @@ public class MatcherImpl implements Matcher {
     }
 
     @Override
-    public boolean same(Node node, Node n1, Node n2, Environment env) {        
+     public boolean same(Node node, Node n1, Node n2, Environment env) {        
+        return same(n1, n2);  
+    }
+    
+    @Deprecated
+    public boolean same2(Node node, Node n1, Node n2, Environment env) {        
         boolean b = same(n1, n2);        
         if (b) {
             return true;
@@ -251,7 +256,8 @@ public class MatcherImpl implements Matcher {
     
     boolean same(Node n1, Node n2){        
         return  (n1.getIndex() == n2.getIndex() 
-                && n1.getGraphStore() == n2.getGraphStore()) 
+                && n1.getGraphStore() == n2.getGraphStore()
+                && n1.getIndex() != -1) 
                 || n1.same(n2);
     }
 

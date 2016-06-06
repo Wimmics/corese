@@ -26,11 +26,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- *
+ * Deprecated
+ * Use Workflow in profile.ttl instead
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
 @Path("process/{serv}")
+@Deprecated
 public class Processor {
 
     private static final String headerAccept = "Access-Control-Allow-Origin";
@@ -91,11 +93,7 @@ public class Processor {
             @QueryParam("transform") String trans,
             @QueryParam("query") String query,
             @PathParam("serv") String serv) {
-        
-        if (serv.equals("shape")){
-            return shape(uri, trans);
-        }
-        
+                    
         boolean rdfs = entail != null && entail.equals("rdfs");
         GraphStore g = GraphStore.create(rdfs);
         
@@ -141,22 +139,7 @@ public class Processor {
          }
          return new Transformer().template(new TripleStore(g), par);
     }
-    
-    public Response shape(String uri, String shape) {
-        if (uri == null || shape == null){
-           String m1 = ((uri == null)   ? "Undefined RDF Graph" : "");
-           String m2 = ((shape == null) ? "Undefined Data Shape" : "");
-           return Response.status(500).header(headerAccept, "*").entity(error(m1, m2)).build(); 
-        }
-        ShapeWorkflow sw = new ShapeWorkflow(resolve(shape), resolve(uri), ShapeWorkflow.FORMAT_HTML);
-        Param par = new Param("/process");
-        par.setLoad(uri);
-        par.setTransform(shape);
-        //par.setProtect(true);
-        Transformer t = new Transformer();
-        return t.process(sw, new TripleStore(GraphStore.create()), par, t.create(par));
-    }
-    
+        
     
     String resolve(String uri){
         URI url;

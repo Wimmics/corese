@@ -1127,8 +1127,10 @@ public class Processor {
 		match = pat.matcher("");
 	}
 	
+        // replace(str, old, new, flag)
 	void compileReplace(Term term){
-		if (term.getArg(1).isConstant()){
+		if (term.getArg(1).isConstant() && (term.getArity() == 3 || term.getArg(3).isConstant())){
+                    isCompiled = true;
                     String sflag = null;
                     if (term.getArity() == 4){
                             sflag = term.getArg(3).getName();
@@ -1138,16 +1140,19 @@ public class Processor {
 	}
 	
 	// TODO: test if constant
-	void compileReplace(String str){
-		pat = Pattern.compile(str);
-		match = pat.matcher("");
-	}
+//	void compileReplace(String str){
+//		pat = Pattern.compile(str);
+//		match = pat.matcher("");
+//	}
 	
 	// replace('%abc@def#', '[^a-z0-9]', '-')
-	public String replace(String str, String rep){           
-		match.reset(str);
-		String res = match.replaceAll(rep);
-		return res;
+	public String replace(String str, String pat, String rep, String flag){ 
+            if (! isCompiled){
+                compilePattern(pat, flag, false);
+            }
+            match.reset(str);
+            String res = match.replaceAll(rep);
+            return res;
 	}	
 	
 	public boolean regex(String str, String exp, String sflag){

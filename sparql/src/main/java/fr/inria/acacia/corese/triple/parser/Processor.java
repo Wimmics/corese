@@ -1133,7 +1133,7 @@ public class Processor {
                     if (term.getArity() == 4){
                             sflag = term.getArg(3).getName();
                     }                    
-                    compilePattern(term.getArg(1).getName(), sflag, false);
+                    compilePattern(term.getArg(1).getLabel(), sflag, false);
 		}
 	}
 	

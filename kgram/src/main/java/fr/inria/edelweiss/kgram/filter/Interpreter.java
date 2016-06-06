@@ -411,6 +411,10 @@ public class Interpreter implements Evaluator, ExprType {
 
         Object[] args = evalArguments(exp, env, p, 0);
         if (args == ERROR_VALUE) {
+            switch (exp.oper()){
+                case UNDEF:
+                    logger.error("Error eval arguments: " + exp.getExpList());
+            }
             return null;
         }
         
@@ -712,7 +716,8 @@ public class Interpreter implements Evaluator, ExprType {
     public Object extension(Expr exp, Environment env, Producer p, Object[] values){ 
         Expr def = getDefine(exp, env);       
         if (def == null){
-            return null;
+            logger.error("Undefined function: " + exp);
+            return ERROR_VALUE;
         }
         return eval(exp, env, p, values, def);
     }
@@ -752,6 +757,7 @@ public class Interpreter implements Evaluator, ExprType {
      * use case: overload operator for extended datatypes
      * name = http://example.org/datatype/equal
      */
+    @Override
      public Object eval(Expr exp, Environment env, Producer p, Object[] values, String name){ 
         Expr def = getDefine(exp, env, name);
         if (def == null){
@@ -763,6 +769,7 @@ public class Interpreter implements Evaluator, ExprType {
     /**
      * Extension function call  
      */
+    @Override
     public Object eval(Expr exp, Environment env, Producer p, Object[] values, Expr def){   
         //count++;
         Expr fun = def.getFunction(); //getExp(0);

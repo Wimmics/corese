@@ -30,21 +30,20 @@ public class GraphCompare {
             g2.index();
         }
 
+        boolean ok = true;
+        
         if (g1.size() != g2.size()) {
-            if (isDebug) {
-                logger.error("** Graph Size: " + g1.size() + " " + g2.size());
-            }
-            return false;
+            logger.error("** Graph Size: " + g1.size() + " != " + g2.size());
+            ok = false;
         }
 
-        boolean ok = true;
         for (Node pred1 : g1.getProperties()) {
             Node pred2 = g2.getPropertyNode(pred1.getLabel());
             int s1 = g1.size(pred1);
             int s2 = g2.size(pred2);
             if (s1 != s2) {
                 ok = false;
-                logger.error(pred1 + ": " + s1 + " vs " + s2);
+                logger.error("** Graph Pred: " + pred1 + ": " + s1 + " != " + s2);
             }
         }
 
@@ -105,6 +104,10 @@ public class GraphCompare {
         return true;
     }
 
+       /**
+        * TODO: may return false negative because it does not backtrack
+        * It should be a projection ...
+        */
     boolean compare(Graph g2, Node pred2, TBN t, Entity ent1, boolean isGraph) {
         Iterable<Entity> l2 = g2.getEdges(pred2);
         Iterator<Entity> it = l2.iterator();

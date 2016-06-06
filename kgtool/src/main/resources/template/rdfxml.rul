@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 03 09:40:29 CEST 2016
+Mon Jun 06 11:21:11 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -40,15 +40,25 @@ where {
 # Top level bnodes (not object of a property)
 #
 template st:main {
-   st:call-template(st:resource, ?in)
+   if (bound(?t), 
+        st:call-template(st:resource, ?in, ?t),
+        st:call-template(st:resource, ?in))
+    
    ; separator = "\n\n"
 }
 where {
-   select distinct ?in where {
+   select distinct ?in ?t where {
      bind (st:focus() as ?in)
      ?in ?p ?y
      
      filter (isURI(?in) || ! exists { ?x ?q ?in } )
+     
+     optional {
+        select ?in ?t where {
+            ?in a ?t  
+            filter (! isBlank(?t))
+        } limit 1
+     }
      
    }
    order by ?in
@@ -101,6 +111,7 @@ template st:result {
   
 }
 where {
+bind (st:set(st:html, true) as ?b)
 }
 
 
@@ -112,13 +123,13 @@ where {
 <body>
 <![CDATA[
 template st:listtriple(?x, ?p, ?y) {
-   "<" st:turtle(?p, true) ">"
+format {
+   "<%s>%s</%s>"
    
-   box {
-    st:call-template(st:listrec, ?y) 
-   }
-   
-   "</" st:turtle(?p, true) ">"
+   st:turtle(?p, true)
+   box { st:call-template(st:listrec, ?y) }
+   st:turtle(?p, true)
+}
 }
 where {
   
@@ -132,9 +143,12 @@ where {
 <body>
 <![CDATA[
 template st:resourceref(?in) {
-
-  "<rdf:Description " ?att "='" str(?name) "' />" 
-
+format {
+  "<rdf:Description %s='%s' />" 
+  
+  st:turtle(?att)
+  str(?name)
+}
 }
 where {
    bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
@@ -150,13 +164,14 @@ where {
 <body>
 <![CDATA[
 template st:collection(?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:parseType='Collection'>" 
+format {
+"<%s rdf:parseType='Collection'>%s</%s>"
    
-   box {
-    st:call-template(st:list, ?y) 
+    st:turtle(?p, true)
+    box { st:call-template(st:list, ?y) }
+    st:turtle(?p, true)
+    
    }
-   
-   "</" st:turtle(?p, true) ">"
 }
 where {
   
@@ -185,20 +200,42 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:resource(?in) {
+template st:profile {}
+where {}
 
-"<rdf:Description " ?att "='" str(?name) "'>" 
+function st:literal(?x){
+    if (st:get(st:html, true), 
+        ?x, 
+        #st:format("<span class='literal'>%s</span>", ?x), 
+        ?x)
+}
 
-   box {
-     st:call-template(st:property, ?in)
-   }
+]]>
+</body>
+</rule>
 
-"</rdf:Description>" 
-
+<rule>
+<body>
+<![CDATA[
+template st:resource(?in, ?t) {
+format {
+    "<%s %s='%s'>%s</%s>"
+    
+    st:turtle(?tag, true)
+    st:turtle(?att) 
+    str(?name)
+    box { 
+        if (bound(?t), 
+            st:call-template(st:property, ?in, ?t),
+            st:call-template(st:property, ?in))
+    }
+    st:turtle(?tag)
+}
 }
 where {
-   bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
-   bind ( if (isBlank(?in), ?in, ?in) as ?name)
+   bind (if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
+   bind (if (isBlank(?in), ?in, ?in) as ?name)
+   bind (if (bound(?t), ?t, rdf:Description) as ?tag)
 }
 
 
@@ -209,13 +246,21 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:blank (?y) {
+template st:blank (?x, ?p, ?y) {
 
-   st:call-template(st:resource, ?y) 
+   if (bound(?t), 
+     st:call-template(st:resource, ?y, ?t),
+     st:call-template(st:resource, ?y))
 
 }
 where {
-   filter(st:visit(?y))
+   ?x ?p ?y
+   optional {
+        select ?y ?t where {
+            ?y a ?t  filter (! isBlank(?t))
+        } limit 1
+     }
+    filter st:visit(?y)
 }
 
 ]]>
@@ -228,12 +273,13 @@ where {
 template st:list {
 
 if (isBlank(?e) && ! st:visited(?e),
-  st:call-template(st:blank, ?e),
+  st:call-template(st:blank, ?r, rdf:first, ?e),
   st:call-template(st:resourceref, ?e))
   
 }
 where {
-  ?in rdf:rest*/rdf:first ?e
+  ?in rdf:rest* ?r 
+  ?r  rdf:first ?e
 }
 
 ]]>
@@ -292,8 +338,8 @@ where {
 <body>
 <![CDATA[
 template st:listrec(?y) {
-
-   "<rdf:Description>" 
+format {
+"<rdf:Description>%s</rdf:Description>" 
    
    box {
     
@@ -302,11 +348,9 @@ template st:listrec(?y) {
    
    if (?r = rdf:nil, 
       st:apply-templates(?y, rdf:rest, ?r),
-      st:call-template(st:listrecrest, ?r))
-   
+      st:call-template(st:listrecrest, ?r))   
    }
-     
-   "</rdf:Description>" 
+}
 }
 where {
   ?y rdf:first ?f ;
@@ -320,13 +364,14 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:property {
+template st:property(?in, ?t) {
 
    st:call-template(st:triple, ?in, ?p, ?y)
 
 }
 where {
-   ?in ?p ?y   
+   ?in ?p ?y 
+   filter if (bound(?t), !(?p = rdf:type && ?y = ?t), true)
 }
 order by ?p ?y
 
@@ -338,14 +383,19 @@ order by ?p ?y
 <body>
 <![CDATA[
 template st:head {
+format {
+"""
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
 
-"<" st:turtle(rdf:RDF)
-  ibox {
-    st:call-template(st:prefix)
-  }
+<%s %s>
 
-">\n\n"
+"""
 
+st:turtle(rdf:RDF)
+ibox { st:call-template(st:prefix) }
+}
 }
 where {
 
@@ -359,13 +409,13 @@ where {
 <body>
 <![CDATA[
 template st:listrecrest(?y) {  
+format {
+   "<rdf:rest>%s</rdf:rest>" 
    
-   "<rdf:rest>" 
-    box {
+   box {
       st:call-template(st:listrec, ?y)
       }
-   "</rdf:rest>" 
-   
+   }
 }
 where {
   
@@ -379,9 +429,14 @@ where {
 <body>
 <![CDATA[
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:datatype='" datatype(?y) "'>" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
+format {
+   "<%s rdf:datatype='%s'>%s</%s>"
+   
+   st:turtle(?p, true)
+   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, "&xsd;"), datatype(?y)) 
+   st:literal(str(?y)) 
+   st:turtle(?p, true)
+}
 }
 where {
    ?x ?p ?y
@@ -398,14 +453,17 @@ where {
 <body>
 <![CDATA[
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) ">" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
+format {
+   "<%s>%s</%s>"
+   
+   st:turtle(?p, true)
+   st:literal(str(?y)) 
+   st:turtle(?p, true)
+   }
 }
 where {
    ?x ?p ?y
-   filter (isLiteral(?y) 
-   && datatype(?y) = xsd:string)
+   filter (isLiteral(?y) && datatype(?y) = xsd:string)
 }
 
 ]]>
@@ -416,9 +474,14 @@ where {
 <body>
 <![CDATA[
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " xml:lang='" lang(?y) "'>" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
+format {
+   "<%s xml:lang='%s'>%s</%s>"
+   
+   st:turtle(?p, true)
+   lang(?y)
+   st:literal(str(?y))
+   st:turtle(?p, true)
+}   
 }
 where {
    ?x ?p ?y
@@ -433,7 +496,12 @@ where {
 <body>
 <![CDATA[
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:resource='" str(?y) "' />"
+format {
+   "<%s rdf:resource='%s' />"
+   
+   st:turtle(?p, true)
+   str(?y)
+}
 }
 where {
    ?x ?p ?y
@@ -448,19 +516,21 @@ where {
 <body>
 <![CDATA[
 template (?x, ?p, ?y) {
-
-  "<" st:turtle(?p, true) ">" 
-    box{  
-      if (st:visited(?y),
-	st:call-template(st:resourceref, ?y),
-	st:call-template(st:blank, ?y))
-    }
-  "</" st:turtle(?p, true) ">"  
+format {
+"""<%s>%s</%s>  """
   
+  st:turtle(?p, true)
+  box {  
+      if (st:visited(?y),
+        st:call-template(st:resourceref, ?y),
+        st:call-template(st:blank, ?x, ?p, ?y))
+    }
+  st:turtle(?p, true)  
+ } 
 }
 where {
    ?x ?p ?y
-   filter (isBlank(?y))
+   filter isBlank(?y)
 }
 
 ]]>

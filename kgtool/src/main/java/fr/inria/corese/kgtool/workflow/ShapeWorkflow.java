@@ -65,25 +65,12 @@ public class ShapeWorkflow extends SemanticWorkflow {
         this.add(para)
             .add(new DatasetProcess())
             .add(new TransformationProcess((test)?SHAPE_TRANS_TEST:SHAPE_TRANS));
-        // set focus graph as Visitor Report Graph
+        // set  Visitor Report Graph as named graph st:visitor
         this.add(new DatasetProcess(WorkflowParser.VISITOR));
-        // display Visitor Report Graph (turtle or html turtle)
-        //transformer = new TransformationProcess(format);
-        //this.add(transformer);
                       
         if (test){
             setContext(new Context().export(Context.STL_TEST, DatatypeMap.TRUE));
         }       
-    }
-    
-    String template(String name){
-       try {
-            QueryLoad ql = QueryLoad.create();
-           return ql.readWE(ShapeWorkflow.class.getResourceAsStream(name));
-        } catch (LoadException ex) {
-            Logger.getLogger(ShapeWorkflow.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-       return null;
     }
     
     

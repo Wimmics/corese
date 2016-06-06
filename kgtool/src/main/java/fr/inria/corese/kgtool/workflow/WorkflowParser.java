@@ -20,7 +20,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -468,7 +467,7 @@ public class WorkflowParser {
         boolean test  = (dtest == null) ? false : dtest.booleanValue();
         
         String uri    = getParam(dt, URI, LOAD_PARAM, true);
-        String shape  = getParam(dt, SHAPE, Context.STL_MODE, true);
+        String shape  = getParam(dt, SHAPE, MODE_PARAM, true);
         String format = getParam(dt, PATH, PATH);
         ShapeWorkflow ap = null;
         if (shape != null && uri != null) {

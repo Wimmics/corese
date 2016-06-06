@@ -2,11 +2,14 @@ package fr.inria.edelweiss.kgenv.eval;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 
@@ -73,6 +76,30 @@ public class Custom {
             return 1;
         }
         return fibo(n - 1) + fibo (n -2);
+    }
+    
+    
+    public IDatatype sort(IDatatype list){
+        if (list.isList()){
+            try {
+                sort(list.getValues());
+            } catch (CoreseDatatypeException ex) {
+                java.util.logging.Logger.getLogger(Custom.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return list;
+    }
+    
+    void sort(List<IDatatype> l) throws CoreseDatatypeException {
+        for (int i = l.size() - 1; i > 0; i--) {
+            for (int j = 0; j < i; j++) {
+                if (l.get(j + 1).less(l.get(j))) {
+                    IDatatype tmp = l.get(j + 1);
+                    l.set(j + 1, l.get(j));
+                    l.set(j, tmp);
+                }
+            }
+        }
     }
 
 }

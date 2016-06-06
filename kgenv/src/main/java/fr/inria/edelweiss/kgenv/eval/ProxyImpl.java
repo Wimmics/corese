@@ -738,7 +738,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case STRREPLACE:
 
-                if (! (param.length == 3 || param.length == 4)) {
+                if (param.length < 3) {
                     return null;
                 }
                 
@@ -746,7 +746,7 @@ public class ProxyImpl implements Proxy, ExprType {
                     return null;
                 }
                 
-                return strreplace(exp, dt, dt1, param[2]);
+                return strreplace(exp, dt, dt1, param[2], (param.length == 4) ? param[3] : null);
 
 
             case SQL:
@@ -915,9 +915,9 @@ public class ProxyImpl implements Proxy, ExprType {
         return result(str, dt1, dt2);
     }
 
-    IDatatype strreplace(Expr exp, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
+    IDatatype strreplace(Expr exp, IDatatype dt1, IDatatype dt2, IDatatype dt3, IDatatype dt4) {
         Processor p = getProcessor(exp);
-        String str = p.replace(dt1.getLabel(), dt3.getLabel());
+        String str = p.replace(dt1.getLabel(), dt2.getLabel(), dt3.getLabel(), (dt4 == null) ? null : dt4.getLabel());
         return result(str, dt1, dt3);
     }
 

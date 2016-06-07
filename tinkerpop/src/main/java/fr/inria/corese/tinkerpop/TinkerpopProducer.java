@@ -9,15 +9,12 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
+import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
+import static fr.inria.corese.tinkerpop.mapper.Mapper.*;
 import org.apache.log4j.Logger;
-import static org.apache.tinkerpop.gremlin.process.traversal.Order.decr;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outV;
-import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 
 /**
  *
@@ -37,8 +34,6 @@ public class TinkerpopProducer extends ProducerImpl {
 	}
 
 	/**
-	 * @todo use env to obtain values given by Corese
-	 *
 	 * @param gNode @TODO Not used for the moment
 	 * @param from @TODO Not used for the moment
 	 * @param qEdge Requested edge.
@@ -50,65 +45,17 @@ public class TinkerpopProducer extends ProducerImpl {
 		Node subject = qEdge.getNode(0);
 		Node object = qEdge.getNode(1);
 
-		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
-		StringBuilder key = new StringBuilder();
-
-		String g = (gNode == null) ? "" : gNode.getLabel();
-		key.append((gNode == null) || (gNode.getLabel().compareTo("?g") == 0) ? "?g" : "G");
-		
-		String s = updateVariable(subject.isVariable(), subject, env, key, "?s", "S");
-		String p = updateVariable(isPredicateFree(qEdge), qEdge.getEdgeNode(), env, key, "?p", "P");
-		String o = updateVariable(object.isVariable(), object, env, key, "?o", "O");
-		
-		switch (key.toString()) {
-			case "?g?sPO":
-				filter = t -> {
-					return t.E().has(EDGE_P, p).where(inV().has(VERTEX_VALUE, o));
-				};
-				break;
-			case "?g?sP?o":
-				filter = t -> {
-					return t.E().has(EDGE_P, p);
-				};
-				break;
-			case "?g?s?pO":
-				filter = t -> {
-					return t.V().has(VERTEX_VALUE, o).inE();
-				};
-				break;
-			case "?gSPO":
-				filter = t -> {
-					return t.E().has(EDGE_P, p).where(inV().has(VERTEX_VALUE, o)).where(outV().has(VERTEX_VALUE, s));
-				};
-				break;
-			case "?gSP?o":
-				filter = t -> {
-					return t.E().has(EDGE_P, p).where(outV().has(VERTEX_VALUE, s));
-				};
-				break;
-			case "?gS?pO":
-				filter = t -> {
-					return t.V().has(VERTEX_VALUE, s).outE().where(inV().has(VERTEX_VALUE, o));
-				};
-				break;
-			case "?gS?p?o":
-				filter = t -> {
-					return t.V().has(VERTEX_VALUE, s).outE();
-				};
-				break;
-			case "G?sP?o":
-				filter = t -> {
-					return t.E().has(EDGE_P, p).has(EDGE_G, g);
-				};
-				break;
-			case "?g?s?p?o":
-			default:
-				filter = t -> {
-//					return t.E().has(EDGE_P, gt(""));
-					return t.E().order().by(EDGE_P, decr).by(EDGE_S, decr).by(EDGE_O, decr).by(EDGE_G, decr); //.has(EDGE_P, gt(""));
-				};
+		ArrayList< Predicate<Traverser<org.apache.tinkerpop.gremlin.structure.Edge>>> edgeFilters = new ArrayList<>();
+		if (!isPredicateFree(qEdge)) {
+			edgeFilters.add(e -> e.get().value(VALUE).equals(qEdge.getEdgeNode().getLabel()));
 		}
-		return tpGraph.getEdges(filter);
+		if (!subject.isVariable()) {
+			edgeFilters.add(e -> e.get().outVertex().value(VALUE).toString().equals(subject.getLabel()));
+		}
+		if (!object.isVariable()) {
+			edgeFilters.add(e -> e.get().inVertex().value(VALUE).toString().equals(object.getLabel()));
+		}
+		return tpGraph.getEdges(edgeFilters);
 	}
 
 	private boolean isPredicateFree(Edge edge) {
@@ -117,51 +64,12 @@ public class TinkerpopProducer extends ProducerImpl {
 		return name.equals(Graph.TOPREL);
 	}
 
-	@Override
-	public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
-		Node node = env.getNode(gNode);
-		if (!tpGraph.isGraphNode(node)) {
-			return false;
-		}
-		if (from.isEmpty()) {
-			return true;
-		}
-		// @TODO what should be done.
-		LOGGER.error("behaviour not defined in that case");
-		return false;
-		//return ei.getCreateDataFrom().isFrom(from, node);
-
-//		Node node = env.getNode(gNode);
-//		if (!graph.isGraphNode(node)) {
-//			return false;
-//		}
-//		if (from.isEmpty()) {
-//			return true;
-//		}
-//
-//		return ei.getCreateDataFrom().isFrom(from, node);
+	private boolean isVariable(Edge edge) {
+		return edge.getEdgeVariable() != null;
 	}
 
-	public void close() {
-		tpGraph.close();
+	private boolean existNode(Node var, Environment env) {
+		return env.getNode(var) != null;
 	}
 
-	private String updateVariable(boolean isVariableFree, Node node, Environment env, StringBuilder key, String freeVar, String boundVar) {
-		String result;
-		if (isVariableFree) {
-			if (env.getNode(node.getLabel()) != null) {
-				key.append(boundVar);
-				result = env.getNode(node.getLabel()).getLabel();
-			} else {
-				key.append(freeVar);
-				result = "";
-			}
-		} else {
-				key.append(boundVar);
-				result = node.getLabel();	
-		}
-		return result;
-	}
-
-	
 }

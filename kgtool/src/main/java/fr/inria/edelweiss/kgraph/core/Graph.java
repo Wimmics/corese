@@ -1299,9 +1299,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * PRAGMA: there is no duplicate in list, all edges are inserted predicate
-     * is declared in graph TODO: if same predicate, perform ensureCapacity on
-     * Index list
+	 * PRAGMA: there is no duplicate in list, all edges are inserted
+	 * predicate is declared in graph TODO: if same predicate, perform
+	 * ensureCapacity on Index list
      */
     void add(Node p, List<Entity> list) {
         setIndex(true);

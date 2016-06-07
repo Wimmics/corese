@@ -1,10 +1,13 @@
 package fr.inria.edelweiss.kgdqp.core;
 
 import fr.inria.edelweiss.kgdqp.strategies.ServiceGrouper;
+import fr.inria.edelweiss.kgram.api.query.DQPFactory;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
+import fr.inria.edelweiss.kgram.core.BgpGenerator;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -43,6 +46,16 @@ public class QueryProcessDQP extends QueryProcess {
     public static ConcurrentHashMap<String, Long> sourceCounter = new ConcurrentHashMap<String, Long>();
     // for each source, record the number of sent queries
     public static ConcurrentHashMap<String, Long> sourceVolumeCounter = new ConcurrentHashMap<String, Long>();
+    
+    static {
+        Query.setFactory(new DQPFactory() {
+
+            @Override
+            public BgpGenerator instance() {
+                return new BgpGeneratorImpl();
+            }
+        });
+    }
 
     public QueryProcessDQP(boolean provEnabled) {
         super();

@@ -5,6 +5,7 @@
  */
 package fr.inria.edelweiss.kgraph.tinkerpop;
 
+import fr.inria.corese.tinkerpop.TinkerpopGraph;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;

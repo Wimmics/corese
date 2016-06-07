@@ -8,7 +8,7 @@
 	</parent>
 	
 	<groupId>fr.inria.wimmics</groupId>
-	<artifactId>corese</artifactId>
+	<artifactId>corese-gui</artifactId>
 	<!--    <properties>
 	    <corese-version>3.0.7</corese-version>
 	</properties>-->
@@ -31,7 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>fr.inria.wimmics</groupId>
-			<artifactId>kgtool</artifactId>
+			<artifactId>corese-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -182,5 +182,6 @@
 				</plugins> 
 			</build> 
 		</profile> 
-	</profiles> 
+	</profiles>
+    <name>corese-gui</name>
 </project>

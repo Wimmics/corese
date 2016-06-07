@@ -579,7 +579,7 @@ public class Exp extends PointerObject
 		}
 	}
 
-	void addFilter(Filter f) {
+	public void addFilter(Filter f) {
 		lFilter.add(f);
 	}
 

@@ -1,19 +1,22 @@
 /*
  * Copyright Inria 2016
  */
-package fr.inria.edelweiss.kgraph.tinkerpop;
+package fr.inria.corese.tinkerpop;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgraph.tinkerpop.mapper.TinkerpopToCorese;
+import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 
@@ -71,7 +74,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	public void setTinkerpopGraph(org.apache.tinkerpop.gremlin.structure.Graph tGraph) {
 		this.tGraph = tGraph;
 		LOGGER.log(Level.INFO, "#vertices = {0}", new Object[]{tGraph.traversal().V().count().next()});
-		LOGGER.log(Level.INFO, "#edges = {0}", new Object[]{tGraph.traversal().E().count().next()});
+//		LOGGER.log(Level.INFO, "#edges = {0}", new Object[]{tGraph.traversal().E().count().next()});
 		LOGGER.info("** Variables of the graph **");
 		try {
 			for (String key : tGraph.variables().keys()) {
@@ -106,6 +109,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			Class gclass = Class.forName(driverName);
 			Method factoryMethod = gclass.getMethod("open", Configuration.class);
 			org.apache.tinkerpop.gremlin.structure.Graph actualGraph = (org.apache.tinkerpop.gremlin.structure.Graph) factoryMethod.invoke(null, config);
+//			actualGraph.createIndex("value", Edge.class);
 			TinkerpopGraph result = new TinkerpopGraph();
 			result.setTinkerpopGraph(actualGraph);
 			return Optional.of(result);
@@ -117,7 +121,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	/**
 	 * Helper that use a String array to generate the configuration used to
-	 * inialize the tinkerpop driver.
+	 * initialize the tinkerpop driver.
 	 *
 	 * @param driverName Name of the class of the driver to instanciate.
 	 * @param configArray Array following the pattern { key_1, value_1,
@@ -134,22 +138,40 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		return create(driverName, config);
 	}
 
+	public Iterable<Entity> getEdges(ArrayList< Predicate<Traverser<Edge>>> filters) {
+		try {
+			tGraph.edges().hasNext();
+			tGraph.traversal().E().hasNext();
+			GraphTraversalSource traversal = tGraph.traversal();
+			GraphTraversal<Edge, Edge> edges = traversal.E();
+			for (Predicate<Traverser<Edge>> p : filters) {
+				edges.filter(p);
+			}
+			Iterator<Entity> result = edges.map(e -> unmapper.buildEntity(e.get()));
+			return new Iterable<Entity>() {
+				public Iterator<Entity> iterator() {
+					return result;
+				}
+			};
+		} catch (Exception ex) {
+			LOGGER.severe("An error occurred: " + ex.toString());
+			return null;
+		}
+	}
+
 	@Override
 	public Iterable<Entity> getEdges() {
-		Iterator<Edge> edges = tGraph.edges();
-		GraphTraversalSource g = tGraph.traversal();
-		System.out.println(g.V().count().value());
-		return new GremlinIterable<>(edges);
+		return getEdges(new ArrayList<>());
 	}
 
 	/**
 	 * @param edgeName
-	 * @return 
+	 * @return
 	 */
 	@Override
 	public Iterable<Entity> getEdges(String edgeName) {
 		GraphTraversalSource traversal = tGraph.traversal();
-		Iterable<Entity> result = traversal.E().has("value", edgeName).map(e->unmapper.buildEntity(e.get())).toList();
+		Iterable<Entity> result = traversal.E().has("value", edgeName).map(e -> unmapper.buildEntity(e.get())).toList();
 		return result;
 	}
 

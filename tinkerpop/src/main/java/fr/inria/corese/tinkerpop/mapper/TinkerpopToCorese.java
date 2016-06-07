@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.edelweiss.kgraph.tinkerpop.mapper;
+package fr.inria.corese.tinkerpop.mapper;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeQuad;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import static fr.inria.edelweiss.kgraph.tinkerpop.mapper.Mapper.*;
+import static fr.inria.corese.tinkerpop.mapper.Mapper.*;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 

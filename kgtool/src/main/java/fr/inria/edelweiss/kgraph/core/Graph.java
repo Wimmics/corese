@@ -109,12 +109,12 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     /**
      * Synchronization:
      *
-     * several read in // ; only one write lock read: Query (QueryProcess) lock
-     * write: Load (Load), Update (QueryProcess), Rule (RuleEngine)
-     * synchronized: Entailment synchronized in read, hence only one entailment
-     * can occur synchronized: indexNode (index of nodes for path) synchronized:
-     * synGetCheck (EdgeIndex) may generate index of nth arg during read see
-     * occurrences of graph.readLock() graph.writeLock()
+	 * several read in // ; only one write lock read: Query (QueryProcess)
+	 * lock write: Load (Load), Update (QueryProcess), Rule (RuleEngine)
+	 * synchronized: Entailment synchronized in read, hence only one
+	 * entailment can occur synchronized: indexNode (index of nodes for
+	 * path) synchronized: synGetCheck (EdgeIndex) may generate index of nth
+	 * arg during read see occurrences of graph.readLock() graph.writeLock()
      *
      */
     ReentrantReadWriteLock lock;
@@ -327,7 +327,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
     
     @Override
-    public Iterable getLoop(){
+	public Iterable getLoop() {
         return getEdges();
     }
 
@@ -622,8 +622,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * Edge Index is sorted on integer index value of Node Set default behavior
-     * for all graphs PRAGMA: PB with several graphs, index are not shared
+	 * Edge Index is sorted on integer index value of Node Set default
+	 * behavior for all graphs PRAGMA: PB with several graphs, index are not
+	 * shared
      */
     public static void setCompareIndex(boolean b) {
         byIndexDefault = b;
@@ -634,8 +635,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * set byIndex on this graph only reset EdgeIndex as well and sort edge list
-     * accordingly
+	 * set byIndex on this graph only reset EdgeIndex as well and sort edge
+	 * list accordingly
      */
     public void setByIndex(boolean b) {
         byIndex = b;
@@ -890,8 +891,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * Generate an RDF Graph that describes the KGRAM system and the current RDF
-     * graph
+	 * Generate an RDF Graph that describes the KGRAM system and the current
+	 * RDF graph
      */
     public Graphable describe() {
         return getContext();
@@ -996,10 +997,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      */
     /**
      * send e.g. by kgram eval() before every query execution restore
-     * consistency if updates have been done, perform entailment when delete is
-     * performed, it is the user responsibility to delete the entailments that
-     * depend on it it can be done using: drop graph kg:entailment Rules are not
-     * automatically run, use re.process()
+	 * consistency if updates have been done, perform entailment when delete
+	 * is performed, it is the user responsibility to delete the entailments
+	 * that depend on it it can be done using: drop graph kg:entailment
+	 * Rules are not automatically run, use re.process()
      */
     public synchronized void init() {
         if (isIndex) {
@@ -1137,8 +1138,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     /**
      * Draft (transitivity is missing ...)
      */
-    public void sameas(){
-        for (Entity ent : getEdges(OWL.SAMEAS)){
+	public void sameas() {
+		for (Entity ent : getEdges(OWL.SAMEAS)) {
             ent.getNode(1).setIndex(ent.getNode(0).getIndex());
         }
         index();
@@ -1296,9 +1297,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * PRAGMA: there is no duplicate in list, all edges are inserted predicate
-     * is declared in graph TODO: if same predicate, perform ensureCapacity on
-     * Index list
+	 * PRAGMA: there is no duplicate in list, all edges are inserted
+	 * predicate is declared in graph TODO: if same predicate, perform
+	 * ensureCapacity on Index list
      */
     void add(Node p, List<Entity> list) {
         setIndex(true);
@@ -1447,8 +1448,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * Given a constant query node, return the target node in current graph if
-     * it exists
+	 * Given a constant query node, return the target node in current graph
+	 * if it exists
      *
      */
     public Node getNode(Node node) {
@@ -1482,12 +1483,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         IDatatype dt = getDatatypeValue(node);
          if (isSameIndexAble(dt)) {
             return getExtLiteralNode(dt);
-        }
-         else {
+		} else {
              return getNode(node);
          }
     }
-
 
     public Node getResourceNode(IDatatype dt, boolean create, boolean add) {
         String key = getKey(dt);
@@ -1832,7 +1831,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     public Edge getEdge(String name, Node node, int index) {
         Node pred = getPropertyNode(name);
-        if (pred == null){
+		if (pred == null) {
             return null;
         }
         return getEdge(pred, node, index);
@@ -1856,15 +1855,15 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return getValue(name, node);
     }
         
-    public IDatatype getValue(String name, Node node){
+	public IDatatype getValue(String name, Node node) {
        Node value = getNode(name, node);
-       if (value == null){
+		if (value == null) {
            return null;
        }
        return (IDatatype) value.getValue();
     }
     
-    public Node getNode(String name, Node node){
+	public Node getNode(String name, Node node) {
         Edge edge = getEdge(name, node, 0);
         if (edge == null) {
             return null;
@@ -2002,10 +2001,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     /**
      *     
      */
-    
-    public IDatatype list(Node node){
+	public IDatatype list(Node node) {
         ArrayList<IDatatype> list = reclist(node);
-        if (list == null){
+		if (list == null) {
             return null;
         }
         return DatatypeMap.createList(list);
@@ -2014,42 +2012,38 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
       public ArrayList<IDatatype> reclist(Node node) {
         if (node.getLabel().equals(RDF.NIL)) {
             return new ArrayList<IDatatype>();
-        } 
-        else {
+		} else {
             Edge first = getEdge(RDF.FIRST, node, 0);
             Edge rest  = getEdge(RDF.REST, node, 0);
             if (first == null || rest == null) {
                 return null;
             }
             ArrayList<IDatatype> list = reclist(rest.getNode(1));
-            if (list == null){
+			if (list == null) {
                 return null;
             }
             Node val = first.getNode(1);
             
-            if (val.isBlank()){
+			if (val.isBlank()) {
                 // may be a list
                 ArrayList<IDatatype> ll = reclist(val);
-                if (ll == null){
+				if (ll == null) {
                     // not a list
                     list.add(0, value(val));
-                }
-                else {
+				} else {
                     // list
                     list.add(0, DatatypeMap.createList(ll));
                 }
-            }
-            else {
+			} else {
                 list.add(0, value(val));
             }
             return list;
         }
     }
       
-      IDatatype value(Node n){
+	IDatatype value(Node n) {
           return (IDatatype) n.getValue();
       }
-
 
     boolean isTopRelation(Node predicate) {
         return predicate.getLabel().equals(TOPREL);
@@ -2120,9 +2114,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return getEdges(predicate);
     }
     
-    public Entity getEdge(String p){
+	public Entity getEdge(String p) {
         Iterator<Entity> it = getEdges(p).iterator();
-        if (it.hasNext()){
+		if (it.hasNext()) {
             return it.next();
         }
         return null;
@@ -2134,7 +2128,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             return EMPTY;
         }
         Iterable<Entity> it = getEdges(predicate, n, i);
-        if (it == null){
+		if (it == null) {
             return EMPTY;
         }
         return it;
@@ -2142,22 +2136,21 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
     public Iterable<Entity> getEdges(IDatatype s, IDatatype p, IDatatype o) {
         Node ns = null, np, no = null;
-        if (p == null){
+		if (p == null) {
             np = getTopProperty();
-        }
-        else {
+		} else {
             np = getPropertyNode(p);
             if (np == null){
                 return EMPTY;
             }
         }
-        if (s != null){
+		if (s != null) {
             ns = getNode(s);
         }        
-        if (o != null){
+		if (o != null) {
             no = getNode(o);
         }
-        if (s == null && o != null){
+		if (s == null && o != null) {
            return getEdges(np, no, null, 1); 
         }
         return getEdges(np, ns, no, 0);
@@ -2199,8 +2192,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * resource & blank TODO: a node may have been deleted (by a delete triple)
-     * but still be in the table
+	 * resource & blank TODO: a node may have been deleted (by a delete
+	 * triple) but still be in the table
      */
     public Iterable<Entity> getRBNodes() {
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
@@ -2227,8 +2220,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * TODO: a node may have been deleted (by a delete triple) but still be in
-     * the table
+	 * TODO: a node may have been deleted (by a delete triple) but still be
+	 * in the table
      */
     public Iterable<Entity> getAllNodesDirect() {
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
@@ -2239,8 +2232,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * Prepare an index of nodes for each graph, enumerate all nodes TODO: there
-     * are duplicates (same node in several graphs)
+	 * Prepare an index of nodes for each graph, enumerate all nodes TODO:
+	 * there are duplicates (same node in several graphs)
      */
     public Iterable<Entity> getAllNodesIndex() {
         indexNode();
@@ -2366,7 +2359,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         this.setStorage(type, null);
     }
 
-    public IStorage getStorageMgr(){
+	public IStorage getStorageMgr() {
         return this.storageMgr;
     }
     
@@ -2593,7 +2586,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * This edge has been deleted TODO: Delete its nodes from tables if needed
+	 * This edge has been deleted TODO: Delete its nodes from tables if
+	 * needed
      */
     void deleted(List<Entity> list) {
         for (Entity ent : list) {
@@ -2764,8 +2758,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      * *************************************************
      */
     /**
-     * Add a copy of the entity edge Use case: entity comes from another graph,
-     * create a local copy of nodes
+	 * Add a copy of the entity edge Use case: entity comes from another
+	 * graph, create a local copy of nodes
      */
     public Edge copy(Entity ent) {
         Node g = basicAddGraph(ent.getGraph().getLabel());
@@ -2971,9 +2965,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * Graph in itself is not considered as a graph node for SPARQL path unless
-     * explicitely referenced as a subject or object Hence ?x :p* ?y does not
-     * return graph nodes
+	 * Graph in itself is not considered as a graph node for SPARQL path
+	 * unless explicitely referenced as a subject or object Hence ?x :p* ?y
+	 * does not return graph nodes
      */
     public Node addGraph(String label) {
         return basicAddGraph(label);
@@ -3013,8 +3007,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     /**
      * Property in itself is not considered as a graph node for SPARQL path
-     * unless explicitely referenced as a subject or object Hence ?x :p* ?y does
-     * not return property nodes
+	 * unless explicitely referenced as a subject or object Hence ?x :p* ?y
+	 * does not return property nodes
      */
     public Node addProperty(String label) {
         return basicAddProperty(label);
@@ -3192,8 +3186,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * Check if query may succeed on graph PRAGMA: no RDFS entailments, simple
-     * RDF match
+	 * Check if query may succeed on graph PRAGMA: no RDFS entailments,
+	 * simple RDF match
      */
     public boolean check(Query q) {
         return check(q, q.getBody());

@@ -27,17 +27,14 @@ import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-import fr.inria.edelweiss.kgraph.tinkerpop.TinkerpopGraph;
-import fr.inria.edelweiss.kgraph.tinkerpop.TinkerpopProducer;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.load.Service;
 import fr.inria.edelweiss.kgtool.util.Extension;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import java.util.Optional;
-import org.apache.log4j.Logger;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 
 /**
  * Evaluator of SPARQL query by KGRAM Implement KGRAM as a lightweight version
@@ -167,6 +164,8 @@ public class QueryProcess extends QuerySolver {
         return eval;
     }
 
+	private static ProducerImpl p = null;
+
     /**
 	 * isMatch = true: Each Producer perform local Matcher.match() on its
 	 * own graph for subsumption Hence each graph can have its own ontology
@@ -174,14 +173,27 @@ public class QueryProcess extends QuerySolver {
 	 * isMatch = false: (default) Global producer perform Matcher.match()
      */
     public static QueryProcess create(Graph g, boolean isMatch) {
-		String DRIVER = "org.apache.tinkerpop.gremlin.orientdb.OrientGraph";
-		String DB_PATH = "plocal:/Users/edemairy/Developpement/RdfToGraph/src/test/resources/testConvertOrientdbResult.orientdb";
-		String[] CONFIG = {OrientGraph.CONFIG_URL, DB_PATH};
-//		ProducerImpl p =  ProducerImpl.create(g);
-		TinkerpopProducer p = new TinkerpopProducer(g);
-		Optional<TinkerpopGraph> graph = TinkerpopGraph.create(DRIVER, CONFIG);
-		p.setTinkerpopGraph(graph.get());
+		String FACTORY = "fr.inria.corese.tinkerpop.Factory";
+		if (p == null) {
+			try {
+				Class<?> classFactory = Class.forName(FACTORY);
+				Method method = classFactory.getMethod("create", Graph.class);
+				p = (ProducerImpl) method.invoke(null, g);
         p.setMatch(isMatch);
+			} catch (ClassNotFoundException ex) {
+				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (NoSuchMethodException ex) {
+				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (SecurityException ex) {
+				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalAccessException ex) {
+				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalArgumentException ex) {
+				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (InvocationTargetException ex) {
+				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
         QueryProcess exec = QueryProcess.create(p);
         exec.setMatch(isMatch);
         return exec;

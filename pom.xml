@@ -8,7 +8,7 @@
 	Web site: http://wimmics.inria.fr/corese
 	Contact: olivier.corby@inria.fr
 	-->
-<!-- metadata: human readable informations for central -->
+	<!-- metadata: human readable informations for central -->
         <description>Corese is a Semantic Web Factory (triple store and SPARQL endpoint) implementing RDF, RDFS, SPARQL 1.1 Query and Update.</description>
         <url>https://github.com/Wimmics/corese</url>
         <licenses>
@@ -156,7 +156,6 @@
 		<module>engine</module>
 		<module>kgengine</module>
 		<module>kgenv</module>
-		<module>kggui</module>
 		<module>kgtool</module>
 		<module>kgserver</module>
 		<!--<module>kgserver-stubs</module>-->
@@ -167,7 +166,7 @@
 		<module>rtc</module> <!-- RDF Triple Collector(firefox plugin)-->
 		<!--<module>kgendpoint</module>-->
 	 <module>tinkerpop</module>
-	 <module>corese-tinkerpop</module>
+		<module>kggui</module>
 	</modules>
     
 	<dependencyManagement>

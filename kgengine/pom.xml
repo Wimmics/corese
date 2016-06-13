@@ -29,7 +29,6 @@
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>sparql</artifactId>
 			<version>${project.parent.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>

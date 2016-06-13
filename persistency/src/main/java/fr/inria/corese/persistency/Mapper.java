@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.corese.tinkerpop.mapper;
+package fr.inria.corese.persistency;
 
 /**
  *
@@ -18,4 +18,6 @@ public class Mapper {
 	public static final String LANG = "lang";
 	public static final String TYPE = "type";
 	public static final String VALUE = "value";
+	public static final String IN = "in";
+	public static final String OUT = "out";
 }

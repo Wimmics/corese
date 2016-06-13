@@ -1,101 +1,48 @@
 /*
  * Copyright Inria 2016
  */
-package fr.inria.corese.tinkerpop;
+package fr.inria.corese.persistency;
 
+import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.Properties;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.commons.configuration.Configuration;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Edge;
 
 /**
  * Bridge to make a Neo4j database accessible from Corese.
  *
  * @author edemairy
  */
-public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
+public class DbGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
-	private org.apache.tinkerpop.gremlin.structure.Graph tGraph;
-	private TinkerpopToCorese unmapper;
+	public static final String PATH = "path";
+	public static final String USER = "user";
+	public static final String PASSWORD = "password";
 
-	private final static Logger LOGGER = Logger.getLogger(TinkerpopGraph.class.getSimpleName());
+	private Connection connection;
+	private SqlToCorese unmapper;
 
-	private class GremlinIterable<T extends Entity> implements Iterable<Entity> {
+	private final static Logger LOGGER = Logger.getLogger(DbGraph.class.getSimpleName());
 
-		private final Iterator<Edge> edges;
-
-		private class GremlinIterator<T> implements Iterator<Entity> {
-
-			private final Iterator<Edge> edges;
-
-			GremlinIterator(Iterator<Edge> edges) {
-				this.edges = edges;
-			}
-
-			@Override
-			public boolean hasNext() {
-				return edges.hasNext();
-			}
-
-			@Override
-			public Entity next() {
-				Edge gremlinCurrent = edges.next();
-				return unmapper.buildEntity(gremlinCurrent);
-			}
-		}
-
-		GremlinIterable(Iterator<Edge> edges) {
-			this.edges = edges;
-		}
-
-		@Override
-		public Iterator<Entity> iterator() {
-			return new GremlinIterator<>(edges);
-		}
-	}
-
-	public TinkerpopGraph() {
+	public DbGraph(Connection connection) {
 		super();
-		unmapper = new TinkerpopToCorese(this);
-	}
-
-	public void setTinkerpopGraph(org.apache.tinkerpop.gremlin.structure.Graph tGraph) {
-		this.tGraph = tGraph;
-		LOGGER.log(Level.INFO, "#vertices = {0}", new Object[]{tGraph.traversal().V().count().next()});
-//		LOGGER.log(Level.INFO, "#edges = {0}", new Object[]{tGraph.traversal().E().count().next()});
-		LOGGER.info("** Variables of the graph **");
-		try {
-			for (String key : tGraph.variables().keys()) {
-				LOGGER.info("key = " + key);
-			}
-		} catch (Exception ex) {
-			LOGGER.info("Impossible to show graph variables. Cause: " + ex.toString());
-		}
-		LOGGER.info("****************************");
-		LOGGER.info("** configuration **");
-		Configuration config = tGraph.configuration();
-		for (Iterator<String> c = config.getKeys(); c.hasNext();) {
-			String key = c.next();
-			LOGGER.log(Level.INFO, "{0} {1}", new Object[]{key, config.getString(key)});
-		}
-		LOGGER.info("****************************");
+		this.connection = connection;
+		this.unmapper = new SqlToCorese(this, connection);
 	}
 
 	@Override
 	public void finalize() throws Throwable {
-		tGraph.close();
+		connection.close();
 		super.finalize();
 	}
 
@@ -104,17 +51,13 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	 * @param dbPath
 	 * @return
 	 */
-	public static Optional<TinkerpopGraph> create(String driverName, Configuration config) {
+	public static Optional<DbGraph> create(String driverName, Properties config) {
 		try {
-			Class gclass = Class.forName(driverName);
-			Method factoryMethod = gclass.getMethod("open", Configuration.class);
-			org.apache.tinkerpop.gremlin.structure.Graph actualGraph = (org.apache.tinkerpop.gremlin.structure.Graph) factoryMethod.invoke(null, config);
-//			actualGraph.createIndex("value", Edge.class);
-			TinkerpopGraph result = new TinkerpopGraph();
-			result.setTinkerpopGraph(actualGraph);
+			Connection connection = DriverManager.getConnection((String) config.get(PATH), config);
+			DbGraph result = new DbGraph(connection);
 			return Optional.of(result);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			Logger.getLogger(TinkerpopGraph.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (SQLException ex) {
+			Logger.getLogger(DbGraph.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		return null;
 	}
@@ -128,8 +71,8 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	 * key_2, value_2, etc. }
 	 * @return
 	 */
-	public static Optional<TinkerpopGraph> create(String driverName, String[] configArray) {
-		Configuration config = new BaseConfiguration();
+	public static Optional<DbGraph> create(String driverName, String[] configArray) {
+		Properties config = new Properties();
 		for (int i = 0; i < configArray.length; i += 2) {
 			String key = configArray[i];
 			String value = configArray[i + 1];
@@ -138,25 +81,81 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		return create(driverName, config);
 	}
 
-	public Iterable<Entity> getEdges(ArrayList< Predicate<Traverser<Edge>>> filters) {
-		try {
-			tGraph.edges().hasNext();
-			tGraph.traversal().E().hasNext();
-			GraphTraversalSource traversal = tGraph.traversal();
-			GraphTraversal<Edge, Edge> edges = traversal.E();
-			for (Predicate<Traverser<Edge>> p : filters) {
-				edges.filter(p);
-			}
-			Iterator<Entity> result = edges.map(e -> unmapper.buildEntity(e.get()));
-			return new Iterable<Entity>() {
-				public Iterator<Entity> iterator() {
-					return result;
-				}
+	public Iterable<Entity> getEdges(ArrayList< Function<String, Boolean>> filters) {
+		return new Iterable<Entity>() {
+			@Override
+			public Iterator<Entity> iterator() {
+				return new Iterator<Entity>() {
+					private boolean initialized = false;
+					private boolean nextValueRead = false;
+					private int chunkNumber = 0;
+					private int chunkSize = 1000;
+					private long pos = 0;
+
+					private Statement statement;
+					private ResultSet rs;
+					private boolean statusNext;
+
+					private void init() {
+						try {
+							statement = connection.createStatement();
+							rs = statement.executeQuery("SELECT context, value, in, out FROM E_rdf_edge OFFSET "+chunkNumber * chunkSize + " LIMIT "+chunkSize);
+						} catch (SQLException ex) {
+							Logger.getLogger(DbGraph.class.getName()).log(Level.SEVERE, null, ex);
+						}
+					}
+
+					private void close() {
+						try {
+							rs.close();
+							statement.close();
+						} catch (SQLException ex) {
+							Logger.getLogger(DbGraph.class.getName()).log(Level.SEVERE, null, ex);
+						}
+					}
+
+					private void readNextValue() {
+						if (!initialized) {
+							init();
+							initialized = true;
+						}
+						if (!nextValueRead) {
+							try {
+								statusNext = rs.next();
+								if (!statusNext) {
+									close();
+								}
+								nextValueRead = true;
+							} catch (SQLException ex) {
+								Logger.getLogger(DbGraph.class.getName()).log(Level.SEVERE, null, ex);
+							}
+						}
+					}
+
+					@Override
+					public boolean hasNext() {
+						readNextValue();
+						return statusNext;
+					}
+
+					@Override
+					public Entity next() {
+						readNextValue();
+						nextValueRead = false;
+						pos++;
+						if (pos >= chunkNumber*chunkSize) {
+							try {
+								chunkNumber++;
+								rs = statement.executeQuery("SELECT context, value, in, out FROM E_rdf_edge OFFSET "+chunkNumber * chunkSize + " LIMIT "+chunkSize);
+							} catch (SQLException ex) {
+								Logger.getLogger(DbGraph.class.getName()).log(Level.SEVERE, null, ex);
+							}
+						}
+						return unmapper.buildEntity(rs);
+					}
+				};
 			};
-		} catch (Exception ex) {
-			LOGGER.severe("An error occurred: " + ex.toString());
-			return null;
-		}
+		};
 	}
 
 	@Override
@@ -164,20 +163,18 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		return getEdges(new ArrayList<>());
 	}
 
-	/**
-	 * @param edgeName
-	 * @return
-	 */
-	@Override
-	public Iterable<Entity> getEdges(String edgeName) {
-		GraphTraversalSource traversal = tGraph.traversal();
-		Iterable<Entity> result = traversal.E().has("value", edgeName).map(e -> unmapper.buildEntity(e.get())).toList();
-		return result;
-	}
-
+//	/**
+//	 * @param edgeName
+//	 * @return
+//	 */
+//	@Override
+//	public Iterable<Entity> getEdges(String edgeName) {
+//		GraphTraversalSource traversal = tGraph.traversal();
+//		Iterable<Entity> result = traversal.E().has("value", edgeName).map(e -> unmapper.buildEntity(e.get())).toList();
+//		return result;
+//	}
 	@Override
 	public void clean() {
 		super.clean();
-		tGraph.tx().commit();
 	}
 }

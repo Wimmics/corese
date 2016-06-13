@@ -1,30 +1,30 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>fr.inria.wimmics</groupId>
-		<artifactId>corese-parent</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>fr.inria.wimmics</groupId>
+        <artifactId>corese-parent</artifactId>
         <version>3.2.1p-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
+        <relativePath>..</relativePath>
+    </parent>
     <groupId>fr.inria.wimmics</groupId>
-	<artifactId>kgdqp</artifactId>
+    <artifactId>kgdqp</artifactId>
 
 	<!--    <properties>
 	    <build.version>${project.version}-r${buildNumber}</build.version>
 	</properties>-->
 
-	<dependencies>
-		<dependency>
+    <dependencies>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-			<artifactId>kgengine</artifactId>
+            <artifactId>kgengine</artifactId>
             <version>${global.version}</version>
-		</dependency>
-		<dependency>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>kgtool</artifactId>
+            <artifactId>corese-core</artifactId>
             <version>${global.version}</version>
-		</dependency>
+        </dependency>
         
 		<dependency>
 			<groupId>xml-apis</groupId>

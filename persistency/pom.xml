@@ -32,13 +32,13 @@
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgram</artifactId>
-            <version>${global.version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgtool</artifactId>
-            <version>${global.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <properties>

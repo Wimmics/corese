@@ -3,13 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.corese.tinkerpop;
+package fr.inria.corese.persistency;
 
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import java.util.Optional;
-import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 
 /**
  *
@@ -17,19 +14,16 @@ import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
  */
 public class Factory {
 
-//	public static String DRIVER = "org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph";
-//	public static String DB_PATH = "/Users/edemairy/btc_neo4j_1m";
-//	public static String[] CONFIG = {Neo4jGraph.CONFIG_DIRECTORY, DB_PATH};
-		public static String DRIVER = "org.apache.tinkerpop.gremlin.orientdb.OrientGraph";
-		public static String DB_PATH = "plocal:/Users/edemairy/btc_orientdb_1m";
-		public static String[] CONFIG = {OrientGraph.CONFIG_URL, DB_PATH};
+	public final static String DRIVER = "com.orientechnologies.orient.jdbc.OrientJdbcDriver";
+	public final static String DB_PATH = "jdbc:orient:plocal:/Users/edemairy/btc_orientdb_1m";
+	public static String[] CONFIG = {DbGraph.PATH, DB_PATH, DbGraph.USER, "admin", DbGraph.PASSWORD, "admin"};
 
-	private static Optional<TinkerpopGraph> graph = null;
+	private static Optional<DbGraph> graph = null;
 
 	public static Object create(Graph g) {
-		TinkerpopProducer p = new TinkerpopProducer(g);
-		graph = TinkerpopGraph.create(DRIVER, CONFIG);
-		p.setTinkerpopGraph(graph.get());
+		DbProducer p = new DbProducer(g);
+		graph = DbGraph.create(DRIVER, CONFIG);
+		p.setDbGraph(graph.get());
 		return p;
 	}
 }

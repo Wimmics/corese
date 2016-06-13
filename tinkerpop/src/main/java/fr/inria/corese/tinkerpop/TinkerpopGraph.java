@@ -140,10 +140,9 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	public Iterable<Entity> getEdges(ArrayList< Predicate<Traverser<Edge>>> filters) {
 		try {
-			tGraph.edges().hasNext();
-			tGraph.traversal().E().hasNext();
 			GraphTraversalSource traversal = tGraph.traversal();
 			GraphTraversal<Edge, Edge> edges = traversal.E();
+			Iterator<Edge> es = tGraph.edges();
 			for (Predicate<Traverser<Edge>> p : filters) {
 				edges.filter(p);
 			}

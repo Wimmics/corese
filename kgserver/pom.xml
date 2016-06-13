@@ -7,6 +7,8 @@
         <version>3.2.1p-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
+    <groupId>fr.inria.wimmics</groupId>
+    <artifactId>corese-server</artifactId>
 
 	<artifactId>corese-server</artifactId>
 

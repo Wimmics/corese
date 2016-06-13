@@ -173,7 +173,7 @@ public class QueryProcess extends QuerySolver {
 	 * isMatch = false: (default) Global producer perform Matcher.match()
      */
     public static QueryProcess create(Graph g, boolean isMatch) {
-		String FACTORY = "fr.inria.corese.tinkerpop.Factory";
+		String FACTORY = "fr.inria.corese.persistency.Factory";
 		if (p == null) {
 			try {
 				Class<?> classFactory = Class.forName(FACTORY);

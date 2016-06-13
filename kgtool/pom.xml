@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>fr.inria.wimmics</groupId>
 		<artifactId>corese-parent</artifactId>
-		<version>3.2.1-SNAPSHOT</version>
+        <version>3.2.1p-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	
@@ -128,18 +128,6 @@
 			<version>2.10.0</version>
 			<scope>test</scope>
 		</dependency>
-		<!--        <dependency>
-		    <groupId>edu.stanford.nlp</groupId>
-		    <artifactId>stanford-parser</artifactId>
-		    <version>3.5.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>edu.sussex.nlp</groupId>
-		    <artifactId>jws</artifactId>
-		    <version>11</version>
-		    <optional>true</optional>
-		</dependency>-->
-        
 	</dependencies>
 
 	<build>

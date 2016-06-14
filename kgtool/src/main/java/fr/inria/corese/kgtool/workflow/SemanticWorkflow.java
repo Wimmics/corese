@@ -2,6 +2,7 @@ package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
@@ -21,6 +22,7 @@ public class SemanticWorkflow extends  CompositeProcess {
     private int loop = -1;
     private Date d1;
     private Date d2;
+    private Graph workflowGraph;
     
     public SemanticWorkflow(){
         super();
@@ -128,10 +130,19 @@ public class SemanticWorkflow extends  CompositeProcess {
         return compute(data);
     }
     
+    // local before
     void before(Data data){
         d1 = new Date();
+        prepare(data);
     }
     
+    void prepare(Data data){
+        if (getWorkflowGraph() != null){
+            data.getGraph().setNamedGraph(Context.STL_SERVER_PROFILE, getWorkflowGraph());
+        }
+    }
+    
+    // local after
     void after(Data data){
         d2 = new Date();
     }
@@ -273,6 +284,20 @@ public class SemanticWorkflow extends  CompositeProcess {
     
     public boolean hasTransformation(){  
         return getTransformation() != null;
+    }
+
+    /**
+     * @return the workflowGraph
+     */
+    public Graph getWorkflowGraph() {
+        return workflowGraph;
+    }
+
+    /**
+     * @param workflowGraph the workflowGraph to set
+     */
+    public void setWorkflowGraph(Graph workflowGraph) {
+        this.workflowGraph = workflowGraph;
     }
 
 }

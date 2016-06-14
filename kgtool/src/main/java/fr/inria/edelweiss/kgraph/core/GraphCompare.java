@@ -39,11 +39,17 @@ public class GraphCompare {
 
         for (Node pred1 : g1.getProperties()) {
             Node pred2 = g2.getPropertyNode(pred1.getLabel());
-            int s1 = g1.size(pred1);
-            int s2 = g2.size(pred2);
-            if (s1 != s2) {
-                ok = false;
-                logger.error("** Graph Pred: " + pred1 + ": " + s1 + " != " + s2);
+            if (pred2 == null){
+               ok = false;
+               logger.error("** Graph Pred: " + pred1 + " undefined in G2 " );
+            }
+            else {
+                int s1 = g1.size(pred1);
+                int s2 = g2.size(pred2);
+                if (s1 != s2) {
+                    ok = false;
+                    logger.error("** Graph Pred: " + pred1 + ": " + s1 + " != " + s2);
+                }
             }
         }
 

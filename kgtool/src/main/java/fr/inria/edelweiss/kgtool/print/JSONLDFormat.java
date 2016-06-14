@@ -140,7 +140,7 @@ public class JSONLDFormat {
         } else {//multiple graph, read each graph 
             for (Node gNode : graph.getGraphNodes()) {
                 //2.1 default graph
-                if (Entailment.DEFAULT.equals(gNode.getLabel())) {
+                if (graph.isDefaultGraphNode(gNode)) {
                     defaultGraph = graph(gNode);
                 } else {
                     //2.2.0 get the info of graph

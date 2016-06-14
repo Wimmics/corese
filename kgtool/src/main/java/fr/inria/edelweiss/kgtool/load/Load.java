@@ -69,6 +69,9 @@ public class Load
     static final String[] protocols = {HTTP, FTP, FILE};
     static final String OWL = NSManager.OWL; 
     static final String IMPORTS = OWL + "imports";
+    private static boolean DEFAULT_GRAPH = false;
+
+    
     int maxFile = Integer.MAX_VALUE;
     Graph graph;
     Log log;
@@ -82,8 +85,17 @@ public class Load
     boolean debug = !true,
             hasPlugin = false;
     private boolean renameBlankNode = true;
+    // true means load into default graph when no named graph is given
+    private boolean defaultGraph = DEFAULT_GRAPH;
     int nb = 0;
     private int limit = Integer.MAX_VALUE;
+    
+    /**
+     * true means load in default graph when no named graph is given
+     */
+    public static void setDefaultGraphValue(boolean b) {
+        DEFAULT_GRAPH = b;
+    }
 
     Load(Graph g) {
         set(g);
@@ -333,19 +345,19 @@ public class Load
      * default format is RDF/XML
      */
     public void parse(String path) throws LoadException {
-        parse(path, path, path, UNDEF_FORMAT);
+        parse(path, null, null, UNDEF_FORMAT);
     }
     
     public void parse(String path, int format) throws LoadException {
-        parse(path, path, path, format);
+        parse(path, null, null, format);
     }
     
     public void parse(String path, String name) throws LoadException {
-        parse(path, name, path, UNDEF_FORMAT);
+        parse(path, name, null, UNDEF_FORMAT);
     }
     
     public void parse(String path, String name, int format) throws LoadException {
-        parse(path, name, path, UNDEF_FORMAT);
+        parse(path, name, null, UNDEF_FORMAT);
     }
 
     /**
@@ -357,15 +369,29 @@ public class Load
      * use case: rdf/xml file has .xml extension but we want to load it as RDFXML_FORMAT
      * if format is UNDEF and path is URI with content type: use content type format
      */
+    @Override
     public void parse(String path, String name, String base, int format) throws LoadException {
-        name = (name == null) ? path : name;
+        name = target(name, path);
         base   = (base == null)   ? path : base;
         name = uri(name);
         base   = uri(base);
         localLoad(path, base, name, getFormat(path, format));
     }
     
-    
+    /**
+     * 
+     */
+    String target(String name, String path){
+        if (name == null){
+            if (isDefaultGraph()){
+                return Entailment.DEFAULT;
+            }
+            else {
+                return path;
+            }
+        }
+        return name;
+    }
     
     public void parse(InputStream stream) throws LoadException {
         parse(stream, UNDEF_FORMAT);
@@ -949,5 +975,19 @@ public class Load
      */
     public void setWorkflow(SemanticWorkflow workflow) {
         this.workflow = workflow;
+    }
+
+    /**
+     * @return the defaultGraph
+     */
+    public boolean isDefaultGraph() {
+        return defaultGraph;
+    }
+
+    /**
+     * @param defaultGraph the defaultGraph to set
+     */
+    public void setDefaultGraph(boolean defaultGraph) {
+        this.defaultGraph = defaultGraph;
     }
 }

@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
         private int level = -1;
         boolean hasLevel = false;
         private boolean isSpeedUp = false;
+        private boolean isRecorEdge = false;
 	
 	EdgeIterator(Graph g){
             gg = g;
@@ -64,7 +66,8 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
         }
 
 	
-	public EdgeIterator(Graph g, Iterable<Entity> i, List<Node> list, boolean hasGraph){
+	public EdgeIterator(Graph g, Iterable<Entity> i, List<Node> list, boolean hasGraph, boolean isRecord){
+                setRecorEdge(isRecord);
 		iter = i;
 		from = list;
 		this.hasGraph = hasGraph;
@@ -163,12 +166,12 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 			
 			if (ok){
 				last = ent.getEdge();
-                               // last = getResult(ent, res);
                                 if (hasLevel && last.getIndex() < level){
                                     // use case: Rule Engine requires edges with level >= this.level
                                     it = empty.iterator();
                                     return null;
                                 }
+                                //ent = getResult(ent, res);
                                 return ent;
 			}
 		}
@@ -182,7 +185,10 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 	}
         
         // simulate creation of only one edge for this iterator
-        Edge getResult(Entity ent, EdgeQuad res) {
+        Entity getResult(Entity ent, EdgeQuad res) {
+            if (isRecorEdge()){
+                return ent;
+            }
             res.setGraph(ent.getGraph());
             res.setEdgeNode(ent.getEdge().getEdgeNode());
             res.setNode(0, ent.getNode(0));
@@ -287,5 +293,19 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
      */
     public void setSpeedUp(boolean isSpeedUp) {
         this.isSpeedUp = isSpeedUp;
+    }
+
+    /**
+     * @return the isRecorEdge
+     */
+    public boolean isRecorEdge() {
+        return isRecorEdge;
+    }
+
+    /**
+     * @param isRecorEdge the isRecorEdge to set
+     */
+    public void setRecorEdge(boolean isRecorEdge) {
+        this.isRecorEdge = isRecorEdge;
     }
 }

@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -325,6 +326,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
    public void listen(Expr exp) {
         switch (exp.type()){
             case ExpType.EXIST: 
+            case ExprType.UNNEST:
                 isWatch = false;
         }           
     }

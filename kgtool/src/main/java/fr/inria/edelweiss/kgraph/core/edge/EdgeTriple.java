@@ -1,64 +1,43 @@
-package fr.inria.edelweiss.kgraph.core;
+package fr.inria.edelweiss.kgraph.core.edge;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.Graph;
 
 /**
- * Graph Edge as Quad
+ * Graph Edge for the defaultGraph
  *
  * @author Olivier Corby, Wimmics, INRIA I3S, 2014
  *
  */
-public class EdgeQuad extends EdgeTop 
+public class EdgeTriple extends EdgeTop 
     implements Edge, Entity {
-    static int pcount = 0;
     public static boolean displayGraph = true;
-    int index = -1;
-    protected Node graph, predicate, subject, object;
-    private Object prov;
+    protected Node predicate, subject, object;
 
-    public EdgeQuad() {
+    public EdgeTriple() {
     }
 
-
-    EdgeQuad(Node g, Node p){
-        graph = g;
-        predicate = p;
-    }
-    
-    EdgeQuad(Node g, Node pred, Node subject, Node object) {
-        this(g, pred);
+  
+    EdgeTriple(Node pred, Node subject, Node object) {
+        this.predicate = pred;
         this.subject = subject;
         this.object = object;
     }
-    
-    
-    EdgeQuad(Node g, Node pred, Node subject, Node object, Node arg1) {
-        this(g, pred, subject, object);
-   }
-    
-     EdgeQuad(Node g, Node p, Node[] args) {
-        this(g, p);
-    }
-     
-    public static EdgeQuad create(Node g, Node subject, Node pred, Node object) {
-        return new EdgeQuad(g, pred, subject, object);
+       
+    public static EdgeTriple create(Node subject, Node pred, Node object) {
+        return new EdgeTriple(pred, subject, object);
     }
 
-    public void add(Node node){
-        
-    }
-    
-    public EdgeQuad copy() {
-        return new EdgeQuad(graph, predicate, subject, object);
+
+    @Override
+    public EdgeTriple copy() {
+        return create(predicate, subject, object);
     }
 
- 
-    public void setTag(Node node) {           
-    }
-
+    @Override
     public String toString() {       
         String str = "";
         if (displayGraph) {
@@ -98,7 +77,7 @@ public class EdgeQuad extends EdgeTop
 
     @Override
     public int getIndex() {
-        return index;
+        return -1;
     }
 
     @Override
@@ -109,6 +88,7 @@ public class EdgeQuad extends EdgeTop
     @Override
     public Node getNode(int n) {
        switch(n){
+           case Graph.IGRAPH: return getGraph();
            case 0: return subject;
            case 1: return object;
        }
@@ -129,7 +109,7 @@ public class EdgeQuad extends EdgeTop
 
     @Override
     public void setIndex(int n) {
-        index = n;
+        
     }
 
     @Override
@@ -138,12 +118,12 @@ public class EdgeQuad extends EdgeTop
     }
 
     @Override
-    public Node getGraph() {
-        return graph;
+    public Node getGraph(){
+        return ((Graph) subject.getGraphStore()).getDefaultGraphNode();
     }
 
+    @Override
     public void setGraph(Node gNode) {
-        graph = gNode;
     }
 
     @Override
@@ -160,15 +140,11 @@ public class EdgeQuad extends EdgeTop
 
     @Override
     public Object getProvenance() {
-        if (prov != null && ! (prov instanceof Node)) {
-            prov = DatatypeMap.createObject("p" + pcount++, prov);
-        }
-        return prov;
+        return null;
     }
     
     @Override    
     public void setProvenance(Object obj) {         
-        prov = obj;
     }
     
 }

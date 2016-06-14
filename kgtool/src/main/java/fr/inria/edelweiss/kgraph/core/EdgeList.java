@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgraph.core;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import static fr.inria.edelweiss.kgraph.core.EdgeIndexer.IGRAPH;
 import static fr.inria.edelweiss.kgraph.core.EdgeIndexer.ILIST;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class EdgeList implements Iterable<Entity> {
     Node predicate;
     ArrayList<Entity> list;
     Comparator<Entity> comp;
-    int index = 0, other = 0;
+    int index = 0, other = 0, next = IGRAPH;
 
     EdgeList(Node p, int i) {
         predicate = p;
@@ -32,6 +33,9 @@ public class EdgeList implements Iterable<Entity> {
         index = i;
         if (index == 0) {
             other = 1;
+        }
+        else if (index == IGRAPH){
+            next = 1;
         }
     }
 
@@ -325,7 +329,7 @@ public class EdgeList implements Iterable<Entity> {
             node = getNodeIndex(list.get(n), index);
             start = n;
             // draft test
-            edge = new EdgeQuad();
+            //edge = new EdgeQuad();
         }
 
         @Override
@@ -364,17 +368,17 @@ public class EdgeList implements Iterable<Entity> {
     }
 
     int getNodeIndex(Entity ent, int n) {
-        if (n == IGRAPH) {
-            return ent.getGraph().getIndex();
-        }
+//        if (n == IGRAPH) {
+//            return ent.getGraph().getIndex();
+//        }
         return ent.getNode(n).getIndex();
     }
 
     int getNodeIndex(int i, int n) {
         Entity ent = list.get(i);
-        if (n == IGRAPH) {
-            return ent.getGraph().getIndex();
-        }
+//        if (n == IGRAPH) {
+//            return ent.getGraph().getIndex();
+//        }
         return ent.getNode(n).getIndex();
     }
 
@@ -395,15 +399,72 @@ public class EdgeList implements Iterable<Entity> {
 
 
     /**
-     *
+     * Compare two edges to sort them in Index
      */
-    Comparator<Entity> getComparator() {
+     Comparator<Entity> getComparator() {
 
         return new Comparator<Entity>() {
             
+            @Override
             public int compare(Entity o1, Entity o2) {
 
-                // first check the index node
+                // check the Index Node
+                int res = intCompare(getNodeIndex(o1, index), getNodeIndex(o2, index));
+
+                if (res != 0) {
+                    return res;
+                }
+                
+                res = intCompare(getNodeIndex(o1, other), getNodeIndex(o2, other));
+
+                if (res != 0) {
+                    return res;
+                }
+                
+                if (o1.nbNode() == 2 && o2.nbNode() == 2) {
+                    // compare third Node
+                    res = intCompare(getNodeIndex(o1, next), getNodeIndex(o2, next));
+                    return res;
+                }
+
+                // common arity
+                int min = Math.min(o1.nbNode(), o2.nbNode());
+
+                for (int i = 0; i < min; i++) {
+                    // check other common arity nodes
+                    if (i != index) {
+                        res = intCompare(getNodeIndex(o1, i), getNodeIndex(o2, i));
+                        if (res != 0) {
+                            return res;
+                        }
+                    }
+                }
+
+                if (o1.nbNode() == o2.nbNode()) {
+                    // same arity, nodes are equal
+                    // check graph node
+                    return intCompare(getNodeIndex(o1, IGRAPH), getNodeIndex(o2, IGRAPH));
+                }
+                else if (o1.nbNode() < o2.nbNode()) {
+                    // smaller arity edge is before
+                    return -1;
+                } else {
+                    return 1;
+                }
+
+            }
+        };
+    }
+    
+    @Deprecated
+    Comparator<Entity> getComparator2() {
+
+        return new Comparator<Entity>() {
+            
+            @Override
+            public int compare(Entity o1, Entity o2) {
+
+                // check the Index Node
                 int res = intCompare(getNodeIndex(o1, index), getNodeIndex(o2, index));
 
                 if (res != 0) {
@@ -424,9 +485,8 @@ public class EdgeList implements Iterable<Entity> {
                 }
 
                 if (o1.nbNode() == o2.nbNode()) {
-                    // same arity, common arity nodes are equal
-                    // check graph
-
+                    // same arity, nodes are equal
+                    // check graph node
                     return intCompare(getNodeIndex(o1, IGRAPH), getNodeIndex(o2, IGRAPH));
                 }
                 else if (o1.nbNode() < o2.nbNode()) {
@@ -440,10 +500,14 @@ public class EdgeList implements Iterable<Entity> {
         };
     }
 
-    // sort in *reverse* order of edge timestamp index
+    /**
+     * sort in reverse order of edge timestamp
+     * new edge first (for RuleEngine)
+     */
     Comparator<Entity> getListComparator() {
 
         return new Comparator<Entity>() {
+            @Override
             public int compare(Entity o1, Entity o2) {
                 int i1 = o1.getEdge().getIndex();
                 int i2 = o2.getEdge().getIndex();

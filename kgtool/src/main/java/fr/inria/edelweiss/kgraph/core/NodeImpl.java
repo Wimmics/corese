@@ -186,6 +186,7 @@ public class NodeImpl extends GraphObject implements Node, Entity {
         return null;    
     }
     
+    @Override
     public void setProvenance(Object obj){
         
     }

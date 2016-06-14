@@ -39,7 +39,7 @@ public class Construct
     Query query;
     GraphManager graph;
     Node defaultGraph;
-    IDatatype dtDefaultGraph;
+    //IDatatype dtDefaultGraph;
     List<Entity> lInsert, lDelete;
     Dataset ds;
     boolean isDebug = false,
@@ -53,21 +53,18 @@ public class Construct
     Duplicate duplicate;
     private int loopIndex = -1;
     private Node prov;
-
-    Construct(Query q) {
-        this(q, GraphManager.DEFAULT_GRAPH);
-    }
+    
 
     Construct(Query q, Dataset ds) {
-        this(q, GraphManager.DEFAULT_GRAPH);
+        this(q);
         this.ds = ds;
     }
 
-    Construct(Query q, String src) {
+    Construct(Query q) {
         query = q;
         table = new HashMap<Node, Node>();
         count = 0;
-        dtDefaultGraph = DatatypeMap.createResource(src);
+        //dtDefaultGraph = DatatypeMap.createResource(src);
         duplicate =  Duplicate.create();
     }
 
@@ -91,11 +88,6 @@ public class Construct
 
     public static Construct create(Query q, Dataset ds) {
         Construct cons = new Construct(q, ds);
-        return cons;
-    }
-
-    public static Construct create(Query q, String src) {
-        Construct cons = new Construct(q, src);
         return cons;
     }
 
@@ -194,7 +186,8 @@ public class Construct
 
         Node gNode = defaultGraph;
         if (gNode == null) {
-            gNode = graph.getResourceNode(dtDefaultGraph);
+            //gNode = graph.getResourceNode(dtDefaultGraph);
+            gNode = graph.getDefaultGraphNode();
         }
 
         if (isDelete) {
@@ -281,8 +274,8 @@ public class Construct
                                 // When insert in new graph g, update dataset named += g
                                 if (ds != null) {
                                     String name = ent.getGraph().getLabel();
-                                    if (!name.equals(Entailment.DEFAULT)) {
-                                        ds.addNamed(ent.getGraph().getLabel());
+                                    if (! graph.isDefaultGraphNode(name)) {
+                                        ds.addNamed(name);
                                     }
                                 }
                             }

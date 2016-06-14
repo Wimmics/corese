@@ -117,7 +117,7 @@ public class BuildImpl implements Build {
 	
 
 	public Entity getEdge(Node source, Node subject, Node predicate, Node value){
-		if (source == null) source = graph.addGraph(Entailment.DEFAULT);
+		if (source == null) source = graph.addDefaultGraphNode();
 		
 		return graph.create(source, subject, predicate, value);
 		

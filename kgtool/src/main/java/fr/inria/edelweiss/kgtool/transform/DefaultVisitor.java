@@ -189,8 +189,7 @@ public class DefaultVisitor implements TemplateVisitor {
     }
     
     void storeGraph(String name, IDatatype obj){
-        Entity ent = visitedGraph.add(DatatypeMap.newResource(Entailment.DEFAULT), 
-                obj, DatatypeMap.newResource(RDF.TYPE), DatatypeMap.newResource(name));
+        Entity ent = visitedGraph.add(obj, DatatypeMap.newResource(RDF.TYPE), DatatypeMap.newResource(name));
     }
     
     StringBuilder toSB(){

@@ -138,6 +138,7 @@ public class WorkflowParser {
     
     public SemanticWorkflow parse(Graph g, String name) throws LoadException {
         setGraph(g);
+        sw.setWorkflowGraph(g);
         Node node = getWorkflowNode(name);
         if (node == null) {
             if (path != null){
@@ -353,8 +354,8 @@ public class WorkflowParser {
     }
     
     void complete(Graph g) {
-        if (getContext() != null){
-            complete(getContext(), g);
+        if (sw.getContext() != null){
+            complete(sw.getContext(), g);
         }
     }
      

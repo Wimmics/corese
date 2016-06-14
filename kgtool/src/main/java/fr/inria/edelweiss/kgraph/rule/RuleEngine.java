@@ -647,7 +647,8 @@ public class RuleEngine implements Engine, Graphable {
         boolean isConstruct = isOptimize && isConstructResult;
 
         Query qq = rule.getQuery();
-        Construct cons = Construct.create(qq, Entailment.RULE);
+        Construct cons = Construct.create(qq);
+        cons.setDefaultGraph(graph.addRuleGraphNode());
         cons.setRule(rule, rule.getIndex(), rule.getProvenance());
         cons.set(new GraphManager(graph));
         cons.setLoopIndex(loopIndex);
@@ -655,11 +656,11 @@ public class RuleEngine implements Engine, Graphable {
 
         if (isConstruct) {
             // kgram Result Listener create edges in list
-            // after query completes, edges are inserted in graoh
+            // after query completes, edges are inserted in graph
             // no Mappings are created by kgram
             cons.setBuffer(true);
             cons.setInsertList(new ArrayList<Entity>());
-            cons.setDefaultGraph(graph.addGraph(Entailment.RULE));
+            //cons.setDefaultGraph(graph.addRuleGraphNode());
             Mappings map = Mappings.create(qq);
             // ResultWatcher call cons to create edges when a solution occur
             rw.setConstruct(cons);

@@ -31,7 +31,7 @@ public class CoreseRDFaTripleSink implements TripleSink {
         this.graph = graph;
 
         if (source == null) {
-            graphSource = this.graph.addGraph(Entailment.DEFAULT);
+            graphSource = this.graph.addDefaultGraphNode();
         } else {
             graphSource = this.graph.addGraph(source);
         }

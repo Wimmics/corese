@@ -69,7 +69,7 @@ public class AddTripleHelper implements ILoadSerialization {
     @Override
     public void addTriple(String subj, String pred, String obj, String lang, String type, int literalType, Node source) {
         if (source == null) {
-            source = graph.addGraph(Entailment.DEFAULT);
+            source = graph.addDefaultGraphNode();
         }
 
         Node s = getSubject(subj);
@@ -166,10 +166,10 @@ public class AddTripleHelper implements ILoadSerialization {
         Node defaultGraphSource;
 
         if (!hasGraphsOrDefault(this.graph)) {
-            defaultGraphSource = this.graph.addGraph(Entailment.DEFAULT);
+            defaultGraphSource = this.graph.addDefaultGraphNode();
         } else {
             if (source == null) {
-                defaultGraphSource = this.graph.getGraphNode(Entailment.DEFAULT);
+                defaultGraphSource = this.graph.addDefaultGraphNode();
             } else {
                 defaultGraphSource = this.graph.addGraph(source);
             }
@@ -185,7 +185,7 @@ public class AddTripleHelper implements ILoadSerialization {
             hasGraphs = true;
             break;
         }
-        hasDefault = g.getGraphNode(Entailment.DEFAULT) != null;
+        hasDefault = g.getDefaultGraphNode() != null;
 
         return hasGraphs || hasDefault;
     }

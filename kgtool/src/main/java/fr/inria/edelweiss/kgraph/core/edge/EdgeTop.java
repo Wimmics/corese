@@ -1,10 +1,11 @@
 
-package fr.inria.edelweiss.kgraph.core;
+package fr.inria.edelweiss.kgraph.core.edge;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgraph.core.GraphObject;
 import java.util.ArrayList;
 
 /**
@@ -25,10 +26,12 @@ public abstract class EdgeTop extends GraphObject implements Entity {
              
          }
          
+        @Override
          public Object getProvenance(){
              return null;
          }
          
+        @Override
          public void setProvenance(Object o){
              
          }               

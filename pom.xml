@@ -167,7 +167,7 @@
 		<!--<module>kgendpoint</module>-->
 	 <module>tinkerpop</module>
 		<module>kggui</module>
-	 <module>persistency</module>
+		<module>persistency-tools</module>
 	</modules>
     
 	<dependencyManagement>

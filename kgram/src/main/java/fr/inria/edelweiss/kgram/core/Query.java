@@ -2207,6 +2207,10 @@ public class Query extends Exp implements Graphable {
     public boolean isRule() {
         return isRule;
     }
+    
+    public boolean isRecordEdge(){
+        return isRule() || isRelax();
+    }
 
     public void setDetail(boolean b) {
         isDetail = b;

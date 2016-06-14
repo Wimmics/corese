@@ -165,15 +165,20 @@ public class Memory implements Environment {
             // because index may vary from 0 to max in any sub query
             q = q.getGlobalQuery();
         }
+        if (q.isRecordEdge()){
+            isEdge = true;
+        }
         int nmax = q.nbNodes();
         int emax = q.nbEdges();
         nbNodes = new int[nmax];
         stackIndex = new int[nmax];
-        if (isEdge) {
-            nbEdges = new int[emax];
-            result = new Entity[emax];
-            qEdges = new Edge[emax];
+        if (! isEdge) {
+            emax = 0;
         }
+        nbEdges = new int[emax];
+        result = new Entity[emax];
+        qEdges = new Edge[emax];
+        
         nodes = new Node[nmax];
         qNodes = new Node[nmax];
         lPath = new Path[nmax];

@@ -197,7 +197,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     static {
         setCompareIndex(true);
     }
-    
     // SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
     /**
      * @return the isSkolem
@@ -508,10 +507,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         tables = new ArrayList<Index>(length);
 
         for (int i = 0; i < length; i++) {
-            // edge Index by subject, object
             tables.add(createIndex(byIndex, i));
         }
-        // edge Index by named graph
+
         tgraph = createIndex(byIndex, IGRAPH);
         tables.add(tgraph);
 
@@ -2942,22 +2940,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         Entity ee = addEdgeWithNode(e);
         return ee;
     }
-    
-    
-
-    /**
-     * Add Edge, not add nodes
-     */
-    public Edge addEdge(Node source, Node subject, Node predicate, Node value) {
-        Entity e = fac.create(source, subject, predicate, value);
-        Entity ee = addEdge(e);
-        if (ee != null) {
-            return ee.getEdge();
-        }
-        return null;
-    }
-
-    public Edge addEdge(Node subject, Node predicate, Node value) {
         Node g = addDefaultGraphNode();
         return addEdge(g, subject, predicate, value);
     }

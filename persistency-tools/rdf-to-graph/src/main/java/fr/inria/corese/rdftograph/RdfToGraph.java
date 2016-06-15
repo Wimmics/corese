@@ -35,8 +35,9 @@ import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.helpers.NTriplesParserSettings;
 
 /**
- * Tool that: (i) read a RDF file using sesame library; (ii) write the content
- * into a neo4j DB using the neo4j library.
+ * This application: 
+ *   (i) read a RDF file using sesame library; 
+ *   (ii) write the content into a neo4j DB using the neo4j library.
  *
  * @author edemairy
  */
@@ -60,8 +61,8 @@ public class RdfToGraph {
 
 	static {
 		DRIVER_TO_CLASS = new HashMap<>();
-		DRIVER_TO_CLASS.put("neo4j", "fr.inria.wimmics.createreposail.driver.Neo4jDriver");
-		DRIVER_TO_CLASS.put("orientdb", "fr.inria.wimmics.createreposail.driver.OrientDbDriver");
+		DRIVER_TO_CLASS.put("neo4j", "fr.inria.corese.rdftograph.driver.Neo4jDriver");
+		DRIVER_TO_CLASS.put("orientdb", "fr.inria.corese.rdftograph.driver.OrientDbDriver");
 	}
 
 	public RdfToGraph() {
@@ -182,7 +183,7 @@ public class RdfToGraph {
 
 			Map<String, Object> properties = new HashMap();
 			properties.put(CONTEXT, contextString);
-			Object relation = driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
+			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
 			triples++;
 			if (triples > THRESHOLD) {
 				break;

@@ -17,10 +17,15 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -30,7 +35,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.xml.XMLLayout;
 
 /**
  *
@@ -42,8 +49,9 @@ public class TestDQP {
 
     static final String host = "localhost";
 
-    private ArrayList<String> queries = new ArrayList<String>();
+    private HashMap<String, String> queries = new HashMap<String, String>();
     private boolean modeBGP = false;
+    private int round = 0;
 
     public TestDQP(boolean modeBGP) {
 
@@ -65,7 +73,7 @@ public class TestDQP {
                 + "    ?region igeo:subdivisionDirecte ?departement ."
                 + "    ?departement igeo:nom ?nom . "
                 + "    OPTIONAL { ?departement igeo:subdivisionDirecte ?arrondisement . }"
-                + "} ";
+                + "} ORDER BY ?region ?departement ?nom ?arrondisement";
 
         String union = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
                 + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
@@ -88,30 +96,30 @@ public class TestDQP {
                 + "    ?popLeg idemo:populationTotale ?popTotale . "
                 + "} ORDER BY ?popTotale";
 
-        String filterbis = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-                + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-                + "SELECT ?arrondisement2 ?arrondisement1  WHERE { "
-                + "       ?region igeo:codeRegion ?v1 ."
-                + "       ?region igeo:subdivisionDirecte ?departement1 ."
-                + "       ?departement1 igeo:nom ?nom . "
-                + "       ?departement1 igeo:subdivisionDirecte ?arrondisement1 . "
-                + "       ?region igeo:subdivisionDirecte ?departement2 ."
-                + "       ?departement2 igeo:subdivisionDirecte ?arrondisement2 . "
-                + "FILTER (?arrondisement1 != ?arrondisement2)"
-                + "} ";
-
-        String subQuery = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-                + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-                + "SELECT ?nom ?popTotale  WHERE { "
-                + "    ?region igeo:codeRegion ?v ."
-                + "    ?region igeo:subdivisionDirecte ?departement ."
-                + "    ?departement igeo:nom ?nom . "
-                + "     { SELECT ?region "
-                + "       { ?region igeo:codeRegion \"31\" . } "
-                + "     }"
-                + "    ?departement idemo:population ?popLeg ."
-                + "    ?popLeg idemo:populationTotale ?popTotale . "
-                + "} ORDER BY ?popTotale";
+//        String filterbis = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
+//                + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
+//                + "SELECT ?arrondisement2 ?arrondisement1  WHERE { "
+//                + "       ?region igeo:codeRegion ?v1 ."
+//                + "       ?region igeo:subdivisionDirecte ?departement1 ."
+//                + "       ?departement1 igeo:nom ?nom . "
+//                + "       ?departement1 igeo:subdivisionDirecte ?arrondisement1 . "
+//                + "       ?region igeo:subdivisionDirecte ?departement2 ."
+//                + "       ?departement2 igeo:subdivisionDirecte ?arrondisement2 . "
+//                + "FILTER (?arrondisement1 != ?arrondisement2)"
+//                + "} ";
+//
+//        String subQuery = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
+//                + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
+//                + "SELECT ?nom ?popTotale  WHERE { "
+//                + "    ?region igeo:codeRegion ?v ."
+//                + "    ?region igeo:subdivisionDirecte ?departement ."
+//                + "    ?departement igeo:nom ?nom . "
+//                + "     { SELECT ?region "
+//                + "       { ?region igeo:codeRegion \"31\" . } "
+//                + "     }"
+//                + "    ?departement idemo:population ?popLeg ."
+//                + "    ?popLeg idemo:populationTotale ?popTotale . "
+//                + "} ORDER BY ?popTotale";
 
         String minus = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
                 + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
@@ -128,16 +136,6 @@ public class TestDQP {
                 + "   ?popLeg idemo:populationTotale ?popTotale . "
                 + "} ORDER BY ?popTotale";
 
-        String limit = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
-                + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
-                + "SELECT ?nom ?popTotale  WHERE { "
-                + "   ?region igeo:codeRegion ?v ."
-                + "    ?region igeo:subdivisionDirecte ?departement . "
-                + "    ?departement igeo:nom ?nom .   "
-                + "    ?departement idemo:population ?popLeg ."
-                + "    ?popLeg idemo:populationTotale ?popTotale . "
-                + "} LIMIT 2 ";
-
         String filters = "PREFIX idemo:<http://rdf.insee.fr/def/demo#>"
                 + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
                 + "SELECT ?arrondissement ?cantonNom  WHERE { "
@@ -149,7 +147,7 @@ public class TestDQP {
                 + "    ?canton igeo:nom ?cantonNom . "
                 + " FILTER (?v = \"11\") "
                 + " FILTER (?cantonNom = \"Paris 14e  canton\") "
-                + "}";
+                + "} ORDER BY ?arrondissement ?cantonNom";
 
         String all = "PREFIX idemo:<http://rdf.insee.fr/def/demo#> "
                 + "PREFIX igeo:<http://rdf.insee.fr/def/geo#>"
@@ -177,14 +175,15 @@ public class TestDQP {
                 + "    ?popLeg idemo:populationTotale ?popTotale .   "
                 + " } ORDER BY ?popTotale";
 
-//     queries.add(simple); //OK
-//     queries.add(minus);//OK
-//     queries.add(union);//OK
-        queries.add(filters);//OK
-//     queries.add(optional);//OK???
-//        queries.add(all);//
-
-//     queries.add(subQuery);//?? but processed as AND by default  because EDGES + SUBQUERY is not an AND BGP-able
+        //name queries and queries
+        queries.put("simple", simple);
+//        queries.put("minus",minus);
+//        queries.put("union",union);
+//        queries.put("filters",filters);
+//        queries.put("optional",optional);
+//        queries.put("all", all);
+//
+//        queries.put("subQuery",subQuery);//?? but processed as AND by default  because EDGES + SUBQUERY is not an AND BGP-able
 //     //when method putFreeEdgesInBGP is used => duplicated result TO FIX
     }
 
@@ -214,7 +213,7 @@ public class TestDQP {
 
         logger.info("Graph size: " + graph.size());
 
-        for (String q : queries) {
+        for (String q : queries.values()) {
             logger.info("Querying with : \n" + q);
             for (int i = 0; i < 10; i++) {
                 sw.reset();
@@ -230,7 +229,7 @@ public class TestDQP {
         ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();
         QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, true);
         execDQP.setGroupingEnabled(true);
-        
+
 //      Mode BGP or not
         if (modeBGP) {
             execDQP.setPlanProfile(Query.QP_BGP);
@@ -257,21 +256,121 @@ public class TestDQP {
 //      Demographic
         execDQP.addRemote(new URL("http://" + host + ":8088/sparql"), WSImplem.REST);
 
-        StopWatch sw = new StopWatch();
-        sw.start();
-        for (String query : queries) {
-            Mappings map = execDQP.query(query);
-            logger.info(map.size() + " results in " + sw.getTime() + " ms");
-            logger.info("\n" + map.toString());
-            logger.info(Messages.countQueries);
-            logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryCounter));
-            logger.info(Messages.countTransferredResults);
-            logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryVolumeCounter));
-            logger.info(Messages.countDS);
-            logger.info(Util.prettyPrintCounter(QueryProcessDQP.sourceCounter));
-            logger.info(Messages.countTransferredResultsPerSource);
-            logger.info(Util.prettyPrintCounter(QueryProcessDQP.sourceVolumeCounter));
+        for (Map.Entry<String, String> query : queries.entrySet()) {
+//            try {
+//                String resultFileName = "/home/macina/NetBeansProjects/corese/kg-dqp/src/main/resources/" + query.getKey() + "/" + query.getKey() + "Result";
+//                String valuesFileName = "/home/macina/NetBeansProjects/corese/kg-dqp/src/main/resources/" + query.getKey() + "/" + query.getKey() + "Values";
+//                File resultFile = new File(resultFileName);
+//                File valuesFile = new File(valuesFileName);
+//
+//                if (modeBGP) {
+////                    resultFileName += "H" + round + ".txt";
+////                    valuesFileName += "H" + round + ".csv";
+//                    resultFileName += "H.txt";
+//                    valuesFileName += "H.csv";
+//                    resultFile = new File(resultFileName);
+//                    valuesFile = new File(valuesFileName);
+//
+//                    //To put values (execution time , final results, etc. => in a .csv file)
+//                    FileWriter writeValuesFile;
+//                    try {
+//                        writeValuesFile = new FileWriter(valuesFile,true);
+//                        BufferedWriter bufferValuesFile = new BufferedWriter(writeValuesFile);
+////                        if(!valuesFile.exists())
+//                            bufferValuesFile.write("BGPs, Edges, Query, Results, Execution, Remote, Intermediate\n");
+//                        bufferValuesFile.flush();
+//                        writeValuesFile.close();
+//                    } catch (IOException ex) {
+//                        java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                } else {
+////                    resultFileName += "D" + round + ".txt";
+////                    valuesFileName += "D" + round + ".csv";
+//                    
+//                    resultFileName += "D.txt";
+//                    valuesFileName += "D.csv";
+//                    
+//                    resultFile = new File(resultFileName);
+//                    valuesFile = new File(valuesFileName);
+//
+//                    //To put values (execution time , final results, etc. => in a .csv file)
+//                    FileWriter writeValuesFile;
+//                    try {
+//                        writeValuesFile = new FileWriter(valuesFile,true);
+//                        BufferedWriter bufferValuesFile = new BufferedWriter(writeValuesFile);
+////                        if(!valuesFile.exists())
+//                            bufferValuesFile.write("Edges, Query, Results, Execution, Remote, Intermediate\n");
+//                        bufferValuesFile.flush();
+//                        writeValuesFile.close();
+//                    } catch (IOException ex) {
+//                        java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }
+//
+//                
+////            for (int i = 0; i < 1; i++) {
+//                logger.setAdditivity(false);
+//                try {
+////                    TO FIX
+////                    String path = TestDQP.class.getClassLoader().getResource("test").getPath()+query.getKey()+"/log"+i+".html";
+////                    System.out.println("?? "+path);
+//                    String logName = "/home/macina/NetBeansProjects/corese/kg-dqp/src/main/resources/" + query.getKey() + "/" + query.getKey();
+//                    if (modeBGP) {
+//                        logName += "H" + round + ".xml";
+//                    } else {
+//                        logName += "D" + round + ".xml";
+//                    }
+//                    FileAppender fa = new FileAppender(new XMLLayout(), logName, false);
+//
+//                    logger.addAppender(fa);
+//
+//                } catch (IOException ex) {
+//                    java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+
+                StopWatch sw = new StopWatch();
+                sw.start();
+                Mappings map = execDQP.query(query.getValue());
+                sw.stop();
+                logger.info(map.size() + " results in " + sw.getTime() + " ms");
+                logger.info("\n" + map.toString());
+                logger.info(Messages.countQueries);
+                logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryCounter));
+                logger.info(Messages.countTransferredResults);
+                logger.info(Util.prettyPrintCounter(QueryProcessDQP.queryVolumeCounter));
+                logger.info(Messages.countDS);
+                logger.info(Util.prettyPrintCounter(QueryProcessDQP.sourceCounter));
+                logger.info(Messages.countTransferredResultsPerSource);
+                logger.info(Util.prettyPrintCounter(QueryProcessDQP.sourceVolumeCounter));
+
+//                try {
+//                    //To put results (mappings values) in a .txt file
+//                    FileWriter writeResultFile = new FileWriter(resultFile, false);
+//                    BufferedWriter bufferResultFile = new BufferedWriter(writeResultFile);
+//                    bufferResultFile.write(map.toString());
+//                    bufferResultFile.flush();
+//                    bufferResultFile.close();
+//                    writeResultFile.close();
+//
+//                    //To put values (execution time , final results, etc. => in a .csv file)
+//                    FileWriter writeValuesFile = new FileWriter(valuesFile, true);
+//                    BufferedWriter bufferValuesFile = new BufferedWriter(writeValuesFile);
+//                    bufferValuesFile.write(round + "," + map.size() + "," + sw.getTime() + "," + Util.sum(QueryProcessDQP.queryCounter) + "," + Util.sum(QueryProcessDQP.queryVolumeCounter) + "," + "\n");
+//                    bufferValuesFile.flush();
+//                    writeValuesFile.close();
+//                } catch (IOException e) {
+//                    java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, e);
+//                }
+
+//            } catch (InterruptedException ex) {
+//                java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+//            }
         }
+
+    }
+
+    public void setRound(int round) {
+        this.round = round;
     }
 
     public static void main(String[] args) throws EngineException, MalformedURLException {
@@ -280,12 +379,14 @@ public class TestDQP {
         Option bgpOpt = new Option("bgp", "modeBGP", false, "specify the evaluation strategy");
         Option helpOpt = new Option("h", "help", false, "print this message");
         Option centralizeOpt = new Option("c", "centralize", false, "to evualuate in a centralized context");
-        Option testCaseOpt = new Option("tc", "tesCase", true, "chose the test case ( d, g or p)");
+        Option testCaseOpt = new Option("tc", "testCase", true, "chose the test case ( d, g or p)");
+        Option roundOpt = new Option("r", "round", true, "the roound of the test ( 0, 1 ..., n)");
 
         options.addOption(bgpOpt);
         options.addOption(helpOpt);
         options.addOption(centralizeOpt);
         options.addOption(testCaseOpt);
+        options.addOption(roundOpt);
 
         String header = "blabla";
         String footer = "\nPlease report any issue to macina@i3s.unice.fr";
@@ -301,14 +402,19 @@ public class TestDQP {
                 formatter.printHelp("kgdqp", header, options, footer, true);
                 System.exit(0);
             }
-            
+
             if (cmd.hasOption("bgp")) {
                 test = new TestDQP(true);
             }
-            
+
+            if (cmd.hasOption("r")) {
+                test.setRound(Integer.parseInt(cmd.getOptionValue("r")));
+            }
+
             if (cmd.hasOption("c")) {
                 test.testLocal();
             } else {
+
                 if (cmd.hasOption("tc")) {
                     String tetsCase = cmd.getOptionValue("tc");
                     test.testDQP(tetsCase);
@@ -321,4 +427,5 @@ public class TestDQP {
             java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }
